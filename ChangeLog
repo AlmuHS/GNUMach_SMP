@@ -1,3 +1,8 @@
+2001-09-30  Roland McGrath  <roland@frob.com>
+
+	* kern/bootstrap.c (bootstrap_create): Ignore trailing spaces when
+	checking boot module string for containing none.
+
 2001-09-18  Marcus Brinkmann  <marcus@gnu.org>
 
 	* linux/dev/glue/misc.c: Do not include <linux/types.h> and
