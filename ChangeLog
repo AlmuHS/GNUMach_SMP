@@ -1,3 +1,8 @@
+2002-04-24  Marcus Brinkmann  <marcus@gnu.org>
+
+	* debian/rules (DOCDIR): Move to
+	$(PREFIX)/share/doc/$(package-dev).
+
 2002-04-23  Roland McGrath  <roland@frob.com>
 
 	* i386/i386/ldt.c (ldt_init): Fix fencepost error in segment limits.

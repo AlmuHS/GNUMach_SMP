@@ -29,7 +29,7 @@ BINDIR = $(PREFIX)/bin
 MANDIR = $(PREFIX)/man
 INFODIR = $(PREFIX)/share/info
 DOCDIR = $(PREFIX)/share/doc/$(package)
-DOCDIR-DEV = $(PREFIX)/doc/$(package-dev)
+DOCDIR-DEV = $(PREFIX)/share/doc/$(package-dev)
 
 #  Package specific stuff.  The idea is to try to make the rules
 #  generic (gradually).
