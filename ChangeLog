@@ -1,3 +1,30 @@
+Thu Apr 17 15:55:40 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* kern/exception.c (exception_no_server): Comment out the suspend
+	code; it's useful for special case debugging, but causes problems
+	in general.
+
+Wed Apr 16 12:52:25 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* Makefile.in (cross-lexxer.o lexxer.o): Add pump-priming
+	dependency on cpu.h.  Reported by Marcus G. Daniels
+	(marcus@cathcart.sysc.pdx.edu). 
+
+	* configure.in: Fail if configure target is not for GNU os.
+
+	* i386/Drivers.in (com): Delete option.  It's required by
+	kd_mouse.c.
+	* i386/Makefrag (i386at-files): Add com.c.
+	(driver-files): Delete variable.
+	* i386/bogus/com.h: Revert change of March 10.
+	* i386/device-drivers.h.in (CONFIG_MACH_COM): Delete option.
+	Bug report from Marcus G. Daniels (marcus@cathcart.sysc.pdx.edu).
+	
+	* Makefile.in (./cross-mig): New rule.  
+	(mkinstalldirs): Add $(libexecdir).
+	* configure.in: Recognize i686.  
+	Reported by Marcus G. Daniels (marcus@cathcart.sysc.pdx.edu).
+
 Mon Apr 14 11:50:45 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* Released version 1.0.	

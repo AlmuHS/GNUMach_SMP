@@ -275,7 +275,7 @@ CPPFLAGS += -nostdinc $(DEFINES) $(INCLUDES)
 MIGFLAGS += $(CPPFLAGS)
 
 
-all: kernel cross-migcom
+all: kernel cross-migcom cross-mig
 
 
 #
@@ -307,7 +307,7 @@ $(installed-sysdep-headers-names): $(includedir)/%: $(sysdep)/include/%
 
 mkinstalldirs:
 	mkdir -p $(bootdir) $(includedir) $(includedir)/device \
-		$(includedir)/mach $(includedir)/mach/$(systype)
+		$(includedir)/mach $(includedir)/mach/$(systype) $(libexecdir)
 
 
 #
@@ -532,4 +532,15 @@ else
 	    $< >$@.tmp && chmod +x $@.tmp && mv -f $@.tmp $@
 endif
 
+# Version of MiG to install
+cross-mig: $(srcdir)/mig/mig.sh Makefile
+	sed -e 's,@MIGDIR@,$(libexecdir),g' \
+	    -e 's,@CPP@,${CC} -x c-header -E,g' \
+	    $< >$@.tmp && chmod +x $@.tmp && mv -f $@.tmp $@
+
+
+# The first time through, Make will try and build MiG to get
+# dependencies, before it knows about the automatically generated
+# files that MiG needs.  So tell it about that file here.
+cross-lexxer.o lexxer.o: cpu.h
 
