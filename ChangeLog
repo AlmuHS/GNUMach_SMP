@@ -1,3 +1,32 @@
+Tue Jun 10 13:33:37 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	Version 1.1.2 released.
+	
+	* Makefile.in (install): Install cross-migcom as `migcom', not as
+	`mig'. 
+
+	* i386/Makefrag (objfiles += $(device_drivers)): Sort
+	$(device_drivers) before adding to objfiles in order to remove
+	duplicates. 
+
+Mon Jun  9 22:14:09 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* i386/Drivers.in: Fix typos apt.o -> atp.o; 3c403.o -> 3c503.o.
+	* Drivers.macros (AC_DRIVER): Test the class selected flag
+	correctly. 
+	
+Mon May 26 14:33:19 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* version.c (version): Update to version 1.1.2.
+
+Fri May 23 10:08:48 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* kern/thread.c (thread_info): Set flags word correctly;
+	TH_FLAGS_SWAPPED and TH_FLAGS_IDLE are not exclusive.
+
+	* Makefile.in (topfiles): Add aclocal.m4.
+	Reported by Marcus G. Daniels (marcus@cathcart.sysc.pdx.edu).
+	
 Mon May 12 11:25:38 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	Version 1.1.1 released.
