@@ -1,0 +1,10 @@
+GNU Mach for Debian
+-------------------
+
+This is the GNU version of the Mach microkernel, currently used as the
+basis for the GNU Hurd.
+
+Let us know if you have hardware troubles.
+Compiling a fresh kernel with minimal hardware support is recommended.
+
+GNU Hurd Maintainers <bug-hurd@gnu.org>

@@ -1,0 +1,19 @@
+Source: gnumach
+Section: base
+Priority: optional
+Maintainer: GNU Hurd Maintainers <bug-hurd@gnu.org>
+Standards-Version: 2.5.0.0
+
+Package: gnumach
+Section: base
+Priority: optional
+Architecture: hurd-i386
+Description: The GNU version of the Mach microkernel
+ This is the Utah Mach microkernel used by the Hurd.
+
+Package: gnumach-dev
+Section: devel
+Priority: optional
+Architecture: hurd-i386
+Description: The GNU version of the Mach microkernel
+ These are the header files for the Utah Mach microkernel used by the Hurd.

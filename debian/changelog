@@ -1,0 +1,66 @@
+gnumach (1:1.1.90-2) unstable; urgency=low
+
+  * Fix package administration information to reflect that maintainership
+    has been transferred to bug-hurd@gnu.org.
+  * Merge a few configuration fixes from Marcus Brinkmann.
+  * Install include files into /usr/include, for the benefit of people
+    without the /usr symlink.
+
+ -- Gordon Matzigkeit <bug-hurd@gnu.org>  Wed, 17 Feb 1999 16:50:54 -0600
+
+gnumach (1:1.1.90-1) unstable; urgency=low
+
+  * New version from OKUJI Yoshinori.
+  * Use DEB_{BUILD,HOST}_GNU_TYPE, in accordance with Marcus's new
+    cross-build proposal.
+
+ -- Gordon Matzigkeit <gord@debian.org>  Tue, 11 Feb 1999 22:14:01 -0600
+
+gnumach (19990116-1) unstable; urgency=low
+
+  * New version from OKUJI Yoshinori.
+  * Added kmsg.
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Mon, 18 Jan 1999 17:11:58 +0100
+
+gnumach (19981118-2) unstable; urgency=low
+
+  * Split into gnumach and gnumach-dev.
+  * Added keyboard patch by Tudor Hulubei <tudor@cs.unh.edu> to fix some
+    keybord issues.
+  * Bumped Standards: version to 2.5.0.0.
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Sun,  3 Jan 1999 13:53:28 +0100
+
+gnumach (19981118-1) unstable; urgency=low
+
+  * New version from OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>.
+    This is not a new upstream version, but includes the Linux 2.0.36 driver.
+  * Strip the kernel.
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Sat, 19 Dec 1998 05:27:30 +0100
+
+gnumach (19981025-1) unstable; urgency=low
+
+  * New upstream snapshot.
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Sat,  7 Nov 1998 18:56:53 +0100
+
+gnumach (1.1.3-2) unstable; urgency=low
+
+  * Added CPU_TYPE_{I486,PENTIUM,PENTIUMPRO,POWERPC} to
+    ./include/mach/machine.h. This is needed for latest hurd release.
+  * Changed description (thank you, Santiagio).
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Sat,  1 Aug 1998 21:33:31 +0200
+
+gnumach (1.1.3-1) unstable; urgency=low
+
+  * Initial Version.
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Sat,  1 Aug 1998 21:33:31 +0200
+
+Local variables:
+mode: debian-changelog
+add-log-mailing-address: "bug-hurd@gnu.org"
+End:

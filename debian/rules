@@ -1,0 +1,156 @@
+#!/usr/bin/make -f
+############################ -*- Mode: Makefile -*- ###########################
+## rules ---
+## Author           : Marcus Brinkmann <brinkmd@debian.org>
+## Created On       : Sat,  1 Aug 1998 21:33:31 +0200
+## Created On Node  : localhost
+## Last Modified By : Marcus Brinkmann
+## Last Modified On : Sun,  8 Nov 1998 13:55:22 +0100
+## Last Machine Used: localhost
+## Update Count     : 1
+## Status           : Unknown, Use with caution!
+## HISTORY          :
+## Description      :
+##
+###############################################################################
+
+# The name of the package (for example, `emacs').
+package   := gnumach
+package-dev := gnumach-dev
+BUILDARCH := $(DEB_BUILD_GNU_TYPE)
+HOSTARCH := $(DEB_HOST_GNU_TYPE)
+
+# Configuration variables (these should be pretty generic)
+CC = cc
+CFLAGS = -O2 -g -pipe -Wall
+LDFLAGS = -s
+PREFIX = /usr
+BINDIR = $(PREFIX)/bin
+MANDIR = $(PREFIX)/man
+DOCDIR = $(PREFIX)/doc/$(package)
+DOCDIR-DEV = $(PREFIX)/doc/$(package-dev)
+
+#  Package specific stuff.  The idea is to try to make the rules
+#  generic (gradually).
+
+FILES_TO_CLEAN	= debian/files machine
+DIRS_TO_CLEAN	= debian/tmp
+STAMPS_TO_CLEAN	= stamp-build stamp-configure
+
+install_file	= install -o root -g root -m 644
+install_program	= install -s -o root -g root -m 755
+make_directory	= install -d -o root -g root -m 755
+
+define checkdir
+	test -f debian/rules
+endef
+
+define checkroot
+	@test 0 = "`id -u`" || (echo need root priviledges; exit 1)
+endef
+
+configure: stamp-configure
+stamp-configure:
+	$(checkdir)
+	-mkdir build
+	cd build && ../configure \
+	--enable-com --enable-floppy --enable-ide --enable-lpr \
+	--enable-advansys --enable-buslogic --enable-u1434f --enable-ultrastor \
+	--enable-aha152x --enable-aha1542 --enable-aha1740 --enable-aic7xxx \
+	--enable-futuredomain --enable-in2000 \
+	--enable-ne2000 --enable-3c503 --enable-el2 \
+	--enable-3c509 --enable-el3 --enable-wd80x3 --enable-3c501 --enable-el1 \
+	--enable-ul --enable-hplanplus --enable-hplan --enable-3c59x --enable-vortex \
+	--enable-seeq8005 --enable-hp100 --enable-hpj2577 --enable-hpj2573 \
+	--enable-hp27248b --enable-hp2585 --enable-ac3200 --enable-e2100 \
+	--enable-at1700 --enable-eth16i --enable-eth32 --enable-znet --enable-znote \
+	--enable-eexpress --enable-eexpresspro --enable-depca --enable-de100 \
+	--enable-de101 --enable-de200 --enable-de201 --enable-de202 --enable-de210 \
+	--enable-de422 --enable-ewrk3 --enable-de203 --enable-de204 --enable-de205 \
+	--enable-de4x5 --enable-de425 --enable-de434 --enable-de500 --enable-apricot \
+	--enable-wavelan --enable-3c507 --enable-el16 --enable-3c505 --enable-elplus \
+	--enable-de600 --enable-de620 --enable-skg16 --enable-ni52 --enable-ni65 \
+	--enable-atp --enable-kmsg --build=$(BUILDARCH) --host=$(HOSTARCH)
+	touch stamp-configure
+
+all build: stamp-build
+stamp-build: configure
+	$(checkdir)
+	cd build && $(MAKE)
+	touch stamp-build
+
+#--enable-ncr5380 --enable-ncr53c400 --enable-ncr53c406a  --enable-ncr53c7xx \
+#--enable-ncr53c8xx
+#--enable-qlogic --enable-pas16 --enable-seagate --enable-t128 \
+#--enable-eatadma --enable-eatapio --enable-wd7000 \
+#--enable-eata --enable-am53c974
+
+clean:
+	$(checkdir)
+	-rm -rf build
+	-mv BAR device-drivers.h
+	-rm -f  $(FILES_TO_CLEAN) $(STAMPS_TO_CLEAN)
+	-rm -rf $(DIRS_TO_CLEAN)
+	-rm -f core `find . \( -name '*.orig' -o -name '*.rej' -o -name '*~' \
+                -o -name '*.bak' -o -name '#*#' -o -name '.*.orig' \
+                -o -name '.*.rej' -o -name '.SUMS' -o -size 0 \) -print`
+
+binary: binary-indep binary-arch
+
+# Build architecture-independent files here.
+
+binary-indep: build
+	$(checkdir)
+	$(checkroot)
+	-rm -rf			debian/tmp
+
+	$(make_directory)	debian/tmp/DEBIAN debian/tmp$(DOCDIR-DEV)
+
+	pfx=`cd debian/tmp && pwd` && cd build && $(MAKE) install-headers prefix=$$pfx
+	mv debian/tmp/include debian/tmp/usr/.
+	-find debian/tmp -type d | xargs chmod g-w
+
+	$(install_file)		NEWS debian/tmp$(DOCDIR-DEV)
+	$(install_file)		ChangeLog debian/tmp$(DOCDIR-DEV)/ChangeLog
+	$(install_file)		ChangeLog.0 debian/tmp$(DOCDIR-DEV)
+	$(install_file)		ChangeLog.00 debian/tmp$(DOCDIR-DEV)
+	$(install_file)		debian/changelog debian/tmp$(DOCDIR-DEV)/changelog.Debian
+	gzip -9frq		debian/tmp$(DOCDIR-DEV)/.
+	$(install_file)		debian/copyright debian/tmp$(DOCDIR-DEV)
+	ln -s			ChangeLog.gz debian/tmp$(DOCDIR-DEV)/changelog.gz
+
+	dpkg-gencontrol         -p$(package-dev) -Pdebian/tmp
+	chown -R root.root      debian/tmp
+	dpkg --build            debian/tmp ..
+
+binary-arch: build
+	$(checkdir)
+	$(checkroot)
+	-rm -rf			debian/tmp
+
+	$(make_directory)	debian/tmp/DEBIAN debian/tmp$(DOCDIR)
+
+	pfx=`cd debian/tmp && pwd` && cd build && $(MAKE) install-kernel prefix=$$pfx
+	strip --strip-all	debian/tmp/boot/gnumach
+	-find debian/tmp -type d | xargs chmod g-w
+
+	$(install_file)		README debian/tmp$(DOCDIR)
+	$(install_file)		NEWS debian/tmp$(DOCDIR)
+	$(install_file)		ChangeLog debian/tmp$(DOCDIR)/ChangeLog
+	$(install_file)		ChangeLog.0 debian/tmp$(DOCDIR)
+	$(install_file)		ChangeLog.00 debian/tmp$(DOCDIR)
+	$(install_file)		i386/README-Drivers debian/tmp$(DOCDIR)
+	$(install_file)		debian/README.Debian debian/tmp$(DOCDIR)
+	$(install_file)		debian/changelog debian/tmp$(DOCDIR)/changelog.Debian
+	gzip -9frq		debian/tmp$(DOCDIR)/.
+	$(install_file)		debian/copyright debian/tmp$(DOCDIR)
+	ln -s			ChangeLog.gz debian/tmp$(DOCDIR)/changelog.gz
+
+	dpkg-gencontrol         -p$(package) -Pdebian/tmp
+	chown -R root.root      debian/tmp
+	dpkg --build            debian/tmp ..
+
+binary-indep: build
+# We have nothing to do here.
+
+.PHONY: build clean binary-indep binary-arch binary configure
