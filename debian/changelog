@@ -1,4 +1,4 @@
-gnumach (1:20011005-3) unstable; urgency=low
+gnumach (1:20011013-1) unstable; urgency=low
 
   * Update to CVS 20011013.
   * Patches applied to CVS code: cdromlock.
