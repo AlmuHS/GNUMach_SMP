@@ -160,6 +160,8 @@ csrpos_t kd_curpos	= 0;	/* set indirectly by kd_setpos--see kdsoft.h */
 short	kd_lines	= 25;
 short	kd_cols		= 80;
 char	kd_attr		= KA_NORMAL;	/* current attribute */
+char	kd_color	= KA_NORMAL;
+char	kd_attrflags	= 0;		/* Not reverse, underline, blink */
 
 /*
  * kd_state shows the state of the modifier keys (ctrl, caps lock,
@@ -208,7 +210,7 @@ boolean_t kd_initialized 	= FALSE;	/* driver initialized? */
 boolean_t kd_extended	= FALSE;
 
 /* Array for processing escape sequences. */
-#define	K_MAXESC	16
+#define	K_MAXESC	32
 u_char	esc_seq[K_MAXESC];
 u_char	*esc_spt	= (u_char *)0;
 
@@ -822,9 +824,8 @@ int	regs;
 	}
 
 	scancode = inb(K_RDWR);
-	if (scancode == K_EXTEND) {
-		if (kb_mode != KB_EVENT)
-			kd_extended = TRUE;
+	if (scancode == K_EXTEND && kb_mode != KB_EVENT) {
+		kd_extended = TRUE;
 		goto done;
 	} else if (scancode == K_RESEND) {
 		kd_resend();
@@ -1200,6 +1201,8 @@ kdinit()
 	esc_spt = esc_seq;
 	kd_attr = KA_NORMAL;
 
+	kd_attrflags = 0;
+	kd_color = KA_NORMAL;
 	/*
 	 * board specific initialization: set up globals and kd_dxxx
 	 * pointers, and synch displayed cursor with logical cursor.
@@ -1471,6 +1474,37 @@ kd_parseesc()
 }
 
 
+/* kd_update_kd_attr:
+ *
+ *	Updates kd_attr according to kd_attrflags and kd_color.
+ * This code has its origin from console.c and selection.h in
+ * linux 2.2 drivers/char/.
+ * Modified for GNU Mach by Marcus Brinkmann.
+ */
+
+#define reverse_video_char(a)       (((a) & 0x88) | ((((a) >> 4) | ((a) << 4)) & 0x77))
+void
+kd_update_kd_attr(void)
+{
+	kd_attr = kd_color;
+	if (kd_attrflags & KAX_UNDERLINE)
+		kd_attr = (kd_attr & 0xf0) | KAX_COL_UNDERLINE;
+	else if (kd_attrflags & KAX_DIM)
+		kd_attr = (kd_attr & 0xf0) | KAX_COL_DIM;
+	if (kd_attrflags & KAX_REVERSE)
+		kd_attr = reverse_video_char(kd_attr);
+	if (kd_attrflags & KAX_BLINK)
+		kd_attr ^= 0x80;
+	if (kd_attrflags & KAX_BOLD)
+		kd_attr ^= 0x08;
+}	
+
+/* color_table added by Julio Merino to take proper color order.
+ * I get this code from Linux 2.2 source code in file: 
+ * linux/drivers/char/console.c
+ */
+unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
+				       8,12,10,14, 9,13,11,15 };
 /*
  * kd_parserest:
  *
@@ -1487,130 +1521,172 @@ kd_parseesc()
 kd_parserest(cp)
 u_char	*cp;
 {
-	int	number;
+	int	number[16], npar = 0, i;
 	csrpos_t newpos;
 
-	cp += kd_atoi(cp, &number);
+	for(i=0;i<=15;i++)
+		number[i] = DEFAULT;
+
+	do {
+		cp += kd_atoi(cp, &number[npar]);
+	} while (*cp == ';' && ++npar <= 15 && cp++);
+	
 	switch(*cp) {
 	case 'm':
-		switch(number) {
-		case DEFAULT:
-		case 0:
-			kd_attr = KA_NORMAL;
-			break;
-		case 7:
-			kd_attr = KA_REVERSE;
-			break;
-		default:
-			kd_attr = KA_NORMAL;
-			break;
-		}
+		for (i=0;i<=npar;i++)
+			switch(number[i]) {
+			case DEFAULT:
+			case 0:
+				kd_attrflags = 0;
+				kd_color = KA_NORMAL;
+				break;
+			case 1:
+				kd_attrflags |= KAX_BOLD;
+				kd_attrflags &= ~KAX_DIM;
+				break;
+			case 2:
+				kd_attrflags |= KAX_DIM;
+				kd_attrflags &= ~KAX_BOLD;
+				break;
+			case 4:
+				kd_attrflags |= KAX_UNDERLINE;
+				break;
+			case 5:
+				kd_attrflags |= KAX_BLINK;
+				break;
+			case 7:
+				kd_attrflags |= KAX_REVERSE;
+				break;
+			case 8:
+				kd_attrflags |= KAX_INVISIBLE;
+				break;
+			case 21:
+			case 22:
+				kd_attrflags &= ~(KAX_BOLD | KAX_DIM);
+				break;
+			case 24:
+				kd_attrflags &= ~KAX_UNDERLINE;
+				break;
+			case 25:
+				kd_attrflags &= ~KAX_BLINK;
+				break;
+			case 27:
+				kd_attrflags &= ~KAX_REVERSE;
+				break;
+			case 38:
+				kd_attrflags |= KAX_UNDERLINE;
+				kd_color = (kd_color & 0xf0) | (KA_NORMAL & 0x0f);
+				break;
+			case 39:
+				kd_attrflags &= ~KAX_UNDERLINE;
+				kd_color = (kd_color & 0xf0) | (KA_NORMAL & 0x0f);
+				break;
+			default:
+			  if (number[i] >= 30 && number[i] <= 37) {
+			    /* foreground color */
+			    kd_color = (kd_color & 0xf0) | color_table[(number[i] - 30)];
+			  } else if (number[i] >= 40 && number[i] <= 47) {
+			    /* background color */
+			    kd_color = (kd_color & 0x0f) | (color_table[(number[i] - 40)] << 4);
+			  }
+			  break;
+			}
+		kd_update_kd_attr();
 		esc_spt = esc_seq;
 		break;
 	case '@':
-		if (number == DEFAULT)
+		if (number[0] == DEFAULT)
 			kd_insch(1);
 		else
-			kd_insch(number);
-		esc_spt = esc_seq;
-		break;
-	case 'H':
-		kd_home();
+			kd_insch(number[0]);
 		esc_spt = esc_seq;
 		break;
 	case 'A':
-		if (number == DEFAULT)
+		if (number[0] == DEFAULT)
 			kd_up();
 		else
-			while (number--)
+			while (number[0]--)
 				kd_up();
 		esc_spt = esc_seq;
 		break;
 	case 'B':
-		if (number == DEFAULT)
+		if (number[0] == DEFAULT)
 			kd_down();
 		else
-			while (number--)
+			while (number[0]--)
 				kd_down();
 		esc_spt = esc_seq;
 		break;
 	case 'C':
-		if (number == DEFAULT)
+		if (number[0] == DEFAULT)
 			kd_right();
 		else
-			while (number--)
+			while (number[0]--)
 				kd_right();
 		esc_spt = esc_seq;
 		break;
 	case 'D':
-		if (number == DEFAULT)
+		if (number[0] == DEFAULT)
 			kd_left();
 		else
-			while (number--)
+			while (number[0]--)
 				kd_left();
 		esc_spt = esc_seq;
 		break;
 	case 'E':
 		kd_cr();
-		if (number == DEFAULT)
+		if (number[0] == DEFAULT)
 			kd_down();
 		else
-			while (number--)
+			while (number[0]--)
 				kd_down();
 		esc_spt = esc_seq;
 		break;
 	case 'F':
 		kd_cr();
-		if (number == DEFAULT)
+		if (number[0] == DEFAULT)
 			kd_up();
 		else
-			while (number--)
+			while (number[0]--)
 				kd_up();
 		esc_spt = esc_seq;
 		break;
 	case 'G':
-		if (number == DEFAULT)
-			number = 0;
+		if (number[0] == DEFAULT)
+			number[0] = 0;
 		else
-			if (number > 0)
-				--number;	/* because number is from 1 */
-		kd_setpos(BEG_OF_LINE(kd_curpos) + number * ONE_SPACE);
+			if (number[0] > 0)
+				--number[0];	/* because number[0] is from 1 */
+		kd_setpos(BEG_OF_LINE(kd_curpos) + number[0] * ONE_SPACE);
 		esc_spt = esc_seq;
 		break;
-	case ';':
-		++cp;
-		if (*cp == '\0')
-			break;			/* not ready yet */
-		if (number == DEFAULT)
-			number = 0;
-		else
-			if (number > 0)
-				--number;		/* numbered from 1 */
-		newpos = (number * ONE_LINE);   /* setup row */
-		cp += kd_atoi(cp, &number);
-		if (*cp == '\0')
-			break;			/* not ready yet */
-		if (number == DEFAULT)
-			number = 0;
-		else if (number > 0)
-			number--;
-		newpos += (number * ONE_SPACE);	/* setup column */
+	case 'f':
+	case 'H':
+		if (number[0] == DEFAULT && number[1] == DEFAULT)
+		{
+			kd_home();
+			esc_spt = esc_seq;
+			break;
+		}
+		if (number[0] == DEFAULT)
+			number[0] = 0;
+		else if (number[0] > 0)
+			--number[0];		/* numbered from 1 */
+		newpos = (number[0] * ONE_LINE);   /* setup row */
+		if (number[1] == DEFAULT)
+			number[1] = 0;
+		else if (number[1] > 0)
+			number[1]--;
+		newpos += (number[1] * ONE_SPACE);	/* setup column */
 		if (newpos < 0)
 			newpos = 0;		/* upper left */
 		if (newpos > ONE_PAGE)
-			newpos = (ONE_PAGE - ONE_SPACE);
-		/* lower right */
-		if (*cp == '\0')
-			break;			/* not ready yet */
-		if (*cp == 'H') {
-			kd_setpos(newpos);
-			esc_spt = esc_seq;	/* done, reset */
-		}
-		else
-			esc_spt = esc_seq;
+			newpos = (ONE_PAGE - ONE_SPACE); /* lower right */
+		kd_setpos(newpos);
+		esc_spt = esc_seq;
 		break;				/* done or not ready */
 	case 'J':
-		switch(number) {
+		switch(number[0]) {
 		case DEFAULT:
 		case 0:
 			kd_cltobcur();	/* clears from current
@@ -1631,7 +1707,7 @@ u_char	*cp;
 		esc_spt = esc_seq;		/* reset it */
 		break;
 	case 'K':
-		switch(number) {
+		switch(number[0]) {
 		case DEFAULT:
 		case 0:
 			kd_cltoecur();	/* clears from current
@@ -1653,47 +1729,47 @@ u_char	*cp;
 		esc_spt = esc_seq;
 		break;
 	case 'L':
-		if (number == DEFAULT)
+		if (number[0] == DEFAULT)
 			kd_insln(1);
 		else
-			kd_insln(number);
+			kd_insln(number[0]);
 		esc_spt = esc_seq;
 		break;
 	case 'M':
-		if (number == DEFAULT)
+		if (number[0] == DEFAULT)
 			kd_delln(1);
 		else
-			kd_delln(number);
+			kd_delln(number[0]);
 		esc_spt = esc_seq;
 		break;
 	case 'P':
-		if (number == DEFAULT)
+		if (number[0] == DEFAULT)
 			kd_delch(1);
 		else
-			kd_delch(number);
+			kd_delch(number[0]);
 		esc_spt = esc_seq;
 		break;
 	case 'S':
-		if (number == DEFAULT)
+		if (number[0] == DEFAULT)
 			kd_scrollup();
 		else
-			while (number--)
+			while (number[0]--)
 				kd_scrollup();
 		esc_spt = esc_seq;
 		break;
 	case 'T':
-		if (number == DEFAULT)
+		if (number[0] == DEFAULT)
 			kd_scrolldn();
 		else
-			while (number--)
+			while (number[0]--)
 				kd_scrolldn();
 		esc_spt = esc_seq;
 		break;
 	case 'X':
-		if (number == DEFAULT)
+		if (number[0] == DEFAULT)
 			kd_erase(1);
 		else
-			kd_erase(number);
+			kd_erase(number[0]);
 		esc_spt = esc_seq;
 		break;
 	case '\0':

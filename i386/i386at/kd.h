@@ -212,6 +212,16 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define KA_NORMAL	0x07
 #define KA_REVERSE	0x70
 
+#define KAX_REVERSE	0x01
+#define KAX_UNDERLINE	0x02
+#define KAX_BLINK	0x04
+#define KAX_BOLD	0x08
+#define KAX_DIM		0x10
+#define KAX_INVISIBLE	0x20
+
+#define KAX_COL_UNDERLINE 0x0f	/* bright white */
+#define KAX_COL_DIM 0x08	/* gray */
+
 /*
  * For an EGA-like display, each character takes two bytes, one for the 
  * actual character, followed by one for its attributes.  

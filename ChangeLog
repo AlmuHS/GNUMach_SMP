@@ -1,5 +1,22 @@
 2001-08-18  Marcus Brinkmann  <marcus@gnu.org>
 
+	* i386/i386at/kd.c (kdintr): In event mode, make it so that
+	0xE0 scancodes are received.
+	From Kalle Olavi Niemitalo <tosi@ees2.oulu.fi>.
+
+	* i386/i386at/kd.h: New constants KAX_REVERSE, KAX_UNDERLINE,
+	KAX_BLINK, KAX_BOLD, KAX_DIM, KAX_INVISIBLE, KAX_COL_UNDERLINE,
+	KAX_COL_DIM.
+	* i386/i386at/kd.c: Increase K_MAXESC to 32.
+	New global variable color_table to map color values.
+	New globals kd_color and kd_attrflags.
+	(kdinit): Initialize these variables.
+	(kd_update_kd_attr): New function.
+	(kd_parserest): Redone to support more terminal attributes,
+	including colors.
+
+2001-08-18  Marcus Brinkmann  <marcus@gnu.org>
+
 	* linux/src/drivers/net/eepro100.c: File updated to version in
 	Linux 2.2.19.
 	* linux/src/include/asm-i386/spinlock.h: New file from Linux 2.2.19.
