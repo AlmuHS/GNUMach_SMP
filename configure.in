@@ -64,7 +64,6 @@ AC_CHECK_TOOL(LD, ld)
 AC_CHECK_TOOL(NM, nm)
 
 AC_CHECK_TOOL(MIG, mig, mig)
-AC_CHECK_TOOL(MAKE, make, make)
 
 # Set up `machine' link in build directory for easier header file location.
 AC_LINK_FILES(${systype}/${systype},machine)
