@@ -1,3 +1,21 @@
+1999-10-04  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* configure.in: Remove AC_CHECK_TOOL(MAKE,...) check.
+	* Makefile.in (MAKE): Variable removed.  We require GNU make anyway,
+	and it always sets MAKE.
+
+	* Makefile.in (clib-routines.o, check-clib-routines, clib-routines.d):
+	Remove these rules, replace with:
+	(kernel.o): New target, relocatable object linked from kernel objects.
+	(kernel-undef, kernel-undef-bad): New targets, glean undefined symbols
+	from kernel.o.
+	(clib-routines.o): New target, use those to select symbols from libc.
+	(clib-routines): Add some symbols; move defn to kernel linking page.
+	This variable is now a list of symbols allowed to be undefined,
+	rather than a prescriptive list of symbols always grabbed from libc.
+	(kernel): Rewrite this rules to just link kernel.o and clib-routines.o
+	together to make the kernel image.
+
 1999-09-15  Mark Kettenis  <kettenis@gnu.org>
 
 	* i386/i386/user_ldt.c: Fix user LDT management.
@@ -21,10 +39,10 @@
 
 	* linux/src/drivers/net/yellowfin.c (yellowfin_probe): Return
 	correct value.  Reported by Marcus Brinkmann
-	<Marcus.Brinkmann@ruhr-uni-bochum.de>. 
+	<Marcus.Brinkmann@ruhr-uni-bochum.de>.
 
 	* linux/dev/drivers/net/Space.c: Declare tc515_probe.  Reported by
-	Marcus Brinkmann <Marcus.Brinkmann@ruhr-uni-bochum.de>. 
+	Marcus Brinkmann <Marcus.Brinkmann@ruhr-uni-bochum.de>.
 
 1999-09-04  Thomas Bushnell, BSG  <tb@mit.edu>
 
@@ -38,13 +56,13 @@
 	* i386/i386at/model_dep.c (init_alloc_aligned): Revert previous
 	change except for the one to AVAIL_NEXT.  All the rest of the
 	previous code was correct.  Correction from Momchil Velikov
-	(velco@fadata.bg). 
+	(velco@fadata.bg).
 
 1999-07-23  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* Drivers.macros (AC_DRIVER): Use `test' instead of `[ ... ]'.
 	Reported by "Momchil 'Velco' Velikov" <velco@fadata.bg>.
-	
+
 1999-07-20  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* linux/dev/drivers/block/genhd.c (check_partition): Change message
