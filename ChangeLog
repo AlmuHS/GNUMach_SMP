@@ -1,3 +1,8 @@
+1999-07-23  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* Drivers.macros (AC_DRIVER): Use `test' instead of `[ ... ]'.
+	Reported by "Momchil 'Velco' Velikov" <velco@fadata.bg>.
+
 1999-07-20  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* linux/dev/drivers/block/genhd.c (check_partition): Change message
