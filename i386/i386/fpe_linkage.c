@@ -86,6 +86,7 @@ extern void	fix_desc();
 	((struct real_gate *)&curr_idt(mycpu)[idx])
 
 void	set_user_access();	/* forward */
+void	enable_fpe(register struct i386_fpsave_state *ifps);
 
 /*
  * long pointer for calling FPE register recovery routine.

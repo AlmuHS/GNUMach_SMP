@@ -1,5 +1,11 @@
 2005-01-22  Guillem Jover  <guillem@hadrons.org>
 
+	* linux/dev/include/linux/skbuff.h (skb_put, skb_push): Fix errors
+	for deprecated use of labels at end of compound statements.
+	* i386/i386/fpe_linkage.c (enable_fpe): Declare prototype.
+
+2005-01-22  Guillem Jover  <guillem@hadrons.org>
+
 	* linux/src/drivers/scsi/qlogicisp_asm.c: Remove file with binary
 	only firmware.
 	* linux/src/drivers/scsi/qlogicisp.c: Do not include "qlogicisp_asm.c".
