@@ -305,7 +305,7 @@ static vm_offset_t zget_space(vm_offset_t size)
 			continue;
 		}
 
-		
+
 		/*
 	  	 *	Memory was allocated in a previous iteration.
 		 *
@@ -328,7 +328,7 @@ static vm_offset_t zget_space(vm_offset_t size)
 		new_space = 0;
 	}
 	result = zalloc_next_space;
-	zalloc_next_space += size;		
+	zalloc_next_space += size;
 	simple_unlock(&zget_space_lock);
 
 	if (new_space != 0)
@@ -374,7 +374,7 @@ void zone_init()
 	 * Setup garbage collection information:
 	 */
 
- 	zone_table_size = atop(zone_max - zone_min) * 
+ 	zone_table_size = atop(zone_max - zone_min) *
 				sizeof(struct zone_page_table_entry);
 	if (kmem_alloc_wired(zone_map, (vm_offset_t *) &zone_page_table,
 			     zone_table_size) != KERN_SUCCESS)
@@ -443,14 +443,15 @@ vm_offset_t zalloc(zone_t zone)
 					 * with the collecatable flag. What we
 					 * want is an assurance we can get the
 					 * memory back, assuming there's no
-					 * leak. 
+					 * leak.
 					 */
 					zone->max_size += (zone->max_size >> 1);
 				} else if (!zone_ignore_overflow) {
 					zone_unlock(zone);
 					printf("zone \"%s\" empty.\n",
 						zone->zone_name);
-					panic("zalloc");
+					panic("zalloc: zone %s exhausted",
+					      zone->zone_name);
 				}
 			}
 
@@ -462,10 +463,11 @@ vm_offset_t zalloc(zone_t zone)
 				if (kmem_alloc_pageable(zone_map, &addr,
 							zone->alloc_size)
 							!= KERN_SUCCESS)
-					panic("zalloc");
+					panic("zalloc: zone %s exhausted",
+					      zone->zone_name);
 				zcram(zone, addr, zone->alloc_size);
 				zone_lock(zone);
-				zone->doing_alloc = FALSE; 
+				zone->doing_alloc = FALSE;
 				/* XXX check before doing this */
 				thread_wakeup((event_t)&zone->doing_alloc);
 
@@ -474,7 +476,8 @@ vm_offset_t zalloc(zone_t zone)
 				if (kmem_alloc_wired(zone_map,
 						     &addr, zone->alloc_size)
 							!= KERN_SUCCESS)
-					panic("zalloc");
+					panic("zalloc: zone %s exhausted",
+					      zone->zone_name);
 				zone_page_init(addr, zone->alloc_size,
 							ZONE_PAGE_USED);
 				zcram(zone, addr, zone->alloc_size);
@@ -483,7 +486,8 @@ vm_offset_t zalloc(zone_t zone)
 			} else {
 				addr = zget_space(zone->elem_size);
 				if (addr == 0)
-					panic("zalloc");
+					panic("zalloc: zone %s exhausted",
+					      zone->zone_name);
 
 				zone_lock(zone);
 				zone_count_up(zone);
@@ -546,7 +550,7 @@ void zfree(zone_t zone, vm_offset_t elem)
  *
  *  These routines have in common the modification of entries in the
  *  zone_page_table.  The latter contains one entry for every page
- *  in the zone_map.  
+ *  in the zone_map.
  *
  *  For each page table entry in the given range:
  *
@@ -556,7 +560,7 @@ void zfree(zone_t zone, vm_offset_t elem)
  *	zone_page_alloc         - increments alloc_count
  *	zone_page_dealloc       - decrements alloc_count
  *	zone_add_free_page_list - adds the page to the free list
- *   
+ *
  *  Two counts are maintained for each page, the in_free_list count and
  *  alloc_count.  The alloc_count is how many zone elements have been
  *  allocated from a page.  (Note that the page could contain elements
@@ -568,10 +572,10 @@ void zfree(zone_t zone, vm_offset_t elem)
  *
  *  Alloc_count and in_free_list are initialized to the correct values
  *  for a particular zone when a page is zcram'ed into a zone.  Subsequent
- *  gets and frees of zone elements will call zone_page_in_use and 
+ *  gets and frees of zone elements will call zone_page_in_use and
  *  zone_page_free which modify the in_free_list count.  When the zones
  *  garbage collector runs it will walk through a zones free element list,
- *  remove the elements that reside on collectable pages, and use 
+ *  remove the elements that reside on collectable pages, and use
  *  zone_add_free_page_list to create a list of pages to be collected.
  */
 
@@ -710,7 +714,7 @@ struct zone_free_entry {
  *	pages.  zone_gc is called by consider_zone_gc when the system
  *	begins to run out of memory.
  */
-static void zone_gc() 
+static void zone_gc()
 {
 	int		max_zones;
 	zone_t		z;
@@ -765,7 +769,7 @@ static void zone_gc()
 			    if (zone_page(elt)->alloc_count == 0 ||
 			      zone_page(elt+(z->elem_size-1))->alloc_count==0) {
 				    zone_add_free_page_list(
-					    &zone_free_page_list, 
+					    &zone_free_page_list,
 					    (vm_offset_t)elt, z->elem_size);
 			    }
 
@@ -792,7 +796,7 @@ static void zone_gc()
 			}
 		    }
 		}
-		zone_unlock(z);		
+		zone_unlock(z);
 		splx(s);
 		simple_lock(&all_zones_lock);
 		z = z->next_zone;
@@ -802,7 +806,7 @@ static void zone_gc()
 	for (freep = zone_free_page_list; freep != 0; freep = freep->next) {
 		vm_offset_t	free_addr;
 
-		free_addr = zone_map_min_address + 
+		free_addr = zone_map_min_address +
 			PAGE_SIZE * (freep - zone_page_table);
 		kmem_free(zone_map, free_addr, PAGE_SIZE);
 	}
