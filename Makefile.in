@@ -440,7 +440,8 @@ vpath configure $(srcdir)
 
 # Building from foo.srv
 %_interface.h %_server.c: %.srv
-	$(MIG) $(MIGFLAGS) -header $*_interface.h -server $*_server.c -user /dev/null $<
+	$(MIG) $(MIGFLAGS) -sheader $*_interface.h -server $*_server.c \
+			   -header /dev/null -user /dev/null $<
 
 #
 # Dependency generation
