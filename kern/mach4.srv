@@ -21,6 +21,8 @@
  */
 /* This is a server presentation file.  */
 
+#include <mach_pcsample.h>
+
 #define KERNEL_SERVER 1
 
 #ifdef MIGRATING_THREADS

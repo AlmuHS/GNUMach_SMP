@@ -167,7 +167,7 @@ void clock_interrupt(usec, usermode, basepri)
 	    thread_quantum_update(my_cpu, thread, 1, state);
 	}
 
-#if 	MACH_SAMPLE
+#if 	MACH_PCSAMPLE
 	/*
 	 * Take a sample of pc for the user if required.
 	 * This had better be MP safe.  It might be interesting
