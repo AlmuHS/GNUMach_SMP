@@ -1,3 +1,12 @@
+Wed Apr 28 02:17:51 1999  Thomas Bushnell, BSG  <tb@mit.edu>
+
+	* linux/src/drivers/net/3c59x.c: Upgrade to Linux 2.2.1 version. 
+	(vortex_start_xmit): Don't frob VP->stat.tx_bytes.
+	(boomerang_start_xmit): Likewise.
+	(vortex_rx): Don't frob VP->stats.rx_bytes.
+	(boomerang_rx): Likewise.
+	Requested by Jeff Bailey (jbailey@nisa.net).
+	
 Mon Apr 26 02:13:02 1999  Thomas Bushnell, BSG  <tb@mit.edu>
 
 	* Makefile.in (objfiles): Don't add $(systype)/sysdep.o here.
