@@ -1,4 +1,4 @@
-/* 
+/*
  * Mach device server routines (i386at version).
  *
  * Copyright (c) 1996 The University of Utah and
@@ -273,6 +273,8 @@ device_reference (device_t dev)
 void
 device_deallocate (device_t dev)
 {
+  if (dev == DEVICE_NULL)
+    return;
   if (dev->emul_ops->dealloc)
     (*dev->emul_ops->dealloc) (dev->emul_data);
 }
