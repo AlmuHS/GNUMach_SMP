@@ -14,6 +14,11 @@ call DEV_GET_RECORDS can return the number of records of a device.
 
 Lots of tweaks have been done to the virtual memory management to make
 it perform better on todays machines.
+
+The console supports ANSI escape sequences for colors and attributes.
+
+Support for the terminal speeds B57600 and B115200 has been added.
+
 
 Changes between version 1.1 and version 1.2
 
