@@ -1,3 +1,9 @@
+2001-04-27  Marcus Brinkmann  <marcus@gnu.org>
+
+	* include/device/tty_status.h: New macros B57600 and B115200,
+	increase NSPEED accordingly.
+	* i386/i386at/com.c (divisorreg): New divisor 1.
+
 2001-04-04  Roland McGrath  <roland@frob.com>
 
 	* ddb/db_access.h: Fix obsolescent #else/#endif syntax.

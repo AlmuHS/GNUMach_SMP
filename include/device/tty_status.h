@@ -61,8 +61,10 @@ struct tty_status {
 #define EXTB	15
 #define B19200	EXTA
 #define B38400  EXTB
+#define B57600	16
+#define B115200	17
 
-#define	NSPEEDS	16
+#define	NSPEEDS	18
 
 /*
  * Flags
