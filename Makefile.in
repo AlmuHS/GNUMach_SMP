@@ -60,7 +60,8 @@ CFLAGS = @CFLAGS@
 all:
 
 # All the possible architectures
-all-archs = i386
+all-archs = i386 linux
+all-real-archs = i386
 
 all-archs-subdirs = $(patsubst %,$(srcdir)/%/Subdirs,$(all-archs))
 all-archs-files = $(patsubst %,$(srcdir)/%/Files,$(all-archs))
@@ -381,28 +382,28 @@ dist:
 		mkdir -p gnumach-$(version)/$$dir; \
 	done
 	# Files
-	ln $(addprefix $(srcdir)/,$(topfiles)) gnumach-$(version)
-	ln $(addprefix $(srcdir)/bogus/,$(bogus-files)) gnumach-$(version)/bogus
-	ln $(addprefix $(srcdir)/chips/,$(chips-files)) gnumach-$(version)/chips
-	ln $(addprefix $(srcdir)/ddb/,$(ddb-files)) gnumach-$(version)/ddb
-	ln $(addprefix $(srcdir)/device/,$(device-files)) gnumach-$(version)/device
-	ln $(addprefix $(srcdir)/ipc/,$(ipc-files)) gnumach-$(version)/ipc
-	ln $(addprefix $(srcdir)/kern/,$(kern-files)) gnumach-$(version)/kern
-	ln $(addprefix $(srcdir)/scsi/,$(scsi-files)) gnumach-$(version)/scsi
-	ln $(addprefix $(srcdir)/util/,$(util-files)) gnumach-$(version)/util
-	ln $(addprefix $(srcdir)/vm/,$(vm-files)) gnumach-$(version)/vm
-	ln $(addprefix $(srcdir)/include/,$(mach-headers)) gnumach-$(version)/include/mach
-	ln $(addprefix $(srcdir)/include/,$(device-headers)) gnumach-$(version)/include/device
-	ln $(addprefix $(srcdir)/include/,$(mach-debug-headers)) gnumach-$(version)/include/mach_debug
-	ln $(addprefix $(srcdir)/include/,$(mach-exec-headers)) gnumach-$(version)/include/mach/exec
-	ln $(addprefix $(srcdir)/include/,$(other-headers)) gnumach-$(version)/include
-	ln $(addprefix $(srcdir)/include/sys/,$(other-sys-headers)) gnumach-$(version)/include/sys
-	ln $(addprefix $(srcdir)/include/mach/,$(other-mach-headers)) gnumach-$(version)/include/mach
+	cp $(addprefix $(srcdir)/,$(topfiles)) gnumach-$(version)
+	cp $(addprefix $(srcdir)/bogus/,$(bogus-files)) gnumach-$(version)/bogus
+	cp $(addprefix $(srcdir)/chips/,$(chips-files)) gnumach-$(version)/chips
+	cp $(addprefix $(srcdir)/ddb/,$(ddb-files)) gnumach-$(version)/ddb
+	cp $(addprefix $(srcdir)/device/,$(device-files)) gnumach-$(version)/device
+	cp $(addprefix $(srcdir)/ipc/,$(ipc-files)) gnumach-$(version)/ipc
+	cp $(addprefix $(srcdir)/kern/,$(kern-files)) gnumach-$(version)/kern
+	cp $(addprefix $(srcdir)/scsi/,$(scsi-files)) gnumach-$(version)/scsi
+	cp $(addprefix $(srcdir)/util/,$(util-files)) gnumach-$(version)/util
+	cp $(addprefix $(srcdir)/vm/,$(vm-files)) gnumach-$(version)/vm
+	cp $(addprefix $(srcdir)/include/,$(mach-headers)) gnumach-$(version)/include/mach
+	cp $(addprefix $(srcdir)/include/,$(device-headers)) gnumach-$(version)/include/device
+	cp $(addprefix $(srcdir)/include/,$(mach-debug-headers)) gnumach-$(version)/include/mach_debug
+	cp $(addprefix $(srcdir)/include/,$(mach-exec-headers)) gnumach-$(version)/include/mach/exec
+	cp $(addprefix $(srcdir)/include/,$(other-headers)) gnumach-$(version)/include
+	cp $(addprefix $(srcdir)/include/sys/,$(other-sys-headers)) gnumach-$(version)/include/sys
+	cp $(addprefix $(srcdir)/include/mach/,$(other-mach-headers)) gnumach-$(version)/include/mach
 	# Files in arch dirs
 	for file in `cat $(all-archs-files)`; do \
-		ln $(srcdir)/$$file gnumach-$(version)/`dirname $$file`; \
+		cp $(srcdir)/$$file gnumach-$(version)/`dirname $$file`; \
 	done
-	for arch in $(all-archs); do \
+	for arch in $(all-real-archs); do \
 		ln -s $$arch gnumach-$(version)/$$arch/include/mach/machine; \
 	done
 	tar cfz gnumach-$(version).tar.gz gnumach-$(version)

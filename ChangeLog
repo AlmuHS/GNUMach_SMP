@@ -1,3 +1,26 @@
+1999-06-21  Thomas Bushnell, BSG  <tb@mit.edu>
+
+	* i386/Subdirs: Remove i386/i386at/boot.
+
+Sun Jun 20 18:33:59 1999  Thomas Bushnell, BSG  <tb@mit.edu>
+
+	* version.c (version): Updated to version 1.2.
+	
+	* i386/Files: Regenerated.
+	* i386/Subdirs: Regenerated.
+	
+	* linux/Files: New file.
+	* linux/Subdirs: New file.
+	* Makefile.in (all-archs): Add `linux'.
+	(all-real-archs): New variable.
+	(dist): Create `machine' symlink only on
+	$(all-real-archs).
+
+	* Makefile.in (dist): Use `cp' instead of `ln'.
+
+	* config.guess: Updated from autoconf 2.13.
+	* config.sub: Likewise.
+
 1999-06-16  Thomas Bushnell, BSG  <tb@mit.edu>
 
 	* linux/dev/drivers/net/Space.c (ethif_probe): Probe tc59x_probe

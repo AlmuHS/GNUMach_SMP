@@ -1,8 +1,16 @@
-Changes from version 1.1:
+Changes between version 1.1 and version 1.2
+
+Many bug fixes.
+
+The task_basic_info RPC now has an additional field, holding the
+creation time of the task.  Likewise for thread_basic_info.
 
 The interface generator `MiG' has been split out.
 
-Linux drivers are updated to 2.0.36.
+Partition names for disks are now printed in the correct way.
+
+Linux drivers are updated to 2.0.36.  Many thanks to Okuji Yoshinori
+for great work here.  The Linux emulation support is much improved.
 
 The kernel message device `kmsg' is supported. --enable-kmsg turns on
 the device.
@@ -16,7 +24,7 @@ the header files.
 Print out Mach device names instead of Linux ones.
 
 
-Changes from version 1.0:
+Changes between versions 1.0 and 1.1:
 
 Cross-compilation support is much improved.  Any of various popular
 libc's is now sufficient for building clib-routines.o.
