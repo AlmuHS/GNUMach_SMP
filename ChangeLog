@@ -1,3 +1,12 @@
+2000-08-17  OKUJI Yoshinori  <okuji@gnu.org>
+
+	* linux/dev/glue/block.c (rdwr_partial): Mask the minor device
+	number with MINOR_SHIFT bits, when indexing the array of
+	partitions. Reported by Marius Vollmer <mvo@zagadka.ping.de>.
+	(init_partition): Likewise.
+	(check_limit): Likewise.
+	(device_get_status): Likewise.
+	
 2000-07-27  Marcus Brinkmann  <marcus@gnu.org>
 
 	* Fix omissions in last change:
