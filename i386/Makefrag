@@ -1,5 +1,5 @@
 # i386 Mach makefile fragment
-# Copyright 1997 Free Software Foundation, Inc.
+# Copyright 1997, 1999 Free Software Foundation, Inc.
 #
 # Permission to use, copy, modify and distribute this software and its
 # documentation is hereby granted, provided that both the copyright
@@ -14,10 +14,10 @@
 
 
 # Some of the i386-specific code checks for these.
-DEFINES += -DCONTINUATIONS -DLINUX_DEV -D__ELF__ -Di386
+DEFINES += -DCONTINUATIONS -D__ELF__ -Di386 -DLINUX_DEV
 
 # Source files for any i386 kernel
-i386at-files = autoconf.c blit.c com.c conf.c cons_conf.c fd.c rtc.c \
+i386at-files = autoconf.c blit.c conf.c cons_conf.c fd.c rtc.c \
 	i386at_ds_routines.c immc.c int_init.c iopl.c kd.c kd_event.c \
 	kd_mouse.c kd_queue.c model_dep.c phys_mem_grab_page.c pic_isa.c
 i386-files = ast_check.c db_disasm.c db_interface.c db_trace.c debug_i386.c \
@@ -51,77 +51,13 @@ ifeq ($(enable_kdb),yes)
 objfiles += _setjmp.o
 endif
 
-### Linux device drivers (make this Better, Please)
+# XXX: In i386, com is always enabled.
+objfiles += com.o
 
-linux-gen-files = $(addprefix linux_,$(linux-gen-names))
-linux-gen-names = autoirq.c block.c dma.c init.c irq.c kmem.c misc.c net.c \
-		port.c printk.c sched.c soft.c timer.c version.c vsprintf.c
-
-linux-block-files = cmd640.c floppy.c genhd.c ide-cd.c ide.c rz1000.c triton.c
-
-linux-net-files = 3c501.c 3c503.c 3c505.c 3c507.c 3c509.c 3c59x.c \
-	8390.c Space.c ac3200.c apricot.c at1700.c atp.c \
-	de4x5.c de600.c de620.c depca.c dev.c e2100.c eepro.c eexpress.c \
-	eth16i.c ewrk3.c hp-plus.c hp.c hp100.c lance.c ne.c net_init.c \
-	ni52.c ni65.c seeq8005.c sk_g16.c smc-ultra.c tulip.c \
-	wavelan.c wd.c znet.c
-
-linux-pci-files = bios32.c pci.c
-
-linux-scsi-files = 53c78xx.c AM53C974.c BusLogic.c NCR53c406a.c advansys.c \
-	aha152x.c aha1542.c aha1740.c aic7xxx.c constants.c eata.c eata_dma.c \
-	eata_pio.c fdomain.c g_NCR5380.c hosts.c in2000.c pas16.c qlogic.c \
-	scsi.c scsi_debug.c scsi_ioctl.c scsi_proc.c scsicam.c sd.c \
-	sd_ioctl.c seagate.c sr.c sr_ioctl.c t128.c u14-34f.c \
-	ultrastor.c wd7000.c
-
-all-linux-files = $(linux-gen-files) $(linux-block-files) \
-		$(linux-net-files) $(linux-pci-files) $(linux-scsi-files)
-
-# These are always used.
-objfiles += $(subst .c,.o,$(filter-out linux_net.c,$(linux-gen-files)))
-objfiles += $(subst .c,.o,$(linux-pci-files)) genhd.o
-
-vpath %.c $(sysdep)/i386at/gpl/linux $(sysdep)/i386at/gpl/linux/block
-vpath %.c $(sysdep)/i386at/gpl/linux/net $(sysdep)/i386at/gpl/linux/pci
-vpath %.c $(sysdep)/i386at/gpl/linux/scsi
-
-# These files need special flags for compilation; each one will
-# have a variable like wd7000.c-linux-flags with those flags.
-CFLAGS += $($(<F)-linux-flags)
-
-# These flags are:
-# Instead of Mach's KERNEL, Linux uses __KERNEL__.  Whee.
-# Arrange for special include directories too.
-# Because of the use of `extern inline' in some Linux header files without
-# corresponding text-segment definitions, we must always optimize.
-linux-spec-flags= -D__KERNEL__ -I$(sysdep)/i386at/gpl/linux \
-	-I$(sysdep)/i386at/gpl/linux/include -O2
-
-# Here is where those specs are found.
--include linux-flags
-
-# How to make this file:
-
-linux-flags: $(sysdep)/Makefrag
-	rm -f $@
-	for i in $(all-linux-files); do \
-		echo $$i-linux-flags '= $$(linux-spec-flags)' >> $@; \
-	done
-	echo 'linux-flags-done='$(all-linux-files) >> $@
-
-# If we haven't included `linux-flags' properly, then don't try and build
-# .d files.
-ifneq ($(linux-flags-done),$(all-linux-files))
-no_deps=t
+# This file is only needed for LPR support.
+ifeq ($(findstring -DMACH_LPR,@DEFS@),-DMACH_LPR)
+objfiles += lpr.o
 endif
-
-### End Linux device drivers grot
-
-
-
-include i386/driverlist
-objfiles += $(sort $(device_drivers))
 
 
 
@@ -160,23 +96,6 @@ i386-installed-headers= mach/proc_ops.h \
 		pio.h pmode.h proc_reg.h rpc.h seg.h syscall_sw.h \
 		thread_status.h time_stamp.h trap.h tss.h vcpi.h vm_param.h \
 		vm_types.h)
-
-
-# Autoconf support
-
-$(sysdep)/configure: $(sysdep)/Drivers.in $(srcdir)/Drivers.macros
-	cd $(sysdep) && rm -f configure && autoconf Drivers.in > configure
-
-# Running config.status always creates driverlist, but
-# only touches device-drivers.h if it changed.
-$(systype)/device-drivers.h: $(systype)/driverlist
-$(systype)/driverlist: $(sysdep)/driverlist.in $(systype)/config.status
-	cd $(systype) && ./config.status
-
-$(systype)/config.status: $(sysdep)/configure
-	cd $(systype) && ./config.status --recheck
-
-
 
 
 # Cheat, cheat, cheat.
