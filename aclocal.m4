@@ -71,3 +71,11 @@ AC_MSG_RESULT($ac_cv_prog_cc_cross)
 AC_SUBST(cross_linkable)
 cross_compiling=$ac_cv_prog_cc_cross
 ])
+
+AC_DEFUN(hurd_SYSTYPE,
+[AC_REQUIRE([AC_CANONICAL_HOST])dnl
+case "$host_cpu" in
+i[[3456]]86)	systype=i386 ;;
+*)		systype="$host_cpu" ;;
+esac
+AC_SUBST(systype)])
