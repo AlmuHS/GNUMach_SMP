@@ -22,6 +22,7 @@
 	* Makefile.in (mach-headers): Remove proc_ops.h.
 	* i386/Makefrag (i386-installed-headers): Likewise.
 	(installed-headers): Don't touch this any more.
+	* i386/Files: Update for removed files.
 
 2000-09-29  Marcus Brinkmann  <marcus@gnu.org>
 
