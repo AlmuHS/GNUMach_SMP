@@ -1,5 +1,11 @@
 1998-10-24  Roland McGrath  <roland@baalperazim.frob.com>
 
+	* Makefile.in (mach_machine): Don't depend on config.status, since it
+	is always newer than the symlink target.
+
+	* i386/Makefrag ($(systype)/device-drivers.h): Depend on
+	$(systype)/driverlist, and have no commands.
+
 	* configure.in (--enable-kdb): Fix help text; handle --disable-kdb.
 	Remove BUILD_CC checks and lex/yacc checks (which were for mig).
 	(installed_clib): Remove these checks.
