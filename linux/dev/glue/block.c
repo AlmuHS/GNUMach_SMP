@@ -1654,8 +1654,9 @@ device_get_status (void *d, dev_flavor_t flavor, dev_status_t status,
       else
 	{
 	  assert (blk_size[MAJOR (bd->dev)]);
-	  (status[DEV_GET_RECORDS_DEVICE_RECORDS]
-	   = blk_size[MAJOR (bd->dev)][MINOR (bd->dev)]);
+	  status[DEV_GET_RECORDS_DEVICE_RECORDS]
+	    = (blk_size[MAJOR (bd->dev)][MINOR (bd->dev)]
+	       << (BLOCK_SIZE_BITS - 9));
 	}
       /* It would be nice to return the block size as reported by
 	 the driver, but a lot of user level code assumes the sector
