@@ -65,6 +65,7 @@ struct thread_basic_info {
 	integer_t	suspend_count;	/* suspend count for thread */
 	integer_t	sleep_time;	/* number of seconds that thread
 					   has been sleeping */
+	time_value_t	creation_time;	/* time stamp of creation */
 };
 
 typedef struct thread_basic_info	thread_basic_info_data_t;

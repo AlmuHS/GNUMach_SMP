@@ -60,6 +60,7 @@ struct task_basic_info {
 					   terminated threads */
 	time_value_t	system_time;	/* total system run time for
 					   terminated threads */
+	time_value_t	creation_time;  /* creation time stamp */
 };
 
 typedef struct task_basic_info		task_basic_info_data_t;
