@@ -1,3 +1,13 @@
+2001-10-07  Roland McGrath  <roland@frob.com>
+
+	* i386/i386/locore.S: Fix sloppy asm syntax to avoid warnings from
+	newer assembler (%ecx -> %cl in byte insns).
+
+	* kern/bootstrap.c (bootstrap_create): Fix inverted test logic for
+	compatibility case.  Ignore trailing newlines after space for
+	compatibility detection.
+	Reported by Neal H Walfield <neal@cs.uml.edu>.
+
 2001-10-06  Marcus Brinkmann  <marcus@gnu.org>
 
 	* README: Replace `GNU mach' by `GNU Mach', and remove
