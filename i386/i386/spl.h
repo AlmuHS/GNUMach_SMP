@@ -48,4 +48,7 @@ extern spl_t	(spldcm)(void);
 
 extern spl_t	(spl6)(void);
 
+/* XXX Include each other... */
+#include <i386/ipl.h>
+
 #endif	/* _MACHINE_SPL_H_ */
