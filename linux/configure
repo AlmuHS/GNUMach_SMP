@@ -693,8 +693,8 @@ done
 
 ac_given_srcdir=$srcdir
 
-trap 'rm -fr `echo "src/.dummy:dummy dev/.dummy:dummy
-          src/include/.dummy:dummy dev/include/.dummy:dummy" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
+trap 'rm -fr `echo "src/.dummy:dummy.in dev/.dummy:dummy.in
+          src/include/.dummy:dummy.in dev/include/.dummy:dummy.in" | sed "s/:[^ ]*//g"` conftest*; exit 1' 1 2 15
 EOF
 cat >> $CONFIG_STATUS <<EOF
 
@@ -771,8 +771,8 @@ EOF
 
 cat >> $CONFIG_STATUS <<EOF
 
-CONFIG_FILES=\${CONFIG_FILES-"src/.dummy:dummy dev/.dummy:dummy
-          src/include/.dummy:dummy dev/include/.dummy:dummy"}
+CONFIG_FILES=\${CONFIG_FILES-"src/.dummy:dummy.in dev/.dummy:dummy.in
+          src/include/.dummy:dummy.in dev/include/.dummy:dummy.in"}
 EOF
 cat >> $CONFIG_STATUS <<\EOF
 for ac_file in .. $CONFIG_FILES; do if test "x$ac_file" != x..; then
