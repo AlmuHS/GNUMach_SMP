@@ -398,6 +398,8 @@ kern_return_t thread_setstatus(thread, flavor, tstate, count)
 		    return(KERN_INVALID_ARGUMENT);
 		}
 
+		state = (struct i386_thread_state *) tstate;
+
 		if (flavor == i386_REGS_SEGS_STATE) {
 		    /*
 		     * Code and stack selectors must not be null,
@@ -415,8 +417,6 @@ kern_return_t thread_setstatus(thread, flavor, tstate, count)
 		     || state->ss == 0 || (state->ss & SEL_PL) != SEL_PL_U)
 			return KERN_INVALID_ARGUMENT;
 		}
-
-		state = (struct i386_thread_state *) tstate;
 
 		saved_state = USER_REGS(thread);
 
