@@ -1,3 +1,9 @@
+2000-07-27  Marcus Brinkmann  <marcus@gnu.org>
+
+	* Fix omissions in last change:
+	* linux/src/arch/i386/lib/delay.S: Now really delete the file.
+	* linux/src/arch/i386/lib/delay.c: Now really add the file.
+
 2000-07-04  Marcus Brinkmann <marcus@gnu.org>
 
 	* debian/changelog: Add entry for new Debian upload.
