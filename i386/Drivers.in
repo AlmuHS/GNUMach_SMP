@@ -95,7 +95,7 @@ AC_DRIVER(am53c974, CONFIG_SCSI_AM53C974, AM53C974.o, scsi)
 dnl Ethernet controllers
 
 AC_DRIVER(ne2000, CONFIG_NE2000, ne.o 8390.o, net)
-AC_DRIVER(el2, CONFIG_EL2, 3c403.o 8390.o, net)
+AC_DRIVER(el2, CONFIG_EL2, 3c503.o 8390.o, net)
 AC_DRIVER(wd80x3, CONFIG_WD80x3, wd.o 8390.o, net)
 AC_DRIVER(el1, CONFIG_EL1, 3c501.o, net)
 AC_DRIVER(ul, CONFIG_ULTRA, smc-ultra.o 8390.o, net)
@@ -123,6 +123,6 @@ AC_DRIVER(de620, CONFIG_DE620, de620.o, net)
 AC_DRIVER(skg16, CONFIG_SK_G16, sk_g16.o, net)
 AC_DRIVER(ni52, CONFIG_NI52, ni52.o, net)
 AC_DRIVER(ni65, CONFIG_NI65, ni65.o, net)
-AC_DRIVER(atp, CONFIG_ATP, apt.o, net)
+AC_DRIVER(atp, CONFIG_ATP, atp.o, net)
 
 AC_OUTPUT(driverlist)

@@ -121,7 +121,7 @@ endif
 
 
 include i386/driverlist
-objfiles += $(device_drivers)
+objfiles += $(sort $(device_drivers))
 
 
 
