@@ -26,6 +26,7 @@
 #define MACH_INCLUDE
 #include <stdarg.h>
 #include <asm/system.h>
+#include <kern/assert.h>
 
 static char buf[2048];
 
@@ -40,14 +41,14 @@ printk (char *fmt, ...)
   va_list args;
   int n, flags;
   extern void cnputc ();
-  extern int linux_vsprintf (char *buf, char *fmt,...);
   char *p, *msg, *buf_end;
   static int msg_level = -1;
   
   save_flags (flags);
   cli ();
   va_start (args, fmt);
-  n = linux_vsprintf (buf + 3, fmt, args);
+  n = vsnprintf (buf + 3, sizeof (buf) - 3, fmt, args);
+  assert (n <= sizeof (buf) - 3);
   buf_end = buf + 3 + n;
   va_end (args);
   for (p = buf + 3; p < buf_end; p++)

@@ -1,3 +1,13 @@
+2004-09-08  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* linux/dev/kernel/printk.c: Include <kern/assert.h>.
+	(printk): Use vsnprintf, not linux_vsprintf to avoid buffer
+	overruns.
+
+	* kern/printf.c (struct vsnprintf_cookie): New structure.
+	(snputc): New function.
+	(vsnprintf): Likewise.
+
 2004-11-22  Guillem Jover  <guillem@hadrons.org>
 
 	* bogus/mach_assert.h: Change #ifdef DEBUG to #ifndef NDEBUG

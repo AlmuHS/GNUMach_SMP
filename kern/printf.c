@@ -579,6 +579,34 @@ sprintf(char *buf, const char *fmt, ...)
 	return (buf - start);
 }
 
+struct vsnprintf_cookie
+{
+  char *buf;
+  int index;
+  int max_len;
+};
+
+static void
+snputc(char c, vm_offset_t arg)
+{
+  struct vsnprintf_cookie *cookie = (void *) arg;
+
+  if (cookie->index < cookie->max_len)
+    cookie->buf[cookie->index ++] = c;
+}
+
+int
+vsnprintf(char *buf, int size, const char *fmt, va_list args)
+{
+  struct vsnprintf_cookie cookie
+    = { .buf = buf, .index = 0, .max_len = size };
+
+  _doprnt (fmt, &args, snputc, 16, (vm_offset_t)&cookie);
+  cookie.buf[cookie.index] = '\0';
+
+  return cookie.index;
+}
+
 
 void safe_gets(str, maxlen)
 	char *str;
