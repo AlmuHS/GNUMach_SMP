@@ -37,6 +37,7 @@
 #include <i386/thread.h>
 #include <i386/user_ldt.h>
 #include "ldt.h"
+#include "vm_param.h"
 
 char	acc_type[8][3] = {
     /*	code	stack	data */
@@ -100,9 +101,10 @@ i386_set_ldt(thread, first_selector, desc_list, count, desc_list_inline)
 	unsigned int	count;
 	boolean_t	desc_list_inline;
 {
-	user_ldt_t	new_ldt, old_ldt, cur_ldt;
+	user_ldt_t	new_ldt, old_ldt, temp;
 	struct real_descriptor *dp;
 	int		i;
+	int             min_selector = 0;
 	pcb_t		pcb;
 	vm_size_t	ldt_size_needed;
 	int		first_desc = sel_idx(first_selector);
@@ -110,7 +112,9 @@ i386_set_ldt(thread, first_selector, desc_list, count, desc_list_inline)
 
 	if (thread == THREAD_NULL)
 	    return KERN_INVALID_ARGUMENT;
-	if (first_desc < 0 || first_desc > 8191)
+	if (thread == current_thread())
+	  min_selector = LDTSZ;
+	if (first_desc < min_selector || first_desc > 8191)
 	    return KERN_INVALID_ARGUMENT;
 	if (first_desc + count >= 8192)
 	    return KERN_INVALID_ARGUMENT;
@@ -172,19 +176,18 @@ i386_set_ldt(thread, first_selector, desc_list, count, desc_list_inline)
 	    }
 	}
 	ldt_size_needed = sizeof(struct real_descriptor)
-			* (first_desc + count - 1);
+			* (first_desc + count);
 
 	pcb = thread->pcb;
-	old_ldt = 0;	/* the one to throw away */
-	new_ldt = 0;	/* the one to allocate */
+	new_ldt = 0;
     Retry:
 	simple_lock(&pcb->lock);
-	cur_ldt = pcb->ims.ldt;
-	if (cur_ldt == 0 ||
-	    cur_ldt->desc.limit_low + 1 < ldt_size_needed)
+	old_ldt = pcb->ims.ldt;
+	if (old_ldt == 0 ||
+	    old_ldt->desc.limit_low + 1 < ldt_size_needed)
 	{
 	    /*
-	     * No current LDT, or not big enough
+	     * No old LDT, or not big enough
 	     */
 	    if (new_ldt == 0) {
 		simple_unlock(&pcb->lock);
@@ -199,7 +202,7 @@ i386_set_ldt(thread, first_selector, desc_list, count, desc_list_inline)
 	    {
 		vm_offset_t	ldt_base;
 
-		ldt_base = (vm_offset_t) &new_ldt->ldt[0];
+		ldt_base = kvtolin(&new_ldt->ldt[0]);
 
 		new_ldt->desc.limit_low   = ldt_size_needed - 1;
 		new_ldt->desc.limit_high  = 0;
@@ -214,40 +217,48 @@ i386_set_ldt(thread, first_selector, desc_list, count, desc_list_inline)
 	    }
 
 	    /*
-	     * Have new LDT.  Copy descriptors from current to new.
+	     * Have new LDT.  If there was a an old ldt, copy descriptors
+	     * from old to new.  Otherwise copy the default ldt.
 	     */
-	    if (cur_ldt)
-		bcopy((char *) &cur_ldt->ldt[0],
-		      (char *) &new_ldt->ldt[0],
-		      cur_ldt->desc.limit_low + 1);
+	    if (old_ldt) {
+		bcopy((char *)&old_ldt->ldt[0],
+		      (char *)&new_ldt->ldt[0],
+		      old_ldt->desc.limit_low + 1);
+	    }
+	    else if (thread == current_thread()) {
+		struct real_descriptor template = {0, 0, 0, ACC_P, 0, 0 ,0};
 
-	    old_ldt = cur_ldt;	/* discard old LDT */
-	    cur_ldt = new_ldt;	/* use new LDT from now on */
-	    new_ldt = 0;	/* keep new LDT */
+		for (dp = &new_ldt->ldt[0], i = 0; i < first_desc; i++, dp++) {
+		    if (i < LDTSZ)
+		    	*dp = *(struct real_descriptor *) &ldt[i];
+		    else
+			*dp = template;
+		}
+	    }
+
+	    temp = old_ldt;
+	    old_ldt = new_ldt;	/* use new LDT from now on */
+	    new_ldt = temp;	/* discard old LDT */
   
-	    pcb->ims.ldt = cur_ldt;	/* set LDT for thread */
+	    pcb->ims.ldt = old_ldt;	/* set LDT for thread */
+
+	    /*
+	     * If we are modifying the LDT for the current thread,
+	     * make sure it is properly set.
+	     */
+	    if (thread == current_thread())
+	        switch_ktss(pcb);
 	}
 
 	/*
 	 * Install new descriptors.
 	 */
-	bcopy((char *) desc_list,
-	      (char *) &cur_ldt->ldt[first_desc],
+	bcopy((char *)desc_list,
+	      (char *)&old_ldt->ldt[first_desc],
 	      count * sizeof(struct real_descriptor));
 
 	simple_unlock(&pcb->lock);
 
-	/*
-	 *	Discard old LDT if it was replaced
-	 */
-	if (old_ldt)
-	    kfree((vm_offset_t)old_ldt,
-		  old_ldt->desc.limit_low + 1
-		+ sizeof(struct real_descriptor));
-
-	/*
-	 *	Discard new LDT if it was not used
-	 */
 	if (new_ldt)
 	    kfree((vm_offset_t)new_ldt,
 		  new_ldt->desc.limit_low + 1
@@ -344,7 +355,7 @@ i386_get_ldt(thread, first_selector, selector_count, desc_list, count)
 	/*
 	 * copy out the descriptors
 	 */
-	bcopy((char *)&user_ldt[first_desc],
+	bcopy((char *)&user_ldt->ldt[first_desc],
 	      (char *)*desc_list,
 	      ldt_size);
 	*count = ldt_count;
@@ -372,7 +383,8 @@ i386_get_ldt(thread, first_selector, selector_count, desc_list, count)
 	    /*
 	     * Make memory into copyin form - this unwires it.
 	     */
-	    (void) vm_map_copyin(ipc_kernel_map, addr, size_used, TRUE, &memory);
+	    (void) vm_map_copyin(ipc_kernel_map, addr, size_used,
+				 TRUE, &memory);
 	    *desc_list = (struct real_descriptor *)memory;
 	}
 
