@@ -1,3 +1,7 @@
+2005-02-10  Guillem Jover  <guillem@hadrons.org>
+
+	* linux/dev/glue/block.c (rdwr_partial): Remove leftover assert.
+
 2005-01-22  Guillem Jover  <guillem@hadrons.org>
 
 	* linux/dev/include/linux/skbuff.h (skb_put, skb_push): Fix errors

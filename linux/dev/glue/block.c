@@ -544,7 +544,6 @@ rdwr_partial (int rw, kdev_t dev, loff_t *off,
     {
       o = *off & BMASK;
       c = bh->b_size - o;
-      assert (*resid <= c);
       if (c > *resid)
 	c = *resid;
       if (rw == READ)
