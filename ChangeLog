@@ -12,6 +12,7 @@
 	(vm_page_release): New argument `external'.  All callers
 	changed. Keep track of number of externally managed pages.
 	(vm_page_bootstrap): Initialize M->external.
+	(vm_page_external_limit): Define new variable.
 	* vm/vm_page.h (vm_page_external_limit, vm_page_external_count):
 	New variables.
 	(struct vm_page): New members `external' and `extcounted'.
@@ -24,6 +25,7 @@
 	doing work, then the only thing we do is schedule cleaning of
 	pages.  Help keep track of the number of externally managed pages
 	that we care about.
+	
 
 	* vm/vm_pageout.c (VM_PAGEOUT_BURST_WAIT): Reduce to 10ms/page.
 	(VM_PAGEOUT_EMPTY_WAIT): Reduce to 75 ms.
