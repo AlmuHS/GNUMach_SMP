@@ -1,3 +1,11 @@
+Fri May  2 12:43:46 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* Makefile.in (enable_kdb): New variable.
+	(clib-routines): If enable_kdb, then add strstr.
+	* i386/i386/_setjmp.S: New file, from UK22 libmach.
+	* i386/Files: Add i386/i386/_setjmp.S.
+	* i386/Makefrag (objfiles): Add _setjmp.o if enable_kdb.
+	
 1997-04-30  Marcus G. Daniels  <marcus@cathcart.sysc.pdx.edu>
 
 	* Makefile.in (clib-routines): Add htons not because it is necessary,

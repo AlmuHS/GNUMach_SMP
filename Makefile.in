@@ -36,6 +36,13 @@ ifeq ($(cross_linkable),yes)
   cross-migcom = cross-migcom
 endif
 
+# Detect if the user wants KDB
+ifeq ($(filter -DMACH_KDB,@DEFS@),-DMACH_KDB)
+enable_kdb=yes
+else
+enable_kdb=no
+endif
+
 # Programs found by configure.
 AWK=@AWK@
 INSTALL=@INSTALL@
@@ -230,7 +237,10 @@ other-headers := alloca.h
 # for sanity.
 objfiles += clib-routines.o
 
-clib-routines = memcpy memset bcopy bzero htonl htons ntohl ntohs
+clib-routines := memcpy memset bcopy bzero htonl htons ntohl ntohs 
+ifeq ($(enable_kdb),yes)
+clib-routines += strstr
+endif
 
 clib-routines.o: $(installed-clib)
 	$(LD) -o clib-routines.o -r $(addprefix -u ,$(clib-routines)) $(installed-clib)

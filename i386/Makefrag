@@ -46,6 +46,11 @@ objfiles += fpe.o
 # Mig-generated
 objfiles += mach_i386_server.o
 
+# This file is only needed for KDB support.
+ifeq ($(enable_kdb),yes)
+objfiles += _setjmp.o
+endif
+
 ### Linux device drivers (make this Better, Please)
 
 linux-gen-files = $(addprefix linux_,$(linux-gen-names))

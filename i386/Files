@@ -54,6 +54,7 @@ i386/dos/i16/i16_vcpi.c
 i386/dos/i16/i16_xms.c
 i386/dos/i16/idt.h
 i386/dos/i16/phys_mem_sources.h
+i386/i368/_setjmp.S
 i386/i386/ast.h
 i386/i386/ast_check.c
 i386/i386/ast_types.h
