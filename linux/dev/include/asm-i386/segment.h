@@ -96,24 +96,24 @@ static inline unsigned long __get_user(const void * y, int size)
 static inline void __generic_memcpy_tofs(void * to, const void * from, unsigned long n)
 {
     __asm__ volatile
-	("	cld
-		push %%es
-		push %%fs
-		cmpl $3,%0
-		pop %%es
-		jbe 1f
-		movl %%edi,%%ecx
-		negl %%ecx
-		andl $3,%%ecx
-		subl %%ecx,%0
-		rep; movsb
-		movl %0,%%ecx
-		shrl $2,%%ecx
-		rep; movsl
-		andl $3,%0
-	1:	movl %0,%%ecx
-		rep; movsb
-		pop %%es"
+	("cld\n"
+	"push %%es\n"
+	"push %%fs\n"
+	"cmpl $3,%0\n"
+	"pop %%es\n"
+	"jbe 1f\n"
+	"movl %%edi,%%ecx\n"
+	"negl %%ecx\n"
+	"andl $3,%%ecx\n"
+	"subl %%ecx,%0\n"
+	"rep; movsb\n"
+	"movl %0,%%ecx\n"
+	"shrl $2,%%ecx\n"
+	"rep; movsl\n"
+	"andl $3,%0\n"
+	"1: movl %0,%%ecx\n"
+	"rep; movsb\n"
+	"pop %%es\n"
 	:"=abd" (n)
 	:"0" (n),"D" ((long) to),"S" ((long) from)
 	:"cx","di","si");
@@ -184,24 +184,24 @@ __asm__("cld\n\t" \
 
 static inline void __generic_memcpy_fromfs(void * to, const void * from, unsigned long n)
 {
-    __asm__ volatile
-	("	cld
-		cmpl $3,%0
-		jbe 1f
-		movl %%edi,%%ecx
-		negl %%ecx
-		andl $3,%%ecx
-		subl %%ecx,%0
-		fs; rep; movsb
-		movl %0,%%ecx
-		shrl $2,%%ecx
-		fs; rep; movsl
-		andl $3,%0
-	1:	movl %0,%%ecx
-		fs; rep; movsb"
-	:"=abd" (n)
-	:"0" (n),"D" ((long) to),"S" ((long) from)
-	:"cx","di","si", "memory");
+  __asm__ volatile
+    ("cld\n"
+     "cmpl $3,%0\n"
+     "jbe 1f\n"
+     "movl %%edi,%%ecx\n"
+     "negl %%ecx\n"
+     "andl $3,%%ecx\n"
+     "subl %%ecx,%0\n"
+     "fs; rep; movsb\n"
+     "movl %0,%%ecx\n"
+     "shrl $2,%%ecx\n"
+     "fs; rep; movsl\n"
+     "andl $3,%0\n"
+     "1:movl %0,%%ecx\n"
+     "fs; rep; movsb\n"
+     :"=abd" (n)
+     :"0" (n),"D" ((long) to),"S" ((long) from)
+     :"cx","di","si", "memory");
 }
 
 static inline void __constant_memcpy_fromfs(void * to, const void * from, unsigned long n)

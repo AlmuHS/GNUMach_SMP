@@ -72,17 +72,16 @@ gdt_init()
 	   We must load ds and es with 0 before loading them with KERNEL_DS
 	   because some processors will "optimize out" the loads
 	   if the previous selector values happen to be the same.  */
-	asm volatile("
-		ljmp	%0,$1f
-	1:
-		movw	%w2,%%ds
-		movw	%w2,%%es
-		movw	%w2,%%fs
-		movw	%w2,%%gs
-
-		movw	%w1,%%ds
-		movw	%w1,%%es
-		movw	%w1,%%ss
-	" : : "i" (KERNEL_CS), "r" (KERNEL_DS), "r" (0));
+	asm volatile("ljmp	%0,$1f\n"
+		     "1:\n"
+		     "movw	%w2,%%ds\n"
+		     "movw	%w2,%%es\n"
+		     "movw	%w2,%%fs\n"
+		     "movw	%w2,%%gs\n"
+		     
+		     "movw	%w1,%%ds\n"
+		     "movw	%w1,%%es\n"
+		     "movw	%w1,%%ss\n"
+		     : : "i" (KERNEL_CS), "r" (KERNEL_DS), "r" (0));
 }
 
