@@ -45,7 +45,7 @@
    We reserve 64K chunks to stay within DMA limits.
    Increase MEM_CHUNKS if the kernel is running out of memory.  */
 #define MEM_CHUNK_SIZE	(64 * 1024)
-#define MEM_CHUNKS	3
+#define MEM_CHUNKS	7
 
 /* Mininum amount that linux_kmalloc will allocate.  */
 #define MIN_ALLOC	12
