@@ -1,3 +1,11 @@
+1999-09-09  Thomas Bushnell, BSG  <tb@mit.edu>
+
+	* linux/src/drivers/net/rtl8139.c (RX_BUF_LEN_IDX): Reduce from 3
+	to 2.  (64K exceeds the limits in linux/dev/glue/kmem.c:kmalloc.)
+	(rtl8129_open): If we fail to get the memory we need, then free
+	the IRQ before returning.
+	Reported by Daniel Kobras <daniel.kobras@student.uni-tuebingen.de>.
+
 1999-09-07  Thomas Bushnell, BSG  <tb@mit.edu>
 
 	* linux/src/drivers/net/yellowfin.c (yellowfin_probe): Return
