@@ -111,6 +111,19 @@ static void add_partition (struct gendisk *hd, int minor, int start, int size)
 	printk(" %s", disk_name(hd, minor, buf));
 }
 
+#ifdef MACH
+static int mach_minor;
+static void
+add_bsd_partition (struct gendisk *hd, int minor, int slice,
+		   int start, int size)
+{
+  char buf[16];
+  hd->part[minor].start_sect = start;
+  hd->part[minor].nr_sects = size;
+  printk (" %s%c", disk_name (hd, mach_minor, buf), slice);
+}
+#endif
+  
 static inline int is_extended_partition(struct partition *p)
 {
 	return (SYS_IND(p) == DOS_EXTENDED_PARTITION ||
@@ -240,46 +253,20 @@ static void bsd_disklabel_partition(struct gendisk *hd, kdev_t dev)
 
 	p = &l->d_partitions[0];
 	while (p - &l->d_partitions[0] <= BSD_MAXPARTITIONS) {
-#ifdef MACH
-	  /* Print BSD slices like hd0s1a (Mach syntax) instead of hd0s5
-	     (Linux syntax), and do not add them into HD. In Mach,
-	     the partitions of HD will not be used anyway.  */
-	  if (p->p_fstype != BSD_FS_UNUSED)
-	    {
-	      unsigned int part = current_minor & mask;
-	      const char *maj = hd->major_name;
-	      char unit = (current_minor >> hd->minor_shift) + '0';
-	      char slice = p - &l->d_partitions[0] + 'a';
-	      
-#ifdef CONFIG_BLK_DEV_IDE
-	      switch (hd->major)
-		{
-		case IDE3_MAJOR:
-		  unit += 2;
-		case IDE2_MAJOR:
-		  unit += 2;
-		case IDE1_MAJOR:
-		  unit += 2;
-		case IDE0_MAJOR:
-		  maj = "hd";
-		}
-#endif
-	      if (part)
-		printk (" %s%cs%d%c", maj, unit, part, slice);
-	      else
-		printk (" %s%c%c", maj, unit, slice);
-	    }
-	  p++;
-#else /* ! MACH */
 		if ((current_minor & mask) >= (4 + hd->max_p))
 			break;
 
 		if (p->p_fstype != BSD_FS_UNUSED) {
+#ifdef MACH
+		  add_bsd_partition (hd, current_minor,
+				     p - &l->d_partitions[0] + 'a',
+				     p->p_offset, p->p_size);
+#else
 			add_partition(hd, current_minor, p->p_offset, p->p_size);
+#endif
 			current_minor++;
 		}
 		p++;
-#endif /* ! MACH */
 	}
 	brelse(bh);
 
@@ -412,6 +399,9 @@ check_table:
 #ifdef CONFIG_BSD_DISKLABEL
 		if (SYS_IND(p) == BSD_PARTITION) {
 			printk(" <");
+#ifdef MACH
+			mach_minor = minor;
+#endif
 			bsd_disklabel_partition(hd, MKDEV(hd->major, minor));
 			printk(" >");
 		}
