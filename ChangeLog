@@ -1,3 +1,14 @@
+2004-11-22  Guillem Jover  <guillem@hadrons.org>
+
+	* i386/i386/locore.S (discover_x86_cpu_type): Enable function.
+	Enable ID flag for Cyrix CPU. Use %ebp to save the stack pointer.
+	Restore EFLAGS just after its last usage.
+	* i386/i386at/model_dep.c (c_boot_entry): Enable use of
+	discover_x86_cpu_type. Remove hardcoded cpu_type assignment.
+	* i386/include/mach/i386/eflags.h
+	(EFL_VI, EFL_VIP): New bits.
+	(EFL_AC, EFL_ID): Bits finally added.
+
 2004-10-26  Guillem Jover  <guillem@hadrons.org>
 
 	* i386/i386/fpe.b: Remove binary without source.

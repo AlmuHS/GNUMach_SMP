@@ -1144,13 +1144,16 @@ syscall_addr:
 	jmp	_take_trap		/* treat as a trap */
 
 
-#if 0
 /* Discover what kind of cpu we have; return the family number
    (3, 4, 5, 6, for 386, 486, 586, 686 respectively).  */
 ENTRY(discover_x86_cpu_type)
-	movl	%esp,%edx		/* Save stack pointer */
+	pushl	%ebp			/* Save frame pointer */
+	movl	%esp,%ebp		/* Save stack pointer */
 	and	$~0x3,%esp		/* Align stack pointer */
 
+	inb	$0xe8,%al		/* Enable ID flag for Cyrix CPU ... */
+	andb	$0x80,%al		/* ... in CCR4 reg bit7 */
+	outb	%al,$0xe8
 	pushfl				/* Fetch flags ... */
 	popl	%eax			/*  ... into eax */
 	movl	%eax,%ecx		/* Save original flags for return */
@@ -1159,6 +1162,8 @@ ENTRY(discover_x86_cpu_type)
 	popfl				/*  ... In EFLAGS */
 	pushfl				/* Fetch flags back ... */
 	popl	%eax			/*  ... into eax */
+	pushl	%ecx			/* From ecx... */
+	popfl				/* ... restore original flags */
 
 	xorl	%ecx,%eax		/* See if any bits didn't change */
 	testl	$EFL_AC,%eax		/* Test AC bit */
@@ -1178,11 +1183,9 @@ ENTRY(discover_x86_cpu_type)
 	shrl	$8,%eax			/* Slide family bits down */
 	andl	$15,%eax		/* And select them */
 
-9:	pushl	%ecx			/* From ecx... */
-	popfl				/* ... restore original flags */
-	movl	%edx,%esp		/* Restore stack pointer */
+9:	movl	%ebp,%esp		/* Restore stack pointer */
+	popl	%ebp			/* Restore frame pointer */
 	ret				/* And return */
-#endif
 
 
 /**/

@@ -45,5 +45,9 @@
 #define	EFL_NT		0x00004000		/* nested task */
 #define	EFL_RF		0x00010000		/* resume without tracing */
 #define	EFL_VM		0x00020000		/* virtual 8086 mode */
+#define	EFL_AC		0x00040000		/* alignment check */
+#define	EFL_VI		0x00080000		/* virtual interrupt */
+#define	EFL_VIP		0x00100000		/* virtual interrupt pending */
+#define	EFL_ID		0x00200000		/* cpuid available */
 
 #endif	/* _MACH_I386_EFLAGS_H_ */
