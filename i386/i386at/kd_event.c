@@ -210,6 +210,11 @@ io_return_t kbdsetstat(dev, flavor, data, count)
 		/* XXX - what to do about unread events? */
 		/* XXX - should check that 'data' contains an OK valud */
 		break;
+   	   case KDSETLEDS:
+	        if (count != 1)
+	            return (D_INVALID_OPERATION);
+		kd_setleds1 (*data);
+		break;
 	    case K_X_KDB_ENTER:
 		return X_kdb_enter_init(data, count);
 	    case K_X_KDB_EXIT:

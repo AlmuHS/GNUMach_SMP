@@ -1244,6 +1244,9 @@ kdinit()
 					   enable the keyboard controller.
 					   This keeps NUM-LOCK from being
 					   set on the NEC Versa. */
+
+	/* Allocate the input buffer.  */
+	ttychars(&kd_tty);
 }
 
 /*

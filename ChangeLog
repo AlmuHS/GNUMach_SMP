@@ -1,3 +1,11 @@
+2004-02-02  Marco Gerards  <metgerards@student.han.nl>
+
+	* i386/i386at/kd.c (kdinit): Initialize the input buffer.
+
+	* i386/i386at/kd.h (KDSETLEDS): New macro.
+	* i386/i386at/kd_event.c (kbdsetstat): Handle KDSETLEDS here to
+	set the keyboard LEDs state.
+
 2004-01-19  Marco Gerards  <metgerards@student.han.nl>
 
         * linux/dev/glue/block.c (init_partition): Don't check for BSD

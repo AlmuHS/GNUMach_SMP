@@ -640,6 +640,8 @@ extern	int	kb_mode;
 #define KDGKBDTYPE	_IOR('K', 2, int)	/* get keyboard type */
 #define KB_VANILLAKB	0
 
+#define KDSETLEDS	_IOW('K', 5, int)	/* set the keyboard ledstate */
+
 struct X_kdb {
 	u_int *ptr;
 	u_int size;
