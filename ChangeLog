@@ -1,3 +1,24 @@
+1997-04-30  Marcus G. Daniels  <marcus@cathcart.sysc.pdx.edu>
+
+	* Makefile.in (clib-routines): Add htons not because it is necessary,
+	but because libc5 systems will bring it in.
+	(check-clib-routines): Tolerate extra weak symbols.
+
+Wed Apr 30 14:12:12 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* Makefile.in: Delete duplicate rule for cross-mig.
+
+Mon Apr 28 12:09:53 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* Makefile.in (check): New target.  Reported by
+	xtest@postman.epa.go.jp. 
+
+	* i386/Drivers.in (ncr53c7xx): Change file name to 53c78xx.o.
+	* i386/i386at/gpl/linux/scsi/53c7,8xx.c: Moved to ...
+	* i386/i386at/gpl/linux/scsi/53c78xx.c: ... here.
+	* i386/Makefrag (linux-scsi-files): Change file name here too.
+	Reported by xtest@postman.epa.go.jp.
+
 Wed Apr 23 14:35:44 1997  Miles Bader  <miles@gnu.ai.mit.edu>
 
 	* ipc/ipc_entry.c [MACH_KDB]: Add include of <kern/task.h>.
@@ -9,7 +30,9 @@ Wed Apr 23 13:21:23 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* configure.in (kdb): New --enable option.
 	* Makefile.in (DEFINES): Add @DEFS@.
-	
+	* bogus/mach_kdb.h: Make this file zero length; we get MACH_KDB
+	from configure now.
+
 	* Makefile.in (clean, distclean, mostlyclean, maintainter-clean):
 	New targets.  
 	(all-archs-configures): New variable.  

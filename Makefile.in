@@ -230,7 +230,7 @@ other-headers := alloca.h
 # for sanity.
 objfiles += clib-routines.o
 
-clib-routines = memcpy memset bcopy bzero htonl ntohl ntohs
+clib-routines = memcpy memset bcopy bzero htonl htons ntohl ntohs
 
 clib-routines.o: $(installed-clib)
 	$(LD) -o clib-routines.o -r $(addprefix -u ,$(clib-routines)) $(installed-clib)
@@ -239,7 +239,10 @@ clib-routines.o: $(installed-clib)
 # extra symbols.
 kernel: check-clib-routines
 check-clib-routines: clib-routines.o
-	test `echo $(clib-routines) | wc -w` -eq `nm -g $< | wc -l` && touch check-clib-routines
+	nm -g $< | awk '$(foreach sym,$(clib-routines),$$3 == "$(sym)" ||) 0 { match_cnt++ } \
+                        $$2 == "W" { weak_cnt++ } \
+                        { total_cnt++ } \
+                        END { exit total_cnt - (match_cnt + weak_cnt) } ' && touch check-clib-routines
 
 
 # Empty dependency file
@@ -301,6 +304,7 @@ mostlyclean: distclean
 maintainer-clean: mostlyclean
 	rm -f $(srcdir)/configure $(all-archs-configures)
 
+check:
 
 
 #
@@ -513,11 +517,6 @@ $(subst .o,.d,$(cross-mig-objfiles)): cross-%.d: $(srcdir)/mig/%.c
 		sed > $@.new -e 's/$*\.o:/cross-$*.o $@:/'
 	mv -f $@.new $@
 endif
-
-./cross-mig: $(srcdir)/mig/mig.sh Makefile
-	sed -e 's,@MIGDIR@,$(libexecdir),g' \
-	    -e 's,@CPP@,${CC} -x c-header -E,g' \
-	    $< >$@.tmp && chmod +x $@.tmp && mv -f $@.tmp $@
 
 ifeq ($(cross_compiling),yes)
 # When cross compiling, we build two migcoms; one for our use and one to 
