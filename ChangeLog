@@ -1,3 +1,20 @@
+Wed Aug 20 16:05:19 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* kern/thread.h (struct thread): New member `creation_time'.
+	* include/mach/thread_info.h: New member `creation_time'.
+	* kern/thread.c (thread_create): Set creation time stamp.
+	(thread_info) [THREAD_BASIC_INFO]: Fill in new creation time
+	field.  Carefully preserve compatibility with old callers.
+
+	* kern/task.h (struct task): New member `creation_time'.
+	* include/mach/task_info.h: New member `creation_time'.
+	* kern/task.c (task_create): Set creation time stamp.
+	(task_info) [TASK_BASIC_INFO]: Fill in new creation time field.
+	Carefully preserve compatibility with old callers. 
+
+	* kern/mach_clock.c (record_time_stamp): New function.
+	* kern/time_out.h (record_time_stamp): Add prototype.
+
 Sun Aug  3 18:25:38 1997  Shantanu Goel  <goel@cs.columbia.edu>
 
 	* i386/i386/thread.h (struct pcb): Added new field `data' used
