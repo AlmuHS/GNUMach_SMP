@@ -1061,71 +1061,6 @@ else
 fi
 fi
 
-# Extract the first word of "${ac_tool_prefix}make", so it can be a program name with args.
-set dummy ${ac_tool_prefix}make; ac_word=$2
-echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1068: checking for $ac_word" >&5
-if eval "test \"`echo '$''{'ac_cv_prog_MAKE'+set}'`\" = set"; then
-  echo $ac_n "(cached) $ac_c" 1>&6
-else
-  if test -n "$MAKE"; then
-  ac_cv_prog_MAKE="$MAKE" # Let the user override the test.
-else
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-  for ac_dir in $PATH; do
-    test -z "$ac_dir" && ac_dir=.
-    if test -f $ac_dir/$ac_word; then
-      ac_cv_prog_MAKE="${ac_tool_prefix}make"
-      break
-    fi
-  done
-  IFS="$ac_save_ifs"
-fi
-fi
-MAKE="$ac_cv_prog_MAKE"
-if test -n "$MAKE"; then
-  echo "$ac_t""$MAKE" 1>&6
-else
-  echo "$ac_t""no" 1>&6
-fi
-
-
-if test -z "$ac_cv_prog_MAKE"; then
-if test -n "$ac_tool_prefix"; then
-  # Extract the first word of "make", so it can be a program name with args.
-set dummy make; ac_word=$2
-echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1099: checking for $ac_word" >&5
-if eval "test \"`echo '$''{'ac_cv_prog_MAKE'+set}'`\" = set"; then
-  echo $ac_n "(cached) $ac_c" 1>&6
-else
-  if test -n "$MAKE"; then
-  ac_cv_prog_MAKE="$MAKE" # Let the user override the test.
-else
-  IFS="${IFS= 	}"; ac_save_ifs="$IFS"; IFS="${IFS}:"
-  for ac_dir in $PATH; do
-    test -z "$ac_dir" && ac_dir=.
-    if test -f $ac_dir/$ac_word; then
-      ac_cv_prog_MAKE="make"
-      break
-    fi
-  done
-  IFS="$ac_save_ifs"
-  test -z "$ac_cv_prog_MAKE" && ac_cv_prog_MAKE="make"
-fi
-fi
-MAKE="$ac_cv_prog_MAKE"
-if test -n "$MAKE"; then
-  echo "$ac_t""$MAKE" 1>&6
-else
-  echo "$ac_t""no" 1>&6
-fi
-
-else
-  MAKE="make"
-fi
-fi
-
 
 # Set up `machine' link in build directory for easier header file location.
 
@@ -1299,7 +1234,6 @@ s%@cross_linkable@%$cross_linkable%g
 s%@LD@%$LD%g
 s%@NM@%$NM%g
 s%@MIG@%$MIG%g
-s%@MAKE@%$MAKE%g
 s%@subdirs@%$subdirs%g
 
 CEOF
