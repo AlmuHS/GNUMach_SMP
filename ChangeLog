@@ -1,3 +1,11 @@
+2001-05-20  Roland McGrath  <roland@frob.com>
+
+	* kern/sched_prim.c (state_panic): New function, panic with some
+	info when a thread's state is bogus.
+	(thread_wakeup_prim): Use that instead of uninformative panic.
+	(thread_invoke): Likewise.
+	(thread_dispatch): Likewise.
+
 2001-05-12  Marcus Brinkmann  <marcus@gnu.org>
 
 	* ipc/ipc_object.c (ipc_object_alloc): Remove initialization of
