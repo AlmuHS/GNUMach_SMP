@@ -179,6 +179,7 @@ ASSERT_IPL(SPL0);
 		 * Make sure we don't get FPU interrupts later for
 		 * this thread
 		 */
+		clear_ts();
 		fwait();
 
 		/* Mark it free and disable access */
@@ -215,6 +216,7 @@ ASSERT_IPL(SPL0);
 	 * FPU state.
 	 */
 	if (fp_thread == thread) {
+	    clear_ts();
 	    fwait();			/* wait for possible interrupt */
 	    clear_fpu();		/* no state in FPU */
 	}
@@ -345,9 +347,17 @@ ASSERT_IPL(SPL0);
 	}
 
 	/* Make sure we`ve got the latest fp state info */
-	clear_ts();
-	fp_save(thread);
-	clear_fpu();
+	/* If the live fpu state belongs to our target */
+#if	NCPUS == 1
+	if (thread == fp_thread)
+#else
+	if (thread == current_thread())
+#endif
+	{
+	    clear_ts();
+	    fp_save(thread);
+	    clear_fpu();
+	}
 
 	state->fpkind = fp_kind;
 	state->exc_status = 0;
@@ -652,6 +662,9 @@ ASSERT_IPL(SPL0);
 			       thread->pcb->ims.ifps->fp_save_state.fp_status);
 		/*NOTREACHED*/
 #endif
+	} else if (! ifps->fp_valid) {
+		printf("fp_load: invalid FPU state!\n");
+		fninit ();
 	} else {
 	    frstor(ifps->fp_save_state);
 	}
