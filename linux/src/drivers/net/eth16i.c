@@ -1,7 +1,7 @@
 /* eth16i.c An ICL EtherTeam 16i and 32 EISA ethernet driver for Linux
-   
+
    Written 1994-1998 by Mika Kuoppala
-   
+
    Copyright (C) 1994-1998 by Mika Kuoppala
    Based on skeleton.c and heavily on at1700.c by Donald Becker
 
@@ -12,7 +12,7 @@
 
    This driver supports following cards :
 	- ICL EtherTeam 16i
-	- ICL EtherTeam 32 EISA 
+	- ICL EtherTeam 32 EISA
 	  (Uses true 32 bit transfers rather than 16i compability mode)
 
    Example Module usage:
@@ -25,26 +25,26 @@
 
    I have benchmarked driver with PII/300Mhz as a ftp client
    and 486/33Mhz as a ftp server. Top speed was 1128.37 kilobytes/sec.
-   
+
    Sources:
      - skeleton.c  a sample network driver core for linux,
        written by Donald Becker <becker@CESDIS.gsfc.nasa.gov>
-     - at1700.c a driver for Allied Telesis AT1700, written 
+     - at1700.c a driver for Allied Telesis AT1700, written
        by Donald Becker.
      - e16iSRV.asm a Netware 3.X Server Driver for ICL EtherTeam16i
        written by Markku Viima
      - The Fujitsu MB86965 databook.
-   
-   Author thanks following persons due to their valueble assistance:    
+
+   Author thanks following persons due to their valueble assistance:
         Markku Viima (ICL)
-	Ari Valve (ICL)      
+	Ari Valve (ICL)
 	Donald Becker
 	Kurt Huwig <kurt@huwig.de>
 
    Revision history:
 
    Version	Date		Description
-   
+
    0.01         15.12-94        Initial version (card detection)
    0.02         23.01-95        Interrupt is now hooked correctly
    0.03         01.02-95        Rewrote initialization part
@@ -58,7 +58,7 @@
    0.05         08.02-95        If there were more than one packet to send,
                                 transmit was jammed due to invalid
                                 register write...now fixed
-   0.06         19.02-95        Rewrote interrupt handling        
+   0.06         19.02-95        Rewrote interrupt handling
    0.07         13.04-95        Wrote EEPROM read routines
                                 Card configuration now set according to
                                 data read from EEPROM
@@ -66,34 +66,34 @@
                                 port if AUTO is selected
 
    0.09         01.09-95        Added module support
-   
+
    0.10         04.09-95        Fixed receive packet allocation to work
                                 with kernels > 1.3.x
-      
-   0.20		20.09-95	Added support for EtherTeam32 EISA	
 
-   0.21         17.10-95        Removed the unnecessary extern 
+   0.20		20.09-95	Added support for EtherTeam32 EISA
+
+   0.21         17.10-95        Removed the unnecessary extern
 				init_etherdev() declaration. Some
 				other cleanups.
-   				
+
    0.22		22.02-96	Receive buffer was not flushed
 				correctly when faulty packet was
 				received. Now fixed.
 
-   0.23		26.02-96	Made resetting the adapter	
+   0.23		26.02-96	Made resetting the adapter
 			 	more reliable.
-   
+
    0.24		27.02-96	Rewrote faulty packet handling in eth16i_rx
 
    0.25		22.05-96	kfree() was missing from cleanup_module.
 
-   0.26		11.06-96	Sometimes card was not found by 
+   0.26		11.06-96	Sometimes card was not found by
 				check_signature(). Now made more reliable.
-   
-   0.27		23.06-96	Oops. 16 consecutive collisions halted 
-				adapter. Now will try to retransmit 
+
+   0.27		23.06-96	Oops. 16 consecutive collisions halted
+				adapter. Now will try to retransmit
 				MAX_COL_16 times before finally giving up.
-   
+
    0.28	        28.10-97	Added dev_id parameter (NULL) for free_irq
 
    0.29         29.10-97        Multiple card support for module users
@@ -103,28 +103,28 @@
 
    0.30a        21.08-98        Card detection made more relaxed. Driver
                                 had problems with some TCP/IP-PROM boots
-				to find the card. Suggested by 
+				to find the card. Suggested by
 				Kurt Huwig <kurt@huwig.de>
 
    0.31         28.08-98        Media interface port can now be selected
                                 with module parameters or kernel
-				boot parameters. 
+				boot parameters.
 
-   0.32         31.08-98        IRQ was never freed if open/close 
+   0.32         31.08-98        IRQ was never freed if open/close
                                 pair wasn't called. Now fixed.
-   
+
    0.33         10.09-98        When eth16i_open() was called after
                                 eth16i_close() chip never recovered.
 				Now more shallow reset is made on
 				close.
 
    Bugs:
-	In some cases the media interface autoprobing code doesn't find 
-	the correct interface type. In this case you can 
-	manually choose the interface type in DOS with E16IC.EXE which is 
+	In some cases the media interface autoprobing code doesn't find
+	the correct interface type. In this case you can
+	manually choose the interface type in DOS with E16IC.EXE which is
 	configuration software for EtherTeam16i and EtherTeam32 cards.
 	This is also true for IRQ setting. You cannot use module
-	parameter to configure IRQ of the card (yet). 
+	parameter to configure IRQ of the card (yet).
 
    To do:
 	- Real multicast support
@@ -136,30 +136,30 @@
 	  irq without configuration utility.
 */
 
-static char *version = 
+static char *version =
     "eth16i.c: v0.33 10-09-98 Mika Kuoppala (miku@iki.fi)\n";
 
 #include <linux/module.h>
 
 #include <linux/kernel.h>
 #include <linux/sched.h>
-#include <linux/types.h>		  
-#include <linux/fcntl.h>		  
-#include <linux/interrupt.h>		  
-#include <linux/ptrace.h>		  
-#include <linux/ioport.h>		  
-#include <linux/in.h>		  
-#include <linux/malloc.h>		  
-#include <linux/string.h>		  
+#include <linux/types.h>
+#include <linux/fcntl.h>
+#include <linux/interrupt.h>
+#include <linux/ptrace.h>
+#include <linux/ioport.h>
+#include <linux/in.h>
+#include <linux/malloc.h>
+#include <linux/string.h>
 #include <linux/errno.h>
 
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
 #include <linux/skbuff.h>
 
-#include <asm/system.h>		  
-#include <asm/bitops.h>		  
-#include <asm/io.h>		  
+#include <asm/system.h>
+#include <asm/bitops.h>
+#include <asm/io.h>
 #include <asm/dma.h>
 
 #ifndef LINUX_VERSION_CODE
@@ -185,8 +185,8 @@ typedef struct net_device_stats eth16i_stats_type;
 #endif
 
 /* Few macros */
-#define BIT(a)		       ( (1 << (a)) )  
-#define BITSET(ioaddr, bnum)   ((outb(((inb(ioaddr)) | (bnum)), ioaddr))) 
+#define BIT(a)		       ( (1 << (a)) )
+#define BITSET(ioaddr, bnum)   ((outb(((inb(ioaddr)) | (bnum)), ioaddr)))
 #define BITCLR(ioaddr, bnum)   ((outb(((inb(ioaddr)) & (~(bnum))), ioaddr)))
 
 /* This is the I/O address space for Etherteam 16i adapter. */
@@ -201,7 +201,7 @@ typedef struct net_device_stats eth16i_stats_type;
 /* Some interrupt masks */
 #define ETH16I_INTR_ON	       0xef8a       /* Higher is receive mask */
 #define ETH16I_INTR_OFF	       0x0000
-	 
+
 /* Buffers header status byte meanings */
 #define PKT_GOOD               BIT(5)
 #define PKT_GOOD_RMT           BIT(4)
@@ -228,7 +228,7 @@ typedef struct net_device_stats eth16i_stats_type;
 #define ALIGN_ERR              BIT(2)
 #define CRC_ERR                BIT(1)
 #define RX_BUF_OVERFLOW        BIT(0)
-              
+
 /* Transmit Interrupt Enable Register (DLCR2) */
 #define TX_INTR_REG            2
 #define TX_INTR_DONE           BIT(7)
@@ -267,14 +267,14 @@ typedef struct net_device_stats eth16i_stats_type;
 #define SRAM_CYCLE_TIME_100NS  BIT(6)
 #define SYSTEM_BUS_WIDTH_8     BIT(5)       /* 1 = 8bit, 0 = 16bit */
 #define BUFFER_WIDTH_8         BIT(4)       /* 1 = 8bit, 0 = 16bit */
-#define TBS1                   BIT(3)       
+#define TBS1                   BIT(3)
 #define TBS0                   BIT(2)
 #define SRAM_BS1               BIT(1)       /* 00=8kb,  01=16kb  */
 #define SRAM_BS0               BIT(0)       /* 10=32kb, 11=64kb  */
 
-#ifndef ETH16I_TX_BUF_SIZE                   /* 0 = 2kb, 1 = 4kb  */ 
+#ifndef ETH16I_TX_BUF_SIZE                   /* 0 = 2kb, 1 = 4kb  */
 #define ETH16I_TX_BUF_SIZE     3             /* 2 = 8kb, 3 = 16kb */
-#endif                                      
+#endif
 #define TX_BUF_1x2048          0
 #define TX_BUF_2x2048          1
 #define TX_BUF_2x4098          2
@@ -312,7 +312,7 @@ typedef struct net_device_stats eth16i_stats_type;
 
 /* DMA Burst and Transceiver Mode Register (BMPR13) */
 #define TRANSCEIVER_MODE_REG   13
-#define TRANSCEIVER_MODE_RB    2         
+#define TRANSCEIVER_MODE_RB    2
 #define IO_BASE_UNLOCK	       BIT(7)
 #define LOWER_SQUELCH_TRESH    BIT(6)
 #define LINK_TEST_DISABLE      BIT(5)
@@ -352,7 +352,7 @@ typedef struct net_device_stats eth16i_stats_type;
   #define E_PORT_AUTO          0x03
   #define E_PORT_FROM_EPROM    0x04
 #define E_PRODUCT_CFG          0x30
- 
+
 
 /* Macro to slow down io between EEPROM clock transitions */
 #define eeprom_slow_io() do { int _i = 40; while(--_i > 0) { inb(0x80); }}while(0)
@@ -378,7 +378,7 @@ static unsigned int eth16i_irqmap[] = { 9, 10, 5, 15, 0 };
 #define NUM_OF_ISA_IRQS    4
 
 /* This is the Interrupt lookup table for Eth32i card */
-static unsigned int eth32i_irqmap[] = { 3, 5, 7, 9, 10, 11, 12, 15, 0 };  
+static unsigned int eth32i_irqmap[] = { 3, 5, 7, 9, 10, 11, 12, 15, 0 };
 #define EISA_IRQ_REG	0xc89
 #define NUM_OF_EISA_IRQS   8
 
@@ -398,10 +398,10 @@ struct eth16i_local {
 	unsigned char     tx_started;
 	unsigned char     tx_buf_busy;
 	unsigned short    tx_queue;  /* Number of packets in transmit buffer */
-	unsigned short    tx_queue_len;         
+	unsigned short    tx_queue_len;
 	unsigned int      tx_buf_size;
 	unsigned long     open_time;
-	unsigned long     tx_buffered_packets;  
+	unsigned long     tx_buffered_packets;
 	unsigned long     col_16;
 };
 
@@ -426,7 +426,7 @@ static void    eth16i_rx(struct device *dev);
 static void    eth16i_interrupt(int irq, void *dev_id, struct pt_regs *regs);
 static void    eth16i_reset(struct device *dev);
 static void    eth16i_skip_packet(struct device *dev);
-static void    eth16i_multicast(struct device *dev); 
+static void    eth16i_multicast(struct device *dev);
 static void    eth16i_select_regbank(unsigned char regbank, int ioaddr);
 static void    eth16i_initialize(struct device *dev);
 
@@ -442,11 +442,11 @@ static struct enet_statistics *eth16i_get_stats(struct device *dev);
 
 static char *cardname = "ICL EtherTeam 16i/32";
 
-#ifdef HAVE_DEVLIST 
+#ifdef HAVE_DEVLIST
 
 /* Support for alternate probe manager */
-/struct netdev_entry eth16i_drv = 
- {"eth16i", eth16i_probe1, ETH16I_IO_EXTENT, eth16i_probe_list}; 
+/struct netdev_entry eth16i_drv =
+ {"eth16i", eth16i_probe1, ETH16I_IO_EXTENT, eth16i_probe_list};
 
 #else  /* Not HAVE_DEVLIST */
 
@@ -455,8 +455,8 @@ __initfunc(int eth16i_probe(struct device *dev))
 	int i;
 	int ioaddr;
 	int base_addr = dev ? dev->base_addr : 0;
-    
-	if(eth16i_debug > 4) 
+
+	if(eth16i_debug > 4)
 		printk(KERN_DEBUG "Probing started for %s\n", cardname);
 
 	if(base_addr > 0x1ff)           /* Check only single location */
@@ -490,27 +490,27 @@ __initfunc(static int eth16i_probe1(struct device *dev, int ioaddr))
 	boot = 1;  /* To inform initilization that we are in boot probe */
 
 	/*
-	  The MB86985 chip has on register which holds information in which 
+	  The MB86985 chip has on register which holds information in which
 	  io address the chip lies. First read this register and compare
 	  it to our current io address and if match then this could
 	  be our chip.
 	  */
 
 	if(ioaddr < 0x1000) {
-	
-		if(eth16i_portlist[(inb(ioaddr + JUMPERLESS_CONFIG) & 0x07)] 
+
+		if(eth16i_portlist[(inb(ioaddr + JUMPERLESS_CONFIG) & 0x07)]
 		   != ioaddr)
 			return -ENODEV;
 	}
 
 	/* Now we will go a bit deeper and try to find the chip's signature */
 
-	if(eth16i_check_signature(ioaddr) != 0) 
+	if(eth16i_check_signature(ioaddr) != 0)
 		return -ENODEV;
 
-	/* 
+	/*
 	   Now it seems that we have found a ethernet chip in this particular
-	   ioaddr. The MB86985 chip has this feature, that when you read a 
+	   ioaddr. The MB86985 chip has this feature, that when you read a
 	   certain register it will increase it's io base address to next
 	   configurable slot. Now when we have found the chip, first thing is
 	   to make sure that the chip's ioaddr will hold still here.
@@ -529,7 +529,7 @@ __initfunc(static int eth16i_probe1(struct device *dev, int ioaddr))
 		printk(KERN_INFO "%s", version);
 
 	dev->base_addr = ioaddr;
-	
+
 #if 0
 	if(dev->irq) {
 		if(eth16i_set_irq(dev)) {
@@ -544,8 +544,8 @@ __initfunc(static int eth16i_probe1(struct device *dev, int ioaddr))
 
 	/* Try to obtain interrupt vector */
 
-	if (request_irq(dev->irq, (void *)&eth16i_interrupt, 0, "eth16i", dev)) {	
-		printk(KERN_WARNING "%s: %s at %#3x, but is unusable due conflicting IRQ %d.\n", 
+	if (request_irq(dev->irq, (void *)&eth16i_interrupt, 0, "eth16i", dev)) {
+		printk(KERN_WARNING "%s: %s at %#3x, but is unusable due conflicting IRQ %d.\n",
 		       dev->name, cardname, ioaddr, dev->irq);
 		return -EAGAIN;
 	}
@@ -562,7 +562,7 @@ __initfunc(static int eth16i_probe1(struct device *dev, int ioaddr))
 
 	/* Now we will have to lock the chip's io address */
 	eth16i_select_regbank(TRANSCEIVER_MODE_RB, ioaddr);
-	outb(0x38, ioaddr + TRANSCEIVER_MODE_REG); 
+	outb(0x38, ioaddr + TRANSCEIVER_MODE_REG);
 
 	eth16i_initialize(dev);   /* Initialize rest of the chip's registers */
 
@@ -606,7 +606,7 @@ static void eth16i_initialize(struct device *dev)
 		((unsigned short *)dev->dev_addr)[i] = ntohs(node_val);
 	}
 
-	for(i = 0; i < 6; i++) { 
+	for(i = 0; i < 6; i++) {
 		outb( ((unsigned char *)dev->dev_addr)[i], ioaddr + NODE_ID_0 + i);
 		if(boot) {
 			printk("%02x", inb(ioaddr + NODE_ID_0 + i));
@@ -617,11 +617,11 @@ static void eth16i_initialize(struct device *dev)
 
 	/* Now we will set multicast addresses to accept none */
 	eth16i_select_regbank(HASH_TABLE_RB, ioaddr);
-	for(i = 0; i < 8; i++) 
+	for(i = 0; i < 8; i++)
 		outb(0x00, ioaddr + HASH_TABLE_0 + i);
 
 	/*
-	  Now let's disable the transmitter and receiver, set the buffer ram 
+	  Now let's disable the transmitter and receiver, set the buffer ram
 	  cycle time, bus width and buffer data path width. Also we shall
 	  set transmit buffer size and total buffer size.
 	  */
@@ -649,7 +649,7 @@ static void eth16i_initialize(struct device *dev)
 #ifdef MODULE
 	/* if_port already set by init_module() */
 #else
-	dev->if_port = (dev->mem_start < E_PORT_FROM_EPROM) ? 
+	dev->if_port = (dev->mem_start < E_PORT_FROM_EPROM) ?
 		dev->mem_start : E_PORT_FROM_EPROM;
 #endif
 
@@ -667,7 +667,7 @@ static void eth16i_initialize(struct device *dev)
 		case E_PORT_AUTO:
 			dev->if_port = eth16i_probe_port(ioaddr);
 			break;
-			
+
 		case E_PORT_BNC:
 		case E_PORT_TP:
 		case E_PORT_DIX:
@@ -736,7 +736,7 @@ static int eth16i_probe_port(int ioaddr)
 }
 
 static void eth16i_set_port(int ioaddr, int porttype)
-{ 
+{
 	unsigned short temp = 0;
 
 	eth16i_select_regbank(TRANSCEIVER_MODE_RB, ioaddr);
@@ -757,13 +757,13 @@ static void eth16i_set_port(int ioaddr, int porttype)
 		temp |= AUI_SELECT;
 		BITSET(ioaddr + TRANSMIT_MODE_REG, CONTROL_OUTPUT);
 		break;
-	}  
+	}
 
 	outb(temp, ioaddr + TRANSCEIVER_MODE_REG);
 
 	if(eth16i_debug > 1) {
 		printk(KERN_DEBUG "TRANSMIT_MODE_REG = %x\n", inb(ioaddr + TRANSMIT_MODE_REG));
-		printk(KERN_DEBUG "TRANSCEIVER_MODE_REG = %x\n", 
+		printk(KERN_DEBUG "TRANSCEIVER_MODE_REG = %x\n",
 		       inb(ioaddr+TRANSCEIVER_MODE_REG));
 	}
 }
@@ -775,10 +775,10 @@ static int eth16i_send_probe_packet(int ioaddr, unsigned char *b, int l)
 	outb(0xff, ioaddr + TX_STATUS_REG);
 
 	outw(l, ioaddr + DATAPORT);
-	outsw(ioaddr + DATAPORT, (unsigned short *)b, (l + 1) >> 1);  
+	outsw(ioaddr + DATAPORT, (unsigned short *)b, (l + 1) >> 1);
 
 	starttime = jiffies;
-	outb(TX_START | 1, ioaddr + TRANSMIT_START_REG); 
+	outb(TX_START | 1, ioaddr + TRANSMIT_START_REG);
 
 	while( (inb(ioaddr + TX_STATUS_REG) & 0x80) == 0) {
 		if( (jiffies - starttime) > TX_TIMEOUT) {
@@ -830,10 +830,10 @@ static int eth16i_set_irq(struct device* dev)
 	const int irq = dev->irq;
 	int i = 0;
 
-	if(ioaddr < 0x1000) {		
+	if(ioaddr < 0x1000) {
 		while(eth16i_irqmap[i] && eth16i_irqmap[i] != irq)
 			i++;
-	
+
 		if(i < NUM_OF_ISA_IRQS) {
 			u8 cbyte = inb(ioaddr + JUMPERLESS_CONFIG);
 			cbyte = (cbyte & 0x3F) | (i << 6);
@@ -844,7 +844,7 @@ static int eth16i_set_irq(struct device* dev)
 	else {
 		printk(KERN_NOTICE "%s: EISA Interrupt cannot be set. Use EISA Configuration utility.\n", dev->name);
 	}
-	
+
 	return -1;
 
 }
@@ -878,7 +878,7 @@ static int eth16i_check_signature(int ioaddr)
 		creg[i] = inb(ioaddr + TRANSMIT_MODE_REG + i);
 
 		if(eth16i_debug > 1)
-			printk("eth16i: read signature byte %x at %x\n", 
+			printk("eth16i: read signature byte %x at %x\n",
 			       creg[i],
 			       ioaddr + TRANSMIT_MODE_REG + i);
 	}
@@ -886,8 +886,8 @@ static int eth16i_check_signature(int ioaddr)
 	creg[0] &= 0x0F;      /* Mask collision cnr */
 	creg[2] &= 0x7F;      /* Mask DCLEN bit */
 
-#ifdef 0
-	/* 
+#if 0
+	/*
 	   This was removed because the card was sometimes left to state
 	   from which it couldn't be find anymore. If there is need
 	   to more strict check still this have to be fixed.
@@ -901,14 +901,14 @@ static int eth16i_check_signature(int ioaddr)
 	if( !((creg[2] == 0x36) && (creg[3] == 0xE0)) ) {
 		creg[2] &= 0x40;
 		creg[3] &= 0x03;
-		
+
 		if( !((creg[2] == 0x40) && (creg[3] == 0x00)) )
 			return -1;
 	}
-	
+
 	if(eth16i_read_eeprom(ioaddr, E_NODEID_0) != 0)
 		return -1;
-	
+
 	if((eth16i_read_eeprom(ioaddr, E_NODEID_1) & 0xFF00) != 0x4B00)
 		return -1;
 
@@ -924,22 +924,22 @@ static int eth16i_read_eeprom(int ioaddr, int offset)
 	data = eth16i_read_eeprom_word(ioaddr);
 	outb(CS_0 | SK_0, ioaddr + EEPROM_CTRL_REG);
 
-	return(data);  
+	return(data);
 }
 
 static int eth16i_read_eeprom_word(int ioaddr)
 {
 	int i;
 	int data = 0;
-     
+
 	for(i = 16; i > 0; i--) {
 		outb(CS_1 | SK_0, ioaddr + EEPROM_CTRL_REG);
 		eeprom_slow_io();
 		outb(CS_1 | SK_1, ioaddr + EEPROM_CTRL_REG);
 		eeprom_slow_io();
-		data = (data << 1) | 
+		data = (data << 1) |
 			((inb(ioaddr + EEPROM_DATA_REG) & DI_1) ? 1 : 0);
-		
+
 		eeprom_slow_io();
 	}
 
@@ -963,25 +963,25 @@ static void eth16i_eeprom_cmd(int ioaddr, unsigned char command)
 		eeprom_slow_io();
 		outb(CS_1 | SK_1, ioaddr + EEPROM_CTRL_REG);
 		eeprom_slow_io();
-	} 
+	}
 }
 
 static int eth16i_open(struct device *dev)
 {
 	struct eth16i_local *lp = (struct eth16i_local *)dev->priv;
 	int ioaddr = dev->base_addr;
-	
+
 	/* Powerup the chip */
 	outb(0xc0 | POWERUP, ioaddr + CONFIG_REG_1);
 
 	/* Initialize the chip */
-	eth16i_initialize(dev);  
+	eth16i_initialize(dev);
 
 	/* Set the transmit buffer size */
 	lp->tx_buf_size = eth16i_tx_buf_map[ETH16I_TX_BUF_SIZE & 0x03];
 
 	if(eth16i_debug > 0)
-		printk(KERN_DEBUG "%s: transmit buffer size %d\n", 
+		printk(KERN_DEBUG "%s: transmit buffer size %d\n",
 		       dev->name, lp->tx_buf_size);
 
 	/* Now enable Transmitter and Receiver sections */
@@ -996,7 +996,7 @@ static int eth16i_open(struct device *dev)
 	lp->tx_queue_len = 0;
 
 	/* Turn on interrupts*/
-	outw(ETH16I_INTR_ON, ioaddr + TX_INTR_REG);  
+	outw(ETH16I_INTR_ON, ioaddr + TX_INTR_REG);
 
 	dev->tbusy = 0;
 	dev->interrupt = 0;
@@ -1015,7 +1015,7 @@ static int eth16i_close(struct device *dev)
 	eth16i_reset(dev);
 
 	/* Turn off interrupts*/
-	outw(ETH16I_INTR_OFF, ioaddr + TX_INTR_REG);  
+	outw(ETH16I_INTR_OFF, ioaddr + TX_INTR_REG);
 
 	dev->start = 0;
 	dev->tbusy = 1;
@@ -1028,7 +1028,7 @@ static int eth16i_close(struct device *dev)
 	/* Reset the chip */
 	/* outb(0xff, ioaddr + RESET); */
 	/* outw(0xffff, ioaddr + TX_STATUS_REG);    */
-	
+
 	outb(0x00, ioaddr + CONFIG_REG_1);
 
 	MOD_DEC_USE_COUNT;
@@ -1043,33 +1043,33 @@ static int eth16i_tx(struct sk_buff *skb, struct device *dev)
 	int status = 0;
 
 	if(dev->tbusy) {
-		
-		/* 
-		   If we get here, some higher level has decided that 
-		   we are broken. There should really be a "kick me" 
-		   function call instead. 
+
+		/*
+		   If we get here, some higher level has decided that
+		   we are broken. There should really be a "kick me"
+		   function call instead.
 		   */
 
 		int tickssofar = jiffies - dev->trans_start;
-		if(tickssofar < TX_TIMEOUT)  
-			return 1;                     
+		if(tickssofar < TX_TIMEOUT)
+			return 1;
 
 		outw(ETH16I_INTR_OFF, ioaddr + TX_INTR_REG);
 
-		printk(KERN_WARNING "%s: transmit timed out with status %04x, %s ?\n", 
+		printk(KERN_WARNING "%s: transmit timed out with status %04x, %s ?\n",
 		       dev->name,
-		       inw(ioaddr + TX_STATUS_REG), 
-		       (inb(ioaddr + TX_STATUS_REG) & TX_DONE) ? 
+		       inw(ioaddr + TX_STATUS_REG),
+		       (inb(ioaddr + TX_STATUS_REG) & TX_DONE) ?
 		       "IRQ conflict" : "network cable problem");
 
 		dev->trans_start = jiffies;
 
 		/* Let's dump all registers */
-		if(eth16i_debug > 0) { 
+		if(eth16i_debug > 0) {
 			printk(KERN_DEBUG "%s: timeout: %02x %02x %02x %02x %02x %02x %02x %02x.\n",
-			       dev->name, inb(ioaddr + 0), 
-			       inb(ioaddr + 1), inb(ioaddr + 2), 
-			       inb(ioaddr + 3), inb(ioaddr + 4), 
+			       dev->name, inb(ioaddr + 0),
+			       inb(ioaddr + 1), inb(ioaddr + 2),
+			       inb(ioaddr + 3), inb(ioaddr + 4),
 			       inb(ioaddr + 5),
 			       inb(ioaddr + 6), inb(ioaddr + 7));
 
@@ -1093,27 +1093,27 @@ static int eth16i_tx(struct sk_buff *skb, struct device *dev)
 
 	}
 
-	/* 
+	/*
 	   If some higher layer thinks we've missed an tx-done interrupt
 	   we are passed NULL. Caution: dev_tint() handles the cli()/sti()
-	   itself 
+	   itself
 	   */
-	
+
 	if(skb == NULL) {
 #if LINUX_VERSION_CODE < 0x020100
 		dev_tint(dev);
 #endif
-		if(eth16i_debug > 0) 
+		if(eth16i_debug > 0)
 			printk(KERN_WARNING "%s: Missed tx-done interrupt.\n", dev->name);
 		return 0;
 	}
 
-	/* Block a timer based transmitter from overlapping. 
-	   This could better be done with atomic_swap(1, dev->tbusy), 
+	/* Block a timer based transmitter from overlapping.
+	   This could better be done with atomic_swap(1, dev->tbusy),
 	   but set_bit() works as well. */
 
 	set_bit(0, (void *)&lp->tx_buf_busy);
-	
+
 	/* Turn off TX interrupts */
 	outw(ETH16I_INTR_OFF, ioaddr + TX_INTR_REG);
 
@@ -1126,13 +1126,13 @@ static int eth16i_tx(struct sk_buff *skb, struct device *dev)
 		unsigned char *buf = skb->data;
 
 		if( (length + 2) > (lp->tx_buf_size - lp->tx_queue_len)) {
-			if(eth16i_debug > 0) 
-				printk(KERN_WARNING "%s: Transmit buffer full.\n", dev->name);  
-		} 
+			if(eth16i_debug > 0)
+				printk(KERN_WARNING "%s: Transmit buffer full.\n", dev->name);
+		}
 		else {
 			outw(length, ioaddr + DATAPORT);
 
-			if( ioaddr < 0x1000 ) 
+			if( ioaddr < 0x1000 )
 				outsw(ioaddr + DATAPORT, buf, (length + 1) >> 1);
 			else {
 				unsigned char frag = length % 4;
@@ -1141,8 +1141,8 @@ static int eth16i_tx(struct sk_buff *skb, struct device *dev)
 
 				if( frag != 0 ) {
 					outsw(ioaddr + DATAPORT, (buf + (length & 0xFFFC)), 1);
-					if( frag == 3 ) 
-						outsw(ioaddr + DATAPORT, 
+					if( frag == 3 )
+						outsw(ioaddr + DATAPORT,
 						      (buf + (length & 0xFFFC) + 2), 1);
 				}
 			}
@@ -1150,9 +1150,9 @@ static int eth16i_tx(struct sk_buff *skb, struct device *dev)
 			lp->tx_buffered_packets++;
 			lp->tx_queue++;
 			lp->tx_queue_len += length + 2;
-			
+
 		}
-		
+
 		lp->tx_buf_busy = 0;
 
 		if(lp->tx_started == 0) {
@@ -1168,13 +1168,13 @@ static int eth16i_tx(struct sk_buff *skb, struct device *dev)
 			/* There is still more room for one more packet in tx buffer */
 			dev->tbusy = 0;
 		}
-		
+
 		outw(ETH16I_INTR_ON, ioaddr + TX_INTR_REG);
-		
+
 		/* Turn TX interrupts back on */
 		/* outb(TX_INTR_DONE | TX_INTR_16_COL, ioaddr + TX_INTR_REG); */
 		status = 0;
-	} 
+	}
 
 #if LINUX_VERSION_CODE >= 0x020100
 	dev_kfree_skb(skb);
@@ -1194,36 +1194,36 @@ static void eth16i_rx(struct device *dev)
 	/* Loop until all packets have been read */
 	while( (inb(ioaddr + RECEIVE_MODE_REG) & RX_BUFFER_EMPTY) == 0) {
 
-		/* Read status byte from receive buffer */ 
+		/* Read status byte from receive buffer */
 		ushort status = inw(ioaddr + DATAPORT);
 
 		/* Get the size of the packet from receive buffer */
 		ushort pkt_len = inw(ioaddr + DATAPORT);
 
 		if(eth16i_debug > 4)
-			printk(KERN_DEBUG "%s: Receiving packet mode %02x status %04x.\n", 
-			       dev->name, 
+			printk(KERN_DEBUG "%s: Receiving packet mode %02x status %04x.\n",
+			       dev->name,
 			       inb(ioaddr + RECEIVE_MODE_REG), status);
-		
+
 		if( !(status & PKT_GOOD) ) {
 			lp->stats.rx_errors++;
 
 			if( (pkt_len < ETH_ZLEN) || (pkt_len > ETH_FRAME_LEN) ) {
 				lp->stats.rx_length_errors++;
 				eth16i_reset(dev);
-				return;		
+				return;
 			}
-			else { 
+			else {
 				eth16i_skip_packet(dev);
 				lp->stats.rx_dropped++;
-			}	
+			}
 		}
 		else {   /* Ok so now we should have a good packet */
 			struct sk_buff *skb;
 
 			skb = dev_alloc_skb(pkt_len + 3);
 			if( skb == NULL ) {
-				printk(KERN_WARNING "%s: Could'n allocate memory for packet (len %d)\n", 
+				printk(KERN_WARNING "%s: Could'n allocate memory for packet (len %d)\n",
 				       dev->name, pkt_len);
 				eth16i_skip_packet(dev);
 				lp->stats.rx_dropped++;
@@ -1232,17 +1232,17 @@ static void eth16i_rx(struct device *dev)
 
 			skb->dev = dev;
 			skb_reserve(skb,2);
-			
-			/* 
+
+			/*
 			   Now let's get the packet out of buffer.
 			   size is (pkt_len + 1) >> 1, cause we are now reading words
 			   and it have to be even aligned.
-			   */ 
-			
-			if(ioaddr < 0x1000) 
-				insw(ioaddr + DATAPORT, skb_put(skb, pkt_len), 
+			   */
+
+			if(ioaddr < 0x1000)
+				insw(ioaddr + DATAPORT, skb_put(skb, pkt_len),
 				     (pkt_len + 1) >> 1);
-			else {	
+			else {
 				unsigned char *buf = skb_put(skb, pkt_len);
 				unsigned char frag = pkt_len % 4;
 
@@ -1264,9 +1264,9 @@ static void eth16i_rx(struct device *dev)
 
 			if( eth16i_debug > 5 ) {
 				int i;
-				printk(KERN_DEBUG "%s: Received packet of length %d.\n", 
+				printk(KERN_DEBUG "%s: Received packet of length %d.\n",
 				       dev->name, pkt_len);
-				for(i = 0; i < 14; i++) 
+				for(i = 0; i < 14; i++)
 					printk(KERN_DEBUG " %02x", skb->data[i]);
 				printk(KERN_DEBUG ".\n");
 			}
@@ -1283,7 +1283,7 @@ static void eth16i_rx(struct device *dev)
 		int i;
 
 		for(i = 0; i < 20; i++) {
-			if( (inb(ioaddr+RECEIVE_MODE_REG) & RX_BUFFER_EMPTY) == 
+			if( (inb(ioaddr+RECEIVE_MODE_REG) & RX_BUFFER_EMPTY) ==
 			    RX_BUFFER_EMPTY)
 				break;
 			inw(ioaddr + DATAPORT);
@@ -1332,7 +1332,7 @@ static void eth16i_interrupt(int irq, void *dev_id, struct pt_regs *regs)
 
 		lp->stats.rx_errors++;
 
-		if(status & (BUS_RD_ERR << 8) ) 
+		if(status & (BUS_RD_ERR << 8) )
 			printk(KERN_WARNING "%s: Bus read error.\n",dev->name);
 		if(status & (SHORT_PKT_ERR << 8) )   lp->stats.rx_length_errors++;
 		if(status & (ALIGN_ERR << 8) )       lp->stats.rx_frame_errors++;
@@ -1346,14 +1346,14 @@ static void eth16i_interrupt(int irq, void *dev_id, struct pt_regs *regs)
 		if(status & CR_LOST) lp->stats.tx_carrier_errors++;
 		if(status & TX_JABBER_ERR) lp->stats.tx_window_errors++;
 
-#if 0	       
+#if 0
 		if(status & COLLISION) {
-			lp->stats.collisions += 
+			lp->stats.collisions +=
 				((inb(ioaddr+TRANSMIT_MODE_REG) & 0xF0) >> 4);
 		}
 #endif
 		if(status & COLLISIONS_16) {
-			if(lp->col_16 < MAX_COL_16) { 
+			if(lp->col_16 < MAX_COL_16) {
 				lp->col_16++;
 				lp->stats.collisions++;
 				/* Resume transmitting, skip failed packet */
@@ -1369,7 +1369,7 @@ static void eth16i_interrupt(int irq, void *dev_id, struct pt_regs *regs)
 
 		if(status & TX_DONE) {         /* The transmit has been done */
 			lp->stats.tx_packets = lp->tx_buffered_packets;
-			lp->col_16 = 0;		   
+			lp->col_16 = 0;
 
 			if(lp->tx_queue) {           /* Is there still packets ? */
 				/* There was packet(s) so start transmitting and write also
@@ -1379,7 +1379,7 @@ static void eth16i_interrupt(int irq, void *dev_id, struct pt_regs *regs)
 				lp->tx_queue_len = 0;
 				lp->tx_started = 1;
 				dev->trans_start = jiffies;
-				mark_bh(NET_BH); 
+				mark_bh(NET_BH);
 			}
 			else {
 				lp->tx_started = 0;
@@ -1388,26 +1388,26 @@ static void eth16i_interrupt(int irq, void *dev_id, struct pt_regs *regs)
 		}
 	}
 
-	if( ( status & 0x8000 ) || 
+	if( ( status & 0x8000 ) ||
 	    ( (inb(ioaddr + RECEIVE_MODE_REG) & RX_BUFFER_EMPTY) == 0) ) {
 		eth16i_rx(dev);  /* We have packet in receive buffer */
-	}  
-	
+	}
+
 	dev->interrupt = 0;
-	
+
 	/* Turn interrupts back on */
 	outw(ETH16I_INTR_ON, ioaddr + TX_INTR_REG);
-	
+
 	if(lp->tx_queue_len < lp->tx_buf_size - (ETH_FRAME_LEN + 2)) {
 		/* There is still more room for one more packet in tx buffer */
 		dev->tbusy = 0;
 	}
-	
+
 	return;
 }
 
 static void eth16i_skip_packet(struct device *dev)
-{	 
+{
 	int ioaddr = dev->base_addr;
 
 	inw(ioaddr + DATAPORT);
@@ -1423,17 +1423,17 @@ static void eth16i_reset(struct device *dev)
 	struct eth16i_local *lp = (struct eth16i_local *)dev->priv;
 	int ioaddr = dev->base_addr;
 
-	if(eth16i_debug > 1) 
+	if(eth16i_debug > 1)
 		printk(KERN_DEBUG "%s: Resetting device.\n", dev->name);
 
 	BITSET(ioaddr + CONFIG_REG_0, DLC_EN);
-	outw(0xffff, ioaddr + TX_STATUS_REG);    
+	outw(0xffff, ioaddr + TX_STATUS_REG);
 	eth16i_select_regbank(2, ioaddr);
 
 	lp->tx_started = 0;
 	lp->tx_buf_busy = 0;
 	lp->tx_queue = 0;
-	lp->tx_queue_len = 0;    
+	lp->tx_queue_len = 0;
 
 	dev->interrupt = 0;
 	dev->start = 1;
@@ -1444,11 +1444,11 @@ static void eth16i_reset(struct device *dev)
 static void eth16i_multicast(struct device *dev)
 {
 	int ioaddr = dev->base_addr;
-  
-	if(dev->mc_count || dev->flags&(IFF_ALLMULTI|IFF_PROMISC)) 
+
+	if(dev->mc_count || dev->flags&(IFF_ALLMULTI|IFF_PROMISC))
 	{
 		dev->flags|=IFF_PROMISC;	/* Must do this */
-		outb(3, ioaddr + RECEIVE_MODE_REG);    
+		outb(3, ioaddr + RECEIVE_MODE_REG);
 	} else {
 		outb(2, ioaddr + RECEIVE_MODE_REG);
 	}
@@ -1466,7 +1466,7 @@ static void eth16i_select_regbank(unsigned char banknbr, int ioaddr)
 	unsigned char data;
 
 	data = inb(ioaddr + CONFIG_REG_1);
-	outb( ((data & 0xF3) | ( (banknbr & 0x03) << 2)), ioaddr + CONFIG_REG_1); 
+	outb( ((data & 0xF3) | ( (banknbr & 0x03) << 2)), ioaddr + CONFIG_REG_1);
 }
 
 #ifdef MODULE
@@ -1475,7 +1475,7 @@ static ushort eth16i_parse_mediatype(const char* s)
 {
 	if(!s)
 		return E_PORT_FROM_EPROM;
-	
+
         if (!strncmp(s, "bnc", 3))
 		return E_PORT_BNC;
         else if (!strncmp(s, "tp", 2))
@@ -1508,7 +1508,7 @@ static int irq[MAX_ETH16I_CARDS] = { 0, };
 static char* mediatype[MAX_ETH16I_CARDS] = { 0, };
 static int debug = -1;
 
-#if (LINUX_VERSION_CODE >= 0x20115) 
+#if (LINUX_VERSION_CODE >= 0x20115)
 MODULE_AUTHOR("Mika Kuoppala <miku@iki.fi>");
 MODULE_DESCRIPTION("ICL EtherTeam 16i/32 driver");
 
@@ -1534,7 +1534,7 @@ int init_module(void)
 	for(this_dev = 0; this_dev < MAX_ETH16I_CARDS; this_dev++)
 	{
 		struct device *dev = &dev_eth16i[this_dev];
-	
+
 		dev->name = namelist + (NAMELEN*this_dev);
 		dev->irq = 0; /* irq[this_dev]; */
 		dev->base_addr = ioaddr[this_dev];
@@ -1559,7 +1559,7 @@ int init_module(void)
 		{
 			printk(KERN_WARNING "eth16i.c No Eth16i card found (i/o = 0x%x).\n",
 			       ioaddr[this_dev]);
-	    
+
 			if(found != 0) return 0;
 			return -ENXIO;
 		}
@@ -1568,7 +1568,7 @@ int init_module(void)
 	}
 	return 0;
 }
-	
+
 void cleanup_module(void)
 {
 	int this_dev;
@@ -1576,16 +1576,16 @@ void cleanup_module(void)
 	for(this_dev = 0; this_dev < MAX_ETH16I_CARDS; this_dev++)
 	{
 		struct device* dev = &dev_eth16i[this_dev];
-		
+
 		if(dev->priv != NULL)
 		{
 			unregister_netdev(dev);
 			kfree(dev->priv);
 			dev->priv = NULL;
-			
+
 			free_irq(dev->irq, dev);
 			release_region(dev->base_addr, ETH16I_IO_EXTENT);
-			
+
 		}
 	}
 }
