@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1993-1988 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -69,6 +69,7 @@ void	tty_flush(struct tty *, int);
 boolean_t char_open_done(io_req_t);
 boolean_t char_read_done(io_req_t);
 boolean_t char_write_done(io_req_t);
+void	ttstart(struct tty *tp);
 
 /*
  * Fake 'line discipline' switch for the benefit of old code
@@ -92,7 +93,7 @@ int	tty_outq_size = 2048;	/* Must be bigger that tthiwat */
 int	pdma_default = 1;       /* turn pseudo dma on by default */
 
 /*
- * compute pseudo-dma tables 
+ * compute pseudo-dma tables
  */
 
 int pdma_timeouts[NSPEEDS]; /* how many ticks in timeout */
@@ -111,7 +112,7 @@ void chario_init(void)
 
   for (i = B0; i < B300; i++)
     pdma_timeouts[i] = 0;
-  
+
   pdma_timeouts[B300] = _PR(30);
   pdma_timeouts[B600] = _PR(60);
   pdma_timeouts[B1200] = _PR(120);
@@ -143,7 +144,7 @@ void chario_init(void)
   pdma_water_mark[EXTA]  = i; /* >14400 baud */
   pdma_water_mark[EXTB]  = i; /* >19200 baud */
 
-  return; 
+  return;
 }
 
 /*
@@ -424,7 +425,7 @@ io_return_t char_read(
 	    rc = D_IO_QUEUED;
 	    goto out;
 	}
-	
+
 	ior->io_residual = ior->io_count - q_to_b(&tp->t_inq,
 						  ior->io_data,
 						  (int)ior->io_count);
@@ -810,7 +811,7 @@ void tty_flush(
 	    tty_queue_completion(&tp->t_delayed_write);
 	}
 }
-		
+
 /*
  * Restart character output after a delay timeout.
  * Calls device start routine - must be on master CPU.
@@ -895,7 +896,7 @@ void ttypush(
 	simple_lock(&tp->t_lock);
 
 	/*
-	  The pdma timeout has gone off. 
+	  The pdma timeout has gone off.
 	  If no character has been received since the timeout
 	  was set, push any pending characters up.
 	  If any characters were received in the last interval
@@ -968,8 +969,8 @@ void ttyinput(
       }
       else {
 	/*
-	 * Not enough characters. 
-	 * If no timeout is set, initiate the timeout 
+	 * Not enough characters.
+	 * If no timeout is set, initiate the timeout
 	 * Otherwise set the character received during timeout interval
 	 * flag.
 	 * One alternative approach would be just to reset the timeout
@@ -1003,7 +1004,7 @@ void ttyinput_many(
 	int		count)
 {
 	/*
-	 * Do not want to overflow input queue 
+	 * Do not want to overflow input queue
 	 */
 	if (tp->t_inq.c_cc < tp->t_inq.c_hog)
 		count -= b_to_q( chars, count, &tp->t_inq);
