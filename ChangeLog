@@ -1,5 +1,10 @@
 2001-10-06  Marcus Brinkmann  <marcus@gnu.org>
 
+	* README: Replace `GNU mach' by `GNU Mach', and remove
+	obsolete paragraph about kmsg device.
+
+2001-10-06  Marcus Brinkmann  <marcus@gnu.org>
+
 	* doc/mach.texi: Fix direntry.
 
 2001-10-05  Marcus Brinkmann  <marcus@gnu.org>

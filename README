@@ -1,5 +1,5 @@
 -*- Text -*-
-This is the GNU mach 1.2 distribution.
+This is the GNU Mach 1.2 distribution.
 
 This kernel is derived from the Utah kernel source.  We use it to run
 the Hurd on.  It is being distributed by us so that we can more easily
@@ -31,10 +31,6 @@ to configure.  This is only useful if you actually anticipate
 debugging the kernel, of course.  We don't turn it on be default
 because it adds considerably to the unpageable memory footprint of the
 kernel.
-
-If you want to use the kmsg device, specify --enable-kmsg to
-configure. It is disabled by default, because we assume that it is
-unstable and there is no appropriate translator for it.
 
 The specific switches you give to configure are always recorded in the
 file `config.status'.  So you can always tell what options you used to
