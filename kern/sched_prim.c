@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1993-1987 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -99,7 +99,7 @@ void thread_check(thread_t, run_queue_t);
  *  S	suspended (or will suspend)
  *  N	non-interruptible
  *
- * init	action 
+ * init	action
  *	assert_wait thread_block    clear_wait	suspend	resume
  *
  * R	RW,  RWN    R;   setrun	    -		RS	-
@@ -202,7 +202,7 @@ void thread_timeout(
  *	is ready to wait.  Must be called between assert_wait()
  *	and thread_block().
  */
- 
+
 void thread_set_timeout(
 	int	t)	/* timeout interval in ticks */
 {
@@ -382,6 +382,13 @@ void clear_wait(
 	splx(s);
 }
 
+static inline void __attribute__((noreturn))
+state_panic(thread_t thread, const char *caller)
+{
+  panic ("%s: thread %x has unexpected state %x",
+	 caller, thread, thread->state);
+}
+
 /*
  *	thread_wakeup_prim:
  *
@@ -448,7 +455,7 @@ void thread_wakeup_prim(
 				break;
 
 			    default:
-				panic("thread_wakeup");
+				state_panic(thread, "thread_wakeup");
 				break;
 			}
 			thread_unlock(thread);
@@ -733,7 +740,7 @@ boolean_t thread_invoke(
 			    break;
 
 			default:
-			    panic("thread_invoke");
+			    state_panic(old_thread, "thread_invoke");
 		    }
 		    thread_unlock(old_thread);
 		after_old_thread:
@@ -879,7 +886,7 @@ void thread_block(
 			recover_ras(thread);
 	}
 #endif	/* FAST_TAS */
-	
+
 	ast_off(cpu_number(), AST_BLOCK);
 
 	do
@@ -982,7 +989,7 @@ void thread_dispatch(
 		break;
 
 	    default:
-		panic("thread_dispatch");
+		state_panic(thread, "thread_dispatch");
 	}
 	thread_unlock(thread);
 }
@@ -1046,7 +1053,7 @@ shift_data_t	wait_shift[32] = {
  *	Take the base priority for this thread and add
  *	to it an increment derived from its cpu_usage.
  *
- *	The thread *must* be locked by the caller. 
+ *	The thread *must* be locked by the caller.
  */
 
 void compute_priority(
@@ -1123,7 +1130,7 @@ void recompute_priorities(void)
 /*
  *	update_priority
  *
- *	Cause the priority computation of a thread that has been 
+ *	Cause the priority computation of a thread that has been
  *	sleeping or suspended to "catch up" with the system.  Thread
  *	*MUST* be locked by caller.  If thread is running, then this
  *	can only be called by the thread on itself.
@@ -1681,7 +1688,7 @@ void idle_thread_continue(void)
 				ast_taken();
 				/* back at spl0 */
 			}
-			
+
 			/*
 			 * machine_idle is a machine dependent function,
 			 * to conserve power.
@@ -2005,7 +2012,7 @@ void do_thread_scan(void)
 	    }
 	} while (restart_needed);
 }
-		
+
 #if	DEBUG
 void checkrq(
 	run_queue_t	rq,
@@ -2027,7 +2034,7 @@ void checkrq(
 	    else {
 		if (low == -1)
 		    low = i;
-		
+
 		for (e = q1->next; e != q1; e = e->next) {
 		    j++;
 		    if (e->next->prev != e)
