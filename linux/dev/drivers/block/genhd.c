@@ -123,7 +123,7 @@ add_bsd_partition (struct gendisk *hd, int minor, int slice,
   printk (" %s%c", disk_name (hd, mach_minor, buf), slice);
 }
 #endif
-  
+
 static inline int is_extended_partition(struct partition *p)
 {
 	return (SYS_IND(p) == DOS_EXTENDED_PARTITION ||
@@ -182,7 +182,7 @@ static void extended_partition(struct gendisk *hd, kdev_t dev)
 		 * and OS/2 seems to use all four entries.
 		 */
 
-		/* 
+		/*
 		 * First process the data partition(s)
 		 */
 		for (i=0; i<4; i++, p++) {
@@ -231,7 +231,7 @@ done:
 }
 
 #ifdef CONFIG_BSD_DISKLABEL
-/* 
+/*
  * Create devices for BSD partitions listed in a disklabel, under a
  * dos-like partition. See extended_partition() for more information.
  */
@@ -313,7 +313,7 @@ check_table:
 		if (SYS_IND(p) == EZD_PARTITION) {
 			/*
 			 * The remainder of the disk must be accessed using
-			 * a translated geometry that reduces the number of 
+			 * a translated geometry that reduces the number of
 			 * apparent cylinders to less than 1024 if possible.
 			 *
 			 * ide_xlate_1024() will take care of the necessary
@@ -329,7 +329,7 @@ check_table:
 			 * Everything on the disk is offset by 63 sectors,
 			 * including a "new" MBR with its own partition table,
 			 * and the remainder of the disk must be accessed using
-			 * a translated geometry that reduces the number of 
+			 * a translated geometry that reduces the number of
 			 * apparent cylinders to less than 1024 if possible.
 			 *
 			 * ide_xlate_1024() will take care of the necessary
@@ -340,7 +340,7 @@ check_table:
 				goto read_mbr;	/* start over with new MBR */
 			}
 		} else if (sig <= 0x1ae && *(unsigned short *)(data + sig) == 0x55AA
-			 && (1 & *(unsigned char *)(data + sig + 2)) ) 
+			 && (1 & *(unsigned char *)(data + sig + 2)) )
 		{
 			/*
 			 * DM6 signature in MBR, courtesy of OnTrack
@@ -387,7 +387,7 @@ check_table:
 			 * be able to bread the block containing the extended
 			 * partition info.
 			 */
-			hd->sizes[minor] = hd->part[minor].nr_sects 
+			hd->sizes[minor] = hd->part[minor].nr_sects
 			  	>> (BLOCK_SIZE_BITS - 9);
 			extended_partition(hd, MKDEV(hd->major, minor));
 			printk(" >");
@@ -527,7 +527,7 @@ static int sun_partition(struct gendisk *hd, kdev_t dev, unsigned long first_sec
 		} partitions[8];
 		unsigned short magic;      /* Magic number */
 		unsigned short csum;       /* Label xor'd checksum */
-	} * label;		
+	} * label;
 	struct sun_partition *p;
 	int other_endian;
 	unsigned long spc;
@@ -642,7 +642,7 @@ amiga_partition(struct gendisk *hd, unsigned int dev, unsigned long first_sector
 				blk = htonl(pb->pb_Next);
 				if (pb->pb_ID == htonl(IDNAME_PARTITION) && checksum_block(
 				    (__u32 *)pb,htonl(pb->pb_SummedLongs) & 0x7F) == 0 ) {
-					
+
 					/* Tell Kernel about it */
 
 					if (!(nr_sects = (htonl(pb->pb_Environment[10]) + 1 -
@@ -678,7 +678,7 @@ static void check_partition(struct gendisk *hd, kdev_t dev)
 	char buf[8];
 
 	if (first_time)
-		printk("Partition check:\n");
+		printk("Partition check (DOS partitions):\n");
 	first_time = 0;
 	first_sector = hd->part[MINOR(dev)].start_sect;
 
@@ -751,7 +751,7 @@ static void setup_dev(struct gendisk *dev)
 		dev->part[i].start_sect = 0;
 		dev->part[i].nr_sects = 0;
 	}
-	dev->init(dev);	
+	dev->init(dev);
 	for (drive = 0 ; drive < dev->nr_real ; drive++) {
 		int first_minor	= drive << dev->minor_shift;
 		current_minor = 1 + first_minor;

@@ -94,7 +94,7 @@
 #undef  CONFIG_SKB_LARGE
 
 /*
- *  
+ *
  */
 #undef  CONFIG_IPX
 #undef  CONFIG_ATALK
@@ -238,8 +238,11 @@
 #define CONFIG_AFFS_FS 1
 #undef  CONFIG_AMIGA_PARTITION
 #define CONFIG_UFS_FS 1
-#define CONFIG_BSD_DISKLABEL 1
-#define CONFIG_SMD_DISKLABEL 1
+
+/* We want Linux's partitioning code to do only the DOS partition table,
+   since the Mach glue code does BSD disklabels for us.  */
+#undef	CONFIG_BSD_DISKLABEL
+#undef	CONFIG_SMD_DISKLABEL
 
 /*
  * Character devices
