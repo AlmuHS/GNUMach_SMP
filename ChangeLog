@@ -1,3 +1,10 @@
+2001-10-05  Marcus Brinkmann  <marcus@gnu.org>
+
+	* doc/mach.texi: Replace `path name' by `file name' in one place.
+	Replace `illegal' by `invalid' and `to to' by `to' everwhere.
+
+	* debian/changelog: Prepare for next release.
+
 2001-10-04  Marcus Brinkmann  <marcus@gnu.org>
 
 	* doc: New directory.

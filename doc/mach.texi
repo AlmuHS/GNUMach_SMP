@@ -17,7 +17,7 @@
 
 @c Get the Mach version we are documenting.
 @include version.texi
-@set EDITION 0.3
+@set EDITION 0.4
 @set UPDATED 2001-09-01
 @c @set ISBN X-XXXXXX-XX-X
 
@@ -542,7 +542,7 @@ The default for an option is to be disabled, unless otherwise noted.
 @item --prefix @var{prefix}
 Sets the prefix to PREFIX.  The default prefix is the empty string, which
 is the correct value for the GNU system.  The prefix is prepended to all
-path names at installation time.
+file names at installation time.
 
 @item --enable-kdb
 Enables the in-kernel debugger.  This is only useful if you actually
@@ -2850,7 +2850,7 @@ tasks as a copy.  Subsequent calls to @code{vm_protect} and
 region is always zero-filled.
 
 The function returns @code{KERN_SUCCESS} if the memory was successfully
-allocated, @code{KERN_INVALID_ADDRESS} if an illegal address was
+allocated, @code{KERN_INVALID_ADDRESS} if an invalid address was
 specified and @code{KERN_NO_SPACE} if there was not enough space left to
 satisfy the request.
 @end deftypefun
@@ -2879,7 +2879,7 @@ The @code{vm_deallocate} call affects only the task specified by the
 continue to reference it.
 
 The function returns @code{KERN_SUCCESS} if the memory was successfully
-deallocated and @code{KERN_INVALID_ADDRESS} if an illegal or
+deallocated and @code{KERN_INVALID_ADDRESS} if an invalid or
 non-allocated address was specified.
 @end deftypefun
 
@@ -2901,7 +2901,7 @@ task reading the data should @code{vm_deallocate} this region when it is
 done with the data.
 
 The function returns @code{KERN_SUCCESS} if the memory was successfully
-read, @code{KERN_INVALID_ADDRESS} if an illegal or non-allocated address
+read, @code{KERN_INVALID_ADDRESS} if an invalid or non-allocated address
 was specified or there was not @var{size} bytes of data following the
 address, @code{KERN_INVALID_ARGUMENT} if the address does not start on a
 page boundary or the size is not an integral number of pages,
@@ -2922,7 +2922,7 @@ The current implementation requires that @var{address}, @var{data} and
 @code{KERN_INVALID_ARGUMENT} is returned.
 
 The function returns @code{KERN_SUCCESS} if the memory was successfully
-written, @code{KERN_INVALID_ADDRESS} if an illegal or non-allocated
+written, @code{KERN_INVALID_ADDRESS} if an invalid or non-allocated
 address was specified or there was not @var{data_count} bytes of
 allocated memory starting at @var{address} and
 @code{KERN_PROTECTION_FAILURE} if the address region in the target task
@@ -2943,7 +2943,7 @@ The current implementation requires that @var{address}, @var{data} and
 @code{KERN_INVALID_ARGUMENT} is returned.
 
 The function returns @code{KERN_SUCCESS} if the memory was successfully
-written, @code{KERN_INVALID_ADDRESS} if an illegal or non-allocated
+written, @code{KERN_INVALID_ADDRESS} if an invalid or non-allocated
 address was specified or there was insufficient memory allocated at one
 of the addresses and @code{KERN_PROTECTION_FAILURE} if the destination
 region was not writable or the source region was not readable.
@@ -3005,7 +3005,7 @@ interface allows write access to require @code{VM_PROT_READ} and
 @code{VM_PROT_READ} permission.
 
 The function returns @code{KERN_SUCCESS} if the memory was successfully
-protected, @code{KERN_INVALID_ADDRESS} if an illegal or non-allocated
+protected, @code{KERN_INVALID_ADDRESS} if an invalid or non-allocated
 address was specified and @code{KERN_PROTECTION_FAILURE} if an attempt
 was made to increase the current or maximum protection beyond the
 existing maximum protection value.
@@ -3037,7 +3037,7 @@ task is the only way two Mach tasks can share physical memory.  Remember
 that all the theads of a given task share all the same memory.
 
 The function returns @code{KERN_SUCCESS} if the memory inheritance was
-successfully set and @code{KERN_INVALID_ADDRESS} if an illegal or
+successfully set and @code{KERN_INVALID_ADDRESS} if an invalid or
 non-allocated address was specified.
 @end deftypefun
 
@@ -3185,7 +3185,7 @@ the target task, rather than mapped read-write.
 The function returns @code{KERN_SUCCESS} if the object is mapped,
 @code{KERN_NO_SPACE} if no unused region of the task's virtual address
 space that meets the address, size, and alignment criteria could be
-found, and @code{KERN_INVALID_ARGUMENT} if an illegal argument was provided.
+found, and @code{KERN_INVALID_ARGUMENT} if an invalid argument was provided.
 @end deftypefun
 
 
@@ -5232,7 +5232,7 @@ Everything described in this section is declared in the header file
 
 @cindex host name port
 @deftp {Data type} host_t 
-This is a @code{mach_port_t} and used to to hold the port name of a host
+This is a @code{mach_port_t} and used to hold the port name of a host
 name port (or short: host port).  Any task can get a send right to the
 name port of the host running the task using the @code{mach_host_self}
 system call.  The name port can be used query information about the
@@ -5555,7 +5555,7 @@ manipulate it.
 @cindex processor set name port
 @cindex port representing a processor set name
 @deftp {Data type} processor_set_name_t 
-This is a @code{mach_port_t} and used to to hold the port name of a
+This is a @code{mach_port_t} and used to hold the port name of a
 processor set name port that names the processor set.  Any task can get
 a send right to name port of a processor set.  The processor set name
 port allows to get information about the processor set.
@@ -5563,7 +5563,7 @@ port allows to get information about the processor set.
 
 @cindex processor set port
 @deftp {Data type} processor_set_t 
-This is a @code{mach_port_t} and used to to hold the port name of a
+This is a @code{mach_port_t} and used to hold the port name of a
 privileged processor set control port that represents the processor set.
 Operations on the processor set are implemented as remote procedure
 calls to the processor set port.  The processor set port allows to
@@ -5915,7 +5915,7 @@ This is a pointer to a @code{struct processor_set_sched_info}.
 @cindex processor port
 @cindex port representing a processor
 @deftp {Data type} processor_t 
-This is a @code{mach_port_t} and used to to hold the port name of a
+This is a @code{mach_port_t} and used to hold the port name of a
 processor port that represents the processor.  Operations on the
 processor are implemented as remote procedure calls to the processor
 port.
@@ -6094,7 +6094,7 @@ has control over the device master port can use all hardware devices.
 @cindex device port
 @cindex port representing a device
 @deftp {Data type} device_t 
-This is a @code{mach_port_t} and used to to hold the port name of a
+This is a @code{mach_port_t} and used to hold the port name of a
 device port that represents the device.  Operations on the device are
 implemented as remote procedure calls to the device port.  Each device
 provides a sequence of records.  The length of a record is specific to
@@ -6126,7 +6126,7 @@ messages seperately from the function call.
 
 @deftypefun boolean_t device_reply_server (@w{msg_header_t *@var{in_msg}}, @w{msg_header_t *@var{out_msg}})
 The function @code{device_reply_server} is produced by the
-remote procedure call generator to to handle a received message.  This
+remote procedure call generator to handle a received message.  This
 function does all necessary argument handling, and actually calls one of
 the following functions: @code{ds_device_open_reply},
 @code{ds_device_read_reply}, @code{ds_device_read_reply_inband},
