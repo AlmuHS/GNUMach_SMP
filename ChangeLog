@@ -1,3 +1,7 @@
+2002-04-23  Roland McGrath  <roland@frob.com>
+
+	* i386/i386/ldt.c (ldt_init): Fix fencepost error in segment limits.
+
 2002-04-19  Roland McGrath  <roland@frob.com>
 
 	* gensym.awk: Emit \n\ at the end of lines inside strings.
