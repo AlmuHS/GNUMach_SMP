@@ -6,7 +6,7 @@
 # notice and this permission notice appear in all copies of the
 # software, derivative works or modified versions, and any portions
 # thereof, and that both notices appear in supporting documentation.
-# 
+#
 # THE FREE SOFTWARE FOUNDATION ALLOWS FREE USE OF THIS SOFTWARE IN ITS
 # "AS IS" CONDITION.  THE FREE SOFTWARE FOUNDATION DISCLAIMS ANY
 # LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
@@ -20,7 +20,6 @@ srcdir=@srcdir@
 systype=@systype@
 prefix=@prefix@
 
-installed-clib=@installed_clib@
 exec_prefix=$(prefix)
 
 bootdir=$(exec_prefix)/boot
@@ -30,12 +29,6 @@ bindir=$(exec_prefix)/bin
 
 sysdep = $(srcdir)/$(systype)
 
-cross_compiling=@cross_compiling@
-cross_linkable=@cross_linkable@
-ifeq ($(cross_linkable),yes)
-  cross-migcom = cross-migcom
-endif
-
 # Detect if the user wants KDB
 ifeq ($(findstring -DMACH_KDB,@DEFS@),-DMACH_KDB)
 enable_kdb=yes
@@ -44,23 +37,17 @@ enable_kdb=no
 endif
 
 # Programs found by configure.
-AWK=@AWK@
-INSTALL=@INSTALL@
-CC=@CC@
-BUILD_CC=@BUILD_CC@
-LEX=@LEX@
-YACC=@YACC@
+AWK = @AWK@
+INSTALL = @INSTALL@
+CC = @CC@
+LD = @LD@
+NM = @NM@
+MIG = @MIG@
 
-LEXLIB=@LEXLIB@
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+INSTALL_DATA = @INSTALL_DATA@
 
-INSTALL_PROGRAM=$(INSTALL)
-INSTALL_DATA=$(INSTALL) -m 644
-
-CFLAGS=@CFLAGS@
-
-# We build these locally
-MIG=./local-mig
-MIGCOM=./migcom
+CFLAGS = @CFLAGS@
 
 all:
 
@@ -76,7 +63,7 @@ topfiles = ChangeLog ChangeLog.0 ChangeLog.00 Drivers.macros Makefile.in \
 	README INSTALL config.guess config.sub configure configure.in \
 	gensym.awk install-sh version.c NEWS aclocal.m4 COPYING
 
-# All the source in each directory.  
+# All the source in each directory.
 
 # Old crud from a previous configure scheme
 bogus-files = bootstrap_symbols.h fast_tas.h hw_footprint.h net_atm.h \
@@ -132,7 +119,7 @@ ipc-cfiles = $(addprefix ipc_,$(ipc-names)) \
 		mach_msg.c mach_port.c mach_rpc.c mach_debug.c fipc.c
 ipc-names = entry.c hash.c init.c kmsg.c marequest.c mqueue.c \
 	notify.c object.c port.c pset.c right.c space.c splay.c \
-	table.c target.c thread.c 
+	table.c target.c thread.c
 ipc-files = $(ipc-cfiles) mach_port.srv fipc.h port.h mach_msg.h \
 	$(patsubst %,ipc_%.h, \
 	entry hash init kmsg kmsg_queue machdep marequest mqueue notify \
@@ -162,7 +149,7 @@ util-files = $(util-cfiles) config.h cpu.h cpu_subs.h cpus.h debug.h \
 	phys_mem.h ref_count.h
 
 # Virtual memory implementation
-vm-cfiles = $(addprefix vm_,$(vm-names)) memory_object.c 
+vm-cfiles = $(addprefix vm_,$(vm-names)) memory_object.c
 vm-names = debug.c external.c fault.c init.c kern.c map.c \
 	object.c pageout.c resident.c user.c
 vm-files = $(vm-cfiles) memory_object_default.cli memory_object_user.cli \
@@ -223,7 +210,7 @@ mach-debug-headers:= $(addprefix mach_debug/, hash_info.h ipc_info.h \
 
 installed-headers:= $(device-headers) $(mach-headers) $(mach-exec-headers)
 
-# Other headers for the distribution.  We don't install these, because the 
+# Other headers for the distribution.  We don't install these, because the
 # GNU C library has correct versions for users to use.
 other-sys-headers := types.h time.h reboot.h ioctl.h
 other-mach-headers := mig_support.h mach_traps.h error.h
@@ -237,22 +224,28 @@ other-headers := alloca.h
 # for sanity.
 objfiles += clib-routines.o
 
-clib-routines := memcpy memset bcopy bzero htonl htons ntohl ntohs 
+clib-routines := memcpy memset bcopy bzero htonl htons ntohl ntohs
 ifeq ($(enable_kdb),yes)
 clib-routines += strstr
 endif
 
-clib-routines.o: $(installed-clib)
-	$(LD) -o clib-routines.o -r $(addprefix -u ,$(clib-routines)) $(installed-clib)
+Wl-u = -Wl,-u,
+clib-routines.o: Makefile
+	$(CC) -o $@ -r -nostartfiles -nostdlib -static -x c /dev/null \
+	      $(addprefix $(Wl-u),$(clib-routines)) -lc
 
-# This rule checks clib-routines and makes sure it doesn't have any 
+# This rule checks clib-routines and makes sure it doesn't have any
 # extra symbols.
 kernel: check-clib-routines
 check-clib-routines: clib-routines.o
-	nm -g $< | awk '$(foreach sym,$(clib-routines),$$3 == "$(sym)" ||) 0 { match_cnt++ } \
-                        $$2 == "W" { weak_cnt++ } \
-                        { total_cnt++ } \
-                        END { exit total_cnt - (match_cnt + weak_cnt) } ' && touch check-clib-routines
+	$(NM) -g $< | \
+	awk '$(foreach sym,$(clib-routines),\
+		       $$3 == "$(sym)" || $$3 == "__$(sym)" ||) 0 \
+		       { match_cnt++; total_cnt++; next } \
+                       $$2 == "W" { weak_cnt++ } \
+                       { total_cnt++ } \
+                       END { exit total_cnt - (match_cnt + weak_cnt) }'
+	touch check-clib-routines
 
 
 # Empty dependency file
@@ -274,6 +267,17 @@ objfiles += device_server.o device_pager_server.o mach_port_server.o \
 vpath %.cli $(srcdir)/vm $(srcdir)/device
 vpath %.srv $(srcdir)/device $(srcdir)/ipc $(srcdir)/kern
 
+
+# We need this symlink in place before we start compiling,
+# so <mach/machine/foo.h> headers can be found.
+before-compile = mach/machine
+mach/machine: mach_machine
+	test -d $(@D) || mkdir $(@D)
+	rm -f $@
+	ln -s ../mach_machine mach/machine
+mach_machine: config.status
+	rm -f $@
+	ln -s $(srcdir)/$(systype)/include/mach/$(systype) mach_machine
 
 
 
@@ -288,18 +292,18 @@ INCLUDES += -I. -I$(srcdir) -I$(srcdir)/include \
 
 include $(sysdep)/Makefrag
 
-CPPFLAGS += -nostdinc $(DEFINES) $(INCLUDES) 
+CPPFLAGS += -nostdinc $(DEFINES) $(INCLUDES)
 
 MIGFLAGS += $(CPPFLAGS)
 
 
 # Standard targets
 
-all: kernel $(cross-migcom) cross-mig
+all: kernel
 
 clean:
 	mv device-drivers.h FOO
-	rm -f *.o *.d kernel cross-migcom cross-mig migcom local-mig
+	rm -f *.o *.d kernel
 	rm -f *.symc *.symc.o *_user.c *_server.c *.h
 	rm -f *.migs_d *.migsh_d *.migu_d *.miguh_d
 	mv FOO device-drivers.h
@@ -308,8 +312,6 @@ distclean: clean
 	rm -f config.status Makefile driverlist
 
 mostlyclean: distclean
-	rm -f $(srcdir)/mig/lexxer.c 
-	rm -f $(srcdir)/mig/parser.c $(srcdir)/mig/parser.h
 
 maintainer-clean: mostlyclean
 	rm -f $(srcdir)/configure $(all-archs-configures)
@@ -329,13 +331,11 @@ kernel: $(objfiles)
 
 #
 # Installation
-# 
+#
 installed-headers-names = $(addprefix $(includedir)/,$(installed-headers))
 installed-sysdep-headers-names = $(addprefix $(includedir)/,$($(systype)-installed-headers))
-install: mkinstalldirs kernel $(installed-headers-names) $(installed-sysdep-headers-names) cross-mig $(cross-migcom)
+install: mkinstalldirs kernel $(installed-headers-names) $(installed-sysdep-headers-names)
 	$(INSTALL_PROGRAM) kernel $(bootdir)/gnumach
-	$(INSTALL_PROGRAM) cross-mig $(bindir)/mig
-	test -z "$(cross-migcom)" || $(INSTALL_PROGRAM) cross-migcom $(libexecdir)/migcom
 	ln -sf $(systype) $(includedir)/mach/machine
 
 $(installed-headers-names): $(includedir)/%: $(srcdir)/include/%
@@ -358,7 +358,7 @@ dist:
 	rm -rf gnumach-$(version)
 	mkdir gnumach-$(version)
 	# Directories
-	mkdir gnumach-$(version)/{bogus,chips,ddb,device,ipc,kern,mig,scsi,util,vm,include}
+	mkdir gnumach-$(version)/{bogus,chips,ddb,device,ipc,kern,scsi,util,vm,include}
 	mkdir gnumach-$(version)/include/{mach,device,mach_debug,sys}
 	mkdir gnumach-$(version)/include/mach/exec
 	for dir in `cat $(all-archs-subdirs)`; do \
@@ -372,7 +372,6 @@ dist:
 	ln $(addprefix $(srcdir)/device/,$(device-files)) gnumach-$(version)/device
 	ln $(addprefix $(srcdir)/ipc/,$(ipc-files)) gnumach-$(version)/ipc
 	ln $(addprefix $(srcdir)/kern/,$(kern-files)) gnumach-$(version)/kern
-	ln $(addprefix $(srcdir)/mig/,$(mig-files)) gnumach-$(version)/mig
 	ln $(addprefix $(srcdir)/scsi/,$(scsi-files)) gnumach-$(version)/scsi
 	ln $(addprefix $(srcdir)/util/,$(util-files)) gnumach-$(version)/util
 	ln $(addprefix $(srcdir)/vm/,$(vm-files)) gnumach-$(version)/vm
@@ -414,7 +413,7 @@ vpath configure $(srcdir)
 
 #
 # How to do some things
-# 
+#
 
 # Building foo.h from foo.sym:
 %.symc: %.sym
@@ -426,11 +425,11 @@ vpath configure $(srcdir)
 		sed -e 's/^[*]/#define/' -e 's/mAgIc[^-0-9]*//' >$@
 
 # Building from foo.cli
-%.h %_user.c: %.cli $(MIG) $(MIGCOM)
+%.h %_user.c: %.cli
 	$(MIG) $(MIGFLAGS) -header $*.h -user $*_user.c -server /dev/null $<
 
 # Building from foo.srv
-%_interface.h %_server.c: %.srv $(MIG) $(MIGCOM)
+%_interface.h %_server.c: %.srv
 	$(MIG) $(MIGFLAGS) -header $*_interface.h -server $*_server.c -user /dev/null $<
 
 #
@@ -442,16 +441,16 @@ ifneq ($(no_deps),t)
 
 # For each file generated by MiG we need a .d file.
 servers = $(filter %_server.o,$(objfiles))
-include $(subst _server.o,.migs_d,$(servers)) /dev/null
-include $(subst _server.o,.migsh_d,$(servers)) /dev/null
+-include $(subst _server.o,.migs_d,$(servers)) /dev/null
+-include $(subst _server.o,.migsh_d,$(servers)) /dev/null
 
 # vm_user.o fits the pattern, but is not actually a MiG-related file.
 users = $(filter-out vm_user.o,$(filter %_user.o,$(objfiles)))
-include $(subst _user.o,.migu_d,$(users)) /dev/null
-include $(subst _user.o,.miguh_d,$(users)) /dev/null
+-include $(subst _user.o,.migu_d,$(users)) /dev/null
+-include $(subst _user.o,.miguh_d,$(users)) /dev/null
 
 # For each .o file we need a .d file.
-include $(subst .o,.d,$(filter %.o,$(objfiles))) /dev/null
+-include $(subst .o,.d,$(filter %.o,$(objfiles))) /dev/null
 
 endif
 
@@ -478,8 +477,8 @@ set -e; $(CC) $(CFLAGS) $(CPPFLAGS) -M -MG $< | \
 mv -f $@.new $@
 endef
 
-%.d: %.c; $(make-deps)
-%.d: %.S; $(make-deps)
+%.d: %.c $(before-compile); $(make-deps)
+%.d: %.S $(before-compile); $(make-deps)
 
 # .s files don't go through the preprocessor, so we do this
 # This rule must come *after* the genuine ones above, so that
@@ -487,103 +486,3 @@ endef
 # list.
 %.d: %.s
 	echo '$*.o: $<' > $@
-
-
-# How to build MiG:
-
-mig-objfiles = error.o global.o header.o lexxer.o migcom.o parser.o routine.o \
-		server.o statement.o string.o type.o user.o utils.o
-mig-csrcfiles = $(subst .o,.c,$(mig-objfiles))
-mig-othersrc = alloc.h boolean.h error.h global.h lexxer.h message.h \
-		mig_string.h routine.h statement.h type.h utils.h write.h \
-		lexxer.l parser.y mig.sh parser.h cpu.sym
-
-cross-lexxer.o lexxer.o: cpu.h
-
-mig-files = $(mig-csrcfiles) $(mig-othersrc) ChangeLog
-
-vpath cpu.sym $(srcdir)/mig
-
-ifeq ($(cross_linkable),yes)
-# Don't use $(CPPFLAGS) here; MiG needs none of the Mach headers except
-# what happens automagically to build cpu.h.
-
-# Here's how to build MiG for the target.
-cross-mig-objfiles = $(addprefix cross-,$(mig-objfiles))
-
-$(cross-mig-objfiles): cross-%.o: $(srcdir)/mig/%.c
-	$(CC) -c $(CFLAGS) -I. -I$(srcdir)/mig -o $@ $<
-
-./cross-migcom: $(cross-mig-objfiles)
-	$(CC) $(CFLAGS) $(cross-mig-objfiles) $(LEXLIB) -o $@
-
-# Dependencies for these .o files
-ifneq ($(no_deps),t)
-include $(subst .o,.d,$(cross-mig-objfiles)) /dev/null
-endif
-
-$(subst .o,.d,$(cross-mig-objfiles)): cross-%.d: $(srcdir)/mig/%.c
-	set -e; $(CC) $(CFLAGS) -M -MG -I. -I$(srcdir)/mig $< | \
-		sed > $@.new -e 's/$*\.o:/cross-$*.o $@:/'
-	mv -f $@.new $@
-endif
-
-ifeq ($(cross_compiling),yes)
-# When cross compiling, we build two migcoms; one for our use and one to 
-# install.  Otherwise, we just build the one.
-
-$(mig-objfiles): %.o: $(srcdir)/mig/%.c
-	$(BUILD_CC) -c $(BUILD_CFLAGS) -I. -I$(srcdir)/mig -o $@ $<
-
-./migcom: $(mig-objfiles)
-	$(BUILD_CC) $(BUILD_CFLAGS) $(mig-objfiles) $(LEXLIB) -o $@
-
-ifneq ($(no_deps),t)
-include $(subst .o,.d,$(mig-objfiles))
-endif
-
-$(subst .o,.d,$(mig-objfiles)): %.d: $(srcdir)/mig/%.c
-	set -e; $(BUILD_CC) $(BUILD_CFLAGS) -M -MG -I. -I$(srcdir)/mig $< | \
-		sed > $@.new -e 's/$*\.o:/$*.o $@:/'
-	mv -f $@.new $@
-
-else
-./migcom: ./cross-migcom
-	rm -f $@
-	ln $< $@
-endif
-
-$(srcdir)/mig/lexxer.c: $(srcdir)/mig/lexxer.l
-	$(LEX) $(LFLAGS) $<
-	mv lex.yy.c $*.c
-
-$(srcdir)/mig/parser.c $(srcdir)/mig/parser.h: $(srcdir)/mig/parser.y
-	$(YACC) $(YFLAGS) -d $<
-	mv y.tab.c $(srcdir)/mig/parser.c
-	mv y.tab.h $(srcdir)/mig/parser.h
-
-# Version of mig script that looks for the right local tools
-ifeq ($(cross_compiling),yes)
-./local-mig: $(srcdir)/mig/mig.sh Makefile
-	sed -e 's,@MIGDIR@,.,g' \
-	    -e 's,@CPP@,${BUILD_CC} -x c-header -E,g' \
-	    $< >$@.tmp && chmod +x $@.tmp && mv -f $@.tmp $@
-else
-./local-mig: $(srcdir)/mig/mig.sh Makefile
-	sed -e 's,@MIGDIR@,.,g' \
-	    -e 's,@CPP@,${CC} -x c-header -E,g' \
-	    $< >$@.tmp && chmod +x $@.tmp && mv -f $@.tmp $@
-endif
-
-# Version of MiG to install
-cross-mig: $(srcdir)/mig/mig.sh Makefile
-	sed -e 's,@MIGDIR@,$(libexecdir),g' \
-	    -e 's,@CPP@,${CC} -x c-header -E,g' \
-	    $< >$@.tmp && chmod +x $@.tmp && mv -f $@.tmp $@
-
-
-# The first time through, Make will try and build MiG to get
-# dependencies, before it knows about the automatically generated
-# files that MiG needs.  So tell it about that file here.
-cross-lexxer.o lexxer.o: cpu.h
-
