@@ -402,7 +402,7 @@ dist:
 	for file in `cat $(all-archs-files)`; do \
 		cp $(srcdir)/$$file gnumach-$(version)/`dirname $$file`; \
 	done
-	chmod -R u=rwX og=rX gnumach-$(version)
+	chmod -R u=rwX,og=rX gnumach-$(version)
 	tar cfz gnumach-$(version).tar.gz gnumach-$(version)
 	rm -rf gnumach-$(version)
 
