@@ -7,7 +7,7 @@ dnl documentation is hereby granted, provided that both the copyright
 dnl notice and this permission notice appear in all copies of the
 dnl software, derivative works or modified versions, and any portions
 dnl thereof, and that both notices appear in supporting documentation.
-dnl 
+dnl
 dnl THE FREE SOFTWARE FOUNDATION ALLOWS FREE USE OF THIS SOFTWARE IN ITS
 dnl "AS IS" CONDITION.  THE FREE SOFTWARE FOUNDATION DISCLAIMS ANY
 dnl LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
@@ -37,13 +37,13 @@ driver_class_[$1]_files="[$3]"
 
 dnl AC_DRIVER(name,option,files [,class]) detects option --enable-name.  If
 dnl it's set, then `option' is defined with AC_DEFINE, and files is
-dnl added to the output variable `device_drivers'.  The driver is of class 
+dnl added to the output variable `device_drivers'.  The driver is of class
 dnl `class'; see the comments on AC_DRIVER_CLASS for more information.
 
 AC_DEFUN(AC_DRIVER, [
 [#] Checking for device driver option [$1]
 AC_ARG_ENABLE([$1],,
-if [ "x$enableval" != xno ]; then 
+if test "x$enableval" != xno; then
 AC_DEFINE([$2])
 device_drivers="$device_drivers [$3]"
 if test "${driver_class_[$4]_selected+set}" != set; then
@@ -53,5 +53,3 @@ if test "${driver_class_[$4]_selected+set}" != set; then
 fi
 fi
 )])
-
-
