@@ -1,3 +1,9 @@
+1999-04-28  OKUJI Yoshinori  <okuji@localhost>
+
+	* linux/dev/drivers/block/genhd.c (bsd_disklabel_partition) [MACH]:
+	Print BSD slices, using Mach device syntax instead of Linux extented
+	partition syntax.
+	
 1999-05-01  Mark Kettenis  <kettenis@gnu.org>
 
 	* linux/dev/glue/block.c (device_get_status): Always set
