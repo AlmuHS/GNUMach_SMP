@@ -19,6 +19,7 @@
 srcdir=@srcdir@
 systype=@systype@
 prefix=@prefix@
+version = @VERSION@
 
 exec_prefix=$(prefix)
 
@@ -68,7 +69,7 @@ all-archs-configures = $(patsubst %,$(srcdir)/%/configure,$(all-archs))
 # Files distributed from the top level directory:
 topfiles = ChangeLog ChangeLog.0 ChangeLog.00 Drivers.macros Makefile.in \
 	README INSTALL config.guess config.sub configure configure.in \
-	gensym.awk install-sh version.c NEWS aclocal.m4 COPYING
+	gensym.awk install-sh version.c.in NEWS aclocal.m4 COPYING
 
 # All the source in each directory.
 
@@ -167,7 +168,7 @@ vm-files = $(vm-cfiles) memory_object_default.cli memory_object_user.cli \
 doc-files = Makefile.in fdl.texi gpl.texi mach.texi
 
 # Debian packaging
-debian-files = changelog  control  copyright README.Debian rules
+debian-files = changelog control copyright README.Debian rules postinst prerm
 
 
 # Object files that go into the kernel image.  (This will be augmented by the
@@ -194,7 +195,6 @@ vpath %.c $(srcdir)/ddb
 
 # Version number
 objfiles += version.o
-vpath version.c $(srcdir)
 
 
 # Header files installed for user use
@@ -393,7 +393,7 @@ dist:
 		cp $(srcdir)/$$file gnumach-$(version)/`dirname $$file`; \
 	done
 	chmod -R u=rwX,og=rX gnumach-$(version)
-	tar cfz gnumach-$(version).tar.gz gnumach-$(version)
+	tar cf - gnumach-$(version) | gzip -9vc > gnumach-$(version).tar.gz
 	rm -rf gnumach-$(version)
 
 
@@ -428,18 +428,18 @@ vpath configure $(srcdir)
 # Building foo.h from foo.sym:
 %.symc: %.sym $(srcdir)/gensym.awk
 	$(AWK) -f $(word 2,$^) $< > $@
-%.symc.o: %.symc
+%.symc.o: %.symc $(before-compile)
 	$(CC) -S $(CPPFLAGS) $(CFLAGS) $(CPPFLAGS-$@) -x c -o $@ $<
 %.h: %.symc.o
 	sed <$< -e 's/^[^*].*$$//' | \
 		sed -e 's/^[*]/#define/' -e 's/mAgIc[^-0-9]*//' >$@
 
 # Building from foo.cli
-%.h %_user.c: %.cli
+%.h %_user.c: %.cli $(before-compile)
 	$(MIG) $(MIGFLAGS) -header $*.h -user $*_user.c -server /dev/null $<
 
 # Building from foo.srv
-%_interface.h %_server.c: %.srv
+%_interface.h %_server.c: %.srv $(before-compile)
 	$(MIG) $(MIGFLAGS) -sheader $*_interface.h -server $*_server.c \
 			   -header /dev/null -user /dev/null $<
 
@@ -467,13 +467,13 @@ endif
 
 # Here is how to make those dependency files
 
-%.migs_d: %.srv
+%.migs_d: %.srv $(before-compile)
 	(set -e; $(CPP) $(MIGFLAGS) -M -MG -x c $< | \
-	sed -e 's/\.srv\.o:/_server.c $@:/' > $@)
+	sed -e 's/[^:]*:/$(@:.migs_d=_server.c) $@:/' > $@)
 
-%.migu_d: %.cli
+%.migu_d: %.cli $(before-compile)
 	(set -e; $(CPP) $(MIGFLAGS) -M -MG -x c $< | \
-	sed -e 's/\.cli\.o:/_user.c $@:/' > $@)
+	sed -e 's/[^:]*:/$(@:.migu_d=_user.c) $@:/' > $@)
 
 %.migsh_d: %.migs_d
 	sed -e 's/_server\.c /_interface.h /' -e 's/migs_d/migsh_d/' < $< > $@
