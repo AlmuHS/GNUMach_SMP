@@ -1,3 +1,21 @@
+2001-05-27  Marcus Brinkmann  <marcus@gnu.org>
+
+	* debian/rules: Add --enable-ncr53c8xx to configure.
+
+1999-10-06  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* linux/src/drivers/scsi/tmscsiw.c: Removed.
+	* linux/src/drivers/scsi/tmscsiw.h: Likewise.
+	* linux/src/drivers/scsi/dc390w.h: Likewise.
+	* i386/linux/device-drivers.h.in (CONFIG_SCSI_DC390W): Deleted.
+	* i386/linux/Drivers.in: Remove linux_DRIVER(dc390w, ...). Now
+	dc390w, dc390u, and dc390f are aliases to ncr53c8xx.
+	* i386/linux/configure: Regenerated.
+	* linux/Files: Likewise.
+	* i386/linux/Makefile.in (linux-scsi-files): Delete tmscsiw.c.
+	* linux/dev/drivers/scsi/hosts.c: Do not include dc390w.h.
+	Reported by Andreas Voegele <andreas.voegele@nikocity.de>.
+
 2001-05-20  Roland McGrath  <roland@frob.com>
 
 	* kern/sched_prim.c (state_panic): New function, panic with some

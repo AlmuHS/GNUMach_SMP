@@ -83,7 +83,7 @@ linux-scsi-files = 53c78xx.c AM53C974.c BusLogic.c NCR53c406a.c advansys.c \
 	eata_dma.c eata_pio.c fdomain.c g_NCR5380.c gdth.c hosts.c in2000.c \
 	ncr53c8xx.c pas16.c ppa.c qlogicfas.c qlogicisp.c scsi.c scsi_ioctl.c \
 	scsi_proc.c scsicam.c sd.c sd_ioctl.c seagate.c sr.c sr_ioctl.c \
-	t128.c tmscsim.c tmscsiw.c u14-34f.c ultrastor.c wd7000.c
+	t128.c tmscsim.c u14-34f.c ultrastor.c wd7000.c
 vpath %.c $(linuxsrcdir)/dev/drivers/scsi
 vpath %.c $(linuxsrcdir)/src/drivers/scsi
 

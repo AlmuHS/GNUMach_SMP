@@ -164,7 +164,6 @@ linux/src/drivers/scsi/aic7xxx_seq.c
 linux/src/drivers/scsi/constants.c
 linux/src/drivers/scsi/constants.h
 linux/src/drivers/scsi/dc390.h
-linux/src/drivers/scsi/dc390w.h
 linux/src/drivers/scsi/dtc.c
 linux/src/drivers/scsi/dtc.h
 linux/src/drivers/scsi/eata.c
@@ -221,8 +220,6 @@ linux/src/drivers/scsi/tmscsim.c
 linux/src/drivers/scsi/t128.c
 linux/src/drivers/scsi/t128.h
 linux/src/drivers/scsi/tmscsim.h
-linux/src/drivers/scsi/tmscsiw.c
-linux/src/drivers/scsi/tmscsiw.h
 linux/src/drivers/scsi/u14-34f.c
 linux/src/drivers/scsi/u14-34f.h
 linux/src/drivers/scsi/ultrastor.c

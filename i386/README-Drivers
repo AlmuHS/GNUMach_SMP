@@ -158,14 +158,12 @@ DTC3180/3280
 
 NCR53C8XX
   --enable-ncr53c8xx		scsi/ncr53c8xx.c
-
-Tekram DC-390W/U/F
-  --enable-dc390w		scsi/tmsscsiw.c
+  --enable-dc390w
   --enable-dc390u
   --enable-dc390f
 
 Tekram DC-390(T)
-  --enable-dc390t		scsi/tmsscsim.c
+  --enable-dc390t		scsi/tmscsim.c
   --enable-dc390
 
 IOMEGA Parallel Port ZIP drive

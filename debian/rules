@@ -54,7 +54,7 @@ stamp-configure:
 	$(checkdir)
 	-mkdir build
 	# disabled:
-	# ncr5380, ncr53c400, ncr53c8xx, ncr53c406a
+	# ncr5380, ncr53c400, ncr53c406a
 	# hpj2577, hpj2573, hp27248b, hp2585, atp
 	cd build && ../configure \
 	--enable-floppy \
@@ -80,7 +80,7 @@ stamp-configure:
 	--enable-eata \
 	--enable-am53c974 --enable-am79c974 \
 	--enable-dtc3280 --enable-dtc3180 \
-	--enable-dc390w --enable-dc390u --enable-dc390f \
+	--enable-ncr53c8xx --enable-dc390w --enable-dc390u --enable-dc390f \
 	--enable-dc390t --enable-dc390 \
 	--enable-ppa \
 	--enable-qlogicfas \

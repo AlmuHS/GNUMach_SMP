@@ -153,10 +153,6 @@
 #include "NCR53c406a.h"
 #endif
 
-#ifdef CONFIG_SCSI_DC390W
-#include "dc390w.h"
-#endif
-
 #ifdef CONFIG_SCSI_DC390T
 #include "dc390.h"
 #endif
@@ -191,7 +187,7 @@
 
 
 /*
-static const char RCSid[] = "$Header: cvs/gnumach/linux/dev/drivers/scsi/Attic/hosts.c,v 1.1 1999/04/26 05:44:25 tb Exp $";
+static const char RCSid[] = "$Header: cvs/gnumach/linux/dev/drivers/scsi/Attic/hosts.c,v 1.2 2001/05/27 12:44:22 marcus Exp $";
 */
 
 /*
