@@ -159,6 +159,8 @@ int	vm_page_free_min = 0;
 int	vm_page_inactive_target = 0;
 int	vm_page_free_reserved = 0;
 int	vm_page_laundry_count = 0;
+int	vm_page_external_limit = 0;
+
 
 /*
  *	The VM system has a couple of heuristics for deciding

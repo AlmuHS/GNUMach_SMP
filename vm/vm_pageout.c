@@ -164,8 +164,6 @@ extern void vm_pageout_scan_continue();
 unsigned int vm_pageout_reserved_internal = 0;
 unsigned int vm_pageout_reserved_really = 0;
 
-unsigned int vm_page_external_target = 0;
-
 unsigned int vm_pageout_burst_max = 0;
 unsigned int vm_pageout_burst_min = 0;
 unsigned int vm_pageout_burst_wait = 0;		/* milliseconds per page */
