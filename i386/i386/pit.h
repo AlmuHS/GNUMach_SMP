@@ -100,8 +100,10 @@ typedef struct time_latch {
 		time_t	ticks;          /* time in HZ since boot */
 		time_t	uticks;         /* time in 1.25 MHZ */
 /* don't need these two for now.   --- csy */
-/*		time_t  secs;           /* seconds since boot */
-/*		time_t  epochsecs;      /* seconds since epoch */
+#if 0
+		time_t  secs;           /* seconds since boot */
+		time_t  epochsecs;      /* seconds since epoch */
+#endif
 	} time_latch;
 /* a couple in-line assembly codes for efficiency. */
 asm  int   intr_disable()

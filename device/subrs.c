@@ -110,7 +110,7 @@ geteblk(size)
 	register io_req_t	ior;
 
 	io_req_alloc(ior, 0);
-	ior->io_device = (device_t)0;
+	ior->io_device = (mach_device_t)0;
 	ior->io_unit = 0;
 	ior->io_op = 0;
 	ior->io_mode = 0;

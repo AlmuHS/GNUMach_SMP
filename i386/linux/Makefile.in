@@ -31,7 +31,7 @@ CFLAGS = @CFLAGS@
 
 
 # Files for driver support.
-linux-c-files = version.c softirq.c dma.c resource.c printk.c \
+linux-c-files = version.c softirq.c delay.c dma.c resource.c printk.c \
 		bios32.c irq.c ctype.c vsprintf.c main.c misc.c sched.c \
 		kmem.c block.c setup.c
 
@@ -39,6 +39,7 @@ linux-c-files = version.c softirq.c dma.c resource.c printk.c \
 vpath %.c $(linuxsrcdir)/dev/kernel
 vpath %.c $(linuxsrcdir)/dev/init
 vpath %.c $(linuxsrcdir)/dev/arch/$(systype)/kernel
+vpath %.c $(linuxsrcdir)/dev/arch/$(systype)/lib
 vpath %.c $(linuxsrcdir)/dev/glue
 vpath %.c $(linuxsrcdir)/dev/lib
 
@@ -46,11 +47,12 @@ vpath %.c $(linuxsrcdir)/dev/lib
 vpath %.c $(linuxsrcdir)/src/kernel
 vpath %.c $(linuxsrcdir)/src/init
 vpath %.c $(linuxsrcdir)/src/arch/$(systype)/kernel
+vpath %.c $(linuxsrcdir)/src/arch/$(systype)/lib
 vpath %.c $(linuxsrcdir)/src/lib
 
 
 # XXX: Assembly source files must be treated separately... Uggg...
-linux-asm-files = delay.S semaphore.S
+linux-asm-files = semaphore.S
 vpath %.S $(linuxsrcdir)/dev/arch/$(systype)/lib
 vpath %.S $(linuxsrcdir)/src/arch/$(systype)/lib
 

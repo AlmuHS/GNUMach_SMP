@@ -131,13 +131,17 @@ number (char *str, long num, int base, int size, int precision, int type)
   if (sign)
     *str++ = sign;
   if (type & SPECIAL)
-    if (base == 8)
-      *str++ = '0';
-    else if (base == 16)
-      {
-	*str++ = '0';
-	*str++ = digits[33];
-      }
+    {
+      if (base == 8)
+	{
+	  *str++ = '0';
+	}
+      else if (base == 16)
+	{
+	  *str++ = '0';
+	  *str++ = digits[33];
+	}
+    }
   if (!(type & LEFT))
     while (size-- > 0)
       *str++ = c;

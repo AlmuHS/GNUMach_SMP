@@ -115,7 +115,7 @@
 #include <mach/boolean.h>
 #include <kern/lock.h>
 #include <kern/strings.h>
-#include <sys/varargs.h>
+#include <stdarg.h>
 
 #define isdigit(d) ((d) >= '0' && (d) <= '9')
 #define Ctod(c) ((c) - '0')
@@ -161,7 +161,7 @@ void printf_init()
 }
 
 void _doprnt(
-	register char	*fmt,
+	register const char *fmt,
 	va_list		*argp,
 					/* character output routine */
  	void		(*putc)( char, vm_offset_t),
@@ -509,20 +509,16 @@ void _doprnt(
  */
 extern void	cnputc( char, /*not really*/vm_offset_t);
 
-void vprintf(fmt, listp)
-	char *	fmt;
-	va_list listp;
+void vprintf(const char *fmt, va_list listp)
 {
 	_doprnt(fmt, &listp, cnputc, 16, 0);
 }
 
 /*VARARGS1*/
-void printf(fmt, va_alist)
-	char *	fmt;
-	va_dcl
+void printf(const char *fmt, ...)
 {
 	va_list	listp;
-	va_start(listp);
+	va_start(listp, fmt);
 	vprintf(fmt, listp);
 	va_end(listp);
 }
@@ -533,9 +529,7 @@ int	indent = 0;
  * Printing (to console) with indentation.
  */
 /*VARARGS1*/
-void iprintf(fmt, va_alist)
-	char *	fmt;
-	va_dcl
+void iprintf(const char *fmt, ...)
 {
 	va_list	listp;
 	register int i;
@@ -550,7 +544,7 @@ void iprintf(fmt, va_alist)
 		i--;
 	    }
 	}
-	va_start(listp);
+	va_start(listp, fmt);
 	_doprnt(fmt, &listp, cnputc, 16, 0);
 	va_end(listp);
 }
@@ -572,15 +566,12 @@ sputc(
 }
 
 int
-sprintf( buf, fmt, va_alist)
-	char	*buf;
-	char	*fmt;
-	va_dcl
+sprintf(char *buf, const char *fmt, ...)
 {
 	va_list	listp;
 	char	*start = buf;
 
-	va_start(listp);
+	va_start(listp, fmt);
 	_doprnt(fmt, &listp, sputc, 16, (vm_offset_t)&buf);
 	va_end(listp);
 

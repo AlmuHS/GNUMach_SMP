@@ -1,3 +1,13 @@
+gnumach (1:1.2-3) unstable; urgency=low
+
+  * Snapshot from CVS 20000703.
+  * i386/i386at/kd.c: Receive 0xE0 scan codes (patch by Kalle Olavi Niemitalo).
+  * Patch to get it compile with gcc-2.95.1 or newer
+  ( by "Weil, Stefan 3732 EPE-24" <Stefan.Weil@de.heidelberg.com>
+  and Igor Khavkine <i_khavki@alcor.concordia.ca>)
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Mon,  3 Jul 2000 21:05:42 +0200
+
 gnumach (1:1.2-2) unstable; urgency=low
 
   * Snapshot from CVS 19990907.

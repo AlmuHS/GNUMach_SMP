@@ -98,6 +98,9 @@ extern char	version[];
 
 extern void	setup_main();
 
+void		halt_all_cpu (boolean_t reboot) __attribute__ ((noreturn));
+void		halt_cpu (void) __attribute__ ((noreturn));
+
 void		inittodr();	/* forward */
 
 int		rebootflag = 0;	/* exported to kdintr */
@@ -155,7 +158,7 @@ void machine_init()
 /*
  * Halt a cpu.
  */
-halt_cpu()
+void halt_cpu(void)
 {
 	asm volatile("cli");
 	while(1);
@@ -164,7 +167,7 @@ halt_cpu()
 /*
  * Halt the system or reboot.
  */
-halt_all_cpus(reboot)
+void halt_all_cpus(reboot)
 	boolean_t	reboot;
 {
 	if (reboot) {

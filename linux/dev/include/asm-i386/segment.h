@@ -92,6 +92,7 @@ static inline unsigned long __get_user(const void * y, int size)
 	}
 }
 
+#if defined(__GNUC__) && (__GNUC__ == 2) && (__GNUC_MINOR__ < 95)
 static inline void __generic_memcpy_tofs(void * to, const void * from, unsigned long n)
 {
     __asm__ volatile
@@ -271,6 +272,29 @@ __asm__("cld\n\t" \
 (__builtin_constant_p(n) ? \
  __constant_memcpy_tofs((to),(from),(n)) : \
  __generic_memcpy_tofs((to),(from),(n)))
+
+
+#else /* code for gcc-2.95.x and newer follows */
+
+static inline void memcpy_fromfs(void * to, const void * from, unsigned long n)
+{
+  char *d = (char *)to;
+  const char *s = (const char *)from;
+  while (n-- > 0) {
+    *d++ = __get_user(s++, 1);
+  }
+}
+
+static inline void memcpy_tofs(void * to, const void * from, unsigned long n)
+{
+  char *d = (char *)to;
+  const char *s = (const char *)from;
+  while (n-- > 0) {
+    __put_user(*s++, d++, 1);
+  }
+}
+
+#endif /* not gcc-2.95 */
 
 /*
  * These are deprecated..

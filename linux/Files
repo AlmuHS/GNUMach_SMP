@@ -413,7 +413,7 @@ linux/src/kernel/softirq.c
 linux/src/kernel/dma.c
 linux/src/arch/i386/kernel/irq.c
 linux/src/arch/i386/kernel/bios32.c
-linux/src/arch/i386/lib/delay.S
+linux/src/arch/i386/lib/delay.c
 linux/src/arch/i386/lib/semaphore.S
 linux/src/lib/ctype.c
 linux/src/lib/vsprintf.c
