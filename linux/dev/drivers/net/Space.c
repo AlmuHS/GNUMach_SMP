@@ -131,9 +131,6 @@ ethif_probe(struct device *dev)
 #ifdef CONFIG_VIA_RHINE
 	&& via_rhine_probe(dev)
 #endif
-#if defined(CONFIG_VORTEX)
-	&& tc59x_probe(dev)
-#endif
 #if defined(CONFIG_DEC_ELCP)
 	&& tulip_probe(dev)
 #endif
@@ -189,6 +186,9 @@ ethif_probe(struct device *dev)
 #endif
 #ifdef CONFIG_EL3		/* 3c509 */
 	&& el3_probe(dev)
+#endif
+#if defined(CONFIG_VORTEX)
+	&& tc59x_probe(dev)
 #endif
 #ifdef CONFIG_3C515		/* 3c515 */
 	&& tc515_probe(dev)
