@@ -312,7 +312,7 @@ clib-routines := memcpy memmove memset bcopy bzero \
 kernel.o: $(objfiles) # kernel.a
 	$(LD) -r -o $@ $^
 kernel-undef: kernel.o
-	$(NM) -u $< | sed 's/^_*//' | sort -u > $@
+	$(NM) -u $< | sed 's/  *U  *//;s/^_*//' | sort -u > $@
 kernel-undef-bad: kernel-undef Makefile
 	sed '$(foreach r,$(clib-routines),/^$r$$/d;)' $< > $@
 clib-routines.o: kernel-undef kernel-undef-bad
