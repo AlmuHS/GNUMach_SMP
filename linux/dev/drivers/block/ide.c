@@ -613,7 +613,6 @@ static int lba_capacity_is_ok (struct hd_driveid *id)
 
 	/* very large drives (8GB+) may lie about the number of cylinders */
 	if (id->cyls == 16383 && id->heads == 16 && id->sectors == 63 && lba_sects > chs_sects) {
-		id->cyls = lba_sects / (16 * 63); /* correct cyls */
 		return 1;	/* lba_capacity is our only option */
 	}
 	/* perform a rough sanity check on lba_sects:  within 10% is "okay" */
@@ -650,7 +649,6 @@ static unsigned long current_capacity (ide_drive_t  *drive)
 	/* Determine capacity, and use LBA if the drive properly supports it */
 	if (id != NULL && (id->capability & 2) && lba_capacity_is_ok(id)) {
 		if (id->lba_capacity >= capacity) {
-			drive->cyl = id->lba_capacity / (drive->head * drive->sect);
 			capacity = id->lba_capacity;
 			drive->select.b.lba = 1;
 		}
@@ -2598,13 +2596,23 @@ static inline void do_identify (ide_drive_t *drive, byte cmd)
 	}
 
 	/* calculate drive capacity, and select LBA if possible */
-	(void) current_capacity (drive);
+	capacity = current_capacity (drive);
 
 	/* Correct the number of cyls if the bios value is too small */
-	if (drive->sect == drive->bios_sect && drive->head == drive->bios_head) {
-		if (drive->cyl > drive->bios_cyl)
-			drive->bios_cyl = drive->cyl;
-	}
+        if (!drive->forced_geom &&
+            capacity > drive->bios_cyl * drive->bios_sect * drive->bios_head) {
+                unsigned long cylsize;
+                cylsize = drive->bios_sect * drive->bios_head;
+                if (cylsize == 0 || capacity/cylsize > 65535) {
+                        drive->bios_sect = 63;
+                        drive->bios_head = 255;
+                        cylsize = 63*255;
+                }
+                if (capacity/cylsize > 65535)
+                        drive->bios_cyl = 65535;
+                else
+                        drive->bios_cyl = capacity/cylsize;
+        }
 
 	if (!strncmp(id->model, "BMI ", 4) &&
 	    strstr(id->model, " ENHANCED IDE ") &&

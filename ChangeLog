@@ -1,3 +1,15 @@
+2001-06-28  Marcus Brinkmann  <marcus@gnu.org>
+
+	* linux/dev/drivers/block/ide.c (lba_capacity_is_ok): Do not
+	attempt to correct id->cyls, it is a short and for large disks the
+	number of cylinders necessary would not fit.  Subsequent checks
+	for lba support would fail.
+	(current_capacity): Likewise for drive->cyl.
+	(do_identify): Store value returned by current_capacity in
+	CAPACITY.  The check which corrects the number of bios cylinders
+	is not aggressive enough.  Update it with the check in linux
+	kernel-2.2.19.
+
 2001-06-25  Marcus Brinkmann  <marcus@gnu.org>
 
 	* i386/bogus/fpe.h (FPE): Define FPE to 0, as the floating point
