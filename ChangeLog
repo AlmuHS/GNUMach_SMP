@@ -1,3 +1,13 @@
+2000-10-29  Roland McGrath  <roland@frob.com>
+
+	* i386/include/mach/proc_ops.h: Dead file removed.
+	* i386/include/mach/setjmp.h: Dead file removed.
+	* i386/include/mach/sa/sys/varargs.h: Dead file removed.
+	* include/mach/proc_ops.h: Dead file removed.
+	* Makefile.in (mach-headers): Remove proc_ops.h.
+	* i386/Makefrag (i386-installed-headers): Likewise.
+	(installed-headers): Don't touch this any more.
+
 2000-09-29  Marcus Brinkmann  <marcus@gnu.org>
 
 	* i386/i386at/conf.c (dev_name_list): Don't use MACH_COM to check
@@ -7,7 +17,7 @@
 
 	* linux/dev/glue/block.c: Reverted the changes at 2000-08-17.
 	Reported by Brent Fulgham <brent.fulgham@xpsystems.com>.
-	
+
 2000-09-19  Marcus Brinkmann  <marcus@gnu.org>
 
 	* linux/dev/glue/block.c (init_partition): Move initialization
@@ -21,7 +31,7 @@
 	(init_partition): Likewise.
 	(check_limit): Likewise.
 	(device_get_status): Likewise.
-	
+
 2000-07-27  Marcus Brinkmann  <marcus@gnu.org>
 
 	* Fix omissions in last change:
@@ -70,7 +80,7 @@
 	* linux/dev/drivers/block/ide.c (do_request) [MACH]: In "bad
 	access" printf, actually print the number of sectors of the
 	partition.
-	
+
 1999-10-05  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* i386/intel/pmap.c (pmap_bootstrap): Use _start instead of start.
