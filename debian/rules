@@ -59,7 +59,6 @@ stamp-configure:
 	cd build && ../configure \
 	--enable-floppy \
 	--enable-ide \
-	--enable-kmsg \
 	\
 	--enable-advansys \
 	--enable-buslogic \

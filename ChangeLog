@@ -1,3 +1,11 @@
+2001-07-29  Marcus Brinkmann  <marcus@gnu.org>
+
+	* NEWS: Add items for this and other changes.
+	* configure.in: Define MACH_KMSG by default and document this in
+	the help output.
+	* configure: Regenerated.
+	* debian/rules: Do not enable kmsg explicitely.
+
 2001-07-18  Marcus Brinkmann  <marcus@gnu.org>
 
 	* debian/rules: Add -isp to dpkg-gencontrol invocation.

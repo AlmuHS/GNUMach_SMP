@@ -1,3 +1,13 @@
+-*- Text -*-
+The kernel message device `kmsg' is now enabled by default.
+--disable-kmsg turns it off.
+
+Large disks (>= 10GB) are now correctly supported, the new get_status
+call DEV_GET_RECORDS can return the number of records of a device.
+
+Lots of tweaks have been done to the virtual memory management to make
+it perform better on todays machines.
+
 Changes between version 1.1 and version 1.2
 
 Many bug fixes.
