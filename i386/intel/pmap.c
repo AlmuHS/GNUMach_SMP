@@ -2,24 +2,24 @@
  * Mach Operating System
  * Copyright (c) 1991,1990,1989,1988 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -191,7 +191,7 @@ boolean_t	pmap_initialized = FALSE;
  */
 extern vm_offset_t phys_first_addr, phys_last_addr;
 
-/* 
+/*
  *	Range of kernel virtual addresses available for kernel memory mapping.
  *	Does not include the virtual addresses used to map physical memory 1-1.
  *	Initialized by pmap_bootstrap.
@@ -547,7 +547,7 @@ vm_offset_t pmap_map(virt, start, end, prot)
 }
 
 /*
- *	Back-door routine for mapping kernel VM at initialization.  
+ *	Back-door routine for mapping kernel VM at initialization.
  * 	Useful for mapping memory outside the range
  *	[phys_first_addr, phys_last_addr) (i.e., devices).
  *	Otherwise like pmap_map.
@@ -674,11 +674,11 @@ void pmap_bootstrap()
 				{
 					WRITE_PTE_FAST(pte, 0);
 				}
-				else 
+				else
 				{
-					extern char start[], etext[];
+					extern char _start[], etext[];
 
-					if ((va >= (vm_offset_t)start)
+					if ((va >= (vm_offset_t)_start)
 					    && (va + INTEL_PGBYTES <= (vm_offset_t)etext))
 					{
 						WRITE_PTE_FAST(pte, pa_to_pte(va)
@@ -1657,7 +1657,7 @@ Retry:
 	    /*
 	     *	May be changing its wired attribute or protection
 	     */
-		
+
 	    if (wired && !(*pte & INTEL_PTE_WIRED))
 		pmap->stats.wired_count++;
 	    else if (!wired && (*pte & INTEL_PTE_WIRED))
@@ -1731,7 +1731,7 @@ Retry:
 			}
 		    }
 #endif	DEBUG
-		    
+
 		    /*
 		     *	Add new pv_entry after header.
 		     */
@@ -2344,7 +2344,7 @@ boolean_t pmap_is_referenced(phys)
 #if	NCPUS > 1
 /*
 *	    TLB Coherence Code (TLB "shootdown" code)
-* 
+*
 * Threads that belong to the same task share the same address space and
 * hence share a pmap.  However, they  may run on distinct cpus and thus
 * have distinct TLBs that cache page table entries. In order to guarantee
@@ -2357,7 +2357,7 @@ boolean_t pmap_is_referenced(phys)
 * flush its own TLB; a processor that needs to invalidate another TLB
 * needs to interrupt the processor that owns that TLB to signal the
 * update.
-* 
+*
 * Whenever a pmap is updated, the lock on that pmap is locked, and all
 * cpus using the pmap are signaled to invalidate. All threads that need
 * to activate a pmap must wait for the lock to clear to await any updates
@@ -2366,7 +2366,7 @@ boolean_t pmap_is_referenced(phys)
 * throughout the TLB code is that all kernel code that runs at or higher
 * than splvm blocks out update interrupts, and that such code does not
 * touch pageable pages.
-* 
+*
 * A shootdown interrupt serves another function besides signaling a
 * processor to invalidate. The interrupt routine (pmap_update_interrupt)
 * waits for the both the pmap lock (and the kernel pmap lock) to clear,
@@ -2379,17 +2379,17 @@ boolean_t pmap_is_referenced(phys)
 * Spinning on the VALUES of the locks is sufficient (rather than
 * having to acquire the locks) because any updates that occur subsequent
 * to finding the lock unlocked will be signaled via another interrupt.
-* (This assumes the interrupt is cleared before the low level interrupt code 
-* calls pmap_update_interrupt()). 
-* 
+* (This assumes the interrupt is cleared before the low level interrupt code
+* calls pmap_update_interrupt()).
+*
 * The signaling processor must wait for any implicit updates in progress
 * to terminate before continuing with its update. Thus it must wait for an
 * acknowledgement of the interrupt from each processor for which such
 * references could be made. For maintaining this information, a set
-* cpus_active is used. A cpu is in this set if and only if it can 
+* cpus_active is used. A cpu is in this set if and only if it can
 * use a pmap. When pmap_update_interrupt() is entered, a cpu is removed from
 * this set; when all such cpus are removed, it is safe to update.
-* 
+*
 * Before attempting to acquire the update lock on a pmap, a cpu (A) must
 * be at least at the priority of the interprocessor interrupt
 * (splip<=splvm). Otherwise, A could grab a lock and be interrupted by a
@@ -2525,7 +2525,7 @@ void pmap_update_interrupt()
 	    i_bit_set(my_cpu, &cpus_active);
 
 	} while (cpu_update_needed[my_cpu]);
-	
+
 	splx(s);
 }
 #else	NCPUS > 1

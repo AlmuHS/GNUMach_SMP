@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990,1989,1988 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -181,7 +181,7 @@ void kernel_trap(regs)
 	vm_map_t	map;
 	kern_return_t	result;
 	register thread_t	thread;
-	extern char start[], etext[];
+	extern char _start[], etext[];
 
 	type = regs->trapno;
 	code = regs->err;
@@ -231,7 +231,7 @@ dump_ss(regs);
 		printf("now %08x\n", subcode);
 #endif
 			if (trunc_page(subcode) == 0
-			    || (subcode >= (int)start
+			    || (subcode >= (int)_start
 				&& subcode < (int)etext)) {
 				printf("Kernel page fault at address 0x%x, "
 				       "eip = 0x%x\n",
@@ -527,7 +527,7 @@ printf("user trap %d error %d sub %08x\n", type, code, subcode);
 #if 0
 		printf("user page fault at linear address %08x\n", subcode);
 		dump_ss (regs);
-		
+
 #endif
 		assert(subcode < LINEAR_MIN_KERNEL_ADDRESS);
 		subcode = regs->cr2;
@@ -1138,4 +1138,3 @@ interrupted_pc(t)
  	return iss->eip;
 }
 #endif	/* MACH_PCSAMPLE > 0*/
-
