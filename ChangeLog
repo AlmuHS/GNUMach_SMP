@@ -1,3 +1,34 @@
+2002-05-22  Roland McGrath  <roland@frob.com>
+
+	* configure.in (VERSION): New substituted variable: set to 1.3 now.
+	(version.c): Add it to AC_OUTPUT.
+	* configure: Regenerated.
+	* Makefile.in (version): New variable, set from that.
+	Remove vpath directive for version.c, not found in build dir.
+	(topfiles): version.c -> version.c.in
+	* doc/Makefile.in (mach-version): Substituted instead of constant.
+	* version.c: File removed, replaced with ...
+	* version.c.in: ... this new file.
+	(version): Make it const.  Use @VERSION@ for the number.
+
+	* Makefile.in (debian-files): Add postinst and prerm.
+	(dist): Use gzip -9 instead of tar z.
+
+	* linux/Files: Add missing files to the list:
+		linux/dev/drivers/net/eepro100.c
+		linux/src/include/asm-i386/hardirq.h
+		linux/src/include/asm-i386/spinlock.h
+		linux/src/include/linux/compatmac.h
+		linux/src/include/linux/spinlock.h
+
+	* linux/src/drivers/net/eth16i.c (eth16i_check_signature): Fix syntax:
+	#ifdef 0 -> #if 0
+
+	* Makefile.in (%.migs_d, %.migu_d): Fix sed substitution to match
+	whatever target file name gcc comes up with.
+	(%.migs_d, %.migu_d, %.symc.o, %_user.c, %_server.c):
+	Depend on $(before-compile).
+
 2002-04-24  Marcus Brinkmann  <marcus@gnu.org>
 
 	* debian/rules (DOCDIR): Move to
