@@ -59,6 +59,33 @@ ifeq ($(findstring -DMACH_LPR,@DEFS@),-DMACH_LPR)
 objfiles += lpr.o
 endif
 
+# We link the device drivers together into this file in a separate Make
+# run, because the Linux-related code sometimes re-uses filenames.  Arrange
+# to have that Makefile used to generate and clean and otherwise deal with 
+# those filenames.
+
+objfiles += i386/sysdep.o
+i386/sysdep.o: $(systype)
+	cd i386 && $(MAKE) all
+
+clean: i386-clean
+i386-clean:
+	cd i386 && $(MAKE) clean
+
+distclean: i386-distclean
+i386-distclean:
+	cd i386 && $(MAKE) distclean
+
+mostlyclean: i386-mostlyclean
+i386-mostlyclean:
+	cd i386 && $(MAKE) mostlyclean
+
+maintainerclean: i386-maintainerclean
+i386-maitainerclean:
+	cd i386 && $(MAKE) maintainer-clean
+
+
+
 
 
 # Where to find some things
@@ -84,6 +111,14 @@ boothdr.o: i386asm.h
 
 
 # Header files we install
+
+install-headers: i386-install-headers
+i386-install-headers:
+	cd i386 && $(MAKE) install-headers
+
+install-kernel: i386-install-kernel
+i386-install-kernel:
+	cd $(systype) && $(MAKE) install-kernel
 
 # We have our own version of this file
 installed-headers := $(filter-out mach/proc_ops.h,$(installed-headers))

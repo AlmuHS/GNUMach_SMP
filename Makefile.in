@@ -304,10 +304,6 @@ INCLUDES += -I. -I$(srcdir) -I$(srcdir)/include \
 
 include $(sysdep)/Makefrag
 
-objfiles += $(systype)/sysdep.o
-$(systype)/sysdep.o: $(systype)
-	cd $(systype) && $(MAKE) all
-
 CPPFLAGS += -nostdinc $(DEFINES) $(INCLUDES)
 
 MIGFLAGS += $(CPPFLAGS)
@@ -318,20 +314,16 @@ MIGFLAGS += $(CPPFLAGS)
 all: kernel
 
 clean:
-	cd $(systype) && $(MAKE) clean
 	rm -f *.o *.d kernel
 	rm -f *.symc *.symc.o *_user.c *_server.c *.h
 	rm -f *.migs_d *.migsh_d *.migu_d *.miguh_d
 
 distclean: clean
-	cd $(systype) && $(MAKE) distclean
 	rm -f config.status config.cache config.log Makefile driverlist
 
 mostlyclean: distclean
-	cd $(systype) && $(MAKE) mostlyclean
 
 maintainer-clean: mostlyclean
-	cd $(systype) && $(MAKE) maintainer-clean
 	rm -f $(srcdir)/configure $(all-archs-configures)
 
 check:
@@ -362,14 +354,10 @@ $(installed-sysdep-headers-names): $(includedir)/%: $(sysdep)/include/%
 
 install-headers: mkheaderdirs $(installed-headers-names) $(installed-sysdep-headers-names)
 	ln -sf $(systype) $(includedir)/mach/machine
-	cd $(systype) && $(MAKE) install-headers
 
 install-kernel: kernel mkkerneldirs
 	$(INSTALL_PROGRAM) kernel $(bootdir)/gnumach
-	cd $(systype) && $(MAKE) install-kernel
 
-# Note: The `-p' option to mkdir is not compliant with
-# the GNU Coding Standards. -- okuji
 mkheaderdirs:
 	mkdir -p $(includedir) $(includedir)/device $(includedir)/mach \
 		$(includedir)/mach/$(systype) $(includedir)/mach/exec
