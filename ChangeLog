@@ -1,3 +1,13 @@
+1999-06-07  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* linux/dev/drivers/block/genhd.c [MACH] (mach_minor): New variable.
+	(add_bsd_partition): New function.
+	(bsd_disklabel_partition) [MACH]: Call add_bsd_partition.
+	(msdos_partition) [MACH]: Set mach_minor to MINOR before
+	calling bsd_disklabel_partition.
+	* linux/dev/drivers/block/ide.c (do_request) [MACH]: Fix "bad access"
+	message.
+
 1999-06-02  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* kern/bootstrap.c (build_args_and_stack): If kernel_cmdline is
