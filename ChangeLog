@@ -1,5 +1,8 @@
 1999-06-21  Thomas Bushnell, BSG  <tb@mit.edu>
 
+	* i386/Files: Don't mention i386/pc/Makerules,
+	i386/include/Makerules, or i386/util/Makerules.
+
 	* Makefile.in (all-real-archs): Delete variable.
 	(dist): No longer make `machine' symlink.
 
