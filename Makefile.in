@@ -207,7 +207,7 @@ mach-headers= $(addprefix mach/, bootstrap.defs default_pager.defs \
 		host_info.h kern_return.h mach_param.h mach_types.h \
 		machine.h macro_help.h memory_object.h message.h mig_errors.h \
 		msg_type.h multiboot.h norma_special_ports.h notify.h \
-		pc_sample.h policy.h port.h proc_ops.h processor_info.h \
+		pc_sample.h policy.h port.h processor_info.h \
 		profil.h profilparam.h rpc.h std_types.h syscall_sw.h \
 		task_info.h task_special_ports.h thread_info.h \
 		thread_special_ports.h thread_status.h thread_switch.h \
