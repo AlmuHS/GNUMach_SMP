@@ -426,8 +426,8 @@ vpath configure $(srcdir)
 #
 
 # Building foo.h from foo.sym:
-%.symc: %.sym
-	$(AWK) -f $(srcdir)/gensym.awk $< >$*.symc
+%.symc: %.sym $(srcdir)/gensym.awk
+	$(AWK) -f $(word 2,$^) $< > $@
 %.symc.o: %.symc
 	$(CC) -S $(CPPFLAGS) $(CFLAGS) $(CPPFLAGS-$@) -x c -o $@ $<
 %.h: %.symc.o
