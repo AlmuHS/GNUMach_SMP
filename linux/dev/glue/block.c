@@ -531,9 +531,7 @@ rdwr_partial (int rw, kdev_t dev, loff_t *off,
   for (gd = gendisk_head, nsect = -1; gd; gd = gd->next)
     if (gd->major == MAJOR (dev))
       {
-	unsigned mask = (1 << gd->minor_shift) - 1;
-
-	nsect = gd->part[MINOR (dev) & mask].nr_sects;
+	nsect = gd->part[MINOR (dev)].nr_sects;
 	break;
       }
   if (nsect > 0)
@@ -937,14 +935,12 @@ init_partition (struct name_map *np, kdev_t *dev,
   struct gendisk *gd = ds->gd;
   struct partition *p;
   struct temp_data *d = current_thread ()->pcb->data;
-  unsigned mask;
-  
+
   if (! gd)
     {
       *part = -1;
       return 0;
     }
-  mask = (1 << gd->minor_shift) - 1;
   if (ds->labels)
     goto check;
   ds->labels = (struct disklabel **) kalloc (sizeof (struct disklabel *)
@@ -955,12 +951,9 @@ init_partition (struct name_map *np, kdev_t *dev,
 	  sizeof (struct disklabel *) * gd->max_nr * gd->max_p);
   for (i = 1; i < gd->max_p; i++)
     {
-      unsigned part;
-      
       d->inode.i_rdev = *dev | i;
-      part = MINOR (d->inode.i_rdev) & mask;
-      if (gd->part[part].nr_sects <= 0
-	  || gd->part[part].start_sect < 0)
+      if (gd->part[MINOR (d->inode.i_rdev)].nr_sects <= 0
+	  || gd->part[MINOR (d->inode.i_rdev)].start_sect < 0)
 	continue;
       linux_intr_pri = SPL5;
       d->file.f_flags = 0;
@@ -982,11 +975,11 @@ init_partition (struct name_map *np, kdev_t *dev,
 		continue;
 
 	      /* Sanity check.  */
-	      if (p->p_size > gd->part[part].nr_sects)
-		p->p_size = gd->part[part].nr_sects;
+	      if (p->p_size > gd->part[MINOR (d->inode.i_rdev)].nr_sects)
+		p->p_size = gd->part[MINOR (d->inode.i_rdev)].nr_sects;
 	    }
 	}
-      ds->labels[part] = lp;
+      ds->labels[MINOR (d->inode.i_rdev)] = lp;
     }
 
 check:
@@ -996,8 +989,8 @@ check:
     return D_NO_SUCH_DEVICE;
   *dev = MKDEV (MAJOR (*dev), MINOR (*dev) | slice);
   if (slice >= gd->max_p
-      || gd->part[MINOR (*dev) & mask].start_sect < 0
-      || gd->part[MINOR (*dev) & mask].nr_sects <= 0)
+      || gd->part[MINOR (*dev)].start_sect < 0
+      || gd->part[MINOR (*dev)].nr_sects <= 0)
     return D_NO_SUCH_DEVICE;
   if (*part >= 0)
     {
@@ -1271,8 +1264,7 @@ check_limit (struct block_data *bd, loff_t *off, long bn, int count)
   int major, minor;
   long maxsz, sz;
   struct disklabel *lp = NULL;
-  unsigned mask;
-  
+
   if (count <= 0)
     return count;
 
@@ -1281,8 +1273,6 @@ check_limit (struct block_data *bd, loff_t *off, long bn, int count)
 
   if (bd->ds->gd)
     {
-      mask = (1 << bd->ds->gd->minor_shift) - 1;
-      
       if (bd->part >= 0)
 	{
 	  assert (bd->ds->labels);
@@ -1291,7 +1281,7 @@ check_limit (struct block_data *bd, loff_t *off, long bn, int count)
 	  maxsz = lp->d_partitions[bd->part].p_size;
 	}
       else
-	maxsz = bd->ds->gd->part[minor & mask].nr_sects;
+	maxsz = bd->ds->gd->part[minor].nr_sects;
     }
   else
     {
@@ -1306,7 +1296,7 @@ check_limit (struct block_data *bd, loff_t *off, long bn, int count)
     count = sz << 9;
   if (lp)
     bn += (lp->d_partitions[bd->part].p_offset
-	   - bd->ds->gd->part[minor & mask].start_sect);
+	   - bd->ds->gd->part[minor].start_sect);
   *off = (loff_t) bn << 9;
   bd->iocount++;
   return count;
@@ -1620,12 +1610,8 @@ device_get_status (void *d, dev_flavor_t flavor, dev_status_t status,
 	       = lp->d_partitions[bd->part].p_size << 9);
 	    }
 	  else
-	    {
-	      unsigned mask = (1 << bd->ds->gd->minor_shift) - 1;
-	      
-	      (status[DEV_GET_SIZE_DEVICE_SIZE]
-	       = bd->ds->gd->part[MINOR (bd->dev) & mask].nr_sects << 9);
-	    }
+	    (status[DEV_GET_SIZE_DEVICE_SIZE]
+	     = bd->ds->gd->part[MINOR (bd->dev)].nr_sects << 9);
 	}
       else
 	{

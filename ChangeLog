@@ -1,3 +1,8 @@
+2000-09-24  OKUJI Yoshinori  <okuji@gnu.org>
+
+	* linux/dev/glue/block.c: Reverted the changes at 2000-08-17.
+	Reported by Brent Fulgham <brent.fulgham@xpsystems.com>.
+	
 2000-09-19  Marcus Brinkmann  <marcus@gnu.org>
 
 	* linux/dev/glue/block.c (init_partition): Move initialization
