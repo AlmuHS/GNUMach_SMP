@@ -1,3 +1,38 @@
+Mon Apr 14 11:50:45 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* i386/Makefrag: Add rebuilding rules for configure subscript.
+
+	* i386/Makefrag: Fix up copyright notice.
+	* i386/Drivers.in: Likewise.
+	* Makefile.in: Likewise.
+	* Drivers.macros: Likewise.
+	* configure.in: Likewise.
+
+	* include/sys/time.h: New file, from include/mach/sa/sys/time.h.
+	* include/sys/reboot.h: New file, from include/mach/sa/sys/reboot.h.
+	* include/sys/ioctl.h: New file, from include/mach/sa/sys/ioctl.h.
+	* include/alloca.h: New file, from include/mach/sa/alloca.h.
+	* Makefile.in (other-sys-headers): Add time.h, ioctl.h, and reboot.h.
+	(other-mach-headers): New variable.
+	(mach-exec-headers): New variable.
+	(other-headers): New variable.
+	(installed-headers): Add mach-exec-headers.
+	(dist): Distribute other-mach-headers, other-sys-headers, 
+	mach-exec-headers, and other-headers.
+	(device-files): Add device.srv.
+	
+	* Makefile.in (check-clib-routines): Use more efficient rule.
+
+Fri Apr 11 15:18:09 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* Makefile.in (dist): Repair rule.
+	(other-sys-headers): New variable.
+	(dist): Install $(other-sys-headers).
+	(INCLUDES): Remove -I$(srcdir)/include/mach/sa.
+	(rules for mig-related .d files): Include MiG-specific -I flags.
+	(mach-headers): Add inline.h.
+	* include/sys/types.h: New file, from include/mach/sa/sys/types.h.
+
 Mon Mar 24 16:23:21 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* version.c (version): Make that 1.0.  Whee.

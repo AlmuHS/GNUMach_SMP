@@ -243,6 +243,10 @@ exception_no_server()
 	while (thread_should_halt(self))
 		thread_halt_self();
 
+
+	if (thread_suspend (self) == KERN_SUCCESS)
+	  thread_exception_return ();
+
 #if	MACH_KDB
 	if (debug_user_with_kdb) {
 		/*

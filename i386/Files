@@ -500,7 +500,6 @@ i386/include/Makefile.in
 i386/include/Makerules
 i386/include/mach/proc_ops.h
 i386/include/mach/setjmp.h
-i386/include/mach/machine
 i386/include/mach/sa/stdarg.h
 i386/include/mach/sa/sys/varargs.h
 i386/include/mach/i386/asm.h

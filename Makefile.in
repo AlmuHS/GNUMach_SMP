@@ -1,6 +1,17 @@
 # Makefile for Mach 4 kernel directory
-# Copyright 1996 Free Software Foundation, Inc.
-# This file is part of GNU Mach.  Redistribution terms are not yet decided. 
+# Copyright 1997 Free Software Foundation, Inc.
+#
+# Permission to use, copy, modify and distribute this software and its
+# documentation is hereby granted, provided that both the copyright
+# notice and this permission notice appear in all copies of the
+# software, derivative works or modified versions, and any portions
+# thereof, and that both notices appear in supporting documentation.
+# 
+# THE FREE SOFTWARE FOUNDATION ALLOWS FREE USE OF THIS SOFTWARE IN ITS
+# "AS IS" CONDITION.  THE FREE SOFTWARE FOUNDATION DISCLAIMS ANY
+# LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
+# USE OF THIS SOFTWARE.
+
 
 
 
@@ -102,7 +113,7 @@ device-files = blkio.c chario.c cirbuf.c cons.c dev_lookup.c dev_name.c \
 	buf.h cirbuf.h conf.h cons.h dev_hdr.h dev_master.h device_port.h \
 	device_types_kernel.h ds_routines.h errno.h if_ether.h if_hdr.h \
 	io_req.h net_io.h param.h tty.h memory_object_reply.cli \
-	dev_forward.defs device_pager.srv device_reply.cli
+	dev_forward.defs device_pager.srv device_reply.cli device.srv
 
 # IPC implementation
 ipc-cfiles = $(addprefix ipc_,$(ipc-names)) \
@@ -192,14 +203,19 @@ mach-headers= $(addprefix mach/, bootstrap.defs default_pager.defs \
 		task_info.h task_special_ports.h thread_info.h \
 		thread_special_ports.h thread_status.h thread_switch.h \
 		time_value.h version.h vm_attributes.h vm_inherit.h \
-		vm_param.h vm_prot.h vm_statistics.h)
-
+		vm_param.h vm_prot.h vm_statistics.h inline.h)
+mach-exec-headers= $(addprefix mach/exec/, a.out.h elf.h exec.h)
 mach-debug-headers:= $(addprefix mach_debug/, hash_info.h ipc_info.h \
 		mach_debug.defs mach_debug_types.defs mach_debug_types.h \
 		pc_info.h vm_info.h zone_info.h)
 
-installed-headers:= $(device-headers) $(mach-headers)
+installed-headers:= $(device-headers) $(mach-headers) $(mach-exec-headers)
 
+# Other headers for the distribution.  We don't install these, because the 
+# GNU C library has correct versions for users to use.
+other-sys-headers := types.h time.h reboot.h ioctl.h
+other-mach-headers := mig_support.h mach_traps.h error.h
+other-headers := alloca.h
 
 
 # We steal routines from the C library and put them here.
@@ -218,8 +234,7 @@ clib-routines.o: $(installed-clib)
 # extra symbols.
 kernel: check-clib-routines
 check-clib-routines: clib-routines.o
-	(set -e; test `echo $(clib-routines) | wc -w` -eq `nm $< | wc -l`; \
-	touch check-clib-routines)
+	test `echo $(clib-routines) | wc -w` -eq `nm $< | wc -l` && touch check-clib-routines
 
 
 # Empty dependency file
@@ -249,7 +264,7 @@ vpath %.srv $(srcdir)/device $(srcdir)/ipc $(srcdir)/kern
 #
 
 DEFINES += -DMACH -DCMU -DMACH_KERNEL -DKERNEL
-INCLUDES += -I. -I$(srcdir) -I$(srcdir)/include -I$(srcdir)/include/mach/sa \
+INCLUDES += -I. -I$(srcdir) -I$(srcdir)/include \
 	-I$(srcdir)/bogus -I$(srcdir)/util -I$(srcdir)/kern -I$(srcdir)/device
 
 
@@ -304,7 +319,8 @@ dist:
 	mkdir gnumach-$(version)
 	# Directories
 	mkdir gnumach-$(version)/{bogus,chips,ddb,device,ipc,kern,mig,scsi,util,vm,include}
-	mkdir gnumach-$(version)/include/{mach,device,mach_debug}
+	mkdir gnumach-$(version)/include/{mach,device,mach_debug,sys}
+	mkdir gnumach-$(version)/include/mach/exec
 	for dir in `cat $(all-archs-subdirs)`; do \
 		mkdir -p gnumach-$(version)/$$dir; \
 	done
@@ -323,13 +339,19 @@ dist:
 	ln $(addprefix $(srcdir)/include/,$(mach-headers)) gnumach-$(version)/include/mach
 	ln $(addprefix $(srcdir)/include/,$(device-headers)) gnumach-$(version)/include/device
 	ln $(addprefix $(srcdir)/include/,$(mach-debug-headers)) gnumach-$(version)/include/mach_debug
+	ln $(addprefix $(srcdir)/include/,$(mach-exec-headers)) gnumach-$(version)/include/mach/exec
+	ln $(addprefix $(srcdir)/include/,$(other-headers)) gnumach-$(version)/include
+	ln $(addprefix $(srcdir)/include/sys/,$(other-sys-headers)) gnumach-$(version)/include/sys
+	ln $(addprefix $(srcdir)/include/mach/,$(other-mach-headers)) gnumach-$(version)/include/mach
 	# Files in arch dirs
 	for file in `cat $(all-archs-files)`; do \
 		ln $(srcdir)/$$file gnumach-$(version)/`dirname $$file`; \
 	done
 	for arch in $(all-archs); do \
-		ln -s $$arch gnumach-$(version)/arch/include/mach/machine; \
+		ln -s $$arch gnumach-$(version)/$$arch/include/mach/machine; \
 	done
+	tar cfz gnumach-$(version).tar.gz gnumach-$(version)
+	rm -rf gnumach-$(version)
 
 
 
@@ -458,8 +480,8 @@ include $(subst .o,.d,$(cross-mig-objfiles)) /dev/null
 endif
 
 $(subst .o,.d,$(cross-mig-objfiles)): cross-%.d: $(srcdir)/mig/%.c
-	set -e; $(CC) $(CFLAGS) -M -MG $< | \
-		sed > $@.new -e 's/$*\.o:/$*.o $@:/'
+	set -e; $(CC) $(CFLAGS) -M -MG -I. -I$(srcdir)/mig $< | \
+		sed > $@.new -e 's/$*\.o:/cross-$*.o $@:/'
 	mv -f $@.new $@
 
 
@@ -478,14 +500,14 @@ include $(subst .o,.d,$(mig-objfiles))
 endif
 
 $(subst .o,.d,$(mig-objfiles)): %.d: $(srcdir)/mig/%.c
-	set -e; $(BUILD_CC) $(BUILD_CFLAGS) -M -MG $< | \
+	set -e; $(BUILD_CC) $(BUILD_CFLAGS) -M -MG -I. -I$(srcdir)/mig $< | \
 		sed > $@.new -e 's/$*\.o:/$*.o $@:/'
 	mv -f $@.new $@
 
 else
 ./migcom: ./cross-migcom
 	rm -f $@
-	$(LN) $< $@
+	ln $< $@
 endif
 
 $(srcdir)/mig/lexxer.c: $(srcdir)/mig/lexxer.l
