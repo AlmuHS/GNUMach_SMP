@@ -1,3 +1,8 @@
+2000-09-29  Marcus Brinkmann  <marcus@gnu.org>
+
+	* i386/i386at/conf.c (dev_name_list): Don't use MACh_COM to check
+	if com support is enabled, but NCOM, as it used to be.
+
 2000-09-24  OKUJI Yoshinori  <okuji@gnu.org>
 
 	* linux/dev/glue/block.c: Reverted the changes at 2000-08-17.

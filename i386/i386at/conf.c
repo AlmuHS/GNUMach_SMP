@@ -331,7 +331,7 @@ struct dev_ops	dev_name_list[] =
 #endif
 #endif /* ! LINUX_DEV */
 
-#ifdef MACH_COM
+#if	NCOM > 0
 	{ comname,	comopen,	comclose,	comread,
 	  comwrite,	comgetstat,	comsetstat,	nomap,
 	  nodev,	nulldev,	comportdeath,	0,
