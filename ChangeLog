@@ -15,6 +15,10 @@ Wed Aug 20 16:05:19 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 	* kern/mach_clock.c (record_time_stamp): New function.
 	* kern/time_out.h (record_time_stamp): Add prototype.
 
+1997-08-14  Miles Bader  <miles@gnu.ai.mit.edu>
+
+	* i386/i386at/gpl/linux/include/linux/pci.h: Update from linux-2.0.30.
+
 Sun Aug  3 18:25:38 1997  Shantanu Goel  <goel@cs.columbia.edu>
 
 	* i386/i386/thread.h (struct pcb): Added new field `data' used
