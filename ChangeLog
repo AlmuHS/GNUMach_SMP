@@ -1,3 +1,8 @@
+2000-11-26  David Welch  <david.welch@seh.ox.ac.uk>
+
+	* i386/Makefrag (i386-installed-headers): Removed dead files 
+	from the list of headers to be installed
+
 2000-11-26  Marcus Brinkmann  <marcus@gnu.org>
 
 	* linux/src/drivers/net/tulip.c: Updated to version

@@ -124,13 +124,13 @@ i386-install-kernel:
 # We have our own version of this file
 installed-headers := $(filter-out mach/proc_ops.h,$(installed-headers))
 
-i386-installed-headers= mach/proc_ops.h \
-		$(addprefix mach/i386/,asm.h bios.h boolean.h code16.h \
-		debug_reg.h disk.h dpmi.h eflags.h exception.h far_ptr.h \
+i386-installed-headers= \
+		$(addprefix mach/i386/,asm.h boolean.h \
+		disk.h eflags.h exception.h \
 		fp_reg.h ioccom.h kern_return.h mach_i386.defs \
-		mach_i386_types.h machine_types.defs multiboot.h paging.h \
-		pio.h pmode.h proc_reg.h rpc.h seg.h syscall_sw.h \
-		thread_status.h time_stamp.h trap.h tss.h vcpi.h vm_param.h \
+		mach_i386_types.h machine_types.defs multiboot.h \
+		rpc.h syscall_sw.h \
+		thread_status.h trap.h vm_param.h \
 		vm_types.h)
 
 
