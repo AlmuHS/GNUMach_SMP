@@ -113,7 +113,7 @@ void bootstrap_create()
     }
   else
     {
-      int i, losers;
+      int i, losers, maxlen;
 
       /* Initialize boot script variables.  We leak these send rights.  */
       losers = boot_script_set_variable
@@ -179,17 +179,23 @@ void bootstrap_create()
       }
 #endif
 
+      maxlen = 0;
       for (i = 0; i < boot_info.mods_count; ++i)
 	{
+	  int err;
 	  char *line = (char*)phystokv(bmods[i].string);
-	  int err = boot_script_parse_line (&bmods[i], line);
+	  int len = strlen (line) + 1;
+	  if (len > maxlen)
+	    maxlen = len;
+	  printf ("\rmodule %d: %*s", i, -maxlen, line);
+	  err = boot_script_parse_line (&bmods[i], line);
 	  if (err)
 	    {
-	      printf ("ERROR: %s in multiboot module string: %s\n",
-		      boot_script_error_string (err), line);
+	      printf ("\n\tERROR: %s", boot_script_error_string (err));
 	      ++losers;
 	    }
 	}
+      printf ("\r%d multiboot modules %*s", i, -maxlen, "");
       if (losers)
 	panic ("%d of %d boot script commands could not be parsed",
 	       losers, boot_info.mods_count);
@@ -672,6 +678,7 @@ boot_script_exec_cmd (void *hook, task_t task, char *path, int argc,
 	  thread_sleep ((event_t) &info, simple_lock_addr(info.lock), FALSE);
 	  simple_lock (&info.lock);
 	}
+      printf ("\n");
     }
 
   return 0;
@@ -682,6 +689,7 @@ static void user_bootstrap()
   struct user_bootstrap_info *info = current_thread()->saved.other;
   exec_info_t boot_exec_info;
   int err;
+  char **av;
 
   /* Load this task up from the executable file in the module.  */
   err = exec_load(boot_read, read_exec, info->mod, &boot_exec_info);
@@ -689,8 +697,13 @@ static void user_bootstrap()
     panic ("Cannot load user executable module (error code %d): %s",
 	   err, info->argv[0]);
 
+  printf ("task loaded:");
+
   /* Set up the stack with arguments.  */
   build_args_and_stack(&boot_exec_info, info->argv, 0);
+
+  for (av = info->argv; *av != 0; ++av)
+    printf (" %s", *av);
 
   task_suspend (current_task());
 
@@ -743,6 +756,7 @@ boot_script_task_resume (struct cmd *cmd)
       printf("boot_script_task_resume failed with %x\n", rc);
       return BOOT_SCRIPT_MACH_ERROR;
     }
+  printf ("\nstart %s: ", cmd->path);
   return 0;
 }
 
