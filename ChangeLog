@@ -1,3 +1,7 @@
+2004-02-29  Marcus Brinkmann  <marcus@gnu.org>
+
+	* NEWS: Add things that changed so far since 1.3.
+
 2004-02-02  Marco Gerards  <metgerards@student.han.nl>
 
 	* i386/i386at/kd.c (kdinit): Initialize the input buffer.
