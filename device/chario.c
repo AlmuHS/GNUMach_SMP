@@ -54,10 +54,12 @@
 /* If you change these, check that tty_outq_size and tty_inq_size
  * is greater than largest tthiwat entry.
  */
-short	tthiwat[16] =
-   { 100,100,100,100,100,100,100,200,200,400,400,400,650,650,1300,2000 };
-short	ttlowat[16] =
-   {  30, 30, 30, 30, 30, 30, 30, 50, 50,120,120,120,125,125, 125, 125 };
+short	tthiwat[NSPEEDS] =
+   { 100,100,100,100,100,100,100,200,200,400,400,400,650,650,1300,2000,
+     2000,2000 };
+short	ttlowat[NSPEEDS] =
+   {  30, 30, 30, 30, 30, 30, 30, 50, 50,120,120,120,125,125, 125, 125,
+     125,125 };
 
 /*
  * forward declarations
@@ -122,6 +124,8 @@ void chario_init(void)
   pdma_timeouts[B9600] = _PR(960);
   pdma_timeouts[EXTA]  = _PR(1440); /* >14400 baud */
   pdma_timeouts[EXTB]  = _PR(1920); /* >19200 baud */
+  pdma_timeouts[B57600] = _PR(5760);
+  pdma_timeouts[B115200] = _PR(11520);
 
   for (i = B0; i < B300; i++)
     pdma_water_mark[i] = 0;
@@ -143,6 +147,8 @@ void chario_init(void)
   pdma_water_mark[B9600] = i;
   pdma_water_mark[EXTA]  = i; /* >14400 baud */
   pdma_water_mark[EXTB]  = i; /* >19200 baud */
+  pdma_water_mark[B57600] = i;
+  pdma_water_mark[B115200] = i;
 
   return;
 }

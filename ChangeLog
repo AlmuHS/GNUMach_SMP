@@ -1,3 +1,10 @@
+2001-04-29  Marcus Brinkmann  <marcus@gnu.org>
+
+	* device/chario.c: Set number of elements of tthiwat and ttlowat
+	to NSPEEDS rather than 16. Initialize the two new elements.
+	(chario_init): Initialize pdma_timeouts and pdma_water_mark for
+	B57600 and B115200.
+
 2001-04-27  Marcus Brinkmann  <marcus@gnu.org>
 
 	* include/device/tty_status.h: New macros B57600 and B115200,
