@@ -1,15 +1,837 @@
+1999-04-14  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* version.c (version): Update to 1.1.92.
+	
 Sun Mar 14 18:53:01 1999  Thomas Bushnell, BSG  <tb@mit.edu>
 
 	* device/ds_routines.c (ds_read_done): When touching memory to
 	mark it dirty, make sure we say "volatile" so the compiler doesn't
 	optimize it out.
 
+1999-04-12  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* i386/linux/Drivers.in: Fix the source paths for `asm'	symbolic
+	links. Reported by KONISHI Toru <sting@mb.infoweb.ne.jp>.
+
+	* linux/dev/drivers/block/ide.c (init_hwif_data) [MACH]: Print Mach
+	device name instead of Linux one.
+	* linux/dev/drivers/block/genhd.c (disk_name): Likewise.
+	* linux/dev/drivers/scsi/sd.c (sd_init_onedisk): Likewise.
+	(sd_detect): Likewise.
+	* linux/dev/drivers/sr.c (sr_detect): Likewise.
+	(get_sectorsize): Likewise.
+	
+1999-03-01  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	Version 1.1.91.
+
+	* version.c (version): Update to 1.1.91.
+	
+1999-03-01  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* i386/linux/Drivers.in: Fix linking paths.
+	* i386/linux/Makefile.in: Corrent include paths and fix
+	Drivers.macros location.
+	
+1999-02-28  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* Makefile.in (clean): Don't move device-drivers.h, because it is
+	not in the top directory any longer.
+	(distclean): Remove config.cache and config.log.
+	* i386/Makefile.in (distclean): Remove config.status, config.log
+	and Makefile.
+	* i386/linux/Makefile.in (distclean): Remove config.status,
+	config.log, Makefile and device-drivers.h.
+	
+1999-02-27  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* i386/linux/Drivers.in: Don't link dev/include/asm-i386 to
+	dev/include/asm. Check if directories already exist before
+	mkdir_p's. Link directories manually, because AC_LINK_FILES
+	is weak in linking files from non-current directories.
+	
+	* i386/i386at/i386at_ds_routines.c: Include
+	<i386/linux/device-drivers.h> instead of <linux/device-drivers.h>.
+	* device/ds_routines.c [LINUX_DEV]: Likewise.
+	* i386/linux/Makefile.in (linux-gen-flags): Fix an extra slash.
+	(distclean): Remove asm links.
+	* linux/src/COPYING: Copied from linux-2.0.36.
+	
+1999-02-27  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* Makefile.in: Omit to detect if com or lpr is used, and don't use
+	linux.o.
+	(objfiles): Add $(systype)/sysdep.o.
+	(clean): Chain the target to $(systype).
+	(distclean): Likewise.
+	(mostlyclean): Likewise.
+	(maintainer-clean): Likewise.
+	(install-headers): Likewise.
+	(install-kernel): Likewise.
+	* configure.in: AC_CONFIG_SUBDIRS ${systype} instead of linux.
+	(--disable-linuxdev): Deleted.
+	(--disable-com): Likewise.
+	(--enable-lpr): Likewise.
+	* i386/Makefile.in: New file.
+	* i386/configure.in: Likewise.
+	* i386/Makefrag (DEFINES): Add -DLINUX_DEV.
+	(objfiles): Always add com.o. If MACH_LPR is defined, then add lpr.o.
+	* linux/Drivers.in: Moved to ...
+	* i386/linux/Drivers.in: ... here. Include ../../aclocal.m4.
+	(mkdir_p): New function to create the linux include dirs.
+	* linux/Makefile.in: Moved to ...
+	* i386/linux/Makefile.in: ... here, and modify so that paths
+	are valid.
+	(clean): New target.
+	(distclean): Likewise.
+	(mostlyclean): Likewise.
+	(maintainer-clean): Likewise.
+	* linux/src/include/linux/autoconf.h: Removed.
+	* linux/dev/include/linux/autoconf.h: Moved to ...
+	* i386/linux/dev/include/linux/autoconf.h: ... here.
+	* linux/dev/arch/i386/linux_emul.h: Moved to ...
+	* i386/linux/dev/include/linux_emul.h: ... here.
+	* linux/device-drivers.h.in: Moved to ...
+	* i386/linux/device-drivers.h.in: ... here.
+	* linux/aclocal.m4: Removed.
+	* linux/configure: Likewise.
+	
+1999-02-14  Gordon Matzigkeit  <gord@trick.fig.org>
+
+	* Makefile.in (install-kernel): Be sure that $(bootdir) is
+	created before installing the kernel.
+
+1999-02-06  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* configure.in: Enable com by default, because current kbd and
+	mouse can't be linked without com. Reported by M. Meiarashi
+	<mes@st.rim.or.jp>.
+	
+1999-02-05  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	Version 1.1.90.
+
+	* version.c (version): Update to 1.1.90.
+	
+1999-02-04  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* device/kmsg.c (kmsginit): Add a missing semicolon.
+	(kmsggetstat): Fix typos,
+	DEV_GET_DEVICE_SIZE -> DEV_GET_SIZE_DEVICE_SIZE and
+	DEV_GET_RECORD_SIZE -> DEV_GET_SIZE_RECORD_SIZE.
+	(kmsg_putchar): Fix a typo kmsg_done_init -> kmsg_init_done.
+	* linux/dev/glue/block.c (device_get_status): Allocate a hd_geometry
+	on the stack.
+	* linux/dev/drivers/block/ide.c: New file.
+	* linux/dev/drivers/scsi/sd_ioctl.c: New file.
+	
+1999-02-02  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* i386/i386at/kd_event.c (kbdgetstat): Fix a typo
+	DEV_GET_SIZES -> DEV_GET_SIZE.
+	* i386/i386at/kd_mouse.c (mousegetstat): Likewise.
+	* device/kmsg.c (kmsggetstat): Likewise.
+	
+1999-02-01  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* linux/dev/glue/block.c (dev_getstat): Fix a missing `struct'.
+	* device/cons.c (cninit): Don't call kmsginit.
+	* kmsg.c (kmsg_buffer): Defined as static.
+	(kmsg_write_offset): Likewise.
+	(kmsg_read_offset): Likewise.
+	(kmsg_read_queue): Likewise.
+	(kmsg_in_use): Likewise.
+	(kmsg_lock): Likewise.
+	(kmsginit): Likewise, and call queue_init instead of setting
+	PREV and NEXT manually.
+	(kmsg_done_init): New variable.
+	(kmsg_putchar): Call kmsginit if not initialized yet.
+	(kmsggetstat): New function.
+	* kmsg.h (kmsggetstat): Add the prototype.
+	* i386/i386at/kd_event.c (kbdgetstat): Handle DEV_GET_SIZE.
+	(kbdread): Check if the amount a user specify is a multiple
+	of sizeof(kd_event).
+	* i386/i386at/kd_mouse.c (mousegetstat): New function.
+	(mouseread): Check if the amount a user specify is a multiple
+	of sizeof(kd_event).
+	* i386/i386at/conf.c (dev_name_list): Set the mouse getstat entry
+	to mousegetstat and the kmsg getstat entry to kmsggetstat.
+	Use MACH_COM instead of NCOM to determine if com is used.
+	Use MACH_LPR instead of NLPR to determine if lpr is used.
+	* configure.in (--enable-com): New option.
+	(--enable-lpr): Likewise.
+	* Makefile.in (enable_com): New variable.
+	(enable_lpr): Likewise.
+	* i386/Makefrag (i386at-files): Remove com.c.
+	(objfiles): Add com.o if enable_com is yes, and lpr.o if enable_lpr
+	is yes.
+	
 Tue Jan 26 21:36:10 1999  Thomas Bushnell, BSG  <tb@mit.edu>
 
 	* kern/exception.c (exception_no_server): Correctly comment out
 	the suspend code.  (This should have happened on 17 April 1997,
 	but apparently I did it backwards.)
 
+1999-01-26  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* device/kmsg.c (kmsgopen): Added simple_lock and simple_unlock.
+	(ksmgclose): Likewise.
+	
+1999-01-25  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* Makefile.in (install-headers): New target for installing only
+	the headers.
+	(install-kernel): New target for installing only the kernel.
+	(mkheaderdirs): New target for making the headers
+	installation directories.
+	(mkkerneldirs): New target for making the kernel
+	installation directory.
+	(install): Do nothing by itself, but depend on install-kernel
+	and install-headers.
+	
+1999-01-24  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* device/kmsg.h (KMSGBUFSIZE): Deleted.
+	* device/kmsg.c: Rewritten completely to provide stream interface.
+	* linux/dev/glue/block.c (device_getstat): Added V_GETPARMS support.
+	* config.guess: New version from automake-1.4.
+	* config.sub: Likewise.
+	* install-sh: Likewise.
+
+	Some changes were merged from gnumach-m68k by
+	Aymeric Vincent <vincent@emi.u-bordeaux.fr>.
+	
+	* Makefile.in (clean): Don't hang if device-drivers.h doesn't exist.
+	* linux/Makefile.in (CPPFLAGS): Fix a typo.
+	
+1999-01-16  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* device/kmsg.c: Fixed the copyright notice.
+	(MACH_KMSG): Removed.
+	* Makefile.in (enable_kmsg): New variable.
+	(objfiles): Add kmsg.o, if and only if enable_kmsg is yes.
+	
+1999-01-10  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* i386/i386at/kd.c: Applied a keymap patch. Reported by
+	Marcus Brinkmann <Marcus.Brikmann@ruhr-uni-bochum.de>.
+	* i386/i386at/kd.h: Likewise.
+	
+1998-12-30  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* linux/dev/glue/net.c (dev_alloc_skb): Change the skb arragement.
+	(dev_kfree_skb): Free only skb.
+	(device_write): Keep skb elements up-to-date.
+	
+1998-12-18  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* Makefile.in (objfiles): Add kmsg.o.
+	* device/cons.c: Include <device/io_req.h>.
+	* device/kmsg.c: Rewritten almost entirely.
+	
+1998-12-06  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	Add kmsg device.
+
+	* Makefile.in (device-files): Add kmsg.c and kmsg.h.
+	* configure.in (--enable-kmsg): New option.
+	* device/cons.c: Include kmsg.h.
+	(cninit): Call kmsginit if MACH_KMSG is defined.
+	(cnputc): Call kmsg_putchar if MACH_KMSG is defined.
+	* device/kmsg.c: New file.
+	* device/kmsg.h: Likewise.
+	* i386/i386at/conf.c (dev_name_list): Add kmsg entry.
+	
+1998-12-02  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* configure.in: Fix linuxdev option handling.
+	* linux/Drivers.in: Remove linuxdev option and fix linking files.
+	* linux/Makefile.in: Replace @DEFS@ with -DLINUX_DEV.
+	* linux/dev/arch/i386/kernel/irq.c: Include missing header files.
+	* linux/dev/arch/i386/kernel/setup.c: Include <device-drivers.h>.
+	* linux/dev/glue/kmem.c: Add printf declaration.
+	* linux/dev/glue/misc.c: Include <linux/types.h>.
+	* linux/dev/init/main.c: Call linux_sched_init instead of sched_init.
+	* linux/dev/kernel/sched.c: Add timer_bh declaration.
+	(tqueue_bh): Fix the argument.
+	(linux_sched_init): Renamed from sched_init.
+
+1998-12-01  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* i386/i386at/i386at_ds_routines.c: Include <linux/device-drivers.h>
+	only if LINUX_DEV is defined. Reported by UCHIYAMA Yasushi
+	<uch@nop.or.jp>.
+	* device/ds_routines.c: Likewise.
+	* configure.in: AC_CONFIG_SUBDIRS(linux) instead of linuxdev.
+	(--disable-linuxdev): New option.
+	* linux/Makefile.in (CPPFLAGS): Remove -DLINUX_DEV, and add @DEFS@.
+	(objfiles): Add linux.o only if LINUX_DEV is defined.
+	* linux/Drivers.in (--disable-linuxdev): New option.
+	* i386/Makefrag (DEFINES): Remove -DLINUX_DEV.
+	
+1998-11-30  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	Clean up linux emulation code to make it architecture-independent
+	as much as possible.
+	
+	* linux: Renamed from linuxdev.
+	* Makefile.in (objfiles): Add linux.o instead of linuxdev.o.
+	(MAKE): New variable. Used for the linux.o target.
+	* configure.in: Add AC_CHECK_TOOL(MAKE, make).
+	* i386/i386/spl.h: Include <i386/ipl.h>, for compatibility with
+	OSF Mach 3.0. Suggested by Elgin Lee <ehl@funghi.com>.
+	* linux/src: Renamed from linux/linux.
+	* linux/dev: Renamed from linux/mach.
+	* linux/Drivers.in (AC_INIT): Use dev/include/linux/autoconf.h,
+	instead of mach/include/linux/autoconf.h.
+	* Makefile.in (all): Target ../linux.o instead of ../linuxdev.o.
+	* linux/dev/drivers/block/genhd.c: Include <machine/spl.h> instead
+	of <i386/ipl.h>.
+	* linux/dev/drivers/net/auto_irq.c: Remove unneeded header files,
+	<i386/ipl.h> and <i386/pic.h>.
+	* linux/dev/init/main.c: Many i386-dependent codes moved to ...
+	* linux/dev/arch/i386/irq.c: ... here.
+	* linux/dev/arch/i386/setup.c: New file.
+	* linux/dev/arch/i386/linux_emul.h: Likewise.
+	* linux/dev/arch/i386/glue/timer.c: Merged into sched.c.
+	* linux/dev/arch/i386/glue/sched.c: Include <machine/spl.h> instead
+	of <i386/ipl.h>, and moved to ...
+	* linux/dev/kernel/sched.c: ... here.
+	* linux/dev/arch/i386/glue/block.c: Include <machine/spl.h> and
+	<linux_emul.h>, instead of i386-dependent header files, and
+	moved to ...
+	* linux/dev/glue/blocl.c: ... here.
+	* linux/dev/arch/i386/glue/net.c: Include <machine/spl.h> and
+	<linux_emul.h>, instead of i386-dependent header files, and
+	moved to ...
+	* linux/dev/glue/net.c: ... here.
+	* linux/dev/arch/i386/glue/misc.c: Remove `x86' and moved to ...
+	* linux/dev/glue/misc.c: ... here.
+	* linux/dev/arch/i386/glue/kmem.c: Moved to ...
+	* linux/dev/glue/kmem.c: ... here.
+	
+1998-11-25  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* linuxdev/mach/init/main.c (linux_init): Call reserve_mach_irqs.
+	* linuxdev/mach/arch/i386/kernel/irq.c (probe_irq_on): Fix ivect
+	mishandling.
+	(probe_irq_off): Disable unnecessary IRQs. Reported by
+	UCHIYAMA Yasushi <uch@nop.or.jp>.
+	(reserve_mach_irqs): New function.
+	
+1998-11-24  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* linuxdev/arch/i386/linux_init.c (linux_init): Check ivect
+	before set linux_bad_intr.
+	* linuxdev/arch/i386/linux_irq.c (probe_irq_on): Allocate only
+	if ivect is null, and set linux_intr_pri to intpri.
+
+	* linuxdev: Heavily changed. It becomes more Linux-like file
+	hierarchy as suggested by Roland McGrath <roland@frob.com>.
+	* linuxdev/linux: Contain original Linux source files.
+	* linuxdev/mach: Contain modified source files for Mach.
+	* linuxdev/mach/arch/i386/glue: XXX Contain files that are
+	not easy to segregate.
+	* Makefile.in: Call `make -C linuxdev all', instead of include
+	linuxdev/Makefrag.
+	
+1998-11-23  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* linuxdev/arch/i386/linux_irq.c (linux_bad_intr): New function.
+	(free_irq): Set linux_bad_intr into ivect[irq].
+	* linuxdev/arch/i386/linux_init.c (linux_init):
+	Set linux_bad_intr as the default interrupt handler.
+
+	* linuxdev/include/asm-i386/string.h (strstr): Fix the
+	egcs/gcc 2.8.x bug and a linkage problem. Reported by
+	Roland McGrath <roland@frob.com>.
+	
+1998-11-18  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* linuxdev/Drivers.in: Fix a typo.
+	* linuxdev/Makefrag: Likewise.
+	* linuxdev/arch/i386/linux_block.c (set_blocksize): Likewise.
+	
+	* linuxdev/arch/i386/linux_kmem.c (vfree): Cast void * to
+	vm_offset_t.
+	* linuxdev/drivers/net/wavelan.p.h: Include
+	<linuxdev/drivers/net/i82586.h>, instead of <drivers/net/i82586.h>.
+	* linuxdev/drivers/scsi/aha152x.c: Define AUTOCONF.
+	* linuxdev/configure: Regenerate.
+	
+1998-11-17  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* linuxdev/arch/i386/linux_misc.c (strstr): New function.
+	Because	inline version strstr is not used when use
+	egcs/gcc 2.8.x.	Reported by UCHIYAMA Yasushi <uch@nop.or.jp>.
+
+	* linuxdev/arch/i386/linux_irq.c (unmask_irq): Fix a typo.
+	
+1998-11-17  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* i386/README-Drivers: Update to Linux 2.0.36 device drivers.
+	* linuxdev/Drivers.in: Likewise.
+	* linuxdev/Makefrag: Likewise.
+	* linuxdev/arch/i386/linux_lib.S: Likewise.
+	* linuxdev/device-drivers.h.in: Likewise.
+	* linuxdev/drivers/block/floppy.c: Likewise.
+	* linuxdev/drivers/block/ide.c: Likewise.
+	* linuxdev/drivers/block/ide.h: Likewise.
+	* linuxdev/drivers/net/3c505.h: Likewise.
+	* linuxdev/drivers/net/3c509.c: Likewise.
+	* linuxdev/drivers/net/3c515.c: Likewise.
+	* linuxdev/drivers/net/3c59x.c: Likewise.
+	* linuxdev/drivers/net/Space.c: Likewise.
+	* linuxdev/drivers/net/apricot.c: Likewise.
+	* linuxdev/drivers/net/de4x5.c: Likewise.
+	* linuxdev/drivers/net/eepro.c: Likewise.
+	* linuxdev/drivers/net/eepro100.c: Likewise.
+	* linuxdev/drivers/net/eexpress.c: Likewise.
+	* linuxdev/drivers/net/epic100.c: Likewise.
+	* linuxdev/drivers/net/eth16i.c: Likewise.
+	* linuxdev/drivers/net/hp100.c: Likewise.
+	* linuxdev/drivers/net/lance.c: Likewise.
+	* linuxdev/drivers/net/ne2k-pci.c: Likewise.
+	* linuxdev/drivers/net/pcnet32.c: Likewise.
+	* linuxdev/drivers/net/rtl8139.c: Likewise.
+	* linuxdev/drivers/net/tlan.c: Likewise.
+	* linuxdev/drivers/net/tulip.c: Likewise.
+	* linuxdev/drivers/net/wavelan.c: Likewise.
+	* linuxdev/drivers/pci/pci.c: Likewise.
+	* linuxdev/drivers/scsi/BusLogic.c: Likewise.
+	* linuxdev/drivers/scsi/FlashPoint.c: Likewise.
+	* linuxdev/drivers/scsi/aha152x.c: Likewise.
+	* linuxdev/drivers/scsi/aha1542.c: Likewise.
+	* linuxdev/drivers/scsi/aic7xxx/sequencer.h: Likewise.
+	* linuxdev/drivers/scsi/aic7xxx.c: Likewise.
+	* linuxdev/drivers/scsi/aic7xxx_proc.c: Likewise.
+	* linuxdev/drivers/scsi/aic7xxx_reg.h: Likewise.
+	* linuxdev/drivers/scsi/dtc.c: Likewise.
+	* linuxdev/drivers/scsi/eata.c: Likewise.
+	* linuxdev/drivers/scsi/eata.h: Likewise.
+	* linuxdev/drivers/scsi/eata_dma.c: Likewise.
+	* linuxdev/drivers/scsi/gdth.c: Likewise.
+	* linuxdev/drivers/scsi/gdth.h: Likewise.
+	* linuxdev/drivers/scsi/gdth_proc.c: Likewise.
+	* linuxdev/drivers/scsi/gdth_proc.h: Likewise.
+	* linuxdev/drivers/scsi/hosts.c: Likewise.
+	* linuxdev/drivers/scsi/in2000.c: Likewise.
+	* linuxdev/drivers/scsi/in2000.h: Likewise.
+	* linuxdev/drivers/scsi/ncr53c8xx.c: Likewise.
+	* linuxdev/drivers/scsi/ppa.h: Likewise.
+	* linuxdev/drivers/scsi/scsi.c: Likewise.
+	* linuxdev/drivers/scsi/scsicam.c: Likewise.
+	* linuxdev/drivers/scsi/sd.c: Likewise.
+	* linuxdev/drivers/scsi/seagate.c: Likewise.
+	* linuxdev/drivers/scsi/u14-34f.c: Likewise.
+	* linuxdev/drivers/scsi/u14-34f.h: Likewise.
+	* linuxdev/drivers/scsi/wd7000.c: Likewise.
+	* linuxdev/drivers/scsi/wd7000.h: Likewise.
+	* linuxdev/include/asm-i386/irq.h: Likewise.
+	* linuxdev/include/asm-i386/processor.h: Likewise.
+	* linuxdev/include/asm-i386/ptrace.h: Likewise.
+	* linuxdev/include/asm-i386/system.h: Likewise.
+	* linuxdev/include/asm-i386/unistd.h: Likewise.
+	* linuxdev/include/linux/fs.h: Likewise.
+	* linuxdev/include/linux/genhd.h: Likewise.
+	* linuxdev/include/linux/interrupt.h: Likewise.
+	* linuxdev/include/linux/ip.h: Likewise.
+	* linuxdev/include/linux/pci.h: Likewise.
+	* linuxdev/include/linux/version.h: Likewise.
+	* linuxdev/include/linux/wireless.h: Likewise.
+
+	* linuxdev/drivers/net/via-rhine.c: New file.
+	* linuxdev/drivers/scsi/aic7xxx_seq.c: Likewise.
+	* linuxdev/include/linux/rose.h: Likewise.
+
+	* linuxdev/drivers/scsi/aic7xxx_seq.h: Removed.
+	* linuxdev/configure: Regenerate.
+	* linuxdev/include/asm-i386/string.h: Fix the egcs/gcc 2.8.x problem,
+	according to http://www.suse.de/~florian/kernel+egcs.html.
+	
+1998-11-14  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* Makefile.in (clib-routines.o): Add -L option to search libc.a.
+	Reported by TAKEUCHI Yoji <ytakeuch@po.iijnet.or.jp>.
+	
+	* linuxdev/drivers/pci/bios32.c: Moved to ...
+	* linuxdev/arch/i386/linux_bios32.c: ... here. Because it is 
+	i386-specific code.
+	* linuxdev/include/asm: Moved to ...
+	* linuxdev/include/asm-i386: ... here.
+	
+	* i386/README-Drivers: Update to Linux 2.0.35 device drivers.
+	* linuxdev/Drivers.in: Likewise.
+	* linuxdev/configure: Likewise.
+	* linuxdev/device-drivers.h.in: Likewise.
+	* linuxdev/Makefrag: Likewise.
+	* linuxdev/arch/i386/linux_autoirq.c: Likewise.
+	* linuxdev/arch/i386/linux_block.c: Likewise.
+	* linuxdev/arch/i386/linux_dma.c: Likewise.
+	* linuxdev/arch/i386/linux_init.c: Likewise.
+	* linuxdev/arch/i386/linux_irq.c: Likewise.
+	* linuxdev/arch/i386/linux_kmem.c: Likewise.
+	* linuxdev/arch/i386/linux_misc.c: Likewise.
+	* linuxdev/arch/i386/linux_net.c: Likewise.
+	* linuxdev/arch/i386/linux_port.c: Likewise.
+	* linuxdev/arch/i386/linux_printk.c: Likewise.
+	* linuxdev/arch/i386/linux_sched.c: Likewise.
+	* linuxdev/arch/i386/linux_timer.c: Likewise.
+	* linuxdev/arch/i386/linux_version.c: Likewise.
+	* linuxdev/arch/i386/linux_vsprintf.c: Likewise.
+	* linuxdev/drivers/block/cmd640.c: Likewise.
+	* linuxdev/drivers/block/floppy.c: Likewise.
+	* linuxdev/drivers/block/genhd.c: Likewise.
+	* linuxdev/drivers/block/ide-cd.c: Likewise.
+	* linuxdev/drivers/block/ide.c: Likewise.
+	* linuxdev/drivers/block/ide.h: Likewise.
+	* linuxdev/drivers/block/ide_modes.h: Likewise.
+	* linuxdev/drivers/block/rz1000.c: Likewise.
+	* linuxdev/drivers/block/triton.c: Likewise.
+	* linuxdev/drivers/net/3c501.c: Likewise.
+	* linuxdev/drivers/net/3c503.c: Likewise.
+	* linuxdev/drivers/net/3c505.c: Likewise.
+	* linuxdev/drivers/net/3c507.c: Likewise.
+	* linuxdev/drivers/net/3c509.c: Likewise.
+	* linuxdev/drivers/net/3c59x.c: Likewise.
+	* linuxdev/drivers/net/8390.c: Likewise.
+	* linuxdev/drivers/net/8390.h: Likewise.
+	* linuxdev/drivers/net/Space.c: Likewise.
+	* linuxdev/drivers/net/ac3200.c: Likewise.
+	* linuxdev/drivers/net/apricot.c: Likewise.
+	* linuxdev/drivers/net/at1700.c: Likewise.
+	* linuxdev/drivers/net/atp.c: Likewise.
+	* linuxdev/drivers/net/atp.h: Likewise.
+	* linuxdev/drivers/net/de4x5.c: Likewise.
+	* linuxdev/drivers/net/de4x5.h: Likewise.
+	* linuxdev/drivers/net/de600.c: Likewise.
+	* linuxdev/drivers/net/de620.c: Likewise.
+	* linuxdev/drivers/net/depca.c: Likewise.
+	* linuxdev/drivers/net/dev.c: Likewise.
+	* linuxdev/drivers/net/e2100.c: Likewise.
+	* linuxdev/drivers/net/eepro.c: Likewise.
+	* linuxdev/drivers/net/eepro100.c: Likewise.
+	* linuxdev/drivers/net/eexpress.c: Likewise.
+	* linuxdev/drivers/net/eth16i.c: Likewise.
+	* linuxdev/drivers/net/ewrk3.c: Likewise.
+	* linuxdev/drivers/net/ewrk3.h: Likewise.
+	* linuxdev/drivers/net/hp-plus.c: Likewise.
+	* linuxdev/drivers/net/hp.c: Likewise.
+	* linuxdev/drivers/net/hp100.c: Likewise.
+	* linuxdev/drivers/net/hp100.h: Likewise.
+	* linuxdev/drivers/net/i82586.h: Likewise.
+	* linuxdev/drivers/net/lance.c: Likewise.
+	* linuxdev/drivers/net/ne.c: Likewise.
+	* linuxdev/drivers/net/net_init.c: Likewise.
+	* linuxdev/drivers/net/ni52.c: Likewise.
+	* linuxdev/drivers/net/ni52.h: Likewise.
+	* linuxdev/drivers/net/ni65.c: Likewise.
+	* linuxdev/drivers/net/ni65.h: Likewise.
+	* linuxdev/drivers/net/seeq8005.c: Likewise.
+	* linuxdev/drivers/net/seeq8005.h: Likewise.
+	* linuxdev/drivers/net/sk_g16.c: Likewise.
+	* linuxdev/drivers/net/sk_g16.h: Likewise.
+	* linuxdev/drivers/net/smc-ultra.c: Likewise.
+	* linuxdev/drivers/net/tulip.c: Likewise.
+	* linuxdev/drivers/net/wavelan.c: Likewise.
+	* linuxdev/drivers/net/wavelan.h: Likewise.
+	* linuxdev/drivers/net/wd.c: Likewise.
+	* linuxdev/drivers/net/znet.c: Likewise.
+	* linuxdev/drivers/pci/pci.c: Likewise.
+	* linuxdev/drivers/scsi/53c7,8xx.h: Likewise.
+	* linuxdev/drivers/scsi/53c78xx.c: Likewise.
+	* linuxdev/drivers/scsi/53c8xx_d.h: Likewise.
+	* linuxdev/drivers/scsi/AM53C974.c: Likewise.
+	* linuxdev/drivers/scsi/AM53C974.h: Likewise.
+	* linuxdev/drivers/scsi/BusLogic.c: Likewise.
+	* linuxdev/drivers/scsi/BusLogic.h: Likewise.
+	* linuxdev/drivers/scsi/NCR53c406a.c: Likewise.
+	* linuxdev/drivers/scsi/NCR53c406a.h: Likewise.
+	* linuxdev/drivers/scsi/advansys.c: Likewise.
+	* linuxdev/drivers/scsi/advansys.h: Likewise.
+	* linuxdev/drivers/scsi/aha152x.c: Likewise.
+	* linuxdev/drivers/scsi/aha152x.h: Likewise.
+	* linuxdev/drivers/scsi/aha1542.c: Likewise.
+	* linuxdev/drivers/scsi/aha1542.h: Likewise.
+	* linuxdev/drivers/scsi/aha1740.c: Likewise.
+	* linuxdev/drivers/scsi/aha1740.h: Likewise.
+	* linuxdev/drivers/scsi/aic7xxx.c: Likewise.
+	* linuxdev/drivers/scsi/aic7xxx.h: Likewise.
+	* linuxdev/drivers/scsi/aic7xxx_seq.h: Likewise.
+	* linuxdev/drivers/scsi/constants.h: Likewise.
+	* linuxdev/drivers/scsi/eata.c: Likewise.
+	* linuxdev/drivers/scsi/eata.h: Likewise.
+	* linuxdev/drivers/scsi/eata_dma.c: Likewise.
+	* linuxdev/drivers/scsi/eata_dma.h: Likewise.
+	* linuxdev/drivers/scsi/eata_generic.h: Likewise.
+	* linuxdev/drivers/scsi/eata_pio.c: Likewise.
+	* linuxdev/drivers/scsi/eata_pio.h: Likewise.
+	* linuxdev/drivers/scsi/fdomain.c: Likewise.
+	* linuxdev/drivers/scsi/fdomain.h: Likewise.
+	* linuxdev/drivers/scsi/g_NCR5380.c: Likewise.
+	* linuxdev/drivers/scsi/g_NCR5380.h: Likewise.
+	* linuxdev/drivers/scsi/hosts.c: Likewise.
+	* linuxdev/drivers/scsi/hosts.h: Likewise.
+	* linuxdev/drivers/scsi/in2000.c: Likewise.
+	* linuxdev/drivers/scsi/in2000.h: Likewise.
+	* linuxdev/drivers/scsi/pas16.c: Likewise.
+	* linuxdev/drivers/scsi/pas16.h: Likewise.
+	* linuxdev/drivers/scsi/scsi.c: Likewise.
+	* linuxdev/drivers/scsi/scsi.h: Likewise.
+	* linuxdev/drivers/scsi/scsi_ioctl.c: Likewise.
+	* linuxdev/drivers/scsi/scsi_proc.c: Likewise.
+	* linuxdev/drivers/scsi/scsicam.c: Likewise.
+	* linuxdev/drivers/scsi/sd.c: Likewise.
+	* linuxdev/drivers/scsi/sd.h: Likewise.
+	* linuxdev/drivers/scsi/sd_ioctl.c: Likewise.
+	* linuxdev/drivers/scsi/seagate.c: Likewise.
+	* linuxdev/drivers/scsi/seagate.h: Likewise.
+	* linuxdev/drivers/scsi/sr.c: Likewise.
+	* linuxdev/drivers/scsi/sr_ioctl.c: Likewise.
+	* linuxdev/drivers/scsi/t128.c: Likewise.
+	* linuxdev/drivers/scsi/t128.h: Likewise.
+	* linuxdev/drivers/scsi/u14-34f.c: Likewise.
+	* linuxdev/drivers/scsi/u14-34f.h: Likewise.
+	* linuxdev/drivers/scsi/ultrastor.c: Likewise.
+	* linuxdev/drivers/scsi/ultrastor.h: Likewise.
+	* linuxdev/drivers/scsi/wd7000.c: Likewise.
+	* linuxdev/drivers/scsi/wd7000.h: Likewise.
+	* linuxdev/include/asm-i386/bitops.h: Likewise.
+	* linuxdev/include/asm-i386/delay.h: Likewise.
+	* linuxdev/include/asm-i386/dma.h: Likewise.
+	* linuxdev/include/asm-i386/errno.h: Likewise.
+	* linuxdev/include/asm-i386/fcntl.h: Likewise.
+	* linuxdev/include/asm-i386/floppy.h: Likewise.
+	* linuxdev/include/asm-i386/ioctl.h: Likewise.
+	* linuxdev/include/asm-i386/floppy.h: Likewise.
+	* linuxdev/include/asm-i386/irq.h: Likewise.
+	* linuxdev/include/asm-i386/processor.h: Likewise.
+	* linuxdev/include/asm-i386/ptrace.h: Likewise.
+	* linuxdev/include/asm-i386/resource.h: Likewise.
+	* linuxdev/include/asm-i386/segment.h: Likewise.
+	* linuxdev/include/asm-i386/sigcontext.h: Likewise.
+	* linuxdev/include/asm-i386/signal.h: Likewise.
+	* linuxdev/include/asm-i386/socket.h: Likewise.
+	* linuxdev/include/asm-i386/statfs.h: Likewise.
+	* linuxdev/include/asm-i386/string.h: Likewise.
+	* linuxdev/include/asm-i386/system.h: Likewise.
+	* linuxdev/include/asm-i386/termios.h: Likewise.
+	* linuxdev/include/asm-i386/types.h: Likewise.
+	* linuxdev/include/asm-i386/unistd.h: Likewise.
+	* linuxdev/include/linux/autoconf.h: Likewise.
+	* linuxdev/include/linux/binfmts.h: Likewise.
+	* linuxdev/include/linux/bios32.h: Likewise.
+	* linuxdev/include/linux/blk.h: Likewise.
+	* linuxdev/include/linux/blkdev.h: Likewise.
+	* linuxdev/include/linux/cdrom.h: Likewise.
+	* linuxdev/include/linux/config.h: Likewise.
+	* linuxdev/include/linux/etherdevice.h: Likewise.
+	* linuxdev/include/linux/fd.h: Likewise.
+	* linuxdev/include/linux/fdreg.h: Likewise.
+	* linuxdev/include/linux/fs.h: Likewise.
+	* linuxdev/include/linux/genhd.h: Likewise.
+	* linuxdev/include/linux/hdreg.h: Likewise.
+	* linuxdev/include/linux/if.h: Likewise.
+	* linuxdev/include/linux/if_arp.h: Likewise.
+	* linuxdev/include/linux/if_ether.h: Likewise.
+	* linuxdev/include/linux/if_tr.h: Likewise.
+	* linuxdev/include/linux/igmp.h: Likewise.
+	* linuxdev/include/linux/in.h: Likewise.
+	* linuxdev/include/linux/inet.h: Likewise.
+	* linuxdev/include/linux/interrupt.h: Likewise.
+	* linuxdev/include/linux/ioport.h: Likewise.
+	* linuxdev/include/linux/ip.h: Likewise.
+	* linuxdev/include/linux/kernel.h: Likewise.
+	* linuxdev/include/linux/locks.h: Likewise.
+	* linuxdev/include/linux/major.h: Likewise.
+	* linuxdev/include/linux/malloc.h: Likewise.
+	* linuxdev/include/linux/mc146818rtc.h: Likewise.
+	* linuxdev/include/linux/mm.h: Likewise.
+	* linuxdev/include/linux/module.h: Likewise.
+	* linuxdev/include/linux/mount.h: Likewise.
+	* linuxdev/include/linux/net.h: Likewise.
+	* linuxdev/include/linux/netdevice.h: Likewise.
+	* linuxdev/include/linux/nfs.h: Likewise.
+	* linuxdev/include/linux/notifier.h: Likewise.
+	* linuxdev/include/linux/pagemap.h: Likewise.
+	* linuxdev/include/linux/pci.h: Likewise.
+	* linuxdev/include/linux/personality.h: Likewise.
+	* linuxdev/include/linux/proc_fs.h: Likewise.
+	* linuxdev/include/linux/quota.h: Likewise.
+	* linuxdev/include/linux/route.h: Likewise.
+	* linuxdev/include/linux/sched.h: Likewise.
+	* linuxdev/include/linux/skbuff.h: Likewise.
+	* linuxdev/include/linux/socket.h: Likewise.
+	* linuxdev/include/linux/sockios.h: Likewise.
+	* linuxdev/include/linux/string.h: Likewise.
+	* linuxdev/include/linux/time.h: Likewise.
+	* linuxdev/include/linux/timer.h: Likewise.
+	* linuxdev/include/linux/tqueue.h: Likewise.
+	* linuxdev/include/linux/tty.h: Likewise.
+	* linuxdev/include/linux/types.h: Likewise.
+	* linuxdev/include/linux/uio.h: Likewise.
+	* linuxdev/include/linux/version.h: Likewise.
+	* linuxdev/include/linux/wait.h: Likewise.
+	* linuxdev/include/net/af_unix.h: Likewise.
+	* linuxdev/include/net/ax25.h: Likewise.
+	* linuxdev/include/net/ax25call.h: Likewise.
+	* linuxdev/include/net/icmp.h: Likewise.
+	* linuxdev/include/net/ip.h: Likewise.
+	* linuxdev/include/net/ip_alias.h: Likewise.
+	* linuxdev/include/net/ip_forward.h: Likewise.
+	* linuxdev/include/net/ipx.h: Likewise.
+	* linuxdev/include/net/netlink.h: Likewise.
+	* linuxdev/include/net/netrom.h: Likewise.
+	* linuxdev/include/net/nrcall.h: Likewise.
+	* linuxdev/include/net/p8022.h: Likewise.
+	* linuxdev/include/net/protocol.h: Likewise.
+	* linuxdev/include/net/psnap.h: Likewise.
+	* linuxdev/include/net/raw.h: Likewise.
+	* linuxdev/include/net/route.h: Likewise.
+	* linuxdev/include/net/sock.h: Likewise.
+	* linuxdev/include/net/tcp.h: Likewise.
+	* linuxdev/include/net/udp.h: Likewise.
+	
+	* linuxdev/arch/i386/linux_soft.c: Removed.
+	* linuxdev/drivers/scsi/NCR5380.src: Likewise.
+	* linuxdev/drivers/scsi/aic7xxx_proc.src: Likewise.
+	* linuxdev/drivers/scsi/aic7xxx_reg.h: Likewise.
+	* linuxdev/drivers/scsi/eata_dma_proc.src: Likewise.
+	* linuxdev/drivers/scsi/eata_pio_proc.src: Likewise.
+	* linuxdev/drivers/scsi/qlogic.c: Likewise.
+	* linuxdev/drivers/scsi/qlogic.h: Likewise.
+	* linuxdev/drivers/scsi/scsi_debug.c: Likewise.
+	* linuxdev/drivers/scsi/scsi_debug.h: Likewise.
+	* linuxdev/drivers/scsi/scsi_ioctl.h: Likewise.
+	* linuxdev/include/linux/math_emu.h: Likewise.
+	* linuxdev/include/linux/minix_fs.h: Likewise.
+	* linuxdev/include/linux/minix_fs_sb.h: Likewise.
+	* linuxdev/include/linux/scsi.h: Likewise.
+	* linuxdev/include/linux/scsicam.h: Likewise.
+	* linuxdev/include/linux/vm86.h: Likewise.
+	
+	* linuxdev/arch/i386/linux_ctype.c: New file.
+	* linuxdev/arch/i386/linux_lib.S: Likewise.
+	* linuxdev/arch/i386/linux_softirq.c: Likewise.
+	* linuxdev/drivers/net/3c515.c: Likewise.
+	* linuxdev/drivers/net/epic100.c: Likewise.
+	* linuxdev/drivers/net/eth82586.h: Likewise.
+	* linuxdev/drivers/net/fmv18x.c: Likewise.
+	* linuxdev/drivers/net/ne2k-pci.c: Likewise.
+	* linuxdev/drivers/net/pcnet32.c: Likewise.
+	* linuxdev/drivers/net/rtl8139.c: Likewise.
+	* linuxdev/drivers/net/smc-ultra32.c: Likewise.
+	* linuxdev/drivers/net/smc9194.c: Likewise.
+	* linuxdev/drivers/net/smc9194.h: Likewise.
+	* linuxdev/drivers/net/tlan.c: Likewise.
+	* linuxdev/drivers/net/tlan.h: Likewise.
+	* linuxdev/drivers/net/wavelan.p.h: Likewise.
+	* linuxdev/drivers/net/yellowfin.c: Likewise.
+	* linuxdev/drivers/scsi/FlashPoint.c: Likewise.
+	* linuxdev/drivers/scsi/NCR5380.c: Likewise.
+	* linuxdev/drivers/scsi/NCR5380.h: Likewise.
+	* linuxdev/drivers/scsi/aic7xxx/scsi_message.h: Likewise.
+	* linuxdev/drivers/scsi/aic7xxx/sequencer.h: Likewise.
+	* linuxdev/drivers/scsi/aic7xxx_proc.c: Likewise.
+	* linuxdev/drivers/scsi/dc390.h: Likewise.
+	* linuxdev/drivers/scsi/dc390w.h: Likewise.
+	* linuxdev/drivers/scsi/dtc.c: Likewise.
+	* linuxdev/drivers/scsi/dtc.h: Likewise.
+	* linuxdev/drivers/scsi/eata_dma_proc.c: Likewise.
+	* linuxdev/drivers/scsi/eata_pio_proc.c: Likewise.
+	* linuxdev/drivers/scsi/gdth.c: Likewise.
+	* linuxdev/drivers/scsi/gdth.h: Likewise.
+	* linuxdev/drivers/scsi/gdth_ioctl.h: Likewise.
+	* linuxdev/drivers/scsi/gdth_proc.c: Likewise.
+	* linuxdev/drivers/scsi/gdth_proc.h: Likewise.
+	* linuxdev/drivers/scsi/ncr53c8xx.c: Likewise.
+	* linuxdev/drivers/scsi/ncr53c8xx.h: Likewise.
+	* linuxdev/drivers/scsi/ppa.c: Likewise.
+	* linuxdev/drivers/scsi/ppa.h: Likewise.
+	* linuxdev/drivers/scsi/qlogicfas.c: Likewise.
+	* linuxdev/drivers/scsi/qlogicfas.h: Likewise.
+	* linuxdev/drivers/scsi/qlogicisp.c: Likewise.
+	* linuxdev/drivers/scsi/qlogicisp.h: Likewise.
+	* linuxdev/drivers/scsi/qlogicisp_asm.c: Likewise.
+	* linuxdev/drivers/scsi/scripts.h: Likewise.
+	* linuxdev/drivers/scsi/scsiio.c: Likewise.
+	* linuxdev/drivers/scsi/scsiiom.c: Likewise.
+	* linuxdev/drivers/scsi/tmscsim.c: Likewise.
+	* linuxdev/drivers/scsi/tmscsim.h: Likewise.
+	* linuxdev/drivers/scsi/tmscsiw.c: Likewise.
+	* linuxdev/drivers/scsi/tmscsiw.h: Likewise.
+	* linuxdev/include/asm-i386/atomic.h: Likewise.
+	* linuxdev/include/asm-i386/checksum.h: Likewise.
+	* linuxdev/include/asm-i386/ioctls.h: Likewise.
+	* linuxdev/include/asm-i386/math_emu.h: Likewise.
+	* linuxdev/include/asm-i386/posix_types.h: Likewise.
+	* linuxdev/include/asm-i386/semaphore.h: Likewise.
+	* linuxdev/include/asm-i386/sockios.h: Likewise.
+	* linuxdev/include/asm-i386/string-486.h: Likewise.
+	* linuxdev/include/asm-i386/termbits.h: Likewise.
+	* linuxdev/include/asm-i386/unaligned.h: Likewise.
+	* linuxdev/include/asm-i386/vm86.h: Likewise.
+	* linuxdev/include/linux/affs_hardblocks.h: Likewise.
+	* linuxdev/include/linux/atalk.h: Likewise.
+	* linuxdev/include/linux/ax25.h: Likewise.
+	* linuxdev/include/linux/compile.h: Likewise.
+	* linuxdev/include/linux/ctype.h: Likewise.
+	* linuxdev/include/linux/fddidevice.h: Likewise.
+	* linuxdev/include/linux/icmp.h: Likewise.
+	* linuxdev/include/linux/if_fddi.h: Likewise.
+	* linuxdev/include/linux/ipx.h: Likewise.
+	* linuxdev/include/linux/md.h: Likewise.
+	* linuxdev/include/linux/netrom.h: Likewise.
+	* linuxdev/include/linux/posix_types.h: Likewise.
+	* linuxdev/include/linux/random.h: Likewise.
+	* linuxdev/include/linux/ucdrom.h: Likewise.
+	* linuxdev/include/linux/udp.h: Likewise.
+	* linuxdev/include/linux/wireless.h: Likewise.
+	* linuxdev/include/net/br.h: Likewise.
+	* linuxdev/include/net/gc.h: Likewise.
+	* linuxdev/include/net/ip_masq.h: Likewise.
+	* linuxdev/include/net/p8022tr.h: Likewise.
+	* linuxdev/include/net/p8022trcall.h: Likewise.
+	* linuxdev/include/net/rose.h: Likewise.
+	* linuxdev/include/net/rosecall.h: Likewise.
+	* linuxdev/include/net/slhc_vj.h: Likewise.
+	* linuxdev/include/net/spx.h: Likewise.
+	* linuxdev/include/scsi/scsi.h: Likewise.
+	* linuxdev/include/scsi/scsi_ioctl.h: Likewise.
+	* linuxdev/include/scsi/scsicam.h: Likewise.
+	
+1998-11-06  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+
+	* i386/i386at/gpl/linux: Moved to ...
+	* linuxdev: ... here.
+	* i386/Makefrag: Linux drivers specific code moved to ...
+	* linuxdev/Makefrag: ... here.
+	* i386/Files: Recreated.
+	* i386/Subdirs: Likewise.
+	* linuxdev/drivers: New directory.
+	* linuxdev/arch: Likewise.
+	* linuxdev/arch/i386: Likewise.
+	* linuxdev/{block,scsi,net,pci}: Moved to ...
+	* linuxdev/drivers/{block,scsi,net,pci}: ... here.
+	* i386/{Drivers.in,device-drivers.h.in,driverlist.in}: Moved to ...
+	* linuxdev/{Drivers.in,device-drivers.h.in,driverlist.in}: ... here.
+	* linuxdev/{linux_emul.h,linux_*.c}: Moved to ...
+	* linuxdev/arch/i386/{linux_emul.h,linux_*.c}: ... here.
+	* linuxdev/arch/i386/linux_block.c: Include <linux_emul.h>, instead
+	of <i386at/gpl/linux/linux_emul.h>.
+	* linuxdev/arch/i386/linux_init.c: Likewise.
+	* linuxdev/arch/i386/linux_kmem.c: Likewise.
+	* linuxdev/arch/i386/linux_misc.c: Likewise.
+	* linuxdev/arch/i386/linux_net.c: Likewise.
+	* linuxdev/arch/i386/linux_sched.c: Likewise.
+	* device/ds_routines.c: Include <linuxdev/device-drivers.h>, instead
+	of <i386/device-drivers.h>.
+	* linuxdev/arch/i386/linux_init.c: Likewise.
+	* linuxdev/include/linux/autoconf.h: Likewise.
+	* Makefile.in: Include $(srcdir)/linuxdev/Makefrag.
+	* linuxdev/Drivers.in (AC_INIT): Use include/linux/autoconf.h,
+	instead of i386/i386asm.sym.
+	
 1998-10-28  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* include/mach/multiboot.h: Contents were doubled.
