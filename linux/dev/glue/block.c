@@ -1595,8 +1595,6 @@ device_get_status (void *d, dev_flavor_t flavor, dev_status_t status,
   switch (flavor)
     {
     case DEV_GET_SIZE:
-      if (*status_count != DEV_GET_SIZE_COUNT)
-	return D_INVALID_SIZE;
       if (disk_major (MAJOR (bd->dev)))
 	{
 	  assert (bd->ds->gd);
@@ -1626,6 +1624,12 @@ device_get_status (void *d, dev_flavor_t flavor, dev_status_t status,
 	 the driver, but a lot of user level code assumes the sector
 	 size to be 512.  */
       status[DEV_GET_SIZE_RECORD_SIZE] = 512;
+      /* Always return DEV_GET_SIZE_COUNT.  This is what all native
+         Mach drivers do, and makes it possible to detect the absence
+         of the call by setting it to a different value on input.  MiG
+         makes sure that we will never return more integers than the
+         user asked for.  */
+      *status_count = DEV_GET_SIZE_COUNT;
       break;
 
     case V_GETPARMS:
