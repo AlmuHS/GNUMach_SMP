@@ -1,3 +1,15 @@
+2001-08-18  Marcus Brinkmann  <marcus@gnu.org>
+
+	* linux/src/drivers/net/eepro100.c: File updated to version in
+	Linux 2.2.19.
+	* linux/src/include/asm-i386/spinlock.h: New file from Linux 2.2.19.
+	* linux/src/include/asm-i386/hardirq.h: Likewise.
+	* linux/src/include/linux/spinlock.h: Likewise.
+	* linux/src/include/linux/compatmac.h: Likewise.
+        * linux/dev/drivers/net/eepro100.c: New file, modified version from
+        the above to glue it in gnumach.
+        Submitted by Kapil H. Paranjape <kapil@imsc.ernet.in>.
+	
 2001-08-17  Roland McGrath  <roland@frob.com>
 
 	* Makefile.in (clib-routines): Add strchr.
