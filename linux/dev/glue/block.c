@@ -333,7 +333,7 @@ free_buffer (void *p, int size)
       d = current_thread ()->pcb->data;
       assert (d);
       queue_iterate (&d->pages, m, vm_page_t, pageq)
-	{      
+	{
 	  if (m->phys_addr == (vm_offset_t) p)
 	    {
 	      queue_remove (&d->pages, m, vm_page_t, pageq);
@@ -1650,16 +1650,17 @@ device_get_status (void *d, dev_flavor_t flavor, dev_status_t status,
 	  else
 	    (status[DEV_GET_RECORDS_DEVICE_RECORDS]
 	     = bd->ds->gd->part[MINOR (bd->dev)].nr_sects);
-
-	  status[DEV_GET_RECORDS_RECORD_SIZE] = 512;
 	}
       else
 	{
 	  assert (blk_size[MAJOR (bd->dev)]);
 	  (status[DEV_GET_RECORDS_DEVICE_RECORDS]
 	   = blk_size[MAJOR (bd->dev)][MINOR (bd->dev)]);
-	  status[DEV_GET_RECORDS_RECORD_SIZE] = BLOCK_SIZE;
 	}
+      /* It would be nice to return the block size as reported by
+	 the driver, but a lot of user level code assumes the sector
+	 size to be 512.  */
+      status[DEV_GET_SIZE_RECORD_SIZE] = 512;
       /* Always return DEV_GET_RECORDS_COUNT.  This is what all native
          Mach drivers do, and makes it possible to detect the absence
          of the call by setting it to a different value on input.  MiG
@@ -1693,16 +1694,16 @@ device_get_status (void *d, dev_flavor_t flavor, dev_status_t status,
 	  dp->dp_secsiz = 512;  /* XXX */
 	  dp->dp_ptag = 0;
 	  dp->dp_pflag = 0;
-	  
+
 	  /* XXX */
 	  dp->dp_pstartsec = -1;
 	  dp->dp_pnumsec = -1;
 
 	  *status_count = sizeof (struct disk_parms) / sizeof (int);
 	}
-      
+
       break;
-      
+
     default:
       return D_INVALID_OPERATION;
     }
