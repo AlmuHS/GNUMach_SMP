@@ -1,5 +1,5 @@
 -*- Text -*-
-This is the GNU mach 1.2 distribution.
+This is NO LONGER the GNU mach 1.2 distribution.
 
 This kernel is derived from the Utah kernel source.  We use it to run
 the Hurd on.  It is being distributed by us so that we can more easily
@@ -43,4 +43,3 @@ build a particular kernel.
 Bug reports relating to this distribution should be sent to
 bug-hurd@gnu.org.  Requests for assistance should be made on
 help-hurd@gnu.org.
-
