@@ -831,6 +831,8 @@ ipc_entry_grow_table(space)
 
 #if	MACH_KDB
 #include <ddb/db_output.h>
+#include <kern/task.h>
+
 #define	printf	kdbprintf
 
 ipc_entry_t	db_ipc_object_by_name(
