@@ -4,6 +4,12 @@
 	vm_page_external_count == vm_page_external_limit, so that before
 	initialization is complete we can still allocate memory without
 	relying on current_thread.
+	(vm_page_wait): Also block if we are over the external page
+	limit. 
+	* vm/vm_pageout.c (vm_pageout_scan): Rewrite the
+	scan-for-pages-to-pageout loop to not crash when we hit the end of
+	the inactive queue; instead jump back to the
+	pause-for-a-little-while code.
 
 1999-06-27  Thomas Bushnell, BSG  <tb@mit.edu>
 
@@ -40,7 +46,7 @@
 	that we care about.
 	* i386/intel/pmap.c (pmap_page_table_page_alloc): Add new arg for
 	vm_page_grab. 
-	* linux/dev/glue.c (alloc_buffer, device_read): Likewise.
+	* linux/dev/glue/block.c (alloc_buffer, device_read): Likewise.
 	* vm/vm_map.c (vm_map_copy_steal_pages): Likewise.
 	* vm/vm_fault.c (vm_fault_page): Add new args for vm_page_grab and
 	vm_page_convert. 
