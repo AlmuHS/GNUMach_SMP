@@ -961,7 +961,7 @@ init_partition (struct name_map *np, kdev_t *dev,
       if (ds->fops->open && (*ds->fops->open) (&d->inode, &d->file))
 	continue;
       lp = read_bsd_label (d->inode.i_rdev);
-      if (! lp)
+      if (! lp && gd->part[MINOR (d->inode.i_rdev)].nr_sects > PDLOCATION)
 	lp = read_vtoc (d->inode.i_rdev);
       if (ds->fops->release)
 	(*ds->fops->release) (&d->inode, &d->file);
