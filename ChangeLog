@@ -1,3 +1,8 @@
+Fri Apr 24 14:24:15 1998  Thomas Bushnell, n/BSG  <tb@mit.edu>
+
+	* i386/i386/pcb.c (thread_setstatus): Set STATE before validating
+	segment registers.  Reported by UCHIYAMA Fasushi (uch@nop.or.jp).
+
 Fri Apr 24 13:19:40 1998  Thomas Bushnell n/BSG  <thomas@melange.gnu.org>
 
 	* kern/debug.c (panic): Increase "seconds" in delay to 1000; machines
