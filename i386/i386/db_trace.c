@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1993,1992,1991,1990 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -44,6 +44,7 @@
 
 #include "trap.h"
 
+int
 db_i386_reg_value(
 	struct db_variable	*vp,
 	db_expr_t		*valuep,
@@ -121,7 +122,7 @@ db_lookup_i386_kreg(
 	}
 	return 0;
 }
-	
+
 db_i386_reg_value(
 	struct	db_variable	*vp,
 	db_expr_t		*valuep,
@@ -147,7 +148,7 @@ db_i386_reg_value(
 	} else {
 	    if (thread == THREAD_NULL || thread == current_thread()) {
 		dp = vp->valuep;
-	    } else if ((thread->state & TH_SWAPPED) == 0 && 
+	    } else if ((thread->state & TH_SWAPPED) == 0 &&
 			thread->kernel_stack) {
 		dp = db_lookup_i386_kreg(vp->name,
 				(int *)(STACK_IKS(thread->kernel_stack)));
@@ -167,7 +168,7 @@ db_i386_reg_value(
 	if (dp == 0) {
 	    if (thread->pcb == 0)
 		db_error("no pcb\n");
-	    dp = (int *)((int)(&thread->pcb->iss) + 
+	    dp = (int *)((int)(&thread->pcb->iss) +
 		 		    ((int)vp->valuep - (int)&ddb_regs));
 	}
 	if (flag == DB_VAR_SET)
@@ -239,13 +240,13 @@ struct interrupt_frame {
 	int		  if_efl;	/* saved efl(iret_i) */
 };
 
-/* 
- * Figure out the next frame up in the call stack.  
- * For trap(), we print the address of the faulting instruction and 
+/*
+ * Figure out the next frame up in the call stack.
+ * For trap(), we print the address of the faulting instruction and
  *   proceed with the calling frame.  We return the ip that faulted.
  *   If the trap was caused by jumping through a bogus pointer, then
- *   the next line in the backtrace will list some random function as 
- *   being called.  It should get the argument list correct, though.  
+ *   the next line in the backtrace will list some random function as
+ *   being called.  It should get the argument list correct, though.
  *   It might be possible to dig out from the next frame up the name
  *   of the function that faulted, but that could get hairy.
  */
@@ -281,7 +282,7 @@ db_nextframe(
 		db_printf(">>>>> interrupt <<<<<\n");
 		goto miss_frame;
 	    }
-	    db_printf(">>>>> interrupt at "); 
+	    db_printf(">>>>> interrupt at ");
 	    ifp = (struct interrupt_frame *)(*lfp);
 	    *fp = ifp->if_frame;
 	    if (ifp->if_iretaddr == db_return_to_iret_symbol_value)
@@ -392,7 +393,7 @@ db_stack_trace_cmd(
 	} else {
 	    frame = (struct i386_frame *)addr;
 	    th = (db_default_thread)? db_default_thread: current_thread();
-	    callpc = (db_addr_t)db_get_task_value((int)&frame->f_retaddr, 4, 
+	    callpc = (db_addr_t)db_get_task_value((int)&frame->f_retaddr, 4,
 						  FALSE,
 						  (th == THREAD_NULL) ? TASK_NULL : th->task);
 	}
@@ -443,7 +444,7 @@ db_i386_stack_trace(
 	    if (INKERNEL((unsigned)callpc) && user_frame == 0) {
 		db_addr_t call_func = 0;
 
-		db_symbol_values(0, db_search_task_symbol(callpc, 
+		db_symbol_values(0, db_search_task_symbol(callpc,
 				 	DB_STGY_XTRN, (db_addr_t *)&offset,
 					TASK_NULL),
 				 &name, (db_expr_t *)&call_func);
