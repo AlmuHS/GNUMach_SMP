@@ -1,3 +1,18 @@
+1999-07-20  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* linux/dev/drivers/block/genhd.c (check_partition): Change message
+	to say these are only the DOS partitions.
+	* i386/linux/dev/include/linux/autoconf.h (CONFIG_BSD_DISKLABEL,
+	CONFIG_SMD_DISKLABEL): #undef these.  The dev/glue/block.c code
+	deals with BSD disklabels and expects the Linux genhd.c code to
+	handle only the DOS partitions; having genhd.c do BSD disklabels
+	too just confuses things.
+
+	Force subdirectory targets so they get recompiled properly.
+	* i386/Makefile.in (linux/linux.o): Depend on FORCE instead of linux.
+	(FORCE): New target.
+	* i386/Makefrag (i386/sysdep.o, FORCE): Likewise.
+
 1999-07-11  Thomas Bushnell, BSG  <tb@mit.edu>
 
 	* i386/i386at/model_dep.c (init_alloc_aligned): Make the checks
@@ -18,7 +33,7 @@
 	initialization is complete we can still allocate memory without
 	relying on current_thread.
 	(vm_page_wait): Also block if we are over the external page
-	limit. 
+	limit.
 	* vm/vm_pageout.c (vm_pageout_scan): Rewrite the
 	scan-for-pages-to-pageout loop to not crash when we hit the end of
 	the inactive queue; instead jump back to the
@@ -35,19 +50,19 @@
 	pages.  Don't let non-privileged threads exceed the
 	externally-managed page limit.
 	(vm_page_convert): New argument `external', handed off to
-	vm_page_grab.  All callers changed. 
+	vm_page_grab.  All callers changed.
 	(vm_page_release): New argument `external'.  All callers
 	changed. Keep track of number of externally managed pages.
 	(vm_page_bootstrap): Initialize M->external.
 	(vm_page_external_limit): Define new variable.
 	(vm_page_grab_phys_addr, vm_page_alloc): Add new arg for
-	vm_page_grab. 
+	vm_page_grab.
 	(vm_page_free): Provide new arg to vm_page_release.
 	* vm/vm_page.h (vm_page_external_limit, vm_page_external_count):
 	New variables.
 	(struct vm_page): New members `external' and `extcounted'.
 	(vm_page_grab, vm_page_release, vm_page_convert): Specify new
-	argument. 
+	argument.
 	* vm/vm_pageout.c (vm_pageout): Initialize vm_page_external_limit
 	and vm_page_external_target.
 	(VM_PAGE_EXTERNAL_LIMIT, VM_PAGE_EXTERNAL_TARGET): New macro.
@@ -58,12 +73,12 @@
 	pages.  Help keep track of the number of externally managed pages
 	that we care about.
 	* i386/intel/pmap.c (pmap_page_table_page_alloc): Add new arg for
-	vm_page_grab. 
+	vm_page_grab.
 	* linux/dev/glue/block.c (alloc_buffer, device_read): Likewise.
 	* vm/vm_map.c (vm_map_copy_steal_pages): Likewise.
 	* vm/vm_fault.c (vm_fault_page): Add new args for vm_page_grab and
-	vm_page_convert. 
-	
+	vm_page_convert.
+
 	* vm/vm_pageout.c (VM_PAGEOUT_BURST_WAIT): Reduce to 10ms/page.
 	(VM_PAGEOUT_EMPTY_WAIT): Reduce to 75 ms.
 	(VM_PAGE_FREE_RESERVED): Increase to 50 pages.
@@ -79,17 +94,17 @@
 	(dist): No longer make `machine' symlink.
 
 	* Makefile.in (dist): Sanify file permissions before building tar
-	file. 
+	file.
 
 	* i386/Subdirs: Remove i386/i386at/boot.
 
 Sun Jun 20 18:33:59 1999  Thomas Bushnell, BSG  <tb@mit.edu>
 
 	* version.c (version): Updated to version 1.2.
-	
+
 	* i386/Files: Regenerated.
 	* i386/Subdirs: Regenerated.
-	
+
 	* linux/Files: New file.
 	* linux/Subdirs: New file.
 	* Makefile.in (all-archs): Add `linux'.
