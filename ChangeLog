@@ -1,3 +1,8 @@
+2001-11-23  Roland McGrath  <roland@frob.com>
+
+	* i386/i386at/i386at_ds_routines.c (device_deallocate): Do nothing if
+	argument is DEVICE_NULL.
+
 2001-10-21  Marcus Brinkmann  <marcus@gnu.org>
 
 	* linux/src/arch/i386/lib/delay.c: Convert HTML entities.
