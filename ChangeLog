@@ -1,3 +1,19 @@
+1999-06-16  Thomas Bushnell, BSG  <tb@mit.edu>
+
+	* linux/dev/drivers/net/Space.c (ethif_probe): Probe tc59x_probe
+	(CONFIG_VORTEX) after el3_probe (CONFIG_EL3), because the latter
+	card matches the former probe, but the driver doesn't work with
+	it.  Reported by Marcus Brinkmann <brinkmd@debian.org>.
+
+	* Drivers.macros (AC_DRIVER): Only turn on driver if $enableval is
+	not `no'.  Reported by Kalle Olavi Niemitalo <tosi@ees2.oulu.fi>.
+
+1999-06-15  Thomas Bushnell, BSG  <tb@mit.edu>
+
+	* ipc/ipc_init.c (ipc_bootstrap): Don't make the IOT_PORT zone
+	exhaustible, because allocation of ports for internal objects
+	panics if zalloc fails.
+
 1999-06-07  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
 
 	* linux/dev/drivers/block/genhd.c [MACH] (mach_minor): New variable.

@@ -43,12 +43,14 @@ dnl `class'; see the comments on AC_DRIVER_CLASS for more information.
 AC_DEFUN(AC_DRIVER, [
 [#] Checking for device driver option [$1]
 AC_ARG_ENABLE([$1],,
+if [ "x$enableval" != xno ]; then 
 AC_DEFINE([$2])
 device_drivers="$device_drivers [$3]"
 if test "${driver_class_[$4]_selected+set}" != set; then
   driver_class_[$4]_selected=yes
   AC_DEFINE_UNQUOTED($driver_class_[$4]_option)
   device_drivers="$device_drivers $driver_class_[$4]_files"
+fi
 fi
 )])
 
