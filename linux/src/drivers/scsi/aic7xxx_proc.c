@@ -26,12 +26,12 @@
  *
  *  Dean W. Gehnert, deang@teleport.com, 05/01/96
  *
- *  $Id: aic7xxx_proc.c,v 1.1 1999/04/26 05:54:19 tb Exp $
+ *  $Id: aic7xxx_proc.c,v 1.1.4.1 2004/01/16 22:41:26 roland Exp $
  *-M*************************************************************************/
 
 #define	BLS	(&aic7xxx_buffer[size])
 #define HDRB \
-"        < 512 512-1K   1-2K   2-4K   4-8K  8-16K 16-32K 32-64K 64-128K >128K"
+"             < 2K      2K+     4K+     8K+    16K+    32K+    64K+   128K+"
 
 #ifdef PROC_DEBUG
 extern int vsprintf(char *, const char *, va_list);
@@ -86,7 +86,7 @@ aic7xxx_proc_info ( char *buffer, char **start, off_t offset, int length,
   int    size = 0;
   unsigned char i;
   struct aic7xxx_xferstats *sp;
-  unsigned char target, lun;
+  unsigned char target;
 
   HBAptr = NULL;
 
@@ -130,15 +130,12 @@ aic7xxx_proc_info ( char *buffer, char **start, off_t offset, int length,
   size = 4096;
   for (target = 0; target < MAX_TARGETS; target++)
   {
-    for (lun = 0; lun < MAX_LUNS; lun++)
-    {
-      if (p->stats[target][lun].xfers != 0)
+    if (p->dev_flags[target] & DEVICE_PRESENT)
 #ifdef AIC7XXX_PROC_STATS
-        size += 512;
+      size += 512;
 #else
-        size += 256;
+      size += 256;
 #endif
-    }
   }
   if (aic7xxx_buffer_size != size)
   {
@@ -163,21 +160,17 @@ aic7xxx_proc_info ( char *buffer, char **start, off_t offset, int length,
   size += sprintf(BLS, "%s", AIC7XXX_H_VERSION);
   size += sprintf(BLS, "\n");
   size += sprintf(BLS, "Compile Options:\n");
-#ifdef AIC7XXX_RESET_DELAY
-  size += sprintf(BLS, "  AIC7XXX_RESET_DELAY    : %d\n", AIC7XXX_RESET_DELAY);
+#ifdef CONFIG_AIC7XXX_TCQ_ON_BY_DEFAULT
+  size += sprintf(BLS, "  TCQ Enabled By Default : Enabled\n");
+#else
+  size += sprintf(BLS, "  TCQ Enabled By Default : Disabled\n");
 #endif
-  size += sprintf(BLS, "  AIC7XXX_TAGGED_QUEUEING: Adapter Support Enabled\n");
-  size += sprintf(BLS, "                             Check below to see "
-                       "which\n"
-                       "                             devices use tagged "
-                       "queueing\n");
-  size += sprintf(BLS, "  AIC7XXX_PAGE_ENABLE    : Enabled (This is no longer "
-                       "an option)\n");
 #ifdef AIC7XXX_PROC_STATS
   size += sprintf(BLS, "  AIC7XXX_PROC_STATS     : Enabled\n");
 #else
   size += sprintf(BLS, "  AIC7XXX_PROC_STATS     : Disabled\n");
 #endif
+  size += sprintf(BLS, "  AIC7XXX_RESET_DELAY    : %d\n", AIC7XXX_RESET_DELAY);
   size += sprintf(BLS, "\n");
   size += sprintf(BLS, "Adapter Configuration:\n");
   size += sprintf(BLS, "           SCSI Adapter: %s\n",
@@ -253,11 +246,7 @@ aic7xxx_proc_info ( char *buffer, char **start, off_t offset, int length,
   }
   size += sprintf(BLS, " Tag Queue Enable Flags: 0x%04x\n", p->tagenable);
   size += sprintf(BLS, "Ordered Queue Tag Flags: 0x%04x\n", p->orderedtag);
-#ifdef AIC7XXX_CMDS_PER_LUN
-  size += sprintf(BLS, "Default Tag Queue Depth: %d\n", AIC7XXX_CMDS_PER_LUN);
-#else
-  size += sprintf(BLS, "Default Tag Queue Depth: %d\n", 8);
-#endif
+  size += sprintf(BLS, "Default Tag Queue Depth: %d\n", AIC7XXX_CMDS_PER_DEVICE);
   size += sprintf(BLS, "    Tagged Queue By Device array for aic7xxx host "
                        "instance %d:\n", p->instance);
   size += sprintf(BLS, "      {");
@@ -272,85 +261,83 @@ aic7xxx_proc_info ( char *buffer, char **start, off_t offset, int length,
   size += sprintf(BLS, "%d}\n", p->dev_max_queue_depth[i]);
 
   size += sprintf(BLS, "\n");
-  size += sprintf(BLS, "Statistics:\n");
+  size += sprintf(BLS, "Statistics:\n\n");
   for (target = 0; target < MAX_TARGETS; target++)
   {
-    for (lun = 0; lun < MAX_LUNS; lun++)
+    sp = &p->stats[target];
+    if ((p->dev_flags[target] & DEVICE_PRESENT) == 0)
     {
-      sp = &p->stats[target][lun];
-      if (sp->xfers == 0)
+      continue;
+    }
+    if (p->features & AHC_TWIN)
+    {
+      size += sprintf(BLS, "(scsi%d:%d:%d:%d)\n",
+          p->host_no, (target >> 3), (target & 0x7), 0);
+    }
+    else
+    {
+      size += sprintf(BLS, "(scsi%d:%d:%d:%d)\n",
+          p->host_no, 0, target, 0);
+    }
+    size += sprintf(BLS, "  Device using %s/%s",
+          (p->transinfo[target].cur_width == MSG_EXT_WDTR_BUS_16_BIT) ?
+          "Wide" : "Narrow",
+          (p->transinfo[target].cur_offset != 0) ?
+          "Sync transfers at " : "Async transfers.\n" );
+    if (p->transinfo[target].cur_offset != 0)
+    {
+      struct aic7xxx_syncrate *sync_rate;
+      int period = p->transinfo[target].cur_period;
+      int rate = (p->transinfo[target].cur_width ==
+                  MSG_EXT_WDTR_BUS_16_BIT) ? 1 : 0;
+
+      sync_rate = aic7xxx_find_syncrate(p, &period, AHC_SYNCRATE_ULTRA2);
+      if (sync_rate != NULL)
       {
-        continue;
-      }
-      if (p->features & AHC_TWIN)
-      {
-        size += sprintf(BLS, "(scsi%d:%d:%d:%d)\n",
-            p->host_no, (target >> 3), (target & 0x7), lun);
+        size += sprintf(BLS, "%s MByte/sec, offset %d\n",
+                        sync_rate->rate[rate],
+                        p->transinfo[target].cur_offset );
       }
       else
       {
-        size += sprintf(BLS, "(scsi%d:%d:%d:%d)\n",
-            p->host_no, 0, target, lun);
+        size += sprintf(BLS, "3.3 MByte/sec, offset %d\n",
+                        p->transinfo[target].cur_offset );
       }
-      size += sprintf(BLS, "  Device using %s/%s\n",
-            (p->transinfo[target].cur_width == MSG_EXT_WDTR_BUS_16_BIT) ?
-            "Wide" : "Narrow",
-            (p->transinfo[target].cur_offset != 0) ?
-            "Sync transfers at" : "Async transfers." );
-      if (p->transinfo[target].cur_offset != 0)
-      {
-        struct aic7xxx_syncrate *sync_rate;
-        int period = p->transinfo[target].cur_period;
-        int rate = (p->transinfo[target].cur_width ==
-                    MSG_EXT_WDTR_BUS_16_BIT) ? 1 : 0;
-
-        sync_rate = aic7xxx_find_syncrate(p, &period, AHC_SYNCRATE_ULTRA2);
-        if (sync_rate != NULL)
-        {
-          size += sprintf(BLS, "  %s MByte/sec, offset %d\n",
-                          sync_rate->rate[rate],
-                          p->transinfo[target].cur_offset );
-        }
-        else
-        {
-          size += sprintf(BLS, "  3.3 MByte/sec, offset %d\n",
-                          p->transinfo[target].cur_offset );
-        }
-      }
-      size += sprintf(BLS, "    Device Negotiation Settings\n");
-      size += sprintf(BLS, "        Period Offset Bus Width\n");
-      size += sprintf(BLS, "User       %03d    %03d        %d\n",
-                      p->transinfo[target].user_period,
-                      p->transinfo[target].user_offset,
-                      p->transinfo[target].user_width);
-      size += sprintf(BLS, "Goal       %03d    %03d        %d\n",
-                      p->transinfo[target].goal_period,
-                      p->transinfo[target].goal_offset,
-                      p->transinfo[target].goal_width);
-      size += sprintf(BLS, "Current    %03d    %03d        %d\n",
-                      p->transinfo[target].cur_period,
-                      p->transinfo[target].cur_offset,
-                      p->transinfo[target].cur_width);
-      size += sprintf(BLS, "    Total transfers %ld (%ld read;%ld written)\n",
-          sp->xfers, sp->r_total, sp->w_total);
-      size += sprintf(BLS, "      blks(512) rd=%ld; blks(512) wr=%ld\n",
-          sp->r_total512, sp->w_total512);
-#ifdef AIC7XXX_PROC_STATS
-      size += sprintf(BLS, "%s\n", HDRB);
-      size += sprintf(BLS, " Reads:");
-      for (i = 0; i < NUMBER(sp->r_bins); i++)
-      {
-        size += sprintf(BLS, "%6ld ", sp->r_bins[i]);
-      }
-      size += sprintf(BLS, "\n");
-      size += sprintf(BLS, "Writes:");
-      for (i = 0; i < NUMBER(sp->w_bins); i++)
-      {
-        size += sprintf(BLS, "%6ld ", sp->w_bins[i]);
-      }
-#endif /* AIC7XXX_PROC_STATS */
-      size += sprintf(BLS, "\n\n");
     }
+    size += sprintf(BLS, "  Transinfo settings: ");
+    size += sprintf(BLS, "current(%d/%d/%d), ",
+                    p->transinfo[target].cur_period,
+                    p->transinfo[target].cur_offset,
+                    p->transinfo[target].cur_width);
+    size += sprintf(BLS, "goal(%d/%d/%d), ",
+                    p->transinfo[target].goal_period,
+                    p->transinfo[target].goal_offset,
+                    p->transinfo[target].goal_width);
+    size += sprintf(BLS, "user(%d/%d/%d)\n",
+                    p->transinfo[target].user_period,
+                    p->transinfo[target].user_offset,
+                    p->transinfo[target].user_width);
+#ifdef AIC7XXX_PROC_STATS
+    size += sprintf(BLS, "  Total transfers %ld (%ld reads and %ld writes)\n",
+        sp->r_total + sp->w_total, sp->r_total, sp->w_total);
+    size += sprintf(BLS, "%s\n", HDRB);
+    size += sprintf(BLS, "   Reads:");
+    for (i = 0; i < NUMBER(sp->r_bins); i++)
+    {
+      size += sprintf(BLS, " %7ld", sp->r_bins[i]);
+    }
+    size += sprintf(BLS, "\n");
+    size += sprintf(BLS, "  Writes:");
+    for (i = 0; i < NUMBER(sp->w_bins); i++)
+    {
+      size += sprintf(BLS, " %7ld", sp->w_bins[i]);
+    }
+    size += sprintf(BLS, "\n");
+#else
+    size += sprintf(BLS, "  Total transfers %ld (%ld reads and %ld writes)\n",
+        sp->r_total + sp->w_total, sp->r_total, sp->w_total);
+#endif /* AIC7XXX_PROC_STATS */
+    size += sprintf(BLS, "\n\n");
   }
 
   if (size >= aic7xxx_buffer_size)

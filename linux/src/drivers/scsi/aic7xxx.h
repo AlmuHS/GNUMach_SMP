@@ -18,7 +18,7 @@
  * along with this program; see the file COPYING.  If not, write to
  * the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
  * 
- * $Id: aic7xxx.h,v 1.1 1999/04/26 05:54:18 tb Exp $
+ * $Id: aic7xxx.h,v 1.1.4.1 2004/01/16 22:41:26 roland Exp $
  *-M*************************************************************************/
 #ifndef _aic7xxx_h
 #define _aic7xxx_h
