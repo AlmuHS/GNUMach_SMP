@@ -316,8 +316,8 @@ static void copy_bootstrap(void *e, struct exec_info *boot_exec_info)
 
 	    while (i < lenp)
 	      {
-		vm_fault(user_map, text_page_start +i, 
-		        load_protect_text ?  
+		vm_fault(user_map, text_page_start +i,
+		        load_protect_text ?
 			 VM_PROT_READ|VM_PROT_EXECUTE :
 			 VM_PROT_READ|VM_PROT_EXECUTE | VM_PROT_WRITE,
 			 0,0,0);
@@ -351,6 +351,7 @@ static build_args_and_stack(boot_exec_info, va_alist)
 	int		arg_item_len;
 	char *		string_pos;
 	char *		zero = (char *)0;
+	static const char cmdline_var[] = "MULTIBOOT_CMDLINE=";
 
 #define	STACK_SIZE	(64*1024)
 
@@ -369,6 +370,9 @@ static build_args_and_stack(boot_exec_info, va_alist)
 	}
 	va_end(argv_ptr);
 
+	if (kernel_cmdline[0] != '\0')
+	  arg_len += sizeof cmdline_var + strlen (kernel_cmdline);
+
 	/*
 	 * Add space for:
 	 *	arg count
@@ -378,7 +382,7 @@ static build_args_and_stack(boot_exec_info, va_alist)
 	 *	and align to integer boundary
 	 */
 	arg_len += sizeof(integer_t)
-		 + (2 + arg_count) * sizeof(char *);
+		 + (3 + arg_count) * sizeof(char *);
 	arg_len = (arg_len + sizeof(integer_t) - 1) & ~(sizeof(integer_t)-1);
 
 	/*
@@ -400,7 +404,7 @@ static build_args_and_stack(boot_exec_info, va_alist)
 	string_pos = arg_pos
 		+ sizeof(integer_t)
 		+ arg_count * sizeof(char *)
-		+ 2 * sizeof(char *);
+		+ 3 * sizeof(char *);
 
 	/*
 	 * first the argument count
@@ -431,10 +435,36 @@ static build_args_and_stack(boot_exec_info, va_alist)
 	va_end(argv_ptr);
 
 	/*
-	 * last, the trailing 0 argument and a null environment pointer.
+	 * Null terminator for argv.
 	 */
 	(void) copyout((char *)&zero, arg_pos, sizeof(char *));
 	arg_pos += sizeof(char *);
+
+	/*
+	 * If we have a command line, put it in an environment variable.
+	 */
+	if (kernel_cmdline[0] != '\0') {
+	    /* set string pointer */
+	    (void) copyout((char *)&string_pos,
+			arg_pos,
+			sizeof (char *));
+	    arg_pos += sizeof(char *);
+
+	    /* copy string */
+	    arg_ptr = (char *) cmdline_var;
+	    arg_item_len = sizeof cmdline_var - 1;
+	    (void) copyout(arg_ptr, string_pos, arg_item_len);
+	    string_pos += arg_item_len;
+
+	    /* copy string */
+	    arg_ptr = kernel_cmdline;
+	    arg_item_len = strlen(kernel_cmdline) + 1;
+	    (void) copyout(arg_ptr, string_pos, arg_item_len);
+	    string_pos += arg_item_len;
+	}
+	/*
+	 * Null terminator for envp.
+	 */
 	(void) copyout((char *)&zero, arg_pos, sizeof(char *));
 }
 
@@ -483,4 +513,3 @@ static void user_bootstrap()
 	thread_bootstrap_return();
 	/*NOTREACHED*/
 }
-
