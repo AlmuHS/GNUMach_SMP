@@ -1,3 +1,8 @@
+2001-05-12  Marcus Brinkmann  <marcus@gnu.org>
+
+	* ipc/ipc_object.c (ipc_object_alloc): Remove initialization of
+	namep, which was without effect.
+
 2001-04-29  Marcus Brinkmann  <marcus@gnu.org>
 
 	* debian/changelog: New entries for past Debian uploads.

@@ -247,7 +247,6 @@ ipc_object_alloc(
 
 		bzero((char *)pset, sizeof(*pset));
 	}
-	*namep = (mach_port_t)object;
 	kr = ipc_entry_alloc(space, namep, &entry);
 	if (kr != KERN_SUCCESS) {
 		io_free(otype, object);
