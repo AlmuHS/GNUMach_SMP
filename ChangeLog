@@ -1,8 +1,14 @@
+1999-10-05  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* i386/intel/pmap.c (pmap_bootstrap): Use _start instead of start.
+	* i386/i386/trap.c (kernel_trap): Likewise.
+
 1999-10-04  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* configure.in: Remove AC_CHECK_TOOL(MAKE,...) check.
 	* Makefile.in (MAKE): Variable removed.  We require GNU make anyway,
 	and it always sets MAKE.
+	* configure: Regenerated.
 
 	* Makefile.in (clib-routines.o, check-clib-routines, clib-routines.d):
 	Remove these rules, replace with:
