@@ -1,3 +1,36 @@
+1999-06-27  Thomas Bushnell, BSG  <tb@mit.edu>
+
+	* vm/vm_resident.c (vm_page_external_count): Define variable.
+	(vm_page_grab): New argument `external'.  All callers changed.
+	Keep track of number of externally managed pages.  Don't let
+	non-privileged threads exceed the externally-managed page limit.
+	(vm_page_grab_contiguous_pages): New argument `external'.  All
+	callers changed.  Keep track of number of externally managed
+	pages.  Don't let non-privileged threads exceed the
+	externally-managed page limit.
+	(vm_page_convert): New argument `external'.  All callers changed.
+	(vm_page_release): New argument `external'.  All callers
+	changed. Keep track of number of externally managed pages.
+	(vm_page_bootstrap): Initialize M->external.
+	* vm/vm_page.h (vm_page_external_limit, vm_page_external_count):
+	New variables.
+	(struct vm_page): New members `external' and `extcounted'.
+	* vm/vm_pageout.c (vm_pageout): Initialize vm_page_external_limit
+	and vm_page_external_target.
+	(VM_PAGE_EXTERNAL_LIMIT, VM_PAGE_EXTERNAL_TARGET): New macro.
+	(vm_pageout_external_target): New variable.
+	(vm_pageout_scan): Regard "too many externally managed pages" as a
+	reason to keep doing work, but if that's the only reason we're
+	doing work, then the only thing we do is schedule cleaning of
+	pages.  Help keep track of the number of externally managed pages
+	that we care about.
+
+	* vm/vm_pageout.c (VM_PAGEOUT_BURST_WAIT): Reduce to 10ms/page.
+	(VM_PAGEOUT_EMPTY_WAIT): Reduce to 75 ms.
+	(VM_PAGE_FREE_RESERVED): Increase to 50 pages.
+	(VM_PAGEOUT_RESERVED_INTERNAL): Adjust to `(reserve) - 25'.
+	(VM_PAGEOUT_RESERVED_REALLY): Adjust to `(reserve) - 40'.
+
 1999-06-21  Thomas Bushnell, BSG  <tb@mit.edu>
 
 	* i386/Files: Don't mention i386/pc/Makerules,
