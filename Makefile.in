@@ -74,7 +74,7 @@ all-archs-configures = $(patsubst %,$(srcdir)/%/configure,$(all-archs))
 # Files distributed from the top level directory:
 topfiles = ChangeLog ChangeLog.0 ChangeLog.00 Drivers.macros Makefile.in \
 	README INSTALL config.guess config.sub configure configure.in \
-	gensym.awk install-sh version.c
+	gensym.awk install-sh version.c NEWS
 
 # All the source in each directory.  
 

@@ -2,6 +2,7 @@ Wed May  7 15:32:08 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* version.c (version): Update to version 1.1.
 	* NEWS: New file.
+	* Makefile.in (topfiles): Add NEWS.
 
 Mon May  5 11:34:01 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
