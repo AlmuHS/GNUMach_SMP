@@ -1,3 +1,36 @@
+1998-10-24  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* configure.in (--enable-kdb): Fix help text; handle --disable-kdb.
+	Remove BUILD_CC checks and lex/yacc checks (which were for mig).
+	(installed_clib): Remove these checks.
+	(LD, NM, MIG): Use AC_CHECK_TOOL for these.
+
+	* Makefile.in (all, clean, mostlyclean, install, dist,
+	%_interface.h rule, all *mig* rules): Remove all commands, deps,
+	and rules related to mig, which is now in a separate distribution.
+
+	* Makefile.in (before-compile): Add mach/machine.
+	(mach/machine, mach_machine): New rules to make symlink so
+	#include <mach/machine/foo.h> works.
+
+	* Makefile.in (NM): New variable, substituted by configure.
+	(check-clib-routines): Use $(NM) instead of literal "nm".
+	Fix awk script to grok __ defns and weak defns of desired symbols.
+	(clib-routines.o): Use $(CC) -r -nostartfiles -nostdlib -static
+	instead of $(LD) -r.  Use -lc instead of $(installed-clib).
+	(installed-clib): Variable removed.
+
+	* i386/Makefrag: Use -include for linux-flags, so no warning.
+
+	* device/chario.c: Add forward decl for ttstart.
+
+	* i386/i386/db_trace.c: Use explicit int in decl.
+
+	* device/ds_routines.c (device_write_trap, device_writev_trap,
+	ds_trap_write_done): Cast arg to zfree.
+
+	* kern/ipc_tt.c (mach_ports_lookup): Remove unnecessary cast.
+
 1998-10-04  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* include/mach/message.h: Use __typeof instead of typeof.
