@@ -500,3 +500,4 @@ endef
 # list.
 %.d: %.s
 	echo '$*.o: $<' > $@
+
