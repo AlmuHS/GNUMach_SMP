@@ -1,3 +1,14 @@
+2004-11-22  Guillem Jover  <guillem@hadrons.org>
+
+	* bogus/mach_assert.h: Change #ifdef DEBUG to #ifndef NDEBUG
+	for assert et al.
+	* kern/assert.h: Likewise.
+	* kern/debug.h: Likewise.
+	* util/debug.h: Likewise.
+
+	* i386/i386/debug.h: Move dump_ss definition out of [DEBUG].
+	* linux/dev/glue/block.c (rdwr_full): Remove invalid assert.
+
 2004-09-07  Neal H. Walfield  <neal@cs.uml.edu>
 
 	* linux/dev/glue/block.c (__brelse): Unconditionally kfree BH.

@@ -589,7 +589,6 @@ rdwr_full (int rw, kdev_t dev, loff_t *off, char **buf, int *resid, int bshift)
   struct buffer_head bhead[MAX_BUF], *bh, *bhp[MAX_BUF];
 
   assert ((*off & BMASK) == 0);
-  assert (*resid >= bsize);
 
   nbuf = *resid >> bshift;
   blk = *off >> bshift;

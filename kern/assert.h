@@ -31,7 +31,7 @@
 
 #include <kern/macro_help.h>
 
-#ifdef DEBUG
+#ifndef NDEBUG
 #define MACH_ASSERT 1
 #endif
 

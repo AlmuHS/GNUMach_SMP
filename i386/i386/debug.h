@@ -23,6 +23,10 @@
 #ifndef _I386_DEBUG_
 #define _I386_DEBUG_
 
+/* Dump a saved state.
+   Probably a good idea to have this around
+   even when DEBUG isn't turned on.  */
+void dump_ss(struct i386_saved_state *st);
 
 #ifdef DEBUG
 
@@ -36,11 +40,6 @@
    the other data segment registers are not needed
    and all registers are saved.  */
 #ifndef ASSEMBLER
-
-/* Dump a saved state.
-   Probably a good idea to have this around
-   even when DEBUG isn't turned on.  */
-void dump_ss(struct i386_saved_state *st);
 
 #define DEBUG_TRACE _debug_trace(__FILE__,__LINE__)
 

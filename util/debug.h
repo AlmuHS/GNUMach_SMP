@@ -34,7 +34,7 @@
 #include <mach/macro_help.h>
 
 
-#ifdef DEBUG
+#ifndef NDEBUG
 
 extern void panic(const char *fmt, ...);
 
@@ -64,7 +64,7 @@ extern void panic(const char *fmt, ...);
 			__FILE__, __LINE__, (p), (id), (p->struct_id)); \
 	})
 
-#else !DEBUG
+#else /* NDEBUG */
 
 #define otsan()
 #define assert(v)
@@ -76,6 +76,6 @@ extern void panic(const char *fmt, ...);
 #define struct_id_denit(p)
 #define struct_id_verify(p,id)
 
-#endif !DEBUG
+#endif /* NDEBUG */
 
 #endif _MACH_UTIL_DEBUG_H_
