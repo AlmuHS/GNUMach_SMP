@@ -1,3 +1,14 @@
+Thu Jun 12 18:08:29 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	Version 1.1.3 released.
+	
+	* version.c (version): Update to 1.1.3.
+
+Wed Jun 11 20:16:47 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* i386/Drivers.in: Add el3.  How did this escape notice?
+	* i386/device-drivers.h.in: Add CONFIG_EL3.
+
 Tue Jun 10 13:33:37 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	Version 1.1.2 released.
