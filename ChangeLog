@@ -1,3 +1,7 @@
+1998-07-19  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* mig: Subdirectory removed, now in separate dist.
+
 Fri Apr 24 14:24:15 1998  Thomas Bushnell, n/BSG  <tb@mit.edu>
 
 	* i386/i386/pcb.c (thread_setstatus): Set STATE before validating
@@ -22,7 +26,7 @@ Wed Aug 20 16:05:19 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 	* include/mach/task_info.h: New member `creation_time'.
 	* kern/task.c (task_create): Set creation time stamp.
 	(task_info) [TASK_BASIC_INFO]: Fill in new creation time field.
-	Carefully preserve compatibility with old callers. 
+	Carefully preserve compatibility with old callers.
 
 	* kern/mach_clock.c (record_time_stamp): New function.
 	* kern/time_out.h (record_time_stamp): Add prototype.
@@ -67,7 +71,7 @@ Fri Aug  1 16:15:33 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 	if PC sampling is configured: MACH_PCSAMPLE, not MACH_SAMPLE.
 
 	* i386/i386/locore.S (discover_x86_cpu_type): Comment out routine
-	for now.  
+	for now.
 	* i386/i386at/model_dep.c (c_boot_entry): Comment out use of
 	discover_x86_cpu_type for now.
 
@@ -96,7 +100,7 @@ Thu Jun 26 13:48:31 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 	* i386/i386/locore.S (discover_x86_cpu_type): New function.
 	* i386/i386at/model_dep.c (c_boot_entry): Fill in cpu type in
 	MACHINE_SLOT using new function.
-	
+
 	* include/mach/machine.h (CPU_TYPE_I486, CPU_TYPE_PENTIUM,
 	CPU_TYPE_PENTIUMPRO, CPU_TYPE_POWERPC): New CPU types.  These
 	conform to current OSF Mach values, but note that some of the
@@ -110,7 +114,7 @@ Mon Jun 16 12:14:17 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 Thu Jun 12 18:08:29 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	Version 1.1.3 released.
-	
+
 	* version.c (version): Update to 1.1.3.
 
 Wed Jun 11 20:16:47 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
@@ -121,21 +125,21 @@ Wed Jun 11 20:16:47 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 Tue Jun 10 13:33:37 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	Version 1.1.2 released.
-	
+
 	* Makefile.in (install): Install cross-migcom as `migcom', not as
-	`mig'. 
+	`mig'.
 
 	* i386/Makefrag (objfiles += $(device_drivers)): Sort
 	$(device_drivers) before adding to objfiles in order to remove
-	duplicates. 
+	duplicates.
 
 Mon Jun  9 22:14:09 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* i386/Drivers.in: Fix typos apt.o -> atp.o; 3c403.o -> 3c503.o.
-	
+
 	* Drivers.macros (AC_DRIVER): Test the class selected flag
-	correctly. 
-	
+	correctly.
+
 Mon May 26 14:33:19 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* version.c (version): Update to version 1.1.2.
@@ -147,16 +151,16 @@ Fri May 23 10:08:48 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* Makefile.in (topfiles): Add aclocal.m4.
 	Reported by Marcus G. Daniels (marcus@cathcart.sysc.pdx.edu).
-	
+
 Mon May 12 11:25:38 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	Version 1.1.1 released.
-	
+
 	* version.c (version): Update to version 1.1.1.
 
 	* bogus/mach_kdb.h: Make sure MACH_KDB is always defined, to zero
 	if necessary.  Bug report from Marcus Daniels
-	(marcus@cathcart.sysc.pdx.edu). 
+	(marcus@cathcart.sysc.pdx.edu).
 
 Fri May  9 13:06:25 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
@@ -181,7 +185,7 @@ Fri May  2 12:43:46 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 	* i386/i386/_setjmp.S: New file, from UK22 libmach.
 	* i386/Files: Add i386/i386/_setjmp.S.
 	* i386/Makefrag (objfiles): Add _setjmp.o if enable_kdb.
-	
+
 1997-04-30  Marcus G. Daniels  <marcus@cathcart.sysc.pdx.edu>
 
 	* Makefile.in (clib-routines): Add htons not because it is necessary,
@@ -195,7 +199,7 @@ Wed Apr 30 14:12:12 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 Mon Apr 28 12:09:53 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* Makefile.in (check): New target.  Reported by
-	xtest@postman.epa.go.jp. 
+	xtest@postman.epa.go.jp.
 
 	* i386/Drivers.in (ncr53c7xx): Change file name to 53c78xx.o.
 	* i386/i386at/gpl/linux/scsi/53c7,8xx.c: Moved to ...
@@ -218,12 +222,12 @@ Wed Apr 23 13:21:23 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 	from configure now.
 
 	* Makefile.in (clean, distclean, mostlyclean, maintainter-clean):
-	New targets.  
-	(all-archs-configures): New variable.  
+	New targets.
+	(all-archs-configures): New variable.
 	(MIG): Change to ./local-mig.
 	(./local-mig): Change to build this instead of ./mig
 	(check-clib-routines): Use nm -g in case there are local symbols.
-	Suggested by Matthew Wilcox (willy@odie.barnet.ac.uk). 
+	Suggested by Matthew Wilcox (willy@odie.barnet.ac.uk).
 
 Fri Apr 18 15:25:10 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
@@ -245,7 +249,7 @@ Wed Apr 16 16:55:36 1997  Marcus G. Daniels  <marcus@cathcart.sysc.pdx.edu>
 	be possible to build it.
 	(all, install): Use $(cross-migcom).
 	(install): Install cross-migcom only if was to be built.
-	(mkinstalldirs): Add $(bindir), $(includedir)/mach/exec 
+	(mkinstalldirs): Add $(bindir), $(includedir)/mach/exec
 	(cross-lexxer.o lexxer.o): lexxer.o needs cpu.h.
 	(./cross-migcom): Prevent dependency generation for cross-* MiG files
 	unless they can actually be built.
@@ -260,7 +264,7 @@ Wed Apr 16 12:52:25 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* Makefile.in (cross-lexxer.o lexxer.o): Add pump-priming
 	dependency on cpu.h.  Reported by Marcus G. Daniels
-	(marcus@cathcart.sysc.pdx.edu). 
+	(marcus@cathcart.sysc.pdx.edu).
 
 	* configure.in: Fail if configure target is not for GNU os.
 
@@ -271,19 +275,19 @@ Wed Apr 16 12:52:25 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 	* i386/bogus/com.h: Revert change of March 10.
 	* i386/device-drivers.h.in (CONFIG_MACH_COM): Delete option.
 	Bug report from Marcus G. Daniels (marcus@cathcart.sysc.pdx.edu).
-	
-	* Makefile.in (./cross-mig): New rule.  
+
+	* Makefile.in (./cross-mig): New rule.
 	(mkinstalldirs): Add $(libexecdir).
-	* configure.in: Recognize i686.  
+	* configure.in: Recognize i686.
 	Reported by Marcus G. Daniels (marcus@cathcart.sysc.pdx.edu).
 
 Mon Apr 14 11:50:45 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
-	* Released version 1.0.	
-	
+	* Released version 1.0.
+
 	* kern/exception.c (exception_no_server): Try and suspend the
 	failing thread before killing the task.  Then a debugger can be
-	used. 
+	used.
 
 	* i386/Makefrag: Add rebuilding rules for configure subscript.
 
@@ -302,10 +306,10 @@ Mon Apr 14 11:50:45 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 	(mach-exec-headers): New variable.
 	(other-headers): New variable.
 	(installed-headers): Add mach-exec-headers.
-	(dist): Distribute other-mach-headers, other-sys-headers, 
+	(dist): Distribute other-mach-headers, other-sys-headers,
 	mach-exec-headers, and other-headers.
 	(device-files): Add device.srv.
-	
+
 	* Makefile.in (check-clib-routines): Use more efficient rule.
 
 Fri Apr 11 15:18:09 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
@@ -327,7 +331,7 @@ Fri Mar 21 15:50:09 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 	* i386/i386at/gpl/linux/scsi/aha1740.c (aha1740_test_port): Try
  	and turn on PORTADDR_ENH before checking it.
 
-	* vm/vm_object.c (vm_object_cached_max): Increase to 200. 
+	* vm/vm_object.c (vm_object_cached_max): Increase to 200.
 
 Thu Mar 20 12:33:06 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
@@ -339,12 +343,12 @@ Thu Mar 20 12:33:06 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 	* version.c (version): Push back to 0.1.
 
 	* Makefile.in (cross_compiling, bindir, libexecdir): New
-	variable. 
-	
+	variable.
+
 	* Makefile.in (install): Depend on cross-mig and cross-migcom;
 	install them.  New rules added to build mig, migcom, cross-mig,
 	and cross-migcom.
-	
+
 	* configure.in (AC_PROG_LEX, AC_PROG_YACC): New tests.
 	(BUILD_CC): New test to set these.
 
@@ -352,13 +356,13 @@ Thu Mar 20 12:33:06 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 	(%_interface.h %_server.c): Likewise.
 	(MIG): Don't use @MIG@; hard code it to the one we build.
 	(BUILD_CC, BUILD_CFLAGS, MIGCOM, LEX, YACC, LEXLIB): New variables.
-	
+
 Wed Mar 19 16:47:28 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* i386/i386at/kd.c (BROKEN_KEYBOARD_RESET): Turn off this so that
 	we attempt the keyboard resets.
 	* i386/i386/locore.S (cpu_shutdown): Attempt to provide a more
-	`robust' null_idtr. 
+	`robust' null_idtr.
 
 Mon Mar 17 13:47:14 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
@@ -366,7 +370,7 @@ Mon Mar 17 13:47:14 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 	gratuitious obnoxiousness.
 	* i386/i386at/gpl/linux/scsi/scsi.c (scsi_dev_init): Likewise.
 	* i386/i386at/gpl/linux/block/triton.c (ide_init_triton):
-	Likewise. 
+	Likewise.
 	(init_triton_dma): Likewise.
 	* i386/i386at/gpl/linux/pci/pci.c (pci_init): Likewise.
 	* i386/i386at/gpl/linux/pci/bios32.c (check_pcibios): Likewise.
@@ -374,7 +378,7 @@ Mon Mar 17 13:47:14 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 	* i386/i386at/gpl/linux/block/genhd.c (add_partition): Likewise.
 
 	* i386/i386at/gpl/linux/net/8390.c (ei_debug): Make default value
-	zero. 
+	zero.
 
 Wed Mar 12 14:50:46 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
@@ -396,10 +400,10 @@ Mon Mar 10 15:04:47 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* i386/i386at/gpl/linux/linux_init.c (calibrate_delay): Don't
 	print out gratuitous obnoxiousness.
-	
+
 	* i386/i386at/gpl/linux/linux_init.c (linux_init): Only call
 	linux_net_emulation_init if CONFIG_INET.  Include
-	<i386/device-drivers.h>. 
+	<i386/device-drivers.h>.
 
 	* i386/i386at/i386at_ds_routines.c: Include
 	<i386/device-drivers.h>.  Don't mention linux_net_emulation_ops
@@ -414,7 +418,7 @@ Mon Mar 10 15:04:47 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 	* i386/Makefrag: Include i386/driverlist; don't include all device
 	drivers in kernel image; instead use list from driverlist.
 	* configure.in: Configure in $systype subdir too.
-	
+
 	* i386/i386at/gpl/linux/include/linux/autoconf.h: Damage severly
 	to conform to device-drivers.h model.
 
@@ -428,13 +432,13 @@ Mon Mar  3 16:26:58 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 Tue Feb 25 15:42:23 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* i386/Makefrag (INCLUDES): Find `include' directory in new
-	location. 
+	location.
 	* Makefile (INCLUDES): Find `include' directory in new location.
 	(%.symc): Find gensym.awk in new location.
-	
+
 	* Reorganized directories into new layout and unified mach4 and
 	mach4-i386 into a single tree.
 
 
 Older changes in ChangeLog.00 (for i386 directory) and ChangeLog.0 (for
-all other files). 	
+all other files).
