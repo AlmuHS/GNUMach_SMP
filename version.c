@@ -1,1 +1,2 @@
-char version[] = "GNUmach 1.0";
+char version[] = "GNUmach 1.1";
+

@@ -1,0 +1,14 @@
+Changes from version 1.0:
+
+Cross-compilation support is much improved.  Any of various popular
+libc's is now sufficient for building clib-routines.o.
+
+New configure option --enable-kdb asks for kernel debugger to be
+compiled in.
+
+Bug in --enable-ncr53c7xx has been fixed.
+
+Many thanks go to Marcus G. Daniels (marcus@cathcart.sysc.pdx.edu) for
+his very helpful testing of the 1.0 release and for his many
+improvements to the cross-compilation support.
+

@@ -1,3 +1,13 @@
+Wed May  7 15:32:08 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* version.c (version): Update to version 1.1.
+	* NEWS: New file.
+
+Mon May  5 11:34:01 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* Makefile.in (enable_kdb): Use findstring instead of filter.
+	Reported by Marcus Daniels (marcus@cathcart.sysc.pdx.edu).
+
 Fri May  2 12:43:46 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* Makefile.in (enable_kdb): New variable.

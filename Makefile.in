@@ -37,7 +37,7 @@ ifeq ($(cross_linkable),yes)
 endif
 
 # Detect if the user wants KDB
-ifeq ($(filter -DMACH_KDB,@DEFS@),-DMACH_KDB)
+ifeq ($(findstring -DMACH_KDB,@DEFS@),-DMACH_KDB)
 enable_kdb=yes
 else
 enable_kdb=no
