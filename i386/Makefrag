@@ -167,7 +167,10 @@ i386-installed-headers= mach/proc_ops.h \
 $(sysdep)/configure: $(sysdep)/Drivers.in $(srcdir)/Drivers.macros
 	cd $(sysdep) && rm -f configure && autoconf Drivers.in > configure
 
-$(systype)/device-drivers.h $(systype)/driverlist: $(sysdep)/driverlist.in $(systype)/config.status
+# Running config.status always creates driverlist, but
+# only touches device-drivers.h if it changed.
+$(systype)/device-drivers.h: $(systype)/driverlist
+$(systype)/driverlist: $(sysdep)/driverlist.in $(systype)/config.status
 	cd $(systype) && ./config.status
 
 $(systype)/config.status: $(sysdep)/configure
