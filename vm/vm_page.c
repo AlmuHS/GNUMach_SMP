@@ -1089,8 +1089,8 @@ vm_page_seg_balance(struct vm_page_seg *seg)
 }
 
 static boolean_t
-vm_page_seg_evict(struct vm_page_seg *seg,
-                  boolean_t external_only, boolean_t low_memory)
+vm_page_seg_evict(struct vm_page_seg *seg, boolean_t external_only,
+                  boolean_t alloc_paused)
 {
     struct vm_page *page;
     boolean_t reclaim, laundry;
@@ -1157,7 +1157,7 @@ restart:
 
     assert(!page->laundry);
 
-    if (object->internal || !low_memory) {
+    if (object->internal || !alloc_paused) {
         laundry = FALSE;
     } else {
         laundry = page->laundry = TRUE;
@@ -1945,39 +1945,10 @@ vm_page_balance(void)
 }
 
 static boolean_t
-vm_page_evict_once(boolean_t external_only)
+vm_page_evict_once(boolean_t external_only, boolean_t alloc_paused)
 {
-    struct vm_page_seg *seg;
-    boolean_t low_memory, min_page_available, evicted;
+    boolean_t evicted;
     unsigned int i;
-
-    /*
-     * XXX Page allocation currently only uses the DIRECTMAP selector,
-     * allowing us to know which segments to look at when determining
-     * whether we're very low on memory.
-     */
-    low_memory = TRUE;
-
-    simple_lock(&vm_page_queue_free_lock);
-
-    for (i = 0; i < vm_page_segs_size; i++) {
-        if (i > VM_PAGE_SEG_DIRECTMAP) {
-            break;
-        }
-
-        seg = vm_page_seg_get(i);
-
-        simple_lock(&seg->lock);
-        min_page_available = vm_page_seg_min_page_available(seg);
-        simple_unlock(&seg->lock);
-
-        if (min_page_available) {
-            low_memory = FALSE;
-            break;
-        }
-    }
-
-    simple_unlock(&vm_page_queue_free_lock);
 
     /*
      * It's important here that pages are evicted from lower priority
@@ -1986,7 +1957,7 @@ vm_page_evict_once(boolean_t external_only)
 
     for (i = vm_page_segs_size - 1; i < vm_page_segs_size; i--) {
         evicted = vm_page_seg_evict(vm_page_seg_get(i),
-                                    external_only, low_memory);
+                                    external_only, alloc_paused);
 
         if (evicted) {
             return TRUE;
@@ -2002,7 +1973,7 @@ vm_page_evict_once(boolean_t external_only)
 boolean_t
 vm_page_evict(boolean_t *should_wait)
 {
-    boolean_t pause, evicted, external_only;
+    boolean_t pause, evicted, external_only, alloc_paused;
     unsigned int i;
 
     *should_wait = TRUE;
@@ -2010,6 +1981,7 @@ vm_page_evict(boolean_t *should_wait)
 
     simple_lock(&vm_page_queue_free_lock);
     vm_page_external_pagedout = 0;
+    alloc_paused = vm_page_alloc_paused;
     simple_unlock(&vm_page_queue_free_lock);
 
 again:
@@ -2023,7 +1995,7 @@ again:
     }
 
     for (i = 0; i < VM_PAGE_MAX_EVICTIONS; i++) {
-        evicted = vm_page_evict_once(external_only);
+        evicted = vm_page_evict_once(external_only, alloc_paused);
 
         if (!evicted) {
             break;
