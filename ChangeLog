@@ -1,3 +1,7 @@
+1998-10-28  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* include/mach/multiboot.h: Contents were doubled.
+
 1998-10-24  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* Makefile.in (mach_machine): Don't depend on config.status, since it
