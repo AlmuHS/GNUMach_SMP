@@ -1,0 +1,13 @@
+Tue Feb 25 15:42:23 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* i386/Makefrag (INCLUDES): Find `include' directory in new
+	location. 
+	* Makefile (INCLUDES): Find `include' directory in new location.
+	(%.symc): Find gensym.awk in new location.
+	
+	* Reorganized directories into new layout and unified mach4 and
+	mach4-i386 into a single tree.
+
+
+Older changes in ChangeLog.00 (for i386 directory) and ChangeLog.0 (for
+all other files). 	

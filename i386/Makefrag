@@ -1,0 +1,111 @@
+# i386 Mach makefile fragment
+# Copyright 1996 Free Software Foundation, Inc.
+# This file is part of GNU Mach.  Redistribution terms are not yet decided. 
+
+
+# Some of the i386-specific code checks for these.
+DEFINES += -DCONTINUATIONS -DLINUX_DEV -D__ELF__ -Di386
+
+# Source files for any i386 kernel
+i386at-files = autoconf.c blit.c com.c conf.c cons_conf.c fd.c \
+	i386at_ds_routines.c immc.c int_init.c iopl.c kd.c kd_event.c \
+	kd_mouse.c kd_queue.c lpr.c model_dep.c nfd.c nhd.c \
+	phys_mem_grab_page.c pic_isa.c rtc.c
+i386-files = ast_check.c db_disasm.c db_interface.c db_trace.c debug_i386.c \
+	fpe_linkage.c fpu.c gdt.c hardclock.c idt.c io_emulate.c io_map.c \
+	iopb.c ktss.c kttd_interface.c ldt.c loose_ends.c mp_desc.c pcb.c \
+	phys.c pic.c pit.c seg.c trap.c user_ldt.c
+intel-files = pmap.c read_fault.c
+
+# Assembler source
+i386at-Sfiles = boothdr.S interrupt.S kdasm.S
+i386-Sfiles = cswitch.S debug_trace.S idt_inittab.S locore.S spl.S
+
+# Account for them in the image
+objfiles += $(subst .c,.o,$(i386at-files) $(i386-files) $(intel-files)) \
+	    $(subst .S,.o,$(i386at-Sfiles) $(i386-Sfiles))
+vpath %.c $(sysdep)/i386at $(sysdep)/i386 $(sysdep)/intel
+vpath %.S $(sysdep)/i386at $(sysdep)/i386
+
+# Files from the generic source that we want
+objfiles += busses.o cirbuf.o
+vpath busses.c $(srcdir)/chips
+
+# FPE emulation
+objfiles += fpe.o
+
+# Mig-generated
+objfiles += mach_i386_server.o
+
+### Linux device drivers (make this Better, Please)
+
+# instead of Mach's KERNEL, Linux uses __KERNEL__.  Whee.
+DEFINES += -D__KERNEL__
+
+linux-gen-files = $(addprefix linux_,$(linux-gen-names))
+linux-gen-names = autoirq.c block.c dma.c init.c irq.c kmem.c misc.c net.c \
+		port.c printk.c sched.c soft.c timer.c version.c vsprintf.c
+
+linux-block-files = cmd640.c floppy.c genhd.c ide-cd.c ide.c rz1000.c triton.c
+
+linux-net-files = 3c501.c 3c503.c 3c505.c 3c507.c 3c509.c 3c59x.c \
+	8390.c Space.c ac3200.c apricot.c at1700.c atp.c \
+	de4x5.c de600.c de620.c depca.c dev.c e2100.c eepro.c eexpress.c \
+	eth16i.c ewrk3.c hp-plus.c hp.c hp100.c lance.c ne.c net_init.c \
+	ni52.c ni65.c seeq8005.c sk_g16.c smc-ultra.c tulip.c \
+	wavelan.c wd.c znet.c
+
+linux-pci-files = bios32.c pci.c
+
+linux-scsi-files = 53c7,8xx.c AM53C974.c BusLogic.c NCR53c406a.c advansys.c \
+	aha152x.c aha1542.c aha1740.c aic7xxx.c constants.c eata.c eata_dma.c \
+	eata_pio.c fdomain.c g_NCR5380.c hosts.c in2000.c pas16.c qlogic.c \
+	scsi.c scsi_debug.c scsi_ioctl.c scsi_proc.c scsicam.c sd.c \
+	sd_ioctl.c seagate.c sr.c sr_ioctl.c t128.c u14-34f.c \
+	ultrastor.c wd7000.c
+
+objfiles += $(subst .c,.o,$(linux-gen-files) $(linux-block-files) \
+		$(linux-net-files) $(linux-pci-files) $(linux-scsi-files))
+vpath %.c $(sysdep)/i386at/gpl/linux $(sysdep)/i386at/gpl/linux/block
+vpath %.c $(sysdep)/i386at/gpl/linux/net $(sysdep)/i386at/gpl/linux/pci
+vpath %.c $(sysdep)/i386at/gpl/linux/scsi
+
+# Because of the use of `extern inline' in some Linux header files without
+# corresponding text-segment definitions, we must always optimize.
+CFLAGS += -O2
+
+### End Linux device drivers grot
+
+
+# XXX Temporary
+i386at_ds_routines.o: device_interface.h
+
+
+
+# Where to find some things
+vpath i386asm.sym $(sysdep)/i386
+vpath mach_i386.srv $(sysdep)/i386
+
+# Make sure boothdr.o is at the very front
+objfiles := boothdr.o $(filter-out boothdr.o,$(objfiles))
+
+# Our include files are here; make sure they PRECEDE the generic ones.
+INCLUDES := -I$(sysdep)/i386at -I$(sysdep)/i386 \
+	-I$(sysdep)/include -I$(sysdep)/include/mach/sa \
+	-I$(sysdep)/bogus -I$(sysdep) \
+	-I$(sysdep)/i386at/gpl/linux -I$(sysdep)/i386at/gpl/linux/include \
+	$(INCLUDES)
+
+
+# arrange suitable load address
+LDFLAGS += -Ttext 100000
+
+# Assemble .S files correctly
+ASFLAGS += -DASSEMBLER
+
+boothdr.o: i386asm.h 
+
+# Cheat, cheat, cheat.
+fpe.o: fpe.b_elf
+	uudecode $<
+vpath fpe.b_elf $(sysdep)/i386
