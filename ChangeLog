@@ -8,14 +8,20 @@
 	callers changed.  Keep track of number of externally managed
 	pages.  Don't let non-privileged threads exceed the
 	externally-managed page limit.
-	(vm_page_convert): New argument `external'.  All callers changed.
+	(vm_page_convert): New argument `external', handed off to
+	vm_page_grab.  All callers changed. 
 	(vm_page_release): New argument `external'.  All callers
 	changed. Keep track of number of externally managed pages.
 	(vm_page_bootstrap): Initialize M->external.
 	(vm_page_external_limit): Define new variable.
+	(vm_page_grab_phys_addr, vm_page_alloc): Add new arg for
+	vm_page_grab. 
+	(vm_page_free): Provide new arg to vm_page_release.
 	* vm/vm_page.h (vm_page_external_limit, vm_page_external_count):
 	New variables.
 	(struct vm_page): New members `external' and `extcounted'.
+	(vm_page_grab, vm_page_release, vm_page_convert): Specify new
+	argument. 
 	* vm/vm_pageout.c (vm_pageout): Initialize vm_page_external_limit
 	and vm_page_external_target.
 	(VM_PAGE_EXTERNAL_LIMIT, VM_PAGE_EXTERNAL_TARGET): New macro.
@@ -25,8 +31,13 @@
 	doing work, then the only thing we do is schedule cleaning of
 	pages.  Help keep track of the number of externally managed pages
 	that we care about.
+	* i386/intel/pmap.c (pmap_page_table_page_alloc): Add new arg for
+	vm_page_grab. 
+	* linux/dev/glue.c (alloc_buffer, device_read): Likewise.
+	* vm/vm_map.c (vm_map_copy_steal_pages): Likewise.
+	* vm/vm_fault.c (vm_fault_page): Add new args for vm_page_grab and
+	vm_page_convert. 
 	
-
 	* vm/vm_pageout.c (VM_PAGEOUT_BURST_WAIT): Reduce to 10ms/page.
 	(VM_PAGEOUT_EMPTY_WAIT): Reduce to 75 ms.
 	(VM_PAGE_FREE_RESERVED): Increase to 50 pages.
