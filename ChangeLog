@@ -1,5 +1,9 @@
 Mon May 12 11:25:38 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
+	Version 1.1.1 released.
+	
+	* version.c (version): Update to version 1.1.1.
+
 	* bogus/mach_kdb.h: Make sure MACH_KDB is always defined, to zero
 	if necessary.  Bug report from Marcus Daniels
 	(marcus@cathcart.sysc.pdx.edu). 
