@@ -1,3 +1,8 @@
+1999-05-29  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* kern/startup.c (start_kernel_threads): Call record_time_stamp to
+	reset the kernel task's creation_time field, so it's not zero.
+
 1999-05-24  Mark Kettenis  <kettenis@gnu.org>
 
 	* i386/i386/fpu.c (fp_free): Clear task switch flag before calling
