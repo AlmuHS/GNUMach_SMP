@@ -1,3 +1,7 @@
+Fri Apr 24 13:19:40 1998  Thomas Bushnell n/BSG  <thomas@melange.gnu.org>
+
+	* i386/i386at/gpl/linux/linux_kmem.c: Increase MEM_CHUNKS to 7.
+
 Wed Aug 20 16:05:19 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* kern/thread.h (struct thread): New member `creation_time'.
