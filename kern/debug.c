@@ -159,7 +159,7 @@ panic(s, va_alist)
 
 	/* Give the user time to see the message */
 	{
-	  int i = 60;		/* seconds */
+	  int i = 1000;		/* seconds */
 	  while (i--)
 	    delay (1000000);	/* microseconds */
 	}
