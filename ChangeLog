@@ -1,3 +1,11 @@
+1998-10-04  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* include/mach/message.h: Use __typeof instead of typeof.
+
+1998-09-06  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* kern/time_out.h: Include <mach/time_value.h> for time_value_t defn.
+
 1998-07-19  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* mig: Subdirectory removed, now in separate dist.
