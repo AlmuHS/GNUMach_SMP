@@ -1,3 +1,16 @@
+1999-10-08  Thomas Bushnell, BSG  <tb@mit.edu>
+
+	* linux/src/drivers/net/3c59x.c: Updated to version 0.99L of the
+	driver from ftp://cesdis.gsfc.nasa.gov/linux/drivers/3c59x.c, in
+	order to support the 3c509c card, as requested by Jeff Bailey
+	<jbailey@nisa.net>.
+
+1999-09-17  Thomas Bushnell, BSG  <tb@mit.edu>
+
+	* linux/dev/drivers/block/ide.c (do_request) [MACH]: In "bad
+	access" printf, actually print the number of sectors of the
+	partition.
+	
 1999-10-05  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* i386/intel/pmap.c (pmap_bootstrap): Use _start instead of start.
