@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 1994 The University of Utah and
  * the Computer Systems Laboratory at the University of Utah (CSL).
  * All rights reserved.
@@ -27,4 +27,4 @@
 
 extern struct i386_tss ktss;
 
-#endif _I386_KTSS_
+#endif /* _I386_KTSS_ */

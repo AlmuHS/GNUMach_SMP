@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 1994 The University of Utah and
  * the Computer Systems Laboratory at the University of Utah (CSL).
  * All rights reserved.
@@ -34,4 +34,4 @@
 
 #include "idt-gen.h"
 
-#endif _I386AT_IDT_
+#endif /* _I386AT_IDT_ */

@@ -1,34 +1,34 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990,1989 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
-/* 
+/*
  *	Olivetti Mach Console driver v0.0
  *	Copyright Ing. C. Olivetti & C. S.p.A. 1988, 1989
  *	All rights reserved.
  *
- */ 
+ */
 /*
   Copyright 1988, 1989 by Olivetti Advanced Technology Center, Inc.,
 Cupertino, California.
@@ -132,7 +132,7 @@ int kdcninit(struct consdev *cp);
 int kdcngetc(dev_t dev, int wait);
 int kdcnputc(dev_t dev, int c);
 
-/* 
+/*
  * These routines define the interface to the device-specific layer.
  * See kdsoft.h for a more complete description of what each routine does.
  */
@@ -154,15 +154,15 @@ unsigned char kd_getdata(), state2leds();
  */
 
 vm_offset_t kd_bitmap_start = (vm_offset_t)0xa0000; /* XXX - put in kd.h */
-u_char 	*vid_start	= (u_char *)EGA_START; 
+u_char 	*vid_start	= (u_char *)EGA_START;
      				/* VM start of video RAM or frame buffer */
 csrpos_t kd_curpos	= 0;	/* set indirectly by kd_setpos--see kdsoft.h */
 short	kd_lines	= 25;
 short	kd_cols		= 80;
 char	kd_attr		= KA_NORMAL;	/* current attribute */
 
-/* 
- * kd_state shows the state of the modifier keys (ctrl, caps lock, 
+/*
+ * kd_state shows the state of the modifier keys (ctrl, caps lock,
  * etc.)  It should normally be changed by calling set_kd_state(), so
  * that the keyboard status LEDs are updated correctly.
  */
@@ -176,18 +176,18 @@ int kd_kbd_mouse = 0;
 int kd_kbd_magic_scale = 6;
 int kd_kbd_magic_button  = 0;
 
-/* 
- * Some keyboard commands work by sending a command, waiting for an 
- * ack (handled by kdintr), then sending data, which generates a 
+/*
+ * Some keyboard commands work by sending a command, waiting for an
+ * ack (handled by kdintr), then sending data, which generates a
  * second ack.  If we are in the middle of such a sequence, kd_ack
  * shows what the ack is for.
- * 
- * When a byte is sent to the keyboard, it is kept around in last_sent 
+ *
+ * When a byte is sent to the keyboard, it is kept around in last_sent
  * in case it needs to be resent.
- * 
+ *
  * The rest of the variables here hold the data required to complete
  * the sequence.
- * 
+ *
  * XXX - the System V driver keeps a command queue, I guess in case we
  * want to start a command while another is in progress.  Is this
  * something we should worry about?
@@ -214,7 +214,7 @@ u_char	*esc_spt	= (u_char *)0;
 
 /*
  * This array maps scancodes to Ascii characters (or character
- * sequences). 
+ * sequences).
  * Each row corresponds to one key.  There are NUMOUTPUT bytes per key
  * state.  The states are ordered: Normal, SHIFT, CTRL, ALT,
  * SHIFT/ALT.
@@ -400,10 +400,10 @@ short	font_byte_width	= 0;		/* num bytes in 1 scan line of font */
 int	kd_pollc = 0;
 
 #ifdef	DEBUG
-/* 
+/*
  * feep:
  *
- *	Ring the bell for a short time. 
+ *	Ring the bell for a short time.
  *	Warning: uses outb(). You may prefer to use kd_debug_put.
  */
 feep()
@@ -424,9 +424,9 @@ pause()
 		;
 }
 
-/* 
+/*
  * Put a debugging character on the screen.
- * LOC=0 means put it in the bottom right corner, LOC=1 means put it 
+ * LOC=0 means put it in the bottom right corner, LOC=1 means put it
  * one column to the left, etc.
  */
 kd_debug_put(loc, c)
@@ -505,7 +505,7 @@ kdopen(dev, flag, ior)
 		/*
 		 *	Special support for boot-time rc scripts, which don't
 		 *	stty the console.
-		 */ 
+		 */
 		tp->t_oproc = kdstart;
 		tp->t_stop = kdstop;
 		tp->t_ospeed = tp->t_ispeed = B9600;
@@ -531,7 +531,7 @@ kdopen(dev, flag, ior)
  *	closing the line discipline.
  *
  * input:	device number 'dev', and flag
- * 
+ *
  * output:	device is closed
  *
  */
@@ -575,7 +575,7 @@ int	dev;
 struct	uio	*uio;
 {
 	struct	tty	*tp;
-  
+
 	tp = &kd_tty;
 	tp->t_state |= TS_CARR_ON;
 	return((*linesw[kd_tty.t_line].l_read)(tp, uio));
@@ -601,7 +601,7 @@ struct	uio	*uio;
 	return((*linesw[kd_tty.t_line].l_write)(&kd_tty, uio));
 }
 
-/* 
+/*
  * Mmap.
  */
 
@@ -687,10 +687,10 @@ io_return_t kdsetstat(dev, flavor, data, count)
 
 
 
-/* 
+/*
  * kdsetbell:
- * 
- *	Turn the bell on or off.  Returns error code, if given bogus 
+ *
+ *	Turn the bell on or off.  Returns error code, if given bogus
  *	on/off value.
  */
 kdsetbell(val, flags)
@@ -711,9 +711,9 @@ int	flags;				/* flags set for console */
 }
 
 
-/* 
+/*
  * kdgetkbent:
- * 
+ *
  *	Get entry from key mapping table.  Returns error code, if any.
  */
 kdgetkbent(kbent)
@@ -731,9 +731,9 @@ struct kbentry *	kbent;
 }
 
 
-/* 
+/*
  * kdsetkbent:
- * 
+ *
  *	Set entry in key mapping table.  Return error code, if any.
  */
 int
@@ -758,8 +758,8 @@ int	flags;				/* flags set for console */
  *
  *	This function is the interrupt code for the driver.  Since this is
  *	a special tty (console), interrupts are only for input, so we read in
- *	the character.  If in ascii mode, we then do the mapping translation 
- *	from the keyboard switch table and place the characters on the tty's 
+ *	the character.  If in ascii mode, we then do the mapping translation
+ *	from the keyboard switch table and place the characters on the tty's
  *	input switch table.  If in event mode, we create and queue a kd_event.
  *
  * input:	interrupt vector 'vec'
@@ -785,29 +785,29 @@ int	regs;
 	tp = &kd_tty;
 #ifdef	old
 	while ((inb(K_STATUS) & K_OBUF_FUL) == 0);	/* this should never loop */
-#else	old
+#else	/* old */
 	{
 		/*
-		 * Allow for keyboards that raise interrupt before 
+		 * Allow for keyboards that raise interrupt before
 		 * the character gets to the buffer.  But don't wait
 		 * forever if grabbing the character by polling leaves
 		 * the interrupt on but buffer empty.
 		 */
 		/*
-		 * Micronics VLB motherboard with 486DX2 can report keyboard 
+		 * Micronics VLB motherboard with 486DX2 can report keyboard
 		 * interrupt before K_STATUS register indicates that the
 		 * output buffer is full.  Moreover, the bus won't settle w
 		 * while we poll K_STATUS at speed.  Temporary fix is to break
-		 * out after safety runs out and pick up keyboard event.  This 
-		 * should be fixed eventually by putting a 1us timout between 
-		 * inb's to K_STATUS and fix the pic initialization order to 
+		 * out after safety runs out and pick up keyboard event.  This
+		 * should be fixed eventually by putting a 1us timout between
+		 * inb's to K_STATUS and fix the pic initialization order to
 		 * avoid bootup keyboard wedging (ie make kd a real device)
 		 */
 		int safety = 1000;
 		while ((inb(K_STATUS) & K_OBUF_FUL) == 0)
 			if (!safety--) break;  /* XXX */
 	}
-#endif	old
+#endif	/* old */
 	/*
 	 * We may have seen a mouse event.
 	 */
@@ -885,13 +885,13 @@ int	regs;
 				}
 			}
 
-			/* 
+			/*
 			 * here's where we actually put the char (or
 			 * char sequence, for function keys) onto the
 			 * input queue.
 			 */
-			for ( ; (c != K_DONE) && (char_idx <= max); 
-			     c = key_map[scancode][char_idx++]) {	
+			for ( ; (c != K_DONE) && (char_idx <= max);
+			     c = key_map[scancode][char_idx++]) {
 				(*linesw[tp->t_line].l_rint)(c, tp);
 			}
 			kd_extended = FALSE;
@@ -902,10 +902,10 @@ int	regs;
 	return;
 }
 
-/* 
+/*
  * kd_handle_ack:
- * 
- *	For pending commands, complete the command.  For data bytes, 
+ *
+ *	For pending commands, complete the command.  For data bytes,
  *	drop the ack on the floor.
  */
 kd_handle_ack()
@@ -927,14 +927,14 @@ kd_handle_ack()
 	}
 }
 
-/* 
+/*
  * kd_resend:
  *
  *	Resend a missed keyboard command or data byte.
  */
 kd_resend()
 {
-	if (kd_ack == NOT_WAITING) 
+	if (kd_ack == NOT_WAITING)
 		printf("unexpected RESEND from keyboard\n");
 	else
 		kd_senddata(last_sent);
@@ -947,9 +947,9 @@ kd_resend()
  *	Change keyboard state according to which modifier key and
  *	whether it went down or up.
  *
- * input:	the current state, the key, and the key's direction.  
+ * input:	the current state, the key, and the key's direction.
  *		The key can be any key, not just a modifier key.
- * 
+ *
  * output:	the new state
  */
 do_modifier(state, c, up)
@@ -967,7 +967,7 @@ boolean_t	up;
 		break;
 #ifndef	ORC
 	case (K_CLCKSC):
-#endif	ORC
+#endif	/* ORC */
 	case (K_CTLSC):
 		if (up)
 			state &= ~KS_CTLED;
@@ -980,7 +980,7 @@ boolean_t	up;
 		if (!up)
 			state ^= KS_CLKED;
 		break;
-#endif	ORC
+#endif	/* ORC */
 	case (K_NLCKSC):
 		if (!up)
 			state ^= KS_NLKED;
@@ -999,21 +999,21 @@ boolean_t	up;
 }
 
 
-/* 
+/*
  * kdcheckmagic:
- * 
- *	Check for magic keystrokes for invoking the debugger or 
+ *
+ *	Check for magic keystrokes for invoking the debugger or
  *	rebooting or ...
  *
  * input:	an unprocessed scancode
- * 
- * output:	TRUE if a magic key combination was recognized and 
+ *
+ * output:	TRUE if a magic key combination was recognized and
  *		processed.  FALSE otherwise.
  *
- * side effects:	
+ * side effects:
  *		various actions possible, depending on which keys are
- *		pressed.  If the debugger is called, steps are taken 
- *		to ensure that the system doesn't think the magic keys 
+ *		pressed.  If the debugger is called, steps are taken
+ *		to ensure that the system doesn't think the magic keys
  *		are still held down.
  */
 boolean_t
@@ -1056,7 +1056,7 @@ int		*regs;
 			}
 			return(TRUE);
 			break;
-#endif	MACH_KDB
+#endif	/* MACH_KDB */
 		case K_DELSC:		/* ctl-alt-del */
 			/* if rebootflag is on, reboot the system */
 			if (rebootflag)
@@ -1071,7 +1071,7 @@ int		*regs;
 /*
  * kdstate2idx:
  *
- *	Return the value for the 2nd index into key_map that 
+ *	Return the value for the 2nd index into key_map that
  *	corresponds to the given state.
  */
 kdstate2idx(state, extended)
@@ -1119,11 +1119,11 @@ struct	tty	*tp;
 	spl_t	o_pri;
 	int	ch;
 	unsigned char	c;
-  
+
 	if (tp->t_state & TS_TTSTOP)
 		return;
 	for ( ; ; ) {
-		tp->t_state &= ~TS_BUSY; 
+		tp->t_state &= ~TS_BUSY;
 		if (tp->t_state & TS_TTSTOP)
 			break;
 		if ((tp->t_outq.c_cc <= 0) || (ch = getc(&tp->t_outq)) == -1)
@@ -1177,7 +1177,7 @@ kdstop(tp, flags)
  * kdinit:
  *
  *	This code initializes the structures and sets up the port registers
- *	for the console driver.  
+ *	for the console driver.
  *
  *	Each bitmap-based graphics card is likely to require a unique
  *	way to determine the card's presence.  The driver runs through
@@ -1207,7 +1207,7 @@ kdinit()
 	if (!evc1init())
 	  if (blit_present())
 		blit_init();
-	  else 
+	  else
 		kd_xga_init();
 
 	/* get rid of any garbage in output buffer */
@@ -1309,11 +1309,11 @@ u_char	ch;
 	if ((!ch) && sit_for_0)
 		return;
 
-	switch (ch) { 
+	switch (ch) {
 	case ((K_LF)):
 		kd_down();
 		break;
-	case ((K_CR)):  
+	case ((K_CR)):
 		kd_cr();
 		break;
 	case ((K_BS)):
@@ -1428,7 +1428,7 @@ kd_scrolldn()
 	count	= ONE_LINE/ONE_SPACE;
 	(*kd_dclear)(to, count, kd_attr);
 	return;
-	
+
 }
 
 
@@ -1436,7 +1436,7 @@ kd_scrolldn()
  * kd_parseesc:
  *
  *	This routine begins the parsing of an escape sequence.  It uses the
- *	escape sequence array and the escape spot pointer to handle 
+ *	escape sequence array and the escape spot pointer to handle
  *	asynchronous parsing of escape sequences.
  *
  * input	: String of characters prepended by an escape
@@ -1598,14 +1598,14 @@ u_char	*cp;
 		if (newpos < 0)
 			newpos = 0;		/* upper left */
 		if (newpos > ONE_PAGE)
-			newpos = (ONE_PAGE - ONE_SPACE); 
+			newpos = (ONE_PAGE - ONE_SPACE);
 		/* lower right */
 		if (*cp == '\0')
 			break;			/* not ready yet */
 		if (*cp == 'H') {
 			kd_setpos(newpos);
 			esc_spt = esc_seq;	/* done, reset */
-		}	
+		}
 		else
 			esc_spt = esc_seq;
 		break;				/* done or not ready */
@@ -1615,12 +1615,12 @@ u_char	*cp;
 		case 0:
 			kd_cltobcur();	/* clears from current
 					   pos to bottom.
-					   */	
+					   */
 			break;
 		case 1:
 			kd_cltopcur();	/* clears from top to
 					   current pos.
-					   */	
+					   */
 			break;
 		case 2:
 			kd_cls();
@@ -1636,7 +1636,7 @@ u_char	*cp;
 		case 0:
 			kd_cltoecur();	/* clears from current
 					   pos to eoln.
-					   */	
+					   */
 			break;
 		case 1:
 			kd_clfrbcur();	/* clears from begin
@@ -1695,7 +1695,7 @@ u_char	*cp;
 		else
 			kd_erase(number);
 		esc_spt = esc_seq;
-		break;	
+		break;
 	case '\0':
 		break;			/* not enough yet */
 	default:
@@ -1919,7 +1919,7 @@ kd_cltopcur()
 /*
  * kd_cltoecur:
  *
- *	This function clears from the current cursor position to eoln. 
+ *	This function clears from the current cursor position to eoln.
  *
  * input	: None
  * output	: Line is cleared from current cursor position to eoln
@@ -2037,7 +2037,7 @@ int	number;
 /*
  * kd_delch:
  *
- *	This function deletes a number of characters from the current 
+ *	This function deletes a number of characters from the current
  *	position in the line.
  *
  * input	: number of characters to delete
@@ -2091,7 +2091,7 @@ int	number;
 	csrpos_t i;
 	csrpos_t stop;
 
-	stop = kd_curpos + (ONE_SPACE * number);	
+	stop = kd_curpos + (ONE_SPACE * number);
 	if (stop > BEG_OF_LINE(kd_curpos) + ONE_LINE)
 		stop = BEG_OF_LINE(kd_curpos) + ONE_LINE;
 	for (i = kd_curpos; i < stop; i += ONE_SPACE) {
@@ -2116,7 +2116,7 @@ kd_eraseln()
 	csrpos_t stop;
 
 	stop = BEG_OF_LINE(kd_curpos) + ONE_LINE;
-	for (i = BEG_OF_LINE(kd_curpos); i < stop; i += ONE_SPACE) {	
+	for (i = BEG_OF_LINE(kd_curpos); i < stop; i += ONE_SPACE) {
 		(*kd_dput)(i, K_SPACE, kd_attr);
 	}
 	return;
@@ -2225,12 +2225,12 @@ unsigned char	ch;
 }
 
 
-/* 
+/*
  * kd_getdata:
- * 
- *	This function returns a data byte from the keyboard RDWR port, 
- *	after waiting until the port is flagged as having something to 
- *	read. 
+ *
+ *	This function returns a data byte from the keyboard RDWR port,
+ *	after waiting until the port is flagged as having something to
+ *	read.
  */
 unsigned char
 kd_getdata()
@@ -2269,9 +2269,9 @@ kd_mouse_drain()
 		printf("kbd: S = %x D = %x\n", i, inb(K_RDWR));
 }
 
-/* 
+/*
  * set_kd_state:
- * 
+ *
  *	Set kd_state and update the keyboard status LEDs.
  */
 
@@ -2282,10 +2282,10 @@ int newstate;
 	kd_setleds1(state2leds(newstate));
 }
 
-/* 
+/*
  * state2leds:
- * 
- *	Return a byte containing LED settings for the keyboard, given 
+ *
+ *	Return a byte containing LED settings for the keyboard, given
  *	a state vector.
  */
 u_char
@@ -2301,10 +2301,10 @@ int	state;
 	return(result);
 }
 
-/* 
+/*
  * kd_setleds[12]:
- * 
- *	Set the keyboard LEDs according to the given byte.  
+ *
+ *	Set the keyboard LEDs according to the given byte.
  */
 kd_setleds1(val)
 u_char val;
@@ -2325,11 +2325,11 @@ kd_setleds2()
 }
 
 
-/* 
+/*
  * cnsetleds:
- * 
+ *
  *	like kd_setleds[12], but not interrupt-based.
- *	Currently disabled because cngetc ignores caps lock and num 
+ *	Currently disabled because cngetc ignores caps lock and num
  *	lock anyway.
  */
 cnsetleds(val)
@@ -2349,9 +2349,9 @@ kdreboot()
 	kd_sendcmd(0xFE);		/* XXX - magic # */
 	delay(1000000);			/* wait to see if anything happens */
 #endif
-	/* 
+	/*
 	 * If that didn't work, then we'll just have to try and
-	 * do it the hard way. 
+	 * do it the hard way.
 	 */
 	cpu_shutdown();
 }
@@ -2472,7 +2472,7 @@ kd_xga_init()
 		 * memory location for these cards.
 		 *
 		 */
-		
+
 		vid_start = (u_char *)phystokv(EGA_START);
 		kd_index_reg = EGA_IDX_REG;
 		kd_io_reg = EGA_IO_REG;
@@ -2623,9 +2623,9 @@ char	chattr;
 }
 
 
-/* 
+/*
  * kd_noopreset:
- * 
+ *
  * 	No-op reset routine for kd_dreset.
  */
 static void
@@ -2726,7 +2726,7 @@ int	count;
 		count /= kd_cols;	/* num lines */
 		count *= fb_byte_width * (char_height+cursor_height);
 		kd_slmscu(bit2fbptr(from_xbit, from_ybit),
-			  bit2fbptr(to_xbit, to_ybit), 
+			  bit2fbptr(to_xbit, to_ybit),
 			  count/SLAMBPW);
 		bmppaintcsr(kd_curpos, char_white);
 	} else {
@@ -2795,7 +2795,7 @@ char	chattr;				/* reverse or normal */
 		/* fast case - entire page */
 		kd_slmwd(vid_start, (fb_byte_width * fb_height)/SLAMBPW,
 			 clearval);
-	} else 
+	} else
 		/* slow case */
 		for (i = 0; i < count; ++i) {
 			bmpput(to, K_SPACE, chattr);
@@ -2884,7 +2884,7 @@ kdcnprobe(struct consdev *cp)
 	maj = 0;
 	unit = 0;
 	pri = CN_INTERNAL;
-	
+
 	cp->cn_dev = makedev(maj, unit);
 	cp->cn_pri = pri;
 }
@@ -2923,13 +2923,13 @@ kdcnputc(dev_t dev, int c)
 	kd_putc(c);
 }
 
-/* 
+/*
  * kdcnmaygetc:
- * 
- *	Get one character using polling, rather than interrupts.  Used 
+ *
+ *	Get one character using polling, rather than interrupts.  Used
  *	by the kernel debugger.  Note that Caps Lock is ignored.
- *	Normally this routine is called with interrupts already 
- *	disabled, but there is code in place so that it will be more 
+ *	Normally this routine is called with interrupts already
+ *	disabled, but there is code in place so that it will be more
  *	likely to work even if interrupts are turned on.
  */
 int

@@ -77,12 +77,12 @@ thread_kdb_return()
 		/*NOTREACHED*/
 	}
 }
-#endif	MACH_KDB
+#endif	/* MACH_KDB */
 
 #if	MACH_TTD
 extern boolean_t kttd_enabled;
 boolean_t debug_all_traps_with_kttd = TRUE;
-#endif	MACH_TTD
+#endif	/* MACH_TTD */
 
 void
 user_page_fault_continue(kr)
@@ -100,7 +100,7 @@ user_page_fault_continue(kr)
 				       (vm_offset_t)regs->cr2,
 				       regs))
 			kdb_trap(T_WATCHPOINT, 0, regs);
-#endif	MACH_KDB
+#endif	/* MACH_KDB */
 		thread_exception_return();
 		/*NOTREACHED*/
 	}
@@ -111,7 +111,7 @@ user_page_fault_continue(kr)
 		thread_exception_return();
 		/*NOTREACHED*/
 	}
-#endif	MACH_KDB
+#endif	/* MACH_KDB */
 
 	i386_exception(EXC_BAD_ACCESS, kr, regs->cr2);
 	/*NOTREACHED*/
@@ -271,7 +271,7 @@ dump_ss(regs);
 			kdb_trap(T_WATCHPOINT, 0, regs);
 		}
 		else
-#endif	MACH_KDB
+#endif	/* MACH_KDB */
 		if ((code & T_PF_WRITE) == 0 &&
 		    result == KERN_PROTECTION_FAILURE)
 		{
@@ -348,7 +348,7 @@ dump_ss(regs);
 #if	MACH_KDB
 		if (kdb_trap(type, code, regs))
 		    return;
-#endif	MACH_KDB
+#endif	/* MACH_KDB */
 		splhigh();
 		printf("kernel trap, type %d, code = %x\n",
 			type, code);
@@ -554,7 +554,7 @@ printf("user trap %d error %d sub %08x\n", type, code, subcode);
 #if	MACH_KDB
 		if (kdb_trap(type, regs->err, regs))
 		    return 0;
-#endif	MACH_KDB
+#endif	/* MACH_KDB */
 		splhigh();
 		printf("user trap, type %d, code = %x\n",
 		       type, regs->err);
@@ -571,7 +571,7 @@ printf("user trap %d error %d sub %08x\n", type, code, subcode);
 	if (debug_all_traps_with_kdb &&
 	    kdb_trap(type, regs->err, regs))
 		return 0;
-#endif	MACH_KDB
+#endif	/* MACH_KDB */
 
 	i386_exception(exc, code, subcode);
 	/*NOTREACHED*/

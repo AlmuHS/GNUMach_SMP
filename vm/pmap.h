@@ -103,7 +103,7 @@ extern void		pmap_virtual_space();	/* During VM initialization,
 						 * report virtual space
 						 * available for the kernel.
 						 */
-#endif	MACHINE_PAGES
+#endif	/* MACHINE_PAGES */
 
 /*
  *	Routines to manage the physical map data structure.
@@ -115,10 +115,10 @@ pmap_t pmap_create(vm_size_t size);
 /* Return the kernel's pmap_t. */
 #ifndef pmap_kernel
 extern pmap_t pmap_kernel(void);
-#endif pmap_kernel
+#endif /* pmap_kernel */
 
 /* Gain and release a reference. */
-extern void pmap_reference(pmap_t pmap);	
+extern void pmap_reference(pmap_t pmap);
 extern void pmap_destroy(pmap_t pmap);
 
 /* Enter a mapping */
@@ -166,7 +166,7 @@ void pmap_clear_reference(vm_offset_t pa);
 /* Return reference bit */
 #ifndef pmap_is_referenced
 boolean_t pmap_is_referenced(vm_offset_t pa);
-#endif pmap_is_referenced
+#endif /* pmap_is_referenced */
 
 /* Clear modify bit */
 void pmap_clear_modify(vm_offset_t pa);
@@ -182,7 +182,7 @@ extern void		pmap_statistics();	/* Return statistics */
 
 #ifndef	pmap_resident_count
 extern int		pmap_resident_count();
-#endif	pmap_resident_count
+#endif	/* pmap_resident_count */
 
 /*
  *	Sundry required routines
@@ -206,7 +206,7 @@ extern vm_offset_t	pmap_phys_address();	/* Transform address
 						 * to physical address
 						 * known to this module.
 						 */
-#endif	pmap_phys_address
+#endif	/* pmap_phys_address */
 #ifndef	pmap_phys_to_frame
 extern int		pmap_phys_to_frame();	/* Inverse of
 						 * pmap_phys_address,
@@ -215,7 +215,7 @@ extern int		pmap_phys_to_frame();	/* Inverse of
 						 * machine-independent
 						 * pseudo-devices.
 						 */
-#endif	pmap_phys_to_frame
+#endif	/* pmap_phys_to_frame */
 
 /*
  *	Optional routines
@@ -224,12 +224,12 @@ extern int		pmap_phys_to_frame();	/* Inverse of
 extern void		pmap_copy();		/* Copy range of
 						 * mappings, if desired.
 						 */
-#endif	pmap_copy
+#endif	/* pmap_copy */
 #ifndef pmap_attribute
 extern kern_return_t	pmap_attribute();	/* Get/Set special
 						 * memory attributes
 						 */
-#endif	pmap_attribute
+#endif	/* pmap_attribute */
 
 /*
  * Routines defined as macros.
@@ -239,24 +239,24 @@ extern kern_return_t	pmap_attribute();	/* Get/Set special
 	if ((pmap) != kernel_pmap)			\
 	    PMAP_ACTIVATE(pmap, thread, cpu);		\
 }
-#endif	PMAP_ACTIVATE_USER
+#endif	/* PMAP_ACTIVATE_USER */
 
 #ifndef	PMAP_DEACTIVATE_USER
 #define	PMAP_DEACTIVATE_USER(pmap, thread, cpu) {	\
 	if ((pmap) != kernel_pmap)			\
 	    PMAP_DEACTIVATE(pmap, thread, cpu);		\
 }
-#endif	PMAP_DEACTIVATE_USER
+#endif	/* PMAP_DEACTIVATE_USER */
 
 #ifndef	PMAP_ACTIVATE_KERNEL
 #define	PMAP_ACTIVATE_KERNEL(cpu)			\
 		PMAP_ACTIVATE(kernel_pmap, THREAD_NULL, cpu)
-#endif	PMAP_ACTIVATE_KERNEL
+#endif	/* PMAP_ACTIVATE_KERNEL */
 
 #ifndef	PMAP_DEACTIVATE_KERNEL
 #define	PMAP_DEACTIVATE_KERNEL(cpu)			\
 		PMAP_DEACTIVATE(kernel_pmap, THREAD_NULL, cpu)
-#endif	PMAP_DEACTIVATE_KERNEL
+#endif	/* PMAP_DEACTIVATE_KERNEL */
 
 /*
  *	Exported data structures
@@ -264,4 +264,4 @@ extern kern_return_t	pmap_attribute();	/* Get/Set special
 
 extern pmap_t	kernel_pmap;			/* The kernel's map */
 
-#endif	_VM_PMAP_H_
+#endif	/* _VM_PMAP_H_ */

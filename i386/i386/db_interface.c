@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1993,1992,1991,1990 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -255,7 +255,7 @@ kdb_kentry(
 }
 
 boolean_t db_no_vm_fault = TRUE;
-  
+
 int
 db_user_to_kernel_address(
 	task_t		task,
@@ -265,7 +265,7 @@ db_user_to_kernel_address(
 {
 	register pt_entry_t *ptp;
 	boolean_t	faulted = FALSE;
-	
+
 	retry:
 	ptp = pmap_pte(task->map->pmap, addr);
 	if (ptp == PT_ENTRY_NULL || (*ptp & INTEL_PTE_VALID) == 0) {
@@ -290,7 +290,7 @@ db_user_to_kernel_address(
 	*kaddr = (unsigned)ptetokv(*ptp) + (addr & (INTEL_PGBYTES-1));
 	return(0);
 }
-	
+
 /*
  * Read bytes from kernel address space for debugger.
  */
@@ -354,7 +354,7 @@ db_write_bytes(
 	extern char	etext;
 	void		db_write_bytes_user_space();
 
-	if ((addr < VM_MIN_KERNEL_ADDRESS) ^ 
+	if ((addr < VM_MIN_KERNEL_ADDRESS) ^
 	    ((addr + size) <= VM_MIN_KERNEL_ADDRESS)) {
 	    db_error("\ncannot write data into mixed space\n");
 	    /* NOTREACHED */
@@ -369,7 +369,7 @@ db_write_bytes(
 		/* NOTREACHED */
 	    }
 	}
-	    
+
 	if (addr >= VM_MIN_KERNEL_ADDRESS &&
 	    addr <= (vm_offset_t)&etext)
 	{
@@ -401,7 +401,7 @@ db_write_bytes(
 	    flush_tlb();
 	}
 }
-	
+
 void
 db_write_bytes_user_space(
 	vm_offset_t	addr,
@@ -543,7 +543,7 @@ db_task_name(
 
 	n = DB_TASK_NAME_LEN-1;
 	p = (char *)kaddr + sizeof(unsigned);
-	for (vaddr += sizeof(int); vaddr < DB_USER_STACK_ADDR && n > 0; 
+	for (vaddr += sizeof(int); vaddr < DB_USER_STACK_ADDR && n > 0;
 							vaddr++, p++, n--) {
 	    if (vaddr % INTEL_PGBYTES == 0) {
 		(void)db_user_to_kernel_address(task, vaddr, &kaddr, 0);
@@ -555,4 +555,4 @@ db_task_name(
 	    db_printf(" ");
 }
 
-#endif MACH_KDB
+#endif /* MACH_KDB */

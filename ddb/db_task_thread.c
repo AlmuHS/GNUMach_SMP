@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -184,7 +184,7 @@ db_lookup_thread_id(task, thread_id)
 {
 	register thread_t thread;
 
-	
+
 	if (thread_id > DB_MAX_THREADID)
 	    return(THREAD_NULL);
 	if (queue_first(&task->thread_list) == 0)
@@ -291,7 +291,7 @@ db_get_task_thread(vp, valuep, flag, ap)
 	    return(0);
 	}
 	if ((thread = db_lookup_thread_id(task, ap->suffix[1])) == THREAD_NULL){
-	    db_printf("no such thread($task%d.%d)\n", 
+	    db_printf("no such thread($task%d.%d)\n",
 					ap->suffix[0], ap->suffix[1]);
 	    db_error(0);
 	    /* NOTREACHED */
@@ -300,4 +300,4 @@ db_get_task_thread(vp, valuep, flag, ap)
 	return(0);
 }
 
-#endif MACH_KDB
+#endif /* MACH_KDB */

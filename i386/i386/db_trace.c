@@ -672,4 +672,4 @@ void db_all_cprocs(
 
 #endif	/* CTHREADS_SUPPORT */
 
-#endif MACH_KDB
+#endif /* MACH_KDB */

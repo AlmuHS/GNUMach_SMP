@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 1995 The University of Utah and
  * the Computer Systems Laboratory at the University of Utah (CSL).
  * All rights reserved.
@@ -38,4 +38,4 @@ int dummy;
 extern struct cpu cpu[NCPUS];
 
 
-#endif _UTIL_CPU_H_
+#endif /* _UTIL_CPU_H_ */

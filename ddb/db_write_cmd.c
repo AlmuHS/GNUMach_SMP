@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1992,1991,1990 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -68,7 +68,7 @@ db_write_cmd(address, have_addr, count, modif)
 	addr = (db_addr_t) address;
 
 	size = db_size_option(modif, &u_opt, &t_opt);
-	if (t_opt) 
+	if (t_opt)
 	  {
 	    if (!db_get_next_thread(&thread, 0))
 	      return;
@@ -76,8 +76,8 @@ db_write_cmd(address, have_addr, count, modif)
 	  }
 	else
 	  task = db_current_task();
-	
-	/* if user space is not explicitly specified, 
+
+	/* if user space is not explicitly specified,
 	   look in the kernel */
 	if (!u_opt)
 	  task = TASK_NULL;
@@ -106,4 +106,4 @@ db_write_cmd(address, have_addr, count, modif)
 	db_prev = addr - size;
 }
 
-#endif MACH_KDB
+#endif /* MACH_KDB */

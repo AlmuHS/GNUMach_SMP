@@ -78,7 +78,7 @@ void start_kernel_threads();	/* forward */
 #if	NCPUS > 1
 extern void	start_other_cpus();
 extern void	action_thread();
-#endif	NCPUS > 1
+#endif	/* NCPUS > 1 */
 
 /* XX */
 extern vm_offset_t phys_first_addr, phys_last_addr;
@@ -113,7 +113,7 @@ void setup_main()
 
 #if	XPR_DEBUG
 	xprbootstrap();
-#endif	XPR_DEBUG
+#endif	/* XPR_DEBUG */
 
 	timestamp_init();
 
@@ -135,7 +135,7 @@ void setup_main()
 	swapper_init();
 #if	MACH_HOST
 	pset_sys_init();
-#endif	MACH_HOST
+#endif	/* MACH_HOST */
 
 	/*
 	 *	Kick off the time-out driven routines by calling
@@ -218,7 +218,7 @@ void start_kernel_threads()
 	 *	Allow other CPUs to run.
 	 */
 	start_other_cpus();
-#endif	NCPUS > 1
+#endif	/* NCPUS > 1 */
 
 	/*
 	 *	Create the device service.
@@ -230,14 +230,14 @@ void start_kernel_threads()
 	 */
 #if	NORMA_IPC
 	norma_ipc_init();
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
 	/*
 	 *	Initialize NORMA vm system.
 	 */
 #if	NORMA_VM
 	norma_vm_init();
-#endif	NORMA_VM
+#endif	/* NORMA_VM */
 
 
 	/*
@@ -256,7 +256,7 @@ void start_kernel_threads()
 
 #if	XPR_DEBUG
 	xprinit();		/* XXX */
-#endif	XPR_DEBUG
+#endif	/* XPR_DEBUG */
 
 	/*
 	 *	Become the pageout daemon.
@@ -271,7 +271,7 @@ void slave_main()
 {
 	cpu_launch_first_thread(THREAD_NULL);
 }
-#endif	NCPUS > 1
+#endif	/* NCPUS > 1 */
 
 /*
  *	Start up the first thread on a CPU.

@@ -195,4 +195,4 @@ typedef struct pcb {
 /* #include_next "thread.h" */
 
 
-#endif	_I386_THREAD_H_
+#endif	/* _I386_THREAD_H_ */

@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1993-1989 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -47,7 +47,7 @@ extern int      pchdopen(),pchdread(),pchdwrite(),pchdgetstat(),pchdsetstat();
 #define pchdname                "pchd"
 #endif
 
-#endif	NHD > 0
+#endif	/* NHD > 0 */
 
 #include <aha.h>
 #if	NAHA > 0
@@ -66,20 +66,20 @@ int	cd_open(), cd_close(), cd_read(), cd_write();
 extern int	fdopen(), fdclose(), fdread(), fdwrite();
 extern int	fdgetstat(), fdsetstat(), fddevinfo();
 #define	fdname			"fd"
-#endif	NFD > 0
+#endif	/* NFD > 0 */
 
 #include <wt.h>
 #if	NWT > 0
 extern int	wtopen(), wtread(), wtwrite(), wtclose();
 #define	wtname			"wt"
-#endif	NWT > 0
+#endif	/* NWT > 0 */
 
 #include <pc586.h>
 #if	NPC586 > 0
 extern int	pc586open(), pc586output(), pc586getstat(), pc586setstat(),
 		pc586setinput();
 #define	pc586name		"pc"
-#endif NPC586 > 0
+#endif /* NPC586 > 0 */
 
 #include <ne.h>
 #if     NNE > 0
@@ -88,16 +88,16 @@ extern int      neopen(), neoutput(), negetstat(), nesetstat(), nesetinput();
 extern int      nefoutput();
 #endif /* FIPC */
 #define nename                  "ne"
-#endif  NNE > 0
+#endif  /* NNE > 0 */
 
 #include <ns8390.h>
 #if	NNS8390 > 0
 extern int	wd8003open(), eliiopen();
-extern int	ns8390output(), ns8390getstat(), ns8390setstat(), 
+extern int	ns8390output(), ns8390getstat(), ns8390setstat(),
 		ns8390setinput();
 #define	ns8390wdname		"wd"
 #define	ns8390elname		"el"
-#endif NNS8390 > 0
+#endif /* NNS8390 > 0 */
 
 #include <at3c501.h>
 #if	NAT3C501 > 0
@@ -105,21 +105,21 @@ extern int	at3c501open(), at3c501output(),
 		at3c501getstat(), at3c501setstat(),
 		at3c501setinput();
 #define	at3c501name		"et"
-#endif NAT3C501 > 0
+#endif /* NAT3C501 > 0 */
 
 #include <ul.h>
 #if NUL > 0
 extern int    ulopen(), uloutput(), ulgetstat(), ulsetstat(),
                ulsetinput();
 #define ulname                        "ul"
-#endif NUL > 0
+#endif /* NUL > 0 */
 
 #include <wd.h>
 #if NWD > 0
 extern int    wdopen(), wdoutput(), wdgetstat(), wdsetstat(),
               wdsetinput();
 #define wdname                        "wd"
-#endif NWD > 0
+#endif /* NWD > 0 */
 
 #include <hpp.h>
 #if NHPP > 0
@@ -133,14 +133,14 @@ extern int    hppopen(), hppoutput(), hppgetstat(), hppsetstat(),
 extern int	paropen(), paroutput(), pargetstat(), parsetstat(),
 		parsetinput();
 #define	parname		"par"
-#endif NPAR > 0
+#endif /* NPAR > 0 */
 
 #include <de6c.h>
 #if	NDE6C > 0
 extern int	de6copen(), de6coutput(), de6cgetstat(), de6csetstat(),
 		de6csetinput();
 #define	de6cname		"de"
-#endif NDE6C > 0
+#endif /* NDE6C > 0 */
 
 extern int	kdopen(), kdclose(), kdread(), kdwrite();
 extern int	kdgetstat(), kdsetstat(), kdportdeath();
@@ -152,14 +152,14 @@ extern vm_offset_t kdmmap();
 extern int	comopen(), comclose(), comread(), comwrite();
 extern int	comgetstat(), comsetstat(), comportdeath();
 #define	comname			"com"
-#endif	NCOM > 0
+#endif	/* NCOM > 0 */
 
 #include <lpr.h>
 #if	NLPR > 0
 extern int	lpropen(), lprclose(), lprread(), lprwrite();
 extern int	lprgetstat(), lprsetstat(), lprportdeath();
 #define	lprname			"lpr"
-#endif	NLPR > 0
+#endif	/* NLPR > 0 */
 
 #include <blit.h>
 #if NBLIT > 0
@@ -219,7 +219,7 @@ struct dev_ops	dev_name_list[] =
 	  hdwrite,	hdgetstat,	hdsetstat,	nomap,
 	  nodev,	nulldev,	nulldev,	1024,
 	  hddevinfo },
-#endif	NHD > 0
+#endif	/* NHD > 0 */
 
 #if	NAHA > 0
 	{ rzname,	rz_open,	rz_close,	rz_read,
@@ -249,14 +249,14 @@ struct dev_ops	dev_name_list[] =
 	  fdwrite,	fdgetstat,	fdsetstat,	nomap,
 	  nodev,	nulldev,	nulldev,	64,
 	  fddevinfo },
-#endif	NFD > 0
+#endif	/* NFD > 0 */
 
 #if	NWT > 0
 	{ wtname,	wtopen,		wtclose,	wtread,
 	  wtwrite,	nulldev,	nulldev,	nomap,
 	  nodev,	nulldev,	nulldev,	0,
 	  nodev },
-#endif	NWT > 0
+#endif	/* NWT > 0 */
 
 #if	NPC586 > 0
 	{ pc586name,	pc586open,	nulldev,	nulldev,
@@ -373,7 +373,7 @@ struct dev_ops	dev_name_list[] =
 	  pchdwrite,	pchdgetstat,	pchdsetstat,	nomap,
 	  nodev,	nulldev,	nulldev,	16,
 	  hddevinfo },
-#endif	NHD > 0
+#endif	/* NHD > 0 */
 #endif
 
 #if 0
@@ -382,8 +382,8 @@ struct dev_ops	dev_name_list[] =
           hdwrite,      hdgetstat,      hdsetstat,      nomap,
           nodev,        nulldev,        nulldev,        16,
           hddevinfo },
-#endif  NHD > 0
-#endif 0 /* Kevin doesn't know why this was here. */
+#endif  /* NHD > 0 */
+#endif /* Kevin doesn't know why this was here. */
 
 #ifdef	MACH_KMSG
         { kmsgname,     kmsgopen,       kmsgclose,       kmsgread,

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 1994 The University of Utah and
  * the Computer Systems Laboratory at the University of Utah (CSL).
  * All rights reserved.
@@ -143,5 +143,4 @@ syscall_trace_print(int syscallvec, ...)
 	return syscallvec;
 }
 
-#endif DEBUG
-
+#endif /* DEBUG */

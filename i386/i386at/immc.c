@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 1995-1994 The University of Utah and
  * the Computer Systems Laboratory at the University of Utah (CSL).
  * All rights reserved.
@@ -73,5 +73,4 @@ int immc_cnmaygetc(void)
 	return -1;
 }
 
-#endif ENABLE_IMMEDIATE_CONSOLE
-
+#endif /* ENABLE_IMMEDIATE_CONSOLE */

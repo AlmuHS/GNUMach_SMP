@@ -79,6 +79,6 @@ extern struct real_descriptor	*mp_gdt[NCPUS];
 extern struct mp_desc_table *	mp_desc_init(/* int */);
 
 
-#endif MULTIPROCESSOR
+#endif /* MULTIPROCESSOR */
 
 #endif	/* _I386_MP_DESC_H_ */

@@ -52,7 +52,7 @@
 
 #if	MACH_FIXPRI
 #include <mach/policy.h>
-#endif	MACH_FIXPRI
+#endif	/* MACH_FIXPRI */
 
 
 volatile ast_t need_ast[NCPUS];
@@ -65,7 +65,7 @@ ast_init()
 
 	for (i=0; i<NCPUS; i++)
 		need_ast[i] = 0;
-#endif	MACHINE_AST
+#endif	/* MACHINE_AST */
 }
 
 void
@@ -93,7 +93,7 @@ ast_taken()
 #if	NORMA_IPC
 	if (reasons & AST_NETIPC)
 		netipc_ast();
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
 	/*
 	 *	Make darn sure that we don't call thread_halt_self
@@ -152,7 +152,7 @@ ast_check()
 		 */
 		ast_on(mycpu, AST_BLOCK);
 		break;
-#endif	NCPUS > 1
+#endif	/* NCPUS > 1 */
 
 	    case PROCESSOR_RUNNING:
 
@@ -194,7 +194,7 @@ ast_check()
 		    }
 		}
 		else {
-#endif	MACH_FIXPRI			
+#endif	/* MACH_FIXPRI			 */
 		rq = &(myprocessor->processor_set->runq);
 		if (!(myprocessor->first_quantum) && (rq->count > 0)) {
 		    register queue_t 	q;
@@ -230,7 +230,7 @@ ast_check()
 		}
 #if	MACH_FIXPRI
 		}
-#endif	MACH_FIXPRI
+#endif	/* MACH_FIXPRI */
 		break;
 
 	    default:

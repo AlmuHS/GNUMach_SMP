@@ -31,7 +31,7 @@
  * Grenoble, FRANCE
  *
  * 		All Rights Reserved
- * 
+ *
  *   Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
  * provided that the above copyright notice appears in all copies and
@@ -40,7 +40,7 @@
  * Foundation not be used in advertising or publicity pertaining to
  * distribution of the software without specific, written prior
  * permission.
- * 
+ *
  *   OSF DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE
  * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS,
  * IN NO EVENT SHALL OSF BE LIABLE FOR ANY SPECIAL, INDIRECT, OR
@@ -63,7 +63,7 @@ extern vm_map_t	kernel_map; /* can be discarded, defined in <vm/vm_kern.h> */
 thread_t profile_thread_id = THREAD_NULL;
 
 
-void profile_thread() 
+void profile_thread()
 {
 	struct message {
 		mach_msg_header_t	head;
@@ -84,11 +84,11 @@ void profile_thread()
 
 	/* Template initialisation of header and type structures */
 	msg.head.msgh_bits = MACH_MSGH_BITS(MACH_MSG_TYPE_COPY_SEND, MACH_MSG_TYPE_MAKE_SEND_ONCE);
-	msg.head.msgh_size = sizeof(msg); 
+	msg.head.msgh_size = sizeof(msg);
 	msg.head.msgh_local_port = MACH_PORT_NULL;
 	msg.head.msgh_kind = MACH_MSGH_KIND_NORMAL;
 	msg.head.msgh_id = 666666;
-	
+
 	msg.type.msgt_name = MACH_MSG_TYPE_INTEGER_32;
 	msg.type.msgt_size = 32;
 	msg.type.msgt_number = SIZE_PROF_BUFFER+1;
@@ -105,7 +105,7 @@ void profile_thread()
 	   splx(s);
 
 	   if ((buf_entry = (buf_to_send_t) prof_queue_entry) == NULLBTS)
-                { 
+                {
 		thread_sleep((event_t) profile_thread, lock, TRUE);
 		if (current_thread()->wait_result != THREAD_AWAKENED)
 			break;
@@ -118,30 +118,30 @@ void profile_thread()
 		int 		imax;
 
                 curr_th = (thread_t) buf_entry->thread;
-                curr_buf = (int) buf_entry->number; 
+                curr_buf = (int) buf_entry->number;
 		pbuf = curr_th->profil_buffer;
 
 		/* Set the remote port */
 		msg.head.msgh_remote_port = (mach_port_t) pbuf->prof_port;
 
-                 
+
                 sample = pbuf->prof_area[curr_buf].p_zone;
 	        imax = pbuf->prof_area[curr_buf].p_index;
 	        for(j=0 ;j<imax; j++,sample++)
-		msg.arg[j] = *sample;	
+		msg.arg[j] = *sample;
 
 	        /* Let hardclock() know you've finished the dirty job */
 	        pbuf->prof_area[curr_buf].p_full = FALSE;
 
 	        /*
-		 * Store the number of samples actually sent 
+		 * Store the number of samples actually sent
 	         * as the last element of the array.
 		 */
 	        msg.arg[SIZE_PROF_BUFFER] = imax;
 
-	        mr = mach_msg(&(msg.head), MACH_SEND_MSG, 
-			            sizeof(struct message), 0, 
-				    MACH_PORT_NULL, MACH_MSG_TIMEOUT_NONE, 
+	        mr = mach_msg(&(msg.head), MACH_SEND_MSG,
+			            sizeof(struct message), 0,
+				    MACH_PORT_NULL, MACH_MSG_TIMEOUT_NONE,
 				    MACH_PORT_NULL);
 
 		if (mr != MACH_MSG_SUCCESS) {
@@ -192,10 +192,10 @@ thread_t th;
 
 	/* Ask for the sending of the last PC buffer.
 	 * Make a request to the profile_thread by inserting
-	 * the buffer in the send queue, and wake it up. 
+	 * the buffer in the send queue, and wake it up.
 	 * The last buffer must be inserted at the head of the
-	 * send queue, so the profile_thread handles it immediatly. 
-	 */ 
+	 * send queue, so the profile_thread handles it immediatly.
+	 */
 	if (kmem_alloc( kernel_map, &vm_buf_entry,
 		   sizeof(struct buf_to_send)) != KERN_SUCCESS)
 		return;
@@ -212,7 +212,7 @@ thread_t th;
 		mpenqueue_tail( &prof_queue, &(buf_entry->list));
 		thread_wakeup((event_t) profile_thread);
 		assert_wait((event_t) &buf_entry->wakeme, TRUE);
-		splx(s); 
+		splx(s);
 		thread_block((void (*)()) 0);
 	} else {
 		splx(s);
@@ -228,26 +228,26 @@ profile(pc) {
 
 	/* Find out which thread has been interrupted. */
 	thread_t it_thread = current_thread();
-	int inout_val = pc; 
+	int inout_val = pc;
 	buf_to_send_t	buf_entry;
 	vm_offset_t 	vm_buf_entry;
 	int		*val;
 	/*
-	 * Test if the current thread is to be sampled 
+	 * Test if the current thread is to be sampled
 	 */
 	if (it_thread->thread_profiled) {
 		/* Inserts the PC value in the buffer of the thread */
-		set_pbuf_value(it_thread->profil_buffer, &inout_val); 
+		set_pbuf_value(it_thread->profil_buffer, &inout_val);
 		switch(inout_val) {
-		case 0: 
+		case 0:
 			if (profile_thread_id == THREAD_NULL) {
 				reset_pbuf_area(it_thread->profil_buffer);
 			} else printf("ERROR : hardclock : full buffer unsent\n");
 			break;
-		case 1: 
+		case 1:
 			/* Normal case, value successfully inserted */
 			break;
-		case 2 : 
+		case 2 :
 			/*
 			 * The value we have just inserted caused the
 			 * buffer to be full, and ready to be sent.
@@ -279,8 +279,8 @@ profile(pc) {
 				thread_wakeup((event_t) profile_thread);
 			break;
 
-		default: 
-			printf("ERROR: profile : unexpected case\n"); 
+		default:
+			printf("ERROR: profile : unexpected case\n");
 		}
 	}
 }
@@ -295,12 +295,12 @@ ipc_space_t	task;
 ipc_object_t 	reply;
 thread_t	cur_thread;
 {
-/* 
+/*
  * This routine is called every time that a new thread has made
- * a request for the sampling service. We must keep track of the 
+ * a request for the sampling service. We must keep track of the
  * correspondance between it's identity (cur_thread) and the port
- * we are going to use as a reply port to send out the samples resulting 
- * from its execution. 
+ * we are going to use as a reply port to send out the samples resulting
+ * from its execution.
  */
 	prof_data_t	pbuf;
 	vm_offset_t     vmpbuf;
@@ -341,7 +341,7 @@ printf("ERROR:mach_sample_thread:cannot set pbuf_nb\n");
 
 		cur_thread->thread_profiled_own     = FALSE;
 		cur_thread->thread_profiled = FALSE;
-		dealloc_pbuf_area(cur_thread->profil_buffer); 
+		dealloc_pbuf_area(cur_thread->profil_buffer);
 		cur_thread->profil_buffer = NULLPBUF;
 	}
 
@@ -385,8 +385,8 @@ task_t		cur_task;
 		if (turnon && profile_thread_id == THREAD_NULL)
 			profile_thread_id =
 				kernel_thread(current_task(), profile_thread);
-		cur_task->task_profiled = turnon;  
-		actual = cur_task->thread_count; 
+		cur_task->task_profiled = turnon;
+		actual = cur_task->thread_count;
 		sentone = 0;
 		for (i=0, thread=(thread_t) queue_first(&cur_task->thread_list);
 		     i < actual;
@@ -402,7 +402,7 @@ task_t		cur_task;
 			}
 		}
 		if (!turnon) {
-			dealloc_pbuf_area(pbuf); 
+			dealloc_pbuf_area(pbuf);
 			cur_task->profil_buffer = NULLPBUF;
 		}
 	}
@@ -410,4 +410,4 @@ task_t		cur_task;
 	return KERN_SUCCESS;
 }
 
-#endif 0
+#endif /* 0 */

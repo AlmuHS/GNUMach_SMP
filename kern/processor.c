@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1993-1988 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -329,7 +329,7 @@ void thread_change_psets(
 	queue_enter(&new_pset->threads, thread, thread_t, pset_threads);
 	thread->processor_set = new_pset;
 	new_pset->thread_count++;
-}	
+}
 
 /*
  *	pset_deallocate:
@@ -362,7 +362,7 @@ void pset_deallocate(
 	 */
 	pset->ref_count = 1;
 	pset_ref_unlock(pset);
-	
+
 	simple_lock(&all_psets_lock);
 	pset_ref_lock(pset);
 	if (--pset->ref_count > 0) {
@@ -440,7 +440,7 @@ processor_info(
 	else
 		basic_info->running = TRUE;
 	basic_info->slot_num = slot_num;
-	if (processor == master_processor) 
+	if (processor == master_processor)
 		basic_info->is_master = TRUE;
 	else
 		basic_info->is_master = FALSE;
@@ -613,7 +613,7 @@ kern_return_t processor_set_destroy(
 		pset_lock(pset);
 	    }
 	}
-	
+
 	if (pset->processor_count > 0) {
 	    list = &pset->processors;
 	    while(!queue_empty(list)) {
@@ -639,7 +639,7 @@ kern_return_t processor_set_destroy(
 }
 
 #else	/* MACH_HOST */
-	    
+
 kern_return_t
 processor_set_create(
 	host_t		host,
@@ -661,7 +661,7 @@ kern_return_t processor_set_destroy(
 	return KERN_FAILURE;
 }
 
-#endif	MACH_HOST
+#endif	/* MACH_HOST */
 
 kern_return_t
 processor_get_assignment(

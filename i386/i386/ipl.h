@@ -73,5 +73,5 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 extern int	(*ivect[])();
 extern int	iunit[];
 extern int	intpri[];
-#endif	ASSEMBLER
-#endif	KERNEL
+#endif	/* ASSEMBLER */
+#endif	/* KERNEL */

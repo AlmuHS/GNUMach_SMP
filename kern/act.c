@@ -934,7 +934,7 @@ act_get_special_port(Act *act, int which, ipc_port_t *portp)
 	    case THREAD_REPLY_PORT:
 		whichp = &act->reply_port;
 		break;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 	    case THREAD_KERNEL_PORT:
 		whichp = &act->self_port;
@@ -994,7 +994,7 @@ act_set_special_port(Act *act, int which, ipc_port_t port)
 	    case THREAD_REPLY_PORT:
 		whichp = &act->reply_port;
 		break;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 	    case THREAD_KERNEL_PORT:
 		whichp = &act->self_port;

@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1993,1991,1990,1989 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -57,12 +57,12 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <sys/ioctl.h>
 #include <device/buf.h>
 #include <device/errno.h>
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 #include <sys/buf.h>
 #include <sys/errno.h>
 #include <sys/user.h>
 #include <sys/ioctl.h>
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 #include <i386/pio.h>
 #include <i386/machspl.h>
 #include <chips/busses.h>
@@ -127,15 +127,15 @@ vm_offset_t	FdDmaPage = (vm_offset_t) 0;
 vm_offset_t	fd_std[NFD] = { 0 };
 struct	bus_device *fd_dinfo[NFD*2];
 struct	bus_ctlr *fd_minfo[NFD];
-struct	bus_driver	fddriver = 
+struct	bus_driver	fddriver =
 	{fdprobe, fdslave, fdattach, 0, fd_std, "fd", fd_dinfo, "fdc", fd_minfo, 0};
 
 int	m765verify[MAXUNIT] = {1,1,1,1};	/* write after read flag */
-						/* 0 != verify mode	*/ 
+						/* 0 != verify mode	*/
 						/* 0 == not verify mode */
 #ifdef	MACH_KERNEL
 extern struct buf *geteblk();
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 
 #define trfrate(uip, type)   outb(VFOREG(uip->addr),(((type)&RATEMASK)>>6))
 #define rbskrate(uip, type)  trfrate(uip,(type)&RAPID?RPSEEK:NMSEEK)
@@ -170,7 +170,7 @@ struct bus_ctlr *ctlr;
 					return 0;
 				}
 				(void)pmap_map(cip->b_vbuf,
-					       (vm_offset_t)cip->b_pbuf, 
+					       (vm_offset_t)cip->b_pbuf,
 					       (vm_offset_t)cip->b_pbuf+PAGE_SIZE,
 					       VM_PROT_READ | VM_PROT_WRITE);
 			}
@@ -208,7 +208,7 @@ struct bus_device *dev;
 		uip->b_unitf=uip;
 		cip->b_unitf=uip;
 	}
-	uip->d_drtab.dr_type &= ~OKTYPE; 
+	uip->d_drtab.dr_type &= ~OKTYPE;
 
 	printf(", port = %x, spl = %d, pic = %d.",
 		dev->address, dev->sysdep, dev->sysdep1);
@@ -220,7 +220,7 @@ struct bus_device *dev;
  *
  * TITLE:	fdopen
  *
- * ABSTRACT:	Open a unit. 
+ * ABSTRACT:	Open a unit.
  *
  ****************************************************************************/
 fdopen(dev, flag, otyp)
@@ -247,7 +247,7 @@ int	otyp;			/* not used */
 		chkbusy(cmdp);
 		cmdp->c_stsflag |= MTRFLAG;
 		mtr_on(uip);
-		if(inb(VFOREG(uip->addr))&OPENBIT || 
+		if(inb(VFOREG(uip->addr))&OPENBIT ||
 		   !(uip->d_drtab.dr_type&OKTYPE)){
 			uip->d_drtab.dr_type &= ~OKTYPE;
 			if(!rbrate(RAPID, uip))
@@ -290,7 +290,7 @@ int	otyp;			/* not used */
  *	Called on last close. mark the unit closed and not-ready.
  *
  * 	Unix doesn't actually "open" an inode for rootdev, swapdev or pipedev.
- *	If UNIT(swapdev) != UNIT(rootdev), then must add code in init() to 
+ *	If UNIT(swapdev) != UNIT(rootdev), then must add code in init() to
  *	"open" swapdev.  These	devices should never be closed.
  *
  *****************************************************************************/
@@ -305,10 +305,10 @@ off_t	offset;		/* not used */
 	spl_t s;
 
 #ifdef	MACH_KERNEL
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	if ((dev == rootdev) || (dev == swapdev))  /* never close these */
 		return(0);
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 
 	/* Clear the bit.
 	 * If last close of drive insure drtab queue is empty before returning.
@@ -321,9 +321,9 @@ off_t	offset;		/* not used */
 	splx(s);
 #ifdef	MACH_KERNEL
 	return(0);
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	close(0);
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 }
 /*****************************************************************************
  *
@@ -357,7 +357,7 @@ struct buf *bp;	/* buffer header */
 	bp->b_error = 0;
 	/* set b_resid to b_bcount because we haven't done anything yet */
 	bp->b_resid = bp->b_bcount;
-	if (!(dr->dr_type & OKTYPE) || 
+	if (!(dr->dr_type & OKTYPE) ||
 	    ((sdr = getparm(MEDIATYPE(bp->b_dev)))==(struct fddrtab *)ERROR) ||
 	    /* wrong parameters */
 	    (sdr->dr_ncyl != dr->dr_ncyl) || (sdr->dr_nsec != dr->dr_nsec) ||
@@ -433,7 +433,7 @@ struct	fdcmd	*cmdp;
 	while(cmdp->c_devflag & STRCHK){
 		cmdp->c_devflag |= STRWAIT;
 		sleep(&cmdp->c_devflag,PZERO);
-	} 
+	}
 }
 /***************************************************************************
  *
@@ -446,7 +446,7 @@ struct	fdcmd	*cmdp;
 	while(cmdp->c_devflag & FDMCHK ){
 		cmdp->c_devflag |= FDWAIT;
 		sleep(&cmdp->c_devflag,PZERO);
-	} 
+	}
 }
 /***************************************************************************
  *
@@ -538,12 +538,12 @@ struct unit_info *uip;
 		cmdp->c_rwdata[0] = RDMV;
 		break;
 	case B_FORMAT:
-		cmdp->c_dcount = FMTCNT; 
+		cmdp->c_dcount = FMTCNT;
 		cmdp->c_rwdata[0] = FMTM;
 		cmdp->c_saddr = cip->b_sector / uip->d_drtab.dr_spc;
 		resid = cip->b_sector % uip->d_drtab.dr_spc;
 		cmdp->c_rwdata[1] = slave|((resid/uip->d_drtab.dr_nsec)<<2);
-		cmdp->c_rwdata[2] = 
+		cmdp->c_rwdata[2] =
 			((struct fmttbl *)cip->b_buf->b_un.b_addr)->s_type;
 		cmdp->c_rwdata[3] = uip->d_drtab.dr_nsec;
 		cmdp->c_rwdata[4] = uip->d_drtab.dr_fgpl;
@@ -563,7 +563,7 @@ struct unit_info *uip;
 		resid = cip->b_sector % uip->d_drtab.dr_spc;
 		cmdp->c_rwdata[3] = resid / uip->d_drtab.dr_nsec;
 		cmdp->c_rwdata[1] = slave|(cmdp->c_rwdata[3]<<2);
-		cmdp->c_rwdata[2] = cmdp->c_saddr = 
+		cmdp->c_rwdata[2] = cmdp->c_saddr =
 			cip->b_sector / uip->d_drtab.dr_spc;
 		cmdp->c_rwdata[4] = (resid % uip->d_drtab.dr_nsec) + 1;
 		cmdp->c_rwdata[5] = 2;
@@ -591,13 +591,13 @@ struct unit_info *uip;
 fdread(dev, uio)
 register dev_t	dev;
 struct uio *uio;
-{ 
+{
 #ifdef	MACH_KERNEL
 	/* no need for page-size restriction */
 	return (block_io(fdstrategy, minphys, uio));
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	return(physio(fdstrategy,&fdrbuf[UNIT(dev)],dev,B_READ,fdminphys,uio));
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 }
 /*****************************************************************************
  *
@@ -615,9 +615,9 @@ struct uio *uio;
 #ifdef	MACH_KERNEL
 	/* no need for page-size restriction */
 	return (block_io(fdstrategy, minphys, uio));
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	return(physio(fdstrategy,&fdrbuf[UNIT(dev)],dev,B_WRITE,fdminphys,uio));
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 }
 /*****************************************************************************
  *
@@ -720,7 +720,7 @@ char	*info;
 
         return(result);
 }
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 /*****************************************************************************
  *
  * TITLE:	fdioctl
@@ -730,7 +730,7 @@ char	*info;
  * CALLING ROUTINES:	kernel
  *
  ****************************************************************************/
-int 
+int
 fdioctl(dev, cmd, cmdarg, flag)
 dev_t	dev;		/* major, minor numbers */
 int	cmd;		/* command code */
@@ -751,10 +751,10 @@ int	flag;		/* not used */
 	}
 	return(EINVAL);
 }
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 /****************************************************************************
  *
- *	set fd parameters 
+ *	set fd parameters
  *
  ****************************************************************************/
 int
@@ -782,7 +782,7 @@ long cmdarg;
 }
 /****************************************************************************
  *
- *	get fd parameters 
+ *	get fd parameters
  *
  ****************************************************************************/
 int
@@ -821,7 +821,7 @@ int	*cmdarg;
 	register struct	fddrtab	*dr = &unit_info[UNIT(dev)].d_drtab;
 
 	if(!(dr->dr_type & OKTYPE))
-		return(EINVAL);	
+		return(EINVAL);
 	varg = (union io_arg *)cmdarg;
 	num_trks = varg->ia_fmt.num_trks;
 	track = (daddr_t)(varg->ia_fmt.start_trk*dr->dr_nsec);
@@ -832,7 +832,7 @@ int	*cmdarg;
 		bp->b_flags &= ~B_DONE;
 		bp->b_dev = dev;
 		bp->b_error = 0; bp->b_resid = 0;
-		bp->b_flags = B_FORMAT;	
+		bp->b_flags = B_FORMAT;
 		bp->b_bcount = dr->dr_nsec * FMTID;
 		bp->b_blkno = (daddr_t)((track << 9) / NBPSCTR);
 		if(makeidtbl(bp->b_un.b_addr,dr,
@@ -841,7 +841,7 @@ int	*cmdarg;
 		fdstrategy(bp);
 		biowait(bp);
 		if(bp->b_error)
-			if((bp->b_error == (char)EBBHARD) || 
+			if((bp->b_error == (char)EBBHARD) ||
 			   (bp->b_error == (char)EBBSOFT))
 				return(EIO);
 			else
@@ -904,11 +904,11 @@ int	ctrl;
 	struct fdcmd		*cmdp = &ctrl_info[ctrl].b_cmd;
 	if(cmdp->c_stsflag & INTROUT)
 		untimeout(fdintr, ctrl);
-	cmdp->c_stsflag &= ~INTROUT;	
+	cmdp->c_stsflag &= ~INTROUT;
 	switch(cmdp->c_intr){
 	case RWFLAG:
 		rwintr(uip);
-		break;	
+		break;
 	case SKFLAG:
 	case SKEFLAG|SKFLAG:
 	case RBFLAG:
@@ -1000,7 +1000,7 @@ rwend:		outb(0x0a, 0x06);
 		D(printf("\n->rwierr %x ", rtn));
 		rwierr(uip);
 	} else { /* write command */
-		if(((cip->b_buf->b_flags&(B_FORMAT|B_READ|B_WRITE))==B_WRITE) 
+		if(((cip->b_buf->b_flags&(B_FORMAT|B_READ|B_WRITE))==B_WRITE)
 		   && !(cip->b_buf->b_flags & B_VERIFY)) {
 			D(printf("->w/v "));
 			cip->b_buf->b_flags |= B_VERIFY;
@@ -1175,7 +1175,7 @@ register char		seekpoint;
  *
  * TITLE:	m765sweep
  *
- * ABSTRACT:	Perform an initialization sweep.  
+ * ABSTRACT:	Perform an initialization sweep.
  *
  **************************************************************************/
 m765sweep(uip, cdr)
@@ -1248,7 +1248,7 @@ struct unit_info *uip;
 	cmdp->c_intr = CMDRST;
 	if(((cip->b_buf->b_flags&(B_READ|B_VERIFY))!=(B_READ|B_VERIFY)) &&
 	   uip->dev->slave)
-		dr->dr_type &= ~OKTYPE; 
+		dr->dr_type &= ~OKTYPE;
 	bp = cip->b_buf;
 	bp->b_flags |= B_ERROR;
 	switch(cip->b_status&BYTEMASK){
@@ -1438,7 +1438,7 @@ register int	cylno;
 	cmdp->c_intr |= WUPFLAG;
 	outb(DATAREG(uip->addr), cylno);		/* seek count */
 	rtn = ERROR;
-	while(rtn){	
+	while(rtn){
 		uip->wakeme = 1;
 		sleep(uip, PZERO);
 		if((rtn = sis(uip)) == ST0OK)
@@ -1455,7 +1455,7 @@ register int	cylno;
  *	seek commnd routine(use interrupt)
  *
  *****************************************************************************/
-fdiseek(uip, cylno) 
+fdiseek(uip, cylno)
 struct unit_info *uip;
 int	cylno;
 {
@@ -1476,7 +1476,7 @@ int	cylno;
 		cylno = cylno * 2;
 	uip->b_cmd->c_intr |= SKFLAG;
 	outb(DATAREG(uip->addr), cylno);	/* seek count */
-fdiend:	
+fdiend:
 	if(rtn)
 		rtn |= SEEKCMD<<8;
 	return(rtn);
@@ -1542,7 +1542,7 @@ struct unit_info *uip;
 	dmalen = i386_trunc_page(address) + I386_PGBYTES - address;
 	if ( (cip->b_rwerr&MRMASK) >= 0x10)
 		dmalen = 0x200;
-	if (dmalen<=cip->b_xferdma) 
+	if (dmalen<=cip->b_xferdma)
 		cip->b_xferdma = dmalen;
 	else
 		dmalen = cip->b_xferdma;
@@ -1588,9 +1588,9 @@ struct unit_info *uip;
 			(B_READ|B_VERIFY))?TOUT:ITOUT;
 #ifdef	MACH_KERNEL
 		timeout(fdintr,uip->dev->ctlr,cnt0);
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 		cmdp->c_timeid = timeout(fdintr,uip->dev->ctlr,cnt0);
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 	}
 	return(rtn);
 }
@@ -1631,7 +1631,7 @@ struct unit_info *uip;
 	int		cnt0 = STSCHKCNT;
 
 	while(cnt0--)
-		if(((ind=inb(STSREG(uip->addr))) & DATAOK) && 
+		if(((ind=inb(STSREG(uip->addr))) & DATAOK) &&
 		   ((ind & DTOCPU) == mode))
 			return(0);
 	return(TIMEOUT);
@@ -1655,9 +1655,9 @@ struct unit_info *uip;
 	cmdp->c_stsflag |= MTROFF;
 #ifdef	MACH_KERNEL
 	timeout(mtr_off,uip,MTRSTOP);
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	cmdp->c_mtrid = timeout(mtr_off,uip,MTRSTOP);
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 }
 /*****************************************************************************
  *

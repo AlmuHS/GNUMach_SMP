@@ -1606,7 +1606,7 @@ static inline void do_request (ide_hwif_t *hwif, struct request *rq)
 		printk("%s: drive not ready for command\n", drive->name);
 		return;
 	}
-	
+
 	if (!drive->special.all) {
 		if (rq->cmd == IDE_DRIVE_CMD) {
 			execute_drive_cmd(drive, rq);
@@ -1646,7 +1646,7 @@ static inline void do_request (ide_hwif_t *hwif, struct request *rq)
 #else
 		do_rw_disk (drive, rq, block); /* simpler and faster */
 		return;
-#endif /* CONFIG_BLK_DEV_IDEATAPI */;
+#endif /* CONFIG_BLK_DEV_IDEATAPI */
 	}
 	do_special(drive);
 	return;
@@ -1696,7 +1696,7 @@ void ide_do_request (ide_hwgroup_t *hwgroup)
 			hwgroup->active = 0;
 			return;		/* no work left for this hwgroup */
 		}
-	got_rq:	
+	got_rq:
 		do_request(hwgroup->hwif = hwgroup->next_hwif = hwif, hwgroup->rq = rq);
 		cli();
 	} while (hwgroup->handler == NULL);
@@ -2429,7 +2429,7 @@ static inline void do_identify (ide_drive_t *drive, byte cmd)
 
 #if defined (CONFIG_SCSI_EATA_DMA) || defined (CONFIG_SCSI_EATA_PIO) || defined (CONFIG_SCSI_EATA)
 	/*
-	 * EATA SCSI controllers do a hardware ATA emulation:  
+	 * EATA SCSI controllers do a hardware ATA emulation:
 	 * Ignore them if there is a driver for them available.
 	 */
 	if ((id->model[0] == 'P' && id->model[1] == 'M')
@@ -3321,7 +3321,7 @@ done:
  * This routine is called from the partition-table code in genhd.c
  * to "convert" a drive to a logical geometry with fewer than 1024 cyls.
  *
- * The second parameter, "xparm", determines exactly how the translation 
+ * The second parameter, "xparm", determines exactly how the translation
  * will be handled:
  *		 0 = convert to CHS with fewer than 1024 cyls
  *			using the same method as Ontrack DiskManager.
@@ -3329,7 +3329,7 @@ done:
  *		-1 = similar to "0", plus redirect sector 0 to sector 1.
  *		>1 = convert to a CHS geometry with "xparm" heads.
  *
- * Returns 0 if the translation was not possible, if the device was not 
+ * Returns 0 if the translation was not possible, if the device was not
  * an IDE disk drive, or if a geometry was "forced" on the commandline.
  * Returns 1 if the geometry translation was successful.
  */
@@ -3640,7 +3640,7 @@ static int hwif_init (int h)
 {
 	ide_hwif_t *hwif = &ide_hwifs[h];
 	void (*rfn)(void);
-	
+
 	if (!hwif->present)
 		return 0;
 	if (!hwif->irq) {
@@ -3655,7 +3655,7 @@ static int hwif_init (int h)
 		return (hwif->present = 0);
 	}
 #endif /* CONFIG_BLK_DEV_HD */
-	
+
 	hwif->present = 0; /* we set it back to 1 if all is ok below */
 	switch (hwif->major) {
 	case IDE0_MAJOR: rfn = &do_ide0_request; break;
@@ -3710,7 +3710,7 @@ int ide_init (void)
 #ifdef CONFIG_BLK_DEV_IDETAPE
 	idetape_register_chrdev();	/* Register character device interface to the ide tape */
 #endif /* CONFIG_BLK_DEV_IDETAPE */
-	
+
 	return 0;
 }
 

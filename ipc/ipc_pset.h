@@ -92,4 +92,4 @@ ipc_pset_destroy(/* ipc_pset_t */);
 extern void
 ipc_pset_print(/* ipc_pset_t */);
 
-#endif	_IPC_IPC_PSET_H_
+#endif	/* _IPC_IPC_PSET_H_ */

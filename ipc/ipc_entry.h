@@ -155,4 +155,4 @@ ipc_entry_dealloc(/* ipc_space_t space, mach_port_t name,
 extern kern_return_t
 ipc_entry_grow_table(/* ipc_space_t space */);
 
-#endif	_IPC_IPC_ENTRY_H_
+#endif	/* _IPC_IPC_ENTRY_H_ */

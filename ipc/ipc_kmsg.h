@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990,1989 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -48,7 +48,7 @@
 #if	NORMA_IPC
 #include <vm/vm_page.h>
 #include <vm/vm_map.h>
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
 /*
  *	This structure is only the header for a kmsg buffer;
@@ -70,7 +70,7 @@ typedef struct ipc_kmsg {
 	vm_page_t ikm_page;
 	vm_map_copy_t ikm_copy;
 	unsigned long ikm_source_node;
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 	mach_msg_header_t ikm_header;
 } *ipc_kmsg_t;
 
@@ -287,5 +287,5 @@ ipc_kmsg_copyin_compat(/* ipc_kmsg_t, ipc_space_t, vm_map_t */);
 extern mach_msg_return_t
 ipc_kmsg_copyout_compat(/* ipc_kmsg_t, ipc_space_t, vm_map_t */);
 
-#endif	MACH_IPC_COMPAT
-#endif	_IPC_IPC_KMSG_H_
+#endif	/* MACH_IPC_COMPAT */
+#endif	/* _IPC_IPC_KMSG_H_ */

@@ -209,7 +209,7 @@ typedef struct vm_map_version {
  *		at a time.
  *
  *	Implementation:
- * 		There are three formats for map copy objects.  
+ * 		There are three formats for map copy objects.
  *		The first is very similar to the main
  *		address map in structure, and as a result, some
  *		of the internal maintenance functions/macros can
@@ -230,9 +230,9 @@ typedef struct vm_map_version {
 
 #if	iPSC386 || iPSC860
 #define VM_MAP_COPY_PAGE_LIST_MAX	64
-#else	iPSC386 || iPSC860
+#else	/* iPSC386 || iPSC860 */
 #define VM_MAP_COPY_PAGE_LIST_MAX	8
-#endif	iPSC386 || iPSC860
+#endif	/* iPSC386 || iPSC860 */
 
 typedef struct vm_map_copy {
 	int			type;
@@ -445,4 +445,4 @@ extern vm_object_t	vm_submap_object;
 
 #define vm_map_entry_wakeup(map)        thread_wakeup((event_t)&(map)->hdr)
 
-#endif	_VM_VM_MAP_H_
+#endif	/* _VM_VM_MAP_H_ */

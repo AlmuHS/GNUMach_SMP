@@ -22,4 +22,4 @@
 
 #define alloca(size) __builtin_alloca(size)
 
-#endif _MACH_ALLOCA_H_
+#endif /* _MACH_ALLOCA_H_ */

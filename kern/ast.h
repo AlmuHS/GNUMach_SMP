@@ -78,12 +78,12 @@ extern volatile ast_t need_ast[NCPUS];
 /*
  *	machine/ast.h is responsible for defining aston and astoff.
  */
-#else	MACHINE_AST
+#else	/* MACHINE_AST */
 
 #define aston(mycpu)
 #define astoff(mycpu)
 
-#endif	MACHINE_AST
+#endif	/* MACHINE_AST */
 
 extern void ast_taken();
 
@@ -129,4 +129,4 @@ MACRO_END
  *	be followed by ast_propagate().
  */
 
-#endif	_KERN_AST_H_
+#endif	/* _KERN_AST_H_ */

@@ -1,4 +1,4 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1990 Carnegie-Mellon University
  * Copyright (c) 1989 Carnegie-Mellon University
@@ -10,7 +10,7 @@
  * Grenoble, FRANCE
  *
  * 		All Rights Reserved
- * 
+ *
  *   Permission to use, copy, modify, and distribute this software and
  * its documentation for any purpose and without fee is hereby granted,
  * provided that the above copyright notice appears in all copies and
@@ -19,7 +19,7 @@
  * Foundation not be used in advertising or publicity pertaining to
  * distribution of the software without specific, written prior
  * permission.
- * 
+ *
  *   OSF DISCLAIMS ALL WARRANTIES WITH REGARD TO THIS SOFTWARE
  * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS,
  * IN NO EVENT SHALL OSF BE LIABLE FOR ANY SPECIAL, INDIRECT, OR
@@ -58,10 +58,10 @@ decl_simple_lock_data(extern , printf_lock)
 
 #if	TIME_STAMP
 extern	time_stamp_t time_stamp;
-#else	TIME_STAMP
+#else	/* TIME_STAMP */
 typedef unsigned int time_stamp_t;
 #define	time_stamp 0
-#endif	TIME_STAMP
+#endif	/* TIME_STAMP */
 
 #define LOCK_INFO_MAX	     (1024*32)
 #define LOCK_INFO_HASH_COUNT 1024
@@ -74,7 +74,7 @@ struct lock_info {
 	unsigned int	success;
 	unsigned int	fail;
 	unsigned int	masked;
-	unsigned int	stack; 
+	unsigned int	stack;
 	time_stamp_t	time;
 	decl_simple_lock_data(, *lock)
 	vm_offset_t	caller;
@@ -113,7 +113,7 @@ decl_simple_lock_data(, **lock)
 	li = &default_lock_info;
 	return(li);
 }
-		
+
 
 simple_lock(lock)
 decl_simple_lock_data(, *lock)
@@ -121,7 +121,7 @@ decl_simple_lock_data(, *lock)
 	register struct lock_info *li = locate_lock_info(&lock);
 	register my_cpu = cpu_number();
 
-	if (current_thread()) 
+	if (current_thread())
 		li->stack = current_thread()->lock_stack++;
 	if (curr_ipl[my_cpu])
 		li->masked++;
@@ -252,8 +252,8 @@ lock_info_sort(arg, abs, count)
 		        old_val = max_val;
 	}
 	db_printf("\n%d total locks, %d empty buckets", total, empty );
-	if (default_lock_info.success) 
-		db_printf(", default: %d", default_lock_info.success + default_lock_info.fail); 
+	if (default_lock_info.success)
+		db_printf(", default: %d", default_lock_info.success + default_lock_info.fail);
 	db_printf("\n");
 	print_lock_info(&mean);
 }
@@ -271,7 +271,7 @@ lock_info_clear()
 			bzero(li, sizeof(struct lock_info));
 		}
 	}
-	bzero(&default_lock_info, sizeof(struct lock_info)); 
+	bzero(&default_lock_info, sizeof(struct lock_info));
 }
 
 print_lock_info(li)
@@ -294,7 +294,7 @@ struct lock_info *li;
 	db_printf("\n");
 }
 
-#endif	NCPUS > 1 && MACH_LOCK_MON
+#endif	/* NCPUS > 1 && MACH_LOCK_MON */
 
 #if	TIME_STAMP
 
@@ -327,9 +327,9 @@ time_lock(loops)
         }
 	stamp = time_stamp - stamp;
 	db_printf("%d stamps for _simple_locks\n", stamp/loops);
-#endif	MACH_LOCK_MON
+#endif	/* MACH_LOCK_MON */
 }
-#endif	TIME_STAMP
+#endif	/* TIME_STAMP */
 
 #if	MACH_MP_DEBUG
 
@@ -369,7 +369,4 @@ retry_bit_lock(index, addr)
 			count = 0;
 		}
 }
-#endif	MACH_MP_DEBUG
-
-
-
+#endif	/* MACH_MP_DEBUG */

@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990,1989 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -176,18 +176,18 @@ ipc_kobject_server(request)
 	 || (routine = device_pager_server_routine(&request->ikm_header)) != 0
 #if	MACH_DEBUG
 	 || (routine = mach_debug_server_routine(&request->ikm_header)) != 0
-#endif	MACH_DEBUG
+#endif	/* MACH_DEBUG */
 #if	NORMA_TASK
 	 || (routine = mach_norma_server_routine(&request->ikm_header)) != 0
 	 || (routine = norma_internal_server_routine(&request->ikm_header)) != 0
-#endif	NORMA_TASK
+#endif	/* NORMA_TASK */
 #if	NORMA_VM
 	 || (routine = proxy_server_routine(&request->ikm_header)) != 0
-#endif	NORMA_VM
+#endif	/* NORMA_VM */
 	 || (routine = mach4_server_routine(&request->ikm_header)) != 0
 #if	MACH_MACHINE_ROUTINES
 	 || (routine = MACHINE_SERVER_ROUTINE(&request->ikm_header)) != 0
-#endif	MACH_MACHINE_ROUTINES
+#endif	/* MACH_MACHINE_ROUTINES */
 	) {
 	    (*routine)(&request->ikm_header, &reply->ikm_header);
 	}
@@ -197,7 +197,7 @@ ipc_kobject_server(request)
 #if	MACH_IPC_TEST
 		printf("ipc_kobject_server: bogus kernel message, id=%d\n",
 		       request->ikm_header.msgh_id);
-#endif	MACH_IPC_TEST
+#endif	/* MACH_IPC_TEST */
 	}
     }
 	check_simple_locks();
@@ -218,11 +218,11 @@ ipc_kobject_server(request)
 		case MACH_MSG_TYPE_PORT_SEND:
 		ipc_port_release_send(*destp);
 		break;
-		
+
 		case MACH_MSG_TYPE_PORT_SEND_ONCE:
 		ipc_port_release_sonce(*destp);
 		break;
-		
+
 		default:
 #if MACH_ASSERT
 		assert(!"ipc_object_destroy: strange destination rights");
@@ -336,7 +336,7 @@ ipc_kobject_destroy(
 #if	MACH_ASSERT
 		printf("ipc_kobject_destroy: port 0x%x, kobj 0x%x, type %d\n",
 		       port, port->ip_kobject, ip_kotype(port));
-#endif	MACH_ASSERT
+#endif	/* MACH_ASSERT */
 		break;
 	}
 }
@@ -380,7 +380,7 @@ ipc_kobject_notify(request_header, reply_header)
 
 		case IKOT_XMM_REPLY:
 		return xmm_reply_notify(request_header);
-#endif	NORMA_VM
+#endif	/* NORMA_VM */
 
 		case IKOT_DEVICE:
 		return ds_notify(request_header);

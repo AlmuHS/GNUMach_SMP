@@ -61,4 +61,4 @@ extern vm_offset_t phys_mem_va;
 #define kvtolin(a)	((vm_offset_t)(a) + LINEAR_MIN_KERNEL_ADDRESS)
 #define lintokv(a)	((vm_offset_t)(a) - LINEAR_MIN_KERNEL_ADDRESS)
 
-#endif _I386_KERNEL_I386_VM_PARAM_
+#endif /* _I386_KERNEL_I386_VM_PARAM_ */

@@ -132,4 +132,4 @@ static __inline void ZFREE(zone_t zone, vm_offset_t element)
 
 
 
-#endif	_KERN_ZALLOC_H_
+#endif	/* _KERN_ZALLOC_H_ */

@@ -641,7 +641,7 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 				ip_unlock(reply_port);
 				goto norma_send;
 		        }
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
 			if (dest_port->ip_msgcount >= dest_port->ip_qlimit)
 				goto abort_request_send_receive;
@@ -760,7 +760,7 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 				ip_unlock(dest_port);
 				goto norma_send;
 			}
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
 			/* optimized ipc_entry_lookup/ipc_mqueue_copyin */
 
@@ -861,7 +861,7 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 		assert(dest_port->ip_receiver != ipc_space_kernel);
 #if	NORMA_IPC
 		assert(! IP_NORMA_IS_PROXY(dest_port));
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 		assert((dest_port->ip_msgcount < dest_port->ip_qlimit) ||
 		       (MACH_MSGH_BITS_REMOTE(kmsg->ikm_header.msgh_bits) ==
 						MACH_MSG_TYPE_PORT_SEND_ONCE));
@@ -1343,7 +1343,7 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 		if (ip_active(dest_port) &&
 #if	NORMA_IPC
 		    (! IP_NORMA_IS_PROXY(dest_port)) &&
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 		    ((dest_port->ip_msgcount < dest_port->ip_qlimit) ||
 		     (MACH_MSGH_BITS_REMOTE(kmsg->ikm_header.msgh_bits) ==
 					MACH_MSG_TYPE_PORT_SEND_ONCE)))
@@ -1400,7 +1400,7 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 		}
 
 		goto slow_get_rcv_port;
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
 	    kernel_send:
 		/*
@@ -2276,4 +2276,4 @@ msg_receive_continue()
 }
 #endif /* CONTINUATIONS */
 
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */

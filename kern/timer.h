@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990,1989,1988,1987 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -43,14 +43,14 @@
 #define TIMER_HIGH_UNIT	TIMER_RATE
 #undef	TIMER_ADJUST
 
-#else	STAT_TIME
+#else	/* STAT_TIME */
 /*
  *	Machine dependent definitions based on hardware support.
  */
 
 #include <machine/timer.h>
 
-#endif	STAT_TIME
+#endif	/* STAT_TIME */
 
 /*
  *	Definitions for accurate timers.  high_bits_check is a copy of
@@ -99,10 +99,10 @@ typedef struct timer_save	timer_save_data_t, *timer_save_t;
 #if	STAT_TIME
 #define start_timer(timer)
 #define timer_switch(timer)
-#else	STAT_TIME
+#else	/* STAT_TIME */
 extern void	start_timer();
 extern void	timer_switch();
-#endif	STAT_TIME
+#endif	/* STAT_TIME */
 
 extern void		timer_read();
 extern void		thread_read_times();
@@ -111,7 +111,7 @@ extern unsigned		timer_delta();
 #if	STAT_TIME
 /*
  *	Macro to bump timer values.
- */	
+ */
 #define timer_bump(timer, usec)					\
 MACRO_BEGIN							\
 	(timer)->low_bits += usec;				\
@@ -120,7 +120,7 @@ MACRO_BEGIN							\
 	}							\
 MACRO_END
 
-#else	STAT_TIME
+#else	/* STAT_TIME */
 /*
  *	Exported hardware interface to timers
  */
@@ -128,7 +128,7 @@ extern void	time_trap_uentry();
 extern void	time_trap_uexit();
 extern timer_t	time_int_entry();
 extern void	time_int_exit();
-#endif	STAT_TIME
+#endif	/* STAT_TIME */
 
 /*
  *	TIMER_DELTA finds the difference between a timer and a saved value,
@@ -154,4 +154,4 @@ MACRO_BEGIN							\
 	}							\
 MACRO_END
 
-#endif	_KERN_TIMER_H_
+#endif	/* _KERN_TIMER_H_ */

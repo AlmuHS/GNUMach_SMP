@@ -3,15 +3,15 @@
           Copyright (C) 1994-96 Marc ZYNGIER
 	  <zyngier@ufr-info-p7.ibp.fr> or
 	  <maz@gloups.fdn.fr>
-	  
+
    This program is free software; you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation; either version 2, or (at your option)
    any later version.
-   
+
    You should have received a copy of the GNU General Public License
    (for example /usr/src/linux/COPYING); if not, write to the Free
-   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.  
+   Software Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 
 #ifndef _MD_H
@@ -271,5 +271,5 @@ extern void md_unregister_thread (struct md_thread *thread);
 extern void md_wakeup_thread(struct md_thread *thread);
 extern int md_update_sb (int minor);
 
-#endif __KERNEL__
-#endif _MD_H
+#endif /* __KERNEL__ */
+#endif /* _MD_H */

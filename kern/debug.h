@@ -46,7 +46,7 @@
 			__FILE__, __LINE__, (p), (id), (p->struct_id)); \
 	})
 
-#else !DEBUG
+#else /* !DEBUG */
 
 #define otsan()
 
@@ -55,6 +55,6 @@
 #define struct_id_denit(p)
 #define struct_id_verify(p,id)
 
-#endif !DEBUG
+#endif /* !DEBUG */
 
-#endif _mach_debug__debug_
+#endif /* _mach_debug__debug_ */

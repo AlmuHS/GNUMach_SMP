@@ -46,7 +46,7 @@
 #ifdef	PS2
 #include <i386/pic.h>
 #include <i386/pio.h>
-#endif	PS2
+#endif	/* PS2 */
 
 extern void	clock_interrupt();
 extern char	return_to_iret[];

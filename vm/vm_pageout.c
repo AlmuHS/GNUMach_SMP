@@ -56,23 +56,23 @@
 
 #ifndef	VM_PAGEOUT_BURST_MAX
 #define	VM_PAGEOUT_BURST_MAX	10		/* number of pages */
-#endif	VM_PAGEOUT_BURST_MAX
+#endif	/* VM_PAGEOUT_BURST_MAX */
 
 #ifndef	VM_PAGEOUT_BURST_MIN
 #define	VM_PAGEOUT_BURST_MIN	5		/* number of pages */
-#endif	VM_PAGEOUT_BURST_MIN
+#endif	/* VM_PAGEOUT_BURST_MIN */
 
 #ifndef	VM_PAGEOUT_BURST_WAIT
 #define	VM_PAGEOUT_BURST_WAIT	10		/* milliseconds per page */
-#endif	VM_PAGEOUT_BURST_WAIT
+#endif	/* VM_PAGEOUT_BURST_WAIT */
 
 #ifndef	VM_PAGEOUT_EMPTY_WAIT
 #define VM_PAGEOUT_EMPTY_WAIT	75		/* milliseconds */
-#endif	VM_PAGEOUT_EMPTY_WAIT
+#endif	/* VM_PAGEOUT_EMPTY_WAIT */
 
 #ifndef	VM_PAGEOUT_PAUSE_MAX
 #define	VM_PAGEOUT_PAUSE_MAX	10		/* number of pauses */
-#endif	VM_PAGEOUT_PAUSE_MAX
+#endif	/* VM_PAGEOUT_PAUSE_MAX */
 
 /*
  *	To obtain a reasonable LRU approximation, the inactive queue
@@ -88,7 +88,7 @@
 
 #ifndef	VM_PAGE_INACTIVE_TARGET
 #define	VM_PAGE_INACTIVE_TARGET(avail)	((avail) * 2 / 3)
-#endif	VM_PAGE_INACTIVE_TARGET
+#endif	/* VM_PAGE_INACTIVE_TARGET */
 
 /*
  *	Once the pageout daemon starts running, it keeps going
@@ -97,7 +97,7 @@
 
 #ifndef	VM_PAGE_FREE_TARGET
 #define	VM_PAGE_FREE_TARGET(free)	(15 + (free) / 80)
-#endif	VM_PAGE_FREE_TARGET
+#endif	/* VM_PAGE_FREE_TARGET */
 
 /*
  *	The pageout daemon always starts running once vm_page_free_count
@@ -106,7 +106,7 @@
 
 #ifndef	VM_PAGE_FREE_MIN
 #define	VM_PAGE_FREE_MIN(free)	(10 + (free) / 100)
-#endif	VM_PAGE_FREE_MIN
+#endif	/* VM_PAGE_FREE_MIN */
 
 /*      When vm_page_external_count exceeds vm_page_external_limit, 
  *	allocations of externally paged pages stops.
@@ -114,14 +114,14 @@
 
 #ifndef VM_PAGE_EXTERNAL_LIMIT
 #define VM_PAGE_EXTERNAL_LIMIT(free)		((free) / 2)
-#endif  VM_PAGE_EXTERNAL_LIMIT
+#endif  /* VM_PAGE_EXTERNAL_LIMIT */
 
 /*	Attempt to keep the number of externally paged pages less
  *	than vm_pages_external_target.
  */
 #ifndef VM_PAGE_EXTERNAL_TARGET
 #define VM_PAGE_EXTERNAL_TARGET(free)		((free) / 4)
-#endif  VM_PAGE_EXTERNAL_TARGET
+#endif  /* VM_PAGE_EXTERNAL_TARGET */
 
 /*
  *	When vm_page_free_count falls below vm_page_free_reserved,
@@ -132,7 +132,7 @@
 
 #ifndef	VM_PAGE_FREE_RESERVED
 #define	VM_PAGE_FREE_RESERVED			50
-#endif	VM_PAGE_FREE_RESERVED
+#endif	/* VM_PAGE_FREE_RESERVED */
 
 /*
  *	When vm_page_free_count falls below vm_pageout_reserved_internal,
@@ -144,7 +144,7 @@
 
 #ifndef	VM_PAGEOUT_RESERVED_INTERNAL
 #define	VM_PAGEOUT_RESERVED_INTERNAL(reserve)	((reserve) - 25)
-#endif	VM_PAGEOUT_RESERVED_INTERNAL
+#endif	/* VM_PAGEOUT_RESERVED_INTERNAL */
 
 /*
  *	When vm_page_free_count falls below vm_pageout_reserved_really,
@@ -156,7 +156,7 @@
 
 #ifndef	VM_PAGEOUT_RESERVED_REALLY
 #define	VM_PAGEOUT_RESERVED_REALLY(reserve)	((reserve) - 40)
-#endif	VM_PAGEOUT_RESERVED_REALLY
+#endif	/* VM_PAGEOUT_RESERVED_REALLY */
 
 extern void vm_pageout_continue();
 extern void vm_pageout_scan_continue();
@@ -196,7 +196,7 @@ unsigned int vm_pageout_inactive_cleaned_external = 0;
  */
 extern kern_return_t memory_object_data_initialize();
 extern kern_return_t memory_object_data_write();
-#endif	NORMA_VM
+#endif	/* NORMA_VM */
 
 /*
  *	Routine:	vm_pageout_setup
@@ -289,7 +289,7 @@ vm_pageout_setup(m, paging_offset, new_object, new_offset, flush)
 		vm_external_state_set(old_object->existence_info,
 					paging_offset,
 					VM_EXTERNAL_STATE_EXISTS);
-#endif	MACH_PAGEMAP
+#endif	/* MACH_PAGEMAP */
 
 		vm_object_unlock(old_object);
 
@@ -336,7 +336,7 @@ vm_pageout_setup(m, paging_offset, new_object, new_offset, flush)
 		vm_external_state_set(old_object->existence_info,
 					paging_offset,
 					VM_EXTERNAL_STATE_EXISTS);
-#endif	MACH_PAGEMAP
+#endif	/* MACH_PAGEMAP */
 
 		vm_object_unlock(old_object);
 

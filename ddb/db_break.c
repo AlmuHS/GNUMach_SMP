@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -93,7 +93,7 @@ db_add_thread_breakpoint(bkpt, task_thd, count, task_bpt)
 	register db_thread_breakpoint_t tp;
 
 	if (db_thread_break_init == FALSE) {
-	    for (tp = db_thread_break_list; 
+	    for (tp = db_thread_break_list;
 		tp < &db_thread_break_list[NTHREAD_LIST-1]; tp++)
 		tp->tb_next = tp+1;
 	    tp->tb_next = 0;
@@ -242,11 +242,11 @@ db_check_breakpoint_valid()
 		    tbp_next = tbp->tb_next;
 		    if (tbp->tb_task_thd == 0)
 			continue;
-		    if ((tbp->tb_is_task && 
+		    if ((tbp->tb_is_task &&
 			 db_lookup_task((task_t)(tbp->tb_task_thd)) < 0) ||
-			(!tbp->tb_is_task && 
+			(!tbp->tb_is_task &&
 			 db_lookup_thread((thread_t)(tbp->tb_task_thd)) < 0)) {
-			db_force_delete_breakpoint(bkpt, 
+			db_force_delete_breakpoint(bkpt,
 					tbp->tb_task_thd, tbp->tb_is_task);
 		    }
 		}
@@ -414,7 +414,7 @@ db_set_breakpoints()
 				BKPT_SET(bkpt->bkpt_inst), task);
 		    bkpt->flags |= BKPT_SET_IN_MEM;
 		} else {
-		    db_printf("Warning: cannot set breakpoint at %X ", 
+		    db_printf("Warning: cannot set breakpoint at %X ",
 				bkpt->address);
 		    if (task)
 			db_printf("in task %X\n", task);
@@ -448,7 +448,7 @@ db_clear_breakpoints()
 		}
 		if ((bkpt->flags & BKPT_SET_IN_MEM)
 		    && DB_CHECK_ACCESS(bkpt->address, BKPT_SIZE, task)) {
-		    inst = db_get_task_value(bkpt->address, BKPT_SIZE, FALSE, 
+		    inst = db_get_task_value(bkpt->address, BKPT_SIZE, FALSE,
 								task);
 		    if (inst != BKPT_SET(inst)) {
 			if (bkpt->flags & BKPT_USR_GLOBAL) {
@@ -497,9 +497,9 @@ db_set_temp_breakpoint(task, addr)
 	    db_printf("Too many thread_breakpoints.\n");
 	    return 0;
 	}
-	bkpt->bkpt_inst = db_get_task_value(bkpt->address, BKPT_SIZE, 
+	bkpt->bkpt_inst = db_get_task_value(bkpt->address, BKPT_SIZE,
 						FALSE, task);
-	db_put_task_value(bkpt->address, BKPT_SIZE, 
+	db_put_task_value(bkpt->address, BKPT_SIZE,
 				BKPT_SET(bkpt->bkpt_inst), task);
 	return bkpt;
 }
@@ -564,7 +564,7 @@ db_list_breakpoints()
 			    if (task_id < 0 || thread_id < 0)
 				db_printf("%0*X    ", 2*sizeof(vm_offset_t),
 					   tp->tb_task_thd);
-			    else	
+			    else
 				db_printf("task%03d.%-3d ", task_id, thread_id);
 			}
 		    }
@@ -603,7 +603,7 @@ db_delete_cmd()
 	boolean_t thd_bpt = FALSE;
 	db_expr_t addr;
 	int t;
-	
+
 	t = db_read_token();
 	if (t == tSLASH) {
 	    t = db_read_token();
@@ -645,7 +645,7 @@ db_delete_cmd()
 		user_space = TRUE;
 	}
 	if (!DB_VALID_ADDRESS((vm_offset_t) addr, user_space)) {
-	    db_printf("Address %#X is not in %s space\n", addr, 
+	    db_printf("Address %#X is not in %s space\n", addr,
 			(user_space)? "user": "kernel");
 	    db_error(0);
 	}
@@ -711,7 +711,7 @@ db_breakpoint_cmd(addr, have_addr, count, modif)
 		if (db_access_level <= DB_ACCESS_CURRENT && user_space
 			 && thread->task != db_current_task())
 		    db_error("Cannot set break point in inactive user space\n");
-		db_set_breakpoint(db_target_space(thread, user_space), 
+		db_set_breakpoint(db_target_space(thread, user_space),
 					(db_addr_t)addr, count,
 					(user_global)? THREAD_NULL: thread,
 					task_bpt);
@@ -730,4 +730,4 @@ db_listbreak_cmd()
 	db_list_breakpoints();
 }
 
-#endif MACH_KDB
+#endif /* MACH_KDB */

@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990,1989 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -221,7 +221,7 @@ ipc_right_dnrequest(
 
 						previous = IP_NULL;
 					} else
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 					previous = ipc_right_dncancel_macro(
 						space, port, name, entry);
 
@@ -263,7 +263,7 @@ ipc_right_dnrequest(
 				entry->ie_request = request;
 #if	MACH_IPC_COMPAT
 				entry->ie_bits = bits &~ IE_BITS_COMPAT;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 				is_write_unlock(space);
 				break;
 			}
@@ -273,7 +273,7 @@ ipc_right_dnrequest(
 				is_write_unlock(space);
 				return KERN_INVALID_NAME;
 			}
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 			bits = entry->ie_bits;
 			assert(bits & MACH_PORT_TYPE_DEAD_NAME);
@@ -346,7 +346,7 @@ ipc_right_dncancel(
 		is_release(space);
 		dnrequest = IP_NULL;
 	}
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 	return dnrequest;
 }
@@ -419,7 +419,7 @@ ipc_right_inuse(space, name, entry)
 				return FALSE;
 			}
 		}
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 		is_write_unlock(space);
 		return TRUE;
@@ -498,7 +498,7 @@ ipc_right_check(space, port, name, entry)
 
 		return TRUE;
 	}
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 	/* convert entry to dead name */
 
@@ -727,7 +727,7 @@ ipc_right_destroy(
 #if	MACH_IPC_COMPAT
 			if (bits & IE_BITS_COMPAT)
 				return KERN_INVALID_NAME;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 			break;
 		}
 
@@ -843,7 +843,7 @@ ipc_right_dealloc(space, name, entry)
 #if	MACH_IPC_COMPAT
 			if (bits & IE_BITS_COMPAT)
 				goto invalid_name;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 			bits = entry->ie_bits;
 			assert(IE_BITS_TYPE(bits) == MACH_PORT_TYPE_DEAD_NAME);
@@ -882,7 +882,7 @@ ipc_right_dealloc(space, name, entry)
 #if	MACH_IPC_COMPAT
 			if (bits & IE_BITS_COMPAT)
 				goto invalid_name;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 			bits = entry->ie_bits;
 			assert(IE_BITS_TYPE(bits) == MACH_PORT_TYPE_DEAD_NAME);
@@ -976,7 +976,7 @@ ipc_right_dealloc(space, name, entry)
     invalid_name:
 	is_write_unlock(space);
 	return KERN_INVALID_NAME;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 }
 
 /*
@@ -1086,7 +1086,7 @@ ipc_right_delta(space, name, entry, right, delta)
 			entry->ie_object = IO_NULL;
 			ipc_entry_dealloc(space, name, entry);
 		} else
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 		if (bits & MACH_PORT_TYPE_SEND) {
 			assert(IE_BITS_TYPE(bits) ==
 					MACH_PORT_TYPE_SEND_RECEIVE);
@@ -1152,7 +1152,7 @@ ipc_right_delta(space, name, entry, right, delta)
 #if	MACH_IPC_COMPAT
 			if (bits & IE_BITS_COMPAT)
 				goto invalid_name;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 			assert(!(entry->ie_bits & MACH_PORT_TYPE_SEND_ONCE));
 			goto invalid_right;
@@ -1198,7 +1198,7 @@ ipc_right_delta(space, name, entry, right, delta)
 #if	MACH_IPC_COMPAT
 			if (bits & IE_BITS_COMPAT)
 				goto invalid_name;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 			bits = entry->ie_bits;
 		} else if ((bits & MACH_PORT_TYPE_DEAD_NAME) == 0)
@@ -1250,7 +1250,7 @@ ipc_right_delta(space, name, entry, right, delta)
 #if	MACH_IPC_COMPAT
 			if (bits & IE_BITS_COMPAT)
 				goto invalid_name;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 			assert((entry->ie_bits & MACH_PORT_TYPE_SEND) == 0);
 			goto invalid_right;
@@ -1337,7 +1337,7 @@ ipc_right_delta(space, name, entry, right, delta)
     invalid_name:
 	is_write_unlock(space);
 	return KERN_INVALID_NAME;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 }
 
 /*
@@ -1372,7 +1372,7 @@ ipc_right_info(
 				is_write_unlock(space);
 				return KERN_INVALID_NAME;
 			}
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 			bits = entry->ie_bits;
 			assert(IE_BITS_TYPE(bits) == MACH_PORT_TYPE_DEAD_NAME);
@@ -1387,7 +1387,7 @@ ipc_right_info(
 	if (bits & IE_BITS_COMPAT)
 		type |= MACH_PORT_TYPE_COMPAT;
 	else
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 	if (request != 0)
 		type |= MACH_PORT_TYPE_DNREQUEST;
 	if (bits & IE_BITS_MAREQUEST)
@@ -1449,7 +1449,7 @@ ipc_right_copyin_check(
 #if	MACH_IPC_COMPAT
 			if (bits & IE_BITS_COMPAT)
 				return FALSE;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 			break;
 		}
@@ -1631,7 +1631,7 @@ ipc_right_copyin(
 #if	MACH_IPC_COMPAT
 			if (bits & IE_BITS_COMPAT)
 				goto invalid_name;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 			bits = entry->ie_bits;
 			goto copy_dead;
@@ -1678,7 +1678,7 @@ ipc_right_copyin(
 #if	MACH_IPC_COMPAT
 			if (bits & IE_BITS_COMPAT)
 				goto invalid_name;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 			bits = entry->ie_bits;
 			goto move_dead;
@@ -1754,7 +1754,7 @@ ipc_right_copyin(
 #if	MACH_IPC_COMPAT
 			if (bits & IE_BITS_COMPAT)
 				goto invalid_name;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 			bits = entry->ie_bits;
 			goto move_dead;
@@ -1834,7 +1834,7 @@ ipc_right_copyin(
 #if	MACH_IPC_COMPAT
     invalid_name:
 	return KERN_INVALID_NAME;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 }
 
 /*
@@ -1963,7 +1963,7 @@ ipc_right_copyin_two(
 #if	MACH_IPC_COMPAT
 		if (bits & IE_BITS_COMPAT)
 			goto invalid_name;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 		goto invalid_right;
 	}
@@ -2017,7 +2017,7 @@ ipc_right_copyin_two(
 #if	MACH_IPC_COMPAT
     invalid_name:
 	return KERN_INVALID_NAME;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 }
 
 /*
@@ -2258,7 +2258,7 @@ ipc_right_rename(
 				is_write_unlock(space);
 				return KERN_INVALID_NAME;
 			}
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 			bits = oentry->ie_bits;
 			assert(IE_BITS_TYPE(bits) == MACH_PORT_TYPE_DEAD_NAME);
@@ -2759,4 +2759,4 @@ ipc_right_copyin_header(space, name, entry, objectp, msgt_namep)
 	return KERN_INVALID_NAME;
 }
 
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */

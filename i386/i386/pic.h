@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990,1989 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -73,7 +73,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define OFF_ICW			0x00
 #define OFF_OCW			0x02
 #define SIZE_PIC		0x04
-#endif	iPSC386
+#endif	/* iPSC386 */
 
 #define PIC_MASTER_ICW		(ADDR_PIC_BASE + OFF_ICW)
 #define PIC_MASTER_OCW		(ADDR_PIC_BASE + OFF_OCW)
@@ -82,11 +82,11 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 /*
 ** The following banks of definitions ICW1, ICW2, ICW3, and ICW4 are used
-** to define the fields of the various ICWs for initialisation of the PICs 
+** to define the fields of the various ICWs for initialisation of the PICs
 */
 
 /*
-**	ICW1				
+**	ICW1
 */
 
 #define ICW_TEMPLATE		0x10
@@ -105,17 +105,17 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 #if	defined(AT386) || defined(PS2)
-#define	PICM_VECTBASE		0x40 
+#define	PICM_VECTBASE		0x40
 #define PICS_VECTBASE		PICM_VECTBASE + 0x08
 #endif	/* defined(AT386) || defined(PS2) */
 
 #ifdef	iPSC386
-#define	PICM_VECTBASE		0x40 
+#define	PICM_VECTBASE		0x40
 #define PICS_VECTBASE		PICM_VECTBASE + 0x08
-#endif	iPSC386
+#endif	/* iPSC386 */
 
 /*
-**	ICW3				
+**	ICW3
 */
 
 #define SLAVE_ON_IR0		0x01
@@ -137,7 +137,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define I_AM_SLAVE_7		0x07
 
 /*
-**	ICW4				
+**	ICW4
 */
 
 #define SNF_MODE_ENA		0x10
@@ -147,19 +147,19 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #if	iPSC386
 #define I_AM_A_SLAVE		0x00
 #define I_AM_A_MASTR		0x04
-#endif	iPSC386
+#endif	/* iPSC386 */
 #define AUTO_EOI_MOD		0x02
 #define NRML_EOI_MOD		0x00
 #define I8086_EMM_MOD		0x01
 #define SET_MCS_MODE		0x00
 
 /*
-**	OCW1				
+**	OCW1
 */
 #define PICM_MASK		0xFF
 #define	PICS_MASK		0xFF
 /*
-**	OCW2				
+**	OCW2
 */
 
 #define NON_SPEC_EOI		0x20
@@ -179,9 +179,9 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define SEND_EOI_IR5		0x05
 #define SEND_EOI_IR6		0x06
 #define SEND_EOI_IR7		0x07
- 
+
 /*
-**	OCW3				
+**	OCW3
 */
 
 #define OCW_TEMPLATE		0x08
@@ -194,4 +194,4 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define READ_IR_ONRD		0x00
 #define READ_IS_ONRD		0x01
 
-#endif	_I386_PIC_H_
+#endif	/* _I386_PIC_H_ */

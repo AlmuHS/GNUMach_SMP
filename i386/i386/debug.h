@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 1994 The University of Utah and
  * the Computer Systems Laboratory at the University of Utah (CSL).
  * All rights reserved.
@@ -51,7 +51,7 @@ void debug_trace_reset(void);
    Also clears the trace buffer.  */
 void debug_trace_dump(void);
 
-#else	ASSEMBLER
+#else	/* ASSEMBLER */
 
 #define DEBUG_TRACE				\
 	pushl	$__LINE__			;\
@@ -62,11 +62,11 @@ void debug_trace_dump(void);
 9:	.ascii	__FILE__"\0"			;\
 	.text
 
-#endif ASSEMBLER
+#endif /* ASSEMBLER */
 
 
-#endif DEBUG
+#endif /* DEBUG */
 
 /* XXX #include_next "debug.h" */
 
-#endif _I386_DEBUG_
+#endif /* _I386_DEBUG_ */

@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1993,1992 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -179,7 +179,7 @@ void kttd_machine_setregs(struct i386_gdb_register_state *ttd_state)
 		kttd_regs.edx = ttd_state->edx;
 	}
 	if (kttd_regs.ecx != ttd_state->ecx) {
-		if (kttd_debug) 
+		if (kttd_debug)
 			printf("ecx 0x%x:0x%x, ", kttd_regs.ecx, ttd_state->ecx);
 		kttd_regs.ecx = ttd_state->ecx;
 	}
@@ -212,7 +212,7 @@ void kttd_machine_setregs(struct i386_gdb_register_state *ttd_state)
 			printf("ss 0x%x:0x%x, ", kttd_regs.ss, ttd_state->ss);
 		kttd_regs.ss = ttd_state->ss;
 	}
-#endif	0
+#endif	/* 0 */
 
 }
 
@@ -238,14 +238,14 @@ boolean_t kttd_mem_access(vm_offset_t offset, vm_prot_t access)
 		if (kttd_debug)
 			printf(">>>>>>>>>>Faulting in memory: 0x%x, 0x%x\n",
 			       trunc_page(offset), access);
-		code = vm_fault(kernel_map, trunc_page(offset), access, FALSE, 
+		code = vm_fault(kernel_map, trunc_page(offset), access, FALSE,
 				FALSE, (void (*)()) 0);
 	}else{
 		/*
 		 * Check for user thread
 		 */
 #if	1
-		if ((current_thread() != THREAD_NULL) && 
+		if ((current_thread() != THREAD_NULL) &&
 		    (current_thread()->task->map->pmap != kernel_pmap) &&
 		    (current_thread()->task->map->pmap != PMAP_NULL)) {
 			code = vm_fault(current_thread()->task->map,
@@ -372,7 +372,7 @@ boolean_t kttd_trap(int	type, int code, struct i386_saved_state *regs)
 	 * Otherwise just hang (this might be panic).
 	 *
 	 * Check to make sure that TTD is supported.
-	 * (Both by the machine's driver's, and bootp if using ether). 
+	 * (Both by the machine's driver's, and bootp if using ether).
 	 */
 	if (!kttd_supported()) {
 		kttd_enabled = FALSE;
@@ -574,4 +574,4 @@ kttd_netentry(int_regs)
 	(void) splx(s);
 }
 
-#endif MACH_TTD
+#endif /* MACH_TTD */

@@ -69,4 +69,4 @@ convert_port_to_pset_name(struct ipc_port *);
 extern struct ipc_port *
 convert_pset_name_to_port(processor_set_t);
 
-#endif	_KERN_IPC_HOST_H_
+#endif	/* _KERN_IPC_HOST_H_ */

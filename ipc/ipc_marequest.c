@@ -189,7 +189,7 @@ ipc_marequest_create(space, port, notify, marequestp)
 
 #if	!MACH_IPC_COMPAT
 	assert(notify != MACH_PORT_NULL);
-#endif	!MACH_IPC_COMPAT
+#endif	/* !MACH_IPC_COMPAT */
 
 	marequest = imar_alloc();
 	if (marequest == IMAR_NULL)
@@ -229,7 +229,7 @@ ipc_marequest_create(space, port, notify, marequestp)
 		if (notify == MACH_PORT_NULL)
 			soright = IP_NULL;
 		else
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 		if ((soright = ipc_port_lookup_notify(space, notify))
 								== IP_NULL) {
 			is_write_unlock(space);
@@ -256,7 +256,7 @@ ipc_marequest_create(space, port, notify, marequestp)
 		if (notify == MACH_PORT_NULL)
 			soright = IP_NULL;
 		else
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 		if ((soright = ipc_port_lookup_notify(space, notify))
 								== IP_NULL) {
 			is_write_unlock(space);
@@ -373,7 +373,7 @@ ipc_marequest_destroy(marequest)
 	ipc_port_t soright;
 #if	MACH_IPC_COMPAT
 	ipc_port_t sright = IP_NULL;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 	is_write_lock(space);
 
@@ -411,7 +411,7 @@ ipc_marequest_destroy(marequest)
 #if	MACH_IPC_COMPAT
 			if (soright == IP_NULL)
 				sright = ipc_space_make_notify(space);
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 		} else
 			name = MACH_PORT_NULL;
 	}
@@ -431,7 +431,7 @@ ipc_marequest_destroy(marequest)
 		return;
 	}
 	assert(sright == IP_NULL);
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 	assert(soright != IP_NULL);
 	ipc_notify_msg_accepted(soright, name);
@@ -482,4 +482,4 @@ ipc_marequest_info(maxp, info, count)
 	return ipc_marequest_size;
 }
 
-#endif	MACH_IPC_DEBUG
+#endif	/* MACH_IPC_DEBUG */

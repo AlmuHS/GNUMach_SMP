@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -314,10 +314,10 @@ void		db_show_help();
 extern void	netipc_packet_print(), netipc_pcs_print(), db_show_all_uids();
 extern void	db_show_all_proxies(), db_show_all_principals();
 extern void	db_show_all_uids_verbose();
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 #if	NORMA_VM
 extern void	xmm_obj_print(), xmm_reply_print();
-#endif	NORMA_VM
+#endif	/* NORMA_VM */
 
 struct db_command db_show_all_cmds[] = {
 	{ "threads",	db_show_all_threads,	0,	0 },
@@ -327,7 +327,7 @@ struct db_command db_show_all_cmds[] = {
 	{ "proxies",	db_show_all_proxies,	0,	0 },
 	{ "principals",	db_show_all_principals,	0,	0 },
 	{ "vuids",	db_show_all_uids_verbose, 0,	0 },
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 	{ (char *)0 }
 };
 
@@ -351,11 +351,11 @@ struct db_command db_show_cmds[] = {
 #if	NORMA_IPC
 	{ "packet",	netipc_packet_print,	0,	0 },
 	{ "pcs",	netipc_pcs_print,	0,	0 },
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 #if	NORMA_VM
 	{ "xmm_obj",	xmm_obj_print,		0,	0 },
 	{ "xmm_reply",	xmm_reply_print,	0,	0 },
-#endif	NORMA_VM
+#endif	/* NORMA_VM */
 	{ (char *)0, }
 };
 
@@ -449,7 +449,7 @@ db_command_loop()
 	extern int db_macro_level;
 #if	NORMA_IPC
 	extern int _node_self;	/* node_self() may not be callable yet */
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
 	/*
 	 * Initialize 'prev' and 'next' to dot.
@@ -594,4 +594,4 @@ db_option(modif, option)
 	return(FALSE);
 }
 
-#endif MACH_KDB
+#endif /* MACH_KDB */

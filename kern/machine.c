@@ -730,7 +730,7 @@ boolean_t	wait;
 {
 #ifdef	lint
 	processor++; new_pset++; wait++;
-#endif	lint
+#endif	/* lint */
 	return(KERN_FAILURE);
 }
 

@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990,1989 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -73,15 +73,15 @@ u_short PICM_ICW3, PICM_OCW3, PICS_ICW3, PICS_OCW3 ;
 u_short PICM_ICW4, PICS_ICW4 ;
 
 /*
-** picinit() - This routine 
+** picinit() - This routine
 **		* Establishes a table of interrupt vectors
 **		* Establishes a table of interrupt priority levels
 **		* Establishes a table of interrupt masks to be put
 **			in the PICs.
-**		* Establishes location of PICs in the system 
+**		* Establishes location of PICs in the system
 **		* Initialises them
 **
-**	At this stage the interrupt functionality of this system should be 
+**	At this stage the interrupt functionality of this system should be
 **	coplete.
 **
 */
@@ -93,8 +93,8 @@ u_short PICM_ICW4, PICS_ICW4 ;
 **	of pic masks, as there are only 7 interrupt priority levels.
 **
 ** 2. The next thing we must do is to determine which of the PIC interrupt
-**	request lines have to be masked out, this is done by calling 
-**	form_pic_mask() with a (int_lev) of zero, this will find all the 
+**	request lines have to be masked out, this is done by calling
+**	form_pic_mask() with a (int_lev) of zero, this will find all the
 **	interrupt lines that have priority 0, (ie to be ignored).
 **	Then we split this up for the master/slave PICs.
 **
@@ -142,10 +142,10 @@ picinit()
 	** 3. Select options for each ICW and each OCW for each PIC.
 	*/
 
-	PICM_ICW1 = 
+	PICM_ICW1 =
  	(ICW_TEMPLATE | EDGE_TRIGGER | ADDR_INTRVL8 | CASCADE_MODE | ICW4__NEEDED);
 
-	PICS_ICW1 = 
+	PICS_ICW1 =
  	(ICW_TEMPLATE | EDGE_TRIGGER | ADDR_INTRVL8 | CASCADE_MODE | ICW4__NEEDED);
 
 	PICM_ICW2 = PICM_VECTBASE;
@@ -154,11 +154,11 @@ picinit()
 #ifdef	AT386
 	PICM_ICW3 = ( SLAVE_ON_IR2 );
 	PICS_ICW3 = ( I_AM_SLAVE_2 );
-#endif	AT386
+#endif	/* AT386 */
 #ifdef	iPSC386
         PICM_ICW3 = ( SLAVE_ON_IR7 );
         PICS_ICW3 = ( I_AM_SLAVE_7 );
-#endif	iPSC386
+#endif	/* iPSC386 */
 
 #ifdef	iPSC386
         /* Use Buffered mode for iPSC386 */
@@ -166,12 +166,12 @@ picinit()
                      NRML_EOI_MOD | I8086_EMM_MOD);
         PICS_ICW4 = (SNF_MODE_DIS | BUFFERD_MODE | I_AM_A_SLAVE |
                      NRML_EOI_MOD | I8086_EMM_MOD);
-#else	iPSC386
-	PICM_ICW4 = 
+#else	/* iPSC386 */
+	PICM_ICW4 =
  	(SNF_MODE_DIS | NONBUFD_MODE | NRML_EOI_MOD | I8086_EMM_MOD);
-	PICS_ICW4 = 
+	PICS_ICW4 =
  	(SNF_MODE_DIS | NONBUFD_MODE | NRML_EOI_MOD | I8086_EMM_MOD);
-#endif	iPSC386
+#endif	/* iPSC386 */
 
 	PICM_OCW1 = (curr_pic_mask & 0x00FF);
 	PICS_OCW1 = ((curr_pic_mask & 0xFF00)>>8);
@@ -183,9 +183,9 @@ picinit()
 	PICS_OCW3 = (OCW_TEMPLATE | READ_NEXT_RD | READ_IR_ONRD );
 
 
-	/* 
+	/*
 	** 4.	Initialise master - send commands to master PIC
-	*/ 
+	*/
 
 	outb ( master_icw, PICM_ICW1 );
 	outb ( master_ocw, PICM_ICW2 );
@@ -223,9 +223,9 @@ picinit()
 
 
 /*
-** form_pic_mask(int_lvl) 
+** form_pic_mask(int_lvl)
 **
-**	For a given interrupt priority level (int_lvl), this routine goes out 
+**	For a given interrupt priority level (int_lvl), this routine goes out
 ** and scans through the interrupt level table, and forms a mask based on the
 ** entries it finds there that have the same or lower interrupt priority level
 ** as (int_lvl). It returns a 16-bit mask which will have to be split up between
@@ -238,7 +238,7 @@ picinit()
 #endif	/* defined(AT386) || defined(PS2) */
 #ifdef	iPSC386
 #define SLAVEMASK       (0xFFFF ^ SLAVE_ON_IR7)
-#endif	iPSC386
+#endif	/* iPSC386 */
 
 #define SLAVEACTV	0xFF00
 
@@ -251,7 +251,7 @@ form_pic_mask()
 			if (intpri[j] <= i)
 				mask |= bit;
 
-	 	if ((mask & SLAVEACTV) != SLAVEACTV )	
+	 	if ((mask & SLAVEACTV) != SLAVEACTV )
 			mask &= SLAVEMASK;
 
 		pic_mask[i] = mask;

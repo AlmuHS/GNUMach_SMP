@@ -14,12 +14,12 @@
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
  * 
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -129,7 +129,7 @@ ENTRY(switch_to_shutdown_context)
 
 	movl	_interrupt_stack(,%edx,4),%ecx	/* point to its interrupt stack */
 	lea	INTSTACK_SIZE(%ecx),%esp	/* switch to it (top) */
-	
+
 	pushl	%eax				/* push thread */
 	call	EXT(thread_dispatch)		/* reschedule thread */
 	addl	$4,%esp				/* clean stack */
@@ -138,5 +138,4 @@ ENTRY(switch_to_shutdown_context)
 	call	*%ebx				/* call routine to run */
 	hlt					/* (should never return) */
 
-#endif	NCPUS > 1
-
+#endif	/* NCPUS > 1 */

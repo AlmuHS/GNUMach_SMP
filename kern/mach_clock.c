@@ -141,7 +141,7 @@ void clock_interrupt(usec, usermode, basepri)
 	else {
 	    timer_bump(&thread->system_timer, usec);
 	}
-#endif	STAT_TIME
+#endif	/* STAT_TIME */
 
 	/*
 	 *	Increment the CPU time statistics.
@@ -193,7 +193,7 @@ void clock_interrupt(usec, usermode, basepri)
 	     *	Increment the tick count for the timestamping routine.
 	     */
 	    ts_tick_count++;
-#endif	TS_FORMAT == 1
+#endif	/* TS_FORMAT == 1 */
 
 	    /*
 	     *	Update the tick count since bootup, and handle
@@ -420,7 +420,7 @@ host_set_time(host, new_time)
 	thread_bind(current_thread(), master_processor);
 	if (current_processor() != master_processor)
 	    thread_block((void (*)) 0);
-#endif	NCPUS > 1
+#endif	/* NCPUS > 1 */
 
 	s = splhigh();
 	time = new_time;
@@ -433,7 +433,7 @@ host_set_time(host, new_time)
 	 * Switch off the master CPU.
 	 */
 	thread_bind(current_thread(), PROCESSOR_NULL);
-#endif	NCPUS > 1
+#endif	/* NCPUS > 1 */
 
 	return (KERN_SUCCESS);
 }
@@ -461,7 +461,7 @@ host_adjust_time(host, new_adjustment, old_adjustment)
 	thread_bind(current_thread(), master_processor);
 	if (current_processor() != master_processor)
 	    thread_block((void (*)) 0);
-#endif	NCPUS > 1
+#endif	/* NCPUS > 1 */
 
 	s = splclock();
 
@@ -482,7 +482,7 @@ host_adjust_time(host, new_adjustment, old_adjustment)
 	splx(s);
 #if	NCPUS > 1
 	thread_bind(current_thread(), PROCESSOR_NULL);
-#endif	NCPUS > 1
+#endif	/* NCPUS > 1 */
 
 	*old_adjustment = oadj;
 

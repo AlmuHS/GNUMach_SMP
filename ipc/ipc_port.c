@@ -51,7 +51,7 @@
 #include <ipc/ipc_notify.h>
 #if	NORMA_IPC
 #include <norma/ipc_node.h>
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
 
 
@@ -221,7 +221,7 @@ ipc_port_dngrow(port)
 
 	return KERN_SUCCESS;
 }
- 
+
 /*
  *	Routine:	ipc_port_dncancel
  *	Purpose:
@@ -508,7 +508,7 @@ ipc_port_init(
 	port->ip_norma_spare2 = 0L;
 	port->ip_norma_spare3 = 0L;
 	port->ip_norma_spare4 = 0L;
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
 	ipc_mqueue_init(&port->ip_messages);
 	ipc_thread_queue_init(&port->ip_blocked);
@@ -637,7 +637,7 @@ ipc_port_delete_compat(port, space, name)
 
 	is_release(space);
 }
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 /*
  *	Routine:	ipc_port_destroy
@@ -702,7 +702,7 @@ ipc_port_destroy(
 				ipc_port_release_send(sright);
 			}
 		} else
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 		if (!ipc_port_check_circularity(port, pdrequest)) {
 			/* consumes our refs for port and pdrequest */
@@ -730,7 +730,7 @@ ipc_port_destroy(
 	 *	destroy any NORMA_IPC state associated with port
 	 */
 	norma_ipc_port_destroy(port);
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
 	/*
 	 *	rouse all blocked senders
@@ -804,7 +804,7 @@ ipc_port_destroy(
 						ipr_space(soright), name);
 				continue;
 			}
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 			ipc_notify_dead_name(soright, name);
 		}
@@ -1247,7 +1247,7 @@ ipc_port_alloc_special(space)
 	int ret = (int) ipc_port_alloc_special;
 #endif
 	extern int input_msgh_id;
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 	ipc_port_t port;
 
 	port = (ipc_port_t) io_alloc(IOT_PORT);
@@ -1274,7 +1274,7 @@ ipc_port_alloc_special(space)
 #if	NORMA_IPC
 	port->ip_norma_spare1 = ret;
 	port->ip_norma_spare2 = input_msgh_id;
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 	return port;
 }
 
@@ -1472,7 +1472,7 @@ ipc_port_copyout_receiver(port, space)
 	return name;
 }
 
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 #include <mach_kdb.h>
 
@@ -1537,9 +1537,9 @@ ipc_port_print(port)
 	printf(", norma_spare2=0x%x", port->ip_norma_spare2);
 	printf(", norma_spare3=0x%x", port->ip_norma_spare3);
 	printf(", norma_spare4=0x%x\n", port->ip_norma_spare4);
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
 	indent -=2;
 }
 
-#endif	MACH_KDB
+#endif	/* MACH_KDB */

@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990,1989 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -61,9 +61,9 @@ mach_dead_name_notification_t		ipc_notify_dead_name_template;
  */
 
 #define NOTIFY_MSGH_SEQNO	MSG_TYPE_EMERGENCY
-#else	MACH_IPC_COMPAT
+#else	/* MACH_IPC_COMPAT */
 #define NOTIFY_MSGH_SEQNO	0
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 /*
  *	Routine:	ipc_notify_init_port_deleted
@@ -388,7 +388,7 @@ ipc_notify_no_senders(port, mscount)
 		norma_ipc_notify_no_senders(ip_nsproxy(port));
 		return;
 	}
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 	kmsg = ikm_alloc(sizeof *n);
 	if (kmsg == IKM_NULL) {
 		printf("dropped no-senders (0x%08x, %u)\n", port, mscount);
@@ -590,4 +590,4 @@ ipc_notify_port_destroyed_compat(port, right)
 	ipc_mqueue_send_always(kmsg);
 }
 
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */

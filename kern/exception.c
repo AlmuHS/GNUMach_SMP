@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1993,1992,1991,1990,1989,1988,1987 Carnegie Mellon University.
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -76,7 +76,7 @@ boolean_t debug_user_with_kdb = FALSE;
  *	The exception function is expected to return.
  *	So the return statements along the slow paths are important.
  */
-#endif	KEEP_STACKS
+#endif	/* KEEP_STACKS */
 
 /*
  *	Routine:	exception
@@ -260,7 +260,7 @@ exception_no_server()
 		db_printf("No exception server, calling kdb...\n");
 		thread_kdb_return();
 	}
-#endif	MACH_KDB
+#endif	/* MACH_KDB */
 
 	/*
 	 *	All else failed; terminate task.
@@ -422,7 +422,7 @@ exception_raise(dest_port, thread_port, task_port,
 	if (!ip_active(dest_port) ||
 #if	NORMA_IPC
 	    IP_NORMA_IS_PROXY(dest_port) ||
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 	    (dest_port->ip_receiver == ipc_space_kernel)) {
 		imq_unlock(reply_mqueue);
 		ip_unlock(dest_port);

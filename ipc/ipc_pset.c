@@ -346,4 +346,4 @@ ipc_pset_print(
 	indent -=2;
 }
 
-#endif	MACH_KDB
+#endif	/* MACH_KDB */

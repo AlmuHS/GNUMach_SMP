@@ -2,7 +2,7 @@
  * Mach Operating System
  * Copyright (c) 1991 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
@@ -52,6 +52,6 @@ struct	ether_header {
 u_char	etherbroadcastaddr[6];
 
 extern char *	ether_sprintf();
-#endif	KERNEL
+#endif	/* KERNEL */
 
 #endif	/*_DEVICE_IF_ETHER_H_*/

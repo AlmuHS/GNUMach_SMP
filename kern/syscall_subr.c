@@ -47,7 +47,7 @@
 
 #if	MACH_FIXPRI
 #include <mach/policy.h>
-#endif	MACH_FIXPRI
+#endif	/* MACH_FIXPRI */
 
 
 
@@ -91,7 +91,7 @@ boolean_t swtch()
 	if (myprocessor->runq.count == 0 &&
 	    myprocessor->processor_set->runq.count == 0)
 		return(FALSE);
-#endif	NCPUS > 1
+#endif	/* NCPUS > 1 */
 
 	counter(c_swtch_block++);
 	thread_block(swtch_continue);
@@ -125,14 +125,14 @@ boolean_t  swtch_pri(pri)
 
 #ifdef	lint
 	pri++;
-#endif	lint
+#endif	/* lint */
 
 #if	NCPUS > 1
 	myprocessor = current_processor();
 	if (myprocessor->runq.count == 0 &&
 	    myprocessor->processor_set->runq.count == 0)
 		return(FALSE);
-#endif	NCPUS > 1
+#endif	/* NCPUS > 1 */
 
 	/*
 	 *	XXX need to think about depression duration.
@@ -158,7 +158,7 @@ void thread_switch_continue()
 	register thread_t	cur_thread = current_thread();
 
 	/*
-	 *  Restore depressed priority			 
+	 *  Restore depressed priority
 	 */
 	if (cur_thread->depress_priority >= 0)
 		(void) thread_depress_abort(cur_thread);
@@ -210,7 +210,7 @@ mach_msg_timeout_t option_time;
 	default:
 	    return(KERN_INVALID_ARGUMENT);
     }
-    
+
 #ifndef MIGRATING_THREADS /* XXX thread_run defunct */
     /*
      *	Check and act on thread hint if appropriate.
@@ -250,11 +250,11 @@ mach_msg_timeout_t option_time;
 			    myprocessor->quantum = thread->sched_data;
 			    myprocessor->first_quantum = TRUE;
 			}
-#endif	MACH_FIXPRI
+#endif	/* MACH_FIXPRI */
 			counter(c_thread_switch_handoff++);
 			thread_run(thread_switch_continue, thread);
 			/*
-			 *  Restore depressed priority			 
+			 *  Restore depressed priority
 			 */
 			if (cur_thread->depress_priority >= 0)
 				(void) thread_depress_abort(cur_thread);
@@ -280,14 +280,14 @@ mach_msg_timeout_t option_time;
     myprocessor = current_processor();
     if (myprocessor->processor_set->runq.count > 0 ||
 	myprocessor->runq.count > 0)
-#endif	NCPUS > 1
+#endif	/* NCPUS > 1 */
     {
 	counter(c_thread_switch_block++);
 	thread_block(thread_switch_continue);
     }
 
     /*
-     *  Restore depressed priority			 
+     *  Restore depressed priority
      */
     if (cur_thread->depress_priority >= 0)
 	(void) thread_depress_abort(cur_thread);
@@ -335,7 +335,7 @@ mach_msg_timeout_t depress_time;
 
     thread_unlock(thread);
     (void) splx(s);
-}	
+}
 
 /*
  *	thread_depress_timeout:

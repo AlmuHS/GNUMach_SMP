@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 1994 The University of Utah and
  * the Computer Systems Laboratory at the University of Utah (CSL).
  * All rights reserved.
@@ -48,7 +48,7 @@ ENTRY(_debug_trace)
 	popf
 	ret
 
-#endif DEBUG
+#endif /* DEBUG */
 
 /* XXX gas bug?  need at least one symbol... */
 foo:

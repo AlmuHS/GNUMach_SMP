@@ -67,11 +67,11 @@
 #include <norma_ipc.h>
 #if	NORMA_VM
 #include <norma/xmm_server_rename.h>
-#endif	NORMA_VM
+#endif	/* NORMA_VM */
 #include <mach_pagemap.h>
 #if	MACH_PAGEMAP
-#include <vm/vm_external.h>	
-#endif	MACH_PAGEMAP
+#include <vm/vm_external.h>
+#endif	/* MACH_PAGEMAP */
 
 typedef	int		memory_object_lock_result_t; /* moved from below */
 
@@ -102,7 +102,7 @@ kern_return_t memory_object_data_provided(object, offset, data, data_cnt,
 					 data_cnt, lock_value, FALSE, IP_NULL,
 					 0);
 }
-#endif	!NORMA_VM
+#endif	/* !NORMA_VM */
 
 
 kern_return_t memory_object_data_supply(object, offset, data_copy, data_cnt,
@@ -382,7 +382,7 @@ kern_return_t memory_object_data_unavailable(object, offset, size)
 {
 #if	MACH_PAGEMAP
 	vm_external_t	existence_info = VM_EXTERNAL_NULL;
-#endif	MACH_PAGEMAP
+#endif	/* MACH_PAGEMAP */
 
 	if (object == VM_OBJECT_NULL)
 		return(KERN_INVALID_ARGUMENT);
@@ -391,11 +391,11 @@ kern_return_t memory_object_data_unavailable(object, offset, size)
 		return(KERN_INVALID_ARGUMENT);
 
 #if	MACH_PAGEMAP
-	if ((offset == 0) && (size > VM_EXTERNAL_LARGE_SIZE) && 
+	if ((offset == 0) && (size > VM_EXTERNAL_LARGE_SIZE) &&
 	    (object->existence_info == VM_EXTERNAL_NULL)) {
 		existence_info = vm_external_create(VM_EXTERNAL_SMALL_SIZE);
 	}
-#endif	MACH_PAGEMAP
+#endif	/* MACH_PAGEMAP */
 
 	vm_object_lock(object);
 #if	MACH_PAGEMAP
@@ -407,7 +407,7 @@ kern_return_t memory_object_data_unavailable(object, offset, size)
 		vm_object_deallocate(object);
 		return(KERN_SUCCESS);
 	}
-#endif	MACH_PAGEMAP
+#endif	/* MACH_PAGEMAP */
 	offset -= object->paging_offset;
 
 	while (size != 0) {
@@ -500,7 +500,7 @@ memory_object_lock_result_t memory_object_lock_page(m, should_return,
 		 *		    Page is not dirty [2 checks] AND (
 		 *		        Page is not precious OR
 		 *			No request to return precious pages ))
-		 *		      
+		 *
 		 *	Now isn't that straightforward and obvious ?? ;-)
 		 *
 		 * XXX	This doesn't handle sending a copy of a wired
@@ -898,7 +898,7 @@ MACRO_END
 
 #if	!NORMA_VM
 /*
- *	Old version of memory_object_lock_request.  
+ *	Old version of memory_object_lock_request.
  */
 kern_return_t
 xxx_memory_object_lock_request(object, offset, size,
@@ -924,8 +924,8 @@ xxx_memory_object_lock_request(object, offset, size,
 		      should_return, should_flush, prot,
 		      reply_to, reply_to_type));
 }
-#endif	!NORMA_VM
-	  
+#endif	/* !NORMA_VM */
+
 kern_return_t
 memory_object_set_attributes_common(object, object_ready, may_cache,
 				    copy_strategy, use_old_pageout)
@@ -1052,7 +1052,7 @@ kern_return_t	memory_object_ready(object, may_cache, copy_strategy)
 						   may_cache, copy_strategy,
 						   FALSE);
 }
-#endif	!NORMA_VM
+#endif	/* !NORMA_VM */
 
 kern_return_t	memory_object_get_attributes(object, object_ready,
 						may_cache, copy_strategy)

@@ -2,24 +2,24 @@
  * Mach Operating System
  * Copyright (c) 1991,1990 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -90,12 +90,12 @@ db_show_regs(addr, have_addr, count, modif)
 		aux_param.suffix[0] = i;
 	        db_read_write_variable(regp, &value, DB_VAR_GET, &aux_param);
 		if (regp->max_level > 0)
-		    db_printf("%s%d%*s", regp->name, i, 
+		    db_printf("%s%d%*s", regp->name, i,
 				12-strlen(regp->name)-((i<10)?1:2), "");
 		else
 		    db_printf("%-12s", regp->name);
 		db_printf("%#*N", 2+2*sizeof(vm_offset_t), value);
-		db_find_xtrn_task_sym_and_offset((db_addr_t)value, &name, 
+		db_find_xtrn_task_sym_and_offset((db_addr_t)value, &name,
 							&offset, task);
 		if (name != 0 && offset <= db_maxoff && offset != value) {
 		    db_printf("\t%s", name);
@@ -116,7 +116,7 @@ db_show_regs(addr, have_addr, count, modif)
 #ifndef	DB_TASK_NAME
 #define DB_TASK_NAME(task)			/* no task name */
 #define DB_TASK_NAME_TITLE	""		/* no task name */
-#endif	DB_TASK_NAME
+#endif	/* DB_TASK_NAME */
 
 #ifndef	db_thread_fp_used
 #define db_thread_fp_used(thread)	FALSE
@@ -128,7 +128,7 @@ db_thread_stat(thread, status)
 	char	 *status;
 {
 	register char *p = status;
-	
+
 	*p++ = (thread->state & TH_RUN)  ? 'R' : '.';
 	*p++ = (thread->state & TH_WAIT) ? 'W' : '.';
 	*p++ = (thread->state & TH_SUSP) ? 'S' : '.';
@@ -180,7 +180,7 @@ db_print_thread(thread, thread_id, flag)
 			db_printf("\n    ");
 		} else
 		    db_printf(" ");
-		db_printf("%3d%c(%0*X,%s)", thread_id, 
+		db_printf("%3d%c(%0*X,%s)", thread_id,
 		    (thread == current_thread())? '#': ':',
 		    2*sizeof(vm_offset_t), thread,
 		    db_thread_stat(thread, status));
@@ -200,7 +200,7 @@ db_print_thread(thread, thread_id, flag)
 	    if (thread->state & TH_SWAPPED) {
 		if (thread->swap_func) {
 		    db_printf("(");
-		    db_task_printsym((db_addr_t)thread->swap_func, 
+		    db_task_printsym((db_addr_t)thread->swap_func,
 				     DB_STGY_ANY, kernel_task);
 		    db_printf(")");
 		} else {
@@ -209,7 +209,7 @@ db_print_thread(thread, thread_id, flag)
 	    }
 	    if (thread->state & TH_WAIT) {
 		db_printf(" ");
-		db_task_printsym((db_addr_t)thread->wait_event, 
+		db_task_printsym((db_addr_t)thread->wait_event,
 			    DB_STGY_ANY, kernel_task);
 	    }
 	    db_printf("\n");
@@ -227,7 +227,7 @@ db_print_task(task, task_id, flag)
 
 	if (flag & OPTION_USER) {
 	    if (flag & OPTION_TASK_TITLE) {
-		db_printf(" ID: TASK     MAP      THD SUS PR %s", 
+		db_printf(" ID: TASK     MAP      THD SUS PR %s",
 			  DB_TASK_NAME_TITLE);
 		if ((flag & OPTION_LONG) == 0)
 		    db_printf("  THREADS");
@@ -508,4 +508,4 @@ db_show_port_id(addr, have_addr, count, modif)
 	    db_printf("\n");
 }
 
-#endif MACH_KDB
+#endif /* MACH_KDB */

@@ -264,7 +264,7 @@ ipc_thread_init(thread)
 
 	thread->ith_reply = port;
     }
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 }
 
 /*
@@ -380,7 +380,7 @@ ipc_thread_terminate(thread)
 	 *	this behaviour, introducing a small incompatibility
 	 *	with the old IPC code.
 	 */
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 	/* destroy the kernel port */
 
@@ -441,7 +441,7 @@ retrieve_thread_self(thread)
 
 	return port;
 }
-#endif	0
+#endif	/* 0 */
 
 /*
  *	Routine:	retrieve_task_self_fast
@@ -573,7 +573,7 @@ retrieve_thread_exception(thread)
 
 	return port;
 }
-#endif	0
+#endif	/* 0 */
 
 /*
  *	Routine:	mach_task_self [mach trap]
@@ -800,7 +800,7 @@ thread_reply()
 	return (port_name_t) name;
 }
 
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 /*
  *	Routine:	task_get_special_port [kernel call]
@@ -845,7 +845,7 @@ task_get_special_port(
 		*portp = port;
 		return KERN_SUCCESS;
 	    }
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 	    case TASK_KERNEL_PORT:
 		whichp = &task->itk_sself;
@@ -922,7 +922,7 @@ task_set_special_port(
 			ipc_port_release_send(old);
 		return KERN_SUCCESS;
 	    }
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 	    case TASK_KERNEL_PORT:
 		whichp = &task->itk_sself;
@@ -986,7 +986,7 @@ thread_get_special_port(thread, which, portp)
 	    case THREAD_REPLY_PORT:
 		whichp = &thread->ith_reply;
 		break;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 	    case THREAD_KERNEL_PORT:
 		whichp = &thread->ith_sself;
@@ -1045,7 +1045,7 @@ thread_set_special_port(thread, which, port)
 	    case THREAD_REPLY_PORT:
 		whichp = &thread->ith_reply;
 		break;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 	    case THREAD_KERNEL_PORT:
 		whichp = &thread->ith_sself;

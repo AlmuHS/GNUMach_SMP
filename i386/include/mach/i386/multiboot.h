@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 1995-1994 The University of Utah and
  * the Computer Systems Laboratory at the University of Utah (CSL).
  * All rights reserved.
@@ -179,4 +179,4 @@ struct AddrRangeDesc
 #define MB_ARD_MEMORY       1
 
 
-#endif _MACH_I386_MULTIBOOT_H_
+#endif /* _MACH_I386_MULTIBOOT_H_ */

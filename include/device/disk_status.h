@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990,1989 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -66,7 +66,7 @@ struct disklabel {
 	short	d_type;			/* drive type */
 	short	d_subtype;		/* controller/d_type specific */
 	char	d_typename[16];		/* type name, e.g. "eagle" */
-	/* 
+	/*
 	 * d_packname contains the pack identifier and is returned when
 	 * the disklabel is read off the disk or in-core copy.
 	 * d_boot0 and d_boot1 are the (optional) names of the
@@ -75,15 +75,15 @@ struct disklabel {
 	 * getdiskbyname(3) to retrieve the values from /etc/disktab.
 	 */
 #if defined(MACH_KERNEL) || defined(STANDALONE)
-	char	d_packname[16];			/* pack identifier */ 
+	char	d_packname[16];			/* pack identifier */
 #else
 	union {
-		char	un_d_packname[16];	/* pack identifier */ 
+		char	un_d_packname[16];	/* pack identifier */
 		struct {
 			char *un_d_boot0;	/* primary bootstrap name */
 			char *un_d_boot1;	/* secondary bootstrap name */
-		} un_b; 
-	} d_un; 
+		} un_b;
+	} d_un;
 #define d_packname	d_un.un_d_packname
 #define d_boot0		d_un.un_b.un_d_boot0
 #define d_boot1		d_un.un_b.un_d_boot1
@@ -168,7 +168,7 @@ struct disklabel {
 	int	bugfix;
 #endif
 };
-#else LOCORE
+#else /* LOCORE */
 	/*
 	 * offsets for asm boot files.
 	 */
@@ -179,7 +179,7 @@ struct disklabel {
 	.set	d_secpercyl,56
 	.set	d_secperunit,60
 	.set	d_end_,276		/* size of disk label */
-#endif LOCORE
+#endif /* LOCORE */
 
 /* d_type values: */
 #define	DTYPE_SMD		1		/* SMD, XSMD; VAX hp/up */
@@ -301,6 +301,6 @@ struct format_op {
 
 #define DIOCSBAD	_IOW('d', 110, struct dkbad)	/* set kernel dkbad */
 
-#endif LOCORE
+#endif /* LOCORE */
 
 #endif	/* _DISK_STATUS_H_ */

@@ -333,7 +333,7 @@ kern_return_t	device_pager_data_request(
 
 #ifdef lint
 	protection_required++;
-#endif lint
+#endif /* lint */
 
 	if (device_pager_debug)
 		printf("(device_pager)data_request: pager=%d, offset=0x%x, length=0x%x\n",
@@ -700,7 +700,7 @@ kern_return_t device_pager_data_unlock(
 {
 #ifdef	lint
 	memory_object++; memory_control_port++; offset++; length++; desired_access++;
-#endif	lint
+#endif	/* lint */
 
 	panic("(device_pager)data_unlock: called");
 	return (KERN_FAILURE);
@@ -714,7 +714,7 @@ kern_return_t device_pager_lock_completed(
 {
 #ifdef	lint
 	memory_object++; pager_request_port++; offset++; length++;
-#endif	lint
+#endif	/* lint */
 
 	panic("(device_pager)lock_completed: called");
 	return (KERN_FAILURE);

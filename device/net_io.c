@@ -651,7 +651,7 @@ net_packet(ifp, kmsg, count, priority)
 	if (netipc_net_packet(kmsg, count)) {
 		return;
 	}
-#endif	NORMA_ETHER
+#endif	/* NORMA_ETHER */
 
 #if	MACH_TTD
 	/*

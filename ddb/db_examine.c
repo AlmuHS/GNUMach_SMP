@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1992,1991,1990 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -76,19 +76,19 @@ db_examine_cmd(addr, have_addr, count, modif)
 	if (count == -1)
 	    count = 1;
 	db_examine_count = count;
-	if (db_option(modif, 't')) 
+	if (db_option(modif, 't'))
 	  {
 	    if (!db_get_next_thread(&thread, 0))
 	      return;
 	  }
-	else 
+	else
 	  if (db_option(modif,'u'))
 	    thread = current_thread();
 	  else
 	    thread = THREAD_NULL;
-	
+
 	db_examine_thread = thread;
-	db_examine((db_addr_t) addr, db_examine_format, count, 
+	db_examine((db_addr_t) addr, db_examine_format, count,
 					db_thread_to_task(thread));
 }
 
@@ -157,7 +157,7 @@ db_examine(addr, fmt, count, task)
 			if (db_print_position() != 0)
 			    db_printf("\n");
 			db_prev = addr;
-			db_task_printsym(addr, 
+			db_task_printsym(addr,
 					(c == 'a')?DB_STGY_ANY:DB_STGY_PROC,
 					task);
 			db_printf(":\t");
@@ -278,7 +278,7 @@ db_print_cmd()
 		task = db_default_thread->task;
 	} else
 	    db_unread_token(t);
-	
+
 	for ( ; ; ) {
 	    t = db_read_token();
 	    if (t == tSTRING) {
@@ -503,4 +503,4 @@ db_xcdump(addr, size, count, task)
 	return(addr);
 }
 
-#endif MACH_KDB
+#endif /* MACH_KDB */

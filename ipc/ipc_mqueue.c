@@ -59,7 +59,7 @@ extern ipc_kmsg_t	norma_ipc_handoff_msg;
 extern mach_msg_size_t	norma_ipc_handoff_max_size;
 extern mach_msg_size_t	norma_ipc_handoff_msg_size;
 extern ipc_kmsg_t	norma_ipc_kmsg_accept();
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
 /*
  *	Routine:	ipc_mqueue_init
@@ -220,7 +220,7 @@ ipc_mqueue_send(kmsg, option, time_out)
 		ip_unlock(port);
 		return mr;
 	}
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
 	for (;;) {
 		ipc_thread_t self;
@@ -245,7 +245,7 @@ ipc_mqueue_send(kmsg, option, time_out)
 #if	NORMA_IPC
 			/* XXX until ipc_kmsg_destroy is fixed... */
 			norma_ipc_finish_receiving(&kmsg);
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 			ipc_kmsg_destroy(kmsg);
 			return MACH_MSG_SUCCESS;
 		}
@@ -332,7 +332,7 @@ ipc_mqueue_send(kmsg, option, time_out)
 #if	NORMA_IPC
 		/* XXX until ipc_kmsg_destroy is fixed... */
 		norma_ipc_finish_receiving(&kmsg);
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 		ipc_kmsg_destroy(kmsg);
 		return MACH_MSG_SUCCESS;
 	}
@@ -379,7 +379,7 @@ ipc_mqueue_send(kmsg, option, time_out)
 		}
 		norma_ipc_handoff_msg_size = kmsg->ikm_header.msgh_size;
 	}
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 	for (;;) {
 		receiver = ipc_thread_queue_first(receivers);
 		if (receiver == ITH_NULL) {
@@ -595,7 +595,7 @@ ipc_mqueue_receive(
 				return MACH_RCV_TOO_LARGE;
 			}
 		}
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 		if (kmsg != IKM_NULL) {
 			/* check space requirements */
 
@@ -747,7 +747,7 @@ ipc_mqueue_receive(
 
 #if	NORMA_IPC
 	norma_ipc_finish_receiving(&kmsg);
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 	*kmsgp = kmsg;
 	*seqnop = seqno;
 	return MACH_MSG_SUCCESS;

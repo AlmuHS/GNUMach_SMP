@@ -96,7 +96,7 @@ extern	kern_return_t	syscall_device_writev_request();
 #ifdef FIPC 
 extern kern_return_t	syscall_fipc_send();
 extern kern_return_t	syscall_fipc_recv();
-#endif FIPC
+#endif /* FIPC */
 
 mach_trap_t	mach_trap_table[] = {
 	MACH_TRAP(kern_invalid, 0),		/* 0 */		/* Unix */
@@ -247,7 +247,7 @@ mach_trap_t	mach_trap_table[] = {
 #else
 	MACH_TRAP(kern_invalid, 0),		      /* 96 */
 	MACH_TRAP(kern_invalid, 0),		      /* 97 */
-#endif FIPC
+#endif /* FIPC */
 
 	MACH_TRAP(kern_invalid, 0),		      /* 98 */
 	MACH_TRAP(kern_invalid, 0),		      /* 99 */

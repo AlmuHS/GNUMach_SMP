@@ -1,29 +1,29 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1993,1992,1991,1990,1989 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
- 
+
 #ifdef	MACH_KERNEL
 #include <mach_ttd.h>
 #include <mach/std_types.h>
@@ -81,7 +81,7 @@ extern int			pc586intr();
 #if NNE > 0
 extern  struct  bus_driver      nedriver;
 extern int                      neintr();
-#endif NNE
+#endif /* NNE */
 
 #include <ns8390.h>
 #if NNS8390 > 0
@@ -133,7 +133,7 @@ extern int			wtintr();
 
 struct	bus_ctlr	bus_master_init[] = {
 
-/* driver    name unit intr    address        len phys_address   
+/* driver    name unit intr    address        len phys_address
      adaptor alive flags spl    pic				 */
 
 #ifndef LINUX_DEV
@@ -226,7 +226,7 @@ struct	bus_ctlr	bus_master_init[] = {
 
 struct	bus_device	bus_device_init[] = {
 
-/* driver     name unit intr    address       am   phys_address 
+/* driver     name unit intr    address       am   phys_address
      adaptor alive ctlr slave flags *mi       *next  sysdep sysdep */
 
 #ifndef LINUX_DEV
@@ -331,7 +331,7 @@ struct	bus_device	bus_device_init[] = {
      '?',    0,   -1,    -1,    0,   0,        0,   SPL_SIX, 5},
 {&nedriver, "ne", 1, neintr, 0x300,0x4000,0xd0000,
      '?',    0,   -1,    -1,    0,   0,        0,   SPL_SIX, 10},
-#endif NNE > 0
+#endif /* NNE > 0 */
 
 #if NNS8390 > 0
 	/* "wd" and "el" */
@@ -463,7 +463,7 @@ void take_dev_irq(
 			dev->sysdep, dev->sysdep1);
 		while (1);
 	}
-		
+
 }
 
 void take_ctlr_irq(

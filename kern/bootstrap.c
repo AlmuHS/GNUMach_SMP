@@ -325,7 +325,7 @@ static void copy_bootstrap(void *e, struct exec_info *boot_exec_info)
 	      }
 	  }
 #endif
-#endif	MACH_KDB
+#endif	/* MACH_KDB */
 }
 
 /*

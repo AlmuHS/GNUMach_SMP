@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -208,7 +208,7 @@ mach_msg_rpc_from_kernel(
 	ipc_kmsg_put_to_kernel(msg, kmsg, kmsg->ikm_header.msgh_size);
 	return MACH_MSG_SUCCESS;
 }
-#endif	NORMA_VM
+#endif	/* NORMA_VM */
 
 /*
  *	Routine:	mach_msg_abort_rpc
@@ -371,7 +371,7 @@ mig_dealloc_reply_port(
 /*
  *	Routine:	mig_put_reply_port
  *	Purpose:
- *		Called by client side interfaces after each RPC to 
+ *		Called by client side interfaces after each RPC to
  *		let the client recycle the reply port if it wishes.
  */
 void
@@ -384,16 +384,16 @@ mig_put_reply_port(
  * mig_strncpy.c - by Joshua Block
  *
  * mig_strncp -- Bounded string copy.  Does what the library routine strncpy
- * OUGHT to do:  Copies the (null terminated) string in src into dest, a 
+ * OUGHT to do:  Copies the (null terminated) string in src into dest, a
  * buffer of length len.  Assures that the copy is still null terminated
  * and doesn't overflow the buffer, truncating the copy if necessary.
  *
  * Parameters:
- * 
+ *
  *     dest - Pointer to destination buffer.
- * 
+ *
  *     src - Pointer to source string.
- * 
+ *
  *     len - Length of destination buffer.
  */
 void mig_strncpy(dest, src, len)
@@ -444,10 +444,10 @@ port_name_to_device(name)
 {
 	register ipc_port_t port;
 	register device_t device;
- 
+
 	fast_send_right_lookup(name, port, goto abort);
 	/* port is locked */
- 
+
 	/*
 	 * Now map the port object to a device object.
 	 * This is an inline version of dev_port_lookup().
@@ -456,25 +456,25 @@ port_name_to_device(name)
 		device = (device_t) port->ip_kobject;
 		device_reference(device);
 		ip_unlock(port);
-		return device;                  
+		return device;
 	}
- 
+
 	ip_unlock(port);
 	return DEVICE_NULL;
- 
+
        /*
         * The slow case.  The port wasn't easily accessible.
         */
     abort: {
 	    ipc_port_t kern_port;
 	    kern_return_t kr;
-           
+
 	    kr = ipc_object_copyin(current_space(), name,
 				   MACH_MSG_TYPE_COPY_SEND,
 				   (ipc_object_t *) &kern_port);
 	    if (kr != KERN_SUCCESS)
 		    return DEVICE_NULL;
- 
+
 	    device = dev_port_lookup(kern_port);
 	    if (IP_VALID(kern_port))
 		    ipc_port_release_send(kern_port);
@@ -1130,5 +1130,3 @@ syscall_device_writev_request(mach_port_t	device_name,
 	device_deallocate(dev);
 	return res;
 }
-
-

@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990,1989 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -72,14 +72,14 @@ unsigned char	*regs;
 		rtcinit();
 		first_rtcopen_ever = 0;
 	}
-	outb(RTC_ADDR, RTC_D); 
+	outb(RTC_ADDR, RTC_D);
 	if (inb(RTC_DATA) & RTC_VRT == 0) return(-1);
-	outb(RTC_ADDR, RTC_A);	
+	outb(RTC_ADDR, RTC_A);
 	while (inb(RTC_DATA) & RTC_UIP)		/* busy wait */
-		outb(RTC_ADDR, RTC_A);	
+		outb(RTC_ADDR, RTC_A);
 	load_rtc(regs);
 	return(0);
-}	
+}
 
 rtcput(regs)
 unsigned char 	*regs;
@@ -93,10 +93,10 @@ unsigned char 	*regs;
 	outb(RTC_ADDR, RTC_B);
 	x = inb(RTC_DATA);
 	outb(RTC_ADDR, RTC_B);
-	outb(RTC_DATA, x | RTC_SET); 	
+	outb(RTC_DATA, x | RTC_SET);
 	save_rtc(regs);
 	outb(RTC_ADDR, RTC_B);
-	outb(RTC_DATA, x & ~RTC_SET); 
+	outb(RTC_DATA, x & ~RTC_SET);
 }
 
 
@@ -136,9 +136,9 @@ readtodc(tp)
 
 #ifdef	MACH_KERNEL
 	ospl = splclock();
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	ospl = spl5();
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 	if (rtcget(&rtclk)) {
 		splx(ospl);
 		return(-1);
@@ -166,11 +166,11 @@ readtodc(tp)
 	n += days * 3600 * 24;
 
 #ifdef	MACH_KERNEL
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	n += tz.tz_minuteswest * 60;
 	if (tz.tz_dsttime)
 		n -= 3600;
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 
 	*tp = n;
 
@@ -186,9 +186,9 @@ writetodc()
 
 #ifdef	MACH_KERNEL
 	ospl = splclock();
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	ospl = spl5();
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 	if (rtcget(&rtclk)) {
 		splx(ospl);
 		return(-1);
@@ -197,11 +197,11 @@ writetodc()
 
 #ifdef	MACH_KERNEL
 	diff = 0;
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	diff = tz.tz_minuteswest * 60;
 	if (tz.tz_dsttime)
 		diff -= 3600;
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 	n = (time.tv_sec - diff) % (3600 * 24);   /* hrs+mins+secs */
 	rtclk.rtc_sec = dectohexdec(n%60);
 	n /= 60;
@@ -227,9 +227,9 @@ writetodc()
 
 #ifdef	MACH_KERNEL
 	ospl = splclock();
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	ospl = spl5();
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 	rtcput(&rtclk);
 	splx(ospl);
 

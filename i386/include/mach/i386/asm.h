@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990,1989 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -65,7 +65,7 @@
 #define gLB(n)  n ## :
 #define LBb(x,n) n ## b
 #define LBf(x,n) n ## f
-#else __STDC__
+#else /* __STDC__ */
 #error XXX elf
 #define EXT(x) _/**/x
 #define LEXT(x) _/**/x/**/:
@@ -73,7 +73,7 @@
 #define gLB(n) n/**/:
 #define LBb(x,n) n/**/b
 #define LBf(x,n) n/**/f
-#endif __STDC__
+#endif /* __STDC__ */
 #define SVC .byte 0x9a; .long 0; .word 0x7
 
 #define String	.ascii
@@ -101,14 +101,14 @@
 #define	ASENTRY(x) 	.globl x; .p2align TEXT_ALIGN; gLB(x) ; \
   			pushl %ebp; movl %esp, %ebp; MCOUNT; popl %ebp;
 
-#else	GPROF
+#else	/* GPROF */
 
 #define MCOUNT
 #define	ENTRY(x)	.globl EXT(x); .p2align TEXT_ALIGN; LEXT(x)
 #define	ENTRY2(x,y)	.globl EXT(x); .globl EXT(y); \
 			.p2align TEXT_ALIGN; LEXT(x) LEXT(y)
 #define	ASENTRY(x)	.globl x; .p2align TEXT_ALIGN; gLB(x)
-#endif	GPROF
+#endif	/* GPROF */
 
 #define	Entry(x)	.globl EXT(x); .p2align TEXT_ALIGN; LEXT(x)
 #define	DATA(x)		.globl EXT(x); .p2align DATA_ALIGN; LEXT(x)

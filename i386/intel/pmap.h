@@ -2,24 +2,24 @@
  * Mach Operating System
  * Copyright (c) 1991,1990,1989,1988 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -57,7 +57,7 @@
 #define trunc_intel_to_vm(x)	trunc_i386_to_vm(x)
 #define round_intel_to_vm(x)	round_i386_to_vm(x)
 #define vm_to_intel(x)		vm_to_i386(x)
-#endif	i386
+#endif	/* i386 */
 #if	i860
 #define	INTEL_PGBYTES		I860_PGBYTES
 #define INTEL_PGSHIFT		I860_PGSHIFT
@@ -68,7 +68,7 @@
 #define trunc_intel_to_vm(x)	trunc_i860_to_vm(x)
 #define round_intel_to_vm(x)	round_i860_to_vm(x)
 #define vm_to_intel(x)		vm_to_i860(x)
-#endif	i860
+#endif	/* i860 */
 
 /*
  *	i386/i486/i860 Page Table Entry
@@ -77,7 +77,7 @@
 typedef unsigned int	pt_entry_t;
 #define PT_ENTRY_NULL	((pt_entry_t *) 0)
 
-#endif	ASSEMBLER
+#endif	/* ASSEMBLER */
 
 #define INTEL_OFFMASK	0xfff	/* offset within page */
 #define PDESHIFT	22	/* page descriptor shift */
@@ -130,13 +130,13 @@ typedef unsigned int	pt_entry_t;
 				|INTEL_PTE_REF		\
 				|INTEL_PTE_MOD		\
 				)
-#else	NOCACHE
+#else	/* NOCACHE */
 #define	INTEL_PTE_VALID		(INTEL_PTE_valid	\
 				|INTEL_PTE_REF		\
 				|INTEL_PTE_MOD		\
 				)
-#endif	NOCACHE
-#endif	i860
+#endif	/* NOCACHE */
+#endif	/* i860 */
 
 #define	pa_to_pte(a)		((a) & INTEL_PTE_PFN)
 #define	pte_to_pa(p)		((p) & INTEL_PTE_PFN)
@@ -199,7 +199,7 @@ void		process_pmap_updates();
 void		pmap_update_interrupt();
 extern	pmap_t	kernel_pmap;
 
-#endif	NCPUS > 1
+#endif	/* NCPUS > 1 */
 
 /*
  *	Machine dependent routines that are used only for i386/i486/i860.
@@ -355,7 +355,7 @@ pt_entry_t *pmap_pte(pmap_t pmap, vm_offset_t addr);
 	splx(s);							\
 }
 
-#else	NCPUS > 1
+#else	/* NCPUS > 1 */
 
 /*
  *	With only one CPU, we just have to indicate whether the pmap is
@@ -384,7 +384,7 @@ pt_entry_t *pmap_pte(pmap_t pmap, vm_offset_t addr);
 	    (pmap)->cpus_using = FALSE;					\
 }
 
-#endif	NCPUS > 1
+#endif	/* NCPUS > 1 */
 
 #define PMAP_CONTEXT(pmap, thread)
 
@@ -396,6 +396,6 @@ pt_entry_t *pmap_pte(pmap_t pmap, vm_offset_t addr);
 #define	pmap_attribute(pmap,addr,size,attr,value) \
 					(KERN_INVALID_ADDRESS)
 
-#endif	ASSEMBLER
+#endif	/* ASSEMBLER */
 
-#endif	_PMAP_MACHINE_
+#endif	/* _PMAP_MACHINE_ */

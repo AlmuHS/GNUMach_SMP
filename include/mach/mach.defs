@@ -164,13 +164,13 @@ skip;	/* old thread_mutate */
  */
 #ifdef	EMULATOR
 skip;	/* the emulator redefines vm_allocate using vm_map */
-#else	EMULATOR
+#else	/* EMULATOR */
 routine vm_allocate(
 		target_task	: vm_task_t;
 	inout	address		: vm_address_t;
 		size		: vm_size_t;
 		anywhere	: boolean_t);
-#endif	EMULATOR
+#endif	/* EMULATOR */
 
 skip;	/* old vm_allocate_with_pager */
 
@@ -582,21 +582,21 @@ routine	xxx_thread_info(
 routine task_set_emulation(
 		target_port	: task_t;
 		routine_entry_pt: vm_address_t;
-		routine_number  : int);	
+		routine_number  : int);
 
 /*
  *      Establish restart pc for interrupted atomic sequences.
  *	This reuses the message number for the old task_get_io_port.
  *	See task_info.h for description of flavors.
- *	
+ *
  */
 routine task_ras_control(
 		target_task     : task_t;
 		basepc          : vm_address_t;
 		boundspc        : vm_address_t;
 		flavor		: int);
-		
-		
+
+
 
 skip;	/* old host_ipc_statistics */
 
@@ -764,7 +764,7 @@ routine port_extract_receive(
 		his_name	: port_name_t;
 	out	his_port	: port_all_t);
 
-#else	MACH_IPC_COMPAT
+#else	/* MACH_IPC_COMPAT */
 
 skip;	/* old port_names */
 skip;	/* old port_type */
@@ -783,7 +783,7 @@ skip;	/* old port_extract_send */
 skip;	/* old port_insert_receive */
 skip;	/* old port_extract_receive */
 
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 /*
  *	Map a user-defined memory object into the virtual address
@@ -829,7 +829,7 @@ routine htg_vm_map(
 		cur_protection	: vm_prot_t;
 		max_protection	: vm_prot_t;
 		inheritance	: vm_inherit_t);
-#else	EMULATOR
+#else	/* EMULATOR */
 routine vm_map(
 		target_task	: vm_task_t;
 	inout	address		: vm_address_t;
@@ -842,7 +842,7 @@ routine vm_map(
 		cur_protection	: vm_prot_t;
 		max_protection	: vm_prot_t;
 		inheritance	: vm_inherit_t);
-#endif	EMULATOR
+#endif	/* EMULATOR */
 
 /*
  *	Indicate that a range of the specified memory object cannot
@@ -933,15 +933,15 @@ routine port_set_backup(
 				  ctype: mach_port_t;
 	out	previous	: port_t);
 
-#else	MACH_IPC_COMPAT
+#else	/* MACH_IPC_COMPAT */
 
 skip;	/* old port_set_backup */
 
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 /*
  *	Set/Get special properties of memory associated
- *	to some virtual address range, such as cachability, 
+ *	to some virtual address range, such as cachability,
  *	migrability, replicability.  Machine-dependent.
  */
 routine vm_machine_attribute(

@@ -867,7 +867,7 @@ kdb_from_iret_i:			/* on interrupt stack */
 	addl	$8,%esp
 	iret
 
-#endif	MACH_KDB
+#endif	/* MACH_KDB */
 
 #if	MACH_TTD
 /*
@@ -1071,7 +1071,7 @@ mach_call_call:
 	/* will return with syscallofs still (or again) in eax */
 	addl	$4,%esp
 0:
-#endif DEBUG
+#endif /* DEBUG */
 
 	call	*EXT(mach_trap_table)+4(%eax)
 					/* call procedure */
@@ -1480,7 +1480,7 @@ ENTRY(outb)
 	outb	%al,%dx			/* send it out */
 #ifdef	iPSC386
 	mull	%ecx			/* Delay a little to make H/W happy */
-#endif	iPSC386
+#endif	/* iPSC386 */
 	ret
 
 /*
@@ -1498,7 +1498,7 @@ ENTRY(inb)
 	pushl	%eax
 	mull	%ecx
 	popl	%eax
-#endif	iPSC386
+#endif	/* iPSC386 */
 	ret
 
 /*

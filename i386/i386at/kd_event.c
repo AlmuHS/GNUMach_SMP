@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990,1989 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -59,7 +59,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifdef	MACH_KERNEL
 #include <device/errno.h>
 #include <device/io_req.h>
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 #include <sys/file.h>
 #include <sys/errno.h>
 #include <kern/thread.h>
@@ -68,7 +68,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <sys/kernel.h>
 #include <sys/ioctl.h>
 #include <sys/tty.h>
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 #include <i386/machspl.h>
 #include <i386at/kd.h>
 #include <i386at/kd_queue.h>
@@ -87,7 +87,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 kd_event_queue kbd_queue;		/* queue of keyboard events */
 #ifdef	MACH_KERNEL
 queue_head_t	kbd_read_queue = { &kbd_read_queue, &kbd_read_queue };
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 struct proc *kbd_sel = 0;		/* selecting process, if any */
 short kbdpgrp = 0;		/* process group leader when dev is open */
 
@@ -95,14 +95,14 @@ int kbdflag = 0;
 #define KBD_COLL	1		/* select collision */
 #define KBD_ASYNC	2		/* user wants asynch notification */
 #define KBD_NBIO	4		/* user wants non-blocking I/O */
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 
 
 void kbd_enqueue();
 #ifdef	MACH_KERNEL
 io_return_t X_kdb_enter_init();
 io_return_t X_kdb_exit_init();
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 
 static boolean_t initialized = FALSE;
 
@@ -114,7 +114,7 @@ static boolean_t initialized = FALSE;
 kbdinit()
 {
 	spl_t s = SPLKD();
-	
+
 	if (!initialized) {
 		kdq_reset(&kbd_queue);
 		initialized = TRUE;
@@ -136,13 +136,13 @@ kbdopen(dev, flags)
 	kbdinit();
 
 #ifdef	MACH_KERNEL
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	if (flags & FWRITE)
 		return(ENODEV);
-	
+
 	if (kbdpgrp == 0)
 		kbdpgrp = u.u_procp->p_pgrp;
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 	return(0);
 }
 
@@ -161,11 +161,11 @@ kbdclose(dev, flags)
 
 	kb_mode = KB_ASCII;
 #ifdef	MACH_KERNEL
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	kbdpgrp = 0;
 	kbdflag = 0;
 	kbd_sel = 0;
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 	kdq_reset(&kbd_queue);
 	splx(s);
 }
@@ -220,7 +220,7 @@ io_return_t kbdsetstat(dev, flavor, data, count)
 	return (D_SUCCESS);
 }
 
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 /*
  * kbdioctl - handling for asynch & non-blocking I/O.
  */
@@ -291,11 +291,11 @@ kbdselect(dev, rw)
 	else
 		kbd_sel = (struct proc *)current_thread();
 					/* eeeyuck */
-	
+
 	splx(s);
 	return(0);
 }
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 
 
 /*
@@ -374,7 +374,7 @@ boolean_t kbd_read_done(ior)
 	return (TRUE);
 }
 
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 /*ARGSUSED*/
 kbdread(dev, uio)
 	dev_t dev;
@@ -390,7 +390,7 @@ kbdread(dev, uio)
 		if (kbdflag & KBD_NBIO) {
 			err = EWOULDBLOCK;
 			goto done;
-		} else 
+		} else
 			while (kdq_empty(&kbd_queue)) {
 				splx(s);
 				sleep((caddr_t)&kbd_queue, TTIPRI);
@@ -411,7 +411,7 @@ done:
 	splx(s);
 	return(err);
 }
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 
 
 /*
@@ -451,7 +451,7 @@ kbd_enqueue(ev)
 	    while ((ior = (io_req_t)dequeue_head(&kbd_read_queue)) != 0)
 		iodone(ior);
 	}
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	if (kbd_sel) {
 		selwakeup(kbd_sel, kbdflag & KBD_COLL);
 		kbd_sel = 0;
@@ -460,7 +460,7 @@ kbd_enqueue(ev)
 	if (kbdflag & KBD_ASYNC)
 		gsignal(kbdpgrp, SIGIO);
 	wakeup((caddr_t)&kbd_queue);
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 }
 
 u_int X_kdb_enter_str[512], X_kdb_exit_str[512];
@@ -544,7 +544,7 @@ X_kdb_exit_init(data, count)
     X_kdb_exit_len = count;
     return D_SUCCESS;
 }
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 X_kdb_enter_init(kp)
 struct X_kdb *kp;
 {
@@ -566,4 +566,4 @@ struct X_kdb *kp;
 
 	X_kdb_exit_len = kp->size>>2;
 }
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */

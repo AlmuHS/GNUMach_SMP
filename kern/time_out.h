@@ -84,4 +84,4 @@ extern boolean_t	untimeout();
 	    reset_timeout((t)); \
 	MACRO_END
 
-#endif	_KERN_TIME_OUT_H_
+#endif	/* _KERN_TIME_OUT_H_ */

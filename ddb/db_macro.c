@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -104,7 +104,7 @@ db_del_macro_cmd()
 {
 	register struct db_user_macro *mp;
 
-	if (db_read_token() != tIDENT 
+	if (db_read_token() != tIDENT
 	    || (mp = db_lookup_macro(db_tok_string)) == 0) {
 	    db_printf("No such macro \"%s\"\n", db_tok_string);
 	    db_error(0);
@@ -134,7 +134,7 @@ db_show_macro()
 	    db_printf("%s: %s", mp->m_name, mp->m_lbuf);
 	}
 }
-	
+
 int
 db_exec_macro(name)
 	char *name;
@@ -150,7 +150,7 @@ db_exec_macro(name)
 	    /* NOTREACHED */
 	}
 	for (n = 0;
-	     n < DB_NARGS && 
+	     n < DB_NARGS &&
 	     db_expression(&db_macro_args[db_macro_level+1][n]);
 	     n++);
 	while (n < DB_NARGS)
@@ -180,4 +180,4 @@ db_arg_variable(vp, valuep, flag, ap)
 	return(0);
 }
 
-#endif MACH_KDB
+#endif /* MACH_KDB */

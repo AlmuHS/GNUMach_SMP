@@ -105,7 +105,7 @@ mach_port_names_helper(
 #if	MACH_IPC_COMPAT
 			if (bits & IE_BITS_COMPAT)
 				return;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 			/* pretend this is a dead-name entry */
 
@@ -122,7 +122,7 @@ mach_port_names_helper(
 	if (bits & IE_BITS_COMPAT)
 		type |= MACH_PORT_TYPE_COMPAT;
 	else
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 	if (request != 0)
 		type |= MACH_PORT_TYPE_DNREQUEST;
 	if (bits & IE_BITS_MAREQUEST)
@@ -1239,7 +1239,7 @@ mach_port_request_notification(
 			ipc_port_release_send(ip_pdsend(previous));
 			previous = IP_NULL;
 		}
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 		*previousp = previous;
 		break;
@@ -2502,4 +2502,4 @@ port_extract_receive(space, name, portp)
 	return kr;
 }
 
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */

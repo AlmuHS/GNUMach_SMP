@@ -126,7 +126,7 @@ host_self(void)
 		ipc_port_copyout_send_compat(sright, current_space());
 }
 
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 /*
  *	ipc_processor_init:

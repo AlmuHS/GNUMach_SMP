@@ -89,7 +89,7 @@ MACRO_END
  *	selected by the (new) use_shared_copy bit in the object.  See
  *	vm_object_copy_temporary in vm_object.c for details.  All maps
  *	are now "top level" maps (either task map, kernel map or submap
- *	of the kernel map).  
+ *	of the kernel map).
  *
  *	Since portions of maps are specified by start/end addreses,
  *	which may not align with existing map entries, all
@@ -644,7 +644,7 @@ int vm_map_pmap_enter_enable = FALSE;
  *		As soon as a page not found in the object the scan ends.
  *
  *	Returns:
- *		Nothing.  
+ *		Nothing.
  *
  *	In/out conditions:
  *		The source map should not be locked on entry.
@@ -797,7 +797,7 @@ kern_return_t vm_map_enter(
 						goto StartAgain;
 					}
 				}
-				
+
 				RETURN(KERN_NO_SPACE);
 			}
 
@@ -895,7 +895,7 @@ kern_return_t vm_map_enter(
 	    (entry->protection == cur_protection) &&
 	    (entry->max_protection == max_protection) &&
 	    (entry->wired_count == 0) &&  /* implies user_wired_count == 0 */
-	    (entry->projected_on == 0)) { 
+	    (entry->projected_on == 0)) {
 		if (vm_object_coalesce(entry->object.vm_object,
 				VM_OBJECT_NULL,
 				entry->offset,
@@ -966,9 +966,9 @@ kern_return_t vm_map_enter(
 	if ((object != VM_OBJECT_NULL) &&
 	    (vm_map_pmap_enter_enable) &&
 	    (!anywhere)	 &&
-	    (!needs_copy) && 
+	    (!needs_copy) &&
 	    (size < (128*1024))) {
-		vm_map_pmap_enter(map, start, end, 
+		vm_map_pmap_enter(map, start, end,
 				  object, offset, cur_protection);
 	}
 
@@ -1353,7 +1353,7 @@ kern_return_t vm_map_pageable_common(map, start, end, access_type, user_wire)
 		       (entry->vme_start < end)) {
 
 		    if ((entry->wired_count == 0) ||
-		    	((entry->vme_end < end) && 
+		    	((entry->vme_end < end) &&
 			 ((entry->vme_next == vm_map_to_entry(map)) ||
 			  (entry->vme_next->vme_start > entry->vme_end))) ||
 			(user_wire && (entry->user_wired_count == 0))) {
@@ -1380,7 +1380,7 @@ kern_return_t vm_map_pageable_common(map, start, end, access_type, user_wire)
 		    else {
 			entry->wired_count--;
 		    }
-		    
+
 		    if (entry->wired_count == 0)
 			vm_fault_unwire(map, entry);
 
@@ -1442,7 +1442,7 @@ kern_return_t vm_map_pageable_common(map, start, end, access_type, user_wire)
 			if (entry->object.vm_object == VM_OBJECT_NULL) {
 				entry->object.vm_object =
 				        vm_object_allocate(
-					    (vm_size_t)(entry->vme_end 
+					    (vm_size_t)(entry->vme_end
 				    			- entry->vme_start));
 				entry->offset = (vm_offset_t)0;
 			}
@@ -1464,7 +1464,7 @@ kern_return_t vm_map_pageable_common(map, start, end, access_type, user_wire)
 		     *		this is the end of the region.
 		     *	Protection: Access requested must be allowed.
 		     */
-		    if (((entry->vme_end < end) && 
+		    if (((entry->vme_end < end) &&
 			 ((entry->vme_next == vm_map_to_entry(map)) ||
 			  (entry->vme_next->vme_start > entry->vme_end))) ||
 			((entry->protection & access_type) != access_type)) {
@@ -1556,7 +1556,7 @@ kern_return_t vm_map_pageable_common(map, start, end, access_type, user_wire)
  *	vm_map_entry_delete:	[ internal use only ]
  *
  *	Deallocate the given entry from the target map.
- */		
+ */
 void vm_map_entry_delete(map, entry)
 	register vm_map_t	map;
 	register vm_map_entry_t	entry;
@@ -1717,7 +1717,7 @@ kern_return_t vm_map_delete(map, start, end)
 			}
 			return KERN_SUCCESS;
 		}
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 		vm_map_clip_start(map, entry, start);
 
 		/*
@@ -2202,7 +2202,7 @@ start_pass_1:
 	/*
 	 * XXXO	If there are no permanent objects in the destination,
 	 * XXXO	and the source and destination map entry zones match,
-	 * XXXO and the destination map entry is not shared, 
+	 * XXXO and the destination map entry is not shared,
 	 * XXXO	then the map entries can be deleted and replaced
 	 * XXXO	with those from the copy.  The following code is the
 	 * XXXO	basic idea of what to do, but there are lots of annoying
@@ -2243,7 +2243,7 @@ start_pass_1:
 		vm_map_entry_t	copy_entry = vm_map_copy_first_entry(copy);
 		vm_size_t	copy_size = (copy_entry->vme_end - copy_entry->vme_start);
 		vm_object_t	object;
-		
+
 		entry = tmp_entry;
 		size = (entry->vme_end - entry->vme_start);
 		/*
@@ -2428,7 +2428,7 @@ start_pass_1:
 
 /*
  *	Macro:		vm_map_copy_insert
- *	
+ *
  *	Description:
  *		Link a copy chain ("copy") into a map at the
  *		specified location (after "where").
@@ -2811,7 +2811,7 @@ StartAgain:
 		(last->wired_count != 0))) {
 		    goto create_object;
 	}
-	
+
 	/*
 	 * If this entry needs an object, make one.
 	 */
@@ -2913,7 +2913,7 @@ create_object:
 
 	entry->vme_start = start;
 	entry->vme_end = start + size;
-	
+
 	entry->inheritance = VM_INHERIT_DEFAULT;
 	entry->protection = VM_PROT_DEFAULT;
 	entry->max_protection = VM_PROT_ALL;
@@ -2937,7 +2937,7 @@ create_object:
 	last = entry;
 
 	/*
-	 *	Transfer pages into new object.  
+	 *	Transfer pages into new object.
 	 *	Scan page list in vm_map_copy.
 	 */
 insert_pages:
@@ -3028,7 +3028,7 @@ insert_pages:
 	vm_object_unlock(object);
 
 	*dst_addr = start + dst_offset;
-	
+
 	/*
 	 *	Clear the in transition bits.  This is easy if we
 	 *	didn't have a continuation.
@@ -3062,7 +3062,7 @@ error:
                         entry = entry->vme_next;
                 }
 	}
-	
+
 	if (result != KERN_SUCCESS)
 		vm_map_delete(dst_map, start, end);
 
@@ -3080,7 +3080,7 @@ error:
 	if (result == KERN_SUCCESS) {
 		zfree(vm_map_copy_zone, (vm_offset_t) orig_copy);
 	}
-	
+
 	return(result);
 }
 
@@ -3151,7 +3151,7 @@ kern_return_t vm_map_copyin(src_map, src_addr, len, src_destroy, copy_result)
 	/*
 	 *	Allocate a header element for the list.
 	 *
-	 *	Use the start and end in the header to 
+	 *	Use the start and end in the header to
 	 *	remember the endpoints prior to rounding.
 	 */
 
@@ -3164,7 +3164,7 @@ kern_return_t vm_map_copyin(src_map, src_addr, len, src_destroy, copy_result)
 
 	copy->offset = src_addr;
 	copy->size = len;
-	
+
 #define	RETURN(x)						\
 	MACRO_BEGIN						\
 	vm_map_unlock(src_map);					\
@@ -3345,7 +3345,7 @@ kern_return_t vm_map_copyin(src_map, src_addr, len, src_destroy, copy_result)
 				&new_entry_needs_copy);
 
 			new_entry->needs_copy = new_entry_needs_copy;
-			
+
 
 			if (result != KERN_SUCCESS) {
 				vm_map_copy_entry_dispose(copy, new_entry);
@@ -3427,7 +3427,7 @@ kern_return_t vm_map_copyin(src_map, src_addr, len, src_destroy, copy_result)
 
 		vm_map_copy_entry_link(copy, vm_map_copy_last_entry(copy),
 				       new_entry);
-		
+
 		/*
 		 *	Determine whether the entire region
 		 *	has been copied.
@@ -3447,7 +3447,7 @@ kern_return_t vm_map_copyin(src_map, src_addr, len, src_destroy, copy_result)
 
 	/*
 	 * If the source should be destroyed, do it now, since the
-	 * copy was successful. 
+	 * copy was successful.
 	 */
 	if (src_destroy)
 	    (void) vm_map_delete(src_map, trunc_page(src_addr), src_end);
@@ -3498,7 +3498,7 @@ kern_return_t vm_map_copyin_object(object, offset, size, copy_result)
  *	vm_map_copyin_page_list_cont:
  *
  *	Continuation routine for vm_map_copyin_page_list.
- *	
+ *
  *	If vm_map_copyin_page_list can't fit the entire vm range
  *	into a single page list object, it creates a continuation.
  *	When the target of the operation has used the pages in the
@@ -3527,7 +3527,7 @@ vm_map_copy_t		*copy_result;	/* OUT */
 	src_destroy_only = (cont_args->src_len == (vm_size_t) 0);
 
 	if (do_abort || src_destroy_only) {
-		if (src_destroy) 
+		if (src_destroy)
 			result = vm_map_remove(cont_args->map,
 			    cont_args->destroy_addr,
 			    cont_args->destroy_addr + cont_args->destroy_len);
@@ -3551,7 +3551,7 @@ vm_map_copy_t		*copy_result;	/* OUT */
 		            new_args->destroy_len = cont_args->destroy_len;
 		}
 	}
-	
+
 	vm_map_deallocate(cont_args->map);
 	kfree((vm_offset_t)cont_args, sizeof(vm_map_copyin_args_data_t));
 
@@ -3644,7 +3644,7 @@ kern_return_t vm_map_copyin_page_list(src_map, src_addr, len, src_destroy,
 	copy->size = len;
 	copy->cpy_cont = ((kern_return_t (*)()) 0);
 	copy->cpy_cont_args = (char *) VM_MAP_COPYIN_ARGS_NULL;
-	
+
 	/*
 	 *	Find the beginning of the region.
 	 */
@@ -3717,7 +3717,7 @@ make_continuation:
 			     *	something stupid.
 			     */
 
-			    cont_args = (vm_map_copyin_args_t) 
+			    cont_args = (vm_map_copyin_args_t)
 			    	    kalloc(sizeof(vm_map_copyin_args_data_t));
 			    cont_args->map = src_map;
 			    vm_map_reference(src_map);
@@ -3791,7 +3791,7 @@ make_continuation:
 				vm_prot_t result_prot;
 				vm_page_t top_page;
 				kern_return_t kr;
-				
+
 				/*
 				 *	Have to fault the page in; must
 				 *	unlock the map to do so.  While
@@ -3803,7 +3803,7 @@ make_continuation:
 				need_map_lookup = TRUE;
 retry:
 				result_prot = VM_PROT_READ;
-				
+
 				kr = vm_fault_page(src_object, src_offset,
 						   VM_PROT_READ, FALSE, FALSE,
 						   &result_prot, &m, &top_page,
@@ -3847,7 +3847,7 @@ retry:
 					result = KERN_MEMORY_ERROR;
 					goto error;
 				}
-				
+
 				if (top_page != VM_PAGE_NULL) {
 					vm_object_lock(src_object);
 					VM_PAGE_FREE(top_page);
@@ -3872,13 +3872,13 @@ retry:
 			 *	we have a paging reference on it.  Either
 			 *	the map is locked, or need_map_lookup is
 			 *	TRUE.
-			 * 
+			 *
 			 *	Put the page in the page list.
 			 */
 			copy->cpy_page_list[copy->cpy_npages++] = m;
 			vm_object_unlock(m->object);
 		}
-			
+
 		/*
 		 *	DETERMINE whether the entire region
 		 *	has been copied.
@@ -3932,7 +3932,7 @@ retry:
 			 *	Remove the page from its object if it
 			 *	can be stolen.  It can be stolen if:
  			 *
-			 *	(1) The source is being destroyed, 
+			 *	(1) The source is being destroyed,
 			 *	      the object is temporary, and
 			 *	      not shared.
 			 *	(2) The page is not precious.
@@ -3950,7 +3950,7 @@ retry:
 			 *
 			 *	Stealing wired pages requires telling the
 			 *	pmap module to let go of them.
-			 * 
+			 *
 			 *	NOTE: stealing clean pages from objects
 			 *  	whose mappings survive requires a call to
 			 *	the pmap module.  Maybe later.
@@ -3965,7 +3965,7 @@ retry:
 			    (!src_object->use_shared_copy) &&
 			    !m->precious) {
 				vm_offset_t	page_vaddr;
-				
+
 				page_vaddr = src_start + (i * PAGE_SIZE);
 				if (m->wire_count > 0) {
 
@@ -4063,7 +4063,7 @@ retry:
 		 *	a continuation to prevent this.
 		 */
 	        if (src_destroy && !vm_map_copy_has_cont(copy)) {
-			cont_args = (vm_map_copyin_args_t) 
+			cont_args = (vm_map_copyin_args_t)
 				kalloc(sizeof(vm_map_copyin_args_data_t));
 			vm_map_reference(src_map);
 			cont_args->map = src_map;
@@ -4076,7 +4076,7 @@ retry:
 			copy->cpy_cont_args = (char *) cont_args;
 			copy->cpy_cont = vm_map_copyin_page_list_cont;
 		}
-			
+
 	}
 
 	vm_map_unlock(src_map);
@@ -4165,7 +4165,7 @@ vm_map_t vm_map_fork(old_map)
 			        &old_entry->offset,
 			        (vm_size_t) (old_entry->vme_end -
 					     old_entry->vme_start));
-				
+
 			    /*
 			     *	If we're making a shadow for other than
 			     *	copy on write reasons, then we have
@@ -4302,7 +4302,7 @@ vm_map_t vm_map_fork(old_map)
 					start,
 					entry_size,
 					FALSE,
-					&copy) 
+					&copy)
 			    != KERN_SUCCESS) {
 			    	vm_map_lock(old_map);
 				if (!vm_map_lookup_entry(old_map, start, &last))
@@ -4436,7 +4436,7 @@ kern_return_t vm_map_lookup(var_map, vaddr, fault_type, out_version,
 		vm_map_unlock_read(old_map);
 		goto RetryLookup;
 	}
-		
+
 	/*
 	 *	Check whether this task is allowed to have
 	 *	this page.
@@ -4444,7 +4444,7 @@ kern_return_t vm_map_lookup(var_map, vaddr, fault_type, out_version,
 
 	prot = entry->protection;
 
-	if ((fault_type & (prot)) != fault_type) 
+	if ((fault_type & (prot)) != fault_type)
 		if ((prot & VM_PROT_NOTIFY) && (fault_type & VM_PROT_WRITE)) {
 			RETURN(KERN_WRITE_PROTECTION_FAILURE);
 		} else {
@@ -4489,9 +4489,9 @@ kern_return_t vm_map_lookup(var_map, vaddr, fault_type, out_version,
 			    &entry->object.vm_object,
 			    &entry->offset,
 			    (vm_size_t) (entry->vme_end - entry->vme_start));
-				
+
 			entry->needs_copy = FALSE;
-			
+
 			vm_map_lock_write_to_read(map);
 		}
 		else {
@@ -4542,7 +4542,7 @@ kern_return_t vm_map_lookup(var_map, vaddr, fault_type, out_version,
 	out_version->main_timestamp = map->timestamp;
 
 	RETURN(KERN_SUCCESS);
-	
+
 #undef	RETURN
 }
 
@@ -4692,7 +4692,7 @@ void vm_map_simplify(map, start)
 		((prev_entry->offset + (prev_entry->vme_end - prev_entry->vme_start))
 		     == this_entry->offset) &&
 	        (prev_entry->projected_on == 0) &&
-	        (this_entry->projected_on == 0) 
+	        (this_entry->projected_on == 0)
 	) {
 		if (map->first_free == this_entry)
 			map->first_free = prev_entry;
@@ -4837,11 +4837,11 @@ void vm_map_copy_print(copy)
 		case VM_MAP_COPY_ENTRY_LIST:
 		printf("[entry_list]");
 		break;
-		
+
 		case VM_MAP_COPY_OBJECT:
 		printf("[object]");
 		break;
-		
+
 		case VM_MAP_COPY_PAGE_LIST:
 		printf("[page_list]");
 		break;
@@ -4886,7 +4886,7 @@ void vm_map_copy_print(copy)
 
 	indent -=2;
 }
-#endif	MACH_KDB
+#endif	/* MACH_KDB */
 
 #if	NORMA_IPC
 /*
@@ -4904,7 +4904,7 @@ void vm_map_copy_print(copy)
  *	We take responsibility for discarding the old structure and
  *	use a continuation to do so.  Postponing this discard ensures
  *	that the objects containing the pages we've marked busy will stick
- *	around.  
+ *	around.
  */
 kern_return_t
 vm_map_convert_to_page_list(caller_copy)
@@ -5024,10 +5024,10 @@ vm_map_convert_to_page_list(caller_copy)
 				vm_prot_t result_prot;
 				vm_page_t top_page;
 				kern_return_t kr;
-				
+
 retry:
 				result_prot = VM_PROT_READ;
-				
+
 				kr = vm_fault_page(object, offset,
 						   VM_PROT_READ, FALSE, FALSE,
 						   &result_prot, &m, &top_page,
@@ -5104,7 +5104,7 @@ vm_map_convert_to_page_list_from_object(caller_copy)
 		m = vm_page_lookup(object, offset);
 		if ((m != VM_PAGE_NULL) && !m->busy && !m->fictitious &&
 		    !m->absent && !m->error) {
-			
+
 			/*
 			 *	This is the page.  Mark it busy
 			 *	and keep the paging reference on
@@ -5116,10 +5116,10 @@ vm_map_convert_to_page_list_from_object(caller_copy)
 			vm_prot_t result_prot;
 			vm_page_t top_page;
 			kern_return_t kr;
-			
+
 retry:
 			result_prot = VM_PROT_READ;
-			
+
 			kr = vm_fault_page(object, offset,
 					   VM_PROT_READ, FALSE, FALSE,
 					   &result_prot, &m, &top_page,
@@ -5136,7 +5136,7 @@ retry:
 				vm_object_paging_begin(object);
 				goto retry;
 			}
-			
+
 			if (top_page != VM_PAGE_NULL) {
 				vm_object_lock(object);
 				VM_PAGE_FREE(top_page);
@@ -5241,4 +5241,4 @@ vm_map_convert_from_page_list(copy)
 	vm_map_copy_entry_link(copy, vm_map_copy_last_entry(copy), new_entry);
 	return(KERN_SUCCESS);
 }
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */

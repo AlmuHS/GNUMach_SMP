@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990,1989, 1988 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -330,7 +330,7 @@ void c_boot_entry(vm_offset_t bi)
 		       kern_sym_start, kern_sym_end,
 		       symtab_size, strtab_size);
 	}
-#endif	MACH_KDB
+#endif	/* MACH_KDB */
 
 	/*
 	 * Do basic VM initialization
@@ -356,7 +356,7 @@ void c_boot_entry(vm_offset_t bi)
 		cninit();		/* need console for debugger */
 		Debugger();
 	}
-#endif	MACH_KDB
+#endif	/* MACH_KDB */
 
 	machine_slot[0].is_cpu = TRUE;
 	machine_slot[0].running = TRUE;
@@ -381,7 +381,7 @@ void c_boot_entry(vm_offset_t bi)
 	  }
 #else
 	machine_slot[0].cpu_type = CPU_TYPE_I386;
-#endif	
+#endif
 
 
 	/*
@@ -402,7 +402,7 @@ timemmap(dev,off,prot)
 
 #ifdef	lint
 	dev++; off++;
-#endif	lint
+#endif	/* lint */
 
 	if (prot & VM_PROT_WRITE) return (-1);
 

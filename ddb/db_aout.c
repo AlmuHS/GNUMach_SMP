@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -162,7 +162,7 @@ aout_db_eq_name(sp, name)
 		/*
 		 * check .c .o file name comparison case
 		 */
-		if (*s2 == 0 && sp->n_un.n_name <= s1 - 2 
+		if (*s2 == 0 && sp->n_un.n_name <= s1 - 2
 			&& s1[-2] == '.' && s1[-1] == 'o')
 		    return(TRUE);
 		return(FALSE);
@@ -173,7 +173,7 @@ aout_db_eq_name(sp, name)
 	 *     xxx:yyy for N_FUN
 	 *     xxx.ttt for N_DATA and N_BSS
 	 */
-	return(*s1 == 0 || (*s1 == ':' && sp->n_type == N_FUN) || 
+	return(*s1 == 0 || (*s1 == ':' && sp->n_type == N_FUN) ||
 		(*s1 == '.' && (sp->n_type == N_DATA || sp->n_type == N_BSS)));
 }
 
@@ -284,7 +284,7 @@ aout_db_qualified_search(stab, file, sym, line)
 		 */
 		in_file = TRUE;
 		for (sp++; sp < ep; sp++) {
-		    if (sp->n_type == N_TEXT 
+		    if (sp->n_type == N_TEXT
 			&& aout_db_is_filename(sp->n_un.n_name))
 			break;		/* enter into another file */
 		    if (sp->n_type == N_SOL) {
@@ -504,4 +504,4 @@ aout_db_line_at_pc(stab, sym, file, line, pc)
 
 #endif	/* DB_NO_AOUT */
 
-#endif MACH_KDB
+#endif /* MACH_KDB */

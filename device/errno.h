@@ -2,7 +2,7 @@
  * Mach Operating System
  * Copyright (c) 1991 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
@@ -42,4 +42,4 @@
 #define	ENOTTY		D_INVALID_OPERATION
 #define ENOMEM		D_NO_MEMORY
 
-#endif	_ERRNO_
+#endif	/* _ERRNO_ */

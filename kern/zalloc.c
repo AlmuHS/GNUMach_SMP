@@ -972,4 +972,4 @@ kern_return_t host_zone_info(host, namesp, namesCntp, infop, infoCntp)
 
 	return KERN_SUCCESS;
 }
-#endif	MACH_DEBUG
+#endif	/* MACH_DEBUG */

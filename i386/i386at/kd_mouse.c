@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990,1989 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -69,7 +69,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifdef	MACH_KERNEL
 #include <device/errno.h>
 #include <device/io_req.h>
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 #include <sys/file.h>
 #include <sys/errno.h>
 #include <kern/thread.h>
@@ -78,7 +78,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <sys/kernel.h>
 #include <sys/ioctl.h>
 #include <sys/tty.h>
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 #include <i386/ipl.h>
 #include <chips/busses.h>
 #include <i386at/kd.h>
@@ -94,18 +94,18 @@ kd_event_queue mouse_queue;		/* queue of mouse events */
 boolean_t mouse_in_use = FALSE;
 #ifdef	MACH_KERNEL
 queue_head_t	mouse_read_queue = { &mouse_read_queue, &mouse_read_queue };
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 struct proc *mouse_sel = 0;		/* selecting process, if any */
 short mousepgrp = 0;		/* process group leader when dev is open */
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 
 #ifdef	MACH_KERNEL
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 int mouseflag = 0;
 #define MOUSE_COLL	1		/* select collision */
 #define MOUSE_ASYNC	2		/* user wants asynch notification */
 #define MOUSE_NBIO	4		/* user wants non-blocking I/O */
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 
 /*
  * The state of the 3 buttons is encoded in the low-order 3 bits (both
@@ -168,19 +168,19 @@ mouseopen(dev, flags)
 	int flags;
 {
 #ifdef	MACH_KERNEL
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	if (flags & FWRITE)
 		return(ENODEV);
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 	if (mouse_in_use)
 		return(EBUSY);
 	mouse_in_use = TRUE;		/* locking? */
 	kdq_reset(&mouse_queue);
 	lastbuttons = MOUSE_ALL_UP;
 #ifdef	MACH_KERNEL
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	mousepgrp = u.u_procp->p_pgrp;
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 
 	switch (mouse_type = ((minor(dev) & 0xf8) >> 3)) {
 	case MICROSOFT_MOUSE7:
@@ -203,7 +203,7 @@ mouseopen(dev, flags)
 		init_mouse_hw(dev&7, LC7);
 		track_man[0] = comgetc(dev&7);
 		track_man[1] = comgetc(dev&7);
-		if (track_man[0] != 0x4d && 
+		if (track_man[0] != 0x4d &&
 		    track_man[1] != 0x33) {
 			printf("LOGITECH_TRACKMAN: NOT M3");
 		}
@@ -252,7 +252,7 @@ kd_mouse_open(dev, mouse_pic)
 }
 
 /*
- * mouseclose - Disable interrupts on the serial port, reset driver flags, 
+ * mouseclose - Disable interrupts on the serial port, reset driver flags,
  * and restore the serial port interrupt vector.
  */
 mouseclose(dev, flags)
@@ -277,11 +277,11 @@ mouseclose(dev, flags)
 	kdq_reset(&mouse_queue);		/* paranoia */
 	mouse_in_use = FALSE;
 #ifdef	MACH_KERNEL
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	mousepgrp = 0;
 	mouseflag = 0;
 	mouse_sel = 0;
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 }
 
 /*ARGSUSED*/
@@ -334,7 +334,7 @@ io_return_t mousegetstat(dev, flavor, data, count)
 	return D_SUCCESS;
 }
 
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 /*
  * mouseioctl - handling for asynch & non-blocking I/O.
  */
@@ -391,11 +391,11 @@ mouseselect(dev, rw)
 	else
 		mouse_sel = (struct proc *)current_thread();
 					/* eeeyuck */
-	
+
 	splx(s);
 	return(0);
 }
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 
 /*
  * mouseread - dequeue and return any queued events.
@@ -472,7 +472,7 @@ boolean_t mouse_read_done(ior)
 	return (TRUE);
 }
 
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 /*ARGSUSED*/
 mouseread(dev, uio)
 	dev_t dev;
@@ -488,7 +488,7 @@ mouseread(dev, uio)
 		if (mouseflag & MOUSE_NBIO) {
 			err = EWOULDBLOCK;
 			goto done;
-		} else 
+		} else
 			while (kdq_empty(&mouse_queue)) {
 				splx(s);
 				sleep((caddr_t)&mouse_queue, TTIPRI);
@@ -509,7 +509,7 @@ done:
 	splx(s);
 	return(err);
 }
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 
 
 /*
@@ -547,7 +547,7 @@ mouseintr(unit)
  */
 int show_mouse_byte = 0;
 /*
-   X down; middle down; middle up; X up		50 0 0; 50 0 0 22; 50 0 0 02; 40 0 0 
+   X down; middle down; middle up; X up		50 0 0; 50 0 0 22; 50 0 0 02; 40 0 0
    X down; middle down; X up; middle up		50 0 0; 50 0 0 22; 40 0 0 22; 40 0 0 2
  *
  * The trick here is that all the while the middle button is down you get 4 byte
@@ -616,7 +616,7 @@ mouse_handle_byte(ch)
 	mousebuf[mousebufindex++] = ch;
 	if (mousebufindex < mousebufsize)
 		return;
-	
+
 	/* got a packet */
 	mousebufindex = 0;
 
@@ -752,9 +752,9 @@ int kd_mouse_read(void)
 #ifdef	MACH_KERNEL
 	    assert_wait((event_t) &mouse_char, FALSE);
 	    thread_block((void (*)()) 0);
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	    sleep(&mouse_char, PZERO);
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 	}
 
 	ch = mouse_char;
@@ -910,7 +910,7 @@ mouse_enqueue(ev)
 	    while ((ior = (io_req_t)dequeue_head(&mouse_read_queue)) != 0)
 		iodone(ior);
 	}
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	if (mouse_sel) {
 		selwakeup(mouse_sel, mouseflag & MOUSE_COLL);
 		mouse_sel = 0;
@@ -919,5 +919,5 @@ mouse_enqueue(ev)
 	if (mouseflag & MOUSE_ASYNC)
 		gsignal(mousepgrp, SIGIO);
 	wakeup((caddr_t)&mouse_queue);
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 }

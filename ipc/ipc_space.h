@@ -82,7 +82,7 @@ struct ipc_space {
 
 #if	MACH_IPC_COMPAT
 	struct ipc_port *is_notify;	/* notification port */
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 };
 
 #define	IS_NULL			((ipc_space_t) 0)
@@ -96,7 +96,7 @@ extern struct ipc_space *ipc_space_kernel;
 extern struct ipc_space *ipc_space_reply;
 #if	NORMA_IPC
 extern struct ipc_space *ipc_space_remote;
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
 #define	is_ref_lock_init(is)	simple_lock_init(&(is)->is_ref_lock_data)
 
@@ -160,5 +160,5 @@ void		ipc_space_destroy(struct ipc_space *);
 #define	ipc_space_make_notify(space)	\
 		ipc_port_copy_send(space->is_notify)
 
-#endif	MACH_IPC_COMPAT
-#endif	_IPC_IPC_SPACE_H_
+#endif	/* MACH_IPC_COMPAT */
+#endif	/* _IPC_IPC_SPACE_H_ */

@@ -64,4 +64,4 @@
 
 #define	IMAR_MAX	(1 << 10)	/* Max number of msg-accepted reqs */
 
-#endif	_KERN_MACH_PARAM_H_
+#endif	/* _KERN_MACH_PARAM_H_ */

@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1992,1991,1990 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -187,7 +187,7 @@ db_lookup(symstr)
  * handler supports qualified search with a file name or a line number.
  * It parses the symbol string, and call an object dependent routine
  * with parsed file name, symbol name and line number.
- */ 
+ */
 db_sym_t
 db_sym_parse_and_lookup(func, symtab, symstr)
 	db_sym_t	(*func)();
@@ -247,7 +247,7 @@ db_sym_parse_and_lookup(func, symtab, symstr)
 		sym_name = component[1];
 	}
 	found = func(symtab, file_name, sym_name, line_number);
-	
+
 out:
 	while (--n >= 1)
 		component[n][-1] = ':';
@@ -290,8 +290,8 @@ db_sym_t db_search_in_task_symbol();
  *
  * Logic change. If the task argument is non NULL and a
  * matching symbol is found in a symbol table which explictly
- * specifies its map to be task->map, that symbol will have 
- * precedence over any symbol from a symbol table will a null 
+ * specifies its map to be task->map, that symbol will have
+ * precedence over any symbol from a symbol table will a null
  * map. This allows overlapping kernel/user maps to work correctly.
  *
  */
@@ -309,9 +309,9 @@ db_search_task_symbol(val, strategy, offp, task)
   else
     {
       ret = db_search_in_task_symbol(val, strategy, offp, task);
-      /* 
-	db_search_in_task_symbol will return success with 
-	a very large offset when it should have failed. 
+      /*
+	db_search_in_task_symbol will return success with
+	a very large offset when it should have failed.
 	*/
       if (ret == DB_SYM_NULL || (*offp) > 0x1000000)
 	{
@@ -340,11 +340,11 @@ db_search_in_task_symbol(val, strategy, offp, task)
   map_for_val = (task == TASK_NULL)? VM_MAP_NULL: task->map;
   newdiff = diff = ~0;
   db_last_symtab = (db_symtab_t *) 0;
-  for (sp = &db_symtabs[0], i = 0; i < db_nsymtab;  sp++, i++) 
+  for (sp = &db_symtabs[0], i = 0; i < db_nsymtab;  sp++, i++)
     {
       newdiff = ~0;
       if ((vm_map_t)sp->map_pointer == VM_MAP_NULL ||
-	  (vm_map_t)sp->map_pointer == map_for_val) 
+	  (vm_map_t)sp->map_pointer == map_for_val)
 	{
 	  sym = X_db_search_symbol(sp, val, strategy, (db_expr_t*)&newdiff);
 	  if (sym == DB_SYM_NULL)
@@ -356,7 +356,7 @@ db_search_in_task_symbol(val, strategy, offp, task)
 	      ret = sym;
 	      continue;
 	    }
-	  if ((vm_map_t) sp->map_pointer == VM_MAP_NULL && 
+	  if ((vm_map_t) sp->map_pointer == VM_MAP_NULL &&
 	      (vm_map_t) db_last_symtab->map_pointer == VM_MAP_NULL &&
 	      newdiff < diff )
 	    { /* closer null map match */
@@ -364,23 +364,23 @@ db_search_in_task_symbol(val, strategy, offp, task)
 	      diff = newdiff;
 	      ret = sym;
 	      continue;
-	    }		    
-	  if ((vm_map_t) sp->map_pointer != VM_MAP_NULL && 
+	    }
+	  if ((vm_map_t) sp->map_pointer != VM_MAP_NULL &&
 	      (newdiff < 0x100000) &&
 	      ((vm_map_t) db_last_symtab->map_pointer == VM_MAP_NULL ||
 	       newdiff < diff ))
-	    { /* update if new is in matching map and symbol is "close", 
-		 and 
-		 old is VM_MAP_NULL or old in is matching map but is further away 
+	    { /* update if new is in matching map and symbol is "close",
+		 and
+		 old is VM_MAP_NULL or old in is matching map but is further away
 		 */
 	      db_last_symtab = sp;
 	      diff = newdiff;
 	      ret = sym;
 	      continue;
-	    }		    
+	    }
 	}
     }
-  
+
   *offp = diff;
   return ret;
 }
@@ -520,4 +520,4 @@ struct db_sym_switch x_db[] = {
 
 };
 
-#endif MACH_KDB
+#endif /* MACH_KDB */

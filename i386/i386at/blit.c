@@ -1,29 +1,29 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990,1989 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
- 
+
 /* **********************************************************************
  File:         blit.c
  Description:  Device Driver for Bell Tech Blit card
@@ -81,14 +81,14 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifdef	MACH_KERNEL
 #include <sys/types.h>
 #include <device/errno.h>
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 #include <sys/types.h>
 #include <sys/errno.h>
 #include <sys/param.h>
 #include <sys/dir.h>
 #include <sys/signal.h>
 #include <sys/user.h>
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 #include <vm/vm_kern.h>
 #include <mach/vm_param.h>
 #include <machine/machspl.h>
@@ -115,7 +115,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 #define MAXBLITS	1
 
-#if	NBLIT > MAXBLITS 
+#if	NBLIT > MAXBLITS
 /* oh, no, you don't want to do this...; */
 
 #else
@@ -166,14 +166,14 @@ struct mb_driver blitdriver = {
 
 /*
  * Per-card bookkeeping information for driver.
- * 
- * "scrstrip" and "dpctlregs" point to data areas that are passed to 
- * the Display Processor.  They are allocated out of the spare 
- * graphics memory.  "scrstrip" is used to describe an entire screen.  
- * "dpctlregs" contains assorted parameters for the display 
- * controller. 
- * 
- * "firstfree" is an offset into the graphics memory.  Memory starting 
+ *
+ * "scrstrip" and "dpctlregs" point to data areas that are passed to
+ * the Display Processor.  They are allocated out of the spare
+ * graphics memory.  "scrstrip" is used to describe an entire screen.
+ * "dpctlregs" contains assorted parameters for the display
+ * controller.
+ *
+ * "firstfree" is an offset into the graphics memory.  Memory starting
  * there can be allocated by users.
  */
 
@@ -187,7 +187,7 @@ struct blitsoft {
 } blitsoft[NBLIT];
 
 
-/* 
+/*
  * The following array contains the initial settings for
  * the Display Processor Control Block Registers.
  * The video timing signals in this array are for the
@@ -221,9 +221,9 @@ DPCONTROLBLK blit_mparm = {
 	DP_CURSOR_CROSSHAIR,		/* cursor style & mode */
 	0x00A0, 0x0050,			/* cursor x & y loc. */
 	/* cursor pattern */
-	0xfffe, 0xfffc, 0xc018, 0xc030, 0xc060, 0xc0c0, 0xc0c0, 0xc060, 
-	0xc430, 0xce18, 0xdb0c, 0xf186, 0xe0c3, 0xc066, 0x803c, 0x0018 
-};   
+	0xfffe, 0xfffc, 0xc018, 0xc030, 0xc060, 0xc0c0, 0xc0c0, 0xc060,
+	0xc430, 0xce18, 0xdb0c, 0xf186, 0xe0c3, 0xc066, 0x803c, 0x0018
+};
 
 void blitreboot();
 
@@ -234,7 +234,7 @@ void blitreboot();
  ***********/
 
 
-/* 
+/*
  * Probe - is the board there?
  *
  * in:	reg = start of mapped Blit memory.
@@ -242,7 +242,7 @@ void blitreboot();
  * out: returns size of mapped Blit memory if the board is present,
  *	0 otherwise.
  *
- * effects: if the board is present, it is reset and left visible in 
+ * effects: if the board is present, it is reset and left visible in
  *	Unix mode.
  */
 
@@ -277,7 +277,7 @@ blitinit()
 }
 
 
-/* 
+/*
  * Allocate needed objects from Blit's memory.
  */
 blit_memory_init(bs)
@@ -311,14 +311,14 @@ blit_memory_init(bs)
 }
 
 
-/* 
+/*
  * Reset the Blit board and leave it visible.
  */
 
 blit_reset_board()
 {
 	union blit_config_reg config;
-	
+
 	config.byte = inb(BLIT_CONFIG_ADDR);
 	config.reg.reset = 1;
 	outb(BLIT_CONFIG_ADDR, config.byte);
@@ -331,7 +331,7 @@ blit_reset_board()
 
 
 #if	AUTOINIT
-/* 
+/*
  * Attach - finish initialization by setting up the 786.
  */
 
@@ -357,7 +357,7 @@ init_biu(blt)
 
 	/* WRITEREG16(blt, DRAM_REFRESH, 0x003f); */
 	WRITEREG16(blt, DRAM_REFRESH, 0x0018);	/* refresh rate */
-	WRITEREG16(blt, DRAM_CONTROL,  
+	WRITEREG16(blt, DRAM_CONTROL,
 		    MEMROWS1 | FASTPG_INTERLV | HEIGHT_256K);
 	WRITEREG16(blt, DP_PRIORITY, (7 << 3) | 7); /* max pri */
 	WRITEREG16(blt, GP_PRIORITY, (1 << 3) | 1); /* almost min pri */
@@ -371,7 +371,7 @@ init_biu(blt)
 }
 
 
-/* 
+/*
  * Initialize the Display Processor.
  * XXX - assumes only 1 card is installed, assumes monochrome display.
  */
@@ -383,9 +383,9 @@ init_dp(bs)
 	struct blitmem *bm = (struct blitmem *)blt->graphmem;
 
 	/*
-	 * Set up strip header and tile descriptor for the whole 
-	 * screen.  It's not clear why the C bit should be turned on, 
-	 * but it seems to get rid of the nasty flickering you can get 
+	 * Set up strip header and tile descriptor for the whole
+	 * screen.  It's not clear why the C bit should be turned on,
+	 * but it seems to get rid of the nasty flickering you can get
 	 * by positioning an xterm window along the top of the screen.
 	 */
 	bs->scrstrip->strip.lines = BLIT_MONOHEIGHT - 1;
@@ -398,7 +398,7 @@ init_dp(bs)
 		 BLIT_MONOWIDTH,	/* width of bitmap */
 		 VM_TO_ADDR786(bm->fb.mono_fb, blt), /* the actual bitmap */
 		 1);			/* bits per pixel */
-	
+
 	/* Copy into DP register block. */
 	*(bs->dpctlregs) = blit_mparm;
 	bs->dpctlregs->descl = DP_ADDRLOW(VM_TO_ADDR786(bs->scrstrip, blt));
@@ -448,7 +448,7 @@ tiledesc(tile, x, y, w, ww, adx, bpp)
 
 
 /*
- * Cause the Display Processor to load its Control Registers from 
+ * Cause the Display Processor to load its Control Registers from
  * "vm_addr".
  */
 
@@ -463,7 +463,7 @@ DPCONTROLBLK *vm_addr;
 	/* set up dp address */
 	WRITEREG16(blt, DP_PARM1_REG, DP_ADDRLOW(blit_addr));
 	WRITEREG16(blt, DP_PARM2_REG, DP_ADDRHIGH(blit_addr));
-  
+
 	/* set blanking video */
 	WRITEREG16(blt, DEF_VIDEO_REG, 0);
 
@@ -556,9 +556,9 @@ int length;				/* num bytes to map */
 	vm_offset_t vmaddr;
 #ifdef	MACH_KERNEL
 	vm_offset_t io_map();
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	vm_offset_t pmap_map_bd();
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 
 	if (physaddr != (caddr_t)trunc_page(physaddr))
 		panic("Blit card not on page boundary");
@@ -566,11 +566,11 @@ int length;				/* num bytes to map */
 #ifdef	MACH_KERNEL
 	vmaddr = io_map((vm_offset_t)physaddr, length);
 	if (vmaddr == 0)
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	if (kmem_alloc_pageable(kernel_map,
 				&vmaddr, round_page(BLIT_MAPPED_SIZE))
 							!= KERN_SUCCESS)
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 		panic("can't alloc VM for Blit card");
 
 	(void)pmap_map_bd(vmaddr, (vm_offset_t)physaddr,
@@ -595,8 +595,8 @@ int length;
 /*
  * blit_init: initialize globals & hardware, and set cursor.  Could be
  * called twice, once as part of kd initialization and once as part of
- * blit initialization.  Should not be called before blit_present() is 
- * called. 
+ * blit initialization.  Should not be called before blit_present() is
+ * called.
  */
 
 void
@@ -644,7 +644,7 @@ blit_init()
 
 	/*
 	 * Use generic bitmap routines, no 786 assist (see
-	 * blit_memory_init). 
+	 * blit_memory_init).
 	 */
 	kd_dput = bmpput;
 	kd_dmvup = bmpmvup;
@@ -723,7 +723,7 @@ getfontinfo(blt)
 	char_white = BLIT_WHITE_BYTE;
 
 	font_start = rom + fontoffset;
-	
+
 	/*
 	 * Check byte-alignment assumption.
 	 * XXX - does it do any good to panic when initializing the
@@ -755,8 +755,8 @@ pick_cursor_height()
 	int scl_avail;			/* scan lines available for console */
 	int scl_per_line;		/* scan lines per console line */
 
-	/* 
-	 * scan lines avail. = total lines - top margin; 
+	/*
+	 * scan lines avail. = total lines - top margin;
 	 * no bottom margin (XXX).
 	 */
 	scl_avail = BLIT_MONOHEIGHT - ystart;
@@ -769,9 +769,9 @@ pick_cursor_height()
 }
 
 
-/* 
- * setstatus: Give a status indication to the user.  Ideally, we'd 
- * just set the 3 user-controlled LED's.  Unfortunately, that doesn't 
+/*
+ * setstatus: Give a status indication to the user.  Ideally, we'd
+ * just set the 3 user-controlled LED's.  Unfortunately, that doesn't
  * seem to work.  So, we ring the bell.
  */
 
@@ -780,7 +780,7 @@ setstatus(val)
 	int val;
 {
 	union blit_diag_reg diag;
-	
+
 	diag.byte = inb(BLIT_DIAG_ADDR);
 	diag.reg.led0 = (val & 1) ? BLIT_LED_ON : BLIT_LED_OFF;
 	diag.reg.led1 = (val & 2) ? BLIT_LED_ON : BLIT_LED_OFF;
@@ -807,8 +807,8 @@ setstatus(val)
  ***********/
 
 
-/* 
- * Open - Verify that minor device is OK and not in use, then clear 
+/*
+ * Open - Verify that minor device is OK and not in use, then clear
  * the screen.
  */
 
@@ -850,7 +850,7 @@ blitclose(dev, flag)
 }
 
 
-/* 
+/*
  * Mmap.
  */
 
@@ -869,7 +869,7 @@ blitmmap(dev, off, prot)
 }
 
 
-/* 
+/*
  * Ioctl.
  */
 
@@ -894,7 +894,7 @@ io_return_t blit_get_stat(dev, flavor, data, count)
 	}
 	return (D_SUCCESS);
 }
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 /*ARGSUSED*/
 int
 blitioctl(dev, cmd, data, flag)
@@ -916,7 +916,7 @@ blitioctl(dev, cmd, data, flag)
 
 	return(err);
 }
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 
 /*
  * clear_blit: clear blit's screen.
@@ -929,7 +929,7 @@ clear_blit(blt)
 	(*kd_dclear)(0, kd_lines*kd_cols, KA_NORMAL);
 }
 
-/* 
+/*
  * Put the board into DOS mode in preparation for rebooting.
  */
 
@@ -937,7 +937,7 @@ void
 blitreboot()
 {
 	union blit_config_reg config;
-	
+
 	config.byte = inb(BLIT_CONFIG_ADDR);
 	config.reg.mode = BLIT_DOS_MODE;
 	config.reg.invisible = BLIT_VISIBLE;

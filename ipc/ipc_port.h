@@ -116,7 +116,7 @@ struct ipc_port {
 	long ip_norma_spare2;
 	long ip_norma_spare3;
 	long ip_norma_spare4;
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 };
 
 #define ip_object		ip_target.ipt_object
@@ -191,7 +191,7 @@ typedef struct ipc_port_request {
 #define	ipr_spacep(soright)	((unsigned int)(soright) & 1)
 #define ipr_space(soright)	((ipc_space_t)((unsigned int)(soright) &~ 1))
 #define	ipr_spacem(space)	((ipc_port_t)((unsigned int)(space) | 1))
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 /*
  *	Taking the ipc_port_multiple lock grants the privilege
@@ -381,7 +381,7 @@ ipc_port_copyout_send_compat(/* ipc_port_t, ipc_space_t */);
 extern mach_port_t
 ipc_port_copyout_receiver(/* ipc_port_t, ipc_space_t */);
 
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 extern void
 ipc_port_print(/* ipc_port_t */);
@@ -402,6 +402,6 @@ ipc_port_print(/* ipc_port_t */);
 #define ip_nsproxy(nsrequest)	((ipc_port_t)((unsigned int)(nsrequest) &~ 1))
 #define	ip_nsproxym(proxy)	((ipc_port_t)((unsigned int)(proxy) | 1))
 
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
-#endif	_IPC_IPC_PORT_H_
+#endif	/* _IPC_IPC_PORT_H_ */

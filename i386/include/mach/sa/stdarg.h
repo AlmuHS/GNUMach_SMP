@@ -43,4 +43,4 @@ typedef	char *va_list;
 	((pvar) += __va_size(type),		\
 	 *((type *)((pvar) - __va_size(type))))
 
-#endif _MACH_SA_STDARG_H_
+#endif /* _MACH_SA_STDARG_H_ */

@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990,1989,1988,1987 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -82,7 +82,7 @@ timer_t this_timer;
 }
 
 #if	STAT_TIME
-#else	STAT_TIME
+#else	/* STAT_TIME */
 
 #ifdef	MACHINE_TIMER_ROUTINES
 
@@ -126,7 +126,7 @@ unsigned ts;
 	elapsed = ts - mytimer->tstamp;
 #ifdef	TIMER_MAX
 	if (elapsed < 0) elapsed += TIMER_MAX;
-#endif	TIMER_MAX
+#endif	/* TIMER_MAX */
 
 	/*
 	 *	Update current timer.
@@ -167,7 +167,7 @@ time_trap_uexit(ts)
 	elapsed = ts - mytimer->tstamp;
 #ifdef	TIMER_MAX
 	if (elapsed < 0) elapsed += TIMER_MAX;
-#endif	TIMER_MAX
+#endif	/* TIMER_MAX */
 
 	/*
 	 *	Update current timer.
@@ -214,7 +214,7 @@ timer_t	new_timer;
 	elapsed = ts - mytimer->tstamp;
 #ifdef	TIMER_MAX
 	if (elapsed < 0) elapsed += TIMER_MAX;
-#endif	TIMER_MAX
+#endif	/* TIMER_MAX */
 
 	/*
 	 *	Update current timer.
@@ -254,7 +254,7 @@ timer_t	old_timer;
 	elapsed = ts - mytimer->tstamp;
 #ifdef	TIMER_MAX
 	if (elapsed < 0) elapsed += TIMER_MAX;
-#endif	TIMER_MAX
+#endif	/* TIMER_MAX */
 
 	/*
 	 *	Update current timer.
@@ -302,7 +302,7 @@ timer_t new_timer;
 	elapsed = ts - mytimer->tstamp;
 #ifdef	TIMER_MAX
 	if (elapsed < 0) elapsed += TIMER_MAX;
-#endif	TIMER_MAX
+#endif	/* TIMER_MAX */
 
 	/*
 	 *	Update current timer.
@@ -325,7 +325,7 @@ timer_t new_timer;
 }
 
 #endif	/* MACHINE_TIMER_ROUTINES */
-#endif	STAT_TIME
+#endif	/* STAT_TIME */
 
 /*
  *	timer_normalize normalizes the value of a timer.  It is
@@ -355,7 +355,7 @@ timer_t	timer;
  *
  *	Critical scheduling code uses TIMER_DELTA macro in timer.h
  *	(called from thread_timer_delta in sched.h).
- *    
+ *
  *      Keep coherent with db_time_grab below.
  */
 
@@ -382,7 +382,7 @@ timer_save_t	save;
 #if MACH_ASSERT
 		passes++;
 		assert((passes < 10000) ? (1) : ((timer->high_bits_check = save->high), 0));
-#endif		
+#endif
 	} while ( (save)->high != (timer)->high_bits_check);
 }
 
@@ -425,7 +425,7 @@ time_value_t *tv;
 	 */
 #ifdef	TIMER_ADJUST
 	TIMER_ADJUST(&temp);
-#endif	TIMER_ADJUST
+#endif	/* TIMER_ADJUST */
 	tv->seconds = temp.high + temp.low/1000000;
 	tv->microseconds = temp.low%1000000;
 
@@ -452,7 +452,7 @@ void	thread_read_times(thread, user_time_p, system_time_p)
 
 #ifdef	TIMER_ADJUST
 	TIMER_ADJUST(&temp);
-#endif	TIMER_ADJUST
+#endif	/* TIMER_ADJUST */
 	user_time_p->seconds = temp.high + temp.low/1000000;
 	user_time_p->microseconds = temp.low % 1000000;
 
@@ -461,7 +461,7 @@ void	thread_read_times(thread, user_time_p, system_time_p)
 
 #ifdef	TIMER_ADJUST
 	TIMER_ADJUST(&temp);
-#endif	TIMER_ADJUST
+#endif	/* TIMER_ADJUST */
 	system_time_p->seconds = temp.high + temp.low/1000000;
 	system_time_p->microseconds = temp.low % 1000000;
 }
@@ -486,7 +486,7 @@ void	db_thread_read_times(thread, user_time_p, system_time_p)
 
 #ifdef	TIMER_ADJUST
 	TIMER_ADJUST(&temp);
-#endif	TIMER_ADJUST
+#endif	/* TIMER_ADJUST */
 	user_time_p->seconds = temp.high + temp.low/1000000;
 	user_time_p->microseconds = temp.low % 1000000;
 
@@ -495,7 +495,7 @@ void	db_thread_read_times(thread, user_time_p, system_time_p)
 
 #ifdef	TIMER_ADJUST
 	TIMER_ADJUST(&temp);
-#endif	TIMER_ADJUST
+#endif	/* TIMER_ADJUST */
 	system_time_p->seconds = temp.high + temp.low/1000000;
 	system_time_p->microseconds = temp.low % 1000000;
 }

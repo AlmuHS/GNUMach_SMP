@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -383,9 +383,9 @@ mach_port_space_info(
 		iin->iin_collision = (bits & IE_BITS_COLLISION) ? TRUE : FALSE;
 #if	MACH_IPC_COMPAT
 		iin->iin_compat = (bits & IE_BITS_COMPAT) ? TRUE : FALSE;
-#else	MACH_IPC_COMPAT
+#else	/* MACH_IPC_COMPAT */
 		iin->iin_compat = FALSE;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 		iin->iin_marequest = (bits & IE_BITS_MAREQUEST) ? TRUE : FALSE;
 		iin->iin_type = IE_BITS_TYPE(bits);
 		iin->iin_urefs = IE_BITS_UREFS(bits);
@@ -408,9 +408,9 @@ mach_port_space_info(
 		iin->iin_collision = (bits & IE_BITS_COLLISION) ? TRUE : FALSE;
 #if	MACH_IPC_COMPAT
 		iin->iin_compat = (bits & IE_BITS_COMPAT) ? TRUE : FALSE;
-#else	MACH_IPC_COMPAT
+#else	/* MACH_IPC_COMPAT */
 		iin->iin_compat = FALSE;
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 		iin->iin_marequest = (bits & IE_BITS_MAREQUEST) ? TRUE : FALSE;
 		iin->iin_type = IE_BITS_TYPE(bits);
 		iin->iin_urefs = IE_BITS_UREFS(bits);

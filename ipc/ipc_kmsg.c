@@ -473,7 +473,7 @@ ipc_kmsg_free(kmsg)
 		/* return it to the norma ipc code */
 		norma_kmsg_put(kmsg);
 		break;
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
 	    case IKM_SIZE_NETWORK:
 		/* return it to the network code */
@@ -1251,9 +1251,9 @@ ipc_kmsg_copyin_header(msg, space, notify)
 			reply_soright = IP_NULL;
 			goto skip_reply_checks;
 		}
-#else	MACH_IPC_COMPAT
+#else	/* MACH_IPC_COMPAT */
 		assert(kr == KERN_SUCCESS);
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 		if ((saved_reply != IP_NULL) && (reply_port == IO_DEAD)) {
 			ipc_port_t dest = (ipc_port_t) dest_port;
@@ -1321,7 +1321,7 @@ ipc_kmsg_copyin_header(msg, space, notify)
 		 *	and the port died on us.  In this case, the copyin
 		 *	code already deallocated reply_entry.
 		 */
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 		if (IE_BITS_TYPE(dest_entry->ie_bits) == MACH_PORT_TYPE_NONE)
 			ipc_entry_dealloc(space, dest_name, dest_entry);
@@ -1398,7 +1398,7 @@ ipc_kmsg_copyin_body(kmsg, space, map)
 		use_page_lists = TRUE;
 		steal_pages = TRUE;
 	}
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
 	saddr = (vm_offset_t) (&kmsg->ikm_header + 1);
 	eaddr = (vm_offset_t) &kmsg->ikm_header + kmsg->ikm_header.msgh_size;
@@ -1482,7 +1482,7 @@ ipc_kmsg_copyin_body(kmsg, space, map)
 
 			if (sizeof(vm_offset_t) > sizeof(mach_msg_type_t))
 				saddr = ptr_align(saddr);
-			
+
 			if ((eaddr - saddr) < sizeof(vm_offset_t)) {
 				ipc_kmsg_clean_partial(kmsg, taddr, FALSE, 0);
 				return MACH_SEND_MSG_TOO_SMALL;
@@ -1786,7 +1786,7 @@ ipc_kmsg_copyin_from_kernel(
  *		Nothing locked.
  *	Returns:
  *		MACH_MSG_SUCCESS	Copied out port rights.
- *		MACH_RCV_INVALID_NOTIFY	
+ *		MACH_RCV_INVALID_NOTIFY
  *			Notify is non-null and doesn't name a receive right.
  *			(Either KERN_INVALID_NAME or KERN_INVALID_RIGHT.)
  *		MACH_RCV_HEADER_ERROR|MACH_MSG_IPC_SPACE
@@ -2746,7 +2746,7 @@ ipc_kmsg_copyout_to_kernel(kmsg, space)
 	kmsg->ikm_header.msgh_local_port = dest_name;
 	kmsg->ikm_header.msgh_remote_port = reply_name;
 }
-#endif	NORMA_IPC || NORMA_VM
+#endif	/* NORMA_IPC || NORMA_VM */
 
 #if	MACH_IPC_COMPAT
 
@@ -2829,7 +2829,7 @@ ipc_kmsg_copyin_compat(kmsg, space, map)
 		use_page_lists = TRUE;
 		steal_pages = TRUE;
 	}
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
 	saddr = (vm_offset_t) (&kmsg->ikm_header + 1);
 	eaddr = (vm_offset_t) &kmsg->ikm_header + kmsg->ikm_header.msgh_size;
@@ -3211,7 +3211,7 @@ ipc_kmsg_copyout_compat(kmsg, space, map)
 	return MACH_MSG_SUCCESS;
 }
 
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 #include <mach_kdb.h>
 #if	MACH_KDB
@@ -3224,66 +3224,66 @@ ipc_type_name(type_name, received)
 	switch (type_name) {
 		case MACH_MSG_TYPE_BOOLEAN:
 		return "boolean";
-		
+
 		case MACH_MSG_TYPE_INTEGER_16:
 		return "short";
-		
+
 		case MACH_MSG_TYPE_INTEGER_32:
 		return "int32";
 
 		case MACH_MSG_TYPE_INTEGER_64:
 		return "int64";
-		
+
 		case MACH_MSG_TYPE_CHAR:
 		return "char";
-		
+
 		case MACH_MSG_TYPE_BYTE:
 		return "byte";
-		
+
 		case MACH_MSG_TYPE_REAL:
 		return "real";
-		
+
 		case MACH_MSG_TYPE_STRING:
 		return "string";
-		
+
 		case MACH_MSG_TYPE_PORT_NAME:
 		return "port_name";
-		
+
 		case MACH_MSG_TYPE_MOVE_RECEIVE:
 		if (received) {
 			return "port_receive";
 		} else {
 			return "move_receive";
 		}
-		
+
 		case MACH_MSG_TYPE_MOVE_SEND:
 		if (received) {
 			return "port_send";
 		} else {
 			return "move_send";
 		}
-		
+
 		case MACH_MSG_TYPE_MOVE_SEND_ONCE:
 		if (received) {
 			return "port_send_once";
 		} else {
 			return "move_send_once";
 		}
-		
+
 		case MACH_MSG_TYPE_COPY_SEND:
 		return "copy_send";
-		
+
 		case MACH_MSG_TYPE_MAKE_SEND:
 		return "make_send";
-		
+
 		case MACH_MSG_TYPE_MAKE_SEND_ONCE:
 		return "make_send_once";
-		
+
 		default:
 		return (char *) 0;
 	}
 }
-		
+
 void
 ipc_print_type_name(
 	int	type_name)
@@ -3313,9 +3313,9 @@ ipc_kmsg_print(kmsg)
 	db_printf(",page=0x%x,copy=0x%x\n",
 		  kmsg->ikm_page,
 		  kmsg->ikm_copy);
-#else	NORMA_IPC
+#else	/* NORMA_IPC */
 	db_printf("\n");
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 	ipc_msg_print(&kmsg->ikm_header);
 }
 
@@ -3481,4 +3481,4 @@ ipc_msg_print(msgh)
 		}
 	}
 }
-#endif	MACH_KDB
+#endif	/* MACH_KDB */

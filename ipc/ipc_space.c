@@ -61,7 +61,7 @@ ipc_space_t ipc_space_kernel;
 ipc_space_t ipc_space_reply;
 #if	NORMA_IPC
 ipc_space_t ipc_space_remote;
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
 /*
  *	Routine:	ipc_space_reference
@@ -178,7 +178,7 @@ ipc_space_create(
 	ip_unlock(port);
 	space->is_notify = port;
     }
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 	*spacep = space;
 	return KERN_SUCCESS;
@@ -305,7 +305,7 @@ ipc_space_destroy(
 #if	MACH_IPC_COMPAT
 	if (IP_VALID(space->is_notify))
 		ipc_port_release_send(space->is_notify);
-#endif	MACH_IPC_COMPAT
+#endif	/* MACH_IPC_COMPAT */
 
 	/*
 	 *	Because the space is now dead,

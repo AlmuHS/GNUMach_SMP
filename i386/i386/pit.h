@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990,1989 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -48,15 +48,15 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <platforms.h>
 #if	defined(MB1) || defined(MB2) || EXL > 0 || iPSC386
 /* Definitions for 8254 Programmable Interrupt Timer ports on 386/20 */
-#define PITCTR0_PORT	0xD0		/* counter 0 port */	
-#define PITCTR1_PORT	0xD2		/* counter 1 port */	
-#define PITCTR2_PORT	0xD4		/* counter 2 port */	
+#define PITCTR0_PORT	0xD0		/* counter 0 port */
+#define PITCTR1_PORT	0xD2		/* counter 1 port */
+#define PITCTR2_PORT	0xD4		/* counter 2 port */
 #define PITCTL_PORT	0xD6		/* PIT control port */
 #else	/* defined(AT386) || defined(PS2) */
 /* Definitions for 8254 Programmable Interrupt Timer ports on AT 386 */
-#define PITCTR0_PORT	0x40		/* counter 0 port */	
-#define PITCTR1_PORT	0x41		/* counter 1 port */	
-#define PITCTR2_PORT	0x42		/* counter 2 port */	
+#define PITCTR0_PORT	0x40		/* counter 0 port */
+#define PITCTR1_PORT	0x41		/* counter 1 port */
+#define PITCTR2_PORT	0x42		/* counter 2 port */
 #define PITCTL_PORT	0x43		/* PIT control port */
 #define PITAUX_PORT	0x61		/* PIT auxiliary port */
 /* bits used in auxiliary control port for timer 2 */
@@ -92,7 +92,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #endif
 #if	iPSC386
 #define CLKNUM          1000000
-#endif	iPSC386
+#endif	/* iPSC386 */
 
 #if	EXL
 /* added micro-timer support.   --- csy */
@@ -117,4 +117,4 @@ asm  int   intr_restore()
      popfl
 }
 
-#endif	EXL
+#endif	/* EXL */

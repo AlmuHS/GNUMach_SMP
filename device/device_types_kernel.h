@@ -41,4 +41,4 @@
 extern device_t	dev_port_lookup(/* struct ipc_port * */);
 extern struct ipc_port *convert_device_to_port(/* device_t */);
 
-#endif	_DEVICE_DEVICE_TYPES_KERNEL_H_
+#endif	/* _DEVICE_DEVICE_TYPES_KERNEL_H_ */

@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 1994 The University of Utah and
  * the Computer Systems Laboratory at the University of Utah (CSL).
  * All rights reserved.
@@ -44,4 +44,4 @@ extern struct real_gate idt[IDTSZ];
 #define fill_idt_gate(int_num, entry, selector, access, dword_count) \
 	fill_gate(&idt[int_num], entry, selector, access, dword_count)
 
-#endif _I386_IDT_
+#endif /* _I386_IDT_ */

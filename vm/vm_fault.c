@@ -100,7 +100,7 @@ boolean_t	software_reference_bits = TRUE;
 
 #if	MACH_KDB
 extern struct db_watchpoint *db_watchpoint_list;
-#endif	MACH_KDB
+#endif	/* MACH_KDB */
 
 /*
  *	Routine:	vm_fault_init
@@ -286,7 +286,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 		 *	so that the watchpoint code notices the access.
 		 */
 	    || db_watchpoint_list
-#endif	MACH_KDB
+#endif	/* MACH_KDB */
 	    ) {
 		/*
 		 *	If we aren't asking for write permission,
@@ -481,7 +481,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 					vm_page_zero_fill(m);
 
 					vm_stat_sample(SAMPLED_PC_VM_ZFILL_FAULTS);
-					
+
 					vm_stat.zero_fill_count++;
 					vm_object_lock(object);
 					pmap_clear_modify(m->phys_addr);
@@ -519,7 +519,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 				if ((access_required & m->unlock_request) != access_required) {
 					vm_prot_t	new_unlock_request;
 					kern_return_t	rc;
-					
+
 					if (!object->pager_ready) {
 						vm_object_assert_wait(object,
 							VM_OBJECT_EVENT_PAGER_READY,
@@ -581,7 +581,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 #if	MACH_PAGEMAP
 			&& (vm_external_state_get(object->existence_info, offset + object->paging_offset) !=
 			 VM_EXTERNAL_STATE_ABSENT)
-#endif	MACH_PAGEMAP
+#endif	/* MACH_PAGEMAP */
 			 ;
 
 		if ((look_for_page || (object == first_object))
@@ -664,16 +664,16 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 			vm_stat.pageins++;
 		    	vm_stat_sample(SAMPLED_PC_VM_PAGEIN_FAULTS);
 
-			if ((rc = memory_object_data_request(object->pager, 
+			if ((rc = memory_object_data_request(object->pager,
 				object->pager_request,
-				m->offset + object->paging_offset, 
+				m->offset + object->paging_offset,
 				PAGE_SIZE, access_required)) != KERN_SUCCESS) {
 				if (rc != MACH_SEND_INTERRUPTED)
 					printf("%s(0x%x, 0x%x, 0x%x, 0x%x, 0x%x) failed, %d\n",
 						"memory_object_data_request",
 						object->pager,
 						object->pager_request,
-						m->offset + object->paging_offset, 
+						m->offset + object->paging_offset,
 						PAGE_SIZE, access_required, rc);
 				/*
 				 *	Don't want to leave a busy page around,
@@ -689,7 +689,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 					VM_FAULT_INTERRUPTED :
 					VM_FAULT_MEMORY_ERROR);
 			}
-			
+
 			/*
 			 * Retry with same object/offset, since new data may
 			 * be in a different page (i.e., m is meaningless at
@@ -789,7 +789,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 	assert((first_m == VM_PAGE_NULL) ||
 		(first_m->busy && !first_m->absent &&
 		 !first_m->active && !first_m->inactive));
-#endif	EXTRA_ASSERTIONS
+#endif	/* EXTRA_ASSERTIONS */
 
 	/*
 	 *	If the page is being written, but isn't
@@ -983,7 +983,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 			 */
 
 			vm_page_copy(m, copy_m);
-			
+
 			/*
 			 *	If the old page was in use by any users
 			 *	of the copy-object, it must be removed
@@ -1059,7 +1059,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 			 *	wait result].  Can't turn off the page's
 			 *	busy bit because we're not done with it.
 			 */
-			 
+
 			if (m->wanted) {
 				m->wanted = FALSE;
 				thread_wakeup_with_result((event_t) m,
@@ -1749,7 +1749,7 @@ kern_return_t vm_fault_wire_fast(map, va, entry)
 
 	/*
 	 *	Wire the page down now.  All bail outs beyond this
-	 *	point must unwire the page.  
+	 *	point must unwire the page.
 	 */
 
 	vm_page_lock_queues();
@@ -1774,7 +1774,7 @@ kern_return_t vm_fault_wire_fast(map, va, entry)
 	/*
 	 *	Put this page into the physical map.
 	 *	We have to unlock the object because pmap_enter
-	 *	may cause other faults.   
+	 *	may cause other faults.
 	 */
 	vm_object_unlock(object);
 
@@ -1865,7 +1865,7 @@ kern_return_t	vm_fault_copy(
 {
 	vm_page_t		result_page;
 	vm_prot_t		prot;
-	
+
 	vm_page_t		src_page;
 	vm_page_t		src_top_page;
 
@@ -2020,7 +2020,7 @@ kern_return_t	vm_fault_copy(
 	RETURN(KERN_SUCCESS);
 #undef	RETURN
 
-	/*NOTREACHED*/	
+	/*NOTREACHED*/
 }
 
 
@@ -2179,4 +2179,4 @@ vm_fault_return_t vm_fault_page_overwrite(dst_object, dst_offset, result_page)
 #undef	DISCARD_PAGE
 }
 
-#endif	notdef
+#endif	/* notdef */

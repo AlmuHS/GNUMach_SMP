@@ -2,7 +2,7 @@
  * Mach Operating System
  * Copyright (c) 1991 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
@@ -50,4 +50,4 @@ extern time_value_t	time;
 	 (tvp)->tv_sec == (uvp)->tv_sec && (tvp)->tv_usec cmp (uvp)->tv_usec)
 #define timerclear(tvp)		(tvp)->tv_sec = (tvp)->tv_usec = 0
 
-#endif _MACH_SA_SYS_TIME_H_
+#endif /* _MACH_SA_SYS_TIME_H_ */

@@ -42,37 +42,37 @@
 
 #ifdef CONFIG_CDU31A
 extern int cdu31a_init(void);
-#endif CONFIG_CDU31A
+#endif /* CONFIG_CDU31A */
 #ifdef CONFIG_MCD
 extern int mcd_init(void);
-#endif CONFIG_MCD
+#endif /* CONFIG_MCD */
 #ifdef CONFIG_MCDX
 extern int mcdx_init(void);
-#endif CONFIG_MCDX
+#endif /* CONFIG_MCDX */
 #ifdef CONFIG_SBPCD
 extern int sbpcd_init(void);
-#endif CONFIG_SBPCD
+#endif /* CONFIG_SBPCD */
 #ifdef CONFIG_AZTCD
 extern int aztcd_init(void);
-#endif CONFIG_AZTCD
+#endif /* CONFIG_AZTCD */
 #ifdef CONFIG_CDU535
 extern int sony535_init(void);
-#endif CONFIG_CDU535
+#endif /* CONFIG_CDU535 */
 #ifdef CONFIG_GSCD
 extern int gscd_init(void);
-#endif CONFIG_GSCD
+#endif /* CONFIG_GSCD */
 #ifdef CONFIG_CM206
 extern int cm206_init(void);
-#endif CONFIG_CM206
+#endif /* CONFIG_CM206 */
 #ifdef CONFIG_OPTCD
 extern int optcd_init(void);
-#endif CONFIG_OPTCD
+#endif /* CONFIG_OPTCD */
 #ifdef CONFIG_SJCD
 extern int sjcd_init(void);
-#endif CONFIG_SJCD
+#endif /* CONFIG_SJCD */
 #ifdef CONFIG_CDI_INIT
 extern int cdi_init(void);
-#endif CONFIG_CDI_INIT
+#endif /* CONFIG_CDI_INIT */
 #ifdef CONFIG_BLK_DEV_HD
 extern int hd_init(void);
 #endif
@@ -87,7 +87,7 @@ extern int loop_init(void);
 #endif
 #ifdef CONFIG_BLK_DEV_MD
 extern int md_init(void);
-#endif CONFIG_BLK_DEV_MD
+#endif /* CONFIG_BLK_DEV_MD */
 
 extern void set_device_ro(kdev_t dev,int flag);
 void add_blkdev_randomness(int major);
@@ -115,7 +115,7 @@ void initrd_init(void);
 		   if (!__err) set_device_ro((dev),get_fs_long((long *) (where))); return __err; } \
   case BLKROGET: { int __err = verify_area(VERIFY_WRITE, (void *) (where), sizeof(long)); \
 		   if (!__err) put_fs_long(0!=is_read_only(dev),(long *) (where)); return __err; }
-		 
+
 #if defined(MAJOR_NR) || defined(IDE_DRIVER)
 
 /*
@@ -134,7 +134,7 @@ void initrd_init(void);
 #define DEVICE_NAME "ramdisk"
 #define DEVICE_REQUEST rd_request
 #define DEVICE_NR(device) (MINOR(device))
-#define DEVICE_ON(device) 
+#define DEVICE_ON(device)
 #define DEVICE_OFF(device)
 #define DEVICE_NO_RANDOM
 
@@ -164,7 +164,7 @@ static void floppy_off(unsigned int nr);
 #elif (MAJOR_NR == SCSI_DISK_MAJOR)
 
 #define DEVICE_NAME "scsidisk"
-#define DEVICE_INTR do_sd  
+#define DEVICE_INTR do_sd
 #define TIMEOUT_VALUE (2*HZ)
 #define DEVICE_REQUEST do_sd_request
 #define DEVICE_NR(device) (MINOR(device) >> 4)
@@ -183,7 +183,7 @@ static void floppy_off(unsigned int nr);
 #elif (MAJOR_NR == SCSI_TAPE_MAJOR)
 
 #define DEVICE_NAME "scsitape"
-#define DEVICE_INTR do_st  
+#define DEVICE_INTR do_st
 #define DEVICE_NR(device) (MINOR(device) & 0x7f)
 #define DEVICE_ON(device)
 #define DEVICE_OFF(device)
@@ -347,7 +347,7 @@ else \
 #endif /* DEVICE_TIMEOUT */
 
 static void (DEVICE_REQUEST)(void);
-  
+
 #ifdef DEVICE_INTR
 #define CLEAR_INTR SET_INTR(NULL)
 #else
@@ -415,11 +415,11 @@ static void end_request(int uptodate) {
 	if ((bh = req->bh) != NULL) {
 		req->bh = bh->b_reqnext;
 		bh->b_reqnext = NULL;
-		
+
  		/*
  		 * This is our 'MD IO has finished' event handler.
  		 * note that b_state should be cached in a register
- 		 * anyways, so the overhead if this checking is almost 
+ 		 * anyways, so the overhead if this checking is almost
  		 * zero. But anyways .. we never get OO for free :)
  		 */
  		if (test_bit(BH_MD, &bh->b_state)) {

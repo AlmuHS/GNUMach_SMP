@@ -111,7 +111,7 @@ ipc_bootstrap(void)
 #if	NORMA_IPC
 	kr = ipc_space_create_special(&ipc_space_remote);
 	assert(kr == KERN_SUCCESS);
-#endif	NORMA_IPC
+#endif	/* NORMA_IPC */
 
 	/* initialize modules with hidden data structures */
 
