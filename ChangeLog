@@ -1,3 +1,7 @@
+1999-05-21  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* linux/configure.in: Fix names dummy -> dummy.in in AC_OUTPUT call.
+
 1999-05-14  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* i386/linux/Drivers.in (linux_DRIVER): New macro, does AC_DRIVER and
