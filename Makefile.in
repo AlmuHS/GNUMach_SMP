@@ -297,7 +297,7 @@ check:
 
 # This is the list of routines we decide is OK to steal from the C library.
 clib-routines := memcpy memmove memset bcopy bzero \
-		 strchr strstr \
+		 strchr strstr strsep \
 		 htonl htons ntohl ntohs \
 		 etext edata end # actually ld magic, not libc
 
