@@ -34,31 +34,6 @@
 	 */
 int boothowto = 0;
 
-	/*
-	 * Should be rewritten in asm anyway.
-	 */
-/* 
- * ovbcopy - like bcopy, but recognizes overlapping ranges and handles 
- *           them correctly.
- */
-ovbcopy(from, to, bytes)
-	char *from, *to;
-	int bytes;			/* num bytes to copy */
-{
-	/* Assume that bcopy copies left-to-right (low addr first). */
-	if (from + bytes <= to || to + bytes <= from || to == from)
-		bcopy(from, to, bytes);	/* non-overlapping or no-op*/
-	else if (from > to)
-		bcopy(from, to, bytes);	/* overlapping but OK */
-	else {
-		/* to > from: overlapping, and must copy right-to-left. */
-		from += bytes - 1;
-		to += bytes - 1;
-		while (bytes-- > 0)
-			*to-- = *from--;
-	}
-}
-
 /* Someone with time should write code to set cpuspeed automagically */
 int cpuspeed = 4;
 #define	DELAY(n)	{ register int N = cpuspeed * (n); while (--N > 0); }
