@@ -1,3 +1,10 @@
+gnumach (1:20020421-1) unstable; urgency=low
+
+  * Update to CVS 20020421.
+  * Patches applied to CVS code: cdromlock.
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Sun, 21 Apr 2002 18:53:13 +0200
+
 gnumach (1:20011013-1) unstable; urgency=low
 
   * Update to CVS 20011013.
