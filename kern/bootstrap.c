@@ -42,6 +42,7 @@
 #include <kern/lock.h>
 #include <vm/vm_kern.h>
 #include <device/device_port.h>
+#include <alloca.h>
 
 #if	MACH_KDB
 #include <machine/db_machdep.h>
