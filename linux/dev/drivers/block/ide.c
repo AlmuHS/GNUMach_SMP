@@ -1578,7 +1578,7 @@ static inline void do_request (ide_hwif_t *hwif, struct request *rq)
 	blockend = block + rq->nr_sectors;
 	if ((blockend < block) || (blockend > drive->part[minor&PARTN_MASK].nr_sects)) {
 #ifdef MACH
-	  printk ("%s%c: bad access: block=%ld, count=%ld, blockend=%ld, nr_sects\n",
+	  printk ("%s%c: bad access: block=%ld, count=%ld, blockend=%ld, nr_sects%ld\n",
 		  drive->name, (minor&PARTN_MASK)?'0'+(minor&PARTN_MASK):' ',
 		  block, rq->nr_sectors, blockend, drive->part[minor&PARTN_MASK].nr_sects);
 #else
