@@ -74,7 +74,7 @@ all-archs-configures = $(patsubst %,$(srcdir)/%/configure,$(all-archs))
 # Files distributed from the top level directory:
 topfiles = ChangeLog ChangeLog.0 ChangeLog.00 Drivers.macros Makefile.in \
 	README INSTALL config.guess config.sub configure configure.in \
-	gensym.awk install-sh version.c NEWS aclocal.m4
+	gensym.awk install-sh version.c NEWS aclocal.m4 COPYING
 
 # All the source in each directory.  
 
@@ -336,7 +336,7 @@ install: mkinstalldirs kernel $(installed-headers-names) $(installed-sysdep-head
 	$(INSTALL_PROGRAM) kernel $(bootdir)/gnumach
 	$(INSTALL_PROGRAM) cross-mig $(bindir)/mig
 	test -z "$(cross-migcom)" || $(INSTALL_PROGRAM) cross-migcom $(libexecdir)/migcom
-	-ln -s $(systype) $(includedir)/mach/machine
+	ln -sf $(systype) $(includedir)/mach/machine
 
 $(installed-headers-names): $(includedir)/%: $(srcdir)/include/%
 	$(INSTALL_DATA) $< $@

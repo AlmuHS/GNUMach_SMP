@@ -1,5 +1,73 @@
+Sun Aug  3 18:25:38 1997  Shantanu Goel  <goel@cs.columbia.edu>
+
+	* i386/i386/thread.h (struct pcb): Added new field `data' used
+	by Linux driver emulation.
+
+	* i386/i386at/gpl/linux/include/linux/blk.h (end_request):
+	Revamped Mach specific code.  Don't use `errors' field in request.
+	Don't call driver's request function.
+
+	* i386/i386at/gpl/linux/include/linux/fs.h (struct buffer_head):
+	Deleted old Mach-specific definition.  Use original Linux defintion.
+
+	* i386/i386at/gpl/linux/linux_block.c:  Rewritten extensively.
+	(collect_buffer_pages): Deleted.
+	(alloc_buffer, free_buffer): Rewritten to use Mach page allocator.
+	(getblk, __brelse): Use Mach kernel allocator.
+	(check_for_error): Deleted.
+	(ll_rw_block): Allocate request structure on stack.
+	(rdwr_partial, rdwr_full, do_rdwr) New routines.
+	(block_read, block_write): Rewritten to use new routine do_rdwr.
+	(find_name): New routine.
+	(read_bsd_label, read_vtoc): New routines.
+	(init_partition): New routine.
+	(device_open): Rewritten for modularity.  Allocate Linux block
+	variables on the stack.
+	(check_limit): New routine.
+	(device_read, device_write): Rewritten extensively.  Map user
+	pages into kernel buffer before passing to driver.  This is in
+	preparation for general Linux block driver support.  Allocate
+	Linux block variables on the stack.
+
+	* i386/i386at/gpl/linux/linux_kmem.c:
+	(collect_buffer_pages): Deleted.
+
+Fri Aug  1 16:15:33 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* kern/mach_clock.c (clock_interrupt): Test correct macro to see
+	if PC sampling is configured: MACH_PCSAMPLE, not MACH_SAMPLE.
+
+	* i386/i386/locore.S (discover_x86_cpu_type): Comment out routine
+	for now.  
+	* i386/i386at/model_dep.c (c_boot_entry): Comment out use of
+	discover_x86_cpu_type for now.
+
+	* i386/include/mach/i386/eflags.h (EFL_AC, EFL_ID): New bits.
+
+	* i386/i386/locore.S (discover_x86_cpu_type): Use correct opcode
+	for right shift.  Use ENTRY macro correctly.
+
+Mon Jul 28 17:01:19 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* COPYING: New file.
+	* Makefile.in (topfiles): Add COPYING.
+
+Mon Jul 21 14:20:39 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* kern/mach4.srv: Include <mach_pcsample.h> so the value of
+	MACH_PCSAMPLE is made available for mach4.defs.
+
+Thu Jul 10 13:51:20 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* Makefile.in (install): Use `ln -sf' instead of `-ln -s'.
+	Suggested by Marcus G. Daniels (marcus@cathcart.sysc.pdx.edu).
+
 Thu Jun 26 13:48:31 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
+	* i386/i386/locore.S (discover_x86_cpu_type): New function.
+	* i386/i386at/model_dep.c (c_boot_entry): Fill in cpu type in
+	MACHINE_SLOT using new function.
+	
 	* include/mach/machine.h (CPU_TYPE_I486, CPU_TYPE_PENTIUM,
 	CPU_TYPE_PENTIUMPRO, CPU_TYPE_POWERPC): New CPU types.  These
 	conform to current OSF Mach values, but note that some of the
