@@ -85,13 +85,13 @@ static vm_size_t avail_remaining;
    if zero, only use physical memory in the low 16MB of addresses.
    Only SCSI still has DMA problems.  */
 #ifdef LINUX_DEV
-int use_all_mem = 1;
+#define use_all_mem 1
 #else
 #include "nscsi.h"
 #if	NSCSI > 0
-int use_all_mem = 0;
+#define use_all_mem 0
 #else
-int use_all_mem = 1;
+#define use_all_mem 1
 #endif
 #endif
 
@@ -444,12 +444,13 @@ unsigned int pmap_free_pages()
 }
 
 /* Always returns page-aligned regions.  */
-boolean_t
+static boolean_t
 init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 {
 	vm_offset_t addr;
 	extern char start[], end[];
 	int i;
+	static int wrapped = 0;
 
 	/* Memory regions to skip.  */
 	vm_offset_t cmdline_start_pa = boot_info.flags & MULTIBOOT_CMDLINE
@@ -469,8 +470,25 @@ init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 	/* Page-align the start address.  */
 	avail_next = round_page(avail_next);
 
+	/* Start with memory above 16MB, reserving the low memory for later. */
+	if (use_all_mem && !wrapped && phys_last_addr > 16 * 1024*1024)
+	  {
+	    if (avail_next < 16 * 1024*1024)
+	      avail_next = 16 * 1024*1024;
+	    else if (avail_next == phys_last_addr)
+	      {
+		/* We have used all the memory above 16MB, so now start on
+		   the low memory.  This will wind up at the end of the list
+		   of free pages, so it should not have been allocated to any
+		   other use in early initialization before the Linux driver
+		   glue initialization needs to allocate low memory.  */
+		avail_next = 0x1000;
+		wrapped = 1;
+	      }
+	  }
+
 	/* Check if we have reached the end of memory.  */
-	if (avail_next == phys_last_addr)
+        if (avail_next == (wrapped ? 16 * 1024*1024 : phys_last_addr))
 		return FALSE;
 
 	/* Tentatively assign the current location to the caller.  */
