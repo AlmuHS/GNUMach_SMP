@@ -1137,8 +1137,8 @@ boolean_t ds_read_done(ior)
 	    register int		c;
 
 	    for (touch = start_sent; touch < end_sent; touch += PAGE_SIZE) {
-		c = *(char *)touch;
-		*(char *)touch = c;
+		c = *(volatile char *)touch;
+		*(volatile char *)touch = c;
 	    }
 	}
 
