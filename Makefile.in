@@ -163,6 +163,11 @@ vm-files = $(vm-cfiles) memory_object_default.cli memory_object_user.cli \
 	memory_object.h pmap.h $(patsubst %,vm_%.h, \
 	external fault kern map object page pageout user)
 
+# Documentation
+doc-files = Makefile.in fdl.texi gpl.texi mach.texi
+
+# Debian packaging
+debian-files = changelog  control  copyright README.Debian rules
 
 
 # Object files that go into the kernel image.  (This will be augmented by the
@@ -357,6 +362,7 @@ dist:
 	mkdir gnumach-$(version)
 	# Directories
 	mkdir gnumach-$(version)/{bogus,chips,ddb,device,ipc,kern,scsi,util,vm,include}
+	mkdir gnumach-$(version)/{doc,debian}
 	mkdir gnumach-$(version)/include/{mach,device,mach_debug,sys}
 	mkdir gnumach-$(version)/include/mach/exec
 	for dir in `cat $(all-archs-subdirs)`; do \
@@ -380,6 +386,8 @@ dist:
 	cp $(addprefix $(srcdir)/include/,$(other-headers)) gnumach-$(version)/include
 	cp $(addprefix $(srcdir)/include/sys/,$(other-sys-headers)) gnumach-$(version)/include/sys
 	cp $(addprefix $(srcdir)/include/mach/,$(other-mach-headers)) gnumach-$(version)/include/mach
+	cp $(addprefix $(srcdir)/doc/,$(doc-files)) gnumach-$(version)/doc
+	cp $(addprefix $(srcdir)/debian/,$(debian-files)) gnumach-$(version)/debian
 	# Files in arch dirs
 	for file in `cat $(all-archs-files)`; do \
 		cp $(srcdir)/$$file gnumach-$(version)/`dirname $$file`; \

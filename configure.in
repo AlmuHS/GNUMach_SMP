@@ -73,4 +73,4 @@ AC_LINK_FILES(${systype}/${systype},machine)
 
 AC_CONFIG_SUBDIRS(linux ${systype})
 
-AC_OUTPUT(Makefile)
+AC_OUTPUT(Makefile doc/Makefile)

@@ -1,0 +1,65 @@
+#
+#   Copyright (C) 2001 Free Software Foundation
+#
+#   This program is free software; you can redistribute it and/or
+#   modify it under the terms of the GNU General Public License as
+#   published by the Free Software Foundation; either version 2, or (at
+#   your option) any later version.
+#
+#   This program is distributed in the hope that it will be useful, but
+#   WITHOUT ANY WARRANTY; without even the implied warranty of
+#   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+#   General Public License for more details.
+#
+#   You should have received a copy of the GNU General Public License
+#   along with this program; if not, write to the Free Software
+#   Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+mach-version := 1.2
+targets := mach.info
+
+# Variables from `configure'.
+srcdir=@srcdir@
+prefix=@prefix@
+
+infodir=$(prefix)/info
+
+DVIPS = dvips
+
+INSTALL_PROGRAM = @INSTALL_PROGRAM@
+
+VPATH = $(srcdir)
+
+all: $(targets)
+
+# For each .info file we need a .d file.
+-include $(patsubst %.info,%.d,$(filter %.info,$(targets))) /dev/null
+
+# Build dependencies from included files.
+%.d: %.texi
+	set -e; (echo "$*.info $*.dvi: \\"; grep '^@include ' $< | \
+		 sed -e 's/^[^  ]*[     ]*\([^  ]*\).*$$/       \1 \\/'; \
+		 echo) > $@.new
+	mv -f $@.new $@
+
+%.info: %.texi
+	@rm -f $@ $@-[0-9] $@-[0-9][0-9]
+	$(MAKEINFO) -I $(@D) -I $(<D) $<
+
+.PRECIOUS: %.dvi
+%.dvi: %.texi
+	TEXINPUTS=$(srcdir):$$TEXINPUTS \
+	  MAKEINFO='$(MAKEINFO) -I $(srcdir)' $(TEXI2DVI) $<
+
+%.ps: %.dvi
+	$(DVIPS) $< -o $@
+
+# move-if-change = $(SHELL) $(top_srcdir)/move-if-change
+# For now:
+move-if-change = mv
+
+version.texi: stamp-version; @:
+stamp-version:
+	echo '@set VERSION $(mach-version)' > version.texi.new
+	$(move-if-change) version.texi.new version.texi
+	touch $@

@@ -1,0 +1,3 @@
+#!/bin/sh -e
+
+install-info --quiet --section "Kernel" "Kernel" /usr/share/info/mach.info

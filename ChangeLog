@@ -1,3 +1,23 @@
+2001-10-04  Marcus Brinkmann  <marcus@gnu.org>
+
+	* doc: New directory.
+	* doc/Makefile.in: New file.
+	* doc/gpl.texi: Likewise.
+	* doc/fdl.texi: Likewise.
+	* doc/mach.texi: Likewise.
+	* configure.in: Add doc/Makefile to AC_OUTPUT call.
+	* configure: Regenerated.
+
+	* Makefile.in (dist): Create directories doc and debian.
+	(doc-files): New variable with documentation files.
+	(debian-files): New variable with Debian packaging files.
+
+	* debian/rules (stamp-build): Build documentation.
+	(build-gnumach): Install the documentation into the gnumach
+	package.
+	* debian/postrm: New file to install info document.
+	* debian/prerm: New file to install info document.
+
 2001-10-01  Marcus Brinkmann  <marcus@gnu.org>
 
 	* i386/i386/locore.S (tenmicrosec): Remove subroutine.
