@@ -63,7 +63,7 @@ linux-net-files = 3c501.c 3c503.c 3c505.c 3c507.c 3c509.c 3c59x.c \
 
 linux-pci-files = bios32.c pci.c
 
-linux-scsi-files = 53c7,8xx.c AM53C974.c BusLogic.c NCR53c406a.c advansys.c \
+linux-scsi-files = 53c78xx.c AM53C974.c BusLogic.c NCR53c406a.c advansys.c \
 	aha152x.c aha1542.c aha1740.c aic7xxx.c constants.c eata.c eata_dma.c \
 	eata_pio.c fdomain.c g_NCR5380.c hosts.c in2000.c pas16.c qlogic.c \
 	scsi.c scsi_debug.c scsi_ioctl.c scsi_proc.c scsicam.c sd.c \
