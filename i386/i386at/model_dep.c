@@ -479,7 +479,7 @@ init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 	avail_next += size;
 
 	/* Skip past the I/O and ROM area.  */
-	if ((avail_next > (boot_info->mem_lower * 0x400)) && (addr < 0x100000))
+	if ((avail_next >= (boot_info->mem_lower * 0x400)) && (addr < 0x100000))
 	{
 		avail_next = 0x100000;
 		goto retry;
@@ -498,22 +498,22 @@ init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 	}
 
 	/* Skip any areas occupied by valuable boot_info data.  */
-	if ((avail_next > boot_info_start_pa) && (addr < boot_info_end_pa))
+	if ((avail_next >= boot_info_start_pa) && (addr < boot_info_end_pa))
 	{
 		avail_next = boot_info_end_pa;
 		goto retry;
 	}
-	if ((avail_next > cmdline_start_pa) && (addr < cmdline_end_pa))
+	if ((avail_next >= cmdline_start_pa) && (addr < cmdline_end_pa))
 	{
 		avail_next = cmdline_end_pa;
 		goto retry;
 	}
-	if ((avail_next > mods_start_pa) && (addr < mods_end_pa))
+	if ((avail_next >= mods_start_pa) && (addr < mods_end_pa))
 	{
 		avail_next = mods_end_pa;
 		goto retry;
 	}
-	if ((avail_next > kern_sym_start) && (addr < kern_sym_end))
+	if ((avail_next >= kern_sym_start) && (addr < kern_sym_end))
 	{
 		avail_next = kern_sym_end;
 		goto retry;
@@ -524,7 +524,7 @@ init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 			phystokv(boot_info->mods_addr);
 		for (i = 0; i < boot_info->mods_count; i++)
 		{
-			if ((avail_next > m[i].mod_start)
+			if ((avail_next >= m[i].mod_start)
 			    && (addr < m[i].mod_end))
 			{
 				avail_next = m[i].mod_end;
