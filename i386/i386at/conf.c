@@ -175,12 +175,15 @@ extern int	kbdopen(), kbdclose(), kbdread();
 extern int	kbdgetstat(), kbdsetstat();
 #define	kbdname			"kbd"
 
-extern int	mouseopen(), mouseclose(), mouseread();
+extern int	mouseopen(), mouseclose(), mouseread(), mousegetstat();
 #define	mousename		"mouse"
 
 extern int	ioplopen(), ioplclose();
 extern vm_offset_t ioplmmap();
 #define	ioplname		"iopl"
+
+extern int	kmsgopen(), kmsgclose(), kmsgread(), kmsggetstat();
+#define kmsgname		"kmsg"
 
 /*
  * List of devices - console must be at slot 0
@@ -328,21 +331,19 @@ struct dev_ops	dev_name_list[] =
 #endif
 #endif /* ! LINUX_DEV */
 
-#if	NCOM > 0
+#ifdef MACH_COM
 	{ comname,	comopen,	comclose,	comread,
 	  comwrite,	comgetstat,	comsetstat,	nomap,
 	  nodev,	nulldev,	comportdeath,	0,
 	  nodev },
 #endif
 
-#ifndef LINUX_DEV
-#if	NLPR > 0
+#ifdef MACH_LPR
 	{ lprname,	lpropen,	lprclose,	lprread,
 	  lprwrite,	lprgetstat,	lprsetstat,	nomap,
 	  nodev,	nulldev,	lprportdeath,	0,
 	  nodev },
 #endif
-#endif /* ! LINUX_DEV */
 
 #if	NBLIT > 0
 	{ blitname,	blitopen,	blitclose,	nodev,
@@ -352,7 +353,7 @@ struct dev_ops	dev_name_list[] =
 #endif
 
 	{ mousename,	mouseopen,	mouseclose,	mouseread,
-	  nodev,	nulldev,	nulldev,	nomap,
+	  nodev,	mousegetstat,	nulldev,	nomap,
 	  nodev,	nulldev,	nulldev,	0,
 	  nodev },
 
@@ -383,6 +384,13 @@ struct dev_ops	dev_name_list[] =
           hddevinfo },
 #endif  NHD > 0
 #endif 0 /* Kevin doesn't know why this was here. */
+
+#ifdef	MACH_KMSG
+        { kmsgname,     kmsgopen,       kmsgclose,       kmsgread,
+          nodev,        kmsggetstat,    nodev,           nomap,
+          nodev,        nulldev,        nulldev,         0,
+          nodev },
+#endif
 
 };
 int	dev_name_count = sizeof(dev_name_list)/sizeof(dev_name_list[0]);

@@ -185,6 +185,11 @@ io_return_t kbdgetstat(dev, flavor, data, count)
 		*data = KB_VANILLAKB;
 		*count = 1;
 		break;
+	    case DEV_GET_SIZE:
+		data[DEV_GET_SIZE_DEVICE_SIZE] = 0;
+		data[DEV_GET_SIZE_RECORD_SIZE] = sizeof(kd_event);
+		*count = DEV_GET_SIZE_COUNT;
+		break;
 	    default:
 		return (D_INVALID_OPERATION);
 	}
@@ -306,6 +311,10 @@ kbdread(dev, ior)
 {
 	register int	err, count;
 	register spl_t	s;
+
+	/* Check if IO_COUNT is a multiple of the record size. */
+	if (ior->io_count % sizeof(kd_event) != 0)
+	    return D_INVALID_SIZE;
 
 	err = device_read_alloc(ior, (vm_size_t)ior->io_count);
 	if (err != KERN_SUCCESS)

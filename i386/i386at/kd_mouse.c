@@ -314,6 +314,26 @@ kd_mouse_close(dev, mouse_pic)
 }
 
 #ifdef	MACH_KERNEL
+io_return_t mousegetstat(dev, flavor, data, count)
+	dev_t		  dev;
+	int		  flavor;
+	int *		  data;		/* pointer to OUT array */
+	unsigned int	  *count;	/* OUT */
+{
+	io_return_t	result;
+
+	switch (flavor) {
+	    case DEV_GET_SIZE:
+		data[DEV_GET_SIZE_DEVICE_SIZE] = 0;
+		data[DEV_GET_SIZE_RECORD_SIZE] = sizeof(kd_event);
+		*count = DEV_GET_SIZE_COUNT;
+		break;
+	    default:
+		return D_INVALID_OPERATION;
+	}
+	return D_SUCCESS;
+}
+
 #else	MACH_KERNEL
 /*
  * mouseioctl - handling for asynch & non-blocking I/O.
@@ -389,6 +409,10 @@ mouseread(dev, ior)
 {
 	register int	err, count;
 	register spl_t	s;
+
+	/* Check if IO_COUNT is a multiple of the record size. */
+	if (ior->io_count % sizeof(kd_event) != 0)
+	    return D_INVALID_SIZE;
 
 	err = device_read_alloc(ior, (vm_size_t)ior->io_count);
 	if (err != KERN_SUCCESS)

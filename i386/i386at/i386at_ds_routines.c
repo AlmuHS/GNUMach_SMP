@@ -35,7 +35,10 @@
 
 #include <i386at/dev_hdr.h>
 #include <i386at/device_emul.h>
-#include <i386/device-drivers.h>
+
+#ifdef LINUX_DEV
+#include <i386/linux/device-drivers.h>
+#endif
 
 extern struct device_emulation_ops mach_device_emulation_ops;
 #ifdef LINUX_DEV
