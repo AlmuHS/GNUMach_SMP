@@ -40,9 +40,6 @@ vpath %.S $(sysdep)/i386at $(sysdep)/i386
 objfiles += busses.o cirbuf.o
 vpath busses.c $(srcdir)/chips
 
-# FPE emulation
-objfiles += fpe.o
-
 # Mig-generated
 objfiles += mach_i386_server.o
 
@@ -132,11 +129,3 @@ i386-installed-headers= \
 		rpc.h syscall_sw.h \
 		thread_status.h trap.h vm_param.h \
 		vm_types.h)
-
-
-# Cheat, cheat, cheat.
-fpe.o: fpe.b_elf
-	uudecode $<
-vpath fpe.b_elf $(sysdep)/i386
-
-fpe.d:; touch $@

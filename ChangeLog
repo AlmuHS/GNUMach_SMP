@@ -1,3 +1,12 @@
+2004-10-26  Guillem Jover  <guillem@hadrons.org>
+
+	* i386/i386/fpe.b: Remove binary without source.
+	* i386/i386/fpe.b_elf: Likewise.
+	* i386/i386/fpe_linkage.c: Disable the code if [! FPE].
+	* i386/bogus/fpe.h: Add comment about not having an fpe implementation.
+	* i386/Makefrag (objfiles): Do not add fpe.o.
+	Remove targets to generate fpe.o.
+
 2004-02-29  Marcus Brinkmann  <marcus@gnu.org>
 
 	* NEWS: Add things that changed so far since 1.3.

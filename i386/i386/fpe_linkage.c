@@ -30,6 +30,8 @@
 
 #include <fpe.h>
 
+#if FPE
+
 #include <cpus.h>
 
 #include <mach/std_types.h>
@@ -357,3 +359,5 @@ fpe_exception_fixup(exc, code, subcode)
 	}
 	exception(exc, code, subcode);
 }
+#endif /* FPE.  */
+
