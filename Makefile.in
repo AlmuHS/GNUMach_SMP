@@ -297,7 +297,7 @@ check:
 
 # This is the list of routines we decide is OK to steal from the C library.
 clib-routines := memcpy memmove memset bcopy bzero \
-		 strstr \
+		 strchr strstr \
 		 htonl htons ntohl ntohs \
 		 etext edata end # actually ld magic, not libc
 
@@ -308,7 +308,7 @@ kernel.o: $(objfiles) # kernel.a
 	$(LD) -r -o $@ $^
 kernel-undef: kernel.o
 	$(NM) -u $< | sed 's/^_*//' | sort -u > $@
-kernel-undef-bad: kernel-undef
+kernel-undef-bad: kernel-undef Makefile
 	sed '$(foreach r,$(clib-routines),/^$r$$/d;)' $< > $@
 clib-routines.o: kernel-undef kernel-undef-bad
 	if test -s kernel-undef-bad; \
@@ -393,13 +393,19 @@ dist:
 #
 # Autoconf support
 #
-$(srcdir)/configure: configure.in
+$(srcdir)/configure: $(srcdir)/configure.in
 	cd $(srcdir) && autoconf
+$(srcdir)/config.h.in: $(srcdir)/acconfig.h
+	cd $(srcdir) && autoheader
 
-Makefile: Makefile.in config.status
+Makefile: $(srcdir)/Makefile.in config.status
 	./config.status
+config.h: stamp-configh ;
+stamp-configh: $(srcdir)/config.h.in config.status
+	./config.status
+	touch $@
 
-config.status: configure
+config.status: $(srcdir)/configure
 	./config.status --recheck
 
 vpath %.in $(srcdir)
