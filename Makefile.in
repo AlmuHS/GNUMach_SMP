@@ -228,43 +228,6 @@ other-mach-headers := mig_support.h mach_traps.h error.h
 other-headers := alloca.h
 
 
-# We steal routines from the C library and put them here.
-# If we link against the C library directly, then we have to hope that we have
-# correctly found all the dependencies that might bring in C library code.
-# This method is much safer because it's easy to check this one object file
-# for sanity.
-objfiles += clib-routines.o
-
-clib-routines := memcpy memset bcopy bzero htonl htons ntohl ntohs
-ifeq ($(enable_kdb),yes)
-clib-routines += strstr
-endif
-
-Wl-u = -Wl,-u,
-clib-routines.o: Makefile
-	$(CC) -o $@ -r -nostartfiles -nostdlib -static -x c /dev/null \
-	      $(addprefix $(Wl-u),$(clib-routines)) \
-	      -L`dirname \`$(CC) --print-file-name=libc.a\`` -lc
-
-# This rule checks clib-routines and makes sure it doesn't have any
-# extra symbols.
-kernel: check-clib-routines
-check-clib-routines: clib-routines.o
-	$(NM) -g $< | \
-	awk '$(foreach sym,$(clib-routines),\
-		       $$3 == "$(sym)" || $$3 == "__$(sym)" ||) 0 \
-		       { match_cnt++; total_cnt++; next } \
-                       $$2 == "W" { weak_cnt++ } \
-                       { total_cnt++ } \
-                       END { exit total_cnt - (match_cnt + weak_cnt) }'
-	touch check-clib-routines
-
-
-# Empty dependency file
-clib-routines.d:; touch $@
-
-
-
 # Automatically generated source
 
 # User stubs
@@ -332,10 +295,30 @@ check:
 #
 # Kernel Image
 #
-# (The newline in this command makes it much easier to read in make output.)
-kernel: $(objfiles)
-	$(LD) -o $@ $(LDFLAGS) \
-		$(objfiles)
+
+# This is the list of routines we decide is OK to steal from the C library.
+clib-routines := memcpy memmove memset bcopy bzero \
+		 strstr \
+		 htonl htons ntohl ntohs \
+		 etext edata end # actually ld magic, not libc
+
+#kernel.a: $(objfiles)
+#	@rm -f $@
+#	$(AR) cq $@ $^
+kernel.o: $(objfiles) # kernel.a
+	$(LD) -r -o $@ $^
+kernel-undef: kernel.o
+	$(NM) -u $< | sed 's/^_*//' | sort -u > $@
+kernel-undef-bad: kernel-undef
+	sed '$(foreach r,$(clib-routines),/^$r$$/d;)' $< > $@
+clib-routines.o: kernel-undef kernel-undef-bad
+	if test -s kernel-undef-bad; \
+	then cat kernel-undef-bad; exit 2; else true; fi
+	$(CC) -nostdlib -nostartfiles -r -static \
+	      -o $@ \
+	      `sed 's/^/-Wl,-u,/' $<` -x c /dev/null -lc
+kernel: kernel.o clib-routines.o
+	$(LD) $(LDFLAGS) -o $@ $^
 
 
 
@@ -500,4 +483,3 @@ endef
 # list.
 %.d: %.s
 	echo '$*.o: $<' > $@
-
