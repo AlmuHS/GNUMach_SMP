@@ -150,24 +150,6 @@ typedef char buffer_block[BLOCK_SIZE];
  * The second 16 bytes we use for lru buffer scans, as used by
  * sync_buffers() and refill_freelist().  -- sct
  */
-#ifdef MACH
-struct buffer_head
-{
-  unsigned long b_blocknr;
-  kdev_t b_dev;
-  unsigned long b_state;
-  unsigned long b_size;
-  char *b_data;
-  struct wait_queue *b_wait;
-  struct buffer_head *b_reqnext;
-  void *b_page_list;
-  int b_index;
-  int b_off;
-  int b_usrcnt;
-  struct request *b_request;
-  struct semaphore *b_sem;
-};
-#else /* ! MACH */
 struct buffer_head {
 	/* First cache line: */
 	unsigned long b_blocknr;	/* block number */
@@ -192,11 +174,7 @@ struct buffer_head {
 	struct buffer_head * b_prev;		/* doubly linked list of hash-queue */
 	struct buffer_head * b_prev_free;	/* doubly linked list of buffers */
 	struct buffer_head * b_reqnext;		/* request queue */
-	char *b_usrbuf;
-	struct request *b_request;
-	struct semaphore *b_sem;
 };
-#endif /* ! MACH */
 
 static inline int buffer_uptodate(struct buffer_head * bh)
 {

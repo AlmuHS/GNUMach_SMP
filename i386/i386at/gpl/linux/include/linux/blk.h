@@ -349,18 +349,19 @@ static void end_request(int uptodate) {
 #endif /* IDE_DRIVER */
 	struct buffer_head * bh;
 
+	req->errors = 0;
 	if (!uptodate) {
 		printk("end_request: I/O error, dev %s, sector %lu\n",
 			kdevname(req->rq_dev), req->sector);
 #ifdef MACH
-		req->errors = 1;
-		while (req->bh) {
-			bh = req->bh;
-			req->bh = bh->b_reqnext;
+		for (bh = req->bh; bh; ) {
+			struct buffer_head *next = bh->b_reqnext;
+			bh->b_reqnext = NULL;
 			mark_buffer_uptodate(bh, 0);
 			unlock_buffer(bh);
+			bh = next;
 		}
-		goto done;
+		req->bh = NULL;
 #else
 		req->nr_sectors--;
 		req->nr_sectors &= ~SECTOR_MASK;
@@ -384,11 +385,6 @@ static void end_request(int uptodate) {
 			return;
 		}
 	}
-#ifdef MACH
-	req->errors = 0;
-
-done:
-#endif
 #ifndef DEVICE_NO_RANDOM
 	add_blkdev_randomness(MAJOR(req->rq_dev));
 #endif
@@ -402,19 +398,7 @@ done:
 	if (req->sem != NULL)
 		up(req->sem);
 	req->rq_status = RQ_INACTIVE;
-#ifndef MACH
 	wake_up(&wait_for_request);
-#endif
-#ifdef MACH
-	{
-		unsigned long flags;
-
-		save_flags(flags);
-		cli();
-		(*blk_dev[MAJOR(req->rq_dev)].request_fn)();
-		restore_flags(flags);
-	}
-#endif
 }
 #endif /* defined(IDE_DRIVER) && !defined(_IDE_C) */
 #endif /* ! SCSI_MAJOR(MAJOR_NR) */
