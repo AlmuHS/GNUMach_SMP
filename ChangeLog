@@ -1,5 +1,10 @@
 2001-08-18  Marcus Brinkmann  <marcus@gnu.org>
 
+	* linux/src/drivers/net/eepro100.c: File updated to version in
+	Linux 2.2.19.  This time for real.
+
+2001-08-18  Marcus Brinkmann  <marcus@gnu.org>
+
 	* debian/changelog: Update for next package upload.
 	* debian/control: Add gnumach-dbg package.
 	* debian/rules: New targets to build gnumach-dbg package.
