@@ -431,7 +431,7 @@ int yellowfin_probe(struct device *dev)
 #if defined (MODULE)
 	return cards_found;
 #else
-	return 0;
+	return cards_found ? 0 : -ENODEV;
 #endif
 }
 
