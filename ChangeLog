@@ -1,5 +1,8 @@
 Fri Apr 24 13:19:40 1998  Thomas Bushnell n/BSG  <thomas@melange.gnu.org>
 
+	* kern/debug.c (panic): Increase "seconds" in delay to 1000; machines
+	are faster now.
+
 	* i386/i386at/gpl/linux/linux_kmem.c: Increase MEM_CHUNKS to 7.
 
 Wed Aug 20 16:05:19 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
@@ -18,10 +21,6 @@ Wed Aug 20 16:05:19 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* kern/mach_clock.c (record_time_stamp): New function.
 	* kern/time_out.h (record_time_stamp): Add prototype.
-
-1997-08-14  Miles Bader  <miles@gnu.ai.mit.edu>
-
-	* i386/i386at/gpl/linux/include/linux/pci.h: Update from linux-2.0.30.
 
 Sun Aug  3 18:25:38 1997  Shantanu Goel  <goel@cs.columbia.edu>
 
