@@ -1,29 +1,29 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1993,1992,1991,1990 Carnegie Mellon University
- * Copyright (c) 1991 IBM Corporation 
+ * Copyright (c) 1991 IBM Corporation
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation,
- * and that the nema IBM not be used in advertising or publicity 
+ * and that the nema IBM not be used in advertising or publicity
  * pertaining to distribution of the software without specific, written
  * prior permission.
- * 
+ *
  * CARNEGIE MELLON AND IBM ALLOW FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON AND IBM DISCLAIM ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -335,7 +335,7 @@ trap_check_kernel_exit:
 	cmpl	$_kret_iret,8(%esp)	/* on IRET? */
 	je	fault_iret
 	cmpl	$_kret_popl_ds,8(%esp)	/* popping DS? */
-	je	fault_popl_ds	
+	je	fault_popl_ds
 	cmpl	$_kret_popl_es,8(%esp)	/* popping ES? */
 	je	fault_popl_es
 	cmpl	$_kret_popl_fs,8(%esp)	/* popping FS? */
@@ -535,7 +535,7 @@ _kret_iret:
 trap_from_kernel:
 #if	MACH_KDB || MACH_TTD
 	movl	%esp,%ebx		/* save current stack */
-	
+
 	cmpl	EXT(int_stack_high),%esp	/* on an interrupt stack? */
 	jb	1f			/* OK if so */
 
@@ -972,7 +972,7 @@ syscall_entry:
 syscall_entry_2:
 	pushl	%eax			/* save system call number */
 	pushl	$0			/* clear trap number slot */
-		
+
 	pusha				/* save the general registers */
 	pushl	%ds			/* and the segment registers */
 	pushl	%es
@@ -1142,15 +1142,15 @@ syscall_addr:
 	movl	$(T_PF_USER),R_ERR(%ebx)
 					/* set error code - read user space */
 	jmp	_take_trap		/* treat as a trap */
-	
 
-#if 0	
+
+#if 0
 /* Discover what kind of cpu we have; return the family number
    (3, 4, 5, 6, for 386, 486, 586, 686 respectively).  */
 ENTRY(discover_x86_cpu_type)
 	movl	%esp,%edx		/* Save stack pointer */
 	and	$~0x3,%esp		/* Align stack pointer */
-	
+
 	pushfl				/* Fetch flags ... */
 	popl	%eax			/*  ... into eax */
 	movl	%eax,%ecx		/* Save original flags for return */
@@ -1165,7 +1165,7 @@ ENTRY(discover_x86_cpu_type)
 	jnz	0f			/* Skip next bit if AC toggled */
 	movl	$3,%eax			/*   Return value is 386 */
 	jmp	9f			/*   And RETURN */
-	
+
 0:	testl	$EFL_ID,%eax		/* Test ID bit */
 	jnz	0f			/* Skip next bit if ID toggled */
 	movl	$4,%eax			/*   Return value is 486 */
@@ -1177,7 +1177,7 @@ ENTRY(discover_x86_cpu_type)
 	cpuid				/*  ... into eax */
 	shrl	$8,%eax			/* Slide family bits down */
 	andl	$15,%eax		/* And select them */
-	
+
 9:	pushl	%ecx			/* From ecx... */
 	popfl				/* ... restore original flags */
 	movl	%edx,%esp		/* Restore stack pointer */
@@ -1707,13 +1707,13 @@ ENTRY(dr3)
 
 	movzbl	B_ARG1, %eax
 	andb	$3, %al
-	addb	$0x10, %ecx
+	addb	$0x10, %cl
 	shll	%cl, %eax
 	orl	%eax, %edx
 
 	movzbl	B_ARG2, %eax
 	andb	$3, %al
-	addb	$0x2, %ecx
+	addb	$0x2, %cl
 	shll	%cl, %eax
 	orl	%eax, %edx
 
@@ -1738,9 +1738,9 @@ ENTRY(dr_addr)
  * cpu_shutdown()
  * Force reboot
  */
-null_idt:	
+null_idt:
 	.space	8 * 32
-		
+
 null_idtr:
         .word   8 * 32 - 1
         .long   null_idt
@@ -1759,4 +1759,3 @@ Entry(cpu_shutdown)
 	.data
 	.globl	EXT(ktss)
 	.comm	EXT(ktss),0x68+65536/8+1
-
