@@ -1,3 +1,7 @@
+2001-10-06  Marcus Brinkmann  <marcus@gnu.org>
+
+	* doc/mach.texi: Fix direntry.
+
 2001-10-05  Marcus Brinkmann  <marcus@gnu.org>
 
 	* doc/mach.texi: Replace `path name' by `file name' in one place.
