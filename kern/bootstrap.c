@@ -57,7 +57,7 @@
 static mach_port_t	boot_device_port;	/* local name */
 static mach_port_t	boot_host_port;		/* local name */
 
-extern struct multiboot_info *boot_info;
+extern struct multiboot_info boot_info;
 extern char *kernel_cmdline;
 
 static void user_bootstrap();	/* forward */
@@ -87,12 +87,12 @@ void bootstrap_create()
 {
 	struct multiboot_module *bmod;
 
-	if (!(boot_info->flags & MULTIBOOT_MODS)
-	    || (boot_info->mods_count == 0))
+	if (!(boot_info.flags & MULTIBOOT_MODS)
+	    || (boot_info.mods_count == 0))
 		panic("No bootstrap code loaded with the kernel!");
-	if (boot_info->mods_count > 1)
+	if (boot_info.mods_count > 1)
 		printf("Warning: only one boot module currently used by Mach\n");
-	bmod = (struct multiboot_module *)phystokv(boot_info->mods_addr);
+	bmod = (struct multiboot_module *)phystokv(boot_info.mods_addr);
 	bootstrap_exec((void*)phystokv(bmod->mod_start));
 
 	/* XXX at this point, we could free all the memory used

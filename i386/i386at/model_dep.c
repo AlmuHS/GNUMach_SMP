@@ -65,7 +65,8 @@ vm_offset_t phys_last_addr;
 /* Virtual address of physical memory, for the kvtophys/phystokv macros.  */
 vm_offset_t phys_mem_va;
 
-struct multiboot_info *boot_info;
+/* A copy of the multiboot info structure passed by the boot loader.  */
+struct multiboot_info boot_info;
 
 /* Command line supplied to kernel.  */
 char *kernel_cmdline = "";
@@ -203,9 +204,9 @@ mem_size_init()
 	   XX make it a constant.  */
 	phys_first_addr = 0;
 
-	phys_last_addr = 0x100000 + (boot_info->mem_upper * 0x400);
+	phys_last_addr = 0x100000 + (boot_info.mem_upper * 0x400);
 	avail_remaining
-	  = phys_last_addr - (0x100000 - (boot_info->mem_lower * 0x400)
+	  = phys_last_addr - (0x100000 - (boot_info.mem_lower * 0x400)
 			      - 0x1000);
 
 	printf("AT386 boot: physical memory from 0x%x to 0x%x\n",
@@ -295,7 +296,7 @@ i386at_init()
 void c_boot_entry(vm_offset_t bi)
 {
 	/* Stash the boot_image_info pointer.  */
-	boot_info = (struct multiboot_info*)phystokv(bi);
+	boot_info = *(struct multiboot_info*)phystokv(bi);
 
 	/* XXX we currently assume phys_mem_va is always 0 here -
 	   if it isn't, we must tweak the pointers in the boot_info.  */
@@ -307,8 +308,8 @@ void c_boot_entry(vm_offset_t bi)
 	printf("\n");
 
 	/* Find the kernel command line, if there is one.  */
-	if (boot_info->flags & MULTIBOOT_CMDLINE)
-		kernel_cmdline = (char*)phystokv(boot_info->cmdline);
+	if (boot_info.flags & MULTIBOOT_CMDLINE)
+		kernel_cmdline = (char*)phystokv(boot_info.cmdline);
 
 #if	MACH_KDB
 	/*
@@ -316,14 +317,14 @@ void c_boot_entry(vm_offset_t bi)
 	 * We need to do this before i386at_init()
 	 * so that the symbol table's memory won't be stomped on.
 	 */
-	if ((boot_info->flags & MULTIBOOT_AOUT_SYMS)
-	    && boot_info->syms.a.addr)
+	if ((boot_info.flags & MULTIBOOT_AOUT_SYMS)
+	    && boot_info.syms.a.addr)
 	{
 		vm_size_t symtab_size, strtab_size;
 
-		kern_sym_start = (vm_offset_t)phystokv(boot_info->syms.a.addr);
-		symtab_size = (vm_offset_t)phystokv(boot_info->syms.a.tabsize);
-		strtab_size = (vm_offset_t)phystokv(boot_info->syms.a.strsize);
+		kern_sym_start = (vm_offset_t)phystokv(boot_info.syms.a.addr);
+		symtab_size = (vm_offset_t)phystokv(boot_info.syms.a.tabsize);
+		strtab_size = (vm_offset_t)phystokv(boot_info.syms.a.strsize);
 		kern_sym_end = kern_sym_start + 4 + symtab_size + strtab_size;
 
 		printf("kernel symbol table at %08x-%08x (%d,%d)\n",
@@ -451,18 +452,16 @@ init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 	int i;
 
 	/* Memory regions to skip.  */
-	vm_offset_t boot_info_start_pa = kvtophys(boot_info);
-	vm_offset_t boot_info_end_pa = boot_info_start_pa + sizeof(*boot_info);
-	vm_offset_t cmdline_start_pa = boot_info->flags & MULTIBOOT_CMDLINE
-		? boot_info->cmdline : 0;
+	vm_offset_t cmdline_start_pa = boot_info.flags & MULTIBOOT_CMDLINE
+		? boot_info.cmdline : 0;
 	vm_offset_t cmdline_end_pa = cmdline_start_pa
 		? cmdline_start_pa+strlen((char*)phystokv(cmdline_start_pa))+1
 		: 0;
-	vm_offset_t mods_start_pa = boot_info->flags & MULTIBOOT_MODS
-		? boot_info->mods_addr : 0;
+	vm_offset_t mods_start_pa = boot_info.flags & MULTIBOOT_MODS
+		? boot_info.mods_addr : 0;
 	vm_offset_t mods_end_pa = mods_start_pa
 		? mods_start_pa
-		  + boot_info->mods_count * sizeof(struct multiboot_module)
+		  + boot_info.mods_count * sizeof(struct multiboot_module)
 		: 0;
 
 	retry:
@@ -482,7 +481,7 @@ init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 	avail_next += size;
 
 	/* Skip past the I/O and ROM area.  */
-	if ((avail_next > (boot_info->mem_lower * 0x400)) && (addr < 0x100000))
+	if ((avail_next > (boot_info.mem_lower * 0x400)) && (addr < 0x100000))
 	{
 		avail_next = 0x100000;
 		goto retry;
@@ -501,11 +500,6 @@ init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 	}
 
 	/* Skip any areas occupied by valuable boot_info data.  */
-	if ((avail_next > boot_info_start_pa) && (addr < boot_info_end_pa))
-	{
-		avail_next = boot_info_end_pa;
-		goto retry;
-	}
 	if ((avail_next > cmdline_start_pa) && (addr < cmdline_end_pa))
 	{
 		avail_next = cmdline_end_pa;
@@ -521,11 +515,11 @@ init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 		avail_next = kern_sym_end;
 		goto retry;
 	}
-	if (boot_info->flags & MULTIBOOT_MODS)
+	if (boot_info.flags & MULTIBOOT_MODS)
 	{
 		struct multiboot_module *m = (struct multiboot_module *)
-			phystokv(boot_info->mods_addr);
-		for (i = 0; i < boot_info->mods_count; i++)
+			phystokv(boot_info.mods_addr);
+		for (i = 0; i < boot_info.mods_count; i++)
 		{
 			if ((avail_next > m[i].mod_start)
 			    && (addr < m[i].mod_end))
@@ -566,7 +560,7 @@ boolean_t pmap_valid_page(x)
 {
 	/* XXX is this OK?  What does it matter for?  */
 	return (((phys_first_addr <= x) && (x < phys_last_addr)) &&
-		!(((boot_info->mem_lower * 1024) <= x) && (x < 1024*1024)));
+		!(((boot_info.mem_lower * 1024) <= x) && (x < 1024*1024)));
 }
 
 #ifndef NBBY
