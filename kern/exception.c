@@ -244,7 +244,7 @@ exception_no_server()
 		thread_halt_self();
 
 
-#if 0
+#if 1
 	if (thread_suspend (self) == KERN_SUCCESS)
 	  thread_exception_return ();
 #endif
