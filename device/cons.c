@@ -37,6 +37,11 @@
 #include <hpdev/cons.h>
 #endif
 
+#ifdef MACH_KMSG
+#include <device/io_req.h>
+#include <kmsg.h>
+#endif
+
 static	int cn_inited = 0;
 static	struct consdev *cn_tab = 0;	/* physical console device info */
 #ifndef MACH_KERNEL
@@ -86,6 +91,7 @@ cninit()
 		    (cn_tab == NULL || cp->cn_pri > cn_tab->cn_pri))
 			cn_tab = cp;
 	}
+	
 	/*
 	 * Found a console, initialize it.
 	 */
@@ -243,6 +249,11 @@ cnputc(c)
 	if (c == 0)
 		return;
 
+#ifdef MACH_KMSG
+	/* XXX: Assume that All output routines always use cnputc. */
+	kmsg_putchar (c);
+#endif
+	
 	if (cn_tab) {
 		(*cn_tab->cn_putc)(cn_tab->cn_dev, c);
 		if (c == '\n')

@@ -66,7 +66,9 @@
 
 #ifdef i386
 #include <i386at/device_emul.h>
-#include <i386/device-drivers.h>
+#ifdef LINUX_DEV
+#include <i386/linux/device-drivers.h>
+#endif
 #endif
 
 #ifdef i386
