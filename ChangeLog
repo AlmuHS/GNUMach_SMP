@@ -1,5 +1,11 @@
 Mon Apr 14 11:50:45 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
+	* Released version 1.0.	
+	
+	* kern/exception.c (exception_no_server): Try and suspend the
+	failing thread before killing the task.  Then a debugger can be
+	used. 
+
 	* i386/Makefrag: Add rebuilding rules for configure subscript.
 
 	* i386/Makefrag: Fix up copyright notice.
