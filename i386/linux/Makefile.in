@@ -205,3 +205,28 @@ mostlyclean: distclean
 
 maintainer-clean: mostlyclean
 	rm -f $(srcdir)/configure
+
+
+
+#
+# Dependency generation
+#
+
+# Include dependency files
+ifneq ($(no_deps),t)
+
+# For each .o file we need a .d file.
+-include $(subst .o,.d,$(filter %.o,$(linux-objs))) /dev/null
+
+endif
+
+# Generic rule for $(CC) based compilation for making dependencies
+define make-deps
+set -e; $(CC) $(CFLAGS) $(CPPFLAGS) -M -MG $< | \
+	sed > $@.new -e 's/$*\.o:/$*.o $@:/'
+mv -f $@.new $@
+endef
+
+%.d: %.c $(before-compile); $(make-deps)
+%.d: %.S $(before-compile); $(make-deps)
+

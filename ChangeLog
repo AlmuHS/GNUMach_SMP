@@ -1,3 +1,10 @@
+1999-07-01  Thomas Bushnell, BSG  <tb@mit.edu>
+
+	* i386/linux/Makefile.in: For each .o file in $(linux-objs)
+	include a corresponding .d file, unless `no_deps' is `t'.
+	(make-deps): New function.
+	(%.d): New pattern rules for building %.d from %.c and %.S.
+
 1999-06-29  Thomas Bushnell, BSG  <tb@mit.edu>
 
 	* vm/vm_resident.c (vm_page_grab): Don't bounce requests when
