@@ -275,7 +275,7 @@ mach/machine: mach_machine
 	test -d $(@D) || mkdir $(@D)
 	rm -f $@
 	ln -s ../mach_machine mach/machine
-mach_machine: config.status
+mach_machine:
 	rm -f $@
 	ln -s $(srcdir)/$(systype)/include/mach/$(systype) mach_machine
 
