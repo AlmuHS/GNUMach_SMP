@@ -357,8 +357,29 @@ void c_boot_entry(vm_offset_t bi)
 
 	machine_slot[0].is_cpu = TRUE;
 	machine_slot[0].running = TRUE;
-	machine_slot[0].cpu_type = CPU_TYPE_I386;
 	machine_slot[0].cpu_subtype = CPU_SUBTYPE_AT386;
+
+#if 0
+	switch (discover_x86_cpu_type ())
+	  {
+	  case 3:
+	  default:
+	    machine_slot[0].cpu_type = CPU_TYPE_I386;
+	    break;
+	  case 4:
+	    machine_slot[0].cpu_type = CPU_TYPE_I486;
+	    break;
+	  case 5:
+	    machine_slot[0].cpu_type = CPU_TYPE_PENTIUM;
+	    break;
+	  case 6:
+	    machine_slot[0].cpu_type = CPU_TYPE_PENTIUMPRO;
+	    break;
+	  }
+#else
+	machine_slot[0].cpu_type = CPU_TYPE_I386;
+#endif	
+
 
 	/*
 	 * Start the system.
