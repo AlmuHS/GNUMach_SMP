@@ -1,9 +1,17 @@
+1999-05-14  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* i386/linux/Drivers.in (linux_DRIVER): New macro, does AC_DRIVER and
+	defines alias for Linux module name.  Use that for all single-module
+	Linux drivers, so we don't forget to define any of the aliases for the
+	Linux module names.
+	* i386/linux/configure: Regenerated.
+
 1999-04-28  OKUJI Yoshinori  <okuji@localhost>
 
 	* linux/dev/drivers/block/genhd.c (bsd_disklabel_partition) [MACH]:
 	Print BSD slices, using Mach device syntax instead of Linux extented
 	partition syntax.
-	
+
 1999-05-01  Mark Kettenis  <kettenis@gnu.org>
 
 	* linux/dev/glue/block.c (device_get_status): Always set
