@@ -58,10 +58,6 @@ dnl not possible to built a useful kernel without at least one Linux
 dnl driver, so that's not really necessary.
 
 
-dnl Serial devices
-
-AC_DRIVER(com, CONFIG_MACH_COM, com.o)
-
 
 dnl non-SCSI Disk controllers
 

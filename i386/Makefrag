@@ -17,7 +17,7 @@
 DEFINES += -DCONTINUATIONS -DLINUX_DEV -D__ELF__ -Di386
 
 # Source files for any i386 kernel
-i386at-files = autoconf.c blit.c conf.c cons_conf.c fd.c rtc.c \
+i386at-files = autoconf.c blit.c com.c conf.c cons_conf.c fd.c rtc.c \
 	i386at_ds_routines.c immc.c int_init.c iopl.c kd.c kd_event.c \
 	kd_mouse.c kd_queue.c model_dep.c phys_mem_grab_page.c pic_isa.c
 i386-files = ast_check.c db_disasm.c db_interface.c db_trace.c debug_i386.c \
@@ -25,9 +25,6 @@ i386-files = ast_check.c db_disasm.c db_interface.c db_trace.c debug_i386.c \
 	iopb.c ktss.c kttd_interface.c ldt.c loose_ends.c mp_desc.c pcb.c \
 	phys.c pic.c pit.c seg.c trap.c user_ldt.c
 intel-files = pmap.c read_fault.c
-
-# Drivers; not used in all kernel, but only if selected.
-driver-files= com.c
 
 # Assembler source
 i386at-Sfiles = boothdr.S interrupt.S kdasm.S
