@@ -1,6 +1,3 @@
-Adaptec 1740
-Patch probe routine to add outb to put card in enhanced mode.
-
 -*- text -*-
 
 ** Turning on or off device drivers
@@ -32,15 +29,18 @@ are believed to work.
 ***
 
 All source file names are relative to .../gnumach/i386/i386at for Mach
-drivers, and .../gnumach/i386/i386at/gpl/linux for Linux drivers.
+drivers, and .../gnumach/linux/src/drivers for Linux drivers.
 
 
 *** Serial devices and similar equivalents
 
-PC com ports
-  --enable-com				com.c
+PC com ports (always enabled)
 	0x3f8,2f8,3e8
 	com%d
+
+Parallel port
+  --enable-lpr				lpr.c
+	lpr%d
 
 System Console (always enabled)
 	(indirect name for kd or first com line)
@@ -83,20 +83,22 @@ IDE disks
 *** SCSI disks Disks all show up as `sd%d'.  CD Roms all show up as
 `cd%d'.  Tapes and generic are not currently supported.
 
-AdvansSys
+AdvanSys
   --enable-advansys		scsi/advansys.c
 
-BusLogic MultiMaster
-  --enable-buslogic		scsi/BusLogic.c
+BusLogic
+  --enable-buslogic		scsi/{BusLogic,FlashPoint}.c
+  --disable-flashpoint (if you want to omit FlashPoint support)
 
 UltraStor 14F/34F
   --enable-u1434f		scsi/u14-34f.c
 
-UlstraStor 14F, 24F, and 34F
+UlstraStor
   --enable-ultrastor		scsi/ultrastor.c
 
-Adaptec AHA-152x
+Adaptec AHA-152x/2825
   --enable-aha152x		scsi/aha152x.c
+  --enable-aha2825
 
 Adaptec AHA-1542
   --enable-aha1542		scsi/aha1540.c
@@ -107,55 +109,84 @@ Adaptec AHA-1740
 Adaptec AIC7xxx
   --enable-aic7xxx		scsi/aic7xxx.c
 
-Future Domain TMC-16x0
+Future Domain 16xx
   --enable-futuredomain		scsi/fdomain.c
 
 Always IN 2000
   --enable-in2000		scsi/in2000.c
 
-Generic NCR5380
+Generic NCR5380/53c400
   --enable-ncr5380		scsi/g_NCR5380.c
+  --enable-ncr53c400
 
-NCR53c406 chip
+NCR53c406a chip
   --enable-ncr53c406a		scsi/NCR53c406a.c
 
-Qlogic FAS408
-  --enable-qlogic		scsi/qlogic.c
+PAS16				scsi/pas16.c
+  --enable-pas16
 
-Pro Audio Spectrum/Studio 16
-  --enable-pas16		scsi/pas16.c
-
-Seagate ST01, ST02, Future Domain TMC-885, TMC-950
+Seagate ST02, Future Domain TMC-8xx
   --enable-seagate		scsi/seagate.c
 
-Trantor T128, T128F, T228
+Trantor T128/T128F/T228
   --enable-t128			scsi/t128.c
+  --enable-t128f
+  --enable-t228
 
-NCR 53C7xx
-  --enable-ncr53c7xx		scsi/53c7,8xx.c
+NCR 53C7,8xx
+  --enable-ncr53c7xx		scsi/53c78xx.c
 
-EATA DMA
+EATA-DMA (DPT, NEC, AT&T, SNI, AST, Olivetti, Alphatronix)
   --enable-eatadma		scsi/eata_dma.c
 
-EATA PIO
+EATA-PIO (old DPT PM2001, PM2012A)
   --enable-eatapio		scsi/eata_pio.c
 
 WD 7000
   --enable-wd7000		scsi/wd7000.c
 
-EATA
+EATA ISA/EISA/PCI (DPT and generic EATA/DMA-compliant boards)
   --enable-eata			scsi/eata.c
 
-AM52/79C974
+AM53/79C974
   --enable-am53c974		scsi/AM53C974.c
+  --enable-am79c974
 
+DTC3180/3280
+  --enable-dtc3280		scsi/dtc.c
+  --enable-dtc3180
+
+NCR53C8XX
+  --enable-ncr53c8xx		scsi/ncr53c8xx.c
+
+Tekram DC-390W/U/F
+  --enable-dc390w		scsi/tmsscsiw.c
+  --enable-dc390u
+  --enable-dc390f
+
+Tekram DC-390(T)
+  --enable-dc390t		scsi/tmsscsim.c
+  --enable-dc390
+
+IOMEGA Parallel Port ZIP drive
+  --enable-ppa			scsi/ppa.c
+
+Qlogic FAS
+  --enable-qlogicfas		scsi/qlogicfas.c
+
+Qlogic ISP
+  --enable-qlogicisp		scsi/qlogicisp.c
+
+GDT SCSI Disk Array Controller
+  --enable-gdth			scsi/gdth.c
 
 
 *** Ethernet controllers
 These all show up as `eth%d' except the atp device.
 
-NE2000
+NE2000/NE1000 ISA
   --enable-ne2000			net/ne.c 8390.c
+  --enable-ne1000
 	0x300,280,320,340,360
 
 3Com 503 (Etherlink II)
@@ -163,15 +194,16 @@ NE2000
   --enable-el2
 	0x300,310,330,350,250,280,2a0,2e0
 
-3Com 509 (Etherlink III)
+3Com 509/579 (Etherlink III)
   --enable-3c509			net/3c509.c 
+  --enable-3c579
   --enable-el3
 
-Western Digital 8003E
+WD80*3
   --enable-wd80x3			net/wd.c, net/8390.c
 	0x300,280,380,240
 
-3COM Etherlink 3C501
+3COM 501
   --enable-3c501			net/3c501.c
   --enable-el1
 	0x280, 300
@@ -180,24 +212,28 @@ SMC Ultra
   --enable-ul				net/smc-ultra.c net/8390.c
 	0x200,220,240,280,300,340,380
 
-Hewlett Packard PC LAN 27??? plus ethercards.
-  --enable-hplanplus			net/hp-plus.c
+SMC Ultra32
+  --enable-ul32				net/smc-ultra32.c net/8390.c
+
+HP PCLAN+ (27247B and 27252A)
+  --enable-hplanplus			net/hp-plus.c net/8390.c
 	0x200,240,280,2c0,300,320,340
 
-Hewlett Packard PC Lan 
+HP PCLAN (27245 and other 27xxx series)
   --enable-hplan			net/hp.c, net/8390.c
 	0x300,320,340,280,2c0,200,240
 
-3Com 3c590/3c595 Vortex
+3Com 590/900 series (592/595/597/900/905) "Vortex/Boomerang"
   --enable-3c59x
+  --enable-3c90x
   --enable-vortex			net/3c59x.c
 
-Seeq 8005
+Seeq8005
   --enable-seeq8005			net/seeq8005.c
 	0x300,320,340,360
 
-Hewlett Packard HP10/100 cards		net/hp100.c
-  --enable-hp100
+HP 10/100VG PCLAN (ISA, EISA, PCI)
+  --enable-hp100			net/hp100.c
   --enable-hpj2577
   --enable-hpj2573
   --enable-hp27248b
@@ -206,33 +242,35 @@ Hewlett Packard HP10/100 cards		net/hp100.c
 Ansel Communications EISA 3200
   --enable-ac3200			net/ac3200.c, net/8390.c
 
-Cabletron E2100 series
+Cabletron E21xx
   --enable-e2100			net/e2100.c, net/8390.c
 	0x300,280,380,220
 
-Allied Telesis AT1700
+AT1700 (Fujitsu 86965)
   --enable-at1700			net/at1700.c
 	0x260,280,2a0,240,340,320,380,300
 
-ECL EtherTeam 16i and 32 EISA
+ICL EtherTeam 16i/32
   --enable-eth16i			net/eth16i.c 
   --enable-eth32
 	0x260,280,2a0,240,340,320,380,300 (16i)
 
-Zenith Z-Note (and some IBM thinkpads)
+Zenith Z-Note
   --enable-znet				net/znet.c
   --enable-znote
 
-Intel EtherExpress
+EtherExpress 16
   --enable-eexpress			net/eexpress.c
 	0x300,270,320,340
 
-Intel EtherExpress Pro/10
+EtherExpressPro
   --enable-eexpresspro			net/eepro.c
 	0x200,240,280,2c0,300,320,340,360
 
-Digital DEPCA and EtherWORKS
-  (DEPCA, DE10[01], DE20[012] Turbo, DE210, DE422)
+Intel EtherExpressPro PCI 10+/100B/100+
+  --enable-eexpresspro100		net/eepro100.c
+
+DEPCA, DE10x, DE200, DE201, DE202, DE210, DE422
   --enable-depca			net/depca.c
   --enable-de100
   --enable-de101
@@ -242,33 +280,33 @@ Digital DEPCA and EtherWORKS
   --enable-de210
   --enable-de422
 
-EtherWORKS 3 Driver
-  (DE20[345])
+EtherWORKS 3 (DE203, DE204, DE205)
   --enable-ewrk3			net/ewrk3.c
   --enable-de203
   --enable-de204
   --enable-de205
 
-Digital DE 400 series cards: DE425, DE43[45], DE500
+DE425, DE434, DE435, DE450, DE500
   --enable-de4x5			net/de4x5.c
   --enable-de425
   --enable-de434
   --enable-de435
+  --enable-de450
   --enable-de500
 
-Apricot 82596
+Apricot XEN-II on board ethernet
   --enable-apricot			net/apricot.c
 
-AT&T GIS (NCR) WaveLAN
+AT&T WaveLAN & DEC RoamAbout DS
   --enable-wavelan			net/wavelan.c
 	0x390
 
-3Com 507 EtherLink16
+3Com 507
   --enable-3c507			net/3c507.c
   --enable-el16
 	0x300,320,340,280
 
-3Com 505 Etherlink Plus
+3Com 505
   --enable-3c505			net/3c505.c
   --enable-elplus
 	0x300,280,310
@@ -293,7 +331,45 @@ NI6510
   --enable-ni65				net/ni65.c
 	0x300/320/340/360
 
-Run-time ATtachable (Pocket) ethernet driver
+AT-LAN-TEC/RealTek pocket adaptor
   --enable-atp				net/atp.c
 	0x378,278,3bc
 	atp%d
+
+AMD LANCE and PCnet (AT1500 and NE2100)
+  --enable-lance			net/lance.c
+  --enable-at1500
+  --enable-ne2100
+
+DECchip Tulip (dc21x4x) PCI
+  --enable-elcp				net/tulip.c
+  --enable-tulip
+
+FMV-181/182/183/184
+  --enable-fmv18x			net/fmv18x.c
+
+3Com 515 ISA Fast EtherLink
+  --enable-3c515			net/3c515.c
+
+AMD PCI PCnet32 (PCI bus NE2100 cards)
+  --enable-pcnet32			net/pcnet32.c
+
+PCI NE2000
+  --enable-ne2kpci			net/ne2k-pci.c
+
+Packet Engines Yellowfin Gigabit-NIC
+  --enable-yellowfin			net/yellowfin.c
+
+RealTek 8129/8139 (not 8019/8029!)
+  --enable-rtl8139			net/rtl8139.c
+  --enable-rtl8129
+
+SMC 83c170/175 EPIC/100 (EtherPower II)
+  --enable-epic				net/epic100.c
+  --enable-epic100
+
+TI ThunderLAN
+  --enable-tlan				net/tlan.c
+
+VIA Rhine
+  --enable-viarhine			net/via_rhine.c
