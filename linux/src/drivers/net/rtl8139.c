@@ -27,7 +27,7 @@ static const char *version =
 static int max_interrupt_work = 10;
 
 /* Size of the in-memory receive ring. */
-#define RX_BUF_LEN_IDX	3			/* 0==8K, 1==16K, 2==32K, 3==64K */
+#define RX_BUF_LEN_IDX	2			/* 0==8K, 1==16K, 2==32K, 3==64K */
 #define RX_BUF_LEN (8192 << RX_BUF_LEN_IDX)
 /* Size of the Tx bounce buffers -- must be at least (dev->mtu+14+4). */
 #define TX_BUF_SIZE	1536
@@ -614,6 +614,7 @@ rtl8129_open(struct device *dev)
 	tp->tx_bufs = kmalloc(TX_BUF_SIZE * NUM_TX_DESC, GFP_KERNEL);
 	tp->rx_ring = kmalloc(RX_BUF_LEN + 16, GFP_KERNEL);
 	if (tp->tx_bufs == NULL ||  tp->rx_ring == NULL) {
+		free_irq (dev->irq, dev);
 		if (tp->tx_bufs)
 			kfree(tp->tx_bufs);
 		if (rtl8129_debug > 0)
