@@ -658,7 +658,7 @@ void vm_pageout_scan()
 		 *	consumes memory.  We don't take the risk of doing
 		 *	this if the default pager already has work to do.
 		 */
-
+	pause:
 		if (queue_empty(&vm_page_queue_inactive) ||
 		    (burst_count >= vm_pageout_burst_max) ||
 		    (vm_page_laundry_count >= vm_pageout_burst_max) ||
@@ -701,10 +701,22 @@ void vm_pageout_scan()
 		}
 
 		vm_pageout_inactive++;
-		for (m = (vm_page_t) queue_first(&vm_page_queue_inactive);
-		     want_pages || m->external;
-		     m = queue_next(m))
-		  assert(!m->active && m->inactive);
+
+		/* Find a page we are interested in paging out.  If we
+		   need pages, then we'll page anything out; otherwise
+		   we only page out external pages. */
+		m = (vm_page_t) queue_first (&vm_page_queue_inactive);
+		while (1)
+		  {
+		    assert (!m->active && m->inactive);
+		    if (want_pages || m->external)
+		      break;
+		    
+		    m = (vm_page_t) queue_next (m);
+		    if (!m)
+		      goto pause;
+		  }
+		
 		object = m->object;
 
 		/*

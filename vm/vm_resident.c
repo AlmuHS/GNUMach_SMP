@@ -1212,7 +1212,8 @@ void vm_page_wait(
 	 */
 
 	simple_lock(&vm_page_queue_free_lock);
-	if (vm_page_free_count < vm_page_free_target) {
+	if ((vm_page_free_count < vm_page_free_target)
+	    || (vm_page_external_count > vm_page_external_limit)) {
 		if (vm_page_free_wanted++ == 0)
 			thread_wakeup((event_t)&vm_page_free_wanted);
 		assert_wait((event_t)&vm_page_free_count, FALSE);
