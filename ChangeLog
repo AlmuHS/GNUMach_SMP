@@ -1,3 +1,11 @@
+2001-09-18  Marcus Brinkmann  <marcus@gnu.org>
+
+	* linux/dev/glue/misc.c: Do not include <linux/types.h> and
+	<linux/string.h>.
+	Remove global variable ___strtok.
+	Remove implementation of strspn, strpbrk, strtok and strstr.
+	* Makefile.in: Add strpbrk and strtok.
+
 2001-08-24  Roland McGrath  <roland@frob.com>
 
 	* kern/bootstrap.c (bootstrap_create): Make setting of boot-args and
