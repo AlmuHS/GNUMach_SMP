@@ -1,8 +1,23 @@
 2000-10-29  Roland McGrath  <roland@frob.com>
 
+	Remove numerous dead header files.
+	Suggested by Igor Khavkine <i_khavki@alcor.concordia.ca>.
+	* i386/include/mach/i386/bios.h: Dead file removed.
+	* i386/include/mach/i386/code16.h: Dead file removed.
+	* i386/include/mach/i386/debug_reg.h: Dead file removed.
+	* i386/include/mach/i386/dpmi.h: Dead file removed.
+	* i386/include/mach/i386/far_ptr.h: Dead file removed.
+	* i386/include/mach/i386/paging.h: Dead file removed.
+	* i386/include/mach/i386/pio.h: Dead file removed.
+	* i386/include/mach/i386/pmode.h: Dead file removed.
+	* i386/include/mach/i386/proc_reg.h: Dead file removed.
+	* i386/include/mach/i386/seg.h: Dead file removed.
+	* i386/include/mach/i386/time_stamp.h: Dead file removed.
+	* i386/include/mach/i386/tss.h: Dead file removed.
+	* i386/include/mach/i386/vcpi.h: Dead file removed.
 	* i386/include/mach/proc_ops.h: Dead file removed.
-	* i386/include/mach/setjmp.h: Dead file removed.
 	* i386/include/mach/sa/sys/varargs.h: Dead file removed.
+	* i386/include/mach/setjmp.h: Dead file removed.
 	* include/mach/proc_ops.h: Dead file removed.
 	* Makefile.in (mach-headers): Remove proc_ops.h.
 	* i386/Makefrag (i386-installed-headers): Likewise.
