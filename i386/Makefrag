@@ -61,12 +61,13 @@ endif
 
 # We link the device drivers together into this file in a separate Make
 # run, because the Linux-related code sometimes re-uses filenames.  Arrange
-# to have that Makefile used to generate and clean and otherwise deal with 
+# to have that Makefile used to generate and clean and otherwise deal with
 # those filenames.
 
 objfiles += i386/sysdep.o
-i386/sysdep.o: $(systype)
+i386/sysdep.o: FORCE
 	cd i386 && $(MAKE) all
+FORCE:
 
 clean: i386-clean
 i386-clean:

@@ -29,8 +29,9 @@ sysdep.o: linux/linux.o $(srcdir)/configure
 	rm -f $@
 	$(LD) -r -o $@ linux/linux.o
 
-linux/linux.o: linux
+linux/linux.o: FORCE
 	cd linux && $(MAKE) all
+FORCE:
 
 clean:
 	rm -f sysdep.o
