@@ -27,7 +27,7 @@ LDFLAGS = -s
 PREFIX = /usr
 BINDIR = $(PREFIX)/bin
 MANDIR = $(PREFIX)/man
-DOCDIR = $(PREFIX)/doc/$(package)
+DOCDIR = $(PREFIX)/share/doc/$(package)
 DOCDIR-DEV = $(PREFIX)/doc/$(package-dev)
 
 #  Package specific stuff.  The idea is to try to make the rules
@@ -173,7 +173,7 @@ binary-indep: build
 	$(install_file)		debian/copyright debian/tmp$(DOCDIR-DEV)
 	ln -s			ChangeLog.gz debian/tmp$(DOCDIR-DEV)/changelog.gz
 
-	dpkg-gencontrol         -p$(package-dev) -Pdebian/tmp
+	dpkg-gencontrol         -isp -p$(package-dev) -Pdebian/tmp
 	chown -R root.root      debian/tmp
 	dpkg --build            debian/tmp ..
 
@@ -201,7 +201,7 @@ binary-arch: build
 	$(install_file)		debian/copyright debian/tmp$(DOCDIR)
 	ln -s			ChangeLog.gz debian/tmp$(DOCDIR)/changelog.gz
 
-	dpkg-gencontrol         -p$(package) -Pdebian/tmp
+	dpkg-gencontrol         -isp -p$(package) -Pdebian/tmp
 	chown -R root.root      debian/tmp
 	dpkg --build            debian/tmp ..
 

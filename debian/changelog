@@ -1,10 +1,17 @@
+gnumach (1:20010718-1) unstable; urgency=low
+
+  * Update to CVS 20010718.
+  * Patches applied to CVS code: cdromlock, color, kbd_enqueu.
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Wed, 18 Jul 2001 22:10:20 +0200
+
 gnumach (1:1.2-11) unstable; urgency=low
 
   * debian/rules (stamp-configure): Add ncr53c8xx driver.
   * Update to CVS 20010528.
   * Patches applied to CVS code: cdromlock, color, kbd_enqueu.
 
- -- Marcus Brinkmann <brinkmd@gnu.org>  Sun, 27 May 2001 14:14:12 +0200
+ -- Marcus Brinkmann <brinkmd@debian.org>  Sun, 27 May 2001 14:14:12 +0200
 
 gnumach (1:1.2-10) unstable; urgency=low
 
@@ -15,14 +22,14 @@ gnumach (1:1.2-10) unstable; urgency=low
   (B57600, B115200).
   * Patches applied to CVS code: cdromlock, color, kbd_enqueu.
 
- -- Marcus Brinkmann <brinkmd@gnu.org>  Sun, 29 Apr 2001 21:41:34 +0200
+ -- Marcus Brinkmann <brinkmd@debian.org>  Sun, 29 Apr 2001 21:41:34 +0200
 
 gnumach (1:1.2-9) unstable; urgency=low
 
   * Update to CVS 20010111, which contains a new interface for
   block devices with a large number of blocks.
 
- -- Marcus Brinkmann <brinkmd@gnu.org>  Thu, 11 Jan 2001 23:45:49 +0100
+ -- Marcus Brinkmann <brinkmd@debian.org>  Thu, 11 Jan 2001 23:45:49 +0100
 
 gnumach (1:1.2-8) unstable; urgency=low
 
@@ -177,8 +184,3 @@ gnumach (1.1.3-1) unstable; urgency=low
   * Initial Version.
 
  -- Marcus Brinkmann <brinkmd@debian.org>  Sat,  1 Aug 1998 21:33:31 +0200
-
-Local variables:
-mode: debian-changelog
-add-log-mailing-address: "bug-hurd@gnu.org"
-End:
