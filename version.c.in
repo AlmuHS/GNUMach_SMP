@@ -1,0 +1,2 @@
+/* @configure_input@ */
+const char version[] = "GNUmach @VERSION@";

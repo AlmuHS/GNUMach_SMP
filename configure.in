@@ -12,9 +12,11 @@ dnl "AS IS" CONDITION.  THE FREE SOFTWARE FOUNDATION DISCLAIMS ANY
 dnl LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
 dnl USE OF THIS SOFTWARE.
 
-
 AC_INIT(kern/ipc_kobject.c)
 AC_PREREQ(2.12)
+
+VERSION=1.3
+AC_SUBST(VERSION)
 
 #
 # Deduce output var `systype' from configuration parms.
@@ -73,4 +75,4 @@ AC_LINK_FILES(${systype}/${systype},machine)
 
 AC_CONFIG_SUBDIRS(linux ${systype})
 
-AC_OUTPUT(Makefile doc/Makefile)
+AC_OUTPUT(Makefile version.c doc/Makefile)
