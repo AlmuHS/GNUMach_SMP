@@ -860,7 +860,7 @@ vm_page_t vm_page_grab(
 	 */
 
 	if (((vm_page_free_count < vm_page_free_reserved) ||
-	     (vm_page_external_count >= vm_page_external_limit)) &&
+	     (vm_page_external_count > vm_page_external_limit)) &&
 	    !current_thread()->vm_privilege) {
 		simple_unlock(&vm_page_queue_free_lock);
 		return VM_PAGE_NULL;
