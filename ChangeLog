@@ -1,3 +1,8 @@
+2001-06-13  Roland McGrath  <roland@frob.com>
+
+	* linux/dev/glue/block.c (device_get_status: DEV_GET_RECORDS):
+	Always return 512 for DEV_GET_SIZE_RECORD_SIZE as DEV_GET_SIZE does.
+
 2001-05-27  Marcus Brinkmann  <marcus@gnu.org>
 
 	* debian/rules: Add --enable-ncr53c8xx to configure.
