@@ -1,3 +1,9 @@
+Sun Mar 14 18:53:01 1999  Thomas Bushnell, BSG  <tb@mit.edu>
+
+	* device/ds_routines.c (ds_read_done): When touching memory to
+	mark it dirty, make sure we say "volatile" so the compiler doesn't
+	optimize it out.
+
 Tue Jan 26 21:36:10 1999  Thomas Bushnell, BSG  <tb@mit.edu>
 
 	* kern/exception.c (exception_no_server): Correctly comment out
