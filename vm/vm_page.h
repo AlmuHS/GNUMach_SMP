@@ -225,7 +225,7 @@ extern void		vm_page_release_fictitious(vm_page_t);
 extern boolean_t	vm_page_convert(vm_page_t, boolean_t);
 extern void		vm_page_more_fictitious(void);
 extern vm_page_t	vm_page_grab(boolean_t);
-extern void		vm_page_release(vm_page_t);
+extern void		vm_page_release(vm_page_t, boolean_t);
 extern void		vm_page_wait(void (*)(void));
 extern vm_page_t	vm_page_alloc(
 	vm_object_t	object,
