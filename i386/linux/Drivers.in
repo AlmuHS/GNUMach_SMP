@@ -1,0 +1,233 @@
+dnl Device driver options for i386
+dnl Copyright 1997, 1999 Free Software Foundation, Inc.
+
+dnl Permission to use, copy, modify and distribute this software and its
+dnl documentation is hereby granted, provided that both the copyright
+dnl notice and this permission notice appear in all copies of the
+dnl software, derivative works or modified versions, and any portions
+dnl thereof, and that both notices appear in supporting documentation.
+dnl 
+dnl THE FREE SOFTWARE FOUNDATION ALLOWS FREE USE OF THIS SOFTWARE IN ITS
+dnl "AS IS" CONDITION.  THE FREE SOFTWARE FOUNDATION DISCLAIMS ANY
+dnl LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
+dnl USE OF THIS SOFTWARE.
+
+AC_INIT(dev/include/linux/autoconf.h)
+AC_PREREQ(2.12)
+
+sinclude([../../Drivers.macros])
+sinclude([../../aclocal.m4])
+
+AC_CONFIG_HEADER(device-drivers.h)
+
+dnl Check the cpu type.
+
+AC_CANONICAL_HOST
+
+case "$host_cpu" in
+i386) AC_DEFINE(CONFIG_M386)
+      AC_DEFINE(CPU, 386)    ;;
+i486) AC_DEFINE(CONFIG_M486)
+      AC_DEFINE(CPU, 486)    ;;
+i586) AC_DEFINE(CONFIG_M586)
+      AC_DEFINE(CPU, 586)    ;;
+i686) AC_DEFINE(CONFIG_M686)
+      AC_DEFINE(CPU, 686)    ;;
+*)    AC_DEFINE(CONFIG_M486)
+      AC_DEFINE(CPU, 486)    ;;
+esac
+
+
+case "$host_cpu" in
+i[[3456]]86) systype=i386 ;;
+esac
+
+AC_SUBST(systype)
+
+AC_CHECK_TOOL(CC, gcc)
+AC_PROG_CC_LOCAL
+
+AC_CHECK_TOOL(LD, ld)
+
+
+dnl XXX: Autoconf is weak in linking files from non-current directories.
+dnl So I hardcode the following shell script.
+
+mkdir_p ()
+{
+  if test ! -d `dirname $1`; then
+    mkdir_p `dirname $1`
+  fi
+  mkdir $1;
+}
+
+if test ! -d ../../linux/src/include; then
+  mkdir_p ../../linux/src/include
+fi
+if test ! -d ../../linux/dev/include; then
+  mkdir_p ../../linux/dev/include
+fi
+
+ln -sf ../../../i386/linux/${srcdir}/../../linux/src/include/asm-${systype} \
+  ../../linux/src/include/asm
+ln -sf ../../../i386/linux/${srcdir}/../../linux/dev/include/asm-${systype} \
+  ../../linux/dev/include/asm
+
+
+dnl Aliases have to come first.
+
+AC_DRIVER_ALIAS(3c501, el1)
+AC_DRIVER_ALIAS(3c503, el2)
+AC_DRIVER_ALIAS(3c509, el3)
+AC_DRIVER_ALIAS(3c579, el3)
+AC_DRIVER_ALIAS(3c59x, vortex)
+AC_DRIVER_ALIAS(3c90x, vortex)
+AC_DRIVER_ALIAS(hpj2577, hp100)
+AC_DRIVER_ALIAS(hpj2573, hp100)
+AC_DRIVER_ALIAS(hpj2585, hp100)
+AC_DRIVER_ALIAS(hp27248b, hp100)
+AC_DRIVER_ALIAS(eth32, eth16i)
+AC_DRIVER_ALIAS(znote, znet)
+AC_DRIVER_ALIAS(de100, depca)
+AC_DRIVER_ALIAS(de101, depca)
+AC_DRIVER_ALIAS(de200, depca)
+AC_DRIVER_ALIAS(de201, depca)
+AC_DRIVER_ALIAS(de202, depca)
+AC_DRIVER_ALIAS(de210, depca)
+AC_DRIVER_ALIAS(de422, depca)
+AC_DRIVER_ALIAS(de203, ewrk3)
+AC_DRIVER_ALIAS(de204, ewrk3)
+AC_DRIVER_ALIAS(de205, ewrk3)
+AC_DRIVER_ALIAS(de425, de4x5)
+AC_DRIVER_ALIAS(de434, de4x5)
+AC_DRIVER_ALIAS(de435, de4x5)
+AC_DRIVER_ALIAS(de450, de4x5)
+AC_DRIVER_ALIAS(de500, de4x5)
+AC_DRIVER_ALIAS(3c507, el16)
+AC_DRIVER_ALIAS(3c505, elplus)
+AC_DRIVER_ALIAS(ne1000, ne2000)
+AC_DRIVER_ALIAS(at1500, lance)
+AC_DRIVER_ALIAS(ne2100, lance)
+AC_DRIVER_ALIAS(tulip, elcp)
+AC_DRIVER_ALIAS(rtl8129, rtl8139)
+AC_DRIVER_ALIAS(aha2825, aha152x)
+AC_DRIVER_ALIAS(ncr53c400, ncr5380)
+AC_DRIVER_ALIAS(t128f, t128)
+AC_DRIVER_ALIAS(t228, t128)
+AC_DRIVER_ALIAS(am79c974, am53c974)
+AC_DRIVER_ALIAS(dtc3180, dtc3280)
+AC_DRIVER_ALIAS(dc390u, dc390w)
+AC_DRIVER_ALIAS(dc390f, dc390w)
+AC_DRIVER_ALIAS(dc390, dc390t)
+AC_DRIVER_ALIAS(epic100, epic)
+
+
+dnl Kinds of drivers that have gobs of source files that get brought in.
+
+AC_DRIVER_CLASS(scsi, CONFIG_SCSI, constants.o hosts.o scsi.o scsi_ioctl.o scsi_proc.o scsicam.o sd.o sd_ioctl.o sr.o sr_ioctl.o)
+
+AC_DRIVER_CLASS(net, CONFIG_INET, auto_irq.o net.o Space.o dev.o net_init.o)
+
+dnl Strictly speaking, we could have a `linux' option too, but it's
+dnl not possible to built a useful kernel without at least one Linux
+dnl driver, so that's not really necessary.
+
+
+
+dnl non-SCSI Disk controllers
+
+AC_DRIVER(floppy, CONFIG_BLK_DEV_FD, floppy.o)
+AC_DRIVER(ide, CONFIG_BLK_DEV_IDE, cmd640.o ide-cd.o ide.o rz1000.o triton.o)
+
+
+dnl SCSI Disk controllers
+
+AC_DRIVER(advansys, CONFIG_SCSI_ADVANSYS, advansys.o, scsi)
+AC_DRIVER(buslogic, CONFIG_SCSI_BUSLOGIC, BusLogic.o, scsi)
+AC_DRIVER(u1434f, CONFIG_SCSI_U14_34F, u14-34f.o, scsi)
+AC_DRIVER(ultrastor, CONFIG_SCSI_ULTRASTOR, ultrastor.o, scsi)
+AC_DRIVER(aha152x, CONFIG_SCSI_AHA152X, aha152x.o, scsi)
+AC_DRIVER(aha1542, CONFIG_SCSI_AHA1542, aha1542.o, scsi)
+AC_DRIVER(aha1740, CONFIG_SCSI_AHA1740, aha1740.o, scsi)
+AC_DRIVER(aic7xxx, CONFIG_SCSI_AIC7XXX, aic7xxx.o, scsi)
+AC_DRIVER(futuredomain, CONFIG_SCSI_FUTURE_DOMAIN, fdomain.o, scsi)
+AC_DRIVER(in2000, CONFIG_SCSI_IN2000, in2000.o, scsi)
+AC_DRIVER(ncr5380, CONFIG_SCSI_GENERIC_NCR5380, g_NCR5380.o, scsi)
+AC_DRIVER(ncr53c406a, CONFIG_SCSI_NCR53C406A, NCR53c406a.o, scsi)
+AC_DRIVER(pas16, CONFIG_SCSI_PASS16, pas16.o, scsi)
+AC_DRIVER(seagate, CONFIG_SCSI_SEAGATE, seagate.o, scsi)
+AC_DRIVER(t128, CONFIG_SCSI_T128, t128.o, scsi)
+AC_DRIVER(ncr53c7xx, CONFIG_SCSI_NCR53C7xx, 53c78xx.o, scsi)
+AC_DRIVER(eatadma, CONFIG_SCSI_EATA_DMA, eata_dma.o, scsi)
+AC_DRIVER(eatapio, CONFIG_SCSI_EATA_PIO, eata_pio.o, scsi)
+AC_DRIVER(wd7000, CONFIG_SCSI_7000FASST, wd7000.o, scsi)
+AC_DRIVER(eata, CONFIG_SCSI_EATA, eata.o, scsi)
+AC_DRIVER(am53c974, CONFIG_SCSI_AM53C974, AM53C974.o, scsi)
+AC_DRIVER(dtc3280, CONFIG_SCSI_DTC3280, dtc.o, scsi)
+AC_DRIVER(ncr53c8xx, CONFIG_SCSI_NCR53C8XX, ncr53c8xx.o, scsi)
+AC_DRIVER(dc390w, CONFIG_SCSI_DC390W, tmscsiw.o, scsi)
+AC_DRIVER(dc390t, CONFIG_SCSI_DC390T, tmscsim.o, scsi)
+AC_DRIVER(ppa, CONFIG_SCSI_PPA, ppa.o, scsi)
+AC_DRIVER(qlogicfas, CONFIG_SCSI_QLOGIC_FAS, qlogicfas.o, scsi)
+AC_DRIVER(qlogicisp, CONFIG_SCSI_QLOGIC_ISP, qlogicisp.o, scsi)
+AC_DRIVER(gdth, CONFIG_SCSI_GDTH, gdth.o, scsi)
+
+
+dnl Dirty implementation...
+
+AC_ARG_ENABLE(flashpoint,,[
+if test ${enableval} = no; then
+  AC_DEFINE(CONFIG_SCSI_OMIT_FLASHPOINT)
+fi
+])
+
+
+dnl Ethernet controllers
+
+AC_DRIVER(ne2000, CONFIG_NE2000, ne.o 8390.o, net)
+AC_DRIVER(el2, CONFIG_EL2, 3c503.o 8390.o, net)
+AC_DRIVER(el3, CONFIG_EL3, 3c509.o, net)
+AC_DRIVER(wd80x3, CONFIG_WD80x3, wd.o 8390.o, net)
+AC_DRIVER(el1, CONFIG_EL1, 3c501.o, net)
+AC_DRIVER(ul, CONFIG_ULTRA, smc-ultra.o 8390.o, net)
+AC_DRIVER(ul32, CONFIG_ULTRA32, smc-ultra32.o 8390.o, net)
+AC_DRIVER(hplanplus, CONFIG_HPLAN_PLUS, hp-plus.o 8390.o, net)
+AC_DRIVER(hplan, CONFIG_HPLAN, hp.o 8390.o, net)
+AC_DRIVER(vortex, CONFIG_VORTEX, 3c59x.o, net)
+AC_DRIVER(seeq8005, CONFIG_SEEQ8005, seeq8005.o, net)
+AC_DRIVER(hp100, CONFIG_HP100, hp100.o, net)
+AC_DRIVER(ac3200, CONFIG_AC3200, ac3200.o 8390.o, net)
+AC_DRIVER(e2100, CONFIG_E2100, e2100.o 8390.o, net)
+AC_DRIVER(at1700, CONFIG_AT1700, at1700.o, net)
+AC_DRIVER(eth16i, CONFIG_ETH16I, eth16i.o, net)
+AC_DRIVER(znet, CONFIG_ZNET, znet.o, net)
+AC_DRIVER(eexpress, CONFIG_EEXPRESS, eexpress.o, net)
+AC_DRIVER(eexpresspro, CONFIG_EEXPRESS_PRO, eepro.o, net)
+AC_DRIVER(eexpresspro100, CONFIG_EEXPRESS_PRO100B, eepro100.o, net)
+AC_DRIVER(depca, CONFIG_DEPCA, depca.o, net)
+AC_DRIVER(ewrk3, CONFIG_EWRK3, ewrk3.o, net)
+AC_DRIVER(de4x5, CONFIG_DE4X5, de4x5.o, net)
+AC_DRIVER(apricot, CONFIG_APRICOT, apricot.o, net)
+AC_DRIVER(wavelan, CONFIG_WAVELAN, wavelan.o, net)
+AC_DRIVER(el16, CONFIG_EL16, 3c507.o, net)
+AC_DRIVER(elplus, CONFIG_ELPLUS, 3c505.o, net)
+AC_DRIVER(de600, CONFIG_DE600, de600.o, net)
+AC_DRIVER(de620, CONFIG_DE620, de620.o, net)
+AC_DRIVER(skg16, CONFIG_SK_G16, sk_g16.o, net)
+AC_DRIVER(ni52, CONFIG_NI52, ni52.o, net)
+AC_DRIVER(ni65, CONFIG_NI65, ni65.o, net)
+AC_DRIVER(atp, CONFIG_ATP, atp.o, net)
+AC_DRIVER(lance, CONFIG_LANCE, lance.o, net)
+AC_DRIVER(elcp, CONFIG_DEC_ELCP, tulip.o, net)
+AC_DRIVER(fmv18x, CONFIG_FMV18X, fmv18x.o, net)
+AC_DRIVER(3c515, CONFIG_3C515, 3c515.o, net)
+AC_DRIVER(pcnet32, CONFIG_PCNET32, pcnet32.o, net)
+AC_DRIVER(ne2kpci, CONFIG_NE2K_PCI, ne2k-pci.o 8390.o, net)
+AC_DRIVER(yellowfin, CONFIG_YELLOWFIN, yellowfin.o, net)
+AC_DRIVER(rtl8139, CONFIG_RTL8139, rtl8139.o, net)
+AC_DRIVER(epic, CONFIG_EPIC, epic100.o, net)
+AC_DRIVER(tlan, CONFIG_TLAN, tlan.o, net)
+AC_DRIVER(viarhine, CONFIG_VIA_RHINE, via-rhine.o, net)
+
+
+AC_OUTPUT(Makefile)
