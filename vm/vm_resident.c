@@ -140,7 +140,7 @@ int	vm_page_wire_count;
  *	pageout daemon.
  */
 int	vm_page_laundry_count = 0;
-int	vm_page_external_pagedout = 0;
+int	vm_page_external_laundry_count = 0;
 
 
 /*
@@ -611,6 +611,7 @@ static void vm_page_init_template(vm_page_t m)
 	m->inactive = FALSE;
 	m->active = FALSE;
 	m->laundry = FALSE;
+	m->external_laundry = FALSE;
 	m->free = FALSE;
 	m->external = FALSE;
 
@@ -811,7 +812,7 @@ phys_addr_t vm_page_grab_phys_addr(void)
 void vm_page_release(
 	vm_page_t	mem,
 	boolean_t 	laundry,
-	boolean_t 	external)
+	boolean_t 	external_laundry)
 {
 	simple_lock(&vm_page_queue_free_lock);
 	if (mem->free)
@@ -825,20 +826,20 @@ void vm_page_release(
 			vm_pageout_resume();
 		}
 	}
-	if (external) {
+	if (external_laundry) {
 
 		/*
-		 *	If vm_page_external_pagedout is negative,
+		 *	If vm_page_external_laundry_count is negative,
 		 *	the pageout daemon isn't expecting to be
 		 *	notified.
 		 */
 
-		if (vm_page_external_pagedout > 0) {
-			vm_page_external_pagedout--;
-		}
+		if (vm_page_external_laundry_count > 0) {
+			vm_page_external_laundry_count--;
 
-		if (vm_page_external_pagedout == 0) {
-			vm_pageout_resume();
+			if (vm_page_external_laundry_count == 0) {
+				vm_pageout_resume();
+			}
 		}
 	}
 
@@ -977,9 +978,9 @@ void vm_page_free(
 		vm_page_release_fictitious(mem);
 	} else {
 		boolean_t laundry = mem->laundry;
-		boolean_t external = mem->external;
+		boolean_t external_laundry = mem->external_laundry;
 		vm_page_init(mem);
-		vm_page_release(mem, laundry, external);
+		vm_page_release(mem, laundry, external_laundry);
 	}
 }
 

@@ -46,12 +46,20 @@
 #include <kern/slab.h>
 #include <kern/task.h>
 #include <kern/thread.h>
+#include <kern/printf.h>
 #include <vm/pmap.h>
 #include <vm/vm_map.h>
 #include <vm/vm_object.h>
 #include <vm/vm_page.h>
 #include <vm/vm_pageout.h>
 #include <machine/locore.h>
+
+#define DEBUG 0
+
+/*
+ * Maximum delay, in milliseconds, between two pageout scans.
+ */
+#define VM_PAGEOUT_TIMEOUT 50
 
 /*
  * Event placeholder for pageout requests, synchronized with
@@ -251,17 +259,19 @@ vm_pageout_setup(
 
 		vm_page_wire(m);
 	} else {
-		vm_page_activate(m);
+		m->external_laundry = TRUE;
 
 		/*
-		 *	If vm_page_external_pagedout is negative,
+		 *	If vm_page_external_laundry_count is negative,
 		 *	the pageout daemon isn't expecting to be
 		 *	notified.
 		 */
 
-		if (vm_page_external_pagedout >= 0) {
-			vm_page_external_pagedout++;
+		if (vm_page_external_laundry_count >= 0) {
+			vm_page_external_laundry_count++;
 		}
+
+		vm_page_activate(m);
 	}
 	vm_page_unlock_queues();
 
@@ -460,9 +470,19 @@ void vm_pageout(void)
 				     FALSE);
 		} else if (should_wait) {
 			assert_wait(&vm_pageout_continue, FALSE);
-			thread_set_timeout(500);
+			thread_set_timeout(VM_PAGEOUT_TIMEOUT);
 			simple_unlock(&vm_page_queue_free_lock);
 			thread_block(NULL);
+
+#if DEBUG
+			if (current_thread()->wait_result != THREAD_AWAKENED) {
+				printf("vm_pageout: timeout,"
+				       " vm_page_laundry_count:%d"
+				       " vm_page_external_laundry_count:%d\n",
+				       vm_page_laundry_count,
+				       vm_page_external_laundry_count);
+			}
+#endif
 		} else {
 			simple_unlock(&vm_page_queue_free_lock);
 		}

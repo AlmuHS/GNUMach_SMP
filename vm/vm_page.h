@@ -105,6 +105,7 @@ struct vm_page {
 	/* boolean_t */	inactive:1,	/* page is in inactive list (P) */
 			active:1,	/* page is in active list (P) */
 			laundry:1,	/* page is being cleaned now (P)*/
+			external_laundry:1,	/* same as laundry for external pagers (P)*/
 			free:1,		/* page is on free list (P) */
 			reference:1,	/* page has been used (P) */
 			external:1,	/* page in external object (P) */
@@ -165,7 +166,7 @@ int	vm_page_wire_count;	/* How many pages are wired? */
 extern
 int	vm_page_laundry_count;	/* How many pages being laundered? */
 extern
-int	vm_page_external_pagedout;	/* How many external pages being paged out? */
+int	vm_page_external_laundry_count;	/* How many external pages being paged out? */
 
 decl_simple_lock_data(extern,vm_page_queue_lock)/* lock on active and inactive
 						   page queues */
