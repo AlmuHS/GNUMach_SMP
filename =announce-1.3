@@ -1,0 +1,47 @@
+We are pleased to announce version 1.3 of the GNU distribution of the
+Mach kernel.  It may be found in the file (about 3.6 MB compressed)
+ftp://ftp.gnu.org/gnu/gnumach/gnumach-1.3.tar.gz;
+unidiffs from version 1.2 (about 310 KB compressed) are in
+ftp://ftp.gnu.org/gnu/gnumach/gnumach-1.2-1.3.diff.gz.
+
+This distribution is only for x86 PC machines.
+Volunteers interested in ports to other architectures are eagerly sought.
+
+We are no longer actively developing version 1.x of GNU Mach.  We plan to
+make only necessary bug fixes or trivial enhancements in the 1.x line,
+and make further 1.x releases only as necessary for those purposes.
+New development efforts have been underway for some time on a new version
+of GNU Mach using the OSKit from the University of Utah for hardware
+support.  Those efforts previously called OSKit-Mach are now working
+towards the future version 2.0 of GNU Mach.
+
+Aside from bug fixes, major changes from 1.2 (from the NEWS file) are:
+
+The kernel now directly supports "boot scripts" in the form of multiboot
+module names with the same syntax as the Hurd's `serverboot' program.
+That is, instead of telling GRUB "module /boot/serverboot", you can give
+GRUB a series of command like "module /hurd/ext2fs ${...}" where the
+syntax after "module" is the same as in boot scripts for Hurd's `serverboot'.
+
+The kernel message device `kmsg' is now enabled by default.
+--disable-kmsg turns it off.
+
+Large disks (>= 10GB) are now correctly supported, the new get_status
+call DEV_GET_RECORDS can return the number of records of a device.
+
+Lots of tweaks have been done to the virtual memory management to make
+it perform better on today's machines.
+
+The console supports ANSI escape sequences for colors and attributes.
+
+Support for the terminal speeds B57600 and B115200 has been added.
+
+
+Bug reports relating to this distribution should be sent to
+bug-hurd@gnu.org.  Requests for assistance should be made on
+help-hurd@gnu.org.
+
+The md5sum checksums for this distribution are:
+
+61e90803889b079a380e30056b21d076  gnumach-1.3.tar.gz
+56ca6aa9040c4d4c4ef7a9757bb0509c  gnumach-1.2-1.3.diff.gz
