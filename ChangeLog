@@ -18,7 +18,7 @@
 	* vm/vm_pageout.c (vm_pageout): Initialize vm_page_external_limit
 	and vm_page_external_target.
 	(VM_PAGE_EXTERNAL_LIMIT, VM_PAGE_EXTERNAL_TARGET): New macro.
-	(vm_pageout_external_target): New variable.
+	(vm_page_external_target): New variable.
 	(vm_pageout_scan): Regard "too many externally managed pages" as a
 	reason to keep doing work, but if that's the only reason we're
 	doing work, then the only thing we do is schedule cleaning of
