@@ -93,6 +93,7 @@ extern int lance_probe(struct device *);
 extern int atp_init(struct device *);
 extern int de600_probe(struct device *);
 extern int de620_probe(struct device *);
+extern int tc515_probe(struct device *);
 
 static int
 ethif_probe(struct device *dev)
