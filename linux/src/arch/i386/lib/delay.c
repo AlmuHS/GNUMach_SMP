@@ -26,7 +26,7 @@ void __delay(unsigned long loops)
 		"1:\tjmp 2f\n"
 		".align 16\n"
 		"2:\tdecl %0\n\tjns 2b"
-		:"=&amp;a" (d0)
+		:"=&a" (d0)
 		:"0" (loops));
 }
 
@@ -34,7 +34,7 @@ inline void __const_udelay(unsigned long xloops)
 {
 	int d0;
 	__asm__("mull %0"
-		:"=d" (xloops), "=&amp;a" (d0)
+		:"=d" (xloops), "=&a" (d0)
 		:"1" (xloops),"0" (loops_per_sec));
         __delay(xloops);
 }
