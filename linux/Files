@@ -6,6 +6,7 @@ linux/dev/drivers/net/Space.c
 linux/dev/drivers/net/auto_irq.c
 linux/dev/drivers/net/net_init.c
 linux/dev/drivers/net/wavelan.p.h
+linux/dev/drivers/net/eepro100.c
 linux/dev/drivers/scsi/eata_dma.c
 linux/dev/drivers/scsi/scsi.h
 linux/dev/drivers/scsi/g_NCR5380.c
@@ -233,12 +234,14 @@ linux/src/include/asm-i386/bitops.h
 linux/src/include/asm-i386/byteorder.h
 linux/src/include/asm-i386/checksum.h
 linux/src/include/asm-i386/delay.h
+linux/src/include/asm-i386/dma.h
 linux/src/include/asm-i386/errno.h
 linux/src/include/asm-i386/fcntl.h
 linux/src/include/asm-i386/floppy.h
+linux/src/include/asm-i386/hardirq.h
 linux/src/include/asm-i386/io.h
-linux/src/include/asm-i386/ioctls.h
 linux/src/include/asm-i386/ioctl.h
+linux/src/include/asm-i386/ioctls.h
 linux/src/include/asm-i386/irq.h
 linux/src/include/asm-i386/math_emu.h
 linux/src/include/asm-i386/page.h
@@ -253,6 +256,7 @@ linux/src/include/asm-i386/sigcontext.h
 linux/src/include/asm-i386/signal.h
 linux/src/include/asm-i386/socket.h
 linux/src/include/asm-i386/sockios.h
+linux/src/include/asm-i386/spinlock.h
 linux/src/include/asm-i386/stat.h
 linux/src/include/asm-i386/statfs.h
 linux/src/include/asm-i386/string-486.h
@@ -264,7 +268,6 @@ linux/src/include/asm-i386/types.h
 linux/src/include/asm-i386/unaligned.h
 linux/src/include/asm-i386/unistd.h
 linux/src/include/asm-i386/vm86.h
-linux/src/include/asm-i386/dma.h
 linux/src/include/linux/affs_hardblocks.h
 linux/src/include/linux/atalk.h
 linux/src/include/linux/ax25.h
@@ -273,6 +276,7 @@ linux/src/include/linux/bios32.h
 linux/src/include/linux/blk.h
 linux/src/include/linux/blkdev.h
 linux/src/include/linux/cdrom.h
+linux/src/include/linux/compatmac.h
 linux/src/include/linux/config.h
 linux/src/include/linux/ctype.h
 linux/src/include/linux/delay.h
@@ -294,6 +298,7 @@ linux/src/include/linux/if_fddi.h
 linux/src/include/linux/if_tr.h
 linux/src/include/linux/igmp.h
 linux/src/include/linux/in.h
+linux/src/include/linux/inet.h
 linux/src/include/linux/interrupt.h
 linux/src/include/linux/ioctl.h
 linux/src/include/linux/ioport.h
@@ -312,8 +317,8 @@ linux/src/include/linux/mc146818rtc.h
 linux/src/include/linux/md.h
 linux/src/include/linux/mm.h
 linux/src/include/linux/module.h
-linux/src/include/linux/net.h
 linux/src/include/linux/mount.h
+linux/src/include/linux/net.h
 linux/src/include/linux/netdevice.h
 linux/src/include/linux/netrom.h
 linux/src/include/linux/nfs.h
@@ -325,8 +330,8 @@ linux/src/include/linux/personality.h
 linux/src/include/linux/posix_types.h
 linux/src/include/linux/proc_fs.h
 linux/src/include/linux/ptrace.h
-linux/src/include/linux/random.h
 linux/src/include/linux/quota.h
+linux/src/include/linux/random.h
 linux/src/include/linux/resource.h
 linux/src/include/linux/rose.h
 linux/src/include/linux/route.h
@@ -337,6 +342,7 @@ linux/src/include/linux/skbuff.h
 linux/src/include/linux/smp.h
 linux/src/include/linux/socket.h
 linux/src/include/linux/sockios.h
+linux/src/include/linux/spinlock.h
 linux/src/include/linux/stat.h
 linux/src/include/linux/stddef.h
 linux/src/include/linux/string.h
@@ -360,7 +366,6 @@ linux/src/include/linux/version.h
 linux/src/include/linux/vfs.h
 linux/src/include/linux/wait.h
 linux/src/include/linux/wireless.h
-linux/src/include/linux/inet.h
 linux/src/include/scsi/scsi_ioctl.h
 linux/src/include/scsi/scsicam.h
 linux/src/include/scsi/scsi.h
