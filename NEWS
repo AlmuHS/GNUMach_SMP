@@ -1,3 +1,21 @@
+Changes from version 1.1:
+
+The interface generator `MiG' has been split out.
+
+Linux drivers are updated to 2.0.36.
+
+The kernel message device `kmsg' is supported. --enable-kmsg turns on
+the device.
+
+The parallel driver is enabled by --enable-lpr.
+
+New make targets, install-kernel and install-headers are added. The
+former will install only the kernel, and the latter will install only
+the header files.
+
+Print out Mach device names instead of Linux ones.
+
+
 Changes from version 1.0:
 
 Cross-compilation support is much improved.  Any of various popular
