@@ -1,3 +1,9 @@
+1999-06-02  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* kern/bootstrap.c (build_args_and_stack): If kernel_cmdline is
+	nonempty, give the bootstrap task an environment variable of
+	"MULTIBOOT_CMDLINE=kernel command line" on its stack.
+
 1999-05-29  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* kern/startup.c (start_kernel_threads): Call record_time_stamp to
