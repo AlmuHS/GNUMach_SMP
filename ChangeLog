@@ -1,3 +1,15 @@
+2001-10-01  Marcus Brinkmann  <marcus@gnu.org>
+
+	* i386/i386/locore.S (tenmicrosec): Remove subroutine.
+	* i386/i386/pit.c (delaycount): Remove global variable.
+	(microdata): Likewise.
+	(clkstart): Do not call findspeed() and microfind().
+	(findspeed): Remove function.
+	(spinwait): Likewise.
+	(microfind): Likewise.  This function triggers a division by zero
+	trap on AMD K6 350Mhz+ and Athlon 1.1GHz+ machines (and in general
+	leads to bad results on fast cpus), and nothing uses this code anymore.
+
 2001-09-30  Roland McGrath  <roland@frob.com>
 
 	* kern/bootstrap.c (bootstrap_create): Ignore trailing spaces when

@@ -63,15 +63,6 @@ int pitctr2_port = PITCTR2_PORT;	/* For 386/20 Board */
 int pit0_mode = PIT_C0|PIT_SQUAREMODE|PIT_READMODE ;
 
 
-unsigned int delaycount;		/* loop count in trying to delay for
-					 * 1 millisecond
-					 */
-unsigned long microdata=50;		/* loop count for 10 microsecond wait.
-					   MUST be initialized for those who
-					   insist on calling "tenmicrosec"
-					   it before the clock has been
-					   initialized.
-					 */
 unsigned int clknumb = CLKNUM;		/* interrupt interval for timer 0 */
 
 #ifdef PS2
@@ -93,8 +84,6 @@ clkstart()
 	intpri[0] = SPLHI;
 	form_pic_mask();
 
-	findspeed();
-	microfind();
 	s = sploff();         /* disable interrupts */
 
 #ifdef	PS2
@@ -115,39 +104,6 @@ clkstart()
 }
 
 #define COUNT   10000   /* should be a multiple of 1000! */
-
-findspeed()
-{
-	unsigned int flags;
-	unsigned char byte;
-	unsigned int leftover;
-	int i;
-	int j;
-	int s;
-
-	s = sploff();                 /* disable interrupts */
-	/* Put counter in count down mode */
-#define PIT_COUNTDOWN PIT_READMODE|PIT_NDIVMODE
-	outb(pitctl_port, PIT_COUNTDOWN);
-	/* output a count of -1 to counter 0 */
-	outb(pitctr0_port, 0xff);
-	outb(pitctr0_port, 0xff);
-	delaycount = COUNT;
-	spinwait(1);
-	/* Read the value left in the counter */
-	byte = inb(pitctr0_port);	/* least siginifcant */
-	leftover = inb(pitctr0_port);	/* most significant */
-	leftover = (leftover<<8) + byte ;
-	/* Formula for delaycount is :
-	 *  (loopcount * timer clock speed)/ (counter ticks * 1000)
-	 * 1000 is for figuring out milliseconds 
-	 */
-        /* we arrange calculation so that it doesn't overflow */
-        delaycount = ((COUNT/1000) * CLKNUM) / (0xffff-leftover);
-	/*        printf("findspeed: delaycount=%d (tics=%d)\n",
-	       delaycount, (0xffff-leftover));*/
-	splon(s);         /* restore interrupt state */
-}
 
 #ifdef PS2
 
@@ -190,47 +146,3 @@ ackrtclock()
 	}
       }
 #endif /* PS2 */
-
-
-spinwait(millis)
-	int millis;		/* number of milliseconds to delay */
-{
-	int i, j;
-
-	for (i=0;i<millis;i++)
-		for (j=0;j<delaycount;j++)
-			;
-}
-
-#define MICROCOUNT      1000    /* keep small to prevent overflow */
-microfind()
-{
-	unsigned int flags;
-	unsigned char byte;
-	unsigned short leftover;
-	int s;
-
-
-	s = sploff();                 /* disable interrupts */
-
-	/* Put counter in count down mode */
-	outb(pitctl_port, PIT_COUNTDOWN);
-	/* output a count of -1 to counter 0 */
-	outb(pitctr0_port, 0xff);
-	outb(pitctr0_port, 0xff);
-	microdata=MICROCOUNT;
-	tenmicrosec();
-	/* Read the value left in the counter */
-	byte = inb(pitctr0_port);	/* least siginifcant */
-	leftover = inb(pitctr0_port);	/* most significant */
-	leftover = (leftover<<8) + byte ;
-	/* Formula for delaycount is :
-	 *  (loopcount * timer clock speed)/ (counter ticks * 1000)
-	 *  Note also that 1000 is for figuring out milliseconds
-	 */
-        microdata = (MICROCOUNT * CLKNUM) / ((0xffff-leftover)*100000);
-	if (!microdata)
-		microdata++;
-
-	splon(s);         /* restore interrupt state */
-}

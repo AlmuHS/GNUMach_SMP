@@ -1735,15 +1735,6 @@ ENTRY(dr_addr)
 	.text
 
 /*
- * Waste 10 microseconds.
- */
-ENTRY(tenmicrosec)
-	movl	EXT(microdata),%ecx		/* cycle count for 10 microsecond loop */
-tenmicroloop:
-	loop	tenmicroloop
-	ret
-
-/*
  * cpu_shutdown()
  * Force reboot
  */
