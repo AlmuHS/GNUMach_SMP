@@ -1,3 +1,12 @@
+1999-09-07  Thomas Bushnell, BSG  <tb@mit.edu>
+
+	* linux/src/drivers/net/yellowfin.c (yellowfin_probe): Return
+	correct value.  Reported by Marcus Brinkmann
+	<Marcus.Brinkmann@ruhr-uni-bochum.de>. 
+
+	* linux/dev/drivers/net/Space.c: Declare tc515_probe.  Reported by
+	Marcus Brinkmann <Marcus.Brinkmann@ruhr-uni-bochum.de>. 
+
 1999-09-04  Thomas Bushnell, BSG  <tb@mit.edu>
 
 	* vm/vm_resident.c (vm_page_grab): Only block unprivileged
