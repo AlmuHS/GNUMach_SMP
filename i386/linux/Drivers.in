@@ -6,7 +6,7 @@ dnl documentation is hereby granted, provided that both the copyright
 dnl notice and this permission notice appear in all copies of the
 dnl software, derivative works or modified versions, and any portions
 dnl thereof, and that both notices appear in supporting documentation.
-dnl 
+dnl
 dnl THE FREE SOFTWARE FOUNDATION ALLOWS FREE USE OF THIS SOFTWARE IN ITS
 dnl "AS IS" CONDITION.  THE FREE SOFTWARE FOUNDATION DISCLAIMS ANY
 dnl LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
@@ -37,41 +37,12 @@ i686) AC_DEFINE(CONFIG_M686)
       AC_DEFINE(CPU, 486)    ;;
 esac
 
-
-case "$host_cpu" in
-i[[3456]]86) systype=i386 ;;
-esac
-
-AC_SUBST(systype)
+hurd_SYSTYPE
 
 AC_CHECK_TOOL(CC, gcc)
 AC_PROG_CC_LOCAL
 
 AC_CHECK_TOOL(LD, ld)
-
-
-dnl XXX: Autoconf is weak in linking files from non-current directories.
-dnl So I hardcode the following shell script.
-
-mkdir_p ()
-{
-  if test ! -d `dirname $1`; then
-    mkdir_p `dirname $1`
-  fi
-  mkdir $1;
-}
-
-if test ! -d ../../linux/src/include; then
-  mkdir_p ../../linux/src/include
-fi
-if test ! -d ../../linux/dev/include; then
-  mkdir_p ../../linux/dev/include
-fi
-
-ln -sf ../../../i386/linux/${srcdir}/../../linux/src/include/asm-${systype} \
-  ../../linux/src/include/asm
-ln -sf ../../../i386/linux/${srcdir}/../../linux/dev/include/asm-${systype} \
-  ../../linux/dev/include/asm
 
 
 dnl Aliases have to come first.
