@@ -1,3 +1,7 @@
+Fri May  9 13:06:25 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* i386/Files: Fix typo for _setjmp.S.
+
 Wed May  7 15:32:08 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* version.c (version): Update to version 1.1.
