@@ -14,7 +14,7 @@ dnl USE OF THIS SOFTWARE.
 
 
 AC_INIT(i386/i386asm.sym)
-AC_PREREQ(2.13)
+AC_PREREQ(2.12)
 
 #
 # Options
