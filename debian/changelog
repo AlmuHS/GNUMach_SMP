@@ -1,3 +1,11 @@
+gnumach (1:1.2-11) unstable; urgency=low
+
+  * debian/rules (stamp-configure): Add ncr53c8xx driver.
+  * Update to CVS 20010528.
+  * Patches applied to CVS code: cdromlock, color, kbd_enqueu.
+
+ -- Marcus Brinkmann <brinkmd@gnu.org>  Sun, 27 May 2001 14:14:12 +0200
+
 gnumach (1:1.2-10) unstable; urgency=low
 
   * debian/rules (stamp-configure): Disable eatadma driver, which

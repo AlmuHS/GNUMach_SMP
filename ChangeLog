@@ -1,3 +1,7 @@
+2001-06-17  Marcus Brinkmann  <marcus@gnu.org>
+
+	* debian/rules: Update to cyrrent version.
+
 2001-06-13  Roland McGrath  <roland@frob.com>
 
 	* linux/dev/glue/block.c (device_get_status: DEV_GET_RECORDS):
