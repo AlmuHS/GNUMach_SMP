@@ -135,6 +135,31 @@ void bootstrap_create()
 	panic ("cannot set boot-script variable %s: %s",
 	       "kernel-command-line", boot_script_error_string (losers));
 
+      {
+	/* Set the same boot script variables that the old Hurd's
+	   serverboot did, so an old Hurd and boot script previously
+	   used with serverboot can be used directly with this kernel.  */
+
+	char *flag_string = alloca(1024);
+	char *root_string = alloca(1024);
+
+	/*
+	 * Get the (compatibility) boot flags and root name strings.
+	 */
+	get_compat_strings(flag_string, root_string);
+
+	losers = boot_script_set_variable ("boot-args", VAL_STR,
+					   (int) flag_string);
+	if (losers)
+	  panic ("cannot set boot-script variable %s: %s",
+		 "boot-args", boot_script_error_string (losers));
+	losers = boot_script_set_variable ("root-device", VAL_STR,
+					   (int) root_string);
+	if (losers)
+	  panic ("cannot set boot-script variable %s: %s",
+		 "root-device", boot_script_error_string (losers));
+      }
+
 #if OSKIT_MACH
       {
 	/* The oskit's "environ" array contains all the words from
@@ -158,24 +183,24 @@ void bootstrap_create()
       }
 #else  /* GNUmach, not oskit-mach */
       {
-	char *flag_string = alloca(1024);
-	char *root_string = alloca(1024);
+	/* Turn each `FOO=BAR' word in the command line into a boot script
+	   variable ${FOO} with value BAR.  This matches what we get from
+	   oskit's environ in the oskit-mach case (above).  */
 
-	/*
-	 * Get the (compatibility) boot flags and root name strings.
-	 */
-	get_compat_strings(flag_string, root_string);
-
-	losers = boot_script_set_variable ("boot-args", VAL_STR,
-					   (int) flag_string);
-	if (losers)
-	  panic ("cannot set boot-script variable %s: %s",
-		 "boot-args", boot_script_error_string (losers));
-	losers = boot_script_set_variable ("root-device", VAL_STR,
-					   (int) root_string);
-	if (losers)
-	  panic ("cannot set boot-script variable %s: %s",
-		 "root-device", boot_script_error_string (losers));
+	int len = strlen (kernel_cmdline) + 1;
+	char *s = memcpy (alloca (len), kernel_cmdline, len);
+	char *word;
+	while ((word = strsep (&s, " \t")) != 0)
+	  {
+	    char *eq = strchr (word, '=');
+	    if (eq == 0)
+	      continue;
+	    *eq++ = '\0';
+	    losers = boot_script_set_variable (word, VAL_STR, (int) eq);
+	    if (losers)
+	      panic ("cannot set boot-script variable %s: %s",
+		     word, boot_script_error_string (losers));
+	  }
       }
 #endif
 
