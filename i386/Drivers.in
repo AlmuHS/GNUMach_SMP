@@ -23,6 +23,7 @@ dnl Aliases have to come first.
 
 AC_DRIVER_ALIAS(3c501, el1)
 AC_DRIVER_ALIAS(3c503, el2)
+AC_DRIVER_ALIAS(3c509, el3)
 AC_DRIVER_ALIAS(3c59x, vortex)
 AC_DRIVER_ALIAS(hpj2577, hp100)
 AC_DRIVER_ALIAS(hpj2573, hp100)
@@ -94,6 +95,7 @@ AC_DRIVER(am53c974, CONFIG_SCSI_AM53C974, AM53C974.o, scsi)
 
 dnl Ethernet controllers
 
+AC_DRIVER(el3, CONFIG_EL3, 3c509.o, net)
 AC_DRIVER(ne2000, CONFIG_NE2000, ne.o 8390.o, net)
 AC_DRIVER(el2, CONFIG_EL2, 3c503.o 8390.o, net)
 AC_DRIVER(wd80x3, CONFIG_WD80x3, wd.o 8390.o, net)
