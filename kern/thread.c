@@ -429,6 +429,8 @@ kern_return_t thread_create(
 
 	*new_thread = thread_template;
 
+	record_time_stamp (&new_thread->creation_time);
+
 	/*
 	 *	Initialize runtime-dependent fields
 	 */
@@ -1473,7 +1475,11 @@ kern_return_t thread_info(
 	if (flavor == THREAD_BASIC_INFO) {
 	    register thread_basic_info_t	basic_info;
 
-	    if (*thread_info_count < THREAD_BASIC_INFO_COUNT) {
+	    /* Allow *thread_info_count to be one smaller than the
+	       usual amount, because creation_time is a new member
+	       that some callers might not know about. */
+
+	    if (*thread_info_count < THREAD_BASIC_INFO_COUNT - 1) {
 		return KERN_INVALID_ARGUMENT;
 	    }
 
@@ -1496,6 +1502,7 @@ kern_return_t thread_info(
 			&basic_info->system_time);
 	    basic_info->base_priority	= thread->priority;
 	    basic_info->cur_priority	= thread->sched_pri;
+	    basic_info->creation_time  = thread->creation_time;
 
 	    /*
 	     *	To calculate cpu_usage, first correct for timer rate,
@@ -1547,7 +1554,8 @@ kern_return_t thread_info(
 	    thread_unlock(thread);
 	    splx(s);
 
-	    *thread_info_count = THREAD_BASIC_INFO_COUNT;
+	    if (*thread_info_count > THREAD_BASIC_INFO_COUNT)
+	      *thread_info_count = THREAD_BASIC_INFO_COUNT;
 	    return KERN_SUCCESS;
 	}
 	else if (flavor == THREAD_SCHED_INFO) {

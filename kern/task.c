@@ -166,6 +166,8 @@ kern_return_t task_create(
 	new_task->total_system_time.seconds = 0;
 	new_task->total_system_time.microseconds = 0;
 
+	record_time_stamp (&new_task->creation_time);
+
 	if (parent_task != TASK_NULL) {
 		task_lock(parent_task);
 		pset = parent_task->processor_set;
@@ -774,7 +776,11 @@ kern_return_t task_info(
 	    {
 		register task_basic_info_t	basic_info;
 
-		if (*task_info_count < TASK_BASIC_INFO_COUNT) {
+		/* Allow *task_info_count to be one smaller than
+		   the usual amount, because creation_time is a new member
+		   that some callers might not know about. */
+		  
+		if (*task_info_count < TASK_BASIC_INFO_COUNT - 1) {
 		    return KERN_INVALID_ARGUMENT;
 		}
 
@@ -797,9 +803,11 @@ kern_return_t task_info(
 				= task->total_system_time.seconds;
 		basic_info->system_time.microseconds 
 				= task->total_system_time.microseconds;
+		basic_info->creation_time = task->creation_time;
 		task_unlock(task);
 
-		*task_info_count = TASK_BASIC_INFO_COUNT;
+		if (*task_info_count > TASK_BASIC_INFO_COUNT)
+		  *task_info_count = TASK_BASIC_INFO_COUNT;
 		break;
 	    }
 

@@ -195,6 +195,9 @@ struct thread {
 	unsigned int	cpu_delta;	/* cpu usage since last update */
 	unsigned int	sched_delta;	/* weighted cpu usage since update */
 
+	/* Creation time stamp */
+	time_value_t	creation_time;
+
 	/* Time-outs */
 	timer_elt_data_t timer;		/* timer for thread */
 	timer_elt_data_t depress_timer;	/* timer for priority depression */

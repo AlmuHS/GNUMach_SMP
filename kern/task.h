@@ -86,6 +86,8 @@ struct task {
 	time_value_t	total_system_time;
 				/* total system time for dead threads */
 
+	time_value_t	creation_time; /* time stamp at creation */
+
 	/* IPC structures */
 	decl_simple_lock_data(, itk_lock_data)
 	struct ipc_port *itk_self;	/* not a right, doesn't hold ref */

@@ -369,6 +369,19 @@ void init_timeout()
 }
 
 /*
+ * Record a timestamp in STAMP. 
+ */
+void
+record_time_stamp (time_value_t *stamp)
+{
+	do {
+		stamp->seconds = mtime->seconds;
+		stamp->microseconds = mtime->microseconds;
+	} while (stamp->seconds != mtime->check_seconds);
+}
+
+
+/*
  * Read the time.
  */
 kern_return_t

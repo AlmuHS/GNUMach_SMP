@@ -43,6 +43,9 @@ extern unsigned long elapsed_ticks; /* number of ticks elapsed since bootup */
 extern int	hz;		/* number of ticks per second */
 extern int	tick;		/* number of usec per tick */
 
+/* Read the current time into STAMP */
+void record_time_stamp (time_value_t *stamp);
+
 /*
  *	Time-out element.
  */
