@@ -1,5 +1,5 @@
 # Makefile for Mach 4 kernel directory
-# Copyright 1997 Free Software Foundation, Inc.
+# Copyright 1997, 1999 Free Software Foundation, Inc.
 #
 # Permission to use, copy, modify and distribute this software and its
 # documentation is hereby granted, provided that both the copyright
@@ -36,6 +36,13 @@ else
 enable_kdb=no
 endif
 
+# Detect if the user wants KMSG
+ifeq ($(findstring -DMACH_KMSG,@DEFS@),-DMACH_KMSG)
+enable_kmsg=yes
+else
+enable_kmsg=no
+endif
+
 # Programs found by configure.
 AWK = @AWK@
 INSTALL = @INSTALL@
@@ -43,6 +50,7 @@ CC = @CC@
 LD = @LD@
 NM = @NM@
 MIG = @MIG@
+MAKE = @MAKE@
 
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_DATA = @INSTALL_DATA@
@@ -111,7 +119,7 @@ device-files = blkio.c chario.c cirbuf.c cons.c dev_lookup.c dev_name.c \
 	dev_pager.c device_init.c dk_label.c ds_routines.c net_io.c subrs.c \
 	buf.h cirbuf.h conf.h cons.h dev_hdr.h dev_master.h device_port.h \
 	device_types_kernel.h ds_routines.h errno.h if_ether.h if_hdr.h \
-	io_req.h net_io.h param.h tty.h memory_object_reply.cli \
+	io_req.h kmsg.c kmsg.h net_io.h param.h tty.h memory_object_reply.cli \
 	dev_forward.defs device_pager.srv device_reply.cli device.srv
 
 # IPC implementation
@@ -171,6 +179,9 @@ vpath %.c $(srcdir)/ipc $(srcdir)/kern $(srcdir)/util $(srcdir)/vm
 # XXX functions in device/subrs.c should each be moved elsewhere
 objfiles += cons.o dev_lookup.o dev_name.o dev_pager.o device_init.o \
 	ds_routines.o subrs.o net_io.o blkio.o chario.o
+ifeq ($(enable_kmsg),yes)
+objfiles += kmsg.o
+endif
 vpath %.c $(srcdir)/device
 
 # DDB support -- eventually to die.  Please.
@@ -232,7 +243,8 @@ endif
 Wl-u = -Wl,-u,
 clib-routines.o: Makefile
 	$(CC) -o $@ -r -nostartfiles -nostdlib -static -x c /dev/null \
-	      $(addprefix $(Wl-u),$(clib-routines)) -lc
+	      $(addprefix $(Wl-u),$(clib-routines)) \
+	      -L`dirname \`$(CC) --print-file-name=libc.a\`` -lc
 
 # This rule checks clib-routines and makes sure it doesn't have any
 # extra symbols.
@@ -292,6 +304,10 @@ INCLUDES += -I. -I$(srcdir) -I$(srcdir)/include \
 
 include $(sysdep)/Makefrag
 
+objfiles += $(systype)/sysdep.o
+$(systype)/sysdep.o: $(systype)
+	cd $(systype) && $(MAKE) all
+
 CPPFLAGS += -nostdinc $(DEFINES) $(INCLUDES)
 
 MIGFLAGS += $(CPPFLAGS)
@@ -302,18 +318,20 @@ MIGFLAGS += $(CPPFLAGS)
 all: kernel
 
 clean:
-	mv device-drivers.h FOO
+	cd $(systype) && $(MAKE) clean
 	rm -f *.o *.d kernel
 	rm -f *.symc *.symc.o *_user.c *_server.c *.h
 	rm -f *.migs_d *.migsh_d *.migu_d *.miguh_d
-	mv FOO device-drivers.h
 
 distclean: clean
-	rm -f config.status Makefile driverlist
+	cd $(systype) && $(MAKE) distclean
+	rm -f config.status config.cache config.log Makefile driverlist
 
 mostlyclean: distclean
+	cd $(systype) && $(MAKE) mostlyclean
 
 maintainer-clean: mostlyclean
+	cd $(systype) && $(MAKE) maintainer-clean
 	rm -f $(srcdir)/configure $(all-archs-configures)
 
 check:
@@ -334,9 +352,7 @@ kernel: $(objfiles)
 #
 installed-headers-names = $(addprefix $(includedir)/,$(installed-headers))
 installed-sysdep-headers-names = $(addprefix $(includedir)/,$($(systype)-installed-headers))
-install: mkinstalldirs kernel $(installed-headers-names) $(installed-sysdep-headers-names)
-	$(INSTALL_PROGRAM) kernel $(bootdir)/gnumach
-	ln -sf $(systype) $(includedir)/mach/machine
+install: install-headers install-kernel
 
 $(installed-headers-names): $(includedir)/%: $(srcdir)/include/%
 	$(INSTALL_DATA) $< $@
@@ -344,10 +360,22 @@ $(installed-headers-names): $(includedir)/%: $(srcdir)/include/%
 $(installed-sysdep-headers-names): $(includedir)/%: $(sysdep)/include/%
 	$(INSTALL_DATA) $< $@
 
-mkinstalldirs:
-	mkdir -p $(bootdir) $(includedir) $(includedir)/device \
-		$(includedir)/mach $(includedir)/mach/$(systype) \
-		$(libexecdir) $(includedir)/mach/exec $(bindir)
+install-headers: mkheaderdirs $(installed-headers-names) $(installed-sysdep-headers-names)
+	ln -sf $(systype) $(includedir)/mach/machine
+	cd $(systype) && $(MAKE) install-headers
+
+install-kernel: kernel mkkerneldirs
+	$(INSTALL_PROGRAM) kernel $(bootdir)/gnumach
+	cd $(systype) && $(MAKE) install-kernel
+
+# Note: The `-p' option to mkdir is not compliant with
+# the GNU Coding Standards. -- okuji
+mkheaderdirs:
+	mkdir -p $(includedir) $(includedir)/device $(includedir)/mach \
+		$(includedir)/mach/$(systype) $(includedir)/mach/exec
+
+mkkerneldirs:
+	mkdir -p $(bootdir)
 
 
 #
