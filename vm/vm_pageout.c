@@ -63,11 +63,11 @@
 #endif	VM_PAGEOUT_BURST_MIN
 
 #ifndef	VM_PAGEOUT_BURST_WAIT
-#define	VM_PAGEOUT_BURST_WAIT	30		/* milliseconds per page */
+#define	VM_PAGEOUT_BURST_WAIT	10		/* milliseconds per page */
 #endif	VM_PAGEOUT_BURST_WAIT
 
 #ifndef	VM_PAGEOUT_EMPTY_WAIT
-#define VM_PAGEOUT_EMPTY_WAIT	200		/* milliseconds */
+#define VM_PAGEOUT_EMPTY_WAIT	75		/* milliseconds */
 #endif	VM_PAGEOUT_EMPTY_WAIT
 
 #ifndef	VM_PAGEOUT_PAUSE_MAX
@@ -108,16 +108,30 @@
 #define	VM_PAGE_FREE_MIN(free)	(10 + (free) / 100)
 #endif	VM_PAGE_FREE_MIN
 
+/*      When vm_page_external_count exceeds vm_page_external_limit, 
+ *	allocations of externally paged pages stops.
+ */
+
+#ifndef VM_PAGE_EXTERNAL_LIMIT
+#define VM_PAGE_EXTERNAL_LIMIT(free)		((free) / 2)
+#endif  VM_PAGE_EXTERNAL_LIMIT
+
+/*	Attempt to keep the number of externally paged pages less
+ *	than vm_pages_external_target.
+ */
+#ifndef VM_PAGE_EXTERNAL_TARGET
+#define VM_PAGE_EXTERNAL_TARGET(free)		((free) / 4)
+#endif  VM_PAGE_EXTERNAL_TARGET
+
 /*
  *	When vm_page_free_count falls below vm_page_free_reserved,
  *	only vm-privileged threads can allocate pages.  vm-privilege
  *	allows the pageout daemon and default pager (and any other
  *	associated threads needed for default pageout) to continue
- *	operation by dipping into the reserved pool of pages.
- */
+ *	operation by dipping into the reserved pool of pages.  */
 
 #ifndef	VM_PAGE_FREE_RESERVED
-#define	VM_PAGE_FREE_RESERVED			15
+#define	VM_PAGE_FREE_RESERVED			50
 #endif	VM_PAGE_FREE_RESERVED
 
 /*
@@ -129,7 +143,7 @@
  */
 
 #ifndef	VM_PAGEOUT_RESERVED_INTERNAL
-#define	VM_PAGEOUT_RESERVED_INTERNAL(reserve)	((reserve) - 5)
+#define	VM_PAGEOUT_RESERVED_INTERNAL(reserve)	((reserve) - 25)
 #endif	VM_PAGEOUT_RESERVED_INTERNAL
 
 /*
@@ -141,7 +155,7 @@
  */
 
 #ifndef	VM_PAGEOUT_RESERVED_REALLY
-#define	VM_PAGEOUT_RESERVED_REALLY(reserve)	((reserve) - 10)
+#define	VM_PAGEOUT_RESERVED_REALLY(reserve)	((reserve) - 40)
 #endif	VM_PAGEOUT_RESERVED_REALLY
 
 extern void vm_pageout_continue();
@@ -149,6 +163,8 @@ extern void vm_pageout_scan_continue();
 
 unsigned int vm_pageout_reserved_internal = 0;
 unsigned int vm_pageout_reserved_really = 0;
+
+unsigned int vm_pageout_external_target = 0;
 
 unsigned int vm_pageout_burst_max = 0;
 unsigned int vm_pageout_burst_min = 0;
@@ -172,6 +188,7 @@ unsigned int vm_pageout_inactive_used = 0;	/* debugging */
 unsigned int vm_pageout_inactive_clean = 0;	/* debugging */
 unsigned int vm_pageout_inactive_dirty = 0;	/* debugging */
 unsigned int vm_pageout_inactive_double = 0;	/* debugging */
+unsigned int vm_pageout_inactive_cleaned_external = 0;
 
 #if	NORMA_VM
 /*
@@ -503,6 +520,7 @@ vm_pageout_page(m, initial, flush)
 void vm_pageout_scan()
 {
 	unsigned int burst_count;
+	unsigned int want_pages;
 
 	/*
 	 *	We want to gradually dribble pages from the active queue
@@ -616,17 +634,20 @@ void vm_pageout_scan()
 		}
 
 		/*
-		 *	We are done if we have met our target *and*
+		 *	We are done if we have met our targets *and*
 		 *	nobody is still waiting for a page.
 		 */
 
 		simple_lock(&vm_page_queue_free_lock);
 		free_count = vm_page_free_count;
-		if ((free_count >= vm_page_free_target) &
+		if ((free_count >= vm_page_free_target) &&
+		    (vm_page_external_count <= vm_page_external_target) &&
 		    (vm_page_free_wanted == 0)) {
 			vm_page_unlock_queues();
 			break;
 		}
+		want_pages = ((free_count < vm_page_free_target) ||
+			      vm_page_free_wanted);
 		simple_unlock(&vm_page_queue_free_lock);
 
 		/*
@@ -680,8 +701,10 @@ void vm_pageout_scan()
 		}
 
 		vm_pageout_inactive++;
-		m = (vm_page_t) queue_first(&vm_page_queue_inactive);
-		assert(!m->active && m->inactive);
+		for (m = (vm_page_t) queue_first(&vm_page_queue_inactive);
+		     want_pages || m->external;
+		     m = m->queue_next(m))
+		  assert(!m->active && m->inactive);
 		object = m->object;
 
 		/*
@@ -727,7 +750,7 @@ void vm_pageout_scan()
 		 *	If it's absent, we can reclaim the page.
 		 */
 
-		if (m->absent) {
+		if (want_pages && m->absent) {
 			vm_pageout_inactive_absent++;
 		    reclaim_page:
 			vm_page_free(m);
@@ -759,6 +782,34 @@ void vm_pageout_scan()
 		pmap_page_protect(m->phys_addr, VM_PROT_NONE);
 		if (!m->dirty)
 			m->dirty = pmap_is_modified(m->phys_addr);
+
+		if (m->external) {
+			/* Figure out if we still care about this
+			page in the limit of externally managed pages.
+			Clean pages don't actually cause system hosage,
+			so it's ok to stop considering them as
+			"consumers" of memory. */
+			if (m->dirty && !m->extcounted) {
+				m->extcounted = TRUE;
+				vm_page_external_count++;
+			else if (!m->dirty && m->extcounted) {
+				m->extcounted = FALSE;
+				vm_page_external_count--;
+			}
+		}
+		
+		/* If we don't actually need more memory, and the page
+		   is not dirty, put it on the tail of the inactive queue
+		   and move on to the next page. */
+		if (!want_pages && !m->dirty) {
+			queue_remove (&vm_page_queue_inactive, m, 
+				      vm_page_t, pageq);
+			queue_enter (&vm_page_queue_inactive, m,
+				     vm_page_t, pageq);
+			vm_page_unlock_queues();
+			vm_pageout_inactive_cleaned_external++;
+			continue;
+		}			
 
 		/*
 		 *	If it's clean and not precious, we can free the page.
@@ -903,6 +954,14 @@ void vm_pageout()
 			VM_PAGEOUT_RESERVED_REALLY(vm_page_free_reserved);
 
 	free_after_reserve = vm_page_free_count - vm_page_free_reserved;
+
+	if (vm_page_external_limit == 0)
+	        vm_page_external_limit = 
+			VM_PAGE_EXTERNAL_LIMIT (free_after_reserve);
+
+	if (vm_page_external_target == 0)
+	        vm_page_external_target = 
+			VM_PAGE_EXTERNAL_TARGET (free_after_reserve);
 
 	if (vm_page_free_min == 0)
 		vm_page_free_min = vm_page_free_reserved +

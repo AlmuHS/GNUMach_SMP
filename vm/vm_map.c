@@ -1828,7 +1828,7 @@ vm_map_copy_t	copy;
 		 *	Page was not stolen,  get a new
 		 *	one and do the copy now.
 		 */
-		while ((new_m = vm_page_grab()) == VM_PAGE_NULL) {
+		while ((new_m = vm_page_grab(FALSE)) == VM_PAGE_NULL) {
 			VM_PAGE_WAIT((void(*)()) 0);
 		}
 

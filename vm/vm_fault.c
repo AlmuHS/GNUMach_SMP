@@ -443,7 +443,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 					 * need to allocate a real page.
 					 */
 
-					real_m = vm_page_grab();
+					real_m = vm_page_grab(!object->internal);
 					if (real_m == VM_PAGE_NULL) {
 						vm_fault_cleanup(object, first_m);
 						return(VM_FAULT_MEMORY_SHORTAGE);
@@ -625,7 +625,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 				 *	won't block for pages.
 				 */
 
-				if (m->fictitious && !vm_page_convert(m)) {
+				if (m->fictitious && !vm_page_convert(m, FALSE)) {
 					VM_PAGE_FREE(m);
 					vm_fault_cleanup(object, first_m);
 					return(VM_FAULT_MEMORY_SHORTAGE);
@@ -742,7 +742,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 			assert(m->object == object);
 			first_m = VM_PAGE_NULL;
 
-			if (m->fictitious && !vm_page_convert(m)) {
+			if (m->fictitious && !vm_page_convert(m, !object->internal)) {
 				VM_PAGE_FREE(m);
 				vm_fault_cleanup(object, VM_PAGE_NULL);
 				return(VM_FAULT_MEMORY_SHORTAGE);
@@ -828,7 +828,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 			/*
 			 *	Allocate a page for the copy
 			 */
-			copy_m = vm_page_grab();
+			copy_m = vm_page_grab(!first_object->internal);
 			if (copy_m == VM_PAGE_NULL) {
 				RELEASE_PAGE(m);
 				vm_fault_cleanup(object, first_m);
