@@ -92,7 +92,7 @@ ipc_bootstrap(void)
 		zinit(sizeof(struct ipc_port),
 		      ipc_port_max * sizeof(struct ipc_port),
 		      sizeof(struct ipc_port),
-		      ZONE_EXHAUSTIBLE, "ipc ports");
+		      0, "ipc ports");
 
 	ipc_object_zones[IOT_PORT_SET] =
 		zinit(sizeof(struct ipc_pset),
