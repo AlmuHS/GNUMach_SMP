@@ -1,3 +1,8 @@
+2000-09-19  Marcus Brinkmann  <marcus@gnu.org>
+
+	* linux/dev/glue/block.c (init_partition): Move initialization
+	of MASK until it is asserted that gd is non-NULL.
+
 2000-08-17  OKUJI Yoshinori  <okuji@gnu.org>
 
 	* linux/dev/glue/block.c (rdwr_partial): Mask the minor device

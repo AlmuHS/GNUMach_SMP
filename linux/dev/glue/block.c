@@ -937,13 +937,14 @@ init_partition (struct name_map *np, kdev_t *dev,
   struct gendisk *gd = ds->gd;
   struct partition *p;
   struct temp_data *d = current_thread ()->pcb->data;
-  unsigned mask = (1 << gd->minor_shift) - 1;
+  unsigned mask;
   
   if (! gd)
     {
       *part = -1;
       return 0;
     }
+  mask = (1 << gd->minor_shift) - 1;
   if (ds->labels)
     goto check;
   ds->labels = (struct disklabel **) kalloc (sizeof (struct disklabel *)
