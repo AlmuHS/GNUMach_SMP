@@ -40,4 +40,7 @@ The specific switches you give to configure are always recorded in the
 file `config.status'.  So you can always tell what options you used to
 build a particular kernel.
 
+Bug reports relating to this distribution should be sent to
+bug-hurd@prep.ai.mit.edu.  Requests for assistance should be made on
+help-hurd@prep.ai.mit.edu. 
 
