@@ -425,7 +425,6 @@ again:
     {
       num_page_collect++;
       collect_kmalloc_pages ();
-      collect_buffer_pages ();
       pages_collected = 1;
       goto again;
     }

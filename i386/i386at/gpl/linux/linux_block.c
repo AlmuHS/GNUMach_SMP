@@ -82,6 +82,15 @@
 
 /* Linux kernel variables.  */
 
+/* Temporary data allocated on the stack.  */
+struct temp_data
+{
+  struct inode inode;
+  struct file file;
+  struct request req;
+  queue_head_t pages;
+};
+
 /* One of these exists for each
    driver associated with a major number.  */
 struct device_struct
@@ -91,8 +100,8 @@ struct device_struct
   int busy:1;			/* driver is being opened/closed */
   int want:1;			/* someone wants to open/close driver */
   struct gendisk *gd;		/* DOS partition information */
-  int *default_slice;		/* what slice to use when none is given */
-  struct disklabel **label;	/* disklabels for each DOS partition */
+  int default_slice;		/* what slice to use when none is given */
+  struct disklabel **labels;	/* disklabels for each DOS partition */
 };
 
 /* An entry in the Mach name to Linux major number conversion table.  */
@@ -176,6 +185,9 @@ int read_ahead[MAX_BLKDEV] = {0, };
    This is unused in Mach.  It is here to make drivers compile.  */
 struct wait_queue *wait_for_request = NULL;
 
+/* Map for allocating device memory.  */
+extern vm_map_t device_io_map;
+
 /* Initialize block drivers.  */
 void
 blk_dev_init ()
@@ -227,8 +239,8 @@ out:
   blkdevs[major].busy = 0;
   blkdevs[major].want = 0;
   blkdevs[major].gd = NULL;
-  blkdevs[major].default_slice = NULL;
-  blkdevs[major].label = NULL;
+  blkdevs[major].default_slice = 0;
+  blkdevs[major].labels = NULL;
   return 0;
 }
 
@@ -244,181 +256,65 @@ unregister_blkdev (unsigned major, const char *name)
   if (! blkdevs[major].fops || strcmp (blkdevs[major].name, name))
     return -LINUX_EINVAL;
   blkdevs[major].fops = NULL;
-  if (blkdevs[major].default_slice)
+  if (blkdevs[major].labels)
     {
       assert (blkdevs[major].gd);
-      kfree ((vm_offset_t) blkdevs[major].default_slice,
-	     sizeof (int) * blkdevs[major].gd->max_nr);
-    }
-  if (blkdevs[major].label)
-    {
-      assert (blkdevs[major].gd);
-      kfree ((vm_offset_t) blkdevs[major].label,
+      kfree ((vm_offset_t) blkdevs[major].labels,
 	     (sizeof (struct disklabel *)
 	      * blkdevs[major].gd->max_p * blkdevs[major].gd->max_nr));
     }
   return 0;
 }
 
-/* One of these is associated with
-   each page allocated by the buffer management routines.  */
-struct pagehdr
-{
-  unsigned char busy;		/* page header is in use */
-  unsigned char avail;		/* number of blocks available in page */
-  unsigned short bitmap;	/* free space bitmap */
-  void *blks;			/* the actual page */
-  struct pagehdr *next;		/* next header in list */
-};
-
-/* This structure describes the different block sizes.  */
-struct bufsize
-{
-  unsigned short size;		/* size of block */
-  unsigned short avail;		/* # available blocks */
-  struct pagehdr *pages;	/* page list */
-};
-
-/* List of supported block sizes.  */
-static struct bufsize bufsizes[] =
-{
-  {  512, 0, NULL },
-  { 1024, 0, NULL },
-  { 2048, 0, NULL },
-  { 4096, 0, NULL },
-};
-
-/* Page headers.  */
-static struct pagehdr pagehdrs[50];	/* XXX: needs to be dynamic */
-
-/* Find the block size that is greater than or equal to SIZE.  */
-static struct bufsize *
-get_bufsize (int size)
-{
-  struct bufsize *bs, *ebs;
-
-  bs = &bufsizes[0];
-  ebs = &bufsizes[sizeof (bufsizes) / sizeof (bufsizes[0])];
-  while (bs < ebs)
-    {
-      if (bs->size >= size)
-	return bs;
-      bs++;
-    }
-
-  panic ("%s:%d: alloc_buffer: bad buffer size %d", __FILE__, __LINE__, size);
-}
-
-/* Free all pages that are not in use.
-   Called by __get_free_pages when pages are running low.  */
-void
-collect_buffer_pages ()
-{
-  struct bufsize *bs, *ebs;
-  struct pagehdr *ph, **prev_ph;
-
-  bs = &bufsizes[0];
-  ebs = &bufsizes[sizeof (bufsizes) / sizeof (bufsizes[0])];
-  while (bs < ebs)
-    {
-      if (bs->avail >= PAGE_SIZE / bs->size)
-	{
-	  ph = bs->pages;
-	  prev_ph = &bs->pages;
-	  while (ph)
-	    if (ph->avail == PAGE_SIZE / bs->size)
-	      {
-		bs->avail -= ph->avail;
-		ph->busy = 0;
-		*prev_ph = ph->next;
-		free_pages ((unsigned long) ph->blks, 0);
-		ph = *prev_ph;
-	      }
-	    else
-	      {
-		prev_ph = &ph->next;
-		ph = ph->next;
-	      }
-	}
-      bs++;
-    }
-}
-
-/* Allocate a buffer of at least SIZE bytes.  */
+/* Allocate a buffer SIZE bytes long.  */
 static void *
 alloc_buffer (int size)
 {
-  int i;
-  unsigned flags;
-  struct bufsize *bs;
-  struct pagehdr *ph, *eph;
+  vm_page_t m;
+  struct temp_data *d;
 
-  bs = get_bufsize (size);
-  save_flags (flags);
-  cli ();
-  if (bs->avail == 0)
+  assert (size <= PAGE_SIZE);
+
+  if (! linux_auto_config)
     {
-      ph = &pagehdrs[0];
-      eph = &pagehdrs[sizeof (pagehdrs) / sizeof (pagehdrs[0])];
-      while (ph < eph && ph->busy)
-	ph++;
-      if (ph == eph)
-	{
-	  restore_flags (flags);
-	  printf ("%s:%d: alloc_buffer: ran out of page headers\n",
-		  __FILE__, __LINE__);
-	  return NULL;
-	}
-      ph->blks = (void *) __get_free_pages (GFP_KERNEL, 0, ~0UL);
-      if (! ph->blks)
-	{
-	  restore_flags (flags);
-	  return NULL;
-	}
-      ph->busy = 1;
-      ph->avail = PAGE_SIZE / bs->size;
-      ph->bitmap = 0;
-      ph->next = bs->pages;
-      bs->pages = ph;
-      bs->avail += ph->avail;
+      while ((m = vm_page_grab ()) == 0)
+	VM_PAGE_WAIT (0);
+      d = current_thread ()->pcb->data;
+      assert (d);
+      queue_enter (&d->pages, m, vm_page_t, pageq);
+      return (void *) m->phys_addr;
     }
-  for (ph = bs->pages; ph; ph = ph->next)
-    if (ph->avail)
-      for (i = 0; i < PAGE_SIZE / bs->size; i++)
-	if ((ph->bitmap & (1 << i)) == 0)
-	  {
-	    bs->avail--;
-	    ph->avail--;
-	    ph->bitmap |= 1 << i;
-	    restore_flags (flags);
-	    return ph->blks + i * bs->size;
-	  }
-
-  panic ("%s:%d: alloc_buffer: list destroyed", __FILE__, __LINE__);
+  return (void *) __get_free_pages (GFP_KERNEL, 0, ~0UL);
 }
 
-/* Free buffer P of SIZE bytes previously allocated by alloc_buffer.  */
+/* Free buffer P which is SIZE bytes long.  */
 static void
 free_buffer (void *p, int size)
 {
   int i;
-  unsigned flags;
-  struct bufsize *bs;
-  struct pagehdr *ph;
+  struct temp_data *d;
+  vm_page_t m;
 
-  bs = get_bufsize (size);
-  save_flags (flags);
-  cli ();
-  for (ph = bs->pages; ph; ph = ph->next)
-    if (p >= ph->blks && p < ph->blks + PAGE_SIZE)
-      break;
-  assert (ph);
-  i = (int) (p - ph->blks) / bs->size;
-  assert (ph->bitmap & (1 << i));
-  ph->bitmap &= ~(1 << i);
-  ph->avail++;
-  bs->avail++;
-  restore_flags (flags);
+  assert (size <= PAGE_SIZE);
+
+  if (! linux_auto_config)
+    {
+      d = current_thread ()->pcb->data;
+      assert (d);
+      queue_iterate (&d->pages, m, vm_page_t, pageq)
+	{      
+	  if (m->phys_addr == (vm_offset_t) p)
+	    {
+	      queue_remove (&d->pages, m, vm_page_t, pageq);
+	      vm_page_lock_queues ();
+	      vm_page_free (m);
+	      vm_page_lock_queues ();
+	      return;
+	    }
+	}
+      panic ("free_buffer");
+    }
+  free_pages ((unsigned long) p, 0);
 }
 
 /* Allocate a buffer of SIZE bytes and
@@ -427,27 +323,29 @@ struct buffer_head *
 getblk (kdev_t dev, int block, int size)
 {
   struct buffer_head *bh;
+  static struct buffer_head bhead;
 
   assert (size <= PAGE_SIZE);
 
-  bh = linux_kmalloc (sizeof (struct buffer_head), GFP_KERNEL);
-  if (! bh)
-    return NULL;
-  bh->b_data = alloc_buffer (size);
-  if (! bh->b_data)
+  if (! linux_auto_config)
+    bh = (struct buffer_head *) kalloc (sizeof (struct buffer_head));
+  else
+    bh = &bhead;
+  if (bh)
     {
-      linux_kfree (bh);
-      return NULL;
+      memset (bh, 0, sizeof (struct buffer_head));
+      bh->b_data = alloc_buffer (size);
+      if (! bh->b_data)
+	{
+	  if (! linux_auto_config)
+	    kfree ((vm_offset_t) bh, sizeof (struct buffer_head));
+	  return NULL;
+	}
+      bh->b_dev = dev;
+      bh->b_size = size;
+      bh->b_state = 1 << BH_Lock;
+      bh->b_blocknr = block;
     }
-  bh->b_dev = dev;
-  bh->b_size = size;
-  bh->b_state = 1 << BH_Lock;
-  bh->b_blocknr = block;
-  bh->b_page_list = NULL;
-  bh->b_request = NULL;
-  bh->b_reqnext = NULL;
-  bh->b_wait = NULL;
-  bh->b_sem = NULL;
   return bh;
 }
 
@@ -455,65 +353,9 @@ getblk (kdev_t dev, int block, int size)
 void
 __brelse (struct buffer_head *bh)
 {
-  if (bh->b_request)
-    linux_kfree (bh->b_request);
   free_buffer (bh->b_data, bh->b_size);
-  linux_kfree (bh);
-}
-
-/* Check for I/O errors upon completion of I/O operation RW
-   on the buffer list BH.  The number of buffers is NBUF.
-   Copy any data from bounce buffers and free them.  */
-static int
-check_for_error (int rw, int nbuf, struct buffer_head **bh)
-{
-  int err;
-  struct request *req;
-
-  req = bh[0]->b_request;
-  if (! req)
-    {
-      while (--nbuf >= 0)
-	if (bh[nbuf]->b_page_list)
-	  {
-	    bh[nbuf]->b_page_list = NULL;
-	    free_buffer (bh[nbuf]->b_data, bh[nbuf]->b_size);
-	  }
-      return -LINUX_ENOMEM;
-    }
-
-  bh[0]->b_request = NULL;
-  err = 0;
-
-  while (--nbuf >= 0)
-    {
-      struct buffer_head *bhp = bh[nbuf];
-
-      if (bhp->b_page_list)
-	{
-	  if (rw == READ && buffer_uptodate (bhp))
-	    {
-	      int amt;
-	      vm_page_t *pages = bhp->b_page_list;
-
-	      amt = PAGE_SIZE - bhp->b_off;
-	      if (amt > bhp->b_usrcnt)
-		amt = bhp->b_usrcnt;
-	      memcpy ((void *) pages[bhp->b_index]->phys_addr + bhp->b_off,
-		      bhp->b_data, amt);
-	      if (amt < bhp->b_usrcnt)
-		memcpy ((void *) pages[bhp->b_index + 1]->phys_addr,
-			bhp->b_data + amt, bhp->b_usrcnt - amt);
-	    }
-	  bhp->b_page_list = NULL;
-	  free_buffer (bhp->b_data, bhp->b_size);
-	}
-      if (! buffer_uptodate (bhp))
-	err = -LINUX_EIO;
-    }
-
-  linux_kfree (req);
-  return err;
+  if (! linux_auto_config)
+    kfree ((vm_offset_t) bh, sizeof (*bh));
 }
 
 /* Allocate a buffer of SIZE bytes and fill it with data
@@ -525,34 +367,32 @@ bread (kdev_t dev, int block, int size)
   struct buffer_head *bh;
 
   bh = getblk (dev, block, size);
-  if (! bh)
-    return NULL;
-  ll_rw_block (READ, 1, &bh);
-  wait_on_buffer (bh);
-  err = check_for_error (READ, 1, &bh);
-  if (err)
+  if (bh)
     {
-      __brelse (bh);
-      return NULL;
+      ll_rw_block (READ, 1, &bh);
+      wait_on_buffer (bh);
+      if (! buffer_uptodate (bh))
+	{
+	  __brelse (bh);
+	  return NULL;
+	}
     }
   return bh;
 }
 
 /* Return the block size for device DEV in *BSIZE and
    log2(block size) in *BSHIFT.  */
-static inline void
+static void
 get_block_size (kdev_t dev, int *bsize, int *bshift)
 {
-  int i, size, shift;
+  int i;
 
-  size = BLOCK_SIZE;
+  *bsize = BLOCK_SIZE;
   if (blksize_size[MAJOR (dev)]
       && blksize_size[MAJOR (dev)][MINOR (dev)])
-    size = blksize_size[MAJOR (dev)][MINOR (dev)];
-  for (i = size, shift = 0; i != 1; shift++, i >>= 1)
+    *bsize = blksize_size[MAJOR (dev)][MINOR (dev)];
+  for (i = *bsize, *bshift = 0; i != 1; i >>= 1, (*bshift)++)
     ;
-  *bsize = size;
-  *bshift = shift;
 }
 
 /* Enqueue request REQ on a driver's queue.  */
@@ -591,23 +431,23 @@ enqueue_request (struct request *req)
 void
 ll_rw_block (int rw, int nr, struct buffer_head **bh)
 {
-  int i, bsize, bshift;
+  int i, bshift, bsize;
   unsigned major;
   struct request *r;
-
-  r = (struct request *) linux_kmalloc (sizeof (struct request), GFP_KERNEL);
-  if (! r)
-    {
-      bh[0]->b_request = NULL;
-      return;
-    }
-  bh[0]->b_request = r;
+  static struct request req;
 
   major = MAJOR (bh[0]->b_dev);
   assert (major < MAX_BLKDEV);
 
   get_block_size (bh[0]->b_dev, &bsize, &bshift);
-  assert (bsize <= PAGE_SIZE);
+
+  if (! linux_auto_config)
+    {
+      assert (current_thread ()->pcb->data);
+      r = &((struct temp_data *) current_thread ()->pcb->data)->req;
+    }
+  else
+    r = &req;
 
   for (i = 0, r->nr_sectors = 0; i < nr - 1; i++)
     {
@@ -624,957 +464,203 @@ ll_rw_block (int rw, int nr, struct buffer_head **bh)
   r->sector = bh[0]->b_blocknr << (bshift - 9);
   r->current_nr_sectors = bh[0]->b_size >> 9;
   r->buffer = bh[0]->b_data;
-  r->sem = bh[0]->b_sem;
   r->bh = bh[0];
   r->bhtail = bh[nr - 1];
+  r->sem = NULL;
   r->next = NULL;
 
   enqueue_request (r);
 }
 
-/* Maximum amount of data to write per invocation of the driver.  */
-#define WRITE_MAXPHYS	(VM_MAP_COPY_PAGE_LIST_MAX << PAGE_SHIFT)
-#define WRITE_MAXPHYSPG	(WRITE_MAXPHYS >> PAGE_SHIFT)
+#define BSIZE	(1 << bshift)
+#define BMASK	(BSIZE - 1)
 
-int linux_block_write_trace = 0;
+/* Perform read/write operation RW on device DEV
+   starting at *off to/from buffer *BUF of size *RESID.
+   The device block size is given by BSHIFT.  *OFF and
+   *RESID may be non-multiples of the block size.
+   *OFF, *BUF and *RESID are updated if the operation
+   completed successfully.  */
+static int
+rdwr_partial (int rw, kdev_t dev, loff_t *off,
+	      char **buf, int *resid, int bshift)
+{
+  int c, err = 0, o;
+  long sect, nsect;
+  struct buffer_head bhead, *bh = &bhead;
+  struct gendisk *gd;
 
-/* Write COUNT bytes of data from user buffer BUF
-   to device specified by INODE at location specified by FILP.  */
+  memset (bh, 0, sizeof (struct buffer_head));
+  bh->b_state = 1 << BH_Lock;
+  bh->b_dev = dev;
+  bh->b_blocknr = *off >> bshift;
+  bh->b_size = BSIZE;
+
+  /* Check if this device has non even number of blocks.  */
+  for (gd = gendisk_head, nsect = -1; gd; gd = gd->next)
+    if (gd->major == MAJOR (dev))
+      {
+	nsect = gd->part[MINOR (dev)].nr_sects;
+	break;
+      }
+  if (nsect > 0)
+    {
+      sect = bh->b_blocknr << (bshift - 9);
+      assert ((nsect - sect) > 0);
+      if (nsect - sect < (BSIZE >> 9))
+	bh->b_size = (nsect - sect) << 9;
+    }
+  bh->b_data = alloc_buffer (bh->b_size);
+  if (! bh->b_data)
+    return -LINUX_ENOMEM;
+  ll_rw_block (READ, 1, &bh);
+  wait_on_buffer (bh);
+  if (buffer_uptodate (bh))
+    {
+      o = *off & BMASK;
+      c = bh->b_size - o;
+      assert (*resid <= c);
+      if (c > *resid)
+	c = *resid;
+      if (rw == READ)
+	memcpy (*buf, bh->b_data + o, c);
+      else
+	{
+	  memcpy (bh->b_data + o, *buf, c);
+	  bh->b_state = (1 << BH_Dirty) | (1 << BH_Lock);
+	  ll_rw_block (WRITE, 1, &bh);
+	  wait_on_buffer (bh);
+	  if (! buffer_uptodate (bh))
+	    {
+	      err = -LINUX_EIO;
+	      goto out;
+	    }
+	}
+      *buf += c;
+      *resid -= c;
+      *off += c;
+    }
+  else
+    err = -LINUX_EIO;
+out:
+  free_buffer (bh->b_data, bh->b_size);
+  return err;
+}
+
+#define BH_Bounce	16
+#define MAX_BUF		VM_MAP_COPY_PAGE_LIST_MAX
+
+/* Perform read/write operation RW on device DEV
+   starting at *off to/from buffer *BUF of size *RESID.
+   The device block size is given by BSHIFT.  *OFF and
+   *RESID must be multiples of the block size.
+   *OFF, *BUF and *RESID are updated if the operation
+   completed successfully.  */
+static int
+rdwr_full (int rw, kdev_t dev, loff_t *off, char **buf, int *resid, int bshift)
+{
+  int cc, err = 0, i, j, nb, nbuf;
+  long blk;
+  struct buffer_head bhead[MAX_BUF], *bh, *bhp[MAX_BUF];
+
+  assert ((*off & BMASK) == 0);
+  assert (*resid >= bsize);
+
+  nbuf = *resid >> bshift;
+  blk = *off >> bshift;
+  for (i = nb = 0, bh = bhead; nb < nbuf; bh++)
+    {
+      memset (bh, 0, sizeof (*bh));
+      bh->b_dev = dev;
+      bh->b_blocknr = blk;
+      set_bit (BH_Lock, &bh->b_state);
+      if (rw == WRITE)
+	set_bit (BH_Dirty, &bh->b_state);
+      cc = PAGE_SIZE - (((int) *buf) & PAGE_MASK);
+      if (cc >= BSIZE && ((int) *buf & 511) == 0)
+	cc &= ~BMASK;
+      else
+	{
+	  cc = PAGE_SIZE;
+	  set_bit (BH_Bounce, &bh->b_state);
+	}
+      if (cc > ((nbuf - nb) << bshift))
+	cc = (nbuf - nb) << bshift;
+      if (! test_bit (BH_Bounce, &bh->b_state))
+	bh->b_data = (char *) pmap_extract (vm_map_pmap (device_io_map),
+					    (((vm_offset_t) *buf)
+					     + (nb << bshift)));
+      else
+	{
+	  bh->b_data = alloc_buffer (cc);
+	  if (! bh->b_data)
+	    {
+	      err = -LINUX_ENOMEM;
+	      break;
+	    }
+	  if (rw == WRITE)
+	    memcpy (bh->b_data, *buf + (nb << bshift), cc);
+	}
+      bh->b_size = cc;
+      bhp[i] = bh;
+      nb += cc >> bshift;
+      blk += nb;
+      if (++i == MAX_BUF)
+	break;
+    }
+  if (! err)
+    {
+      ll_rw_block (rw, i, bhp);
+      wait_on_buffer (bhp[i - 1]);
+    }
+  for (bh = bhead, cc = 0, j = 0; j < i; cc += bh->b_size, bh++, j++)
+    {
+      if (! err && buffer_uptodate (bh)
+	  && rw == READ && test_bit (BH_Bounce, &bh->b_state))
+	memcpy (*buf + cc, bh->b_data, bh->b_size);
+      else if (! err && ! buffer_uptodate (bh))
+	  err = -LINUX_EIO;
+      if (test_bit (BH_Bounce, &bh->b_state))
+	free_buffer (bh->b_data, bh->b_size);
+    }
+  if (! err)
+    {
+      *buf += cc;
+      *resid -= cc;
+      *off += cc;
+    }
+  return err;
+}
+
+/* Perform read/write operation RW on device DEV
+   starting at *off to/from buffer BUF of size COUNT.
+   *OFF is updated if the operation completed successfully.  */
+static int
+do_rdwr (int rw, kdev_t dev, loff_t *off, char *buf, int count)
+{
+  int bsize, bshift, err = 0, resid = count;
+
+  get_block_size (dev, &bsize, &bshift);
+  if (*off & BMASK)
+    err = rdwr_partial (rw, dev, off, &buf, &resid, bshift);
+  while (resid >= bsize && ! err)
+    err = rdwr_full (rw, dev, off, &buf, &resid, bshift);
+  if (! err && resid)
+    err = rdwr_partial (rw, dev, off, &buf, &resid, bshift);
+  return err ? err : count - resid;
+}
+
 int
 block_write (struct inode *inode, struct file *filp,
 	     const char *buf, int count)
 {
-  char *p;
-  int i, bsize, bmask, bshift;
-  int err = 0, have_page_list = 1;
-  int resid = count, unaligned;
-  int page_index, pages, amt, cnt, nbuf;
-  unsigned blk;
-  vm_map_copy_t copy;
-  struct request req;
-  struct semaphore sem;
-  struct name_map *np = filp->f_np;
-  struct buffer_head *bh, *bhp, **bhlist;
-
-  /* Compute device block size.  */
-  get_block_size (inode->i_rdev, &bsize, &bshift);
-  assert (bsize <= PAGE_SIZE);
-  bmask = bsize - 1;
-
-  copy = (vm_map_copy_t) buf;
-  assert (copy);
-  assert (copy->type == VM_MAP_COPY_PAGE_LIST);
-
-  p = (char *) copy->offset;
-  pages = copy->cpy_npages;
-  blk = (filp->f_pos + bmask) >> bshift;
-
-  if (linux_block_write_trace)
-    printf ("block_write: at %d: f_pos 0x%x, count %d, blk 0x%x, p 0x%x\n",
-	    __LINE__, (unsigned) filp->f_pos, count, blk, p);
-
-  /* Allocate buffer headers.  */
-  nbuf = ((round_page ((vm_offset_t) p + resid) - trunc_page ((vm_offset_t) p))
-	  >> PAGE_SHIFT);
-  if (nbuf > WRITE_MAXPHYSPG)
-    nbuf = WRITE_MAXPHYSPG;
-  if ((filp->f_pos & bmask) || ((int) p & PAGE_MASK))
-    nbuf *= 2;
-  bh = (struct buffer_head *) kalloc ((sizeof (*bh) + sizeof (*bhlist))
-				      * nbuf);
-  if (! bh)
-    {
-      err = -LINUX_ENOMEM;
-      goto out;
-    }
-  bhlist = (struct buffer_head **) (bh + nbuf);
-
-  /* Write any partial block.  */
-  if (filp->f_pos & bmask)
-    {
-      char *b, *q;
-      int use_req;
-
-      use_req = (disk_major (MAJOR (inode->i_rdev)) && ! np->read_only);
-
-      amt = bsize - (filp->f_pos & bmask);
-      if (amt > resid)
-	amt = resid;
-
-      if (linux_block_write_trace)
-	printf ("block_write: at %d: amt %d, resid %d\n",
-		__LINE__, amt, resid);
-
-      if (use_req)
-	{
-	  i = (amt + 511) & ~511;
-	  req.buffer = b = alloc_buffer (i);
-	  if (! b)
-	    {
-	      printf ("%s:%d: block_write: ran out of buffers\n",
-		      __FILE__, __LINE__);
-	      err = -LINUX_ENOMEM;
-	      goto out;
-	    }
-	  req.sector = filp->f_pos >> 9;
-	  req.nr_sectors = i >> 9;
-	  req.current_nr_sectors = i >> 9;
-	  req.rq_status = RQ_ACTIVE;
-	  req.rq_dev = inode->i_rdev;
-	  req.cmd = READ;
-	  req.errors = 0;
-	  req.sem = &sem;
-	  req.bh = NULL;
-	  req.bhtail = NULL;
-	  req.next = NULL;
-
-	  sem.count = 0;
-	  sem.wait = NULL;
-
-	  enqueue_request (&req);
-	  __down (&sem);
-
-	  if (req.errors)
-	    {
-	      free_buffer (b, i);
-	      err = -LINUX_EIO;
-	      goto out;
-	    }
-	  q = b + (filp->f_pos & 511);
-	}
-      else
-	{
-	  i = bsize;
-	  bhp = bh;
-	  bhp->b_data = b = alloc_buffer (i);
-	  if (! b)
-	    {
-	      err = -LINUX_ENOMEM;
-	      goto out;
-	    }
-	  bhp->b_blocknr = filp->f_pos >> bshift;
-	  bhp->b_dev = inode->i_rdev;
-	  bhp->b_size = bsize;
-	  bhp->b_state = 1 << BH_Lock;
-	  bhp->b_page_list = NULL;
-	  bhp->b_request = NULL;
-	  bhp->b_reqnext = NULL;
-	  bhp->b_wait = NULL;
-	  bhp->b_sem = NULL;
-
-	  ll_rw_block (READ, 1, &bhp);
-	  wait_on_buffer (bhp);
-	  err = check_for_error (READ, 1, &bhp);
-	  if (err)
-	    {
-	      free_buffer (b, i);
-	      goto out;
-	    }
-	  q = b + (filp->f_pos & bmask);
-	}
-
-      cnt = PAGE_SIZE - ((int) p & PAGE_MASK);
-      if (cnt > amt)
-	cnt = amt;
-      memcpy (q, ((void *) copy->cpy_page_list[0]->phys_addr
-		  + ((int) p & PAGE_MASK)),
-	      cnt);
-      if (cnt < amt)
-	{
-	  assert (copy->cpy_npages >= 2);
-	  memcpy (q + cnt,
-		  (void *) copy->cpy_page_list[1]->phys_addr, amt - cnt);
-	}
-      else
-	assert (copy->cpy_npages >= 1);
-
-      if (use_req)
-	{
-	  req.buffer = b;
-	  req.sector = filp->f_pos >> 9;
-	  req.nr_sectors = i >> 9;
-	  req.current_nr_sectors = i >> 9;
-	  req.rq_status = RQ_ACTIVE;
-	  req.rq_dev = inode->i_rdev;
-	  req.cmd = WRITE;
-	  req.errors = 0;
-	  req.sem = &sem;
-	  req.bh = NULL;
-	  req.bhtail = NULL;
-	  req.next = NULL;
-
-	  sem.count = 0;
-	  sem.wait = NULL;
-
-	  enqueue_request (&req);
-	  __down (&sem);
-
-	  if (req.errors)
-	    err = -LINUX_EIO;
-	}
-      else
-	{
-	  bhp->b_state = (1 << BH_Dirty) | (1 << BH_Lock);
-	  ll_rw_block (WRITE, 1, &bhp);
-	  err = check_for_error (WRITE, 1, &bhp);
-	}
-      free_buffer (b, i);
-      if (err)
-	{
-	  if (linux_block_write_trace)
-	    printf ("block_write: at %d\n", __LINE__);
-
-	  goto out;
-	}
-      resid -= amt;
-      if (resid == 0)
-	goto out;
-      p += amt;
-    }
-
-  unaligned = (int) p & 511;
-
-  /* Write full blocks.  */
-  while (resid > bsize)
-    {
-      assert (have_page_list == 1);
-
-      /* Construct buffer list.  */
-      for (i = 0, bhp = bh; resid > bsize && i < nbuf; i++, bhp++)
-	{
-	  page_index = ((trunc_page ((vm_offset_t) p)
-			 - trunc_page (copy->offset))
-			>> PAGE_SHIFT);
-
-	  if (page_index == pages)
-	    break;
-
-	  bhlist[i] = bhp;
-	  bhp->b_dev = inode->i_rdev;
-	  bhp->b_state = (1 << BH_Dirty) | (1 << BH_Lock);
-	  bhp->b_blocknr = blk;
-	  bhp->b_wait = NULL;
-	  bhp->b_page_list = NULL;
-	  bhp->b_sem = &sem;
-
-	  cnt = PAGE_SIZE - ((int) p & PAGE_MASK);
-	  if (! unaligned && cnt >= bsize)
-	    {
-	      if (cnt > resid)
-		cnt = resid;
-	      bhp->b_size = cnt & ~bmask;
-	      bhp->b_data = (((char *)
-			      copy->cpy_page_list[page_index]->phys_addr)
-			     + ((int) p & PAGE_MASK));
-	    }
-	  else
-	    {
-	      if (cnt < bsize)
-		{
-		  if (page_index == pages - 1)
-		    break;
-		  bhp->b_size = bsize;
-		}
-	      else
-		{
-		  bhp->b_size = cnt;
-		  if (bhp->b_size > resid)
-		    bhp->b_size = resid;
-		  bhp->b_size &= ~bmask;
-		}
-	      bhp->b_data = alloc_buffer (bhp->b_size);
-	      if (! bhp->b_data)
-		{
-		  printf ("%s:%d: block_write: ran out of buffers\n",
-			  __FILE__, __LINE__);
-		  while (--i >= 0)
-		    if (bhlist[i]->b_page_list)
-		      free_buffer (bhlist[i]->b_data, bhlist[i]->b_size);
-		  err = -LINUX_ENOMEM;
-		  goto out;
-		}
-	      bhp->b_page_list = (void *) 1;
-	      if (cnt > bhp->b_size)
-		cnt = bhp->b_size;
-	      memcpy (bhp->b_data,
-		      ((void *) copy->cpy_page_list[page_index]->phys_addr
-		       + ((int) p & PAGE_MASK)),
-		      cnt);
-	      if (cnt < bhp->b_size)
-		memcpy (bhp->b_data + cnt,
-			((void *)
-			 copy->cpy_page_list[page_index + 1]->phys_addr),
-			bhp->b_size - cnt);
-	    }
-
-	  p += bhp->b_size;
-	  resid -= bhp->b_size;
-	  blk += bhp->b_size >> bshift;
-	}
-
-      assert (i > 0);
-
-      sem.count = 0;
-      sem.wait = NULL;
-
-      /* Do the write.  */
-      ll_rw_block (WRITE, i, bhlist);
-      __down (&sem);
-      err = check_for_error (WRITE, i, bhlist);
-      if (err || resid == 0)
-	goto out;
-
-      /* Discard current page list.  */
-      vm_map_copy_discard (copy);
-      have_page_list = 0;
-
-      /* Compute # pages to wire down.  */
-      pages = ((round_page ((vm_offset_t) p + resid)
-		- trunc_page ((vm_offset_t) p))
-	       >> PAGE_SHIFT);
-      if (pages > WRITE_MAXPHYSPG)
-	pages = WRITE_MAXPHYSPG;
-
-      /* Wire down user pages and get page list.  */
-      err = vm_map_copyin_page_list (current_map (),
-				     trunc_page ((vm_offset_t) p),
-				     pages << PAGE_SHIFT, FALSE,
-				     FALSE, &copy, FALSE);
-      if (err)
-	{
-	  if (err == KERN_INVALID_ADDRESS || err == KERN_PROTECTION_FAILURE)
-	    err = -LINUX_EINVAL;
-	  else
-	    err = -LINUX_ENOMEM;
-	  goto out;
-	}
-
-      assert (pages == copy->cpy_npages);
-      assert (! vm_map_copy_has_cont (copy));
-
-      have_page_list = 1;
-    }
-
-  /* Write any partial count.  */
-  if (resid > 0)
-    {
-      char *b;
-      int use_req;
-
-      assert (have_page_list);
-      assert (pages >= 1);
-
-      use_req = (disk_major (MAJOR (inode->i_rdev)) && ! np->read_only);
-
-      if (linux_block_write_trace)
-	printf ("block_write: at %d: resid %d\n", __LINE__, resid);
-
-      if (use_req)
-	{
-	  i = (resid + 511) & ~511;
-	  req.buffer = b = alloc_buffer (i);
-	  if (! b)
-	    {
-	      printf ("%s:%d: block_write: ran out of buffers\n",
-		      __FILE__, __LINE__);
-	      err = -LINUX_ENOMEM;
-	      goto out;
-	    }
-	  req.sector = blk << (bshift - 9);
-	  req.nr_sectors = i >> 9;
-	  req.current_nr_sectors = i >> 9;
-	  req.rq_status = RQ_ACTIVE;
-	  req.rq_dev = inode->i_rdev;
-	  req.cmd = READ;
-	  req.errors = 0;
-	  req.sem = &sem;
-	  req.bh = NULL;
-	  req.bhtail = NULL;
-	  req.next = NULL;
-
-	  sem.count = 0;
-	  sem.wait = NULL;
-
-	  enqueue_request (&req);
-	  __down (&sem);
-
-	  if (req.errors)
-	    {
-	      free_buffer (b, i);
-	      err = -LINUX_EIO;
-	      goto out;
-	    }
-	}
-      else
-	{
-	  i = bsize;
-	  bhp = bh;
-	  bhp->b_data = b = alloc_buffer (i);
-	  if (! b)
-	    {
-	      err = -LINUX_ENOMEM;
-	      goto out;
-	    }
-	  bhp->b_blocknr = blk;
-	  bhp->b_dev = inode->i_rdev;
-	  bhp->b_size = bsize;
-	  bhp->b_state = 1 << BH_Lock;
-	  bhp->b_page_list = NULL;
-	  bhp->b_request = NULL;
-	  bhp->b_reqnext = NULL;
-	  bhp->b_wait = NULL;
-	  bhp->b_sem = NULL;
-
-	  ll_rw_block (READ, 1, &bhp);
-	  wait_on_buffer (bhp);
-	  err = check_for_error (READ, 1, &bhp);
-	  if (err)
-	    {
-	      free_buffer (b, i);
-	      goto out;
-	    }
-	}
-
-      page_index = ((trunc_page ((vm_offset_t) p) - trunc_page (copy->offset))
-		    >> PAGE_SHIFT);
-      cnt = PAGE_SIZE - ((int) p & PAGE_MASK);
-      if (cnt > resid)
-	cnt = resid;
-      memcpy (b, ((void *) copy->cpy_page_list[page_index]->phys_addr
-		  + ((int) p & PAGE_MASK)),
-	      cnt);
-      if (cnt < resid)
-	{
-	  assert (copy->cpy_npages >= 2);
-	  memcpy (b + cnt,
-		  (void *) copy->cpy_page_list[page_index + 1]->phys_addr,
-		  resid - cnt);
-	}
-      else
-	assert (copy->cpy_npages >= 1);
-
-      if (use_req)
-	{
-	  req.buffer = b;
-	  req.sector = blk << (bshift - 9);
-	  req.nr_sectors = i >> 9;
-	  req.current_nr_sectors = i >> 9;
-	  req.rq_status = RQ_ACTIVE;
-	  req.rq_dev = inode->i_rdev;
-	  req.cmd = WRITE;
-	  req.errors = 0;
-	  req.sem = &sem;
-	  req.bh = NULL;
-	  req.bhtail = NULL;
-	  req.next = NULL;
-
-	  sem.count = 0;
-	  sem.wait = NULL;
-
-	  enqueue_request (&req);
-	  __down (&sem);
-
-	  if (req.errors)
-	    err = -LINUX_EIO;
-	}
-      else
-	{
-	  bhp->b_state = (1 << BH_Dirty) | (1 << BH_Lock);
-	  ll_rw_block (WRITE, 1, &bhp);
-	  err = check_for_error (WRITE, 1, &bhp);
-	}
-      free_buffer (b, i);
-      if (! err)
-	resid = 0;
-    }
-
-out:
-  if (have_page_list)
-    vm_map_copy_discard (copy);
-  if (bh)
-    kfree ((vm_offset_t) bh,
-	   (sizeof (*bh) + sizeof (*bhlist)) * nbuf);
-  filp->f_resid = resid;
-  return err;
+  return do_rdwr (WRITE, inode->i_rdev, &filp->f_pos, (char *) buf, count);
 }
 
-int linux_block_read_trace = 0;
-#define LINUX_BLOCK_READ_TRACE (linux_block_read_trace == -1 \
-				|| linux_block_read_trace == inode->i_rdev)
-
-/* Maximum amount of data to read per driver invocation.  */
-#define READ_MAXPHYS	(64*1024)
-#define READ_MAXPHYSPG	(READ_MAXPHYS >> PAGE_SHIFT)
-
-/* Read COUNT bytes of data into user buffer BUF
-   from device specified by INODE from location specified by FILP.  */
 int
 block_read (struct inode *inode, struct file *filp, char *buf, int count)
 {
-  int err = 0, resid = count;
-  int i, bsize, bmask, bshift;
-  int pages, amt, unaligned;
-  int page_index, nbuf;
-  int have_page_list = 0;
-  unsigned blk;
-  vm_offset_t off, wire_offset, offset;
-  vm_object_t object;
-  vm_page_t *page_list;
-  struct request req;
-  struct semaphore sem;
-  struct name_map *np = filp->f_np;
-  struct buffer_head *bh, *bhp, **bhlist;
-
-  /* Get device block size.  */
-  get_block_size (inode->i_rdev, &bsize, &bshift);
-  assert (bsize <= PAGE_SIZE);
-  bmask = bsize - 1;
-
-  off = 0;
-  blk = (filp->f_pos + bmask) >> bshift;
-
-  /* Allocate buffer headers.  */
-  nbuf = round_page (count) >> PAGE_SHIFT;
-  if (nbuf > READ_MAXPHYSPG)
-    nbuf = READ_MAXPHYSPG;
-  if (filp->f_pos & bmask)
-    nbuf *= 2;
-  bh = (struct buffer_head *) kalloc ((sizeof (*bh) + sizeof (*bhlist)) * nbuf
-				      + sizeof (*page_list) * READ_MAXPHYSPG);
-  if (! bh)
-    return -LINUX_ENOMEM;
-  bhlist = (struct buffer_head **) (bh + nbuf);
-  page_list = (vm_page_t *) (bhlist + nbuf);
-
-  /* Allocate an object to hold the data.  */
-  object = vm_object_allocate (round_page (count));
-  if (! object)
-    {
-      err = -LINUX_ENOMEM;
-      goto out;
-    }
-
-  /* Compute number of pages to be wired at a time.  */
-  pages = round_page (count) >> PAGE_SHIFT;
-  if (pages > READ_MAXPHYSPG)
-    pages = READ_MAXPHYSPG;
-
-  /* Allocate and wire down pages in the object.  */
-  for (i = 0, wire_offset = offset = 0; i < pages; i++, offset += PAGE_SIZE)
-    {
-      while (1)
-	{
-	  page_list[i] = vm_page_grab ();
-	  if (page_list[i])
-	    {
-	      assert (page_list[i]->busy);
-	      assert (! page_list[i]->wanted);
-	      break;
-	    }
-	  vm_page_wait (NULL);
-	}
-      vm_object_lock (object);
-      vm_page_lock_queues ();
-      assert (! vm_page_lookup (object, offset));
-      vm_page_insert (page_list[i], object, offset);
-      assert (page_list[i]->wire_count == 0);
-      vm_page_wire (page_list[i]);
-      vm_page_unlock_queues ();
-      vm_object_unlock (object);
-    }
-  have_page_list = 1;
-
-  /* Read any partial block.  */
-  if (filp->f_pos & bmask)
-    {
-      char *b, *q;
-      int use_req;
-
-      use_req = (disk_major (MAJOR (inode->i_rdev)) && ! np->read_only);
-
-      amt = bsize - (filp->f_pos & bmask);
-      if (amt > resid)
-	amt = resid;
-
-      if (LINUX_BLOCK_READ_TRACE)
-	printf ("block_read: at %d: amt %d, resid %d\n",
-		__LINE__, amt, resid);
-
-      if (use_req)
-	{
-	  i = (amt + 511) & ~511;
-	  req.buffer = b = alloc_buffer (i);
-	  if (! b)
-	    {
-	      printf ("%s:%d: block_read: ran out of buffers\n",
-		      __FILE__, __LINE__);
-	      err = -LINUX_ENOMEM;
-	      goto out;
-	    }
-	  req.sector = filp->f_pos >> 9;
-	  req.nr_sectors = i >> 9;
-	  req.current_nr_sectors = i >> 9;
-	  req.rq_status = RQ_ACTIVE;
-	  req.rq_dev = inode->i_rdev;
-	  req.cmd = READ;
-	  req.errors = 0;
-	  req.sem = &sem;
-	  req.bh = NULL;
-	  req.bhtail = NULL;
-	  req.next = NULL;
-
-	  sem.count = 0;
-	  sem.wait = NULL;
-
-	  enqueue_request (&req);
-	  __down (&sem);
-
-	  if (req.errors)
-	    {
-	      free_buffer (b, i);
-	      err = -LINUX_EIO;
-	      goto out;
-	    }
-	  q = b + (filp->f_pos & 511);
-	}
-      else
-	{
-	  i = bsize;
-	  bhp = bh;
-	  bhp->b_data = b = alloc_buffer (i);
-	  if (! b)
-	    {
-	      err = -LINUX_ENOMEM;
-	      goto out;
-	    }
-	  bhp->b_blocknr = filp->f_pos >> bshift;
-	  bhp->b_dev = inode->i_rdev;
-	  bhp->b_size = bsize;
-	  bhp->b_state = 1 << BH_Lock;
-	  bhp->b_page_list = NULL;
-	  bhp->b_request = NULL;
-	  bhp->b_reqnext = NULL;
-	  bhp->b_wait = NULL;
-	  bhp->b_sem = NULL;
-
-	  ll_rw_block (READ, 1, &bhp);
-	  wait_on_buffer (bhp);
-	  err = check_for_error (READ, 1, &bhp);
-	  if (err)
-	    {
-	      free_buffer (b, i);
-	      goto out;
-	    }
-	  q = b + (filp->f_pos & bmask);
-	}
-
-      memcpy ((void *) page_list[0]->phys_addr, q, amt);
-
-      free_buffer (b, i);
-      resid -= amt;
-      if (resid == 0)
-	{
-	  if (LINUX_BLOCK_READ_TRACE)
-	    printf ("block_read: at %d\n", __LINE__);
-
-	  assert (pages == 1);
-	  goto out;
-	}
-      off += amt;
-    }
-
-  unaligned = off & 511;
-
-  /* Read full blocks.  */
-  while (resid > bsize)
-    {
-      /* Construct buffer list to hand to the driver.  */
-      for (i = 0, bhp = bh; resid > bsize && i < nbuf; bhp++, i++)
-	{
-	  if (off == wire_offset + (pages << PAGE_SHIFT))
-	    break;
-
-	  bhlist[i] = bhp;
-	  bhp->b_dev = inode->i_rdev;
-	  bhp->b_state = 1 << BH_Lock;
-	  bhp->b_blocknr = blk;
-	  bhp->b_wait = NULL;
-	  bhp->b_sem = &sem;
-
-	  page_index = (trunc_page (off) - wire_offset) >> PAGE_SHIFT;
-	  amt = PAGE_SIZE - (off & PAGE_MASK);
-	  if (! unaligned && amt >= bsize)
-	    {
-	      if (amt > resid)
-		amt = resid;
-	      bhp->b_size = amt & ~bmask;
-	      bhp->b_data = ((char *) page_list[page_index]->phys_addr
-			     + (off & PAGE_MASK));
-	      bhp->b_page_list = NULL;
-	    }
-	  else
-	    {
-	      if (amt < bsize)
-		{
-		  if (page_index == pages - 1)
-		    {
-		      assert (round_page (count) - off >= resid);
-		      break;
-		    }
-		  bhp->b_size = bsize;
-		}
-	      else
-		{
-		  if (amt > resid)
-		    amt = resid;
-		  bhp->b_size = amt & ~bmask;
-		}
-	      bhp->b_data = alloc_buffer (bhp->b_size);
-	      if (! bhp->b_data)
-		{
-		  printf ("%s:%d: block_read: ran out of buffers\n",
-			  __FILE__, __LINE__);
-
-		  while (--i >= 0)
-		    if (bhp->b_page_list)
-		      free_buffer (bhp->b_data, bhp->b_size);
-		  err = -LINUX_ENOMEM;
-		  goto out;
-		}
-	      bhp->b_page_list = page_list;
-	      bhp->b_index = page_index;
-	      bhp->b_off = off & PAGE_MASK;
-	      bhp->b_usrcnt = bhp->b_size;
-	    }
-
-	  resid -= bhp->b_size;
-	  off += bhp->b_size;
-	  blk += bhp->b_size >> bshift;
-	}
-
-      assert (i > 0);
-
-      sem.count = 0;
-      sem.wait = NULL;
-
-      /* Do the read.  */
-      ll_rw_block (READ, i, bhlist);
-      __down (&sem);
-      err = check_for_error (READ, i, bhlist);
-      if (err || resid == 0)
-	goto out;
-
-      /* Unwire the pages and mark them dirty.  */
-      offset = trunc_page (off);
-      for (i = 0; wire_offset < offset; i++, wire_offset += PAGE_SIZE)
-	{
-	  vm_object_lock (object);
-	  vm_page_lock_queues ();
-	  assert (vm_page_lookup (object, wire_offset) == page_list[i]);
-	  assert (page_list[i]->wire_count == 1);
-	  assert (! page_list[i]->active && ! page_list[i]->inactive);
-	  assert (! page_list[i]->reference);
-	  page_list[i]->dirty = TRUE;
-	  page_list[i]->reference = TRUE;
-	  page_list[i]->busy = FALSE;
-	  vm_page_unwire (page_list[i]);
-	  vm_page_unlock_queues ();
-	  vm_object_unlock (object);
-	}
-
-      assert (i <= pages);
-
-      /* Wire down the next chunk of the object.  */
-      if (i == pages)
-	{
-	  i = 0;
-	  offset = wire_offset;
-	  have_page_list = 0;
-	}
-      else
-	{
-	  int j;
-
-	  for (j = 0; i < pages; page_list[j++] = page_list[i++])
-	    offset += PAGE_SIZE;
-	  i = j;
-	}
-      pages = (round_page (count) - wire_offset) >> PAGE_SHIFT;
-      if (pages > READ_MAXPHYSPG)
-	pages = READ_MAXPHYSPG;
-      while (i < pages)
-	{
-	  while (1)
-	    {
-	      page_list[i] = vm_page_grab ();
-	      if (page_list[i])
-		{
-		  assert (page_list[i]->busy);
-		  assert (! page_list[i]->wanted);
-		  break;
-		}
-	      vm_page_wait (NULL);
-	    }
-	  vm_object_lock (object);
-	  vm_page_lock_queues ();
-	  assert (! vm_page_lookup (object, offset));
-	  vm_page_insert (page_list[i], object, offset);
-	  assert (page_list[i]->wire_count == 0);
-	  vm_page_wire (page_list[i]);
-	  vm_page_unlock_queues ();
-	  vm_object_unlock (object);
-	  i++;
-	  offset += PAGE_SIZE;
-	}
-      have_page_list = 1;
-    }
-
-  /* Read any partial count.  */
-  if (resid > 0)
-    {
-      char *b;
-      int use_req;
-
-      assert (have_page_list);
-      assert (pages >= 1);
-
-      use_req = (disk_major (MAJOR (inode->i_rdev)) && ! np->read_only);
-
-      amt = bsize - (filp->f_pos & bmask);
-      if (amt > resid)
-	amt = resid;
-
-      if (LINUX_BLOCK_READ_TRACE)
-	printf ("block_read: at %d: resid %d\n", __LINE__, amt, resid);
-
-      if (use_req)
-	{
-	  i = (resid + 511) & ~511;
-	  req.buffer = b = alloc_buffer (i);
-	  if (! b)
-	    {
-	      printf ("%s:%d: block_read: ran out of buffers\n",
-		      __FILE__, __LINE__);
-	      err = -LINUX_ENOMEM;
-	      goto out;
-	    }
-	  req.sector = blk << (bshift - 9);
-	  req.nr_sectors = i >> 9;
-	  req.current_nr_sectors = i >> 9;
-	  req.rq_status = RQ_ACTIVE;
-	  req.rq_dev = inode->i_rdev;
-	  req.cmd = READ;
-	  req.errors = 0;
-	  req.sem = &sem;
-	  req.bh = NULL;
-	  req.bhtail = NULL;
-	  req.next = NULL;
-
-	  sem.count = 0;
-	  sem.wait = NULL;
-
-	  enqueue_request (&req);
-	  __down (&sem);
-
-	  if (req.errors)
-	    {
-	      free_buffer (b, i);
-	      err = -LINUX_EIO;
-	      goto out;
-	    }
-	}
-      else
-	{
-	  i = bsize;
-	  bhp = bh;
-	  bhp->b_data = b = alloc_buffer (i);
-	  if (! b)
-	    {
-	      err = -LINUX_ENOMEM;
-	      goto out;
-	    }
-	  bhp->b_blocknr = blk;
-	  bhp->b_dev = inode->i_rdev;
-	  bhp->b_size = bsize;
-	  bhp->b_state = 1 << BH_Lock;
-	  bhp->b_page_list = NULL;
-	  bhp->b_request = NULL;
-	  bhp->b_reqnext = NULL;
-	  bhp->b_wait = NULL;
-	  bhp->b_sem = NULL;
-
-	  ll_rw_block (READ, 1, &bhp);
-	  wait_on_buffer (bhp);
-	  err = check_for_error (READ, 1, &bhp);
-	  if (err)
-	    {
-	      free_buffer (b, i);
-	      goto out;
-	    }
-	}
-
-      page_index = (trunc_page (off) - wire_offset) >> PAGE_SHIFT;
-      amt = PAGE_SIZE - (off & PAGE_MASK);
-      if (amt > resid)
-	amt = resid;
-      memcpy (((void *) page_list[page_index]->phys_addr
-	       + (off & PAGE_MASK)),
-	      b, amt);
-      if (amt < resid)
-	{
-	  assert (pages >= 2);
-	  memcpy ((void *) page_list[page_index + 1]->phys_addr,
-		  b + amt, resid - amt);
-	}
-      else
-	assert (pages >= 1);
-
-      free_buffer (b, i);
-    }
-
-out:
-  if (have_page_list)
-    {
-      for (i = 0; i < pages; i++, wire_offset += PAGE_SIZE)
-	{
-	  vm_object_lock (object);
-	  vm_page_lock_queues ();
-	  assert (vm_page_lookup (object, wire_offset) == page_list[i]);
-	  assert (page_list[i]->wire_count == 1);
-	  assert (! page_list[i]->active && ! page_list[i]->inactive);
-	  assert (! page_list[i]->reference);
-	  page_list[i]->dirty = TRUE;
-	  page_list[i]->reference = TRUE;
-	  page_list[i]->busy = FALSE;
-	  vm_page_unwire (page_list[i]);
-	  vm_page_unlock_queues ();
-	  vm_object_unlock (object);
-	}
-    }      
-  kfree ((vm_offset_t) bh,
-	 ((sizeof (*bh) + sizeof (*bhlist)) * nbuf
-	  + sizeof (*page_list) * READ_MAXPHYSPG));
-  if (err)
-    {
-      if (object)
-	{
-	  assert (object->ref_count == 1);
-	  vm_object_deallocate (object);
-	}
-    }
-  else
-    {
-      assert (object);
-      assert (object->ref_count == 1);
-
-      filp->f_resid = 0;
-      filp->f_object = object;
-    }
-
-  if (LINUX_BLOCK_READ_TRACE)
-    printf ("block_read: at %d: err %d\n", __LINE__, err);
-
-  return err;
+  return do_rdwr (READ, inode->i_rdev, &filp->f_pos, buf, count);
 }
 
 /*
@@ -1662,11 +748,12 @@ struct block_data
   int open_count;		/* number of opens */
   int iocount;			/* number of pending I/O operations */
   int part;			/* BSD partition number (-1 if none) */
+  int flags;			/* Linux file flags */
+  int mode;			/* Linux file mode */
+  kdev_t dev;			/* Linux device number */
   ipc_port_t port;		/* port representing device */
   struct device_struct *ds;	/* driver operation table entry */
   struct device device;		/* generic device header */
-  struct file file;		/* Linux file structure */
-  struct inode inode;		/* Linux inode structure */
   struct name_map *np;		/* name to inode map */
   struct block_data *next;	/* forward link */
 };
@@ -1703,115 +790,222 @@ isdigit (int c)
   return c >= '0' && c <= '9';
 }
 
-int linux_device_open_trace = 0;
-
-static io_return_t
-device_open (ipc_port_t reply_port, mach_msg_type_name_t reply_port_type,
-	     dev_mode_t mode, char *name, device_t *devp)
+/* Find the name map entry for device NAME.
+   Set *SLICE to be the DOS partition and
+   *PART the BSD/Mach partition, if any.  */
+static struct name_map *
+find_name (char *name, int *slice, int *part)
 {
-  char *p;
-  int i, part = -1, slice = 0, err = 0;
-  unsigned major, minor;
-  kdev_t dev;
-  ipc_port_t notify;
-  struct file file;
-  struct inode inode;
+  char *p, *q;
+  int i, len;
   struct name_map *np;
-  struct device_struct *ds;
-  struct block_data *bd = NULL, *bdp;
-
-  if (linux_device_open_trace)
-    printf ("device_open: at %d: name %s\n", __LINE__, name);
 
   /* Parse name into name, unit, DOS partition (slice) and partition.  */
-  for (p = name; isalpha (*p); p++)
+  for (*slice = 0, *part = -1, p = name; isalpha (*p); p++)
     ;
   if (p == name || ! isdigit (*p))
-    {
-      if (linux_device_open_trace)
-	printf ("device_open: at %d\n", __LINE__);
-
-      return D_NO_SUCH_DEVICE;
-    }
+    return NULL;
   do
     p++;
   while (isdigit (*p));
   if (*p)
     {
-      char *q = p;
-
-      if (! isalpha (*q))
-	{
-	  if (linux_device_open_trace)
-	    printf ("device_open: at %d\n", __LINE__);
-
-	  return D_NO_SUCH_DEVICE;
-	}
+      q = p;
       if (*q == 's' && isdigit (*(q + 1)))
 	{
 	  q++;
-	  slice = 0;
 	  do
-	    slice = slice * 10 + *q++ - '0';
+	    *slice = *slice * 10 + *q++ - '0';
 	  while (isdigit (*q));
 	  if (! *q)
 	    goto find_major;
-	  if (! isalpha (*q))
-	    {
-	      if (linux_device_open_trace)
-		printf ("device_open: at %d\n", __LINE__);
-
-	      return D_NO_SUCH_DEVICE;
-	    }
 	}
-      if (*(q + 1))
-	{
-	  if (linux_device_open_trace)
-	    printf ("device_open: at %d\n", __LINE__);
-
-	  return D_NO_SUCH_DEVICE;
-	}
-      part = *q - 'a';
+      if (! isalpha (*q) || *(q + 1))
+	return NULL;
+      *part = *q - 'a';
     }
-  else
-    slice = -1;
 
 find_major:
   /* Convert name to major number.  */
   for (i = 0, np = name_to_major; i < NUM_NAMES; i++, np++)
     {
-      int len = strlen (np->name);
-
-      if (len == p - name && ! strncmp (np->name, name, len))
-	break;
+      len = strlen (np->name);
+      if (len == (p - name) && ! strncmp (np->name, name, len))
+	return np;
     }
-  if (i == NUM_NAMES)
+  return NULL;
+}
+
+/* Attempt to read a BSD disklabel from device DEV.  */
+static struct disklabel *
+read_bsd_label (kdev_t dev)
+{
+  int bsize, bshift;
+  struct buffer_head *bh;
+  struct disklabel *dlp, *lp = NULL;
+
+  get_block_size (dev, &bsize, &bshift);
+  bh = bread (dev, LBLLOC >> (bshift - 9), bsize);
+  if (bh)
     {
-      if (linux_device_open_trace)
-	printf ("device_open: at %d\n", __LINE__);
+      dlp = (struct disklabel *) (bh->b_data + ((LBLLOC << 9) & (bsize - 1)));
+      if (dlp->d_magic == DISKMAGIC && dlp->d_magic2 == DISKMAGIC)
+	{
+	  lp = (struct disklabel *) kalloc (sizeof (*lp));
+	  assert (lp);
+	  memcpy (lp, dlp, sizeof (*lp));
+	}
+      __brelse (bh);
+    }
+  return lp;
+}
 
-      return D_NO_SUCH_DEVICE;
+/* Attempt to read a VTOC from device DEV.  */
+static struct disklabel *
+read_vtoc (kdev_t dev)
+{
+  int bshift, bsize, i;
+  struct buffer_head *bh;
+  struct evtoc *evp;
+  struct disklabel *lp = NULL;
+
+  get_block_size (dev, &bsize, &bshift);
+  bh = bread (dev, PDLOCATION >> (bshift - 9), bsize);
+  if (bh)
+    {
+      evp = (struct evtoc *) (bh->b_data + ((PDLOCATION << 9) & (bsize - 1)));
+      if (evp->sanity == VTOC_SANE)
+	{
+	  lp = (struct disklabel *) kalloc (sizeof (*lp));
+	  assert (lp);
+	  lp->d_npartitions = evp->nparts;
+	  if (lp->d_npartitions > MAXPARTITIONS)
+	    lp->d_npartitions = MAXPARTITIONS;
+	  for (i = 0; i < lp->d_npartitions; i++)
+	    {
+	      lp->d_partitions[i].p_size = evp->part[i].p_size;
+	      lp->d_partitions[i].p_offset = evp->part[i].p_start;
+	      lp->d_partitions[i].p_fstype = FS_BSDFFS;
+	    }
+	}
+      __brelse (bh);
+    }
+  return lp;
+}
+
+/* Initialize BSD/Mach partition table for device
+   specified by NP, DS and *DEV.  Check SLICE and *PART for validity.  */
+static kern_return_t
+init_partition (struct name_map *np, kdev_t *dev,
+		struct device_struct *ds, int slice, int *part)
+{
+  int err, i, j;
+  struct disklabel *lp;
+  struct gendisk *gd = ds->gd;
+  struct partition *p;
+  struct temp_data *d = current_thread ()->pcb->data;
+
+  if (! gd)
+    {
+      *part = -1;
+      return 0;
+    }
+  if (ds->labels)
+    goto check;
+  ds->labels = (struct disklabel **) kalloc (sizeof (struct disklabel *)
+					     * gd->max_nr * gd->max_p);
+  if (! ds->labels)
+    return D_NO_MEMORY;
+  memset ((void *) ds->labels, 0,
+	  sizeof (struct disklabel *) * gd->max_nr * gd->max_p);
+  for (i = 1; i < gd->max_p; i++)
+    {
+      d->inode.i_rdev = *dev | i;
+      if (gd->part[MINOR (d->inode.i_rdev)].nr_sects <= 0
+	  || gd->part[MINOR (d->inode.i_rdev)].start_sect < 0)
+	continue;
+      linux_intr_pri = SPL5;
+      d->file.f_flags = 0;
+      d->file.f_mode = O_RDONLY;
+      if (ds->fops->open && (*ds->fops->open) (&d->inode, &d->file))
+	continue;
+      lp = read_bsd_label (d->inode.i_rdev);
+      if (! lp)
+	lp = read_vtoc (d->inode.i_rdev);
+      if (ds->fops->release)
+	(*ds->fops->release) (&d->inode, &d->file);
+      if (lp)
+	{
+	  if (ds->default_slice == 0)
+	    ds->default_slice = i;
+	  for (j = 0, p = lp->d_partitions; j < lp->d_npartitions; j++, p++)
+	    {
+	      if (p->p_offset < 0 || p->p_size <= 0)
+		continue;
+
+	      /* Sanity check.  */
+	      if (p->p_size > gd->part[MINOR (d->inode.i_rdev)].nr_sects)
+		p->p_size = gd->part[MINOR (d->inode.i_rdev)].nr_sects;
+	    }
+	}
+      ds->labels[MINOR (d->inode.i_rdev)] = lp;
     }
 
+check:
+  if (*part >= 0 && slice == 0)
+    slice = ds->default_slice;
+  if (*part >= 0 && slice == 0)
+    return D_NO_SUCH_DEVICE;
+  *dev = MKDEV (MAJOR (*dev), MINOR (*dev) | slice);
+  if (slice >= gd->max_p
+      || gd->part[MINOR (*dev)].start_sect < 0
+      || gd->part[MINOR (*dev)].nr_sects <= 0)
+    return D_NO_SUCH_DEVICE;
+  if (*part >= 0)
+    {
+      lp = ds->labels[MINOR (*dev)];
+      if (! lp
+	  || *part >= lp->d_npartitions
+	  || lp->d_partitions[*part].p_offset < 0
+	  || lp->d_partitions[*part].p_size <= 0)
+	return D_NO_SUCH_DEVICE;
+    }
+  return 0;
+}
+
+#define DECL_DATA	struct temp_data td
+#define INIT_DATA()			\
+{					\
+  queue_init (&td.pages);		\
+  td.inode.i_rdev = bd->dev;		\
+  td.file.f_mode = bd->mode;		\
+  td.file.f_flags = bd->flags;		\
+  current_thread ()->pcb->data = &td;	\
+}
+
+static io_return_t
+device_open (ipc_port_t reply_port, mach_msg_type_name_t reply_port_type,
+	     dev_mode_t mode, char *name, device_t *devp)
+{
+  int part, slice, err;
+  unsigned major, minor;
+  kdev_t dev;
+  ipc_port_t notify;
+  struct block_data *bd = NULL, *bdp;
+  struct device_struct *ds;
+  struct gendisk *gd;
+  struct name_map *np;
+  DECL_DATA;
+
+  np = find_name (name, &slice, &part);
+  if (! np)
+    return D_NO_SUCH_DEVICE;
   major = np->major;
   ds = &blkdevs[major];
 
   /* Check that driver exists.  */
   if (! ds->fops)
-    {
-      if (linux_device_open_trace)
-	printf ("device_open: at %d\n", __LINE__);
-
-      return D_NO_SUCH_DEVICE;
-    }
-
-  /* Slice and partition numbers are only used by disk drives.
-     The test for read-only is for IDE CDROMs.  */
-  if (! disk_major (major) || np->read_only)
-    {
-      slice = -1;
-      part = -1;
-    }
+    return D_NO_SUCH_DEVICE;
 
   /* Wait for any other open/close calls to finish.  */
   ds = &blkdevs[major];
@@ -1824,157 +1018,49 @@ find_major:
   ds->busy = 1;
 
   /* Compute minor number.  */
-  if (disk_major (major) && ! ds->gd)
+  if (! ds->gd)
     {
-      struct gendisk *gd;
-
       for (gd = gendisk_head; gd && gd->major != major; gd = gd->next)
 	;
-      assert (gd);
       ds->gd = gd;
     }
   minor = np->unit;
-  if (ds->gd)
-    minor <<= ds->gd->minor_shift;
+  gd = ds->gd;
+  if (gd)
+    minor <<= gd->minor_shift;
   dev = MKDEV (major, minor);
 
-  /* If no DOS partition is specified, find one we can handle.  */
-  if (slice == 0 && (! ds->default_slice || ds->default_slice[np->unit] == 0))
-    {
-      int sysid, bsize, bshift;
-      struct mboot *mp;
-      struct ipart *pp;
-      struct buffer_head *bhp;
+  queue_init (&td.pages);
+  current_thread ()->pcb->data = &td;
 
-      /* Open partition 0.  */
-      inode.i_rdev = dev;
-      file.f_mode = O_RDONLY;
-      file.f_flags = 0;
-      if (ds->fops->open)
-	{
-	  linux_intr_pri = SPL5;
-	  err = (*ds->fops->open) (&inode, &file);
-	  if (err)
-	    {
-	      if (linux_device_open_trace)
-		printf ("device_open: at %d\n", __LINE__);
-
-	      err = linux_to_mach_error (err);
-	      goto out;
-	    }
-	}
-
-      /* Allocate a buffer for I/O.  */
-      get_block_size (inode.i_rdev, &bsize, &bshift);
-      assert (bsize <= PAGE_SIZE);
-      bhp = getblk (inode.i_rdev, 0, bsize);
-      if (! bhp)
-	{
-	  if (linux_device_open_trace)
-	    printf ("device_open: at %d\n", __LINE__);
-
-	  err = D_NO_MEMORY;
-	  goto slice_done;
-	}
-
-      /* Read DOS partition table.  */
-      ll_rw_block (READ, 1, &bhp);
-      wait_on_buffer (bhp);
-      err = check_for_error (READ, 1, &bhp);
-      if (err)
-	{
-	  printf ("%s: error reading boot sector\n", np->name);
-	  err = linux_to_mach_error (err);
-	  goto slice_done;
-	}
-
-      /* Check for valid partition table.  */
-      mp = (struct mboot *) bhp->b_data;
-      if (mp->signature != BOOT_MAGIC)
-	{
-	  printf ("%s: invalid partition table\n", np->name);
-	  err = D_NO_SUCH_DEVICE;
-	  goto slice_done;
-	}
-
-      /* Search for a Mach, BSD or Linux partition.  */
-      sysid = 0;
-      pp = (struct ipart *) mp->parts;
-      for (i = 0; i < FD_NUMPART; i++, pp++)
-	{
-	  if ((pp->systid == UNIXOS
-	       || pp->systid == BSDOS
-	       || pp->systid == LINUXOS)
-	      && (! sysid || pp->bootid == ACTIVE))
-	    {
-	      sysid = pp->systid;
-	      slice = i + 1;
-	    }
-	}
-      if (! sysid)
-	{
-	  printf ("%s: No Mach, BSD or Linux partition found\n", np->name);
-	  err = D_NO_SUCH_DEVICE;
-	  goto slice_done;
-	}
-
-      /*      printf ("%s: default slice %d: %s OS\n", np->name, slice,
-	      (sysid == UNIXOS ? "Mach" : (sysid == BSDOS ? "BSD" : "LINUX")));*/
-
-    slice_done:
-      if (ds->fops->release)
-	(*ds->fops->release) (&inode, &file);
-      __brelse (bhp);
-      if (err)
-	goto out;
-      if (! ds->default_slice)
-	{
-	  ds->default_slice = (int *) kalloc (sizeof (int) * ds->gd->max_nr);
-	  if (! ds->default_slice)
-	    {
-	      if (linux_device_open_trace)
-		printf ("device_open: at %d\n", __LINE__);
-
-	      err = D_NO_MEMORY;
-	      goto out;
-	    }
-	  memset (ds->default_slice, 0, sizeof (int) * ds->gd->max_nr);
-	}
-      ds->default_slice[np->unit] = slice;
-    }
-
-  /* Add slice to minor number.  */
-  if (slice == 0)
-    slice = ds->default_slice[np->unit];
-  if (slice > 0)
-    {
-      if (slice >= ds->gd->max_p)
-	{
-	  if (linux_device_open_trace)
-	    printf ("device_open: at %d\n", __LINE__);
-
-	  err = D_NO_SUCH_DEVICE;
-	  goto out;
-	}
-      minor |= slice;
-
-      if (linux_device_open_trace)
-	printf ("device_open: at %d: start_sect 0x%x, nr_sects %d\n",
-		__LINE__, ds->gd->part[minor].start_sect,
-		ds->gd->part[minor].nr_sects);
-    }
-  dev = MKDEV (major, minor);
+  /* Check partition.  */
+  err = init_partition (np, &dev, ds, slice, &part);
+  if (err)
+    goto out;
 
   /* Initialize file structure.  */
-  file.f_mode = (mode == D_READ || np->read_only) ? O_RDONLY : O_RDWR;
-  file.f_flags = (mode & D_NODELAY) ? O_NDELAY : 0;
+  switch (mode & (D_READ|D_WRITE))
+    {
+    case D_WRITE:
+      td.file.f_mode = O_WRONLY;
+      break;
+
+    case D_READ|D_WRITE:
+      td.file.f_mode = O_RDWR;
+      break;
+
+    default:
+      td.file.f_mode = O_RDONLY;
+      break;
+    }
+  td.file.f_flags = (mode & D_NODELAY) ? O_NDELAY : 0;
 
   /* Check if the device is currently open.  */
   for (bdp = open_list; bdp; bdp = bdp->next)
-    if (bdp->inode.i_rdev == dev
+    if (bdp->dev == dev
 	&& bdp->part == part
-	&& bdp->file.f_mode == file.f_mode
-	&& bdp->file.f_flags == file.f_flags)
+	&& bdp->mode == td.file.f_mode
+	&& bdp->flags == td.file.f_flags)
       {
 	bd = bdp;
 	goto out;
@@ -1983,158 +1069,20 @@ find_major:
   /* Open the device.  */
   if (ds->fops->open)
     {
-      inode.i_rdev = dev;
+      td.inode.i_rdev = dev;
       linux_intr_pri = SPL5;
-      err = (*ds->fops->open) (&inode, &file);
+      err = (*ds->fops->open) (&td.inode, &td.file);
       if (err)
 	{
-	  if (linux_device_open_trace)
-	    printf ("device_open: at %d\n", __LINE__);
-
 	  err = linux_to_mach_error (err);
 	  goto out;
 	}
-    }
-      
-  /* Read disklabel.  */
-  if (part >= 0 && (! ds->label || ! ds->label[minor]))
-    {
-      int bsize, bshift;
-      struct evtoc *evp;
-      struct disklabel *lp, *dlp;
-      struct buffer_head *bhp;
-
-      assert (disk_major (major));
-
-      /* Allocate a disklabel.  */
-      lp = (struct disklabel *) kalloc (sizeof (struct disklabel));
-      if (! lp)
-	{
-	  if (linux_device_open_trace)
-	    printf ("device_open: at %d\n", __LINE__);
-
-	  err = D_NO_MEMORY;
-	  goto bad;
-	}
-
-      /* Allocate a buffer for I/O.  */
-      get_block_size (dev, &bsize, &bshift);
-      assert (bsize <= PAGE_SIZE);
-      bhp = getblk (dev, LBLLOC >> (bshift - 9), bsize);
-      if (! bhp)
-	{
-	  if (linux_device_open_trace)
-	    printf ("device_open: at %d\n", __LINE__);
-
-	  err = D_NO_MEMORY;
-	  goto label_done;
-	}
-
-      /* Set up 'c' partition to span the entire DOS partition.  */
-      lp->d_npartitions = PART_DISK + 1;
-      memset (lp->d_partitions, 0, MAXPARTITIONS * sizeof (struct partition));
-      lp->d_partitions[PART_DISK].p_offset = ds->gd->part[minor].start_sect;
-      lp->d_partitions[PART_DISK].p_size = ds->gd->part[minor].nr_sects;
-
-      /* Try reading a BSD disklabel.  */
-      ll_rw_block (READ, 1, &bhp);
-      wait_on_buffer (bhp);
-      err = check_for_error (READ, 1, &bhp);
-      if (err)
-	{
-	  printf ("%s: error reading BSD label\n", np->name);
-	  err = 0;
-	  goto vtoc;
-	}
-      dlp = (struct disklabel *) (bhp->b_data + ((LBLLOC << 9) & (bsize - 1)));
-      if (dlp->d_magic != DISKMAGIC || dlp->d_magic2 != DISKMAGIC)
-	goto vtoc;
-      /*      printf ("%s: BSD LABEL\n", np->name);*/
-      lp->d_npartitions = dlp->d_npartitions;
-      memcpy (lp->d_partitions, dlp->d_partitions,
-	      MAXPARTITIONS * sizeof (struct partition));
-
-      /* Check for NetBSD DOS partition bogosity.  */
-      for (i = 0; i < lp->d_npartitions; i++)
-	if (lp->d_partitions[i].p_size > ds->gd->part[minor].nr_sects)
-	  ds->gd->part[minor].nr_sects = lp->d_partitions[i].p_size;
-      goto label_done;
-
-    vtoc:
-      /* Try reading VTOC.  */
-      bhp->b_blocknr = PDLOCATION >> (bshift - 9);
-      bhp->b_state = 1 << BH_Lock;
-      ll_rw_block (READ, 1, &bhp);
-      wait_on_buffer (bhp);
-      err = check_for_error (READ, 1, &bhp);
-      if (err)
-	{
-	  printf ("%s: error reading evtoc\n", np->name);
-	  err = linux_to_mach_error (err);
-	  goto label_done;
-	}
-      evp = (struct evtoc *) (bhp->b_data + ((PDLOCATION << 9) & (bsize - 1)));
-      if (evp->sanity != VTOC_SANE)
-	{
-	  printf ("%s: No BSD or Mach label found\n", np->name);
-	  err = D_NO_SUCH_DEVICE;
-	  goto label_done;
-	}
-      /*      printf ("%s: LOCAL LABEL\n", np->name);*/
-      lp->d_npartitions = (evp->nparts > MAXPARTITIONS
-			   ? MAXPARTITIONS : evp->nparts);
-      for (i = 0; i < lp->d_npartitions; i++)
-	{
-	  lp->d_partitions[i].p_size = evp->part[i].p_size;
-	  lp->d_partitions[i].p_offset = evp->part[i].p_start;
-	  lp->d_partitions[i].p_fstype = FS_BSDFFS;
-	}
-
-    label_done:
-      if (bhp)
-	__brelse (bhp);
-      if (err)
-	{
-	  kfree ((vm_offset_t) lp, sizeof (struct disklabel));
-	  goto bad;
-	}
-      if (! ds->label)
-	{
-	  ds->label = (struct disklabel **) kalloc (sizeof (struct disklabel *)
-						    * ds->gd->max_p
-						    * ds->gd->max_nr);
-	  if (! ds->label)
-	    {
-	      if (linux_device_open_trace)
-		printf ("device_open: at %d\n", __LINE__);
-
-	      kfree ((vm_offset_t) lp, sizeof (struct disklabel));
-	      err = D_NO_MEMORY;
-	      goto bad;
-	    }
-	  memset (ds->label, 0,
-		  (sizeof (struct disklabel *)
-		   * ds->gd->max_p * ds->gd->max_nr));
-	}
-      ds->label[minor] = lp;
-    }
-
-  /* Check partition number.  */
-  if (part >= 0
-      && (part >= ds->label[minor]->d_npartitions
-	  || ds->label[minor]->d_partitions[part].p_size == 0))
-    {
-      err = D_NO_SUCH_DEVICE;
-      goto bad;
     }
 
   /* Allocate and initialize device data.  */
   bd = (struct block_data *) kalloc (sizeof (struct block_data));
   if (! bd)
     {
-      if (linux_device_open_trace)
-	printf ("device_open: at %d\n", __LINE__);
-
       err = D_NO_MEMORY;
       goto bad;
     }
@@ -2145,16 +1093,12 @@ find_major:
   bd->ds = ds;
   bd->device.emul_data = bd;
   bd->device.emul_ops = &linux_block_emulation_ops;
-  bd->inode.i_rdev = dev;
-  bd->file.f_mode = file.f_mode;
-  bd->file.f_np = np;
-  bd->file.f_flags = file.f_flags;
+  bd->dev = dev;
+  bd->mode = td.file.f_mode;
+  bd->flags = td.file.f_flags;
   bd->port = ipc_port_alloc_kernel ();
   if (bd->port == IP_NULL)
     {
-      if (linux_device_open_trace)
-	printf ("device_open: at %d\n", __LINE__);
-
       err = KERN_RESOURCE_SHORTAGE;
       goto bad;
     }
@@ -2163,12 +1107,11 @@ find_major:
   ip_lock (bd->port);
   ipc_port_nsrequest (bd->port, 1, notify, &notify);
   assert (notify == IP_NULL);
-
   goto out;
 
 bad:
   if (ds->fops->release)
-    (*ds->fops->release) (&inode, &file);
+    (*ds->fops->release) (&td.inode, &td.file);
 
 out:
   ds->busy = 0;
@@ -2223,6 +1166,9 @@ device_close (void *d)
 {
   struct block_data *bd = d, *bdp, **prev;
   struct device_struct *ds = bd->ds;
+  DECL_DATA;
+
+  INIT_DATA ();
 
   /* Wait for any other open/close to complete.  */
   while (ds->busy)
@@ -2260,7 +1206,7 @@ device_close (void *d)
       assert (bdp == bd);
 
       if (ds->fops->release)
-	(*ds->fops->release) (&bd->inode, &bd->file);
+	(*ds->fops->release) (&td.inode, &td.file);
 
       ipc_kobject_set (bd->port, IKO_NULL, IKOT_NONE);
       ipc_port_dealloc_kernel (bd->port);
@@ -2276,231 +1222,331 @@ device_close (void *d)
   return D_SUCCESS;
 }
 
-/* XXX: Assumes all drivers use block_write.  */
-static io_return_t
-device_write (void *d, ipc_port_t reply_port,
-	      mach_msg_type_name_t reply_port_type, dev_mode_t mode,
-	      recnum_t bn, io_buf_ptr_t data, unsigned int count,
-	      int *bytes_written)
+#define MAX_COPY	(VM_MAP_COPY_PAGE_LIST_MAX << PAGE_SHIFT)
+
+/* Check block BN and size COUNT for I/O validity
+   to from device BD.  Set *OFF to the byte offset
+   where I/O is to begin and return the size of transfer.  */
+static int
+check_limit (struct block_data *bd, loff_t *off, long bn, int count)
 {
   int major, minor;
-  unsigned sz, maxsz, off;
-  io_return_t err = 0;
-  struct block_data *bd = d;
+  long maxsz, sz;
+  struct disklabel *lp = NULL;
 
-  if (! bd->ds->fops->write)
+  if (count <= 0)
+    return count;
+
+  major = MAJOR (bd->dev);
+  minor = MINOR (bd->dev);
+
+  if (bd->ds->gd)
     {
-      printf ("device_write: at %d\n", __LINE__);
-      return D_INVALID_OPERATION;
-    }
-
-  if ((int) count <= 0)
-    {
-      printf ("device_write: at %d\n", __LINE__);
-      return D_INVALID_SIZE;
-    }
-
-  major = MAJOR (bd->inode.i_rdev);
-  minor = MINOR (bd->inode.i_rdev);
-
-  if (disk_major (major))
-    {
-      assert (bd->ds->gd);
-
       if (bd->part >= 0)
 	{
-	  struct disklabel *lp;
-
-	  assert (bd->ds->label);
-	  lp = bd->ds->label[minor];
-	  assert (lp);
+	  assert (bd->ds->labels);
+	  assert (bd->ds->labels[minor]);
+	  lp = bd->ds->labels[minor];
 	  maxsz = lp->d_partitions[bd->part].p_size;
-	  off = (lp->d_partitions[bd->part].p_offset
-		 - bd->ds->gd->part[minor].start_sect);
-
-	  if (linux_block_write_trace)
-	    printf ("device_write: at %d: dev %s, part %d, "
-		    "offset 0x%x (%u), start_sect 0x%x (%u), "
-		    "maxsz 0x%x (%u)\n",
-		    __LINE__,
-		    kdevname (bd->inode.i_rdev),
-		    bd->part,
-		    lp->d_partitions[bd->part].p_offset,
-		    lp->d_partitions[bd->part].p_offset,
-		    bd->ds->gd->part[minor].start_sect,
-		    bd->ds->gd->part[minor].start_sect,
-		    maxsz, maxsz);
-
-	  assert (off < bd->ds->gd->part[minor].nr_sects);
 	}
       else
-	{
-	  maxsz = bd->ds->gd->part[minor].nr_sects;
-	  off = 0;
-	}
+	maxsz = bd->ds->gd->part[minor].nr_sects;
     }
   else
     {
       assert (blk_size[major]);
       maxsz = blk_size[major][minor] << (BLOCK_SIZE_BITS - 9);
-      off = 0;
     }
-
-  if (bn >= maxsz)
-    {
-      if (linux_block_write_trace)
-	printf ("device_write: at %d\n", __LINE__);
-
-      return D_INVALID_SIZE;
-    }
-
+  assert (maxsz > 0);
+  sz = maxsz - bn;
+  if (sz <= 0)
+    return sz;
+  if (sz < ((count + 511) >> 9))
+    count = sz << 9;
+  if (lp)
+    bn += (lp->d_partitions[bd->part].p_offset
+	   - bd->ds->gd->part[minor].start_sect);
+  *off = (loff_t) bn << 9;
   bd->iocount++;
+  return count;
+}
 
-  sz = (count + 511) >> 9;
-  if (sz > maxsz - bn)
+static io_return_t
+device_write (void *d, ipc_port_t reply_port,
+	      mach_msg_type_name_t reply_port_type, dev_mode_t mode,
+	      recnum_t bn, io_buf_ptr_t data, unsigned int orig_count,
+	      int *bytes_written)
+{
+  int resid, amt, i;
+  int count = (int) orig_count;
+  io_return_t err = 0;
+  vm_map_copy_t copy;
+  vm_offset_t addr, uaddr;
+  vm_size_t len, size;
+  struct block_data *bd = d;
+  DECL_DATA;
+
+  INIT_DATA ();
+
+  *bytes_written = 0;
+
+  if (bd->mode == O_RDONLY)
+    return D_INVALID_OPERATION;
+  if (! bd->ds->fops->write)
+    return D_READ_ONLY;
+  count = check_limit (bd, &td.file.f_pos, bn, count);
+  if (count < 0)
+    return D_INVALID_SIZE;
+  if (count == 0)
     {
-      sz = maxsz - bn;
-      if (count > (sz << 9))
-	count = sz << 9;
+      vm_map_copy_discard (copy);
+      return 0;
     }
 
-  bd->file.f_pos = (loff_t) (bn + off) << 9;
+  resid = count;
+  copy = (vm_map_copy_t) data;
+  uaddr = copy->offset;
 
-  err = (*bd->ds->fops->write) (&bd->inode, &bd->file, (char *) data, count);
+  /* Allocate a kernel buffer.  */
+  size = round_page (uaddr + count) - trunc_page (uaddr);
+  if (size > MAX_COPY)
+    size = MAX_COPY;
+  addr = vm_map_min (device_io_map);
+  err = vm_map_enter (device_io_map, &addr, size, 0, TRUE,
+		      NULL, 0, FALSE, VM_PROT_READ|VM_PROT_WRITE,
+		      VM_PROT_READ|VM_PROT_WRITE, VM_INHERIT_NONE);
   if (err)
-    err = linux_to_mach_error (err);
+    {
+      vm_map_copy_discard (copy);
+      goto out;
+    }
 
-  if (linux_block_write_trace)
-    printf ("device_write: at %d: err %d\n", __LINE__, err);
+  /* Determine size of I/O this time around.  */
+  len = size - (uaddr & PAGE_MASK);
+  if (len > resid)
+    len = resid;
 
-  if (IP_VALID (reply_port))
-    ds_device_write_reply (reply_port, reply_port_type,
-			   err, count - bd->file.f_resid);
+  while (1)
+    {
+      /* Map user pages.  */
+      for (i = 0; i < copy->cpy_npages; i++)
+	pmap_enter (vm_map_pmap (device_io_map),
+		    addr + (i << PAGE_SHIFT),
+		    copy->cpy_page_list[i]->phys_addr,
+		    VM_PROT_READ|VM_PROT_WRITE, TRUE);
 
+      /* Do the write.  */
+      amt = (*bd->ds->fops->write) (&td.inode, &td.file,
+				    (char *) addr + (uaddr & PAGE_MASK), len);
+
+      /* Unmap pages and deallocate copy.  */
+      pmap_remove (vm_map_pmap (device_io_map),
+		   addr, addr + (copy->cpy_npages << PAGE_SHIFT));
+      vm_map_copy_discard (copy);
+
+      /* Check result of write.  */
+      if (amt > 0)
+	{
+	  resid -= amt;
+	  if (resid == 0)
+	    break;
+	  uaddr += amt;
+	}
+      else
+	{
+	  if (amt < 0)
+	    err = linux_to_mach_error (amt);
+	  break;
+	}
+
+      /* Determine size of I/O this time around and copy in pages.  */
+      len = round_page (uaddr + resid) - trunc_page (uaddr);
+      if (len > MAX_COPY)
+	len = MAX_COPY;
+      len -= uaddr & PAGE_MASK;
+      if (len > resid)
+	len = resid;
+      err = vm_map_copyin_page_list (current_map (), uaddr, len,
+				     FALSE, FALSE, &copy, FALSE);
+      if (err)
+	break;
+    }
+
+  /* Delete kernel buffer.  */
+  vm_map_remove (device_io_map, addr, addr + size);
+
+out:
   if (--bd->iocount == 0 && bd->want)
     {
       bd->want = 0;
       thread_wakeup ((event_t) bd);
     }
+  if (IP_VALID (reply_port))
+    ds_device_write_reply (reply_port, reply_port_type, err, count - resid);
   return MIG_NO_REPLY;
 }
 
-/* XXX: Assumes all drivers use block_read.  */
 static io_return_t
 device_read (void *d, ipc_port_t reply_port,
 	     mach_msg_type_name_t reply_port_type, dev_mode_t mode,
 	     recnum_t bn, int count, io_buf_ptr_t *data,
 	     unsigned *bytes_read)
 {
-  int major, minor;
-  unsigned sz, maxsz, off;
+  boolean_t dirty;
+  int resid, amt;
   io_return_t err = 0;
-  vm_offset_t addr;
-  vm_object_t object;
+  queue_head_t pages;
   vm_map_copy_t copy;
+  vm_offset_t addr, offset, alloc_offset, o;
+  vm_object_t object;
+  vm_page_t m;
+  vm_size_t len, size;
   struct block_data *bd = d;
-  struct inode *inode = &bd->inode;
+  DECL_DATA;
+
+  INIT_DATA ();
 
   *data = 0;
   *bytes_read = 0;
 
   if (! bd->ds->fops->read)
     return D_INVALID_OPERATION;
-
-  if (count <= 0)
+  count = check_limit (bd, &td.file.f_pos, bn, count);
+  if (count < 0)
     return D_INVALID_SIZE;
+  if (count == 0)
+    return 0;
 
-  major = MAJOR (bd->inode.i_rdev);
-  minor = MINOR (bd->inode.i_rdev);
-
-  if (LINUX_BLOCK_READ_TRACE)
-    printf ("device_read: at %d: major %d, minor %d, count %d, recnum %u\n",
-	    __LINE__, major, minor, count, bn);
-
-  if (disk_major (major))
+  /* Allocate an object to hold the data.  */
+  size = round_page (count);
+  object = vm_object_allocate (size);
+  if (! object)
     {
-      assert (bd->ds->gd);
-
-      if (bd->part >= 0)
-	{
-	  struct disklabel *lp;
-
-	  assert (bd->ds->label);
-	  lp = bd->ds->label[minor];
-	  assert (lp);
-	  maxsz = lp->d_partitions[bd->part].p_size;
-	  off = (lp->d_partitions[bd->part].p_offset
-		 - bd->ds->gd->part[minor].start_sect);
-
-	  if (LINUX_BLOCK_READ_TRACE)
-	    printf ("device_read: at %d: dev %s, part %d, offset 0x%x, "
-		    "size %d, start_sect 0x%x, nr_sects %d\n",
-		    __LINE__, kdevname (major), bd->part, off, maxsz,
-		    bd->ds->gd->part[minor].start_sect,
-		    bd->ds->gd->part[minor].nr_sects);
-
-	  assert (off < bd->ds->gd->part[minor].nr_sects);
-	}
-      else
-	{
-	  maxsz = bd->ds->gd->part[minor].nr_sects;
-	  off = 0;
-	}
+      err = D_NO_MEMORY;
+      goto out;
     }
-  else
-    {
-      assert (blk_size[major]);
-      maxsz = blk_size[major][minor] << (BLOCK_SIZE_BITS - 9);
-      off = 0;
-    }
+  alloc_offset = offset = 0;
+  resid = count;
 
-  if (bn > maxsz)
-    return D_INVALID_SIZE;
-
-  /* Be backward compatible with Unix.  */
-  if (bn == maxsz)
-    {
-      if (LINUX_BLOCK_READ_TRACE)
-	printf ("device_read: at %d\n", __LINE__);
-      return 0;
-    }
-
-  sz = (count + 511) >> 9;
-  if (sz > maxsz - bn)
-    {
-      sz = maxsz - bn;
-      if (count > (sz << 9))
-	count = sz << 9;
-    }
-
-  bd->file.f_pos = (loff_t) (bn + off) << 9;
-  bd->file.f_object = NULL;
-
-  if (LINUX_BLOCK_READ_TRACE)
-    printf ("device_read: at %d: f_pos 0x%x\n",
-	    __LINE__, (unsigned) bd->file.f_pos);
-
-  bd->iocount++;
-
-  err = (*bd->ds->fops->read) (&bd->inode, &bd->file, (char *) data, count);
+  /* Allocate a kernel buffer.  */
+  addr = vm_map_min (device_io_map);
+  if (size > MAX_COPY)
+    size = MAX_COPY;
+  err = vm_map_enter (device_io_map, &addr, size, 0, TRUE, NULL,
+		      0, FALSE, VM_PROT_READ|VM_PROT_WRITE,
+		      VM_PROT_READ|VM_PROT_WRITE, VM_INHERIT_NONE);
   if (err)
-    err = linux_to_mach_error (err);
-  else
+    goto out;
+
+  queue_init (&pages);
+
+  while (resid)
     {
-      object = bd->file.f_object;
-      assert (object);
-      assert (object->ref_count == 1);
-      err = vm_map_copyin_object (object, 0, round_page (count), &copy);
-      assert (object->ref_count == 1);
-      if (err)
-	vm_object_deallocate (object);
+      /* Determine size of I/O this time around.  */
+      len = round_page (offset + resid) - trunc_page (offset);
+      if (len > MAX_COPY)
+	len = MAX_COPY;
+
+      /* Map any pages left from previous operation.  */
+      o = trunc_page (offset);
+      queue_iterate (&pages, m, vm_page_t, pageq)
+	{
+	  pmap_enter (vm_map_pmap (device_io_map),
+		      addr + o - trunc_page (offset),
+		      m->phys_addr, VM_PROT_READ|VM_PROT_WRITE, TRUE);
+	  o += PAGE_SIZE;
+	}
+      assert (o == alloc_offset);
+
+      /* Allocate and map pages.  */
+      while (alloc_offset < trunc_page (offset) + len)
+	{
+	  while ((m = vm_page_grab ()) == 0)
+	    VM_PAGE_WAIT (0);
+	  assert (! m->active && ! m->inactive);
+	  m->busy = TRUE;
+	  queue_enter (&pages, m, vm_page_t, pageq);
+	  pmap_enter (vm_map_pmap (device_io_map),
+		      addr + alloc_offset - trunc_page (offset),
+		      m->phys_addr, VM_PROT_READ|VM_PROT_WRITE, TRUE);
+	  alloc_offset += PAGE_SIZE;
+	}
+
+      /* Do the read.  */
+      amt = len - (offset & PAGE_MASK);
+      if (amt > resid)
+	amt = resid;
+      amt = (*bd->ds->fops->read) (&td.inode, &td.file,
+				   (char *) addr + (offset & PAGE_MASK), amt);
+
+      /* Compute number of pages to insert in object.  */
+      o = trunc_page (offset);
+      if (amt > 0)
+	{
+	  dirty = TRUE;
+	  resid -= amt;
+	  if (resid == 0)
+	    {
+	      /* Zero any unused space.  */
+	      if (offset + amt < o + len)
+		memset ((void *) (addr + offset - o + amt),
+			0, o + len - offset - amt);
+	      offset = o + len;
+	    }
+	  else
+	    offset += amt;
+	}
       else
 	{
-	  assert (copy->cpy_object->ref_count == 1);
-	  *data = (io_buf_ptr_t) copy;
-	  *bytes_read = count - bd->file.f_resid;
+	  dirty = FALSE;
+	  offset = o + len;
+	}
+
+      /* Unmap pages and add them to the object.  */
+      pmap_remove (vm_map_pmap (device_io_map), addr, addr + len);
+      vm_object_lock (object);
+      while (o < trunc_page (offset))
+	{
+	  m = (vm_page_t) queue_first (&pages);
+	  assert (! queue_end (&pages, (queue_entry_t) m));
+	  queue_remove (&pages, m, vm_page_t, pageq);
+	  assert (m->busy);
+	  vm_page_lock_queues ();
+	  if (dirty)
+	    {
+	      PAGE_WAKEUP_DONE (m);
+	      m->dirty = TRUE;
+	      vm_page_insert (m, object, o);
+	    }
+	  else
+	    vm_page_free (m);
+	  vm_page_unlock_queues ();
+	  o += PAGE_SIZE;
+	}
+      vm_object_unlock (object);
+      if (amt <= 0)
+	{
+	  if (amt < 0)
+	    err = linux_to_mach_error (amt);
+	  break;
 	}
     }
+
+  /* Delete kernel buffer.  */
+  vm_map_remove (device_io_map, addr, addr + size);
+
+  assert (queue_empty (&pages));
+
+out:
+  if (! err)
+    err = vm_map_copyin_object (object, 0, round_page (count), &copy);
+  if (! err)
+    {
+      *data = (io_buf_ptr_t) copy;
+      *bytes_read = count - resid;
+    }
+  else
+    vm_object_deallocate (object);
   if (--bd->iocount == 0 && bd->want)
     {
       bd->want = 0;
@@ -2520,7 +1566,7 @@ device_get_status (void *d, dev_flavor_t flavor, dev_status_t status,
     case DEV_GET_SIZE:
       if (*status_count != DEV_GET_SIZE_COUNT)
 	return D_INVALID_SIZE;
-      if (disk_major (MAJOR (bd->inode.i_rdev)))
+      if (disk_major (MAJOR (bd->dev)))
 	{
 	  assert (bd->ds->gd);
 
@@ -2528,21 +1574,21 @@ device_get_status (void *d, dev_flavor_t flavor, dev_status_t status,
 	    {
 	      struct disklabel *lp;
 
-	      assert (bd->ds->label);
-	      lp = bd->ds->label[MINOR (bd->inode.i_rdev)];
+	      assert (bd->ds->labels);
+	      lp = bd->ds->labels[MINOR (bd->dev)];
 	      assert (lp);
 	      (status[DEV_GET_SIZE_DEVICE_SIZE]
 	       = lp->d_partitions[bd->part].p_size << 9);
 	    }
 	  else
 	    (status[DEV_GET_SIZE_DEVICE_SIZE]
-	     = bd->ds->gd->part[MINOR (bd->inode.i_rdev)].nr_sects << 9);
+	     = bd->ds->gd->part[MINOR (bd->dev)].nr_sects << 9);
 	}
       else
 	{
-	  assert (blk_size[MAJOR (bd->inode.i_rdev)]);
+	  assert (blk_size[MAJOR (bd->dev)]);
 	  (status[DEV_GET_SIZE_DEVICE_SIZE]
-	   = (blk_size[MAJOR (bd->inode.i_rdev)][MINOR (bd->inode.i_rdev)]
+	   = (blk_size[MAJOR (bd->dev)][MINOR (bd->dev)]
 	      << BLOCK_SIZE_BITS));
 	}
       /* It would be nice to return the block size as reported by
