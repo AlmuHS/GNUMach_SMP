@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1993-1988 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -137,7 +137,7 @@ kern_return_t task_create(
 	new_task->ref_count = 2;
 
 	if (child_task == &kernel_task)  {
-		new_task->map = kernel_map; 
+		new_task->map = kernel_map;
 	} else if (inherit_memory) {
 		new_task->map = vm_map_fork(parent_task->map);
 	} else {
@@ -206,7 +206,7 @@ kern_return_t task_create(
 	    }
 	}
 #endif	/* FAST_TAS */
- 
+
 	ipc_task_enable(new_task);
 
 #if	NORMA_TASK
@@ -776,11 +776,11 @@ kern_return_t task_info(
 	    {
 		register task_basic_info_t	basic_info;
 
-		/* Allow *task_info_count to be one smaller than
+		/* Allow *task_info_count to be two words smaller than
 		   the usual amount, because creation_time is a new member
 		   that some callers might not know about. */
-		  
-		if (*task_info_count < TASK_BASIC_INFO_COUNT - 1) {
+
+		if (*task_info_count < TASK_BASIC_INFO_COUNT - 2) {
 		    return KERN_INVALID_ARGUMENT;
 		}
 
@@ -801,7 +801,7 @@ kern_return_t task_info(
 				= task->total_user_time.microseconds;
 		basic_info->system_time.seconds
 				= task->total_system_time.seconds;
-		basic_info->system_time.microseconds 
+		basic_info->system_time.microseconds
 				= task->total_system_time.microseconds;
 		basic_info->creation_time = task->creation_time;
 		task_unlock(task);
@@ -1035,7 +1035,7 @@ task_assign(
 	return KERN_FAILURE;
 }
 #endif	/* MACH_HOST */
-	
+
 
 /*
  *	task_assign_default:
@@ -1184,7 +1184,7 @@ task_ras_control(
 	int flavor)
 {
     kern_return_t ret = KERN_FAILURE;
-	
+
 #if	FAST_TAS
     int i;
 
@@ -1214,7 +1214,7 @@ task_ras_control(
 	    ret = KERN_INVALID_ADDRESS;
 	}
 	break;
-    case TASK_RAS_CONTROL_PURGE_ALL_AND_INSTALL_ONE: 
+    case TASK_RAS_CONTROL_PURGE_ALL_AND_INSTALL_ONE:
 	/* remove all RAS an install this RAS */
 	for (i = 0; i < TASK_FAST_TAS_NRAS; i++) {
 	    task->fast_tas_base[i] = task->fast_tas_end[i] = 0;
@@ -1235,7 +1235,7 @@ task_ras_control(
 	}
 	if (i == TASK_FAST_TAS_NRAS)  {
 	    ret = KERN_RESOURCE_SHORTAGE;
-	} 
+	}
 	break;
     default: ret = KERN_INVALID_VALUE;
 	break;
