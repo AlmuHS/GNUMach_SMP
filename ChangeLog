@@ -1,3 +1,8 @@
+2004-01-19  Marco Gerards  <metgerards@student.han.nl>
+
+        * linux/dev/glue/block.c (init_partition): Don't check for BSD
+        partitions if the DOS partition is too small.
+
 2004-01-16  Marco Gerards  <metgerards@student.han.nl>
 
 	* linux/dev/glue/block.c (device_get_status): Correctly calculate
