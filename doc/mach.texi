@@ -6,7 +6,7 @@
 @comment Tell install-info what to do.
 @dircategory Kernel
 @direntry
-* GNUMach: (mach)               Using and programming the GNU Mach microkernel.
+* GNUMach: (mach).              Using and programming the GNU Mach microkernel.
 @end direntry
 
 @c Should have a glossary.
