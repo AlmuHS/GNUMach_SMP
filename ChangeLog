@@ -1,3 +1,9 @@
+2001-08-23  Roland McGrath  <roland@frob.com>
+
+	* kern/bootstrap.c (bootstrap_create, user_bootstrap,
+	boot_script_exec_cmd, boot_script_task_resume): Add printfs at
+	various stages of startup.
+
 2001-08-21  Roland McGrath  <roland@frob.com>
 
 	* i386/i386at/model_dep.c (use_all_mem): Turn variable into macro.
