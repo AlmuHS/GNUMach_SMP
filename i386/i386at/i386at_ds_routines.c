@@ -35,11 +35,14 @@
 
 #include <i386at/dev_hdr.h>
 #include <i386at/device_emul.h>
+#include <i386/device-drivers.h>
 
 extern struct device_emulation_ops mach_device_emulation_ops;
 #ifdef LINUX_DEV
 extern struct device_emulation_ops linux_block_emulation_ops;
+#ifdef CONFIG_INET
 extern struct device_emulation_ops linux_net_emulation_ops;
+#endif
 #endif
 
 /* List of emulations.  */
@@ -47,7 +50,9 @@ static struct device_emulation_ops *emulation_list[] =
 {
 #ifdef LINUX_DEV
   &linux_block_emulation_ops,
+#ifdef CONFIG_INET
   &linux_net_emulation_ops,
+#endif
 #endif
   &mach_device_emulation_ops,
 };

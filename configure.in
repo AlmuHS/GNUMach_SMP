@@ -1,0 +1,45 @@
+dnl Configure script for GNU Mach.
+dnl Copyright 1997 Free Software Foundation, Inc.
+dnl This file is part of GNU Mach.  Redistribution terms are not yet decided.
+
+AC_INIT(kern/ipc_kobject.c)
+
+#
+# Deduce output var `systype' from configuration parms.
+#
+AC_CANONICAL_HOST
+
+case "$host_cpu" in
+i[[345]]86) systype=i386 ;;
+*) AC_MSG_ERROR([unsupported CPU type]) ;;
+esac
+
+AC_SUBST(systype)
+AC_SUBST(cross_compiling)
+
+# Default prefix is / for the kernel.
+AC_PREFIX_DEFAULT()
+
+#
+# Programs
+#
+AC_PROG_CC
+AC_PROG_AWK
+AC_PROG_INSTALL
+AC_PROG_LEX
+AC_PROG_YACC
+AC_CHECK_TOOL(MIG, mig, mig)
+
+if test $host != $build; then
+  AC_CHECK_PROG(BUILD_CC, gcc cc)
+fi
+
+# Set up `machine' link in build directory for easier header file location.
+AC_LINK_FILES(${systype}/${systype},machine)
+
+# Do machine-specific configuration last so that it can override anything
+# set above if necessary.
+
+AC_CONFIG_SUBDIRS($systype)
+
+AC_OUTPUT(Makefile)

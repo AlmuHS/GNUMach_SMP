@@ -85,7 +85,7 @@ static const char *version =
 #ifdef EI_DEBUG
 int ei_debug = EI_DEBUG;
 #else
-int ei_debug = 1;
+int ei_debug = 0;
 #endif
 #ifdef EI_PINGPONG
 static int ei_pingpong = 1;

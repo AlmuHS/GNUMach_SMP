@@ -1,8 +1,4 @@
 /*
- * Automatically generated C config: don't edit
- */
-
-/*
  * Loadable module support
  */
 #undef CONFIG_MODULES
@@ -25,11 +21,16 @@
 #undef  CONFIG_M586
 #undef  CONFIG_M686
 
+/* Fetch GNUmach driver config file */
+#include <i386/device-drivers.h>
+
+#if 0				/* these are now in device-drivers.h */
 /*
  * Floppy, IDE, and other block devices
  */
 #define CONFIG_BLK_DEV_FD 1
 #define CONFIG_BLK_DEV_IDE 1
+#endif
 
 /*
  * Please see drivers/block/README.ide for help/info on IDE drives
@@ -46,6 +47,7 @@
 #undef  CONFIG_BLK_DEV_LOOP
 #undef  CONFIG_BLK_DEV_XD
 
+#if 0				/* now in device-drivers.h */
 /*
  * Networking options
  */
@@ -55,6 +57,7 @@
 #undef  CONFIG_IP_FORWARD
 #undef  CONFIG_IP_MULTICAST
 #undef  CONFIG_IP_ACCT
+#endif
 
 /*
  * (it is safe to leave these untouched)
@@ -74,10 +77,12 @@
 #undef  CONFIG_AX25
 #undef  CONFIG_NETLINK
 
+#if 0
 /*
  * SCSI support
  */
 #define CONFIG_SCSI 1
+#endif
 
 /*
  * SCSI support type (disk, tape, CDrom)
@@ -87,6 +92,7 @@
 #define CONFIG_BLK_DEV_SR 1
 #undef  CONFIG_CHR_DEV_SG
 
+#if 0				/* now in device-drivers.h */
 /*
  * Some SCSI devices (e.g. CD jukebox) support multiple LUNs
  */
@@ -118,6 +124,7 @@
 #undef  CONFIG_SCSI_NCR53C406A
 #undef  CONFIG_SCSI_AM53C974
 #define CONFIG_SCSI_NCR53C7xx 1
+#endif
 
 /*
  * Network device support
@@ -129,6 +136,7 @@
 #undef CONFIG_SLIP_SMART
 #undef CONFIG_PPP
 
+#if 0
 /*
  * CCP compressors for PPP are only built as modules.
  */
@@ -164,6 +172,7 @@
  * CD-ROM drivers (not for SCSI or IDE/ATAPI drives)
  */
 #undef  CONFIG_CD_NO_IDESCSI
+#endif
 
 /*
  * Filesystems
@@ -185,6 +194,7 @@
 #undef  CONFIG_HPFS_FS
 #undef  CONFIG_SYSV_FS
 
+#if 0
 /*
  * Character devices
  */
@@ -208,3 +218,4 @@
  * Kernel hacking
  */
 #undef  CONFIG_PROFILE
+#endif

@@ -438,6 +438,9 @@ mach_msg
 #endif	/* LINTLIBRARY */
 #endif	/* c_plusplus || __STDC__ */
 
+extern typeof (mach_msg) __mach_msg;
+extern typeof (mach_msg_trap) __mach_msg_trap;
+
 
 /* Definitions for the old IPC interface. */
 

@@ -88,7 +88,7 @@ static void add_partition (struct gendisk *hd, int minor, int start, int size)
 {
 	hd->part[minor].start_sect = start;
 	hd->part[minor].nr_sects   = size;
-	print_minor_name(hd, minor);
+	/*	print_minor_name(hd, minor);*/
 }
 
 static inline int is_extended_partition(struct partition *p)
@@ -301,7 +301,7 @@ check_table:
 			continue;
 		add_partition(hd, minor, first_sector+START_SECT(p), NR_SECTS(p));
 		if (is_extended_partition(p)) {
-			printk(" <");
+		  /*			printk(" <");*/
 			/*
 			 * If we are rereading the partition table, we need
 			 * to set the size of the partition so that we will
@@ -311,7 +311,7 @@ check_table:
 			hd->sizes[minor] = hd->part[minor].nr_sects 
 			  	>> (BLOCK_SIZE_BITS - 9);
 			extended_partition(hd, MKDEV(hd->major, minor));
-			printk(" >");
+			/*			printk(" >");*/
 			/* prevent someone doing mkfs or mkswap on an
 			   extended partition, but leave room for LILO */
 			if (hd->part[minor].nr_sects > 2)
@@ -332,7 +332,7 @@ check_table:
 			add_partition(hd, current_minor, START_SECT(p), NR_SECTS(p));
 		}
 	}
-	printk("\n");
+	/*	printk("\n");*/
 	brelse(bh);
 	return 1;
 }
@@ -405,7 +405,7 @@ static int osf_partition(struct gendisk *hd, unsigned int dev, unsigned long fir
 				partition->p_size);
 		current_minor++;
 	}
-	printk("\n");
+	/*	printk("\n");*/
 	brelse(bh);
 	return 1;
 }
@@ -475,7 +475,7 @@ static int sun_partition(struct gendisk *hd, unsigned int dev, unsigned long fir
 		add_partition(hd, current_minor, st_sector, p->num_sectors);
 		current_minor++;
 	}
-	printk("\n");
+	/*	printk("\n");*/
 	brelse(bh);
 	return 1;
 }
@@ -487,8 +487,8 @@ static void check_partition(struct gendisk *hd, kdev_t dev)
 	static int first_time = 1;
 	unsigned long first_sector;
 
-	if (first_time)
-		printk("Partition check:\n");
+	/*	if (first_time)
+		printk("Partition check:\n");*/
 	first_time = 0;
 	first_sector = hd->part[MINOR(dev)].start_sect;
 
@@ -501,8 +501,8 @@ static void check_partition(struct gendisk *hd, kdev_t dev)
 		return;
 	}
 
-	printk(" ");
-	print_minor_name(hd, MINOR(dev));
+	/*	printk(" ");
+	print_minor_name(hd, MINOR(dev));*/
 #ifdef CONFIG_MSDOS_PARTITION
 	if (msdos_partition(hd, dev, first_sector))
 		return;

@@ -341,9 +341,13 @@ static void init_triton_dma (ide_hwif_t *hwif, unsigned short base)
 {
 	static unsigned long dmatable = 0;
 
+#if 0
 	printk("    %s: BusMaster DMA at 0x%04x-0x%04x", hwif->name, base, base+7);
+#endif
 	if (check_region(base, 8)) {
+#if 0
 		printk(" -- ERROR, PORTS ALREADY IN USE");
+#endif
 	} else {
 		request_region(base, 8, "triton DMA");
 		hwif->dma_base = base;
@@ -362,7 +366,9 @@ static void init_triton_dma (ide_hwif_t *hwif, unsigned short base)
 			hwif->dmaproc  = &triton_dmaproc;
 		}
 	}
+#if 0
 	printk("\n");
+#endif
 }
 
 /*
@@ -448,10 +454,12 @@ void ide_init_triton (byte bus, byte fn)
 			continue;
 		s_clks = ((~time >> 12) & 3) + 2;
 		r_clks = ((~time >>  8) & 3) + 1;
+#if 0
 		printk("    %s timing: (0x%04x) sample_CLKs=%d, recovery_CLKs=%d (PIO mode%d)\n",
 		 hwif->name, time, s_clks, r_clks, calc_mode(s_clks+r_clks));
 		print_triton_drive_flags (0, time & 0xf);
 		print_triton_drive_flags (1, (time >> 4) & 0xf);
+#endif
 	}
 
 quit: if (rc) printk("ide: pcibios access failed - %s\n", pcibios_strerror(rc));

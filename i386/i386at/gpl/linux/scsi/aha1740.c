@@ -1,4 +1,4 @@
-/*  $Id: aha1740.c,v 1.1.1.1 1997/02/25 21:27:46 thomas Exp $
+/*  $Id: aha1740.c,v 1.2 1997/03/24 21:51:17 thomas Exp $
  *  1993/03/31
  *  linux/kernel/aha1740.c
  *
@@ -56,7 +56,7 @@ struct proc_dir_entry proc_scsi_aha1740 = {
 #endif
 
 /*
-static const char RCSid[] = "$Header: cvs/gnumach/i386/i386at/gpl/linux/scsi/Attic/aha1740.c,v 1.1.1.1 1997/02/25 21:27:46 thomas Exp $";
+static const char RCSid[] = "$Header: cvs/gnumach/i386/i386at/gpl/linux/scsi/Attic/aha1740.c,v 1.2 1997/03/24 21:51:17 thomas Exp $";
 */
 
 static unsigned int slot, base;
@@ -166,6 +166,9 @@ int aha1740_test_port(void)
 	return 0;
     }
 
+    /* Try and turn on enhanced mode */
+    tmp = inb (PORTADR);
+    outb (PORTADR, tmp | PORTADDR_ENH);
     if ( inb(PORTADR) & PORTADDR_ENH )
 	return 1;   /* Okay, we're all set */
 	

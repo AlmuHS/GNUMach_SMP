@@ -1600,7 +1600,7 @@ check_disk_change (kdev_t dev)
   if (! (*fops->check_media_change) (dev))
     return 0;
 
-  printf ("Disk change detected on device %s\n", kdevname(dev));
+  /*  printf ("Disk change detected on device %s\n", kdevname(dev));*/
 
   if (fops->revalidate)
     (*fops->revalidate) (dev);
@@ -1918,8 +1918,8 @@ find_major:
 	  goto slice_done;
 	}
 
-      printf ("%s: default slice %d: %s OS\n", np->name, slice,
-	      (sysid == UNIXOS ? "Mach" : (sysid == BSDOS ? "BSD" : "LINUX")));
+      /*      printf ("%s: default slice %d: %s OS\n", np->name, slice,
+	      (sysid == UNIXOS ? "Mach" : (sysid == BSDOS ? "BSD" : "LINUX")));*/
 
     slice_done:
       if (ds->fops->release)
@@ -2049,7 +2049,7 @@ find_major:
       dlp = (struct disklabel *) (bhp->b_data + ((LBLLOC << 9) & (bsize - 1)));
       if (dlp->d_magic != DISKMAGIC || dlp->d_magic2 != DISKMAGIC)
 	goto vtoc;
-      printf ("%s: BSD LABEL\n", np->name);
+      /*      printf ("%s: BSD LABEL\n", np->name);*/
       lp->d_npartitions = dlp->d_npartitions;
       memcpy (lp->d_partitions, dlp->d_partitions,
 	      MAXPARTITIONS * sizeof (struct partition));
@@ -2080,7 +2080,7 @@ find_major:
 	  err = D_NO_SUCH_DEVICE;
 	  goto label_done;
 	}
-      printf ("%s: LOCAL LABEL\n", np->name);
+      /*      printf ("%s: LOCAL LABEL\n", np->name);*/
       lp->d_npartitions = (evp->nparts > MAXPARTITIONS
 			   ? MAXPARTITIONS : evp->nparts);
       for (i = 0; i < lp->d_npartitions; i++)

@@ -1,0 +1,38 @@
+I am pleased to announce version 1.0 of the GNU distribution of the
+Mach kernel.  It may be found in the file (about XXX MB compressed)
+ftp://prep.ai.mit.edu/pub/gnu/gnumach-1.0.tar.gz.
+
+This distribution was prepared in order to install some bug fixes and
+minor improvements (not worth noting here) to the Utah microkernel,
+and to make the package conform to the GNU coding standards, at least
+minimally, as regards configuration.  This was based upon the UK22
+distribution, with some modifications made at Utah as well.
+
+This kernel will be in the forthcoming complete binary distribution of
+GNU.  The release is being made now, in the hopes that any serious
+problems we didn't notice might be found in advance of that
+distribution.  Volunteers who are interested in compiling this release
+should do so, and please report any problems asap.
+
+All the non-kernel pieces of the Utah distribution are not present in
+this distribution, except for the MiG interface generator which is
+still supplied.  These other pieces were never used for GNU, and are
+not really part of the kernel at all.  We may separate MiG into a
+separate distribution for convenience at some later date.
+
+This distribution is only for i386, i486, i586 (pentium), and i686
+(sexium [pentium pro]) processors on PC-AT compatible machines.
+Volunteers interested in ports to other architectures are eagerly
+sought.
+
+Most ethernet cards and disk controllers are supported by this kernel;
+ones for which Linux drivers exist can be ported easily.  Non-network
+devices for which BSD drivers exist can be ported with a little
+effort, but not much.
+
+Bug reports relating to this distribution should be sent to
+bug-hurd@prep.ai.mit.edu.  Requests for assistance should be made on
+help-hurd@prep.ai.mit.edu. 
+
+The md5sum checksum for gnumach-1.0.tar.gz is:
+

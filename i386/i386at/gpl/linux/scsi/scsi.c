@@ -49,7 +49,7 @@
 #undef USE_STATIC_SCSI_MEMORY
 
 /*
-static const char RCSid[] = "$Header: cvs/gnumach/i386/i386at/gpl/linux/scsi/Attic/scsi.c,v 1.1.1.1 1997/02/25 21:27:50 thomas Exp $";
+static const char RCSid[] = "$Header: cvs/gnumach/i386/i386at/gpl/linux/scsi/Attic/scsi.c,v 1.2 1997/03/24 21:51:33 thomas Exp $";
 */
 
 
@@ -2352,12 +2352,14 @@ int scsi_dev_init(void)
     for (shpnt = scsi_hostlist; shpnt; shpnt = shpnt->next)
 	scan_scsis(shpnt,0,0,0,0);           /* scan for scsi devices */
 
+#if 0
     printk("scsi : detected ");
     for (sdtpnt = scsi_devicelist; sdtpnt; sdtpnt = sdtpnt->next)
 	if (sdtpnt->dev_noticed && sdtpnt->name)
 	    printk("%d SCSI %s%s ", sdtpnt->dev_noticed, sdtpnt->name,
 		   (sdtpnt->dev_noticed != 1) ? "s" : "");
     printk("total.\n");
+#endif
     
     for(sdtpnt = scsi_devicelist; sdtpnt; sdtpnt = sdtpnt->next)
 	if(sdtpnt->init && sdtpnt->dev_noticed) (*sdtpnt->init)();

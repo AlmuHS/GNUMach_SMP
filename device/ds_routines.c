@@ -66,6 +66,7 @@
 
 #ifdef i386
 #include <i386at/device_emul.h>
+#include <i386/device-drivers.h>
 #endif
 
 #ifdef i386
@@ -1428,7 +1429,7 @@ void io_done_thread_continue()
 	    register spl_t	s;
 	    register io_req_t	ior;
 
-#if defined (i386) && defined (LINUX_DEV)
+#if defined (i386) && defined (LINUX_DEV) && defined (CONFIG_INET)
 	    free_skbuffs ();
 #endif
 	    s = splio();

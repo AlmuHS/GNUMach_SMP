@@ -192,10 +192,12 @@ extern unsigned long check_pcibios(unsigned long memory_start, unsigned long mem
 			if (signature != PCI_SIGNATURE)
 				pcibios_entry = 0;
 		}
+#if 0
 		if (pcibios_entry) {
 			printk ("pcibios_init : PCI BIOS revision %x.%02x entry at 0x%lx\n",
 				major_revision, minor_revision, pcibios_entry);
 		}
+#endif
 	}
 	return memory_start;
 }
@@ -433,13 +435,17 @@ unsigned long pcibios_init(unsigned long memory_start, unsigned long memory_end)
 				check->fields.revision, check);
 			continue;
 		}
+#if 0
 		printk ("pcibios_init : BIOS32 Service Directory structure at 0x%p\n", check);
+#endif
 		if (!bios32_entry) {
 			if (check->fields.entry >= 0x100000) {
 				printk("pcibios_init: entry in high memory, unable to access\n");
 			} else {
 				bios32_indirect.address = bios32_entry = check->fields.entry;
+#if 0
 				printk ("pcibios_init : BIOS32 Service Directory entry at 0x%lx\n", bios32_entry);
+#endif
 			}
 		} else {
 			printk ("pcibios_init : multiple entries, mail drew@colorado.edu\n");

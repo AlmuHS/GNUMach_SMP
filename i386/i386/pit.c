@@ -144,8 +144,8 @@ findspeed()
 	 */
         /* we arrange calculation so that it doesn't overflow */
         delaycount = ((COUNT/1000) * CLKNUM) / (0xffff-leftover);
-        printf("findspeed: delaycount=%d (tics=%d)\n",
-	       delaycount, (0xffff-leftover));
+	/*        printf("findspeed: delaycount=%d (tics=%d)\n",
+	       delaycount, (0xffff-leftover));*/
 	splon(s);         /* restore interrupt state */
 }
 

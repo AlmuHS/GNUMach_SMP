@@ -116,8 +116,9 @@ void kd_enqsc();			/* enqueues a scancode */
 
 void timeout();
 
+#if 0
 #define BROKEN_KEYBOARD_RESET
-
+#endif
 
 struct tty       kd_tty;
 extern int	rebootflag;
@@ -2327,7 +2328,6 @@ kdreboot()
 	kd_sendcmd(0xFE);		/* XXX - magic # */
 	delay(1000000);			/* wait to see if anything happens */
 #endif
-
 	/* 
 	 * If that didn't work, then we'll just have to try and
 	 * do it the hard way. 

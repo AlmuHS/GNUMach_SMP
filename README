@@ -1,0 +1,37 @@
+-*- Text -*-
+This is the GNU mach 0.1 distribution.
+
+This kernel is derived from the Utah kernel source.  We use it to run
+the Hurd on.  It is being distributed by us so that we can more easily
+modify the source, and so that it will work with the normal GNU coding
+standards and Makefile conventions.
+
+libmach, bootloaders, default pagers, and the like are not part of
+this distribution.  For libraries, we refer you to the GNU C library,
+which has Mach support.  For bootloaders, we refer you to GRUB.  (This
+kernel can be loaded by any bootloader that uses the multiboot
+standard.)  For default pagers, we refer you to your particular system
+that you will run on top of Mach.  The upcoming Hurd distribution
+(version 0.2) will contain the code that used to be in the Utah kernel
+distributions for doing the work of the default pager.
+
+The interface generator `MiG' is still part of this distribution.
+Perhaps at some later point it will be split out, as it surely should
+be.
+
+Generic installation instructions may be found in the file INSTALL.
+
+By default, you get a kernel with no device drivers for disks and
+network devices.  This is not what you want!  Examine the file
+`README-Drivers' in the directory for the machine type your kernel is
+on (e.g., `i386/README-Drivers') for a list of configure --enable
+switches.  Give the appropriate set for your hardware.  It is
+generally safe to specify switches for hardware you don't have; in
+this way you can build kernels that work on different physical machine
+set ups.
+
+The specific switches you give to configure are always recorded in the
+file `config.status'.  So you can always tell what options you used to
+build a particular kernel.
+
+

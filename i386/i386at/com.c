@@ -173,7 +173,7 @@ comprobe_general(struct bus_device *dev, int noisy)
 int
 comprobe(int port, struct bus_device *dev)
 {
-	return comprobe_general(dev, /*noisy*/ 1);
+	return comprobe_general(dev, /*noisy*/ 0);
 }
 
 #if RCLINE >= 0

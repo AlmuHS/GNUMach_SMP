@@ -894,7 +894,9 @@ unsigned long pci_init (unsigned long mem_start, unsigned long mem_end)
 		return mem_start;
 	}
 
+#if 0
 	printk("Probing PCI hardware.\n");
+#endif
 
 	memset(&pci_root, 0, sizeof(pci_root));
 	pci_root.subordinate = scan_bus(&pci_root, &mem_start);

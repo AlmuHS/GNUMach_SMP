@@ -1,0 +1,513 @@
+# Makefile for Mach 4 kernel directory
+# Copyright 1996 Free Software Foundation, Inc.
+# This file is part of GNU Mach.  Redistribution terms are not yet decided. 
+
+
+
+# Variables from `configure'.
+srcdir=@srcdir@
+systype=@systype@
+prefix=@prefix@
+
+installed-clib=$(prefix)/lib/libcrt.a
+exec_prefix=$(prefix)
+
+bootdir=$(exec_prefix)/boot
+includedir=$(prefix)/include
+libexecdir=$(exec_prefix)/libexec
+bindir=$(exec_prefix)/bin
+
+sysdep = $(srcdir)/$(systype)
+
+cross_compiling=@cross_compiling@
+
+# Programs found by configure.
+AWK=@AWK@
+INSTALL=@INSTALL@
+CC=@CC@
+BUILD_CC=@BUILD_CC@
+LEX=@LEX@
+YACC=@YACC@
+
+LEXLIB=@LEXLIB@
+
+INSTALL_PROGRAM=$(INSTALL)
+INSTALL_DATA=$(INSTALL) -m 644
+
+CFLAGS=@CFLAGS@
+
+# We build these locally
+MIG=./mig
+MIGCOM=./migcom
+
+all:
+
+# All the possible architectures
+all-archs = i386
+
+all-archs-subdirs = $(patsubst %,$(srcdir)/%/Subdirs,$(all-archs))
+all-archs-files = $(patsubst %,$(srcdir)/%/Files,$(all-archs))
+
+# Files distributed from the top level directory:
+topfiles = ChangeLog ChangeLog.0 ChangeLog.00 Drivers.macros Makefile.in \
+	README INSTALL config.guess config.sub configure configure.in \
+	gensym.awk install-sh version.c
+
+# All the source in each directory.  
+
+# Old crud from a previous configure scheme
+bogus-files = bootstrap_symbols.h fast_tas.h hw_footprint.h net_atm.h \
+	power_save.h simple_clock.h stat_time.h xpr_debug.h \
+	$(patsubst %,mach_%.h,assert counters debug fixpri host ipc_compat \
+	ipc_debug ipc_test kdb ldebug lock_mon machine_routines mp_debug \
+	pagemap pcsample ttd vm_debug) \
+	$(patsubst %,norma_%.h,device ether ipc task vm)
+
+# Generic code for various hardware drivers
+chips-files = atm.c audio.c bt431.c bt455.c bt459.c build_font.c busses.c \
+	cfb_hdw.c cfb_misc.c dc503.c dtop_handlers.c dtop_hdw.c dz_hdw.c \
+	fb_hdw.c fb_misc.c fdc_82077_hdw.c frc.c ims332.c isdn_79c30_hdw.c \
+	kernel_font.c lance.c lance_mapped.c lk201.c mc_clock.c mouse.c \
+	nc.c nw_mk.c pm_hdw.c pm_misc.c scc_8530_hdw.c screen.c \
+	screen_switch.c serial_console.c sfb_hdw.c sfb_misc.c spans.c \
+	tca100.c tca100_if.c xcfb_hdw.c xcfb_misc.c \
+	atmreg.h audio_config.h audio_defs.h bt431.h bt455.h bt459.h \
+	bt478.h busses.h dc503.h dtop.h dz_7085.h dz_defs.h eccreg.h \
+	fdc_82077.h ims332.h isdn_79c30.h lance.h lk201.h mc_clock.h \
+	nc.h nw.h nw_mk.h pm_defs.h scc_8530.h screen.h screen_defs.h \
+	screen_switch.h serial_defs.h spans.h tca100.h tca100_if.h \
+	vs42x_rb.h xcfb_monitor.h
+
+# Generic code for various SCSI unit types
+scsi-files = disk_label.c mapped_scsi.c pc_scsi_label.c rz.c rz_audio.c \
+	rz_cpu.c rz_disk.c rz_disk_bbr.c rz_host.c rz_tape.c scsi.c \
+	scsi_alldevs.c scsi_comm.c scsi_cpu.c scsi_disk.c scsi_jukebox.c \
+	scsi_optical.c scsi_printer.c scsi_rom.c scsi_scanner.c \
+	scsi_tape.c scsi_worm.c \
+	compat_30.h mapped_scsi.h rz.h rz_labels.h scsi.h scsi2.h \
+	scsi_defs.h scsi_endian.h
+
+# Icky kernel debugger
+ddb-cfiles = $(addprefix db_,$(ddb-names))
+ddb-names = access.c aout.c break.c command.c cond.c examine.c expr.c \
+	ext_symtab.c input.c lex.c macro.c mp.c output.c print.c run.c \
+	sym.c task_thread.c trap.c variables.c watch.c write_cmd.c
+ddb-files = $(ddb-cfiles) $(patsubst %,db_%.h, \
+	access break command expr lex output print run sym task_thread \
+	variables watch) nlist.h stab.h tr.h
+
+# Device support interfaces
+device-files = blkio.c chario.c cirbuf.c cons.c dev_lookup.c dev_name.c \
+	dev_pager.c device_init.c dk_label.c ds_routines.c net_io.c subrs.c \
+	buf.h cirbuf.h conf.h cons.h dev_hdr.h dev_master.h device_port.h \
+	device_types_kernel.h ds_routines.h errno.h if_ether.h if_hdr.h \
+	io_req.h net_io.h param.h tty.h memory_object_reply.cli \
+	dev_forward.defs device_pager.srv device_reply.cli
+
+# IPC implementation
+ipc-cfiles = $(addprefix ipc_,$(ipc-names)) \
+		mach_msg.c mach_port.c mach_rpc.c mach_debug.c fipc.c
+ipc-names = entry.c hash.c init.c kmsg.c marequest.c mqueue.c \
+	notify.c object.c port.c pset.c right.c space.c splay.c \
+	table.c target.c thread.c 
+ipc-files = $(ipc-cfiles) mach_port.srv fipc.h port.h mach_msg.h \
+	$(patsubst %,ipc_%.h, \
+	entry hash init kmsg kmsg_queue machdep marequest mqueue notify \
+	object port pset right space splay table target thread types)
+
+# "kernel" implementation (tasks, threads, trivia, etc.)
+kern-cfiles = act.c ast.c bootstrap.c counters.c debug.c eventcount.c \
+	exception.c host.c ipc_host.c ipc_kobject.c ipc_mig.c ipc_sched.c \
+	ipc_tt.c kalloc.c lock.c lock_mon.c mach_clock.c mach_factor.c \
+	machine.c pc_sample.c printf.c priority.c processor.c profile.c \
+	queue.c sched_prim.c startup.c strings.c syscall_emulation.c \
+	syscall_subr.c syscall_sw.c task.c thread.c thread_swap.c \
+	time_stamp.c timer.c xpr.c zalloc.c elf-load.c
+kern-files = $(kern-cfiles) \
+	act.h assert.h ast.h compat_xxx_defs.h counters.h cpu_number.h \
+	debug.h eventcount.h host.h ipc_host.h ipc_kobject.h ipc_sched.h \
+	ipc_tt.h kalloc.h kern_types.h lock.h mach_param.h macro_help.h \
+	pc_sample.h processor.h queue.h refcount.h sched.h sched_prim.h \
+	shuttle.h strings.h syscall_emulation.h syscall_subr.h syscall_sw.h \
+	task.h thread.h thread_swap.h time_out.h time_stamp.h timer.h xpr.h \
+	zalloc.h \
+	mach.srv mach4.srv mach_debug.srv mach_host.srv
+
+# Still more trivia
+util-cfiles = about_to_die.c cpu.c cpu_init.c die.c putchar.c puts.c
+util-files = $(util-cfiles) config.h cpu.h cpu_subs.h cpus.h debug.h \
+	phys_mem.h ref_count.h
+
+# Virtual memory implementation
+vm-cfiles = $(addprefix vm_,$(vm-names)) memory_object.c 
+vm-names = debug.c external.c fault.c init.c kern.c map.c \
+	object.c pageout.c resident.c user.c
+vm-files = $(vm-cfiles) memory_object_default.cli memory_object_user.cli \
+	memory_object.h pmap.h $(patsubst %,vm_%.h, \
+	external fault kern map object page pageout user)
+
+
+
+# Object files that go into the kernel image.  (This will be augmented by the
+# machine dependent Makefile fragment.)
+
+# Basic kernel source for Mach
+objfiles := $(subst .c,.o,$(ipc-cfiles) $(kern-cfiles) \
+			  $(util-cfiles) $(vm-cfiles))
+vpath %.c $(srcdir)/ipc $(srcdir)/kern $(srcdir)/util $(srcdir)/vm
+
+# These device support files are always needed; the others are needed only
+# if particular drivers want the routines.
+# XXX functions in device/subrs.c should each be moved elsewhere
+objfiles += cons.o dev_lookup.o dev_name.o dev_pager.o device_init.o \
+	ds_routines.o subrs.o net_io.o blkio.o chario.o
+vpath %.c $(srcdir)/device
+
+# DDB support -- eventually to die.  Please.
+objfiles += $(subst .c,.o,$(ddb-cfiles))
+vpath %.c $(srcdir)/ddb
+
+# Version number
+objfiles += version.o
+vpath version.c $(srcdir)
+
+
+# Header files installed for user use
+device-headers= $(addprefix device/,audio_status.h bpf.h device.defs \
+		device_reply.defs device_request.defs device_types.defs \
+		device_types.h disk_status.h net_status.h tape_status.h \
+		tty_status.h)
+mach-headers= $(addprefix mach/, bootstrap.defs default_pager.defs \
+		default_pager_helper.defs default_pager_types.defs \
+		exc.defs mach.defs mach4.defs mach_host.defs mach_norma.defs \
+		mach_port.defs mach_types.defs memory_object.defs \
+		memory_object_default.defs norma_task.defs notify.defs \
+		std_types.defs \
+		alert.h boolean.h boot.h default_pager_types.h exception.h \
+		host_info.h kern_return.h mach_param.h mach_types.h \
+		machine.h macro_help.h memory_object.h message.h mig_errors.h \
+		msg_type.h multiboot.h norma_special_ports.h notify.h \
+		pc_sample.h policy.h port.h proc_ops.h processor_info.h \
+		profil.h profilparam.h rpc.h std_types.h syscall_sw.h \
+		task_info.h task_special_ports.h thread_info.h \
+		thread_special_ports.h thread_status.h thread_switch.h \
+		time_value.h version.h vm_attributes.h vm_inherit.h \
+		vm_param.h vm_prot.h vm_statistics.h)
+
+mach-debug-headers:= $(addprefix mach_debug/, hash_info.h ipc_info.h \
+		mach_debug.defs mach_debug_types.defs mach_debug_types.h \
+		pc_info.h vm_info.h zone_info.h)
+
+installed-headers:= $(device-headers) $(mach-headers)
+
+
+
+# We steal routines from the C library and put them here.
+# If we link against the C library directly, then we have to hope that we have
+# correctly found all the dependencies that might bring in C library code.
+# This method is much safer because it's easy to check this one object file
+# for sanity.
+objfiles += clib-routines.o
+
+clib-routines = memcpy memset bcopy bzero htonl ntohl ntohs
+
+clib-routines.o: $(installed-clib)
+	$(LD) -o clib-routines.o -r $(addprefix -u ,$(clib-routines)) $(installed-clib)
+
+# This rule checks clib-routines and makes sure it doesn't have any 
+# extra symbols.
+kernel: check-clib-routines
+check-clib-routines: clib-routines.o
+	(set -e; test `echo $(clib-routines) | wc -w` -eq `nm $< | wc -l`; \
+	touch check-clib-routines)
+
+
+# Empty dependency file
+clib-routines.d:; touch $@
+
+
+
+# Automatically generated source
+
+# User stubs
+objfiles += memory_object_user_user.o memory_object_default_user.o \
+	device_reply_user.o memory_object_reply_user.o
+
+# Server stubs
+objfiles += device_server.o device_pager_server.o mach_port_server.o \
+	mach_server.o mach4_server.o mach_debug_server.o mach_host_server.o
+
+# Where to find the relevant Mig source files
+vpath %.cli $(srcdir)/vm $(srcdir)/device
+vpath %.srv $(srcdir)/device $(srcdir)/ipc $(srcdir)/kern
+
+
+
+
+#
+# Compilation flags
+#
+
+DEFINES += -DMACH -DCMU -DMACH_KERNEL -DKERNEL
+INCLUDES += -I. -I$(srcdir) -I$(srcdir)/include -I$(srcdir)/include/mach/sa \
+	-I$(srcdir)/bogus -I$(srcdir)/util -I$(srcdir)/kern -I$(srcdir)/device
+
+
+include $(sysdep)/Makefrag
+
+CPPFLAGS += -nostdinc $(DEFINES) $(INCLUDES) 
+
+MIGFLAGS += $(CPPFLAGS)
+
+
+all: kernel cross-migcom
+
+
+#
+# Kernel Image
+#
+# (The newline in this command makes it much easier to read in make output.)
+kernel: $(objfiles)
+	$(LD) -o $@ $(LDFLAGS) \
+		$(objfiles)
+
+
+
+#
+# Installation
+# 
+installed-headers-names = $(addprefix $(includedir)/,$(installed-headers))
+installed-sysdep-headers-names = $(addprefix $(includedir)/,$($(systype)-installed-headers))
+install: mkinstalldirs kernel $(installed-headers-names) $(installed-sysdep-headers-names) cross-mig cross-migcom
+	$(INSTALL_PROGRAM) kernel $(bootdir)/gnumach
+	$(INSTALL_PROGRAM) cross-mig $(bindir)/mig
+	$(INSTALL_PROGRAM) cross-migcom $(libexecdir)/mig
+	-ln -s $(systype) $(includedir)/mach/machine
+
+$(installed-headers-names): $(includedir)/%: $(srcdir)/include/%
+	$(INSTALL_DATA) $< $@
+
+$(installed-sysdep-headers-names): $(includedir)/%: $(sysdep)/include/%
+	$(INSTALL_DATA) $< $@
+
+mkinstalldirs:
+	mkdir -p $(bootdir) $(includedir) $(includedir)/device \
+		$(includedir)/mach $(includedir)/mach/$(systype)
+
+
+#
+# Building the distribution
+#
+
+dist:
+	rm -rf gnumach-$(version)
+	mkdir gnumach-$(version)
+	# Directories
+	mkdir gnumach-$(version)/{bogus,chips,ddb,device,ipc,kern,mig,scsi,util,vm,include}
+	mkdir gnumach-$(version)/include/{mach,device,mach_debug}
+	for dir in `cat $(all-archs-subdirs)`; do \
+		mkdir -p gnumach-$(version)/$$dir; \
+	done
+	# Files
+	ln $(addprefix $(srcdir)/,$(topfiles)) gnumach-$(version)
+	ln $(addprefix $(srcdir)/bogus/,$(bogus-files)) gnumach-$(version)/bogus
+	ln $(addprefix $(srcdir)/chips/,$(chips-files)) gnumach-$(version)/chips
+	ln $(addprefix $(srcdir)/ddb/,$(ddb-files)) gnumach-$(version)/ddb
+	ln $(addprefix $(srcdir)/device/,$(device-files)) gnumach-$(version)/device
+	ln $(addprefix $(srcdir)/ipc/,$(ipc-files)) gnumach-$(version)/ipc
+	ln $(addprefix $(srcdir)/kern/,$(kern-files)) gnumach-$(version)/kern
+	ln $(addprefix $(srcdir)/mig/,$(mig-files)) gnumach-$(version)/mig
+	ln $(addprefix $(srcdir)/scsi/,$(scsi-files)) gnumach-$(version)/scsi
+	ln $(addprefix $(srcdir)/util/,$(util-files)) gnumach-$(version)/util
+	ln $(addprefix $(srcdir)/vm/,$(vm-files)) gnumach-$(version)/vm
+	ln $(addprefix $(srcdir)/include/,$(mach-headers)) gnumach-$(version)/include/mach
+	ln $(addprefix $(srcdir)/include/,$(device-headers)) gnumach-$(version)/include/device
+	ln $(addprefix $(srcdir)/include/,$(mach-debug-headers)) gnumach-$(version)/include/mach_debug
+	# Files in arch dirs
+	for file in `cat $(all-archs-files)`; do \
+		ln $(srcdir)/$$file gnumach-$(version)/`dirname $$file`; \
+	done
+	for arch in $(all-archs); do \
+		ln -s $$arch gnumach-$(version)/arch/include/mach/machine; \
+	done
+
+
+
+#
+# Autoconf support
+#
+$(srcdir)/configure: configure.in
+	cd $(srcdir) && autoconf
+
+Makefile: Makefile.in config.status
+	./config.status
+
+config.status: configure
+	./config.status --recheck
+
+vpath %.in $(srcdir)
+vpath configure $(srcdir)
+
+
+
+#
+# How to do some things
+# 
+
+# Building foo.h from foo.sym:
+%.symc: %.sym
+	$(AWK) -f $(srcdir)/gensym.awk $< >$*.symc
+%.symc.o: %.symc
+	$(CC) -S $(CPPFLAGS) $(CFLAGS) $(CPPFLAGS-$@) -x c -o $@ $<
+%.h: %.symc.o
+	sed <$< -e 's/^[^*].*$$//' | \
+		sed -e 's/^[*]/#define/' -e 's/mAgIc[^-0-9]*//' >$@
+
+# Building from foo.cli
+%.h %_user.c: %.cli $(MIG) $(MIGCOM)
+	$(MIG) $(MIGFLAGS) -header $*.h -user $*_user.c -server /dev/null $<
+
+# Building from foo.srv
+%_interface.h %_server.c: %.srv $(MIG) $(MIGCOM)
+	$(MIG) $(MIGFLAGS) -header $*_interface.h -server $*_server.c -user /dev/null $<
+
+#
+# Dependency generation
+#
+
+# Include dependency files
+ifneq ($(no_deps),t)
+
+# For each file generated by MiG we need a .d file.
+servers = $(filter %_server.o,$(objfiles))
+include $(subst _server.o,.migs_d,$(servers)) /dev/null
+include $(subst _server.o,.migsh_d,$(servers)) /dev/null
+
+# vm_user.o fits the pattern, but is not actually a MiG-related file.
+users = $(filter-out vm_user.o,$(filter %_user.o,$(objfiles)))
+include $(subst _user.o,.migu_d,$(users)) /dev/null
+include $(subst _user.o,.miguh_d,$(users)) /dev/null
+
+# For each .o file we need a .d file.
+include $(subst .o,.d,$(filter %.o,$(objfiles))) /dev/null
+
+endif
+
+# Here is how to make those dependency files
+
+%.migs_d: %.srv
+	(set -e; $(CPP) $(MIGFLAGS) -M -MG -x c $< | \
+	sed -e 's/\.srv\.o:/_server.c $@:/' > $@)
+
+%.migu_d: %.cli
+	(set -e; $(CPP) $(MIGFLAGS) -M -MG -x c $< | \
+	sed -e 's/\.cli\.o:/_user.c $@:/' > $@)
+
+%.migsh_d: %.migs_d
+	sed -e 's/_server\.c /_interface.h /' -e 's/migs_d/migsh_d/' < $< > $@
+
+%.miguh_d: %.migu_d
+	sed -e 's/_user\.c /.h /' -e 's/migu_d/miguh_d/' < $< > $@
+
+# Generic rule for $(CC) based compilation for making dependencies
+define make-deps
+set -e; $(CC) $(CFLAGS) $(CPPFLAGS) -M -MG $< | \
+	sed > $@.new -e 's/$*\.o:/$*.o $@:/'
+mv -f $@.new $@
+endef
+
+%.d: %.c; $(make-deps)
+%.d: %.S; $(make-deps)
+
+# .s files don't go through the preprocessor, so we do this
+# This rule must come *after* the genuine ones above, so that
+# make doesn't build a .s file and then make an empty dependency
+# list.
+%.d: %.s
+	echo '$*.o: $<' > $@
+
+
+# How to build MiG:
+
+mig-objfiles = error.o global.o header.o lexxer.o migcom.o parser.o routine.o \
+		server.o statement.o string.o type.o user.o utils.o
+mig-csrcfiles = $(subst .o,.c,$(mig-objfiles))
+mig-othersrc = alloc.h boolean.h error.h global.h lexxer.h message.h \
+		mig_string.h routine.h statement.h type.h utils.h write.h \
+		lexxer.l parser.y mig.sh parser.h cpu.sym
+
+mig-files = $(mig-csrcfiles) $(mig-othersrc) ChangeLog
+
+vpath cpu.sym $(srcdir)/mig
+
+# Don't use $(CPPFLAGS) here; MiG needs none of the Mach headers except
+# what happens automagically to build cpu.h.
+
+# Here's how to build MiG for the target.
+cross-mig-objfiles = $(addprefix cross-,$(mig-objfiles))
+
+$(cross-mig-objfiles): cross-%.o: $(srcdir)/mig/%.c
+	$(CC) -c $(CFLAGS) -I. -I$(srcdir)/mig -o $@ $<
+
+./cross-migcom: $(cross-mig-objfiles)
+	$(CC) $(CFLAGS) $(cross-mig-objfiles) $(LEXLIB) -o $@
+
+# Dependencies for these .o files
+ifneq ($(no_deps),t)
+include $(subst .o,.d,$(cross-mig-objfiles)) /dev/null
+endif
+
+$(subst .o,.d,$(cross-mig-objfiles)): cross-%.d: $(srcdir)/mig/%.c
+	set -e; $(CC) $(CFLAGS) -M -MG $< | \
+		sed > $@.new -e 's/$*\.o:/$*.o $@:/'
+	mv -f $@.new $@
+
+
+ifeq ($(cross_compiling),yes)
+# When cross compiling, we build two migcoms; one for our use and one to 
+# install.  Otherwise, we just build the one.
+
+$(mig-objfiles): %.o: $(srcdir)/mig/%.c
+	$(BUILD_CC) -c $(BUILD_CFLAGS) -I. -I$(srcdir)/mig -o $@ $<
+
+./migcom: $(mig-objfiles)
+	$(BUILD_CC) $(BUILD_CFLAGS) $(mig-objfiles) $(LEXLIB) -o $@
+
+ifneq ($(no_deps),t)
+include $(subst .o,.d,$(mig-objfiles))
+endif
+
+$(subst .o,.d,$(mig-objfiles)): %.d: $(srcdir)/mig/%.c
+	set -e; $(BUILD_CC) $(BUILD_CFLAGS) -M -MG $< | \
+		sed > $@.new -e 's/$*\.o:/$*.o $@:/'
+	mv -f $@.new $@
+
+else
+./migcom: ./cross-migcom
+	rm -f $@
+	$(LN) $< $@
+endif
+
+$(srcdir)/mig/lexxer.c: $(srcdir)/mig/lexxer.l
+	$(LEX) $(LFLAGS) $<
+	mv lex.yy.c $*.c
+
+$(srcdir)/mig/parser.c $(srcdir)/mig/parser.h: $(srcdir)/mig/parser.y
+	$(YACC) $(YFLAGS) -d $<
+	mv y.tab.c $(srcdir)/mig/parser.c
+	mv y.tab.h $(srcdir)/mig/parser.h
+
+# Version of mig script that looks for the right local tools
+ifeq ($(cross_compiling),yes)
+./mig: $(srcdir)/mig/mig.sh Makefile
+	sed -e 's,@MIGDIR@,.,g' \
+	    -e 's,@CPP@,${BUILD_CC} -x c-header -E,g' \
+	    $< >$@.tmp && chmod +x $@.tmp && mv -f $@.tmp $@
+else
+./mig: $(srcdir)/mig/mig.sh Makefile
+	sed -e 's,@MIGDIR@,.,g' \
+	    -e 's,@CPP@,${CC} -x c-header -E,g' \
+	    $< >$@.tmp && chmod +x $@.tmp && mv -f $@.tmp $@
+endif
+
+

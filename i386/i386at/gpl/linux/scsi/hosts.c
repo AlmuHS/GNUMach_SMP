@@ -134,7 +134,7 @@
 #endif
 
 /*
-static const char RCSid[] = "$Header: cvs/gnumach/i386/i386at/gpl/linux/scsi/Attic/hosts.c,v 1.1.1.1 1997/02/25 21:27:49 thomas Exp $";
+static const char RCSid[] = "$Header: cvs/gnumach/i386/i386at/gpl/linux/scsi/Attic/hosts.c,v 1.2 1997/03/24 21:51:24 thomas Exp $";
 */
 
 /*
@@ -387,12 +387,16 @@ unsigned int scsi_init()
 	    name = shpnt->hostt->info(shpnt);
 	else
 	    name = shpnt->hostt->name;
+#if 0
 	printk ("scsi%d : %s\n", /* And print a little message */
 		shpnt->host_no, name);
+#endif
     }
-    
+
+#if 0    
     printk ("scsi : %d host%s.\n", next_scsi_host,
 	    (next_scsi_host == 1) ? "" : "s");
+#endif
     
     scsi_make_blocked_list();
     

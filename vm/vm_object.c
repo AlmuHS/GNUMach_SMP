@@ -182,7 +182,7 @@ vm_object_t	kernel_object;
  */
 queue_head_t	vm_object_cached_list;
 int		vm_object_cached_count;
-int		vm_object_cached_max = 100;	/* may be patched*/
+int		vm_object_cached_max = 200;	/* may be patched*/
 
 decl_simple_lock_data(,vm_object_cached_lock_data)
 

@@ -1,0 +1,44 @@
+dnl
+dnl Some autoconf macros useful for device driver configuration
+dnl
+
+AC_SUBST(device_drivers)
+
+dnl AC_DRIVER_ALIAS(alias, canonical) makes --enable-alias have the
+dnl same effect as --enable-canonical.
+
+AC_DEFUN(AC_DRIVER_ALIAS, [
+[#] Checking for alias [$1]
+AC_ARG_ENABLE([$1],,
+enable_[$2]="$enable_[$1]"
+)])
+
+dnl AC_DRIVER_CLASS(name,option,files) defines a class of drivers.  If
+dnl any driver declared by AC_DRIVER to be in that class is selected
+dnl by the user, then set the specified option with AC_DEFINE and add
+dnl the specified files to the output variable `device_drivers'.  This
+dnl macro must precede the use of any corresponding AC_DRIVER macros.
+
+AC_DEFUN(AC_DRIVER_CLASS, [
+driver_class_[$1]_option=[$2]
+driver_class_[$1]_files="[$3]"
+])
+
+dnl AC_DRIVER(name,option,files [,class]) detects option --enable-name.  If
+dnl it's set, then `option' is defined with AC_DEFINE, and files is
+dnl added to the output variable `device_drivers'.  The driver is of class 
+dnl `class'; see the comments on AC_DRIVER_CLASS for more information.
+
+AC_DEFUN(AC_DRIVER, [
+[#] Checking for device driver option [$1]
+AC_ARG_ENABLE([$1],,
+AC_DEFINE([$2])
+device_drivers="$device_drivers [$3]"
+if test "driver_class_[$4]_selected+set" != set; then
+  driver_class_[$4]_selected=yes
+  AC_DEFINE_UNQUOTED($driver_class_[$4]_option)
+  device_drivers="$device_drivers $driver_class_[$4]_files"
+fi
+)])
+
+

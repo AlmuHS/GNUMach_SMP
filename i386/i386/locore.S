@@ -1705,9 +1705,12 @@ tenmicroloop:
  * cpu_shutdown()
  * Force reboot
  */
+null_idt:	
+	.space	8 * 32
+		
 null_idtr:
-        .word   0
-        .long   0
+        .word   8 * 32 - 1
+        .long   null_idt
 
 Entry(cpu_shutdown)
         lidt    null_idtr       /* disable the interrupt handler */

@@ -54,6 +54,8 @@
 
 #include <asm/system.h>
 
+#include <i386/device-drivers.h>
+
 /*
  * Set if the machine has an EISA bus.
  */
@@ -230,7 +232,9 @@ linux_init()
 	/*
 	 * Initialize devices.
 	 */
+#ifdef CONFIG_INET
 	linux_net_emulation_init();
+#endif
 	cli();
 	device_setup();
 
@@ -389,7 +393,7 @@ calibrate_delay()
 {
 	int ticks;
 
-	printk("Calibrating delay loop.. ");
+	/*	printk("Calibrating delay loop.. "); */
 	while (loops_per_sec <<= 1) {
 		/* Wait for "start of" clock tick.  */
 		ticks = jiffies;
@@ -402,11 +406,11 @@ calibrate_delay()
 		if (ticks >= hz) {
 			loops_per_sec = muldiv(loops_per_sec,
 						     hz, ticks);
-			printk("ok - %lu.%02lu BogoMips\n",
+			/*printk("ok - %lu.%02lu BogoMips\n",
 			       loops_per_sec / 500000,
-			       (loops_per_sec / 5000) % 100);
+			       (loops_per_sec / 5000) % 100);*/
 			return;
 		}
 	}
-	printk("failed\n");
+/*	printk("failed\n");*/
 }

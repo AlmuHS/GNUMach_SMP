@@ -290,7 +290,7 @@ void vm_page_bootstrap(
 	*startp = virtual_space_start;
 	*endp = virtual_space_end;
 
-	printf("vm_page_bootstrap: %d free pages\n", vm_page_free_count);
+	/*	printf("vm_page_bootstrap: %d free pages\n", vm_page_free_count);*/
 	vm_page_free_count_minimum = vm_page_free_count;
 }
 

@@ -1,3 +1,110 @@
+Mon Mar 24 16:23:21 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* version.c (version): Make that 1.0.  Whee.
+
+Fri Mar 21 15:50:09 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* i386/i386at/gpl/linux/scsi/aha1740.c (aha1740_test_port): Try
+ 	and turn on PORTADDR_ENH before checking it.
+
+	* vm/vm_object.c (vm_object_cached_max): Increase to 200. 
+
+Thu Mar 20 12:33:06 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* Makefile.in (dist): New target.  Reorganized some vars
+	describing source.
+	* i386/Subdirs: New file.
+	* i386/Files: New file.
+
+	* version.c (version): Push back to 0.1.
+
+	* Makefile.in (cross_compiling, bindir, libexecdir): New
+	variable. 
+	
+	* Makefile.in (install): Depend on cross-mig and cross-migcom;
+	install them.  New rules added to build mig, migcom, cross-mig,
+	and cross-migcom.
+	
+	* configure.in (AC_PROG_LEX, AC_PROG_YACC): New tests.
+	(BUILD_CC): New test to set these.
+
+	* Makefile.in (%.h %_user.c): Depend on $(MIG) too.
+	(%_interface.h %_server.c): Likewise.
+	(MIG): Don't use @MIG@; hard code it to the one we build.
+	(BUILD_CC, BUILD_CFLAGS, MIGCOM, LEX, YACC, LEXLIB): New variables.
+	
+Wed Mar 19 16:47:28 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* i386/i386at/kd.c (BROKEN_KEYBOARD_RESET): Turn off this so that
+	we attempt the keyboard resets.
+	* i386/i386/locore.S (cpu_shutdown): Attempt to provide a more
+	`robust' null_idtr. 
+
+Mon Mar 17 13:47:14 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* i386/i386at/gpl/linux/scsi/hosts.c (scsi_init): Don't print out
+	gratuitious obnoxiousness.
+	* i386/i386at/gpl/linux/scsi/scsi.c (scsi_dev_init): Likewise.
+	* i386/i386at/gpl/linux/block/triton.c (ide_init_triton):
+	Likewise. 
+	(init_triton_dma): Likewise.
+	* i386/i386at/gpl/linux/pci/pci.c (pci_init): Likewise.
+	* i386/i386at/gpl/linux/pci/bios32.c (check_pcibios): Likewise.
+	(pcibios_init): Likewise.
+	* i386/i386at/gpl/linux/block/genhd.c (add_partition): Likewise.
+
+	* i386/i386at/gpl/linux/net/8390.c (ei_debug): Make default value
+	zero. 
+
+Wed Mar 12 14:50:46 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* i386/i386at/com.c (comprobe): Turn off noisiness.
+
+	* i386/i386at/gpl/linux/linux_block.c (check_disk_change): Don't
+	print out gratuitous obnoxiousness.
+	(device_open): Likewise.
+	* kern/bootstrap.c (copy_bootstrap): Likewise.
+	(user_bootstrap): Likewise.
+	* i386/i386at/gpl/linux/block/genhd.c (msdos_partition): Likewise.
+	(osf_partition): Likewise.
+	(sun_partition): Likewise.
+	(check_partition): Likewise.
+	* i386/i386/pit.c (findspeed): Likewise.
+	* vm/vm_resident.c (vm_page_bootstrap): Likewise.
+
+Mon Mar 10 15:04:47 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* i386/i386at/gpl/linux/linux_init.c (calibrate_delay): Don't
+	print out gratuitous obnoxiousness.
+	
+	* i386/i386at/gpl/linux/linux_init.c (linux_init): Only call
+	linux_net_emulation_init if CONFIG_INET.  Include
+	<i386/device-drivers.h>. 
+
+	* i386/i386at/i386at_ds_routines.c: Include
+	<i386/device-drivers.h>.  Don't mention linux_net_emulation_ops
+	unless CONFIG_INET.
+
+	* device/ds_routines.c (io_done_thread_continue): [i386]
+ 	Conditionalize free_skbuffs also on CONFIG_INET.  Include
+ 	<i386/device-drivers.h>.
+
+	* i386/Drivers.in, i386/device-drivers.h.in, i386/driverlist.in:
+	New files.
+	* i386/Makefrag: Include i386/driverlist; don't include all device
+	drivers in kernel image; instead use list from driverlist.
+	* configure.in: Configure in $systype subdir too.
+	
+	* i386/i386at/gpl/linux/include/linux/autoconf.h: Damage severly
+	to conform to device-drivers.h model.
+
+	* i386/bogus/com.h: Include <i386/device-drivers.h>.
+	Only turn on NCOM if CONFIG_MACH_COM is present.
+
+Mon Mar  3 16:26:58 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* include/mach/message.h (__mach_msg, __mach_msg_trap): Add decls.
+
 Tue Feb 25 15:42:23 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* i386/Makefrag (INCLUDES): Find `include' directory in new
