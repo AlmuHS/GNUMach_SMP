@@ -198,7 +198,6 @@ linux/src/drivers/scsi/ppa.c
 linux/src/drivers/scsi/ppa.h
 linux/src/drivers/scsi/qlogicfas.c
 linux/src/drivers/scsi/qlogicfas.h
-linux/src/drivers/scsi/qlogicisp_asm.c
 linux/src/drivers/scsi/qlogicisp.c
 linux/src/drivers/scsi/qlogicisp.h
 linux/src/drivers/scsi/scripts.h
