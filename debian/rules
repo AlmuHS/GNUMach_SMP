@@ -17,8 +17,8 @@
 # The name of the package (for example, `emacs').
 package   := gnumach
 package-dev := gnumach-dev
-BUILDARCH := $(DEB_BUILD_GNU_TYPE)
-HOSTARCH := $(DEB_HOST_GNU_TYPE)
+DEB_BUILD_GNU_TYPE := $(shell dpkg-architecture -qDEB_BUILD_GNU_TYPE)
+DEB_HOST_GNU_TYPE := $(shell dpkg-architecture -qDEB_HOST_GNU_TYPE)
 
 # Configuration variables (these should be pretty generic)
 CC = cc
@@ -34,7 +34,7 @@ DOCDIR-DEV = $(PREFIX)/doc/$(package-dev)
 #  generic (gradually).
 
 FILES_TO_CLEAN	= debian/files machine
-DIRS_TO_CLEAN	= debian/tmp
+DIRS_TO_CLEAN	= debian/tmp build build-dbg
 STAMPS_TO_CLEAN	= stamp-build stamp-configure
 
 install_file	= install -o root -g root -m 644
@@ -49,15 +49,10 @@ define checkroot
 	@test 0 = "`id -u`" || (echo need root priviledges; exit 1)
 endef
 
-configure: stamp-configure
-stamp-configure:
-	$(checkdir)
-	-mkdir build
-	# disabled:
-	# ncr5380, ncr53c400, ncr53c406a
-	# hpj2577, hpj2573, hp27248b, hp2585, atp
-	cd build && ../configure \
-	--enable-floppy \
+# disabled:
+# ncr5380, ncr53c400, ncr53c406a
+# hpj2577, hpj2573, hp27248b, hp2585, atp
+drivers := --enable-floppy \
 	--enable-ide \
 	\
 	--enable-advansys \
@@ -129,19 +124,35 @@ stamp-configure:
 	--enable-skg16 \
 	--enable-ni52 --enable-ni65 \
 	--enable-lance \
-	--enable-tlan \
-	--build=$(BUILDARCH) --host=$(HOSTARCH)
+	--enable-tlan
+
+stamp-configure:
+	$(checkdir)
+	-mkdir build
+	cd build && ../configure $(drivers) \
+	--build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE)
 	touch stamp-configure
 
-all build: stamp-build
-stamp-build: configure
+stamp-configure-dbg:
+	$(checkdir)
+	-mkdir build-dbg
+	cd build-dbg && ../configure --enable-kdb $(drivers) \
+	--build=$(DEB_BUILD_GNU_TYPE) --host=$(DEB_HOST_GNU_TYPE)
+	touch stamp-configure-dbg
+
+all build: stamp-build stamp-build-dbg
+stamp-build: stamp-configure
 	$(checkdir)
 	cd build && $(MAKE)
 	touch stamp-build
 
+stamp-build-dbg: stamp-configure-dbg
+	$(checkdir)
+	cd build-dbg && $(MAKE)
+	touch stamp-build-dbg
+
 clean:
 	$(checkdir)
-	-rm -rf build
 	-rm -f  $(FILES_TO_CLEAN) $(STAMPS_TO_CLEAN)
 	-rm -rf $(DIRS_TO_CLEAN)
 	-rm -f core `find . \( -name '*.orig' -o -name '*.rej' -o -name '*~' \
@@ -176,7 +187,9 @@ binary-indep: build
 	chown -R root.root      debian/tmp
 	dpkg --build            debian/tmp ..
 
-binary-arch: build
+binary-arch: binary-gnumach binary-gnumach-dbg
+
+binary-gnumach: stamp-build
 	$(checkdir)
 	$(checkroot)
 	-rm -rf			debian/tmp
@@ -204,7 +217,35 @@ binary-arch: build
 	chown -R root.root      debian/tmp
 	dpkg --build            debian/tmp ..
 
+binary-gnumach-dbg: stamp-build-dbg
+	$(checkdir)
+	$(checkroot)
+	-rm -rf			debian/tmp
+
+	$(make_directory)	debian/tmp/DEBIAN debian/tmp$(DOCDIR)-dbg
+
+	pfx=`cd debian/tmp && pwd` && cd build-dbg && $(MAKE) install-kernel prefix=$$pfx
+	mv debian/tmp/boot/gnumach debian/tmp/boot/gnumach-dbg
+	gzip -9fq		debian/tmp/boot/gnumach-dbg
+	-find debian/tmp -type d | xargs chmod g-w
+
+	$(install_file)		README debian/tmp$(DOCDIR)-dbg
+	$(install_file)		NEWS debian/tmp$(DOCDIR)-dbg
+	$(install_file)		ChangeLog debian/tmp$(DOCDIR)-dbg/ChangeLog
+	$(install_file)		ChangeLog.0 debian/tmp$(DOCDIR)-dbg
+	$(install_file)		ChangeLog.00 debian/tmp$(DOCDIR)-dbg
+	$(install_file)		i386/README-Drivers debian/tmp$(DOCDIR)-dbg
+	$(install_file)		debian/README.Debian debian/tmp$(DOCDIR)-dbg
+	$(install_file)		debian/changelog debian/tmp$(DOCDIR)-dbg/changelog.Debian
+	gzip -9frq		debian/tmp$(DOCDIR)-dbg/.
+	$(install_file)		debian/copyright debian/tmp$(DOCDIR)-dbg
+	ln -s			ChangeLog.gz debian/tmp$(DOCDIR)-dbg/changelog.gz
+
+	dpkg-gencontrol         -isp -p$(package)-dbg -Pdebian/tmp
+	chown -R root.root      debian/tmp
+	dpkg --build            debian/tmp ..
+
 binary-indep: build
 # We have nothing to do here.
 
-.PHONY: build clean binary-indep binary-arch binary configure
+.PHONY: build clean binary-indep binary-arch binary-gnumach binary-gnumach-dbg binary configure

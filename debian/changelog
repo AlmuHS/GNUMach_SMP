@@ -1,3 +1,20 @@
+gnumach (1:20010818-1) unstable; urgency=low
+
+  * Update to CVS 20010718.
+  * Patches applied to CVS code: cdromlock.
+  The other patches are in CVS now.
+
+  * Wading through the bug list, there are some old bugs
+  fixed long ago, closes: #37954, #47948, #85302, #45792
+  * debian/rules: Make it build via direct invocation, submitted
+  by Robert Bihlmeyer, closes: #101697.
+  
+  * control: New package gnumach-dbg.  This kernel is not stripped and includes the
+  kernel-level debugger.
+  * debian/rules: Build this package.
+
+ -- Marcus Brinkmann <brinkmd@debian.de>  Sat, 18 Aug 2001 02:15:06 +0200
+
 gnumach (1:20010718-1) unstable; urgency=low
 
   * Update to CVS 20010718.

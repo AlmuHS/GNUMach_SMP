@@ -1,5 +1,12 @@
 2001-08-18  Marcus Brinkmann  <marcus@gnu.org>
 
+	* debian/changelog: Update for next package upload.
+	* debian/control: Add gnumach-dbg package.
+	* debian/rules: New targets to build gnumach-dbg package.
+	Fix various bugs.
+
+2001-08-18  Marcus Brinkmann  <marcus@gnu.org>
+
 	* i386/i386at/kd.c (kdintr): In event mode, make it so that
 	0xE0 scancodes are received.
 	From Kalle Olavi Niemitalo <tosi@ees2.oulu.fi>.
