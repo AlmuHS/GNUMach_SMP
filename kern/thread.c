@@ -1513,12 +1513,11 @@ kern_return_t thread_info(
 		(basic_info->cpu_usage * 1000000)/sched_usec;
 #endif	/* SIMPLE_CLOCK */
 
+	    flags = 0;
 	    if (thread->state & TH_SWAPPED)
-		flags = TH_FLAGS_SWAPPED;
-	    else if (thread->state & TH_IDLE)
-		flags = TH_FLAGS_IDLE;
-	    else
-		flags = 0;
+		flags |= TH_FLAGS_SWAPPED;
+	    if (thread->state & TH_IDLE)
+		flags |= TH_FLAGS_IDLE;
 
 	    if (thread->state & TH_HALTED)
 		state = TH_STATE_HALTED;
