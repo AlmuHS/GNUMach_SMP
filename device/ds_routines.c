@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1993,1991,1990,1989 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -692,7 +692,7 @@ device_write_get(ior, wait)
 	if (result != KERN_SUCCESS)
 	    return (result);
 
-	if ((ior->io_data + ior->io_count) > 
+	if ((ior->io_data + ior->io_count) >
 	    (((char *)new_addr) + ior->io_alloc_size)) {
 
 		/*
@@ -708,7 +708,7 @@ device_write_get(ior, wait)
 		 *	Caller must wait synchronously.
 		 */
 		ior->io_op &= ~IO_CALL;
-		*wait = TRUE;		
+		*wait = TRUE;
 	}
 
 	ior->io_copy = io_copy;			/* vm_map_copy to discard */
@@ -727,7 +727,7 @@ device_write_dealloc(ior)
 	vm_map_copy_t	io_copy;
 	kern_return_t	result;
 	vm_offset_t	size_to_do;
-	int		bsize;	
+	int		bsize;
 
 	if (ior->io_alloc_size == 0)
 	    return (TRUE);
@@ -740,7 +740,7 @@ device_write_dealloc(ior)
 
 	    return (TRUE);
 	}
-	
+
 	if ((io_copy = ior->io_copy) == VM_MAP_COPY_NULL)
 	    return (TRUE);
 
@@ -758,7 +758,7 @@ device_write_dealloc(ior)
 	if (vm_map_copy_has_cont(io_copy)) {
 
 		/*
-		 *	Remember how much is left, then 
+		 *	Remember how much is left, then
 		 *	invoke or abort the continuation.
 		 */
 		size_to_do = io_copy->size - ior->io_count;
@@ -789,7 +789,7 @@ device_write_dealloc(ior)
 
 			if (res != D_SUCCESS)
 				panic("device_write_dealloc: No block size");
-			
+
 			ior->io_recnum += ior->io_count/bsize;
 			ior->io_count = new_copy->size;
 		}
@@ -1029,7 +1029,7 @@ ds_device_read_inband(device, reply_port, reply_port_type, mode, recnum,
 	ior->io_mode		= mode;
 	ior->io_recnum		= recnum;
 	ior->io_data		= 0;		/* driver must allocate data */
-	ior->io_count		= 
+	ior->io_count		=
 	    ((bytes_wanted < sizeof(io_buf_ptr_inband_t)) ?
 		bytes_wanted : sizeof(io_buf_ptr_inband_t));
 	ior->io_alloc_size	= 0;		/* no data allocated yet */
@@ -1115,7 +1115,7 @@ boolean_t ds_read_done(ior)
 
 	start_sent  = (ior->io_op & IO_INBAND) ? start_data :
 						trunc_page(start_data);
-	end_sent    = (ior->io_op & IO_INBAND) ? 
+	end_sent    = (ior->io_op & IO_INBAND) ?
 		start_data + ior->io_alloc_size : round_page(end_data);
 
 	/*
@@ -1587,8 +1587,8 @@ ds_trap_write_done(io_req_t ior)
 	/*
 	 * Should look at reply port and maybe send a message.
 	 */
-	zfree(io_trap_zone, ior);
-	
+	zfree(io_trap_zone, (vm_offset_t) ior);
+
 	/*
 	 * Give up device reference from ds_write_trap.
 	 */
@@ -1628,14 +1628,14 @@ ds_device_write_trap(device_t		device,
 
 	if (device->state != DEV_STATE_OPEN)
 		return (D_NO_SUCH_DEVICE);
- 
+
 	/* XXX note that a CLOSE may proceed at any point */
- 
+
 	/*
 	 * Get a buffer to hold the ioreq.
 	 */
 	ior = ds_trap_req_alloc(device, data_count);
- 
+
 	/*
 	 * Package the write request for the device driver.
 	 */
@@ -1661,29 +1661,29 @@ ds_device_write_trap(device_t		device,
 	 */
 	if (data_count > 0)
 		copyin((char *)data, (char *)ior->io_data, data_count);
- 
+
 	/*
 	 * The ior keeps an extra reference for the device.
 	 */
 	mach_device_reference(device);
- 
+
 	/*
 	 * And do the write.
 	 */
 	result = (*device->dev_ops->d_write)(device->dev_number, ior);
- 
+
 	/*
 	 * If the IO was queued, delay reply until it is finished.
 	 */
 	if (result == D_IO_QUEUED)
 		return (MIG_NO_REPLY);
- 
+
 	/*
 	 * Remove the extra reference.
 	 */
 	mach_device_deallocate(device);
- 
-	zfree(io_trap_zone, ior);
+
+	zfree(io_trap_zone, (vm_offset_t) ior);
 	return (result);
 }
 
@@ -1719,9 +1719,9 @@ ds_device_writev_trap(device_t		device,
 
 	if (device->state != DEV_STATE_OPEN)
 		return (D_NO_SUCH_DEVICE);
- 
+
 	/* XXX note that a CLOSE may proceed at any point */
- 
+
 	/*
 	 * Copyin user addresses.
 	 */
@@ -1737,7 +1737,7 @@ ds_device_writev_trap(device_t		device,
 	 * Get a buffer to hold the ioreq.
 	 */
 	ior = ds_trap_req_alloc(device, data_count);
- 
+
 	/*
 	 * Package the write request for the device driver.
 	 */
@@ -1772,29 +1772,29 @@ ds_device_writev_trap(device_t		device,
 			p += stack_iovec[i].count;
 		}
 	}
- 
+
 	/*
 	 * The ior keeps an extra reference for the device.
 	 */
 	mach_device_reference(device);
- 
+
 	/*
 	 * And do the write.
 	 */
 	result = (*device->dev_ops->d_write)(device->dev_number, ior);
- 
+
 	/*
 	 * If the IO was queued, delay reply until it is finished.
 	 */
 	if (result == D_IO_QUEUED)
 		return (MIG_NO_REPLY);
- 
+
 	/*
 	 * Remove the extra reference.
 	 */
 	mach_device_deallocate(device);
- 
-	zfree(io_trap_zone, ior);
+
+	zfree(io_trap_zone, (vm_offset_t) ior);
 	return (result);
 }
 
