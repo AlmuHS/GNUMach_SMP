@@ -53,24 +53,87 @@ configure: stamp-configure
 stamp-configure:
 	$(checkdir)
 	-mkdir build
+	# disabled:
+	# ncr5380, ncr53c400, ncr53c8xx, ncr53c406a
+	# hpj2577, hpj2573, hp27248b, hp2585, atp
 	cd build && ../configure \
-	--enable-com --enable-floppy --enable-ide --enable-lpr \
-	--enable-advansys --enable-buslogic --enable-u1434f --enable-ultrastor \
-	--enable-aha152x --enable-aha1542 --enable-aha1740 --enable-aic7xxx \
-	--enable-futuredomain --enable-in2000 \
-	--enable-ne2000 --enable-3c503 --enable-el2 \
-	--enable-3c509 --enable-el3 --enable-wd80x3 --enable-3c501 --enable-el1 \
-	--enable-ul --enable-hplanplus --enable-hplan --enable-3c59x --enable-vortex \
-	--enable-seeq8005 --enable-hp100 --enable-hpj2577 --enable-hpj2573 \
-	--enable-hp27248b --enable-hp2585 --enable-ac3200 --enable-e2100 \
-	--enable-at1700 --enable-eth16i --enable-eth32 --enable-znet --enable-znote \
-	--enable-eexpress --enable-eexpresspro --enable-depca --enable-de100 \
-	--enable-de101 --enable-de200 --enable-de201 --enable-de202 --enable-de210 \
-	--enable-de422 --enable-ewrk3 --enable-de203 --enable-de204 --enable-de205 \
-	--enable-de4x5 --enable-de425 --enable-de434 --enable-de500 --enable-apricot \
-	--enable-wavelan --enable-3c507 --enable-el16 --enable-3c505 --enable-elplus \
-	--enable-de600 --enable-de620 --enable-skg16 --enable-ni52 --enable-ni65 \
-	--enable-atp --enable-kmsg --build=$(BUILDARCH) --host=$(HOSTARCH)
+	--enable-com \
+	--enable-floppy \
+	--enable-ide \
+	--enable-lpr \
+	\
+	--enable-advansys \
+	--enable-buslogic \
+	--enable-u1434f \
+	--enable-ultrastor \
+	--enable-aha152x --enable-aha2825 \
+	--enable-aha1542 \
+	--enable-aha1740 \
+	--enable-aic7xxx \
+	--enable-futuredomain \
+	--enable-in2000 \
+	--enable-pas16 \
+	--enable-seagate \
+	--enable-t128 --enable-t128f --enable-t228 \
+	--enable-ncr53c7xx \
+	--enable-eatadma \
+	--enable-eatapio \
+	--enable-wd7000 \
+	--enable-eata \
+	--enable-am53c974 --enable-am79c974 \
+	--enable-dtc3280 --enable-dtc3180 \
+	--enable-dc390w --enable-dc390u --enable-dc390f \
+	--enable-dc390t --enable-dc390 \
+	--enable-ppa \
+	--enable-qlogicfas \
+	--enable-qlogicisp \
+	--enable-gdth \
+	\
+	--enable-de4x5 --enable-de425 --enable-de434 --enable-de435 --enable-de450 --enable-de500 \
+	--enable-eexpresspro100 \
+	--enable-epic100 \
+	--enable-hp100 \
+	--enable-ne2kpci \
+	--enable-pcnet32 \
+	--enable-rtl8139 --enable-rtl8129 \
+	--enable-viarhine \
+	--enable-elcp --enable-tulip \
+	--enable-yellowfin \
+	\
+	--enable-ac3200 \
+	--enable-ul32 \
+	\
+	--enable-at1700 \
+	--enable-ul \
+	--enable-epic \
+	--enable-wd80x3 \
+	--enable-3c503 --enable-el2 \
+	--enable-hplan --enable-hplanplus \
+	--enable-seeq8005 \
+	--enable-e2100 \
+	--enable-ne2000 --enable-ne1000 \
+	--enable-at1500 --enable-ne2100 \
+	--enable-fmv18x \
+	--enable-eth16i --enable-eth32 \
+	--enable-el3 --enable-3c509 --enable-3c579 \
+	--enable-vortex --enable-3c59x --enable-3c90x \
+	--enable-3c515 \
+	--enable-znet --enable-znote \
+	--enable-eexpress --enable-eexpresspro  \
+	--enable-depca --enable-de100 --enable-de101 --enable-de200 \
+	--enable-de201 --enable-de202 --enable-de210 --enable-de422 \
+	--enable-ewrk3 --enable-de203 --enable-de204 --enable-de205 \
+	--enable-apricot \
+	--enable-el1 --enable-3c501 \
+	--enable-wavelan \
+	--enable-el16 --enable-3c507 \
+	--enable-elplus --enable-3c505 \
+	--enable-de600 --enable-de620 \
+	--enable-skg16 \
+	--enable-ni52 --enable-ni65 \
+	--enable-lance \
+	--enable-tlan \
+	--enable-kmsg --build=$(BUILDARCH) --host=$(HOSTARCH)
 	touch stamp-configure
 
 all build: stamp-build
@@ -79,16 +142,9 @@ stamp-build: configure
 	cd build && $(MAKE)
 	touch stamp-build
 
-#--enable-ncr5380 --enable-ncr53c400 --enable-ncr53c406a  --enable-ncr53c7xx \
-#--enable-ncr53c8xx
-#--enable-qlogic --enable-pas16 --enable-seagate --enable-t128 \
-#--enable-eatadma --enable-eatapio --enable-wd7000 \
-#--enable-eata --enable-am53c974
-
 clean:
 	$(checkdir)
 	-rm -rf build
-	-mv BAR device-drivers.h
 	-rm -f  $(FILES_TO_CLEAN) $(STAMPS_TO_CLEAN)
 	-rm -rf $(DIRS_TO_CLEAN)
 	-rm -f core `find . \( -name '*.orig' -o -name '*.rej' -o -name '*~' \
@@ -132,6 +188,7 @@ binary-arch: build
 
 	pfx=`cd debian/tmp && pwd` && cd build && $(MAKE) install-kernel prefix=$$pfx
 	strip --strip-all	debian/tmp/boot/gnumach
+	gzip -9fq		debian/tmp/boot/gnumach
 	-find debian/tmp -type d | xargs chmod g-w
 
 	$(install_file)		README debian/tmp$(DOCDIR)

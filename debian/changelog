@@ -1,3 +1,50 @@
+gnumach (1:1.2-2) unstable; urgency=low
+
+  * Snapshot from CVS 19990907.
+  * Reenable all network interfaces, because the problem is fixed.
+  * Gzip gnumach binary.
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Wed,  8 Sep 1999 00:15:39 +0200
+
+gnumach (1:1.2-1) unstable; urgency=low
+
+  * Snapshot from CVS 19990725.
+  * Start from official 1.2 release.
+  * Remove some network card drivers that seems to have no autodetection in
+    order to get a maximum set of cards enabled that allows GNU Mach to detect
+    at least one.
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Mon, 26 Jul 1999 01:31:31 +0200
+
+gnumach (1:1.1.92-5) unstable; urgency=low
+
+  * Snapshot from CVS 19990616.
+  * Marks dummy network driver still there.
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Thu, 17 Jun 1999 16:53:50 +0200
+
+gnumach (1:1.1.92-4) unstable; urgency=low
+
+  * Snapshot from CVS 19990602.
+  * Marks dummy network driver still there.
+  * Replaced linux/dev/drivers/block/genhd.c to avoid a bug.
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Sat,  5 Jun 1999 00:59:43 +0200
+
+gnumach (1:1.1.92-2) unstable; urgency=low
+
+  * Snapshot from CVS 19990524.
+  * Applied Marks dummy network driver.
+  * Enabled thousands more devices.
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Mon, 24 May 1999 18:00:19 +0200
+
+gnumach (1:1.1.92-1) unstable; urgency=low
+
+  * Snapshot from CVS 19990507.
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Fri,  7 May 1999 20:46:06 +0200
+
 gnumach (1:1.1.90-2) unstable; urgency=low
 
   * Fix package administration information to reflect that maintainership
