@@ -1,3 +1,8 @@
+2001-01-28  Roland McGrath  <roland@frob.com>
+
+	* kern/zalloc.c (zalloc): Change panics for exhausted zone to include
+	the zone name.
+
 2001-01-09  Marcus Brinkmann  <marcus@gnu.org>
 
 	* include/device/device_types.h: New get_status call
@@ -11,7 +16,7 @@
 
 2000-11-26  David Welch  <david.welch@seh.ox.ac.uk>
 
-	* i386/Makefrag (i386-installed-headers): Removed dead files 
+	* i386/Makefrag (i386-installed-headers): Removed dead files
 	from the list of headers to be installed
 
 2000-11-26  Marcus Brinkmann  <marcus@gnu.org>
