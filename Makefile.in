@@ -61,7 +61,6 @@ all:
 
 # All the possible architectures
 all-archs = i386 linux
-all-real-archs = i386
 
 all-archs-subdirs = $(patsubst %,$(srcdir)/%/Subdirs,$(all-archs))
 all-archs-files = $(patsubst %,$(srcdir)/%/Files,$(all-archs))
@@ -402,9 +401,6 @@ dist:
 	# Files in arch dirs
 	for file in `cat $(all-archs-files)`; do \
 		cp $(srcdir)/$$file gnumach-$(version)/`dirname $$file`; \
-	done
-	for arch in $(all-real-archs); do \
-		ln -s $$arch gnumach-$(version)/$$arch/include/mach/machine; \
 	done
 	chmod -R u=rwX og=rX gnumach-$(version)
 	tar cfz gnumach-$(version).tar.gz gnumach-$(version)

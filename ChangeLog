@@ -1,5 +1,8 @@
 1999-06-21  Thomas Bushnell, BSG  <tb@mit.edu>
 
+	* Makefile.in (all-real-archs): Delete variable.
+	(dist): No longer make `machine' symlink.
+
 	* Makefile.in (dist): Sanify file permissions before building tar
 	file. 
 
