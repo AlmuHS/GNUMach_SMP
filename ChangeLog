@@ -1,3 +1,15 @@
+Thu Jun 26 13:48:31 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* include/mach/machine.h (CPU_TYPE_I486, CPU_TYPE_PENTIUM,
+	CPU_TYPE_PENTIUMPRO, CPU_TYPE_POWERPC): New CPU types.  These
+	conform to current OSF Mach values, but note that some of the
+	various subtypes are different.
+
+Mon Jun 16 12:14:17 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* i386/i386/loose_ends.c (ovbcopy): Delete function.  Suggested by
+	Matthew Wilcox (willy@odie.barnet.ac.uk.)
+
 Thu Jun 12 18:08:29 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	Version 1.1.3 released.
