@@ -354,22 +354,17 @@ struct buffer_head *
 getblk (kdev_t dev, int block, int size)
 {
   struct buffer_head *bh;
-  static struct buffer_head bhead;
 
   assert (size <= PAGE_SIZE);
 
-  if (! linux_auto_config)
-    bh = (struct buffer_head *) kalloc (sizeof (struct buffer_head));
-  else
-    bh = &bhead;
+  bh = (struct buffer_head *) kalloc (sizeof (struct buffer_head));
   if (bh)
     {
       memset (bh, 0, sizeof (struct buffer_head));
       bh->b_data = alloc_buffer (size);
       if (! bh->b_data)
 	{
-	  if (! linux_auto_config)
-	    kfree ((vm_offset_t) bh, sizeof (struct buffer_head));
+	  kfree ((vm_offset_t) bh, sizeof (struct buffer_head));
 	  return NULL;
 	}
       bh->b_dev = dev;
@@ -385,8 +380,7 @@ void
 __brelse (struct buffer_head *bh)
 {
   free_buffer (bh->b_data, bh->b_size);
-  if (! linux_auto_config)
-    kfree ((vm_offset_t) bh, sizeof (*bh));
+  kfree ((vm_offset_t) bh, sizeof (*bh));
 }
 
 /* Allocate a buffer of SIZE bytes and fill it with data

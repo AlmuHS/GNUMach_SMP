@@ -106,11 +106,17 @@ unsigned long k_zone_max[16] = {
  *	This initializes all of the zones.
  */
 
+#ifndef NDEBUG
+static int kalloc_init_called;
+#endif
+
 void kalloc_init()
 {
 	vm_offset_t min, max;
 	vm_size_t size;
 	register int i;
+
+	assert (! kalloc_init_called);
 
 	kalloc_map = kmem_suballoc(kernel_map, &min, &max,
 				   kalloc_map_size, FALSE);
@@ -142,6 +148,10 @@ void kalloc_init()
 				  size >= PAGE_SIZE ? ZONE_COLLECTABLE : 0,
 				  k_zone_name[i]);
 	}
+
+#ifndef NDEBUG
+	kalloc_init_called = 1;
+#endif
 }
 
 vm_offset_t kalloc(size)
@@ -152,6 +162,8 @@ vm_offset_t kalloc(size)
 	vm_offset_t addr;
 
 	/* compute the size of the block that we will actually allocate */
+
+	assert (kalloc_init_called);
 
 	allocsize = size;
 	if (size < kalloc_max) {
@@ -184,6 +196,8 @@ vm_offset_t kget(size)
 	register int zindex;
 	register vm_size_t allocsize;
 	vm_offset_t addr;
+
+	assert (kalloc_init_called);
 
 	/* compute the size of the block that we will actually allocate */
 
@@ -218,6 +232,8 @@ kfree(data, size)
 {
 	register int zindex;
 	register vm_size_t freesize;
+
+	assert (kalloc_init_called);
 
 	freesize = size;
 	if (size < kalloc_max) {

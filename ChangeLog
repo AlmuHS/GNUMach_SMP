@@ -1,3 +1,16 @@
+2004-09-07  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* linux/dev/glue/block.c (__brelse): Unconditionally kfree BH.
+	(getblk): Unconditionally kalloc BH.
+
+	* kern/kalloc.c [!NDEBUG] (kalloc_init_called): New static
+	variable.
+	(kalloc_init): Assert that kalloc_init_called is zero.
+	[! NDEBUG] Set kalloc_init_called to 1 on success.
+	(kalloc): Assert that kalloc_init_called is non-zero.
+	(kget): Likewise.
+	(kfree): Likewise.
+
 2004-11-22  Guillem Jover  <guillem@hadrons.org>
 
 	* i386/i386/locore.S (discover_x86_cpu_type): Enable function.
