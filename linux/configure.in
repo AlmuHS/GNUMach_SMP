@@ -23,5 +23,5 @@ AC_LINK_FILES(src/include/asm-${systype} dev/include/asm-${systype},
 
 dnl We need to write these bogus output files to make autoconf create
 dnl the directories where the directory symlinks need to go.
-AC_OUTPUT(src/.dummy:dummy dev/.dummy:dummy
-          src/include/.dummy:dummy dev/include/.dummy:dummy)
+AC_OUTPUT(src/.dummy:dummy.in dev/.dummy:dummy.in
+          src/include/.dummy:dummy.in dev/include/.dummy:dummy.in)
