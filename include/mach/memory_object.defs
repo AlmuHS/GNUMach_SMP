@@ -1,4 +1,4 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990,1989,1988,1987 Carnegie Mellon University
  * All Rights Reserved.
@@ -102,7 +102,7 @@ simpleroutine	memory_object_terminate(
 #if	KERNEL_USER
 		/* for compatibility with Mach 2.5 kernels */
 						, dealloc
-#endif	KERNEL_USER
+#endif	/* KERNEL_USER */
 						;
 		memory_object_name	: memory_object_name_t =
 						MACH_MSG_TYPE_MOVE_RECEIVE
@@ -110,7 +110,7 @@ simpleroutine	memory_object_terminate(
 #if	KERNEL_USER
 		/* for compatibility with Mach 2.5 kernels */
 						, dealloc
-#endif	KERNEL_USER
+#endif	/* KERNEL_USER */
 						);
 
 /*
@@ -143,7 +143,7 @@ simpleroutine	memory_object_copy(
 		old_memory_object	: memory_object_t;
 #if	SEQNOS
 	msgseqno seqno			: mach_port_seqno_t;
-#endif	SEQNOS
+#endif	/* SEQNOS */
 		old_memory_control	: memory_object_control_t =
 						MACH_MSG_TYPE_MAKE_SEND
 						ctype: mach_port_t;
@@ -155,7 +155,7 @@ simpleroutine	memory_object_copy(
 #if	KERNEL_USER
 		/* for compatibility with Mach 2.5 kernels */
 						, dealloc
-#endif	KERNEL_USER
+#endif	/* KERNEL_USER */
 						);
 
 /*
@@ -169,7 +169,7 @@ simpleroutine	memory_object_data_request(
 		memory_object		: memory_object_t;
 #if	SEQNOS
 	msgseqno seqno			: mach_port_seqno_t;
-#endif	SEQNOS
+#endif	/* SEQNOS */
 		memory_control		: memory_object_control_t =
 						MACH_MSG_TYPE_MAKE_SEND
 						ctype: mach_port_t;
@@ -188,7 +188,7 @@ simpleroutine	memory_object_data_unlock(
 		memory_object		: memory_object_t;
 #if	SEQNOS
 	msgseqno seqno			: mach_port_seqno_t;
-#endif	SEQNOS
+#endif	/* SEQNOS */
 		memory_control		: memory_object_control_t =
 						MACH_MSG_TYPE_MAKE_SEND
 						ctype: mach_port_t;
@@ -210,7 +210,7 @@ simpleroutine	memory_object_data_write(
 		memory_object		: memory_object_t;
 #if	SEQNOS
 	msgseqno seqno			: mach_port_seqno_t;
-#endif	SEQNOS
+#endif	/* SEQNOS */
 		memory_control		: memory_object_control_t =
 						MACH_MSG_TYPE_MAKE_SEND
 						ctype: mach_port_t;
@@ -231,7 +231,7 @@ simpleroutine	memory_object_lock_completed(
 			ctype: mach_port_t;
 #if	SEQNOS
 	msgseqno seqno			: mach_port_seqno_t;
-#endif	SEQNOS
+#endif	/* SEQNOS */
 		memory_control		: memory_object_control_t =
 						MACH_MSG_TYPE_MAKE_SEND
 						ctype: mach_port_t;
@@ -262,7 +262,7 @@ simpleroutine	memory_object_supply_completed(
 			ctype: mach_port_t;
 #if	SEQNOS
 	msgseqno seqno			: mach_port_seqno_t;
-#endif	SEQNOS
+#endif	/* SEQNOS */
 		memory_control		: memory_object_control_t =
 						MACH_MSG_TYPE_MAKE_SEND
 						ctype: mach_port_t;
@@ -286,7 +286,7 @@ simpleroutine   memory_object_data_return(
 		memory_object		: memory_object_t;
 #if	SEQNOS
 	msgseqno seqno			: mach_port_seqno_t;
-#endif	SEQNOS
+#endif	/* SEQNOS */
 		memory_control		: memory_object_control_t =
 						MACH_MSG_TYPE_MAKE_SEND
 						ctype: mach_port_t;
@@ -308,6 +308,6 @@ simpleroutine	memory_object_change_completed(
 			ctype: mach_port_t;
 #if	SEQNOS
 	msgseqno seqno			: mach_port_seqno_t;
-#endif	SEQNOS
+#endif	/* SEQNOS */
 		may_cache		: boolean_t;
 		copy_strategy		: memory_object_copy_strategy_t);

@@ -163,7 +163,7 @@ ds_device_open(open_port, reply_port, reply_port_type,
 			return (MIG_NO_REPLY);
 		}
 	}
-#endif	NORMA_DEVICE
+#endif	/* NORMA_DEVICE */
 #endif	/* ! i386 */
 
 	/*
@@ -896,7 +896,7 @@ ds_device_read(device, reply_port, reply_port_type, mode, recnum,
 #ifdef lint
 	*data = *data;
 	*data_count = *data_count;
-#endif lint
+#endif /* lint */
 
 #ifndef i386
 	/*
@@ -996,7 +996,7 @@ ds_device_read_inband(device, reply_port, reply_port_type, mode, recnum,
 #ifdef lint
 	*data = *data;
 	*data_count = *data_count;
-#endif lint
+#endif /* lint */
 
 #ifndef i386
 	/*
@@ -1332,7 +1332,7 @@ ds_device_map(device, protection, offset, size, pager, unmap)
 
 #ifdef	lint
 	unmap = unmap;
-#endif	lint
+#endif	/* lint */
 	if (protection & ~VM_PROT_ALL)
 		return (KERN_INVALID_ARGUMENT);
 

@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1993-1989 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -352,9 +352,9 @@ kern_return_t	device_pager_data_request(
 
 #if	NORMA_VM
 	    object = vm_object_lookup(pager);
-#else	NORMA_VM
+#else	/* NORMA_VM */
 	    object = vm_object_lookup(pager_request);
-#endif	NORMA_VM
+#endif	/* NORMA_VM */
 	    if (object == VM_OBJECT_NULL) {
 		    (void) r_memory_object_data_error(pager_request,
 						      offset, length,
@@ -375,16 +375,16 @@ kern_return_t	device_pager_data_request(
 	    io_return_t			result;
 
 	    panic("(device_pager)data_request: dev pager");
-	    
+
 	    device = ds->device;
 	    mach_device_reference(device);
 	    dev_pager_deallocate(ds);
-	    
+
 	    /*
 	     * Package the read for the device driver.
 	     */
 	    io_req_alloc(ior, 0);
-	    
+
 	    ior->io_device	= device;
 	    ior->io_unit	= device->dev_number;
 	    ior->io_op		= IO_READ | IO_CALL;
@@ -398,11 +398,11 @@ kern_return_t	device_pager_data_request(
 	    ior->io_done	= device_pager_data_request_done;
 	    ior->io_reply_port	= pager_request;
 	    ior->io_reply_port_type = MACH_MSG_TYPE_PORT_SEND;
-	    
+
 	    result = (*device->dev_ops->d_read)(device->dev_number, ior);
 	    if (result == D_IO_QUEUED)
 		return (KERN_SUCCESS);
-	    
+
 	    /*
 	     * Return by queuing IOR for io_done thread, to reply in
 	     * correct environment (kernel).
@@ -429,7 +429,7 @@ boolean_t device_pager_data_request_done(register io_req_t	ior)
 	    if (ior->io_residual) {
 		if (device_pager_debug)
 		    printf("(device_pager)data_request_done: r: 0x%x\n",ior->io_residual);
-		bzero( (char *) (&ior->io_data[ior->io_count - 
+		bzero( (char *) (&ior->io_data[ior->io_count -
 					       ior->io_residual]),
 		      (unsigned) ior->io_residual);
 	    }
