@@ -212,7 +212,6 @@ i386/imps/cpus.h
 i386/imps/imps.c
 i386/imps/impsasm.sym
 i386/include/Makefile.in
-i386/include/Makerules
 i386/include/mach/proc_ops.h
 i386/include/mach/setjmp.h
 i386/include/mach/i386/asm.h
@@ -253,7 +252,6 @@ i386/include/mach/sa/sys/varargs.h
 i386/intel/pmap.c
 i386/intel/pmap.h
 i386/intel/read_fault.c
-i386/pc/Makerules
 i386/pc/NOTES
 i386/pc/debug.h
 i386/pc/exit.c
@@ -297,7 +295,6 @@ i386/pc/rv86/rv86_real_int_asm.S
 i386/pc/rv86/rv86_reflect_irq.S
 i386/pc/rv86/rv86_trap_handler.S
 i386/pc/rv86/trap_handler.S
-i386/util/Makerules
 i386/util/NOTES
 i386/util/anno.c
 i386/util/anno.h
