@@ -30,6 +30,12 @@ generally safe to specify switches for hardware you don't have; in
 this way you can build kernels that work on different physical machine
 set ups.
 
+If you want the in-kernel debugger compiled in, specify --enable-kdb
+to configure.  This is only useful if you actually anticipate
+debugging the kernel, of course.  We don't turn it on be default
+because it adds considerably to the unpageable memory footprint of the
+kernel.
+
 The specific switches you give to configure are always recorded in the
 file `config.status'.  So you can always tell what options you used to
 build a particular kernel.

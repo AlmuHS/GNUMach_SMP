@@ -52,7 +52,7 @@ INSTALL_DATA=$(INSTALL) -m 644
 CFLAGS=@CFLAGS@
 
 # We build these locally
-MIG=./mig
+MIG=./local-mig
 MIGCOM=./migcom
 
 all:
@@ -62,6 +62,7 @@ all-archs = i386
 
 all-archs-subdirs = $(patsubst %,$(srcdir)/%/Subdirs,$(all-archs))
 all-archs-files = $(patsubst %,$(srcdir)/%/Files,$(all-archs))
+all-archs-configures = $(patsubst %,$(srcdir)/%/configure,$(all-archs))
 
 # Files distributed from the top level directory:
 topfiles = ChangeLog ChangeLog.0 ChangeLog.00 Drivers.macros Makefile.in \
@@ -238,7 +239,7 @@ clib-routines.o: $(installed-clib)
 # extra symbols.
 kernel: check-clib-routines
 check-clib-routines: clib-routines.o
-	test `echo $(clib-routines) | wc -w` -eq `nm $< | wc -l` && touch check-clib-routines
+	test `echo $(clib-routines) | wc -w` -eq `nm -g $< | wc -l` && touch check-clib-routines
 
 
 # Empty dependency file
@@ -267,7 +268,7 @@ vpath %.srv $(srcdir)/device $(srcdir)/ipc $(srcdir)/kern
 # Compilation flags
 #
 
-DEFINES += -DMACH -DCMU -DMACH_KERNEL -DKERNEL
+DEFINES += -DMACH -DCMU -DMACH_KERNEL -DKERNEL @DEFS@
 INCLUDES += -I. -I$(srcdir) -I$(srcdir)/include \
 	-I$(srcdir)/bogus -I$(srcdir)/util -I$(srcdir)/kern -I$(srcdir)/device
 
@@ -279,7 +280,27 @@ CPPFLAGS += -nostdinc $(DEFINES) $(INCLUDES)
 MIGFLAGS += $(CPPFLAGS)
 
 
+# Standard targets
+
 all: kernel $(cross-migcom) cross-mig
+
+clean:
+	mv device-drivers.h FOO
+	rm -f *.o *.d kernel cross-migcom cross-mig migcom local-mig
+	rm -f *.symc *.symc.o *_user.c *_server.c *.h
+	rm -f *.migs_d *.migsh_d *.migu_d *.miguh_d
+	mv FOO device-drivers.h
+
+distclean: clean
+	rm -f config.status Makefile driverlist
+
+mostlyclean: distclean
+	rm -f $(srcdir)/mig/lexxer.c 
+	rm -f $(srcdir)/mig/parser.c $(srcdir)/mig/parser.h
+
+maintainer-clean: mostlyclean
+	rm -f $(srcdir)/configure $(all-archs-configures)
+
 
 
 #
@@ -534,12 +555,12 @@ $(srcdir)/mig/parser.c $(srcdir)/mig/parser.h: $(srcdir)/mig/parser.y
 
 # Version of mig script that looks for the right local tools
 ifeq ($(cross_compiling),yes)
-./mig: $(srcdir)/mig/mig.sh Makefile
+./local-mig: $(srcdir)/mig/mig.sh Makefile
 	sed -e 's,@MIGDIR@,.,g' \
 	    -e 's,@CPP@,${BUILD_CC} -x c-header -E,g' \
 	    $< >$@.tmp && chmod +x $@.tmp && mv -f $@.tmp $@
 else
-./mig: $(srcdir)/mig/mig.sh Makefile
+./local-mig: $(srcdir)/mig/mig.sh Makefile
 	sed -e 's,@MIGDIR@,.,g' \
 	    -e 's,@CPP@,${CC} -x c-header -E,g' \
 	    $< >$@.tmp && chmod +x $@.tmp && mv -f $@.tmp $@

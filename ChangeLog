@@ -1,3 +1,24 @@
+Wed Apr 23 13:21:23 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* configure.in (BUILD_CC): Use AC_CHECK_PROGS, not AC_CHECK_PROG,
+	since we are checking multiple names.
+
+	* configure.in (kdb): New --enable option.
+	* Makefile.in (DEFINES): Add @DEFS@.
+	
+	* Makefile.in (clean, distclean, mostlyclean, maintainter-clean):
+	New targets.  
+	(all-archs-configures): New variable.  
+	(MIG): Change to ./local-mig.
+	(./local-mig): Change to build this instead of ./mig
+	(check-clib-routines): Use nm -g in case there are local symbols.
+	Suggested by Matthew Wilcox (willy@odie.barnet.ac.uk). 
+
+Fri Apr 18 15:25:10 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
+
+	* configure.in: Add AC_PREREQ for version 2.12.
+	* i386/Drivers.in: Likewise.
+
 Wed Apr 16 16:55:36 1997  Marcus G. Daniels  <marcus@cathcart.sysc.pdx.edu>
 
 	* configure.in: Replace AC_PROG_CC with AC_PROG_CC_LOCAL.
