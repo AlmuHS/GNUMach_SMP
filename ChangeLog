@@ -1,3 +1,8 @@
+2002-04-19  Roland McGrath  <roland@frob.com>
+
+	* gensym.awk: Emit \n\ at the end of lines inside strings.
+	* Makefile.in (%.symc: %.sym): Depend on gensym.awk.
+
 2002-03-29  Marcus Brinkmann  <marcus@g10code.de>
 
 	* doc/mach.texi: End index entry with full stop.
