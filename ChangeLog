@@ -1,3 +1,9 @@
+2001-08-21  Roland McGrath  <roland@frob.com>
+
+	* i386/i386at/model_dep.c (use_all_mem): Turn variable into macro.
+	(init_alloc_aligned): Make this function static.
+	Initially skip memory < 16MB and then wrap around to get it last.
+
 2001-08-20  Roland McGrath  <roland@frob.com>
 
 	Support "boot script" functionality in multiboot module strings.
