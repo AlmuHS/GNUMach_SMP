@@ -168,6 +168,9 @@ typedef struct pcb {
 	struct i386_saved_state iss;
 	struct i386_machine_state ims;
 	decl_simple_lock_data(, lock)
+#ifdef LINUX_DEV
+	void *data;
+#endif
 } *pcb_t;
 
 /*

@@ -1142,6 +1142,48 @@ syscall_addr:
 	movl	$(T_PF_USER),R_ERR(%ebx)
 					/* set error code - read user space */
 	jmp	_take_trap		/* treat as a trap */
+	
+
+#if 0	
+/* Discover what kind of cpu we have; return the family number
+   (3, 4, 5, 6, for 386, 486, 586, 686 respectively).  */
+ENTRY(discover_x86_cpu_type)
+	movl	%esp,%edx		/* Save stack pointer */
+	and	$~0x3,%esp		/* Align stack pointer */
+	
+	pushfl				/* Fetch flags ... */
+	popl	%eax			/*  ... into eax */
+	movl	%eax,%ecx		/* Save original flags for return */
+	xorl	$(EFL_AC+EFL_ID),%eax	/* Attempt to toggle ID and AC bits */
+	pushl	%eax			/* Save flags... */
+	popfl				/*  ... In EFLAGS */
+	pushfl				/* Fetch flags back ... */
+	popl	%eax			/*  ... into eax */
+
+	xorl	%ecx,%eax		/* See if any bits didn't change */
+	testl	$EFL_AC,%eax		/* Test AC bit */
+	jnz	0f			/* Skip next bit if AC toggled */
+	movl	$3,%eax			/*   Return value is 386 */
+	jmp	9f			/*   And RETURN */
+	
+0:	testl	$EFL_ID,%eax		/* Test ID bit */
+	jnz	0f			/* Skip next bit if ID toggled */
+	movl	$4,%eax			/*   Return value is 486 */
+	jmp	9f			/*   And RETURN */
+
+	/* We are a modern enough processor to have the CPUID instruction;
+	   use it to find out what we are. */
+0:	movl	$1,%eax			/* Fetch CPU type info ... */
+	cpuid				/*  ... into eax */
+	shrl	$8,%eax			/* Slide family bits down */
+	andl	$15,%eax		/* And select them */
+	
+9:	pushl	%ecx			/* From ecx... */
+	popfl				/* ... restore original flags */
+	movl	%edx,%esp		/* Restore stack pointer */
+	ret				/* And return */
+#endif
+
 
 /**/
 /*
