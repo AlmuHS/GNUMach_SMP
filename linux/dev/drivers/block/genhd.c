@@ -240,6 +240,37 @@ static void bsd_disklabel_partition(struct gendisk *hd, kdev_t dev)
 
 	p = &l->d_partitions[0];
 	while (p - &l->d_partitions[0] <= BSD_MAXPARTITIONS) {
+#ifdef MACH
+	  /* Print BSD slices like hd0s1a (Mach syntax) instead of hd0s5
+	     (Linux syntax), and do not add them into HD. In Mach,
+	     the partitions of HD will not be used anyway.  */
+	  if (p->p_fstype != BSD_FS_UNUSED)
+	    {
+	      unsigned int part = current_minor & mask;
+	      const char *maj = hd->major_name;
+	      char unit = (current_minor >> hd->minor_shift) + '0';
+	      char slice = p - &l->d_partitions[0] + 'a';
+	      
+#ifdef CONFIG_BLK_DEV_IDE
+	      switch (hd->major)
+		{
+		case IDE3_MAJOR:
+		  unit += 2;
+		case IDE2_MAJOR:
+		  unit += 2;
+		case IDE1_MAJOR:
+		  unit += 2;
+		case IDE0_MAJOR:
+		  maj = "hd";
+		}
+#endif
+	      if (part)
+		printk (" %s%cs%d%c", maj, unit, part, slice);
+	      else
+		printk (" %s%c%c", maj, unit, slice);
+	    }
+	  p++;
+#else /* ! MACH */
 		if ((current_minor & mask) >= (4 + hd->max_p))
 			break;
 
@@ -248,6 +279,7 @@ static void bsd_disklabel_partition(struct gendisk *hd, kdev_t dev)
 			current_minor++;
 		}
 		p++;
+#endif /* ! MACH */
 	}
 	brelse(bh);
 
