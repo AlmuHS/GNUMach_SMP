@@ -109,6 +109,10 @@ extern struct machine_slot	machine_slot[NCPUS];
 #define CPU_TYPE_SPARC		((cpu_type_t) 14)
 #define CPU_TYPE_I860		((cpu_type_t) 15)
 #define	CPU_TYPE_ALPHA		((cpu_type_t) 16)
+#define CPU_TYPE_I486		((cpu_type_t) 17)
+#define CPU_TYPE_PENTIUM	((cpu_type_t) 18)
+#define CPU_TYPE_PENTIUMPRO	((cpu_type_t) 19)
+#define CPU_TYPE_POWERPC	((cpu_type_t) 20)
 
 /*
  *	Machine subtypes (these are defined here, instead of in a machine
