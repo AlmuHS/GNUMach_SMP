@@ -1,5 +1,5 @@
 dnl Configure script for GNU Mach.
-dnl Copyright 1997 Free Software Foundation, Inc.
+dnl Copyright 1997, 1998, 1999 Free Software Foundation, Inc.
 
 dnl Permission to use, copy, modify and distribute this software and its
 dnl documentation is hereby granted, provided that both the copyright
@@ -44,6 +44,10 @@ AC_ARG_ENABLE(kdb,
 [  --enable-kdb             enable use of in-kernel debugger],
 [test "x$enableval" = xno || AC_DEFINE(MACH_KDB)])
 
+AC_ARG_ENABLE(kmsg,
+[  --enable-kmsg            enable use of kmsg device],
+[test "x$enableval" = xno || AC_DEFINE(MACH_KMSG)])
+
 #
 # Programs
 #
@@ -60,6 +64,7 @@ AC_CHECK_TOOL(LD, ld)
 AC_CHECK_TOOL(NM, nm)
 
 AC_CHECK_TOOL(MIG, mig, mig)
+AC_CHECK_TOOL(MAKE, make, make)
 
 # Set up `machine' link in build directory for easier header file location.
 AC_LINK_FILES(${systype}/${systype},machine)
@@ -67,6 +72,6 @@ AC_LINK_FILES(${systype}/${systype},machine)
 # Do machine-specific configuration last so that it can override anything
 # set above if necessary.
 
-AC_CONFIG_SUBDIRS($systype)
+AC_CONFIG_SUBDIRS(${systype})
 
 AC_OUTPUT(Makefile)
