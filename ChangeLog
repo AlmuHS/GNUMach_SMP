@@ -12,6 +12,7 @@ Tue Jun 10 13:33:37 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 Mon Jun  9 22:14:09 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* i386/Drivers.in: Fix typos apt.o -> atp.o; 3c403.o -> 3c503.o.
+	
 	* Drivers.macros (AC_DRIVER): Test the class selected flag
 	correctly. 
 	
