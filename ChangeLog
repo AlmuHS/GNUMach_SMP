@@ -1,3 +1,13 @@
+2001-08-20  Roland McGrath  <roland@frob.com>
+
+	Support "boot script" functionality in multiboot module strings.
+	* kern/bootstrap.c: Rewrite merged from oskit-branch.
+	* kern/boot_script.c, kern/boot_script.h: New files,
+	copied from boot/ directory in Hurd sources.
+	* Makefile.in (kern-cfiles): Add boot_script.c here.
+	(kern-files): Add boot_script.h here.
+	* NEWS: Mention the new feature.
+
 2001-08-18  Roland McGrath  <roland@frob.com>
 
 	* i386/i386at/model_dep.c (boot_info): Define a struct, not a pointer.
