@@ -5,6 +5,12 @@
 
 2004-01-15  Alfred M. Szmidt  <ams@kemisten.nu>
 
+	* linux/src/drivers/scsi/aic7xxx.c: Updated from Linux 2.0.39
+	* linux/src/drivers/scsi/aic7xxx.h: Likewise.
+	* linux/src/drivers/scsi/aic7xxx_proc.c: Likewise.
+	* linux/src/drivers/scsi/scsicam.c: Likewise.
+	* linux/src/include/linux/pci.h: Likewise.
+
 	* linux/src/drivers/scsi/53c7,8xx.h (patch_dsa_32): Don't use
 	token paste operator (##).
 
