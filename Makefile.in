@@ -139,7 +139,7 @@ kern-cfiles = act.c ast.c bootstrap.c counters.c debug.c eventcount.c \
 	machine.c pc_sample.c printf.c priority.c processor.c profile.c \
 	queue.c sched_prim.c startup.c strings.c syscall_emulation.c \
 	syscall_subr.c syscall_sw.c task.c thread.c thread_swap.c \
-	time_stamp.c timer.c xpr.c zalloc.c elf-load.c
+	time_stamp.c timer.c xpr.c zalloc.c elf-load.c boot_script.c
 kern-files = $(kern-cfiles) \
 	act.h assert.h ast.h compat_xxx_defs.h counters.h cpu_number.h \
 	debug.h eventcount.h host.h ipc_host.h ipc_kobject.h ipc_sched.h \
@@ -147,7 +147,7 @@ kern-files = $(kern-cfiles) \
 	pc_sample.h processor.h queue.h refcount.h sched.h sched_prim.h \
 	shuttle.h strings.h syscall_emulation.h syscall_subr.h syscall_sw.h \
 	task.h thread.h thread_swap.h time_out.h time_stamp.h timer.h xpr.h \
-	zalloc.h \
+	zalloc.h boot_script.h \
 	mach.srv mach4.srv mach_debug.srv mach_host.srv
 
 # Still more trivia
