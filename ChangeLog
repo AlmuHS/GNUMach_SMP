@@ -1,5 +1,14 @@
 2001-10-07  Roland McGrath  <roland@frob.com>
 
+	* ddb/db_access.c: Fix obsolescent #else/#endif syntax.
+	* device/dev_name.c: Likewise.
+	* device/dev_pager.c: Likewise.
+	* device/ds_routines.c: Likewise.
+	* i386/i386/i386asm.sym: Likewise.
+	* include/device/device_reply.defs: Likewise.
+	* include/mach/memory_object.defs: Likewise.
+	* include/mach/memory_object_default.defs: Likewise.
+
 	* i386/i386/locore.S: Fix sloppy asm syntax to avoid warnings from
 	newer assembler (%ecx -> %cl in byte insns).
 
