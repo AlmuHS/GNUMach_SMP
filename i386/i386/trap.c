@@ -524,7 +524,7 @@ printf("user trap %d error %d sub %08x\n", type, code, subcode);
 		break;
 
 	    case T_PAGE_FAULT:
-#if 1
+#if 0
 		printf("user page fault at linear address %08x\n", subcode);
 		dump_ss (regs);
 		
