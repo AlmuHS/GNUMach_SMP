@@ -99,28 +99,24 @@ void bootstrap_create()
 {
   struct multiboot_module *bmods = ((struct multiboot_module *)
 				    phystokv(boot_info.mods_addr));
-  char *p;
+  int compat;
 
   if (!(boot_info.flags & MULTIBOOT_MODS)
       || (boot_info.mods_count == 0))
     panic ("No bootstrap code loaded with the kernel!");
 
-  if (boot_info.mods_count == 1)
+  compat = boot_info.mods_count == 1;
+  if (compat)
     {
-      p = strchr((char*)phystokv(bmods[0].string), ' ');
+      char *p = strchr((char*)phystokv(bmods[0].string), ' ');
       if (p != 0)
-	{
-	  do
-	    ++p;
-	  while (*p == ' ');
-	  if (*p == '\0')
-	    p = 0;
-	}
+	do
+	  ++p;
+	while (*p == ' ' || *p == '\n');
+      compat = p == 0 || *p == '\0';
     }
-  else
-    p = 0;
 
-  if (p == 0)
+  if (compat)
     {
       printf("Loading single multiboot module in compat mode: %s\n",
 	     (char*)phystokv(bmods[0].string));
