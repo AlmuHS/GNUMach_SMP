@@ -1,5 +1,13 @@
 2001-04-29  Marcus Brinkmann  <marcus@gnu.org>
 
+	* debian/changelog: New entries for past Debian uploads.
+	* debian/rules: Disable eatdma driver (breaks AMD K7), do
+	not enable com, lpr (com is redundant, lpr doesn't work),
+	move enabling of kmsg in its own line.
+	* debian/control: Add build dependency on mig and sharutils.
+
+2001-04-29  Marcus Brinkmann  <marcus@gnu.org>
+
 	* device/chario.c: Set number of elements of tthiwat and ttlowat
 	to NSPEEDS rather than 16. Initialize the two new elements.
 	(chario_init): Initialize pdma_timeouts and pdma_water_mark for

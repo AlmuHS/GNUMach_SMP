@@ -1,3 +1,56 @@
+gnumach (1:1.2-10) unstable; urgency=low
+
+  * debian/rules (stamp-configure): Disable eatadma driver, which
+  prevents booting on some AMD K7 motherboards. Reported by
+  Robert Bihlmeyer <robbe@orcus.priv.at>.
+  * Update to CVS 20010429, which contains support for high baud rates
+  (B57600, B115200).
+  * Patches applied to CVS code: cdromlock, color, kbd_enqueu.
+
+ -- Marcus Brinkmann <brinkmd@gnu.org>  Sun, 29 Apr 2001 21:41:34 +0200
+
+gnumach (1:1.2-9) unstable; urgency=low
+
+  * Update to CVS 20010111, which contains a new interface for
+  block devices with a large number of blocks.
+
+ -- Marcus Brinkmann <brinkmd@gnu.org>  Thu, 11 Jan 2001 23:45:49 +0100
+
+gnumach (1:1.2-8) unstable; urgency=low
+
+  * Applied patch by Alexey Dejneka <adejneka@comail.ru> to fix CD ROM
+  locking problem.
+  * debian/control: Add mig and sharutils to list of build dependencies
+  (sharutils for uudecode for fpu emu), closes: #74794.
+  * linux/src/drivers/net/tulip.c: Update from Linux 2.2.17, thanks
+  Jason Henry Parker <jasonp@uq.net.au>
+  
+ -- Marcus Brinkmann <brinkmd@debian.org>  Sun, 26 Nov 2000 03:46:08 +0100
+
+gnumach (1:1.2-7) unstable; urgency=low
+
+  * Update to CVS 20000929, which contains a fix for comX.
+  * debian/rules: Drop --enable-lpr, which doesn't work.
+  Drop --enable-com, which is already enforced.
+  
+ -- Marcus Brinkmann <brinkmd@debian.org>  Fri, 29 Sep 2000 20:24:54 +0200
+
+gnumach (1:1.2-5) unstable; urgency=low
+
+  * Update to CVS 20000817, which contains a fix for
+  linux/dev/glue/block.c.
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Thu, 17 Aug 2000 03:22:30 +0200
+
+gnumach (1:1.2-4) unstable; urgency=low
+
+  * Add color support to gnumach. Set TERM to mach-color to get the full
+  effect. Thanks to Juli-Manel Merino Vidal <jmmv@mail.com> for working
+  out the mapping between ANSI color codes and the bits to poke into the
+  attribute.
+
+ -- Marcus Brinkmann <brinkmd@debian.org>  Tue,  8 Aug 2000 21:00:50 +0200
+
 gnumach (1:1.2-3) unstable; urgency=low
 
   * Snapshot from CVS 20000703.

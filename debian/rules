@@ -57,10 +57,9 @@ stamp-configure:
 	# ncr5380, ncr53c400, ncr53c8xx, ncr53c406a
 	# hpj2577, hpj2573, hp27248b, hp2585, atp
 	cd build && ../configure \
-	--enable-com \
 	--enable-floppy \
 	--enable-ide \
-	--enable-lpr \
+	--enable-kmsg \
 	\
 	--enable-advansys \
 	--enable-buslogic \
@@ -76,7 +75,6 @@ stamp-configure:
 	--enable-seagate \
 	--enable-t128 --enable-t128f --enable-t228 \
 	--enable-ncr53c7xx \
-	--enable-eatadma \
 	--enable-eatapio \
 	--enable-wd7000 \
 	--enable-eata \
@@ -133,7 +131,7 @@ stamp-configure:
 	--enable-ni52 --enable-ni65 \
 	--enable-lance \
 	--enable-tlan \
-	--enable-kmsg --build=$(BUILDARCH) --host=$(HOSTARCH)
+	--build=$(BUILDARCH) --host=$(HOSTARCH)
 	touch stamp-configure
 
 all build: stamp-build
