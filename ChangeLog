@@ -1,3 +1,8 @@
+1999-05-23  Roland McGrath  <roland@baalperazim.frob.com>
+
+	* kern/task.c (task_info): Allow count for TASK_BASIC_INFO to be less
+	two words, not just one.  The new member creation_time is two words.
+
 1999-05-22  Roland McGrath  <roland@baalperazim.frob.com>
 
 	* linux/configure: Regenerated.
