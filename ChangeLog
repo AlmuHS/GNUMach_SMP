@@ -1,6 +1,11 @@
+2001-06-25  Marcus Brinkmann  <marcus@gnu.org>
+
+	* i386/bogus/fpe.h (FPE): Define FPE to 0, as the floating point
+	emulation is broken anyway and blows up plex86.
+
 2001-06-17  Marcus Brinkmann  <marcus@gnu.org>
 
-	* debian/rules: Update to cyrrent version.
+	* debian/rules: Update to current version.
 
 2001-06-13  Roland McGrath  <roland@frob.com>
 
