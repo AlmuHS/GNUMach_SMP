@@ -251,6 +251,134 @@ ac_help="$ac_help
 "
 ac_help="$ac_help
 "
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
+ac_help="$ac_help
+"
 
 # Initialize some variables set by options.
 # The variables have the same names as the options, with
@@ -811,7 +939,7 @@ else { echo "configure: error: can not run $ac_config_sub" 1>&2; exit 1; }
 fi
 
 echo $ac_n "checking host system type""... $ac_c" 1>&6
-echo "configure:815: checking host system type" >&5
+echo "configure:943: checking host system type" >&5
 
 host_alias=$host
 case "$host_alias" in
@@ -882,7 +1010,7 @@ esac
 
 
 echo $ac_n "checking build system type""... $ac_c" 1>&6
-echo "configure:886: checking build system type" >&5
+echo "configure:1014: checking build system type" >&5
 
 build_alias=$build
 case "$build_alias" in
@@ -908,7 +1036,7 @@ fi
 # Extract the first word of "${ac_tool_prefix}gcc", so it can be a program name with args.
 set dummy ${ac_tool_prefix}gcc; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:912: checking for $ac_word" >&5
+echo "configure:1040: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CC'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -939,7 +1067,7 @@ fi
 # Extract the first word of "gcc", so it can be a program name with args.
 set dummy gcc; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:943: checking for $ac_word" >&5
+echo "configure:1071: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CC'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -968,7 +1096,7 @@ if test -z "$CC"; then
   # Extract the first word of "cc", so it can be a program name with args.
 set dummy cc; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:972: checking for $ac_word" >&5
+echo "configure:1100: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_CC'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1016,7 +1144,7 @@ fi
 fi
 
 echo $ac_n "checking whether the C compiler ($CC $CFLAGS $LDFLAGS) works""... $ac_c" 1>&6
-echo "configure:1020: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) works" >&5
+echo "configure:1148: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) works" >&5
 
 ac_ext=c
 # CFLAGS is not in ac_cpp because -g, -O, etc. are not valid cpp options.
@@ -1026,11 +1154,11 @@ ac_link='${CC-cc} -o conftest $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS 
 cross_compiling=$ac_cv_prog_cc_cross
 
 cat > conftest.$ac_ext <<EOF
-#line 1030 "configure"
+#line 1158 "configure"
 #include "confdefs.h"
 main(){return(0);}
 EOF
-if { (eval echo configure:1034: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
+if { (eval echo configure:1162: \"$ac_link\") 1>&5; (eval $ac_link) 2>&5; } && test -s conftest; then
   ac_cv_prog_cc_works=yes
   # If we can't run a trivial program, we are probably using a cross compiler.
   if (./conftest; exit) 2>/dev/null; then
@@ -1054,13 +1182,13 @@ else
  cross_linkable=yes
 fi
 echo $ac_n "checking whether the C compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler""... $ac_c" 1>&6
-echo "configure:1058: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler" >&5
+echo "configure:1186: checking whether the C compiler ($CC $CFLAGS $LDFLAGS) is a cross-compiler" >&5
 echo "$ac_t""$ac_cv_prog_cc_cross" 1>&6
 
 cross_compiling=$ac_cv_prog_cc_cross
 
 echo $ac_n "checking whether we are using GNU C""... $ac_c" 1>&6
-echo "configure:1064: checking whether we are using GNU C" >&5
+echo "configure:1192: checking whether we are using GNU C" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_gcc'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1069,7 +1197,7 @@ else
   yes;
 #endif
 EOF
-if { ac_try='${CC-cc} -E conftest.c'; { (eval echo configure:1073: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
+if { ac_try='${CC-cc} -E conftest.c'; { (eval echo configure:1201: \"$ac_try\") 1>&5; (eval $ac_try) 2>&5; }; } | egrep yes >/dev/null 2>&1; then
   ac_cv_prog_gcc=yes
 else
   ac_cv_prog_gcc=no
@@ -1103,7 +1231,7 @@ fi
 # Extract the first word of "${ac_tool_prefix}ld", so it can be a program name with args.
 set dummy ${ac_tool_prefix}ld; ac_word=$2
 echo $ac_n "checking for $ac_word""... $ac_c" 1>&6
-echo "configure:1107: checking for $ac_word" >&5
+echo "configure:1235: checking for $ac_word" >&5
 if eval "test \"`echo '$''{'ac_cv_prog_LD'+set}'`\" = set"; then
   echo $ac_n "(cached) $ac_c" 1>&6
 else
@@ -1405,6 +1533,15 @@ if test "${enable_ne1000+set}" = set; then
 fi
 
 
+# Checking for alias ne
+# Check whether --enable-ne or --disable-ne was given.
+if test "${enable_ne+set}" = set; then
+  enableval="$enable_ne"
+  enable_ne2000="$enable_ne"
+
+fi
+
+
 # Checking for alias at1500
 # Check whether --enable-at1500 or --disable-at1500 was given.
 if test "${enable_at1500+set}" = set; then
@@ -1593,6 +1730,15 @@ fi
 
 
 
+# Checking for alias advansys
+# Check whether --enable-advansys or --disable-advansys was given.
+if test "${enable_advansys+set}" = set; then
+  enableval="$enable_advansys"
+  enable_advansys="$enable_advansys"
+
+fi
+
+
 # Checking for device driver option advansys
 # Check whether --enable-advansys or --disable-advansys was given.
 if test "${enable_advansys+set}" = set; then
@@ -1610,6 +1756,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_scsi_files"
 fi
+
+fi
+
+
+# Checking for alias BusLogic
+# Check whether --enable-BusLogic or --disable-BusLogic was given.
+if test "${enable_BusLogic+set}" = set; then
+  enableval="$enable_BusLogic"
+  enable_buslogic="$enable_BusLogic"
 
 fi
 
@@ -1635,6 +1790,15 @@ fi
 fi
 
 
+# Checking for alias u14-34f
+# Check whether --enable-u14-34f or --disable-u14-34f was given.
+if test "${enable_u14_34f+set}" = set; then
+  enableval="$enable_u14_34f"
+  enable_u1434f="$enable_u14-34f"
+
+fi
+
+
 # Checking for device driver option u1434f
 # Check whether --enable-u1434f or --disable-u1434f was given.
 if test "${enable_u1434f+set}" = set; then
@@ -1652,6 +1816,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_scsi_files"
 fi
+
+fi
+
+
+# Checking for alias ultrastor
+# Check whether --enable-ultrastor or --disable-ultrastor was given.
+if test "${enable_ultrastor+set}" = set; then
+  enableval="$enable_ultrastor"
+  enable_ultrastor="$enable_ultrastor"
 
 fi
 
@@ -1677,6 +1850,15 @@ fi
 fi
 
 
+# Checking for alias aha152x
+# Check whether --enable-aha152x or --disable-aha152x was given.
+if test "${enable_aha152x+set}" = set; then
+  enableval="$enable_aha152x"
+  enable_aha152x="$enable_aha152x"
+
+fi
+
+
 # Checking for device driver option aha152x
 # Check whether --enable-aha152x or --disable-aha152x was given.
 if test "${enable_aha152x+set}" = set; then
@@ -1694,6 +1876,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_scsi_files"
 fi
+
+fi
+
+
+# Checking for alias aha1542
+# Check whether --enable-aha1542 or --disable-aha1542 was given.
+if test "${enable_aha1542+set}" = set; then
+  enableval="$enable_aha1542"
+  enable_aha1542="$enable_aha1542"
 
 fi
 
@@ -1719,6 +1910,15 @@ fi
 fi
 
 
+# Checking for alias aha1740
+# Check whether --enable-aha1740 or --disable-aha1740 was given.
+if test "${enable_aha1740+set}" = set; then
+  enableval="$enable_aha1740"
+  enable_aha1740="$enable_aha1740"
+
+fi
+
+
 # Checking for device driver option aha1740
 # Check whether --enable-aha1740 or --disable-aha1740 was given.
 if test "${enable_aha1740+set}" = set; then
@@ -1736,6 +1936,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_scsi_files"
 fi
+
+fi
+
+
+# Checking for alias aic7xxx
+# Check whether --enable-aic7xxx or --disable-aic7xxx was given.
+if test "${enable_aic7xxx+set}" = set; then
+  enableval="$enable_aic7xxx"
+  enable_aic7xxx="$enable_aic7xxx"
 
 fi
 
@@ -1761,6 +1970,15 @@ fi
 fi
 
 
+# Checking for alias fdomain
+# Check whether --enable-fdomain or --disable-fdomain was given.
+if test "${enable_fdomain+set}" = set; then
+  enableval="$enable_fdomain"
+  enable_futuredomain="$enable_fdomain"
+
+fi
+
+
 # Checking for device driver option futuredomain
 # Check whether --enable-futuredomain or --disable-futuredomain was given.
 if test "${enable_futuredomain+set}" = set; then
@@ -1778,6 +1996,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_scsi_files"
 fi
+
+fi
+
+
+# Checking for alias in2000
+# Check whether --enable-in2000 or --disable-in2000 was given.
+if test "${enable_in2000+set}" = set; then
+  enableval="$enable_in2000"
+  enable_in2000="$enable_in2000"
 
 fi
 
@@ -1803,6 +2030,15 @@ fi
 fi
 
 
+# Checking for alias g_NCR5380
+# Check whether --enable-g_NCR5380 or --disable-g_NCR5380 was given.
+if test "${enable_g_NCR5380+set}" = set; then
+  enableval="$enable_g_NCR5380"
+  enable_ncr5380="$enable_g_NCR5380"
+
+fi
+
+
 # Checking for device driver option ncr5380
 # Check whether --enable-ncr5380 or --disable-ncr5380 was given.
 if test "${enable_ncr5380+set}" = set; then
@@ -1820,6 +2056,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_scsi_files"
 fi
+
+fi
+
+
+# Checking for alias NCR53c406a
+# Check whether --enable-NCR53c406a or --disable-NCR53c406a was given.
+if test "${enable_NCR53c406a+set}" = set; then
+  enableval="$enable_NCR53c406a"
+  enable_ncr53c406a="$enable_NCR53c406a"
 
 fi
 
@@ -1845,6 +2090,15 @@ fi
 fi
 
 
+# Checking for alias pas16
+# Check whether --enable-pas16 or --disable-pas16 was given.
+if test "${enable_pas16+set}" = set; then
+  enableval="$enable_pas16"
+  enable_pas16="$enable_pas16"
+
+fi
+
+
 # Checking for device driver option pas16
 # Check whether --enable-pas16 or --disable-pas16 was given.
 if test "${enable_pas16+set}" = set; then
@@ -1862,6 +2116,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_scsi_files"
 fi
+
+fi
+
+
+# Checking for alias seagate
+# Check whether --enable-seagate or --disable-seagate was given.
+if test "${enable_seagate+set}" = set; then
+  enableval="$enable_seagate"
+  enable_seagate="$enable_seagate"
 
 fi
 
@@ -1887,6 +2150,15 @@ fi
 fi
 
 
+# Checking for alias t128
+# Check whether --enable-t128 or --disable-t128 was given.
+if test "${enable_t128+set}" = set; then
+  enableval="$enable_t128"
+  enable_t128="$enable_t128"
+
+fi
+
+
 # Checking for device driver option t128
 # Check whether --enable-t128 or --disable-t128 was given.
 if test "${enable_t128+set}" = set; then
@@ -1904,6 +2176,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_scsi_files"
 fi
+
+fi
+
+
+# Checking for alias 53c78xx
+# Check whether --enable-53c78xx or --disable-53c78xx was given.
+if test "${enable_53c78xx+set}" = set; then
+  enableval="$enable_53c78xx"
+  enable_ncr53c7xx="$enable_53c78xx"
 
 fi
 
@@ -1929,6 +2210,15 @@ fi
 fi
 
 
+# Checking for alias eata_dma
+# Check whether --enable-eata_dma or --disable-eata_dma was given.
+if test "${enable_eata_dma+set}" = set; then
+  enableval="$enable_eata_dma"
+  enable_eatadma="$enable_eata_dma"
+
+fi
+
+
 # Checking for device driver option eatadma
 # Check whether --enable-eatadma or --disable-eatadma was given.
 if test "${enable_eatadma+set}" = set; then
@@ -1946,6 +2236,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_scsi_files"
 fi
+
+fi
+
+
+# Checking for alias eata_pio
+# Check whether --enable-eata_pio or --disable-eata_pio was given.
+if test "${enable_eata_pio+set}" = set; then
+  enableval="$enable_eata_pio"
+  enable_eatapio="$enable_eata_pio"
 
 fi
 
@@ -1971,6 +2270,15 @@ fi
 fi
 
 
+# Checking for alias wd7000
+# Check whether --enable-wd7000 or --disable-wd7000 was given.
+if test "${enable_wd7000+set}" = set; then
+  enableval="$enable_wd7000"
+  enable_wd7000="$enable_wd7000"
+
+fi
+
+
 # Checking for device driver option wd7000
 # Check whether --enable-wd7000 or --disable-wd7000 was given.
 if test "${enable_wd7000+set}" = set; then
@@ -1988,6 +2296,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_scsi_files"
 fi
+
+fi
+
+
+# Checking for alias eata
+# Check whether --enable-eata or --disable-eata was given.
+if test "${enable_eata+set}" = set; then
+  enableval="$enable_eata"
+  enable_eata="$enable_eata"
 
 fi
 
@@ -2013,6 +2330,15 @@ fi
 fi
 
 
+# Checking for alias AM53C974
+# Check whether --enable-AM53C974 or --disable-AM53C974 was given.
+if test "${enable_AM53C974+set}" = set; then
+  enableval="$enable_AM53C974"
+  enable_am53c974="$enable_AM53C974"
+
+fi
+
+
 # Checking for device driver option am53c974
 # Check whether --enable-am53c974 or --disable-am53c974 was given.
 if test "${enable_am53c974+set}" = set; then
@@ -2030,6 +2356,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_scsi_files"
 fi
+
+fi
+
+
+# Checking for alias dtc
+# Check whether --enable-dtc or --disable-dtc was given.
+if test "${enable_dtc+set}" = set; then
+  enableval="$enable_dtc"
+  enable_dtc3280="$enable_dtc"
 
 fi
 
@@ -2055,6 +2390,15 @@ fi
 fi
 
 
+# Checking for alias ncr53c8xx
+# Check whether --enable-ncr53c8xx or --disable-ncr53c8xx was given.
+if test "${enable_ncr53c8xx+set}" = set; then
+  enableval="$enable_ncr53c8xx"
+  enable_ncr53c8xx="$enable_ncr53c8xx"
+
+fi
+
+
 # Checking for device driver option ncr53c8xx
 # Check whether --enable-ncr53c8xx or --disable-ncr53c8xx was given.
 if test "${enable_ncr53c8xx+set}" = set; then
@@ -2072,6 +2416,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_scsi_files"
 fi
+
+fi
+
+
+# Checking for alias tmscsiw
+# Check whether --enable-tmscsiw or --disable-tmscsiw was given.
+if test "${enable_tmscsiw+set}" = set; then
+  enableval="$enable_tmscsiw"
+  enable_dc390w="$enable_tmscsiw"
 
 fi
 
@@ -2097,6 +2450,15 @@ fi
 fi
 
 
+# Checking for alias tmscsim
+# Check whether --enable-tmscsim or --disable-tmscsim was given.
+if test "${enable_tmscsim+set}" = set; then
+  enableval="$enable_tmscsim"
+  enable_dc390t="$enable_tmscsim"
+
+fi
+
+
 # Checking for device driver option dc390t
 # Check whether --enable-dc390t or --disable-dc390t was given.
 if test "${enable_dc390t+set}" = set; then
@@ -2114,6 +2476,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_scsi_files"
 fi
+
+fi
+
+
+# Checking for alias ppa
+# Check whether --enable-ppa or --disable-ppa was given.
+if test "${enable_ppa+set}" = set; then
+  enableval="$enable_ppa"
+  enable_ppa="$enable_ppa"
 
 fi
 
@@ -2139,6 +2510,15 @@ fi
 fi
 
 
+# Checking for alias qlogicfas
+# Check whether --enable-qlogicfas or --disable-qlogicfas was given.
+if test "${enable_qlogicfas+set}" = set; then
+  enableval="$enable_qlogicfas"
+  enable_qlogicfas="$enable_qlogicfas"
+
+fi
+
+
 # Checking for device driver option qlogicfas
 # Check whether --enable-qlogicfas or --disable-qlogicfas was given.
 if test "${enable_qlogicfas+set}" = set; then
@@ -2156,6 +2536,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_scsi_files"
 fi
+
+fi
+
+
+# Checking for alias qlogicisp
+# Check whether --enable-qlogicisp or --disable-qlogicisp was given.
+if test "${enable_qlogicisp+set}" = set; then
+  enableval="$enable_qlogicisp"
+  enable_qlogicisp="$enable_qlogicisp"
 
 fi
 
@@ -2181,6 +2570,15 @@ fi
 fi
 
 
+# Checking for alias gdth
+# Check whether --enable-gdth or --disable-gdth was given.
+if test "${enable_gdth+set}" = set; then
+  enableval="$enable_gdth"
+  enable_gdth="$enable_gdth"
+
+fi
+
+
 # Checking for device driver option gdth
 # Check whether --enable-gdth or --disable-gdth was given.
 if test "${enable_gdth+set}" = set; then
@@ -2200,8 +2598,6 @@ EOF
 fi
 
 fi
-
-
 
 
 # Check whether --enable-flashpoint or --disable-flashpoint was given.
@@ -2263,6 +2659,15 @@ fi
 fi
 
 
+# Checking for alias 3c509
+# Check whether --enable-3c509 or --disable-3c509 was given.
+if test "${enable_3c509+set}" = set; then
+  enableval="$enable_3c509"
+  enable_el3="$enable_3c509"
+
+fi
+
+
 # Checking for device driver option el3
 # Check whether --enable-el3 or --disable-el3 was given.
 if test "${enable_el3+set}" = set; then
@@ -2301,6 +2706,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_net_files"
 fi
+
+fi
+
+
+# Checking for alias 3c501
+# Check whether --enable-3c501 or --disable-3c501 was given.
+if test "${enable_3c501+set}" = set; then
+  enableval="$enable_3c501"
+  enable_el1="$enable_3c501"
 
 fi
 
@@ -2410,6 +2824,15 @@ fi
 fi
 
 
+# Checking for alias 3c59x
+# Check whether --enable-3c59x or --disable-3c59x was given.
+if test "${enable_3c59x+set}" = set; then
+  enableval="$enable_3c59x"
+  enable_vortex="$enable_3c59x"
+
+fi
+
+
 # Checking for device driver option vortex
 # Check whether --enable-vortex or --disable-vortex was given.
 if test "${enable_vortex+set}" = set; then
@@ -2431,6 +2854,15 @@ fi
 fi
 
 
+# Checking for alias seeq8005
+# Check whether --enable-seeq8005 or --disable-seeq8005 was given.
+if test "${enable_seeq8005+set}" = set; then
+  enableval="$enable_seeq8005"
+  enable_seeq8005="$enable_seeq8005"
+
+fi
+
+
 # Checking for device driver option seeq8005
 # Check whether --enable-seeq8005 or --disable-seeq8005 was given.
 if test "${enable_seeq8005+set}" = set; then
@@ -2448,6 +2880,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_net_files"
 fi
+
+fi
+
+
+# Checking for alias hp100
+# Check whether --enable-hp100 or --disable-hp100 was given.
+if test "${enable_hp100+set}" = set; then
+  enableval="$enable_hp100"
+  enable_hp100="$enable_hp100"
 
 fi
 
@@ -2515,6 +2956,15 @@ fi
 fi
 
 
+# Checking for alias at1700
+# Check whether --enable-at1700 or --disable-at1700 was given.
+if test "${enable_at1700+set}" = set; then
+  enableval="$enable_at1700"
+  enable_at1700="$enable_at1700"
+
+fi
+
+
 # Checking for device driver option at1700
 # Check whether --enable-at1700 or --disable-at1700 was given.
 if test "${enable_at1700+set}" = set; then
@@ -2532,6 +2982,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_net_files"
 fi
+
+fi
+
+
+# Checking for alias eth16i
+# Check whether --enable-eth16i or --disable-eth16i was given.
+if test "${enable_eth16i+set}" = set; then
+  enableval="$enable_eth16i"
+  enable_eth16i="$enable_eth16i"
 
 fi
 
@@ -2557,6 +3016,15 @@ fi
 fi
 
 
+# Checking for alias znet
+# Check whether --enable-znet or --disable-znet was given.
+if test "${enable_znet+set}" = set; then
+  enableval="$enable_znet"
+  enable_znet="$enable_znet"
+
+fi
+
+
 # Checking for device driver option znet
 # Check whether --enable-znet or --disable-znet was given.
 if test "${enable_znet+set}" = set; then
@@ -2574,6 +3042,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_net_files"
 fi
+
+fi
+
+
+# Checking for alias eexpress
+# Check whether --enable-eexpress or --disable-eexpress was given.
+if test "${enable_eexpress+set}" = set; then
+  enableval="$enable_eexpress"
+  enable_eexpress="$enable_eexpress"
 
 fi
 
@@ -2599,6 +3076,15 @@ fi
 fi
 
 
+# Checking for alias eepro
+# Check whether --enable-eepro or --disable-eepro was given.
+if test "${enable_eepro+set}" = set; then
+  enableval="$enable_eepro"
+  enable_eexpresspro="$enable_eepro"
+
+fi
+
+
 # Checking for device driver option eexpresspro
 # Check whether --enable-eexpresspro or --disable-eexpresspro was given.
 if test "${enable_eexpresspro+set}" = set; then
@@ -2616,6 +3102,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_net_files"
 fi
+
+fi
+
+
+# Checking for alias eepro100
+# Check whether --enable-eepro100 or --disable-eepro100 was given.
+if test "${enable_eepro100+set}" = set; then
+  enableval="$enable_eepro100"
+  enable_eexpresspro100="$enable_eepro100"
 
 fi
 
@@ -2641,6 +3136,15 @@ fi
 fi
 
 
+# Checking for alias depca
+# Check whether --enable-depca or --disable-depca was given.
+if test "${enable_depca+set}" = set; then
+  enableval="$enable_depca"
+  enable_depca="$enable_depca"
+
+fi
+
+
 # Checking for device driver option depca
 # Check whether --enable-depca or --disable-depca was given.
 if test "${enable_depca+set}" = set; then
@@ -2658,6 +3162,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_net_files"
 fi
+
+fi
+
+
+# Checking for alias ewrk3
+# Check whether --enable-ewrk3 or --disable-ewrk3 was given.
+if test "${enable_ewrk3+set}" = set; then
+  enableval="$enable_ewrk3"
+  enable_ewrk3="$enable_ewrk3"
 
 fi
 
@@ -2683,6 +3196,15 @@ fi
 fi
 
 
+# Checking for alias de4x5
+# Check whether --enable-de4x5 or --disable-de4x5 was given.
+if test "${enable_de4x5+set}" = set; then
+  enableval="$enable_de4x5"
+  enable_de4x5="$enable_de4x5"
+
+fi
+
+
 # Checking for device driver option de4x5
 # Check whether --enable-de4x5 or --disable-de4x5 was given.
 if test "${enable_de4x5+set}" = set; then
@@ -2700,6 +3222,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_net_files"
 fi
+
+fi
+
+
+# Checking for alias apricot
+# Check whether --enable-apricot or --disable-apricot was given.
+if test "${enable_apricot+set}" = set; then
+  enableval="$enable_apricot"
+  enable_apricot="$enable_apricot"
 
 fi
 
@@ -2725,6 +3256,15 @@ fi
 fi
 
 
+# Checking for alias wavelan
+# Check whether --enable-wavelan or --disable-wavelan was given.
+if test "${enable_wavelan+set}" = set; then
+  enableval="$enable_wavelan"
+  enable_wavelan="$enable_wavelan"
+
+fi
+
+
 # Checking for device driver option wavelan
 # Check whether --enable-wavelan or --disable-wavelan was given.
 if test "${enable_wavelan+set}" = set; then
@@ -2742,6 +3282,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_net_files"
 fi
+
+fi
+
+
+# Checking for alias 3c507
+# Check whether --enable-3c507 or --disable-3c507 was given.
+if test "${enable_3c507+set}" = set; then
+  enableval="$enable_3c507"
+  enable_el16="$enable_3c507"
 
 fi
 
@@ -2767,6 +3316,15 @@ fi
 fi
 
 
+# Checking for alias 3c505
+# Check whether --enable-3c505 or --disable-3c505 was given.
+if test "${enable_3c505+set}" = set; then
+  enableval="$enable_3c505"
+  enable_elplus="$enable_3c505"
+
+fi
+
+
 # Checking for device driver option elplus
 # Check whether --enable-elplus or --disable-elplus was given.
 if test "${enable_elplus+set}" = set; then
@@ -2784,6 +3342,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_net_files"
 fi
+
+fi
+
+
+# Checking for alias de600
+# Check whether --enable-de600 or --disable-de600 was given.
+if test "${enable_de600+set}" = set; then
+  enableval="$enable_de600"
+  enable_de600="$enable_de600"
 
 fi
 
@@ -2809,6 +3376,15 @@ fi
 fi
 
 
+# Checking for alias de620
+# Check whether --enable-de620 or --disable-de620 was given.
+if test "${enable_de620+set}" = set; then
+  enableval="$enable_de620"
+  enable_de620="$enable_de620"
+
+fi
+
+
 # Checking for device driver option de620
 # Check whether --enable-de620 or --disable-de620 was given.
 if test "${enable_de620+set}" = set; then
@@ -2826,6 +3402,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_net_files"
 fi
+
+fi
+
+
+# Checking for alias sk_g16
+# Check whether --enable-sk_g16 or --disable-sk_g16 was given.
+if test "${enable_sk_g16+set}" = set; then
+  enableval="$enable_sk_g16"
+  enable_skg16="$enable_sk_g16"
 
 fi
 
@@ -2851,6 +3436,15 @@ fi
 fi
 
 
+# Checking for alias ni52
+# Check whether --enable-ni52 or --disable-ni52 was given.
+if test "${enable_ni52+set}" = set; then
+  enableval="$enable_ni52"
+  enable_ni52="$enable_ni52"
+
+fi
+
+
 # Checking for device driver option ni52
 # Check whether --enable-ni52 or --disable-ni52 was given.
 if test "${enable_ni52+set}" = set; then
@@ -2868,6 +3462,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_net_files"
 fi
+
+fi
+
+
+# Checking for alias ni65
+# Check whether --enable-ni65 or --disable-ni65 was given.
+if test "${enable_ni65+set}" = set; then
+  enableval="$enable_ni65"
+  enable_ni65="$enable_ni65"
 
 fi
 
@@ -2893,6 +3496,15 @@ fi
 fi
 
 
+# Checking for alias atp
+# Check whether --enable-atp or --disable-atp was given.
+if test "${enable_atp+set}" = set; then
+  enableval="$enable_atp"
+  enable_atp="$enable_atp"
+
+fi
+
+
 # Checking for device driver option atp
 # Check whether --enable-atp or --disable-atp was given.
 if test "${enable_atp+set}" = set; then
@@ -2910,6 +3522,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_net_files"
 fi
+
+fi
+
+
+# Checking for alias lance
+# Check whether --enable-lance or --disable-lance was given.
+if test "${enable_lance+set}" = set; then
+  enableval="$enable_lance"
+  enable_lance="$enable_lance"
 
 fi
 
@@ -2935,6 +3556,15 @@ fi
 fi
 
 
+# Checking for alias tulip
+# Check whether --enable-tulip or --disable-tulip was given.
+if test "${enable_tulip+set}" = set; then
+  enableval="$enable_tulip"
+  enable_elcp="$enable_tulip"
+
+fi
+
+
 # Checking for device driver option elcp
 # Check whether --enable-elcp or --disable-elcp was given.
 if test "${enable_elcp+set}" = set; then
@@ -2952,6 +3582,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_net_files"
 fi
+
+fi
+
+
+# Checking for alias fmv18x
+# Check whether --enable-fmv18x or --disable-fmv18x was given.
+if test "${enable_fmv18x+set}" = set; then
+  enableval="$enable_fmv18x"
+  enable_fmv18x="$enable_fmv18x"
 
 fi
 
@@ -2977,6 +3616,15 @@ fi
 fi
 
 
+# Checking for alias 3c515
+# Check whether --enable-3c515 or --disable-3c515 was given.
+if test "${enable_3c515+set}" = set; then
+  enableval="$enable_3c515"
+  enable_3c515="$enable_3c515"
+
+fi
+
+
 # Checking for device driver option 3c515
 # Check whether --enable-3c515 or --disable-3c515 was given.
 if test "${enable_3c515+set}" = set; then
@@ -2994,6 +3642,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_net_files"
 fi
+
+fi
+
+
+# Checking for alias pcnet32
+# Check whether --enable-pcnet32 or --disable-pcnet32 was given.
+if test "${enable_pcnet32+set}" = set; then
+  enableval="$enable_pcnet32"
+  enable_pcnet32="$enable_pcnet32"
 
 fi
 
@@ -3040,6 +3697,15 @@ fi
 fi
 
 
+# Checking for alias yellowfin
+# Check whether --enable-yellowfin or --disable-yellowfin was given.
+if test "${enable_yellowfin+set}" = set; then
+  enableval="$enable_yellowfin"
+  enable_yellowfin="$enable_yellowfin"
+
+fi
+
+
 # Checking for device driver option yellowfin
 # Check whether --enable-yellowfin or --disable-yellowfin was given.
 if test "${enable_yellowfin+set}" = set; then
@@ -3057,6 +3723,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_net_files"
 fi
+
+fi
+
+
+# Checking for alias rtl8139
+# Check whether --enable-rtl8139 or --disable-rtl8139 was given.
+if test "${enable_rtl8139+set}" = set; then
+  enableval="$enable_rtl8139"
+  enable_rtl8139="$enable_rtl8139"
 
 fi
 
@@ -3082,6 +3757,15 @@ fi
 fi
 
 
+# Checking for alias epic100
+# Check whether --enable-epic100 or --disable-epic100 was given.
+if test "${enable_epic100+set}" = set; then
+  enableval="$enable_epic100"
+  enable_epic="$enable_epic100"
+
+fi
+
+
 # Checking for device driver option epic
 # Check whether --enable-epic or --disable-epic was given.
 if test "${enable_epic+set}" = set; then
@@ -3099,6 +3783,15 @@ EOF
 
   device_drivers="$device_drivers $driver_class_net_files"
 fi
+
+fi
+
+
+# Checking for alias tlan
+# Check whether --enable-tlan or --disable-tlan was given.
+if test "${enable_tlan+set}" = set; then
+  enableval="$enable_tlan"
+  enable_tlan="$enable_tlan"
 
 fi
 
@@ -3124,6 +3817,15 @@ fi
 fi
 
 
+# Checking for alias via-rhine
+# Check whether --enable-via-rhine or --disable-via-rhine was given.
+if test "${enable_via_rhine+set}" = set; then
+  enableval="$enable_via_rhine"
+  enable_viarhine="$enable_via-rhine"
+
+fi
+
+
 # Checking for device driver option viarhine
 # Check whether --enable-viarhine or --disable-viarhine was given.
 if test "${enable_viarhine+set}" = set; then
@@ -3143,8 +3845,6 @@ EOF
 fi
 
 fi
-
-
 
 trap '' 1 2 15
 cat > confcache <<\EOF
