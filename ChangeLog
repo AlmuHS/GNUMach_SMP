@@ -1,3 +1,14 @@
+1999-09-15  Mark Kettenis  <kettenis@gnu.org>
+
+	* i386/i386/user_ldt.c: Fix user LDT management.
+	(i386_set_ldt): Prevent thrashing the LDT for the current thread.
+	Correctly calculate size of new LDT.  Set base adress of the LDT
+	descriptor to the linear address of the LDT instead of the kernel
+	virtual address.  Copy descriptors from the default LDT if there
+	is no old LDT for the current thread.  Call switch_ktss if we are
+	setting a new LDT for the current thread.
+	(i386_get_ldt): Fix bug in copying out the descriptors.
+
 1999-09-09  Thomas Bushnell, BSG  <tb@mit.edu>
 
 	* linux/src/drivers/net/rtl8139.c (RX_BUF_LEN_IDX): Reduce from 3
