@@ -1,3 +1,23 @@
+Wed Apr 16 16:55:36 1997  Marcus G. Daniels  <marcus@cathcart.sysc.pdx.edu>
+
+	* configure.in: Replace AC_PROG_CC with AC_PROG_CC_LOCAL.
+	If cross compiling do Lex/Yacc checks with BUILD_CC.
+        Check CC and BUILD_CC for libraries having the needed support,
+	and substitute discovery in installed_clib.
+
+	* aclocal.m4: New file.  These replacement macros are to handle
+	the case where there is a cross compiler but no supporting files.
+
+	* Makefile.in (installed-clib): Don't hardwire a Hurd libcrt.a.
+	(cross_linkable): Only define cross-migcom variable when it will
+	be possible to build it.
+	(all, install): Use $(cross-migcom).
+	(install): Install cross-migcom only if was to be built.
+	(mkinstalldirs): Add $(bindir), $(includedir)/mach/exec 
+	(cross-lexxer.o lexxer.o): lexxer.o needs cpu.h.
+	(./cross-migcom): Prevent dependency generation for cross-* MiG files
+	unless they can actually be built.
+
 Thu Apr 17 15:55:40 1997  Thomas Bushnell, n/BSG  <thomas@gnu.ai.mit.edu>
 
 	* kern/exception.c (exception_no_server): Comment out the suspend

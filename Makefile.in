@@ -20,7 +20,7 @@ srcdir=@srcdir@
 systype=@systype@
 prefix=@prefix@
 
-installed-clib=$(prefix)/lib/libcrt.a
+installed-clib=@installed_clib@
 exec_prefix=$(prefix)
 
 bootdir=$(exec_prefix)/boot
@@ -31,6 +31,10 @@ bindir=$(exec_prefix)/bin
 sysdep = $(srcdir)/$(systype)
 
 cross_compiling=@cross_compiling@
+cross_linkable=@cross_linkable@
+ifeq ($(cross_linkable),yes)
+  cross-migcom = cross-migcom
+endif
 
 # Programs found by configure.
 AWK=@AWK@
@@ -275,7 +279,7 @@ CPPFLAGS += -nostdinc $(DEFINES) $(INCLUDES)
 MIGFLAGS += $(CPPFLAGS)
 
 
-all: kernel cross-migcom cross-mig
+all: kernel $(cross-migcom) cross-mig
 
 
 #
@@ -293,10 +297,10 @@ kernel: $(objfiles)
 # 
 installed-headers-names = $(addprefix $(includedir)/,$(installed-headers))
 installed-sysdep-headers-names = $(addprefix $(includedir)/,$($(systype)-installed-headers))
-install: mkinstalldirs kernel $(installed-headers-names) $(installed-sysdep-headers-names) cross-mig cross-migcom
+install: mkinstalldirs kernel $(installed-headers-names) $(installed-sysdep-headers-names) cross-mig $(cross-migcom)
 	$(INSTALL_PROGRAM) kernel $(bootdir)/gnumach
 	$(INSTALL_PROGRAM) cross-mig $(bindir)/mig
-	$(INSTALL_PROGRAM) cross-migcom $(libexecdir)/mig
+	test -z "$(cross-migcom)" || $(INSTALL_PROGRAM) cross-migcom $(libexecdir)/mig
 	-ln -s $(systype) $(includedir)/mach/machine
 
 $(installed-headers-names): $(includedir)/%: $(srcdir)/include/%
@@ -307,7 +311,8 @@ $(installed-sysdep-headers-names): $(includedir)/%: $(sysdep)/include/%
 
 mkinstalldirs:
 	mkdir -p $(bootdir) $(includedir) $(includedir)/device \
-		$(includedir)/mach $(includedir)/mach/$(systype) $(libexecdir)
+		$(includedir)/mach $(includedir)/mach/$(systype) \
+		$(libexecdir) $(includedir)/mach/exec $(bindir)
 
 
 #
@@ -458,10 +463,13 @@ mig-othersrc = alloc.h boolean.h error.h global.h lexxer.h message.h \
 		mig_string.h routine.h statement.h type.h utils.h write.h \
 		lexxer.l parser.y mig.sh parser.h cpu.sym
 
+cross-lexxer.o lexxer.o: cpu.h
+
 mig-files = $(mig-csrcfiles) $(mig-othersrc) ChangeLog
 
 vpath cpu.sym $(srcdir)/mig
 
+ifeq ($(cross_linkable),yes)
 # Don't use $(CPPFLAGS) here; MiG needs none of the Mach headers except
 # what happens automagically to build cpu.h.
 
@@ -483,7 +491,12 @@ $(subst .o,.d,$(cross-mig-objfiles)): cross-%.d: $(srcdir)/mig/%.c
 	set -e; $(CC) $(CFLAGS) -M -MG -I. -I$(srcdir)/mig $< | \
 		sed > $@.new -e 's/$*\.o:/cross-$*.o $@:/'
 	mv -f $@.new $@
+endif
 
+./cross-mig: $(srcdir)/mig/mig.sh Makefile
+	sed -e 's,@MIGDIR@,$(libexecdir),g' \
+	    -e 's,@CPP@,${CC} -x c-header -E,g' \
+	    $< >$@.tmp && chmod +x $@.tmp && mv -f $@.tmp $@
 
 ifeq ($(cross_compiling),yes)
 # When cross compiling, we build two migcoms; one for our use and one to 

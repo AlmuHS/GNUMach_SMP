@@ -39,16 +39,55 @@ AC_PREFIX_DEFAULT()
 #
 # Programs
 #
-AC_PROG_CC
+AC_PROG_CC_LOCAL
 AC_PROG_AWK
 AC_PROG_INSTALL
-AC_PROG_LEX
-AC_PROG_YACC
 AC_CHECK_TOOL(MIG, mig, mig)
 
-if test $host != $build; then
+if test $cross_compiling = yes; then
   AC_CHECK_PROG(BUILD_CC, gcc cc)
+  CC=$BUILD_CC
 fi
+
+AC_PROG_LEX
+AC_PROG_YACC
+
+if test $cross_compiling = yes ; then
+  CC=$ac_cv_prog_CC
+fi
+
+
+usable_libc='yes'
+needed_funcs='memcpy memset bcopy bzero htonl ntohl ntohs'
+AC_CHECK_FUNCS($needed_funcs, , usable_libc=no)
+if test $usable_libc = no ; then
+  echo "Support functions not found using $CC, trying $BUILD_CC."
+  CC="$BUILD_CC"
+  for i in $needed_funcs ; do
+    unset ac_cv_func_$i
+  done
+  usable_libc=yes
+  AC_CHECK_FUNCS($needed_funcs, , usable_libc=no)
+  if test $usable_libc = no ; then
+    echo "Configuration problem:" 1>&2
+    echo "Please set installed-clib in the toplevel Makefile so the functions:"
+    echo "$needed_funcs are available."
+    exit 1
+  else
+    changequote(,)
+    set -- `$BUILD_CC -v 2>&1 | sed -n 's/.*from \(.*\)\/lib\/gcc-lib\/\([^/][^/]*\).*/\1 \2/p'`
+    changequote([,])
+    if test -f "$1/$2/lib/libc.a" ; then
+      installed_clib=$1/$2/lib/libc.a
+    else
+      installed_clib=$1/lib/libc.a
+    fi
+  fi
+  CC=$ac_cv_prog_CC
+else
+  installed_clib=$prefix/lib/libcrt.a
+fi
+AC_SUBST(installed_clib)
 
 # Set up `machine' link in build directory for easier header file location.
 AC_LINK_FILES(${systype}/${systype},machine)
