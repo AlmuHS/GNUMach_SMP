@@ -5,6 +5,14 @@
 
 2004-01-15  Alfred M. Szmidt  <ams@kemisten.nu>
 
+	* linux/dev/include/asm-i386/string.h (memscan): Don't use
+	multi-line string literals for asm().
+	* linux/dev/include/asm-i386/segment.h (__generic_memcpy_tofs)
+	(__generic_memcpy_fromfs): Likewise.
+	* linux/src/include/asm-i386/floppy.h (floppy_hardint): Likewise.
+	* i386/i386/proc_reg.h (flush_instr_queue): Likewise.
+	* i386/i386/gdt.c (gdt_init): Likewise.
+
 	* linux/src/drivers/scsi/aic7xxx.c: Updated from Linux 2.0.39
 	* linux/src/drivers/scsi/aic7xxx.h: Likewise.
 	* linux/src/drivers/scsi/aic7xxx_proc.c: Likewise.
@@ -13,13 +21,6 @@
 
 	* linux/src/drivers/scsi/53c7,8xx.h (patch_dsa_32): Don't use
 	token paste operator (##).
-
-	* linux/dev/include/asm-i386/string.h (memscan): Don't use
-	multi-line string literals for asm().
-	* linux/dev/include/asm-i386/segment.h (__generic_memcpy_tofs)
-	(__generic_memcpy_fromfs): Likewise.
-	* i386/i386/proc_reg.h (flush_instr_queue): Likewise.
-	* i386/i386/gdt.c (gdt_init): Likewise.
 
 	* Makefile.in (kernel-undef): Match new output format from
 	nm (binutils) 2.14.x.
