@@ -1,1 +1,1 @@
-#define POWER_SAVE 0
+#define POWER_SAVE 1

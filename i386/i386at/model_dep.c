@@ -42,6 +42,8 @@
 
 #include "vm_param.h"
 #include <kern/time_out.h>
+#include <kern/assert.h>
+#include <kern/cpu_number.h>
 #include <sys/time.h>
 #include <vm/vm_page.h>
 #include <i386/machspl.h>
@@ -154,6 +156,13 @@ void machine_init()
 	 * Unmap page 0 to trap NULL references.
 	 */
 	pmap_unmap_page_zero();
+}
+
+/* Conserve power on processor CPU.  */
+void machine_idle (int cpu)
+{
+  assert (cpu == cpu_number ());
+  asm volatile ("hlt" : : : "memory");
 }
 
 /*
