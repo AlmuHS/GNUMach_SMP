@@ -1,3 +1,13 @@
+2001-08-24  Roland McGrath  <roland@frob.com>
+
+	* kern/bootstrap.c (bootstrap_create): Make setting of boot-args and
+	root-device no longer conditional on [! OSKIT_MACH].
+	(bootstrap_create) [! OSKIT_MACH]: Parse FOO=BAR words out of the
+	multiboot command line and turn those into boot script variables.
+
+	* Makefile.in (clib-routines): Add strsep.
+	* kern/strings.h (strsep, strchr): Declare them.
+
 2001-08-23  Roland McGrath  <roland@frob.com>
 
 	* kern/bootstrap.c (bootstrap_create, user_bootstrap,
