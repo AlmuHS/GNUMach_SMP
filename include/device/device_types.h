@@ -110,6 +110,11 @@ typedef int		dev_status_data_t[DEV_STATUS_MAX];
 #	define	DEV_GET_SIZE_DEVICE_SIZE	0	/* 0 if unknown */
 #	define	DEV_GET_SIZE_RECORD_SIZE	1	/* 1 if sequential */
 #define	DEV_GET_SIZE_COUNT		2
+/* size a device in record numbers, not bytes */
+#define	DEV_GET_RECORDS			1
+#	define	DEV_GET_RECORDS_DEVICE_RECORDS	0	/* 0 if unknown */
+#	define	DEV_GET_RECORDS_RECORD_SIZE	1	/* 1 if sequential */
+#define	DEV_GET_RECORDS_COUNT		2
 
 /*
  * Device error codes

@@ -1632,6 +1632,42 @@ device_get_status (void *d, dev_flavor_t flavor, dev_status_t status,
       *status_count = DEV_GET_SIZE_COUNT;
       break;
 
+    case DEV_GET_RECORDS:
+      if (disk_major (MAJOR (bd->dev)))
+	{
+	  assert (bd->ds->gd);
+
+	  if (bd->part >= 0)
+	    {
+	      struct disklabel *lp;
+
+	      assert (bd->ds->labels);
+	      lp = bd->ds->labels[MINOR (bd->dev)];
+	      assert (lp);
+	      (status[DEV_GET_RECORDS_DEVICE_RECORDS]
+	       = lp->d_partitions[bd->part].p_size);
+	    }
+	  else
+	    (status[DEV_GET_RECORDS_DEVICE_RECORDS]
+	     = bd->ds->gd->part[MINOR (bd->dev)].nr_sects);
+
+	  status[DEV_GET_RECORDS_RECORD_SIZE] = 512;
+	}
+      else
+	{
+	  assert (blk_size[MAJOR (bd->dev)]);
+	  (status[DEV_GET_RECORDS_DEVICE_RECORDS]
+	   = blk_size[MAJOR (bd->dev)][MINOR (bd->dev)]);
+	  status[DEV_GET_RECORDS_RECORD_SIZE] = BLOCK_SIZE;
+	}
+      /* Always return DEV_GET_RECORDS_COUNT.  This is what all native
+         Mach drivers do, and makes it possible to detect the absence
+         of the call by setting it to a different value on input.  MiG
+         makes sure that we will never return more integers than the
+         user asked for.  */
+      *status_count = DEV_GET_RECORDS_COUNT;
+      break;
+
     case V_GETPARMS:
       if (*status_count < (sizeof (struct disk_parms) / sizeof (int)))
 	return D_INVALID_OPERATION;

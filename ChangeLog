@@ -1,3 +1,14 @@
+2001-01-09  Marcus Brinkmann  <marcus@gnu.org>
+
+	* include/device/device_types.h: New get_status call
+	DEV_GET_RECORDS to get the number of records of a device (rather
+	than the number of bytes). Accordingly define
+	DEV_GET_RECORDS_DEVICE_RECORDS, DEV_GET_RECORDS_RECORD_SIZE and
+	DEV_GET_RECORDS_COUNT.
+
+	* linux/dev/glue/block.c (device_get_status): Handle
+	DEV_GET_RECORDS.
+
 2000-11-26  David Welch  <david.welch@seh.ox.ac.uk>
 
 	* i386/Makefrag (i386-installed-headers): Removed dead files 
