@@ -1,3 +1,13 @@
+2001-08-18  Roland McGrath  <roland@frob.com>
+
+	* i386/i386at/model_dep.c (boot_info): Define a struct, not a pointer.
+	(c_boot_entry): Copy the contents into it rather than setting the ptr.
+	(c_boot_entry, init_alloc_aligned, pmap_valid_page, mem_size_init):
+	Update uses.
+	(init_alloc_aligned): Don't need to skip the boot_info memory.
+	* kern/bootstrap.c (boot_info): Update decl.
+	(bootstrap_create): Update uses.
+
 2001-08-18  Marcus Brinkmann  <marcus@gnu.org>
 
 	* linux/src/drivers/net/eepro100.c: File updated to version in
@@ -38,7 +48,7 @@
         * linux/dev/drivers/net/eepro100.c: New file, modified version from
         the above to glue it in gnumach.
         Submitted by Kapil H. Paranjape <kapil@imsc.ernet.in>.
-	
+
 2001-08-17  Roland McGrath  <roland@frob.com>
 
 	* Makefile.in (clib-routines): Add strchr.
