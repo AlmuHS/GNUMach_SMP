@@ -406,6 +406,7 @@ dist:
 	for arch in $(all-real-archs); do \
 		ln -s $$arch gnumach-$(version)/$$arch/include/mach/machine; \
 	done
+	chmod -R u=rwX og=rX gnumach-$(version)
 	tar cfz gnumach-$(version).tar.gz gnumach-$(version)
 	rm -rf gnumach-$(version)
 
