@@ -72,6 +72,6 @@ AC_LINK_FILES(${systype}/${systype},machine)
 # Do machine-specific configuration last so that it can override anything
 # set above if necessary.
 
-AC_CONFIG_SUBDIRS(${systype})
+AC_CONFIG_SUBDIRS(linux ${systype})
 
 AC_OUTPUT(Makefile)

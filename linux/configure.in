@@ -1,0 +1,27 @@
+dnl Configure script for linux code snarfed into GNU Mach.
+dnl Copyright 1999 Free Software Foundation, Inc.
+
+dnl Permission to use, copy, modify and distribute this software and its
+dnl documentation is hereby granted, provided that both the copyright
+dnl notice and this permission notice appear in all copies of the
+dnl software, derivative works or modified versions, and any portions
+dnl thereof, and that both notices appear in supporting documentation.
+dnl
+dnl THE FREE SOFTWARE FOUNDATION ALLOWS FREE USE OF THIS SOFTWARE IN ITS
+dnl "AS IS" CONDITION.  THE FREE SOFTWARE FOUNDATION DISCLAIMS ANY
+dnl LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
+dnl USE OF THIS SOFTWARE.
+
+AC_INIT(src/include/linux/version.h)
+AC_PREREQ(2.12)
+sinclude([../aclocal.m4])
+
+hurd_SYSTYPE
+
+AC_LINK_FILES(src/include/asm-${systype} dev/include/asm-${systype},
+              src/include/asm dev/include/asm)
+
+dnl We need to write these bogus output files to make autoconf create
+dnl the directories where the directory symlinks need to go.
+AC_OUTPUT(src/.dummy:dummy dev/.dummy:dummy
+          src/include/.dummy:dummy dev/include/.dummy:dummy)
