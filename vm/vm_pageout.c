@@ -164,7 +164,7 @@ extern void vm_pageout_scan_continue();
 unsigned int vm_pageout_reserved_internal = 0;
 unsigned int vm_pageout_reserved_really = 0;
 
-unsigned int vm_pageout_external_target = 0;
+unsigned int vm_page_external_target = 0;
 
 unsigned int vm_pageout_burst_max = 0;
 unsigned int vm_pageout_burst_min = 0;
@@ -703,7 +703,7 @@ void vm_pageout_scan()
 		vm_pageout_inactive++;
 		for (m = (vm_page_t) queue_first(&vm_page_queue_inactive);
 		     want_pages || m->external;
-		     m = m->queue_next(m))
+		     m = queue_next(m))
 		  assert(!m->active && m->inactive);
 		object = m->object;
 
@@ -792,7 +792,7 @@ void vm_pageout_scan()
 			if (m->dirty && !m->extcounted) {
 				m->extcounted = TRUE;
 				vm_page_external_count++;
-			else if (!m->dirty && m->extcounted) {
+			} else if (!m->dirty && m->extcounted) {
 				m->extcounted = FALSE;
 				vm_page_external_count--;
 			}
