@@ -1,3 +1,10 @@
+2005-05-26  Alfred M. Szmidt  <ams@gnu.org>
+
+	* device/cons.h (cn_tab) [KERNEL]: Removed extern declaration.
+
+	* linux/dev/include/linux/fs.h (super_blocks): Declare as an
+	pointer.
+
 2005-02-10  Guillem Jover  <guillem@hadrons.org>
 
 	* linux/dev/glue/block.c (rdwr_partial): Remove leftover assert.
