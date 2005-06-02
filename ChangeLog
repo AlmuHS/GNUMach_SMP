@@ -1,3 +1,21 @@
+2005-05-28  Alfred M. Szmidt  <ams@gnu.org>
+
+	* linux/src/drivers/scsi/u14-34f.c (ihdlr): Silence gcc 4.x
+	errors.
+	* linux/src/drivers/scsi/qlogicisp.h: Likewise.
+	* linux/src/drivers/scsi/advansys.c: Likewise.
+	(advansys_reset, advansys_interrupt, asc_scsi_done_list,
+	(asc_enqueue, asc_dequeue, asc_dequeue_list, asc_rmqueue,
+	(asc_isqueued): Likewise.
+	* linux/src/drivers/scsi/53c78xx.c (NCR53c7xx_queue_command):
+	Likewise.
+	* linux/src/drivers/net/ne2k-pci.c (ne_block_input)
+	(ne_block_output): Likewise.
+	* linux/src/drivers/net/hp100.c (__initfunc): Likewise.
+	* linux/src/drivers/net/3c507.c (el16_interrupt): Likewise.
+	* linux/dev/drivers/scsi/seagate.c (seagate_st0x_queue_command):
+	Likewise.
+
 2005-05-26  Alfred M. Szmidt  <ams@gnu.org>
 
 	* device/cons.h (cn_tab) [KERNEL]: Removed extern declaration.

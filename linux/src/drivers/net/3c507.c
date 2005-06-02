@@ -71,6 +71,8 @@ static unsigned int net_debug = NET_DEBUG;
 static unsigned int netcard_portlist[] =
 	{ 0x300, 0x320, 0x340, 0x280, 0};
 
+static void init_rx_bufs(struct device *dev);
+
 /*
   			Details of the i82586.
 
@@ -589,7 +591,6 @@ el16_interrupt(int irq, void *dev_id, struct pt_regs *regs)
 	}
 
 	if ((status & 0x0070) != 0x0040  &&  dev->start) {
-	  static void init_rx_bufs(struct device *);
 		/* The Rx unit is not ready, it must be hung.  Restart the receiver by
 		   initializing the rx buffers, and issuing an Rx start command. */
 		if (net_debug)

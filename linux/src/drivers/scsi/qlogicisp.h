@@ -17,10 +17,52 @@
 /* Renamed and updated to 1.3.x by Michael Griffith <grif@cs.ucr.edu> */
 
 /*
- * $Date: 1999/04/26 05:54:53 $
- * $Revision: 1.1 $
+ * $Date: 2005/06/02 18:52:38 $
+ * $Revision: 1.1.4.1 $
  *
- * $Log: isp1020.h,v $
+ * $Log: qlogicisp.h,v $
+ * Revision 1.1  1999/04/26 05:54:53  tb
+ * 1998-11-30  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
+ *
+ * 	Clean up linux emulation code to make it architecture-independent
+ * 	as much as possible.
+ *
+ * 	* linux: Renamed from linuxdev.
+ * 	* Makefile.in (objfiles): Add linux.o instead of linuxdev.o.
+ * 	(MAKE): New variable. Used for the linux.o target.
+ * 	* configure.in: Add AC_CHECK_TOOL(MAKE, make).
+ * 	* i386/i386/spl.h: Include <i386/ipl.h>, for compatibility with
+ * 	OSF Mach 3.0. Suggested by Elgin Lee <ehl@funghi.com>.
+ * 	* linux/src: Renamed from linux/linux.
+ * 	* linux/dev: Renamed from linux/mach.
+ * 	* linux/Drivers.in (AC_INIT): Use dev/include/linux/autoconf.h,
+ * 	instead of mach/include/linux/autoconf.h.
+ * 	* Makefile.in (all): Target ../linux.o instead of ../linuxdev.o.
+ * 	* linux/dev/drivers/block/genhd.c: Include <machine/spl.h> instead
+ * 	of <i386/ipl.h>.
+ * 	* linux/dev/drivers/net/auto_irq.c: Remove unneeded header files,
+ * 	<i386/ipl.h> and <i386/pic.h>.
+ * 	* linux/dev/init/main.c: Many i386-dependent codes moved to ...
+ * 	* linux/dev/arch/i386/irq.c: ... here.
+ * 	* linux/dev/arch/i386/setup.c: New file.
+ * 	* linux/dev/arch/i386/linux_emul.h: Likewise.
+ * 	* linux/dev/arch/i386/glue/timer.c: Merged into sched.c.
+ * 	* linux/dev/arch/i386/glue/sched.c: Include <machine/spl.h> instead
+ * 	of <i386/ipl.h>, and moved to ...
+ * 	* linux/dev/kernel/sched.c: ... here.
+ * 	* linux/dev/arch/i386/glue/block.c: Include <machine/spl.h> and
+ * 	<linux_emul.h>, instead of i386-dependent header files, and
+ * 	moved to ...
+ * 	* linux/dev/glue/blocl.c: ... here.
+ * 	* linux/dev/arch/i386/glue/net.c: Include <machine/spl.h> and
+ * 	<linux_emul.h>, instead of i386-dependent header files, and
+ * 	moved to ...
+ * 	* linux/dev/glue/net.c: ... here.
+ * 	* linux/dev/arch/i386/glue/misc.c: Remove `x86' and moved to ...
+ * 	* linux/dev/glue/misc.c: ... here.
+ * 	* linux/dev/arch/i386/glue/kmem.c: Moved to ...
+ * 	* linux/dev/glue/kmem.c: ... here.
+ *
  * Revision 0.5  1995/09/22  02:32:56  root
  * do auto request sense
  *
@@ -70,7 +112,7 @@ int isp1020_biosparam(Disk *, kdev_t, int[]);
 #define NULL (0)
 #endif
 
-extern struct proc_dir_entry proc_scsi_isp1020;
+static struct proc_dir_entry proc_scsi_isp1020;
 
 #define QLOGICISP {							   \
 	/* next */		NULL,					   \

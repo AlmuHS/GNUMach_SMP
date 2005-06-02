@@ -1,4 +1,4 @@
-/* $Id: advansys.c,v 1.1 1999/04/26 05:54:04 tb Exp $ */
+/* $Id: advansys.c,v 1.1.4.1 2005/06/02 18:52:38 ams Exp $ */
 #define ASC_VERSION "3.1E"    /* AdvanSys Driver Version */
 
 /*
@@ -3136,7 +3136,7 @@ typedef int (* ADV_SBRESET_CALLBACK)
 /*
  * Default EEPROM Configuration structure defined in a_init.c.
  */
-extern ADVEEP_CONFIG Default_EEPROM_Config;
+STATIC ADVEEP_CONFIG Default_EEPROM_Config;
 
 /*
  * DvcGetPhyAddr() flag arguments
@@ -3256,7 +3256,7 @@ Forced Error: Driver must define ADV_MAX_SG_LIST.
  *  REQTIMESTAMP() - system time stamp value
  */
 typedef Scsi_Cmnd            REQ, *REQP;
-#define REQPNEXT(reqp)       ((REQP) ((reqp)->host_scribble))
+#define REQPNEXT(reqp)       ((reqp)->host_scribble)
 #define REQPNEXTP(reqp)      ((REQP *) &((reqp)->host_scribble))
 #define REQPTID(reqp)        ((reqp)->target)
 #define REQPTIME(reqp)       ((reqp)->SCp.this_residual)
@@ -6015,16 +6015,19 @@ advansys_reset(Scsi_Cmnd *scp, unsigned int reset_flags)
          */
         if (done_scp == NULL) {
             done_scp = asc_dequeue_list(&boardp->active, &last_scp, target);
-            for (tscp = done_scp; tscp; tscp = REQPNEXT(tscp)) {
+            for (tscp = done_scp; tscp; tscp = (REQP) REQPNEXT(tscp)) {
                 tscp->result = HOST_BYTE(DID_RESET);
             }
         } else {
             ASC_ASSERT(last_scp != NULL);
-            REQPNEXT(last_scp) = asc_dequeue_list(&boardp->active,
-                &new_last_scp, target);
-            if (new_last_scp != NULL) {
-                ASC_ASSERT(REQPNEXT(last_scp) != NULL);
-                for (tscp = REQPNEXT(last_scp); tscp; tscp = REQPNEXT(tscp)) {
+            REQPNEXT(last_scp) =
+	      (unsigned char *) asc_dequeue_list(&boardp->active,
+						 &new_last_scp, target);
+            if (new_last_scp != (Scsi_Cmnd *) NULL) {
+	        ASC_ASSERT((REQP) REQPNEXT(last_scp) != NULL);
+                for (tscp = (Scsi_Cmnd *) REQPNEXT(last_scp);
+		     tscp;
+		     tscp = (Scsi_Cmnd *) REQPNEXT(tscp)) {
                     tscp->result = HOST_BYTE(DID_RESET);
                 }
                 last_scp = new_last_scp;
@@ -6037,16 +6040,19 @@ advansys_reset(Scsi_Cmnd *scp, unsigned int reset_flags)
          */
         if (done_scp == NULL) {
             done_scp = asc_dequeue_list(&boardp->waiting, &last_scp, target);
-            for (tscp = done_scp; tscp; tscp = REQPNEXT(tscp)) {
+            for (tscp = done_scp; tscp; tscp = (REQP) REQPNEXT(tscp)) {
                 tscp->result = HOST_BYTE(DID_RESET);
             }
         } else {
             ASC_ASSERT(last_scp != NULL);
-            REQPNEXT(last_scp) = asc_dequeue_list(&boardp->waiting,
-                &new_last_scp, target);
+            REQPNEXT(last_scp) =
+	      (unsigned char *) asc_dequeue_list(&boardp->waiting,
+						 &new_last_scp, target);
             if (new_last_scp != NULL) {
-                ASC_ASSERT(REQPNEXT(last_scp) != NULL);
-                for (tscp = REQPNEXT(last_scp); tscp; tscp = REQPNEXT(tscp)) {
+	        ASC_ASSERT((REQP) REQPNEXT(last_scp) != NULL);
+                for (tscp = (REQP) REQPNEXT(last_scp);
+		     tscp;
+		     tscp = (REQP) REQPNEXT(tscp)) {
                     tscp->result = HOST_BYTE(DID_RESET);
                 }
                 last_scp = new_last_scp;
@@ -6342,8 +6348,10 @@ advansys_interrupt(int irq, void *dev_id, struct pt_regs *regs)
                     ASC_TID_ALL);
             } else {
                 ASC_ASSERT(last_scp != NULL);
-                REQPNEXT(last_scp) = asc_dequeue_list(&boardp->done,
-                    &new_last_scp, ASC_TID_ALL);
+                REQPNEXT(last_scp) =
+		  (unsigned char *) asc_dequeue_list(&boardp->done,
+						     &new_last_scp,
+						     ASC_TID_ALL);
                 if (new_last_scp != NULL) {
                     ASC_ASSERT(REQPNEXT(last_scp) != NULL);
                     last_scp = new_last_scp;
@@ -6441,7 +6449,7 @@ asc_scsi_done_list(Scsi_Cmnd *scp)
     ASC_DBG(2, "asc_scsi_done_list: begin\n");
     while (scp != NULL) {
         ASC_DBG1(3, "asc_scsi_done_list: scp %x\n", (unsigned) scp);
-        tscp = REQPNEXT(scp);
+        tscp = (REQP) REQPNEXT(scp);
         REQPNEXT(scp) = NULL;
         ASC_STATS(scp->host, done);
         ASC_ASSERT(scp->scsi_done != NULL);
@@ -7874,7 +7882,7 @@ asc_enqueue(asc_queue_t *ascq, REQP reqp, int flag)
     tid = REQPTID(reqp);
     ASC_ASSERT(tid >= 0 && tid <= ADV_MAX_TID);
     if (flag == ASC_FRONT) {
-        REQPNEXT(reqp) = ascq->q_first[tid];
+        REQPNEXT(reqp) = (unsigned char *) ascq->q_first[tid];
         ascq->q_first[tid] = reqp;
         /* If the queue was empty, set the last pointer. */
         if (ascq->q_last[tid] == NULL) {
@@ -7882,7 +7890,7 @@ asc_enqueue(asc_queue_t *ascq, REQP reqp, int flag)
         }
     } else { /* ASC_BACK */
         if (ascq->q_last[tid] != NULL) {
-            REQPNEXT(ascq->q_last[tid]) = reqp;
+            REQPNEXT(ascq->q_last[tid]) = (unsigned char *) reqp;
         }
         ascq->q_last[tid] = reqp;
         REQPNEXT(reqp) = NULL;
@@ -7925,7 +7933,7 @@ asc_dequeue(asc_queue_t *ascq, int tid)
     ASC_ASSERT(tid >= 0 && tid <= ADV_MAX_TID);
     if ((reqp = ascq->q_first[tid]) != NULL) {
         ASC_ASSERT(ascq->q_tidmask & ADV_TID_TO_TIDMASK(tid));
-        ascq->q_first[tid] = REQPNEXT(reqp);
+        ascq->q_first[tid] = (REQP) REQPNEXT(reqp);
         /* If the queue is empty, clear its bit and the last pointer. */
         if (ascq->q_first[tid] == NULL) {
             ascq->q_tidmask &= ~ADV_TID_TO_TIDMASK(tid);
@@ -7992,7 +8000,7 @@ asc_dequeue_list(asc_queue_t *ascq, REQP *lastpp, int tid)
             {
                 REQP reqp;
                 ascq->q_cur_cnt[tid] = 0;
-                for (reqp = firstp; reqp; reqp = REQPNEXT(reqp)) {
+                for (reqp = firstp; reqp; reqp = (REQP) REQPNEXT(reqp)) {
                     REQTIMESTAT("asc_dequeue_list", ascq, reqp, tid);
                 }
             }
@@ -8008,7 +8016,7 @@ asc_dequeue_list(asc_queue_t *ascq, REQP *lastpp, int tid)
                     lastp = ascq->q_last[i];
                 } else {
                     ASC_ASSERT(lastp != NULL);
-                    REQPNEXT(lastp) = ascq->q_first[i];
+                    REQPNEXT(lastp) = (unsigned char *) ascq->q_first[i];
                     lastp = ascq->q_last[i];
                 }
                 ascq->q_first[i] = ascq->q_last[i] = NULL;
@@ -8021,7 +8029,7 @@ asc_dequeue_list(asc_queue_t *ascq, REQP *lastpp, int tid)
 #ifdef ADVANSYS_STATS
         {
             REQP reqp;
-            for (reqp = firstp; reqp; reqp = REQPNEXT(reqp)) {
+            for (reqp = firstp; reqp; reqp = (REQP) REQPNEXT(reqp)) {
                 REQTIMESTAT("asc_dequeue_list", ascq, reqp, reqp->target);
             }
         }
@@ -8065,7 +8073,7 @@ asc_rmqueue(asc_queue_t *ascq, REQP reqp)
      */
     if (reqp == ascq->q_first[tid]) {
         ret = ASC_TRUE;
-        ascq->q_first[tid] = REQPNEXT(reqp);
+        ascq->q_first[tid] = (REQP) REQPNEXT(reqp);
         /* If the queue is now empty, clear its bit and the last pointer. */
         if (ascq->q_first[tid] == NULL) {
             ascq->q_tidmask &= ~ADV_TID_TO_TIDMASK(tid);
@@ -8083,8 +8091,8 @@ asc_rmqueue(asc_queue_t *ascq, REQP reqp)
          * Set 'prevp' to the first entry, 'currp' to the second entry,
          * and search for 'reqp'.
          */
-        for (prevp = ascq->q_first[tid], currp = REQPNEXT(prevp);
-             currp; prevp = currp, currp = REQPNEXT(currp)) {
+        for (prevp = ascq->q_first[tid], currp = (REQP) REQPNEXT(prevp);
+             currp; prevp = currp, currp = (REQP) REQPNEXT(currp)) {
             if (currp == reqp) {
                 ret = ASC_TRUE;
                 REQPNEXT(prevp) = REQPNEXT(currp);
@@ -8127,7 +8135,7 @@ asc_isqueued(asc_queue_t *ascq, REQP reqp)
     tid = REQPTID(reqp);
     ASC_ASSERT(tid >= 0 && tid <= ADV_MAX_TID);
 
-    for (treqp = ascq->q_first[tid]; treqp; treqp = REQPNEXT(treqp)) {
+    for (treqp = ascq->q_first[tid]; treqp; treqp = (REQP) REQPNEXT(treqp)) {
         ASC_ASSERT(ascq->q_tidmask & ADV_TID_TO_TIDMASK(tid));
         if (treqp == reqp) {
             ret = ASC_TRUE;

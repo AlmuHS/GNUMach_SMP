@@ -2,7 +2,7 @@
 ** hp100.c 
 ** HP CASCADE Architecture Driver for 100VG-AnyLan Network Adapters
 **
-** $Id: hp100.c,v 1.1 1999/04/26 05:52:18 tb Exp $
+** $Id: hp100.c,v 1.1.4.1 2005/06/02 18:52:39 ams Exp $
 **
 ** Based on the HP100 driver written by Jaroslav Kysela <perex@jcu.cz>
 ** Extended for new busmaster capable chipsets by 
@@ -648,8 +648,7 @@ __initfunc(static int hp100_probe1( struct device *dev, int ioaddr, u_char bus, 
     {
       mem_ptr_phys = (u_int *)( hp100_inw( MEM_MAP_LSW ) | 
 				( hp100_inw( MEM_MAP_MSW ) << 16 ) );
-      (u_int)mem_ptr_phys &= ~0x1fff;  /* 8k alignment */
-
+      mem_ptr_phys = (u_int *) ((u_int) mem_ptr_phys & ~0x1fff);  /* 8k alignment */
       if ( bus == HP100_BUS_ISA && ( (u_long)mem_ptr_phys & ~0xfffff ) != 0 )
         {
 	  printk("hp100: %s: Can only use programmed i/o mode.\n", dev->name);
