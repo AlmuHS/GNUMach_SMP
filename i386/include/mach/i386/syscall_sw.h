@@ -35,13 +35,15 @@ ENTRY(trap_name) \
 	movl	$ trap_number,%eax; \
 	SVC; \
 	jb LCL(cerror); \
-	ret;
+	ret; \
+END(trap_name)
 #else
 #define kernel_trap(trap_name,trap_number,number_args) \
 ENTRY(trap_name) \
 	movl	$ trap_number,%eax; \
 	SVC; \
-	ret;
+	ret; \
+END(trap_name)
 #endif
 
 #endif	/* _MACH_I386_SYSCALL_SW_H_ */

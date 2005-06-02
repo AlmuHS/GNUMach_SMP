@@ -1,3 +1,9 @@
+2005-05-24  Alfred M. Szmidt  <ams@gnu.org>
+
+	* i386/include/mach/i386/asm.h (END): New macro.
+
+	* i386/include/mach/i386/syscall_sw.h (kernel_trap): Call END.
+
 2005-05-28  Alfred M. Szmidt  <ams@gnu.org>
 
 	* linux/src/drivers/scsi/u14-34f.c (ihdlr): Silence gcc 4.x
