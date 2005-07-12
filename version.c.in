@@ -1,2 +1,2 @@
 /* @configure_input@ */
-const char version[] = "GNUmach @VERSION@";
+const char version[] = "@PACKAGE_NAME@ @PACKAGE_VERSION@";

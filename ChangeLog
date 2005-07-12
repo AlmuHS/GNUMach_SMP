@@ -1,3 +1,67 @@
+2005-07-12  Guillem Jover  <guillem@hadrons.org>
+
+	* configure: Regenerated.
+	* i386/configure: Regenerated.
+	
+	* Drivers.macros (AC_DRIVER_CLASS): Use AH_TEMPLATE.
+	(AC_DRIVER): Set the value for the AC_DEFINE and AC_DEFINE_UNQUOTED
+	to 1.
+
+	* aclocal.m4 (AC_PROG_CC_LOCAL, AC_PROG_CC_WORKS_LOCAL): Removed.
+	* version.m4: New file.
+	* Makefile.in: Use PACKAGE_VERSION, not VERSION.
+	* doc/Makefile.in: Likewise.
+	* version.c.in: Likewise. Use PACKAGE_NAME, not "GNUmach".
+	* i386/linux/Makefile.in (configure): Change its source to
+	configure.ac.
+
+	* aclocal.m4: Add missing quotations.
+	* Drivers.macros: Likewise.
+	* configure.in: Likewise. Include version.m4 and use PACKAGE and
+	VERSION m4 macros from it.
+	* i386/configure.in: Likewise.
+	(AC_INIT): Use new syntax and move source check to AC_CONFIG_SRCDIR.
+	* i386/linux/configure.ac: Likewise. Use m4_sinclude, not sinclude.
+	* linux/configure.in: Likewise.
+
+	* i386/configure.in: Update AC_DEFINE to the new three argument form.
+	* i386/linux/configure.ac: Move AC_DEFINE inside AC_ARG_ENABLE.
+
+	* configure.in: Use AC_CONFIG_LINKS, not AC_LINK_FILES.
+	* linux/configure.in: Likewise.
+
+	* i386/configure.in: Call AC_CONFIG_FILES and use the new form of
+	AC_OUTPUT.
+	* i386/linux/configure.ac: Likewise.
+	* linux/configure.in: Likewise
+
+	* configure.in: Use AS_HELP_STRING in AC_ARG_ENABLE help strings.
+	* Drivers.macros: Likewise.
+	* i386/configure.in: Likewise.
+	* i386/linux/configure.ac: Likewise.
+
+2005-07-12  Neal H. Walfield  <neal@cs.uml.edu>
+
+	* configure.in: Update to use autoconf 2.57.
+	Do not error out if host_os is not GNU.
+	Update AC_DEFINEs to the required three argument form.
+	Don't call AC_CHECK_TOOL(CC, gcc) and AC_PROG_CC_LOCAL, just use
+	AC_PROG_CC.
+	AC_SUBST(LDFLAGS).
+	Refactor AC_CONFIG_SUBDIRS to not do variable substitution.
+	Call AC_CONFIG_FILES and use the new form of AC_OUTPUT.
+	* i386/configure.in: Require autoconf 2.57.
+	* linux/configure.in: Likewise.
+	* i386/linux/Drivers.in: Move from here...
+	* i386/linux/configure.ac: ... to here to conform to the
+	environment autoreconf expects.
+	(hurd_host_CPU): New macro.
+	Call AC_PROG_CC, not AC_PROG_CC_LOCAL.
+	AC_SUBST(LD_FLAGS).
+	(flashpoint): Update AC_DEFINE to the new three argument form.
+	* Drivers.macros (AC_DRIVER): Update AC_DEFINE to the new three
+	argument form.
+
 2005-05-24  Alfred M. Szmidt  <ams@gnu.org>
 
 	* i386/include/mach/i386/asm.h (END): New macro.

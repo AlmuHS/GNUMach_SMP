@@ -1,5 +1,5 @@
 # Makefile for Mach 4 kernel directory
-# Copyright 1997, 1999 Free Software Foundation, Inc.
+# Copyright 1997, 1999, 2004 Free Software Foundation, Inc.
 #
 # Permission to use, copy, modify and distribute this software and its
 # documentation is hereby granted, provided that both the copyright
@@ -19,7 +19,7 @@
 srcdir=@srcdir@
 systype=@systype@
 prefix=@prefix@
-version = @VERSION@
+version = @PACKAGE_VERSION@
 
 exec_prefix=$(prefix)
 

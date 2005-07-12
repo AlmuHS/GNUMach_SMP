@@ -175,8 +175,8 @@ linux-objs += $(sort $(device_drivers))
 
 # Autoconf support
 
-$(srcdir)/configure: $(srcdir)/Drivers.in $(srcdir)/../../Drivers.macros
-	cd $(srcdir) && rm -f configure && autoconf Drivers.in > configure
+$(srcdir)/configure: $(srcdir)/configure.ac $(srcdir)/../../Drivers.macros
+	cd $(srcdir) && autoconf
 
 device-drivers.h: $(srcdir)/Makefile.in config.status
 	./config.status

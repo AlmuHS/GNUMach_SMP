@@ -1,5 +1,5 @@
 dnl Configure script for i386
-dnl Copyright 1999 Free Software Foundation, Inc.
+dnl Copyright 1999, 2004 Free Software Foundation, Inc.
 
 dnl Permission to use, copy, modify and distribute this software and its
 dnl documentation is hereby granted, provided that both the copyright
@@ -13,22 +13,26 @@ dnl LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
 dnl USE OF THIS SOFTWARE.
 
 
-AC_INIT(i386/i386asm.sym)
-AC_PREREQ(2.12)
+m4_include([../version.m4])
+
+AC_INIT([PACKAGE], [VERSION])
+AC_CONFIG_SRCDIR([i386/i386asm.sym])
+AC_PREREQ(2.57)
 
 #
 # Options
 #
-AC_ARG_ENABLE(lpr,
-[  --enable-lpr             enable use of lpr device],
-[test "x$enableval" = xno || AC_DEFINE(MACH_LPR)])
+AC_ARG_ENABLE([lpr],
+AS_HELP_STRING([--enable-lpr], [enable use of lpr device]),
+[test "x$enableval" = xno || AC_DEFINE([MACH_LPR], [], [enable mach lpr])])
 
 #
 # Programs
 #
-AC_CHECK_TOOL(LD, ld)
-AC_CHECK_TOOL(MAKE, make)
+AC_CHECK_TOOL([LD], [ld])
+AC_CHECK_TOOL([MAKE], [make])
 
-AC_CONFIG_SUBDIRS(linux)
+AC_CONFIG_SUBDIRS([linux])
 
-AC_OUTPUT(Makefile)
+AC_CONFIG_FILES([Makefile])
+AC_OUTPUT

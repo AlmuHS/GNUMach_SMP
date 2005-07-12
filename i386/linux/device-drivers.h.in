@@ -1,84 +1,262 @@
-/* All possible device drivers; must match Drivers.in. */
+/* device-drivers.h.in.  Generated from configure.ac by autoheader.  */
 
-#undef CONFIG_M386
-#undef CONFIG_M486
-#undef CONFIG_M586
-#undef CONFIG_M686
-#undef CPU
-#undef CONFIG_SCSI
-#undef CONFIG_INET
-#undef CONFIG_BLK_DEV_FD
-#undef CONFIG_BLK_DEV_IDE
-#undef CONFIG_SCSI_ADVANSYS
-#undef CONFIG_SCSI_BUSLOGIC
-#undef CONFIG_SCSI_OMIT_FLASHPOINT
-#undef CONFIG_SCSI_U14_34F
-#undef CONFIG_SCSI_ULTRASTOR
-#undef CONFIG_SCSI_AHA152X
-#undef CONFIG_SCSI_AHA1542
-#undef CONFIG_SCSI_AHA1740
-#undef CONFIG_SCSI_AIC7XXX
-#undef CONFIG_SCSI_FUTURE_DOMAIN
-#undef CONFIG_SCSI_IN2000
-#undef CONFIG_SCSI_GENERIC_NCR5380
-#undef CONFIG_SCSI_NCR53C406A
-#undef CONFIG_SCSI_PASS16
-#undef CONFIG_SCSI_SEAGATE
-#undef CONFIG_SCSI_T128
-#undef CONFIG_SCSI_NCR53C7xx
-#undef CONFIG_SCSI_EATA_DMA
-#undef CONFIG_SCSI_EATA_PIO
-#undef CONFIG_SCSI_7000FASST
-#undef CONFIG_SCSI_EATA
-#undef CONFIG_SCSI_AM53C974
-#undef CONFIG_SCSI_DTC3280
-#undef CONFIG_SCSI_NCR53C8XX
-#undef CONFIG_SCSI_DC390T
-#undef CONFIG_SCSI_PPA
-#undef CONFIG_SCSI_QLOGIC_FAS
-#undef CONFIG_SCSI_QLOGIC_ISP
-#undef CONFIG_SCSI_GDTH
-#undef CONFIG_NE2000
-#undef CONFIG_EL2
-#undef CONFIG_EL3
-#undef CONFIG_WD80x3
-#undef CONFIG_EL1
-#undef CONFIG_ULTRA
-#undef CONFIG_ULTRA32
-#undef CONFIG_HPLAN_PLUS
-#undef CONFIG_HPLAN
-#undef CONFIG_VORTEX
-#undef CONFIG_SEEQ8005
-#undef CONFIG_HP100
-#undef CONFIG_AC3200
-#undef CONFIG_E2100
-#undef CONFIG_AT1700
-#undef CONFIG_ETH16I
-#undef CONFIG_ZNET
-#undef CONFIG_EEXPRESS
-#undef CONFIG_EEXPRESS_PRO
-#undef CONFIG_EEXPRESS_PRO100B
-#undef CONFIG_DEPCA
-#undef CONFIG_EWRK3
-#undef CONFIG_DE4X5
-#undef CONFIG_APRICOT
-#undef CONFIG_WAVELAN
-#undef CONFIG_EL16
-#undef CONFIG_ELPLUS
-#undef CONFIG_DE600
-#undef CONFIG_DE620
-#undef CONFIG_SK_G16
-#undef CONFIG_NI52
-#undef CONFIG_NI65
-#undef CONFIG_ATP
-#undef CONFIG_LANCE
-#undef CONFIG_DEC_ELCP
-#undef CONFIG_FMV18X
+/* 3c515 */
 #undef CONFIG_3C515
-#undef CONFIG_PCNET32
-#undef CONFIG_NE2K_PCI
-#undef CONFIG_YELLOWFIN
-#undef CONFIG_RTL8139
+
+/* ac3200 */
+#undef CONFIG_AC3200
+
+/* apricot */
+#undef CONFIG_APRICOT
+
+/* at1700 */
+#undef CONFIG_AT1700
+
+/* atp */
+#undef CONFIG_ATP
+
+/* floppy */
+#undef CONFIG_BLK_DEV_FD
+
+/* ide */
+#undef CONFIG_BLK_DEV_IDE
+
+/* de4x5 */
+#undef CONFIG_DE4X5
+
+/* de600 */
+#undef CONFIG_DE600
+
+/* de620 */
+#undef CONFIG_DE620
+
+/* elcp */
+#undef CONFIG_DEC_ELCP
+
+/* depca */
+#undef CONFIG_DEPCA
+
+/* e2100 */
+#undef CONFIG_E2100
+
+/* eexpress */
+#undef CONFIG_EEXPRESS
+
+/* eexpresspro */
+#undef CONFIG_EEXPRESS_PRO
+
+/* eexpresspro100 */
+#undef CONFIG_EEXPRESS_PRO100B
+
+/* el1 */
+#undef CONFIG_EL1
+
+/* el16 */
+#undef CONFIG_EL16
+
+/* el2 */
+#undef CONFIG_EL2
+
+/* el3 */
+#undef CONFIG_EL3
+
+/* elplus */
+#undef CONFIG_ELPLUS
+
+/* epic */
 #undef CONFIG_EPIC
+
+/* eth16i */
+#undef CONFIG_ETH16I
+
+/* ewrk3 */
+#undef CONFIG_EWRK3
+
+/* fmv18x */
+#undef CONFIG_FMV18X
+
+/* hp100 */
+#undef CONFIG_HP100
+
+/* hplan */
+#undef CONFIG_HPLAN
+
+/* hplanplus */
+#undef CONFIG_HPLAN_PLUS
+
+/* Driver Class net */
+#undef CONFIG_INET
+
+/* lance */
+#undef CONFIG_LANCE
+
+/* 386 */
+#undef CONFIG_M386
+
+/* 486 */
+#undef CONFIG_M486
+
+/* 586 */
+#undef CONFIG_M586
+
+/* 686 */
+#undef CONFIG_M686
+
+/* ne2000 */
+#undef CONFIG_NE2000
+
+/* ne2kpci */
+#undef CONFIG_NE2K_PCI
+
+/* ni52 */
+#undef CONFIG_NI52
+
+/* ni65 */
+#undef CONFIG_NI65
+
+/* pcnet32 */
+#undef CONFIG_PCNET32
+
+/* rtl8139 */
+#undef CONFIG_RTL8139
+
+/* Driver Class scsi */
+#undef CONFIG_SCSI
+
+/* wd7000 */
+#undef CONFIG_SCSI_7000FASST
+
+/* advansys */
+#undef CONFIG_SCSI_ADVANSYS
+
+/* aha152x */
+#undef CONFIG_SCSI_AHA152X
+
+/* aha1542 */
+#undef CONFIG_SCSI_AHA1542
+
+/* aha1740 */
+#undef CONFIG_SCSI_AHA1740
+
+/* aic7xxx */
+#undef CONFIG_SCSI_AIC7XXX
+
+/* am53c974 */
+#undef CONFIG_SCSI_AM53C974
+
+/* buslogic */
+#undef CONFIG_SCSI_BUSLOGIC
+
+/* dc390t */
+#undef CONFIG_SCSI_DC390T
+
+/* dtc3280 */
+#undef CONFIG_SCSI_DTC3280
+
+/* eata */
+#undef CONFIG_SCSI_EATA
+
+/* eatadma */
+#undef CONFIG_SCSI_EATA_DMA
+
+/* eatapio */
+#undef CONFIG_SCSI_EATA_PIO
+
+/* futuredomain */
+#undef CONFIG_SCSI_FUTURE_DOMAIN
+
+/* gdth */
+#undef CONFIG_SCSI_GDTH
+
+/* ncr5380 */
+#undef CONFIG_SCSI_GENERIC_NCR5380
+
+/* in2000 */
+#undef CONFIG_SCSI_IN2000
+
+/* ncr53c406a */
+#undef CONFIG_SCSI_NCR53C406A
+
+/* ncr53c7xx */
+#undef CONFIG_SCSI_NCR53C7xx
+
+/* ncr53c8xx */
+#undef CONFIG_SCSI_NCR53C8XX
+
+/* scsi omit flashpoint */
+#undef CONFIG_SCSI_OMIT_FLASHPOINT
+
+/* pas16 */
+#undef CONFIG_SCSI_PASS16
+
+/* ppa */
+#undef CONFIG_SCSI_PPA
+
+/* qlogicfas */
+#undef CONFIG_SCSI_QLOGIC_FAS
+
+/* qlogicisp */
+#undef CONFIG_SCSI_QLOGIC_ISP
+
+/* seagate */
+#undef CONFIG_SCSI_SEAGATE
+
+/* t128 */
+#undef CONFIG_SCSI_T128
+
+/* u1434f */
+#undef CONFIG_SCSI_U14_34F
+
+/* ultrastor */
+#undef CONFIG_SCSI_ULTRASTOR
+
+/* seeq8005 */
+#undef CONFIG_SEEQ8005
+
+/* skg16 */
+#undef CONFIG_SK_G16
+
+/* tlan */
 #undef CONFIG_TLAN
+
+/* ul */
+#undef CONFIG_ULTRA
+
+/* ul32 */
+#undef CONFIG_ULTRA32
+
+/* viarhine */
 #undef CONFIG_VIA_RHINE
+
+/* vortex */
+#undef CONFIG_VORTEX
+
+/* wavelan */
+#undef CONFIG_WAVELAN
+
+/* wd80x3 */
+#undef CONFIG_WD80x3
+
+/* yellowfin */
+#undef CONFIG_YELLOWFIN
+
+/* znet */
+#undef CONFIG_ZNET
+
+/* CPU */
+#undef CPU
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION

@@ -1,5 +1,5 @@
 dnl Configure script for linux code snarfed into GNU Mach.
-dnl Copyright 1999 Free Software Foundation, Inc.
+dnl Copyright 1999, 2004 Free Software Foundation, Inc.
 
 dnl Permission to use, copy, modify and distribute this software and its
 dnl documentation is hereby granted, provided that both the copyright
@@ -12,16 +12,23 @@ dnl "AS IS" CONDITION.  THE FREE SOFTWARE FOUNDATION DISCLAIMS ANY
 dnl LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
 dnl USE OF THIS SOFTWARE.
 
-AC_INIT(src/include/linux/version.h)
-AC_PREREQ(2.12)
-sinclude([../aclocal.m4])
+m4_include([../version.m4])
+
+AC_INIT([PACKAGE],[VERSION])
+AC_CONFIG_SRCDIR([src/include/linux/version.h])
+AC_PREREQ(2.57)
+
+m4_sinclude([../aclocal.m4])
 
 hurd_SYSTYPE
 
-AC_LINK_FILES(src/include/asm-${systype} dev/include/asm-${systype},
-              src/include/asm dev/include/asm)
+AC_CONFIG_LINKS([src/include/asm:src/include/asm-${systype}
+		 dev/include/asm:dev/include/asm-${systype}])
 
 dnl We need to write these bogus output files to make autoconf create
 dnl the directories where the directory symlinks need to go.
-AC_OUTPUT(src/.dummy:dummy.in dev/.dummy:dummy.in
-          src/include/.dummy:dummy.in dev/include/.dummy:dummy.in)
+AC_CONFIG_FILES([src/.dummy:dummy.in
+		 dev/.dummy:dummy.in
+		 src/include/.dummy:dummy.in
+		 dev/include/.dummy:dummy.in])
+AC_OUTPUT
