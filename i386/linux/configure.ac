@@ -1,5 +1,5 @@
 dnl Device driver options for i386
-dnl Copyright 1997, 1999, 2004 Free Software Foundation, Inc.
+dnl Copyright 1997, 1999, 2004, 2006 Free Software Foundation, Inc.
 
 dnl Permission to use, copy, modify and distribute this software and its
 dnl documentation is hereby granted, provided that both the copyright
@@ -108,7 +108,7 @@ AC_DRIVER_CLASS([scsi], [CONFIG_SCSI], [ \
   sd_ioctl.o sr.o sr_ioctl.o])
 
 AC_DRIVER_CLASS([net], [CONFIG_INET], [ \
-  auto_irq.o net.o Space.o dev.o net_init.o])
+  auto_irq.o net.o Space.o dev.o net_init.o pci-scan.o])
 
 dnl Strictly speaking, we could have a `linux' option too, but it's
 dnl not possible to built a useful kernel without at least one Linux
@@ -169,6 +169,20 @@ AC_ARG_ENABLE([flashpoint],
 
 
 dnl Ethernet controllers
+
+dnl FIXME: Can't be enabled since it is a pcmcia driver, and we don't
+dnl have that kind of fluff.
+dnl
+dnl linux_DRIVER([cb_shim], [CB_SHIM], [cb_shim], [net])
+
+linux_DRIVER([starfire], [STARFIRE], [starfire], [net])
+linux_DRIVER([sundance], [SUNDANCE], [sundance], [net])
+linux_DRIVER([winbond_840], [WINBOND840], [winbond-840], [net])
+linux_DRIVER([hamachi], [HAMACHI], [hamachi], [net])
+linux_DRIVER([intel_gige], [INTEL_GIGE], [intel-gige], [net])
+linux_DRIVER([natsemi], [NATSEMI], [natsemi], [net])
+linux_DRIVER([myson803], [MYSON803], [myson803], [net])
+linux_DRIVER([ns820], [NS820], [ns820], [net])
 
 AC_DRIVER([ne2000], [CONFIG_NE2000], [ne.o 8390.o], [net])
 AC_DRIVER([el2], [CONFIG_EL2], [3c503.o 8390.o], [net])

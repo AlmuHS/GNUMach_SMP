@@ -910,6 +910,22 @@ Optional Features:
   --enable-gdth           enable driver alias gdth for gdth
   --enable-gdth           enable driver gdth
   --enable-flashpoint     enable SCSI flashpoint [default=no]
+  --enable-starfire       enable driver alias starfire for starfire
+  --enable-starfire       enable driver starfire
+  --enable-sundance       enable driver alias sundance for sundance
+  --enable-sundance       enable driver sundance
+  --enable-winbond-840    enable driver alias winbond-840 for winbond_840
+  --enable-winbond_840    enable driver winbond_840
+  --enable-hamachi        enable driver alias hamachi for hamachi
+  --enable-hamachi        enable driver hamachi
+  --enable-intel-gige     enable driver alias intel-gige for intel_gige
+  --enable-intel_gige     enable driver intel_gige
+  --enable-natsemi        enable driver alias natsemi for natsemi
+  --enable-natsemi        enable driver natsemi
+  --enable-myson803       enable driver alias myson803 for myson803
+  --enable-myson803       enable driver myson803
+  --enable-ns820          enable driver alias ns820 for ns820
+  --enable-ns820          enable driver ns820
   --enable-ne2000         enable driver ne2000
   --enable-el2            enable driver el2
   --enable-el3            enable driver el3
@@ -1081,7 +1097,7 @@ esac
     else
       echo "$as_me: WARNING: no configuration information is in $ac_dir" >&2
     fi
-    cd "$ac_popdir"
+    cd $ac_popdir
   done
 fi
 
@@ -2260,7 +2276,8 @@ if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   cat conftest.err >&5
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
   { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
@@ -2318,7 +2335,8 @@ if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   cat conftest.err >&5
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
   { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
@@ -2434,7 +2452,8 @@ if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   cat conftest.err >&5
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
   { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
@@ -2488,7 +2507,8 @@ if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   cat conftest.err >&5
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
   { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
@@ -2533,7 +2553,8 @@ if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   cat conftest.err >&5
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
   { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
@@ -2577,7 +2598,8 @@ if { (eval echo "$as_me:$LINENO: \"$ac_compile\"") >&5
   cat conftest.err >&5
   echo "$as_me:$LINENO: \$? = $ac_status" >&5
   (exit $ac_status); } &&
-	 { ac_try='test -z "$ac_c_werror_flag"			 || test ! -s conftest.err'
+	 { ac_try='test -z "$ac_c_werror_flag"
+			 || test ! -s conftest.err'
   { (eval echo "$as_me:$LINENO: \"$ac_try\"") >&5
   (eval $ac_try) 2>&5
   ac_status=$?
@@ -3085,7 +3107,7 @@ driver_class_scsi_files=" \
 
 driver_class_net_option=CONFIG_INET
 driver_class_net_files=" \
-  auto_irq.o net.o Space.o dev.o net_init.o"
+  auto_irq.o net.o Space.o dev.o net_init.o pci-scan.o"
 
 
 
@@ -4108,6 +4130,280 @@ _ACEOF
 
 fi;
 
+
+
+
+
+
+# Checking for alias starfire
+# Check whether --enable-starfire or --disable-starfire was given.
+if test "${enable_starfire+set}" = set; then
+  enableval="$enable_starfire"
+  enable_starfire="$enable_starfire"
+
+fi;
+
+# Checking for device driver option starfire
+# Check whether --enable-starfire or --disable-starfire was given.
+if test "${enable_starfire+set}" = set; then
+  enableval="$enable_starfire"
+
+if test "x$enableval" != xno; then
+
+cat >>confdefs.h <<\_ACEOF
+#define CONFIG_STARFIRE 1
+_ACEOF
+
+device_drivers="$device_drivers starfire.o"
+if test "${driver_class_net_selected+set}" != set; then
+  driver_class_net_selected=yes
+  cat >>confdefs.h <<_ACEOF
+#define $driver_class_net_option 1
+_ACEOF
+
+  device_drivers="$device_drivers $driver_class_net_files"
+fi
+fi
+
+fi;
+
+
+
+# Checking for alias sundance
+# Check whether --enable-sundance or --disable-sundance was given.
+if test "${enable_sundance+set}" = set; then
+  enableval="$enable_sundance"
+  enable_sundance="$enable_sundance"
+
+fi;
+
+# Checking for device driver option sundance
+# Check whether --enable-sundance or --disable-sundance was given.
+if test "${enable_sundance+set}" = set; then
+  enableval="$enable_sundance"
+
+if test "x$enableval" != xno; then
+
+cat >>confdefs.h <<\_ACEOF
+#define CONFIG_SUNDANCE 1
+_ACEOF
+
+device_drivers="$device_drivers sundance.o"
+if test "${driver_class_net_selected+set}" != set; then
+  driver_class_net_selected=yes
+  cat >>confdefs.h <<_ACEOF
+#define $driver_class_net_option 1
+_ACEOF
+
+  device_drivers="$device_drivers $driver_class_net_files"
+fi
+fi
+
+fi;
+
+
+
+# Checking for alias winbond-840
+# Check whether --enable-winbond-840 or --disable-winbond-840 was given.
+if test "${enable_winbond_840+set}" = set; then
+  enableval="$enable_winbond_840"
+  enable_winbond_840="$enable_winbond-840"
+
+fi;
+
+# Checking for device driver option winbond_840
+# Check whether --enable-winbond_840 or --disable-winbond_840 was given.
+if test "${enable_winbond_840+set}" = set; then
+  enableval="$enable_winbond_840"
+
+if test "x$enableval" != xno; then
+
+cat >>confdefs.h <<\_ACEOF
+#define CONFIG_WINBOND840 1
+_ACEOF
+
+device_drivers="$device_drivers winbond-840.o"
+if test "${driver_class_net_selected+set}" != set; then
+  driver_class_net_selected=yes
+  cat >>confdefs.h <<_ACEOF
+#define $driver_class_net_option 1
+_ACEOF
+
+  device_drivers="$device_drivers $driver_class_net_files"
+fi
+fi
+
+fi;
+
+
+
+# Checking for alias hamachi
+# Check whether --enable-hamachi or --disable-hamachi was given.
+if test "${enable_hamachi+set}" = set; then
+  enableval="$enable_hamachi"
+  enable_hamachi="$enable_hamachi"
+
+fi;
+
+# Checking for device driver option hamachi
+# Check whether --enable-hamachi or --disable-hamachi was given.
+if test "${enable_hamachi+set}" = set; then
+  enableval="$enable_hamachi"
+
+if test "x$enableval" != xno; then
+
+cat >>confdefs.h <<\_ACEOF
+#define CONFIG_HAMACHI 1
+_ACEOF
+
+device_drivers="$device_drivers hamachi.o"
+if test "${driver_class_net_selected+set}" != set; then
+  driver_class_net_selected=yes
+  cat >>confdefs.h <<_ACEOF
+#define $driver_class_net_option 1
+_ACEOF
+
+  device_drivers="$device_drivers $driver_class_net_files"
+fi
+fi
+
+fi;
+
+
+
+# Checking for alias intel-gige
+# Check whether --enable-intel-gige or --disable-intel-gige was given.
+if test "${enable_intel_gige+set}" = set; then
+  enableval="$enable_intel_gige"
+  enable_intel_gige="$enable_intel-gige"
+
+fi;
+
+# Checking for device driver option intel_gige
+# Check whether --enable-intel_gige or --disable-intel_gige was given.
+if test "${enable_intel_gige+set}" = set; then
+  enableval="$enable_intel_gige"
+
+if test "x$enableval" != xno; then
+
+cat >>confdefs.h <<\_ACEOF
+#define CONFIG_INTEL_GIGE 1
+_ACEOF
+
+device_drivers="$device_drivers intel-gige.o"
+if test "${driver_class_net_selected+set}" != set; then
+  driver_class_net_selected=yes
+  cat >>confdefs.h <<_ACEOF
+#define $driver_class_net_option 1
+_ACEOF
+
+  device_drivers="$device_drivers $driver_class_net_files"
+fi
+fi
+
+fi;
+
+
+
+# Checking for alias natsemi
+# Check whether --enable-natsemi or --disable-natsemi was given.
+if test "${enable_natsemi+set}" = set; then
+  enableval="$enable_natsemi"
+  enable_natsemi="$enable_natsemi"
+
+fi;
+
+# Checking for device driver option natsemi
+# Check whether --enable-natsemi or --disable-natsemi was given.
+if test "${enable_natsemi+set}" = set; then
+  enableval="$enable_natsemi"
+
+if test "x$enableval" != xno; then
+
+cat >>confdefs.h <<\_ACEOF
+#define CONFIG_NATSEMI 1
+_ACEOF
+
+device_drivers="$device_drivers natsemi.o"
+if test "${driver_class_net_selected+set}" != set; then
+  driver_class_net_selected=yes
+  cat >>confdefs.h <<_ACEOF
+#define $driver_class_net_option 1
+_ACEOF
+
+  device_drivers="$device_drivers $driver_class_net_files"
+fi
+fi
+
+fi;
+
+
+
+# Checking for alias myson803
+# Check whether --enable-myson803 or --disable-myson803 was given.
+if test "${enable_myson803+set}" = set; then
+  enableval="$enable_myson803"
+  enable_myson803="$enable_myson803"
+
+fi;
+
+# Checking for device driver option myson803
+# Check whether --enable-myson803 or --disable-myson803 was given.
+if test "${enable_myson803+set}" = set; then
+  enableval="$enable_myson803"
+
+if test "x$enableval" != xno; then
+
+cat >>confdefs.h <<\_ACEOF
+#define CONFIG_MYSON803 1
+_ACEOF
+
+device_drivers="$device_drivers myson803.o"
+if test "${driver_class_net_selected+set}" != set; then
+  driver_class_net_selected=yes
+  cat >>confdefs.h <<_ACEOF
+#define $driver_class_net_option 1
+_ACEOF
+
+  device_drivers="$device_drivers $driver_class_net_files"
+fi
+fi
+
+fi;
+
+
+
+# Checking for alias ns820
+# Check whether --enable-ns820 or --disable-ns820 was given.
+if test "${enable_ns820+set}" = set; then
+  enableval="$enable_ns820"
+  enable_ns820="$enable_ns820"
+
+fi;
+
+# Checking for device driver option ns820
+# Check whether --enable-ns820 or --disable-ns820 was given.
+if test "${enable_ns820+set}" = set; then
+  enableval="$enable_ns820"
+
+if test "x$enableval" != xno; then
+
+cat >>confdefs.h <<\_ACEOF
+#define CONFIG_NS820 1
+_ACEOF
+
+device_drivers="$device_drivers ns820.o"
+if test "${driver_class_net_selected+set}" != set; then
+  driver_class_net_selected=yes
+  cat >>confdefs.h <<_ACEOF
+#define $driver_class_net_option 1
+_ACEOF
+
+  device_drivers="$device_drivers $driver_class_net_files"
+fi
+fi
+
+fi;
 
 
 
@@ -6302,6 +6598,11 @@ esac
 
 
 
+  if test x"$ac_file" != x-; then
+    { echo "$as_me:$LINENO: creating $ac_file" >&5
+echo "$as_me: creating $ac_file" >&6;}
+    rm -f "$ac_file"
+  fi
   # Let's still pretend it is `configure' which instantiates (i.e., don't
   # use $as_me), people would be surprised to read:
   #    /* config.h.  Generated by config.status.  */
@@ -6340,12 +6641,6 @@ echo "$as_me: error: cannot find input file: $f" >&2;}
 	 fi;;
       esac
     done` || { (exit 1); exit 1; }
-
-  if test x"$ac_file" != x-; then
-    { echo "$as_me:$LINENO: creating $ac_file" >&5
-echo "$as_me: creating $ac_file" >&6;}
-    rm -f "$ac_file"
-  fi
 _ACEOF
 cat >>$CONFIG_STATUS <<_ACEOF
   sed "$ac_vpsub

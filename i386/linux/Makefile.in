@@ -1,5 +1,5 @@
 # Makefile for Linux device drivers and the glue codes.
-# Copyright 1998, 1999 Free Software Foundation, Inc.
+# Copyright 1998, 1999, 2006 Free Software Foundation, Inc.
 #
 # Permission to use, copy, modify and distribute this software and its
 # documentation is hereby granted, provided that both the copyright
@@ -68,7 +68,12 @@ linux-net-files = auto_irq.c 3c501.c 3c503.c 3c505.c 3c507.c 3c509.c \
 	eexpress.c epic100.c eth16i.c ewrk3.c fmv18x.c hp-plus.c hp.c hp100.c \
 	lance.c ne.c ne2k-pci.c net_init.c ni52.c ni65.c pcnet32.c rtl8139.c \
 	seeq8005.c sk_g16.c smc-ultra.c smc-ultra32.c tlan.c tulip.c \
-	via-rhine.c wavelan.c wd.c yellowfin.c znet.c net.c
+	via-rhine.c wavelan.c wd.c yellowfin.c znet.c \
+	cb_shim.c hamachi.c intel-gige.c myson803.c natsemi.c ns820.c \
+	starfire.c sundance.c winbond-840.c \
+	pci-scan.c \
+	net.c
+
 vpath %.c $(linuxsrcdir)/dev/drivers/net
 vpath %.c $(linuxsrcdir)/dev/net/core
 vpath %.c $(linuxsrcdir)/src/drivers/net

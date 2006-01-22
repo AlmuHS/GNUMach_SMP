@@ -2,6 +2,7 @@
 #define _LINUX_MALLOC_H
 
 #include <linux/mm.h>
+#include <asm/cache.h>
 
 #ifndef MACH_INCLUDE
 #define kmalloc		linux_kmalloc

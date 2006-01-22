@@ -62,6 +62,14 @@ extern int ewrk3_probe(struct device *);
 extern int de4x5_probe(struct device *);
 extern int el1_probe(struct device *);
 extern int via_rhine_probe(struct device *);
+extern int natsemi_probe(struct device *);
+extern int ns820_probe(struct device *);
+extern int winbond840_probe(struct device *);
+extern int hamachi_probe(struct device *);
+extern int sundance_probe(struct device *);
+extern int starfire_probe(struct device *);
+extern int myson803_probe(struct device *);
+extern int igige_probe(struct device *);
 #if	defined(CONFIG_WAVELAN)
 extern int wavelan_probe(struct device *);
 #endif	/* defined(CONFIG_WAVELAN) */
@@ -131,6 +139,30 @@ ethif_probe(struct device *dev)
 #endif
 #ifdef CONFIG_VIA_RHINE
 	&& via_rhine_probe(dev)
+#endif
+#ifdef CONFIG_NATSEMI
+	&& natsemi_probe(dev)
+#endif
+#ifdef CONFIG_NS820
+	&& ns820_probe(dev)
+#endif
+#ifdef CONFIG_WINBOND840
+	&& winbond840_probe(dev)
+#endif
+#ifdef CONFIG_HAMACHI
+	&& hamachi_probe(dev)
+#endif
+#ifdef CONFIG_SUNDANCE
+	&& sundance_probe(dev)
+#endif
+#ifdef CONFIG_STARFIRE
+	&& starfire_probe(dev)
+#endif
+#ifdef CONFIG_MYSON803
+	&& myson803_probe(dev)
+#endif
+#ifdef CONFIG_INTEL_GIGE
+	&& igige_probe(dev)
 #endif
 #if defined(CONFIG_DEC_ELCP)
 	&& tulip_probe(dev)

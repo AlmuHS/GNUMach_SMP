@@ -75,6 +75,9 @@
 /* fmv18x */
 #undef CONFIG_FMV18X
 
+/* hamachi */
+#undef CONFIG_HAMACHI
+
 /* hp100 */
 #undef CONFIG_HP100
 
@@ -86,6 +89,9 @@
 
 /* Driver Class net */
 #undef CONFIG_INET
+
+/* intel_gige */
+#undef CONFIG_INTEL_GIGE
 
 /* lance */
 #undef CONFIG_LANCE
@@ -102,6 +108,12 @@
 /* 686 */
 #undef CONFIG_M686
 
+/* myson803 */
+#undef CONFIG_MYSON803
+
+/* natsemi */
+#undef CONFIG_NATSEMI
+
 /* ne2000 */
 #undef CONFIG_NE2000
 
@@ -113,6 +125,9 @@
 
 /* ni65 */
 #undef CONFIG_NI65
+
+/* ns820 */
+#undef CONFIG_NS820
 
 /* pcnet32 */
 #undef CONFIG_PCNET32
@@ -216,6 +231,12 @@
 /* skg16 */
 #undef CONFIG_SK_G16
 
+/* starfire */
+#undef CONFIG_STARFIRE
+
+/* sundance */
+#undef CONFIG_SUNDANCE
+
 /* tlan */
 #undef CONFIG_TLAN
 
@@ -236,6 +257,9 @@
 
 /* wd80x3 */
 #undef CONFIG_WD80x3
+
+/* winbond_840 */
+#undef CONFIG_WINBOND840
 
 /* yellowfin */
 #undef CONFIG_YELLOWFIN
