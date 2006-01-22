@@ -541,11 +541,10 @@ ne_block_input(struct device *dev, int count, struct sk_buff *skb, int ring_offs
 	insl(NE_BASE + NE_DATAPORT, buf, count>>2);
 	if (count & 3) {
 		buf += count & ~3;
-		if (count & 2)
-			{
-				*buf = *(u16 *) buf + 1;
-				*buf = inw(NE_BASE + NE_DATAPORT);
-			}
+		if (count & 2) {
+			*((u16 *) buf) = inw(NE_BASE + NE_DATAPORT);
+			buf = (void *) buf + sizeof (u16);
+		}
 		if (count & 1)
 			*buf = inb(NE_BASE + NE_DATAPORT);
 	}
@@ -607,8 +606,10 @@ ne_block_output(struct device *dev, int count,
 	outsl(NE_BASE + NE_DATAPORT, buf, count>>2);
 	if (count & 3) {
 		buf += count & ~3;
-		if (count & 2)
-			outw(*buf++, NE_BASE + NE_DATAPORT);
+		if (count & 2) {
+			outw(*((u16 *) buf), NE_BASE + NE_DATAPORT);
+			buf = (void *) buf + sizeof (u16);
+		}
 
 	}
 #else
