@@ -1,5 +1,8 @@
 2006-01-22  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* doc/mach.texi (Configuration): Document the recently added drivers.
+	* i386/README-Drivers: Likewise.
+
 	* configure, i386/configure, i386/linux/configure, linux/configure,
 	i386/linux/device-drivers.h.in: Regenerated.
 

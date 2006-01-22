@@ -371,3 +371,27 @@ TI ThunderLAN
 
 VIA Rhine
   --enable-viarhine			net/via_rhine.c
+
+Packet Engines "Hamachi" GNIC-2 Gigabit Ethernet
+  --enable-hamachi			net/hamachi.c
+
+Intel PCI Gigabit Ethernet
+  --enable-intel-gige			net/intel-gige.c
+
+Myson MTD803 Ethernet adapter series
+  --enable-myson803			net/myson803.c
+
+National Semiconductor DP8381x series PCI Ethernet
+  --enable-natsemi			net/natsemi.c
+
+National Semiconductor DP8382x series PCI Ethernet
+  --enable-ns820			net/ns820.c
+
+Adaptec Starfire network adapter
+  --enable-starfire			net/starfire.c
+
+Sundance ST201 "Alta" PCI Ethernet
+  --enable-sundance			net/sundance.c
+
+Winbond W89c840 PCI Ethernet
+  --enable-winbond-840			net/winbond-840.c

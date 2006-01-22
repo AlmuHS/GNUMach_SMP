@@ -854,6 +854,30 @@ Enables the TI ThunderLAN netword card devices eth%d.
 
 @item --enable-viarhine
 Enables the VIA Rhine netword card devices eth%d.
+
+@item --enable-hamachi
+Enables the Packet Engines "Hamachi" GNIC-2 Gigabit Ethernet devices eth%d.
+
+@item --enable-intel-gige
+Enables the Intel PCI Gigabit Ethernet devices eth%d.
+
+@item --enable-myson803
+Enables the Myson MTD803 Ethernet adapter series devices eth%d.
+
+@item --enable-natsemi
+Enables the National Semiconductor DP8381x series PCI Ethernet devices eth%d.
+
+@item --enable-ns820
+Enables the National Semiconductor DP8382x series PCI Ethernet devices eth%d.
+
+@item --enable-starfire
+Enables the Adaptec Starfire network adapter devices eth%d.
+
+@item --enable-sundance
+Enables the Sundance ST201 "Alta" PCI Ethernet devices eth%d.
+
+@item --enable-winbond-840
+Enables the Winbond W89c840 PCI Ethernet devices eth%d.
 @end table
 
 
