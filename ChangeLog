@@ -1,3 +1,10 @@
+2006-01-23  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* i386/linux/configure: Regenerated.
+
+	* i386/linux/configure.ac: Only add a AC_DRIVER_ALIAS if it really is a
+	alias.
+
 2006-01-22  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* doc/mach.texi (Configuration): Document the recently added drivers.

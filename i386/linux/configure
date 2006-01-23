@@ -853,35 +853,25 @@ Optional Features:
   --enable-epic100        enable driver alias epic100 for epic
   --enable-floppy         enable driver floppy
   --enable-ide            enable driver ide
-  --enable-advansys       enable driver alias advansys for advansys
   --enable-advansys       enable driver advansys
   --enable-BusLogic       enable driver alias BusLogic for buslogic
   --enable-buslogic       enable driver buslogic
   --enable-u14-34f        enable driver alias u14-34f for u1434f
   --enable-u1434f         enable driver u1434f
-  --enable-ultrastor      enable driver alias ultrastor for ultrastor
   --enable-ultrastor      enable driver ultrastor
-  --enable-aha152x        enable driver alias aha152x for aha152x
   --enable-aha152x        enable driver aha152x
-  --enable-aha1542        enable driver alias aha1542 for aha1542
   --enable-aha1542        enable driver aha1542
-  --enable-aha1740        enable driver alias aha1740 for aha1740
   --enable-aha1740        enable driver aha1740
-  --enable-aic7xxx        enable driver alias aic7xxx for aic7xxx
   --enable-aic7xxx        enable driver aic7xxx
   --enable-fdomain        enable driver alias fdomain for futuredomain
   --enable-futuredomain   enable driver futuredomain
-  --enable-in2000         enable driver alias in2000 for in2000
   --enable-in2000         enable driver in2000
   --enable-g_NCR5380      enable driver alias g_NCR5380 for ncr5380
   --enable-ncr5380        enable driver ncr5380
   --enable-NCR53c406a     enable driver alias NCR53c406a for ncr53c406a
   --enable-ncr53c406a     enable driver ncr53c406a
-  --enable-pas16          enable driver alias pas16 for pas16
   --enable-pas16          enable driver pas16
-  --enable-seagate        enable driver alias seagate for seagate
   --enable-seagate        enable driver seagate
-  --enable-t128           enable driver alias t128 for t128
   --enable-t128           enable driver t128
   --enable-53c78xx        enable driver alias 53c78xx for ncr53c7xx
   --enable-ncr53c7xx      enable driver ncr53c7xx
@@ -889,42 +879,29 @@ Optional Features:
   --enable-eatadma        enable driver eatadma
   --enable-eata_pio       enable driver alias eata_pio for eatapio
   --enable-eatapio        enable driver eatapio
-  --enable-wd7000         enable driver alias wd7000 for wd7000
   --enable-wd7000         enable driver wd7000
-  --enable-eata           enable driver alias eata for eata
   --enable-eata           enable driver eata
   --enable-AM53C974       enable driver alias AM53C974 for am53c974
   --enable-am53c974       enable driver am53c974
   --enable-dtc            enable driver alias dtc for dtc3280
   --enable-dtc3280        enable driver dtc3280
-  --enable-ncr53c8xx      enable driver alias ncr53c8xx for ncr53c8xx
   --enable-ncr53c8xx      enable driver ncr53c8xx
   --enable-tmscsim        enable driver alias tmscsim for dc390t
   --enable-dc390t         enable driver dc390t
-  --enable-ppa            enable driver alias ppa for ppa
   --enable-ppa            enable driver ppa
-  --enable-qlogicfas      enable driver alias qlogicfas for qlogicfas
   --enable-qlogicfas      enable driver qlogicfas
-  --enable-qlogicisp      enable driver alias qlogicisp for qlogicisp
   --enable-qlogicisp      enable driver qlogicisp
-  --enable-gdth           enable driver alias gdth for gdth
   --enable-gdth           enable driver gdth
   --enable-flashpoint     enable SCSI flashpoint [default=no]
-  --enable-starfire       enable driver alias starfire for starfire
   --enable-starfire       enable driver starfire
-  --enable-sundance       enable driver alias sundance for sundance
   --enable-sundance       enable driver sundance
   --enable-winbond-840    enable driver alias winbond-840 for winbond_840
   --enable-winbond_840    enable driver winbond_840
-  --enable-hamachi        enable driver alias hamachi for hamachi
   --enable-hamachi        enable driver hamachi
   --enable-intel-gige     enable driver alias intel-gige for intel_gige
   --enable-intel_gige     enable driver intel_gige
-  --enable-natsemi        enable driver alias natsemi for natsemi
   --enable-natsemi        enable driver natsemi
-  --enable-myson803       enable driver alias myson803 for myson803
   --enable-myson803       enable driver myson803
-  --enable-ns820          enable driver alias ns820 for ns820
   --enable-ns820          enable driver ns820
   --enable-ne2000         enable driver ne2000
   --enable-el2            enable driver el2
@@ -936,64 +913,41 @@ Optional Features:
   --enable-hplanplus      enable driver hplanplus
   --enable-hplan          enable driver hplan
   --enable-vortex         enable driver vortex
-  --enable-seeq8005       enable driver alias seeq8005 for seeq8005
   --enable-seeq8005       enable driver seeq8005
-  --enable-hp100          enable driver alias hp100 for hp100
   --enable-hp100          enable driver hp100
   --enable-ac3200         enable driver ac3200
   --enable-e2100          enable driver e2100
-  --enable-at1700         enable driver alias at1700 for at1700
   --enable-at1700         enable driver at1700
-  --enable-eth16i         enable driver alias eth16i for eth16i
   --enable-eth16i         enable driver eth16i
-  --enable-znet           enable driver alias znet for znet
   --enable-znet           enable driver znet
-  --enable-eexpress       enable driver alias eexpress for eexpress
   --enable-eexpress       enable driver eexpress
   --enable-eepro          enable driver alias eepro for eexpresspro
   --enable-eexpresspro    enable driver eexpresspro
   --enable-eepro100       enable driver alias eepro100 for eexpresspro100
   --enable-eexpresspro100 enable driver eexpresspro100
-  --enable-depca          enable driver alias depca for depca
   --enable-depca          enable driver depca
-  --enable-ewrk3          enable driver alias ewrk3 for ewrk3
   --enable-ewrk3          enable driver ewrk3
-  --enable-de4x5          enable driver alias de4x5 for de4x5
   --enable-de4x5          enable driver de4x5
-  --enable-apricot        enable driver alias apricot for apricot
   --enable-apricot        enable driver apricot
-  --enable-wavelan        enable driver alias wavelan for wavelan
   --enable-wavelan        enable driver wavelan
   --enable-el16           enable driver el16
   --enable-elplus         enable driver elplus
-  --enable-de600          enable driver alias de600 for de600
   --enable-de600          enable driver de600
-  --enable-de620          enable driver alias de620 for de620
   --enable-de620          enable driver de620
   --enable-sk_g16         enable driver alias sk_g16 for skg16
   --enable-skg16          enable driver skg16
-  --enable-ni52           enable driver alias ni52 for ni52
   --enable-ni52           enable driver ni52
-  --enable-ni65           enable driver alias ni65 for ni65
   --enable-ni65           enable driver ni65
-  --enable-atp            enable driver alias atp for atp
   --enable-atp            enable driver atp
-  --enable-lance          enable driver alias lance for lance
   --enable-lance          enable driver lance
   --enable-elcp           enable driver elcp
-  --enable-fmv18x         enable driver alias fmv18x for fmv18x
   --enable-fmv18x         enable driver fmv18x
-  --enable-3c515          enable driver alias 3c515 for 3c515
   --enable-3c515          enable driver 3c515
-  --enable-pcnet32        enable driver alias pcnet32 for pcnet32
   --enable-pcnet32        enable driver pcnet32
   --enable-ne2kpci        enable driver ne2kpci
-  --enable-yellowfin      enable driver alias yellowfin for yellowfin
   --enable-yellowfin      enable driver yellowfin
-  --enable-rtl8139        enable driver alias rtl8139 for rtl8139
   --enable-rtl8139        enable driver rtl8139
   --enable-epic           enable driver epic
-  --enable-tlan           enable driver alias tlan for tlan
   --enable-tlan           enable driver tlan
   --enable-via-rhine      enable driver alias via-rhine for viarhine
   --enable-viarhine       enable driver viarhine
@@ -3168,13 +3122,6 @@ fi;
 
 
 
-# Checking for alias advansys
-# Check whether --enable-advansys or --disable-advansys was given.
-if test "${enable_advansys+set}" = set; then
-  enableval="$enable_advansys"
-  enable_advansys="$enable_advansys"
-
-fi;
 
 # Checking for device driver option advansys
 # Check whether --enable-advansys or --disable-advansys was given.
@@ -3270,13 +3217,6 @@ fi;
 
 
 
-# Checking for alias ultrastor
-# Check whether --enable-ultrastor or --disable-ultrastor was given.
-if test "${enable_ultrastor+set}" = set; then
-  enableval="$enable_ultrastor"
-  enable_ultrastor="$enable_ultrastor"
-
-fi;
 
 # Checking for device driver option ultrastor
 # Check whether --enable-ultrastor or --disable-ultrastor was given.
@@ -3304,13 +3244,6 @@ fi;
 
 
 
-# Checking for alias aha152x
-# Check whether --enable-aha152x or --disable-aha152x was given.
-if test "${enable_aha152x+set}" = set; then
-  enableval="$enable_aha152x"
-  enable_aha152x="$enable_aha152x"
-
-fi;
 
 # Checking for device driver option aha152x
 # Check whether --enable-aha152x or --disable-aha152x was given.
@@ -3338,13 +3271,6 @@ fi;
 
 
 
-# Checking for alias aha1542
-# Check whether --enable-aha1542 or --disable-aha1542 was given.
-if test "${enable_aha1542+set}" = set; then
-  enableval="$enable_aha1542"
-  enable_aha1542="$enable_aha1542"
-
-fi;
 
 # Checking for device driver option aha1542
 # Check whether --enable-aha1542 or --disable-aha1542 was given.
@@ -3372,13 +3298,6 @@ fi;
 
 
 
-# Checking for alias aha1740
-# Check whether --enable-aha1740 or --disable-aha1740 was given.
-if test "${enable_aha1740+set}" = set; then
-  enableval="$enable_aha1740"
-  enable_aha1740="$enable_aha1740"
-
-fi;
 
 # Checking for device driver option aha1740
 # Check whether --enable-aha1740 or --disable-aha1740 was given.
@@ -3406,13 +3325,6 @@ fi;
 
 
 
-# Checking for alias aic7xxx
-# Check whether --enable-aic7xxx or --disable-aic7xxx was given.
-if test "${enable_aic7xxx+set}" = set; then
-  enableval="$enable_aic7xxx"
-  enable_aic7xxx="$enable_aic7xxx"
-
-fi;
 
 # Checking for device driver option aic7xxx
 # Check whether --enable-aic7xxx or --disable-aic7xxx was given.
@@ -3474,13 +3386,6 @@ fi;
 
 
 
-# Checking for alias in2000
-# Check whether --enable-in2000 or --disable-in2000 was given.
-if test "${enable_in2000+set}" = set; then
-  enableval="$enable_in2000"
-  enable_in2000="$enable_in2000"
-
-fi;
 
 # Checking for device driver option in2000
 # Check whether --enable-in2000 or --disable-in2000 was given.
@@ -3576,13 +3481,6 @@ fi;
 
 
 
-# Checking for alias pas16
-# Check whether --enable-pas16 or --disable-pas16 was given.
-if test "${enable_pas16+set}" = set; then
-  enableval="$enable_pas16"
-  enable_pas16="$enable_pas16"
-
-fi;
 
 # Checking for device driver option pas16
 # Check whether --enable-pas16 or --disable-pas16 was given.
@@ -3610,13 +3508,6 @@ fi;
 
 
 
-# Checking for alias seagate
-# Check whether --enable-seagate or --disable-seagate was given.
-if test "${enable_seagate+set}" = set; then
-  enableval="$enable_seagate"
-  enable_seagate="$enable_seagate"
-
-fi;
 
 # Checking for device driver option seagate
 # Check whether --enable-seagate or --disable-seagate was given.
@@ -3644,13 +3535,6 @@ fi;
 
 
 
-# Checking for alias t128
-# Check whether --enable-t128 or --disable-t128 was given.
-if test "${enable_t128+set}" = set; then
-  enableval="$enable_t128"
-  enable_t128="$enable_t128"
-
-fi;
 
 # Checking for device driver option t128
 # Check whether --enable-t128 or --disable-t128 was given.
@@ -3780,13 +3664,6 @@ fi;
 
 
 
-# Checking for alias wd7000
-# Check whether --enable-wd7000 or --disable-wd7000 was given.
-if test "${enable_wd7000+set}" = set; then
-  enableval="$enable_wd7000"
-  enable_wd7000="$enable_wd7000"
-
-fi;
 
 # Checking for device driver option wd7000
 # Check whether --enable-wd7000 or --disable-wd7000 was given.
@@ -3814,13 +3691,6 @@ fi;
 
 
 
-# Checking for alias eata
-# Check whether --enable-eata or --disable-eata was given.
-if test "${enable_eata+set}" = set; then
-  enableval="$enable_eata"
-  enable_eata="$enable_eata"
-
-fi;
 
 # Checking for device driver option eata
 # Check whether --enable-eata or --disable-eata was given.
@@ -3916,13 +3786,6 @@ fi;
 
 
 
-# Checking for alias ncr53c8xx
-# Check whether --enable-ncr53c8xx or --disable-ncr53c8xx was given.
-if test "${enable_ncr53c8xx+set}" = set; then
-  enableval="$enable_ncr53c8xx"
-  enable_ncr53c8xx="$enable_ncr53c8xx"
-
-fi;
 
 # Checking for device driver option ncr53c8xx
 # Check whether --enable-ncr53c8xx or --disable-ncr53c8xx was given.
@@ -3984,13 +3847,6 @@ fi;
 
 
 
-# Checking for alias ppa
-# Check whether --enable-ppa or --disable-ppa was given.
-if test "${enable_ppa+set}" = set; then
-  enableval="$enable_ppa"
-  enable_ppa="$enable_ppa"
-
-fi;
 
 # Checking for device driver option ppa
 # Check whether --enable-ppa or --disable-ppa was given.
@@ -4018,13 +3874,6 @@ fi;
 
 
 
-# Checking for alias qlogicfas
-# Check whether --enable-qlogicfas or --disable-qlogicfas was given.
-if test "${enable_qlogicfas+set}" = set; then
-  enableval="$enable_qlogicfas"
-  enable_qlogicfas="$enable_qlogicfas"
-
-fi;
 
 # Checking for device driver option qlogicfas
 # Check whether --enable-qlogicfas or --disable-qlogicfas was given.
@@ -4052,13 +3901,6 @@ fi;
 
 
 
-# Checking for alias qlogicisp
-# Check whether --enable-qlogicisp or --disable-qlogicisp was given.
-if test "${enable_qlogicisp+set}" = set; then
-  enableval="$enable_qlogicisp"
-  enable_qlogicisp="$enable_qlogicisp"
-
-fi;
 
 # Checking for device driver option qlogicisp
 # Check whether --enable-qlogicisp or --disable-qlogicisp was given.
@@ -4086,13 +3928,6 @@ fi;
 
 
 
-# Checking for alias gdth
-# Check whether --enable-gdth or --disable-gdth was given.
-if test "${enable_gdth+set}" = set; then
-  enableval="$enable_gdth"
-  enable_gdth="$enable_gdth"
-
-fi;
 
 # Checking for device driver option gdth
 # Check whether --enable-gdth or --disable-gdth was given.
@@ -4135,13 +3970,6 @@ fi;
 
 
 
-# Checking for alias starfire
-# Check whether --enable-starfire or --disable-starfire was given.
-if test "${enable_starfire+set}" = set; then
-  enableval="$enable_starfire"
-  enable_starfire="$enable_starfire"
-
-fi;
 
 # Checking for device driver option starfire
 # Check whether --enable-starfire or --disable-starfire was given.
@@ -4169,13 +3997,6 @@ fi;
 
 
 
-# Checking for alias sundance
-# Check whether --enable-sundance or --disable-sundance was given.
-if test "${enable_sundance+set}" = set; then
-  enableval="$enable_sundance"
-  enable_sundance="$enable_sundance"
-
-fi;
 
 # Checking for device driver option sundance
 # Check whether --enable-sundance or --disable-sundance was given.
@@ -4237,13 +4058,6 @@ fi;
 
 
 
-# Checking for alias hamachi
-# Check whether --enable-hamachi or --disable-hamachi was given.
-if test "${enable_hamachi+set}" = set; then
-  enableval="$enable_hamachi"
-  enable_hamachi="$enable_hamachi"
-
-fi;
 
 # Checking for device driver option hamachi
 # Check whether --enable-hamachi or --disable-hamachi was given.
@@ -4305,13 +4119,6 @@ fi;
 
 
 
-# Checking for alias natsemi
-# Check whether --enable-natsemi or --disable-natsemi was given.
-if test "${enable_natsemi+set}" = set; then
-  enableval="$enable_natsemi"
-  enable_natsemi="$enable_natsemi"
-
-fi;
 
 # Checking for device driver option natsemi
 # Check whether --enable-natsemi or --disable-natsemi was given.
@@ -4339,13 +4146,6 @@ fi;
 
 
 
-# Checking for alias myson803
-# Check whether --enable-myson803 or --disable-myson803 was given.
-if test "${enable_myson803+set}" = set; then
-  enableval="$enable_myson803"
-  enable_myson803="$enable_myson803"
-
-fi;
 
 # Checking for device driver option myson803
 # Check whether --enable-myson803 or --disable-myson803 was given.
@@ -4373,13 +4173,6 @@ fi;
 
 
 
-# Checking for alias ns820
-# Check whether --enable-ns820 or --disable-ns820 was given.
-if test "${enable_ns820+set}" = set; then
-  enableval="$enable_ns820"
-  enable_ns820="$enable_ns820"
-
-fi;
 
 # Checking for device driver option ns820
 # Check whether --enable-ns820 or --disable-ns820 was given.
@@ -4678,13 +4471,6 @@ fi;
 
 
 
-# Checking for alias seeq8005
-# Check whether --enable-seeq8005 or --disable-seeq8005 was given.
-if test "${enable_seeq8005+set}" = set; then
-  enableval="$enable_seeq8005"
-  enable_seeq8005="$enable_seeq8005"
-
-fi;
 
 # Checking for device driver option seeq8005
 # Check whether --enable-seeq8005 or --disable-seeq8005 was given.
@@ -4712,13 +4498,6 @@ fi;
 
 
 
-# Checking for alias hp100
-# Check whether --enable-hp100 or --disable-hp100 was given.
-if test "${enable_hp100+set}" = set; then
-  enableval="$enable_hp100"
-  enable_hp100="$enable_hp100"
-
-fi;
 
 # Checking for device driver option hp100
 # Check whether --enable-hp100 or --disable-hp100 was given.
@@ -4794,13 +4573,6 @@ fi
 fi;
 
 
-# Checking for alias at1700
-# Check whether --enable-at1700 or --disable-at1700 was given.
-if test "${enable_at1700+set}" = set; then
-  enableval="$enable_at1700"
-  enable_at1700="$enable_at1700"
-
-fi;
 
 # Checking for device driver option at1700
 # Check whether --enable-at1700 or --disable-at1700 was given.
@@ -4828,13 +4600,6 @@ fi;
 
 
 
-# Checking for alias eth16i
-# Check whether --enable-eth16i or --disable-eth16i was given.
-if test "${enable_eth16i+set}" = set; then
-  enableval="$enable_eth16i"
-  enable_eth16i="$enable_eth16i"
-
-fi;
 
 # Checking for device driver option eth16i
 # Check whether --enable-eth16i or --disable-eth16i was given.
@@ -4862,13 +4627,6 @@ fi;
 
 
 
-# Checking for alias znet
-# Check whether --enable-znet or --disable-znet was given.
-if test "${enable_znet+set}" = set; then
-  enableval="$enable_znet"
-  enable_znet="$enable_znet"
-
-fi;
 
 # Checking for device driver option znet
 # Check whether --enable-znet or --disable-znet was given.
@@ -4896,13 +4654,6 @@ fi;
 
 
 
-# Checking for alias eexpress
-# Check whether --enable-eexpress or --disable-eexpress was given.
-if test "${enable_eexpress+set}" = set; then
-  enableval="$enable_eexpress"
-  enable_eexpress="$enable_eexpress"
-
-fi;
 
 # Checking for device driver option eexpress
 # Check whether --enable-eexpress or --disable-eexpress was given.
@@ -4998,13 +4749,6 @@ fi;
 
 
 
-# Checking for alias depca
-# Check whether --enable-depca or --disable-depca was given.
-if test "${enable_depca+set}" = set; then
-  enableval="$enable_depca"
-  enable_depca="$enable_depca"
-
-fi;
 
 # Checking for device driver option depca
 # Check whether --enable-depca or --disable-depca was given.
@@ -5032,13 +4776,6 @@ fi;
 
 
 
-# Checking for alias ewrk3
-# Check whether --enable-ewrk3 or --disable-ewrk3 was given.
-if test "${enable_ewrk3+set}" = set; then
-  enableval="$enable_ewrk3"
-  enable_ewrk3="$enable_ewrk3"
-
-fi;
 
 # Checking for device driver option ewrk3
 # Check whether --enable-ewrk3 or --disable-ewrk3 was given.
@@ -5066,13 +4803,6 @@ fi;
 
 
 
-# Checking for alias de4x5
-# Check whether --enable-de4x5 or --disable-de4x5 was given.
-if test "${enable_de4x5+set}" = set; then
-  enableval="$enable_de4x5"
-  enable_de4x5="$enable_de4x5"
-
-fi;
 
 # Checking for device driver option de4x5
 # Check whether --enable-de4x5 or --disable-de4x5 was given.
@@ -5100,13 +4830,6 @@ fi;
 
 
 
-# Checking for alias apricot
-# Check whether --enable-apricot or --disable-apricot was given.
-if test "${enable_apricot+set}" = set; then
-  enableval="$enable_apricot"
-  enable_apricot="$enable_apricot"
-
-fi;
 
 # Checking for device driver option apricot
 # Check whether --enable-apricot or --disable-apricot was given.
@@ -5134,13 +4857,6 @@ fi;
 
 
 
-# Checking for alias wavelan
-# Check whether --enable-wavelan or --disable-wavelan was given.
-if test "${enable_wavelan+set}" = set; then
-  enableval="$enable_wavelan"
-  enable_wavelan="$enable_wavelan"
-
-fi;
 
 # Checking for device driver option wavelan
 # Check whether --enable-wavelan or --disable-wavelan was given.
@@ -5236,13 +4952,6 @@ fi;
 
 
 
-# Checking for alias de600
-# Check whether --enable-de600 or --disable-de600 was given.
-if test "${enable_de600+set}" = set; then
-  enableval="$enable_de600"
-  enable_de600="$enable_de600"
-
-fi;
 
 # Checking for device driver option de600
 # Check whether --enable-de600 or --disable-de600 was given.
@@ -5270,13 +4979,6 @@ fi;
 
 
 
-# Checking for alias de620
-# Check whether --enable-de620 or --disable-de620 was given.
-if test "${enable_de620+set}" = set; then
-  enableval="$enable_de620"
-  enable_de620="$enable_de620"
-
-fi;
 
 # Checking for device driver option de620
 # Check whether --enable-de620 or --disable-de620 was given.
@@ -5338,13 +5040,6 @@ fi;
 
 
 
-# Checking for alias ni52
-# Check whether --enable-ni52 or --disable-ni52 was given.
-if test "${enable_ni52+set}" = set; then
-  enableval="$enable_ni52"
-  enable_ni52="$enable_ni52"
-
-fi;
 
 # Checking for device driver option ni52
 # Check whether --enable-ni52 or --disable-ni52 was given.
@@ -5372,13 +5067,6 @@ fi;
 
 
 
-# Checking for alias ni65
-# Check whether --enable-ni65 or --disable-ni65 was given.
-if test "${enable_ni65+set}" = set; then
-  enableval="$enable_ni65"
-  enable_ni65="$enable_ni65"
-
-fi;
 
 # Checking for device driver option ni65
 # Check whether --enable-ni65 or --disable-ni65 was given.
@@ -5406,13 +5094,6 @@ fi;
 
 
 
-# Checking for alias atp
-# Check whether --enable-atp or --disable-atp was given.
-if test "${enable_atp+set}" = set; then
-  enableval="$enable_atp"
-  enable_atp="$enable_atp"
-
-fi;
 
 # Checking for device driver option atp
 # Check whether --enable-atp or --disable-atp was given.
@@ -5440,13 +5121,6 @@ fi;
 
 
 
-# Checking for alias lance
-# Check whether --enable-lance or --disable-lance was given.
-if test "${enable_lance+set}" = set; then
-  enableval="$enable_lance"
-  enable_lance="$enable_lance"
-
-fi;
 
 # Checking for device driver option lance
 # Check whether --enable-lance or --disable-lance was given.
@@ -5508,13 +5182,6 @@ fi;
 
 
 
-# Checking for alias fmv18x
-# Check whether --enable-fmv18x or --disable-fmv18x was given.
-if test "${enable_fmv18x+set}" = set; then
-  enableval="$enable_fmv18x"
-  enable_fmv18x="$enable_fmv18x"
-
-fi;
 
 # Checking for device driver option fmv18x
 # Check whether --enable-fmv18x or --disable-fmv18x was given.
@@ -5542,13 +5209,6 @@ fi;
 
 
 
-# Checking for alias 3c515
-# Check whether --enable-3c515 or --disable-3c515 was given.
-if test "${enable_3c515+set}" = set; then
-  enableval="$enable_3c515"
-  enable_3c515="$enable_3c515"
-
-fi;
 
 # Checking for device driver option 3c515
 # Check whether --enable-3c515 or --disable-3c515 was given.
@@ -5576,13 +5236,6 @@ fi;
 
 
 
-# Checking for alias pcnet32
-# Check whether --enable-pcnet32 or --disable-pcnet32 was given.
-if test "${enable_pcnet32+set}" = set; then
-  enableval="$enable_pcnet32"
-  enable_pcnet32="$enable_pcnet32"
-
-fi;
 
 # Checking for device driver option pcnet32
 # Check whether --enable-pcnet32 or --disable-pcnet32 was given.
@@ -5634,13 +5287,6 @@ fi
 fi;
 
 
-# Checking for alias yellowfin
-# Check whether --enable-yellowfin or --disable-yellowfin was given.
-if test "${enable_yellowfin+set}" = set; then
-  enableval="$enable_yellowfin"
-  enable_yellowfin="$enable_yellowfin"
-
-fi;
 
 # Checking for device driver option yellowfin
 # Check whether --enable-yellowfin or --disable-yellowfin was given.
@@ -5668,13 +5314,6 @@ fi;
 
 
 
-# Checking for alias rtl8139
-# Check whether --enable-rtl8139 or --disable-rtl8139 was given.
-if test "${enable_rtl8139+set}" = set; then
-  enableval="$enable_rtl8139"
-  enable_rtl8139="$enable_rtl8139"
-
-fi;
 
 # Checking for device driver option rtl8139
 # Check whether --enable-rtl8139 or --disable-rtl8139 was given.
@@ -5736,13 +5375,6 @@ fi;
 
 
 
-# Checking for alias tlan
-# Check whether --enable-tlan or --disable-tlan was given.
-if test "${enable_tlan+set}" = set; then
-  enableval="$enable_tlan"
-  enable_tlan="$enable_tlan"
-
-fi;
 
 # Checking for device driver option tlan
 # Check whether --enable-tlan or --disable-tlan was given.

@@ -119,7 +119,7 @@ dnl
 dnl linux_DRIVER(machname, MACRO, linuxname, class)
 dnl
 AC_DEFUN([linux_DRIVER], [
-  AC_DRIVER_ALIAS([$3], [$1])
+  m4_if([$1], [$3],, [AC_DRIVER_ALIAS([$3], [$1])])
   AC_DRIVER([$1], [CONFIG_$2], [$3.o], [$4])
 ])dnl
 
