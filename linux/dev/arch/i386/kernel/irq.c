@@ -103,15 +103,22 @@ linux_intr (int irq)
 {
   struct pt_regs regs;
   struct linux_action *action = *(irq_action + irq);
+  unsigned long flags;
 
   kstat.interrupts[irq]++;
   intr_count++;
+
+  save_flags (flags);
+  if (action && (action->flags & SA_INTERRUPT))
+    cli ();
 
   while (action)
     {
       action->handler (irq, action->dev_id, &regs);
       action = action->next;
     }
+
+  restore_flags (flags);
 
   intr_count--;
 

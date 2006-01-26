@@ -1,5 +1,8 @@
 2006-01-26  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
+	* linux/dev/arch/i386/kernel/irq.c (linux_intr): Disable interrupts
+	if the driver requested it through request_irq().
+
 	* linux/dev/drivers/block/ide.c (read_intr): Set the IRQ handler before
 	issuing a request.
 	(write_intr): Likewise.
