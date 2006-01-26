@@ -183,8 +183,8 @@ linux-objs += $(sort $(device_drivers))
 $(srcdir)/configure: $(srcdir)/configure.ac $(srcdir)/../../Drivers.macros
 	cd $(srcdir) && autoconf
 
-device-drivers.h: $(srcdir)/Makefile.in config.status
-	./config.status
+Makefile device-drivers.h: $(srcdir)/Makefile.in config.status
+	./config.status $@
 
 config.status: $(srcdir)/configure
 	./config.status --recheck
