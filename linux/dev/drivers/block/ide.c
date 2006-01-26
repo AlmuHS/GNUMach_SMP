@@ -1129,6 +1129,9 @@ read_next:
 		msect -= nsect;
 	} else
 		nsect = 1;
+	i = rq->nr_sectors - nsect;
+	if (i > 0 && !msect)
+		ide_set_handler (drive, &read_intr, WAIT_CMD);
 	ide_input_data(drive, rq->buffer, nsect * SECTOR_WORDS);
 #ifdef DEBUG
 	printk("%s:  read: sectors(%ld-%ld), buffer=0x%08lx, remaining=%ld\n",
@@ -1138,14 +1141,11 @@ read_next:
 	rq->sector += nsect;
 	rq->buffer += nsect<<9;
 	rq->errors = 0;
-	i = (rq->nr_sectors -= nsect);
+	rq->nr_sectors = i;
 	if ((rq->current_nr_sectors -= nsect) <= 0)
 		ide_end_request(1, HWGROUP(drive));
-	if (i > 0) {
-		if (msect)
-			goto read_next;
-		ide_set_handler (drive, &read_intr, WAIT_CMD);
-	}
+	if (i > 0 && msect)
+		goto read_next;
 }
 
 /*
@@ -1173,8 +1173,8 @@ static void write_intr (ide_drive_t *drive)
 			if (rq->current_nr_sectors <= 0)
 				ide_end_request(1, hwgroup);
 			if (i > 0) {
-				ide_output_data (drive, rq->buffer, SECTOR_WORDS);
 				ide_set_handler (drive, &write_intr, WAIT_CMD);
+				ide_output_data (drive, rq->buffer, SECTOR_WORDS);
 			}
 			return;
 		}
@@ -1231,8 +1231,8 @@ static void multwrite_intr (ide_drive_t *drive)
 	if (OK_STAT(stat=GET_STAT(),DRIVE_READY,drive->bad_wstat)) {
 		if (stat & DRQ_STAT) {
 			if (rq->nr_sectors) {
-				ide_multwrite(drive, drive->mult_count);
 				ide_set_handler (drive, &multwrite_intr, WAIT_CMD);
+				ide_multwrite(drive, drive->mult_count);
 				return;
 			}
 		} else {
