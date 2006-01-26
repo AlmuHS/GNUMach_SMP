@@ -225,7 +225,7 @@ i386_set_ldt(thread, first_selector, desc_list, count, desc_list_inline)
 		      (char *)&new_ldt->ldt[0],
 		      old_ldt->desc.limit_low + 1);
 	    }
-	    else if (thread == current_thread()) {
+	    else {
 		struct real_descriptor template = {0, 0, 0, ACC_P, 0, 0 ,0};
 
 		for (dp = &new_ldt->ldt[0], i = 0; i < first_desc; i++, dp++) {

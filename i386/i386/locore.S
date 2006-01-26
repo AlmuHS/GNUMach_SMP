@@ -464,6 +464,8 @@ trap_push_segs:
 	mov	%ss,%ax			/* switch to kernel data segment */
 	mov	%ax,%ds			/* (same as kernel stack segment) */
 	mov	%ax,%es
+	mov	%ax,%fs
+	mov	%ax,%gs
 
 trap_set_segs:
 	cld				/* clear direction flag */
@@ -982,6 +984,8 @@ syscall_entry_2:
 	mov	%ss,%dx			/* switch to kernel data segment */
 	mov	%dx,%ds
 	mov	%dx,%es
+	mov	%dx,%fs
+	mov	%dx,%gs
 
 /*
  * Shuffle eflags,eip,cs into proper places
