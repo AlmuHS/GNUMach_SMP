@@ -33,7 +33,7 @@
 #include <mach/boolean.h>
 #include <machine/db_machdep.h>
 #include <ddb/db_task_thread.h>
-#include "vm_param.h"
+#include <machine/vm_param.h>
 
 /* implementation dependent access capability */
 #define	DB_ACCESS_KERNEL	0	/* only kernel space */

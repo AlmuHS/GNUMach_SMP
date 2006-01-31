@@ -35,7 +35,7 @@
  */
 
 #include <mach/kern_return.h>
-#include "vm_param.h"
+#include <machine/vm_param.h>
 #include <kern/assert.h>
 #include <kern/lock.h>
 #include <kern/thread.h>

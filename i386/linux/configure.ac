@@ -14,7 +14,7 @@ dnl USE OF THIS SOFTWARE.
 
 m4_include([../../version.m4])
 
-AC_INIT([PACKAGE], [VERSION])
+AC_INIT([PACKAGE], [VERSION], [bug-hurd@gnu.org], [gnumach])
 AC_CONFIG_SRCDIR([dev/include/linux/autoconf.h])
 AC_PREREQ(2.57)
 
@@ -43,12 +43,6 @@ i686) hurd_host_CPU([686]) ;;
 esac
 
 hurd_SYSTYPE
-
-AC_CHECK_TOOL([CC], [gcc])
-AC_PROG_CC
-
-AC_CHECK_TOOL([LD], [ld])
-AC_SUBST([LDFLAGS])
 
 
 dnl Aliases have to come first.
@@ -229,5 +223,5 @@ linux_DRIVER([epic], [EPIC], [epic100], [net])
 linux_DRIVER([tlan], [TLAN], [tlan], [net])
 linux_DRIVER([viarhine], [VIA_RHINE], [via-rhine], [net])
 
-AC_CONFIG_FILES([Makefile])
+AC_CONFIG_FILES([Makefile Makerules])
 AC_OUTPUT

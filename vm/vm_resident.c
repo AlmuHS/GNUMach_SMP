@@ -40,7 +40,7 @@
 #include <kern/task.h>
 #include <kern/thread.h>
 #include <mach/vm_statistics.h>
-#include "vm_param.h"
+#include <machine/vm_param.h>
 #include <kern/xpr.h>
 #include <kern/zalloc.h>
 #include <vm/pmap.h>

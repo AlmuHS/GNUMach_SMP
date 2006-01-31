@@ -43,7 +43,7 @@
 #include <mach/memory_object.h>
 #include "memory_object_default.h"
 #include "memory_object_user.h"
-#include "vm_param.h"
+#include <machine/vm_param.h>
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_space.h>
 #include <kern/assert.h>

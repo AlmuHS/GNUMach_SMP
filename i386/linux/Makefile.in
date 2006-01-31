@@ -12,21 +12,43 @@
 # LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
 # USE OF THIS SOFTWARE.
 
+
+#
+# configure's findings.
+#
 
-# Variables from `configure'.
-srcdir=@srcdir@
-systype=@systype@
-device_drivers=@device_drivers@
+srcdir = @srcdir@
 
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+bootdir = $(exec_prefix)/boot
+datadir = @datadir@
+includedir = @includedir@
+infodir = @infodir@
+libdir = @libdir@
+libexecdir = @libexecdir@
+localstatedir = @localstatedir@
+mandir = @mandir@
+oldincludedir = @oldincludedir@
+sbindir = @sbindir@
+sharedstatedir = @sharedstatedir@
+sysconfdir = @sysconfdir@
+
+top_builddir = ../../
 sysdep=$(srcdir)/..
 linuxdir=../../linux
 linuxsrcdir=$(srcdir)/$(linuxdir)
 
-# Programs found by configure.
-CC = @CC@
-LD = @LD@
+systype=@systype@
+device_drivers=@device_drivers@
 
-CFLAGS = @CFLAGS@
+
+#
+# Default target
+#
+
+all:
 
 
 
@@ -97,22 +119,21 @@ all-linux-files = $(linux-c-files) $(linux-block-files) \
 		$(linux-net-files) $(linux-pci-files) $(linux-scsi-files)
 
 # These are always used.
-linux-objs := $(subst .c,.o, $(linux-c-files) $(linux-pci-files)) genhd.o
-linux-objs += $(subst .S,.o, $(linux-asm-files))
+objfiles := $(subst .c,.o, $(linux-c-files) $(linux-pci-files)) genhd.o
+objfiles += $(subst .S,.o, $(linux-asm-files))
 
 # These files need special flags for compilation; each one will
 # have a variable like wd7000.c-linux-flags with those flags.
-CFLAGS += $($(<F)-linux-flags)
-ASFLAGS += $($(<F)-linux-flags)
-
-CPPFLAGS = -DMACH -DCMU -DMACH_KERNEL -DKERNEL -DLINUX_DEV \
-	-DCONTINUATIONS -D__ELF__ -Di386 \
+CFLAGS = $($(<F)-linux-flags)
+ASFLAGS = $($(<F)-linux-flags)
+INCLUDES = \
 	-I. -I.. -I$(srcdir)/.. -I../.. -I$(srcdir)/../.. \
 	-I$(srcdir)/../../include -I$(srcdir)/../../bogus \
 	-I$(srcdir)/../../util -I$(srcdir)/../../kern \
 	-I$(srcdir)/../../device -I$(sysdep)/i386at -I$(sysdep)/i386 \
 	-I$(sysdep)/include -I$(sysdep)/include/mach/sa -I$(sysdep)/bogus \
-	-I$(sysdep) -Wall
+	-I$(sysdep)
+CPPFLAGS = -Wall
 
 # These flags are:
 # Instead of Mach's KERNEL, Linux uses __KERNEL__.  Whee.
@@ -138,6 +159,8 @@ linux-asm-spec-flags = -D__KERNEL__ -D__ASSEMBLY__ -traditional \
 
 
 # Here is where those specs are found.
+ifneq ($(no_deps),t)
+
 -include linux-flags
 
 # How to make this file:
@@ -174,7 +197,9 @@ ifneq ($(linux-flags-done),$(all-linux-files) $(linux-asm-files))
 no_deps=t
 endif
 
-linux-objs += $(sort $(device_drivers))
+endif
+
+objfiles += $(sort $(device_drivers))
 
 
 
@@ -183,7 +208,7 @@ linux-objs += $(sort $(device_drivers))
 $(srcdir)/configure: $(srcdir)/configure.ac $(srcdir)/../../Drivers.macros
 	cd $(srcdir) && autoconf
 
-Makefile device-drivers.h: $(srcdir)/Makefile.in config.status
+Makefile device-drivers.h: %: $(srcdir)/%.in config.status
 	./config.status $@
 
 config.status: $(srcdir)/configure
@@ -197,16 +222,22 @@ vpath configure $(srcdir)
 # Create a linuxdev object file.
 all: linux.o
 
-linux.o: $(linux-objs) $(srcdir)/configure
+linux.o: $(objfiles) $(srcdir)/configure
 	rm -f $@
-	$(LD) -r -o $@ $(linux-objs)
+	$(LD) -r -o $@ $(objfiles)
+
+check:
+
+install install-headers install-kernel:
 
 clean:
-	rm -f $(linux-objs) linux.o
+	rm -f linux.o
+	rm -f linux-flags
+	rm -f $(objfiles) $(subst .o,.d,$(objfiles))
 
 distclean: clean
-	rm -f $(linuxdir)/src/include/asm $(linuxdir)/dev/include/asm
-	rm -f config.status config.log Makefile device-drivers.h
+	rm -f Makefile Makerules device-drivers.h
+	rm -f config.status config.log
 
 mostlyclean: distclean
 
@@ -214,26 +245,8 @@ maintainer-clean: mostlyclean
 	rm -f $(srcdir)/configure
 
 
-
 #
-# Dependency generation
+# Makerules
 #
 
-# Include dependency files
-ifneq ($(no_deps),t)
-
-# For each .o file we need a .d file.
--include $(subst .o,.d,$(filter %.o,$(linux-objs))) /dev/null
-
-endif
-
-# Generic rule for $(CC) based compilation for making dependencies
-define make-deps
-set -e; $(CC) $(CFLAGS) $(CPPFLAGS) -M -MG $< | \
-	sed > $@.new -e 's/$*\.o:/$*.o $@:/'
-mv -f $@.new $@
-endef
-
-%.d: %.c $(before-compile); $(make-deps)
-%.d: %.S $(before-compile); $(make-deps)
-
+include $(top_builddir)/Makerules

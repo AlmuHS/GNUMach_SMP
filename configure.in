@@ -1,5 +1,5 @@
 dnl Configure script for GNU Mach.
-dnl Copyright 1997, 1998, 1999, 2004 Free Software Foundation, Inc.
+dnl Copyright 1997, 1998, 1999, 2004, 2006 Free Software Foundation, Inc.
 
 dnl Permission to use, copy, modify and distribute this software and its
 dnl documentation is hereby granted, provided that both the copyright
@@ -29,7 +29,6 @@ i[[3456]]86) systype=i386 ;;
 esac
 
 AC_SUBST([systype])
-AC_SUBST([cross_compiling])
 
 # Default prefix is / for the kernel.
 AC_PREFIX_DEFAULT([])
@@ -53,15 +52,22 @@ AS_HELP_STRING([--enable-kmsg], [enable use of kmsg device [[default=yes]]]),
 AC_PROG_INSTALL
 AC_PROG_AWK
 AC_PROG_CC
+AC_PROG_CPP
+AC_PROG_RANLIB
 
+AC_CHECK_TOOL([AR], [ar])
 AC_CHECK_TOOL([LD], [ld])
-AC_SUBST([LDFLAGS])
 AC_CHECK_TOOL([NM], [nm])
 
 AC_CHECK_TOOL([MIG], [mig], [mig])
 
-# Set up `machine' link in build directory for easier header file location.
-AC_CONFIG_LINKS([machine:${systype}/${systype}])
+AC_CHECK_PROG([MBCHK], [mbchk], [mbchk], :)
+
+# Set up `machine' and `mach/machine' links in the build directory for easier
+# header file location.
+AC_CONFIG_LINKS([machine:${systype}/${systype}
+		 mach/machine:${systype}/include/mach/${systype}])
+
 
 AC_CONFIG_SUBDIRS([linux])
 
@@ -71,5 +77,5 @@ if test "$systype" = i386; then
   AC_CONFIG_SUBDIRS([i386])
 fi
 
-AC_CONFIG_FILES([Makefile version.c doc/Makefile])
+AC_CONFIG_FILES([Makefile Makerules version.c doc/Makefile])
 AC_OUTPUT

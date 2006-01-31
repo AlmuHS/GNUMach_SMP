@@ -34,7 +34,7 @@
 
 #include <mach/port.h>
 #include <mach/message.h>
-#include "vm_param.h"
+#include <machine/vm_param.h>
 #include <ipc/ipc_port.h>
 #include <kern/host.h>
 #include <kern/task.h>

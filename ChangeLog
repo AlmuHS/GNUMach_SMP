@@ -1,3 +1,80 @@
+2006-01-31  Thomas Schwinge  <tschwinge@gnu.org>
+
+	Cleanup of GNU Mach's build system.  The system dependend parts are now
+	handeled by the respective Makefile and no longer by the top-level one.
+	
+	* configure, i386/configure, i386/linux/configure, linux/configure:
+	Regenerated.
+
+	* Makefile.in: Various cleanups.
+	(mach/machine, mach_machine): Targets removed.
+	(AWK, CC, CFLAGS, CPPFLAGS, DEFINES, INCLUDES, INSTALL, INSTALL_DATA)
+	(INSTALL_PROGRAM, LD, MIG, MIGFLAGS, NM): Variables moved into
+	Makerules.in.
+	Do not include $(sysdep)/Makefrag anymore.
+	(all, check, clean, distclean, mostlyclean, maintainer-clean, install)
+	(install-headers, install-kernel): Recurse into the system dependend
+	subdirectory.
+	(check): Add a basic test using mbchk.
+	(clean, distclean): Be more explicit in what to delete.
+	($(systype)/%): New target.
+	(kernel.o): Incorporate the system dependend archive.
+	(installed-sysdep-headers-names, $(installed-sysdep-headers-names)):
+	Variable and target moved into the system dependend Makefile.in.
+	(install-headers, mkheaderdirs): Don't care for the system dependend
+	header files.
+	(%.symc, %.symc.o, %.h, %_user.c, %_interface.h, %_server.c): Targets
+	moved into Makerules.in.
+	Inclusion of dependency files: Likewise.
+	(%.migs_d, %.migu_d, %.migsh_d, %.miguh_d, make-deps, %.d): Likewise.
+	Include Makerules.
+	* Makerules.in: New file, mainly based on Makefile.in.
+	* configure.in: Do not substitute cross_compiling and not explicitly
+	substitute LDFLAGS.
+	Check for cpp, ranlib, ar and mbchk.
+	Care for the mach/machine symbolic link.
+	Add Makerules as a config file.
+	* i386/Makefile.in: Various cleanups.
+	Merge i386/Makefrag and the system dependent stuff from Makefile.in
+	into this file.
+	(all, check, install, install-headers, install-kernel): Recurse into
+	the system dependend subdirectory.
+	(sysdep.o): transformed to the new target sysdep.a.
+	(linux/linux.o): Target removed.
+	(clean, distclean): Be more explicit in what to delete.
+	(linux/%): New target.
+	(install-headers): Install the system dependend header files.
+	(mkheaderdirs): New target.
+	Include the top-level Makerules.
+	* i386/Makefrag: File removed.
+	* i386/Makerules.in: New file.
+	* i386/configure.in: Synchronize AC_INIT to the top-level definition.
+	Do not check for ld and make.
+	Add Makerules as a config file.
+	* i386/linux/Makefile.in: Various cleanups.
+	Replace linux-objs with objfiles.
+	(check, install, install-headers, install-kernel): New empty targets.
+	Don't care about linux-flags if no_deps is true.
+	Inclusion of dependency files removed and instead...
+	Include the top-level Makerules.
+	* i386/linux/Makerules.in: New file.
+	* i386/linux/configure.ac: Synchronize AC_INIT to the top-level
+	definition.
+	Do not check for gcc and ld.
+	Do not explicitly substitute LDFLAGS.
+	Add Makerules as a config file.
+	* linux/configure.in: Synchronize AC_INIT to the top-level definition.
+	Do not create directories using a dummy file.
+	* linux/dummy.in: File removed.
+	
+	* ddb/db_access.h: Include <machine/vm_param.h> instead of
+	"vm_param.h".
+	* kern/bootstrap.c: Likewise.
+	* kern/thread.c: Likewise.
+	* vm/vm_kern.c: Likewise.
+	* vm/vm_object.c: Likewise.
+	* vm/vm_resident.c: Likewise.
+
 2006-01-26  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* config.guess: Updated from the canonical source.

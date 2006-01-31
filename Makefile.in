@@ -1,5 +1,5 @@
 # Makefile for Mach 4 kernel directory
-# Copyright 1997, 1999, 2004 Free Software Foundation, Inc.
+# Copyright 1997, 1999, 2004, 2006 Free Software Foundation, Inc.
 #
 # Permission to use, copy, modify and distribute this software and its
 # documentation is hereby granted, provided that both the copyright
@@ -12,24 +12,40 @@
 # LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
 # USE OF THIS SOFTWARE.
 
-
 
+#
+# configure's findings.
+#
 
-# Variables from `configure'.
-srcdir=@srcdir@
-systype=@systype@
-prefix=@prefix@
+srcdir = @srcdir@
 version = @PACKAGE_VERSION@
 
-exec_prefix=$(prefix)
+prefix = @prefix@
+exec_prefix = @exec_prefix@
+bindir = @bindir@
+bootdir = $(exec_prefix)/boot
+datadir = @datadir@
+includedir = @includedir@
+infodir = @infodir@
+libdir = @libdir@
+libexecdir = @libexecdir@
+localstatedir = @localstatedir@
+mandir = @mandir@
+oldincludedir = @oldincludedir@
+sbindir = @sbindir@
+sharedstatedir = @sharedstatedir@
+sysconfdir = @sysconfdir@
 
-bootdir=$(exec_prefix)/boot
-includedir=$(prefix)/include
-libexecdir=$(exec_prefix)/libexec
-bindir=$(exec_prefix)/bin
+systype = @systype@
 
-sysdep = $(srcdir)/$(systype)
+
+#
+# Default target
+#
 
+all:
+
+
 # Detect if the user wants KDB
 ifeq ($(findstring -DMACH_KDB,@DEFS@),-DMACH_KDB)
 enable_kdb=yes
@@ -43,21 +59,6 @@ enable_kmsg=yes
 else
 enable_kmsg=no
 endif
-
-# Programs found by configure.
-AWK = @AWK@
-INSTALL = @INSTALL@
-CC = @CC@
-LD = @LD@
-NM = @NM@
-MIG = @MIG@
-
-INSTALL_PROGRAM = @INSTALL_PROGRAM@
-INSTALL_DATA = @INSTALL_DATA@
-
-CFLAGS = @CFLAGS@
-
-all:
 
 # All the possible architectures
 all-archs = i386 linux
@@ -171,8 +172,7 @@ doc-files = Makefile.in fdl.texi gpl.texi mach.texi
 debian-files = changelog control copyright README.Debian rules postinst prerm
 
 
-# Object files that go into the kernel image.  (This will be augmented by the
-# machine dependent Makefile fragment.)
+# Object files that go into the kernel image.
 
 # Basic kernel source for Mach
 objfiles := $(subst .c,.o,$(ipc-cfiles) $(kern-cfiles) \
@@ -238,62 +238,53 @@ other-headers := alloca.h
 objfiles += memory_object_user_user.o memory_object_default_user.o \
 	device_reply_user.o memory_object_reply_user.o
 
+users = $(filter-out vm_user.o,$(filter %_user.o,$(objfiles)))
+
 # Server stubs
 objfiles += device_server.o device_pager_server.o mach_port_server.o \
 	mach_server.o mach4_server.o mach_debug_server.o mach_host_server.o
+
+servers = $(filter %_server.o,$(objfiles))
 
 # Where to find the relevant Mig source files
 vpath %.cli $(srcdir)/vm $(srcdir)/device
 vpath %.srv $(srcdir)/device $(srcdir)/ipc $(srcdir)/kern
 
-
-# We need this symlink in place before we start compiling,
-# so <mach/machine/foo.h> headers can be found.
-before-compile = mach/machine
-mach/machine: mach_machine
-	test -d $(@D) || mkdir $(@D)
-	rm -f $@
-	ln -s ../mach_machine mach/machine
-mach_machine:
-	rm -f $@
-	ln -s $(srcdir)/$(systype)/include/mach/$(systype) mach_machine
 
-
-
 #
-# Compilation flags
+# Rules.
 #
-
-DEFINES += -DMACH -DCMU -DMACH_KERNEL -DKERNEL @DEFS@
-INCLUDES += -I. -I$(srcdir) -I$(srcdir)/include \
-	-I$(srcdir)/bogus -I$(srcdir)/util -I$(srcdir)/kern -I$(srcdir)/device
-
-
-include $(sysdep)/Makefrag
-
-CPPFLAGS += -nostdinc $(DEFINES) $(INCLUDES)
-
-MIGFLAGS += $(CPPFLAGS)
-
-
-# Standard targets
 
 all: kernel
+	$(MAKE) -C $(systype) $@
+
+# Better than nothing...
+check: kernel
+	$(MBCHK) $<
+	$(MAKE) -C $(systype) $@
 
 clean:
-	rm -f *.o *.d kernel
+	$(MAKE) -C $(systype) $@
+	rm -f clib-routines.o kernel.o kernel kernel-undef kernel-undef-bad
+	rm -f $(objfiles) $(subst .o,.d,$(objfiles))
 	rm -f *.symc *.symc.o *_user.c *_server.c *.h
 	rm -f *.migs_d *.migsh_d *.migu_d *.miguh_d
 
 distclean: clean
-	rm -f config.status config.cache config.log Makefile driverlist
+	$(MAKE) -C $(systype) $@
+	rm -f Makefile Makerules version.c doc/Makefile machine mach/machine
+	rm -f config.status config.log
 
 mostlyclean: distclean
+	$(MAKE) -C $(systype) $@
 
 maintainer-clean: mostlyclean
+	$(MAKE) -C $(systype) $@
 	rm -f $(srcdir)/configure $(all-archs-configures)
 
-check:
+$(systype)/%: FORCE
+	$(MAKE) -C $(systype) $(@F)
+FORCE:
 
 
 #
@@ -309,8 +300,9 @@ clib-routines := memcpy memmove memset bcopy bzero \
 #kernel.a: $(objfiles)
 #	@rm -f $@
 #	$(AR) cq $@ $^
-kernel.o: $(objfiles) # kernel.a
-	$(LD) -r -o $@ $^
+kernel.o: $(objfiles) $(systype)/sysdep.a # kernel.a
+	$(LD) -r -o $@ $(kernel-objfiles-prepend) \
+	  $(filter-out $(kernel-objfiles-prepend),$^)
 kernel-undef: kernel.o
 	$(NM) -u $< | sed 's/  *U  *//;s/^_*//' | sort -u > $@
 kernel-undef-bad: kernel-undef Makefile
@@ -322,32 +314,30 @@ clib-routines.o: kernel-undef kernel-undef-bad
 	      -o $@ \
 	      `sed 's/^/-Wl,-u,/' $<` -x c /dev/null -lc
 kernel: kernel.o clib-routines.o
-	$(LD) $(LDFLAGS) -o $@ $^
-
+	$(LD) $(LDFLAGS) $(LDFLAGS-$@) -o $@ $^
 
 
 #
 # Installation
 #
+
 installed-headers-names = $(addprefix $(includedir)/,$(installed-headers))
-installed-sysdep-headers-names = $(addprefix $(includedir)/,$($(systype)-installed-headers))
 install: install-headers install-kernel
+	make -C $(systype) $@
 
 $(installed-headers-names): $(includedir)/%: $(srcdir)/include/%
 	$(INSTALL_DATA) $< $@
 
-$(installed-sysdep-headers-names): $(includedir)/%: $(sysdep)/include/%
-	$(INSTALL_DATA) $< $@
-
-install-headers: mkheaderdirs $(installed-headers-names) $(installed-sysdep-headers-names)
-	ln -sf $(systype) $(includedir)/mach/machine
+install-headers: mkheaderdirs $(installed-headers-names)
+	ln -sfn $(systype) $(includedir)/mach/machine
+	make -C $(systype) $@
 
 install-kernel: kernel mkkerneldirs
 	$(INSTALL_PROGRAM) kernel $(bootdir)/gnumach
+	make -C $(systype) $@
 
 mkheaderdirs:
-	mkdir -p $(includedir) $(includedir)/device $(includedir)/mach \
-		$(includedir)/mach/$(systype) $(includedir)/mach/exec
+	mkdir -p $(includedir) $(includedir)/device $(includedir)/mach/exec
 
 mkkerneldirs:
 	mkdir -p $(bootdir)
@@ -397,7 +387,6 @@ dist:
 	rm -rf gnumach-$(version)
 
 
-
 #
 # Autoconf support
 #
@@ -407,7 +396,7 @@ $(srcdir)/config.h.in: $(srcdir)/acconfig.h
 	cd $(srcdir) && autoheader
 
 Makefile: $(srcdir)/Makefile.in config.status
-	./config.status
+	./config.status $@
 config.h: stamp-configh ;
 stamp-configh: $(srcdir)/config.h.in config.status
 	./config.status
@@ -420,80 +409,8 @@ vpath %.in $(srcdir)
 vpath configure $(srcdir)
 
 
-
 #
-# How to do some things
-#
-
-# Building foo.h from foo.sym:
-%.symc: %.sym $(srcdir)/gensym.awk
-	$(AWK) -f $(word 2,$^) $< > $@
-%.symc.o: %.symc $(before-compile)
-	$(CC) -S $(CPPFLAGS) $(CFLAGS) $(CPPFLAGS-$@) -x c -o $@ $<
-%.h: %.symc.o
-	sed <$< -e 's/^[^*].*$$//' | \
-		sed -e 's/^[*]/#define/' -e 's/mAgIc[^-0-9]*//' >$@
-
-# Building from foo.cli
-%.h %_user.c: %.cli $(before-compile)
-	$(MIG) $(MIGFLAGS) -header $*.h -user $*_user.c -server /dev/null $<
-
-# Building from foo.srv
-%_interface.h %_server.c: %.srv $(before-compile)
-	$(MIG) $(MIGFLAGS) -sheader $*_interface.h -server $*_server.c \
-			   -header /dev/null -user /dev/null $<
-
-#
-# Dependency generation
+# Makerules
 #
 
-# Include dependency files
-ifneq ($(no_deps),t)
-
-# For each file generated by MiG we need a .d file.
-servers = $(filter %_server.o,$(objfiles))
--include $(subst _server.o,.migs_d,$(servers)) /dev/null
--include $(subst _server.o,.migsh_d,$(servers)) /dev/null
-
-# vm_user.o fits the pattern, but is not actually a MiG-related file.
-users = $(filter-out vm_user.o,$(filter %_user.o,$(objfiles)))
--include $(subst _user.o,.migu_d,$(users)) /dev/null
--include $(subst _user.o,.miguh_d,$(users)) /dev/null
-
-# For each .o file we need a .d file.
--include $(subst .o,.d,$(filter %.o,$(objfiles))) /dev/null
-
-endif
-
-# Here is how to make those dependency files
-
-%.migs_d: %.srv $(before-compile)
-	(set -e; $(CPP) $(MIGFLAGS) -M -MG -x c $< | \
-	sed -e 's/[^:]*:/$(@:.migs_d=_server.c) $@:/' > $@)
-
-%.migu_d: %.cli $(before-compile)
-	(set -e; $(CPP) $(MIGFLAGS) -M -MG -x c $< | \
-	sed -e 's/[^:]*:/$(@:.migu_d=_user.c) $@:/' > $@)
-
-%.migsh_d: %.migs_d
-	sed -e 's/_server\.c /_interface.h /' -e 's/migs_d/migsh_d/' < $< > $@
-
-%.miguh_d: %.migu_d
-	sed -e 's/_user\.c /.h /' -e 's/migu_d/miguh_d/' < $< > $@
-
-# Generic rule for $(CC) based compilation for making dependencies
-define make-deps
-set -e; $(CC) $(CFLAGS) $(CPPFLAGS) -M -MG $< | \
-	sed > $@.new -e 's/$*\.o:/$*.o $@:/'
-mv -f $@.new $@
-endef
-
-%.d: %.c $(before-compile); $(make-deps)
-%.d: %.S $(before-compile); $(make-deps)
-
-# .s files don't go through the preprocessor, so we do this
-# This rule must come *after* the genuine ones above, so that
-# make doesn't build a .s file and then make an empty dependency
-# list.
-%.d: %.s
-	echo '$*.o: $<' > $@
+include Makerules

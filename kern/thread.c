@@ -46,7 +46,7 @@
 #include <mach/thread_special_ports.h>
 #include <mach/thread_status.h>
 #include <mach/time_value.h>
-#include "vm_param.h"
+#include <machine/vm_param.h>
 #include <kern/ast.h>
 #include <kern/counters.h>
 #include <kern/ipc_tt.h>
