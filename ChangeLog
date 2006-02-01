@@ -1,3 +1,9 @@
+2006-02-01  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* linux/dev/drivers/block/genhd.c (add_bsd_partition): Only define if
+	both MACH and CONFIG_BSD_DISKLABEL are defined.
+	Reported by Matheus Morais <matheus.morais@gmail.com>.
+
 2006-01-31  Thomas Schwinge  <tschwinge@gnu.org>
 
 	Cleanup of GNU Mach's build system.  The system dependent parts are now

@@ -111,7 +111,7 @@ static void add_partition (struct gendisk *hd, int minor, int start, int size)
 	printk(" %s", disk_name(hd, minor, buf));
 }
 
-#ifdef MACH
+#if defined (MACH) && defined (CONFIG_BSD_DISKLABEL)
 static int mach_minor;
 static void
 add_bsd_partition (struct gendisk *hd, int minor, int slice,
