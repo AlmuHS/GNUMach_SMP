@@ -1,7 +1,7 @@
 2006-01-31  Thomas Schwinge  <tschwinge@gnu.org>
 
-	Cleanup of GNU Mach's build system.  The system dependend parts are now
-	handeled by the respective Makefile and no longer by the top-level one.
+	Cleanup of GNU Mach's build system.  The system dependent parts are now
+	handled by the respective Makefile and no longer by the top-level one.
 	
 	* configure, i386/configure, i386/linux/configure, linux/configure:
 	Regenerated.
@@ -13,15 +13,15 @@
 	Makerules.in.
 	Do not include $(sysdep)/Makefrag anymore.
 	(all, check, clean, distclean, mostlyclean, maintainer-clean, install)
-	(install-headers, install-kernel): Recurse into the system dependend
+	(install-headers, install-kernel): Recurse into the system dependent
 	subdirectory.
 	(check): Add a basic test using mbchk.
 	(clean, distclean): Be more explicit in what to delete.
 	($(systype)/%): New target.
-	(kernel.o): Incorporate the system dependend archive.
+	(kernel.o): Incorporate the system dependent archive.
 	(installed-sysdep-headers-names, $(installed-sysdep-headers-names)):
-	Variable and target moved into the system dependend Makefile.in.
-	(install-headers, mkheaderdirs): Don't care for the system dependend
+	Variable and target moved into the system dependent Makefile.in.
+	(install-headers, mkheaderdirs): Don't care for the system dependent
 	header files.
 	(%.symc, %.symc.o, %.h, %_user.c, %_interface.h, %_server.c): Targets
 	moved into Makerules.in.
@@ -38,12 +38,12 @@
 	Merge i386/Makefrag and the system dependent stuff from Makefile.in
 	into this file.
 	(all, check, install, install-headers, install-kernel): Recurse into
-	the system dependend subdirectory.
+	the system dependent subdirectory.
 	(sysdep.o): transformed to the new target sysdep.a.
 	(linux/linux.o): Target removed.
 	(clean, distclean): Be more explicit in what to delete.
 	(linux/%): New target.
-	(install-headers): Install the system dependend header files.
+	(install-headers): Install the system dependent header files.
 	(mkheaderdirs): New target.
 	Include the top-level Makerules.
 	* i386/Makefrag: File removed.
