@@ -681,7 +681,7 @@ int apricot_probe(struct device *dev)
     struct i596_private *lp;
     int checksum = 0;
     int ioaddr = 0x300;
-    char eth_addr[6];
+    char eth_addr[8];
     
     /* this is easy the ethernet interface can only be at 0x300 */
     /* first check nothing is already registered here */
