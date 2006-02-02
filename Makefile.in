@@ -238,6 +238,7 @@ other-headers := alloca.h
 objfiles += memory_object_user_user.o memory_object_default_user.o \
 	device_reply_user.o memory_object_reply_user.o
 
+# vm_user.o fits the pattern, but is not actually a MiG-related file.
 users = $(filter-out vm_user.o,$(filter %_user.o,$(objfiles)))
 
 # Server stubs

@@ -1,3 +1,8 @@
+2006-02-02  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* Makerules.in: Move a comment ...
+	* Makefile.in: ... here.
+
 2006-02-01  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* linux/dev/drivers/block/genhd.c (add_bsd_partition): Only define if

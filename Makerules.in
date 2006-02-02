@@ -107,7 +107,6 @@ ifneq ($(no_deps),t)
 -include $(subst _server.o,.migs_d,$(servers)) /dev/null
 -include $(subst _server.o,.migsh_d,$(servers)) /dev/null
 
-# vm_user.o fits the pattern, but is not actually a MiG-related file.
 -include $(subst _user.o,.migu_d,$(users)) /dev/null
 -include $(subst _user.o,.miguh_d,$(users)) /dev/null
 
