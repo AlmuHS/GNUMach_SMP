@@ -981,7 +981,7 @@ int eata_pio_detect(Scsi_Host_Template * tpnt)
 
     find_pio_ISA(&gc, tpnt);
     
-    for (i = 0; i <= MAXIRQ; i++)
+    for (i = 0; i < MAXIRQ; i++)
 	if (reg_IRQ[i])
 	    request_irq(i, eata_pio_int_handler, SA_INTERRUPT, "EATA-PIO", NULL);
     

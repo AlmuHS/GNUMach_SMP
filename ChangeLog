@@ -1,5 +1,10 @@
 2006-02-02  Sergio Lopez  <koro@sinrega.org>
 
+	* linux/src/drivers/scsi/eata_pio.c (eata_pio_detect): Fix a
+	off-by-one error when probing.
+	* linux/src/drivers/scsi/eata_dma.c (eata_detect): Likewise.
+	* linux/dev/drivers/scsi/eata_dma.c (eata_detect): Likewise.
+
 	* linux/src/drivers/net/apricot.c (apricot_probe): Increase eth_addr
 	size to 8 so we do not trash the stack when reading from the io ports.
 

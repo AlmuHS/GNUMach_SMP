@@ -1536,7 +1536,7 @@ int eata_detect(Scsi_Host_Template * tpnt)
     
     find_ISA(&gc, tpnt);
     
-    for (i = 0; i <= MAXIRQ; i++) { /* Now that we know what we have, we     */
+    for (i = 0; i < MAXIRQ; i++) {  /* Now that we know what we have, we     */
 	if (reg_IRQ[i] >= 1){       /* exchange the interrupt handler which  */
 	    free_irq(i, NULL);      /* we used for probing with the real one */
 	    request_irq(i, (void *)(eata_int_handler), SA_INTERRUPT|SA_SHIRQ, 
