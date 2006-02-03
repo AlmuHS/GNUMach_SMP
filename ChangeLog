@@ -1,3 +1,8 @@
+2006-02-03  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* Makerules.in: Add -fno-strict-aliasing to CFLAGS.
+	* i386/linux/Makefile.in: Likewise for linux-gen-flags.
+
 2006-02-02  Sergio Lopez  <koro@sinrega.org>
 
 	* linux/src/drivers/scsi/eata_pio.c (eata_pio_detect): Fix a

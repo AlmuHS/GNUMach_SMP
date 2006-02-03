@@ -140,7 +140,7 @@ CPPFLAGS = -Wall
 # Arrange for special include directories too.
 # Because of the use of `extern inline' in some Linux header files without
 # corresponding text-segment definitions, we must always optimize.
-linux-gen-flags = -D__KERNEL__ -O2 \
+linux-gen-flags = -D__KERNEL__ -O2 -fno-strict-aliasing \
 	-Idev/include -I$(srcdir)/dev/include \
 	-I$(linuxdir)/dev/include -I$(linuxdir)/src/include \
 	-I$(linuxsrcdir)/dev/include -I$(linuxsrcdir)/src/include

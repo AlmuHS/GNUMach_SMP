@@ -68,6 +68,9 @@ MIGFLAGS += $(CPPFLAGS)
 
 CFLAGS += $(CFLAGS-common)
 
+# See <URL:http://lists.gnu.org/archive/html/bug-hurd/2006-01/msg00148.html>.
+CFLAGS += -fno-strict-aliasing
+
 LDFLAGS += $(LDFLAGS-common)
 
 # Assemble .S files correctly
