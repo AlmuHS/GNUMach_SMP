@@ -1,5 +1,10 @@
 2006-02-03  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* Makerules.in: Set no_deps to true if we don't need the dependency
+	files.
+	* i386/linux/Makefile.in: Do care about linux-flags if no_deps is true;
+	reverting the change from 2006-01-31.
+	
 	* Makefile.in: Include Makerules through top_builddir, so that it will
 	automatically be rebuilt if needed.
 

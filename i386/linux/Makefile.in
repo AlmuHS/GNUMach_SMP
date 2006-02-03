@@ -159,8 +159,6 @@ linux-asm-spec-flags = -D__KERNEL__ -D__ASSEMBLY__ -traditional \
 
 
 # Here is where those specs are found.
-ifneq ($(no_deps),t)
-
 -include linux-flags
 
 # How to make this file:
@@ -195,8 +193,6 @@ linux-flags: Makefile
 # .d files.
 ifneq ($(linux-flags-done),$(all-linux-files) $(linux-asm-files))
 no_deps=t
-endif
-
 endif
 
 objfiles += $(sort $(device_drivers))
