@@ -8,8 +8,8 @@
 	* Makefile.in: Include Makerules through top_builddir, so that it will
 	automatically be rebuilt if needed.
 
-	* Makerules.in: Add -fno-strict-aliasing to CFLAGS.
-	* i386/linux/Makefile.in: Likewise for linux-gen-flags.
+	* Makerules.in (CFLAGS): Added -fno-strict-aliasing.
+	* i386/linux/Makefile.in (linux-gen-flags): Likewise.
 
 2006-02-02  Sergio Lopez  <koro@sinrega.org>
 
