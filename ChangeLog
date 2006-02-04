@@ -1,3 +1,7 @@
+2006-02-05  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* Makerules.in: Don't set no_deps to true if MAKECMDGOALS is empty.
+
 2006-02-03  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* Makerules.in: Set no_deps to true if we don't need the dependency

@@ -104,7 +104,7 @@ ASFLAGS += -DASSEMBLER
 #
 
 # Don't build and include dependency files if they're not needed.
-ifeq ($(strip $(filter-out %clean, $(MAKECMDGOALS))),)
+ifneq ($(strip $(filter %clean, $(MAKECMDGOALS))),)
 no_deps = t
 endif
 
