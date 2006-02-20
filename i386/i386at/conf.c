@@ -54,14 +54,6 @@ extern int	wtopen(), wtread(), wtwrite(), wtclose();
 #define	wtname			"wt"
 #endif	/* NWT > 0 */
 
-#include <at3c501.h>
-#if	NAT3C501 > 0
-extern int	at3c501open(), at3c501output(),
-		at3c501getstat(), at3c501setstat(),
-		at3c501setinput();
-#define	at3c501name		"et"
-#endif /* NAT3C501 > 0 */
-
 #include <ul.h>
 #if NUL > 0
 extern int    ulopen(), uloutput(), ulgetstat(), ulsetstat(),
@@ -198,13 +190,6 @@ struct dev_ops	dev_name_list[] =
 	  nodev,	nulldev,	nulldev,	0,
 	  nodev },
 #endif	/* NWT > 0 */
-
-#if	NAT3C501 > 0
-	{ at3c501name,	at3c501open,	nulldev,	nulldev,
-	  at3c501output,at3c501getstat,	at3c501setstat,	nomap,
-	  at3c501setinput, nulldev,	nulldev, 	0,
-	  nodev },
-#endif
 
 #if   	NUL > 0
         { ulname,       ulopen,         nulldev,        nulldev,

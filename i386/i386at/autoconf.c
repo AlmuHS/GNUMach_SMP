@@ -59,12 +59,6 @@ extern struct	bus_driver	eaha_driver;
 extern int	eaha_intr();
 #endif /* NEAHA */
 
-#include <at3c501.h>
-#if NAT3C501 > 0
-extern struct	bus_driver	at3c501driver;
-extern int			at3c501intr();
-#endif /* NAT3C501 */
-
 #include <ul.h>
 #if NUL > 0
 extern struct  bus_driver      uldriver;
@@ -244,11 +238,6 @@ struct	bus_device	bus_device_init[] = {
 { &eaha_driver,	"tz",   6,  0,  0x0,0,	0,    '?',     0,   0,   6,    0, },
 { &eaha_driver,	"tz",   7,  0,  0x0,0,	0,    '?',     0,   0,   7,    0, },
 #endif	/* NEAHA > 0*/
-
-#if NAT3C501 > 0
-  {&at3c501driver, "et", 0, at3c501intr, 0x300, 0,0x300,
-     '?',    0,   -1,    -1,    0,   0,        0,   SPL_SIX, 9},
-#endif /* NAT3C501 > 0 */
 
 #if NUL > 0
   {&uldriver, "ul",  0, ulintr, 0, 0, 0, '?', 0, -1, -1, 0, 0, 0, SPL_SIX, 0},

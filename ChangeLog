@@ -4,6 +4,13 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* i386/bogus/at3c501.h: Remove file.
+	* i386/i386at/if_3c501.c: Likewise.
+	* i386/i386at/if_3c501.h: Likewise.
+	* i386/i386at/autoconf.c: Don't include <at3c501.h> anymore and adopt
+	all users of NAT3C501 as if it were always defined to `0'.
+	* i386/i386at/conf.c: Likewise.
+
 	* i386/bogus/ns8390.h: Remove file.
 	* i386/i386at/ds8390.h: Likewise.
 	* i386/i386at/if_3c503.h: Likewise.
