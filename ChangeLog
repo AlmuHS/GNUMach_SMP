@@ -4,6 +4,34 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* i386/dos/dos_buf.c: Remove file.
+	* i386/dos/dos_check_err.c: Likewise.
+	* i386/dos/dos_close.c: Likewise.
+	* i386/dos/dos_fstat.c: Likewise.
+	* i386/dos/dos_gettimeofday.c: Likewise.
+	* i386/dos/dos_io.h: Likewise.
+	* i386/dos/dos_open.c: Likewise.
+	* i386/dos/dos_read.c: Likewise.
+	* i386/dos/dos_rename.c: Likewise.
+	* i386/dos/dos_seek.c: Likewise.
+	* i386/dos/dos_tcgetattr.c: Likewise.
+	* i386/dos/dos_unlink.c: Likewise.
+	* i386/dos/dos_write.c: Likewise.
+	* i386/dos/i16/gdt.h: Likewise.
+	* i386/dos/i16/gdt_sels.h: Likewise.
+	* i386/dos/i16/i16_crt0.S: Likewise.
+	* i386/dos/i16/i16_crt0.h: Likewise.
+	* i386/dos/i16/i16_dos.h: Likewise.
+	* i386/dos/i16/i16_dos_mem.c: Likewise.
+	* i386/dos/i16/i16_exit.c: Likewise.
+	* i386/dos/i16/i16_main.c: Likewise.
+	* i386/dos/i16/i16_putchar.c: Likewise.
+	* i386/dos/i16/i16_vcpi.c: Likewise.
+	* i386/dos/i16/i16_xms.c: Likewise.
+	* i386/dos/i16/idt.h: Likewise.
+	* i386/dos/i16/phys_mem_sources.h: Likewise.
+	* i386/dos/putchar.c: Likewise.
+
 	* chips/atm.c: Remove file.
 	* chips/atmreg.h: Likewise.
 	* chips/audio.c: Likewise.
