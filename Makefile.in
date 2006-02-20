@@ -77,7 +77,7 @@ topfiles = ChangeLog ChangeLog.0 ChangeLog.00 Drivers.macros Makefile.in \
 # All the source in each directory.
 
 # Old crud from a previous configure scheme
-bogus-files = bootstrap_symbols.h fast_tas.h hw_footprint.h net_atm.h \
+bogus-files = bootstrap_symbols.h cpus.h fast_tas.h hw_footprint.h net_atm.h \
 	power_save.h simple_clock.h stat_time.h xpr_debug.h \
 	$(patsubst %,mach_%.h,assert counters debug fixpri host ipc_compat \
 	ipc_debug ipc_test kdb ldebug lock_mon machine_routines mp_debug \
@@ -134,9 +134,8 @@ kern-files = $(kern-cfiles) \
 	mach.srv mach4.srv mach_debug.srv mach_host.srv
 
 # Still more trivia
-util-cfiles = about_to_die.c cpu.c cpu_init.c die.c putchar.c puts.c
-util-files = $(util-cfiles) config.h cpu.h cpu_subs.h cpus.h debug.h \
-	phys_mem.h ref_count.h
+util-cfiles = putchar.c puts.c
+util-files = $(util-cfiles)
 
 # Virtual memory implementation
 vm-cfiles = $(addprefix vm_,$(vm-names)) memory_object.c

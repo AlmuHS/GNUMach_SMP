@@ -4,6 +4,22 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* util/about_to_die.c: Remove file.
+	* util/config.h: Likewise.
+	* util/cpu.c: Likewise.
+	* util/cpu.h: Likewise.
+	* util/cpu_init.c: Likewise.
+	* util/cpu_subs.h: Likewise.
+	* util/debug.h: Likewise.
+	* util/die.c: Likewise.
+	* util/phys_mem.h: Likewise.
+	* util/ref_count.h: Likewise.
+	* util/cpus.h: Move from here...
+	* bogus/cpus.h: ... to here.
+	* Makefile.in (bogus-files): Add `cpus.h'.
+	(util-cfiles): Only contain `putchar.c' and `puts.c'.
+	(util-files): Only contain `$(util-cfiles)'.
+
 	* i386/util/NOTES: Remove file.
 	* i386/util/anno.c: Likewise.
 	* i386/util/anno.h: Likewise.
