@@ -4,6 +4,13 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* i386/bogus/hd.h: Remove file.
+	* i386/i386at/nhd.c: Likewise.
+	* i386/i386at/nhdreg.h: Likewise.
+	* i386/i386at/autoconf.c: Don't include <hd.h> anymore and adopt all
+	users of NHD as if it were always defined to `0'.
+	* i386/i386at/conf.c: Likewise.
+
 	* DEVELOPMENT: New file.
 
 2006-02-05  Thomas Schwinge  <tschwinge@gnu.org>

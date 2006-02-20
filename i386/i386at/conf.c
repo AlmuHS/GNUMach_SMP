@@ -36,19 +36,6 @@ extern int	timeopen(), timeclose();
 extern vm_offset_t timemmap();
 #define	timename		"time"
 
-#include <hd.h>
-#if	NHD > 0
-extern int	hdopen(), hdclose(), hdread(), hdwrite();
-extern int	hdgetstat(), hdsetstat(), hddevinfo();
-#define	hdname			"hd"
-
-#if 0
-extern int      pchdopen(),pchdread(),pchdwrite(),pchdgetstat(),pchdsetstat();
-#define pchdname                "pchd"
-#endif
-
-#endif	/* NHD > 0 */
-
 #include <aha.h>
 #if	NAHA > 0
 int     rz_open(), rz_close(), rz_read(), rz_write();
@@ -214,13 +201,6 @@ struct dev_ops	dev_name_list[] =
 	  nodev },
 
 #ifndef LINUX_DEV
-#if	NHD > 0
-	{ hdname,	hdopen,		hdclose,	hdread,
-	  hdwrite,	hdgetstat,	hdsetstat,	nomap,
-	  nodev,	nulldev,	nulldev,	1024,
-	  hddevinfo },
-#endif	/* NHD > 0 */
-
 #if	NAHA > 0
 	{ rzname,	rz_open,	rz_close,	rz_read,
 	  rz_write,	rz_get_status,	rz_set_status,	nomap,
@@ -366,24 +346,6 @@ struct dev_ops	dev_name_list[] =
 	  nodev,	nodev,		nodev,		ioplmmap,
 	  nodev,	nulldev,	nulldev,	0,
 	  nodev },
-
-#if 0
-#if	NHD > 0
-	{ pchdname,     pchdopen,      	hdclose,	pchdread,
-	  pchdwrite,	pchdgetstat,	pchdsetstat,	nomap,
-	  nodev,	nulldev,	nulldev,	16,
-	  hddevinfo },
-#endif	/* NHD > 0 */
-#endif
-
-#if 0
-#if     NHD > 0
-        { hdname,       hdopen,         hdclose,        hdread,
-          hdwrite,      hdgetstat,      hdsetstat,      nomap,
-          nodev,        nulldev,        nulldev,        16,
-          hddevinfo },
-#endif  /* NHD > 0 */
-#endif /* Kevin doesn't know why this was here. */
 
 #ifdef	MACH_KMSG
         { kmsgname,     kmsgopen,       kmsgclose,       kmsgread,

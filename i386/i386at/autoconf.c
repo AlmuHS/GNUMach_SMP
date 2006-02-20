@@ -47,12 +47,6 @@
 #define	SPL_TTY		(vm_offset_t)SPLTTY
 
 
-#include <hd.h>
-#if NHD > 0
-extern	struct	bus_driver	hddriver;
-extern int			hdintr();
-#endif /* NHD */
-
 #include <fd.h>
 #if NFD > 0
 extern	struct	bus_driver	fddriver;
@@ -137,14 +131,6 @@ struct	bus_ctlr	bus_master_init[] = {
      adaptor alive flags spl    pic				 */
 
 #ifndef LINUX_DEV
-#if NHD > 0
-  {&hddriver, "hdc",  0, hdintr, 0x1f0, 8, 0x1f0,
-     '?',	0,  0,	 SPL_FIVE, 14},
-
-  {&hddriver, "hdc",  1, hdintr, 0x170, 8, 0x170,
-     '?',	0,  0,	 SPL_FIVE, 15},
-#endif	/* NHD > 0 */
-
 #if NAHA > 0
   {&aha_driver, "ahac",  0, aha_intr, 0x330, 4, 0x330,
      '?',	0,  0,	 SPL_FIVE, 11},
@@ -230,17 +216,6 @@ struct	bus_device	bus_device_init[] = {
      adaptor alive ctlr slave flags *mi       *next  sysdep sysdep */
 
 #ifndef LINUX_DEV
-#if NHD > 0
-  {&hddriver, "hd", 0, hdintr, 0x104, 8, 0x1f0,
-     '?',    0,   0,    0,    0,   0,  0,  SPL_FIVE, 14},
-  {&hddriver, "hd", 1, hdintr, 0x118, 8, 0x1f0,
-     '?',    0,   0,    1,    0,   0,  0,  SPL_FIVE, 14},
-  {&hddriver, "hd", 2, hdintr, 0x104, 8, 0x170,  /*??*/
-     '?',    0,   1,    0,    0,   0,  0,  SPL_FIVE, 15},
-  {&hddriver, "hd", 3, hdintr, 0x118, 8, 0x170,
-     '?',    0,   1,    1,    0,   0,  0,  SPL_FIVE, 15},
-#endif /* NHD > 0 */
-
 #if NAHA > 0
 { &aha_driver,	"rz",   0,  0,  0x0,0,	0,    '?',     0,   0,   0,    0, },
 { &aha_driver,	"rz",   1,  0,  0x0,0,	0,    '?',     0,   0,   1,    0, },
