@@ -54,13 +54,6 @@ extern int	wtopen(), wtread(), wtwrite(), wtclose();
 #define	wtname			"wt"
 #endif	/* NWT > 0 */
 
-#include <pc586.h>
-#if	NPC586 > 0
-extern int	pc586open(), pc586output(), pc586getstat(), pc586setstat(),
-		pc586setinput();
-#define	pc586name		"pc"
-#endif /* NPC586 > 0 */
-
 #include <ne.h>
 #if     NNE > 0
 extern int      neopen(), neoutput(), negetstat(), nesetstat(), nesetinput();
@@ -223,13 +216,6 @@ struct dev_ops	dev_name_list[] =
 	  nodev,	nulldev,	nulldev,	0,
 	  nodev },
 #endif	/* NWT > 0 */
-
-#if	NPC586 > 0
-	{ pc586name,	pc586open,	nulldev,	nulldev,
-	  pc586output,	pc586getstat,	pc586setstat,	nomap,
-	  pc586setinput,nulldev,	nulldev, 	0,
-	  nodev },
-#endif
 
 #if     NNE > 0
         { nename,       neopen,         nulldev,        nulldev,

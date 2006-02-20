@@ -4,6 +4,14 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* i386/bogus/pc586.h: Remove file.
+	* i386/i386at/i82586.h: Likewise.
+	* i386/i386at/if_pc586.c: Likewise.
+	* i386/i386at/if_pc586.h: Likewise.
+	* i386/i386at/autoconf.c: Don't include <pc586.h> anymore and adopt all
+	users of NPC586 as if it were always defined to `0'.
+	* i386/i386at/conf.c: Likewise.
+
 	* i386/bogus/fd.h: Remove file.
 	* i386/i386at/fd.c: Likewise.
 	* i386/i386at/fdreg.h: Likewise.

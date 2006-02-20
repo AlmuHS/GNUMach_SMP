@@ -59,12 +59,6 @@ extern struct	bus_driver	eaha_driver;
 extern int	eaha_intr();
 #endif /* NEAHA */
 
-#include <pc586.h>
-#if NPC586 > 0
-extern	struct	bus_driver	pcdriver;
-extern int			pc586intr();
-#endif /* NPC586 */
-
 #include <ne.h>
 #if NNE > 0
 extern  struct  bus_driver      nedriver;
@@ -262,18 +256,6 @@ struct	bus_device	bus_device_init[] = {
 { &eaha_driver,	"tz",   6,  0,  0x0,0,	0,    '?',     0,   0,   6,    0, },
 { &eaha_driver,	"tz",   7,  0,  0x0,0,	0,    '?',     0,   0,   7,    0, },
 #endif	/* NEAHA > 0*/
-
-#if NPC586 > 0
-  /* For MACH Default */
-  {&pcdriver, "pc", 0, pc586intr, 0xd0000, 0, 0xd0000,
-     '?',    0,   -1,    -1,    0,   0,        0,   SPL_FIVE, 9},
-  /* For Factory Default */
-  {&pcdriver, "pc", 0, pc586intr, 0xc0000, 0, 0xc0000,
-     '?',    0,   -1,    -1,    0,   0,        0,   SPL_FIVE, 5},
-  /* For what Intel Ships */
-  {&pcdriver, "pc", 0, pc586intr, 0xf00000, 0, 0xf00000,
-     '?',    0,   -1,    -1,    0,   0,        0,   SPL_FIVE, 12},
-#endif /* NPC586 > 0 */
 
 #if NNE > 0
 {&nedriver, "ne", 0, neintr, 0x280,0x4000,0xd0000,
