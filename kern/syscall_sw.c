@@ -38,7 +38,6 @@
 #include <mach/mach_traps.h>
 #include <mach/message.h>
 #include <kern/syscall_subr.h>
-#include <chips/nw_mk.h>
 
 
 /*

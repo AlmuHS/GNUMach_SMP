@@ -4,6 +4,82 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* chips/atm.c: Remove file.
+	* chips/atmreg.h: Likewise.
+	* chips/audio.c: Likewise.
+	* chips/audio_config.h: Likewise.
+	* chips/audio_defs.h: Likewise.
+	* chips/bt431.c: Likewise.
+	* chips/bt431.h: Likewise.
+	* chips/bt455.c: Likewise.
+	* chips/bt455.h: Likewise.
+	* chips/bt459.c: Likewise.
+	* chips/bt459.h: Likewise.
+	* chips/bt478.c: Likewise.
+	* chips/bt478.h: Likewise.
+	* chips/build_font.c: Likewise.
+	* chips/cfb_hdw.c: Likewise.
+	* chips/cfb_misc.c: Likewise.
+	* chips/dc503.c: Likewise.
+	* chips/dc503.h: Likewise.
+	* chips/dtop.h: Likewise.
+	* chips/dtop_handlers.c: Likewise.
+	* chips/dtop_hdw.c: Likewise.
+	* chips/dz_7085.h: Likewise.
+	* chips/dz_defs.h: Likewise.
+	* chips/dz_hdw.c: Likewise.
+	* chips/eccreg.h: Likewise.
+	* chips/fb_hdw.c: Likewise.
+	* chips/fb_misc.c: Likewise.
+	* chips/fdc_82077.h: Likewise.
+	* chips/fdc_82077_hdw.c: Likewise.
+	* chips/frc.c: Likewise.
+	* chips/ims332.c: Likewise.
+	* chips/ims332.h: Likewise.
+	* chips/isdn_79c30.h: Likewise.
+	* chips/isdn_79c30_hdw.c: Likewise.
+	* chips/kernel_font.c: Likewise.
+	* chips/kernel_font.data: Likewise.
+	* chips/lance.c: Likewise.
+	* chips/lance.h: Likewise.
+	* chips/lance_mapped.c: Likewise.
+	* chips/lk201.c: Likewise.
+	* chips/lk201.h: Likewise.
+	* chips/mc_clock.c: Likewise.
+	* chips/mc_clock.h: Likewise.
+	* chips/mouse.c: Likewise.
+	* chips/nc.c: Likewise.
+	* chips/nc.h: Likewise.
+	* chips/nw.h: Likewise.
+	* chips/nw_mk.c: Likewise.
+	* chips/nw_mk.h: Likewise.
+	* chips/pm_defs.h: Likewise.
+	* chips/pm_hdw.c: Likewise.
+	* chips/pm_misc.c: Likewise.
+	* chips/scc_8530.h: Likewise.
+	* chips/scc_8530_hdw.c: Likewise.
+	* chips/screen.c: Likewise.
+	* chips/screen.h: Likewise.
+	* chips/screen_defs.h: Likewise.
+	* chips/screen_switch.c: Likewise.
+	* chips/screen_switch.h: Likewise.
+	* chips/serial_console.c: Likewise.
+	* chips/serial_defs.h: Likewise.
+	* chips/sfb_hdw.c: Likewise.
+	* chips/sfb_misc.c: Likewise.
+	* chips/spans.c: Likewise.
+	* chips/spans.h: Likewise.
+	* chips/tca100.c: Likewise.
+	* chips/tca100.h: Likewise.
+	* chips/tca100_if.c: Likewise.
+	* chips/tca100_if.h: Likewise.
+	* chips/vs42x_rb.h: Likewise.
+	* chips/xcfb_hdw.c: Likewise.
+	* chips/xcfb_misc.c: Likewise.
+	* chips/xcfb_monitor.h: Likewise.
+	* Makefile.in (chips-files): Only contain `busses.c' and `busses.h'.
+	* kern/syscall_sw.c: Don't include <chips/nw_mk.h> anymore.
+
 	* i386/i386at/asm_startup.h: Remove file.
 	* i386/i386at/phys_mem_grab_page.c: Likewise.
 	* i386/Makefile.in (i386at-files): Remove `phys_mem_grab_page.c'.

@@ -85,19 +85,7 @@ bogus-files = bootstrap_symbols.h fast_tas.h hw_footprint.h net_atm.h \
 	$(patsubst %,norma_%.h,device ether ipc task vm)
 
 # Generic code for various hardware drivers
-chips-files = atm.c audio.c bt431.c bt455.c bt459.c build_font.c busses.c \
-	cfb_hdw.c cfb_misc.c dc503.c dtop_handlers.c dtop_hdw.c dz_hdw.c \
-	fb_hdw.c fb_misc.c fdc_82077_hdw.c frc.c ims332.c isdn_79c30_hdw.c \
-	kernel_font.c lance.c lance_mapped.c lk201.c mc_clock.c mouse.c \
-	nc.c nw_mk.c pm_hdw.c pm_misc.c scc_8530_hdw.c screen.c \
-	screen_switch.c serial_console.c sfb_hdw.c sfb_misc.c spans.c \
-	tca100.c tca100_if.c xcfb_hdw.c xcfb_misc.c \
-	atmreg.h audio_config.h audio_defs.h bt431.h bt455.h bt459.h \
-	bt478.h busses.h dc503.h dtop.h dz_7085.h dz_defs.h eccreg.h \
-	fdc_82077.h ims332.h isdn_79c30.h lance.h lk201.h mc_clock.h \
-	nc.h nw.h nw_mk.h pm_defs.h scc_8530.h screen.h screen_defs.h \
-	screen_switch.h serial_defs.h spans.h tca100.h tca100_if.h \
-	vs42x_rb.h xcfb_monitor.h
+chips-files = busses.c busses.h
 
 # Icky kernel debugger
 ddb-cfiles = $(addprefix db_,$(ddb-names))
