@@ -54,15 +54,6 @@ extern int	wtopen(), wtread(), wtwrite(), wtclose();
 #define	wtname			"wt"
 #endif	/* NWT > 0 */
 
-#include <ne.h>
-#if     NNE > 0
-extern int      neopen(), neoutput(), negetstat(), nesetstat(), nesetinput();
-#ifdef FIPC
-extern int      nefoutput();
-#endif /* FIPC */
-#define nename                  "ne"
-#endif  /* NNE > 0 */
-
 #include <ns8390.h>
 #if	NNS8390 > 0
 extern int	wd8003open(), eliiopen();
@@ -216,17 +207,6 @@ struct dev_ops	dev_name_list[] =
 	  nodev,	nulldev,	nulldev,	0,
 	  nodev },
 #endif	/* NWT > 0 */
-
-#if     NNE > 0
-        { nename,       neopen,         nulldev,        nulldev,
-          neoutput,     negetstat,      nesetstat,      nulldev,
-#ifdef FIPC
-          nesetinput,   nulldev,        nefoutput,      0,
-#else
-          nesetinput,   nulldev,        nulldev,        0,
-#endif /* FIPC */
-          nodev },
-#endif
 
 #if	NAT3C501 > 0
 	{ at3c501name,	at3c501open,	nulldev,	nulldev,

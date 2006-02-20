@@ -4,6 +4,13 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* i386/bogus/ne.h: Remove file.
+	* i386/i386at/if_ne.c: Likewise.
+	* i386/i386at/if_nereg.h: Likewise.
+	* i386/i386at/autoconf.c: Don't include <ne.h> anymore and adopt all
+	users of NNE as if it were always defined to `0'.
+	* i386/i386at/conf.c: Likewise.
+
 	* i386/bogus/pc586.h: Remove file.
 	* i386/i386at/i82586.h: Likewise.
 	* i386/i386at/if_pc586.c: Likewise.

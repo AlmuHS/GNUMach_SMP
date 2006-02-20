@@ -59,12 +59,6 @@ extern struct	bus_driver	eaha_driver;
 extern int	eaha_intr();
 #endif /* NEAHA */
 
-#include <ne.h>
-#if NNE > 0
-extern  struct  bus_driver      nedriver;
-extern int                      neintr();
-#endif /* NNE */
-
 #include <ns8390.h>
 #if NNS8390 > 0
 extern	struct	bus_driver	ns8390driver;
@@ -256,13 +250,6 @@ struct	bus_device	bus_device_init[] = {
 { &eaha_driver,	"tz",   6,  0,  0x0,0,	0,    '?',     0,   0,   6,    0, },
 { &eaha_driver,	"tz",   7,  0,  0x0,0,	0,    '?',     0,   0,   7,    0, },
 #endif	/* NEAHA > 0*/
-
-#if NNE > 0
-{&nedriver, "ne", 0, neintr, 0x280,0x4000,0xd0000,
-     '?',    0,   -1,    -1,    0,   0,        0,   SPL_SIX, 5},
-{&nedriver, "ne", 1, neintr, 0x300,0x4000,0xd0000,
-     '?',    0,   -1,    -1,    0,   0,        0,   SPL_SIX, 10},
-#endif /* NNE > 0 */
 
 #if NNS8390 > 0
 	/* "wd" and "el" */
