@@ -4,6 +4,42 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* i386/util/NOTES: Remove file.
+	* i386/util/anno.c: Likewise.
+	* i386/util/anno.h: Likewise.
+	* i386/util/cpu.h: Likewise.
+	* i386/util/cpu_subs.h: Likewise.
+	* i386/util/cpu_tables_init.c: Likewise.
+	* i386/util/cpu_tables_load.c: Likewise.
+	* i386/util/crtn.S: Likewise.
+	* i386/util/debug.h: Likewise.
+	* i386/util/gdt.c: Likewise.
+	* i386/util/gdt.h: Likewise.
+	* i386/util/gdt_sels.h: Likewise.
+	* i386/util/i16/debug.h: Likewise.
+	* i386/util/i16/i16.h: Likewise.
+	* i386/util/i16/i16_die.c: Likewise.
+	* i386/util/i16/i16_gdt_init_temp.c: Likewise.
+	* i386/util/i16/i16_nanodelay.c: Likewise.
+	* i386/util/i16/i16_puts.c: Likewise.
+	* i386/util/i16/i16_writehex.c: Likewise.
+	* i386/util/i386_asm.sym: Likewise.
+	* i386/util/idt.c: Likewise.
+	* i386/util/idt.h: Likewise.
+	* i386/util/idt_inittab.S: Likewise.
+	* i386/util/idt_inittab.h: Likewise.
+	* i386/util/ldt.h: Likewise.
+	* i386/util/trap.h: Likewise.
+	* i386/util/trap_asm.sym: Likewise.
+	* i386/util/trap_dump.c: Likewise.
+	* i386/util/trap_dump_die.c: Likewise.
+	* i386/util/trap_handler.S: Likewise.
+	* i386/util/trap_return.S: Likewise.
+	* i386/util/tss.c: Likewise.
+	* i386/util/tss.h: Likewise.
+	* i386/util/tss_dump.c: Likewise.
+	* i386/util/vm_param.h: Likewise.
+
 	* i386/pc/NOTES: Remove file.
 	* i386/pc/debug.h: Likewise.
 	* i386/pc/exit.c: Likewise.
