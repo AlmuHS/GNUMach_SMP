@@ -4,6 +4,50 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* i386/pc/NOTES: Remove file.
+	* i386/pc/debug.h: Likewise.
+	* i386/pc/exit.c: Likewise.
+	* i386/pc/gdt.h: Likewise.
+	* i386/pc/gdt_sels.h: Likewise.
+	* i386/pc/i16/i16_a20.c: Likewise.
+	* i386/pc/i16/i16_a20.h: Likewise.
+	* i386/pc/i16/i16_bios.h: Likewise.
+	* i386/pc/i16/i16_exit.c: Likewise.
+	* i386/pc/i16/i16_ext_mem.c: Likewise.
+	* i386/pc/i16/i16_init.c: Likewise.
+	* i386/pc/i16/i16_main.c: Likewise.
+	* i386/pc/i16/i16_pic.c: Likewise.
+	* i386/pc/i16/i16_putchar.c: Likewise.
+	* i386/pc/i16/i16_raw.c: Likewise.
+	* i386/pc/i16/i16_raw_test_a20.S: Likewise.
+	* i386/pc/i16/i16_real_int.S: Likewise.
+	* i386/pc/i16/i16_switch.h: Likewise.
+	* i386/pc/i16/phys_mem_collect.c: Likewise.
+	* i386/pc/i16/phys_mem_sources.h: Likewise.
+	* i386/pc/i16/raw_exit.c: Likewise.
+	* i386/pc/i16/raw_real_int.c: Likewise.
+	* i386/pc/ipl.h: Likewise.
+	* i386/pc/irq.h: Likewise.
+	* i386/pc/irq_list.h: Likewise.
+	* i386/pc/pc_asm.sym: Likewise.
+	* i386/pc/phys_mem.h: Likewise.
+	* i386/pc/phys_mem_add.c: Likewise.
+	* i386/pc/pic.c: Likewise.
+	* i386/pc/pic.h: Likewise.
+	* i386/pc/putchar.c: Likewise.
+	* i386/pc/real.h: Likewise.
+	* i386/pc/real_tss.c: Likewise.
+	* i386/pc/real_tss.h: Likewise.
+	* i386/pc/real_tss_def.S: Likewise.
+	* i386/pc/rv86/config.h: Likewise.
+	* i386/pc/rv86/gdt_sels.h: Likewise.
+	* i386/pc/rv86/idt_irq_init.c: Likewise.
+	* i386/pc/rv86/rv86_real_int.c: Likewise.
+	* i386/pc/rv86/rv86_real_int_asm.S: Likewise.
+	* i386/pc/rv86/rv86_reflect_irq.S: Likewise.
+	* i386/pc/rv86/rv86_trap_handler.S: Likewise.
+	* i386/pc/rv86/trap_handler.S: Likewise.
+
 	* i386/imps/Makefile.in: Remove file.
 	* i386/imps/apic.h: Likewise.
 	* i386/imps/cpu_number.h: Likewise.
