@@ -4,6 +4,13 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* i386/imps/Makefile.in: Remove file.
+	* i386/imps/apic.h: Likewise.
+	* i386/imps/cpu_number.h: Likewise.
+	* i386/imps/cpus.h: Likewise.
+	* i386/imps/imps.c: Likewise.
+	* i386/imps/impsasm.sym: Likewise.
+
 	* i386/dos/dos_buf.c: Remove file.
 	* i386/dos/dos_check_err.c: Likewise.
 	* i386/dos/dos_close.c: Likewise.
