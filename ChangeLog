@@ -4,6 +4,11 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* i386/bogus/wt.h: Remove file.
+	* i386/i386at/autoconf.c: Don't include <wt.h> anymore and adopt all
+	users of NWT as if it were always defined to `0'.
+	* i386/i386at/conf.c: Likewise.
+
 	* i386/bogus/hpp.h: Remove file.
 	* i386/bogus/ul.h: Likewise.
 	* i386/bogus/wd.h: Likewise.

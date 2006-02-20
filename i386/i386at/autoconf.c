@@ -71,12 +71,6 @@ extern	struct	bus_driver	lprdriver;
 extern int			lprintr();
 #endif /* NLPR */
 
-#include <wt.h>
-#if NWT > 0
-extern	struct	bus_driver	wtdriver;
-extern int			wtintr();
-#endif /* NWT */
-
 struct	bus_ctlr	bus_master_init[] = {
 
 /* driver    name unit intr    address        len phys_address
@@ -240,15 +234,6 @@ struct	bus_device	bus_device_init[] = {
   {&lprdriver, "lpr", 0, lprintr, 0x3bc, 3, 0x3bc,
      '?',    0,   -1,    -1,    0,   0,        0,   SPL_TTY, 7},
 #endif /* NLPR > 0 */
-
-#if NWT > 0
-  {&wtdriver, "wt", 0, wtintr, 0x300, 2, 0x300,
-     '?',    0,   -1,    -1,    0,   0,        0,   SPL_FIVE, 5},
-  {&wtdriver, "wt", 0, wtintr, 0x288, 2, 0x288,
-     '?',    0,   -1,    -1,    0,   0,        0,   SPL_FIVE, 5},
-  {&wtdriver, "wt", 0, wtintr, 0x388, 2, 0x388,
-     '?',    0,   -1,    -1,    0,   0,        0,   SPL_FIVE, 5},
-#endif /* NWT > 0 */
 #endif /* ! LINUX_DEV */
 
   0

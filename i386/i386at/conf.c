@@ -48,12 +48,6 @@ int	cd_open(), cd_close(), cd_read(), cd_write();
 
 #endif	/*NAHA > 0*/
 
-#include <wt.h>
-#if	NWT > 0
-extern int	wtopen(), wtread(), wtwrite(), wtclose();
-#define	wtname			"wt"
-#endif	/* NWT > 0 */
-
 #include <par.h>
 #if	NPAR > 0
 extern int	paropen(), paroutput(), pargetstat(), parsetstat(),
@@ -162,13 +156,6 @@ struct dev_ops	dev_name_list[] =
 	  nodev },
 
 #endif	/*NAHA > 0*/
-
-#if	NWT > 0
-	{ wtname,	wtopen,		wtclose,	wtread,
-	  wtwrite,	nulldev,	nulldev,	nomap,
-	  nodev,	nulldev,	nulldev,	0,
-	  nodev },
-#endif	/* NWT > 0 */
 
 #if	NPAR > 0
 	{ parname,	paropen,	nulldev,	nulldev,
