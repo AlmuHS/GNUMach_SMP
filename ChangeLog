@@ -4,6 +4,14 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* i386/bogus/nscsi.h: Remove file.
+	* i386/i386at/model_dep.c: Don't include <nscsi.h> anymore and adopt
+	all users of NSCSI as if it were always defined to `0'.
+	(use_all_mem): Don't define anymore and adopt all users as if it were
+	always defined to `1'.
+	(NBBY, NBPW, DMA_MAX): Remove macros.
+	(alloc_dma_mem): Remove function.
+
 	* i386/bogus/asc.h: Remove file.
 	* i386/bogus/aha.h: Likewise.
 	* i386/bogus/eaha.h: Likewise.

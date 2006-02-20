@@ -83,20 +83,6 @@ static vm_offset_t avail_next = 0x1000; /* XX end of BIOS data area */
    still remaining to be handed to the VM system.  */
 static vm_size_t avail_remaining;
 
-/* Configuration parameter:
-   if zero, only use physical memory in the low 16MB of addresses.
-   Only SCSI still has DMA problems.  */
-#ifdef LINUX_DEV
-#define use_all_mem 1
-#else
-#include "nscsi.h"
-#if	NSCSI > 0
-#define use_all_mem 0
-#else
-#define use_all_mem 1
-#endif
-#endif
-
 extern char	version[];
 
 extern void	setup_main();
@@ -220,11 +206,6 @@ mem_size_init()
 
 	printf("AT386 boot: physical memory from 0x%x to 0x%x\n",
 	       phys_first_addr, phys_last_addr);
-
-	if ((!use_all_mem) && phys_last_addr > 16 * 1024*1024) {
-		printf("** Limiting useable memory to 16 Meg to avoid DMA problems.\n");
-		/* This is actually enforced below, in init_alloc_aligned.  */
-	}
 
 	phys_first_addr = round_page(phys_first_addr);
 	phys_last_addr = trunc_page(phys_last_addr);
@@ -475,7 +456,7 @@ init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 	avail_next = round_page(avail_next);
 
 	/* Start with memory above 16MB, reserving the low memory for later. */
-	if (use_all_mem && !wrapped && phys_last_addr > 16 * 1024*1024)
+	if (!wrapped && phys_last_addr > 16 * 1024*1024)
 	  {
 	    if (avail_next < 16 * 1024*1024)
 	      avail_next = 16 * 1024*1024;
@@ -507,11 +488,6 @@ init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 	{
 		avail_next = 0x100000;
 		goto retry;
-	}
-
-	/* If we're only supposed to use the low 16 megs, enforce that.  */
-	if ((!use_all_mem) && (addr >= 16 * 1024*1024)) {
-		return FALSE;
 	}
 
 	/* Skip our own kernel code, data, and bss.  */
@@ -583,109 +559,4 @@ boolean_t pmap_valid_page(x)
 	/* XXX is this OK?  What does it matter for?  */
 	return (((phys_first_addr <= x) && (x < phys_last_addr)) &&
 		!(((boot_info.mem_lower * 1024) <= x) && (x < 1024*1024)));
-}
-
-#ifndef NBBY
-#define NBBY	8
-#endif
-#ifndef NBPW
-#define NBPW	(NBBY * sizeof(int))
-#endif
-#define DMA_MAX	(16*1024*1024)
-
-/*
- * Allocate contiguous pages below 16 MB
- * starting at specified boundary for DMA.
- */
-vm_offset_t
-alloc_dma_mem(size, align)
-	vm_size_t size;
-	vm_offset_t align;
-{
-	int *bits, i, j, k, n;
-	int npages, count, bit, mask;
-	int first_page, last_page;
-	vm_offset_t addr;
-	vm_page_t p, prevp;
-
-	npages = round_page(size) / PAGE_SIZE;
-	mask = align ? (align - 1) / PAGE_SIZE : 0;
-
-	/*
-	 * Allocate bit array.
-	 */
-	n = ((DMA_MAX / PAGE_SIZE) + NBPW - 1) / NBPW;
-	i = n * NBPW;
-	bits = (unsigned *)kalloc(i);
-	if (bits == 0) {
-		printf("alloc_dma_mem: unable alloc bit array\n");
-		return (0);
-	}
-	bzero((char *)bits, i);
-
-	/*
-	 * Walk the page free list and set a bit for
-	 * every usable page in bit array.
-	 */
-	simple_lock(&vm_page_queue_free_lock);
-	for (p = vm_page_queue_free; p; p = (vm_page_t)p->pageq.next) {
-		if (p->phys_addr < DMA_MAX) {
-			i = p->phys_addr / PAGE_SIZE;
-			bits[i / NBPW] |= 1 << (i % NBPW);
-		}
-	}
-
-	/*
-	 * Search for contiguous pages by scanning bit array.
-	 */
-	for (i = 0, first_page = -1; i < n; i++) {
-		for (bit = 1, j = 0; j < NBPW; j++, bit <<= 1) {
-			if (bits[i] & bit) {
-				if (first_page < 0) {
-					k = i * NBPW + j;
-					if (!mask
-					    || (((k & mask) + npages)
-						<= mask + 1)) {
-						first_page = k;
-						if (npages == 1)
-							goto found;
-						count = 1;
-					}
-				} else if (++count == npages)
-					goto found;
-			} else
-				first_page = -1;
-		}
-	}
-	addr = 0;
-	goto out;
-
- found:
-	/*
-	 * Remove pages from the free list.
-	 */
-	addr = first_page * PAGE_SIZE;
-	last_page = first_page + npages;
-	vm_page_free_count -= npages;
-	p = vm_page_queue_free;
-	prevp = 0;
-	while (1) {
-		i = p->phys_addr / PAGE_SIZE;
-		if (i >= first_page && i < last_page) {
-			if (prevp)
-				prevp->pageq.next = p->pageq.next;
-			else
-				vm_page_queue_free = (vm_page_t)p->pageq.next;
-			p->free = FALSE;
-			if (--npages == 0)
-				break;
-		} else
-			prevp = p;
-		p = (vm_page_t)p->pageq.next;
-	}
-
- out:
-	simple_unlock(&vm_page_queue_free_lock);
-	kfree((vm_offset_t)bits, n * NBPW);
-	return (addr);
 }
