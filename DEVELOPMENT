@@ -1,0 +1,8 @@
+-*- Text -*-
+
+`gnumach-1-branch-before_removing_unused_and_unsupported_code' was tagged
+on 2006-02-20.  After creating that tag, code for unused and unsupported
+device driver for ISA cards and a good deal of i386 dependent, also
+unused and unsupported code was removed.  Be sure to check the ChangeLog
+and have a look at the repository at that tag's state if you want to work
+on the i386 dependent parts of GNU Mach.
