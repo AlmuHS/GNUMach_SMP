@@ -99,15 +99,6 @@ chips-files = atm.c audio.c bt431.c bt455.c bt459.c build_font.c busses.c \
 	screen_switch.h serial_defs.h spans.h tca100.h tca100_if.h \
 	vs42x_rb.h xcfb_monitor.h
 
-# Generic code for various SCSI unit types
-scsi-files = disk_label.c mapped_scsi.c pc_scsi_label.c rz.c rz_audio.c \
-	rz_cpu.c rz_disk.c rz_disk_bbr.c rz_host.c rz_tape.c scsi.c \
-	scsi_alldevs.c scsi_comm.c scsi_cpu.c scsi_disk.c scsi_jukebox.c \
-	scsi_optical.c scsi_printer.c scsi_rom.c scsi_scanner.c \
-	scsi_tape.c scsi_worm.c \
-	compat_30.h mapped_scsi.h rz.h rz_labels.h scsi.h scsi2.h \
-	scsi_defs.h scsi_endian.h
-
 # Icky kernel debugger
 ddb-cfiles = $(addprefix db_,$(ddb-names))
 ddb-names = access.c aout.c break.c command.c cond.c examine.c expr.c \
@@ -369,7 +360,6 @@ dist:
 	cp $(addprefix $(srcdir)/device/,$(device-files)) gnumach-$(version)/device
 	cp $(addprefix $(srcdir)/ipc/,$(ipc-files)) gnumach-$(version)/ipc
 	cp $(addprefix $(srcdir)/kern/,$(kern-files)) gnumach-$(version)/kern
-	cp $(addprefix $(srcdir)/scsi/,$(scsi-files)) gnumach-$(version)/scsi
 	cp $(addprefix $(srcdir)/util/,$(util-files)) gnumach-$(version)/util
 	cp $(addprefix $(srcdir)/vm/,$(vm-files)) gnumach-$(version)/vm
 	cp $(addprefix $(srcdir)/include/,$(mach-headers)) gnumach-$(version)/include/mach

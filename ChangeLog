@@ -4,6 +4,69 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* i386/bogus/asc.h: Remove file.
+	* i386/bogus/aha.h: Likewise.
+	* i386/bogus/eaha.h: Likewise.
+	* i386/bogus/sbic.h: Likewise.
+	* i386/bogus/sci.h: Likewise.
+	* i386/bogus/sii.h: Likewise.
+	* i386/bogus/siop.h: Likewise.
+	* i386/i386at/eisa.h: Likewise.
+	* scsi/adapters/README: Likewise.
+	* scsi/adapters/scsi_33C93.h: Likewise.
+	* scsi/adapters/scsi_33C93_hdw.c: Likewise.
+	* scsi/adapters/scsi_5380.h: Likewise.
+	* scsi/adapters/scsi_5380_hdw.c: Likewise.
+	* scsi/adapters/scsi_53C700.h: Likewise.
+	* scsi/adapters/scsi_53C700_hdw.c: Likewise.
+	* scsi/adapters/scsi_53C94.h: Likewise.
+	* scsi/adapters/scsi_53C94_hdw.c: Likewise.
+	* scsi/adapters/scsi_7061.h: Likewise.
+	* scsi/adapters/scsi_7061_hdw.c: Likewise.
+	* scsi/adapters/scsi_89352.h: Likewise.
+	* scsi/adapters/scsi_89352_hdw.c: Likewise.
+	* scsi/adapters/scsi_aha15.h: Likewise.
+	* scsi/adapters/scsi_aha15_hdw.c: Likewise.
+	* scsi/adapters/scsi_aha17_hdw.c: Likewise.
+	* scsi/adapters/scsi_dma.h: Likewise.
+	* scsi/adapters/scsi_user_dma.c: Likewise.
+	* scsi/adapters/scsi_user_dma.h: Likewise.
+	* scsi/compat_30.h: Likewise.
+	* scsi/disk_label.c: Likewise.
+	* scsi/mapped_scsi.c: Likewise.
+	* scsi/mapped_scsi.h: Likewise.
+	* scsi/pc_scsi_label.c: Likewise.
+	* scsi/rz.c: Likewise.
+	* scsi/rz.h: Likewise.
+	* scsi/rz_audio.c: Likewise.
+	* scsi/rz_cpu.c: Likewise.
+	* scsi/rz_disk.c: Likewise.
+	* scsi/rz_disk_bbr.c: Likewise.
+	* scsi/rz_host.c: Likewise.
+	* scsi/rz_labels.h: Likewise.
+	* scsi/rz_tape.c: Likewise.
+	* scsi/scsi.c: Likewise.
+	* scsi/scsi.h: Likewise.
+	* scsi/scsi2.h: Likewise.
+	* scsi/scsi_alldevs.c: Likewise.
+	* scsi/scsi_comm.c: Likewise.
+	* scsi/scsi_cpu.c: Likewise.
+	* scsi/scsi_defs.h: Likewise.
+	* scsi/scsi_disk.c: Likewise.
+	* scsi/scsi_endian.h: Likewise.
+	* scsi/scsi_jukebox.c: Likewise.
+	* scsi/scsi_optical.c: Likewise.
+	* scsi/scsi_printer.c: Likewise.
+	* scsi/scsi_rom.c: Likewise.
+	* scsi/scsi_scanner.c: Likewise.
+	* scsi/scsi_tape.c: Likewise.
+	* scsi/scsi_worm.c: Likewise.
+	* i386/i386at/autoconf.c: Don't include <aha.h> and <eaha.h> anymore
+	and adopt all users of NAHA and NEAHA as if it were always defined to
+	`0'.
+	* i386/i386at/conf.c: Likewise.
+	* Makefile.in (scsi-files): Remove variable and all users of it.
+
 	* i386/bogus/wt.h: Remove file.
 	* i386/i386at/autoconf.c: Don't include <wt.h> anymore and adopt all
 	users of NWT as if it were always defined to `0'.

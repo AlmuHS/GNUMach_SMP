@@ -1,1 +1,0 @@
-#define NASC 0

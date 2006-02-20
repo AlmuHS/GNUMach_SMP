@@ -1,1 +1,0 @@
-#define NSIOP 0

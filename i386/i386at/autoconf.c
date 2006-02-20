@@ -47,18 +47,6 @@
 #define	SPL_TTY		(vm_offset_t)SPLTTY
 
 
-#include <aha.h>
-#if NAHA > 0
-extern struct	bus_driver	aha_driver;
-extern int			aha_intr();
-#endif /* NAHA */
-
-#include <eaha.h>
-#if NEAHA > 0
-extern struct	bus_driver	eaha_driver;
-extern int	eaha_intr();
-#endif /* NEAHA */
-
 #include <com.h>
 #if NCOM > 0
 extern	struct	bus_driver	comdriver;
@@ -76,74 +64,6 @@ struct	bus_ctlr	bus_master_init[] = {
 /* driver    name unit intr    address        len phys_address
      adaptor alive flags spl    pic				 */
 
-#ifndef LINUX_DEV
-#if NAHA > 0
-  {&aha_driver, "ahac",  0, aha_intr, 0x330, 4, 0x330,
-     '?',	0,  0,	 SPL_FIVE, 11},
-
-#if NAHA > 1
-
-  {&aha_driver, "ahac",  1, aha_intr, 0x234, 4, 0x234,
-     '?',	0,  0,	 SPL_FIVE, 12},
-  {&aha_driver, "ahac",  1, aha_intr, 0x230, 4, 0x230,
-     '?',	0,  0,	 SPL_FIVE, 12},
-  {&aha_driver, "ahac",  1, aha_intr, 0x134, 4, 0x134,
-     '?',	0,  0,	 SPL_FIVE, 12},
-  {&aha_driver, "ahac",  1, aha_intr, 0x130, 4, 0x130,
-     '?',	0,  0,	 SPL_FIVE, 12},
-
-#else
-
-  {&aha_driver, "ahac",  0, aha_intr, 0x334, 4, 0x334,
-     '?',	0,  0,	 SPL_FIVE, 11},
-  {&aha_driver, "ahac",  0, aha_intr, 0x234, 4, 0x234,
-     '?',	0,  0,	 SPL_FIVE, 11},
-  {&aha_driver, "ahac",  0, aha_intr, 0x230, 4, 0x230,
-     '?',	0,  0,	 SPL_FIVE, 11},
-  {&aha_driver, "ahac",  0, aha_intr, 0x134, 4, 0x134,
-     '?',	0,  0,	 SPL_FIVE, 11},
-  {&aha_driver, "ahac",  0, aha_intr, 0x130, 4, 0x130,
-     '?',	0,  0,	 SPL_FIVE, 11},
-
-#endif	/* NAHA > 1 */
-#endif	/* NAHA > 0*/
-
-#if NEAHA > 0
-{&eaha_driver, "eahac", 0, eaha_intr, 0x0000, 4, 0x0000,
-     '?',	0,  0,	 SPL_FIVE, 12},
-{&eaha_driver, "eahac", 0, eaha_intr, 0x1000, 4, 0x1000,
-     '?',	0,  0,	 SPL_FIVE, 12},
-{&eaha_driver, "eahac", 0, eaha_intr, 0x2000, 4, 0x2000,
-     '?',	0,  0,	 SPL_FIVE, 12},
-{&eaha_driver, "eahac", 0, eaha_intr, 0x3000, 4, 0x3000,
-     '?',	0,  0,	 SPL_FIVE, 12},
-{&eaha_driver, "eahac", 0, eaha_intr, 0x4000, 4, 0x4000,
-     '?',	0,  0,	 SPL_FIVE, 12},
-{&eaha_driver, "eahac", 0, eaha_intr, 0x5000, 4, 0x5000,
-     '?',	0,  0,	 SPL_FIVE, 12},
-{&eaha_driver, "eahac", 0, eaha_intr, 0x6000, 4, 0x6000,
-     '?',	0,  0,	 SPL_FIVE, 12},
-{&eaha_driver, "eahac", 0, eaha_intr, 0x7000, 4, 0x7000,
-     '?',	0,  0,	 SPL_FIVE, 12},
-{&eaha_driver, "eahac", 0, eaha_intr, 0x8000, 4, 0x8000,
-     '?',	0,  0,	 SPL_FIVE, 12},
-{&eaha_driver, "eahac", 0, eaha_intr, 0x9000, 4, 0x9000,
-     '?',	0,  0,	 SPL_FIVE, 12},
-{&eaha_driver, "eahac", 0, eaha_intr, 0xa000, 4, 0xa000,
-     '?',	0,  0,	 SPL_FIVE, 12},
-{&eaha_driver, "eahac", 0, eaha_intr, 0xb000, 4, 0xb000,
-     '?',	0,  0,	 SPL_FIVE, 12},
-{&eaha_driver, "eahac", 0, eaha_intr, 0xc000, 4, 0xc000,
-     '?',	0,  0,	 SPL_FIVE, 12},
-{&eaha_driver, "eahac", 0, eaha_intr, 0xd000, 4, 0xd000,
-     '?',	0,  0,	 SPL_FIVE, 12},
-{&eaha_driver, "eahac", 0, eaha_intr, 0xe000, 4, 0xe000,
-     '?',	0,  0,	 SPL_FIVE, 12},
-{&eaha_driver, "eahac", 0, eaha_intr, 0xf000, 4, 0xf000,
-     '?',	0,  0,	 SPL_FIVE, 12},
-#endif /* NEAHA > 0 */
-#endif	/* ! LINUX_DEV */
-
   0
 };
 
@@ -152,69 +72,6 @@ struct	bus_device	bus_device_init[] = {
 
 /* driver     name unit intr    address       am   phys_address
      adaptor alive ctlr slave flags *mi       *next  sysdep sysdep */
-
-#ifndef LINUX_DEV
-#if NAHA > 0
-{ &aha_driver,	"rz",   0,  0,  0x0,0,	0,    '?',     0,   0,   0,    0, },
-{ &aha_driver,	"rz",   1,  0,  0x0,0,	0,    '?',     0,   0,   1,    0, },
-{ &aha_driver,	"rz",   2,  0,  0x0,0,	0,    '?',     0,   0,   2,    0, },
-{ &aha_driver,	"rz",   3,  0,  0x0,0,	0,    '?',     0,   0,   3,    0, },
-{ &aha_driver,	"rz",   4,  0,  0x0,0,	0,    '?',     0,   0,   4,    0, },
-{ &aha_driver,	"rz",   5,  0,  0x0,0,	0,    '?',     0,   0,   5,    0, },
-{ &aha_driver,	"rz",   6,  0,  0x0,0,	0,    '?',     0,   0,   6,    0, },
-{ &aha_driver,	"rz",   7,  0,  0x0,0,	0,    '?',     0,   0,   7,    0, },
-
-{ &aha_driver,	"tz",   0,  0,  0x0,0,	0,    '?',     0,   0,   0,    0, },
-{ &aha_driver,	"tz",   1,  0,  0x0,0,	0,    '?',     0,   0,   1,    0, },
-{ &aha_driver,	"tz",   2,  0,  0x0,0,	0,    '?',     0,   0,   2,    0, },
-{ &aha_driver,	"tz",   3,  0,  0x0,0,	0,    '?',     0,   0,   3,    0, },
-{ &aha_driver,	"tz",   4,  0,  0x0,0,	0,    '?',     0,   0,   4,    0, },
-{ &aha_driver,	"tz",   5,  0,  0x0,0,	0,    '?',     0,   0,   5,    0, },
-{ &aha_driver,	"tz",   6,  0,  0x0,0,	0,    '?',     0,   0,   6,    0, },
-{ &aha_driver,	"tz",   7,  0,  0x0,0,	0,    '?',     0,   0,   7,    0, },
-
-#if NAHA > 1
-
-{ &aha_driver,	"rz",   8,  0,  0x0,0,	0,    '?',     0,   1,   0,    0, },
-{ &aha_driver,	"rz",   9,  0,  0x0,0,	0,    '?',     0,   1,   1,    0, },
-{ &aha_driver,	"rz",  10,  0,  0x0,0,	0,    '?',     0,   1,   2,    0, },
-{ &aha_driver,	"rz",  11,  0,  0x0,0,	0,    '?',     0,   1,   3,    0, },
-{ &aha_driver,	"rz",  12,  0,  0x0,0,	0,    '?',     0,   1,   4,    0, },
-{ &aha_driver,	"rz",  13,  0,  0x0,0,	0,    '?',     0,   1,   5,    0, },
-{ &aha_driver,	"rz",  14,  0,  0x0,0,	0,    '?',     0,   1,   6,    0, },
-{ &aha_driver,	"rz",  15,  0,  0x0,0,	0,    '?',     0,   1,   7,    0, },
-
-{ &aha_driver,	"tz",   8,  0,  0x0,0,	0,    '?',     0,   1,   0,    0, },
-{ &aha_driver,	"tz",   9,  0,  0x0,0,	0,    '?',     0,   1,   1,    0, },
-{ &aha_driver,	"tz",  10,  0,  0x0,0,	0,    '?',     0,   1,   2,    0, },
-{ &aha_driver,	"tz",  11,  0,  0x0,0,	0,    '?',     0,   1,   3,    0, },
-{ &aha_driver,	"tz",  12,  0,  0x0,0,	0,    '?',     0,   1,   4,    0, },
-{ &aha_driver,	"tz",  13,  0,  0x0,0,	0,    '?',     0,   1,   5,    0, },
-{ &aha_driver,	"tz",  14,  0,  0x0,0,	0,    '?',     0,   1,   6,    0, },
-{ &aha_driver,	"tz",  15,  0,  0x0,0,	0,    '?',     0,   1,   7,    0, },
-#endif	/* NAHA > 1 */
-#endif	/* NAHA > 0 */
-
-#if NEAHA > 0
-{ &eaha_driver,	"rz",   0,  0,  0x0,0,	0,    '?',     0,   0,   0,    0, },
-{ &eaha_driver,	"rz",   1,  0,  0x0,0,	0,    '?',     0,   0,   1,    0, },
-{ &eaha_driver,	"rz",   2,  0,  0x0,0,	0,    '?',     0,   0,   2,    0, },
-{ &eaha_driver,	"rz",   3,  0,  0x0,0,	0,    '?',     0,   0,   3,    0, },
-{ &eaha_driver,	"rz",   4,  0,  0x0,0,	0,    '?',     0,   0,   4,    0, },
-{ &eaha_driver,	"rz",   5,  0,  0x0,0,	0,    '?',     0,   0,   5,    0, },
-{ &eaha_driver,	"rz",   6,  0,  0x0,0,	0,    '?',     0,   0,   6,    0, },
-{ &eaha_driver,	"rz",   7,  0,  0x0,0,	0,    '?',     0,   0,   7,    0, },
-
-{ &eaha_driver,	"tz",   0,  0,  0x0,0,	0,    '?',     0,   0,   0,    0, },
-{ &eaha_driver,	"tz",   1,  0,  0x0,0,	0,    '?',     0,   0,   1,    0, },
-{ &eaha_driver,	"tz",   2,  0,  0x0,0,	0,    '?',     0,   0,   2,    0, },
-{ &eaha_driver,	"tz",   3,  0,  0x0,0,	0,    '?',     0,   0,   3,    0, },
-{ &eaha_driver,	"tz",   4,  0,  0x0,0,	0,    '?',     0,   0,   4,    0, },
-{ &eaha_driver,	"tz",   5,  0,  0x0,0,	0,    '?',     0,   0,   5,    0, },
-{ &eaha_driver,	"tz",   6,  0,  0x0,0,	0,    '?',     0,   0,   6,    0, },
-{ &eaha_driver,	"tz",   7,  0,  0x0,0,	0,    '?',     0,   0,   7,    0, },
-#endif	/* NEAHA > 0*/
-#endif /* ! LINUX_DEV */
 
 #if NCOM > 0
   {&comdriver, "com", 0, comintr, 0x3f8, 8, 0x3f8,

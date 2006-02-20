@@ -1,1 +1,0 @@
-#define NSII 0

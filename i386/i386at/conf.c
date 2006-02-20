@@ -36,18 +36,6 @@ extern int	timeopen(), timeclose();
 extern vm_offset_t timemmap();
 #define	timename		"time"
 
-#include <aha.h>
-#if	NAHA > 0
-int     rz_open(), rz_close(), rz_read(), rz_write();
-int     rz_get_status(), rz_set_status(), rz_devinfo();
-int	cd_open(), cd_close(), cd_read(), cd_write();
-#define rzname "sd"
-#define	tzname "st"
-#define	scname "sc"	/* processors */
-#define cdname	"cd_audio"	/* CD-ROM DA */
-
-#endif	/*NAHA > 0*/
-
 #include <par.h>
 #if	NPAR > 0
 extern int	paropen(), paroutput(), pargetstat(), parsetstat(),
@@ -134,29 +122,6 @@ struct dev_ops	dev_name_list[] =
 	  nodev },
 
 #ifndef LINUX_DEV
-#if	NAHA > 0
-	{ rzname,	rz_open,	rz_close,	rz_read,
-	  rz_write,	rz_get_status,	rz_set_status,	nomap,
-	  nodev,	nulldev,	nulldev,	1024, /* 8 */
-	  rz_devinfo },
-
-	{ tzname,	rz_open,	rz_close,	rz_read,
-	  rz_write,	rz_get_status,	rz_set_status,	nomap,
-	  nodev,	nulldev,	nulldev,	8,
-	  nodev },
-
-	{ cdname,	cd_open,	cd_close,	cd_read,
-	  cd_write,	nodev,		nodev,		nomap,
-	  nodev,	nulldev,	nulldev,	8,
-	  nodev },
-
-	{ scname,	rz_open,	rz_close,	rz_read,
-	  rz_write,	rz_get_status,	rz_set_status,	nomap,
-	  nodev,	nulldev,	nulldev,	8,
-	  nodev },
-
-#endif	/*NAHA > 0*/
-
 #if	NPAR > 0
 	{ parname,	paropen,	nulldev,	nulldev,
 	  paroutput,	pargetstat,	parsetstat,	nomap,
