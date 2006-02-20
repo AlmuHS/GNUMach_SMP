@@ -4,6 +4,10 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* i386/i386at/asm_startup.h: Remove file.
+	* i386/i386at/phys_mem_grab_page.c: Likewise.
+	* i386/Makefile.in (i386at-files): Remove `phys_mem_grab_page.c'.
+
 	* i386/bogus/evc.h: Remove file.
 	* i386/i386at/kd.c: Don't include <evc.h> anymore and adopt all	users
 	of NEVC as if it were always defined to `0'.
