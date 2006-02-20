@@ -4,6 +4,19 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* i386/bogus/blit.h: Remove file.
+	* i386/i386at/blit.c: Likewise.
+	* i386/i386at/blitreg.h: Likewise.
+	* i386/i386at/blituser.h: Likewise.
+	* i386/i386at/blitvar.h: Likewise.
+	* i386/i386at/conf.c: Don't include <blit.h> anymore and adopt all
+	users of NBLIT as if it were always defined to `0'.
+	* i386/i386at/kd.c: Likewise.
+	(blit_init): Remove definition.
+	(blit_present): Likewise and adopt all users as if it were always
+	defined to `FALSE'.
+	* i386/Makefile.in (i386at-files): Remove `blit.c'.
+	
 	* bogus/net_atm.h: Remove file.
 	* Makefile.in (bogus-files): Remove `net_atm.h'.
 	* kern/syscall_sw.c: Don't include <net_atm.h> anymore and adopt all

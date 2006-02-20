@@ -93,14 +93,6 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <i386at/kdsoft.h>
 #include <cons.h>
 
-#include <blit.h>
-#if	NBLIT > 0
-#include <i386at/blitvar.h>
-#else
-#define blit_present()	FALSE
-#define blit_init()			/* nothing */
-#endif
-
 #define DEBUG	1			/* export feep() */
 
 #define DEFAULT		-1		/* see kd_atoi */
@@ -1200,10 +1192,7 @@ kdinit()
 	 * board specific initialization: set up globals and kd_dxxx
 	 * pointers, and synch displayed cursor with logical cursor.
 	 */
-	  if (blit_present())
-		blit_init();
-	  else
-		kd_xga_init();
+	kd_xga_init();
 
 	/* get rid of any garbage in output buffer */
 	if (inb(K_STATUS) & K_OBUF_FUL)

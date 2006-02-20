@@ -69,16 +69,6 @@ extern int	lprgetstat(), lprsetstat(), lprportdeath();
 #define	lprname			"lpr"
 #endif	/* NLPR > 0 */
 
-#include <blit.h>
-#if NBLIT > 0
-extern int	blitopen(), blitclose(), blit_get_stat();
-extern vm_offset_t blitmmap();
-#define	blitname		"blit"
-
-extern int	mouseinit(), mouseopen(), mouseclose();
-extern int	mouseioctl(), mouseselect(), mouseread();
-#endif
-
 extern int	kbdopen(), kbdclose(), kbdread();
 extern int	kbdgetstat(), kbdsetstat();
 #define	kbdname			"kbd"
@@ -148,13 +138,6 @@ struct dev_ops	dev_name_list[] =
 	{ lprname,	lpropen,	lprclose,	lprread,
 	  lprwrite,	lprgetstat,	lprsetstat,	nomap,
 	  nodev,	nulldev,	lprportdeath,	0,
-	  nodev },
-#endif
-
-#if	NBLIT > 0
-	{ blitname,	blitopen,	blitclose,	nodev,
-	  nodev,	blit_get_stat,	nodev,		blitmmap,
-	  nodev,	nodev,		nodev,		0,
 	  nodev },
 #endif
 
