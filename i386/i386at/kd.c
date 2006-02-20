@@ -101,13 +101,6 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define blit_init()			/* nothing */
 #endif
 
-#include <evc.h>
-#if	NEVC > 0
-int evc1init();
-#else
-#define evc1init()	FALSE
-#endif
-
 #define DEBUG	1			/* export feep() */
 
 #define DEFAULT		-1		/* see kd_atoi */
@@ -1207,7 +1200,6 @@ kdinit()
 	 * board specific initialization: set up globals and kd_dxxx
 	 * pointers, and synch displayed cursor with logical cursor.
 	 */
-	if (!evc1init())
 	  if (blit_present())
 		blit_init();
 	  else

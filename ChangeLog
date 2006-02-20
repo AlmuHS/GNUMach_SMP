@@ -4,6 +4,12 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* i386/bogus/evc.h: Remove file.
+	* i386/i386at/kd.c: Don't include <evc.h> anymore and adopt all	users
+	of NEVC as if it were always defined to `0'.
+	(evc1init): Remove definition and adopt all users as if it were always
+	defined to `FALSE'.
+	
 	* i386/bogus/nscsi.h: Remove file.
 	* i386/i386at/model_dep.c: Don't include <nscsi.h> anymore and adopt
 	all users of NSCSI as if it were always defined to `0'.
