@@ -28,7 +28,6 @@
  */
 
 #include <mach_ipc_compat.h>
-#include <net_atm.h>
 
 #include <mach/port.h>
 #include <mach/kern_return.h>
@@ -204,24 +203,6 @@ mach_trap_t	mach_trap_table[] = {
 	MACH_TRAP(kern_invalid, 0),		/* 78 */
 	MACH_TRAP(kern_invalid, 0),		/* 79 */
 
-#if	NET_ATM
-	MACH_TRAP(mk_update,3),                       /* 80 */
-	MACH_TRAP(mk_lookup,2),                       /* 81 */
-	MACH_TRAP_STACK(mk_endpoint_allocate,4),      /* 82 */
-	MACH_TRAP_STACK(mk_endpoint_deallocate,1),    /* 83 */
-	MACH_TRAP(mk_buffer_allocate,2),              /* 84 */
-	MACH_TRAP(mk_buffer_deallocate,2),            /* 85 */
-	MACH_TRAP_STACK(mk_connection_open,4),        /* 86 */
-	MACH_TRAP_STACK(mk_connection_accept,3),      /* 87 */
-	MACH_TRAP_STACK(mk_connection_close,1),       /* 88 */
-	MACH_TRAP_STACK(mk_multicast_add,4),          /* 89 */
-	MACH_TRAP_STACK(mk_multicast_drop,4),         /* 90 */
-	MACH_TRAP(mk_endpoint_status,3),              /* 91 */
-	MACH_TRAP_STACK(mk_send,3),                   /* 92 */
-	MACH_TRAP_STACK(mk_receive,2),                /* 93 */
-	MACH_TRAP_STACK(mk_rpc,4),                    /* 94 */
-	MACH_TRAP_STACK(mk_select,3),                 /* 95 */
-#else	/* NET_ATM */
 	MACH_TRAP(kern_invalid, 0),                   /* 80 */
 	MACH_TRAP(kern_invalid, 0),                   /* 81 */
 	MACH_TRAP(kern_invalid, 0),		      /* 82 */
@@ -238,7 +219,6 @@ mach_trap_t	mach_trap_table[] = {
 	MACH_TRAP(kern_invalid, 0),	              /* 93 */
 	MACH_TRAP(kern_invalid, 0),                   /* 94 */
 	MACH_TRAP(kern_invalid, 0),                   /* 95 */
-#endif	/* NET_ATM */
 
 #ifdef FIPC
 	MACH_TRAP(syscall_fipc_send, 4),		      /* 96 */

@@ -38,7 +38,6 @@
 #include <mach_pcsample.h>
 #include <simple_clock.h>
 #include <mach_debug.h>
-#include <net_atm.h>
 
 #include <mach/std_types.h>
 #include <mach/policy.h>
@@ -65,10 +64,6 @@
 #include <ipc/mach_msg.h>
 #include <machine/machspl.h>		/* for splsched */
 #include <machine/thread.h>		/* for MACHINE_STACK */
-
-#if	NET_ATM
-#include <chips/nw_mk.h>
-#endif
 
 thread_t active_threads[NCPUS];
 vm_offset_t active_stacks[NCPUS];
@@ -447,10 +442,6 @@ kern_return_t thread_create(
 	pcb_init(new_thread);
 
 	ipc_thread_init(new_thread);
-
-#if	NET_ATM
-	new_thread->nw_ep_waited = 0;
-#endif
 
 	/*
 	 *	Find the processor set for the parent task.
@@ -862,9 +853,6 @@ kern_return_t thread_terminate(
 	 *	reference to itself.
 	 */
 	ipc_thread_terminate(thread);
-#if	NET_ATM
-	mk_waited_collect(thread);
-#endif
 	thread_deallocate(thread);
 	return KERN_SUCCESS;
 }
@@ -903,9 +891,6 @@ thread_force_terminate(
 
 	(void) thread_halt(thread, TRUE);
 	ipc_thread_terminate(thread);
-#if	NET_ATM
-	mk_waited_collect(thread);
-#endif
 
 #if	MACH_HOST
 	thread_unfreeze(thread);
@@ -1147,9 +1132,6 @@ void	thread_halt_self(void)
 		 *	reaper thread.
 		 */
 		ipc_thread_terminate(thread);
-#if	NET_ATM
-		mk_waited_collect(thread);
-#endif
 
 		thread_hold(thread);
 

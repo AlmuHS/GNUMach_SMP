@@ -4,6 +4,15 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* bogus/net_atm.h: Remove file.
+	* Makefile.in (bogus-files): Remove `net_atm.h'.
+	* kern/syscall_sw.c: Don't include <net_atm.h> anymore and adopt all
+	users of NET_ATM as if it were always defined to `0'.
+	* kern/task.c: Likewise.
+	* kern/task.h: Likewise.
+	* kern/thread.c: Likewise.
+	* kern/thread.h: Likewise.
+
 	* util/about_to_die.c: Remove file.
 	* util/config.h: Likewise.
 	* util/cpu.c: Likewise.

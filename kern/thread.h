@@ -38,7 +38,6 @@
 #include <hw_footprint.h>
 #include <mach_fixpri.h>
 #include <mach_host.h>
-#include <net_atm.h>
 
 #include <mach/boolean.h>
 #include <mach/thread_info.h>
@@ -220,10 +219,6 @@ struct thread {
 #if	NCPUS > 1
 	processor_t	last_processor; /* processor this last ran on */
 #endif	/* NCPUS > 1 */
-
-#if	NET_ATM
-	nw_ep_owned_t   nw_ep_waited;
-#endif	/* NET_ATM */
 };
 
 /* typedef of thread_t is in kern/kern_types.h */

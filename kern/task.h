@@ -36,7 +36,6 @@
 
 #include <norma_task.h>
 #include <fast_tas.h>
-#include <net_atm.h>
 
 #include <mach/boolean.h>
 #include <mach/port.h>
@@ -50,13 +49,6 @@
 #include <kern/processor.h>
 #include <kern/syscall_emulation.h>
 #include <vm/vm_map.h>
-
-#if	NET_ATM
-typedef struct nw_ep_owned {
-  unsigned int ep;
-  struct nw_ep_owned *next;
-} nw_ep_owned_s, *nw_ep_owned_t;
-#endif
 
 struct task {
 	/* Synchronization/destruction information */
@@ -113,10 +105,6 @@ struct task {
 	vm_offset_t	fast_tas_base[TASK_FAST_TAS_NRAS];
 	vm_offset_t	fast_tas_end[TASK_FAST_TAS_NRAS];
 #endif	/* FAST_TAS */
-
-#if	NET_ATM
-	nw_ep_owned_t   nw_ep_owned;
-#endif	/* NET_ATM */
 };
 
 #define task_lock(task)		simple_lock(&(task)->lock)

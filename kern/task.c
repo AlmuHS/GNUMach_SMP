@@ -35,7 +35,6 @@
 #include <mach_pcsample.h>
 #include <norma_task.h>
 #include <fast_tas.h>
-#include <net_atm.h>
 
 #include <mach/machine/vm_types.h>
 #include <mach/vm_param.h>
@@ -53,10 +52,6 @@
 #include <kern/ipc_tt.h>
 #include <vm/vm_kern.h>		/* for kernel_map, ipc_kernel_map */
 #include <machine/machspl.h>	/* for splsched */
-
-#if	NET_ATM
-#include <chips/nw_mk.h>
-#endif
 
 #if	NORMA_TASK
 #define	task_create	task_create_local
@@ -156,10 +151,6 @@ kern_return_t task_create(
 	eml_task_reference(new_task, parent_task);
 
 	ipc_task_init(new_task, parent_task);
-
-#if	NET_ATM
-	new_task->nw_ep_owned = 0;
-#endif
 
 	new_task->total_user_time.seconds = 0;
 	new_task->total_user_time.microseconds = 0;
@@ -290,13 +281,6 @@ kern_return_t task_terminate(
 	list = &task->thread_list;
 	cur_task = current_task();
 	cur_thread = current_thread();
-
-#if	NET_ATM
-	/*
-	 *      Shut down networking.
-         */
-	mk_endpoint_collect(task);
-#endif
 
 	/*
 	 *	Deactivate task so that it can't be terminated again,

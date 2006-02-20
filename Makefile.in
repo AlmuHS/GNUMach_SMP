@@ -77,7 +77,7 @@ topfiles = ChangeLog ChangeLog.0 ChangeLog.00 Drivers.macros Makefile.in \
 # All the source in each directory.
 
 # Old crud from a previous configure scheme
-bogus-files = bootstrap_symbols.h cpus.h fast_tas.h hw_footprint.h net_atm.h \
+bogus-files = bootstrap_symbols.h cpus.h fast_tas.h hw_footprint.h \
 	power_save.h simple_clock.h stat_time.h xpr_debug.h \
 	$(patsubst %,mach_%.h,assert counters debug fixpri host ipc_compat \
 	ipc_debug ipc_test kdb ldebug lock_mon machine_routines mp_debug \
