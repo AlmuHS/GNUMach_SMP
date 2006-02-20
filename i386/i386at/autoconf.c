@@ -59,12 +59,6 @@ extern struct	bus_driver	eaha_driver;
 extern int	eaha_intr();
 #endif /* NEAHA */
 
-#include <ns8390.h>
-#if NNS8390 > 0
-extern	struct	bus_driver	ns8390driver;
-extern int			ns8390intr();
-#endif /* NNS8390 */
-
 #include <at3c501.h>
 #if NAT3C501 > 0
 extern struct	bus_driver	at3c501driver;
@@ -250,26 +244,6 @@ struct	bus_device	bus_device_init[] = {
 { &eaha_driver,	"tz",   6,  0,  0x0,0,	0,    '?',     0,   0,   6,    0, },
 { &eaha_driver,	"tz",   7,  0,  0x0,0,	0,    '?',     0,   0,   7,    0, },
 #endif	/* NEAHA > 0*/
-
-#if NNS8390 > 0
-	/* "wd" and "el" */
-  {&ns8390driver, "wd", 0, ns8390intr, 0x280,0x2000,0xd0000,
-     '?',    0,   -1,    -1,    0,   0,        0,   SPL_SIX, 9},
-  {&ns8390driver, "wd", 0, ns8390intr, 0x2a0,0x2000,0xd0000,
-     '?',    0,   -1,    -1,    0,   0,        0,   SPL_SIX, 9},
-  {&ns8390driver, "wd", 0, ns8390intr, 0x2e0,0x2000,0xd0000,
-     '?',    0,   -1,    -1,    0,   0,        0,   SPL_SIX, 5},
-  {&ns8390driver, "wd", 0, ns8390intr, 0x300,0x2000,0xd0000,
-     '?',    0,   -1,    -1,    0,   0,        0,   SPL_SIX, 5},
-  {&ns8390driver, "wd", 0, ns8390intr, 0x250,0x2000,0xd0000,
-     '?',    0,   -1,    -1,    0,   0,        0,   SPL_SIX, 5},
-  {&ns8390driver, "wd", 0, ns8390intr, 0x350,0x2000,0xd0000,
-     '?',    0,   -1,    -1,    0,   0,        0,   SPL_SIX, 5},
-  {&ns8390driver, "wd", 0, ns8390intr, 0x240,0x2000,0xd0000,
-     '?',    0,   -1,    -1,    0,   0,        0,   SPL_SIX, 11},
-  {&ns8390driver, "wd", 1, ns8390intr, 0x340,0x2000,0xe8000,
-     '?',    0,   -1,    -1,    0,   0,        0,   SPL_SIX, 15},
-#endif /* NNS8390 > 0 */
 
 #if NAT3C501 > 0
   {&at3c501driver, "et", 0, at3c501intr, 0x300, 0,0x300,

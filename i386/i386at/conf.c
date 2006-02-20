@@ -54,15 +54,6 @@ extern int	wtopen(), wtread(), wtwrite(), wtclose();
 #define	wtname			"wt"
 #endif	/* NWT > 0 */
 
-#include <ns8390.h>
-#if	NNS8390 > 0
-extern int	wd8003open(), eliiopen();
-extern int	ns8390output(), ns8390getstat(), ns8390setstat(),
-		ns8390setinput();
-#define	ns8390wdname		"wd"
-#define	ns8390elname		"el"
-#endif /* NNS8390 > 0 */
-
 #include <at3c501.h>
 #if	NAT3C501 > 0
 extern int	at3c501open(), at3c501output(),
@@ -212,18 +203,6 @@ struct dev_ops	dev_name_list[] =
 	{ at3c501name,	at3c501open,	nulldev,	nulldev,
 	  at3c501output,at3c501getstat,	at3c501setstat,	nomap,
 	  at3c501setinput, nulldev,	nulldev, 	0,
-	  nodev },
-#endif
-
-#if	NNS8390 > 0
-	{ ns8390wdname,	wd8003open,	nulldev,	nulldev,
-	  ns8390output, ns8390getstat,	ns8390setstat,	nomap,
-	  ns8390setinput, nulldev,	nulldev,	0,
-	  nodev },
-
-	{ ns8390elname,	eliiopen,	nulldev,	nulldev,
-	  ns8390output, ns8390getstat,	ns8390setstat,	nomap,
-	  ns8390setinput, nulldev,	nulldev,	0,
 	  nodev },
 #endif
 

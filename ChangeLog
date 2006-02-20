@@ -4,6 +4,16 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* i386/bogus/ns8390.h: Remove file.
+	* i386/i386at/ds8390.h: Likewise.
+	* i386/i386at/if_3c503.h: Likewise.
+	* i386/i386at/if_ns8390.c: Likewise.
+	* i386/i386at/if_ns8390.h: Likewise.
+	* i386/i386at/if_wd8003.h: Likewise.
+	* i386/i386at/autoconf.c: Don't include <ns8390.h> anymore and adopt
+	all users of NNS8390 as if it were always defined to `0'.
+	* i386/i386at/conf.c: Likewise.
+
 	* i386/bogus/ne.h: Remove file.
 	* i386/i386at/if_ne.c: Likewise.
 	* i386/i386at/if_nereg.h: Likewise.
