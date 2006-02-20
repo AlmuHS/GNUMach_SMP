@@ -70,7 +70,7 @@ endif
 
 
 # Source files for any i386 kernel
-i386at-files = autoconf.c blit.c conf.c cons_conf.c fd.c rtc.c \
+i386at-files = autoconf.c blit.c conf.c cons_conf.c rtc.c \
 	i386at_ds_routines.c immc.c int_init.c iopl.c kd.c kd_event.c \
 	kd_mouse.c kd_queue.c model_dep.c phys_mem_grab_page.c pic_isa.c
 i386-files = ast_check.c db_disasm.c db_interface.c db_trace.c debug_i386.c \

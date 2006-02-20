@@ -48,13 +48,6 @@ int	cd_open(), cd_close(), cd_read(), cd_write();
 
 #endif	/*NAHA > 0*/
 
-#include <fd.h>
-#if	NFD > 0
-extern int	fdopen(), fdclose(), fdread(), fdwrite();
-extern int	fdgetstat(), fdsetstat(), fddevinfo();
-#define	fdname			"fd"
-#endif	/* NFD > 0 */
-
 #include <wt.h>
 #if	NWT > 0
 extern int	wtopen(), wtread(), wtwrite(), wtclose();
@@ -223,13 +216,6 @@ struct dev_ops	dev_name_list[] =
 	  nodev },
 
 #endif	/*NAHA > 0*/
-
-#if	NFD > 0
-	{ fdname,	fdopen,		fdclose,	fdread,
-	  fdwrite,	fdgetstat,	fdsetstat,	nomap,
-	  nodev,	nulldev,	nulldev,	64,
-	  fddevinfo },
-#endif	/* NFD > 0 */
 
 #if	NWT > 0
 	{ wtname,	wtopen,		wtclose,	wtread,

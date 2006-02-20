@@ -47,12 +47,6 @@
 #define	SPL_TTY		(vm_offset_t)SPLTTY
 
 
-#include <fd.h>
-#if NFD > 0
-extern	struct	bus_driver	fddriver;
-extern int			fdintr();
-#endif /* NFD */
-
 #include <aha.h>
 #if NAHA > 0
 extern struct	bus_driver	aha_driver;
@@ -196,14 +190,6 @@ struct	bus_ctlr	bus_master_init[] = {
 {&eaha_driver, "eahac", 0, eaha_intr, 0xf000, 4, 0xf000,
      '?',	0,  0,	 SPL_FIVE, 12},
 #endif /* NEAHA > 0 */
-
-#if NFD > 0
-  {&fddriver, "fdc",  0, fdintr, 0x3f2, 6, 0x3f2,
-     '?',	0,  0,	 SPL_FIVE, 6},
-
-  {&fddriver, "fdc",  1, fdintr, 0x372, 6, 0x372,
-     '?',	0,  0,	 SPL_FIVE, 10},
-#endif	/* NFD > 0 */
 #endif	/* ! LINUX_DEV */
 
   0
@@ -276,18 +262,6 @@ struct	bus_device	bus_device_init[] = {
 { &eaha_driver,	"tz",   6,  0,  0x0,0,	0,    '?',     0,   0,   6,    0, },
 { &eaha_driver,	"tz",   7,  0,  0x0,0,	0,    '?',     0,   0,   7,    0, },
 #endif	/* NEAHA > 0*/
-
-#if NFD > 0
-  {&fddriver, "fd", 0, fdintr, 0x3f2, 6, 0x3f2,
-     '?',    0,   0,    0,    0,   0,  0,   SPL_FIVE, 6},
-  {&fddriver, "fd", 1, fdintr, 0x3f2, 6, 0x3f2,
-     '?',    0,   0,    1,    0,   0,  0,   SPL_FIVE, 6},
-
-  {&fddriver, "fd", 2, fdintr, 0x372, 6, 0x372,
-     '?',    0,   1,    0,    0,   0,  0,   SPL_FIVE, 10},
-  {&fddriver, "fd", 3, fdintr, 0x372, 6, 0x372,
-     '?',    0,   1,    1,    0,   0,  0,   SPL_FIVE, 10},
-#endif /* NFD > 0 */
 
 #if NPC586 > 0
   /* For MACH Default */

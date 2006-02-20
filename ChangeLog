@@ -4,6 +4,16 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* i386/bogus/fd.h: Remove file.
+	* i386/i386at/fd.c: Likewise.
+	* i386/i386at/fdreg.h: Likewise.
+	* i386/i386at/nfd.c: Likewise.
+	* i386/i386at/nfdreg.h: Likewise.
+	* i386/Makefile.in (i386at-files): Remove `fd.c'.
+	* i386/i386at/autoconf.c: Don't include <fd.h> anymore and adopt all
+	users of NFD as if it were always defined to `0'.
+	* i386/i386at/conf.c: Likewise.
+
 	* i386/bogus/hd.h: Remove file.
 	* i386/i386at/nhd.c: Likewise.
 	* i386/i386at/nhdreg.h: Likewise.
