@@ -59,24 +59,6 @@ extern struct	bus_driver	eaha_driver;
 extern int	eaha_intr();
 #endif /* NEAHA */
 
-#include <ul.h>
-#if NUL > 0
-extern struct  bus_driver      uldriver;
-extern int                     ulintr();
-#endif
-
-#include <wd.h>
-#if NWD > 0
-extern struct  bus_driver      wddriver;
-extern int                     wdintr();
-#endif
-
-#include <hpp.h>
-#if NHPP > 0
-extern struct  bus_driver      hppdriver;
-extern int                    hppintr();
-#endif
-
 #include <com.h>
 #if NCOM > 0
 extern	struct	bus_driver	comdriver;
@@ -238,21 +220,6 @@ struct	bus_device	bus_device_init[] = {
 { &eaha_driver,	"tz",   6,  0,  0x0,0,	0,    '?',     0,   0,   6,    0, },
 { &eaha_driver,	"tz",   7,  0,  0x0,0,	0,    '?',     0,   0,   7,    0, },
 #endif	/* NEAHA > 0*/
-
-#if NUL > 0
-  {&uldriver, "ul",  0, ulintr, 0, 0, 0, '?', 0, -1, -1, 0, 0, 0, SPL_SIX, 0},
-  {&uldriver, "ul",  1, ulintr, 0, 0, 0, '?', 0, -1, -1, 0, 0, 0, SPL_SIX, 0},
-#endif
-
-#if NWD > 0
-  {&wddriver, "wd",  0, wdintr, 0, 0, 0, '?', 0, -1, -1, 0, 0, 0, SPL_SIX, 9},
-  {&wddriver, "wd",  1, wdintr, 0, 0, 0, '?', 0, -1, -1, 0, 0, 0, SPL_SIX, 15},
-#endif
-
-#if NHPP > 0
-  {&hppdriver, "hpp", 0, hppintr, 0, 0, 0, '?', 0, -1, -1, 0, 0, 0, SPL_SIX, 0},
-  {&hppdriver, "hpp", 1, hppintr, 0, 0, 0, '?', 0, -1, -1, 0, 0, 0, SPL_SIX, 0},
-#endif
 #endif /* ! LINUX_DEV */
 
 #if NCOM > 0

@@ -54,27 +54,6 @@ extern int	wtopen(), wtread(), wtwrite(), wtclose();
 #define	wtname			"wt"
 #endif	/* NWT > 0 */
 
-#include <ul.h>
-#if NUL > 0
-extern int    ulopen(), uloutput(), ulgetstat(), ulsetstat(),
-               ulsetinput();
-#define ulname                        "ul"
-#endif /* NUL > 0 */
-
-#include <wd.h>
-#if NWD > 0
-extern int    wdopen(), wdoutput(), wdgetstat(), wdsetstat(),
-              wdsetinput();
-#define wdname                        "wd"
-#endif /* NWD > 0 */
-
-#include <hpp.h>
-#if NHPP > 0
-extern int    hppopen(), hppoutput(), hppgetstat(), hppsetstat(),
-               hppsetinput();
-#define hppname                       "hpp"
-#endif /* NHPP > 0 */
-
 #include <par.h>
 #if	NPAR > 0
 extern int	paropen(), paroutput(), pargetstat(), parsetstat(),
@@ -190,27 +169,6 @@ struct dev_ops	dev_name_list[] =
 	  nodev,	nulldev,	nulldev,	0,
 	  nodev },
 #endif	/* NWT > 0 */
-
-#if   	NUL > 0
-        { ulname,       ulopen,         nulldev,        nulldev,
-          uloutput,     ulgetstat,      ulsetstat,      nulldev,
-          ulsetinput,   nulldev,        nulldev,        0,
-          nodev },
-#endif
-
-#if   	NWD > 0
-	{ wdname,       wdopen,         nulldev,        nulldev,
-          wdoutput,     wdgetstat,      wdsetstat,      nulldev,
-          wdsetinput,   nulldev,        nulldev,        0,
-	  nodev },
-#endif
-
-#if   	NHPP > 0
-	{ hppname,      hppopen,        nulldev,        nulldev,
-	  hppoutput,  hppgetstat,     hppsetstat,     nulldev,
-	  hppsetinput,  nulldev,        nulldev,        0,
-          nodev },
-#endif
 
 #if	NPAR > 0
 	{ parname,	paropen,	nulldev,	nulldev,

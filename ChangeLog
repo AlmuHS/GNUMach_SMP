@@ -4,6 +4,19 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* i386/bogus/hpp.h: Remove file.
+	* i386/bogus/ul.h: Likewise.
+	* i386/bogus/wd.h: Likewise.
+	* i386/i386at/gpl/if_hpp.c: Likewise.
+	* i386/i386at/gpl/if_ns.c: Likewise.
+	* i386/i386at/gpl/if_nsreg.h: Likewise.
+	* i386/i386at/gpl/if_ul.c: Likewise.
+	* i386/i386at/gpl/if_wd.c: Likewise.
+	* i386/i386at/autoconf.c: Don't include <hpp.h>, <ul.h> and <wd.h>
+	anymore and adopt all users of NHPP, NUL and NWD as if they were always
+	defined to `0'.
+	* i386/i386at/conf.c: Likewise.
+
 	* i386/bogus/at3c501.h: Remove file.
 	* i386/i386at/if_3c501.c: Likewise.
 	* i386/i386at/if_3c501.h: Likewise.
