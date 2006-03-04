@@ -1,3 +1,9 @@
+2006-03-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	[ patch #4737 ]
+	* i386/i386/iopb.c: Include "vm_param.h".
+	(io_tss_init): Fix address and limit of user TSS.
+
 2006-03-04  Thomas Schwinge  <tschwinge@gnu.org>
 
 	Remove unused and unsupported code.  Consult the file

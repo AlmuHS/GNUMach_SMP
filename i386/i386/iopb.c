@@ -43,6 +43,7 @@
 #include "iopb.h"
 #include "seg.h"
 #include "gdt.h"
+#include "vm_param.h"
 
 /*
  * A set of ports for an IO device.
@@ -242,8 +243,8 @@ io_tss_init(
 	iopb_tss_t	io_tss,
 	boolean_t	access_all)	/* allow access or not */
 {
-	vm_offset_t	addr = (vm_offset_t) io_tss;
-	vm_size_t	size = (char *)&io_tss->barrier - (char *)io_tss;
+	vm_offset_t	addr = kvtolin (io_tss);
+	vm_size_t	limit = (char *)&io_tss->barrier - (char *)io_tss;
 
 	bzero(&io_tss->tss, sizeof(struct i386_tss));
 	io_tss->tss.io_bit_map_offset
@@ -252,11 +253,11 @@ io_tss_init(
 	io_bitmap_init(io_tss->bitmap, access_all);
 	io_tss->barrier = ~0;
 	queue_init(&io_tss->io_port_list);
-	io_tss->iopb_desc[0] = ((size-1) & 0xffff)
+	io_tss->iopb_desc[0] = (limit & 0xffff)
 		| ((addr & 0xffff) << 16);
 	io_tss->iopb_desc[1] = ((addr & 0x00ff0000) >> 16)
 		| ((ACC_TSS|ACC_PL_K|ACC_P) << 8)
-		| ((size-1) & 0x000f0000)
+		| (limit & 0x000f0000)
 		| (addr & 0xff000000);
 }
 
