@@ -4,6 +4,13 @@
 	`DEVELOPMENT' for details.  Partly based on suggestions by
 	Gianluca Guida <glguida@gmail.com>.
 
+	* i386/bogus/par.h: Remove file.
+	* i386/i386at/if_par.c: Likewise.
+	* i386/i386at/if_par.h: Likewise.
+	* i386/i386at/conf.c: Don't include <par.h> anymore and adopt all users
+	of NPAR as if it were always defined to `0'.
+	* i386/i386at/lpr.c: Likewise.
+
 	* i386/bogus/de6c.h: Remove file.
 	* i386/i386at/if_de6c.c: Likewise.
 	* i386/i386at/if_de6c.h: Likewise.

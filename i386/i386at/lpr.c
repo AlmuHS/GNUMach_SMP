@@ -30,7 +30,6 @@
   
 #include <lpr.h>
 #if NLPR > 0
-#include <par.h>
   
 #ifdef	MACH_KERNEL
 #include <mach/std_types.h>
@@ -58,10 +57,6 @@
 #include <chips/busses.h>
 #include <i386at/lprreg.h>
   
-#if NPAR > 0
-extern int	parattach();
-#endif
-
 extern void 	splx();
 extern spl_t	spltty();
 extern void 	timeout();
@@ -126,10 +121,6 @@ void lprattach(struct bus_device *dev)
 	lprinfo[unit] = dev;
   
 	outb(INTR_ENAB(addr), inb(INTR_ENAB(addr)) & 0x0f);
-
-#if NPAR > 0
-	parattach(dev);
-#endif
 
 	return;
 }

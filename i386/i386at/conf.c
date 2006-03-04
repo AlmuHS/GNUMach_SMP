@@ -36,13 +36,6 @@ extern int	timeopen(), timeclose();
 extern vm_offset_t timemmap();
 #define	timename		"time"
 
-#include <par.h>
-#if	NPAR > 0
-extern int	paropen(), paroutput(), pargetstat(), parsetstat(),
-		parsetinput();
-#define	parname		"par"
-#endif /* NPAR > 0 */
-
 extern int	kdopen(), kdclose(), kdread(), kdwrite();
 extern int	kdgetstat(), kdsetstat(), kdportdeath();
 extern vm_offset_t kdmmap();
@@ -103,15 +96,6 @@ struct dev_ops	dev_name_list[] =
 	  nulldev,	nulldev,	nulldev,	timemmap,
 	  nodev,	nulldev,	nulldev,	0,
 	  nodev },
-
-#ifndef LINUX_DEV
-#if	NPAR > 0
-	{ parname,	paropen,	nulldev,	nulldev,
-	  paroutput,	pargetstat,	parsetstat,	nomap,
-	  parsetinput,	nulldev,	nulldev, 	0,
-	  nodev },
-#endif
-#endif /* ! LINUX_DEV */
 
 #if	NCOM > 0
 	{ comname,	comopen,	comclose,	comread,
