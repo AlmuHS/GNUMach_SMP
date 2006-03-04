@@ -1,3 +1,17 @@
+2006-03-04  Thomas Schwinge  <tschwinge@gnu.org>
+
+	Remove unused and unsupported code.  Consult the file
+	`DEVELOPMENT' for details.  Partly based on suggestions by
+	Gianluca Guida <glguida@gmail.com>.
+
+	* i386/bogus/de6c.h: Remove file.
+	* i386/i386at/if_de6c.c: Likewise.
+	* i386/i386at/if_de6c.h: Likewise.
+	* i386/i386at/if_de6s.S: Likewise.
+	* i386/i386at/conf.c: Don't include <de6c.h> anymore and adopt all
+	users of NDE6C as if it were always defined to `0'.
+	* i386/i386at/lpr.c: Likewise.
+
 2006-02-20  Thomas Schwinge  <tschwinge@gnu.org>
 
 	Remove unused and unsupported code.  Consult the file

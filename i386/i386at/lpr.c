@@ -31,7 +31,6 @@
 #include <lpr.h>
 #if NLPR > 0
 #include <par.h>
-#include <de6c.h>
   
 #ifdef	MACH_KERNEL
 #include <mach/std_types.h>
@@ -61,10 +60,6 @@
   
 #if NPAR > 0
 extern int	parattach();
-#endif
-
-#if NDE6C > 0
-extern int	de6cattach();
 #endif
 
 extern void 	splx();
@@ -136,9 +131,6 @@ void lprattach(struct bus_device *dev)
 	parattach(dev);
 #endif
 
-#if NDE6C > 0 && !defined(LINUX_DEV)
-	de6cattach(dev);
-#endif
 	return;
 }
 

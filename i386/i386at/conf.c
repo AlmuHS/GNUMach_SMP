@@ -43,13 +43,6 @@ extern int	paropen(), paroutput(), pargetstat(), parsetstat(),
 #define	parname		"par"
 #endif /* NPAR > 0 */
 
-#include <de6c.h>
-#if	NDE6C > 0
-extern int	de6copen(), de6coutput(), de6cgetstat(), de6csetstat(),
-		de6csetinput();
-#define	de6cname		"de"
-#endif /* NDE6C > 0 */
-
 extern int	kdopen(), kdclose(), kdread(), kdwrite();
 extern int	kdgetstat(), kdsetstat(), kdportdeath();
 extern vm_offset_t kdmmap();
@@ -116,13 +109,6 @@ struct dev_ops	dev_name_list[] =
 	{ parname,	paropen,	nulldev,	nulldev,
 	  paroutput,	pargetstat,	parsetstat,	nomap,
 	  parsetinput,	nulldev,	nulldev, 	0,
-	  nodev },
-#endif
-
-#if	NDE6C > 0
-	{ de6cname,	de6copen,	nulldev,	nulldev,
-	  de6coutput,	de6cgetstat,	de6csetstat,	nomap,
-	  de6csetinput,	nulldev,	nulldev, 	0,
 	  nodev },
 #endif
 #endif /* ! LINUX_DEV */
