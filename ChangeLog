@@ -1,3 +1,7 @@
+2006-03-04  Roland McGrath  <roland@frob.com>
+
+	* Makefile.in (DEFS): Substitute once and use the variable elsewhere.
+
 2006-03-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	[ patch #4737 ]
@@ -43,7 +47,7 @@
 	(blit_present): Likewise and adopt all users as if it were always
 	defined to `FALSE'.
 	* i386/Makefile.in (i386at-files): Remove `blit.c'.
-	
+
 	* bogus/net_atm.h: Remove file.
 	* Makefile.in (bogus-files): Remove `net_atm.h'.
 	* kern/syscall_sw.c: Don't include <net_atm.h> anymore and adopt all
@@ -269,7 +273,7 @@
 	of NEVC as if it were always defined to `0'.
 	(evc1init): Remove definition and adopt all users as if it were always
 	defined to `FALSE'.
-	
+
 	* i386/bogus/nscsi.h: Remove file.
 	* i386/i386at/model_dep.c: Don't include <nscsi.h> anymore and adopt
 	all users of NSCSI as if it were always defined to `0'.
@@ -420,7 +424,7 @@
 	files.
 	* i386/linux/Makefile.in: Do care about linux-flags if no_deps is true;
 	reverting the change from 2006-01-31.
-	
+
 	* Makefile.in: Include Makerules through top_builddir, so that it will
 	automatically be rebuilt if needed.
 
@@ -452,7 +456,7 @@
 
 	Cleanup of GNU Mach's build system.  The system dependent parts are now
 	handled by the respective Makefile and no longer by the top-level one.
-	
+
 	* configure, i386/configure, i386/linux/configure, linux/configure:
 	Regenerated.
 
@@ -516,7 +520,7 @@
 	* linux/configure.in: Synchronize AC_INIT to the top-level definition.
 	Do not create directories using a dummy file.
 	* linux/dummy.in: File removed.
-	
+
 	* ddb/db_access.h: Include <machine/vm_param.h> instead of
 	"vm_param.h".
 	* kern/bootstrap.c: Likewise.
@@ -626,7 +630,7 @@
 
 	* configure: Regenerated.
 	* i386/configure: Regenerated.
-	
+
 	* Drivers.macros (AC_DRIVER_CLASS): Use AH_TEMPLATE.
 	(AC_DRIVER): Set the value for the AC_DEFINE and AC_DEFINE_UNQUOTED
 	to 1.
