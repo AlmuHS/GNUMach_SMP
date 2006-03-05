@@ -40,6 +40,7 @@ systype = @systype@
 
 top_builddir = ./
 
+DEFS = @DEFS@
 
 #
 # Default target
@@ -47,16 +48,15 @@ top_builddir = ./
 
 all:
 
-
 # Detect if the user wants KDB
-ifeq ($(findstring -DMACH_KDB,@DEFS@),-DMACH_KDB)
+ifeq ($(findstring -DMACH_KDB,$(DEFS)),-DMACH_KDB)
 enable_kdb=yes
 else
 enable_kdb=no
 endif
 
 # Detect if the user wants KMSG
-ifeq ($(findstring -DMACH_KMSG,@DEFS@),-DMACH_KMSG)
+ifeq ($(findstring -DMACH_KMSG,$(DEFS)),-DMACH_KMSG)
 enable_kmsg=yes
 else
 enable_kmsg=no
