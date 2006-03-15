@@ -1,3 +1,10 @@
+2006-03-15  Thomas Schwinge  <tschwinge@gnu.org
+
+	* configure.in: Check for strip and gzip.
+	* configure: Regenerated.
+	* Makerules.in (GZIP, STRIP): New variables.
+	(%.gz, %.stripped): New targets.
+
 2006-03-04  Roland McGrath  <roland@frob.com>
 
 	* Makefile.in (DEFS): Substitute once and use the variable elsewhere.

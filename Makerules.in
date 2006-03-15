@@ -25,11 +25,13 @@ AR = @AR@
 AWK = @AWK@
 CC = @CC@
 CPP = @CPP@
+GZIP = @GZIP@
 LD = @LD@
 MBCHK = @MBCHK@
 MIG = @MIG@
 NM = @NM@
 RANLIB = @RANLIB@
+STRIP = @STRIP@
 
 INSTALL = @INSTALL@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
@@ -98,6 +100,14 @@ ASFLAGS += -DASSEMBLER
 %_interface.h %_server.c: %.srv
 	$(MIG) $(MIGFLAGS) -sheader $*_interface.h -server $*_server.c \
 			   -header /dev/null -user /dev/null $<
+
+# gzip files
+%.gz: %
+	$(GZIP) -9 < $< > $@
+
+# strip files
+%.stripped: %
+	$(STRIP) -o $@ $<
 
 #
 # Dependency generation
