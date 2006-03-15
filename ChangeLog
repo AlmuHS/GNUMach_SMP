@@ -1,4 +1,4 @@
-2006-03-15  Thomas Schwinge  <tschwinge@gnu.org
+2006-03-15  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* configure.in: Check for strip and gzip.
 	* configure: Regenerated.
