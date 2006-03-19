@@ -43,9 +43,6 @@ extern void	dev_lookup_init();
 extern void	net_io_init();
 extern void	device_pager_init();
 extern void	chario_init(void);
-#ifdef FIPC
-extern void 	fipc_init();
-#endif
 
 extern void	io_done_thread();
 extern void	net_thread();
@@ -64,9 +61,6 @@ device_service_create()
 	net_io_init();
 	device_pager_init();
 	chario_init();
-#ifdef FIPC
-	fipc_init();
-#endif
 
 	(void) kernel_thread(kernel_task, io_done_thread, 0);
 	(void) kernel_thread(kernel_task, net_thread, 0);

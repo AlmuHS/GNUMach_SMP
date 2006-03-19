@@ -132,9 +132,4 @@ kernel_trap(host_self,-55,0)
 
 #endif	/* MACH_IPC_COMPAT */
 
-#ifdef FIPC
-kernel_trap(fipc_send,-96,4)
-kernel_trap(fipc_recv,-97,5)
-#endif
-
 #endif	/* _MACH_SYSCALL_SW_H_ */

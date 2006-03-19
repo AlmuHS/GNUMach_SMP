@@ -106,11 +106,11 @@ device-files = blkio.c chario.c cirbuf.c cons.c dev_lookup.c dev_name.c \
 
 # IPC implementation
 ipc-cfiles = $(addprefix ipc_,$(ipc-names)) \
-		mach_msg.c mach_port.c mach_rpc.c mach_debug.c fipc.c
+		mach_msg.c mach_port.c mach_rpc.c mach_debug.c 
 ipc-names = entry.c hash.c init.c kmsg.c marequest.c mqueue.c \
 	notify.c object.c port.c pset.c right.c space.c splay.c \
 	table.c target.c thread.c
-ipc-files = $(ipc-cfiles) mach_port.srv fipc.h port.h mach_msg.h \
+ipc-files = $(ipc-cfiles) mach_port.srv port.h mach_msg.h \
 	$(patsubst %,ipc_%.h, \
 	entry hash init kmsg kmsg_queue machdep marequest mqueue notify \
 	object port pset right space splay table target thread types)

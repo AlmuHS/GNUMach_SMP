@@ -91,11 +91,6 @@ extern	kern_return_t	evc_wait_clear();
 extern	kern_return_t	syscall_device_write_request();
 extern	kern_return_t	syscall_device_writev_request();
 
-#ifdef FIPC 
-extern kern_return_t	syscall_fipc_send();
-extern kern_return_t	syscall_fipc_recv();
-#endif /* FIPC */
-
 mach_trap_t	mach_trap_table[] = {
 	MACH_TRAP(kern_invalid, 0),		/* 0 */		/* Unix */
 	MACH_TRAP(kern_invalid, 0),		/* 1 */		/* Unix */
@@ -220,13 +215,8 @@ mach_trap_t	mach_trap_table[] = {
 	MACH_TRAP(kern_invalid, 0),                   /* 94 */
 	MACH_TRAP(kern_invalid, 0),                   /* 95 */
 
-#ifdef FIPC
-	MACH_TRAP(syscall_fipc_send, 4),		      /* 96 */
-	MACH_TRAP(syscall_fipc_recv, 5),		      /* 97 */
-#else
 	MACH_TRAP(kern_invalid, 0),		      /* 96 */
 	MACH_TRAP(kern_invalid, 0),		      /* 97 */
-#endif /* FIPC */
 
 	MACH_TRAP(kern_invalid, 0),		      /* 98 */
 	MACH_TRAP(kern_invalid, 0),		      /* 99 */

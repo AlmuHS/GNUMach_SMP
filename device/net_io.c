@@ -1432,63 +1432,6 @@ net_write(ifp, start, ior)
 	return (D_IO_QUEUED);
 }
 
-#ifdef FIPC
-/* This gets called by nefoutput for dev_ops->d_port_death ... */
-
-io_return_t
-net_fwrite(ifp, start, ior)
-	register struct ifnet *ifp;
-	int		(*start)();
-	io_req_t	ior;
-{
-	spl_t	s;
-	kern_return_t	rc;
-	boolean_t	wait;
-
-	/*
-	 * Reject the write if the interface is down.
-	 */
-	if ((ifp->if_flags & (IFF_UP|IFF_RUNNING)) != (IFF_UP|IFF_RUNNING))
-	    return (D_DEVICE_DOWN);
-
-	/*
-	 * Reject the write if the packet is too large or too small.
-	 */
-	if (ior->io_count < ifp->if_header_size ||
-	    ior->io_count > ifp->if_header_size + ifp->if_mtu)
-	    	return (D_INVALID_SIZE);
-
-	/*
-	 * DON'T Wire down the memory.
-	 */
-#if 0
-	rc = device_write_get(ior, &wait);
-	if (rc != KERN_SUCCESS)
-	    return (rc);
-#endif
-	/*
-	 *	Network interfaces can't cope with VM continuations.
-	 *	If wait is set, just panic.
-	*/
-	/* I'll have to figure out who was setting wait...*/
-#if 0
-	if (wait) {
-		panic("net_write: VM continuation");
-	}
-#endif
-	/*
-	 * Queue the packet on the output queue, and
-	 * start the device.
-	 */
-	s = splimp();
-	IF_ENQUEUE(&ifp->if_snd, ior);
-	(*start)(ifp->if_unit);
-	splx(s);
-	
-	return (D_IO_QUEUED);
-}
-#endif /* FIPC */
-
 /*
  * Initialize the whole package.
  */

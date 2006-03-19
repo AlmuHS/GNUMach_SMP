@@ -1,3 +1,21 @@
+2006-03-19  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* DEVELOPMENT: Document the FIPC removal.
+
+2006-03-19  Leonardo Lopes Pereira  <leonardolopespereira@gmail.com>
+
+	Remove unused and unsuported code.  Consult the file `DEVELOPMENT'
+	for details.
+        
+	* ipc/fipc.c: Remove file.
+	* ipc/fipc.h: Likewise.
+	* Makefile.in (ipc-cfiles): Remove `fipc.c'.
+	(ipc-files): Remove `fipc.h'.
+	* device/device_init.c [FIPC]: Remove code.
+	* device/net_io.c [FIPC]: Likewise.
+	* include/mach/syscall_sw.h [FIPC]: Likewise.
+	* kern/syscall_sw.c [FIPC]: Likewise.
+
 2006-03-15  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* configure.in: Check for strip and gzip.
