@@ -48,7 +48,6 @@
 
 #include <mach/std_types.defs>
 #if	KERNEL_SERVER
-#include <norma_vm.h>
 #endif	/* KERNEL_SERVER */
 
 type mach_port_status_t = struct[9] of integer_t;
@@ -134,11 +133,7 @@ type memory_object_t = mach_port_t
 type memory_object_control_t = mach_port_t
 		ctype: mach_port_t
 #if	KERNEL_SERVER
-#if	NORMA_VM
-		intran: mach_xmm_obj_t xmm_kobj_lookup(mach_port_t)
-#else	/* NORMA_VM */
 		intran: vm_object_t vm_object_lookup(mach_port_t)
-#endif	/* NORMA_VM */
 #endif	/* KERNEL_SERVER */
 		;
 

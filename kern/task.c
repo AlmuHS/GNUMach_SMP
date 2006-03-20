@@ -33,7 +33,6 @@
 
 #include <mach_host.h>
 #include <mach_pcsample.h>
-#include <norma_task.h>
 #include <fast_tas.h>
 
 #include <mach/machine/vm_types.h>
@@ -52,10 +51,6 @@
 #include <kern/ipc_tt.h>
 #include <vm/vm_kern.h>		/* for kernel_map, ipc_kernel_map */
 #include <machine/machspl.h>	/* for splsched */
-
-#if	NORMA_TASK
-#define	task_create	task_create_local
-#endif	/* NORMA_TASK */
 
 task_t	kernel_task = TASK_NULL;
 zone_t	task_zone;
@@ -200,10 +195,6 @@ kern_return_t task_create(
 
 	ipc_task_enable(new_task);
 
-#if	NORMA_TASK
-	new_task->child_node = -1;
-#endif	/* NORMA_TASK */
-
 	*child_task = new_task;
 	return KERN_SUCCESS;
 }
@@ -229,14 +220,6 @@ void task_deallocate(
 	task_unlock(task);
 	if (c != 0)
 		return;
-
-#if	NORMA_TASK
-	if (task->map == VM_MAP_NULL) {
-		/* norma placeholder task */
-		zfree(task_zone, (vm_offset_t) task);
-		return;
-	}
-#endif	/* NORMA_TASK */
 
 	eml_task_deallocate(task);
 

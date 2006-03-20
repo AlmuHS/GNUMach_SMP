@@ -81,8 +81,7 @@ bogus-files = bootstrap_symbols.h cpus.h fast_tas.h hw_footprint.h \
 	power_save.h simple_clock.h stat_time.h xpr_debug.h \
 	$(patsubst %,mach_%.h,assert counters debug fixpri host ipc_compat \
 	ipc_debug ipc_test kdb ldebug lock_mon machine_routines mp_debug \
-	pagemap pcsample ttd vm_debug) \
-	$(patsubst %,norma_%.h,device ether ipc task vm)
+	pagemap pcsample ttd vm_debug) 
 
 # Generic code for various hardware drivers
 chips-files = busses.c busses.h
@@ -184,14 +183,14 @@ device-headers= $(addprefix device/,audio_status.h bpf.h device.defs \
 		tty_status.h)
 mach-headers= $(addprefix mach/, bootstrap.defs default_pager.defs \
 		default_pager_helper.defs default_pager_types.defs \
-		exc.defs mach.defs mach4.defs mach_host.defs mach_norma.defs \
+		exc.defs mach.defs mach4.defs mach_host.defs \
 		mach_port.defs mach_types.defs memory_object.defs \
-		memory_object_default.defs norma_task.defs notify.defs \
+		memory_object_default.defs notify.defs \
 		std_types.defs \
 		alert.h boolean.h boot.h default_pager_types.h exception.h \
 		host_info.h kern_return.h mach_param.h mach_types.h \
 		machine.h macro_help.h memory_object.h message.h mig_errors.h \
-		msg_type.h multiboot.h norma_special_ports.h notify.h \
+		msg_type.h multiboot.h notify.h \
 		pc_sample.h policy.h port.h processor_info.h \
 		profil.h profilparam.h rpc.h std_types.h syscall_sw.h \
 		task_info.h task_special_ports.h thread_info.h \

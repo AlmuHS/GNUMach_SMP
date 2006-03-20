@@ -37,7 +37,6 @@
  */
 
 #include <mach_ipc_compat.h>
-#include <norma_ipc.h>
 
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
@@ -59,9 +58,6 @@
 zone_t ipc_space_zone;
 ipc_space_t ipc_space_kernel;
 ipc_space_t ipc_space_reply;
-#if	NORMA_IPC
-ipc_space_t ipc_space_remote;
-#endif	/* NORMA_IPC */
 
 /*
  *	Routine:	ipc_space_reference

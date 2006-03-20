@@ -8,6 +8,11 @@ unused and unsupported code was removed.
 On 2006-03-19, support was removed for FIPC, which only ever was used
 within the native Mach NE2000 NIC device driver, see
 <URL:http://www.cs.utah.edu/flux/mach4-i386/html/mach4-UK22.html#FIPC>.
+<URL:http://lists.gnu.org/archive/html/bug-hurd/2006-01/msg00162.html>.
+
+Support for NORMA was removed on 2006-03-20.
+<URL:http://lists.gnu.org/archive/html/bug-hurd/2006-03/msg00007.html>.
+
 
 Be sure to check the ChangeLog and have a look at the repository at that
 tag's state if you want to work on those parts of GNU Mach.

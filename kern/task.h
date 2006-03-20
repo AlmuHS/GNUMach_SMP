@@ -34,7 +34,6 @@
 #ifndef	_KERN_TASK_H_
 #define _KERN_TASK_H_
 
-#include <norma_task.h>
 #include <fast_tas.h>
 
 #include <mach/boolean.h>
@@ -95,10 +94,6 @@ struct task {
 	struct 	eml_dispatch	*eml_dispatch;
 
 	sample_control_t pc_sample;
-
-#if	NORMA_TASK
-	long		child_node;	/* if != -1, node for new children */
-#endif	/* NORMA_TASK */
 
 #if	FAST_TAS
 #define TASK_FAST_TAS_NRAS	8

@@ -35,7 +35,6 @@
 #define _VM_VM_OBJECT_H_
 
 #include <mach_pagemap.h>
-#include <norma_vm.h>
 
 #include <mach/kern_return.h>
 #include <mach/boolean.h>
@@ -53,11 +52,7 @@
 #include <vm/vm_external.h>
 #endif	/* MACH_PAGEMAP */
 
-#if	NORMA_VM
-typedef struct xmm_obj *	pager_request_t;
-#else	/* NORMA_VM */
 typedef struct ipc_port *	pager_request_t;
-#endif	/* NORMA_VM */
 #define	PAGER_REQUEST_NULL	((pager_request_t) 0)
 
 /*

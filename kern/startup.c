@@ -31,8 +31,6 @@
 #include <xpr_debug.h>
 #include <cpus.h>
 #include <mach_host.h>
-#include <norma_ipc.h>
-#include <norma_vm.h>
 
 #include <mach/boolean.h>
 #include <mach/machine.h>
@@ -224,21 +222,6 @@ void start_kernel_threads()
 	 *	Create the device service.
 	 */
 	device_service_create();
-
-	/*
-	 *	Initialize NORMA ipc system.
-	 */
-#if	NORMA_IPC
-	norma_ipc_init();
-#endif	/* NORMA_IPC */
-
-	/*
-	 *	Initialize NORMA vm system.
-	 */
-#if	NORMA_VM
-	norma_vm_init();
-#endif	/* NORMA_VM */
-
 
 	/*
 	 * 	Initialize kernel task's creation time.

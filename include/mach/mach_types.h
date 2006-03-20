@@ -61,11 +61,6 @@
 				       processor_set_name_array_t */
 #include <kern/syscall_emulation.h>
 				/* for emulation_vector_t */
-#include <norma_vm.h>
-#if	NORMA_VM
-typedef struct xmm_obj	*mach_xmm_obj_t;
-extern mach_xmm_obj_t	xmm_kobj_lookup();
-#endif	/* NORMA_VM */
 #else	/* MACH_KERNEL */
 typedef	mach_port_t	task_t;
 typedef task_t		*task_array_t;

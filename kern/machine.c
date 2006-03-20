@@ -34,7 +34,6 @@
  *	Support for machine independent machine abstraction.
  */
 
-#include <norma_ether.h>
 #include <cpus.h>
 #include <mach_host.h>
 
@@ -747,12 +746,6 @@ host_get_boot_info(priv_host, boot_info)
 		return KERN_INVALID_HOST;
 	}
 
-#if	NORMA_ETHER
-{
-	extern char *norma_ether_boot_info();
-	src = norma_ether_boot_info();
-}
-#endif	/* NORMA_ETHER */
 #if	defined(iPSC386) || defined(iPSC860)
 {
 	extern char *ipsc_boot_environ();

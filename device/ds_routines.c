@@ -28,8 +28,6 @@
  *	Date: 	3/89
  */
 
-#include <norma_device.h>
-
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
 #include <mach/mig_errors.h>
@@ -128,42 +126,6 @@ ds_device_open(open_port, reply_port, reply_port_type,
 	    return (MIG_NO_REPLY);	/* no sense in doing anything */
 	}
 
-#if	NORMA_DEVICE
-	/*
-	 * Map global device name to <node> + local device name.
-	 */
-	if (name[0] != '<') {
-		extern char *dev_forward_name();
-
-		name = dev_forward_name(name, namebuf, sizeof(namebuf));
-	}
-	/*
-	 * Look for explicit node specifier, e.g., <2>sd0a.
-	 * If found, then forward request to correct device server.
-	 * If not found, then remove '<n>' and process locally.
-	 *
-	 * XXX should handle send-right reply_port as well as send-once XXX
-	 */
-	if (name[0] == '<') {
-		char *n;
-		int node = 0;
-
-		for (n = &name[1]; *n != '>'; n++) {
-			if (*n >= '0' && *n <= '9') {
-				node = 10 * node + (*n - '0');
-			} else {
-				return (D_NO_SUCH_DEVICE);
-			}
-		}
-		if (node == node_self()) {
-			name = &n[1];	/* skip trailing '>' */
-		} else {
-			forward_device_open_send(remote_device(node),
-						 reply_port, mode, name);
-			return (MIG_NO_REPLY);
-		}
-	}
-#endif	/* NORMA_DEVICE */
 #endif	/* ! i386 */
 
 	/*

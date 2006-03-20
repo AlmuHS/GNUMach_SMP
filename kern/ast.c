@@ -37,7 +37,6 @@
 
 #include <cpus.h>
 #include <mach_fixpri.h>
-#include <norma_ipc.h>
 
 #include <kern/ast.h>
 #include <kern/counters.h>
@@ -89,11 +88,6 @@ ast_taken()
 
 	if (reasons & AST_NETWORK)
 		net_ast();
-
-#if	NORMA_IPC
-	if (reasons & AST_NETIPC)
-		netipc_ast();
-#endif	/* NORMA_IPC */
 
 	/*
 	 *	Make darn sure that we don't call thread_halt_self

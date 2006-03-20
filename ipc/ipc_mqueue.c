@@ -34,8 +34,6 @@
  *	Functions to manipulate IPC message queues.
  */
 
-#include <norma_ipc.h>
-
 #include <mach/port.h>
 #include <mach/message.h>
 #include <kern/assert.h>
@@ -52,14 +50,6 @@
 #include <ipc/ipc_marequest.h>
 
 
-
-#if	NORMA_IPC
-extern ipc_mqueue_t	norma_ipc_handoff_mqueue;
-extern ipc_kmsg_t	norma_ipc_handoff_msg;
-extern mach_msg_size_t	norma_ipc_handoff_max_size;
-extern mach_msg_size_t	norma_ipc_handoff_msg_size;
-extern ipc_kmsg_t	norma_ipc_kmsg_accept();
-#endif	/* NORMA_IPC */
 
 /*
  *	Routine:	ipc_mqueue_init
@@ -212,16 +202,6 @@ ipc_mqueue_send(kmsg, option, time_out)
 		return MACH_MSG_SUCCESS;
 	}
 
-#if	NORMA_IPC
-	if (IP_NORMA_IS_PROXY(port)) {
-		mach_msg_return_t mr;
-
-		mr = norma_ipc_send(kmsg);
-		ip_unlock(port);
-		return mr;
-	}
-#endif	/* NORMA_IPC */
-
 	for (;;) {
 		ipc_thread_t self;
 
@@ -242,10 +222,6 @@ ipc_mqueue_send(kmsg, option, time_out)
 			ip_release(port);
 			ip_check_unlock(port);
 			kmsg->ikm_header.msgh_remote_port = MACH_PORT_NULL;
-#if	NORMA_IPC
-			/* XXX until ipc_kmsg_destroy is fixed... */
-			norma_ipc_finish_receiving(&kmsg);
-#endif	/* NORMA_IPC */
 			ipc_kmsg_destroy(kmsg);
 			return MACH_MSG_SUCCESS;
 		}
@@ -329,10 +305,6 @@ ipc_mqueue_send(kmsg, option, time_out)
 
 		/* don't allow the creation of a circular loop */
 
-#if	NORMA_IPC
-		/* XXX until ipc_kmsg_destroy is fixed... */
-		norma_ipc_finish_receiving(&kmsg);
-#endif	/* NORMA_IPC */
 		ipc_kmsg_destroy(kmsg);
 		return MACH_MSG_SUCCESS;
 	}
@@ -370,16 +342,6 @@ ipc_mqueue_send(kmsg, option, time_out)
 
 	/* check for a receiver for the message */
 
-#if	NORMA_IPC
-	if (mqueue == norma_ipc_handoff_mqueue) {
-		norma_ipc_handoff_msg = kmsg;
-		if (kmsg->ikm_header.msgh_size <= norma_ipc_handoff_max_size) {
-			imq_unlock(mqueue);
-			return MACH_MSG_SUCCESS;
-		}
-		norma_ipc_handoff_msg_size = kmsg->ikm_header.msgh_size;
-	}
-#endif	/* NORMA_IPC */
 	for (;;) {
 		receiver = ipc_thread_queue_first(receivers);
 		if (receiver == ITH_NULL) {
@@ -572,30 +534,6 @@ ipc_mqueue_receive(
 
 	for (;;) {
 		kmsg = ipc_kmsg_queue_first(kmsgs);
-#if	NORMA_IPC
-		/*
-		 * It may be possible to make this work even when a timeout
-		 * is specified.
-		 *
-		 * Netipc_replenish should be moved somewhere else.
-		 */
-		if (kmsg == IKM_NULL && ! (option & MACH_RCV_TIMEOUT)) {
-			netipc_replenish(FALSE);
-			*kmsgp = IKM_NULL;
-			kmsg = norma_ipc_kmsg_accept(mqueue, max_size,
-						     (mach_msg_size_t *)kmsgp);
-			if (kmsg != IKM_NULL) {
-				port = (ipc_port_t)
-				    kmsg->ikm_header.msgh_remote_port;
-				seqno = port->ip_seqno++;
-				break;
-			}
-			if (*kmsgp) {
-				imq_unlock(mqueue);
-				return MACH_RCV_TOO_LARGE;
-			}
-		}
-#endif	/* NORMA_IPC */
 		if (kmsg != IKM_NULL) {
 			/* check space requirements */
 
@@ -745,9 +683,6 @@ ipc_mqueue_receive(
 	ip_unlock(port);
     }
 
-#if	NORMA_IPC
-	norma_ipc_finish_receiving(&kmsg);
-#endif	/* NORMA_IPC */
 	*kmsgp = kmsg;
 	*seqnop = seqno;
 	return MACH_MSG_SUCCESS;

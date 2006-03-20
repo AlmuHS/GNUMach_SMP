@@ -1,12 +1,74 @@
+2006-03-20  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* DEVELOPMENT: Document the NORMA removal.
+
+2006-03-20  Leonardo Lopes Pereira  <leonardolopespereira@gmail.com>
+
+	Remove unused and unsupported code.  Consult the file `DEVELOPMENT'
+	for details.
+
+	[patch #4982]
+	* bogus/norma_device.h: Remove file.
+	* bogus/norma_ether.h: Likewise.
+	* bogus/norma_ipc.h: Likewise.
+	* bogus/norma_task.h: Likewise.
+	* bogus/norma_vm.h: Likewise.
+	* include/mach/mach_norma.defs: Likewise.
+	* include/mach/norma_task.defs: Likewise.
+	* include/mach/norma_special_ports.h: Likewise.
+	* Makefile.in (bogus-files): Remove `norma_device.h', `norma_ether.h',
+	`norma_ipc.h', `norma_task.h' and `norma_vm.h'.
+	(mach-headers): Remove `mach_norma.defs', `norma_task.defs' and
+	`norma_special_ports.h'.
+	* device/ds_routines.c: Don't include <norma_device.h> anymore and
+	adopt all users of NORMA_DEVICE as if it were always defined to `0'.
+	* device/net_io.c: Likewise for <norma_ether.h>, NORMA_ETHER.
+	* kern/machine.c: Likewise.
+	* ddb/db_command.c: Likevise for <norma_ipc.h>, NORMA_IPC.
+	* ipc/ipc_init.c: Likewise.
+	* ipc/ipc_kmsg.c: Likewise.
+	* ipc/ipc_kmsg.h: Likewise.
+	* ipc/ipc_mqueue.c: Likewise.
+	* ipc/ipc_notify.c: Likewise.
+	* ipc/ipc_port.c: Likewise.
+	* ipc/ipc_port.h: Likewise.
+	* ipc/ipc_space.c: Likewise.
+	* ipc/ipc_space.h: Likewise.
+	* ipc/mach_msg.c: Likewise.
+	* kern/ast.c: Likewise.
+	* kern/debug.c: Likewise.
+	* kern/exception.c: Likewise.
+	* kern/startup.c: Likewise.
+	* vm/memory_object.c: Likewise.
+	* vm/vm_map.c: Likewise.
+	* kern/ipc_kobject.c: Likewise for <norma_task.h>, NORMA_TASK.
+	* kern/task.c: Likewise.
+	* kern/task.h: Likewise.
+	* ddb/db_command.c: Likewise for <norma_vm.h>, NORMA_VM.
+	* device/dev_pager.c: Likewise.
+	* include/mach/mach_types.defs: Likewise.
+	* include/mach/mach_types.h: Likewise.
+	* include/mach/memory_object_default.defs: Likewise.
+	* include/mach/memory_object.defs: Likewise.
+	* ipc/ipc_kmsg.c: Likewise.
+	* kern/ipc_kobject.c: Likewise.
+	* kern/ipc_mig.c: Likewise.
+	* kern/startup.c: Likewise.
+	* vm/memory_object.c: Likewise.
+	* vm/vm_object.c: Likewise.
+	* vm/vm_object.h: Likewise.
+	* vm/vm_pageout.c: Likewise.
+
 2006-03-19  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* DEVELOPMENT: Document the FIPC removal.
 
 2006-03-19  Leonardo Lopes Pereira  <leonardolopespereira@gmail.com>
 
-	Remove unused and unsuported code.  Consult the file `DEVELOPMENT'
+	Remove unused and unsupported code.  Consult the file `DEVELOPMENT'
 	for details.
         
+	[patch #4982]
 	* ipc/fipc.c: Remove file.
 	* ipc/fipc.h: Likewise.
 	* Makefile.in (ipc-cfiles): Remove `fipc.c'.
@@ -29,7 +91,7 @@
 
 2006-03-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
-	[ patch #4737 ]
+	[patch #4737]
 	* i386/i386/iopb.c: Include "vm_param.h".
 	(io_tss_init): Fix address and limit of user TSS.
 

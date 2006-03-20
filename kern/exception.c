@@ -24,7 +24,6 @@
  * the rights to redistribute these changes.
  */
 
-#include <norma_ipc.h>
 #include <mach_kdb.h>
 
 #include <mach/boolean.h>
@@ -420,9 +419,6 @@ exception_raise(dest_port, thread_port, task_port,
 	}
 
 	if (!ip_active(dest_port) ||
-#if	NORMA_IPC
-	    IP_NORMA_IS_PROXY(dest_port) ||
-#endif	/* NORMA_IPC */
 	    (dest_port->ip_receiver == ipc_space_kernel)) {
 		imq_unlock(reply_mqueue);
 		ip_unlock(dest_port);

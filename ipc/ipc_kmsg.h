@@ -36,7 +36,6 @@
 
 #include <cpus.h>
 #include <mach_ipc_compat.h>
-#include <norma_ipc.h>
 
 #include <mach/machine/vm_types.h>
 #include <mach/message.h>
@@ -45,10 +44,6 @@
 #include <kern/macro_help.h>
 #include <kern/kalloc.h>
 #include <ipc/ipc_marequest.h>
-#if	NORMA_IPC
-#include <vm/vm_page.h>
-#include <vm/vm_map.h>
-#endif	/* NORMA_IPC */
 
 /*
  *	This structure is only the header for a kmsg buffer;
@@ -66,11 +61,6 @@ typedef struct ipc_kmsg {
 	struct ipc_kmsg *ikm_next, *ikm_prev;
 	vm_size_t ikm_size;
 	ipc_marequest_t ikm_marequest;
-#if	NORMA_IPC
-	vm_page_t ikm_page;
-	vm_map_copy_t ikm_copy;
-	unsigned long ikm_source_node;
-#endif	/* NORMA_IPC */
 	mach_msg_header_t ikm_header;
 } *ipc_kmsg_t;
 

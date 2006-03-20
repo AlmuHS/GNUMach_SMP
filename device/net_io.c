@@ -38,7 +38,6 @@
  *	It may change a lot real soon.	-cmaeda 11 June 1993
  */
 
-#include <norma_ether.h>
 #include <mach_ttd.h>
 
 #include <sys/types.h>
@@ -61,10 +60,6 @@
 #include <kern/queue.h>
 #include <kern/sched_prim.h>
 #include <kern/thread.h>
-
-#if	NORMA_ETHER
-#include <norma/ipc_ether.h>
-#endif	/*NORMA_ETHER*/
 
 #include <machine/machspl.h>
 
@@ -646,12 +641,6 @@ net_packet(ifp, kmsg, count, priority)
 	boolean_t		priority;
 {
 	boolean_t awake;
-
-#if	NORMA_ETHER
-	if (netipc_net_packet(kmsg, count)) {
-		return;
-	}
-#endif	/* NORMA_ETHER */
 
 #if	MACH_TTD
 	/*

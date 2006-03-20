@@ -27,7 +27,6 @@
 #include <stdarg.h>
 
 #include <mach_kdb.h>
-#include <norma_ipc.h>
 #include <cpus.h>
 
 #include "cpu_number.h"
@@ -126,9 +125,6 @@ void
 panic(const char *s, ...)
 {
 	va_list	listp;
-#if	NORMA_IPC
-	extern int _node_self;	/* node_self() may not be callable yet */
-#endif	/* NORMA_IPC */
 
 	panic_init();
 
@@ -146,9 +142,6 @@ panic(const char *s, ...)
 	}
 	simple_unlock(&panic_lock);
 	printf("panic");
-#if	NORMA_IPC
-	printf("(node %U)", _node_self);
-#endif
 #if	NCPUS > 1
 	printf("(cpu %U)", paniccpu);
 #endif

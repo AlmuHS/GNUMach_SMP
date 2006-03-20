@@ -29,7 +29,6 @@
  *
  * 	Device pager.
  */
-#include <norma_vm.h>
 
 #include <mach/boolean.h>
 #include <mach/port.h>
@@ -350,11 +349,7 @@ kern_return_t	device_pager_data_request(
 	    register vm_object_t	object;
 	    vm_offset_t			device_map_page(void *,vm_offset_t);
 
-#if	NORMA_VM
-	    object = vm_object_lookup(pager);
-#else	/* NORMA_VM */
 	    object = vm_object_lookup(pager_request);
-#endif	/* NORMA_VM */
 	    if (object == VM_OBJECT_NULL) {
 		    (void) r_memory_object_data_error(pager_request,
 						      offset, length,

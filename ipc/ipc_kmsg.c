@@ -36,8 +36,6 @@
 
 #include <cpus.h>
 #include <mach_ipc_compat.h>
-#include <norma_ipc.h>
-#include <norma_vm.h>
 
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
@@ -468,12 +466,6 @@ ipc_kmsg_free(kmsg)
 	vm_size_t size = kmsg->ikm_size;
 
 	switch (size) {
-#if	NORMA_IPC
-	    case IKM_SIZE_NORMA:
-		/* return it to the norma ipc code */
-		norma_kmsg_put(kmsg);
-		break;
-#endif	/* NORMA_IPC */
 
 	    case IKM_SIZE_NETWORK:
 		/* return it to the network code */
@@ -1392,13 +1384,6 @@ ipc_kmsg_copyin_body(kmsg, space, map)
 	complex = FALSE;
 	use_page_lists = ipc_kobject_vm_page_list(ip_kotype((ipc_port_t)dest));
 	steal_pages = ipc_kobject_vm_page_steal(ip_kotype((ipc_port_t)dest));
-
-#if	NORMA_IPC
-	if (IP_NORMA_IS_PROXY((ipc_port_t) dest)) {
-		use_page_lists = TRUE;
-		steal_pages = TRUE;
-	}
-#endif	/* NORMA_IPC */
 
 	saddr = (vm_offset_t) (&kmsg->ikm_header + 1);
 	eaddr = (vm_offset_t) &kmsg->ikm_header + kmsg->ikm_header.msgh_size;
@@ -2701,53 +2686,6 @@ ipc_kmsg_copyout_dest(kmsg, space)
 	}
 }
 
-#if	NORMA_IPC || NORMA_VM
-/*
- *	Routine:	ipc_kmsg_copyout_to_kernel
- *	Purpose:
- *		Copies out the destination and reply ports in the message.
- *		Leaves all other rights and memory in the message alone.
- *	Conditions:
- *		Nothing locked.
- *
- *	Derived from ipc_kmsg_copyout_dest.
- *	Use by mach_msg_rpc_from_kernel (which used to use copyout_dest).
- *	We really do want to save rights and memory.
- */
-
-void
-ipc_kmsg_copyout_to_kernel(kmsg, space)
-	ipc_kmsg_t kmsg;
-	ipc_space_t space;
-{
-	mach_msg_bits_t mbits = kmsg->ikm_header.msgh_bits;
-	ipc_object_t dest = (ipc_object_t) kmsg->ikm_header.msgh_remote_port;
-	ipc_object_t reply = (ipc_object_t) kmsg->ikm_header.msgh_local_port;
-	mach_msg_type_name_t dest_type = MACH_MSGH_BITS_REMOTE(mbits);
-	mach_msg_type_name_t reply_type = MACH_MSGH_BITS_LOCAL(mbits);
-	mach_port_t dest_name, reply_name;
-
-	assert(IO_VALID(dest));
-
-	io_lock(dest);
-	if (io_active(dest)) {
-		ipc_object_copyout_dest(space, dest, dest_type, &dest_name);
-		/* dest is unlocked */
-	} else {
-		io_release(dest);
-		io_check_unlock(dest);
-		dest_name = MACH_PORT_DEAD;
-	}
-
-	reply_name = (mach_port_t) reply;
-
-	kmsg->ikm_header.msgh_bits = (MACH_MSGH_BITS_OTHER(mbits) |
-				      MACH_MSGH_BITS(reply_type, dest_type));
-	kmsg->ikm_header.msgh_local_port = dest_name;
-	kmsg->ikm_header.msgh_remote_port = reply_name;
-}
-#endif	/* NORMA_IPC || NORMA_VM */
-
 #if	MACH_IPC_COMPAT
 
 /*
@@ -2823,13 +2761,6 @@ ipc_kmsg_copyin_compat(kmsg, space, map)
 	complex = FALSE;
 	use_page_lists = ipc_kobject_vm_page_list(ip_kotype((ipc_port_t)dest));
 	steal_pages = ipc_kobject_vm_page_steal(ip_kotype((ipc_port_t)dest));
-
-#if	NORMA_IPC
-	if (IP_NORMA_IS_PROXY((ipc_port_t) dest)) {
-		use_page_lists = TRUE;
-		steal_pages = TRUE;
-	}
-#endif	/* NORMA_IPC */
 
 	saddr = (vm_offset_t) (&kmsg->ikm_header + 1);
 	eaddr = (vm_offset_t) &kmsg->ikm_header + kmsg->ikm_header.msgh_size;
@@ -3309,13 +3240,7 @@ ipc_kmsg_print(kmsg)
 		  kmsg->ikm_prev,
 		  kmsg->ikm_size,
 		  kmsg->ikm_marequest);
-#if	NORMA_IPC
-	db_printf(",page=0x%x,copy=0x%x\n",
-		  kmsg->ikm_page,
-		  kmsg->ikm_copy);
-#else	/* NORMA_IPC */
 	db_printf("\n");
-#endif	/* NORMA_IPC */
 	ipc_msg_print(&kmsg->ikm_header);
 }
 

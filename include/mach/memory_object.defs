@@ -39,13 +39,6 @@ subsystem
 #endif	/* KERNEL_SERVER */
 		     memory_object 2200;
 
-#ifdef	KERNEL
-#include <norma_vm.h>
-#if	NORMA_VM
-userprefix k_;
-#endif	/* NORMA_VM */
-#endif	/* KERNEL */
-
 #include <mach/std_types.defs>
 #include <mach/mach_types.defs>
 

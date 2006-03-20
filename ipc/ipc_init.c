@@ -108,11 +108,6 @@ ipc_bootstrap(void)
 	kr = ipc_space_create_special(&ipc_space_reply);
 	assert(kr == KERN_SUCCESS);
 
-#if	NORMA_IPC
-	kr = ipc_space_create_special(&ipc_space_remote);
-	assert(kr == KERN_SUCCESS);
-#endif	/* NORMA_IPC */
-
 	/* initialize modules with hidden data structures */
 
 	ipc_table_init();

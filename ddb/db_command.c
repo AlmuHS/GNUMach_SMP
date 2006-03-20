@@ -35,8 +35,6 @@
  * Command dispatcher.
  */
 #include <cpus.h>
-#include <norma_ipc.h>
-#include <norma_vm.h>
 
 #include <mach/boolean.h>
 #include <kern/strings.h>
@@ -310,24 +308,10 @@ extern void	ipc_port_print(), ipc_pset_print(), db_show_all_slocks();
 extern void	ipc_kmsg_print(), ipc_msg_print();
 extern void	db_show_port_id();
 void		db_show_help();
-#if	NORMA_IPC
-extern void	netipc_packet_print(), netipc_pcs_print(), db_show_all_uids();
-extern void	db_show_all_proxies(), db_show_all_principals();
-extern void	db_show_all_uids_verbose();
-#endif	/* NORMA_IPC */
-#if	NORMA_VM
-extern void	xmm_obj_print(), xmm_reply_print();
-#endif	/* NORMA_VM */
 
 struct db_command db_show_all_cmds[] = {
 	{ "threads",	db_show_all_threads,	0,	0 },
 	{ "slocks",	db_show_all_slocks,	0,	0 },
-#if	NORMA_IPC
-	{ "uids",	db_show_all_uids,	0,	0 },
-	{ "proxies",	db_show_all_proxies,	0,	0 },
-	{ "principals",	db_show_all_principals,	0,	0 },
-	{ "vuids",	db_show_all_uids_verbose, 0,	0 },
-#endif	/* NORMA_IPC */
 	{ (char *)0 }
 };
 
@@ -348,14 +332,6 @@ struct db_command db_show_cmds[] = {
 	{ "kmsg",	ipc_kmsg_print,		0,	0 },
 	{ "msg",	ipc_msg_print,		0,	0 },
 	{ "ipc_port",	db_show_port_id,	0,	0 },
-#if	NORMA_IPC
-	{ "packet",	netipc_packet_print,	0,	0 },
-	{ "pcs",	netipc_pcs_print,	0,	0 },
-#endif	/* NORMA_IPC */
-#if	NORMA_VM
-	{ "xmm_obj",	xmm_obj_print,		0,	0 },
-	{ "xmm_reply",	xmm_reply_print,	0,	0 },
-#endif	/* NORMA_VM */
 	{ (char *)0, }
 };
 
@@ -447,9 +423,6 @@ db_command_loop()
 	jmp_buf_t *prev = db_recover;
 	extern int db_output_line;
 	extern int db_macro_level;
-#if	NORMA_IPC
-	extern int _node_self;	/* node_self() may not be callable yet */
-#endif	/* NORMA_IPC */
 
 	/*
 	 * Initialize 'prev' and 'next' to dot.
@@ -468,9 +441,6 @@ db_command_loop()
 		db_printf("\n");
 	    db_output_line = 0;
 	    db_printf("db%s", (db_default_thread)? "t": "");
-#if	NORMA_IPC
-	    db_printf("%d", _node_self);
-#endif
 #if	NCPUS > 1
 	    db_printf("{%d}", cpu_number());
 #endif

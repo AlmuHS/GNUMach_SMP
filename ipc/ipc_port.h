@@ -40,7 +40,6 @@
 #define _IPC_IPC_PORT_H_
 
 #include <mach_ipc_compat.h>
-#include <norma_ipc.h>
 
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
@@ -99,24 +98,6 @@ struct ipc_port {
 	mach_port_msgcount_t ip_msgcount;
 	mach_port_msgcount_t ip_qlimit;
 	struct ipc_thread_queue ip_blocked;
-
-#if	NORMA_IPC
-	unsigned long ip_norma_uid;
-	unsigned long ip_norma_dest_node;
-	long ip_norma_stransit;
-	long ip_norma_sotransit;
-	long ip_norma_xmm_object_refs;
-	boolean_t ip_norma_is_proxy;
-	boolean_t ip_norma_is_special;
-	struct ipc_port *ip_norma_atrium;
-	struct ipc_port *ip_norma_queue_next;
-	struct ipc_port *ip_norma_xmm_object;
-	struct ipc_port *ip_norma_next;
-	long ip_norma_spare1;
-	long ip_norma_spare2;
-	long ip_norma_spare3;
-	long ip_norma_spare4;
-#endif	/* NORMA_IPC */
 };
 
 #define ip_object		ip_target.ipt_object
@@ -385,23 +366,5 @@ ipc_port_copyout_receiver(/* ipc_port_t, ipc_space_t */);
 
 extern void
 ipc_port_print(/* ipc_port_t */);
-
-#if	NORMA_IPC
-
-#define	IP_NORMA_IS_PROXY(port)	((port)->ip_norma_is_proxy)
-
-/*
- *	A proxy never has a real nsrequest, but is always has a fake
- *	nsrequest so that the norma ipc system is notified when there
- *	are no send rights for a proxy. A fake nsrequest is indicated by
- *	the low bit of the pointer.  This works because the zone package
- *	guarantees that the two low bits of port pointers are zero.
- */
-
-#define	ip_nsproxyp(nsrequest)	((unsigned int)(nsrequest) & 1)
-#define ip_nsproxy(nsrequest)	((ipc_port_t)((unsigned int)(nsrequest) &~ 1))
-#define	ip_nsproxym(proxy)	((ipc_port_t)((unsigned int)(proxy) | 1))
-
-#endif	/* NORMA_IPC */
 
 #endif	/* _IPC_IPC_PORT_H_ */

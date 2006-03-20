@@ -35,7 +35,6 @@
  */
 
 #include <mach_pagemap.h>
-#include <norma_vm.h>
 
 #include <mach/mach_types.h>
 #include <mach/memory_object.h>
@@ -189,14 +188,6 @@ unsigned int vm_pageout_inactive_clean = 0;	/* debugging */
 unsigned int vm_pageout_inactive_dirty = 0;	/* debugging */
 unsigned int vm_pageout_inactive_double = 0;	/* debugging */
 unsigned int vm_pageout_inactive_cleaned_external = 0;
-
-#if	NORMA_VM
-/*
- * Define them here, since they won't be defined by memory_object_user.h.
- */
-extern kern_return_t memory_object_data_initialize();
-extern kern_return_t memory_object_data_write();
-#endif	/* NORMA_VM */
 
 /*
  *	Routine:	vm_pageout_setup

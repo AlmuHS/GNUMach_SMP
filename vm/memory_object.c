@@ -63,11 +63,6 @@
 #include <vm/vm_map.h>		/* For vm_map_pageable */
 #include <ipc/ipc_port.h>
 
-#include <norma_vm.h>
-#include <norma_ipc.h>
-#if	NORMA_VM
-#include <norma/xmm_server_rename.h>
-#endif	/* NORMA_VM */
 #include <mach_pagemap.h>
 #if	MACH_PAGEMAP
 #include <vm/vm_external.h>
@@ -86,7 +81,6 @@ decl_simple_lock_data(,memory_manager_default_lock)
  *		argument conversion. Explicit deallocation is necessary.
  */
 
-#if	!NORMA_VM
 /*
  *	If successful, destroys the map copy object.
  */
@@ -102,7 +96,6 @@ kern_return_t memory_object_data_provided(object, offset, data, data_cnt,
 					 data_cnt, lock_value, FALSE, IP_NULL,
 					 0);
 }
-#endif	/* !NORMA_VM */
 
 
 kern_return_t memory_object_data_supply(object, offset, data_copy, data_cnt,
@@ -896,7 +889,6 @@ MACRO_END
 	return (KERN_SUCCESS);
 }
 
-#if	!NORMA_VM
 /*
  *	Old version of memory_object_lock_request.
  */
@@ -924,7 +916,6 @@ xxx_memory_object_lock_request(object, offset, size,
 		      should_return, should_flush, prot,
 		      reply_to, reply_to_type));
 }
-#endif	/* !NORMA_VM */
 
 kern_return_t
 memory_object_set_attributes_common(object, object_ready, may_cache,
@@ -989,8 +980,6 @@ memory_object_set_attributes_common(object, object_ready, may_cache,
 	return(KERN_SUCCESS);
 }
 
-#if	!NORMA_VM
-
 /*
  * XXX	rpd claims that reply_to could be obviated in favor of a client
  * XXX	stub that made change_attributes an RPC.  Need investigation.
@@ -1052,7 +1041,6 @@ kern_return_t	memory_object_ready(object, may_cache, copy_strategy)
 						   may_cache, copy_strategy,
 						   FALSE);
 }
-#endif	/* !NORMA_VM */
 
 kern_return_t	memory_object_get_attributes(object, object_ready,
 						may_cache, copy_strategy)

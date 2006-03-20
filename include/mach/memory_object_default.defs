@@ -37,13 +37,6 @@ subsystem
 #endif	/* KERNEL_USER */
 		     memory_object_default 2250;
 
-#ifdef	MACH_KERNEL
-#include <norma_vm.h>
-#if	NORMA_VM
-userprefix k_;
-#endif	/* NORMA_VM */
-#endif	/* MACH_KERNEL */
-
 #include <mach/std_types.defs>
 #include <mach/mach_types.defs>
 

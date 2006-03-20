@@ -49,9 +49,6 @@
 #include <ipc/ipc_thread.h>
 #include <ipc/ipc_mqueue.h>
 #include <ipc/ipc_notify.h>
-#if	NORMA_IPC
-#include <norma/ipc_node.h>
-#endif	/* NORMA_IPC */
 
 
 
@@ -492,24 +489,6 @@ ipc_port_init(
 	port->ip_msgcount = 0;
 	port->ip_qlimit = MACH_PORT_QLIMIT_DEFAULT;
 
-#if	NORMA_IPC
-	port->ip_norma_uid = 0;
-	port->ip_norma_dest_node = 0;
-	port->ip_norma_stransit = 0;
-	port->ip_norma_sotransit = 0;
-	port->ip_norma_xmm_object_refs = 0;
-	port->ip_norma_is_proxy = FALSE;
-	port->ip_norma_is_special = FALSE;
-	port->ip_norma_atrium = IP_NULL;
-	port->ip_norma_queue_next = port;
-	port->ip_norma_xmm_object = IP_NULL;
-	port->ip_norma_next = port;
-	port->ip_norma_spare1 = 0L;
-	port->ip_norma_spare2 = 0L;
-	port->ip_norma_spare3 = 0L;
-	port->ip_norma_spare4 = 0L;
-#endif	/* NORMA_IPC */
-
 	ipc_mqueue_init(&port->ip_messages);
 	ipc_thread_queue_init(&port->ip_blocked);
 }
@@ -724,13 +703,6 @@ ipc_port_destroy(
 
 		/* fall through and destroy the port */
 	}
-
-#if	NORMA_IPC
-	/*
-	 *	destroy any NORMA_IPC state associated with port
-	 */
-	norma_ipc_port_destroy(port);
-#endif	/* NORMA_IPC */
 
 	/*
 	 *	rouse all blocked senders
@@ -1240,14 +1212,6 @@ ipc_port_t
 ipc_port_alloc_special(space)
 	ipc_space_t space;
 {
-#if	NORMA_IPC
-#if	i386
-	int ret = (&ret)[2];	/* where we were called from */
-#else
-	int ret = (int) ipc_port_alloc_special;
-#endif
-	extern int input_msgh_id;
-#endif	/* NORMA_IPC */
 	ipc_port_t port;
 
 	port = (ipc_port_t) io_alloc(IOT_PORT);
@@ -1271,10 +1235,6 @@ ipc_port_alloc_special(space)
 
 	ipc_port_init(port, space, (mach_port_t)port);
 
-#if	NORMA_IPC
-	port->ip_norma_spare1 = ret;
-	port->ip_norma_spare2 = input_msgh_id;
-#endif	/* NORMA_IPC */
 	return port;
 }
 
@@ -1517,27 +1477,6 @@ ipc_port_print(port)
 	printf(", rcvrs=0x%x", port->ip_messages.imq_threads.ithq_base);
 	printf(", sndrs=0x%x", port->ip_blocked.ithq_base);
 	printf(", kobj=0x%x\n", port->ip_kobject);
-
-#if	NORMA_IPC
-	iprintf("norma_uid=%x", port->ip_norma_uid);
-	printf(", dest_node=%d", port->ip_norma_dest_node);
-	printf(", stransit=%d", port->ip_norma_stransit);
-	printf(", xorefs=%d", port->ip_norma_xmm_object_refs);
-	printf(", sotransit=%d\n", port->ip_norma_sotransit);
-
-	iprintf("norma_is_proxy=%d", port->ip_norma_is_proxy);
-	printf(", is_special=%d\n", port->ip_norma_is_special);
-
-	iprintf("norma_atrium=0x%x", port->ip_norma_atrium);
-	printf(", queue_next=0x%x", port->ip_norma_queue_next);
-	printf(", xmm_object=0x%x", port->ip_norma_xmm_object);
-	printf(", next=0x%x\n", port->ip_norma_next);
-
-	iprintf("norma_spare1=0x%x", port->ip_norma_spare1);
-	printf(", norma_spare2=0x%x", port->ip_norma_spare2);
-	printf(", norma_spare3=0x%x", port->ip_norma_spare3);
-	printf(", norma_spare4=0x%x\n", port->ip_norma_spare4);
-#endif	/* NORMA_IPC */
 
 	indent -=2;
 }

@@ -36,8 +36,6 @@
 #include <mach_debug.h>
 #include <mach_ipc_test.h>
 #include <mach_machine_routines.h>
-#include <norma_task.h>
-#include <norma_vm.h>
 
 #include <mach/port.h>
 #include <mach/kern_return.h>
@@ -156,13 +154,6 @@ ipc_kobject_server(request)
 #if	MACH_DEBUG
 	extern mig_routine_t	mach_debug_server_routine();
 #endif
-#if	NORMA_TASK
-	extern mig_routine_t	mach_norma_server_routine();
-	extern mig_routine_t	norma_internal_server_routine();
-#endif
-#if	NORMA_VM
-	extern mig_routine_t	proxy_server_routine();
-#endif
 
 #if	MACH_MACHINE_ROUTINES
 	extern mig_routine_t	MACHINE_SERVER_ROUTINE();
@@ -177,13 +168,6 @@ ipc_kobject_server(request)
 #if	MACH_DEBUG
 	 || (routine = mach_debug_server_routine(&request->ikm_header)) != 0
 #endif	/* MACH_DEBUG */
-#if	NORMA_TASK
-	 || (routine = mach_norma_server_routine(&request->ikm_header)) != 0
-	 || (routine = norma_internal_server_routine(&request->ikm_header)) != 0
-#endif	/* NORMA_TASK */
-#if	NORMA_VM
-	 || (routine = proxy_server_routine(&request->ikm_header)) != 0
-#endif	/* NORMA_VM */
 	 || (routine = mach4_server_routine(&request->ikm_header)) != 0
 #if	MACH_MACHINE_ROUTINES
 	 || (routine = MACHINE_SERVER_ROUTINE(&request->ikm_header)) != 0
@@ -368,20 +352,6 @@ ipc_kobject_notify(request_header, reply_header)
 		return FALSE;
 	}
 	switch (ip_kotype(port)) {
-#if	NORMA_VM
-		case IKOT_XMM_OBJECT:
-		return xmm_object_notify(request_header);
-
-		case IKOT_XMM_PAGER:
-		return xmm_pager_notify(request_header);
-
-		case IKOT_XMM_KERNEL:
-		return xmm_kernel_notify(request_header);
-
-		case IKOT_XMM_REPLY:
-		return xmm_reply_notify(request_header);
-#endif	/* NORMA_VM */
-
 		case IKOT_DEVICE:
 		return ds_notify(request_header);
 

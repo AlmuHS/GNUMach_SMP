@@ -24,8 +24,6 @@
  * the rights to redistribute these changes.
  */
 
-#include <norma_vm.h>
-
 #include <mach/boolean.h>
 #include <mach/port.h>
 #include <mach/message.h>
@@ -93,122 +91,6 @@ mach_msg_rpc_from_kernel(msg, send_size, reply_size)
 {
 	panic("mach_msg_rpc_from_kernel"); /*XXX*/
 }
-
-#if	NORMA_VM
-/*
- *	Routine:	mach_msg_rpc_from_kernel
- *	Purpose:
- *		Send a message from the kernel and receive a reply.
- *		Uses ith_rpc_reply for the reply port.
- *
- *		This is used by the client side of KernelUser interfaces
- *		to implement Routines.
- *	Conditions:
- *		Nothing locked.
- *	Returns:
- *		MACH_MSG_SUCCESS	Sent the message.
- *		MACH_RCV_PORT_DIED	The reply port was deallocated.
- */
-
-mach_msg_return_t
-mach_msg_rpc_from_kernel(
-	mach_msg_header_t	*msg,
-	mach_msg_size_t		send_size,
-	mach_msg_size_t		rcv_size)
-{
-	ipc_thread_t self = current_thread();
-	ipc_port_t reply;
-	ipc_kmsg_t kmsg;
-	mach_port_seqno_t seqno;
-	mach_msg_return_t mr;
-
-	assert(MACH_PORT_VALID(msg->msgh_remote_port));
-	assert(msg->msgh_local_port == MACH_PORT_NULL);
-
-	mr = ipc_kmsg_get_from_kernel(msg, send_size, &kmsg);
-	if (mr != MACH_MSG_SUCCESS)
-		panic("mach_msg_rpc_from_kernel");
-
-	ipc_kmsg_copyin_from_kernel(kmsg);
-
-	ith_lock(self);
-	assert(self->ith_self != IP_NULL);
-
-	reply = self->ith_rpc_reply;
-	if (reply == IP_NULL) {
-		ith_unlock(self);
-		reply = ipc_port_alloc_reply();
-		ith_lock(self);
-		if ((reply == IP_NULL) ||
-		    (self->ith_rpc_reply != IP_NULL))
-			panic("mach_msg_rpc_from_kernel");
-		self->ith_rpc_reply = reply;
-	}
-
-	/* insert send-once right for the reply port */
-	kmsg->ikm_header.msgh_local_port =
-		(mach_port_t) ipc_port_make_sonce(reply);
-
-	ipc_port_reference(reply);
-	ith_unlock(self);
-
-	ipc_mqueue_send_always(kmsg);
-
-	for (;;) {
-		ipc_mqueue_t mqueue;
-
-		ip_lock(reply);
-		if (!ip_active(reply)) {
-			ip_unlock(reply);
-			ipc_port_release(reply);
-			return MACH_RCV_PORT_DIED;
-		}
-
-		assert(reply->ip_pset == IPS_NULL);
-		mqueue = &reply->ip_messages;
-		imq_lock(mqueue);
-		ip_unlock(reply);
-
-		mr = ipc_mqueue_receive(mqueue, MACH_MSG_OPTION_NONE,
-					MACH_MSG_SIZE_MAX,
-					MACH_MSG_TIMEOUT_NONE,
-					FALSE, IMQ_NULL_CONTINUE,
-					&kmsg, &seqno);
-		/* mqueue is unlocked */
-		if (mr == MACH_MSG_SUCCESS)
-			break;
-
-		assert((mr == MACH_RCV_INTERRUPTED) ||
-		       (mr == MACH_RCV_PORT_DIED));
-
-		while (thread_should_halt(self)) {
-			/* don't terminate while holding a reference */
-			if (self->ast & AST_TERMINATE)
-				ipc_port_release(reply);
-			thread_halt_self();
-		}
-	}
-	ipc_port_release(reply);
-
-	kmsg->ikm_header.msgh_seqno = seqno;
-
-	if (rcv_size < kmsg->ikm_header.msgh_size) {
-		ipc_kmsg_copyout_dest(kmsg, ipc_space_reply);
-		ipc_kmsg_put_to_kernel(msg, kmsg, kmsg->ikm_header.msgh_size);
-		return MACH_RCV_TOO_LARGE;
-	}
-
-	/*
-	 *	We want to preserve rights and memory in reply!
-	 *	We don't have to put them anywhere; just leave them
-	 *	as they are.
-	 */
-
-	ipc_kmsg_copyout_to_kernel(kmsg, ipc_space_reply);
-	ipc_kmsg_put_to_kernel(msg, kmsg, kmsg->ikm_header.msgh_size);
-	return MACH_MSG_SUCCESS;
-}
-#endif	/* NORMA_VM */
 
 /*
  *	Routine:	mach_msg_abort_rpc

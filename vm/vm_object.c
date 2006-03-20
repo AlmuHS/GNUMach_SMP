@@ -33,12 +33,7 @@
  *	Virtual memory object module.
  */
 
-#include <norma_vm.h>
 #include <mach_pagemap.h>
-
-#if	NORMA_VM
-#include <norma/xmm_server_rename.h>
-#endif	/* NORMA_VM */
 
 #include <mach/memory_object.h>
 #include "memory_object_default.h"
@@ -231,13 +226,11 @@ vm_object_t vm_object_allocate(
 	register ipc_port_t port;
 
 	object = _vm_object_allocate(size);
-#if	!NORMA_VM
 	port = ipc_port_alloc_kernel();
 	if (port == IP_NULL)
 		panic("vm_object_allocate");
 	object->pager_name = port;
 	ipc_kobject_set(port, (ipc_kobject_t) object, IKOT_PAGING_NAME);
-#endif	/* !NORMA_VM */
 
 	return object;
 }
@@ -325,7 +318,6 @@ void vm_object_bootstrap(void)
 
 void vm_object_init(void)
 {
-#if	!NORMA_VM
 	/*
 	 *	Finish initializing the kernel object.
 	 *	The submap object doesn't need a name port.
@@ -335,7 +327,6 @@ void vm_object_init(void)
 	ipc_kobject_set(kernel_object->pager_name,
 			(ipc_kobject_t) kernel_object,
 			IKOT_PAGING_NAME);
-#endif	/* !NORMA_VM */
 }
 
 /*
@@ -656,11 +647,7 @@ void vm_object_terminate(
 					     object->pager_name);
 	} else if (object->pager_name != IP_NULL) {
 		/* consumes our right for pager_name */
-#if	NORMA_VM
-		ipc_port_release_send(object->pager_name);
-#else	/* NORMA_VM */
 		ipc_port_dealloc_kernel(object->pager_name);
-#endif	/* NORMA_VM */
 	}
 
 #if	MACH_PAGEMAP
@@ -865,11 +852,7 @@ kern_return_t memory_object_destroy(
 					     old_name);
 	} else if (old_name != IP_NULL) {
 		/* consumes our right for name */
-#if	NORMA_VM
-		ipc_port_release_send(object->pager_name);
-#else	/* NORMA_VM */
 		ipc_port_dealloc_kernel(object->pager_name);
-#endif	/* NORMA_VM */
 	}
 
 	/*
@@ -1861,11 +1844,7 @@ vm_object_t vm_object_lookup(
 	if (IP_VALID(port)) {
 		ip_lock(port);
 		if (ip_active(port) &&
-#if	NORMA_VM
-		    (ip_kotype(port) == IKOT_PAGER)) {
-#else	/* NORMA_VM */
 		    (ip_kotype(port) == IKOT_PAGING_REQUEST)) {
-#endif	/* NORMA_VM */
 			vm_object_cache_lock();
 			object = (vm_object_t) port->ip_kobject;
 			vm_object_lock(object);
@@ -1976,16 +1955,10 @@ void vm_object_destroy(
 	 */
 
 	ipc_port_release_send(pager);
-#if	!NORMA_VM
 	if (old_request != IP_NULL)
 		ipc_port_dealloc_kernel(old_request);
-#endif	/* !NORMA_VM */
 	if (old_name != IP_NULL)
-#if	NORMA_VM
-		ipc_port_release_send(old_name);
-#else	/* NORMA_VM */
 		ipc_port_dealloc_kernel(old_name);
-#endif	/* NORMA_VM */
 
 	/*
 	 *	Restart pending page requests
@@ -2138,27 +2111,6 @@ restart:
 		object->pager_created = TRUE;
 		object->pager = pager;
 
-#if	NORMA_VM
-
-		/*
-		 *	Let the xmm system know that we want to use the pager.
-		 *
-		 *	Name port will be provided by the xmm system
-		 *	when set_attributes_common is called.
-		 */
-
-		object->internal = internal;
-		object->pager_ready = internal;
-		if (internal) {
-			assert(object->temporary);
-		} else {
-			object->temporary = FALSE;
-		}
-		object->pager_name = IP_NULL;
-
-		(void) xmm_memory_object_init(object);
-#else	/* NORMA_VM */
-
 		/*
 		 *	Allocate request port.
 		 */
@@ -2207,7 +2159,6 @@ restart:
 				PAGE_SIZE);
 
 		}
-#endif	/* NORMA_VM */
 
 		vm_object_lock(object);
 		object->pager_initialized = TRUE;
@@ -2359,7 +2310,6 @@ void vm_object_remove(
 		 else if (ip_kotype(port) != IKOT_NONE)
 			panic("vm_object_remove: bad object port");
 	}
-#if	!NORMA_VM
 	if ((port = object->pager_request) != IP_NULL) {
 		if (ip_kotype(port) == IKOT_PAGING_REQUEST)
 			ipc_kobject_set(port, IKO_NULL, IKOT_NONE);
@@ -2372,7 +2322,6 @@ void vm_object_remove(
 		 else if (ip_kotype(port) != IKOT_NONE)
 			panic("vm_object_remove: bad name port");
 	}
-#endif	/* !NORMA_VM */
 }
 
 /*
@@ -2611,10 +2560,6 @@ void vm_object_collapse(
 			object->pager_created = backing_object->pager_created;
 
 			object->pager_request = backing_object->pager_request;
-#if	NORMA_VM
-			old_name_port = object->pager_name;
-			object->pager_name = backing_object->pager_name;
-#else	/* NORMA_VM */
 			if (object->pager_request != IP_NULL)
 				ipc_kobject_set(object->pager_request,
 						(ipc_kobject_t) object,
@@ -2628,7 +2573,6 @@ void vm_object_collapse(
 				ipc_kobject_set(object->pager_name,
 						(ipc_kobject_t) object,
 						IKOT_PAGING_NAME);
-#endif	/* NORMA_VM */
 
 			vm_object_cache_unlock();
 
@@ -2677,11 +2621,7 @@ void vm_object_collapse(
 
 			vm_object_unlock(object);
 			if (old_name_port != IP_NULL)
-#if	NORMA_VM
-				ipc_port_release_send(old_name_port);
-#else	/* NORMA_VM */
 				ipc_port_dealloc_kernel(old_name_port);
-#endif	/* NORMA_VM */
 			zfree(vm_object_zone, (vm_offset_t) backing_object);
 			vm_object_lock(object);
 
@@ -2959,11 +2899,7 @@ ipc_port_t	vm_object_name(
 
 	p = object->pager_name;
 	if (p != IP_NULL)
-#if	NORMA_VM
-		p = ipc_port_copy_send(p);
-#else	/* NORMA_VM */
 		p = ipc_port_make_send(p);
-#endif	/* NORMA_VM */
 	vm_object_unlock(object);
 
 	return p;

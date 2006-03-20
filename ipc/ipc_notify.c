@@ -382,13 +382,6 @@ ipc_notify_no_senders(port, mscount)
 	ipc_kmsg_t kmsg;
 	mach_no_senders_notification_t *n;
 
-#if	NORMA_IPC
-	if (ip_nsproxyp(port)) {
-		assert(mscount == 0);
-		norma_ipc_notify_no_senders(ip_nsproxy(port));
-		return;
-	}
-#endif	/* NORMA_IPC */
 	kmsg = ikm_alloc(sizeof *n);
 	if (kmsg == IKM_NULL) {
 		printf("dropped no-senders (0x%08x, %u)\n", port, mscount);

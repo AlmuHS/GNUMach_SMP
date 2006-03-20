@@ -40,7 +40,6 @@
 #define _IPC_IPC_SPACE_H_
 
 #include <mach_ipc_compat.h>
-#include <norma_ipc.h>
 
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
@@ -94,9 +93,6 @@ extern zone_t ipc_space_zone;
 
 extern struct ipc_space *ipc_space_kernel;
 extern struct ipc_space *ipc_space_reply;
-#if	NORMA_IPC
-extern struct ipc_space *ipc_space_remote;
-#endif	/* NORMA_IPC */
 
 #define	is_ref_lock_init(is)	simple_lock_init(&(is)->is_ref_lock_data)
 
