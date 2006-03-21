@@ -1,3 +1,14 @@
+2006-03-21  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* Makefile.in (clean): Also remove `kernel.gz', `kernel.stripped' and
+	`kernel.stripped.gz'.
+
+	* Makefile.in (kernel.o): Handle `$(systype)-objfiles-prepend'.
+	* i386/Makefile.in (sysdep.a): Likewise.
+	* i386/Makerules.in (kernel-objfiles-prepend): Transform variable into
+	`$(systype)-objfiles-prepend'.
+	(kernel.o): Remove target.
+
 2006-03-20  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* DEVELOPMENT: Document the NORMA removal.

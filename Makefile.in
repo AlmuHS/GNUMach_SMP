@@ -245,7 +245,8 @@ check: kernel
 
 clean:
 	$(MAKE) -C $(systype) $@
-	rm -f clib-routines.o kernel.o kernel kernel-undef kernel-undef-bad
+	rm -f clib-routines.o kernel.o kernel-undef kernel-undef-bad
+	rm -f kernel kernel.gz kernel.stripped kernel.stripped.gz
 	rm -f $(objfiles) $(subst .o,.d,$(objfiles))
 	rm -f *.symc *.symc.o *_user.c *_server.c *.h
 	rm -f *.migs_d *.migsh_d *.migu_d *.miguh_d
@@ -280,9 +281,12 @@ clib-routines := memcpy memmove memset bcopy bzero \
 #kernel.a: $(objfiles)
 #	@rm -f $@
 #	$(AR) cq $@ $^
+
+# Then dependency on `$(systype)/sysdep.a' also makes sure that
+# `$($(systype)-objfiles-prepend)' are created.
 kernel.o: $(objfiles) $(systype)/sysdep.a # kernel.a
-	$(LD) -r -o $@ $(kernel-objfiles-prepend) \
-	  $(filter-out $(kernel-objfiles-prepend),$^)
+	$(LD) -r -o $@ \
+	  $(addprefix $(systype)/,$($(systype)-objfiles-prepend)) $^
 kernel-undef: kernel.o
 	$(NM) -u $< | sed 's/  *U  *//;s/^_*//' | sort -u > $@
 kernel-undef-bad: kernel-undef Makefile

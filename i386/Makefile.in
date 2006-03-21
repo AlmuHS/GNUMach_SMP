@@ -131,10 +131,11 @@ INCLUDES = -I. -I$(srcdir)/i386at -I$(srcdir)/i386 \
 all: sysdep.a
 	$(MAKE) -C linux $@
 
-# `boothdr.o' is special.
+# `$($(systype)-objfiles-prepend)' are special, but are nevertheless
+# created for the target `sysdep.a'.
 sysdep.a: $(objfiles) linux/linux.o
 	rm -f $@
-	$(AR) cr $@ $(filter-out boothdr.o,$^)
+	$(AR) cr $@ $(filter-out $($(systype)-objfiles-prepend),$^)
 	$(RANLIB) $@
 
 check:
