@@ -1,5 +1,12 @@
 2006-04-02  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* Makerules.in (%_user.c, %_server.c): Those are `.PRECIOUS'.
+	(%.migs.d, %.migu.d): New targets.
+	(%.migs_d, %.migu_d, %.migsh_d, %.miguh_d): Remove targets.
+	Adopt the `include's to the renamed targets.
+	* Makefile.in (clean): Adopt to the renamed targets.
+	* i386/Makefile.in (clean): Likewise.
+
 	* i386/Makefile.in (boothdr.o): New target.
 
 2006-03-21  Thomas Schwinge  <tschwinge@gnu.org>

@@ -248,8 +248,7 @@ clean:
 	rm -f clib-routines.o kernel.o kernel-undef kernel-undef-bad
 	rm -f kernel kernel.gz kernel.stripped kernel.stripped.gz
 	rm -f $(objfiles) $(subst .o,.d,$(objfiles))
-	rm -f *.symc *.symc.o *_user.c *_server.c *.h
-	rm -f *.migs_d *.migsh_d *.migu_d *.miguh_d
+	rm -f *.symc *.symc.o *_user.c *_server.c *.h *.migs.d *.migu.d
 
 distclean: clean
 	$(MAKE) -C $(systype) $@
