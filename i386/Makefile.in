@@ -123,6 +123,10 @@ INCLUDES = -I. -I$(srcdir)/i386at -I$(srcdir)/i386 \
 	-I$(srcdir)/include -I$(srcdir)/include/mach/sa \
 	-I$(srcdir)/bogus -I$(srcdir)
 
+# Static dependencies.
+
+# For building with `no_deps=t'.
+boothdr.o: i386asm.h
 
 #
 # Rules.

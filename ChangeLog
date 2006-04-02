@@ -1,3 +1,7 @@
+2006-04-02  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* i386/Makefile.in (boothdr.o): New target.
+
 2006-03-21  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* Makefile.in (clean): Also remove `kernel.gz', `kernel.stripped' and
