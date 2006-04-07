@@ -119,9 +119,8 @@ vpath i386asm.sym $(srcdir)/i386
 vpath mach_i386.srv $(srcdir)/i386
 
 # Our include files; they precede the generic ones.
-INCLUDES = -I. -I$(srcdir)/i386at -I$(srcdir)/i386 \
-	-I$(srcdir)/include -I$(srcdir)/include/mach/sa \
-	-I$(srcdir)/bogus -I$(srcdir)
+INCLUDES = -I. -I$(srcdir)/i386at -I$(srcdir)/i386 -I$(srcdir)/include	\
+  -I$(srcdir)/include/mach/sa -I$(srcdir)
 
 # Static dependencies.
 

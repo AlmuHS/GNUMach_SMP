@@ -30,6 +30,9 @@ include $(abs_top_builddir)/$(systype)/linux/Makerules
 # Some of the i386-specific code checks for these.
 DEFINES += -DCONTINUATIONS -D__ELF__ -Di386 $(DEFS-$(systype))
 
+# The system specific ones always override the generic ones.
+INCLUDES += -I$(abs_top_srcdir)/$(systype)/bogus
+
 # Arrange for a suitable load address.
 LDFLAGS-kernel += -Ttext 100000
 
