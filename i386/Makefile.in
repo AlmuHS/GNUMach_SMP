@@ -172,7 +172,7 @@ FORCE:
 #
 
 install:
-	make -C linux $@
+	$(MAKE) -C linux $@
 
 installed-headers = $(addprefix mach/i386/, \
 	asm.h boolean.h disk.h eflags.h exception.h fp_reg.h ioccom.h \
@@ -186,10 +186,10 @@ $(installed-headers-names): $(includedir)/%: $(srcdir)/include/%
 
 install-headers: mkheaderdirs $(installed-headers-names)
 	ln -sfn $(systype) $(includedir)/mach/machine
-	make -C linux $@
+	$(MAKE) -C linux $@
 
 install-kernel:
-	make -C linux $@
+	$(MAKE) -C linux $@
 
 mkheaderdirs:
 	mkdir -p $(includedir)/mach/$(systype)

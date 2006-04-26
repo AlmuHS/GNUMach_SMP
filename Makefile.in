@@ -306,18 +306,18 @@ kernel: kernel.o clib-routines.o
 
 installed-headers-names = $(addprefix $(includedir)/,$(installed-headers))
 install: install-headers install-kernel
-	make -C $(systype) $@
+	$(MAKE) -C $(systype) $@
 
 $(installed-headers-names): $(includedir)/%: $(srcdir)/include/%
 	$(INSTALL_DATA) $< $@
 
 install-headers: mkheaderdirs $(installed-headers-names)
 	ln -sfn $(systype) $(includedir)/mach/machine
-	make -C $(systype) $@
+	$(MAKE) -C $(systype) $@
 
 install-kernel: kernel mkkerneldirs
 	$(INSTALL_PROGRAM) kernel $(bootdir)/gnumach
-	make -C $(systype) $@
+	$(MAKE) -C $(systype) $@
 
 mkheaderdirs:
 	mkdir -p $(includedir) $(includedir)/device $(includedir)/mach/exec

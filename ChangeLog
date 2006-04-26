@@ -1,3 +1,9 @@
+2006-04-26  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* Makefile.in: Replace `make' with `$(MAKE)'.
+	* i386/Makefile.in: Likewise.
+	Reported by Leonardo Lopes Pereira <leonardolopespereira@gmail.com>.
+
 2006-04-08  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* i386/Makefile.in (INCLUDES): Don't add `$(srcdir)/bogus'.
