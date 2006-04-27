@@ -72,7 +72,8 @@
 #ifndef _DEVICE_BPF_H_
 #define _DEVICE_BPF_H_
 
-#if 0	/* not used in MK now */
+#include <sys/types.h> /* u_short */
+
 /*
  * Alignment macros.  BPF_WORDALIGN rounds up to the next 
  * even multiple of BPF_ALIGNMENT. 
@@ -115,14 +116,14 @@ struct bpf_version {
 #define DLT_PPP		9	/* Point-to-point Protocol */
 #define DLT_FDDI	10	/* FDDI */
 
-#endif /* 0 */
-
 /*
  * The instruction encondings.
  */
 
-/* Magic number for the first instruction */
-#define BPF_BEGIN NETF_BPF
+/* Magic number and flags for the first instruction */
+#define BPF_BEGIN	NETF_BPF
+#define BPF_IN		NETF_IN
+#define BPF_OUT		NETF_OUT
 
 /* instruction classes */
 #define BPF_CLASS(code) ((code) & 0x07)

@@ -82,7 +82,9 @@ void if_init_queues(ifp)
 {
 	IFQ_INIT(&ifp->if_snd);
 	queue_init(&ifp->if_rcv_port_list);
+	queue_init(&ifp->if_snd_port_list);
 	simple_lock_init(&ifp->if_rcv_port_list_lock);
+	simple_lock_init(&ifp->if_snd_port_list_lock);
 }
 
 

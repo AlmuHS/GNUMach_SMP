@@ -98,6 +98,11 @@ struct net_status {
  *  If the final value of the filter operation is true, then the packet is
  *  accepted for the filter.
  *
+ *  The first filter_t object is a header which allows to set flags for the
+ *  filter code. Main flags concern the direction of packets. This header is
+ *  split in the same way NETF words are : the 6 MSB bits indicate the type
+ *  of filter while the 10 LSB bits are the flags. For native NETF filters,
+ *  clear the 6 MSB bits (which is why there is no dedicated macro).
  */
 
 typedef	unsigned short	filter_t;
@@ -111,6 +116,14 @@ typedef filter_t	*filter_array_t;
 
 #define	NETF_ARG(word)	((word) & 0x3ff)
 #define	NETF_OP(word)	(((word)>>NETF_NBPA)&0x3f)
+
+/*  filter types  */
+#define NETF_TYPE_MASK	(((1 << NETF_NBPO) - 1) << NETF_NBPA)
+#define NETF_BPF	(1 << NETF_NBPA)
+
+/*  flags  */
+#define NETF_IN		0x1
+#define NETF_OUT	0x2
 
 /*  binary operators  */
 #define NETF_NOP	(0<<NETF_NBPA)
@@ -131,7 +144,6 @@ typedef filter_t	*filter_array_t;
 #define	NETF_RSH	(15<<NETF_NBPA)
 #define	NETF_ADD	(16<<NETF_NBPA)
 #define	NETF_SUB	(17<<NETF_NBPA)
-#define NETF_BPF	(((1 << NETF_NBPO) - 1) << NETF_NBPA)
 
 
 /*  stack arguments  */
@@ -178,6 +190,7 @@ struct net_rcv_msg {
 	char		header[NET_HDW_HDR_MAX];
 	mach_msg_type_t	packet_type;
 	char		packet[NET_RCV_MAX];
+	boolean_t	sent;
 };
 typedef struct net_rcv_msg 	*net_rcv_msg_t;
 #define	net_rcv_msg_packet_count packet_type.msgt_number

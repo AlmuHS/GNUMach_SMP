@@ -79,8 +79,11 @@ struct ifnet {
 	char	*if_address;		/* pointer to hardware address */
 	struct ifqueue if_snd;		/* output queue */
 	queue_head_t if_rcv_port_list;	/* input filter list */
+	queue_head_t if_snd_port_list;	/* output filter list */
 	decl_simple_lock_data(,
-		if_rcv_port_list_lock)	/* lock for filter list */
+		if_rcv_port_list_lock)	/* lock for input filter list */
+	decl_simple_lock_data(,
+		if_snd_port_list_lock)	/* lock for output filter list */
 /* statistics */
 	int	if_ipackets;		/* packets received */
 	int	if_ierrors;		/* input errors */

@@ -1,3 +1,21 @@
+2006-04-27  Richard Braun  <syn@hurdfr.org>
+	    Manuel Menal  <mmenal@hurdfr.org>
+
+	* device/if_hdr.h (struct ifnet): Added new members `if_snd_port_list'
+	and `if_snd_port_list_lock'.
+	* device/net_io.c: Reworked to improve BPF support.  Filters can be
+	applied to ingress packets, egress packets, or both.
+	* device/subrs.c: Initialize the `if_snd_port_list' and
+	`if_snd_port_list_lock'.
+	* include/device/bpf.h [0]: Enable unconditionally.
+	Include <sys/types.h>.
+	(BPF_IN, BPF_OUT): New macros.
+	* include/device/net_status.h (NETF_TYPE_MASK, NETF_IN, NETF_OUT): New
+	macros.
+	(struct net_rcv_msg): New member `sent'.
+	* linux/dev/glue/net.c: Mark ingress packets as received and inject
+	egress packets into the packet filters.
+
 2006-04-26  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* Makefile.in: Replace `make' with `$(MAKE)'.

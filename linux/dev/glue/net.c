@@ -290,6 +290,9 @@ netif_rx (struct sk_buff *skb)
   eh = (struct ether_header *) (net_kmsg (kmsg)->header);
   ph = (struct packet_header *) (net_kmsg (kmsg)->packet);
   memcpy (eh, skb->data, sizeof (struct ether_header));
+
+  /* packet is prefixed with a struct packet_header,
+     see include/device/net_status.h.  */
   memcpy (ph + 1, skb->data + sizeof (struct ether_header),
 	  skb->len - sizeof (struct ether_header));
   ph->type = eh->ether_type;
@@ -297,6 +300,8 @@ netif_rx (struct sk_buff *skb)
 		+ sizeof (struct packet_header));
 
   dev_kfree_skb (skb, FREE_READ);
+
+  net_kmsg(kmsg)->sent = FALSE; /* Mark packet as received.  */
 
   /* Pass packet up to the microkernel.  */
   net_packet (&dev->net_data->ifnet, kmsg,
@@ -483,6 +488,34 @@ device_write (void *d, ipc_port_t reply_port,
       mark_bh (NET_BH);
     }
   splx (s);
+
+  /* Send packet to filters.  */
+  {
+    struct packet_header *packet;
+    struct ether_header *header;
+    ipc_kmsg_t kmsg;
+
+    kmsg = net_kmsg_get ();
+
+    if (kmsg != IKM_NULL)
+      {
+        /* Suitable for Ethernet only.  */
+        header = (struct ether_header *) (net_kmsg (kmsg)->header);
+        packet = (struct packet_header *) (net_kmsg (kmsg)->packet);
+        memcpy (header, skb->data, sizeof (struct ether_header));
+
+        /* packet is prefixed with a struct packet_header,
+           see include/device/net_status.h.  */
+        memcpy (packet + 1, skb->data + sizeof (struct ether_header),
+                skb->len - sizeof (struct ether_header));
+        packet->length = skb->len - sizeof (struct ether_header)
+                         + sizeof (struct packet_header);
+        packet->type = header->ether_type;
+        net_kmsg (kmsg)->sent = TRUE; /* Mark packet as sent.  */
+        net_packet (&dev->net_data->ifnet, kmsg, packet->length,
+                    ethernet_priority (kmsg));
+      }
+  }
 
   return MIG_NO_REPLY;
 }

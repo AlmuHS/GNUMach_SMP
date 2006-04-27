@@ -288,7 +288,8 @@ net_kmsg_more(void)
  * filter for a single session.
  */
 struct net_rcv_port {
-	queue_chain_t	chain;		/* list of open_descriptors */
+	queue_chain_t	input;		/* list of input open_descriptors */
+	queue_chain_t	output;		/* list of output open_descriptors */
 	ipc_port_t	rcv_port;	/* port to send packet to */
 	int		rcv_qlimit;	/* port's qlimit */
 	int		rcv_count;	/* number of packets received */
@@ -348,15 +349,15 @@ decl_simple_lock_data(,net_hash_header_lock)
 	} while ((elt) != (head));
 
 
-#define FILTER_ITERATE(ifp, fp, nextfp) \
-	for ((fp) = (net_rcv_port_t) queue_first(&(ifp)->if_rcv_port_list);\
-	     !queue_end(&(ifp)->if_rcv_port_list, (queue_entry_t)(fp));    \
-	     (fp) = (nextfp)) {						   \
-		(nextfp) = (net_rcv_port_t) queue_next(&(fp)->chain);
+#define FILTER_ITERATE(if_port_list, fp, nextfp, chain)	\
+	for ((fp) = (net_rcv_port_t) queue_first(if_port_list);	\
+	     !queue_end(if_port_list, (queue_entry_t)(fp));	\
+	     (fp) = (nextfp)) {					\
+		(nextfp) = (net_rcv_port_t) queue_next(chain);
 #define FILTER_ITERATE_END }
 
 /* entry_p must be net_rcv_port_t or net_hash_entry_t */
-#define ENQUEUE_DEAD(dead, entry_p) { \
+#define ENQUEUE_DEAD(dead, entry_p, chain) {			\
 	queue_next(&(entry_p)->chain) = (queue_entry_t) (dead);	\
 	(dead) = (queue_entry_t)(entry_p);			\
 }
@@ -711,23 +712,36 @@ net_filter(kmsg, send_list)
  	queue_entry_t		dead_entp = (queue_entry_t) 0;
  	unsigned int		ret_count;
 
+	queue_head_t *if_port_list;
+
 	int count = net_kmsg(kmsg)->net_rcv_msg_packet_count;
 	ifp = (struct ifnet *) kmsg->ikm_header.msgh_remote_port;
 	ipc_kmsg_queue_init(send_list);
 
+	if (net_kmsg(kmsg)->sent)
+	    if_port_list = &ifp->if_snd_port_list;
+	else
+	    if_port_list = &ifp->if_rcv_port_list;
+
 	/*
 	 * Unfortunately we can't allocate or deallocate memory
-	 * while holding this lock.  And we can't drop the lock
-	 * while examining the filter list.
+	 * while holding these locks. And we can't drop the locks
+	 * while examining the filter lists.
+	 * Both locks are hold in case a filter is removed from both
+	 * queues.
 	 */
 	simple_lock(&ifp->if_rcv_port_list_lock);
- 	FILTER_ITERATE(ifp, infp, nextfp)
- 	{
+	simple_lock(&ifp->if_snd_port_list_lock);
+	FILTER_ITERATE(if_port_list, infp, nextfp,
+		       net_kmsg(kmsg)->sent ? &infp->output : &infp->input)
+	{
  	    entp = (net_hash_entry_t) 0;
- 	    if (infp->filter[0] == NETF_BPF) {
- 		ret_count = bpf_do_filter(infp, net_kmsg(kmsg)->packet, count,
- 					  net_kmsg(kmsg)->header,
- 					  &hash_headp, &entp);
+ 	    if ((infp->filter[0] & NETF_TYPE_MASK) == NETF_BPF) {
+ 		ret_count = bpf_do_filter(infp, net_kmsg(kmsg)->packet
+					  + sizeof(struct packet_header),
+					  count, net_kmsg(kmsg)->header,
+					  ifp->if_header_size, &hash_headp,
+					  &entp);
 		if (entp == (net_hash_entry_t) 0)
 		  dest = infp->rcv_port;
 		else
@@ -754,9 +768,15 @@ net_filter(kmsg, send_list)
 		     */
 
  		    if (entp == (net_hash_entry_t) 0) {
- 			queue_remove(&ifp->if_rcv_port_list, infp,
- 				     net_rcv_port_t, chain);
- 			ENQUEUE_DEAD(dead_infp, infp);
+			if (infp->filter[0] & NETF_IN)
+			    queue_remove(&ifp->if_rcv_port_list, infp,
+					 net_rcv_port_t, input);
+			if (infp->filter[0] & NETF_OUT)
+			    queue_remove(&ifp->if_snd_port_list, infp,
+					 net_rcv_port_t, output);
+
+			/* Use input only for queues of dead filters. */
+ 			ENQUEUE_DEAD(dead_infp, infp, input);
  			continue;
  		    } else {
  			hash_ent_remove (ifp,
@@ -808,22 +828,27 @@ net_filter(kmsg, send_list)
 		 * See if ordering of filters is wrong
 		 */
 		if (infp->priority >= NET_HI_PRI) {
-		    prevfp = (net_rcv_port_t) queue_prev(&infp->chain);
-		    /*
-		     * If infp is not the first element on the queue,
-		     * and the previous element is at equal priority
-		     * but has a lower count, then promote infp to
-		     * be in front of prevfp.
-		     */
-		    if ((queue_t)prevfp != &ifp->if_rcv_port_list &&
-			infp->priority == prevfp->priority) {
-			/*
-			 * Threshold difference to prevent thrashing
-			 */
-			if (net_filter_queue_reorder
-			    && (100 + prevfp->rcv_count < rcount))
-				reorder_queue(&prevfp->chain, &infp->chain);
+#define REORDER_PRIO(chain)						\
+		    prevfp = (net_rcv_port_t) queue_prev(&infp->chain);	\
+		    /*							\
+		     * If infp is not the first element on the queue,	\
+		     * and the previous element is at equal priority	\
+		     * but has a lower count, then promote infp to	\
+		     * be in front of prevfp.				\
+		     */							\
+		    if ((queue_t)prevfp != if_port_list &&		\
+			infp->priority == prevfp->priority) {		\
+			/*						\
+			 * Threshold difference to prevent thrashing	\
+			 */						\
+			if (net_filter_queue_reorder			\
+			    && (100 + prevfp->rcv_count < rcount))	\
+			    reorder_queue(&prevfp->chain, &infp->chain);\
 		    }
+
+		    REORDER_PRIO(input);
+		    REORDER_PRIO(output);
+
 		    /*
 		     * High-priority filter -> no more deliveries
 		     */
@@ -833,7 +858,7 @@ net_filter(kmsg, send_list)
 	    }
 	}
 	FILTER_ITERATE_END
-
+	simple_unlock(&ifp->if_snd_port_list_lock);
 	simple_unlock(&ifp->if_rcv_port_list_lock);
 
 	/*
@@ -872,7 +897,7 @@ net_do_filter(infp, data, data_count, header)
 #define	header_word	((unsigned short *)header)
 
 	sp = &stack[NET_FILTER_STACK_DEPTH];
-	fp = &infp->filter[0];
+	fp = &infp->filter[1]; /* filter[0] used for flags */
 	fpe = infp->filter_end;
 
 	*sp = TRUE;
@@ -999,6 +1024,10 @@ parse_net_filter(filter, count)
 	register filter_t	*fpe = &filter[count];
 	register filter_t	op, arg;
 
+	/*
+	 * count is at least 1, and filter[0] is used for flags.
+	 */
+	filter++;
 	sp = NET_FILTER_STACK_DEPTH;
 
 	for (; filter < fpe; filter++) {
@@ -1099,6 +1128,7 @@ net_set_filter(ifp, rcv_port, priority, filter, filter_count)
     int				i;
     int				ret, is_new_infp;
     io_return_t			rval;
+    boolean_t			in, out;
 
     /*
      * Check the filter syntax.
@@ -1107,13 +1137,19 @@ net_set_filter(ifp, rcv_port, priority, filter, filter_count)
     filter_bytes = CSPF_BYTES(filter_count);
     match = (bpf_insn_t) 0;
 
-    if (filter_count > 0 && filter[0] == NETF_BPF) {
+    if (filter_count == 0) {
+	return (D_INVALID_OPERATION);
+    } else if (!((filter[0] & NETF_IN) || (filter[0] & NETF_OUT))) {
+	return (D_INVALID_OPERATION); /* NETF_IN or NETF_OUT required */
+    } else if ((filter[0] & NETF_TYPE_MASK) == NETF_BPF) {
 	ret = bpf_validate((bpf_insn_t)filter, filter_bytes, &match);
 	if (!ret)
 	    return (D_INVALID_OPERATION);
-    } else {
+    } else if ((filter[0] & NETF_TYPE_MASK) == 0) {
 	if (!parse_net_filter(filter, filter_count))
 	    return (D_INVALID_OPERATION);
+    } else {
+	return (D_INVALID_OPERATION);
     }
 
     rval = D_SUCCESS;			/* default return value */
@@ -1129,8 +1165,8 @@ net_set_filter(ifp, rcv_port, priority, filter, filter_count)
 	is_new_infp = TRUE;
     } else {
         /*
-	 * If there is a match instruction, we assume there will
-	 * multiple session with a common substructure and allocate
+	 * If there is a match instruction, we assume there will be
+	 * multiple sessions with a common substructure and allocate
 	 * a hash table to deal with them.
 	 */
 	my_infp = 0;
@@ -1143,70 +1179,87 @@ net_set_filter(ifp, rcv_port, priority, filter, filter_count)
      * Look for filters with dead ports (for GC).
      * Look for a filter with the same code except KEY insns.
      */
-    
-    simple_lock(&ifp->if_rcv_port_list_lock);
-    
-    FILTER_ITERATE(ifp, infp, nextfp)
+    void check_filter_list(queue_head_t *if_port_list)
     {
+	FILTER_ITERATE(if_port_list, infp, nextfp,
+                       (if_port_list == &ifp->if_rcv_port_list)
+                       ? &infp->input : &infp->output)
+	{
 	    if (infp->rcv_port == MACH_PORT_NULL) {
-		    if (match != 0
-			&& infp->priority == priority
-			&& my_infp == 0
-			&& (infp->filter_end - infp->filter) == filter_count
-			&& bpf_eq((bpf_insn_t)infp->filter,
-				  filter, filter_bytes))
-			    {
-				    my_infp = infp;
-			    }
+		if (match != 0
+		    && infp->priority == priority
+		    && my_infp == 0
+		    && (infp->filter_end - infp->filter) == filter_count
+		    && bpf_eq((bpf_insn_t)infp->filter,
+			      filter, filter_bytes))
+		    my_infp = infp;
 
-		    for (i = 0; i < NET_HASH_SIZE; i++) {
-			    head = &((net_hash_header_t) infp)->table[i];
-			    if (*head == 0)
-				    continue;
+		for (i = 0; i < NET_HASH_SIZE; i++) {
+		    head = &((net_hash_header_t) infp)->table[i];
+		    if (*head == 0)
+			continue;
 
-			    /*
-			     * Check each hash entry to make sure the
-			     * destination port is still valid.  Remove
-			     * any invalid entries.
-			     */
-			    entp = *head;
-			    do {
-				    nextentp = (net_hash_entry_t) entp->he_next;
+		    /*
+		     * Check each hash entry to make sure the
+		     * destination port is still valid.  Remove
+		     * any invalid entries.
+		     */
+		    entp = *head;
+		    do {
+			nextentp = (net_hash_entry_t) entp->he_next;
   
-				    /* checked without 
-				       ip_lock(entp->rcv_port) */
-				    if (entp->rcv_port == rcv_port
-					|| !IP_VALID(entp->rcv_port)
-					|| !ip_active(entp->rcv_port)) {
-				
-					    ret = hash_ent_remove (ifp,
-						(net_hash_header_t)infp,
-						(my_infp == infp),
-						head,
-						entp,
-						&dead_entp);
-					    if (ret)
-						    goto hash_loop_end;
-				    }
+			/* checked without 
+			   ip_lock(entp->rcv_port) */
+			if (entp->rcv_port == rcv_port
+			    || !IP_VALID(entp->rcv_port)
+			    || !ip_active(entp->rcv_port)) {
+			    ret = hash_ent_remove (ifp,
+				(net_hash_header_t)infp,
+				(my_infp == infp),
+				head,
+				entp,
+				&dead_entp);
+			    if (ret)
+				goto hash_loop_end;
+			}
 			
-				    entp = nextentp;
-			    /* While test checks head since hash_ent_remove
-			       might modify it.
-			       */
-			    } while (*head != 0 && entp != *head);
-		    }
+			entp = nextentp;
+		    /* While test checks head since hash_ent_remove
+		       might modify it.
+		     */
+		    } while (*head != 0 && entp != *head);
+		}
+
 		hash_loop_end:
 		    ;
-		    
 	    } else if (infp->rcv_port == rcv_port
 		       || !IP_VALID(infp->rcv_port)
 		       || !ip_active(infp->rcv_port)) {
-		    /* Remove the old filter from list */
-		    remqueue(&ifp->if_rcv_port_list, (queue_entry_t)infp);
-		    ENQUEUE_DEAD(dead_infp, infp);
+
+		    /* Remove the old filter from lists */
+		    if (infp->filter[0] & NETF_IN)
+			queue_remove(&ifp->if_rcv_port_list, infp,
+				     net_rcv_port_t, input);
+		    if (infp->filter[0] & NETF_OUT)
+			queue_remove(&ifp->if_snd_port_list, infp,
+				     net_rcv_port_t, output);
+
+		    ENQUEUE_DEAD(dead_infp, infp, input);
 	    }
+	}
+	FILTER_ITERATE_END
     }
-    FILTER_ITERATE_END
+
+    in = (filter[0] & NETF_IN) != 0;
+    out = (filter[0] & NETF_OUT) != 0;
+
+    simple_lock(&ifp->if_rcv_port_list_lock);
+    simple_lock(&ifp->if_snd_port_list_lock);
+
+    if (in)
+	check_filter_list(&ifp->if_rcv_port_list);
+    if (out)
+	check_filter_list(&ifp->if_snd_port_list);
 
     if (my_infp == 0) {
 	/* Allocate a dummy infp */
@@ -1217,6 +1270,7 @@ net_set_filter(ifp, rcv_port, priority, filter, filter_count)
 	}
 	if (i == N_NET_HASH) {
 	    simple_unlock(&net_hash_header_lock);
+	    simple_unlock(&ifp->if_snd_port_list_lock);
 	    simple_unlock(&ifp->if_rcv_port_list_lock);
 
             ipc_port_release_send(rcv_port);
@@ -1257,10 +1311,21 @@ net_set_filter(ifp, rcv_port, priority, filter, filter_count)
 	}
 
 	/* Insert my_infp according to priority */
-	queue_iterate(&ifp->if_rcv_port_list, infp, net_rcv_port_t, chain)
-	    if (priority > infp->priority)
-		break;
-	enqueue_tail((queue_t)&infp->chain, (queue_entry_t)my_infp);
+	if (in) {
+	    queue_iterate(&ifp->if_rcv_port_list, infp, net_rcv_port_t, input)
+		if (priority > infp->priority)
+		    break;
+
+	    queue_enter(&ifp->if_rcv_port_list, my_infp, net_rcv_port_t, input);
+	}
+
+	if (out) {
+	    queue_iterate(&ifp->if_snd_port_list, infp, net_rcv_port_t, output)
+		if (priority > infp->priority)
+		    break;
+
+	    queue_enter(&ifp->if_snd_port_list, my_infp, net_rcv_port_t, output);
+	}
     }
     
     if (match != 0)
@@ -1284,9 +1349,9 @@ net_set_filter(ifp, rcv_port, priority, filter, filter_count)
 
 	((net_hash_header_t)my_infp)->ref_count++;
 	hash_entp->rcv_qlimit = net_add_q_info(rcv_port);
-
     }
     
+    simple_unlock(&ifp->if_snd_port_list_lock);
     simple_unlock(&ifp->if_rcv_port_list_lock);
 
 clean_and_return:
@@ -1537,11 +1602,12 @@ net_io_init()
  */
 
 int
-bpf_do_filter(infp, p, wirelen, header, hash_headpp, entpp)
+bpf_do_filter(infp, p, wirelen, header, hlen, hash_headpp, entpp)
 	net_rcv_port_t	infp;
 	char *		p;		/* packet data */
 	unsigned int	wirelen;	/* data_count (in bytes) */
 	char *		header;
+	unsigned int    hlen;           /* header len (in bytes) */
 	net_hash_entry_t	**hash_headpp, *entpp;	/* out */
 {
 	register bpf_insn_t pc, pc_end;
@@ -1551,8 +1617,11 @@ bpf_do_filter(infp, p, wirelen, header, hash_headpp, entpp)
 	register int k;
 	long mem[BPF_MEMWORDS];
 
+	/* Generic pointer to either HEADER or P according to the specified offset. */
+	char *data = NULL;
+
 	pc = ((bpf_insn_t) infp->filter) + 1;
-					/* filter[0].code is BPF_BEGIN */
+				/* filter[0].code is (NETF_BPF | flags) */
 	pc_end = (bpf_insn_t)infp->filter_end;
 	buflen = NET_RCV_MAX;
 	*entpp = 0;			/* default */
@@ -1596,58 +1665,53 @@ bpf_do_filter(infp, p, wirelen, header, hash_headpp, entpp)
 
 		case BPF_LD|BPF_W|BPF_ABS:
 			k = pc->k;
-			if ((u_int)k + sizeof(long) <= buflen) {
-#ifdef BPF_ALIGN
-				if (((int)(p + k) & 3) != 0)
-					A = EXTRACT_LONG(&p[k]);
-				else
-#endif
-					A = ntohl(*(long *)(p + k));
-				continue;
-			}
 
-			k -= BPF_DLBASE;
-			if ((u_int)k + sizeof(long) <= NET_HDW_HDR_MAX) {
+		load_word:
+			if ((u_int)k + sizeof(long) <= hlen)
+			     data = header;
+			else if ((u_int)k + sizeof(long) <= buflen) {
+			     k -= hlen;
+			     data = p;
+			} else
+			     return 0;
+
 #ifdef BPF_ALIGN
-				if (((int)(header + k) & 3) != 0)
-					A = EXTRACT_LONG(&header[k]);
-				else
+			if (((int)(data + k) & 3) != 0)
+			     A = EXTRACT_LONG(&data[k]);
+			else
 #endif
-					A = ntohl(*(long *)(header + k));
-				continue;
-			} else {
-				return 0;
-			}
+			     A = ntohl(*(long *)(data + k));
+			continue;
 
 		case BPF_LD|BPF_H|BPF_ABS:
 			k = pc->k;
-			if ((u_int)k + sizeof(short) <= buflen) {
-				A = EXTRACT_SHORT(&p[k]);
-				continue;
-			}
 
-			k -= BPF_DLBASE;
-			if ((u_int)k + sizeof(short) <= NET_HDW_HDR_MAX) {
-				A = EXTRACT_SHORT(&header[k]);
-				continue;
-			} else {
-				return 0;
-			}
+		load_half:
+			if ((u_int)k + sizeof(short) <= hlen)
+			     data = header;
+			else if ((u_int)k + sizeof(short) <= buflen) {
+			     k -= hlen;
+			     data = p;
+			} else
+			     return 0;
+
+			A = EXTRACT_SHORT(&data[k]);
+			continue;
 
 		case BPF_LD|BPF_B|BPF_ABS:
-			k = pc->k;
-			if ((u_int)k < buflen) {
-				A = p[k];
-				continue;
-			}
-			
-			k -= BPF_DLBASE;
-			if ((u_int)k < NET_HDW_HDR_MAX) {
-				A = header[k];
-				continue;
-			} else {
-				return 0;
-			}
+		        k = pc->k;
+
+		load_byte:
+			if ((u_int)k < hlen)
+			     data = header;
+			else if ((u_int)k < buflen) {
+			     data = p;
+			     k -= hlen;
+			} else
+			     return 0;
+
+			A = data[k];
+			continue;
 
 		case BPF_LD|BPF_W|BPF_LEN:
 			A = wirelen;
@@ -1659,35 +1723,27 @@ bpf_do_filter(infp, p, wirelen, header, hash_headpp, entpp)
 
 		case BPF_LD|BPF_W|BPF_IND:
 			k = X + pc->k;
-			if (k + sizeof(long) > buflen)
-				return 0;
-#ifdef BPF_ALIGN
-			if (((int)(p + k) & 3) != 0)
-				A = EXTRACT_LONG(&p[k]);
-			else
-#endif
-				A = ntohl(*(long *)(p + k));
-			continue;
-
+			goto load_word;
+			
 		case BPF_LD|BPF_H|BPF_IND:
 			k = X + pc->k;
-			if (k + sizeof(short) > buflen)
-				return 0;
-			A = EXTRACT_SHORT(&p[k]);
-			continue;
+			goto load_half;
 
 		case BPF_LD|BPF_B|BPF_IND:
 			k = X + pc->k;
-			if (k >= buflen)
-				return 0;
-			A = p[k];
-			continue;
+			goto load_byte;
 
 		case BPF_LDX|BPF_MSH|BPF_B:
 			k = pc->k;
-			if (k >= buflen)
-				return 0;
-			X = (p[pc->k] & 0xf) << 2;
+			if (k < hlen)
+			     data = header;
+			else if (k < buflen) {
+			     data = p;
+			     k -= hlen;
+			} else
+			     return 0;
+
+			X = (data[k] & 0xf) << 2;
 			continue;
 
 		case BPF_LD|BPF_IMM:
@@ -1855,7 +1911,11 @@ bpf_validate(f, bytes, match)
 	register bpf_insn_t p;
 
 	len = BPF_BYTES2LEN(bytes);
-	/* f[0].code is already checked to be BPF_BEGIN. So skip f[0]. */
+
+	/*
+	 * f[0].code is already checked to be (NETF_BPF | flags).
+	 * So skip f[0].
+	 */
 
 	for (i = 1; i < len; ++i) {
 		/*
@@ -1984,7 +2044,7 @@ bpf_match (hash, n_keys, keys, hash_headpp, entpp)
 /*
  * Removes a hash entry (ENTP) from its queue (HEAD).
  * If the reference count of filter (HP) becomes zero and not USED,
- * HP is removed from ifp->if_rcv_port_list and is freed.
+ * HP is removed from the corresponding port lists and is freed.
  */
 
 int
@@ -1998,13 +2058,18 @@ hash_ent_remove (ifp, hp, used, head, entp, dead_p)
 	hp->ref_count--;
 
 	if (*head == entp) {
-
 		if (queue_empty((queue_t) entp)) {
 			*head = 0;
-			ENQUEUE_DEAD(*dead_p, entp);
+			ENQUEUE_DEAD(*dead_p, entp, chain);
 			if (hp->ref_count == 0 && !used) {
-				remqueue((queue_t) &ifp->if_rcv_port_list,
-					 (queue_entry_t)hp);
+				if (((net_rcv_port_t)hp)->filter[0] & NETF_IN)
+					queue_remove(&ifp->if_rcv_port_list,
+						     (net_rcv_port_t)hp,
+						     net_rcv_port_t, input);
+				if (((net_rcv_port_t)hp)->filter[0] & NETF_OUT)
+					queue_remove(&ifp->if_snd_port_list,
+						     (net_rcv_port_t)hp,
+						     net_rcv_port_t, output);
 				hp->n_keys = 0;
 				return TRUE;
 			}
@@ -2015,7 +2080,7 @@ hash_ent_remove (ifp, hp, used, head, entp, dead_p)
 	}
 
 	remqueue((queue_t)*head, (queue_entry_t)entp);
-	ENQUEUE_DEAD(*dead_p, entp);
+	ENQUEUE_DEAD(*dead_p, entp, chain);
 	return FALSE;
 }    
 
@@ -2069,7 +2134,7 @@ net_free_dead_infp (dead_infp)
 
 	for (infp = (net_rcv_port_t) dead_infp; infp != 0; infp = nextfp)
 	{
-		nextfp = (net_rcv_port_t) queue_next(&infp->chain);
+		nextfp = (net_rcv_port_t) queue_next(&infp->input);
 		ipc_port_release_send(infp->rcv_port);
 		net_del_q_info(infp->rcv_qlimit);
 		zfree(net_rcv_zone, (vm_offset_t) infp);
