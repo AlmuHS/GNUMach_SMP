@@ -627,7 +627,12 @@ void pmap_bootstrap()
 	 * and extends to a stupid arbitrary limit beyond that.
 	 */
 	kernel_virtual_start = phys_last_addr;
-	kernel_virtual_end = phys_last_addr + morevm;
+	kernel_virtual_end = phys_last_addr + morevm
+		+ (phys_last_addr - phys_first_addr) / 15;
+
+	if (kernel_virtual_end < phys_last_addr
+			|| kernel_virtual_end > VM_MAX_KERNEL_ADDRESS)
+		kernel_virtual_end = VM_MAX_KERNEL_ADDRESS;
 
 	/*
 	 * Allocate and clear a kernel page directory.
@@ -656,7 +661,7 @@ void pmap_bootstrap()
 		 * to allocate new kernel page tables later.
 		 * XX fix this
 		 */
-		for (va = phys_first_addr; va < phys_last_addr + morevm; )
+		for (va = phys_first_addr; va < kernel_virtual_end; )
 		{
 			pt_entry_t *pde = kernel_page_dir + lin2pdenum(kvtolin(va));
 			pt_entry_t *ptable = (pt_entry_t*)pmap_grab_page();

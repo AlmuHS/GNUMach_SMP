@@ -13,6 +13,14 @@ within the native Mach NE2000 NIC device driver, see
 Support for NORMA was removed on 2006-03-20.
 <URL:http://lists.gnu.org/archive/html/bug-hurd/2006-03/msg00007.html>.
 
-
 Be sure to check the ChangeLog and have a look at the repository at that
 tag's state if you want to work on those parts of GNU Mach.
+
+
+Starting with the application of the patch from
+<URL:http://savannah.gnu.org/bugs/index.php?func=detailitem&item_id=7118>,
+GNU Mach's usage of the machine's memory equipment is currently forced to
+be somewhere below 1 GiB, to make GNU Mach work at all on systems with
+such enlarged RAM installations.  This is--of course--not optimal.  See
+the calculation of and with `kernel_virtual_end' and `morevm' in
+i386/intel/pmap.c and `phys_last_addr' in i386/i386at/model_dep.c.

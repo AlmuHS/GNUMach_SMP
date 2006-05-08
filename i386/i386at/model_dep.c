@@ -207,6 +207,11 @@ mem_size_init()
 	printf("AT386 boot: physical memory from 0x%x to 0x%x\n",
 	       phys_first_addr, phys_last_addr);
 
+	/* Reserve 1/16 of the memory address space for virtual mappings.
+	 * Yes, this loses memory.  Blame i386.  */
+	if (phys_last_addr > (VM_MAX_KERNEL_ADDRESS / 16) * 15)
+		phys_last_addr = (VM_MAX_KERNEL_ADDRESS / 16) * 15;
+
 	phys_first_addr = round_page(phys_first_addr);
 	phys_last_addr = trunc_page(phys_last_addr);
 }

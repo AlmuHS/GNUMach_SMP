@@ -1,3 +1,17 @@
+2006-05-08  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* DEVELOPMENT: Document Samuel's patch.
+
+2006-05-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* i386/i386at/model_dep.c (mem_size_init): Limit memory to what can
+	actually be used (minus a little extra for virtual mappings).
+
+	* i386/intel/pmap.c (pmap_bootstrap): Extend the virtual mapping area
+	according to memory size for at least being able to manage it.  But
+	look out for wrap and limit it to kernel adresses.  Remove duplicate
+	computing.
+
 2006-04-27  Richard Braun  <syn@hurdfr.org>
 	    Manuel Menal  <mmenal@hurdfr.org>
 
