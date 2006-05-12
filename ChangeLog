@@ -1,3 +1,8 @@
+2006-05-12  Stefan Siegl  <stesie@brokenpipe.de>
+
+	* linux/dev/glue/kmem.c (vfree): Panic if `vmalloc_list_lookup' did
+	NOT succeed.
+
 2006-05-08  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* DEVELOPMENT: Document Samuel's patch.

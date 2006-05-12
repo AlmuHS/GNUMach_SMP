@@ -550,7 +550,7 @@ vfree (void *addr)
   struct vmalloc_struct *p;
 
   p = vmalloc_list_lookup ((vm_offset_t) addr);
-  if (p)
+  if (!p)
     panic ("vmalloc_list_lookup failure");
   
   kmem_free (kernel_map, addr, p->size);
