@@ -1,3 +1,15 @@
+2006-05-14  Roland McGrath  <roland@frob.com>
+
+	[sync from HEAD, 2002-06-17]
+	* device/if_hdr.h: Replace ancient UCB copyright terms with current
+	approved UCB terms.
+	* include/sys/reboot.h: Likewise.
+	* include/device/disk_status.h: Likewise.
+	* include/device/tape_status.h: Likewise.
+	* device/net_io.c: Remove advertising clause from UCB copyright terms.
+	* include/device/audio_status.h: Likewise.
+	* include/device/bpf.h: Likewise.
+
 2006-05-14  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* i386/i386at/autoconf.c (bus_device_init) <lpr> [! LINUX_DEV]: Depend
