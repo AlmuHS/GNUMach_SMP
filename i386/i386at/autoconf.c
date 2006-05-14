@@ -82,7 +82,7 @@ struct	bus_device	bus_device_init[] = {
      '?',    0,   -1,    -1,    0,   0,        0,   SPL_TTY, 5},
 #endif /* NCOM > 0 */
 
-#ifndef LINUX_DEV
+#ifdef MACH_LPR
 #if NLPR > 0
   {&lprdriver, "lpr", 0, lprintr, 0x378, 3, 0x378,
      '?',    0,   -1,    -1,    0,   0,        0,   SPL_TTY, 7},
@@ -91,7 +91,7 @@ struct	bus_device	bus_device_init[] = {
   {&lprdriver, "lpr", 0, lprintr, 0x3bc, 3, 0x3bc,
      '?',    0,   -1,    -1,    0,   0,        0,   SPL_TTY, 7},
 #endif /* NLPR > 0 */
-#endif /* ! LINUX_DEV */
+#endif /* MACH_LPR */
 
   0
 };

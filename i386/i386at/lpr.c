@@ -39,7 +39,7 @@
 #include <device/errno.h>
 #include <device/tty.h>
 #include <device/io_req.h>
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 #include <sys/param.h>
 #include <sys/conf.h>
 #include <sys/dir.h>
@@ -50,7 +50,7 @@
 #include <sys/systm.h>
 #include <sys/uio.h>
 #include <sys/file.h>
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
   
 #include <i386/ipl.h>
 #include <i386/pio.h>
@@ -70,7 +70,7 @@ int 	lprprobe(), lprintr(), lprstart(), lprstop();
 void	lprattach(struct bus_device *);
 #ifdef	MACH_KERNEL
 int lprstop(), lprgetstat(), lprsetstat();
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 
 struct bus_device *lprinfo[NLPR];	/* ??? */
 
@@ -130,7 +130,7 @@ int dev;
 int flag;
 #ifdef	MACH_KERNEL
 io_req_t ior;
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 {
 int unit = minor(dev);
 struct bus_device *isai;
@@ -143,7 +143,7 @@ u_short addr;
 #ifndef	MACH_KERNEL
 	if (tp->t_state & TS_XCLUDE && u.u_uid != 0)
 		return(EBUSY);
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 	addr = (u_short) isai->address;
 	tp->t_dev = dev;
 	tp->t_addr = *(caddr_t *)&addr;
@@ -153,7 +153,7 @@ u_short addr;
 	tp->t_stop = lprstop;
 	tp->t_getstat = lprgetstat;
 	tp->t_setstat = lprsetstat;
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 	if ((tp->t_state & TS_ISOPEN) == 0)
 		ttychars(tp);
 	outb(INTR_ENAB(addr), inb(INTR_ENAB(addr)) | 0x10);
@@ -171,7 +171,7 @@ u_short		addr = 	(u_short) lprinfo[unit]->address;
   
 #ifndef	MACH_KERNEL
   	(*linesw[tp->t_line].l_close)(tp);
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 	ttyclose(tp);
 	if (tp->t_state&TS_HUPCLS || (tp->t_state&TS_ISOPEN)==0) {
 		outb(INTR_ENAB(addr), inb(INTR_ENAB(addr)) & 0x0f);
@@ -240,7 +240,7 @@ unsigned int	count;
 	}
 	return (D_SUCCESS);
 }
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 int lprwrite(dev, uio)
      int dev;
      struct uio *uio;
@@ -276,7 +276,7 @@ int lprioctl(dev, cmd, addr, mode)
   splx(s);
   return(0);
 }
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 
 int lprintr(unit)
 int unit;
@@ -315,7 +315,7 @@ struct tty *tp;
 	if (tp->t_outq.c_cc <= TTLOWAT(tp)) {
 #ifdef	MACH_KERNEL
 		tt_write_wakeup(tp);
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 		if (tp->t_state & TS_ASLEEP) {
 			tp->t_state &= ~TS_ASLEEP;
 			wakeup ((caddr_t)&tp->t_outq);
@@ -325,7 +325,7 @@ struct tty *tp;
 			tp->t_wsel = 0;
 			tp->t_state &= ~TS_WCOLL;
 		}
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 	}
 	if (tp->t_outq.c_cc == 0) {
 		splx(s);
@@ -342,7 +342,7 @@ struct tty *tp;
 	outb(INTR_ENAB(addr),inb(INTR_ENAB(addr)) | 0x01);
 	outb(INTR_ENAB(addr),inb(INTR_ENAB(addr)) & 0x1e);
 	tp->t_state |= TS_BUSY;
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 	if (tp->t_flags & (RAW|LITOUT))
 		nch = ndqb(&tp->t_outq,0);
 	else {
@@ -362,7 +362,7 @@ struct tty *tp;
 		outb(INTR_ENAB(addr),inb(INTR_ENAB(addr)) & 0x1e);
 		tp->t_state |= TS_BUSY;
 	}
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 	splx(s);
 	return(0);
 }
@@ -375,7 +375,7 @@ int	flags;
 	if ((tp->t_state & TS_BUSY) && (tp->t_state & TS_TTSTOP) == 0)
 		tp->t_state |= TS_FLUSH;
 }
-#else	MACH_KERNEL
+#else	/* MACH_KERNEL */
 int lprstop(tp, flag)
 struct tty *tp;
 {
@@ -385,7 +385,7 @@ struct tty *tp;
 		tp->t_state |= TS_FLUSH;
 	splx(s);
 }
-#endif	MACH_KERNEL
+#endif	/* MACH_KERNEL */
 lprpr(unit)
 {
 	lprpr_addr(lprinfo[unit]->address);
@@ -399,4 +399,4 @@ lprpr_addr(addr)
 		STATUS(addr), inb(STATUS(addr)),
 		INTR_ENAB(addr), inb(INTR_ENAB(addr)));
 }
-#endif NLPR
+#endif /* NLPR */
