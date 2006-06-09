@@ -1,5 +1,19 @@
 2006-06-09  Stefan Siegl  <stesie@brokenpipe.de>
 
+	* linux/dev/include/asm-i386/uaccess.h: New dummy file.
+	* linux/dev/include/linux/pm.h: Likewise.
+	* linux/dev/include/linux/threads.h: Likewise.
+	* linux/src/include/linux/symtab_begin.h: New file from Linux 2.0.40.
+	* linux/src/include/linux/symtab_end.h: Likewise.
+	* linux/src/include/linux/module.h: Update from Linux 2.0.40 with minor
+	changes.
+	* linux/src/include/linux/list.h: New file from Linux 2.2.26.
+	* linux/src/include/linux/kcomp.h: Likewise with minor changes.
+	* linux/src/include/linux/wait.h: Update from Linux 2.2.26.
+	* linux/src/include/linux/wireless.h: Likewise.
+	* linux/src/include/asm-i386/bitops.h [__KERNEL__] (ffs, hweight32)
+	(hweight16, hweight8): Copy from Linux 2.2.26.
+
 	* kern/printf.c (_doprnt): Support printing of pointer addresses.
 
 2006-05-14  Roland McGrath  <roland@frob.com>

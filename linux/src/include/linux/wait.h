@@ -4,16 +4,26 @@
 #define WNOHANG		0x00000001
 #define WUNTRACED	0x00000002
 
-#define __WCLONE	0x80000000
+#define __WALL		0x40000000	/* Wait on all children, regardless of type */
+#define __WCLONE	0x80000000	/* Wait only on non-SIGCHLD children */ 
 
 #ifdef __KERNEL__
+
+#include <asm/page.h>
 
 struct wait_queue {
 	struct task_struct * task;
 	struct wait_queue * next;
 };
 
+typedef struct wait_queue wait_queue_t;
+typedef struct wait_queue *wait_queue_head_t;
+
 #define WAIT_QUEUE_HEAD(x) ((struct wait_queue *)((x)-1))
+#define DECLARE_WAITQUEUE(wait, current)	struct wait_queue wait = { current, NULL }
+#define DECLARE_WAIT_QUEUE_HEAD(wait)		wait_queue_head_t wait
+#define init_waitqueue_head(x)			*(x)=NULL
+#define init_waitqueue_entry(q,p)		((q)->task)=(p)
 
 static inline void init_waitqueue(struct wait_queue **q)
 {

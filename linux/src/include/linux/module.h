@@ -46,7 +46,7 @@ struct module_ref {
 struct internal_symbol {
 	void *addr;
 	const char *name;
-	};
+};
 
 struct symbol_table { /* received from "insmod" */
 	int size; /* total, including string table!!! */
@@ -65,7 +65,7 @@ struct module {
 	struct symbol_table *symtab;
 	const char *name;
 	int size;			/* size of module in pages */
-	void* addr;			/* address of module */
+	void *addr;			/* address of module */
 	int state;
 	void (*cleanup)(void);		/* cleanup routine */
 };
@@ -108,12 +108,6 @@ int Using_Versions; /* gcc will handle this global (used as a flag) correctly */
 #endif
 
 /* insert new symbol table */
-extern int register_symtab_from(struct symbol_table *, long *);
-extern void *get_module_symbol(char *, char *);
-#ifdef MODULE
-#define register_symtab(symtab) register_symtab_from(symtab, &mod_use_count_)
-#else
-#define register_symtab(symtab) register_symtab_from(symtab, 0)
-#endif
+#define register_symtab(symtab)
 
 #endif
