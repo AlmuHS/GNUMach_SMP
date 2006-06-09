@@ -50,6 +50,7 @@
  *
  *	%d	decimal conversion
  *	%u	unsigned conversion
+ *	%p      pointer address
  *	%x	hexadecimal conversion
  *	%X	hexadecimal conversion with capital letters
  *	%o	octal conversion
@@ -399,6 +400,7 @@ void _doprnt(
 		    base = 10;
 		    goto print_unsigned;
 
+		case 'p':
 		case 'x':
 		    truncate = _doprnt_truncates;
 		case 'X':
