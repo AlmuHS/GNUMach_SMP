@@ -122,8 +122,7 @@ int mouse_baud = BCNT1200;
 
 boolean_t	mouse_char_cmd = FALSE;		/* mouse response is to cmd */
 boolean_t	mouse_char_wanted = FALSE;	/* want mouse response */
-boolean_t	mouse_char_in = FALSE;		/* have mouse response */
-unsigned char	mouse_char;			/* mouse response */
+int		mouse_char_index;		/* mouse response */
 
 
 /*
@@ -573,11 +572,11 @@ mouse_handle_byte(ch)
 	    /*
 	     *	Mouse character is response to command
 	     */
-	    mouse_char = ch;
-	    mouse_char_in = TRUE;
+	    if (mousebufindex < mousebufsize)
+	        mousebuf[mousebufindex++] = ch;
 	    if (mouse_char_wanted) {
 		mouse_char_wanted = FALSE;
-		wakeup(&mouse_char);
+		wakeup(&mousebuf);
 	    }
 	    return;
 	}
@@ -747,20 +746,31 @@ int kd_mouse_read(void)
 {
 	int	ch;
 
-	while (!mouse_char_in) {
+	if (mouse_char_index >= mousebufsize)
+	    return -1;
+
+	while (mousebufindex <= mouse_char_index) {
 	    mouse_char_wanted = TRUE;
 #ifdef	MACH_KERNEL
-	    assert_wait((event_t) &mouse_char, FALSE);
+	    assert_wait((event_t) &mousebuf, FALSE);
 	    thread_block((void (*)()) 0);
 #else	/* MACH_KERNEL */
-	    sleep(&mouse_char, PZERO);
+	    sleep(&mousebuf, PZERO);
 #endif	/* MACH_KERNEL */
 	}
 
-	ch = mouse_char;
-	mouse_char_in = FALSE;
+	ch = mousebuf[mouse_char_index++];
 
 	return ch;
+}
+
+/*
+ *	Prepare buffer for receiving next packet from mouse.
+ */
+void kd_mouse_read_reset(void)
+{
+	mousebufindex = 0;
+	mouse_char_index = 0;
 }
 
 ibm_ps2_mouse_open(dev)
@@ -775,6 +785,7 @@ ibm_ps2_mouse_open(dev)
 	kd_cmdreg_write(0x47);	/* allow mouse interrupts */
 				/* magic number for ibm? */
 
+	kd_mouse_read_reset();
 	kd_mouse_write(0xff);	/* reset mouse */
 	if (kd_mouse_read() != 0xfa) {
 	    splx(s);
@@ -784,18 +795,21 @@ ibm_ps2_mouse_open(dev)
 	(void) kd_mouse_read();	/* discard 2-character mouse ID */
 	(void) kd_mouse_read();
 
+	kd_mouse_read_reset();
 	kd_mouse_write(0xea);	/* set stream mode */
 	if (kd_mouse_read() != 0xfa) {
 	    splx(s);
 	    return;		/* need ACK */
 	}
 
+	kd_mouse_read_reset();
 	kd_mouse_write(0xf4);	/* enable */
 	if (kd_mouse_read() != 0xfa) {
 	    splx(s);
 	    return;		/* need ACK */
 	}
 
+	kd_mouse_read_reset();
 	mouse_char_cmd = FALSE;	/* now we get mouse packets */
 
 	splx(s);
@@ -807,6 +821,7 @@ ibm_ps2_mouse_close(dev)
 
 	mouse_char_cmd = TRUE;	/* responses are to commands */
 
+	kd_mouse_read_reset();
 	kd_mouse_write(0xff);	/* reset mouse */
 	if (kd_mouse_read() == 0xfa) {
 	    /* got ACK: discard 2-char mouse ID */
