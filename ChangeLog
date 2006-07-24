@@ -1,3 +1,14 @@
+2006-07-24  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* Makerules.in (%.h %_user.c): Add `%.cli.d' to the target list.
+	Create these files by specifying `-MD' as a flag for mig and rename the
+	resulting files as needed.
+	Include these `*.cli.d' files instead of `*.migu.d' files.
+	(%_interface.h %_server.c): Likewise for `%.srv.d' / `*.migs.d'.
+	(%.migs.d, %.migu.d): Remove targets.
+	* Makefile.in (clean): Adapt to the above.
+	* i386/Makefile.in (clean): Likewise.
+	
 2006-06-30  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* i386/i386at/kd_mouse.c (mouse_char_in, mouse_char) Remove variables.
