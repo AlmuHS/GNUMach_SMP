@@ -937,6 +937,16 @@ Optional Features:
   --enable-tlan           enable driver tlan
   --enable-via-rhine      enable driver alias via-rhine for viarhine
   --enable-viarhine       enable driver viarhine
+  --enable-i82365         enable driver i82365
+  --enable-3c574_cs       enable driver 3c574_cs
+  --enable-3c589_cs       enable driver 3c589_cs
+  --enable-axnet_cs       enable driver axnet_cs
+  --enable-fmvj18x_cs     enable driver fmvj18x_cs
+  --enable-nmclan_cs      enable driver nmclan_cs
+  --enable-pcnet_cs       enable driver pcnet_cs
+  --enable-smc91c92_cs    enable driver smc91c92_cs
+  --enable-xirc2ps_cs     enable driver xirc2ps_cs
+  --enable-orinoco_cs     enable driver orinoco_cs
 
 Report bugs to <bug-hurd@gnu.org>.
 _ACEOF
@@ -1947,6 +1957,21 @@ driver_class_scsi_files=" \
 driver_class_net_option=CONFIG_INET
 driver_class_net_files=" \
   auto_irq.o net.o Space.o dev.o net_init.o pci-scan.o"
+
+
+
+
+
+driver_class_pcmcia_option=CONFIG_PCMCIA
+driver_class_pcmcia_files=" \
+  pcmcia.o cs.o ds.o rsrc_mgr.o bulkmem.o cistpl.o pci_fixup.o"
+
+
+
+
+
+driver_class_wireless_option=CONFIG_WIRELESS
+driver_class_wireless_files=""
 
 
 
@@ -4318,6 +4343,303 @@ fi
 fi
 
 fi;
+
+
+
+
+
+
+
+# Checking for device driver option i82365
+# Check whether --enable-i82365 or --disable-i82365 was given.
+if test "${enable_i82365+set}" = set; then
+  enableval="$enable_i82365"
+
+if test "x$enableval" != xno; then
+
+cat >>confdefs.h <<\_ACEOF
+#define CONFIG_I82365 1
+_ACEOF
+
+device_drivers="$device_drivers i82365.o"
+if test "${driver_class_pcmcia_selected+set}" != set; then
+  driver_class_pcmcia_selected=yes
+  cat >>confdefs.h <<_ACEOF
+#define $driver_class_pcmcia_option 1
+_ACEOF
+
+  device_drivers="$device_drivers $driver_class_pcmcia_files"
+fi
+fi
+
+fi;
+
+
+
+
+
+
+# Checking for device driver option 3c574_cs
+# Check whether --enable-3c574_cs or --disable-3c574_cs was given.
+if test "${enable_3c574_cs+set}" = set; then
+  enableval="$enable_3c574_cs"
+
+if test "x$enableval" != xno; then
+
+cat >>confdefs.h <<\_ACEOF
+#define CONFIG_3C574_CS 1
+_ACEOF
+
+device_drivers="$device_drivers 3c574_cs.o"
+if test "${driver_class_pcmcia_selected+set}" != set; then
+  driver_class_pcmcia_selected=yes
+  cat >>confdefs.h <<_ACEOF
+#define $driver_class_pcmcia_option 1
+_ACEOF
+
+  device_drivers="$device_drivers $driver_class_pcmcia_files"
+fi
+fi
+
+fi;
+
+
+
+
+# Checking for device driver option 3c589_cs
+# Check whether --enable-3c589_cs or --disable-3c589_cs was given.
+if test "${enable_3c589_cs+set}" = set; then
+  enableval="$enable_3c589_cs"
+
+if test "x$enableval" != xno; then
+
+cat >>confdefs.h <<\_ACEOF
+#define CONFIG_3C589_CS 1
+_ACEOF
+
+device_drivers="$device_drivers 3c589_cs.o"
+if test "${driver_class_pcmcia_selected+set}" != set; then
+  driver_class_pcmcia_selected=yes
+  cat >>confdefs.h <<_ACEOF
+#define $driver_class_pcmcia_option 1
+_ACEOF
+
+  device_drivers="$device_drivers $driver_class_pcmcia_files"
+fi
+fi
+
+fi;
+
+
+
+
+# Checking for device driver option axnet_cs
+# Check whether --enable-axnet_cs or --disable-axnet_cs was given.
+if test "${enable_axnet_cs+set}" = set; then
+  enableval="$enable_axnet_cs"
+
+if test "x$enableval" != xno; then
+
+cat >>confdefs.h <<\_ACEOF
+#define CONFIG_AXNET_CS 1
+_ACEOF
+
+device_drivers="$device_drivers axnet_cs.o"
+if test "${driver_class_pcmcia_selected+set}" != set; then
+  driver_class_pcmcia_selected=yes
+  cat >>confdefs.h <<_ACEOF
+#define $driver_class_pcmcia_option 1
+_ACEOF
+
+  device_drivers="$device_drivers $driver_class_pcmcia_files"
+fi
+fi
+
+fi;
+
+
+
+
+# Checking for device driver option fmvj18x_cs
+# Check whether --enable-fmvj18x_cs or --disable-fmvj18x_cs was given.
+if test "${enable_fmvj18x_cs+set}" = set; then
+  enableval="$enable_fmvj18x_cs"
+
+if test "x$enableval" != xno; then
+
+cat >>confdefs.h <<\_ACEOF
+#define CONFIG_FMVJ18X_CS 1
+_ACEOF
+
+device_drivers="$device_drivers fmvj18x_cs.o"
+if test "${driver_class_pcmcia_selected+set}" != set; then
+  driver_class_pcmcia_selected=yes
+  cat >>confdefs.h <<_ACEOF
+#define $driver_class_pcmcia_option 1
+_ACEOF
+
+  device_drivers="$device_drivers $driver_class_pcmcia_files"
+fi
+fi
+
+fi;
+
+
+
+
+# Checking for device driver option nmclan_cs
+# Check whether --enable-nmclan_cs or --disable-nmclan_cs was given.
+if test "${enable_nmclan_cs+set}" = set; then
+  enableval="$enable_nmclan_cs"
+
+if test "x$enableval" != xno; then
+
+cat >>confdefs.h <<\_ACEOF
+#define CONFIG_NMCLAN_CS 1
+_ACEOF
+
+device_drivers="$device_drivers nmclan_cs.o"
+if test "${driver_class_pcmcia_selected+set}" != set; then
+  driver_class_pcmcia_selected=yes
+  cat >>confdefs.h <<_ACEOF
+#define $driver_class_pcmcia_option 1
+_ACEOF
+
+  device_drivers="$device_drivers $driver_class_pcmcia_files"
+fi
+fi
+
+fi;
+
+
+# Checking for device driver option pcnet_cs
+# Check whether --enable-pcnet_cs or --disable-pcnet_cs was given.
+if test "${enable_pcnet_cs+set}" = set; then
+  enableval="$enable_pcnet_cs"
+
+if test "x$enableval" != xno; then
+
+cat >>confdefs.h <<\_ACEOF
+#define CONFIG_PCNET_CS 1
+_ACEOF
+
+device_drivers="$device_drivers pcnet_cs.o 8390.o"
+if test "${driver_class_pcmcia_selected+set}" != set; then
+  driver_class_pcmcia_selected=yes
+  cat >>confdefs.h <<_ACEOF
+#define $driver_class_pcmcia_option 1
+_ACEOF
+
+  device_drivers="$device_drivers $driver_class_pcmcia_files"
+fi
+fi
+
+fi;
+
+
+
+# Checking for device driver option smc91c92_cs
+# Check whether --enable-smc91c92_cs or --disable-smc91c92_cs was given.
+if test "${enable_smc91c92_cs+set}" = set; then
+  enableval="$enable_smc91c92_cs"
+
+if test "x$enableval" != xno; then
+
+cat >>confdefs.h <<\_ACEOF
+#define CONFIG_SMC91C92_CS 1
+_ACEOF
+
+device_drivers="$device_drivers smc91c92_cs.o"
+if test "${driver_class_pcmcia_selected+set}" != set; then
+  driver_class_pcmcia_selected=yes
+  cat >>confdefs.h <<_ACEOF
+#define $driver_class_pcmcia_option 1
+_ACEOF
+
+  device_drivers="$device_drivers $driver_class_pcmcia_files"
+fi
+fi
+
+fi;
+
+
+
+
+# Checking for device driver option xirc2ps_cs
+# Check whether --enable-xirc2ps_cs or --disable-xirc2ps_cs was given.
+if test "${enable_xirc2ps_cs+set}" = set; then
+  enableval="$enable_xirc2ps_cs"
+
+if test "x$enableval" != xno; then
+
+cat >>confdefs.h <<\_ACEOF
+#define CONFIG_XIRC2PS_CS 1
+_ACEOF
+
+device_drivers="$device_drivers xirc2ps_cs.o"
+if test "${driver_class_pcmcia_selected+set}" != set; then
+  driver_class_pcmcia_selected=yes
+  cat >>confdefs.h <<_ACEOF
+#define $driver_class_pcmcia_option 1
+_ACEOF
+
+  device_drivers="$device_drivers $driver_class_pcmcia_files"
+fi
+fi
+
+fi;
+
+
+
+
+
+
+
+
+# Checking for device driver option orinoco_cs
+# Check whether --enable-orinoco_cs or --disable-orinoco_cs was given.
+if test "${enable_orinoco_cs+set}" = set; then
+  enableval="$enable_orinoco_cs"
+
+if test "x$enableval" != xno; then
+
+cat >>confdefs.h <<\_ACEOF
+#define CONFIG_ORINOCO_CS 1
+_ACEOF
+
+device_drivers="$device_drivers  \
+		       hermes.o orinoco.o orinoco_cs.o"
+if test "${driver_class_wireless_selected+set}" != set; then
+  driver_class_wireless_selected=yes
+  cat >>confdefs.h <<_ACEOF
+#define $driver_class_wireless_option 1
+_ACEOF
+
+  device_drivers="$device_drivers $driver_class_wireless_files"
+fi
+fi
+
+fi;
+  if test x"${driver_class_pcmcia_selected+set}" != xset; then
+    driver_class_pcmcia_selected=yes
+    cat >>confdefs.h <<_ACEOF
+#define $driver_class_pcmcia_option 1
+_ACEOF
+
+    device_drivers="$device_drivers $driver_class_pcmcia_files"
+  fi
+
+
+if test x"${driver_class_pcmcia_selected+set}" = xset; then
+  if test x"${driver_class_net_selected+set}" != xset; then
+    driver_class_net_selected=yes
+    cat >>confdefs.h <<_ACEOF
+#define $driver_class_net_option 1
+_ACEOF
+
+    device_drivers="$device_drivers $driver_class_net_files"
+  fi
+fi
 
 
                     ac_config_files="$ac_config_files Makefile Makerules"

@@ -1,3 +1,8 @@
+2006-07-27  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* i386/linux/configure: Regenerate.
+	* i386/linux/device-drivers.h.in: Likewise.
+
 2006-07-27  Stefan Siegl  <stesie@brokenpipe.de>
 
 	* i386/linux/configure.ac (pcmcia, wireless): New driver classes.

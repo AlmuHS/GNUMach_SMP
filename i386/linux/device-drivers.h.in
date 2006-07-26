@@ -3,6 +3,15 @@
 /* 3c515 */
 #undef CONFIG_3C515
 
+/* 3c574_cs */
+#undef CONFIG_3C574_CS
+
+/* 3c575_cb */
+#undef CONFIG_3C575_CB
+
+/* 3c589_cs */
+#undef CONFIG_3C589_CS
+
 /* ac3200 */
 #undef CONFIG_AC3200
 
@@ -15,11 +24,20 @@
 /* atp */
 #undef CONFIG_ATP
 
+/* axnet_cs */
+#undef CONFIG_AXNET_CS
+
 /* floppy */
 #undef CONFIG_BLK_DEV_FD
 
 /* ide */
 #undef CONFIG_BLK_DEV_IDE
+
+/* cardbus */
+#undef CONFIG_CARDBUS
+
+/* cb_enabler */
+#undef CONFIG_CB_ENABLER
 
 /* de4x5 */
 #undef CONFIG_DE4X5
@@ -38,6 +56,9 @@
 
 /* e2100 */
 #undef CONFIG_E2100
+
+/* eepro100_cb */
+#undef CONFIG_EEPRO100_CB
 
 /* eexpress */
 #undef CONFIG_EEXPRESS
@@ -66,6 +87,9 @@
 /* epic */
 #undef CONFIG_EPIC
 
+/* epic_cb */
+#undef CONFIG_EPIC_CB
+
 /* eth16i */
 #undef CONFIG_ETH16I
 
@@ -74,6 +98,9 @@
 
 /* fmv18x */
 #undef CONFIG_FMV18X
+
+/* fmvj18x_cs */
+#undef CONFIG_FMVJ18X_CS
 
 /* hamachi */
 #undef CONFIG_HAMACHI
@@ -86,6 +113,9 @@
 
 /* hplanplus */
 #undef CONFIG_HPLAN_PLUS
+
+/* i82365 */
+#undef CONFIG_I82365
 
 /* Driver Class net */
 #undef CONFIG_INET
@@ -126,11 +156,23 @@
 /* ni65 */
 #undef CONFIG_NI65
 
+/* nmclan_cs */
+#undef CONFIG_NMCLAN_CS
+
 /* ns820 */
 #undef CONFIG_NS820
 
+/* orinoco_cs */
+#undef CONFIG_ORINOCO_CS
+
+/* Driver Class pcmcia */
+#undef CONFIG_PCMCIA
+
 /* pcnet32 */
 #undef CONFIG_PCNET32
+
+/* pcnet_cs */
+#undef CONFIG_PCNET_CS
 
 /* rtl8139 */
 #undef CONFIG_RTL8139
@@ -231,6 +273,9 @@
 /* skg16 */
 #undef CONFIG_SK_G16
 
+/* smc91c92_cs */
+#undef CONFIG_SMC91C92_CS
+
 /* starfire */
 #undef CONFIG_STARFIRE
 
@@ -239,6 +284,9 @@
 
 /* tlan */
 #undef CONFIG_TLAN
+
+/* tulip_cb */
+#undef CONFIG_TULIP_CB
 
 /* ul */
 #undef CONFIG_ULTRA
@@ -260,6 +308,12 @@
 
 /* winbond_840 */
 #undef CONFIG_WINBOND840
+
+/* Driver Class wireless */
+#undef CONFIG_WIRELESS
+
+/* xirc2ps_cs */
+#undef CONFIG_XIRC2PS_CS
 
 /* yellowfin */
 #undef CONFIG_YELLOWFIN
