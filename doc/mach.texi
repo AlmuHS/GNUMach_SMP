@@ -880,6 +880,26 @@ Enables the Sundance ST201 "Alta" PCI Ethernet devices eth%d.
 Enables the Winbond W89c840 PCI Ethernet devices eth%d.
 @end table
 
+pcmcia drivers.
+
+@table @code
+@item --enable-i82365
+@end table
+
+pcmcia device drivers.
+
+@table @code
+@item --enable-3c574_cs
+@item --enable-3c589_cs
+@item --enable-axnet_cs
+@item --enable-fmvj18x_cs
+@item --enable-nmclan_cs
+@item --enable-pcnet_cs
+@item --enable-smc91c92_cs
+@item --enable-xirc2ps_cs
+@item --enable-orinoco_cs
+@end table
+
 
 @node Cross-Compilation
 @section Cross-Compilation

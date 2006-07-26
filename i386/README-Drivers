@@ -395,3 +395,19 @@ Sundance ST201 "Alta" PCI Ethernet
 
 Winbond W89c840 PCI Ethernet
   --enable-winbond-840			net/winbond-840.c
+
+*** pcmcia drivers
+
+  --enable-i82365
+
+*** pcmcia device drivers
+
+  --enable-3c574_cs
+  --enable-3c589_cs
+  --enable-axnet_cs
+  --enable-fmvj18x_cs
+  --enable-nmclan_cs
+  --enable-pcnet_cs
+  --enable-smc91c92_cs
+  --enable-xirc2ps_cs
+  --enable-orinoco_cs
