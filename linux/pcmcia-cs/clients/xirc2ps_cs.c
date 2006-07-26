@@ -442,6 +442,10 @@ get_tuple(int fn, client_handle_t handle, tuple_t *tuple, cisparse_t *parse)
 static void
 busy_loop(u_long len)
 {
+#ifdef MACH
+    /* TODO: Is this really what we want?  */
+    __udelay(1000000 / HZ *  len);
+#else
     if (in_interrupt()) {
 	u_long timeout = jiffies + len;
 	u_long flags;
@@ -454,6 +458,7 @@ busy_loop(u_long len)
 	__set_current_state(TASK_UNINTERRUPTIBLE);
 	schedule_timeout(len);
     }
+#endif
 }
 
 

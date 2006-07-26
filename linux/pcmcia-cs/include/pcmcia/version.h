@@ -5,9 +5,5 @@
 
 #define VERSION(v,p,s)		(((v)<<16)+(p<<8)+s)
 
-#ifdef CONFIG_PCMCIA
-#include_next <pcmcia/version.h>
-#else
 #define CS_RELEASE		CS_PKG_RELEASE
 #define CS_RELEASE_CODE		CS_PKG_RELEASE_CODE
-#endif

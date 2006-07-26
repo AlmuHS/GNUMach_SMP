@@ -48,7 +48,10 @@ u32 pci_irq_mask = 0;
 ======================================================================*/
 
 #if (LINUX_VERSION_CODE < VERSION(2,1,0))
+#ifndef MACH
+/* Already defined in drivers/pci/pci.c.  */
 struct pci_dev *pci_devices = NULL;
+#endif
 struct pci_bus pci_root = {
     parent:	NULL,
     children:	NULL,

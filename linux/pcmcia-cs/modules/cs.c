@@ -2322,7 +2322,7 @@ EXPORT_SYMBOL(pci_set_power_state);
 
 #endif
 
-static int __init init_pcmcia_cs(void)
+int __init init_pcmcia_cs(void)
 {
     printk(KERN_INFO "%s\n", release);
 #ifdef UTS_RELEASE

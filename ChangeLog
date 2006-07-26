@@ -1,3 +1,29 @@
+2006-07-27  Stefan Siegl  <stesie@brokenpipe.de>
+
+	* linux/pcmcia-cs/clients/xirc2ps_cs.c (busy_loop): Replace the code by
+	a call to __udelay.
+	* linux/pcmcia-cs/include/linux/init.h: Adapt to our Linux environment.
+	* linux/pcmcia-cs/include/linux/slab.h: Use `#include', not
+	`#include_next'.
+	* linux/pcmcia-cs/include/pcmcia/mem_op.h: Adapt to our Linux
+	environment and fix GCC 4.0 complaints.
+	* linux/pcmcia-cs/include/pcmcia/version.h: Always assume that
+	CONFIG_PCMCIA is not defined.
+	* linux/pcmcia-cs/modules/cs.c (init_pcmcia_cs): Don't make it static.
+	* linux/pcmcia-cs/modules/ds.c: Use some magic to avoid duplicate
+	definition `io_req_t'.
+	(ds_open, ds_release, ds_read, ds_write, ds_select, ds_poll, ds_fops):
+	Hide functions if MACH is defined.
+	Likewise for the module handling code.
+	(ds_ioctl): Use plain `memcpy' if MACH is defined.
+	(init_pcmcia_ds): Don't register charcater devices if MACH is defined.
+	Include "../glue/ds.c".
+	* linux/pcmcia-cs/modules/i82365.c (test_irq): Adapt to GNU Mach.
+	(init_i82365): Don't make it static.
+	* linux/pcmcia-cs/modules/pci_fixup.c (pci_devices): Don't define if
+	MACH is defined.
+	* linux/pcmcia-cs/wireless/orinoco.c: Adapt to our Linux environment.
+
 2006-07-27  Thomas Schwinge  <tschwinge@gnu.org>
 
 	Import a number of files from the pcmcia-cs package, version 3.2.8,

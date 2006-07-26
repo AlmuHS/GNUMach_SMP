@@ -4,7 +4,7 @@
 #include <linux/version.h>
 
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(2,2,0))
-#include_next <linux/malloc.h>
+#include <linux/malloc.h>
 #else
 #include_next <linux/slab.h>
 #endif

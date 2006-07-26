@@ -48,12 +48,19 @@
 #include <linux/poll.h>
 #endif
 
+/* 
+ * <pcmcia/cs.h> defines io_req_t which is not used in this file, but
+ * which clashes with the io_req_t needed for the Mach devices.  Rename
+ * it to cardservice_io_req_t to avoid this clash.
+ */
+#define io_req_t    cardservice_io_req_t
 #include <pcmcia/version.h>
 #include <pcmcia/cs_types.h>
 #include <pcmcia/cs.h>
 #include <pcmcia/bulkmem.h>
 #include <pcmcia/cistpl.h>
 #include <pcmcia/ds.h>
+#undef io_req_t
 
 /*====================================================================*/
 
@@ -516,6 +523,9 @@ static int unbind_request(int i, bind_info_t *bind_info)
 
 ======================================================================*/
 
+/* Disable all the ds filesystem operations.  */
+#ifndef MACH
+
 static int ds_open(struct inode *inode, struct file *file)
 {
     socket_t i = MINOR(inode->i_rdev);
@@ -699,6 +709,8 @@ static u_int ds_poll(struct file *file, poll_table *wait)
 
 /*====================================================================*/
 
+#endif /* !defined(MACH) */
+
 static int ds_ioctl(struct inode * inode, struct file * file,
 		    u_int cmd, u_long arg)
 {
@@ -721,6 +733,7 @@ static int ds_ioctl(struct inode * inode, struct file * file,
     if (!(cmd & IOC_OUT) && !capable(CAP_SYS_ADMIN))
 	return -EPERM;
 	
+#ifndef MACH
     if (cmd & IOC_IN) {
 	err = verify_area(VERIFY_READ, (char *)arg, size);
 	if (err) {
@@ -735,10 +748,15 @@ static int ds_ioctl(struct inode * inode, struct file * file,
 	    return err;
 	}
     }
+#endif
     
     err = ret = 0;
     
+#ifndef MACH
     if (cmd & IOC_IN) copy_from_user((char *)&buf, (char *)arg, size);
+#else
+    if (cmd & IOC_IN) memcpy((char *) &buf, (char *) arg, size);
+#endif
     
     switch (cmd) {
     case DS_ADJUST_RESOURCE_INFO:
@@ -857,12 +875,18 @@ static int ds_ioctl(struct inode * inode, struct file * file,
 	}
     }
     
+#ifndef MACH
     if (cmd & IOC_OUT) copy_to_user((char *)arg, (char *)&buf, size);
+#else
+    if (cmd & IOC_OUT) memcpy((char *) arg, (char *) &buf, size);
+#endif
      
     return err;
 } /* ds_ioctl */
 
 /*====================================================================*/
+
+#ifndef MACH
 
 static struct file_operations ds_fops = {
     open:	ds_open,
@@ -895,6 +919,8 @@ EXPORT_SYMBOL(register_pccard_driver);
 EXPORT_SYMBOL(unregister_pccard_driver);
 
 #endif
+
+#endif /* !defined(MACH) */
 
 /*====================================================================*/
 
@@ -961,6 +987,7 @@ int __init init_pcmcia_ds(void)
 	}
     }
     
+#ifndef MACH
     /* Set up character device for user mode clients */
     i = register_chrdev(0, "pcmcia", &ds_fops);
     if (i == -EBUSY)
@@ -969,6 +996,7 @@ int __init init_pcmcia_ds(void)
     else
 	major_dev = i;
     register_symtab(&ds_symtab);
+#endif
 
 #ifdef HAS_PROC_BUS
     if (proc_pccard)
@@ -1002,3 +1030,10 @@ void __exit cleanup_module(void)
 }
 
 #endif
+
+/*====================================================================*/
+
+/* Include the interface glue code to GNU Mach.  */
+#include "../glue/ds.c"
+
+/*====================================================================*/

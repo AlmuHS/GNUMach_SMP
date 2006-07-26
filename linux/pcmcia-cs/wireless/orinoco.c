@@ -506,6 +506,20 @@ MODULE_PARM(suppress_linkstatus, "i");
   HERMES_MAX_MULTICAST : 0)*/
 #define MAX_MULTICAST(priv)	(HERMES_MAX_MULTICAST)
 
+/*
+ * MACH related stuff...
+ */
+
+#ifdef MACH
+
+#undef copy_to_user
+#define copy_to_user(a,b,c)     (memcpy(a,b,c), 0)
+
+#define verify_area(a,b,c)      (0)
+#define copy_from_user(a,b,c)   (memcpy(a,b,c), 0)
+
+#endif
+
 /********************************************************************/
 /* Data tables                                                      */
 /********************************************************************/
@@ -1805,7 +1819,6 @@ static void __orinoco_ev_rx(struct net_device *dev, hermes_t *hw)
 	/* Pass the packet to the networking stack */
 	netif_rx(skb);
 	stats->rx_packets++;
-	stats->rx_bytes += length;
 
 	return;
 
@@ -2357,7 +2370,7 @@ orinoco_xmit(struct sk_buff *skb, struct net_device *dev)
                    safest approach). */
 		stats->tx_errors++;
 		orinoco_unlock(priv, &flags);
-		dev_kfree_skb(skb);
+		dev_kfree_skb(skb, FREE_WRITE);
 		TRACE_EXIT(dev->name);
 		return 0;
 	}
@@ -2435,7 +2448,6 @@ orinoco_xmit(struct sk_buff *skb, struct net_device *dev)
 	}
 
 	dev->trans_start = jiffies;
-	stats->tx_bytes += data_off + data_len;
 
 	orinoco_unlock(priv, &flags);
 
@@ -2955,6 +2967,13 @@ static int orinoco_ioctl_getnick(struct net_device *dev, struct iw_point *nrq)
 	orinoco_unlock(priv, &flags);
 
 	nrq->length = strlen(nickbuf)+1;
+
+#ifdef MACH
+	if(! nrq->pointer) {
+		printk(KERN_INFO "orinoco_ioctl_getnick: no nrq pointer.\n");
+		return -EFAULT;
+	}
+#endif
 
 	if (copy_to_user(nrq->pointer, nickbuf, sizeof(nickbuf)))
 		return -EFAULT;

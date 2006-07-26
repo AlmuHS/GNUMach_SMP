@@ -1171,8 +1171,20 @@ static u_int __init test_irq(socket_info_t *s, int irq, int pci)
 	    return 1;
     }
     irq_hits = 0;
+
+#ifndef MACH
     __set_current_state(TASK_UNINTERRUPTIBLE);
     schedule_timeout(HZ/100);
+#else
+    /* TODO: Is this really what we want?  */
+    {
+      unsigned long flags;
+      
+      save_flags(flags);
+
+      mdelay(1);
+#endif
+
     if (irq_hits && !irq_shared) {
 	free_irq(irq, socket);
 	DEBUG(2, "    spurious hit!\n");
@@ -1197,6 +1209,12 @@ static u_int __init test_irq(socket_info_t *s, int irq, int pci)
 	i365_bset(s, I365_GENCTL, I365_CTL_SW_IRQ);
 	mdelay(1);
     }
+
+#ifdef MACH
+    restore_flags(flags);
+    }
+
+#endif
 
     free_irq(irq, socket);
 
@@ -2456,7 +2474,7 @@ static int pcic_service(u_int sock, u_int cmd, void *arg)
 
 /*====================================================================*/
 
-static int __init init_i82365(void)
+int __init init_i82365(void)
 {
     servinfo_t serv;
     CardServices(GetCardServicesInfo, &serv);
