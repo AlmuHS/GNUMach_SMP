@@ -1,3 +1,59 @@
+2006-07-27  Thomas Schwinge  <tschwinge@gnu.org>
+
+	Import a number of files from the pcmcia-cs package, version 3.2.8,
+	available from <http://pcmcia-cs.sourceforge.net/>.
+
+	* linux/pcmcia-cs/clients/3c574_cs.c: Import file.
+	* linux/pcmcia-cs/clients/3c589_cs.c: Likewise.
+	* linux/pcmcia-cs/clients/ax8390.h: Likewise.
+	* linux/pcmcia-cs/clients/axnet_cs.c: Likewise.
+	* linux/pcmcia-cs/clients/fmvj18x_cs.c: Likewise.
+	* linux/pcmcia-cs/clients/nmclan_cs.c: Likewise.
+	* linux/pcmcia-cs/clients/ositech.h: Likewise.
+	* linux/pcmcia-cs/clients/pcnet_cs.c: Likewise.
+	* linux/pcmcia-cs/clients/smc91c92_cs.c: Likewise.
+	* linux/pcmcia-cs/clients/xirc2ps_cs.c: Likewise.
+	* linux/pcmcia-cs/include/linux/crc32.h: Likewise.
+	* linux/pcmcia-cs/include/linux/init.h: Likewise.
+	* linux/pcmcia-cs/include/linux/slab.h: Likewise.
+	* linux/pcmcia-cs/include/pcmcia/bulkmem.h: Likewise.
+	* linux/pcmcia-cs/include/pcmcia/bus_ops.h: Likewise.
+	* linux/pcmcia-cs/include/pcmcia/ciscode.h: Likewise.
+	* linux/pcmcia-cs/include/pcmcia/cisreg.h: Likewise.
+	* linux/pcmcia-cs/include/pcmcia/cistpl.h: Likewise.
+	* linux/pcmcia-cs/include/pcmcia/cs.h: Likewise.
+	* linux/pcmcia-cs/include/pcmcia/cs_types.h: Likewise.
+	* linux/pcmcia-cs/include/pcmcia/driver_ops.h: Likewise.
+	* linux/pcmcia-cs/include/pcmcia/ds.h: Likewise.
+	* linux/pcmcia-cs/include/pcmcia/mem_op.h: Likewise.
+	* linux/pcmcia-cs/include/pcmcia/ss.h: Likewise.
+	* linux/pcmcia-cs/include/pcmcia/version.h: Likewise.
+	* linux/pcmcia-cs/modules/bulkmem.c: Likewise.
+	* linux/pcmcia-cs/modules/cirrus.h: Likewise.
+	* linux/pcmcia-cs/modules/cistpl.c: Likewise.
+	* linux/pcmcia-cs/modules/cs.c: Likewise.
+	* linux/pcmcia-cs/modules/cs_internal.h: Likewise.
+	* linux/pcmcia-cs/modules/ds.c: Likewise.
+	* linux/pcmcia-cs/modules/ene.h: Likewise.
+	* linux/pcmcia-cs/modules/i82365.c: Likewise.
+	* linux/pcmcia-cs/modules/i82365.h: Likewise.
+	* linux/pcmcia-cs/modules/o2micro.h: Likewise.
+	* linux/pcmcia-cs/modules/pci_fixup.c: Likewise.
+	* linux/pcmcia-cs/modules/ricoh.h: Likewise.
+	* linux/pcmcia-cs/modules/rsrc_mgr.c: Likewise.
+	* linux/pcmcia-cs/modules/smc34c90.h: Likewise.
+	* linux/pcmcia-cs/modules/ti113x.h: Likewise.
+	* linux/pcmcia-cs/modules/topic.h: Likewise.
+	* linux/pcmcia-cs/modules/vg468.h: Likewise.
+	* linux/pcmcia-cs/modules/yenta.h: Likewise.
+	* linux/pcmcia-cs/wireless/hermes.c: Likewise.
+	* linux/pcmcia-cs/wireless/hermes.h: Likewise.
+	* linux/pcmcia-cs/wireless/hermes_rid.h: Likewise.
+	* linux/pcmcia-cs/wireless/ieee802_11.h: Likewise.
+	* linux/pcmcia-cs/wireless/orinoco.c: Likewise.
+	* linux/pcmcia-cs/wireless/orinoco.h: Likewise.
+	* linux/pcmcia-cs/wireless/orinoco_cs.c: Likewise.
+
 2006-07-24  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* Makerules.in (%.h %_user.c): Add `%.cli.d' to the target list.
@@ -1296,9 +1352,9 @@
 	* linux/src/include/asm-i386/hardirq.h: Likewise.
 	* linux/src/include/linux/spinlock.h: Likewise.
 	* linux/src/include/linux/compatmac.h: Likewise.
-        * linux/dev/drivers/net/eepro100.c: New file, modified version from
-        the above to glue it in gnumach.
-        Submitted by Kapil H. Paranjape <kapil@imsc.ernet.in>.
+	* linux/dev/drivers/net/eepro100.c: New file, modified version from
+	the above to glue it in gnumach.
+	Submitted by Kapil H. Paranjape <kapil@imsc.ernet.in>.
 
 2001-08-17  Roland McGrath  <roland@frob.com>
 
