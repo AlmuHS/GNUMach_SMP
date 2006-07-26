@@ -1,5 +1,10 @@
 2006-07-27  Stefan Siegl  <stesie@brokenpipe.de>
 
+	* linux/pcmcia-cs/glue/ds.c: New file.
+	* linux/pcmcia-cs/glue/pcmcia.c: Likewise.
+	* linux/pcmcia-cs/glue/pcmcia_glue.h: Likewise.
+	* linux/pcmcia-cs/glue/wireless_glue.h: Likewise.
+
 	* linux/pcmcia-cs/clients/xirc2ps_cs.c (busy_loop): Replace the code by
 	a call to __udelay.
 	* linux/pcmcia-cs/include/linux/init.h: Adapt to our Linux environment.
