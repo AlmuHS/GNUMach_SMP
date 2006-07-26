@@ -1,5 +1,16 @@
 2006-07-27  Stefan Siegl  <stesie@brokenpipe.de>
 
+	* i386/linux/configure.ac (pcmcia, wireless): New driver classes.
+	(i82365, 3c574_cs, 3c589_cs, axnet_cs, fmvj18x_cs, nmclan_cs, pcnet_cs)
+	(smc91c92_cs, xirc2ps_cs, orinoco_cs): New drivers.
+	* i386/linux/Makefile.in (linux-pcmcia-cs-modules-files)
+	(linux-pcmcia-cs-clients-files, linux-pcmcia-cs-wireless-files): New
+	variables.  Add `vpath's to the files locations.
+	(all-linux-files): Add the three new variables.
+	(linux-pcmcia-cs-modules-flags, linux-pcmcia-cs-clients-flags)
+	(linux-pcmcia-cs-wireless-flags): New variables.
+	(linux-flags): Add code to handle the above files and flags.
+
 	* i386/i386at/i386at_ds_routines.c (emulation_list)
 	[LINUX_DEV && CONFIG_INET && CONFIG_PCMCIA]: Add the Linux pcmcia
 	emulation structure.

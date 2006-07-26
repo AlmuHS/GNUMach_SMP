@@ -115,8 +115,25 @@ vpath %.c $(linuxsrcdir)/dev/drivers/scsi
 vpath %.c $(linuxsrcdir)/src/drivers/scsi
 
 
+# pcmcia-cs.
+
+linux-pcmcia-cs-modules-files = pcmcia.c cs.c ds.c rsrc_mgr.c bulkmem.c \
+	cistpl.c pci_fixup.c i82365.c 
+vpath %.c $(linuxsrcdir)/pcmcia-cs/modules
+vpath %.c $(linuxsrcdir)/pcmcia-cs/glue
+
+linux-pcmcia-cs-clients-files = 3c574_cs.c 3c589_cs.c axnet_cs.c fmvj18x_cs.c \
+	nmclan_cs.c pcnet_cs.c smc91c92_cs.c xirc2ps_cs.c
+vpath %.c $(linuxsrcdir)/pcmcia-cs/clients
+
+linux-pcmcia-cs-wireless-files = hermes.c orinoco.c orinoco_cs.c
+vpath %.c $(linuxsrcdir)/pcmcia-cs/wireless
+
+
 all-linux-files = $(linux-c-files) $(linux-block-files) \
-		$(linux-net-files) $(linux-pci-files) $(linux-scsi-files)
+		$(linux-net-files) $(linux-pci-files) $(linux-scsi-files) \
+		$(linux-pcmcia-cs-modules-files) $(linux-pcmcia-cs-clients-files) \
+		$(linux-pcmcia-cs-wireless-files)
 
 # These are always used.
 objfiles := $(subst .c,.o, $(linux-c-files) $(linux-pci-files)) genhd.o
@@ -152,6 +169,12 @@ linux-pci-flags = -I$(linuxsrcdir)/dev/drivers/pci \
 	-I$(linuxsrcdir)/src/drivers/pci
 linux-scsi-flags = -I$(linuxsrcdir)/dev/drivers/scsi \
 	-I$(linuxsrcdir)/src/drivers/scsi
+linux-pcmcia-cs-modules-flags = -I$(linuxsrcdir)/pcmcia-cs/include \
+	-include $(linuxsrcdir)/pcmcia-cs/glue/pcmcia_glue.h
+linux-pcmcia-cs-clients-flags = -I$(linuxsrcdir)/pcmcia-cs/include \
+	-DPCMCIA_CLIENT -include $(linuxsrcdir)/pcmcia-cs/glue/pcmcia_glue.h
+linux-pcmcia-cs-wireless-flags = -I$(linuxsrcdir)/pcmcia-cs/include \
+	-include $(linuxsrcdir)/pcmcia-cs/glue/wireless_glue.h
 linux-asm-spec-flags = -D__KERNEL__ -D__ASSEMBLY__ -traditional \
 	-Idev/include -I$(linuxdir)/dev/include -I$(linuxdir)/src/include \
 	-I$(srcdir)/dev/include -I$(linuxsrcdir)/dev/include \
@@ -183,6 +206,18 @@ linux-flags: Makefile
 	for i in $(linux-scsi-files); do \
 		echo $$i-linux-flags \
 		  '= $$(linux-gen-flags) $$(linux-scsi-flags)' >> $@; \
+	done
+	for i in $(linux-pcmcia-cs-modules-files); do \
+		echo $$i-linux-flags \
+		  '= $$(linux-pcmcia-cs-modules-flags) $$(linux-gen-flags)' >> $@; \
+	done
+	for i in $(linux-pcmcia-cs-clients-files); do \
+		echo $$i-linux-flags \
+		  '= $$(linux-pcmcia-cs-clients-flags) $$(linux-gen-flags)' >>$@; \
+	done
+	for i in $(linux-pcmcia-cs-wireless-files); do \
+		echo $$i-linux-flags \
+		  '= $$(linux-pcmcia-cs-wireless-flags) $$(linux-gen-flags)' >> $@; \
 	done
 	for i in $(linux-asm-files); do \
 		echo $$i-linux-flags '= $$(linux-asm-spec-flags)' >> $@; \

@@ -104,6 +104,11 @@ AC_DRIVER_CLASS([scsi], [CONFIG_SCSI], [ \
 AC_DRIVER_CLASS([net], [CONFIG_INET], [ \
   auto_irq.o net.o Space.o dev.o net_init.o pci-scan.o])
 
+AC_DRIVER_CLASS([pcmcia], [CONFIG_PCMCIA], [ \
+  pcmcia.o cs.o ds.o rsrc_mgr.o bulkmem.o cistpl.o pci_fixup.o])
+
+AC_DRIVER_CLASS([wireless], [CONFIG_WIRELESS], [])
+
 dnl Strictly speaking, we could have a `linux' option too, but it's
 dnl not possible to built a useful kernel without at least one Linux
 dnl driver, so that's not really necessary.
@@ -222,6 +227,49 @@ linux_DRIVER([rtl8139], [RTL8139], [rtl8139], [net])
 linux_DRIVER([epic], [EPIC], [epic100], [net])
 linux_DRIVER([tlan], [TLAN], [tlan], [net])
 linux_DRIVER([viarhine], [VIA_RHINE], [via-rhine], [net])
+
+
+dnl PCMCIA device support.
+
+linux_DRIVER([i82365], [I82365], [i82365], [pcmcia])
+
+dnl PCMCIA device drivers.
+
+linux_DRIVER([3c574_cs], [3C574_CS], [3c574_cs], [pcmcia])
+linux_DRIVER([3c589_cs], [3C589_CS], [3c589_cs], [pcmcia])
+linux_DRIVER([axnet_cs], [AXNET_CS], [axnet_cs], [pcmcia])
+linux_DRIVER([fmvj18x_cs], [FMVJ18X_CS], [fmvj18x_cs], [pcmcia])
+linux_DRIVER([nmclan_cs], [NMCLAN_CS], [nmclan_cs], [pcmcia])
+AC_DRIVER([pcnet_cs], [CONFIG_PCNET_CS], [pcnet_cs.o 8390.o], [pcmcia])
+linux_DRIVER([smc91c92_cs], [SMC91C92_CS], [smc91c92_cs], [pcmcia])
+linux_DRIVER([xirc2ps_cs], [XIRC2PS_CS], [xirc2ps_cs], [pcmcia])
+
+dnl Wireless device support.
+
+AC_DEFUN([AC_WIRELESS_CS_DRIVER], [
+  AC_DRIVER([$1], [CONFIG_$2], [$3], [wireless])
+  if test x"${driver_class_pcmcia_selected+set}" != xset; then
+    driver_class_pcmcia_selected=yes
+    AC_DEFINE_UNQUOTED([$driver_class_pcmcia_option], [1])
+    device_drivers="$device_drivers $driver_class_pcmcia_files"
+  fi
+])
+
+dnl Wireless device drivers.
+
+AC_WIRELESS_CS_DRIVER([orinoco_cs], [ORINOCO_CS], [ \
+		       hermes.o orinoco.o orinoco_cs.o])
+
+dnl If any PCMCIA devices have been enabled, make sure to include the network
+dnl glue as well...
+if test x"${driver_class_pcmcia_selected+set}" = xset; then
+  if test x"${driver_class_net_selected+set}" != xset; then
+    driver_class_net_selected=yes
+    AC_DEFINE_UNQUOTED([$driver_class_net_option], [1])
+    device_drivers="$device_drivers $driver_class_net_files"
+  fi
+fi
+
 
 AC_CONFIG_FILES([Makefile Makerules])
 AC_OUTPUT
