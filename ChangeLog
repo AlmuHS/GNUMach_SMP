@@ -1,5 +1,15 @@
 2006-07-27  Stefan Siegl  <stesie@brokenpipe.de>
 
+	* i386/i386at/i386at_ds_routines.c (emulation_list)
+	[LINUX_DEV && CONFIG_INET && CONFIG_PCMCIA]: Add the Linux pcmcia
+	emulation structure.
+	* linux/dev/glue/net.c: Include <linux/wireless.h>.
+	(device_get_status): Rewrite function.
+	(device_set_status): New function.
+	(linux_net_emulation_ops): Add `device_set_status' at the appropriate
+	position.
+	* linux/dev/init/main.c (linux_init) [CONFIG_PCMCIA]: Call pcmcia_init.
+
 	* linux/pcmcia-cs/glue/ds.c: New file.
 	* linux/pcmcia-cs/glue/pcmcia.c: Likewise.
 	* linux/pcmcia-cs/glue/pcmcia_glue.h: Likewise.

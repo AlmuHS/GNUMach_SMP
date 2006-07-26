@@ -45,6 +45,9 @@ extern struct device_emulation_ops mach_device_emulation_ops;
 extern struct device_emulation_ops linux_block_emulation_ops;
 #ifdef CONFIG_INET
 extern struct device_emulation_ops linux_net_emulation_ops;
+#ifdef CONFIG_PCMCIA
+extern struct device_emulation_ops linux_pcmcia_emulation_ops;
+#endif
 #endif
 #endif
 
@@ -55,6 +58,9 @@ static struct device_emulation_ops *emulation_list[] =
   &linux_block_emulation_ops,
 #ifdef CONFIG_INET
   &linux_net_emulation_ops,
+#ifdef CONFIG_PCMCIA
+  &linux_pcmcia_emulation_ops,
+#endif
 #endif
 #endif
   &mach_device_emulation_ops,

@@ -103,6 +103,7 @@ extern int linux_bad_intr (int);
 extern int prtnull ();
 extern int intnull ();
 extern void linux_sched_init (void);
+extern void pcmcia_init (void);
 
 
 /*
@@ -179,10 +180,19 @@ linux_init (void)
 #ifdef CONFIG_INET
   linux_net_emulation_init ();
 #endif
+
   cli ();
   device_setup ();
 
+#ifdef CONFIG_PCMCIA
+  /* 
+   * Initialize pcmcia.
+   */
+  pcmcia_init ();
+#endif
+
   restore_IRQ ();
+
   linux_auto_config = 0;
 }
 

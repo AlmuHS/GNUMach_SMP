@@ -96,6 +96,7 @@
 #include <linux/malloc.h>
 #include <linux/netdevice.h>
 #include <linux/etherdevice.h>
+#include <linux/wireless.h>
 
 extern int linux_intr_pri;
 
@@ -520,12 +521,101 @@ device_write (void *d, ipc_port_t reply_port,
   return MIG_NO_REPLY;
 }
 
+
 static io_return_t
 device_get_status (void *d, dev_flavor_t flavor, dev_status_t status,
 		   mach_msg_type_number_t *count)
 {
-  return net_getstat (&((struct net_data *) d)->ifnet, flavor, status, count);
+  if(flavor >= SIOCIWFIRST && flavor <= SIOCIWLAST)
+    {
+      /* handle wireless ioctl */
+      if(! IW_IS_GET(flavor))
+	return D_INVALID_OPERATION;
+
+      if(*count * sizeof(int) < sizeof(struct ifreq))
+	return D_INVALID_OPERATION;
+
+      struct net_data *nd = d;
+      struct linux_device *dev = nd->dev;
+
+      if(! dev->do_ioctl)
+	return D_INVALID_OPERATION;
+
+      int result;
+
+      if((flavor == SIOCGIWRANGE || flavor == SIOCGIWENCODE
+	  || flavor == SIOCGIWESSID || flavor == SIOCGIWNICKN
+	  || flavor == SIOCGIWSPY)
+	 && ((struct iwreq *) status)->u.data.pointer)
+	{
+	  struct iw_point *iwp = &((struct iwreq *) status)->u.data;
+
+	  /* safety check whether the status array is long enough ... */
+	  if(*count * sizeof(int) < sizeof(struct ifreq) + iwp->length)
+	    return D_INVALID_OPERATION;
+
+	  /* make sure, iwp->pointer points to the correct address */
+	  iwp->pointer = (void *) status + sizeof(struct ifreq);
+
+	  result = dev->do_ioctl(dev, (struct ifreq *) status, flavor);
+	  /* *count = (sizeof(struct ifreq) + iwp->length) / sizeof(int);
+	   * if(iwp->length % sizeof(int)) *count ++;
+	   */
+	}
+      else
+	{
+	  *count = sizeof(struct ifreq) / sizeof(int);
+	  result = dev->do_ioctl(dev, (struct ifreq *) status, flavor);
+	}
+
+      return result ? D_IO_ERROR : D_SUCCESS;
+    }
+  else
+    {
+      /* common get_status request */
+      return net_getstat (&((struct net_data *) d)->ifnet, flavor,
+			  status, count);
+    }
 }
+
+
+static io_return_t
+device_set_status(void *d, dev_flavor_t flavor, dev_status_t status,
+		  mach_msg_type_number_t count)
+{
+  if(flavor < SIOCIWFIRST || flavor > SIOCIWLAST)
+    return D_INVALID_OPERATION;
+
+  if(! IW_IS_SET(flavor))
+    return D_INVALID_OPERATION;
+  
+  if(count * sizeof(int) < sizeof(struct ifreq))
+    return D_INVALID_OPERATION;
+
+  struct net_data *nd = d;
+  struct linux_device *dev = nd->dev;
+
+  if(! dev->do_ioctl)
+    return D_INVALID_OPERATION;
+
+  if((flavor == SIOCSIWENCODE || flavor == SIOCSIWESSID
+      || flavor == SIOCSIWNICKN || flavor == SIOCSIWSPY)
+     && ((struct iwreq *) status)->u.data.pointer)
+    {
+      struct iw_point *iwp = &((struct iwreq *) status)->u.data;
+
+      /* safety check whether the status array is long enough ... */
+      if(count * sizeof(int) < sizeof(struct ifreq) + iwp->length)
+	return D_INVALID_OPERATION;
+
+      /* make sure, iwp->pointer points to the correct address */
+      if(iwp->pointer) iwp->pointer = (void *) status + sizeof(struct ifreq);
+    }
+  
+  int result = dev->do_ioctl(dev, (struct ifreq *) status, flavor);
+  return result ? D_IO_ERROR : D_SUCCESS;
+}
+
 
 static io_return_t
 device_set_filter (void *d, ipc_port_t port, int priority,
@@ -546,7 +636,7 @@ struct device_emulation_ops linux_net_emulation_ops =
   NULL,
   NULL,
   NULL,
-  NULL,
+  device_set_status,
   device_get_status,
   device_set_filter,
   NULL,
