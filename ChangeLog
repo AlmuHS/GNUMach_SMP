@@ -1,5 +1,7 @@
 2006-07-27  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* linux/dev/include/linux/types.h (_MACH_SA_SYS_TYPES_H_): Define.
+
 	* i386/linux/configure: Regenerate.
 	* i386/linux/device-drivers.h.in: Likewise.
 
