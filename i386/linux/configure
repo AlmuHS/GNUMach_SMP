@@ -4592,10 +4592,6 @@ fi;
 
 
 
-
-
-
-
 # Checking for device driver option orinoco_cs
 # Check whether --enable-orinoco_cs or --disable-orinoco_cs was given.
 if test "${enable_orinoco_cs+set}" = set; then
@@ -4608,7 +4604,7 @@ cat >>confdefs.h <<\_ACEOF
 _ACEOF
 
 device_drivers="$device_drivers  \
-		       hermes.o orinoco.o orinoco_cs.o"
+  hermes.o orinoco.o orinoco_cs.o"
 if test "${driver_class_wireless_selected+set}" != set; then
   driver_class_wireless_selected=yes
   cat >>confdefs.h <<_ACEOF
@@ -4620,6 +4616,9 @@ fi
 fi
 
 fi;
+
+
+if test x"${driver_class_wireless_selected+set}" = xset; then
   if test x"${driver_class_pcmcia_selected+set}" != xset; then
     driver_class_pcmcia_selected=yes
     cat >>confdefs.h <<_ACEOF
@@ -4628,7 +4627,7 @@ _ACEOF
 
     device_drivers="$device_drivers $driver_class_pcmcia_files"
   fi
-
+fi
 
 if test x"${driver_class_pcmcia_selected+set}" = xset; then
   if test x"${driver_class_net_selected+set}" != xset; then

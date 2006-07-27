@@ -1,5 +1,7 @@
 2006-07-27  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* i386/linux/configure: Regenerate.
+
 	* i386/linux/configure.ac: Pull in the pcmcia code only if really
 	needed.
 
