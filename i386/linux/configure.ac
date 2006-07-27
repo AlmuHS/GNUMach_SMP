@@ -244,24 +244,24 @@ AC_DRIVER([pcnet_cs], [CONFIG_PCNET_CS], [pcnet_cs.o 8390.o], [pcmcia])
 linux_DRIVER([smc91c92_cs], [SMC91C92_CS], [smc91c92_cs], [pcmcia])
 linux_DRIVER([xirc2ps_cs], [XIRC2PS_CS], [xirc2ps_cs], [pcmcia])
 
-dnl Wireless device support.
+dnl Wireless device drivers.
 
-AC_DEFUN([AC_WIRELESS_CS_DRIVER], [
-  AC_DRIVER([$1], [CONFIG_$2], [$3], [wireless])
+AC_DRIVER([orinoco_cs], [CONFIG_ORINOCO_CS], [ \
+  hermes.o orinoco.o orinoco_cs.o], [wireless])
+
+
+dnl If any pcmcia wireless devices have been enabled, make sure to include the
+dnl pcmcia glue as well.
+if test x"${driver_class_wireless_selected+set}" = xset; then
   if test x"${driver_class_pcmcia_selected+set}" != xset; then
     driver_class_pcmcia_selected=yes
     AC_DEFINE_UNQUOTED([$driver_class_pcmcia_option], [1])
     device_drivers="$device_drivers $driver_class_pcmcia_files"
   fi
-])
+fi
 
-dnl Wireless device drivers.
-
-AC_WIRELESS_CS_DRIVER([orinoco_cs], [ORINOCO_CS], [ \
-		       hermes.o orinoco.o orinoco_cs.o])
-
-dnl If any PCMCIA devices have been enabled, make sure to include the network
-dnl glue as well...
+dnl If any pcmcia devices have been enabled, make sure to include the network
+dnl glue as well.
 if test x"${driver_class_pcmcia_selected+set}" = xset; then
   if test x"${driver_class_net_selected+set}" != xset; then
     driver_class_net_selected=yes

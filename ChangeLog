@@ -1,5 +1,8 @@
 2006-07-27  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* i386/linux/configure.ac: Pull in the pcmcia code only if really
+	needed.
+
 	* doc/mach.texi (Configuration): Very briefly document the new drivers.
 	* i386/README-Drivers: Likewise.
 
