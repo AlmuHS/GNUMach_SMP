@@ -396,18 +396,39 @@ Sundance ST201 "Alta" PCI Ethernet
 Winbond W89c840 PCI Ethernet
   --enable-winbond-840			net/winbond-840.c
 
-*** pcmcia drivers
+*** pcmcia bridge drivers
+All source files are relative to .../gnumach/linux/pcmcia-cs.
 
-  --enable-i82365
+Intel 82365 PC Card controller
+  --enable-i82365			modules/i82365.c
 
 *** pcmcia device drivers
+These all show up as `eth%d'.
+All source files are relative to .../gnumach/linux/pcmcia-cs.
 
-  --enable-3c574_cs
-  --enable-3c589_cs
-  --enable-axnet_cs
-  --enable-fmvj18x_cs
-  --enable-nmclan_cs
-  --enable-pcnet_cs
-  --enable-smc91c92_cs
-  --enable-xirc2ps_cs
-  --enable-orinoco_cs
+3Com 3c574 ``RoadRunner'' PCMCIA Ethernet
+  --enable-3c574_cs			clients/3c574_cs.c
+
+3Com 3c589 PCMCIA Ethernet card
+  --enable-3c589_cs			clients/3c589_cs.c
+
+Asix AX88190-based PCMCIA Ethernet adapters
+  --enable-axnet_cs			clients/axnet_cs.c
+
+fmvj18x chipset based PCMCIA Ethernet cards
+  --enable-fmvj18x_cs			clients/fmvj18x_cs.c
+
+New Media Ethernet LAN PCMCIA cards
+  --enable-nmclan_cs			clients/nmclan_cs.c
+
+NS8390-based PCMCIA cards
+  --enable-pcnet_cs			clients/pcnet_cs.c
+
+SMC91c92-based PCMCIA cards
+  --enable-smc91c92_cs			clients/smc91c92_cs.c
+
+Xircom CreditCard and Realport PCMCIA ethernet
+  --enable-xirc2ps_cs			clients/xirc2ps_cs.c
+
+Hermes or Prism 2 PCMCIA Wireless adapters (Orinoco)
+  --enable-orinoco_cs			wireless/orinoco_cs.c

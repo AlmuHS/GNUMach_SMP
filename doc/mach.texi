@@ -880,24 +880,71 @@ Enables the Sundance ST201 "Alta" PCI Ethernet devices eth%d.
 Enables the Winbond W89c840 PCI Ethernet devices eth%d.
 @end table
 
-pcmcia drivers.
+The following options enable drivers for supported PCMCIA bridges.
+To make use of GNU Mach PCMCIA support you need to have the
+corresponding userland applications (GNU Mach Card Services)
+installed.  
 
 @table @code
 @item --enable-i82365
+Enables the driver for the Intel 82365 and compatible PC Card
+controllers, and Yenta-compatible PCI-to-CardBus controllers.
 @end table
 
-pcmcia device drivers.
+The following options enable drivers for supported PCMCIA Ethernet
+controllers.  NIC device names are usually eth%d.
 
 @table @code
 @item --enable-3c574_cs
+Enables the PCMCIA ethernet driver for the 3Com 3c574 ``RoadRunner''.
+
 @item --enable-3c589_cs
+Enables the driver for the 3Com 3c589 PCMCIA card.
+
 @item --enable-axnet_cs
+Enables the driver for the Asix AX88190-based PCMCIA cards.
+
 @item --enable-fmvj18x_cs
+Enables the driver for PCMCIA cards with the fmvj18x chipset. 
+
 @item --enable-nmclan_cs
+Enables the driver for the New Media Ethernet LAN PCMCIA cards.
+
 @item --enable-pcnet_cs
+Enables the driver for NS8390-based PCMCIA cards.
+
+This driver supports the D-Link DE-650 and Linksys EthernetCard cards,
+the newer D-Link and Linksys combo cards, Accton EN2212 cards, the
+RPTI EP400, and the PreMax PE-200 in non-shared-memory mode, and the
+IBM Credit Card Adapter, the NE4100, the Thomas Conrad ethernet card,
+and the Kingston KNE-PCM/x in shared-memory mode.  It will also handle
+the Socket EA card in either mode. 
+
 @item --enable-smc91c92_cs
+Enables the driver for SMC91c92-based PCMCIA cards.
+
 @item --enable-xirc2ps_cs
+Enables the driver for Xircom CreditCard and Realport PCMCIA ethernet
+adapters. 
+@end table
+
+The following options enable drivers for supported PCMCIA Wireless LAN
+network controllers.  NIC device names are usually eth%d.
+
+Please mind, that you need to have some userland applications (the GNU
+Mach Wireless Tools) installed, in order to make use of these devices.
+
+@table @code
 @item --enable-orinoco_cs
+Enables the driver for the Hermes or Prism 2 chipset based PCMCIA
+wireless adapters, with Lucent/Agere, Intersil or Symbol firmware. 
+
+This driver is suitable for PCMCIA wireless adapters, such as the
+Lucent WavelanIEEE/Orinoco cards and their OEM (Cabletron/EnteraSys
+RoamAbout 802.11, ELSA Airlancer, Melco Buffalo and others).
+It should also be usable on various Prism II based cards such as the
+Linksys, D-Link and Farallon Skyline. It should also work on Symbol
+cards such as the 3Com AirConnect and Ericsson WLAN.
 @end table
 
 
