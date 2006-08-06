@@ -1,5 +1,29 @@
 -*- Text -*-
 
+If you're ``just'' looking for something to work on, have a look at the
+  * bug list, <http://savannah.gnu.org/bugs/?group=hurd> and
+  * task list, <http://savannah.gnu.org/task/?group=hurd>.
+
+HOW TO CONTRIBUTE LARGER CHUNKS
+===============================
+
+If you want to help the maintainers to be quickly able to evaluate and
+check in your contribution, please try to follow these suggestions:
+
+Try to mark in the code stuff (i.e. whole functions, parts of header
+files) that you've just copied (and then perhaps modified; also note that
+briefly) from somewhere else and stuff that you've actually written
+yourself.  Either do that by simply writing a ChangeLog in parallel (an
+informal one is fine as well) or put notes in the modified / imported
+files.  The one who will be checking in your patches will then probably
+remove most of these notes, as soon as everything is written down in the
+real ChangeLog.  Logging your changes right from the beginning makes it
+much easier for the maintainers to track down where which chunk is coming
+from, so that they can be handled appropriately.
+
+HISTORY
+=======
+
 `gnumach-1-branch-before_removing_unused_and_unsupported_code' was tagged
 on 2006-02-20.  After creating that tag, code for unused and unsupported
 device driver for ISA cards and a good deal of i386 dependent, also
@@ -7,20 +31,11 @@ unused and unsupported code was removed.
 
 On 2006-03-19, support was removed for FIPC, which only ever was used
 within the native Mach NE2000 NIC device driver, see
-<URL:http://www.cs.utah.edu/flux/mach4-i386/html/mach4-UK22.html#FIPC>.
-<URL:http://lists.gnu.org/archive/html/bug-hurd/2006-01/msg00162.html>.
+<http://www.cs.utah.edu/flux/mach4-i386/html/mach4-UK22.html#FIPC>.
+<http://lists.gnu.org/archive/html/bug-hurd/2006-01/msg00162.html>.
 
 Support for NORMA was removed on 2006-03-20.
-<URL:http://lists.gnu.org/archive/html/bug-hurd/2006-03/msg00007.html>.
+<http://lists.gnu.org/archive/html/bug-hurd/2006-03/msg00007.html>.
 
 Be sure to check the ChangeLog and have a look at the repository at that
 tag's state if you want to work on those parts of GNU Mach.
-
-
-Starting with the application of the patch from
-<URL:http://savannah.gnu.org/bugs/index.php?func=detailitem&item_id=7118>,
-GNU Mach's usage of the machine's memory equipment is currently forced to
-be somewhere below 1 GiB, to make GNU Mach work at all on systems with
-such enlarged RAM installations.  This is--of course--not optimal.  See
-the calculation of and with `kernel_virtual_end' and `morevm' in
-i386/intel/pmap.c and `phys_last_addr' in i386/i386at/model_dep.c.
