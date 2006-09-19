@@ -1,7 +1,6 @@
-2006-09-19  Samuel Thibault <samuel.thibault@ens-lyon.org>
+2006-09-19  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
-	Fix against gcc 4.1's optimizations.
-
+	[bug #17338 --- ``GNU Mach vs. GCC 4.1'']
 	* i386/i386/seg.h (struct pseudo_descriptor): Pack structure and
 	move the padding field to the end.
 	(lgdt): Pass the whole structure to the lgdt assembly command.
@@ -208,7 +207,7 @@
 
 2006-05-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
-	[bug #7118]
+	[bug #7118 --- ``GNU Mach can't handle 1G memory'']
 	* i386/i386at/model_dep.c (mem_size_init): Limit memory to what can
 	actually be used (minus a little extra for virtual mappings).
 	* i386/intel/pmap.c (pmap_bootstrap): Extend the virtual mapping area
@@ -278,7 +277,8 @@
 	Remove unused and unsupported code.  Consult the file `DEVELOPMENT'
 	for details.
 
-	[patch #4982]
+	[patch #4982 --- ``remove of unused / unsuported functions of
+	gnumach-1-branch'']
 	* bogus/norma_device.h: Remove file.
 	* bogus/norma_ether.h: Likewise.
 	* bogus/norma_ipc.h: Likewise.
@@ -339,7 +339,8 @@
 	Remove unused and unsupported code.  Consult the file `DEVELOPMENT'
 	for details.
         
-	[patch #4982]
+	[patch #4982 --- ``remove of unused / unsuported functions of
+	gnumach-1-branch'']
 	* ipc/fipc.c: Remove file.
 	* ipc/fipc.h: Likewise.
 	* Makefile.in (ipc-cfiles): Remove `fipc.c'.
@@ -362,7 +363,7 @@
 
 2006-03-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
-	[patch #4737]
+	[patch #4737 --- ``User TSS fixup'']
 	* i386/i386/iopb.c: Include "vm_param.h".
 	(io_tss_init): Fix address and limit of user TSS.
 
