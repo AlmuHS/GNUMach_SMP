@@ -1,3 +1,26 @@
+2006-09-20  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* Drivers.macros (AC_DRIVER_ALIAS): Remove definition.
+	(AC_DRIVER): Extend to take a `description' parameter and consider
+	`$enable_default_device_drivers'.
+	(AC_DRIVER_nodef): New definition.
+	* configure.in (options kdb, kmsg): Remove redundancy.
+	* i386/configure.in (option default-device-drivers): New option.
+	(option lpr): Consider `$enable_default_device_drivers'.
+	* i386/linux/configure.ac: Rework substantially.  Remove all aliases.
+	Rename some of the device driver options.
+	(option default-device-drivers): New option.
+	(linux_DRIVER): Take care about a `description' parameter and don't
+	invoke AC_DRIVER_ALIAS.
+	(linux_DRIVER_nodef): New definition.
+	Adopt all usages of AC_DRIVER and linux_DRIVER to provide a
+	`description' parameter.
+	(g_NCR5380, NCR53c406a, eata_dma, wavelan, atp): Change from AC_DRIVER
+	to AC_DRIVER_nodef to have these device drivers disabled by default.
+	* doc/mach.texi: Add a note about the outdatedness to the configuration
+	option table.
+	* i386/README-Drivers: Update.
+	
 2006-09-19  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	[bug #17338 --- ``GNU Mach vs. GCC 4.1'']

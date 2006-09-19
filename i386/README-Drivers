@@ -2,9 +2,19 @@
 
 ** Turning on or off device drivers
 
-Each device driver has an associated configure switch.  The table at
-the end of this file gives the list of configure switches.  For many
-devices there are multiple drivers to choose from.  
+Each device driver has an associated configure switch.  The table at the
+end of this file indicates whether a device driver is enabled by default
+or not.  It also gives --- if possible at all --- the configure switches
+to use for disabling or enabling device drivers, in case you're not
+satisfied with the default choices.  Where a `--disable-*' switch is
+given in the table, the device driver is enabled by default and you have
+to use the switch to disable it and vice versa for the `--enable-*'
+switches, the device driver is disabled by default and you have to us the
+switch to enable it.  To have all device drivers disabled that can be
+disabled and would otherwise have been enabled by default you can specify
+the `--disable-default-device-drivers' switch and then use the
+`--enable-*' switches to enable only those you actually want to have
+enabled.
 
 
 ** What the configure switches do
@@ -26,11 +36,14 @@ are believed to work.
 ** Then comes the name of the device to users.  %d is a unit number.
 
 
-***
+** Source files
 
-All source file names are relative to .../gnumach/i386/i386at for Mach
-drivers, and .../gnumach/linux/src/drivers for Linux drivers.
+All source file names are relative to [GNU Mach]/i386/i386at/ for
+Mach drivers, and the Linux drivers's files can be found below
+[GNU Mach]/linux/.
 
+
+** Table
 
 *** Serial devices and similar equivalents
 
@@ -39,7 +52,7 @@ PC com ports (always enabled)
 	com%d
 
 Parallel port
-  --enable-lpr				lpr.c
+  --disable-lpr				lpr.c
 	lpr%d
 
 System Console (always enabled)
@@ -66,267 +79,228 @@ Interface to setting up IO port access for users (always enabled)
 	iopl%d
 
 
-
 *** Disk controllers (except for SCSI)
 
 PC floppy
-  --enable-floppy			block/floppy.c
+  --disable-floppy		block/floppy.c
 	0x3f0, 370
 	fd%d
 
 IDE disks
-  --enable-ide		block/{cmd640,ide-cd,ide,rz1000,triton}.c
+  --disable-ide			block/{cmd640,ide-cd,ide,rz1000,triton}.c
 	hd%d	(disks)
 	wcd%d	(cdroms)
 
 
-*** SCSI disks Disks all show up as `sd%d'.  CD Roms all show up as
-`cd%d'.  Tapes and generic are not currently supported.
+*** SCSI disks
+
+Disks all show up as `sd%d'.  CD Roms all show up as `cd%d'.  Tapes and
+generic are not currently supported.
 
 AdvanSys
-  --enable-advansys		scsi/advansys.c
+  --disable-advansys		scsi/advansys.c
 
 BusLogic
-  --enable-buslogic		scsi/{BusLogic,FlashPoint}.c
-  --disable-flashpoint (if you want to omit FlashPoint support)
+  --disable-BusLogic		scsi/{BusLogic,FlashPoint}.c
+  --enable-flashpoint (if you want to omit FlashPoint support)
 
 UltraStor 14F/34F
-  --enable-u1434f		scsi/u14-34f.c
+  --disable-u1434f		scsi/u14-34f.c
 
 UlstraStor
-  --enable-ultrastor		scsi/ultrastor.c
+  --disable-ultrastor		scsi/ultrastor.c
 
-Adaptec AHA-152x/2825
-  --enable-aha152x		scsi/aha152x.c
-  --enable-aha2825
+Adaptec AHA-152x/2825 (aha152x, aha2825)
+  --disable-aha152x		scsi/aha152x.c
 
 Adaptec AHA-1542
-  --enable-aha1542		scsi/aha1540.c
+  --disable-aha1542		scsi/aha1540.c
 
 Adaptec AHA-1740
-  --enable-aha1740		scsi/aha1740.c
+  --disable-aha1740		scsi/aha1740.c
 
 Adaptec AIC7xxx
-  --enable-aic7xxx		scsi/aic7xxx.c
+  --disable-aic7xxx		scsi/aic7xxx.c
 
 Future Domain 16xx
-  --enable-futuredomain		scsi/fdomain.c
+  --disable-fdomain		scsi/fdomain.c
 
 Always IN 2000
-  --enable-in2000		scsi/in2000.c
+  --disable-in2000		scsi/in2000.c
 
-Generic NCR5380/53c400
-  --enable-ncr5380		scsi/g_NCR5380.c
-  --enable-ncr53c400
+Generic NCR5380/53c400 (ncr5380, ncr53c400)
+  --enable-g_NCR5380		scsi/g_NCR5380.c
 
 NCR53c406a chip
-  --enable-ncr53c406a		scsi/NCR53c406a.c
+  --enable-NCR53c406a		scsi/NCR53c406a.c
 
-PAS16				scsi/pas16.c
-  --enable-pas16
+PAS16
+  --disable-pas16		scsi/pas16.c
 
 Seagate ST02, Future Domain TMC-8xx
-  --enable-seagate		scsi/seagate.c
+  --disable-seagate		scsi/seagate.c
 
-Trantor T128/T128F/T228
-  --enable-t128			scsi/t128.c
-  --enable-t128f
-  --enable-t228
+Trantor T128/T128F/T228 (t128, t128f, t228)
+  --disable-t128		scsi/t128.c
 
 NCR 53C7,8xx
-  --enable-ncr53c7xx		scsi/53c78xx.c
+  --disable-ncr53c78xx		scsi/53c78xx.c
 
 EATA-DMA (DPT, NEC, AT&T, SNI, AST, Olivetti, Alphatronix)
-  --enable-eatadma		scsi/eata_dma.c
+  --enable-eata_dma		scsi/eata_dma.c
 
 EATA-PIO (old DPT PM2001, PM2012A)
-  --enable-eatapio		scsi/eata_pio.c
+  --disable-eata_pio		scsi/eata_pio.c
 
 WD 7000
-  --enable-wd7000		scsi/wd7000.c
+  --disable-wd7000		scsi/wd7000.c
 
 EATA ISA/EISA/PCI (DPT and generic EATA/DMA-compliant boards)
-  --enable-eata			scsi/eata.c
+  --disable-eata		scsi/eata.c
 
-AM53/79C974
-  --enable-am53c974		scsi/AM53C974.c
-  --enable-am79c974
+AM53/79C974 (am53c974, am79c974)
+  --disable-AM53C974		scsi/AM53C974.c
 
-DTC3180/3280
-  --enable-dtc3280		scsi/dtc.c
-  --enable-dtc3180
+DTC3180/3280 (dtc3180, dtc3280)
+  --disable-dtc	       		scsi/dtc.c
 
-NCR53C8XX
-  --enable-ncr53c8xx		scsi/ncr53c8xx.c
-  --enable-dc390w
-  --enable-dc390u
-  --enable-dc390f
+NCR53C8XX (ncr53c8xx, dc390f, dc390u, dc390w)
+  --disable-ncr53c8xx		scsi/ncr53c8xx.c
 
-Tekram DC-390(T)
-  --enable-dc390t		scsi/tmscsim.c
-  --enable-dc390
+Tekram DC-390(T) (dc390, dc390t)
+  --disable-tmscsim		scsi/tmscsim.c
 
 IOMEGA Parallel Port ZIP drive
-  --enable-ppa			scsi/ppa.c
+  --disable-ppa			scsi/ppa.c
 
 Qlogic FAS
-  --enable-qlogicfas		scsi/qlogicfas.c
+  --disable-qlogicfas		scsi/qlogicfas.c
 
 Qlogic ISP
-  --enable-qlogicisp		scsi/qlogicisp.c
+  --disable-qlogicisp		scsi/qlogicisp.c
 
 GDT SCSI Disk Array Controller
-  --enable-gdth			scsi/gdth.c
+  --disable-gdth		scsi/gdth.c
 
 
 *** Ethernet controllers
 These all show up as `eth%d' except the atp device.
 
-NE2000/NE1000 ISA
-  --enable-ne2000			net/ne.c 8390.c
-  --enable-ne1000
+NE2000/NE1000 ISA (ne, ne1000, ne2000)
+  --disable-ne				net/ne.c 8390.c
 	0x300,280,320,340,360
 
-3Com 503 (Etherlink II)
-  --enable-3c503			net/3c503.c net/8390.c
-  --enable-el2
+3Com 503 (3c503) / Etherlink II
+  --disable-3c503			net/3c503.c net/8390.c
 	0x300,310,330,350,250,280,2a0,2e0
 
-3Com 509/579 (Etherlink III)
-  --enable-3c509			net/3c509.c 
-  --enable-3c579
-  --enable-el3
+3Com 509/579 (3c509, 3c579) / Etherlink III
+  --disable-3c509			net/3c509.c 
 
-WD80*3
-  --enable-wd80x3			net/wd.c, net/8390.c
+WD80x3
+  --disable-wd				net/wd.c, net/8390.c
 	0x300,280,380,240
 
-3COM 501
-  --enable-3c501			net/3c501.c
-  --enable-el1
-	0x280, 300
+3COM 501 (3c501) / Etherlink I
+  --disable-3c501			net/3c501.c
+	0x280,300
 
 SMC Ultra
-  --enable-ul				net/smc-ultra.c net/8390.c
+  --disable-smcultra			net/smc-ultra.c net/8390.c
 	0x200,220,240,280,300,340,380
 
 SMC Ultra32
-  --enable-ul32				net/smc-ultra32.c net/8390.c
+  --disable-smcultra32			net/smc-ultra32.c net/8390.c
 
 HP PCLAN+ (27247B and 27252A)
-  --enable-hplanplus			net/hp-plus.c net/8390.c
+  --disable-hpplus			net/hp-plus.c net/8390.c
 	0x200,240,280,2c0,300,320,340
 
 HP PCLAN (27245 and other 27xxx series)
-  --enable-hplan			net/hp.c, net/8390.c
+  --disable-hp	 			net/hp.c, net/8390.c
 	0x300,320,340,280,2c0,200,240
 
-3Com 590/900 series (592/595/597/900/905) "Vortex/Boomerang"
-  --enable-3c59x
-  --enable-3c90x
-  --enable-vortex			net/3c59x.c
+3Com 59x/90x (3c59x, 3c590, 3c592, 3c595, 3c597, 3c90x, 3c900, 3c905) "Vortex/Boomerang"
+  --disable-3c59x			net/3c59x.c
 
 Seeq8005
-  --enable-seeq8005			net/seeq8005.c
+  --disable-seeq8005			net/seeq8005.c
 	0x300,320,340,360
 
-HP 10/100VG PCLAN (ISA, EISA, PCI)
-  --enable-hp100			net/hp100.c
-  --enable-hpj2577
-  --enable-hpj2573
-  --enable-hp27248b
-  --enable-hp2585
+HP 10/100VG PCLAN (ISA, EISA, PCI) (hp100, hpj2577, hpj2573, hpj2585, hp27248b)
+  --disable-hp100			net/hp100.c
 
 Ansel Communications EISA 3200
-  --enable-ac3200			net/ac3200.c, net/8390.c
+  --disable-ac3200			net/ac3200.c, net/8390.c
 
 Cabletron E21xx
-  --enable-e2100			net/e2100.c, net/8390.c
+  --disable-e2100			net/e2100.c, net/8390.c
 	0x300,280,380,220
 
 AT1700 (Fujitsu 86965)
-  --enable-at1700			net/at1700.c
+  --disable-at1700			net/at1700.c
 	0x260,280,2a0,240,340,320,380,300
 
-ICL EtherTeam 16i/32
-  --enable-eth16i			net/eth16i.c 
-  --enable-eth32
+ICL EtherTeam 16i/32 (eth16i, eth32)
+  --disable-eth16i			net/eth16i.c 
 	0x260,280,2a0,240,340,320,380,300 (16i)
 
-Zenith Z-Note
-  --enable-znet				net/znet.c
-  --enable-znote
+Zenith Z-Note (znet, znote)
+  --disable-znet			net/znet.c
 
 EtherExpress 16
-  --enable-eexpress			net/eexpress.c
+  --disable-eexpress			net/eexpress.c
 	0x300,270,320,340
 
 EtherExpressPro
-  --enable-eexpresspro			net/eepro.c
+  --disable-eepro			net/eepro.c
 	0x200,240,280,2c0,300,320,340,360
 
 Intel EtherExpressPro PCI 10+/100B/100+
-  --enable-eexpresspro100		net/eepro100.c
+  --disable-eepro100			net/eepro100.c
 
-DEPCA, DE10x, DE200, DE201, DE202, DE210, DE422
-  --enable-depca			net/depca.c
-  --enable-de100
-  --enable-de101
-  --enable-de200
-  --enable-de201
-  --enable-de202
-  --enable-de210
-  --enable-de422
+DEPCA (de100, de101, de200, de201, de202, de210, de422)
+  --disable-depca			net/depca.c
 
-EtherWORKS 3 (DE203, DE204, DE205)
-  --enable-ewrk3			net/ewrk3.c
-  --enable-de203
-  --enable-de204
-  --enable-de205
+EtherWORKS 3 (ewrk3, de203, de204, de205)
+  --disable-ewrk3			net/ewrk3.c
 
-DE425, DE434, DE435, DE450, DE500
-  --enable-de4x5			net/de4x5.c
-  --enable-de425
-  --enable-de434
-  --enable-de435
-  --enable-de450
-  --enable-de500
+DE4x5 (de4x5, de425, de434, de435, de450, de500)
+  --disable-de4x5			net/de4x5.c
 
 Apricot XEN-II on board ethernet
-  --enable-apricot			net/apricot.c
+  --disable-apricot			net/apricot.c
 
 AT&T WaveLAN & DEC RoamAbout DS
   --enable-wavelan			net/wavelan.c
 	0x390
 
-3Com 507
-  --enable-3c507			net/3c507.c
-  --enable-el16
+3Com 507 (3c507, el16)
+  --disable-3c507			net/3c507.c
 	0x300,320,340,280
 
-3Com 505
-  --enable-3c505			net/3c505.c
-  --enable-elplus
+3Com 505 (3c505, elplus)
+  --disable-3c505			net/3c505.c
 	0x300,280,310
 
 D-Link DE-600
-  --enable-de600			net/de600.c
+  --disable-de600			net/de600.c
 	0x378
 
 D-Link DE-620
-  --enable-de620			net/de620.c
+  --disable-de620			net/de620.c
 	0x378
 
 Schneider & Koch G16
-  --enable-skg16			net/sk_g16.c
+  --disable-sk_g16			net/sk_g16.c
 	0x100,180,208,220,288,320,328,390
 
 NI5210
-  --enable-ni52				net/ni52.c
+  --disable-ni52			net/ni52.c
 	0x300,280,360,320,340
 
 NI6510
-  --enable-ni65				net/ni65.c
+  --disable-ni65			net/ni65.c
 	0x300/320/340/360
 
 AT-LAN-TEC/RealTek pocket adaptor
@@ -334,101 +308,99 @@ AT-LAN-TEC/RealTek pocket adaptor
 	0x378,278,3bc
 	atp%d
 
-AMD LANCE and PCnet (AT1500 and NE2100)
-  --enable-lance			net/lance.c
-  --enable-at1500
-  --enable-ne2100
+AMD LANCE and PCnet (at1500, ne2100)
+  --disable-lance			net/lance.c
 
-DECchip Tulip (dc21x4x) PCI
-  --enable-elcp				net/tulip.c
-  --enable-tulip
+DECchip Tulip (dc21x4x) PCI (elcp, tulip)
+  --disable-tulip			net/tulip.c
 
 FMV-181/182/183/184
-  --enable-fmv18x			net/fmv18x.c
+  --disable-fmv18x			net/fmv18x.c
 
 3Com 515 ISA Fast EtherLink
-  --enable-3c515			net/3c515.c
+  --disable-3c515			net/3c515.c
 
 AMD PCI PCnet32 (PCI bus NE2100 cards)
-  --enable-pcnet32			net/pcnet32.c
+  --disable-pcnet32			net/pcnet32.c
 
 PCI NE2000
-  --enable-ne2kpci			net/ne2k-pci.c
+  --disable-ne2kpci			net/ne2k-pci.c
 
 Packet Engines Yellowfin Gigabit-NIC
-  --enable-yellowfin			net/yellowfin.c
+  --disable-yellowfin			net/yellowfin.c
 
-RealTek 8129/8139 (not 8019/8029!)
-  --enable-rtl8139			net/rtl8139.c
-  --enable-rtl8129
+RealTek 8129/8139 (rtl8129, rtl8139) (not 8019/8029!)
+  --disable-rtl8139			net/rtl8139.c
 
-SMC 83c170/175 EPIC/100 (EtherPower II)
-  --enable-epic				net/epic100.c
-  --enable-epic100
+SMC 83c170/175 EPIC/100 (epic, epic100) / EtherPower II
+  --disable-epic100			net/epic100.c
 
 TI ThunderLAN
-  --enable-tlan				net/tlan.c
+  --disable-tlan			net/tlan.c
 
 VIA Rhine
-  --enable-viarhine			net/via_rhine.c
+  --disable-viarhine			net/via-rhine.c
 
 Packet Engines "Hamachi" GNIC-2 Gigabit Ethernet
-  --enable-hamachi			net/hamachi.c
+  --disable-hamachi			net/hamachi.c
 
 Intel PCI Gigabit Ethernet
-  --enable-intel-gige			net/intel-gige.c
+  --disable-intelgige			net/intel-gige.c
 
 Myson MTD803 Ethernet adapter series
-  --enable-myson803			net/myson803.c
+  --disable-myson803			net/myson803.c
 
 National Semiconductor DP8381x series PCI Ethernet
-  --enable-natsemi			net/natsemi.c
+  --disable-natsemi			net/natsemi.c
 
 National Semiconductor DP8382x series PCI Ethernet
-  --enable-ns820			net/ns820.c
+  --disable-ns820			net/ns820.c
 
 Adaptec Starfire network adapter
-  --enable-starfire			net/starfire.c
+  --disable-starfire			net/starfire.c
 
 Sundance ST201 "Alta" PCI Ethernet
-  --enable-sundance			net/sundance.c
+  --disable-sundance			net/sundance.c
 
 Winbond W89c840 PCI Ethernet
-  --enable-winbond-840			net/winbond-840.c
+  --disable-winbond840			net/winbond-840.c
 
 *** pcmcia bridge drivers
-All source files are relative to .../gnumach/linux/pcmcia-cs.
+
+All source files are relative to [GNU Mach]/linux/pcmcia-cs.
 
 Intel 82365 PC Card controller
-  --enable-i82365			modules/i82365.c
+  --disable-i82365			modules/i82365.c
 
 *** pcmcia device drivers
+
 These all show up as `eth%d'.
-All source files are relative to .../gnumach/linux/pcmcia-cs.
+
+All source files are relative to [GNU Mach]/linux/pcmcia-cs.
 
 3Com 3c574 ``RoadRunner'' PCMCIA Ethernet
-  --enable-3c574_cs			clients/3c574_cs.c
+  --disable-3c574_cs			clients/3c574_cs.c
 
 3Com 3c589 PCMCIA Ethernet card
-  --enable-3c589_cs			clients/3c589_cs.c
+  --disable-3c589_cs			clients/3c589_cs.c
 
 Asix AX88190-based PCMCIA Ethernet adapters
-  --enable-axnet_cs			clients/axnet_cs.c
+  --disable-axnet_cs			clients/axnet_cs.c
 
 fmvj18x chipset based PCMCIA Ethernet cards
-  --enable-fmvj18x_cs			clients/fmvj18x_cs.c
+  --disable-fmvj18x_cs			clients/fmvj18x_cs.c
 
 New Media Ethernet LAN PCMCIA cards
-  --enable-nmclan_cs			clients/nmclan_cs.c
+  --disable-nmclan_cs			clients/nmclan_cs.c
 
 NS8390-based PCMCIA cards
-  --enable-pcnet_cs			clients/pcnet_cs.c
+  --disable-pcnet_cs			clients/pcnet_cs.c
 
 SMC91c92-based PCMCIA cards
-  --enable-smc91c92_cs			clients/smc91c92_cs.c
+  --disable-smc91c92_cs			clients/smc91c92_cs.c
 
 Xircom CreditCard and Realport PCMCIA ethernet
-  --enable-xirc2ps_cs			clients/xirc2ps_cs.c
+  --disable-xirc2ps_cs			clients/xirc2ps_cs.c
 
 Hermes or Prism 2 PCMCIA Wireless adapters (Orinoco)
-  --enable-orinoco_cs			wireless/orinoco_cs.c
+  --disable-orinoco_cs			wireless/orinoco_cs.c

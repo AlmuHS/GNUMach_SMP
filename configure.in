@@ -37,13 +37,16 @@ AC_PREFIX_DEFAULT([])
 # Options
 #
 AC_ARG_ENABLE([kdb],
-AS_HELP_STRING([--enable-kdb], [enable use of in-kernel debugger]),
-[test "x$enableval" = xno || AC_DEFINE([MACH_KDB], [1], [enable use of in-kernel debugger])])
+AS_HELP_STRING([--enable-kdb], [enable use of in-kernel debugger]))
+[if test x"$enable_kdb" = xyes; then]
+  AC_DEFINE([MACH_KDB], [1], [enable use of in-kernel debugger])
+[fi]
 
 AC_ARG_ENABLE([kmsg],
-AS_HELP_STRING([--enable-kmsg], [enable use of kmsg device [[default=yes]]]),
-[test "x$enableval" = xno || AC_DEFINE([MACH_KMSG], [], [enable use of kmsg device])],
-			    [AC_DEFINE([MACH_KMSG], [], [enable use of kmsg device])])
+AS_HELP_STRING([--disable-kmsg], [disable use of kmsg device]))
+[if test x"$enable_kmsg" != xno; then]
+  AC_DEFINE([MACH_KMSG], [], [enable use of kmsg device])
+[fi]
 
 #
 # Programs

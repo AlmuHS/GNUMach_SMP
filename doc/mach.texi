@@ -538,6 +538,9 @@ where it is installed.
 
 The default for an option is to be disabled, unless otherwise noted.
 
+This table is out-dated.  Please see the file @file{i386/README-Drivers}
+and the output of @code{[GNU Mach]/configure --help=recursive}.
+
 @table @code
 @item --prefix @var{prefix}
 Sets the prefix to PREFIX.  The default prefix is the empty string, which
