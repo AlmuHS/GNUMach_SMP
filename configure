@@ -815,7 +815,7 @@ Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
   --enable-kdb            enable use of in-kernel debugger
-  --enable-kmsg           enable use of kmsg device [default=yes]
+  --disable-kmsg          disable use of kmsg device
 
 Some influential environment variables:
   CC          C compiler command
@@ -1379,28 +1379,28 @@ esac
 # Check whether --enable-kdb or --disable-kdb was given.
 if test "${enable_kdb+set}" = set; then
   enableval="$enable_kdb"
-  test "x$enableval" = xno ||
+
+fi;
+if test x"$enable_kdb" = xyes; then
+
 cat >>confdefs.h <<\_ACEOF
 #define MACH_KDB 1
 _ACEOF
 
-fi;
+fi
 
 # Check whether --enable-kmsg or --disable-kmsg was given.
 if test "${enable_kmsg+set}" = set; then
   enableval="$enable_kmsg"
-  test "x$enableval" = xno ||
-cat >>confdefs.h <<\_ACEOF
-#define MACH_KMSG
-_ACEOF
-
-else
-
-cat >>confdefs.h <<\_ACEOF
-#define MACH_KMSG
-_ACEOF
 
 fi;
+if test x"$enable_kmsg" != xno; then
+
+cat >>confdefs.h <<\_ACEOF
+#define MACH_KMSG
+_ACEOF
+
+fi
 
 #
 # Programs

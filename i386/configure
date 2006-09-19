@@ -788,7 +788,12 @@ if test -n "$ac_init_help"; then
 Optional Features:
   --disable-FEATURE       do not include FEATURE (same as --enable-FEATURE=no)
   --enable-FEATURE[=ARG]  include FEATURE [ARG=yes]
-  --enable-lpr            enable use of lpr device
+  --disable-default-device-drivers
+                          have all device drivers disabled that can be
+                          disabled and would otherwise have been enabled by
+                          default; then use the `--enable-*' options to enable
+                          only those you actually want to have enabled
+  --disable-lpr           disable use of lpr device
 
 Report bugs to <bug-hurd@gnu.org>.
 _ACEOF
@@ -1242,15 +1247,28 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 #
 # Options
 #
+# Check whether --enable-default-device-drivers or --disable-default-device-drivers was given.
+if test "${enable_default_device_drivers+set}" = set; then
+  enableval="$enable_default_device_drivers"
+
+fi;
+if test x"$enable_default_device_drivers" != xno
+then enable_default_device_drivers=yes
+fi
+
 # Check whether --enable-lpr or --disable-lpr was given.
 if test "${enable_lpr+set}" = set; then
   enableval="$enable_lpr"
-  test "x$enableval" = xno ||
+
+fi;
+enable_lpr=${enable_lpr-$enable_default_device_drivers}
+if test x"$enable_lpr" = xyes
+then
 cat >>confdefs.h <<\_ACEOF
 #define MACH_LPR
 _ACEOF
 
-fi;
+fi
 
 ac_aux_dir=
 for ac_dir in $srcdir $srcdir/.. $srcdir/../..; do

@@ -1,5 +1,10 @@
 2006-09-20  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* configure: Regenerate.
+	* i386/configure: Likewise.
+	* i386/linux/configure: Likewise.
+	* i386/linux/device-drivers.h.in: Likewise.
+	
 	* Drivers.macros (AC_DRIVER_ALIAS): Remove definition.
 	(AC_DRIVER): Extend to take a `description' parameter and consider
 	`$enable_default_device_drivers'.

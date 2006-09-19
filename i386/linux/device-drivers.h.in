@@ -6,9 +6,6 @@
 /* 3c574_cs */
 #undef CONFIG_3C574_CS
 
-/* 3c575_cb */
-#undef CONFIG_3C575_CB
-
 /* 3c589_cs */
 #undef CONFIG_3C589_CS
 
@@ -33,12 +30,6 @@
 /* ide */
 #undef CONFIG_BLK_DEV_IDE
 
-/* cardbus */
-#undef CONFIG_CARDBUS
-
-/* cb_enabler */
-#undef CONFIG_CB_ENABLER
-
 /* de4x5 */
 #undef CONFIG_DE4X5
 
@@ -48,7 +39,7 @@
 /* de620 */
 #undef CONFIG_DE620
 
-/* elcp */
+/* tulip */
 #undef CONFIG_DEC_ELCP
 
 /* depca */
@@ -57,38 +48,32 @@
 /* e2100 */
 #undef CONFIG_E2100
 
-/* eepro100_cb */
-#undef CONFIG_EEPRO100_CB
-
 /* eexpress */
 #undef CONFIG_EEXPRESS
 
-/* eexpresspro */
+/* eepro */
 #undef CONFIG_EEXPRESS_PRO
 
-/* eexpresspro100 */
+/* eepro100 */
 #undef CONFIG_EEXPRESS_PRO100B
 
-/* el1 */
+/* 3c501 */
 #undef CONFIG_EL1
 
-/* el16 */
+/* 3c507 */
 #undef CONFIG_EL16
 
-/* el2 */
+/* 3c503 */
 #undef CONFIG_EL2
 
-/* el3 */
+/* 3c509 */
 #undef CONFIG_EL3
 
-/* elplus */
+/* 3c505 */
 #undef CONFIG_ELPLUS
 
-/* epic */
+/* epic100 */
 #undef CONFIG_EPIC
-
-/* epic_cb */
-#undef CONFIG_EPIC_CB
 
 /* eth16i */
 #undef CONFIG_ETH16I
@@ -108,10 +93,10 @@
 /* hp100 */
 #undef CONFIG_HP100
 
-/* hplan */
+/* hp */
 #undef CONFIG_HPLAN
 
-/* hplanplus */
+/* hpplus */
 #undef CONFIG_HPLAN_PLUS
 
 /* i82365 */
@@ -120,7 +105,7 @@
 /* Driver Class net */
 #undef CONFIG_INET
 
-/* intel_gige */
+/* intelgige */
 #undef CONFIG_INTEL_GIGE
 
 /* lance */
@@ -144,7 +129,7 @@
 /* natsemi */
 #undef CONFIG_NATSEMI
 
-/* ne2000 */
+/* ne */
 #undef CONFIG_NE2000
 
 /* ne2kpci */
@@ -198,43 +183,43 @@
 /* aic7xxx */
 #undef CONFIG_SCSI_AIC7XXX
 
-/* am53c974 */
+/* AM53C974 */
 #undef CONFIG_SCSI_AM53C974
 
-/* buslogic */
+/* BusLogic */
 #undef CONFIG_SCSI_BUSLOGIC
 
-/* dc390t */
+/* tmscsim */
 #undef CONFIG_SCSI_DC390T
 
-/* dtc3280 */
+/* dtc */
 #undef CONFIG_SCSI_DTC3280
 
 /* eata */
 #undef CONFIG_SCSI_EATA
 
-/* eatadma */
+/* eata_dma */
 #undef CONFIG_SCSI_EATA_DMA
 
-/* eatapio */
+/* eata_pio */
 #undef CONFIG_SCSI_EATA_PIO
 
-/* futuredomain */
+/* fdomain */
 #undef CONFIG_SCSI_FUTURE_DOMAIN
 
 /* gdth */
 #undef CONFIG_SCSI_GDTH
 
-/* ncr5380 */
+/* g_NCR5380 */
 #undef CONFIG_SCSI_GENERIC_NCR5380
 
 /* in2000 */
 #undef CONFIG_SCSI_IN2000
 
-/* ncr53c406a */
+/* NCR53c406a */
 #undef CONFIG_SCSI_NCR53C406A
 
-/* ncr53c7xx */
+/* 53c78xx */
 #undef CONFIG_SCSI_NCR53C7xx
 
 /* ncr53c8xx */
@@ -270,7 +255,7 @@
 /* seeq8005 */
 #undef CONFIG_SEEQ8005
 
-/* skg16 */
+/* sk_g16 */
 #undef CONFIG_SK_G16
 
 /* smc91c92_cs */
@@ -285,28 +270,25 @@
 /* tlan */
 #undef CONFIG_TLAN
 
-/* tulip_cb */
-#undef CONFIG_TULIP_CB
-
-/* ul */
+/* smcultra */
 #undef CONFIG_ULTRA
 
-/* ul32 */
+/* smcultra32 */
 #undef CONFIG_ULTRA32
 
 /* viarhine */
 #undef CONFIG_VIA_RHINE
 
-/* vortex */
+/* 3c59x */
 #undef CONFIG_VORTEX
 
 /* wavelan */
 #undef CONFIG_WAVELAN
 
-/* wd80x3 */
+/* wd */
 #undef CONFIG_WD80x3
 
-/* winbond_840 */
+/* winbond840 */
 #undef CONFIG_WINBOND840
 
 /* Driver Class wireless */
