@@ -1,3 +1,12 @@
+2006-09-19  Samuel Thibault <samuel.thibault@ens-lyon.org>
+
+	Fix against gcc 4.1's optimizations.
+
+	* i386/i386/seg.h (struct pseudo_descriptor): Pack structure and
+	move the padding field to the end.
+	(lgdt): Pass the whole structure to the lgdt assembly command.
+	(lidt): Likewise.
+
 2006-08-06  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* DEVELOPMENT: Update.

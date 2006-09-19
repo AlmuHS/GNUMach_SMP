@@ -121,20 +121,20 @@ struct real_gate {
 /* Format of a "pseudo-descriptor", used for loading the IDT and GDT.  */
 struct pseudo_descriptor
 {
-	short pad;
 	unsigned short limit;
 	unsigned long linear_base;
-};
+	short pad;
+} __attribute__((packed));
 
 
 /* Load the processor's IDT, GDT, or LDT pointers.  */
 MACH_INLINE void lgdt(struct pseudo_descriptor *pdesc)
 {
-	__asm volatile("lgdt %0" : : "m" (pdesc->limit));
+	__asm volatile("lgdt %0" : : "m" (*pdesc));
 }
 MACH_INLINE void lidt(struct pseudo_descriptor *pdesc)
 {
-	__asm volatile("lidt %0" : : "m" (pdesc->limit));
+	__asm volatile("lidt %0" : : "m" (*pdesc));
 }
 MACH_INLINE void lldt(unsigned short ldt_selector)
 {
