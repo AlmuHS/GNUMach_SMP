@@ -365,6 +365,25 @@ linux_DRIVER([i82365],
   [Intel 82365 PC Card controller],
   [I82365], [i82365], [pcmcia])
 
+AC_DEFUN([AC_PCMCIA_OPTION], [
+  AC_ARG_ENABLE([pcmcia-$1], 
+    AS_HELP_STRING([--disable-pcmcia-$1], [$4]))
+  [enable_pcmcia_$1=${enable_pcmcia_$1-$enable_default_device_drivers}
+  if test x"$enable_pcmcia_$1" = xyes; then]
+    AC_DEFINE([CONFIG_$2], [1], [$4])
+    [device_drivers="$device_drivers $3"
+    if test "${driver_class_pcmcia_selected+set}" != set; then
+      driver_class_pcmcia_selected=yes]
+      AC_DEFINE_UNQUOTED([$driver_class_pcmcia_option], [1])
+      [device_drivers="$device_drivers $driver_class_pcmcia_files"
+    fi
+  fi
+]])
+
+AC_PCMCIA_OPTION([isa], [ISA], [],
+		 [disable isa-bus-support (pcmcia core)])
+
+
 dnl PCMCIA device drivers.
 
 linux_DRIVER([3c574_cs],

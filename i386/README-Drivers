@@ -372,6 +372,9 @@ All source files are relative to [GNU Mach]/linux/pcmcia-cs.
 Intel 82365 PC Card controller
   --disable-i82365			modules/i82365.c
 
+Disable scan for ISA interrupts at startup
+  --disable-pcmcia-isa			modules/i82365.c
+
 *** pcmcia device drivers
 
 These all show up as `eth%d'.

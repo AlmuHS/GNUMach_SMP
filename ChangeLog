@@ -1,3 +1,12 @@
+2006-09-23  Stefan Siegl  <stesie@brokenpipe.de>
+
+	* i386/linux/configure.ac (AC_PCMCIA_OPTION): New function.
+	(--disable-pcmcia-isa): New configuration option to disable ISA-bus
+	support in the pcmcia core, which is otherwise enabled now by default.
+	* doc/mach.texi (Configuration): Briefly document the new configuration
+	option.
+	* i386/README-Drivers: Likewise.
+	
 2006-09-20  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* configure: Regenerate.
