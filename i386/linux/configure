@@ -800,7 +800,7 @@ Optional Features:
   --disable-ide           disable driver IDE disks
   --disable-advansys      disable driver SCSI controller AdvanSys
   --disable-BusLogic      disable driver SCSI controller BusLogic
-  --enable-flashpoint     enable SCSI flashpoint [default=no]
+  --enable-flashpoint     enable SCSI flashpoint
   --disable-u1434f        disable driver SCSI controller UltraStor 14F/34F
   --disable-ultrastor     disable driver SCSI controller UltraStor
   --disable-aha152x       disable driver SCSI controller Adaptec AHA-152x/2825
@@ -931,6 +931,7 @@ Optional Features:
   --disable-winbond840    disable driver Ethernet controller Winbond W89c840
                           PCI Ethernet
   --disable-i82365        disable driver Intel 82365 PC Card controller
+  --disable-pcmcia-isa    disable isa-bus-support (pcmcia core)
   --disable-3c574_cs      disable driver 3Com 3c574 ``RoadRunner'' PCMCIA
                           Ethernet
   --disable-3c589_cs      disable driver 3Com 3c589 PCMCIA Ethernet card
@@ -1717,7 +1718,7 @@ _ACEOF
   fi
 fi
 
-#TODO Was ist mit FlashPoint.o?
+# TODO.  What's that?  And what about FlashPoint.o?
 # Check whether --enable-flashpoint or --disable-flashpoint was given.
 if test "${enable_flashpoint+set}" = set; then
   enableval="$enable_flashpoint"
@@ -3689,6 +3690,34 @@ _ACEOF
     device_drivers="$device_drivers $driver_class_pcmcia_files"
   fi
 fi
+
+
+
+
+
+  # Check whether --enable-pcmcia-isa or --disable-pcmcia-isa was given.
+if test "${enable_pcmcia_isa+set}" = set; then
+  enableval="$enable_pcmcia_isa"
+
+fi;
+  enable_pcmcia_isa=${enable_pcmcia_isa-$enable_default_device_drivers}
+  if test x"$enable_pcmcia_isa" = xyes; then
+
+cat >>confdefs.h <<\_ACEOF
+#define CONFIG_ISA 1
+_ACEOF
+
+    device_drivers="$device_drivers "
+    if test "${driver_class_pcmcia_selected+set}" != set; then
+      driver_class_pcmcia_selected=yes
+      cat >>confdefs.h <<_ACEOF
+#define $driver_class_pcmcia_option 1
+_ACEOF
+
+      device_drivers="$device_drivers $driver_class_pcmcia_files"
+    fi
+  fi
+
 
 
 

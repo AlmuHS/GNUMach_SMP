@@ -108,6 +108,9 @@
 /* intelgige */
 #undef CONFIG_INTEL_GIGE
 
+/* disable isa-bus-support (pcmcia core) */
+#undef CONFIG_ISA
+
 /* lance */
 #undef CONFIG_LANCE
 
