@@ -543,24 +543,26 @@ device_get_status (void *d, dev_flavor_t flavor, dev_status_t status,
 
       int result;
 
-      if((flavor == SIOCGIWRANGE || flavor == SIOCGIWENCODE
+      if (flavor == SIOCGIWRANGE || flavor == SIOCGIWENCODE
 	  || flavor == SIOCGIWESSID || flavor == SIOCGIWNICKN
 	  || flavor == SIOCGIWSPY)
-	 && ((struct iwreq *) status)->u.data.pointer)
 	{
-	  struct iw_point *iwp = &((struct iwreq *) status)->u.data;
-
-	  /* safety check whether the status array is long enough ... */
-	  if(*count * sizeof(int) < sizeof(struct ifreq) + iwp->length)
-	    return D_INVALID_OPERATION;
-
-	  /* make sure, iwp->pointer points to the correct address */
-	  iwp->pointer = (void *) status + sizeof(struct ifreq);
-
-	  result = dev->do_ioctl(dev, (struct ifreq *) status, flavor);
-	  /* *count = (sizeof(struct ifreq) + iwp->length) / sizeof(int);
-	   * if(iwp->length % sizeof(int)) *count ++;
+	  /*
+	   * These ioctls require an `iw_point' as their argument (i.e.
+	   * they want to return some data to userspace. 
+	   * Therefore supply some sane values and carry the data back
+	   * to userspace right behind the `struct iwreq'.
 	   */
+	  struct iw_point *iwp = &((struct iwreq *) status)->u.data;
+	  iwp->length = *count * sizeof (dev_status_t) - sizeof (struct ifreq);
+	  iwp->pointer = (void *) status + sizeof (struct ifreq);
+
+	  result = dev->do_ioctl (dev, (struct ifreq *) status, flavor);
+
+	  *count = ((sizeof (struct ifreq) + iwp->length)
+		    / sizeof (dev_status_t));
+	  if (iwp->length % sizeof (dev_status_t))
+	    (*count) ++;
 	}
       else
 	{
