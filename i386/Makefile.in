@@ -134,11 +134,9 @@ boothdr.o: i386asm.h
 all: sysdep.a
 	$(MAKE) -C linux $@
 
-# `$($(systype)-objfiles-prepend)' are special, but are nevertheless
-# created for the target `sysdep.a'.
 sysdep.a: $(objfiles) linux/linux.o
 	rm -f $@
-	$(AR) cr $@ $(filter-out $($(systype)-objfiles-prepend),$^)
+	$(AR) cr $@ $^
 	$(RANLIB) $@
 
 check:

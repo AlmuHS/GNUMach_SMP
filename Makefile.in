@@ -281,11 +281,8 @@ clib-routines := memcpy memmove memset bcopy bzero \
 #	@rm -f $@
 #	$(AR) cq $@ $^
 
-# Then dependency on `$(systype)/sysdep.a' also makes sure that
-# `$($(systype)-objfiles-prepend)' are created.
 kernel.o: $(objfiles) $(systype)/sysdep.a # kernel.a
-	$(LD) -r -o $@ \
-	  $(addprefix $(systype)/,$($(systype)-objfiles-prepend)) $^
+	$(LD) -r -o $@ $^
 kernel-undef: kernel.o
 	$(NM) -u $< | sed 's/  *U  *//;s/^_*//' | sort -u > $@
 kernel-undef-bad: kernel-undef Makefile

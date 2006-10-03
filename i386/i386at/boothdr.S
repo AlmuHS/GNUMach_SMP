@@ -3,8 +3,11 @@
 
 #include "i386asm.h"
 
-	.text
-
+	/*
+	 * This section will be put first into .text.  See also	i386/ldscript.
+	 */
+	.section .text.start,"ax"
+	
 	/* We should never be entered this way.  */
 	.globl	start,_start
 start:

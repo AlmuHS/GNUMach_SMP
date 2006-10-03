@@ -33,12 +33,8 @@ DEFINES += -DCONTINUATIONS -D__ELF__ -Di386 $(DEFS-$(systype))
 # The system specific ones always override the generic ones.
 INCLUDES += -I$(abs_top_srcdir)/$(systype)/bogus
 
-# Arrange for a suitable load address.
-LDFLAGS-kernel += -Ttext 100000
-
-# `boothdr.o' has to be at the beginning of the kernel image.
-$(systype)-objfiles-prepend = boothdr.o
-
+# i386 specific linker script.
+LDFLAGS-kernel += -T $(abs_top_srcdir)/$(systype)/ldscript
 
 #
 # Autoconf support

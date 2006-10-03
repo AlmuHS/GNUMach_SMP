@@ -46,8 +46,14 @@ SECTIONS
     KEEP (*(.init))
   } =0x90909090
   .plt            : { *(.plt) }
+  /*
+   * _start needs to be at 0x100000, so that's where .text will be begin
+   * and .text.start will be first in there.  See also i386/i386at/boothdr.S.
+   */
+  . = 0x100000;
   .text           :
   {
+    *(.text.start)
     *(.text .stub .text.* .gnu.linkonce.t.*)
     KEEP (*(.text.*personality*))
     /* .gnu.warning sections are handled specially by elf32.em.  */
