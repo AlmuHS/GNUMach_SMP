@@ -1,3 +1,9 @@
+2006-10-03  Thomas Schwinge  <tschwinge@gnu.org>
+
+	[task #5941 --- ``Linker script for GNU Mach'']
+	* i386/ldscript: New file, copied from `/lib/ldscripts/elf_i386.x' of a
+	GNU Binutils 2.16.1 installation.
+
 2006-09-25  Stefan Siegl  <stesie@brokenpipe.de>
 
 	* linux/dev/glue/net.c (device_get_status): Reworked to not read
