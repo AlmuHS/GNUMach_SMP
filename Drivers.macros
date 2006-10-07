@@ -36,11 +36,12 @@ dnl By default, the value from $enable_default_device_drivers is considered
 dnl when deciding whether to activate the device driver or not.
 
 AC_DEFUN([AC_DRIVER], [
+unset enableval
 AC_ARG_ENABLE([$1],
-  AS_HELP_STRING([--disable-$1], [disable driver $2]))
-[enable_$1=${enable_$1-$enable_default_device_drivers}
-if test x"$enable_$1" = xyes; then]
-  AC_DEFINE([$3], [1], [$1])
+  AS_HELP_STRING([--disable-$1], [disable $2]))
+[enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then]
+  AC_DEFINE([$3], [1], [$1: $2])
   [device_drivers="$device_drivers $4"
   if test "${driver_class_$5_selected+set}" != set; then
     driver_class_$5_selected=yes]
@@ -54,9 +55,9 @@ dnl $enable_default_device_drivers.
 
 AC_DEFUN([AC_DRIVER_nodef], [
 AC_ARG_ENABLE([$1],
-  AS_HELP_STRING([--enable-$1], [enable driver $2]), [
+  AS_HELP_STRING([--enable-$1], [enable $2]), [
 if test x"$enableval" = xyes; then
-  AC_DEFINE([$3], [1], [$1])
+  AC_DEFINE([$3], [1], [$1: $2])
   device_drivers="$device_drivers $4"
   if test "${driver_class_$5_selected+set}" != set; then
     driver_class_$5_selected=yes

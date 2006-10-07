@@ -76,22 +76,22 @@ dnl driver, so that's not really necessary.
 
 
 dnl
-dnl linux_DRIVER(machname, MACRO, linuxname, class)
+dnl linux_DRIVER(machname, description, MACRO, linuxname, class)
 dnl
 AC_DEFUN([linux_DRIVER], [
-  AC_DRIVER([$1], [$2], [CONFIG_$3], [$4.o], [$5])
+  AC_DRIVER([$1], [device driver for $2], [CONFIG_$3], [$4.o], [$5])
 ])
 AC_DEFUN([linux_DRIVER_nodef], [
-  AC_DRIVER_nodef([$1], [$2], [CONFIG_$3], [$4.o], [$5])
+  AC_DRIVER_nodef([$1], [device driver for $2], [CONFIG_$3], [$4.o], [$5])
 ])
 
 dnl non-SCSI Disk controllers
 
 AC_DRIVER([floppy],
-  [PC floppy],
+  [device driver for PC floppy],
   [CONFIG_BLK_DEV_FD], [floppy.o])
 AC_DRIVER([ide],
-  [IDE disks],
+  [device driver for IDE disks],
   [CONFIG_BLK_DEV_IDE], [cmd640.o ide-cd.o ide.o rz1000.o triton.o])
 
 
@@ -109,7 +109,7 @@ AC_ARG_ENABLE([flashpoint],
   AS_HELP_STRING([--enable-flashpoint], [enable SCSI flashpoint]),
   [test x"$enableval" = xno &&
    AC_DEFINE([CONFIG_SCSI_OMIT_FLASHPOINT], [], [scsi omit flashpoint])])
-linux_DRIVER([u1434f],
+linux_DRIVER([u14-34f],
   [SCSI controller UltraStor 14F/34F],
   [SCSI_U14_34F], [u14-34f], [scsi])
 linux_DRIVER([ultrastor],
@@ -195,31 +195,31 @@ linux_DRIVER([gdth],
 dnl Ethernet controllers
 
 AC_DRIVER([ne],
-  [Ethernet controller NE2000/NE1000 ISA (ne, ne1000, ne2000)],
+  [device driver for Ethernet controller NE2000/NE1000 ISA (ne, ne1000, ne2000)],
   [CONFIG_NE2000], [ne.o 8390.o], [net])
 AC_DRIVER([3c503],
-  [Ethernet controller 3Com 503 (3c503) / Etherlink II],
+  [device driver for Ethernet controller 3Com 503 (3c503) / Etherlink II],
   [CONFIG_EL2], [3c503.o 8390.o], [net])
 linux_DRIVER([3c509],
   [Ethernet controller 3Com 509/579 (3c509, 3c579) / Etherlink III],
   [EL3], [3c509], [net])
 AC_DRIVER([wd],
-  [Ethernet controller WD80x3],
+  [device driver for Ethernet controller WD80x3],
   [CONFIG_WD80x3], [wd.o 8390.o], [net])
 linux_DRIVER([3c501],
   [Ethernet controller 3COM 501 (3c501) / Etherlink I],
   [EL1], [3c501], [net])
-AC_DRIVER([smcultra],
-  [Ethernet controller SMC Ultra],
+AC_DRIVER([smc-ultra],
+  [device driver for Ethernet controller SMC Ultra],
   [CONFIG_ULTRA], [smc-ultra.o 8390.o], [net])
-AC_DRIVER([smcultra32],
-  [Ethernet controller SMC Ultra32],
+AC_DRIVER([smc-ultra32],
+  [device driver for Ethernet controller SMC Ultra32],
   [CONFIG_ULTRA32], [smc-ultra32.o 8390.o], [net])
-AC_DRIVER([hpplus],
-  [Ethernet controller HP PCLAN+ (27247B and 27252A)],
+AC_DRIVER([hp-plus],
+  [device driver for Ethernet controller HP PCLAN+ (27247B and 27252A)],
   [CONFIG_HPLAN_PLUS], [hp-plus.o 8390.o], [net])
 AC_DRIVER([hp],
-  [Ethernet controller HP PCLAN (27245 and other 27xxx series)],
+  [device driver for Ethernet controller HP PCLAN (27245 and other 27xxx series)],
   [CONFIG_HPLAN], [hp.o 8390.o], [net])
 linux_DRIVER([3c59x],
   [Ethernet controller 3Com 59x/90x (3c59x, 3c590, 3c592, 3c595, 3c597, 3c90x, 3c900, 3c905) "Vortex/Boomerang"],
@@ -231,10 +231,10 @@ linux_DRIVER([hp100],
   [Ethernet controller HP 10/100VG PCLAN (ISA, EISA, PCI) (hp100, hpj2577, hpj2573, hpj2585, hp27248b)],
   [HP100], [hp100], [net])
 AC_DRIVER([ac3200],
-  [Ethernet controller Ansel Communications EISA 3200],
+  [device driver for Ethernet controller Ansel Communications EISA 3200],
   [CONFIG_AC3200], [ac3200.o 8390.o], [net])
 AC_DRIVER([e2100],
-  [Ethernet controller Cabletron E21xx],
+  [device driver for Ethernet controller Cabletron E21xx],
   [CONFIG_E2100], [e2100.o 8390.o], [net])
 linux_DRIVER([at1700],
   [Ethernet controller AT1700 (Fujitsu 86965)],
@@ -310,8 +310,8 @@ linux_DRIVER([3c515],
 linux_DRIVER([pcnet32],
   [Ethernet controller AMD PCI PCnet32 (PCI bus NE2100 cards)],
   [PCNET32], [pcnet32], [net])
-AC_DRIVER([ne2kpci],
-  [Ethernet controller PCI NE2000],
+AC_DRIVER([ne2k-pci],
+  [device driver for Ethernet controller PCI NE2000],
   [CONFIG_NE2K_PCI], [ne2k-pci.o 8390.o], [net])
 linux_DRIVER([yellowfin],
   [Ethernet controller Packet Engines Yellowfin Gigabit-NIC],
@@ -325,13 +325,13 @@ linux_DRIVER([epic100],
 linux_DRIVER([tlan],
   [Ethernet controller TI ThunderLAN],
   [TLAN], [tlan], [net])
-linux_DRIVER([viarhine],
+linux_DRIVER([via-rhine],
   [Ethernet controller VIA Rhine],
   [VIA_RHINE], [via-rhine], [net])
 linux_DRIVER([hamachi],
   [Ethernet controller Packet Engines "Hamachi" GNIC-2 Gigabit Ethernet],
   [HAMACHI], [hamachi], [net])
-linux_DRIVER([intelgige],
+linux_DRIVER([intel-gige],
   [Ethernet controller Intel PCI Gigabit Ethernet],
   [INTEL_GIGE], [intel-gige], [net])
 linux_DRIVER([myson803],
@@ -349,7 +349,7 @@ linux_DRIVER([starfire],
 linux_DRIVER([sundance],
   [Ethernet controller Sundance ST201 "Alta" PCI Ethernet],
   [SUNDANCE], [sundance], [net])
-linux_DRIVER([winbond840],
+linux_DRIVER([winbond-840],
   [Ethernet controller Winbond W89c840 PCI Ethernet],
   [WINBOND840], [winbond-840], [net])
 dnl FIXME: Can't be enabled since it is a pcmcia driver, and we don't
@@ -365,23 +365,9 @@ linux_DRIVER([i82365],
   [Intel 82365 PC Card controller],
   [I82365], [i82365], [pcmcia])
 
-AC_DEFUN([AC_PCMCIA_OPTION], [
-  AC_ARG_ENABLE([pcmcia-$1], 
-    AS_HELP_STRING([--disable-pcmcia-$1], [$4]))
-  [enable_pcmcia_$1=${enable_pcmcia_$1-$enable_default_device_drivers}
-  if test x"$enable_pcmcia_$1" = xyes; then]
-    AC_DEFINE([CONFIG_$2], [1], [$4])
-    [device_drivers="$device_drivers $3"
-    if test "${driver_class_pcmcia_selected+set}" != set; then
-      driver_class_pcmcia_selected=yes]
-      AC_DEFINE_UNQUOTED([$driver_class_pcmcia_option], [1])
-      [device_drivers="$device_drivers $driver_class_pcmcia_files"
-    fi
-  fi
-]])
-
-AC_PCMCIA_OPTION([isa], [ISA], [],
-		 [disable isa-bus-support (pcmcia core)])
+AC_DRIVER([pcmcia-isa],
+  [option isa bus support in the pcmcia core],
+  [CONFIG_ISA], [], [pcmcia])
 
 
 dnl PCMCIA device drivers.
@@ -402,7 +388,7 @@ linux_DRIVER([nmclan_cs],
   [New Media Ethernet LAN PCMCIA cards],
   [NMCLAN_CS], [nmclan_cs], [pcmcia])
 AC_DRIVER([pcnet_cs],
-  [NS8390-based PCMCIA cards],
+  [device driver for NS8390-based PCMCIA cards],
   [CONFIG_PCNET_CS], [pcnet_cs.o 8390.o], [pcmcia])
 linux_DRIVER([smc91c92_cs],
   [SMC91c92-based PCMCIA cards],
@@ -414,7 +400,7 @@ linux_DRIVER([xirc2ps_cs],
 dnl Wireless device drivers.
 
 AC_DRIVER([orinoco_cs],
-  [Hermes or Prism 2 PCMCIA Wireless adapters (Orinoco)],
+  [device driver for Hermes or Prism 2 PCMCIA Wireless adapters (Orinoco)],
   [CONFIG_ORINOCO_CS], [hermes.o orinoco.o orinoco_cs.o], [wireless])
 
 

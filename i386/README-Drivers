@@ -105,7 +105,7 @@ BusLogic
   --enable-flashpoint (if you want to omit FlashPoint support)
 
 UltraStor 14F/34F
-  --disable-u1434f		scsi/u14-34f.c
+  --disable-u14-34f		scsi/u14-34f.c
 
 UlstraStor
   --disable-ultrastor		scsi/ultrastor.c
@@ -187,7 +187,7 @@ GDT SCSI Disk Array Controller
 These all show up as `eth%d' except the atp device.
 
 NE2000/NE1000 ISA (ne, ne1000, ne2000)
-  --disable-ne				net/ne.c 8390.c
+  --disable-ne				net/ne.c net/8390.c
 	0x300,280,320,340,360
 
 3Com 503 (3c503) / Etherlink II
@@ -206,14 +206,14 @@ WD80x3
 	0x280,300
 
 SMC Ultra
-  --disable-smcultra			net/smc-ultra.c net/8390.c
+  --disable-smc-ultra			net/smc-ultra.c net/8390.c
 	0x200,220,240,280,300,340,380
 
 SMC Ultra32
-  --disable-smcultra32			net/smc-ultra32.c net/8390.c
+  --disable-smc-ultra32			net/smc-ultra32.c net/8390.c
 
 HP PCLAN+ (27247B and 27252A)
-  --disable-hpplus			net/hp-plus.c net/8390.c
+  --disable-hp-plus			net/hp-plus.c net/8390.c
 	0x200,240,280,2c0,300,320,340
 
 HP PCLAN (27245 and other 27xxx series)
@@ -324,7 +324,7 @@ AMD PCI PCnet32 (PCI bus NE2100 cards)
   --disable-pcnet32			net/pcnet32.c
 
 PCI NE2000
-  --disable-ne2kpci			net/ne2k-pci.c
+  --disable-ne2k-pci			net/ne2k-pci.c
 
 Packet Engines Yellowfin Gigabit-NIC
   --disable-yellowfin			net/yellowfin.c
@@ -339,13 +339,13 @@ TI ThunderLAN
   --disable-tlan			net/tlan.c
 
 VIA Rhine
-  --disable-viarhine			net/via-rhine.c
+  --disable-via-rhine			net/via-rhine.c
 
 Packet Engines "Hamachi" GNIC-2 Gigabit Ethernet
   --disable-hamachi			net/hamachi.c
 
 Intel PCI Gigabit Ethernet
-  --disable-intelgige			net/intel-gige.c
+  --disable-intel-gige			net/intel-gige.c
 
 Myson MTD803 Ethernet adapter series
   --disable-myson803			net/myson803.c
@@ -363,7 +363,7 @@ Sundance ST201 "Alta" PCI Ethernet
   --disable-sundance			net/sundance.c
 
 Winbond W89c840 PCI Ethernet
-  --disable-winbond840			net/winbond-840.c
+  --disable-winbond-840			net/winbond-840.c
 
 *** pcmcia bridge drivers
 
@@ -373,7 +373,7 @@ Intel 82365 PC Card controller
   --disable-i82365			modules/i82365.c
 
 Disable scan for ISA interrupts at startup
-  --disable-pcmcia-isa			modules/i82365.c
+  --disable-pcmcia-isa
 
 *** pcmcia device drivers
 
