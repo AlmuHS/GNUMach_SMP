@@ -796,156 +796,183 @@ Optional Features:
                           disabled and would otherwise have been enabled by
                           default; then use the `--enable-*' options to enable
                           only those you actually want to have enabled
-  --disable-floppy        disable driver PC floppy
-  --disable-ide           disable driver IDE disks
-  --disable-advansys      disable driver SCSI controller AdvanSys
-  --disable-BusLogic      disable driver SCSI controller BusLogic
+  --disable-floppy        disable device driver for PC floppy
+  --disable-ide           disable device driver for IDE disks
+  --disable-advansys      disable device driver for SCSI controller AdvanSys
+  --disable-BusLogic      disable device driver for SCSI controller BusLogic
   --enable-flashpoint     enable SCSI flashpoint
-  --disable-u1434f        disable driver SCSI controller UltraStor 14F/34F
-  --disable-ultrastor     disable driver SCSI controller UltraStor
-  --disable-aha152x       disable driver SCSI controller Adaptec AHA-152x/2825
-                          (aha152x, aha2825)
-  --disable-aha1542       disable driver SCSI controller Adaptec AHA-1542
-  --disable-aha1740       disable driver SCSI controller Adaptec AHA-1740
-  --disable-aic7xxx       disable driver SCSI controller Adaptec AIC7xxx
-  --disable-fdomain       disable driver SCSI controller Future Domain 16xx
-  --disable-in2000        disable driver SCSI controller Always IN 2000
-  --enable-g_NCR5380      enable driver SCSI controller Generic NCR5380/53c400
-                          (ncr5380, ncr53c400)
-  --enable-NCR53c406a     enable driver SCSI controller NCR53c406a chip
-  --disable-pas16         disable driver SCSI controller PAS16
-  --disable-seagate       disable driver SCSI controller Seagate ST02, Future
-                          Domain TMC-8xx
-  --disable-t128          disable driver SCSI controller Trantor
+  --disable-u14-34f       disable device driver for SCSI controller UltraStor
+                          14F/34F
+  --disable-ultrastor     disable device driver for SCSI controller UltraStor
+  --disable-aha152x       disable device driver for SCSI controller Adaptec
+                          AHA-152x/2825 (aha152x, aha2825)
+  --disable-aha1542       disable device driver for SCSI controller Adaptec
+                          AHA-1542
+  --disable-aha1740       disable device driver for SCSI controller Adaptec
+                          AHA-1740
+  --disable-aic7xxx       disable device driver for SCSI controller Adaptec
+                          AIC7xxx
+  --disable-fdomain       disable device driver for SCSI controller Future
+                          Domain 16xx
+  --disable-in2000        disable device driver for SCSI controller Always IN
+                          2000
+  --enable-g_NCR5380      enable device driver for SCSI controller Generic
+                          NCR5380/53c400 (ncr5380, ncr53c400)
+  --enable-NCR53c406a     enable device driver for SCSI controller NCR53c406a
+                          chip
+  --disable-pas16         disable device driver for SCSI controller PAS16
+  --disable-seagate       disable device driver for SCSI controller Seagate
+                          ST02, Future Domain TMC-8xx
+  --disable-t128          disable device driver for SCSI controller Trantor
                           T128/T128F/T228 (t128, t128f, t228)
-  --disable-53c78xx       disable driver SCSI controller NCR 53C7,8xx
-  --enable-eata_dma       enable driver SCSI controller EATA-DMA (DPT, NEC,
-                          AT&T, SNI, AST, Olivetti, Alphatronix)
-  --disable-eata_pio      disable driver SCSI controller EATA-PIO (old DPT
-                          PM2001, PM2012A)
-  --disable-wd7000        disable driver SCSI controller WD 7000
-  --disable-eata          disable driver SCSI controller EATA ISA/EISA/PCI
-                          (DPT and generic EATA/DMA-compliant boards)
-  --disable-AM53C974      disable driver SCSI controller AM53/79C974
-                          (am53c974, am79c974)
-  --disable-dtc           disable driver SCSI controller DTC3180/3280
-                          (dtc3180, dtc3280)
-  --disable-ncr53c8xx     disable driver SCSI controller NCR53C8XX (ncr53c8xx,
-                          dc390f, dc390u, dc390w)
-  --disable-tmscsim       disable driver SCSI controller Tekram DC-390(T)
-                          (dc390, dc390t)
-  --disable-ppa           disable driver IOMEGA Parallel Port ZIP drive
-  --disable-qlogicfas     disable driver SCSI controller Qlogic FAS
-  --disable-qlogicisp     disable driver SCSI controller Qlogic ISP
-  --disable-gdth          disable driver GDT SCSI Disk Array Controller
-  --disable-ne            disable driver Ethernet controller NE2000/NE1000 ISA
-                          (ne, ne1000, ne2000)
-  --disable-3c503         disable driver Ethernet controller 3Com 503 (3c503)
-                          / Etherlink II
-  --disable-3c509         disable driver Ethernet controller 3Com 509/579
-                          (3c509, 3c579) / Etherlink III
-  --disable-wd            disable driver Ethernet controller WD80x3
-  --disable-3c501         disable driver Ethernet controller 3COM 501 (3c501)
-                          / Etherlink I
-  --disable-smcultra      disable driver Ethernet controller SMC Ultra
-  --disable-smcultra32    disable driver Ethernet controller SMC Ultra32
-  --disable-hpplus        disable driver Ethernet controller HP PCLAN+ (27247B
-                          and 27252A)
-  --disable-hp            disable driver Ethernet controller HP PCLAN (27245
-                          and other 27xxx series)
-  --disable-3c59x         disable driver Ethernet controller 3Com 59x/90x
-                          (3c59x, 3c590, 3c592, 3c595, 3c597, 3c90x, 3c900,
-                          3c905) "Vortex/Boomerang"
-  --disable-seeq8005      disable driver Ethernet controller Seeq8005
-  --disable-hp100         disable driver Ethernet controller HP 10/100VG PCLAN
-                          (ISA, EISA, PCI) (hp100, hpj2577, hpj2573, hpj2585,
-                          hp27248b)
-  --disable-ac3200        disable driver Ethernet controller Ansel
+  --disable-53c78xx       disable device driver for SCSI controller NCR
+                          53C7,8xx
+  --enable-eata_dma       enable device driver for SCSI controller EATA-DMA
+                          (DPT, NEC, AT&T, SNI, AST, Olivetti, Alphatronix)
+  --disable-eata_pio      disable device driver for SCSI controller EATA-PIO
+                          (old DPT PM2001, PM2012A)
+  --disable-wd7000        disable device driver for SCSI controller WD 7000
+  --disable-eata          disable device driver for SCSI controller EATA
+                          ISA/EISA/PCI (DPT and generic EATA/DMA-compliant
+                          boards)
+  --disable-AM53C974      disable device driver for SCSI controller
+                          AM53/79C974 (am53c974, am79c974)
+  --disable-dtc           disable device driver for SCSI controller
+                          DTC3180/3280 (dtc3180, dtc3280)
+  --disable-ncr53c8xx     disable device driver for SCSI controller NCR53C8XX
+                          (ncr53c8xx, dc390f, dc390u, dc390w)
+  --disable-tmscsim       disable device driver for SCSI controller Tekram
+                          DC-390(T) (dc390, dc390t)
+  --disable-ppa           disable device driver for IOMEGA Parallel Port ZIP
+                          drive
+  --disable-qlogicfas     disable device driver for SCSI controller Qlogic FAS
+  --disable-qlogicisp     disable device driver for SCSI controller Qlogic ISP
+  --disable-gdth          disable device driver for GDT SCSI Disk Array
+                          Controller
+  --disable-ne            disable device driver for Ethernet controller
+                          NE2000/NE1000 ISA (ne, ne1000, ne2000)
+  --disable-3c503         disable device driver for Ethernet controller 3Com
+                          503 (3c503) / Etherlink II
+  --disable-3c509         disable device driver for Ethernet controller 3Com
+                          509/579 (3c509, 3c579) / Etherlink III
+  --disable-wd            disable device driver for Ethernet controller WD80x3
+  --disable-3c501         disable device driver for Ethernet controller 3COM
+                          501 (3c501) / Etherlink I
+  --disable-smc-ultra     disable device driver for Ethernet controller SMC
+                          Ultra
+  --disable-smc-ultra32   disable device driver for Ethernet controller SMC
+                          Ultra32
+  --disable-hp-plus       disable device driver for Ethernet controller HP
+                          PCLAN+ (27247B and 27252A)
+  --disable-hp            disable device driver for Ethernet controller HP
+                          PCLAN (27245 and other 27xxx series)
+  --disable-3c59x         disable device driver for Ethernet controller 3Com
+                          59x/90x (3c59x, 3c590, 3c592, 3c595, 3c597, 3c90x,
+                          3c900, 3c905) "Vortex/Boomerang"
+  --disable-seeq8005      disable device driver for Ethernet controller
+                          Seeq8005
+  --disable-hp100         disable device driver for Ethernet controller HP
+                          10/100VG PCLAN (ISA, EISA, PCI) (hp100, hpj2577,
+                          hpj2573, hpj2585, hp27248b)
+  --disable-ac3200        disable device driver for Ethernet controller Ansel
                           Communications EISA 3200
-  --disable-e2100         disable driver Ethernet controller Cabletron E21xx
-  --disable-at1700        disable driver Ethernet controller AT1700 (Fujitsu
-                          86965)
-  --disable-eth16i        disable driver Ethernet controller ICL EtherTeam
-                          16i/32 (eth16i, eth32)
-  --disable-znet          disable driver Ethernet controller Zenith Z-Note
-                          (znet, znote)
-  --disable-eexpress      disable driver Ethernet controller EtherExpress 16
-  --disable-eepro         disable driver Ethernet controller EtherExpressPro
-  --disable-eepro100      disable driver Ethernet controller Intel
+  --disable-e2100         disable device driver for Ethernet controller
+                          Cabletron E21xx
+  --disable-at1700        disable device driver for Ethernet controller AT1700
+                          (Fujitsu 86965)
+  --disable-eth16i        disable device driver for Ethernet controller ICL
+                          EtherTeam 16i/32 (eth16i, eth32)
+  --disable-znet          disable device driver for Ethernet controller Zenith
+                          Z-Note (znet, znote)
+  --disable-eexpress      disable device driver for Ethernet controller
+                          EtherExpress 16
+  --disable-eepro         disable device driver for Ethernet controller
+                          EtherExpressPro
+  --disable-eepro100      disable device driver for Ethernet controller Intel
                           EtherExpressPro PCI 10+/100B/100+
-  --disable-depca         disable driver Ethernet controller DEPCA (de100,
-                          de101, de200, de201, de202, de210, de422)
-  --disable-ewrk3         disable driver Ethernet controller EtherWORKS 3
-                          (ewrk3, de203, de204, de205)
-  --disable-de4x5         disable driver Ethernet controller DE4x5 (de4x5,
-                          de425, de434, de435, de450, de500)
-  --disable-apricot       disable driver Ethernet controller Apricot XEN-II on
-                          board ethernet
-  --enable-wavelan        enable driver Ethernet controller AT&T WaveLAN & DEC
-                          RoamAbout DS
-  --disable-3c507         disable driver Ethernet controller 3Com 507 (3c507,
-                          el16)
-  --disable-3c505         disable driver Ethernet controller 3Com 505 (3c505,
-                          elplus)
-  --disable-de600         disable driver Ethernet controller D-Link DE-600
-  --disable-de620         disable driver Ethernet controller D-Link DE-620
-  --disable-sk_g16        disable driver Ethernet controller Schneider & Koch
-                          G16
-  --disable-ni52          disable driver Ethernet controller NI5210
-  --disable-ni65          disable driver Ethernet controller NI6510
-  --enable-atp            enable driver Ethernet controller AT-LAN-TEC/RealTek
-                          pocket adaptor
-  --disable-lance         disable driver Ethernet controller AMD LANCE and
-                          PCnet (at1500, ne2100)
-  --disable-tulip         disable driver Ethernet controller DECchip Tulip
-                          (dc21x4x) PCI (elcp, tulip)
-  --disable-fmv18x        disable driver Ethernet controller
+  --disable-depca         disable device driver for Ethernet controller DEPCA
+                          (de100, de101, de200, de201, de202, de210, de422)
+  --disable-ewrk3         disable device driver for Ethernet controller
+                          EtherWORKS 3 (ewrk3, de203, de204, de205)
+  --disable-de4x5         disable device driver for Ethernet controller DE4x5
+                          (de4x5, de425, de434, de435, de450, de500)
+  --disable-apricot       disable device driver for Ethernet controller
+                          Apricot XEN-II on board ethernet
+  --enable-wavelan        enable device driver for Ethernet controller AT&T
+                          WaveLAN & DEC RoamAbout DS
+  --disable-3c507         disable device driver for Ethernet controller 3Com
+                          507 (3c507, el16)
+  --disable-3c505         disable device driver for Ethernet controller 3Com
+                          505 (3c505, elplus)
+  --disable-de600         disable device driver for Ethernet controller D-Link
+                          DE-600
+  --disable-de620         disable device driver for Ethernet controller D-Link
+                          DE-620
+  --disable-sk_g16        disable device driver for Ethernet controller
+                          Schneider & Koch G16
+  --disable-ni52          disable device driver for Ethernet controller NI5210
+  --disable-ni65          disable device driver for Ethernet controller NI6510
+  --enable-atp            enable device driver for Ethernet controller
+                          AT-LAN-TEC/RealTek pocket adaptor
+  --disable-lance         disable device driver for Ethernet controller AMD
+                          LANCE and PCnet (at1500, ne2100)
+  --disable-tulip         disable device driver for Ethernet controller
+                          DECchip Tulip (dc21x4x) PCI (elcp, tulip)
+  --disable-fmv18x        disable device driver for Ethernet controller
                           FMV-181/182/183/184
-  --disable-3c515         disable driver Ethernet controller 3Com 515 ISA Fast
-                          EtherLink
-  --disable-pcnet32       disable driver Ethernet controller AMD PCI PCnet32
-                          (PCI bus NE2100 cards)
-  --disable-ne2kpci       disable driver Ethernet controller PCI NE2000
-  --disable-yellowfin     disable driver Ethernet controller Packet Engines
-                          Yellowfin Gigabit-NIC
-  --disable-rtl8139       disable driver Ethernet controller RealTek 8129/8139
-                          (rtl8129, rtl8139) (not 8019/8029!)
-  --disable-epic100       disable driver Ethernet controller SMC 83c170/175
-                          EPIC/100 (epic, epic100) / EtherPower II
-  --disable-tlan          disable driver Ethernet controller TI ThunderLAN
-  --disable-viarhine      disable driver Ethernet controller VIA Rhine
-  --disable-hamachi       disable driver Ethernet controller Packet Engines
-                          "Hamachi" GNIC-2 Gigabit Ethernet
-  --disable-intelgige     disable driver Ethernet controller Intel PCI Gigabit
-                          Ethernet
-  --disable-myson803      disable driver Ethernet controller Myson MTD803
-                          Ethernet adapter series
-  --disable-natsemi       disable driver Ethernet controller National
-                          Semiconductor DP8381x series PCI Ethernet
-  --disable-ns820         disable driver Ethernet controller National
-                          Semiconductor DP8382x series PCI Ethernet
-  --disable-starfire      disable driver Ethernet controller Adaptec Starfire
-                          network adapter
-  --disable-sundance      disable driver Ethernet controller Sundance ST201
-                          "Alta" PCI Ethernet
-  --disable-winbond840    disable driver Ethernet controller Winbond W89c840
-                          PCI Ethernet
-  --disable-i82365        disable driver Intel 82365 PC Card controller
-  --disable-pcmcia-isa    disable isa-bus-support (pcmcia core)
-  --disable-3c574_cs      disable driver 3Com 3c574 ``RoadRunner'' PCMCIA
-                          Ethernet
-  --disable-3c589_cs      disable driver 3Com 3c589 PCMCIA Ethernet card
-  --disable-axnet_cs      disable driver Asix AX88190-based PCMCIA Ethernet
-                          adapters
-  --disable-fmvj18x_cs    disable driver fmvj18x chipset based PCMCIA Ethernet
+  --disable-3c515         disable device driver for Ethernet controller 3Com
+                          515 ISA Fast EtherLink
+  --disable-pcnet32       disable device driver for Ethernet controller AMD
+                          PCI PCnet32 (PCI bus NE2100 cards)
+  --disable-ne2k-pci      disable device driver for Ethernet controller PCI
+                          NE2000
+  --disable-yellowfin     disable device driver for Ethernet controller Packet
+                          Engines Yellowfin Gigabit-NIC
+  --disable-rtl8139       disable device driver for Ethernet controller
+                          RealTek 8129/8139 (rtl8129, rtl8139) (not
+                          8019/8029!)
+  --disable-epic100       disable device driver for Ethernet controller SMC
+                          83c170/175 EPIC/100 (epic, epic100) / EtherPower II
+  --disable-tlan          disable device driver for Ethernet controller TI
+                          ThunderLAN
+  --disable-via-rhine     disable device driver for Ethernet controller VIA
+                          Rhine
+  --disable-hamachi       disable device driver for Ethernet controller Packet
+                          Engines "Hamachi" GNIC-2 Gigabit Ethernet
+  --disable-intel-gige    disable device driver for Ethernet controller Intel
+                          PCI Gigabit Ethernet
+  --disable-myson803      disable device driver for Ethernet controller Myson
+                          MTD803 Ethernet adapter series
+  --disable-natsemi       disable device driver for Ethernet controller
+                          National Semiconductor DP8381x series PCI Ethernet
+  --disable-ns820         disable device driver for Ethernet controller
+                          National Semiconductor DP8382x series PCI Ethernet
+  --disable-starfire      disable device driver for Ethernet controller
+                          Adaptec Starfire network adapter
+  --disable-sundance      disable device driver for Ethernet controller
+                          Sundance ST201 "Alta" PCI Ethernet
+  --disable-winbond-840   disable device driver for Ethernet controller
+                          Winbond W89c840 PCI Ethernet
+  --disable-i82365        disable device driver for Intel 82365 PC Card
+                          controller
+  --disable-pcmcia-isa    disable option isa bus support in the pcmcia core
+  --disable-3c574_cs      disable device driver for 3Com 3c574 ``RoadRunner''
+                          PCMCIA Ethernet
+  --disable-3c589_cs      disable device driver for 3Com 3c589 PCMCIA Ethernet
+                          card
+  --disable-axnet_cs      disable device driver for Asix AX88190-based PCMCIA
+                          Ethernet adapters
+  --disable-fmvj18x_cs    disable device driver for fmvj18x chipset based
+                          PCMCIA Ethernet cards
+  --disable-nmclan_cs     disable device driver for New Media Ethernet LAN
+                          PCMCIA cards
+  --disable-pcnet_cs      disable device driver for NS8390-based PCMCIA cards
+  --disable-smc91c92_cs   disable device driver for SMC91c92-based PCMCIA
                           cards
-  --disable-nmclan_cs     disable driver New Media Ethernet LAN PCMCIA cards
-  --disable-pcnet_cs      disable driver NS8390-based PCMCIA cards
-  --disable-smc91c92_cs   disable driver SMC91c92-based PCMCIA cards
-  --disable-xirc2ps_cs    disable driver Xircom CreditCard and Realport PCMCIA
-                          ethernet
-  --disable-orinoco_cs    disable driver Hermes or Prism 2 PCMCIA Wireless
-                          adapters (Orinoco)
+  --disable-xirc2ps_cs    disable device driver for Xircom CreditCard and
+                          Realport PCMCIA ethernet
+  --disable-orinoco_cs    disable device driver for Hermes or Prism 2 PCMCIA
+                          Wireless adapters (Orinoco)
 
 Report bugs to <bug-hurd@gnu.org>.
 _ACEOF
@@ -1620,13 +1647,14 @@ driver_class_wireless_files=""
 
 
 
+unset enableval
 # Check whether --enable-floppy or --disable-floppy was given.
 if test "${enable_floppy+set}" = set; then
   enableval="$enable_floppy"
 
 fi;
-enable_floppy=${enable_floppy-$enable_default_device_drivers}
-if test x"$enable_floppy" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_BLK_DEV_FD 1
@@ -1643,13 +1671,14 @@ _ACEOF
   fi
 fi
 
+unset enableval
 # Check whether --enable-ide or --disable-ide was given.
 if test "${enable_ide+set}" = set; then
   enableval="$enable_ide"
 
 fi;
-enable_ide=${enable_ide-$enable_default_device_drivers}
-if test x"$enable_ide" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_BLK_DEV_IDE 1
@@ -1670,13 +1699,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-advansys or --disable-advansys was given.
 if test "${enable_advansys+set}" = set; then
   enableval="$enable_advansys"
 
 fi;
-enable_advansys=${enable_advansys-$enable_default_device_drivers}
-if test x"$enable_advansys" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_ADVANSYS 1
@@ -1695,13 +1725,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-BusLogic or --disable-BusLogic was given.
 if test "${enable_BusLogic+set}" = set; then
   enableval="$enable_BusLogic"
 
 fi;
-enable_BusLogic=${enable_BusLogic-$enable_default_device_drivers}
-if test x"$enable_BusLogic" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_BUSLOGIC 1
@@ -1731,13 +1762,14 @@ _ACEOF
 fi;
 
 
-# Check whether --enable-u1434f or --disable-u1434f was given.
-if test "${enable_u1434f+set}" = set; then
-  enableval="$enable_u1434f"
+unset enableval
+# Check whether --enable-u14-34f or --disable-u14-34f was given.
+if test "${enable_u14_34f+set}" = set; then
+  enableval="$enable_u14_34f"
 
 fi;
-enable_u1434f=${enable_u1434f-$enable_default_device_drivers}
-if test x"$enable_u1434f" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_U14_34F 1
@@ -1756,13 +1788,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-ultrastor or --disable-ultrastor was given.
 if test "${enable_ultrastor+set}" = set; then
   enableval="$enable_ultrastor"
 
 fi;
-enable_ultrastor=${enable_ultrastor-$enable_default_device_drivers}
-if test x"$enable_ultrastor" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_ULTRASTOR 1
@@ -1781,13 +1814,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-aha152x or --disable-aha152x was given.
 if test "${enable_aha152x+set}" = set; then
   enableval="$enable_aha152x"
 
 fi;
-enable_aha152x=${enable_aha152x-$enable_default_device_drivers}
-if test x"$enable_aha152x" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_AHA152X 1
@@ -1806,13 +1840,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-aha1542 or --disable-aha1542 was given.
 if test "${enable_aha1542+set}" = set; then
   enableval="$enable_aha1542"
 
 fi;
-enable_aha1542=${enable_aha1542-$enable_default_device_drivers}
-if test x"$enable_aha1542" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_AHA1542 1
@@ -1831,13 +1866,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-aha1740 or --disable-aha1740 was given.
 if test "${enable_aha1740+set}" = set; then
   enableval="$enable_aha1740"
 
 fi;
-enable_aha1740=${enable_aha1740-$enable_default_device_drivers}
-if test x"$enable_aha1740" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_AHA1740 1
@@ -1856,13 +1892,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-aic7xxx or --disable-aic7xxx was given.
 if test "${enable_aic7xxx+set}" = set; then
   enableval="$enable_aic7xxx"
 
 fi;
-enable_aic7xxx=${enable_aic7xxx-$enable_default_device_drivers}
-if test x"$enable_aic7xxx" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_AIC7XXX 1
@@ -1881,13 +1918,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-fdomain or --disable-fdomain was given.
 if test "${enable_fdomain+set}" = set; then
   enableval="$enable_fdomain"
 
 fi;
-enable_fdomain=${enable_fdomain-$enable_default_device_drivers}
-if test x"$enable_fdomain" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_FUTURE_DOMAIN 1
@@ -1906,13 +1944,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-in2000 or --disable-in2000 was given.
 if test "${enable_in2000+set}" = set; then
   enableval="$enable_in2000"
 
 fi;
-enable_in2000=${enable_in2000-$enable_default_device_drivers}
-if test x"$enable_in2000" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_IN2000 1
@@ -1981,13 +2020,14 @@ fi;
 
 
 
+unset enableval
 # Check whether --enable-pas16 or --disable-pas16 was given.
 if test "${enable_pas16+set}" = set; then
   enableval="$enable_pas16"
 
 fi;
-enable_pas16=${enable_pas16-$enable_default_device_drivers}
-if test x"$enable_pas16" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_PASS16 1
@@ -2006,13 +2046,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-seagate or --disable-seagate was given.
 if test "${enable_seagate+set}" = set; then
   enableval="$enable_seagate"
 
 fi;
-enable_seagate=${enable_seagate-$enable_default_device_drivers}
-if test x"$enable_seagate" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_SEAGATE 1
@@ -2031,13 +2072,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-t128 or --disable-t128 was given.
 if test "${enable_t128+set}" = set; then
   enableval="$enable_t128"
 
 fi;
-enable_t128=${enable_t128-$enable_default_device_drivers}
-if test x"$enable_t128" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_T128 1
@@ -2056,13 +2098,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-53c78xx or --disable-53c78xx was given.
 if test "${enable_53c78xx+set}" = set; then
   enableval="$enable_53c78xx"
 
 fi;
-enable_53c78xx=${enable_53c78xx-$enable_default_device_drivers}
-if test x"$enable_53c78xx" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_NCR53C7xx 1
@@ -2106,13 +2149,14 @@ fi;
 
 
 
+unset enableval
 # Check whether --enable-eata_pio or --disable-eata_pio was given.
 if test "${enable_eata_pio+set}" = set; then
   enableval="$enable_eata_pio"
 
 fi;
-enable_eata_pio=${enable_eata_pio-$enable_default_device_drivers}
-if test x"$enable_eata_pio" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_EATA_PIO 1
@@ -2131,13 +2175,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-wd7000 or --disable-wd7000 was given.
 if test "${enable_wd7000+set}" = set; then
   enableval="$enable_wd7000"
 
 fi;
-enable_wd7000=${enable_wd7000-$enable_default_device_drivers}
-if test x"$enable_wd7000" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_7000FASST 1
@@ -2156,13 +2201,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-eata or --disable-eata was given.
 if test "${enable_eata+set}" = set; then
   enableval="$enable_eata"
 
 fi;
-enable_eata=${enable_eata-$enable_default_device_drivers}
-if test x"$enable_eata" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_EATA 1
@@ -2181,13 +2227,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-AM53C974 or --disable-AM53C974 was given.
 if test "${enable_AM53C974+set}" = set; then
   enableval="$enable_AM53C974"
 
 fi;
-enable_AM53C974=${enable_AM53C974-$enable_default_device_drivers}
-if test x"$enable_AM53C974" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_AM53C974 1
@@ -2206,13 +2253,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-dtc or --disable-dtc was given.
 if test "${enable_dtc+set}" = set; then
   enableval="$enable_dtc"
 
 fi;
-enable_dtc=${enable_dtc-$enable_default_device_drivers}
-if test x"$enable_dtc" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_DTC3280 1
@@ -2231,13 +2279,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-ncr53c8xx or --disable-ncr53c8xx was given.
 if test "${enable_ncr53c8xx+set}" = set; then
   enableval="$enable_ncr53c8xx"
 
 fi;
-enable_ncr53c8xx=${enable_ncr53c8xx-$enable_default_device_drivers}
-if test x"$enable_ncr53c8xx" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_NCR53C8XX 1
@@ -2256,13 +2305,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-tmscsim or --disable-tmscsim was given.
 if test "${enable_tmscsim+set}" = set; then
   enableval="$enable_tmscsim"
 
 fi;
-enable_tmscsim=${enable_tmscsim-$enable_default_device_drivers}
-if test x"$enable_tmscsim" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_DC390T 1
@@ -2281,13 +2331,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-ppa or --disable-ppa was given.
 if test "${enable_ppa+set}" = set; then
   enableval="$enable_ppa"
 
 fi;
-enable_ppa=${enable_ppa-$enable_default_device_drivers}
-if test x"$enable_ppa" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_PPA 1
@@ -2306,13 +2357,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-qlogicfas or --disable-qlogicfas was given.
 if test "${enable_qlogicfas+set}" = set; then
   enableval="$enable_qlogicfas"
 
 fi;
-enable_qlogicfas=${enable_qlogicfas-$enable_default_device_drivers}
-if test x"$enable_qlogicfas" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_QLOGIC_FAS 1
@@ -2331,13 +2383,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-qlogicisp or --disable-qlogicisp was given.
 if test "${enable_qlogicisp+set}" = set; then
   enableval="$enable_qlogicisp"
 
 fi;
-enable_qlogicisp=${enable_qlogicisp-$enable_default_device_drivers}
-if test x"$enable_qlogicisp" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_QLOGIC_ISP 1
@@ -2356,13 +2409,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-gdth or --disable-gdth was given.
 if test "${enable_gdth+set}" = set; then
   enableval="$enable_gdth"
 
 fi;
-enable_gdth=${enable_gdth-$enable_default_device_drivers}
-if test x"$enable_gdth" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SCSI_GDTH 1
@@ -2383,13 +2437,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-ne or --disable-ne was given.
 if test "${enable_ne+set}" = set; then
   enableval="$enable_ne"
 
 fi;
-enable_ne=${enable_ne-$enable_default_device_drivers}
-if test x"$enable_ne" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_NE2000 1
@@ -2406,13 +2461,14 @@ _ACEOF
   fi
 fi
 
+unset enableval
 # Check whether --enable-3c503 or --disable-3c503 was given.
 if test "${enable_3c503+set}" = set; then
   enableval="$enable_3c503"
 
 fi;
-enable_3c503=${enable_3c503-$enable_default_device_drivers}
-if test x"$enable_3c503" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_EL2 1
@@ -2430,13 +2486,14 @@ _ACEOF
 fi
 
 
+unset enableval
 # Check whether --enable-3c509 or --disable-3c509 was given.
 if test "${enable_3c509+set}" = set; then
   enableval="$enable_3c509"
 
 fi;
-enable_3c509=${enable_3c509-$enable_default_device_drivers}
-if test x"$enable_3c509" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_EL3 1
@@ -2454,13 +2511,14 @@ _ACEOF
 fi
 
 
+unset enableval
 # Check whether --enable-wd or --disable-wd was given.
 if test "${enable_wd+set}" = set; then
   enableval="$enable_wd"
 
 fi;
-enable_wd=${enable_wd-$enable_default_device_drivers}
-if test x"$enable_wd" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_WD80x3 1
@@ -2478,13 +2536,14 @@ _ACEOF
 fi
 
 
+unset enableval
 # Check whether --enable-3c501 or --disable-3c501 was given.
 if test "${enable_3c501+set}" = set; then
   enableval="$enable_3c501"
 
 fi;
-enable_3c501=${enable_3c501-$enable_default_device_drivers}
-if test x"$enable_3c501" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_EL1 1
@@ -2502,13 +2561,14 @@ _ACEOF
 fi
 
 
-# Check whether --enable-smcultra or --disable-smcultra was given.
-if test "${enable_smcultra+set}" = set; then
-  enableval="$enable_smcultra"
+unset enableval
+# Check whether --enable-smc-ultra or --disable-smc-ultra was given.
+if test "${enable_smc_ultra+set}" = set; then
+  enableval="$enable_smc_ultra"
 
 fi;
-enable_smcultra=${enable_smcultra-$enable_default_device_drivers}
-if test x"$enable_smcultra" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_ULTRA 1
@@ -2525,13 +2585,14 @@ _ACEOF
   fi
 fi
 
-# Check whether --enable-smcultra32 or --disable-smcultra32 was given.
-if test "${enable_smcultra32+set}" = set; then
-  enableval="$enable_smcultra32"
+unset enableval
+# Check whether --enable-smc-ultra32 or --disable-smc-ultra32 was given.
+if test "${enable_smc_ultra32+set}" = set; then
+  enableval="$enable_smc_ultra32"
 
 fi;
-enable_smcultra32=${enable_smcultra32-$enable_default_device_drivers}
-if test x"$enable_smcultra32" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_ULTRA32 1
@@ -2548,13 +2609,14 @@ _ACEOF
   fi
 fi
 
-# Check whether --enable-hpplus or --disable-hpplus was given.
-if test "${enable_hpplus+set}" = set; then
-  enableval="$enable_hpplus"
+unset enableval
+# Check whether --enable-hp-plus or --disable-hp-plus was given.
+if test "${enable_hp_plus+set}" = set; then
+  enableval="$enable_hp_plus"
 
 fi;
-enable_hpplus=${enable_hpplus-$enable_default_device_drivers}
-if test x"$enable_hpplus" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_HPLAN_PLUS 1
@@ -2571,13 +2633,14 @@ _ACEOF
   fi
 fi
 
+unset enableval
 # Check whether --enable-hp or --disable-hp was given.
 if test "${enable_hp+set}" = set; then
   enableval="$enable_hp"
 
 fi;
-enable_hp=${enable_hp-$enable_default_device_drivers}
-if test x"$enable_hp" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_HPLAN 1
@@ -2595,13 +2658,14 @@ _ACEOF
 fi
 
 
+unset enableval
 # Check whether --enable-3c59x or --disable-3c59x was given.
 if test "${enable_3c59x+set}" = set; then
   enableval="$enable_3c59x"
 
 fi;
-enable_3c59x=${enable_3c59x-$enable_default_device_drivers}
-if test x"$enable_3c59x" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_VORTEX 1
@@ -2620,13 +2684,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-seeq8005 or --disable-seeq8005 was given.
 if test "${enable_seeq8005+set}" = set; then
   enableval="$enable_seeq8005"
 
 fi;
-enable_seeq8005=${enable_seeq8005-$enable_default_device_drivers}
-if test x"$enable_seeq8005" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SEEQ8005 1
@@ -2645,13 +2710,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-hp100 or --disable-hp100 was given.
 if test "${enable_hp100+set}" = set; then
   enableval="$enable_hp100"
 
 fi;
-enable_hp100=${enable_hp100-$enable_default_device_drivers}
-if test x"$enable_hp100" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_HP100 1
@@ -2669,13 +2735,14 @@ _ACEOF
 fi
 
 
+unset enableval
 # Check whether --enable-ac3200 or --disable-ac3200 was given.
 if test "${enable_ac3200+set}" = set; then
   enableval="$enable_ac3200"
 
 fi;
-enable_ac3200=${enable_ac3200-$enable_default_device_drivers}
-if test x"$enable_ac3200" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_AC3200 1
@@ -2692,13 +2759,14 @@ _ACEOF
   fi
 fi
 
+unset enableval
 # Check whether --enable-e2100 or --disable-e2100 was given.
 if test "${enable_e2100+set}" = set; then
   enableval="$enable_e2100"
 
 fi;
-enable_e2100=${enable_e2100-$enable_default_device_drivers}
-if test x"$enable_e2100" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_E2100 1
@@ -2716,13 +2784,14 @@ _ACEOF
 fi
 
 
+unset enableval
 # Check whether --enable-at1700 or --disable-at1700 was given.
 if test "${enable_at1700+set}" = set; then
   enableval="$enable_at1700"
 
 fi;
-enable_at1700=${enable_at1700-$enable_default_device_drivers}
-if test x"$enable_at1700" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_AT1700 1
@@ -2741,13 +2810,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-eth16i or --disable-eth16i was given.
 if test "${enable_eth16i+set}" = set; then
   enableval="$enable_eth16i"
 
 fi;
-enable_eth16i=${enable_eth16i-$enable_default_device_drivers}
-if test x"$enable_eth16i" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_ETH16I 1
@@ -2766,13 +2836,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-znet or --disable-znet was given.
 if test "${enable_znet+set}" = set; then
   enableval="$enable_znet"
 
 fi;
-enable_znet=${enable_znet-$enable_default_device_drivers}
-if test x"$enable_znet" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_ZNET 1
@@ -2791,13 +2862,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-eexpress or --disable-eexpress was given.
 if test "${enable_eexpress+set}" = set; then
   enableval="$enable_eexpress"
 
 fi;
-enable_eexpress=${enable_eexpress-$enable_default_device_drivers}
-if test x"$enable_eexpress" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_EEXPRESS 1
@@ -2816,13 +2888,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-eepro or --disable-eepro was given.
 if test "${enable_eepro+set}" = set; then
   enableval="$enable_eepro"
 
 fi;
-enable_eepro=${enable_eepro-$enable_default_device_drivers}
-if test x"$enable_eepro" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_EEXPRESS_PRO 1
@@ -2841,13 +2914,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-eepro100 or --disable-eepro100 was given.
 if test "${enable_eepro100+set}" = set; then
   enableval="$enable_eepro100"
 
 fi;
-enable_eepro100=${enable_eepro100-$enable_default_device_drivers}
-if test x"$enable_eepro100" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_EEXPRESS_PRO100B 1
@@ -2866,13 +2940,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-depca or --disable-depca was given.
 if test "${enable_depca+set}" = set; then
   enableval="$enable_depca"
 
 fi;
-enable_depca=${enable_depca-$enable_default_device_drivers}
-if test x"$enable_depca" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_DEPCA 1
@@ -2891,13 +2966,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-ewrk3 or --disable-ewrk3 was given.
 if test "${enable_ewrk3+set}" = set; then
   enableval="$enable_ewrk3"
 
 fi;
-enable_ewrk3=${enable_ewrk3-$enable_default_device_drivers}
-if test x"$enable_ewrk3" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_EWRK3 1
@@ -2916,13 +2992,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-de4x5 or --disable-de4x5 was given.
 if test "${enable_de4x5+set}" = set; then
   enableval="$enable_de4x5"
 
 fi;
-enable_de4x5=${enable_de4x5-$enable_default_device_drivers}
-if test x"$enable_de4x5" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_DE4X5 1
@@ -2941,13 +3018,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-apricot or --disable-apricot was given.
 if test "${enable_apricot+set}" = set; then
   enableval="$enable_apricot"
 
 fi;
-enable_apricot=${enable_apricot-$enable_default_device_drivers}
-if test x"$enable_apricot" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_APRICOT 1
@@ -2991,13 +3069,14 @@ fi;
 
 
 
+unset enableval
 # Check whether --enable-3c507 or --disable-3c507 was given.
 if test "${enable_3c507+set}" = set; then
   enableval="$enable_3c507"
 
 fi;
-enable_3c507=${enable_3c507-$enable_default_device_drivers}
-if test x"$enable_3c507" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_EL16 1
@@ -3016,13 +3095,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-3c505 or --disable-3c505 was given.
 if test "${enable_3c505+set}" = set; then
   enableval="$enable_3c505"
 
 fi;
-enable_3c505=${enable_3c505-$enable_default_device_drivers}
-if test x"$enable_3c505" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_ELPLUS 1
@@ -3041,13 +3121,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-de600 or --disable-de600 was given.
 if test "${enable_de600+set}" = set; then
   enableval="$enable_de600"
 
 fi;
-enable_de600=${enable_de600-$enable_default_device_drivers}
-if test x"$enable_de600" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_DE600 1
@@ -3066,13 +3147,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-de620 or --disable-de620 was given.
 if test "${enable_de620+set}" = set; then
   enableval="$enable_de620"
 
 fi;
-enable_de620=${enable_de620-$enable_default_device_drivers}
-if test x"$enable_de620" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_DE620 1
@@ -3091,13 +3173,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-sk_g16 or --disable-sk_g16 was given.
 if test "${enable_sk_g16+set}" = set; then
   enableval="$enable_sk_g16"
 
 fi;
-enable_sk_g16=${enable_sk_g16-$enable_default_device_drivers}
-if test x"$enable_sk_g16" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SK_G16 1
@@ -3116,13 +3199,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-ni52 or --disable-ni52 was given.
 if test "${enable_ni52+set}" = set; then
   enableval="$enable_ni52"
 
 fi;
-enable_ni52=${enable_ni52-$enable_default_device_drivers}
-if test x"$enable_ni52" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_NI52 1
@@ -3141,13 +3225,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-ni65 or --disable-ni65 was given.
 if test "${enable_ni65+set}" = set; then
   enableval="$enable_ni65"
 
 fi;
-enable_ni65=${enable_ni65-$enable_default_device_drivers}
-if test x"$enable_ni65" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_NI65 1
@@ -3191,13 +3276,14 @@ fi;
 
 
 
+unset enableval
 # Check whether --enable-lance or --disable-lance was given.
 if test "${enable_lance+set}" = set; then
   enableval="$enable_lance"
 
 fi;
-enable_lance=${enable_lance-$enable_default_device_drivers}
-if test x"$enable_lance" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_LANCE 1
@@ -3216,13 +3302,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-tulip or --disable-tulip was given.
 if test "${enable_tulip+set}" = set; then
   enableval="$enable_tulip"
 
 fi;
-enable_tulip=${enable_tulip-$enable_default_device_drivers}
-if test x"$enable_tulip" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_DEC_ELCP 1
@@ -3241,13 +3328,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-fmv18x or --disable-fmv18x was given.
 if test "${enable_fmv18x+set}" = set; then
   enableval="$enable_fmv18x"
 
 fi;
-enable_fmv18x=${enable_fmv18x-$enable_default_device_drivers}
-if test x"$enable_fmv18x" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_FMV18X 1
@@ -3266,13 +3354,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-3c515 or --disable-3c515 was given.
 if test "${enable_3c515+set}" = set; then
   enableval="$enable_3c515"
 
 fi;
-enable_3c515=${enable_3c515-$enable_default_device_drivers}
-if test x"$enable_3c515" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_3C515 1
@@ -3291,13 +3380,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-pcnet32 or --disable-pcnet32 was given.
 if test "${enable_pcnet32+set}" = set; then
   enableval="$enable_pcnet32"
 
 fi;
-enable_pcnet32=${enable_pcnet32-$enable_default_device_drivers}
-if test x"$enable_pcnet32" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_PCNET32 1
@@ -3315,13 +3405,14 @@ _ACEOF
 fi
 
 
-# Check whether --enable-ne2kpci or --disable-ne2kpci was given.
-if test "${enable_ne2kpci+set}" = set; then
-  enableval="$enable_ne2kpci"
+unset enableval
+# Check whether --enable-ne2k-pci or --disable-ne2k-pci was given.
+if test "${enable_ne2k_pci+set}" = set; then
+  enableval="$enable_ne2k_pci"
 
 fi;
-enable_ne2kpci=${enable_ne2kpci-$enable_default_device_drivers}
-if test x"$enable_ne2kpci" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_NE2K_PCI 1
@@ -3339,13 +3430,14 @@ _ACEOF
 fi
 
 
+unset enableval
 # Check whether --enable-yellowfin or --disable-yellowfin was given.
 if test "${enable_yellowfin+set}" = set; then
   enableval="$enable_yellowfin"
 
 fi;
-enable_yellowfin=${enable_yellowfin-$enable_default_device_drivers}
-if test x"$enable_yellowfin" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_YELLOWFIN 1
@@ -3364,13 +3456,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-rtl8139 or --disable-rtl8139 was given.
 if test "${enable_rtl8139+set}" = set; then
   enableval="$enable_rtl8139"
 
 fi;
-enable_rtl8139=${enable_rtl8139-$enable_default_device_drivers}
-if test x"$enable_rtl8139" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_RTL8139 1
@@ -3389,13 +3482,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-epic100 or --disable-epic100 was given.
 if test "${enable_epic100+set}" = set; then
   enableval="$enable_epic100"
 
 fi;
-enable_epic100=${enable_epic100-$enable_default_device_drivers}
-if test x"$enable_epic100" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_EPIC 1
@@ -3414,13 +3508,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-tlan or --disable-tlan was given.
 if test "${enable_tlan+set}" = set; then
   enableval="$enable_tlan"
 
 fi;
-enable_tlan=${enable_tlan-$enable_default_device_drivers}
-if test x"$enable_tlan" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_TLAN 1
@@ -3439,13 +3534,14 @@ fi
 
 
 
-# Check whether --enable-viarhine or --disable-viarhine was given.
-if test "${enable_viarhine+set}" = set; then
-  enableval="$enable_viarhine"
+unset enableval
+# Check whether --enable-via-rhine or --disable-via-rhine was given.
+if test "${enable_via_rhine+set}" = set; then
+  enableval="$enable_via_rhine"
 
 fi;
-enable_viarhine=${enable_viarhine-$enable_default_device_drivers}
-if test x"$enable_viarhine" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_VIA_RHINE 1
@@ -3464,13 +3560,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-hamachi or --disable-hamachi was given.
 if test "${enable_hamachi+set}" = set; then
   enableval="$enable_hamachi"
 
 fi;
-enable_hamachi=${enable_hamachi-$enable_default_device_drivers}
-if test x"$enable_hamachi" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_HAMACHI 1
@@ -3489,13 +3586,14 @@ fi
 
 
 
-# Check whether --enable-intelgige or --disable-intelgige was given.
-if test "${enable_intelgige+set}" = set; then
-  enableval="$enable_intelgige"
+unset enableval
+# Check whether --enable-intel-gige or --disable-intel-gige was given.
+if test "${enable_intel_gige+set}" = set; then
+  enableval="$enable_intel_gige"
 
 fi;
-enable_intelgige=${enable_intelgige-$enable_default_device_drivers}
-if test x"$enable_intelgige" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_INTEL_GIGE 1
@@ -3514,13 +3612,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-myson803 or --disable-myson803 was given.
 if test "${enable_myson803+set}" = set; then
   enableval="$enable_myson803"
 
 fi;
-enable_myson803=${enable_myson803-$enable_default_device_drivers}
-if test x"$enable_myson803" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_MYSON803 1
@@ -3539,13 +3638,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-natsemi or --disable-natsemi was given.
 if test "${enable_natsemi+set}" = set; then
   enableval="$enable_natsemi"
 
 fi;
-enable_natsemi=${enable_natsemi-$enable_default_device_drivers}
-if test x"$enable_natsemi" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_NATSEMI 1
@@ -3564,13 +3664,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-ns820 or --disable-ns820 was given.
 if test "${enable_ns820+set}" = set; then
   enableval="$enable_ns820"
 
 fi;
-enable_ns820=${enable_ns820-$enable_default_device_drivers}
-if test x"$enable_ns820" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_NS820 1
@@ -3589,13 +3690,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-starfire or --disable-starfire was given.
 if test "${enable_starfire+set}" = set; then
   enableval="$enable_starfire"
 
 fi;
-enable_starfire=${enable_starfire-$enable_default_device_drivers}
-if test x"$enable_starfire" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_STARFIRE 1
@@ -3614,13 +3716,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-sundance or --disable-sundance was given.
 if test "${enable_sundance+set}" = set; then
   enableval="$enable_sundance"
 
 fi;
-enable_sundance=${enable_sundance-$enable_default_device_drivers}
-if test x"$enable_sundance" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SUNDANCE 1
@@ -3639,13 +3742,14 @@ fi
 
 
 
-# Check whether --enable-winbond840 or --disable-winbond840 was given.
-if test "${enable_winbond840+set}" = set; then
-  enableval="$enable_winbond840"
+unset enableval
+# Check whether --enable-winbond-840 or --disable-winbond-840 was given.
+if test "${enable_winbond_840+set}" = set; then
+  enableval="$enable_winbond_840"
 
 fi;
-enable_winbond840=${enable_winbond840-$enable_default_device_drivers}
-if test x"$enable_winbond840" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_WINBOND840 1
@@ -3668,13 +3772,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-i82365 or --disable-i82365 was given.
 if test "${enable_i82365+set}" = set; then
   enableval="$enable_i82365"
 
 fi;
-enable_i82365=${enable_i82365-$enable_default_device_drivers}
-if test x"$enable_i82365" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_I82365 1
@@ -3693,43 +3798,42 @@ fi
 
 
 
-
-
-  # Check whether --enable-pcmcia-isa or --disable-pcmcia-isa was given.
+unset enableval
+# Check whether --enable-pcmcia-isa or --disable-pcmcia-isa was given.
 if test "${enable_pcmcia_isa+set}" = set; then
   enableval="$enable_pcmcia_isa"
 
 fi;
-  enable_pcmcia_isa=${enable_pcmcia_isa-$enable_default_device_drivers}
-  if test x"$enable_pcmcia_isa" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_ISA 1
 _ACEOF
 
-    device_drivers="$device_drivers "
-    if test "${driver_class_pcmcia_selected+set}" != set; then
-      driver_class_pcmcia_selected=yes
-      cat >>confdefs.h <<_ACEOF
+  device_drivers="$device_drivers "
+  if test "${driver_class_pcmcia_selected+set}" != set; then
+    driver_class_pcmcia_selected=yes
+    cat >>confdefs.h <<_ACEOF
 #define $driver_class_pcmcia_option 1
 _ACEOF
 
-      device_drivers="$device_drivers $driver_class_pcmcia_files"
-    fi
+    device_drivers="$device_drivers $driver_class_pcmcia_files"
   fi
+fi
 
 
 
 
 
-
+unset enableval
 # Check whether --enable-3c574_cs or --disable-3c574_cs was given.
 if test "${enable_3c574_cs+set}" = set; then
   enableval="$enable_3c574_cs"
 
 fi;
-enable_3c574_cs=${enable_3c574_cs-$enable_default_device_drivers}
-if test x"$enable_3c574_cs" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_3C574_CS 1
@@ -3748,13 +3852,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-3c589_cs or --disable-3c589_cs was given.
 if test "${enable_3c589_cs+set}" = set; then
   enableval="$enable_3c589_cs"
 
 fi;
-enable_3c589_cs=${enable_3c589_cs-$enable_default_device_drivers}
-if test x"$enable_3c589_cs" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_3C589_CS 1
@@ -3773,13 +3878,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-axnet_cs or --disable-axnet_cs was given.
 if test "${enable_axnet_cs+set}" = set; then
   enableval="$enable_axnet_cs"
 
 fi;
-enable_axnet_cs=${enable_axnet_cs-$enable_default_device_drivers}
-if test x"$enable_axnet_cs" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_AXNET_CS 1
@@ -3798,13 +3904,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-fmvj18x_cs or --disable-fmvj18x_cs was given.
 if test "${enable_fmvj18x_cs+set}" = set; then
   enableval="$enable_fmvj18x_cs"
 
 fi;
-enable_fmvj18x_cs=${enable_fmvj18x_cs-$enable_default_device_drivers}
-if test x"$enable_fmvj18x_cs" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_FMVJ18X_CS 1
@@ -3823,13 +3930,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-nmclan_cs or --disable-nmclan_cs was given.
 if test "${enable_nmclan_cs+set}" = set; then
   enableval="$enable_nmclan_cs"
 
 fi;
-enable_nmclan_cs=${enable_nmclan_cs-$enable_default_device_drivers}
-if test x"$enable_nmclan_cs" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_NMCLAN_CS 1
@@ -3847,13 +3955,14 @@ _ACEOF
 fi
 
 
+unset enableval
 # Check whether --enable-pcnet_cs or --disable-pcnet_cs was given.
 if test "${enable_pcnet_cs+set}" = set; then
   enableval="$enable_pcnet_cs"
 
 fi;
-enable_pcnet_cs=${enable_pcnet_cs-$enable_default_device_drivers}
-if test x"$enable_pcnet_cs" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_PCNET_CS 1
@@ -3871,13 +3980,14 @@ _ACEOF
 fi
 
 
+unset enableval
 # Check whether --enable-smc91c92_cs or --disable-smc91c92_cs was given.
 if test "${enable_smc91c92_cs+set}" = set; then
   enableval="$enable_smc91c92_cs"
 
 fi;
-enable_smc91c92_cs=${enable_smc91c92_cs-$enable_default_device_drivers}
-if test x"$enable_smc91c92_cs" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_SMC91C92_CS 1
@@ -3896,13 +4006,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-xirc2ps_cs or --disable-xirc2ps_cs was given.
 if test "${enable_xirc2ps_cs+set}" = set; then
   enableval="$enable_xirc2ps_cs"
 
 fi;
-enable_xirc2ps_cs=${enable_xirc2ps_cs-$enable_default_device_drivers}
-if test x"$enable_xirc2ps_cs" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_XIRC2PS_CS 1
@@ -3922,13 +4033,14 @@ fi
 
 
 
+unset enableval
 # Check whether --enable-orinoco_cs or --disable-orinoco_cs was given.
 if test "${enable_orinoco_cs+set}" = set; then
   enableval="$enable_orinoco_cs"
 
 fi;
-enable_orinoco_cs=${enable_orinoco_cs-$enable_default_device_drivers}
-if test x"$enable_orinoco_cs" = xyes; then
+enableval=${enableval-$enable_default_device_drivers}
+if test x"$enableval" = xyes; then
 
 cat >>confdefs.h <<\_ACEOF
 #define CONFIG_ORINOCO_CS 1

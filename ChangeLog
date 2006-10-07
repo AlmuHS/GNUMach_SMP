@@ -1,5 +1,8 @@
 2006-10-07  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* i386/linux/configure: Regernerate.
+	* i386/linux/device-drivers.h.in: Likewise.
+
 	* Drivers.macros (AC_DRIVER, AC_DRIVER_nodef): Rewrite to allow options
 	with dashes in them, make it usable more universally and enhance the
 	generated comments in header files.
