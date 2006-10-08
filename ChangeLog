@@ -1,5 +1,8 @@
 2006-10-08  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* linux/dev/drivers/scsi/aha152x.c: Move file...
+	* linux/src/drivers/scsi/aha152x.c: ... here.
+
 	* linux/dev/drivers/scsi/sr.c: Move file...
 	* linux/src/drivers/scsi/sr.c: ... here.
 
