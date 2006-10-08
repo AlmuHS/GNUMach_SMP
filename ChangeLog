@@ -1,7 +1,8 @@
 2006-10-08  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* linux/dev/drivers/scsi/hosts.c: Remove file.
-	
+	* linux/dev/drivers/scsi/scsi.c: Likewise.
+
 	* linux/dev/drivers/block/ide.c: Move file...
 	* linux/src/drivers/block/ide.c: ... here.
 	
