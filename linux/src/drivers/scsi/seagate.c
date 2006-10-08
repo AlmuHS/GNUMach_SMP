@@ -46,6 +46,12 @@
  *	transfer rate if handshaking isn't working correctly.
  */
 
+#ifdef MACH
+#define ARBITRATE
+#define SLOW_HANDSHAKE
+#define FAST32
+#endif
+
 #include <linux/module.h>
 
 #include <asm/io.h>
@@ -136,6 +142,8 @@ static unsigned char irq = IRQ;
 #define STATUS (*(volatile unsigned char *) st0x_cr_sr)
 #define CONTROL STATUS 
 #define DATA (*(volatile unsigned char *) st0x_dr)
+#define WRITE_CONTROL(d) { writeb((d), st0x_cr_sr); }
+#define WRITE_DATA(d) { writeb((d), st0x_dr); }
 
 void st0x_setup (char *str, int *ints) {
     controller_type = SEAGATE;
@@ -557,7 +565,7 @@ int seagate_st0x_queue_command (Scsi_Cmnd * SCpnt,  void (*done)(Scsi_Cmnd *))
 	done_fn = done;
 	current_target = SCpnt->target;
 	current_lun = SCpnt->lun;
-	(const void *) current_cmnd = SCpnt->cmnd;
+	current_cmnd = SCpnt->cmnd;
 	current_data = (unsigned char *) SCpnt->request_buffer;
 	current_bufflen = SCpnt->request_bufflen;
 	SCint = SCpnt;
@@ -1091,24 +1099,19 @@ if (fast && transfersize && !(len % transfersize) && (len >= transfersize)
 	       SCint->transfersize, len, data);
 #endif
 
-	__asm__("
-	cld;
-"
+	{
 #ifdef FAST32
-"	shr $2, %%ecx;
-1:	lodsl;
-	movl %%eax, (%%edi);
-"
+	  unsigned int *iop = phys_to_virt (st0x_dr);
+	  const unsigned int *dp = (unsigned int *) data;
+	  int xferlen = transfersize >> 2;
 #else
-"1:	lodsb;
-	movb %%al, (%%edi);
-"
+	  unsigned char *iop = phys_to_virt (st0x_dr);
+	  const unsigned char *dp = data;
+	  int xferlen = transfersize;
 #endif
-"	loop 1b;" : :
-	/* input */
-	"D" (st0x_dr), "S" (data), "c" (SCint->transfersize) :
-	/* clobbered */
-	"eax", "ecx", "esi" );
+	  for (; xferlen; --xferlen)
+	    *iop = *dp++;
+	}
 
 	len -= transfersize;
 	data += transfersize;
@@ -1127,55 +1130,20 @@ if (fast && transfersize && !(len % transfersize) && (len >= transfersize)
  * 	We loop as long as we are in a data out phase, there is data to send, 
  *	and BSY is still active.
  */
-		__asm__ (
 
-/*
-	Local variables : 
-	len = ecx
-	data = esi
-	st0x_cr_sr = ebx
-	st0x_dr =  edi
+            while (len)
+            {
+              unsigned char stat;
 
-	Test for any data here at all.
-*/
-	"\torl %%ecx, %%ecx
-	jz 2f
-
-	cld
-
-	movl " SYMBOL_NAME_STR(st0x_cr_sr) ", %%ebx
-	movl " SYMBOL_NAME_STR(st0x_dr) ", %%edi
-	
-1:	movb (%%ebx), %%al\n"
-/*
-	Test for BSY
-*/
-
-	"\ttest $1, %%al
-	jz 2f\n"
-
-/*
-	Test for data out phase - STATUS & REQ_MASK should be REQ_DATAOUT, which is 0.
-*/
-	"\ttest $0xe, %%al
-	jnz 2f	\n"
-/*
-	Test for REQ
-*/	
-	"\ttest $0x10, %%al
-	jz 1b
-	lodsb
-	movb %%al, (%%edi) 
-	loop 1b
-
-2: 
-									":
-/* output */
-"=S" (data), "=c" (len) :
-/* input */
-"0" (data), "1" (len) :
-/* clobbered */
-"eax", "ebx", "edi"); 
+              stat = STATUS;
+              if (!(stat & STAT_BSY) || ((stat & REQ_MASK) != REQ_DATAOUT))
+                break;
+              if (stat & STAT_REQ)
+              {
+                WRITE_DATA (*data++);
+                --len;
+              }
+            }
 }
 
 			if (!len && nobuffs) {
@@ -1217,25 +1185,19 @@ if (fast && transfersize && !(len % transfersize) && (len >= transfersize)
 	       "         len = %d, data = %08x\n", hostno, SCint->underflow, 
 	       SCint->transfersize, len, data);
 #endif
-	__asm__("
-	cld;
-"
+	{
 #ifdef FAST32
-"	shr $2, %%ecx;
-1:	movl (%%esi), %%eax;
-	stosl;
-"
+	  const unsigned int *iop = phys_to_virt (st0x_dr);
+	  unsigned int *dp = (unsigned int *) data;
+	  int xferlen = len >> 2;
 #else
-"1:	movb (%%esi), %%al;
-	stosb;
-"
+	  const unsigned char *iop = phys_to_virt (st0x_dr);
+	  unsigned char *dp = data;
+	  int xferlen = len;
 #endif
-
-"	loop 1b;" : :
-	/* input */
-	"S" (st0x_dr), "D" (data), "c" (SCint->transfersize) :
-	/* clobbered */
-	"eax", "ecx", "edi");
+	  for (; xferlen; --xferlen)
+	    *dp++ = *iop;
+	}
 
 	len -= transfersize;
 	data += transfersize;
@@ -1265,57 +1227,19 @@ if (fast && transfersize && !(len % transfersize) && (len >= transfersize)
  * 	and BSY is still active
  */
  
-			__asm__ (
-/*
-	Local variables : 
-	ecx = len
-	edi = data
-	esi = st0x_cr_sr
-	ebx = st0x_dr
+	while (len)
+	  {
+	    unsigned char stat;
 
-	Test for room to read
-*/
-	"\torl %%ecx, %%ecx
-	jz 2f
-
-	cld
-	movl " SYMBOL_NAME_STR(st0x_cr_sr) ", %%esi
-	movl " SYMBOL_NAME_STR(st0x_dr) ", %%ebx
-
-1:	movb (%%esi), %%al\n"
-/*
-	Test for BSY
-*/
-
-	"\ttest $1, %%al 
-	jz 2f\n"
-
-/*
-	Test for data in phase - STATUS & REQ_MASK should be REQ_DATAIN, = STAT_IO, which is 4.
-*/
-	"\tmovb $0xe, %%ah	
-	andb %%al, %%ah
-	cmpb $0x04, %%ah
-	jne 2f\n"
-		
-/*
-	Test for REQ
-*/	
-	"\ttest $0x10, %%al
-	jz 1b
-
-	movb (%%ebx), %%al	
-	stosb	
-	loop 1b\n"
-
-"2:\n"
-									:
-/* output */
-"=D" (data), "=c" (len) :
-/* input */
-"0" (data), "1" (len) :
-/* clobbered */
-"eax","ebx", "esi"); 
+	    stat = STATUS;
+	    if (!(stat & STAT_BSY) || ((stat & REQ_MASK) != REQ_DATAIN))
+	      break;
+	    if (stat & STAT_REQ)
+              {
+                *data++ = DATA;
+                --len;
+              }
+	  }
 
 #if (DEBUG & PHASE_DATAIN)
 	printk("scsi%d: transfered -= %d\n", hostno, len);
