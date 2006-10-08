@@ -1005,8 +1005,12 @@ void requeue_sr_request (Scsi_Cmnd * SCpnt)
 static int sr_detect(Scsi_Device * SDp){
     
     if(SDp->type != TYPE_ROM && SDp->type != TYPE_WORM) return 0;
-    
-    printk("Detected scsi CD-ROM sr%d at scsi%d, channel %d, id %d, lun %d\n", 
+
+#ifdef MACH
+    printk("Detected scsi CD-ROM cd%d at scsi%d, channel %d, id %d, lun %d\n",
+#else
+    printk("Detected scsi CD-ROM sr%d at scsi%d, channel %d, id %d, lun %d\n",
+#endif
 	   sr_template.dev_noticed++,
 	   SDp->host->host_no, SDp->channel, SDp->id, SDp->lun); 
     
@@ -1117,8 +1121,13 @@ void get_sectorsize(int i){
 		case 512:
 			break;
 		default:
+#ifdef MACH
+			printk ("cd%d : unsupported sector size %d.\n",
+				i, scsi_CDs[i].sector_size);
+#else
 			printk ("scd%d : unsupported sector size %d.\n",
 				i, scsi_CDs[i].sector_size);
+#endif
 			scsi_CDs[i].capacity = 0;
 			scsi_CDs[i].needs_sector_size = 1;
 	}
