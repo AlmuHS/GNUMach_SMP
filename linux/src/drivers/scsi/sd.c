@@ -1082,7 +1082,11 @@ static int sd_init_onedisk(int i)
 	       SCpnt->sense_buffer[2] == NOT_READY) {
 		unsigned long time1;
 		if(!spintime){
+#ifdef MACH
+                    printk( "sd%d: Spinning up disk...", i);
+#else
 		    printk( "sd%c: Spinning up disk...", 'a' + i );
+#endif
 		    cmd[0] = START_STOP;
 		    cmd[1] = (rscsi_disks[i].device->lun << 5) & 0xe0;
 		    cmd[1] |= 1;  /* Return immediately */
@@ -1168,22 +1172,42 @@ static int sd_init_onedisk(int i)
     
     if (the_result)
     {
+#ifdef MACH
+	printk ("sd%d : READ CAPACITY failed.\n"
+		"sd%d : status = %x, message = %02x, host = %d, driver = %02x \n",
+                i, i,
+#else
 	printk ("sd%c : READ CAPACITY failed.\n"
 		"sd%c : status = %x, message = %02x, host = %d, driver = %02x \n",
 		'a' + i, 'a' + i,
+#endif
 		status_byte(the_result),
 		msg_byte(the_result),
 		host_byte(the_result),
 		driver_byte(the_result)
 		);
 	if (driver_byte(the_result)  & DRIVER_SENSE)
+#ifdef MACH
+	    printk("sd%d : extended sense code = %1x \n", 
+		   i, SCpnt->sense_buffer[2] & 0xf);
+#else
 	    printk("sd%c : extended sense code = %1x \n", 
 		   'a' + i, SCpnt->sense_buffer[2] & 0xf);
+#endif
 	else
+#ifdef MACH
+	    printk("sd%d : sense not available. \n", i);
+#else
 	    printk("sd%c : sense not available. \n", 'a' + i);
-	
+#endif
+
+#ifdef MACH
+	printk("sd%d : block size assumed to be 512 bytes, disk size 1GB.  \n",
+	       i);
+#else
 	printk("sd%c : block size assumed to be 512 bytes, disk size 1GB.  \n",
 	       'a' + i);
+#endif
 	rscsi_disks[i].capacity = 0x1fffff;
 	rscsi_disks[i].sector_size = 512;
 	
@@ -1211,7 +1235,11 @@ static int sd_init_onedisk(int i)
 
 	if (rscsi_disks[i].sector_size == 0) {
 	  rscsi_disks[i].sector_size = 512;
+#ifdef MACH
+	  printk("sd%d : sector size 0 reported, assuming 512.\n", i);
+#else
 	  printk("sd%c : sector size 0 reported, assuming 512.\n", 'a' + i);
+#endif
 	}
  
 	
@@ -1219,8 +1247,13 @@ static int sd_init_onedisk(int i)
 	    rscsi_disks[i].sector_size != 1024 &&
 	    rscsi_disks[i].sector_size != 256)
 	{
+#ifdef MACH
+	    printk ("sd%d : unsupported sector size %d.\n",
+		    i, rscsi_disks[i].sector_size);
+#else
 	    printk ("sd%c : unsupported sector size %d.\n",
 		    'a' + i, rscsi_disks[i].sector_size);
+#endif
 	    if(rscsi_disks[i].device->removable){
 		rscsi_disks[i].capacity = 0;
 	    } else {
@@ -1249,10 +1282,17 @@ static int sd_init_onedisk(int i)
         m = (mb + 50) / 100;
         sz_quot = m / 10;
         sz_rem = m - (10 * sz_quot);
+#ifdef MACH
+	printk ("SCSI device sd%d: hdwr sector= %d bytes."
+               " Sectors= %d [%d MB] [%d.%1d GB]\n",
+		i, hard_sector, rscsi_disks[i].capacity, 
+                mb, sz_quot, sz_rem);
+#else
 	printk ("SCSI device sd%c: hdwr sector= %d bytes."
                " Sectors= %d [%d MB] [%d.%1d GB]\n",
 		i+'a', hard_sector, rscsi_disks[i].capacity, 
                 mb, sz_quot, sz_rem);
+#endif
     }
 	if(rscsi_disks[i].sector_size == 1024)
 	    rscsi_disks[i].capacity <<= 1;  /* Change into 512 byte sectors */
@@ -1301,12 +1341,21 @@ static int sd_init_onedisk(int i)
 	wake_up(&SCpnt->device->device_wait); 
 	
 	if ( the_result ) {
+#ifdef MACH
+	    printk ("sd%d: test WP failed, assume Write Protected\n",i);
+#else
 	    printk ("sd%c: test WP failed, assume Write Protected\n",i+'a');
+#endif
 	    rscsi_disks[i].write_prot = 1;
 	} else {
 	    rscsi_disks[i].write_prot = ((buffer[2] & 0x80) != 0);
+#ifdef MACH
+	    printk ("sd%d: Write Protect is %s\n",i,
+	            rscsi_disks[i].write_prot ? "on" : "off");
+#else
 	    printk ("sd%c: Write Protect is %s\n",i+'a',
 	            rscsi_disks[i].write_prot ? "on" : "off");
+#endif
 	}
 	
     }	/* check for write protect */
@@ -1420,11 +1469,18 @@ static void sd_finish(void)
 
 static int sd_detect(Scsi_Device * SDp){
     if(SDp->type != TYPE_DISK && SDp->type != TYPE_MOD) return 0;
-    
+
+#ifdef MACH
+    printk("Detected scsi %sdisk sd%d at scsi%d, channel %d, id %d, lun %d\n", 
+           SDp->removable ? "removable " : "",
+	   sd_template.dev_noticed++,
+	   SDp->host->host_no, SDp->channel, SDp->id, SDp->lun);
+#else
     printk("Detected scsi %sdisk sd%c at scsi%d, channel %d, id %d, lun %d\n", 
            SDp->removable ? "removable " : "",
 	   'a'+ (sd_template.dev_noticed++),
-	   SDp->host->host_no, SDp->channel, SDp->id, SDp->lun); 
+	   SDp->host->host_no, SDp->channel, SDp->id, SDp->lun);
+#endif
     
     return 1;
 }

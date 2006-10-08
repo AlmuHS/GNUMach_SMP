@@ -1,11 +1,14 @@
 2006-10-08  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* linux/dev/drivers/scsi/sd.c: Move file...
+	* linux/src/drivers/scsi/sd.c: ... here.
+
 	* linux/dev/drivers/scsi/hosts.c: Remove file.
 	* linux/dev/drivers/scsi/scsi.c: Likewise.
 
 	* linux/dev/drivers/block/ide.c: Move file...
 	* linux/src/drivers/block/ide.c: ... here.
-	
+
 	* linux/dev/drivers/block/ide-cd.c: Remove file.
 	* linux/src/drivers/block/ide-cd.c (cdrom_sleep): Don't define function
 	`#ifndef MACH'.
