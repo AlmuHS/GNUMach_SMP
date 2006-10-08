@@ -1,5 +1,8 @@
 2006-10-08  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* linux/dev/drivers/scsi/scsi.h: Move file...
+	* linux/src/drivers/scsi/scsi.h: ... here.
+
 	* linux/dev/drivers/scsi/seagate.c: Move file...
 	* linux/src/drivers/scsi/seagate.c: ... here.
 

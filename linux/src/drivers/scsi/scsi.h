@@ -591,6 +591,24 @@ static Scsi_Cmnd * end_scsi_request(Scsi_Cmnd * SCpnt, int uptodate, int sectors
     }
 #endif
 
+#ifdef MACH
+#define SCSI_SLEEP(QUEUE, CONDITION) {		    \
+    if (CONDITION) {			            \
+	struct wait_queue wait = { NULL, NULL};     \
+	add_wait_queue(QUEUE, &wait);		    \
+	for(;;) {			            \
+	if (CONDITION) {		            \
+            if (intr_count)	                    \
+	        panic("scsi: trying to call schedule() in interrupt" \
+		      ", file %s, line %d.\n", __FILE__, __LINE__);  \
+	    schedule();			\
+        }				\
+	else			        \
+	    break;      		\
+	}			        \
+	remove_wait_queue(QUEUE, &wait);\
+    }; }
+#else /* !MACH */
 #define SCSI_SLEEP(QUEUE, CONDITION) {		    \
     if (CONDITION) {			            \
 	struct wait_queue wait = { current, NULL};  \
@@ -609,7 +627,7 @@ static Scsi_Cmnd * end_scsi_request(Scsi_Cmnd * SCpnt, int uptodate, int sectors
 	remove_wait_queue(QUEUE, &wait);\
 	current->state = TASK_RUNNING;	\
     }; }
-
+#endif /* !MACH */
 #endif
 
 /*
