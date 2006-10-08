@@ -409,7 +409,11 @@ static void init_hwif_data (unsigned int index)
 		drive->special.b.set_geometry	= 1;
 		drive->name[0]			= 'h';
 		drive->name[1]			= 'd';
+#ifdef MACH
+		drive->name[2]			= '0' + (index * MAX_DRIVES) + unit;
+#else
 		drive->name[2]			= 'a' + (index * MAX_DRIVES) + unit;
+#endif
 	}
 }
 
@@ -609,7 +613,6 @@ static int lba_capacity_is_ok (struct hd_driveid *id)
 
 	/* very large drives (8GB+) may lie about the number of cylinders */
 	if (id->cyls == 16383 && id->heads == 16 && id->sectors == 63 && lba_sects > chs_sects) {
-		id->cyls = lba_sects / (16 * 63); /* correct cyls */
 		return 1;	/* lba_capacity is our only option */
 	}
 	/* perform a rough sanity check on lba_sects:  within 10% is "okay" */
@@ -646,7 +649,6 @@ static unsigned long current_capacity (ide_drive_t  *drive)
 	/* Determine capacity, and use LBA if the drive properly supports it */
 	if (id != NULL && (id->capability & 2) && lba_capacity_is_ok(id)) {
 		if (id->lba_capacity >= capacity) {
-			drive->cyl = id->lba_capacity / (drive->head * drive->sect);
 			capacity = id->lba_capacity;
 			drive->select.b.lba = 1;
 		}
@@ -1127,6 +1129,9 @@ read_next:
 		msect -= nsect;
 	} else
 		nsect = 1;
+	i = rq->nr_sectors - nsect;
+	if (i > 0 && !msect)
+		ide_set_handler (drive, &read_intr, WAIT_CMD);
 	ide_input_data(drive, rq->buffer, nsect * SECTOR_WORDS);
 #ifdef DEBUG
 	printk("%s:  read: sectors(%ld-%ld), buffer=0x%08lx, remaining=%ld\n",
@@ -1136,14 +1141,11 @@ read_next:
 	rq->sector += nsect;
 	rq->buffer += nsect<<9;
 	rq->errors = 0;
-	i = (rq->nr_sectors -= nsect);
+	rq->nr_sectors = i;
 	if ((rq->current_nr_sectors -= nsect) <= 0)
 		ide_end_request(1, HWGROUP(drive));
-	if (i > 0) {
-		if (msect)
-			goto read_next;
-		ide_set_handler (drive, &read_intr, WAIT_CMD);
-	}
+	if (i > 0 && msect)
+		goto read_next;
 }
 
 /*
@@ -1171,8 +1173,8 @@ static void write_intr (ide_drive_t *drive)
 			if (rq->current_nr_sectors <= 0)
 				ide_end_request(1, hwgroup);
 			if (i > 0) {
-				ide_output_data (drive, rq->buffer, SECTOR_WORDS);
 				ide_set_handler (drive, &write_intr, WAIT_CMD);
+				ide_output_data (drive, rq->buffer, SECTOR_WORDS);
 			}
 			return;
 		}
@@ -1229,8 +1231,8 @@ static void multwrite_intr (ide_drive_t *drive)
 	if (OK_STAT(stat=GET_STAT(),DRIVE_READY,drive->bad_wstat)) {
 		if (stat & DRQ_STAT) {
 			if (rq->nr_sectors) {
-				ide_multwrite(drive, drive->mult_count);
 				ide_set_handler (drive, &multwrite_intr, WAIT_CMD);
+				ide_multwrite(drive, drive->mult_count);
 				return;
 			}
 		} else {
@@ -1573,8 +1575,14 @@ static inline void do_request (ide_hwif_t *hwif, struct request *rq)
 	block    = rq->sector;
 	blockend = block + rq->nr_sectors;
 	if ((blockend < block) || (blockend > drive->part[minor&PARTN_MASK].nr_sects)) {
+#ifdef MACH
+	  printk ("%s%c: bad access: block=%ld, count=%ld, blockend=%ld, nr_sects%ld\n",
+		  drive->name, (minor&PARTN_MASK)?'0'+(minor&PARTN_MASK):' ',
+		  block, rq->nr_sectors, blockend, drive->part[minor&PARTN_MASK].nr_sects);
+#else
 		printk("%s%c: bad access: block=%ld, count=%ld\n", drive->name,
 		 (minor&PARTN_MASK)?'0'+(minor&PARTN_MASK):' ', block, rq->nr_sectors);
+#endif
 		goto kill_rq;
 	}
 	block += drive->part[minor&PARTN_MASK].start_sect + drive->sect0;
@@ -1596,7 +1604,7 @@ static inline void do_request (ide_hwif_t *hwif, struct request *rq)
 		printk("%s: drive not ready for command\n", drive->name);
 		return;
 	}
-	
+
 	if (!drive->special.all) {
 		if (rq->cmd == IDE_DRIVE_CMD) {
 			execute_drive_cmd(drive, rq);
@@ -1636,7 +1644,7 @@ static inline void do_request (ide_hwif_t *hwif, struct request *rq)
 #else
 		do_rw_disk (drive, rq, block); /* simpler and faster */
 		return;
-#endif /* CONFIG_BLK_DEV_IDEATAPI */;
+#endif /* CONFIG_BLK_DEV_IDEATAPI */
 	}
 	do_special(drive);
 	return;
@@ -1686,7 +1694,7 @@ void ide_do_request (ide_hwgroup_t *hwgroup)
 			hwgroup->active = 0;
 			return;		/* no work left for this hwgroup */
 		}
-	got_rq:	
+	got_rq:
 		do_request(hwgroup->hwif = hwgroup->next_hwif = hwif, hwgroup->rq = rq);
 		cli();
 	} while (hwgroup->handler == NULL);
@@ -2147,6 +2155,14 @@ static int ide_ioctl (struct inode *inode, struct file *file,
 		{
 			struct hd_geometry *loc = (struct hd_geometry *) arg;
 			if (!loc || (drive->media != ide_disk && drive->media != ide_floppy)) return -EINVAL;
+#ifdef MACH
+			loc->heads = drive->bios_head;
+			loc->sectors = drive->bios_sect;
+			loc->cylinders = drive->bios_cyl;
+			loc->start
+			  = (drive->part[MINOR(inode->i_rdev)&PARTN_MASK]
+			     .start_sect);
+#else
 			err = verify_area(VERIFY_WRITE, loc, sizeof(*loc));
 			if (err) return err;
 			put_user(drive->bios_head, (byte *) &loc->heads);
@@ -2154,6 +2170,7 @@ static int ide_ioctl (struct inode *inode, struct file *file,
 			put_user(drive->bios_cyl, (unsigned short *) &loc->cylinders);
 			put_user((unsigned)drive->part[MINOR(inode->i_rdev)&PARTN_MASK].start_sect,
 				(unsigned long *) &loc->start);
+#endif
 			return 0;
 		}
 		case BLKFLSBUF:
@@ -2410,7 +2427,7 @@ static inline void do_identify (ide_drive_t *drive, byte cmd)
 
 #if defined (CONFIG_SCSI_EATA_DMA) || defined (CONFIG_SCSI_EATA_PIO) || defined (CONFIG_SCSI_EATA)
 	/*
-	 * EATA SCSI controllers do a hardware ATA emulation:  
+	 * EATA SCSI controllers do a hardware ATA emulation:
 	 * Ignore them if there is a driver for them available.
 	 */
 	if ((id->model[0] == 'P' && id->model[1] == 'M')
@@ -2579,13 +2596,23 @@ static inline void do_identify (ide_drive_t *drive, byte cmd)
 	}
 
 	/* calculate drive capacity, and select LBA if possible */
-	(void) current_capacity (drive);
+	capacity = current_capacity (drive);
 
 	/* Correct the number of cyls if the bios value is too small */
-	if (drive->sect == drive->bios_sect && drive->head == drive->bios_head) {
-		if (drive->cyl > drive->bios_cyl)
-			drive->bios_cyl = drive->cyl;
-	}
+        if (!drive->forced_geom &&
+            capacity > drive->bios_cyl * drive->bios_sect * drive->bios_head) {
+                unsigned long cylsize;
+                cylsize = drive->bios_sect * drive->bios_head;
+                if (cylsize == 0 || capacity/cylsize > 65535) {
+                        drive->bios_sect = 63;
+                        drive->bios_head = 255;
+                        cylsize = 63*255;
+                }
+                if (capacity/cylsize > 65535)
+                        drive->bios_cyl = 65535;
+                else
+                        drive->bios_cyl = capacity/cylsize;
+        }
 
 	if (!strncmp(id->model, "BMI ", 4) &&
 	    strstr(id->model, " ENHANCED IDE ") &&
@@ -3302,7 +3329,7 @@ done:
  * This routine is called from the partition-table code in genhd.c
  * to "convert" a drive to a logical geometry with fewer than 1024 cyls.
  *
- * The second parameter, "xparm", determines exactly how the translation 
+ * The second parameter, "xparm", determines exactly how the translation
  * will be handled:
  *		 0 = convert to CHS with fewer than 1024 cyls
  *			using the same method as Ontrack DiskManager.
@@ -3310,7 +3337,7 @@ done:
  *		-1 = similar to "0", plus redirect sector 0 to sector 1.
  *		>1 = convert to a CHS geometry with "xparm" heads.
  *
- * Returns 0 if the translation was not possible, if the device was not 
+ * Returns 0 if the translation was not possible, if the device was not
  * an IDE disk drive, or if a geometry was "forced" on the commandline.
  * Returns 1 if the geometry translation was successful.
  */
@@ -3621,7 +3648,7 @@ static int hwif_init (int h)
 {
 	ide_hwif_t *hwif = &ide_hwifs[h];
 	void (*rfn)(void);
-	
+
 	if (!hwif->present)
 		return 0;
 	if (!hwif->irq) {
@@ -3636,7 +3663,7 @@ static int hwif_init (int h)
 		return (hwif->present = 0);
 	}
 #endif /* CONFIG_BLK_DEV_HD */
-	
+
 	hwif->present = 0; /* we set it back to 1 if all is ok below */
 	switch (hwif->major) {
 	case IDE0_MAJOR: rfn = &do_ide0_request; break;
@@ -3691,7 +3718,7 @@ int ide_init (void)
 #ifdef CONFIG_BLK_DEV_IDETAPE
 	idetape_register_chrdev();	/* Register character device interface to the ide tape */
 #endif /* CONFIG_BLK_DEV_IDETAPE */
-	
+
 	return 0;
 }
 
