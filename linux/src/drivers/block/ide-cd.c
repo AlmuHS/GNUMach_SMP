@@ -1380,6 +1380,7 @@ static void cdrom_do_packet_command (ide_drive_t *drive)
 }
 
 
+#ifndef MACH
 /* Sleep for TIME jiffies.
    Not to be called from an interrupt handler. */
 static
@@ -1389,6 +1390,7 @@ void cdrom_sleep (int time)
 	current->timeout = jiffies + time;
 	schedule ();
 }
+#endif
 
 static
 int cdrom_queue_packet_command (ide_drive_t *drive, struct packet_command *pc)

@@ -1,3 +1,9 @@
+2006-10-08  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* linux/dev/drivers/block/ide-cd.c: Remove file.
+	* linux/src/drivers/block/ide-cd.c (cdrom_sleep): Don't define function
+	`#ifndef MACH'.
+
 2006-10-07  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* i386/linux/configure: Regernerate.
