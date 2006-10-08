@@ -31,9 +31,11 @@ int sd_ioctl(struct inode * inode, struct file * file, unsigned int cmd, unsigne
     switch (cmd) {
     case HDIO_GETGEO:   /* Return BIOS disk parameters */
 	if (!loc)  return -EINVAL;
+#ifndef MACH
 	error = verify_area(VERIFY_WRITE, loc, sizeof(*loc));
 	if (error)
 	    return error;
+#endif
 	host = rscsi_disks[MINOR(dev) >> 4].device->host;
 
 /* default to most commonly used values */
@@ -51,10 +53,17 @@ int sd_ioctl(struct inode * inode, struct file * file, unsigned int cmd, unsigne
         else scsicam_bios_param(&rscsi_disks[MINOR(dev) >> 4],
 				dev, &diskinfo[0]);
 
+#ifdef MACH
+        loc->heads = diskinfo[0];
+        loc->sectors = diskinfo[1];
+        loc->cylinders = diskinfo[2];
+        loc->start = sd[MINOR(inode->i_rdev)].start_sect;
+#else
 	put_user(diskinfo[0], &loc->heads);
 	put_user(diskinfo[1], &loc->sectors);
 	put_user(diskinfo[2], &loc->cylinders);
 	put_user(sd[MINOR(inode->i_rdev)].start_sect, &loc->start);
+#endif
 	return 0;
     case BLKGETSIZE:   /* Return device size */
 	if (!arg)  return -EINVAL;
