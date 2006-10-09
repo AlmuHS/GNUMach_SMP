@@ -1,5 +1,7 @@
 2006-10-09  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* bogus/panic.c: Remove file.
+
 	* linux/src/drivers/scsi/in2000.c (in2000_proc_info) [PROC_INTERFACE]:
 	Don't consider `__DATE__' and `__TIME__'.
 
