@@ -1,5 +1,10 @@
 2006-10-09  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* ddb/tr.h: Insert the content of `bogus/mach_assert.h' instead of
+	including it.
+	* i386/i386/loose_ends.c: Likewise.
+	* bogus/mach_assert.h: Remove file.
+
 	* bogus/panic.c: Remove file.
 
 	* linux/src/drivers/scsi/in2000.c (in2000_proc_info) [PROC_INTERFACE]:

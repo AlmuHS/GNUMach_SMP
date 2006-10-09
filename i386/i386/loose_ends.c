@@ -25,8 +25,12 @@
  */
 /*
  */
-#include <mach_assert.h>
 
+#ifndef NDEBUG
+#define MACH_ASSERT 1
+#else
+#define MACH_ASSERT 0
+#endif
 
 	/*
 	 * For now we will always go to single user mode, since there is

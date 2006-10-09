@@ -15,7 +15,12 @@
  *	less formatting.
  */
 
-#include <mach_assert.h>
+#ifndef NDEBUG
+#define MACH_ASSERT 1
+#else
+#define MACH_ASSERT 0
+#endif
+
 #include <mach_tr.h>
 
 /*
