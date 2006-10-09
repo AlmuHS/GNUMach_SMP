@@ -1,3 +1,8 @@
+2006-10-09  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* linux/src/drivers/scsi/in2000.c (in2000_proc_info) [PROC_INTERFACE]:
+	Don't consider `__DATE__' and `__TIME__'.
+
 2006-10-08  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* linux/dev/drivers/scsi/scsi.h: Move file...

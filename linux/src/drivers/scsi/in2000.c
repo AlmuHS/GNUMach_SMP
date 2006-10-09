@@ -2270,8 +2270,11 @@ static int stop = 0;
    bp = buf;
    *bp = '\0';
    if (hd->proc & PR_VERSION) {
-      sprintf(tbuf,"\nVersion %s - %s. Compiled %s %s",
-            IN2000_VERSION,IN2000_DATE,__DATE__,__TIME__);
+      /* Don't create varied object files each time this file is compiled.  */
+      /* sprintf(tbuf,"\nVersion %s - %s. Compiled %s %s",
+	     IN2000_VERSION,IN2000_DATE,__DATE__,__TIME__); */
+      sprintf(tbuf,"\nVersion %s - %s.",
+	    IN2000_VERSION,IN2000_DATE);
       strcat(bp,tbuf);
       }
    if (hd->proc & PR_INFO) {
