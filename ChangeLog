@@ -1,5 +1,7 @@
 2006-10-12  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* version.m4 (AC_PACKAGE_VERSION): Let's name it `1.3.99'.
+	
 	* configure: Regenerate.
 	* i386/configure: Likewise.
 	* i386/linux/configure: Likewise.
