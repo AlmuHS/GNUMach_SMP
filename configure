@@ -1277,7 +1277,6 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
 
 
 
-
 #
 # Deduce output var `systype' from configuration parms.
 #

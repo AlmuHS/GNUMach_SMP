@@ -1,5 +1,10 @@
 2006-10-12  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* configure: Regenerate.
+	* i386/configure: Likewise.
+	* i386/linux/configure: Likewise.
+	* linux/configure: Likewise.
+
 	* version.m4: Rewrite.
 	* configure.in: Adopt to the above.
 	* i386/configure.in: Likewise.
