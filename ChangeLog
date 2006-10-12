@@ -1,3 +1,11 @@
+2006-10-12  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* version.m4: Rewrite.
+	* configure.in: Adopt to the above.
+	* i386/configure.in: Likewise.
+	* i386/linux/configure.ac: Likewise.
+	* linux/configure.in: Likewise.
+
 2006-10-09  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* ddb/tr.h: Insert the content of `bogus/mach_assert.h' instead of
