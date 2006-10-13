@@ -74,10 +74,6 @@ CFLAGS += $(CFLAGS-common)
 CFLAGS += -fno-strict-aliasing
 
 LDFLAGS += $(LDFLAGS-common)
-
-# Assemble .S files correctly
-ASFLAGS += -DASSEMBLER
-
 
 #
 # How to do some things

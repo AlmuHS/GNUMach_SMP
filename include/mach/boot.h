@@ -25,7 +25,7 @@
 
 #include <mach/machine/boot.h>
 
-#ifndef ASSEMBLER
+#ifndef __ASSEMBLER__
 
 #include <mach/machine/vm_types.h>
 
@@ -65,7 +65,7 @@ struct boot_rendezvous
 	int code;
 };
 
-#endif !ASSEMBLER
+#endif !__ASSEMBLER__
 
 
 /* This is the magic value that must appear in boot_module.magic.  */

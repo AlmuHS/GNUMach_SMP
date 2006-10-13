@@ -1,5 +1,22 @@
 2006-10-13  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* Makerules.in (ASFLAGS): Don't define `ASSEMBLER'.
+	* i386/i386/cpu_number.h: Check for `__ASSEMBLER__' instead of
+	`ASSEMBLER'.
+	* i386/i386/debug.h: Likewise.
+	* i386/i386/ipl.h: Likewise.
+	* i386/i386/ldt.h: Likewise.
+	* i386/i386/proc_reg.h: Likewise.
+	* i386/i386/seg.h: Likewise.
+	* i386/i386/trap.h: Likewise.
+	* i386/include/mach/i386/kern_return.h: Likewise.
+	* i386/include/mach/i386/vm_types.h: Likewise.
+	* i386/intel/pmap.h: Likewise.
+	* include/mach/boolean.h: Likewise.
+	* include/mach/boot.h: Likewise.
+	* include/mach/error.h: Likewise.
+	* kern/syscall_emulation.h: Likewise.
+
 	* configure: Regenerate.
 	* i386/configure: Likewise.
 	* i386/linux/configure: Likewise.

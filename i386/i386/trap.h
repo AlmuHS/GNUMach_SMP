@@ -29,10 +29,10 @@
 
 #include <mach/machine/trap.h>
 
-#ifndef ASSEMBLER
+#ifndef __ASSEMBLER__
 
 char *trap_name(unsigned int trapnum);
 
-#endif /* !ASSEMBLER */
+#endif /* !__ASSEMBLER__ */
 
 #endif	/* _I386_TRAP_H_ */

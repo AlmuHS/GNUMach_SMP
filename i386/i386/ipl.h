@@ -68,10 +68,10 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define NSPL		(SPL7 + 1)
 
 #ifdef	KERNEL
-#ifndef	ASSEMBLER
+#ifndef	__ASSEMBLER__
 #include <machine/machspl.h>
 extern int	(*ivect[])();
 extern int	iunit[];
 extern int	intpri[];
-#endif	/* ASSEMBLER */
+#endif	/* __ASSEMBLER__ */
 #endif	/* KERNEL */

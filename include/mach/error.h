@@ -87,9 +87,9 @@
 /*	Flux OS error systems */
 #define err_fluke		err_system(0x20)	/* Fluke API */
 
-#ifndef ASSEMBLER
+#ifndef __ASSEMBLER__
 typedef	kern_return_t	mach_error_t;
 typedef mach_error_t	(* mach_error_fn_t)();
-#endif /* ASSEMBLER */
+#endif /* __ASSEMBLER__ */
 
 #endif	/* _MACH_ERROR_H_ */

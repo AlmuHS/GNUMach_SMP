@@ -34,7 +34,7 @@
 #ifndef	_MACH_I386_KERN_RETURN_H_
 #define _MACH_I386_KERN_RETURN_H_
 
-#ifndef	ASSEMBLER
+#ifndef	__ASSEMBLER__
 typedef	int		kern_return_t;
-#endif	/* ASSEMBLER */
+#endif	/* __ASSEMBLER__ */
 #endif	/* _MACH_I386_KERN_RETURN_H_ */

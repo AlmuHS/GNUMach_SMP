@@ -38,7 +38,7 @@
  * i386 segmentation.
  */
 
-#ifndef ASSEMBLER
+#ifndef __ASSEMBLER__
 
 /*
  * Real segment descriptor.
@@ -61,7 +61,7 @@ struct real_gate {
 			offset_high:16;	/* offset 16..31 */
 };
 
-#endif /* !ASSEMBLER */
+#endif /* !__ASSEMBLER__ */
 
 #define	SZ_32		0x4			/* 32-bit segment */
 #define SZ_16		0x0			/* 16-bit segment */
@@ -113,7 +113,7 @@ struct real_gate {
 #define	sel_idx(sel)	((sel)>>3)
 
 
-#ifndef ASSEMBLER
+#ifndef __ASSEMBLER__
 
 #include <mach/inline.h>
 
@@ -179,6 +179,6 @@ fill_gate(struct real_gate *gate, unsigned offset, unsigned short selector,
 	gate->offset_high = (offset >> 16) & 0xffff;
 }
 
-#endif /* !ASSEMBLER */
+#endif /* !__ASSEMBLER__ */
 
 #endif	/* _I386_SEG_H_ */

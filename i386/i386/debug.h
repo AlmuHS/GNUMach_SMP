@@ -39,7 +39,7 @@ void dump_ss(struct i386_saved_state *st);
    Only the kernel stack needs to be valid;
    the other data segment registers are not needed
    and all registers are saved.  */
-#ifndef ASSEMBLER
+#ifndef __ASSEMBLER__
 
 #define DEBUG_TRACE _debug_trace(__FILE__,__LINE__)
 
@@ -50,7 +50,7 @@ void debug_trace_reset(void);
    Also clears the trace buffer.  */
 void debug_trace_dump(void);
 
-#else	/* ASSEMBLER */
+#else	/* __ASSEMBLER__ */
 
 #define DEBUG_TRACE				\
 	pushl	$__LINE__			;\
@@ -61,7 +61,7 @@ void debug_trace_dump(void);
 9:	.ascii	__FILE__"\0"			;\
 	.text
 
-#endif /* ASSEMBLER */
+#endif /* __ASSEMBLER__ */
 
 
 #endif /* DEBUG */

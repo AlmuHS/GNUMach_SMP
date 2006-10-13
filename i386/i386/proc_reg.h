@@ -45,7 +45,7 @@
 #define	CR0_MP	0x00000002		/*	 monitor coprocessor */
 #define	CR0_PE	0x00000001		/*	 enable protected mode */
 
-#ifndef	ASSEMBLER
+#ifndef	__ASSEMBLER__
 #ifdef	__GNUC__
 
 static inline unsigned
@@ -143,6 +143,6 @@ set_eflags(unsigned eflags)
             "0:\n")
 
 #endif	/* __GNUC__ */
-#endif	/* ASSEMBLER */
+#endif	/* __ASSEMBLER__ */
 
 #endif	/* _I386_PROC_REG_H_ */

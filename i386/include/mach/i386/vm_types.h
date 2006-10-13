@@ -34,8 +34,8 @@
 #ifndef	_MACHINE_VM_TYPES_H_
 #define _MACHINE_VM_TYPES_H_	1
 
-#ifdef	ASSEMBLER
-#else	/* ASSEMBLER */
+#ifdef	__ASSEMBLER__
+#else	/* __ASSEMBLER__ */
 
 /*
  * A natural_t is the type for the native
@@ -96,7 +96,7 @@ typedef unsigned long long	unsigned64_t;
 typedef float			float32_t;
 typedef double			float64_t;
 
-#endif	/* ASSEMBLER */
+#endif	/* __ASSEMBLER__ */
 
 /*
  * If composing messages by hand (please dont)

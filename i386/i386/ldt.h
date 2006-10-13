@@ -49,7 +49,7 @@
 #define	LDTSZ		4
 
 
-#ifndef ASSEMBLER
+#ifndef __ASSEMBLER__
 
 extern struct real_descriptor ldt[LDTSZ];
 
@@ -61,6 +61,6 @@ extern struct real_descriptor ldt[LDTSZ];
 	fill_gate((struct real_gate*)&ldt[selector/8], \
 		  offset, dest_selector, access, word_count)
 
-#endif /* !ASSEMBLER */
+#endif /* !__ASSEMBLER__ */
 
 #endif /* _I386_LDT_ */

@@ -35,7 +35,7 @@
 #ifndef	_PMAP_MACHINE_
 #define _PMAP_MACHINE_	1
 
-#ifndef	ASSEMBLER
+#ifndef	__ASSEMBLER__
 
 #include <kern/zalloc.h>
 #include <kern/lock.h>
@@ -77,7 +77,7 @@
 typedef unsigned int	pt_entry_t;
 #define PT_ENTRY_NULL	((pt_entry_t *) 0)
 
-#endif	/* ASSEMBLER */
+#endif	/* __ASSEMBLER__ */
 
 #define INTEL_OFFMASK	0xfff	/* offset within page */
 #define PDESHIFT	22	/* page descriptor shift */
@@ -147,7 +147,7 @@ typedef unsigned int	pt_entry_t;
  */
 #define ptetokv(a)	(phystokv(pte_to_pa(a)))
 
-#ifndef	ASSEMBLER
+#ifndef	__ASSEMBLER__
 typedef	volatile long	cpu_set;	/* set of CPUs - must be <= 32 */
 					/* changed by other processors */
 
@@ -396,6 +396,6 @@ pt_entry_t *pmap_pte(pmap_t pmap, vm_offset_t addr);
 #define	pmap_attribute(pmap,addr,size,attr,value) \
 					(KERN_INVALID_ADDRESS)
 
-#endif	/* ASSEMBLER */
+#endif	/* __ASSEMBLER__ */
 
 #endif	/* _PMAP_MACHINE_ */

@@ -37,9 +37,9 @@
  *	Pick up "boolean_t" type definition
  */
 
-#ifndef	ASSEMBLER
+#ifndef	__ASSEMBLER__
 #include <mach/machine/boolean.h>
-#endif	/* ASSEMBLER */
+#endif	/* __ASSEMBLER__ */
 
 #endif	/* _MACH_BOOLEAN_H_ */
 

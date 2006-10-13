@@ -42,7 +42,7 @@
 
 #endif	/* NCPUS == 1 */
 
-#ifndef ASSEMBLER
+#ifndef __ASSEMBLER__
 #include "kern/cpu_number.h"
 #endif
 
