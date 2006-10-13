@@ -1,5 +1,8 @@
 2006-10-13  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* configure.in: Move file...
+	* configure.ac: ... here.
+
 	* Makerules.in (ASFLAGS): Don't define `ASSEMBLER'.
 	* i386/i386/cpu_number.h: Check for `__ASSEMBLER__' instead of
 	`ASSEMBLER'.
