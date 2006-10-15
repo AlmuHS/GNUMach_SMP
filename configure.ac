@@ -199,7 +199,7 @@ AC_CONFIG_COMMANDS([frob_Makefile_for_correct_output_files_for_.S_files],[
   then]
     AC_MSG_NOTICE([Applied a patch to fix a bug in your version of Automake.]
       [The applied fix should work in most cases.  You could also consider]
-      [updating to Automake 1.10 (once it is released) or better.])
+      [updating to Automake 1.10 or better.])
   [else]
     AC_MSG_ERROR([failed to patch using ]
       [`Makefile.correct_output_files_for_.S_files.patch'.]
@@ -219,7 +219,7 @@ AC_CONFIG_COMMANDS([frob_Makefile_for_correct_output_files_for_.S_files],[
 # But since adding such support is nontrivial and the nonexistent dependency
 # tracking (missing only for .S files) is not considered a fundamental problem,
 # we save the costs of adding such support here.  You should instead consider
-# updating to Automake 1.10 (once it is released) or better.
+# updating to Automake 1.10 or better.
 #
 
 AC_CONFIG_COMMANDS([frob_Makefile_for_dependency_tracking_for_.S_files],[
@@ -230,7 +230,7 @@ AC_CONFIG_COMMANDS([frob_Makefile_for_dependency_tracking_for_.S_files],[
   else]
     AC_MSG_NOTICE([Your build of GNU Mach won't have dependency tracking for]
       [(preprocessed) Assembler source files.  Consider updating to Automake]
-      [1.10 (once it is released) or better if you need such support.])
+      [1.10 or better if you need such support.])
 dnl In case someone feels like completing this instead of simply using a fixed
 dnl version of Automake...
 dnl    if "$PATCH" -f; then :; else]
