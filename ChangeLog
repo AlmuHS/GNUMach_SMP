@@ -2,6 +2,11 @@
 
 	[task #5956 --- ``Automake'ify GNU Mach's code base'']
 
+	* doc/Makefile.in: Remove file.
+	* doc/Makefrag.am: New file.
+	* tests/Makefrag.am: Likewise.
+	* tests/test-mbchk.in: Likewise.
+
 	* configfrag.ac: New file.
 	* tests/configfrag.ac: Likewise.
 	* Makerules.am (DEFINES): Convert those into...
