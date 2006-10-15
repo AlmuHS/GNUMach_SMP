@@ -1,5 +1,8 @@
 2006-10-15  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* i386/include/Makefile.in: Remove unused file.  Thanks to Guillem
+	Jover for spotting this.
+
 	[task #5956 --- ``Automake'ify GNU Mach's code base'']
 
 	* configure: Regenerate.
