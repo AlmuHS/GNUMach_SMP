@@ -326,16 +326,16 @@
 	* Makefrag.am <configure's findings, Rules, Kernel Image, Installation>
 	<Building the distribution, Autoconf support, Makerules>: Remove
 	sections.
-	(enable_kdb, enable_kmsg): Adopt.
+	(enable_kdb, enable_kmsg): Adapt.
 	<All the source in each directory>
-	<Header files installed for user use>: Rewrite to adopt to how things
+	<Header files installed for user use>: Rewrite to adapt to how things
 	are to be done now.
 	<Automatically generated source files>: New section.
 	(i386/Makefrag.am): Include file if appropriate.
 	* i386/Makefrag.am <configure's findings, Rules, Installation>
 	<Autoconf support, Makerules>: Remove sections.
-	(enable_lpr): Adopt.
-	<Source files for any i386 kernel>: Rewrite to adopt to how things are
+	(enable_lpr): Adapt.
+	<Source files for any i386 kernel>: Rewrite to adapt to how things are
 	to be done now.
 	* i386/linux/Makefrag.am: New file.
 	* linux/Makefrag.am: Likewise.
@@ -368,7 +368,7 @@
 	(AC_PREFIX_DEFAULT, AC_CONFIG_SUBDIRS): Don't invoke.
 	<Output variable `systype'>: Rework the whole section.
 	<Options> (--enable-kdb, --disable-kmsg): Move into `configfrag.ac' and
-	adopt.
+	adapt.
 	<Programs> (AM_PROG_AS, AM_PROG_CC_C_O): Instantiate.
 	(AC_CHECK_PROG): Move instantiation searching for a `mbchk' program
 	into `tests/configfrag.ac'.
@@ -461,11 +461,11 @@
 	(scsi, net, pcmcia, wireless): Remove AC_DRIVER_CLASS instantiations.
 	(device_driver_group): New shell function.
 	(AC_OPTION, AC_OPTION_nodef): New functions.
-	(linux_DRIVER): Rename function to AC_Linux_DRIVER and adopt.
+	(linux_DRIVER): Rename function to AC_Linux_DRIVER and adapt.
 	(linux_DRIVER_nodef): Likewise to AC_Linux_DRIVER_nodef.
-	<Configuration options>: Adopt to the new functions introduced above
+	<Configuration options>: Adapt to the new functions introduced above
 	and re-position parts.
-	<Process device driver groups>: Adopt to the changes related to device
+	<Process device driver groups>: Adapt to the changes related to device
 	driver groups.
 	* linux/configure.in <AC_CONFIG_LINKS>: Move to...
 	* linux/configfrag.ac: ... here.
@@ -529,7 +529,7 @@
 	* linux/configure: Likewise.
 
 	* version.m4: Rewrite.
-	* configure.in: Adopt to the above.
+	* configure.in: Adapt to the above.
 	* i386/configure.in: Likewise.
 	* i386/linux/configure.ac: Likewise.
 	* linux/configure.in: Likewise.
@@ -651,7 +651,7 @@
 	(linux_DRIVER): Take care about a `description' parameter and don't
 	invoke AC_DRIVER_ALIAS.
 	(linux_DRIVER_nodef): New definition.
-	Adopt all usages of AC_DRIVER and linux_DRIVER to provide a
+	Adapt all usages of AC_DRIVER and linux_DRIVER to provide a
 	`description' parameter.
 	(g_NCR5380, NCR53c406a, eata_dma, wavelan, atp): Change from AC_DRIVER
 	to AC_DRIVER_nodef to have these device drivers disabled by default.
@@ -912,8 +912,8 @@
 	* Makerules.in (%_user.c, %_server.c): Those are `.PRECIOUS'.
 	(%.migs.d, %.migu.d): New targets.
 	(%.migs_d, %.migu_d, %.migsh_d, %.miguh_d): Remove targets.
-	Adopt the `include's to the renamed targets.
-	* Makefile.in (clean): Adopt to the renamed targets.
+	Adapt the `include's to the renamed targets.
+	* Makefile.in (clean): Adapt to the renamed targets.
 	* i386/Makefile.in (clean): Likewise.
 
 	* i386/Makefile.in (boothdr.o): New target.
@@ -953,7 +953,7 @@
 	(mach-headers): Remove `mach_norma.defs', `norma_task.defs' and
 	`norma_special_ports.h'.
 	* device/ds_routines.c: Don't include <norma_device.h> anymore and
-	adopt all users of NORMA_DEVICE as if it were always defined to `0'.
+	adapt all users of NORMA_DEVICE as if it were always defined to `0'.
 	* device/net_io.c: Likewise for <norma_ether.h>, NORMA_ETHER.
 	* kern/machine.c: Likewise.
 	* ddb/db_command.c: Likevise for <norma_ipc.h>, NORMA_IPC.
@@ -1037,7 +1037,7 @@
 	* i386/bogus/par.h: Remove file.
 	* i386/i386at/if_par.c: Likewise.
 	* i386/i386at/if_par.h: Likewise.
-	* i386/i386at/conf.c: Don't include <par.h> anymore and adopt all users
+	* i386/i386at/conf.c: Don't include <par.h> anymore and adapt all users
 	of NPAR as if it were always defined to `0'.
 	* i386/i386at/lpr.c: Likewise.
 
@@ -1045,7 +1045,7 @@
 	* i386/i386at/if_de6c.c: Likewise.
 	* i386/i386at/if_de6c.h: Likewise.
 	* i386/i386at/if_de6s.S: Likewise.
-	* i386/i386at/conf.c: Don't include <de6c.h> anymore and adopt all
+	* i386/i386at/conf.c: Don't include <de6c.h> anymore and adapt all
 	users of NDE6C as if it were always defined to `0'.
 	* i386/i386at/lpr.c: Likewise.
 
@@ -1060,17 +1060,17 @@
 	* i386/i386at/blitreg.h: Likewise.
 	* i386/i386at/blituser.h: Likewise.
 	* i386/i386at/blitvar.h: Likewise.
-	* i386/i386at/conf.c: Don't include <blit.h> anymore and adopt all
+	* i386/i386at/conf.c: Don't include <blit.h> anymore and adapt all
 	users of NBLIT as if it were always defined to `0'.
 	* i386/i386at/kd.c: Likewise.
 	(blit_init): Remove definition.
-	(blit_present): Likewise and adopt all users as if it were always
+	(blit_present): Likewise and adapt all users as if it were always
 	defined to `FALSE'.
 	* i386/Makefile.in (i386at-files): Remove `blit.c'.
 
 	* bogus/net_atm.h: Remove file.
 	* Makefile.in (bogus-files): Remove `net_atm.h'.
-	* kern/syscall_sw.c: Don't include <net_atm.h> anymore and adopt all
+	* kern/syscall_sw.c: Don't include <net_atm.h> anymore and adapt all
 	users of NET_ATM as if it were always defined to `0'.
 	* kern/task.c: Likewise.
 	* kern/task.h: Likewise.
@@ -1289,15 +1289,15 @@
 	* i386/Makefile.in (i386at-files): Remove `phys_mem_grab_page.c'.
 
 	* i386/bogus/evc.h: Remove file.
-	* i386/i386at/kd.c: Don't include <evc.h> anymore and adopt all	users
+	* i386/i386at/kd.c: Don't include <evc.h> anymore and adapt all	users
 	of NEVC as if it were always defined to `0'.
-	(evc1init): Remove definition and adopt all users as if it were always
+	(evc1init): Remove definition and adapt all users as if it were always
 	defined to `FALSE'.
 
 	* i386/bogus/nscsi.h: Remove file.
-	* i386/i386at/model_dep.c: Don't include <nscsi.h> anymore and adopt
+	* i386/i386at/model_dep.c: Don't include <nscsi.h> anymore and adapt
 	all users of NSCSI as if it were always defined to `0'.
-	(use_all_mem): Don't define anymore and adopt all users as if it were
+	(use_all_mem): Don't define anymore and adapt all users as if it were
 	always defined to `1'.
 	(NBBY, NBPW, DMA_MAX): Remove macros.
 	(alloc_dma_mem): Remove function.
@@ -1360,13 +1360,13 @@
 	* scsi/scsi_tape.c: Likewise.
 	* scsi/scsi_worm.c: Likewise.
 	* i386/i386at/autoconf.c: Don't include <aha.h> and <eaha.h> anymore
-	and adopt all users of NAHA and NEAHA as if it were always defined to
+	and adapt all users of NAHA and NEAHA as if it were always defined to
 	`0'.
 	* i386/i386at/conf.c: Likewise.
 	* Makefile.in (scsi-files): Remove variable and all users of it.
 
 	* i386/bogus/wt.h: Remove file.
-	* i386/i386at/autoconf.c: Don't include <wt.h> anymore and adopt all
+	* i386/i386at/autoconf.c: Don't include <wt.h> anymore and adapt all
 	users of NWT as if it were always defined to `0'.
 	* i386/i386at/conf.c: Likewise.
 
@@ -1379,14 +1379,14 @@
 	* i386/i386at/gpl/if_ul.c: Likewise.
 	* i386/i386at/gpl/if_wd.c: Likewise.
 	* i386/i386at/autoconf.c: Don't include <hpp.h>, <ul.h> and <wd.h>
-	anymore and adopt all users of NHPP, NUL and NWD as if they were always
+	anymore and adapt all users of NHPP, NUL and NWD as if they were always
 	defined to `0'.
 	* i386/i386at/conf.c: Likewise.
 
 	* i386/bogus/at3c501.h: Remove file.
 	* i386/i386at/if_3c501.c: Likewise.
 	* i386/i386at/if_3c501.h: Likewise.
-	* i386/i386at/autoconf.c: Don't include <at3c501.h> anymore and adopt
+	* i386/i386at/autoconf.c: Don't include <at3c501.h> anymore and adapt
 	all users of NAT3C501 as if it were always defined to `0'.
 	* i386/i386at/conf.c: Likewise.
 
@@ -1396,14 +1396,14 @@
 	* i386/i386at/if_ns8390.c: Likewise.
 	* i386/i386at/if_ns8390.h: Likewise.
 	* i386/i386at/if_wd8003.h: Likewise.
-	* i386/i386at/autoconf.c: Don't include <ns8390.h> anymore and adopt
+	* i386/i386at/autoconf.c: Don't include <ns8390.h> anymore and adapt
 	all users of NNS8390 as if it were always defined to `0'.
 	* i386/i386at/conf.c: Likewise.
 
 	* i386/bogus/ne.h: Remove file.
 	* i386/i386at/if_ne.c: Likewise.
 	* i386/i386at/if_nereg.h: Likewise.
-	* i386/i386at/autoconf.c: Don't include <ne.h> anymore and adopt all
+	* i386/i386at/autoconf.c: Don't include <ne.h> anymore and adapt all
 	users of NNE as if it were always defined to `0'.
 	* i386/i386at/conf.c: Likewise.
 
@@ -1411,7 +1411,7 @@
 	* i386/i386at/i82586.h: Likewise.
 	* i386/i386at/if_pc586.c: Likewise.
 	* i386/i386at/if_pc586.h: Likewise.
-	* i386/i386at/autoconf.c: Don't include <pc586.h> anymore and adopt all
+	* i386/i386at/autoconf.c: Don't include <pc586.h> anymore and adapt all
 	users of NPC586 as if it were always defined to `0'.
 	* i386/i386at/conf.c: Likewise.
 
@@ -1421,14 +1421,14 @@
 	* i386/i386at/nfd.c: Likewise.
 	* i386/i386at/nfdreg.h: Likewise.
 	* i386/Makefile.in (i386at-files): Remove `fd.c'.
-	* i386/i386at/autoconf.c: Don't include <fd.h> anymore and adopt all
+	* i386/i386at/autoconf.c: Don't include <fd.h> anymore and adapt all
 	users of NFD as if it were always defined to `0'.
 	* i386/i386at/conf.c: Likewise.
 
 	* i386/bogus/hd.h: Remove file.
 	* i386/i386at/nhd.c: Likewise.
 	* i386/i386at/nhdreg.h: Likewise.
-	* i386/i386at/autoconf.c: Don't include <hd.h> anymore and adopt all
+	* i386/i386at/autoconf.c: Don't include <hd.h> anymore and adapt all
 	users of NHD as if it were always defined to `0'.
 	* i386/i386at/conf.c: Likewise.
 
