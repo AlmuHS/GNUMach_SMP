@@ -8381,7 +8381,9 @@ fi
 # when running `make clean', the build system may decide to first build all the
 # to-be-genereated files and afterwards remove them again, but it works and I
 # don't want to spend more thoughts on this issue at the moment.  Feel free to
-# suggest something better.
+# suggest something better.  TODO.  See <http://savannah.gnu.org/bugs/?18011>
+# --- ``GNU Mach: `make install-data' will build the ``to-be-generated
+# files''''.
 #
 
 
