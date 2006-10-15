@@ -2,6 +2,8 @@
 
 	[task #5956 --- ``Automake'ify GNU Mach's code base'']
 
+	* AUTHORS: New file, copy from the MIG repository.
+
 	* kern/bootstrap.c: Don't include `bootstrap_symbols.h'.
 	* ddb/db_command.c: Don't include `cpus.h'.
 	* ddb/db_mp.c: Likewise.
