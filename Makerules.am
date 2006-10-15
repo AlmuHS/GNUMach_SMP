@@ -56,8 +56,6 @@ include $(abs_top_builddir)/$(systype)/Makerules
 
 DEFS += $(DEFS-common)
 
-DEFINES += $(DEFS) -DMACH -DCMU -DMACH_KERNEL -DKERNEL
-
 INCLUDES += -I$(abs_top_builddir) -I$(abs_top_srcdir) \
 	-I$(abs_top_srcdir)/include -I$(abs_top_srcdir)/$(systype) \
 	-I$(abs_top_srcdir)/$(systype)/include/mach/sa \

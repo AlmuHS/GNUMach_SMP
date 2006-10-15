@@ -1,4 +1,5 @@
-dnl Configure script for i386
+dnl Configure fragment for i386.
+
 dnl Copyright 1999, 2004, 2006 Free Software Foundation, Inc.
 
 dnl Permission to use, copy, modify and distribute this software and its
@@ -12,32 +13,60 @@ dnl "AS IS" CONDITION.  THE FREE SOFTWARE FOUNDATION DISCLAIMS ANY
 dnl LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
 dnl USE OF THIS SOFTWARE.
 
-AC_PREREQ([2.57])
+#
+# Definitions.
+#
 
-m4_include([../version.m4])
-AC_INIT([AC_PACKAGE_NAME], [AC_PACKAGE_VERSION], [AC_PACKAGE_BUGREPORT], [AC_PACKAGE_TARNAME])
-AC_CONFIG_SRCDIR([i386/i386asm.sym])
+# Some of the i386-specific code checks for these.
+AC_DEFINE([CONTINUATIONS], [1], [CONTINUATIONS])
+AC_DEFINE([__ELF__], [1], [__ELF__])
+AC_DEFINE([i386], [1], [i386])
+
+#
+# Formerly in `i386/bogus/'.
+#
+
+# i386/bogus/com.h
+AC_DEFINE([NCOM], [4], [NCOM])
+
+# i386/bogus/fpe.h
+AC_DEFINE([FPE], [0], [We do not have a floating point implementation.])
+
+# i386/bogus/lpr.h
+AC_DEFINE([NLPR], [1], [NLPR])
+
+# i386/bogus/mach_machine_routines.h
+AC_DEFINE([MACH_MACHINE_ROUTINES], [1], [MACH_MACHINE_ROUTINES])
+
+# i386/bogus/platforms.h
+AC_DEFINE([AT386], [1], [AT386])
+
+# i386/bogus/rc.h
+#
+# This controls whether or not we use a serial line for the console
+# (ie, remote console).
+#
+#
+# Values for RCLINE:
+#      -1 = disable
+#       0 = port 0x3f8/irq 4 (DOS COM1)
+#       1 = port 0x2f8/irq 3 (DOS COM2)
+#       2 = port 0x3e8/irq 5 (DOS COM3)
+#       3 = port 0x2e8/irq 9 (DOS COM4)
+#
+AC_DEFINE([RCLINE], [-1], [com port for the remote console])
+AC_DEFINE([RCADDR], [0x3f8], [where is the com port for the remote console])
 
 #
-# Options
+# Options.
 #
-AC_ARG_ENABLE([default-device-drivers],
-AS_HELP_STRING([--disable-default-device-drivers], [have all device drivers
-disabled that can be disabled and would otherwise have been enabled by default;
-then use the `--enable-*' options to enable only those you actually want to
-have enabled]))
-[if test x"$enable_default_device_drivers" != xno
-then enable_default_device_drivers=yes
-fi]
 
 AC_ARG_ENABLE([lpr],
   AS_HELP_STRING([--disable-lpr], [disable use of lpr device]))
 [enable_lpr=${enable_lpr-$enable_default_device_drivers}
-if test x"$enable_lpr" = xyes
-then] AC_DEFINE([MACH_LPR], [], [enable mach lpr])
+if [ x"$enable_lpr" = xyes ]; then]
+  AC_DEFINE([MACH_LPR], [], [lpr device])
+  AM_CONDITIONAL([enable_lpr], [true])
+[else]
+  AM_CONDITIONAL([enable_lpr], [false])
 [fi]
-
-AC_CONFIG_SUBDIRS([linux])
-
-AC_CONFIG_FILES([Makefile Makerules])
-AC_OUTPUT

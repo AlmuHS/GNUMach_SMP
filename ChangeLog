@@ -2,6 +2,102 @@
 
 	[task #5956 --- ``Automake'ify GNU Mach's code base'']
 
+	* configfrag.ac: New file.
+	* tests/configfrag.ac: Likewise.
+	* Makerules.am (DEFINES): Convert those into...
+	* configfrag.ac: ... AC_DEFINE instantiations.
+	* i386/Makerules.in (DEFINES): Convert those into...
+	* i386/configfrag.ac: ... AC_DEFINE instantiations.
+	* i386/Makerules.in: Remove file.
+	* i386/configfrag.ac (AC_PREREQ, AC_INIT, AC_CONFIG_SRCDIR)
+	(AC_CONFIG_SUBDIRS, AC_CONFIG_FILES, AC_OUTPUT): Don't invoke.
+	(../version.m4): Don't include.
+	(--disable-lpr): Rework configuration option.
+	(--disable-default-device-drivers): Move configuration option to...
+	* configfrag.ac: ... here.
+	* configure.ac (AC_CONFIG_AUX_DIR, AM_INIT_AUTOMAKE): Instantiate.
+	(AC_PREFIX_DEFAULT, AC_CONFIG_SUBDIRS): Don't invoke.
+	<Output variable `systype'>: Rework the whole section.
+	<Options> (--enable-kdb, --disable-kmsg): Move into `configfrag.ac' and
+	adopt.
+	<Programs> (AM_PROG_AS, AM_PROG_CC_C_O): Instantiate.
+	(AC_CHECK_PROG): Move instantiation searching for a `mbchk' program
+	into `tests/configfrag.ac'.
+	(AC_CHECK_PROG): Instantiate to search for a `patch' program.
+	<configure fragments> (tests/configfrag.ac, configfrag.ac)
+	(linux/configfrag.ac): Include files.
+	(i386/configfrag.ac): Include file if appropriate.
+	(AC_CONFIG_HEADER): Instantiate for `config.h'.
+	(AC_CONFIG_FILES): Remove `Makerules' and `doc/Makefile'.
+	(AC_CONFIG_COMMANDS_POST): Instantiate for `config.status.dep.patch'.
+	(AC_CONFIG_COMMANDS): Instantiate for
+	`Makefile.correct_output_files_for_.S_files.patch' and (the
+	nonexistent) `Makefile.dependency_tracking_for_.S_files.patch'.
+	* Makefile.dependency_tracking_for_.S_files.patch: New file.
+	* config.status.dep.patch: Likewise.
+	* bogus/bootstrap_symbols.h: Remove file.
+	* configfrag.ac: AC_DEFINE `BOOTSTRAP_SYMBOLS' to `0'.
+	* bogus/cpus.h: Remove file.
+	* configfrag.ac: AC_DEFINE `NCPUS' to `1'.  AH_TEMPLATE
+	`MULTIPROCESSOR'.
+	* bogus/fast_tas.h: Remove file.
+	* configfrag.ac: AC_DEFINE `FAST_TAS' to `0'.
+	* bogus/hw_footprint.h: Remove file.
+	* configfrag.ac: AC_DEFINE `HW_FOOTPRINT' to `0'.
+	* bogus/mach_counters.h: Remove file.
+	* configfrag.ac: AC_DEFINE `MACH_COUNTERS' to `0'.
+	* bogus/mach_debug.h: Remove file.
+	* configfrag.ac: AC_DEFINE `MACH_DEBUG' to `1'.
+	* bogus/mach_fixpri.h: Remove file.
+	* configfrag.ac: AC_DEFINE `MACH_FIXPRI' to `1'.
+	* bogus/mach_host.h: Remove file.
+	* configfrag.ac: AC_DEFINE `MACH_HOST' to `0'.
+	* bogus/mach_ipc_compat.h: Remove file.
+	* configfrag.ac: AC_DEFINE `MACH_IPC_COMPAT' to `1'.
+	* bogus/mach_ipc_debug.h: Remove file.
+	* configfrag.ac: AC_DEFINE `MACH_IPC_DEBUG' to `1'.
+	* bogus/mach_ipc_test.h: Remove file.
+	* configfrag.ac: AC_DEFINE `MACH_IPC_TEST' to `0'.
+	* bogus/mach_kdb.h: Remove file.
+	* configfrag.ac (--disable-kdb): AC_DEFINE `MACH_KDB' to `0'.
+	* bogus/mach_ldebug.h: Remove file.
+	* configfrag.ac: AC_DEFINE `MACH_LDEBUG' to `0'.
+	* bogus/mach_lock_mon.h: Remove file.
+	* configfrag.ac: AC_DEFINE `MACH_LOCK_MON' to `0'.
+	* bogus/mach_machine_routines.h: Remove file.
+	* configfrag.ac: Add comment about not AC_DEFINEing
+	`MACH_MACHINE_ROUTINES' to `0'.
+	* bogus/mach_mp_debug.h: Remove file.
+	* configfrag.ac: AC_DEFINE `MACH_MP_DEBUG' to `0'.
+	* bogus/mach_pagemap.h: Remove file.
+	* configfrag.ac: AC_DEFINE `MACH_PAGEMAP' to `1'.
+	* bogus/mach_pcsample.h: Remove file.
+	* configfrag.ac: AC_DEFINE `MACH_PCSAMPLE' to `1'.
+	* bogus/mach_ttd.h: Remove file.
+	* configfrag.ac: AC_DEFINE `MACH_TTD' to `0'.
+	* bogus/mach_vm_debug.h: Remove file.
+	* configfrag.ac: AC_DEFINE `MACH_VM_DEBUG' to `1'.
+	* bogus/power_save.h: Remove file.
+	* configfrag.ac: AC_DEFINE `POWER_SAVE' to `1'.
+	* bogus/simple_clock.h: Remove file.
+	* configfrag.ac: AC_DEFINE `SIMPLE_CLOCK' to `0'.
+	* bogus/stat_time.h: Remove file.
+	* configfrag.ac: AC_DEFINE `STAT_TIME' to `1'.
+	* bogus/xpr_debug.h: Remove file.
+	* configfrag.ac: AC_DEFINE `XPR_DEBUG' to `1'.
+	* i386/bogus/com.h: Remove file.
+	* i386/configfrag.ac: AC_DEFINE `NCOM' to `4'.
+	* i386/bogus/fpe.h: Remove file.
+	* i386/configfrag.ac: AC_DEFINE `FPE' to `0'.
+	* i386/bogus/lpr.h: Remove file.
+	* i386/configfrag.ac: AC_DEFINE `NLPR' to `1'.
+	* i386/bogus/mach_machine_routines.h: Remove file.
+	* i386/configfrag.ac: AC_DEFINE `MACH_MACHINE_ROUTINES' to `1'.
+	* i386/bogus/platforms.h: Remove file.
+	* i386/configfrag.ac: AC_DEFINE `AT386' to `1'.
+	* i386/bogus/rc.h: Remove file.
+	* i386/configfrag.ac: AC_DEFINE `RCLINE' to `-1' and `RCADDR' to `0x3f8'.
+
 	* Makerules.in: Move file...
 	* Makerules.am: ... here.
 

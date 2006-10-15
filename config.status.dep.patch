@@ -1,0 +1,11 @@
+--- config.status.save	2006-10-09 22:28:47.000000000 +0200
++++ config.status	2006-10-09 22:29:34.000000000 +0200
+@@ -1610,7 +1610,7 @@
+    { (exit 1); exit 1; }; }; }
+ 
+     # echo "creating $dirpart/$file"
+-    echo '# dummy' > "$dirpart/$file"
++    echo 'Makefile: $(filter-out $(DIST_SOURCES),$(SOURCES))' > "$dirpart/$file"
+   done
+ done
+  ;;

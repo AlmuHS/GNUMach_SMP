@@ -1,2 +1,0 @@
-#define NCOM 4
-

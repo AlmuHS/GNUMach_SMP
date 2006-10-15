@@ -1,0 +1,137 @@
+dnl Configure fragment for general options.
+
+dnl Copyright 2006 Free Software Foundation, Inc.
+
+dnl Permission to use, copy, modify and distribute this software and its
+dnl documentation is hereby granted, provided that both the copyright
+dnl notice and this permission notice appear in all copies of the
+dnl software, derivative works or modified versions, and any portions
+dnl thereof, and that both notices appear in supporting documentation.
+dnl
+dnl THE FREE SOFTWARE FOUNDATION ALLOWS FREE USE OF THIS SOFTWARE IN ITS
+dnl "AS IS" CONDITION.  THE FREE SOFTWARE FOUNDATION DISCLAIMS ANY
+dnl LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
+dnl USE OF THIS SOFTWARE.
+
+#
+# Definitions.
+#
+
+AC_DEFINE([MACH], [1], [MACH])
+AC_DEFINE([CMU], [1], [CMU])
+AC_DEFINE([MACH_KERNEL], [1], [MACH_KERNEL])
+AC_DEFINE([KERNEL], [1], [KERNEL])
+
+#
+# Formerly in `bogus/'.
+#
+
+# bogus/bootstrap_symbols.h
+AC_DEFINE([BOOTSTRAP_SYMBOLS], [0], [BOOTSTRAP_SYMBOLS])
+
+# bogus/cpus.h
+AC_DEFINE([NCPUS], [1], [set things up for a uniprocessor])
+AH_TEMPLATE([MULTIPROCESSOR], [set things up for a uniprocessor])
+
+# bogus/fast_tas.h
+AC_DEFINE([FAST_TAS], [0], [FAST_TAS])
+
+# bogus/hw_footprint.h
+AC_DEFINE([HW_FOOTPRINT], [0], [HW_FOOTPRINT])
+
+# bogus/mach_counters.h
+AC_DEFINE([MACH_COUNTERS], [0], [MACH_COUNTERS])
+
+# bogus/mach_debug.h
+AC_DEFINE([MACH_DEBUG], [1], [MACH_DEBUG])
+
+# bogus/mach_fixpri.h
+AC_DEFINE([MACH_FIXPRI], [1], [MACH_FIXPRI])
+
+# bogus/mach_host.h
+AC_DEFINE([MACH_HOST], [0], [MACH_HOST])
+
+# bogus/mach_ipc_compat.h
+AC_DEFINE([MACH_IPC_COMPAT], [1], [MACH_IPC_COMPAT])
+
+# bogus/mach_ipc_debug.h
+AC_DEFINE([MACH_IPC_DEBUG], [1], [MACH_IPC_DEBUG])
+
+# bogus/mach_ipc_test.h
+AC_DEFINE([MACH_IPC_TEST], [0], [MACH_IPC_TEST])
+
+# bogus/mach_ldebug.h
+AC_DEFINE([MACH_LDEBUG], [0], [MACH_LDEBUG])
+
+# bogus/mach_lock_mon.h
+AC_DEFINE([MACH_LOCK_MON], [0], [MACH_LOCK_MON])
+
+# bogus/mach_machine_routines.h
+# TODO.  Defining a default value here and potentially overriding it later
+# might or might not work.  See
+# <http://lists.gnu.org/archive/html/autoconf/2006-10/msg00005.html>.  So,
+# comment this out so that the i386-specific one will be used instead. Doesn't
+# do any harm as we're i386-only so far.
+#AC_DEFINE([MACH_MACHINE_ROUTINES], [0], [MACH_MACHINE_ROUTINES])
+
+# bogus/mach_mp_debug.h
+AC_DEFINE([MACH_MP_DEBUG], [0], [MACH_MP_DEBUG])
+
+# bogus/mach_pagemap.h
+AC_DEFINE([MACH_PAGEMAP], [1], [MACH_PAGEMAP])
+
+# bogus/mach_pcsample.h
+AC_DEFINE([MACH_PCSAMPLE], [1], [MACH_PCSAMPLE])
+
+# bogus/mach_ttd.h
+AC_DEFINE([MACH_TTD], [0], [MACH_TTD])
+
+# bogus/mach_vm_debug.h
+AC_DEFINE([MACH_VM_DEBUG], [1], [MACH_VM_DEBUG])
+
+# bogus/power_save.h
+AC_DEFINE([POWER_SAVE], [1], [POWER_SAVE])
+
+# bogus/simple_clock.h
+AC_DEFINE([SIMPLE_CLOCK], [0], [SIMPLE_CLOCK])
+
+# bogus/stat_time.h
+AC_DEFINE([STAT_TIME], [1], [STAT_TIME])
+
+# bogus/xpr_debug.h
+AC_DEFINE([XPR_DEBUG], [1], [XPR_DEBUG])
+
+#
+# Options.
+#
+
+AC_ARG_ENABLE([kdb],
+  AS_HELP_STRING([--enable-kdb], [enable use of in-kernel debugger]))
+[if [ x"$enable_kdb" = xyes ]; then]
+  AC_DEFINE([MACH_KDB], [1], [Use the in-kernel debugger?])
+  AM_CONDITIONAL([enable_kdb], [true])
+[else]
+  # We need to be long winded here: bogus/mach_kdb.h made it default to zero,
+  # unless overridden.
+  AC_DEFINE([MACH_KDB], [0], [Use the in-kernel debugger?])
+  AM_CONDITIONAL([enable_kdb], [false])
+[fi]
+
+
+AC_ARG_ENABLE([kmsg],
+  AS_HELP_STRING([--disable-kmsg], [disable use of kmsg device]))
+[if [ x"$enable_kmsg" != xno ]; then]
+  AC_DEFINE([MACH_KMSG], [], [enable use of kmsg device])
+  AM_CONDITIONAL([enable_kmsg], [true])
+[else]
+  AM_CONDITIONAL([enable_kmsg], [false])
+[fi]
+
+
+AC_ARG_ENABLE([default-device-drivers],
+  AS_HELP_STRING([--disable-default-device-drivers], [have all of the following
+    device drivers and switches disabled by default; then use the `--enable-*'
+    options to enable only those you actually want to have enabled]))
+[if [ x"$enable_default_device_drivers" != xno ]
+then enable_default_device_drivers=yes
+fi]
