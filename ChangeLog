@@ -1,3 +1,12 @@
+2006-10-15  Thomas Schwinge  <tschwinge@gnu.org>
+
+	[task #5956 --- ``Automake'ify GNU Mach's code base'']
+
+	* i386/Files: Remove file.
+	* i386/Subdirs: Likewise.
+	* linux/Files: Likewise.
+	* linux/Subdirs: Likewise.
+
 2006-10-13  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* configure.in: Move file...
