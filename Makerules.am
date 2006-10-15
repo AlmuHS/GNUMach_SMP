@@ -1,6 +1,7 @@
-# Makerules
+# Makerules: how to do some things.
+
 # Copyright 2006 Free Software Foundation, Inc.
-#
+
 # Permission to use, copy, modify and distribute this software and its
 # documentation is hereby granted, provided that both the copyright
 # notice and this permission notice appear in all copies of the
@@ -11,147 +12,85 @@
 # "AS IS" CONDITION.  THE FREE SOFTWARE FOUNDATION DISCLAIMS ANY
 # LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
 # USE OF THIS SOFTWARE.
-
 
 #
-# configure's findings.
+# Building foo.h from foo.sym.
 #
 
-systype = @systype@
-abs_top_builddir = @abs_top_builddir@
-abs_top_srcdir = @abs_top_srcdir@
-
-AR = @AR@
-AWK = @AWK@
-CC = @CC@
-CPP = @CPP@
-GZIP = @GZIP@
-LD = @LD@
-MBCHK = @MBCHK@
-MIG = @MIG@
-NM = @NM@
-RANLIB = @RANLIB@
-STRIP = @STRIP@
-
-INSTALL = @INSTALL@
-INSTALL_PROGRAM = @INSTALL_PROGRAM@
-INSTALL_DATA = @INSTALL_DATA@
-
-CFLAGS-common = @CFLAGS@
-CPPFLAGS-common = @CPPFLAGS@
-DEFS-common = @DEFS@
-LDFLAGS-common = @LDFLAGS@
-
-
-#
-# System dependent Makerules
-#
-
-include $(abs_top_builddir)/$(systype)/Makerules
-
-
-#
-# Compilation flags
-#
-
-DEFS += $(DEFS-common)
-
-INCLUDES += -I$(abs_top_builddir) -I$(abs_top_srcdir) \
-	-I$(abs_top_srcdir)/include -I$(abs_top_srcdir)/$(systype) \
-	-I$(abs_top_srcdir)/$(systype)/include/mach/sa \
-	-I$(abs_top_srcdir)/bogus -I$(abs_top_srcdir)/util \
-	-I$(abs_top_srcdir)/kern -I$(abs_top_srcdir)/device
-
-CPPFLAGS += -nostdinc $(DEFINES) $(INCLUDES) $(CPPFLAGS-common)
-
-MIGFLAGS += $(CPPFLAGS)
-
-CFLAGS += $(CFLAGS-common)
-
-# See <URL:http://lists.gnu.org/archive/html/bug-hurd/2006-01/msg00148.html>.
-CFLAGS += -fno-strict-aliasing
-
-LDFLAGS += $(LDFLAGS-common)
-
-#
-# How to do some things
-#
-
-# Building foo.h from foo.sym:
-%.symc: %.sym $(abs_top_srcdir)/gensym.awk
+%.symc: %.sym $(top_srcdir)/gensym.awk
 	$(AWK) -f $(word 2,$^) $< > $@
 %.symc.o: %.symc
-	$(CC) -S $(CPPFLAGS) $(CFLAGS) $(CPPFLAGS-$@) -x c -o $@ $<
+	$(COMPILE) -S -x c -o $@ $<
 %.h: %.symc.o
-	sed <$< -e 's/^[^*].*$$//' | \
-		sed -e 's/^[*]/#define/' -e 's/mAgIc[^-0-9]*//' >$@
-
-# Building from foo.cli
-.PRECIOUS: %_user.c
-%.h %_user.c %.cli.d: %.cli
-	$(MIG) $(MIGFLAGS) -MD \
-	  -header $*.h -user $*_user.c -server /dev/null $<
-	mv $*-mig.d $*.cli.d
-
-# Building from foo.srv
-.PRECIOUS: %_server.c
-%_interface.h %_server.c %.srv.d: %.srv
-	$(MIG) $(MIGFLAGS) -MD				\
-	  -sheader $*_interface.h -server $*_server.c	\
-	  -header /dev/null -user /dev/null $<
-	mv $*-mig.d $*.srv.d
-
-# gzip files
-%.gz: %
-	$(GZIP) -9 < $< > $@
-
-# strip files
-%.stripped: %
-	$(STRIP) -o $@ $<
-
-#
-# Dependency generation
-#
-
-# Don't build and include dependency files if they're not needed.
-ifneq ($(strip $(filter %clean, $(MAKECMDGOALS))),)
-no_deps = t
-endif
-
-# Include dependency files
-ifneq ($(no_deps),t)
-
-# The MIG stubs depend on their definition files.
--include $(subst _server.o,.srv.d,$(servers)) /dev/null
--include $(subst _user.o,.cli.d,$(users)) /dev/null
-
-# For each .o file we need a .d file.
--include $(subst .o,.d,$(filter %.o,$(objfiles))) /dev/null
-
-endif
-
-# Generic rule for $(CC) based compilation for making dependencies
-define make-deps
-set -e; $(CC) $(CFLAGS) $(CPPFLAGS) -M -MG $< | \
-	sed > $@.new -e 's/$*\.o:/$*.o $@:/'
-mv -f $@.new $@
-endef
-
-%.d: %.c; $(make-deps)
-%.d: %.S; $(make-deps)
-
-# .s files don't go through the preprocessor, so we do this
-# This rule must come *after* the genuine ones above, so that
-# make doesn't build a .s file and then make an empty dependency
-# list.
-%.d: %.s
-	echo '$*.o: $<' > $@
-
+	sed < $< > $@				\
+	  -e 's/^[^*].*$$//'			\
+	  -e 's/^[*]/#define/'			\
+	  -e 's/mAgIc[^-0-9]*//'
 
 #
-# Autoconf support
+# Building RPC stubs.
 #
 
-$(top_builddir)/Makerules $(abs_top_builddir)/Makerules: \
-  $(abs_top_srcdir)/Makerules.in $(abs_top_builddir)/config.status
-	cd $(abs_top_builddir) && ./config.status $(@F)
+# These chained rules could be (and used to be) single rules using pipes or
+# could even --- if you dare to --- use the `mig' shell script, but it's
+# convenient to be able to explicitly make the intermediate files when you want
+# to deal with a problem in the MIG stub generator.
+
+# TODO.  Get rid of the following four rules and the lib_dep_tr_for_defs.a
+# machinery (see Makefrag.am and i386/Makefrag.am).
+%.server.defs.c: %.srv
+	rm -f $@
+	cp -p $< $@
+%.user.defs.c: %.cli
+	rm -f $@
+	cp -p $< $@
+%.server.h %.server.c: lib_dep_tr_for_defs_a-%.server.defs.$(OBJEXT)
+	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMSFLAGS)	\
+	  -sheader $*.server.h -server $*.server.c	\
+	  -user /dev/null -header /dev/null		\
+	  < $<
+%.user.h %.user.c: lib_dep_tr_for_defs_a-%.user.defs.$(OBJEXT)
+	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMUFLAGS)		\
+	  -user $*.user.c -server /dev/null -header $*.user.h	\
+	  < $<
+
+# TODO.  Get rid of the .srv files and rather use .defs files and MIG*SFLAGS?
+%.server.defs: %.srv
+	$(CPP) $(AM_CPPFLAGS) $(CPPFLAGS) -o $@ $<
+%.server.defs: %.defs
+	$(CPP) $(AM_CPPFLAGS) $(CPPFLAGS) $(MIGSFLAGS) -o $@ $<
+%.server.h %.server.c: %.server.defs
+	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMSFLAGS)	\
+	  -sheader $*.server.h -server $*.server.c	\
+	  -user /dev/null -header /dev/null		\
+	  < $<
+# TODO.  Get rid of the .cli files and rather use .defs files and MIG*UFLAGS?
+%.user.defs: %.cli
+	$(CPP) $(AM_CPPFLAGS) $(CPPFLAGS) -o $@ $<
+%.user.defs: %.defs
+	$(CPP) $(AM_CPPFLAGS) $(CPPFLAGS) $(MIGUFLAGS) -o $@ $<
+%.user.h %.user.c: %.user.defs
+	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMUFLAGS)		\
+	  -user $*.user.c -server /dev/null -header $*.user.h	\
+	  < $<
+
+#
+# gzip files.
+#
+
+%.gz: %
+	$(GZIP) -9 < $< > $@
+
+#
+# strip files.
+#
+
+%.stripped: %
+	$(STRIP) -o $@ $<
+
+#
+# Echo target.
+#
+
+echo-%:
+	@echo '$* = `$($*)'\'

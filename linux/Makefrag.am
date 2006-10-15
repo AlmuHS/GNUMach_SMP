@@ -1,0 +1,622 @@
+# Makefile fragment for Linux device drivers and the glue code.
+
+# Copyright (C) 2006 Free Software Foundation, Inc.
+
+# This program is free software; you can redistribute it and/or
+# modify it under the terms of the GNU General Public License as
+# published by the Free Software Foundation; either version 2, or (at
+# your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program; if not, write to the Free Software
+# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+#
+# Files for device driver support.
+#
+
+noinst_LIBRARIES += \
+	liblinux.a
+gnumach_o_LDADD += \
+	liblinux.a
+
+liblinux_a_CPPFLAGS = $(AM_CPPFLAGS) \
+	-I$(srcdir)/$(systype)/linux/dev/include \
+	-I$(top_builddir)/linux/dev/include \
+	-I$(srcdir)/linux/dev/include \
+	-I$(top_builddir)/linux/src/include \
+	-I$(srcdir)/linux/src/include
+# Because of the use of `extern inline' in some Linux header files without
+# corresponding text segment definitions, we must always optimize.
+liblinux_a_CFLAGS = -O2 $(AM_CFLAGS)
+# TODO.  Do we really need `-traditional'?
+liblinux_a_CCASFLAGS = $(AM_CCASFLAGS) \
+	-D__ASSEMBLY__ -traditional \
+	$(liblinux_a_CPPFLAGS)
+
+liblinux_a_SOURCES = \
+	linux/dev/init/version.c \
+	linux/dev/kernel/softirq.c \
+	linux/src/arch/i386/lib/delay.c \
+	linux/dev/kernel/dma.c \
+	linux/dev/kernel/resource.c \
+	linux/dev/kernel/printk.c \
+	linux/src/arch/i386/kernel/bios32.c \
+	linux/dev/arch/i386/kernel/irq.c \
+	linux/src/lib/ctype.c \
+	linux/dev/lib/vsprintf.c \
+	linux/dev/init/main.c \
+	linux/dev/glue/misc.c \
+	linux/dev/kernel/sched.c \
+	linux/dev/glue/kmem.c \
+	linux/dev/glue/block.c \
+	linux/dev/arch/i386/kernel/setup.c
+
+liblinux_a_SOURCES += \
+	linux/src/drivers/pci/pci.c \
+	linux/dev/drivers/block/genhd.c
+
+#
+# Linux device drivers.
+#
+if device_driver_floppy
+liblinux_a_SOURCES += \
+	linux/dev/drivers/block/floppy.c
+endif
+
+if device_driver_ide
+liblinux_a_SOURCES += \
+	linux/src/drivers/block/cmd640.c \
+	linux/src/drivers/block/ide-cd.c \
+	linux/src/drivers/block/ide.c \
+	linux/src/drivers/block/rz1000.c \
+	linux/src/drivers/block/triton.c
+endif
+
+if device_driver_group_scsi
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/constants.c \
+	linux/src/drivers/scsi/hosts.c \
+	linux/src/drivers/scsi/scsi.c \
+	linux/src/drivers/scsi/scsi_ioctl.c \
+	linux/src/drivers/scsi/scsi_proc.c \
+	linux/src/drivers/scsi/scsicam.c \
+	linux/src/drivers/scsi/sd.c \
+	linux/src/drivers/scsi/sd_ioctl.c \
+	linux/src/drivers/scsi/sr.c \
+	linux/src/drivers/scsi/sr_ioctl.c
+endif
+
+if device_driver_53c78xx
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/53c78xx.c
+endif
+
+if device_driver_AM53C974
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/AM53C974.c
+endif
+
+if device_driver_BusLogic
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/BusLogic.c
+endif
+
+if device_driver_NCR53c406a
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/NCR53c406a.c
+endif
+
+if device_driver_advansys
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/advansys.c
+endif
+
+if device_driver_aha152x
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/aha152x.c
+endif
+
+if device_driver_aha1542
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/aha1542.c
+endif
+
+if device_driver_aha1740
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/aha1740.c
+endif
+
+if device_driver_aic7xxx
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/aic7xxx.c
+endif
+
+if device_driver_dtc
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/dtc.c
+endif
+
+if device_driver_eata
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/eata.c
+endif
+
+if device_driver_eata_dma
+liblinux_a_SOURCES += \
+	linux/dev/drivers/scsi/eata_dma.c
+endif
+
+if device_driver_eata_pio
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/eata_pio.c
+endif
+
+if device_driver_fdomain
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/fdomain.c
+endif
+
+if device_driver_g_NCR5380
+liblinux_a_SOURCES += \
+	linux/dev/drivers/scsi/g_NCR5380.c
+endif
+
+if device_driver_gdth
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/gdth.c
+endif
+
+if device_driver_in2000
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/in2000.c
+endif
+
+if device_driver_ncr53c8xx
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/ncr53c8xx.c
+endif
+
+if device_driver_pas16
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/pas16.c
+endif
+
+if device_driver_ppa
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/ppa.c
+endif
+
+if device_driver_qlogicfas
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/qlogicfas.c
+endif
+
+if device_driver_qlogicisp
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/qlogicisp.c
+endif
+
+if device_driver_seagate
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/seagate.c
+endif
+
+if device_driver_t128
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/t128.c
+endif
+
+if device_driver_tmscsim
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/tmscsim.c
+endif
+
+if device_driver_u14_34f
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/u14-34f.c
+endif
+
+if device_driver_ultrastor
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/ultrastor.c
+endif
+
+if device_driver_wd7000
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/wd7000.c
+endif
+
+if device_driver_group_net
+liblinux_a_SOURCES += \
+	linux/dev/drivers/net/auto_irq.c \
+	linux/dev/glue/net.c \
+	linux/dev/drivers/net/Space.c \
+	linux/dev/net/core/dev.c \
+	linux/dev/drivers/net/net_init.c \
+	linux/src/drivers/net/pci-scan.c
+endif
+
+if device_driver_3c501
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/3c501.c
+endif
+
+if device_driver_3c503
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/3c503.c \
+	linux/src/drivers/net/8390.c
+endif
+
+if device_driver_3c505
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/3c505.c
+endif
+
+if device_driver_3c507
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/3c507.c
+endif
+
+if device_driver_3c509
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/3c509.c
+endif
+
+if device_driver_3c59x
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/3c59x.c
+endif
+
+if device_driver_3c515
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/3c515.c
+endif
+
+if device_driver_ac3200
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/ac3200.c \
+	linux/src/drivers/net/8390.c
+endif
+
+if device_driver_apricot
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/apricot.c
+endif
+
+if device_driver_at1700
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/at1700.c
+endif
+
+if device_driver_atp
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/atp.c
+endif
+
+#if device_driver_cb_shim
+#liblinux_a_SOURCES += \
+#	linux/src/drivers/net/cb_shim.c
+#endif
+
+if device_driver_de4x5
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/de4x5.c
+endif
+
+if device_driver_de600
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/de600.c
+endif
+
+if device_driver_de620
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/de620.c
+endif
+
+if device_driver_depca
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/depca.c
+endif
+
+if device_driver_e2100
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/e2100.c \
+	linux/src/drivers/net/8390.c
+endif
+
+if device_driver_eepro
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/eepro.c
+endif
+
+if device_driver_eepro100
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/eepro100.c
+endif
+
+if device_driver_eexpress
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/eexpress.c
+endif
+
+if device_driver_epic100
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/epic100.c
+endif
+
+if device_driver_eth16i
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/eth16i.c
+endif
+
+if device_driver_ewrk3
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/ewrk3.c
+endif
+
+if device_driver_fmv18x
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/fmv18x.c
+endif
+
+if device_driver_hamachi
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/hamachi.c
+endif
+
+if device_driver_hp_plus
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/hp-plus.c \
+	linux/src/drivers/net/8390.c
+endif
+
+if device_driver_hp
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/hp.c \
+	linux/src/drivers/net/8390.c
+endif
+
+if device_driver_hp100
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/hp100.c
+endif
+
+if device_driver_intel_gige
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/intel-gige.c
+endif
+
+if device_driver_lance
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/lance.c
+endif
+
+if device_driver_myson803
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/myson803.c
+endif
+
+if device_driver_natsemi
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/natsemi.c
+endif
+
+if device_driver_ne
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/ne.c \
+	linux/src/drivers/net/8390.c
+endif
+
+if device_driver_ne2k_pci
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/ne2k-pci.c \
+	linux/src/drivers/net/8390.c
+endif
+
+if device_driver_ni52
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/ni52.c
+endif
+
+if device_driver_ni65
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/ni65.c
+endif
+
+if device_driver_ns820
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/ns820.c
+endif
+
+if device_driver_pcnet32
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/pcnet32.c
+endif
+
+if device_driver_rtl8139
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/rtl8139.c
+endif
+
+if device_driver_seeq8005
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/seeq8005.c
+endif
+
+if device_driver_sk_g16
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/sk_g16.c
+endif
+
+if device_driver_smc_ultra
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/smc-ultra.c \
+	linux/src/drivers/net/8390.c
+endif
+
+if device_driver_smc_ultra32
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/smc-ultra32.c \
+	linux/src/drivers/net/8390.c
+endif
+
+if device_driver_starfire
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/starfire.c
+endif
+
+if device_driver_sundance
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/sundance.c
+endif
+
+if device_driver_tlan
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/tlan.c
+endif
+
+if device_driver_tulip
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/tulip.c
+endif
+
+if device_driver_via_rhine
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/via-rhine.c
+endif
+
+if device_driver_wavelan
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/wavelan.c
+endif
+
+if device_driver_wd
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/wd.c
+endif
+
+if device_driver_winbond_840
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/winbond-840.c \
+	linux/src/drivers/net/8390.c
+endif
+
+if device_driver_yellowfin
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/yellowfin.c
+endif
+
+if device_driver_znet
+liblinux_a_SOURCES += \
+	linux/src/drivers/net/znet.c
+endif
+
+# pcmcia-cs.
+
+liblinux_pcmcia_cs_modules_a_CPPFLAGS = $(liblinux_a_CPPFLAGS) \
+	-I$(srcdir)/linux/pcmcia-cs/include
+liblinux_pcmcia_cs_modules_a_CFLAGS = $(liblinux_a_CFLAGS) \
+	-include $(srcdir)/linux/pcmcia-cs/glue/pcmcia_glue.h
+liblinux_pcmcia_cs_modules_a_SOURCES =
+noinst_LIBRARIES += \
+	liblinux_pcmcia_cs_modules.a
+gnumach_o_LDADD += \
+	liblinux_pcmcia_cs_modules.a
+
+if device_driver_group_pcmcia
+liblinux_pcmcia_cs_modules_a_SOURCES += \
+	linux/pcmcia-cs/glue/pcmcia.c \
+	linux/pcmcia-cs/modules/cs.c \
+	linux/pcmcia-cs/modules/ds.c \
+	linux/pcmcia-cs/modules/rsrc_mgr.c \
+	linux/pcmcia-cs/modules/bulkmem.c \
+	linux/pcmcia-cs/modules/cistpl.c \
+	linux/pcmcia-cs/modules/pci_fixup.c
+endif
+
+if device_driver_i82365
+liblinux_pcmcia_cs_modules_a_SOURCES += \
+	linux/pcmcia-cs/modules/i82365.c
+endif
+
+liblinux_pcmcia_cs_clients_a_CPPFLAGS = $(liblinux_a_CPPFLAGS) \
+	-DPCMCIA_CLIENT -I$(srcdir)/linux/pcmcia-cs/include
+liblinux_pcmcia_cs_clients_a_CFLAGS = $(liblinux_a_CFLAGS) \
+	-include $(srcdir)/linux/pcmcia-cs/glue/pcmcia_glue.h
+liblinux_pcmcia_cs_clients_a_SOURCES =
+noinst_LIBRARIES += \
+	liblinux_pcmcia_cs_clients.a
+gnumach_o_LDADD += \
+	liblinux_pcmcia_cs_clients.a
+
+if device_driver_3c574_cs
+liblinux_pcmcia_cs_clients_a_SOURCES += \
+	linux/pcmcia-cs/clients/3c574_cs.c
+endif
+
+if device_driver_3c589_cs
+liblinux_pcmcia_cs_clients_a_SOURCES += \
+	linux/pcmcia-cs/clients/3c589_cs.c
+endif
+
+if device_driver_axnet_cs
+liblinux_pcmcia_cs_clients_a_SOURCES += \
+	linux/pcmcia-cs/clients/axnet_cs.c
+endif
+
+if device_driver_fmvj18x_cs
+liblinux_pcmcia_cs_clients_a_SOURCES += \
+	linux/pcmcia-cs/clients/fmvj18x_cs.c
+endif
+
+if device_driver_nmclan_cs
+liblinux_pcmcia_cs_clients_a_SOURCES += \
+	linux/pcmcia-cs/clients/nmclan_cs.c
+endif
+
+if device_driver_pcnet_cs
+liblinux_pcmcia_cs_clients_a_SOURCES += \
+	linux/pcmcia-cs/clients/pcnet_cs.c \
+	linux/src/drivers/net/8390.c
+endif
+
+if device_driver_smc91c92_cs
+liblinux_pcmcia_cs_clients_a_SOURCES += \
+	linux/pcmcia-cs/clients/smc91c92_cs.c
+endif
+
+if device_driver_xirc2ps_cs
+liblinux_pcmcia_cs_clients_a_SOURCES += \
+	linux/pcmcia-cs/clients/xirc2ps_cs.c
+endif
+
+liblinux_pcmcia_cs_wireless_a_CPPFLAGS = $(liblinux_a_CPPFLAGS) \
+	-I$(srcdir)/linux/pcmcia-cs/include
+liblinux_pcmcia_cs_wireless_a_CFLAGS = $(liblinux_a_CFLAGS) \
+	-include $(srcdir)/linux/pcmcia-cs/glue/wireless_glue.h
+liblinux_pcmcia_cs_wireless_a_SOURCES =
+noinst_LIBRARIES += \
+	liblinux_pcmcia_cs_wireless.a
+gnumach_o_LDADD += \
+	liblinux_pcmcia_cs_wireless.a
+
+if device_driver_orinoco_cs
+liblinux_pcmcia_cs_wireless_a_SOURCES += \
+	linux/pcmcia-cs/wireless/hermes.c \
+	linux/pcmcia-cs/wireless/orinoco.c \
+	linux/pcmcia-cs/wireless/orinoco_cs.c
+endif
+
+#
+# Architecture specific parts.
+#
+
+if HOST_i386
+include i386/linux/Makefrag.am
+endif

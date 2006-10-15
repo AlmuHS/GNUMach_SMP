@@ -2,6 +2,33 @@
 
 	[task #5956 --- ``Automake'ify GNU Mach's code base'']
 
+	* Makefile.am: New file.
+	* Makerules.am <configure's findings, System dependent Makerules>
+	<Compilation flags, Dependency generation, Autoconf support>: Remove
+	sections.
+	<Building from foo.cli, Building from foo.srv>: Rewrite:
+	(%.server.defs.c, %.user.defs.c, %.server.h %.server.c)
+	(%.user.h %.user.c, %.server.defs, %.user.defs): New targets.
+	(%.h %_user.c %.cli.d, %_interface.h %_server.c %.srv.d): Remove
+	targets.
+	(echo-%): New target.
+	* Makefrag.am <configure's findings, Rules, Kernel Image, Installation>
+	<Building the distribution, Autoconf support, Makerules>: Remove
+	sections.
+	(enable_kdb, enable_kmsg): Adopt.
+	<All the source in each directory>
+	<Header files installed for user use>: Rewrite to adopt to how things
+	are to be done now.
+	<Automatically generated source files>: New section.
+	(i386/Makefrag.am): Include file if appropriate.
+	* i386/Makefrag.am <configure's findings, Rules, Installation>
+	<Autoconf support, Makerules>: Remove sections.
+	(enable_lpr): Adopt.
+	<Source files for any i386 kernel>: Rewrite to adopt to how things are
+	to be done now.
+	* i386/linux/Makefrag.am: New file.
+	* linux/Makefrag.am: Likewise.
+	
 	* Makefile.in: Move file...
 	* Makefrag.am: ... here.
 	* i386/Makefile.in: Move file...

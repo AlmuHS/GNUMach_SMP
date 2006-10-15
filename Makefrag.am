@@ -1,6 +1,7 @@
-# Makefile for Mach 4 kernel directory
+# Main Makefile fragment for GNU Mach.
+
 # Copyright 1997, 1999, 2004, 2006 Free Software Foundation, Inc.
-#
+
 # Permission to use, copy, modify and distribute this software and its
 # documentation is hereby granted, provided that both the copyright
 # notice and this permission notice appear in all copies of the
@@ -11,385 +12,317 @@
 # "AS IS" CONDITION.  THE FREE SOFTWARE FOUNDATION DISCLAIMS ANY
 # LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
 # USE OF THIS SOFTWARE.
-
 
-#
-# configure's findings.
-#
-
-srcdir = @srcdir@
-version = @PACKAGE_VERSION@
-
-prefix = @prefix@
-exec_prefix = @exec_prefix@
-bindir = @bindir@
-bootdir = $(exec_prefix)/boot
-datadir = @datadir@
-includedir = @includedir@
-infodir = @infodir@
-libdir = @libdir@
-libexecdir = @libexecdir@
-localstatedir = @localstatedir@
-mandir = @mandir@
-oldincludedir = @oldincludedir@
-sbindir = @sbindir@
-sharedstatedir = @sharedstatedir@
-sysconfdir = @sysconfdir@
-
-systype = @systype@
-
-top_builddir = ./
-
-DEFS = @DEFS@
-
-#
-# Default target
-#
-
-all:
-
-# Detect if the user wants KDB
-ifeq ($(findstring -DMACH_KDB,$(DEFS)),-DMACH_KDB)
-enable_kdb=yes
-else
-enable_kdb=no
+# Do we want the icky kernel debugger?
+if enable_kdb
+# DDB support --- eventually to die.  Please.
+libkernel_a_SOURCES += \
+	ddb/db_access.c \
+	ddb/db_aout.c \
+	ddb/db_break.c \
+	ddb/db_command.c \
+	ddb/db_cond.c \
+	ddb/db_examine.c \
+	ddb/db_expr.c \
+	ddb/db_ext_symtab.c \
+	ddb/db_input.c \
+	ddb/db_lex.c \
+	ddb/db_macro.c \
+	ddb/db_mp.c \
+	ddb/db_output.c \
+	ddb/db_print.c \
+	ddb/db_run.c \
+	ddb/db_sym.c \
+	ddb/db_task_thread.c \
+	ddb/db_trap.c \
+	ddb/db_variables.c \
+	ddb/db_watch.c \
+	ddb/db_write_cmd.c 
 endif
 
-# Detect if the user wants KMSG
-ifeq ($(findstring -DMACH_KMSG,$(DEFS)),-DMACH_KMSG)
-enable_kmsg=yes
-else
-enable_kmsg=no
+# IPC implementation.
+libkernel_a_SOURCES += \
+	ipc/ipc_entry.c \
+	ipc/ipc_hash.c \
+	ipc/ipc_init.c \
+	ipc/ipc_kmsg.c \
+	ipc/ipc_marequest.c \
+	ipc/ipc_mqueue.c \
+	ipc/ipc_notify.c \
+	ipc/ipc_object.c \
+	ipc/ipc_port.c \
+	ipc/ipc_pset.c \
+	ipc/ipc_right.c \
+	ipc/ipc_space.c \
+	ipc/ipc_splay.c \
+	ipc/ipc_table.c \
+	ipc/ipc_target.c \
+	ipc/ipc_thread.c \
+	ipc/mach_msg.c \
+	ipc/mach_port.c \
+	ipc/mach_rpc.c \
+	ipc/mach_debug.c 
+
+# "kernel" implementation (tasks, threads, trivia, etc.).
+libkernel_a_SOURCES += \
+	kern/act.c \
+	kern/ast.c \
+	kern/bootstrap.c \
+	kern/counters.c \
+	kern/debug.c \
+	kern/eventcount.c \
+	kern/exception.c \
+	kern/host.c \
+	kern/ipc_host.c \
+	kern/ipc_kobject.c \
+	kern/ipc_mig.c \
+	kern/ipc_sched.c \
+	kern/ipc_tt.c \
+	kern/kalloc.c \
+	kern/lock.c \
+	kern/lock_mon.c \
+	kern/mach_clock.c \
+	kern/mach_factor.c \
+	kern/machine.c \
+	kern/pc_sample.c \
+	kern/printf.c \
+	kern/priority.c \
+	kern/processor.c \
+	kern/profile.c \
+	kern/queue.c \
+	kern/sched_prim.c \
+	kern/startup.c \
+	kern/strings.c \
+	kern/syscall_emulation.c \
+	kern/syscall_subr.c \
+	kern/syscall_sw.c \
+	kern/task.c \
+	kern/thread.c \
+	kern/thread_swap.c \
+	kern/time_stamp.c \
+	kern/timer.c \
+	kern/xpr.c \
+	kern/zalloc.c \
+	kern/elf-load.c \
+	kern/boot_script.c
+
+# Still more trivia.
+libkernel_a_SOURCES += \
+	util/putchar.c \
+	util/puts.c
+
+# Virtual memory implementation.
+libkernel_a_SOURCES += \
+	vm/vm_debug.c \
+	vm/vm_external.c \
+	vm/vm_fault.c \
+	vm/vm_init.c \
+	vm/vm_kern.c \
+	vm/vm_map.c \
+	vm/vm_object.c \
+	vm/vm_pageout.c \
+	vm/vm_resident.c \
+	vm/vm_user.c \
+	vm/memory_object.c
+
+# These device support files are always needed; the others are needed only if
+# particular drivers want the routines.
+# TODO.  Functions in device/subrs.c should each be moved elsewhere.
+libkernel_a_SOURCES += \
+	device/cons.c \
+	device/dev_lookup.c \
+	device/dev_name.c \
+	device/dev_pager.c \
+	device/device_init.c \
+	device/ds_routines.c \
+	device/subrs.c \
+	device/net_io.c \
+	device/blkio.c \
+	device/chario.c
+
+# kmsg device.
+if enable_kmsg
+libkernel_a_SOURCES += \
+	device/kmsg.c
 endif
 
-# All the possible architectures
-all-archs = i386 linux
-
-all-archs-subdirs = $(patsubst %,$(srcdir)/%/Subdirs,$(all-archs))
-all-archs-files = $(patsubst %,$(srcdir)/%/Files,$(all-archs))
-all-archs-configures = $(patsubst %,$(srcdir)/%/configure,$(all-archs))
-
-# Files distributed from the top level directory:
-topfiles = ChangeLog ChangeLog.0 ChangeLog.00 Drivers.macros Makefile.in \
-	README INSTALL config.guess config.sub configure configure.in \
-	gensym.awk install-sh version.c.in NEWS aclocal.m4 COPYING
-
-# All the source in each directory.
-
-# Old crud from a previous configure scheme
-bogus-files = bootstrap_symbols.h cpus.h fast_tas.h hw_footprint.h \
-	power_save.h simple_clock.h stat_time.h xpr_debug.h \
-	$(patsubst %,mach_%.h,assert counters debug fixpri host ipc_compat \
-	ipc_debug ipc_test kdb ldebug lock_mon machine_routines mp_debug \
-	pagemap pcsample ttd vm_debug) 
-
-# Generic code for various hardware drivers
-chips-files = busses.c busses.h
-
-# Icky kernel debugger
-ddb-cfiles = $(addprefix db_,$(ddb-names))
-ddb-names = access.c aout.c break.c command.c cond.c examine.c expr.c \
-	ext_symtab.c input.c lex.c macro.c mp.c output.c print.c run.c \
-	sym.c task_thread.c trap.c variables.c watch.c write_cmd.c
-ddb-files = $(ddb-cfiles) $(patsubst %,db_%.h, \
-	access break command expr lex output print run sym task_thread \
-	variables watch) nlist.h stab.h tr.h
-
-# Device support interfaces
-device-files = blkio.c chario.c cirbuf.c cons.c dev_lookup.c dev_name.c \
-	dev_pager.c device_init.c dk_label.c ds_routines.c net_io.c subrs.c \
-	buf.h cirbuf.h conf.h cons.h dev_hdr.h dev_master.h device_port.h \
-	device_types_kernel.h ds_routines.h errno.h if_ether.h if_hdr.h \
-	io_req.h kmsg.c kmsg.h net_io.h param.h tty.h memory_object_reply.cli \
-	dev_forward.defs device_pager.srv device_reply.cli device.srv
-
-# IPC implementation
-ipc-cfiles = $(addprefix ipc_,$(ipc-names)) \
-		mach_msg.c mach_port.c mach_rpc.c mach_debug.c 
-ipc-names = entry.c hash.c init.c kmsg.c marequest.c mqueue.c \
-	notify.c object.c port.c pset.c right.c space.c splay.c \
-	table.c target.c thread.c
-ipc-files = $(ipc-cfiles) mach_port.srv port.h mach_msg.h \
-	$(patsubst %,ipc_%.h, \
-	entry hash init kmsg kmsg_queue machdep marequest mqueue notify \
-	object port pset right space splay table target thread types)
-
-# "kernel" implementation (tasks, threads, trivia, etc.)
-kern-cfiles = act.c ast.c bootstrap.c counters.c debug.c eventcount.c \
-	exception.c host.c ipc_host.c ipc_kobject.c ipc_mig.c ipc_sched.c \
-	ipc_tt.c kalloc.c lock.c lock_mon.c mach_clock.c mach_factor.c \
-	machine.c pc_sample.c printf.c priority.c processor.c profile.c \
-	queue.c sched_prim.c startup.c strings.c syscall_emulation.c \
-	syscall_subr.c syscall_sw.c task.c thread.c thread_swap.c \
-	time_stamp.c timer.c xpr.c zalloc.c elf-load.c boot_script.c
-kern-files = $(kern-cfiles) \
-	act.h assert.h ast.h compat_xxx_defs.h counters.h cpu_number.h \
-	debug.h eventcount.h host.h ipc_host.h ipc_kobject.h ipc_sched.h \
-	ipc_tt.h kalloc.h kern_types.h lock.h mach_param.h macro_help.h \
-	pc_sample.h processor.h queue.h refcount.h sched.h sched_prim.h \
-	shuttle.h strings.h syscall_emulation.h syscall_subr.h syscall_sw.h \
-	task.h thread.h thread_swap.h time_out.h time_stamp.h timer.h xpr.h \
-	zalloc.h boot_script.h \
-	mach.srv mach4.srv mach_debug.srv mach_host.srv
-
-# Still more trivia
-util-cfiles = putchar.c puts.c
-util-files = $(util-cfiles)
-
-# Virtual memory implementation
-vm-cfiles = $(addprefix vm_,$(vm-names)) memory_object.c
-vm-names = debug.c external.c fault.c init.c kern.c map.c \
-	object.c pageout.c resident.c user.c
-vm-files = $(vm-cfiles) memory_object_default.cli memory_object_user.cli \
-	memory_object.h pmap.h $(patsubst %,vm_%.h, \
-	external fault kern map object page pageout user)
-
-# Documentation
-doc-files = Makefile.in fdl.texi gpl.texi mach.texi
-
-# Debian packaging
-debian-files = changelog control copyright README.Debian rules postinst prerm
-
+# Version number.
+libkernel_a_SOURCES += \
+	version.c
 
-# Object files that go into the kernel image.
+#
+# Installation.
+#
 
-# Basic kernel source for Mach
-objfiles := $(subst .c,.o,$(ipc-cfiles) $(kern-cfiles) \
-			  $(util-cfiles) $(vm-cfiles))
-vpath %.c $(srcdir)/ipc $(srcdir)/kern $(srcdir)/util $(srcdir)/vm
+include_devicedir = $(includedir)/device
+include_device_HEADERS = \
+	include/device/audio_status.h \
+	include/device/bpf.h \
+	include/device/device.defs \
+	include/device/device_reply.defs \
+	include/device/device_request.defs \
+	include/device/device_types.defs \
+	include/device/device_types.h \
+	include/device/disk_status.h \
+	include/device/net_status.h \
+	include/device/tape_status.h \
+	include/device/tty_status.h
 
-# These device support files are always needed; the others are needed only
-# if particular drivers want the routines.
-# XXX functions in device/subrs.c should each be moved elsewhere
-objfiles += cons.o dev_lookup.o dev_name.o dev_pager.o device_init.o \
-	ds_routines.o subrs.o net_io.o blkio.o chario.o
-ifeq ($(enable_kmsg),yes)
-objfiles += kmsg.o
-endif
-vpath %.c $(srcdir)/device
+include_machdir = $(includedir)/mach
+include_mach_HEADERS = \
+	include/mach/bootstrap.defs \
+	include/mach/default_pager.defs \
+	include/mach/default_pager_helper.defs \
+	include/mach/default_pager_types.defs \
+	include/mach/exc.defs \
+	include/mach/mach.defs \
+	include/mach/mach4.defs \
+	include/mach/mach_host.defs \
+	include/mach/mach_port.defs \
+	include/mach/mach_types.defs \
+	include/mach/memory_object.defs \
+	include/mach/memory_object_default.defs \
+	include/mach/notify.defs \
+	include/mach/std_types.defs \
+	include/mach/alert.h \
+	include/mach/boolean.h \
+	include/mach/boot.h \
+	include/mach/default_pager_types.h \
+	include/mach/exception.h \
+	include/mach/host_info.h \
+	include/mach/kern_return.h \
+	include/mach/mach_param.h \
+	include/mach/mach_types.h \
+	include/mach/machine.h \
+	include/mach/macro_help.h \
+	include/mach/memory_object.h \
+	include/mach/message.h \
+	include/mach/mig_errors.h \
+	include/mach/msg_type.h \
+	include/mach/multiboot.h \
+	include/mach/notify.h \
+	include/mach/pc_sample.h \
+	include/mach/policy.h \
+	include/mach/port.h \
+	include/mach/processor_info.h \
+	include/mach/profil.h \
+	include/mach/profilparam.h \
+	include/mach/rpc.h \
+	include/mach/std_types.h \
+	include/mach/syscall_sw.h \
+	include/mach/task_info.h \
+	include/mach/task_special_ports.h \
+	include/mach/thread_info.h \
+	include/mach/thread_special_ports.h \
+	include/mach/thread_status.h \
+	include/mach/thread_switch.h \
+	include/mach/time_value.h \
+	include/mach/version.h \
+	include/mach/vm_attributes.h \
+	include/mach/vm_inherit.h \
+	include/mach/vm_param.h \
+	include/mach/vm_prot.h \
+	include/mach/vm_statistics.h \
+	include/mach/inline.h
 
-# DDB support -- eventually to die.  Please.
-objfiles += $(subst .c,.o,$(ddb-cfiles))
-vpath %.c $(srcdir)/ddb
+include_mach_execdir = $(includedir)/mach/exec
+include_mach_exec_HEADERS = \
+	include/mach/exec/a.out.h \
+	include/mach/exec/elf.h \
+	include/mach/exec/exec.h
 
-# Version number
-objfiles += version.o
-
-
-# Header files installed for user use
-device-headers= $(addprefix device/,audio_status.h bpf.h device.defs \
-		device_reply.defs device_request.defs device_types.defs \
-		device_types.h disk_status.h net_status.h tape_status.h \
-		tty_status.h)
-mach-headers= $(addprefix mach/, bootstrap.defs default_pager.defs \
-		default_pager_helper.defs default_pager_types.defs \
-		exc.defs mach.defs mach4.defs mach_host.defs \
-		mach_port.defs mach_types.defs memory_object.defs \
-		memory_object_default.defs notify.defs \
-		std_types.defs \
-		alert.h boolean.h boot.h default_pager_types.h exception.h \
-		host_info.h kern_return.h mach_param.h mach_types.h \
-		machine.h macro_help.h memory_object.h message.h mig_errors.h \
-		msg_type.h multiboot.h notify.h \
-		pc_sample.h policy.h port.h processor_info.h \
-		profil.h profilparam.h rpc.h std_types.h syscall_sw.h \
-		task_info.h task_special_ports.h thread_info.h \
-		thread_special_ports.h thread_status.h thread_switch.h \
-		time_value.h version.h vm_attributes.h vm_inherit.h \
-		vm_param.h vm_prot.h vm_statistics.h inline.h)
-mach-exec-headers= $(addprefix mach/exec/, a.out.h elf.h exec.h)
-mach-debug-headers:= $(addprefix mach_debug/, hash_info.h ipc_info.h \
-		mach_debug.defs mach_debug_types.defs mach_debug_types.h \
-		pc_info.h vm_info.h zone_info.h)
-
-installed-headers:= $(device-headers) $(mach-headers) $(mach-exec-headers)
+# mach-debug-headers:= $(addprefix mach_debug/, hash_info.h ipc_info.h \
+# 		mach_debug.defs mach_debug_types.defs mach_debug_types.h \
+# 		pc_info.h vm_info.h zone_info.h)
 
 # Other headers for the distribution.  We don't install these, because the
 # GNU C library has correct versions for users to use.
-other-sys-headers := types.h time.h reboot.h ioctl.h
-other-mach-headers := mig_support.h mach_traps.h error.h
-other-headers := alloca.h
+# other-sys-headers := types.h time.h reboot.h ioctl.h
+# other-mach-headers := mig_support.h mach_traps.h error.h
+# other-headers := alloca.h
 
-
-# Automatically generated source
-
-# User stubs
-objfiles += memory_object_user_user.o memory_object_default_user.o \
-	device_reply_user.o memory_object_reply_user.o
-
-# vm_user.o fits the pattern, but is not actually a MiG-related file.
-users = $(filter-out vm_user.o,$(filter %_user.o,$(objfiles)))
-
-# Server stubs
-objfiles += device_server.o device_pager_server.o mach_port_server.o \
-	mach_server.o mach4_server.o mach_debug_server.o mach_host_server.o
-
-servers = $(filter %_server.o,$(objfiles))
-
-# Where to find the relevant Mig source files
-vpath %.cli $(srcdir)/vm $(srcdir)/device
-vpath %.srv $(srcdir)/device $(srcdir)/ipc $(srcdir)/kern
-
+install-data-hook:
+	rm -f '$(DESTDIR)$(include_machdir)'/machine
+	ln -s '$(systype)' '$(DESTDIR)$(include_machdir)'/machine
 
 #
-# Rules.
+# Automatically generated source files.
 #
 
-all: kernel
-	$(MAKE) -C $(systype) $@
+# TODO.  Get rid of that stuff and lib_dep_tr_for_defs.a.  See the thread at
+# <http://lists.gnu.org/archive/html/automake/2006-10/msg00039.html> about what
+# we really want to do.
+noinst_LIBRARIES += \
+	lib_dep_tr_for_defs.a
+nodist_lib_dep_tr_for_defs_a_SOURCES =
+MOSTLYCLEANFILES += \
+	$(nodist_lib_dep_tr_for_defs_a_SOURCES)
+# Preprocess only.
+lib_dep_tr_for_defs_a_CPPFLAGS = $(AM_CPPFLAGS) \
+	-E
 
-# Better than nothing...
-check: kernel
-	$(MBCHK) $<
-	$(MAKE) -C $(systype) $@
+# User stubs.
+nodist_lib_dep_tr_for_defs_a_SOURCES += \
+	vm/memory_object_user.user.defs.c \
+	vm/memory_object_default.user.defs.c
+nodist_libkernel_a_SOURCES += \
+	vm/memory_object_user.user.h \
+	vm/memory_object_user.user.c \
+	vm/memory_object_default.user.h \
+	vm/memory_object_default.user.c
+#	vm/memory_object_user.user.defs
+#	vm/memory_object_default.user.defs
+nodist_lib_dep_tr_for_defs_a_SOURCES += \
+	device/device_reply.user.defs.c \
+	device/memory_object_reply.user.defs.c
+nodist_libkernel_a_SOURCES += \
+	device/device_reply.user.h \
+	device/device_reply.user.c \
+	device/memory_object_reply.user.h \
+	device/memory_object_reply.user.c
+#	device/device_reply.user.defs
+#	device/memory_object_reply.user.defs
 
-clean:
-	$(MAKE) -C $(systype) $@
-	rm -f clib-routines.o kernel.o kernel-undef kernel-undef-bad
-	rm -f kernel kernel.gz kernel.stripped kernel.stripped.gz
-	rm -f $(objfiles) $(subst .o,.d,$(objfiles))
-	rm -f *.symc *.symc.o *_user.c *_server.c *.h *.cli.d *.srv.d
-
-distclean: clean
-	$(MAKE) -C $(systype) $@
-	rm -f Makefile Makerules version.c doc/Makefile machine mach/machine
-	rm -f config.status config.log
-
-mostlyclean: distclean
-	$(MAKE) -C $(systype) $@
-
-maintainer-clean: mostlyclean
-	$(MAKE) -C $(systype) $@
-	rm -f $(srcdir)/configure $(all-archs-configures)
-
-$(systype)/%: FORCE
-	$(MAKE) -C $(systype) $(@F)
-FORCE:
-
+# Server stubs.
+nodist_lib_dep_tr_for_defs_a_SOURCES += \
+	device/device.server.defs.c \
+	device/device_pager.server.defs.c
+nodist_libkernel_a_SOURCES += \
+	device/device.server.h \
+	device/device.server.c \
+	device/device_pager.server.h \
+	device/device_pager.server.c
+#	device/device.server.defs
+#	device/device_pager.server.defs
+nodist_lib_dep_tr_for_defs_a_SOURCES += \
+	ipc/mach_port.server.defs.c
+nodist_libkernel_a_SOURCES += \
+	ipc/mach_port.server.h \
+	ipc/mach_port.server.c
+#	ipc/mach_port.server.defs
+nodist_lib_dep_tr_for_defs_a_SOURCES += \
+	kern/mach.server.defs.c \
+	kern/mach4.server.defs.c \
+	kern/mach_debug.server.defs.c \
+	kern/mach_host.server.defs.c
+nodist_libkernel_a_SOURCES += \
+	kern/mach.server.h \
+	kern/mach.server.c \
+	kern/mach4.server.h \
+	kern/mach4.server.c \
+	kern/mach_debug.server.h \
+	kern/mach_debug.server.c \
+	kern/mach_host.server.h \
+	kern/mach_host.server.c
+#	kern/mach.server.defs
+#	kern/mach4.server.defs
+#	kern/mach_debug.server.defs
+#	kern/mach_host.server.defs
 
 #
-# Kernel Image
+# Architecture specific parts.
 #
 
-# This is the list of routines we decide is OK to steal from the C library.
-clib-routines := memcpy memmove memset bcopy bzero \
-		 strchr strstr strsep strpbrk strtok \
-		 htonl htons ntohl ntohs \
-		 etext edata end # actually ld magic, not libc
-
-#kernel.a: $(objfiles)
-#	@rm -f $@
-#	$(AR) cq $@ $^
-
-kernel.o: $(objfiles) $(systype)/sysdep.a # kernel.a
-	$(LD) -r -o $@ $^
-kernel-undef: kernel.o
-	$(NM) -u $< | sed 's/  *U  *//;s/^_*//' | sort -u > $@
-kernel-undef-bad: kernel-undef Makefile
-	sed '$(foreach r,$(clib-routines),/^$r$$/d;)' $< > $@
-clib-routines.o: kernel-undef kernel-undef-bad
-	if test -s kernel-undef-bad; \
-	then cat kernel-undef-bad; exit 2; else true; fi
-	$(CC) -nostdlib -nostartfiles -r -static \
-	      -o $@ \
-	      `sed 's/^/-Wl,-u,/' $<` -x c /dev/null -lc
-kernel: kernel.o clib-routines.o
-	$(LD) $(LDFLAGS) $(LDFLAGS-$@) -o $@ $^
-
-
-#
-# Installation
-#
-
-installed-headers-names = $(addprefix $(includedir)/,$(installed-headers))
-install: install-headers install-kernel
-	$(MAKE) -C $(systype) $@
-
-$(installed-headers-names): $(includedir)/%: $(srcdir)/include/%
-	$(INSTALL_DATA) $< $@
-
-install-headers: mkheaderdirs $(installed-headers-names)
-	ln -sfn $(systype) $(includedir)/mach/machine
-	$(MAKE) -C $(systype) $@
-
-install-kernel: kernel mkkerneldirs
-	$(INSTALL_PROGRAM) kernel $(bootdir)/gnumach
-	$(MAKE) -C $(systype) $@
-
-mkheaderdirs:
-	mkdir -p $(includedir) $(includedir)/device $(includedir)/mach/exec
-
-mkkerneldirs:
-	mkdir -p $(bootdir)
-
-
-#
-# Building the distribution
-#
-
-dist:
-	rm -rf gnumach-$(version)
-	mkdir gnumach-$(version)
-	# Directories
-	mkdir gnumach-$(version)/{bogus,chips,ddb,device,ipc,kern,scsi,util,vm,include}
-	mkdir gnumach-$(version)/{doc,debian}
-	mkdir gnumach-$(version)/include/{mach,device,mach_debug,sys}
-	mkdir gnumach-$(version)/include/mach/exec
-	for dir in `cat $(all-archs-subdirs)`; do \
-		mkdir -p gnumach-$(version)/$$dir; \
-	done
-	# Files
-	cp $(addprefix $(srcdir)/,$(topfiles)) gnumach-$(version)
-	cp $(addprefix $(srcdir)/bogus/,$(bogus-files)) gnumach-$(version)/bogus
-	cp $(addprefix $(srcdir)/chips/,$(chips-files)) gnumach-$(version)/chips
-	cp $(addprefix $(srcdir)/ddb/,$(ddb-files)) gnumach-$(version)/ddb
-	cp $(addprefix $(srcdir)/device/,$(device-files)) gnumach-$(version)/device
-	cp $(addprefix $(srcdir)/ipc/,$(ipc-files)) gnumach-$(version)/ipc
-	cp $(addprefix $(srcdir)/kern/,$(kern-files)) gnumach-$(version)/kern
-	cp $(addprefix $(srcdir)/util/,$(util-files)) gnumach-$(version)/util
-	cp $(addprefix $(srcdir)/vm/,$(vm-files)) gnumach-$(version)/vm
-	cp $(addprefix $(srcdir)/include/,$(mach-headers)) gnumach-$(version)/include/mach
-	cp $(addprefix $(srcdir)/include/,$(device-headers)) gnumach-$(version)/include/device
-	cp $(addprefix $(srcdir)/include/,$(mach-debug-headers)) gnumach-$(version)/include/mach_debug
-	cp $(addprefix $(srcdir)/include/,$(mach-exec-headers)) gnumach-$(version)/include/mach/exec
-	cp $(addprefix $(srcdir)/include/,$(other-headers)) gnumach-$(version)/include
-	cp $(addprefix $(srcdir)/include/sys/,$(other-sys-headers)) gnumach-$(version)/include/sys
-	cp $(addprefix $(srcdir)/include/mach/,$(other-mach-headers)) gnumach-$(version)/include/mach
-	cp $(addprefix $(srcdir)/doc/,$(doc-files)) gnumach-$(version)/doc
-	cp $(addprefix $(srcdir)/debian/,$(debian-files)) gnumach-$(version)/debian
-	# Files in arch dirs
-	for file in `cat $(all-archs-files)`; do \
-		cp $(srcdir)/$$file gnumach-$(version)/`dirname $$file`; \
-	done
-	chmod -R u=rwX,og=rX gnumach-$(version)
-	tar cf - gnumach-$(version) | gzip -9vc > gnumach-$(version).tar.gz
-	rm -rf gnumach-$(version)
-
-
-#
-# Autoconf support
-#
-$(srcdir)/configure: $(srcdir)/configure.in
-	cd $(srcdir) && autoconf
-$(srcdir)/config.h.in: $(srcdir)/acconfig.h
-	cd $(srcdir) && autoheader
-
-Makefile: $(srcdir)/Makefile.in config.status
-	./config.status $@
-config.h: stamp-configh ;
-stamp-configh: $(srcdir)/config.h.in config.status
-	./config.status
-	touch $@
-
-config.status: $(srcdir)/configure
-	./config.status --recheck
-
-vpath %.in $(srcdir)
-vpath configure $(srcdir)
-
-
-#
-# Makerules
-#
-
-include $(top_builddir)/Makerules
+if HOST_i386
+include i386/Makefrag.am
+endif
