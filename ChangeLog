@@ -2,6 +2,9 @@
 
 	[task #5956 --- ``Automake'ify GNU Mach's code base'']
 
+	* Makerules.in: Move file...
+	* Makerules.am: ... here.
+
 	* linux/configfrag.ac (AC_PREREQ, AC_INIT, AC_CONFIG_SRCDIR)
 	(AC_CONFIG_HEADER, AC_CANONICAL_HOST, hurd_SYSTYPE, AC_CONFIG_FILES)
 	(AC_OUTPUT): Don't invoke.
