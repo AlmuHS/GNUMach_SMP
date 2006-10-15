@@ -203,7 +203,7 @@ noinst_PROGRAMS = gnumach.o$(EXEEXT)
 DIST_COMMON = README $(am__configure_deps) \
 	$(am__include_mach_i386_HEADERS_DIST) \
 	$(include_device_HEADERS) $(include_mach_HEADERS) \
-	$(include_mach_exec_HEADERS) $(srcdir)/Makefile.am \
+	$(include_mach_eXec_HEADERS) $(srcdir)/Makefile.am \
 	$(srcdir)/Makefile.in $(srcdir)/Makefrag.am \
 	$(srcdir)/Makerules.am $(srcdir)/config.h.in \
 	$(srcdir)/doc/Makefrag.am $(srcdir)/doc/stamp-vti \
@@ -1185,7 +1185,7 @@ liblinux_pcmcia_cs_wireless_a_OBJECTS =  \
 am__installdirs = "$(DESTDIR)$(exec_bootdir)" "$(DESTDIR)$(infodir)" \
 	"$(DESTDIR)$(include_devicedir)" \
 	"$(DESTDIR)$(include_machdir)" \
-	"$(DESTDIR)$(include_mach_execdir)" \
+	"$(DESTDIR)$(include_mach_eXecdir)" \
 	"$(DESTDIR)$(include_mach_i386dir)"
 exec_bootPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(exec_boot_PROGRAMS) $(noinst_PROGRAMS)
@@ -1244,7 +1244,7 @@ am__vpath_adj = case $$p in \
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
 include_deviceHEADERS_INSTALL = $(INSTALL_HEADER)
 include_machHEADERS_INSTALL = $(INSTALL_HEADER)
-include_mach_execHEADERS_INSTALL = $(INSTALL_HEADER)
+include_mach_eXecHEADERS_INSTALL = $(INSTALL_HEADER)
 am__include_mach_i386_HEADERS_DIST = i386/include/mach/i386/asm.h \
 	i386/include/mach/i386/boolean.h i386/include/mach/i386/disk.h \
 	i386/include/mach/i386/eflags.h \
@@ -1264,7 +1264,7 @@ am__include_mach_i386_HEADERS_DIST = i386/include/mach/i386/asm.h \
 	i386/include/mach/i386/vm_types.h
 include_mach_i386HEADERS_INSTALL = $(INSTALL_HEADER)
 HEADERS = $(include_device_HEADERS) $(include_mach_HEADERS) \
-	$(include_mach_exec_HEADERS) $(include_mach_i386_HEADERS)
+	$(include_mach_eXec_HEADERS) $(include_mach_i386_HEADERS)
 ETAGS = etags
 CTAGS = ctags
 DISTFILES = $(DIST_COMMON) $(DIST_SOURCES) $(TEXINFOS) $(EXTRA_DIST)
@@ -1753,8 +1753,10 @@ include_mach_HEADERS = \
 	include/mach/vm_statistics.h \
 	include/mach/inline.h
 
-include_mach_execdir = $(includedir)/mach/exec
-include_mach_exec_HEADERS = \
+
+# If we name this `*_execdir', Automake won't add it to `install-data'...
+include_mach_eXecdir = $(includedir)/mach/exec
+include_mach_eXec_HEADERS = \
 	include/mach/exec/a.out.h \
 	include/mach/exec/elf.h \
 	include/mach/exec/exec.h
@@ -5992,22 +5994,22 @@ uninstall-include_machHEADERS:
 	  echo " rm -f '$(DESTDIR)$(include_machdir)/$$f'"; \
 	  rm -f "$(DESTDIR)$(include_machdir)/$$f"; \
 	done
-install-include_mach_execHEADERS: $(include_mach_exec_HEADERS)
+install-include_mach_eXecHEADERS: $(include_mach_eXec_HEADERS)
 	@$(NORMAL_INSTALL)
-	test -z "$(include_mach_execdir)" || $(mkdir_p) "$(DESTDIR)$(include_mach_execdir)"
-	@list='$(include_mach_exec_HEADERS)'; for p in $$list; do \
+	test -z "$(include_mach_eXecdir)" || $(mkdir_p) "$(DESTDIR)$(include_mach_eXecdir)"
+	@list='$(include_mach_eXec_HEADERS)'; for p in $$list; do \
 	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
 	  f=$(am__strip_dir) \
-	  echo " $(include_mach_execHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(include_mach_execdir)/$$f'"; \
-	  $(include_mach_execHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(include_mach_execdir)/$$f"; \
+	  echo " $(include_mach_eXecHEADERS_INSTALL) '$$d$$p' '$(DESTDIR)$(include_mach_eXecdir)/$$f'"; \
+	  $(include_mach_eXecHEADERS_INSTALL) "$$d$$p" "$(DESTDIR)$(include_mach_eXecdir)/$$f"; \
 	done
 
-uninstall-include_mach_execHEADERS:
+uninstall-include_mach_eXecHEADERS:
 	@$(NORMAL_UNINSTALL)
-	@list='$(include_mach_exec_HEADERS)'; for p in $$list; do \
+	@list='$(include_mach_eXec_HEADERS)'; for p in $$list; do \
 	  f=$(am__strip_dir) \
-	  echo " rm -f '$(DESTDIR)$(include_mach_execdir)/$$f'"; \
-	  rm -f "$(DESTDIR)$(include_mach_execdir)/$$f"; \
+	  echo " rm -f '$(DESTDIR)$(include_mach_eXecdir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(include_mach_eXecdir)/$$f"; \
 	done
 install-include_mach_i386HEADERS: $(include_mach_i386_HEADERS)
 	@$(NORMAL_INSTALL)
@@ -6384,7 +6386,7 @@ all-am: Makefile $(INFO_DEPS) $(LIBRARIES) $(PROGRAMS) $(HEADERS) \
 		config.h
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(exec_bootdir)" "$(DESTDIR)$(infodir)" "$(DESTDIR)$(include_devicedir)" "$(DESTDIR)$(include_machdir)" "$(DESTDIR)$(include_mach_execdir)" "$(DESTDIR)$(include_mach_i386dir)"; do \
+	for dir in "$(DESTDIR)$(exec_bootdir)" "$(DESTDIR)$(infodir)" "$(DESTDIR)$(include_devicedir)" "$(DESTDIR)$(include_machdir)" "$(DESTDIR)$(include_mach_eXecdir)" "$(DESTDIR)$(include_mach_i386dir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-recursive
@@ -6498,13 +6500,12 @@ info: info-recursive
 info-am: $(INFO_DEPS)
 
 install-data-am: install-include_deviceHEADERS \
-	install-include_machHEADERS install-include_mach_i386HEADERS \
-	install-info-am
+	install-include_machHEADERS install-include_mach_eXecHEADERS \
+	install-include_mach_i386HEADERS install-info-am
 	@$(NORMAL_INSTALL)
 	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
 
-install-exec-am: install-exec_bootPROGRAMS \
-	install-include_mach_execHEADERS
+install-exec-am: install-exec_bootPROGRAMS
 
 install-info: install-info-recursive
 
@@ -6565,7 +6566,7 @@ ps-am: $(PSS)
 
 uninstall-am: uninstall-exec_bootPROGRAMS \
 	uninstall-include_deviceHEADERS uninstall-include_machHEADERS \
-	uninstall-include_mach_execHEADERS \
+	uninstall-include_mach_eXecHEADERS \
 	uninstall-include_mach_i386HEADERS uninstall-info-am
 
 uninstall-info: uninstall-info-recursive
@@ -6581,7 +6582,7 @@ uninstall-info: uninstall-info-recursive
 	install install-am install-data install-data-am \
 	install-data-hook install-exec install-exec-am \
 	install-exec_bootPROGRAMS install-include_deviceHEADERS \
-	install-include_machHEADERS install-include_mach_execHEADERS \
+	install-include_machHEADERS install-include_mach_eXecHEADERS \
 	install-include_mach_i386HEADERS install-info install-info-am \
 	install-man install-strip installcheck installcheck-am \
 	installdirs installdirs-am maintainer-clean \
@@ -6592,7 +6593,7 @@ uninstall-info: uninstall-info-recursive
 	tags-recursive uninstall uninstall-am \
 	uninstall-exec_bootPROGRAMS uninstall-include_deviceHEADERS \
 	uninstall-include_machHEADERS \
-	uninstall-include_mach_execHEADERS \
+	uninstall-include_mach_eXecHEADERS \
 	uninstall-include_mach_i386HEADERS uninstall-info-am
 
 
