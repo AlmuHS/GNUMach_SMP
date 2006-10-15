@@ -2,6 +2,15 @@
 
 	[task #5956 --- ``Automake'ify GNU Mach's code base'']
 
+	* build-aux/compile: New file, thanks to `autoreconf'.
+	* build-aux/config.guess: Likewise.
+	* build-aux/config.sub: Likewise.
+	* build-aux/depcomp: Likewise.
+	* build-aux/install-sh: Likewise.
+	* build-aux/mdate-sh: Likewise.
+	* build-aux/missing: Likewise.
+	* build-aux/texinfo.tex: Likewise.
+	
 	* AUTHORS: New file, copy from the MIG repository.
 
 	* kern/bootstrap.c: Don't include `bootstrap_symbols.h'.
