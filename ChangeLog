@@ -2,6 +2,10 @@
 
 	[task #5956 --- ``Automake'ify GNU Mach's code base'']
 
+	* config.guess: Remove file.
+	* config.sub: Likewise.
+	* install-sh: Likewise.
+
 	* i386/Files: Remove file.
 	* i386/Subdirs: Likewise.
 	* linux/Files: Likewise.
