@@ -2,6 +2,9 @@
 
 	[task #5956 --- ``Automake'ify GNU Mach's code base'']
 
+	* INSTALL: File updated, thanks to `autoreconf'.
+	* aclocal.m4: Likewise.
+
 	* build-aux/compile: New file, thanks to `autoreconf'.
 	* build-aux/config.guess: Likewise.
 	* build-aux/config.sub: Likewise.
