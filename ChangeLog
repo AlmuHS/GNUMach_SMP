@@ -2,6 +2,30 @@
 
 	[task #5956 --- ``Automake'ify GNU Mach's code base'']
 
+	* linux/configfrag.ac (AC_PREREQ, AC_INIT, AC_CONFIG_SRCDIR)
+	(AC_CONFIG_HEADER, AC_CANONICAL_HOST, hurd_SYSTYPE, AC_CONFIG_FILES)
+	(AC_OUTPUT): Don't invoke.
+	(../../version.m4, ../../Drivers.macros, ../../aclocal.m4): Don't
+	include.
+	<case "$host_cpu">: Only evaluate for i386.
+	(--disable-default-device-drivers): Remove configuraion option.
+	(LINUX_DEV, __KERNEL__): AC_DEFINE these.
+	(scsi, net, pcmcia, wireless): Remove AC_DRIVER_CLASS instantiations.
+	(device_driver_group): New shell function.
+	(AC_OPTION, AC_OPTION_nodef): New functions.
+	(linux_DRIVER): Rename function to AC_Linux_DRIVER and adopt.
+	(linux_DRIVER_nodef): Likewise to AC_Linux_DRIVER_nodef.
+	<Configuration options>: Adopt to the new functions introduced above
+	and re-position parts.
+	<Process device driver groups>: Adopt to the changes related to device
+	driver groups.
+	* linux/configure.in <AC_CONFIG_LINKS>: Move to...
+	* linux/configfrag.ac: ... here.
+	* linux/configure.in: Remove file.
+	* linux/configure: Likewise.
+	* i386/linux/Makerules.in: Likewise.
+	* Drivers.macros: Likewise.
+
 	* i386/linux/configure.ac: Move file...
 	* linux/configfrag.ac: ... here.
 	* i386/linux/configure: Remove file.

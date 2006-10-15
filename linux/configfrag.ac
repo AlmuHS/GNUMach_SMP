@@ -1,4 +1,5 @@
-dnl Device driver options for i386
+dnl Configure fragment for Linux code snarfed into GNU Mach.
+
 dnl Copyright 1997, 1999, 2004, 2006 Free Software Foundation, Inc.
 
 dnl Permission to use, copy, modify and distribute this software and its
@@ -12,418 +13,554 @@ dnl "AS IS" CONDITION.  THE FREE SOFTWARE FOUNDATION DISCLAIMS ANY
 dnl LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
 dnl USE OF THIS SOFTWARE.
 
-AC_PREREQ([2.57])
+#
+# Which host CPU?
+#
 
-m4_include([../../version.m4])
-AC_INIT([AC_PACKAGE_NAME], [AC_PACKAGE_VERSION], [AC_PACKAGE_BUGREPORT], [AC_PACKAGE_TARNAME])
-AC_CONFIG_SRCDIR([dev/include/linux/autoconf.h])
-
-m4_sinclude([../../Drivers.macros])
-m4_sinclude([../../aclocal.m4])
-
-AC_CONFIG_HEADER([device-drivers.h])
-
-dnl Check the cpu type.
-
-AC_CANONICAL_HOST
-
-dnl Which host CPU
 AC_DEFUN([hurd_host_CPU], [
-  AC_DEFINE([CONFIG_M$1], [], [$1])
+  AC_DEFINE([CONFIG_M$1], [1], [$1])
   AC_DEFINE([CPU], [$1], [CPU])
 ])
 
-
-case "$host_cpu" in
-i386) hurd_host_CPU([386]) ;;
-i486) hurd_host_CPU([486]) ;;
-i586) hurd_host_CPU([586]) ;;
-i686) hurd_host_CPU([686]) ;;
-*)    hurd_host_CPU([486]) ;;
-esac
-
-hurd_SYSTYPE
-
-#
-# Options.
-#
-AC_ARG_ENABLE([default-device-drivers],
-AS_HELP_STRING([--disable-default-device-drivers], [have all device drivers
-disabled that can be disabled and would otherwise have been enabled by default;
-then use the `--enable-*' options to enable only those you actually want to
-have enabled]))
-[if test x"$enable_default_device_drivers" != xno
-then enable_default_device_drivers=yes
+[if [ x"$systype" = xi386 ]; then
+  case "$host_cpu" in
+    i386)] hurd_host_CPU([386])[;;
+    i486)] hurd_host_CPU([486])[;;
+    i586)] hurd_host_CPU([586])[;;
+    i686)] hurd_host_CPU([686])[;;
+    *)] hurd_host_CPU([486])[;;
+  esac
 fi]
+
+#
+# Definitions.
+#
 
-dnl Kinds of drivers that have gobs of source files that get brought in.
+# The glue code dependend code checks for this.
+AC_DEFINE([LINUX_DEV], [1], [Linux device drivers.])
+# Instead of Mach's KERNEL, Linux uses __KERNEL__.  Whee.
+AC_DEFINE([__KERNEL__], [1], [__KERNEL__])
+
+#
+# Helper functions.
+#
 
-AC_DRIVER_CLASS([scsi], [CONFIG_SCSI], [ \
-  constants.o hosts.o scsi.o scsi_ioctl.o scsi_proc.o scsicam.o sd.o \
-  sd_ioctl.o sr.o sr_ioctl.o])
+#
+# Calling `device_driver_group group' makes sure that the infrastructure needed
+# for the group `group' will be set-up.
+#
 
-AC_DRIVER_CLASS([net], [CONFIG_INET], [ \
-  auto_irq.o net.o Space.o dev.o net_init.o pci-scan.o])
+device_driver_group() {
+  case $1 in
+    '')
+      # No group.
+      :;;
+    net)
+      device_driver_group_net=selected;;
+    pcmcia)
+      # Pull in group `net'.
+      device_driver_group net
+      device_driver_group_pcmcia=selected;;
+    scsi)
+      device_driver_group_scsi=selected;;
+    wireless)
+      # Pull in group `pcmcia'.
+      device_driver_group pcmcia
+      device_driver_group_wireless=selected;;
+    *)
+      AC_MSG_ERROR([invalid device driver group `$1']);;
+  esac
+}
 
-AC_DRIVER_CLASS([pcmcia], [CONFIG_PCMCIA], [ \
-  pcmcia.o cs.o ds.o rsrc_mgr.o bulkmem.o cistpl.o pci_fixup.o])
+#
+# AC_OPTION(name,description,option[,class]).  Process configuration option
+# --enable-`name' (with description `description').  If it's set, then `option'
+# is defined with AC_DEFINE.  The option optionally pulls in group `group'; see
+# the comments on device_driver_group for more information.  By default, the
+# value from $enable_default_device_drivers is considered when deciding whether
+# to activate the option by default or not.
+#
 
-AC_DRIVER_CLASS([wireless], [CONFIG_WIRELESS], [])
+AC_DEFUN([AC_OPTION], [
+[unset enableval]
+AC_ARG_ENABLE([$1],
+  AS_HELP_STRING([--disable-$1], [disable $2]))
+[enableval=${enableval-$enable_default_device_drivers}]
+AM_CONDITIONAL([device_driver_]m4_bpatsubst([$1], [-], [_]),
+  [test x"$enableval" = xyes])
+[if test x"$enableval" = xyes; then]
+  AC_DEFINE([$3], [1], [option $1: $2])
+  [device_driver_group $4
+fi]])
 
-dnl Strictly speaking, we could have a `linux' option too, but it's
-dnl not possible to built a useful kernel without at least one Linux
-dnl driver, so that's not really necessary.
+#
+# AC_OPTION_nodef() is like AC_OPTION(), but doesn't consider
+# $enable_default_device_drivers.
+#
 
+AC_DEFUN([AC_OPTION_nodef], [
+[unset enableval]
+AC_ARG_ENABLE([$1],
+  AS_HELP_STRING([--enable-$1], [enable $2]))
+AM_CONDITIONAL([device_driver_]m4_bpatsubst([$1], [-], [_]),
+  [test x"$enableval" = xyes])
+[if test x"$enableval" = xyes; then]
+  AC_DEFINE([$3], [1], [option $1: $2])
+  [device_driver_group $4
+fi]])
 
-dnl
-dnl linux_DRIVER(machname, description, MACRO, linuxname, class)
-dnl
-AC_DEFUN([linux_DRIVER], [
-  AC_DRIVER([$1], [device driver for $2], [CONFIG_$3], [$4.o], [$5])
+#
+# AC_Linux_DRIVER(machname, description, definition, [group]).  Convenience.
+#
+
+AC_DEFUN([AC_Linux_DRIVER], [
+  AC_OPTION([$1], [Linux device driver for $2], [$3], [$4])
 ])
-AC_DEFUN([linux_DRIVER_nodef], [
-  AC_DRIVER_nodef([$1], [device driver for $2], [CONFIG_$3], [$4.o], [$5])
+AC_DEFUN([AC_Linux_DRIVER_nodef], [
+  AC_OPTION_nodef([$1], [Linux device driver for $2], [$3], [$4])
 ])
+
+#
+# Configuration options.
+#
 
-dnl non-SCSI Disk controllers
+AC_Linux_DRIVER([floppy],
+  [PC floppy],
+  [CONFIG_BLK_DEV_FD])
 
-AC_DRIVER([floppy],
-  [device driver for PC floppy],
-  [CONFIG_BLK_DEV_FD], [floppy.o])
-AC_DRIVER([ide],
-  [device driver for IDE disks],
-  [CONFIG_BLK_DEV_IDE], [cmd640.o ide-cd.o ide.o rz1000.o triton.o])
+AC_Linux_DRIVER([ide],
+  [IDE disk controllers],
+  [CONFIG_BLK_DEV_IDE])
 
+dnl SCSI controllers.
 
-dnl SCSI Disk controllers
-
-linux_DRIVER([advansys],
-  [SCSI controller AdvanSys],
-  [SCSI_ADVANSYS], [advansys], [scsi])
-linux_DRIVER([BusLogic],
+AC_Linux_DRIVER([53c78xx],
+  [SCSI controller NCR 53C7,8xx],
+  [CONFIG_SCSI_NCR53C7xx],
+  [scsi])
+AC_Linux_DRIVER([AM53C974],
+  [SCSI controller AM53/79C974 (am53c974, am79c974)],
+  [CONFIG_SCSI_AM53C974],
+  [scsi])
+AC_Linux_DRIVER([BusLogic],
   [SCSI controller BusLogic],
-  [SCSI_BUSLOGIC], [BusLogic], [scsi])
-# TODO.  What's that?  And what about FlashPoint.o?
+  [CONFIG_SCSI_BUSLOGIC],
+  [scsi])
+# TODO.  What's that?  And what about FlashPoint.c?
 dnl Dirty implementation...
 AC_ARG_ENABLE([flashpoint],
   AS_HELP_STRING([--enable-flashpoint], [enable SCSI flashpoint]),
   [test x"$enableval" = xno &&
    AC_DEFINE([CONFIG_SCSI_OMIT_FLASHPOINT], [], [scsi omit flashpoint])])
-linux_DRIVER([u14-34f],
-  [SCSI controller UltraStor 14F/34F],
-  [SCSI_U14_34F], [u14-34f], [scsi])
-linux_DRIVER([ultrastor],
-  [SCSI controller UltraStor],
-  [SCSI_ULTRASTOR], [ultrastor], [scsi])
-linux_DRIVER([aha152x],
-  [SCSI controller Adaptec AHA-152x/2825 (aha152x, aha2825)],
-  [SCSI_AHA152X], [aha152x], [scsi])
-linux_DRIVER([aha1542],
-  [SCSI controller Adaptec AHA-1542],
-  [SCSI_AHA1542], [aha1542], [scsi])
-linux_DRIVER([aha1740],
-  [SCSI controller Adaptec AHA-1740],
-  [SCSI_AHA1740], [aha1740], [scsi])
-linux_DRIVER([aic7xxx],
-  [SCSI controller Adaptec AIC7xxx],
-  [SCSI_AIC7XXX], [aic7xxx], [scsi])
-linux_DRIVER([fdomain],
-  [SCSI controller Future Domain 16xx],
-  [SCSI_FUTURE_DOMAIN], [fdomain], [scsi])
-linux_DRIVER([in2000],
-  [SCSI controller Always IN 2000],
-  [SCSI_IN2000], [in2000], [scsi])
 # Disabled by default.
-linux_DRIVER_nodef([g_NCR5380],
-  [SCSI controller Generic NCR5380/53c400 (ncr5380, ncr53c400)],
-  [SCSI_GENERIC_NCR5380], [g_NCR5380], [scsi])
-# Disabled by default.
-linux_DRIVER_nodef([NCR53c406a],
+AC_Linux_DRIVER_nodef([NCR53c406a],
   [SCSI controller NCR53c406a chip],
-  [SCSI_NCR53C406A], [NCR53c406a], [scsi])
-linux_DRIVER([pas16],
-  [SCSI controller PAS16],
-  [SCSI_PASS16], [pas16], [scsi])
-linux_DRIVER([seagate],
-  [SCSI controller Seagate ST02, Future Domain TMC-8xx],
-  [SCSI_SEAGATE], [seagate], [scsi])
-linux_DRIVER([t128],
-  [SCSI controller Trantor T128/T128F/T228 (t128, t128f, t228)],
-  [SCSI_T128], [t128], [scsi])
-linux_DRIVER([53c78xx],
-  [SCSI controller NCR 53C7,8xx],
-  [SCSI_NCR53C7xx], [53c78xx], [scsi])
-# Disabled by default.
-linux_DRIVER_nodef([eata_dma],
-  [SCSI controller EATA-DMA (DPT, NEC, AT&T, SNI, AST, Olivetti, Alphatronix)],
-  [SCSI_EATA_DMA], [eata_dma], [scsi])
-linux_DRIVER([eata_pio],
-  [SCSI controller EATA-PIO (old DPT PM2001, PM2012A)],
-  [SCSI_EATA_PIO], [eata_pio], [scsi])
-linux_DRIVER([wd7000],
-  [SCSI controller WD 7000],
-  [SCSI_7000FASST], [wd7000], [scsi])
-linux_DRIVER([eata],
-  [SCSI controller EATA ISA/EISA/PCI (DPT and generic EATA/DMA-compliant boards)],
-  [SCSI_EATA], [eata], [scsi])
-linux_DRIVER([AM53C974],
-  [SCSI controller AM53/79C974 (am53c974, am79c974)],
-  [SCSI_AM53C974], [AM53C974], [scsi])
-linux_DRIVER([dtc],
+  [CONFIG_SCSI_NCR53C406A],
+  [scsi])
+AC_Linux_DRIVER([advansys],
+  [SCSI controller AdvanSys],
+  [CONFIG_SCSI_ADVANSYS],
+  [scsi])
+AC_Linux_DRIVER([aha152x],
+  [SCSI controller Adaptec AHA-152x/2825 (aha152x, aha2825)],
+  [CONFIG_SCSI_AHA152X],
+  [scsi])
+AC_Linux_DRIVER([aha1542],
+  [SCSI controller Adaptec AHA-1542],
+  [CONFIG_SCSI_AHA1542],
+  [scsi])
+AC_Linux_DRIVER([aha1740],
+  [SCSI controller Adaptec AHA-1740],
+  [CONFIG_SCSI_AHA1740],
+  [scsi])
+AC_Linux_DRIVER([aic7xxx],
+  [SCSI controller Adaptec AIC7xxx],
+  [CONFIG_SCSI_AIC7XXX],
+  [scsi])
+AC_Linux_DRIVER([dtc],
   [SCSI controller DTC3180/3280 (dtc3180, dtc3280)],
-  [SCSI_DTC3280], [dtc], [scsi])
-linux_DRIVER([ncr53c8xx],
-  [SCSI controller NCR53C8XX (ncr53c8xx, dc390f, dc390u, dc390w)],
-  [SCSI_NCR53C8XX], [ncr53c8xx], [scsi])
-linux_DRIVER([tmscsim],
-  [SCSI controller Tekram DC-390(T) (dc390, dc390t)],
-  [SCSI_DC390T], [tmscsim], [scsi])
-linux_DRIVER([ppa],
-  [IOMEGA Parallel Port ZIP drive],
-  [SCSI_PPA], [ppa], [scsi])
-linux_DRIVER([qlogicfas],
-  [SCSI controller Qlogic FAS],
-  [SCSI_QLOGIC_FAS], [qlogicfas], [scsi])
-linux_DRIVER([qlogicisp],
-  [SCSI controller Qlogic ISP],
-  [SCSI_QLOGIC_ISP], [qlogicisp], [scsi])
-linux_DRIVER([gdth],
+  [CONFIG_SCSI_DTC3280],
+  [scsi])
+AC_Linux_DRIVER([eata],
+  [SCSI controller EATA ISA/EISA/PCI
+    (DPT and generic EATA/DMA-compliant boards)],
+  [CONFIG_SCSI_EATA],
+  [scsi])
+# Disabled by default.
+AC_Linux_DRIVER_nodef([eata_dma],
+  [SCSI controller EATA-DMA (DPT, NEC, AT&T, SNI, AST, Olivetti, Alphatronix)],
+  [CONFIG_SCSI_EATA_DMA],
+  [scsi])
+AC_Linux_DRIVER([eata_pio],
+  [SCSI controller EATA-PIO (old DPT PM2001, PM2012A)],
+  [CONFIG_SCSI_EATA_PIO],
+  [scsi])
+AC_Linux_DRIVER([fdomain],
+  [SCSI controller Future Domain 16xx],
+  [CONFIG_SCSI_FUTURE_DOMAIN],
+  [scsi])
+# Disabled by default.
+AC_Linux_DRIVER_nodef([g_NCR5380],
+  [SCSI controller Generic NCR5380/53c400 (ncr5380, ncr53c400)],
+  [CONFIG_SCSI_GENERIC_NCR5380],
+  [scsi])
+AC_Linux_DRIVER([gdth],
   [GDT SCSI Disk Array Controller],
-  [SCSI_GDTH], [gdth], [scsi])
+  [CONFIG_SCSI_GDTH],
+  [scsi])
+AC_Linux_DRIVER([in2000],
+  [SCSI controller Always IN 2000],
+  [CONFIG_SCSI_IN2000],
+  [scsi])
+AC_Linux_DRIVER([ncr53c8xx],
+  [SCSI controller NCR53C8XX (ncr53c8xx, dc390f, dc390u, dc390w)],
+  [CONFIG_SCSI_NCR53C8XX],
+  [scsi])
+AC_Linux_DRIVER([pas16],
+  [SCSI controller PAS16],
+  [CONFIG_SCSI_PASS16],
+  [scsi])
+AC_Linux_DRIVER([ppa],
+  [IOMEGA Parallel Port ZIP drive],
+  [CONFIG_SCSI_PPA],
+  [scsi])
+AC_Linux_DRIVER([qlogicfas],
+  [SCSI controller Qlogic FAS],
+  [CONFIG_SCSI_QLOGIC_FAS],
+  [scsi])
+AC_Linux_DRIVER([qlogicisp],
+  [SCSI controller Qlogic ISP],
+  [CONFIG_SCSI_QLOGIC_ISP],
+  [scsi])
+AC_Linux_DRIVER([seagate],
+  [SCSI controller Seagate ST02, Future Domain TMC-8xx],
+  [CONFIG_SCSI_SEAGATE],
+  [scsi])
+AC_Linux_DRIVER([t128],
+  [SCSI controller Trantor T128/T128F/T228 (t128, t128f, t228)],
+  [CONFIG_SCSI_T128],
+  [scsi])
+AC_Linux_DRIVER([tmscsim],
+  [SCSI controller Tekram DC-390(T) (dc390, dc390t)],
+  [CONFIG_SCSI_DC390T],
+  [scsi])
+AC_Linux_DRIVER([u14-34f],
+  [SCSI controller UltraStor 14F/34F],
+  [CONFIG_SCSI_U14_34F],
+  [scsi])
+AC_Linux_DRIVER([ultrastor],
+  [SCSI controller UltraStor],
+  [CONFIG_SCSI_ULTRASTOR],
+  [scsi])
+AC_Linux_DRIVER([wd7000],
+  [SCSI controller WD 7000],
+  [CONFIG_SCSI_7000FASST],
+  [scsi])
 
+dnl Ethernet controllers.
 
-dnl Ethernet controllers
-
-AC_DRIVER([ne],
-  [device driver for Ethernet controller NE2000/NE1000 ISA (ne, ne1000, ne2000)],
-  [CONFIG_NE2000], [ne.o 8390.o], [net])
-AC_DRIVER([3c503],
-  [device driver for Ethernet controller 3Com 503 (3c503) / Etherlink II],
-  [CONFIG_EL2], [3c503.o 8390.o], [net])
-linux_DRIVER([3c509],
-  [Ethernet controller 3Com 509/579 (3c509, 3c579) / Etherlink III],
-  [EL3], [3c509], [net])
-AC_DRIVER([wd],
-  [device driver for Ethernet controller WD80x3],
-  [CONFIG_WD80x3], [wd.o 8390.o], [net])
-linux_DRIVER([3c501],
+AC_Linux_DRIVER([3c501],
   [Ethernet controller 3COM 501 (3c501) / Etherlink I],
-  [EL1], [3c501], [net])
-AC_DRIVER([smc-ultra],
-  [device driver for Ethernet controller SMC Ultra],
-  [CONFIG_ULTRA], [smc-ultra.o 8390.o], [net])
-AC_DRIVER([smc-ultra32],
-  [device driver for Ethernet controller SMC Ultra32],
-  [CONFIG_ULTRA32], [smc-ultra32.o 8390.o], [net])
-AC_DRIVER([hp-plus],
-  [device driver for Ethernet controller HP PCLAN+ (27247B and 27252A)],
-  [CONFIG_HPLAN_PLUS], [hp-plus.o 8390.o], [net])
-AC_DRIVER([hp],
-  [device driver for Ethernet controller HP PCLAN (27245 and other 27xxx series)],
-  [CONFIG_HPLAN], [hp.o 8390.o], [net])
-linux_DRIVER([3c59x],
-  [Ethernet controller 3Com 59x/90x (3c59x, 3c590, 3c592, 3c595, 3c597, 3c90x, 3c900, 3c905) "Vortex/Boomerang"],
-  [VORTEX], [3c59x], [net])
-linux_DRIVER([seeq8005],
-  [Ethernet controller Seeq8005],
-  [SEEQ8005], [seeq8005], [net])
-linux_DRIVER([hp100],
-  [Ethernet controller HP 10/100VG PCLAN (ISA, EISA, PCI) (hp100, hpj2577, hpj2573, hpj2585, hp27248b)],
-  [HP100], [hp100], [net])
-AC_DRIVER([ac3200],
-  [device driver for Ethernet controller Ansel Communications EISA 3200],
-  [CONFIG_AC3200], [ac3200.o 8390.o], [net])
-AC_DRIVER([e2100],
-  [device driver for Ethernet controller Cabletron E21xx],
-  [CONFIG_E2100], [e2100.o 8390.o], [net])
-linux_DRIVER([at1700],
-  [Ethernet controller AT1700 (Fujitsu 86965)],
-  [AT1700], [at1700], [net])
-linux_DRIVER([eth16i],
-  [Ethernet controller ICL EtherTeam 16i/32 (eth16i, eth32)],
-  [ETH16I], [eth16i], [net])
-linux_DRIVER([znet],
-  [Ethernet controller Zenith Z-Note (znet, znote)],
-  [ZNET], [znet], [net])
-linux_DRIVER([eexpress],
-  [Ethernet controller EtherExpress 16],
-  [EEXPRESS], [eexpress], [net])
-linux_DRIVER([eepro],
-  [Ethernet controller EtherExpressPro],
-  [EEXPRESS_PRO], [eepro], [net])
-linux_DRIVER([eepro100],
-  [Ethernet controller Intel EtherExpressPro PCI 10+/100B/100+],
-  [EEXPRESS_PRO100B], [eepro100], [net])
-linux_DRIVER([depca],
-  [Ethernet controller DEPCA (de100, de101, de200, de201, de202, de210, de422)],
-  [DEPCA], [depca], [net])
-linux_DRIVER([ewrk3],
-  [Ethernet controller EtherWORKS 3 (ewrk3, de203, de204, de205)],
-  [EWRK3], [ewrk3], [net])
-linux_DRIVER([de4x5],
-  [Ethernet controller DE4x5 (de4x5, de425, de434, de435, de450, de500)],
-  [DE4X5], [de4x5], [net])
-linux_DRIVER([apricot],
-  [Ethernet controller Apricot XEN-II on board ethernet],
-  [APRICOT], [apricot], [net])
-# Disabled by default.
-linux_DRIVER_nodef([wavelan],
-  [Ethernet controller AT&T WaveLAN & DEC RoamAbout DS],
-  [WAVELAN], [wavelan], [net])
-linux_DRIVER([3c507],
-  [Ethernet controller 3Com 507 (3c507, el16)],
-  [EL16], [3c507], [net])
-linux_DRIVER([3c505],
+  [CONFIG_EL1],
+  [net])
+AC_Linux_DRIVER([3c503],
+  [Ethernet controller 3Com 503 (3c503) / Etherlink II],
+  [CONFIG_EL2],
+  [net])
+AC_Linux_DRIVER([3c505],
   [Ethernet controller 3Com 505 (3c505, elplus)],
-  [ELPLUS], [3c505], [net])
-linux_DRIVER([de600],
-  [Ethernet controller D-Link DE-600],
-  [DE600], [de600], [net])
-linux_DRIVER([de620],
-  [Ethernet controller D-Link DE-620],
-  [DE620], [de620], [net])
-linux_DRIVER([sk_g16],
-  [Ethernet controller Schneider & Koch G16],
-  [SK_G16], [sk_g16], [net])
-linux_DRIVER([ni52],
-  [Ethernet controller NI5210],
-  [NI52], [ni52], [net])
-linux_DRIVER([ni65],
-  [Ethernet controller NI6510],
-  [NI65], [ni65], [net])
-# Disabled by default.
-linux_DRIVER_nodef([atp],
-  [Ethernet controller AT-LAN-TEC/RealTek pocket adaptor],
-  [ATP], [atp], [net])
-linux_DRIVER([lance],
-  [Ethernet controller AMD LANCE and PCnet (at1500, ne2100)],
-  [LANCE], [lance], [net])
-linux_DRIVER([tulip],
-  [Ethernet controller DECchip Tulip (dc21x4x) PCI (elcp, tulip)],
-  [DEC_ELCP], [tulip], [net])
-linux_DRIVER([fmv18x],
-  [Ethernet controller FMV-181/182/183/184],
-  [FMV18X], [fmv18x], [net])
-linux_DRIVER([3c515],
+  [CONFIG_ELPLUS],
+  [net])
+AC_Linux_DRIVER([3c507],
+  [Ethernet controller 3Com 507 (3c507, el16)],
+  [CONFIG_EL16],
+  [net])
+AC_Linux_DRIVER([3c509],
+  [Ethernet controller 3Com 509/579 (3c509, 3c579) / Etherlink III],
+  [CONFIG_EL3],
+  [net])
+AC_Linux_DRIVER([3c59x],
+  [Ethernet controller 3Com 59x/90x
+    (3c59x, 3c590, 3c592, 3c595, 3c597, 3c90x, 3c900, 3c905)
+    "Vortex/Boomerang"],
+  [CONFIG_VORTEX],
+  [net])
+AC_Linux_DRIVER([3c515],
   [Ethernet controller 3Com 515 ISA Fast EtherLink],
-  [3C515], [3c515], [net])
-linux_DRIVER([pcnet32],
-  [Ethernet controller AMD PCI PCnet32 (PCI bus NE2100 cards)],
-  [PCNET32], [pcnet32], [net])
-AC_DRIVER([ne2k-pci],
-  [device driver for Ethernet controller PCI NE2000],
-  [CONFIG_NE2K_PCI], [ne2k-pci.o 8390.o], [net])
-linux_DRIVER([yellowfin],
-  [Ethernet controller Packet Engines Yellowfin Gigabit-NIC],
-  [YELLOWFIN], [yellowfin], [net])
-linux_DRIVER([rtl8139],
-  [Ethernet controller RealTek 8129/8139 (rtl8129, rtl8139) (not 8019/8029!)],
-  [RTL8139], [rtl8139], [net])
-linux_DRIVER([epic100],
-  [Ethernet controller SMC 83c170/175 EPIC/100 (epic, epic100) / EtherPower II],
-  [EPIC], [epic100], [net])
-linux_DRIVER([tlan],
-  [Ethernet controller TI ThunderLAN],
-  [TLAN], [tlan], [net])
-linux_DRIVER([via-rhine],
-  [Ethernet controller VIA Rhine],
-  [VIA_RHINE], [via-rhine], [net])
-linux_DRIVER([hamachi],
-  [Ethernet controller Packet Engines "Hamachi" GNIC-2 Gigabit Ethernet],
-  [HAMACHI], [hamachi], [net])
-linux_DRIVER([intel-gige],
-  [Ethernet controller Intel PCI Gigabit Ethernet],
-  [INTEL_GIGE], [intel-gige], [net])
-linux_DRIVER([myson803],
-  [Ethernet controller Myson MTD803 Ethernet adapter series],
-  [MYSON803], [myson803], [net])
-linux_DRIVER([natsemi],
-  [Ethernet controller National Semiconductor DP8381x series PCI Ethernet],
-  [NATSEMI], [natsemi], [net])
-linux_DRIVER([ns820],
-  [Ethernet controller National Semiconductor DP8382x series PCI Ethernet],
-  [NS820], [ns820], [net])
-linux_DRIVER([starfire],
-  [Ethernet controller Adaptec Starfire network adapter],
-  [STARFIRE], [starfire], [net])
-linux_DRIVER([sundance],
-  [Ethernet controller Sundance ST201 "Alta" PCI Ethernet],
-  [SUNDANCE], [sundance], [net])
-linux_DRIVER([winbond-840],
-  [Ethernet controller Winbond W89c840 PCI Ethernet],
-  [WINBOND840], [winbond-840], [net])
+  [CONFIG_3C515],
+  [net])
+AC_Linux_DRIVER([ac3200],
+  [Ethernet controller Ansel Communications EISA 3200],
+  [CONFIG_AC3200],
+  [net])
+AC_Linux_DRIVER([apricot],
+  [Ethernet controller Apricot XEN-II on board ethernet],
+  [CONFIG_APRICOT],
+  [net])
+AC_Linux_DRIVER([at1700],
+  [Ethernet controller AT1700 (Fujitsu 86965)],
+  [CONFIG_AT1700],
+  [net])
+# Disabled by default.
+AC_Linux_DRIVER_nodef([atp],
+  [Ethernet controller AT-LAN-TEC/RealTek pocket adaptor],
+  [CONFIG_ATP],
+  [net])
 dnl FIXME: Can't be enabled since it is a pcmcia driver, and we don't
 dnl have that kind of fluff.
-dnl
 dnl linux_DRIVER([cb_shim], [CB_SHIM], [cb_shim], [net])
-
-
+AC_Linux_DRIVER([de4x5],
+  [Ethernet controller DE4x5 (de4x5, de425, de434, de435, de450, de500)],
+  [CONFIG_DE4X5],
+  [net])
+AC_Linux_DRIVER([de600],
+  [Ethernet controller D-Link DE-600],
+  [CONFIG_DE600],
+  [net])
+AC_Linux_DRIVER([de620],
+  [Ethernet controller D-Link DE-620],
+  [CONFIG_DE620],
+  [net])
+AC_Linux_DRIVER([depca],
+  [Ethernet controller DEPCA
+    (de100, de101, de200, de201, de202, de210, de422)],
+  [CONFIG_DEPCA],
+  [net])
+AC_Linux_DRIVER([e2100],
+  [Ethernet controller Cabletron E21xx],
+  [CONFIG_E2100],
+  [net])
+AC_Linux_DRIVER([eepro],
+  [Ethernet controller EtherExpressPro],
+  [CONFIG_EEXPRESS_PRO],
+  [net])
+AC_Linux_DRIVER([eepro100],
+  [Ethernet controller Intel EtherExpressPro PCI 10+/100B/100+],
+  [CONFIG_EEXPRESS_PRO100B],
+  [net])
+AC_Linux_DRIVER([eexpress],
+  [Ethernet controller EtherExpress 16],
+  [CONFIG_EEXPRESS],
+  [net])
+AC_Linux_DRIVER([epic100],
+  [Ethernet controller SMC 83c170/175 EPIC/100 (epic, epic100) / EtherPower II],
+  [CONFIG_EPIC],
+  [net])
+AC_Linux_DRIVER([eth16i],
+  [Ethernet controller ICL EtherTeam 16i/32 (eth16i, eth32)],
+  [CONFIG_ETH16I],
+  [net])
+AC_Linux_DRIVER([ewrk3],
+  [Ethernet controller EtherWORKS 3 (ewrk3, de203, de204, de205)],
+  [CONFIG_EWRK3],
+  [net])
+AC_Linux_DRIVER([fmv18x],
+  [Ethernet controller FMV-181/182/183/184],
+  [CONFIG_FMV18X],
+  [net])
+AC_Linux_DRIVER([hamachi],
+  [Ethernet controller Packet Engines "Hamachi" GNIC-2 Gigabit Ethernet],
+  [CONFIG_HAMACHI],
+  [net])
+AC_Linux_DRIVER([hp-plus],
+  [Ethernet controller HP PCLAN+ (27247B and 27252A)],
+  [CONFIG_HPLAN_PLUS],
+  [net])
+AC_Linux_DRIVER([hp],
+  [Ethernet controller HP PCLAN (27245 and other 27xxx series)],
+  [CONFIG_HPLAN],
+  [net])
+AC_Linux_DRIVER([hp100],
+  [Ethernet controller HP 10/100VG PCLAN (ISA, EISA, PCI)
+    (hp100, hpj2577, hpj2573, hpj2585, hp27248b)],
+  [CONFIG_HP100],
+  [net])
+AC_Linux_DRIVER([intel-gige],
+  [Ethernet controller Intel PCI Gigabit Ethernet],
+  [CONFIG_INTEL_GIGE],
+  [net])
+AC_Linux_DRIVER([lance],
+  [Ethernet controller AMD LANCE and PCnet (at1500, ne2100)],
+  [CONFIG_LANCE],
+  [net])
+AC_Linux_DRIVER([myson803],
+  [Ethernet controller Myson MTD803 Ethernet adapter series],
+  [CONFIG_MYSON803],
+  [net])
+AC_Linux_DRIVER([natsemi],
+  [Ethernet controller National Semiconductor DP8381x series PCI Ethernet],
+  [CONFIG_NATSEMI],
+  [net])
+AC_Linux_DRIVER([ne],
+  [Ethernet controller NE2000/NE1000 ISA (ne, ne1000, ne2000)],
+  [CONFIG_NE2000],
+  [net])
+AC_Linux_DRIVER([ne2k-pci],
+  [Ethernet controller PCI NE2000],
+  [CONFIG_NE2K_PCI],
+  [net])
+AC_Linux_DRIVER([ni52],
+  [Ethernet controller NI5210],
+  [CONFIG_NI52],
+  [net])
+AC_Linux_DRIVER([ni65],
+  [Ethernet controller NI6510],
+  [CONFIG_NI65],
+  [net])
+AC_Linux_DRIVER([ns820],
+  [Ethernet controller National Semiconductor DP8382x series PCI Ethernet],
+  [CONFIG_NS820],
+  [net])
+AC_Linux_DRIVER([pcnet32],
+  [Ethernet controller AMD PCI PCnet32 (PCI bus NE2100 cards)],
+  [CONFIG_PCNET32],
+  [net])
+AC_Linux_DRIVER([rtl8139],
+  [Ethernet controller RealTek 8129/8139 (rtl8129, rtl8139) (not 8019/8029!)],
+  [CONFIG_RTL8139],
+  [net])
+AC_Linux_DRIVER([seeq8005],
+  [Ethernet controller Seeq8005],
+  [CONFIG_SEEQ8005],
+  [net])
+AC_Linux_DRIVER([sk_g16],
+  [Ethernet controller Schneider & Koch G16],
+  [CONFIG_SK_G16],
+  [net])
+AC_Linux_DRIVER([smc-ultra],
+  [Ethernet controller SMC Ultra],
+  [CONFIG_ULTRA],
+  [net])
+AC_Linux_DRIVER([smc-ultra32],
+  [Ethernet controller SMC Ultra32],
+  [CONFIG_ULTRA32],
+  [net])
+AC_Linux_DRIVER([starfire],
+  [Ethernet controller Adaptec Starfire network adapter],
+  [CONFIG_STARFIRE],
+  [net])
+AC_Linux_DRIVER([sundance],
+  [Ethernet controller Sundance ST201 "Alta" PCI Ethernet],
+  [CONFIG_SUNDANCE],
+  [net])
+AC_Linux_DRIVER([tlan],
+  [Ethernet controller TI ThunderLAN],
+  [CONFIG_TLAN],
+  [net])
+AC_Linux_DRIVER([tulip],
+  [Ethernet controller DECchip Tulip (dc21x4x) PCI (elcp, tulip)],
+  [CONFIG_DEC_ELCP],
+  [net])
+AC_Linux_DRIVER([via-rhine],
+  [Ethernet controller VIA Rhine],
+  [CONFIG_VIA_RHINE],
+  [net])
+# Disabled by default.
+AC_Linux_DRIVER_nodef([wavelan],
+  [Ethernet controller AT&T WaveLAN & DEC RoamAbout DS],
+  [CONFIG_WAVELAN],
+  [net])
+AC_Linux_DRIVER([wd],
+  [Ethernet controller WD80x3],
+  [CONFIG_WD80x3],
+  [net])
+AC_Linux_DRIVER([winbond-840],
+  [Ethernet controller Winbond W89c840 PCI Ethernet],
+  [CONFIG_WINBOND840],
+  [net])
+AC_Linux_DRIVER([yellowfin],
+  [Ethernet controller Packet Engines Yellowfin Gigabit-NIC],
+  [CONFIG_YELLOWFIN],
+  [net])
+AC_Linux_DRIVER([znet],
+  [Ethernet controller Zenith Z-Note (znet, znote)],
+  [CONFIG_ZNET],
+  [net])
 
 dnl PCMCIA device support.
 
-linux_DRIVER([i82365],
+AC_Linux_DRIVER([i82365],
   [Intel 82365 PC Card controller],
-  [I82365], [i82365], [pcmcia])
+  [CONFIG_I82365],
+  [pcmcia])
 
-AC_DRIVER([pcmcia-isa],
-  [option isa bus support in the pcmcia core],
-  [CONFIG_ISA], [], [pcmcia])
-
+AC_OPTION([pcmcia-isa],
+  [isa bus support in the pcmcia core],
+  [CONFIG_ISA],
+  [pcmcia])
 
 dnl PCMCIA device drivers.
 
-linux_DRIVER([3c574_cs],
+AC_Linux_DRIVER([3c574_cs],
   [3Com 3c574 ``RoadRunner'' PCMCIA Ethernet],
-  [3C574_CS], [3c574_cs], [pcmcia])
-linux_DRIVER([3c589_cs],
+  [CONFIG_3C574_CS],
+  [pcmcia])
+AC_Linux_DRIVER([3c589_cs],
   [3Com 3c589 PCMCIA Ethernet card],
-  [3C589_CS], [3c589_cs], [pcmcia])
-linux_DRIVER([axnet_cs],
+  [CONFIG_3C589_CS],
+  [pcmcia])
+AC_Linux_DRIVER([axnet_cs],
   [Asix AX88190-based PCMCIA Ethernet adapters],
-  [AXNET_CS], [axnet_cs], [pcmcia])
-linux_DRIVER([fmvj18x_cs],
+  [CONFIG_AXNET_CS],
+  [pcmcia])
+AC_Linux_DRIVER([fmvj18x_cs],
   [fmvj18x chipset based PCMCIA Ethernet cards],
-  [FMVJ18X_CS], [fmvj18x_cs], [pcmcia])
-linux_DRIVER([nmclan_cs],
+  [CONFIG_FMVJ18X_CS],
+  [pcmcia])
+AC_Linux_DRIVER([nmclan_cs],
   [New Media Ethernet LAN PCMCIA cards],
-  [NMCLAN_CS], [nmclan_cs], [pcmcia])
-AC_DRIVER([pcnet_cs],
-  [device driver for NS8390-based PCMCIA cards],
-  [CONFIG_PCNET_CS], [pcnet_cs.o 8390.o], [pcmcia])
-linux_DRIVER([smc91c92_cs],
+  [CONFIG_NMCLAN_CS],
+  [pcmcia])
+AC_Linux_DRIVER([pcnet_cs],
+  [NS8390-based PCMCIA cards],
+  [CONFIG_PCNET_CS],
+  [pcmcia])
+AC_Linux_DRIVER([smc91c92_cs],
   [SMC91c92-based PCMCIA cards],
-  [SMC91C92_CS], [smc91c92_cs], [pcmcia])
-linux_DRIVER([xirc2ps_cs],
+  [CONFIG_SMC91C92_CS],
+  [pcmcia])
+AC_Linux_DRIVER([xirc2ps_cs],
   [Xircom CreditCard and Realport PCMCIA ethernet],
-  [XIRC2PS_CS], [xirc2ps_cs], [pcmcia])
+  [CONFIG_XIRC2PS_CS],
+  [pcmcia])
 
 dnl Wireless device drivers.
 
-AC_DRIVER([orinoco_cs],
-  [device driver for Hermes or Prism 2 PCMCIA Wireless adapters (Orinoco)],
-  [CONFIG_ORINOCO_CS], [hermes.o orinoco.o orinoco_cs.o], [wireless])
+AC_Linux_DRIVER([orinoco_cs],
+  [Hermes or Prism 2 PCMCIA Wireless adapters (Orinoco)],
+  [CONFIG_ORINOCO_CS],
+  [wireless])
+
+#
+# Process device driver groups: kinds of drivers that have gobs of source files
+# that get brought in, need special symbols defined, etc.
+#
 
+[if [ x"$device_driver_group_net" = xselected ]; then]
+  AC_DEFINE([CONFIG_INET], [1], [CONFIG_INET])
+  AM_CONDITIONAL([device_driver_group_net], [true])
+[else] AM_CONDITIONAL([device_driver_group_net], [false])
+[fi
 
-dnl If any pcmcia wireless devices have been enabled, make sure to include the
-dnl pcmcia glue as well.
-if test x"${driver_class_wireless_selected+set}" = xset; then
-  if test x"${driver_class_pcmcia_selected+set}" != xset; then
-    driver_class_pcmcia_selected=yes
-    AC_DEFINE_UNQUOTED([$driver_class_pcmcia_option], [1])
-    device_drivers="$device_drivers $driver_class_pcmcia_files"
-  fi
-fi
+if [ x"$device_driver_group_pcmcia" = xselected ]; then]
+  AC_DEFINE([CONFIG_PCMCIA], [1], [CONFIG_PCMCIA])
+  AM_CONDITIONAL([device_driver_group_pcmcia], [true])
+[else] AM_CONDITIONAL([device_driver_group_pcmcia], [false])
+[fi
 
-dnl If any pcmcia devices have been enabled, make sure to include the network
-dnl glue as well.
-if test x"${driver_class_pcmcia_selected+set}" = xset; then
-  if test x"${driver_class_net_selected+set}" != xset; then
-    driver_class_net_selected=yes
-    AC_DEFINE_UNQUOTED([$driver_class_net_option], [1])
-    device_drivers="$device_drivers $driver_class_net_files"
-  fi
-fi
+if [ x"$device_driver_group_scsi" = xselected ]; then]
+  AC_DEFINE([CONFIG_SCSI], [1], [CONFIG_SCSI])
+  AM_CONDITIONAL([device_driver_group_scsi], [true])
+[else] AM_CONDITIONAL([device_driver_group_scsi], [false])
+[fi
 
+if [ x"$device_driver_group_wireless" = xselected ]; then]
+  AC_DEFINE([CONFIG_WIRELESS], [1], [CONFIG_WIRELESS])
+[fi]
+
+#
+# Create `asm-SYSTYPE' links.
+#
 
-AC_CONFIG_FILES([Makefile Makerules])
-AC_OUTPUT
+AC_CONFIG_LINKS([linux/src/include/asm:linux/src/include/asm-${systype}
+		 linux/dev/include/asm:linux/dev/include/asm-${systype}])
