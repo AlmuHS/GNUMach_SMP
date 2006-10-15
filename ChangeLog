@@ -2,6 +2,8 @@
 
 	[task #5956 --- ``Automake'ify GNU Mach's code base'']
 
+	* Makefile.in: Move file...
+	* Makefrag.am: ... here.
 	* i386/Makefile.in: Move file...
 	* i386/Makefrag.am: ... here.
 	* i386/linux/Makefile.in: Remove file.
