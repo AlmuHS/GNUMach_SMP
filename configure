@@ -8421,7 +8421,7 @@ fi
 # But since adding such support is nontrivial and the nonexistent dependency
 # tracking (missing only for .S files) is not considered a fundamental problem,
 # we save the costs of adding such support here.  You should instead consider
-# updating to Automake 1.10 (once it is released) or better.
+# updating to Automake 1.10 or better.
 #
 
           ac_config_commands="$ac_config_commands frob_Makefile_for_dependency_tracking_for_.S_files"
@@ -10943,10 +10943,10 @@ echo "$as_me: ... not a problem with the used version of Automake." >&6;}
   then
     { echo "$as_me:$LINENO: Applied a patch to fix a bug in your version of Automake.
       The applied fix should work in most cases.  You could also consider
-      updating to Automake 1.10 (once it is released) or better." >&5
+      updating to Automake 1.10 or better." >&5
 echo "$as_me: Applied a patch to fix a bug in your version of Automake.
       The applied fix should work in most cases.  You could also consider
-      updating to Automake 1.10 (once it is released) or better." >&6;}
+      updating to Automake 1.10 or better." >&6;}
   else
     { { echo "$as_me:$LINENO: error: failed to patch using
       \`Makefile.correct_output_files_for_.S_files.patch'.
@@ -10966,10 +10966,10 @@ echo "$as_me: ... not a problem with the used version of Automake." >&6;}
   else
     { echo "$as_me:$LINENO: Your build of GNU Mach won't have dependency tracking for
       (preprocessed) Assembler source files.  Consider updating to Automake
-      1.10 (once it is released) or better if you need such support." >&5
+      1.10 or better if you need such support." >&5
 echo "$as_me: Your build of GNU Mach won't have dependency tracking for
       (preprocessed) Assembler source files.  Consider updating to Automake
-      1.10 (once it is released) or better if you need such support." >&6;}
+      1.10 or better if you need such support." >&6;}
   fi
   esac
 done

@@ -1,5 +1,7 @@
 2006-10-15  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* configure: Regenerate.
+
 	* configure.ac: Update texts snippets: GNU Automake 1.10 has just been
 	released.
 
