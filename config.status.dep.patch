@@ -1,11 +1,17 @@
 --- config.status.save	2006-10-09 22:28:47.000000000 +0200
 +++ config.status	2006-10-09 22:29:34.000000000 +0200
-@@ -1610,7 +1610,7 @@
+@@ -1610,7 +1610,13 @@
     { (exit 1); exit 1; }; }; }
  
      # echo "creating $dirpart/$file"
 -    echo '# dummy' > "$dirpart/$file"
-+    echo 'Makefile: $(filter-out $(DIST_SOURCES),$(SOURCES))' > "$dirpart/$file"
++    # Try to guess what file this dependency file is from...
++    for f in "$srcdir"/"`dirname "$fdir"`"/"`basename "$file" .Po`"*; do
++      case $f in
++	*.c | *.S) echo "$f"': $(filter-out $(DIST_SOURCES),$(SOURCES))';;
++	*) echo '# dummy';;
++      esac
++    done > "$dirpart/$file"
    done
  done
   ;;

@@ -141,17 +141,15 @@ AC_CONFIG_FILES([Makefile version.c])
 # real patch is being used here and not some `sed' magic: to make it fail
 # loudly in case.
 #
-# For all source files create dependency files where it is stated that the
-# Makefile depends on all to-be-generated files.  Later, when compiling the
-# source files, these dependency files will be rewritten to contain the files's
-# actual dependencies.  From then on this hack will be forgotten.  The choice
-# of the Makefile as the file to depends on is not be the best one, because
-# when running `make clean', the build system may decide to first build all the
-# to-be-genereated files and afterwards remove them again, but it works and I
-# don't want to spend more thoughts on this issue at the moment.  Feel free to
-# suggest something better.  TODO.  See <http://savannah.gnu.org/bugs/?18011>
-# --- ``GNU Mach: `make install-data' will build the ``to-be-generated
-# files''''.
+# For all shipped source files a dependency file is tried to be created where
+# it is simply stated that the respective source file depends on _all_
+# to-be-generated files.  Depending on all of them doesn't do any harm, as they
+# will nevertheless have to be created, sooner or later.  The problem is, that
+# `config.status' doesn't know about the source file of the file it is
+# currently creating the dependency file for.  So we have it do an educated
+# guess...  Later, when compiling the source files, these dependency files will
+# be rewritten to contain the files's actual dependencies.  From then on this
+# bootstrap hack will be forgotten.
 #
 
 dnl AC_CONFIG_COMMANDS_POST([

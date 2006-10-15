@@ -1,3 +1,11 @@
+2006-10-16  Thomas Schwinge  <tschwinge@gnu.org>
+
+	[bug #18011 --- ``GNU Mach: `make install-data' will build the
+	``to-be-generated files'''']
+	* config.status.dep.patch: Do an educated guess instead of using the
+	`Makefile'.
+	* configure.ac <config.status.dep.patch>: Update description.
+
 2006-10-15  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* configure: Regenerate.
