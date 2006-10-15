@@ -2,6 +2,10 @@
 
 	[task #5956 --- ``Automake'ify GNU Mach's code base'']
 
+	* i386/configure.in: Move file...
+	* i386/configfrag.ac: ... here.
+	* i386/configure: Remove file.
+
 	* config.guess: Remove file.
 	* config.sub: Likewise.
 	* install-sh: Likewise.
