@@ -1,0 +1,523 @@
+/* config.h.in.  Generated from configure.ac by autoheader.  */
+
+/* AT386 */
+#undef AT386
+
+/* BOOTSTRAP_SYMBOLS */
+#undef BOOTSTRAP_SYMBOLS
+
+/* CMU */
+#undef CMU
+
+/* option 3c515: Linux device driver for Ethernet controller 3Com 515 ISA Fast
+   EtherLink */
+#undef CONFIG_3C515
+
+/* option 3c574_cs: Linux device driver for 3Com 3c574 ``RoadRunner'' PCMCIA
+   Ethernet */
+#undef CONFIG_3C574_CS
+
+/* option 3c589_cs: Linux device driver for 3Com 3c589 PCMCIA Ethernet card */
+#undef CONFIG_3C589_CS
+
+/* option ac3200: Linux device driver for Ethernet controller Ansel
+   Communications EISA 3200 */
+#undef CONFIG_AC3200
+
+/* option apricot: Linux device driver for Ethernet controller Apricot XEN-II
+   on board ethernet */
+#undef CONFIG_APRICOT
+
+/* option at1700: Linux device driver for Ethernet controller AT1700 (Fujitsu
+   86965) */
+#undef CONFIG_AT1700
+
+/* option atp: Linux device driver for Ethernet controller AT-LAN-TEC/RealTek
+   pocket adaptor */
+#undef CONFIG_ATP
+
+/* option axnet_cs: Linux device driver for Asix AX88190-based PCMCIA Ethernet
+   adapters */
+#undef CONFIG_AXNET_CS
+
+/* option floppy: Linux device driver for PC floppy */
+#undef CONFIG_BLK_DEV_FD
+
+/* option ide: Linux device driver for IDE disk controllers */
+#undef CONFIG_BLK_DEV_IDE
+
+/* option de4x5: Linux device driver for Ethernet controller DE4x5 (de4x5,
+   de425, de434, de435, de450, de500) */
+#undef CONFIG_DE4X5
+
+/* option de600: Linux device driver for Ethernet controller D-Link DE-600 */
+#undef CONFIG_DE600
+
+/* option de620: Linux device driver for Ethernet controller D-Link DE-620 */
+#undef CONFIG_DE620
+
+/* option tulip: Linux device driver for Ethernet controller DECchip Tulip
+   (dc21x4x) PCI (elcp, tulip) */
+#undef CONFIG_DEC_ELCP
+
+/* option depca: Linux device driver for Ethernet controller DEPCA (de100,
+   de101, de200, de201, de202, de210, de422) */
+#undef CONFIG_DEPCA
+
+/* option e2100: Linux device driver for Ethernet controller Cabletron E21xx
+   */
+#undef CONFIG_E2100
+
+/* option eexpress: Linux device driver for Ethernet controller EtherExpress
+   16 */
+#undef CONFIG_EEXPRESS
+
+/* option eepro: Linux device driver for Ethernet controller EtherExpressPro
+   */
+#undef CONFIG_EEXPRESS_PRO
+
+/* option eepro100: Linux device driver for Ethernet controller Intel
+   EtherExpressPro PCI 10+/100B/100+ */
+#undef CONFIG_EEXPRESS_PRO100B
+
+/* option 3c501: Linux device driver for Ethernet controller 3COM 501 (3c501)
+   / Etherlink I */
+#undef CONFIG_EL1
+
+/* option 3c507: Linux device driver for Ethernet controller 3Com 507 (3c507,
+   el16) */
+#undef CONFIG_EL16
+
+/* option 3c503: Linux device driver for Ethernet controller 3Com 503 (3c503)
+   / Etherlink II */
+#undef CONFIG_EL2
+
+/* option 3c509: Linux device driver for Ethernet controller 3Com 509/579
+   (3c509, 3c579) / Etherlink III */
+#undef CONFIG_EL3
+
+/* option 3c505: Linux device driver for Ethernet controller 3Com 505 (3c505,
+   elplus) */
+#undef CONFIG_ELPLUS
+
+/* option epic100: Linux device driver for Ethernet controller SMC 83c170/175
+   EPIC/100 (epic, epic100) / EtherPower II */
+#undef CONFIG_EPIC
+
+/* option eth16i: Linux device driver for Ethernet controller ICL EtherTeam
+   16i/32 (eth16i, eth32) */
+#undef CONFIG_ETH16I
+
+/* option ewrk3: Linux device driver for Ethernet controller EtherWORKS 3
+   (ewrk3, de203, de204, de205) */
+#undef CONFIG_EWRK3
+
+/* option fmv18x: Linux device driver for Ethernet controller
+   FMV-181/182/183/184 */
+#undef CONFIG_FMV18X
+
+/* option fmvj18x_cs: Linux device driver for fmvj18x chipset based PCMCIA
+   Ethernet cards */
+#undef CONFIG_FMVJ18X_CS
+
+/* option hamachi: Linux device driver for Ethernet controller Packet Engines
+   "Hamachi" GNIC-2 Gigabit Ethernet */
+#undef CONFIG_HAMACHI
+
+/* option hp100: Linux device driver for Ethernet controller HP 10/100VG PCLAN
+   (ISA, EISA, PCI) (hp100, hpj2577, hpj2573, hpj2585, hp27248b) */
+#undef CONFIG_HP100
+
+/* option hp: Linux device driver for Ethernet controller HP PCLAN (27245 and
+   other 27xxx series) */
+#undef CONFIG_HPLAN
+
+/* option hp-plus: Linux device driver for Ethernet controller HP PCLAN+
+   (27247B and 27252A) */
+#undef CONFIG_HPLAN_PLUS
+
+/* option i82365: Linux device driver for Intel 82365 PC Card controller */
+#undef CONFIG_I82365
+
+/* CONFIG_INET */
+#undef CONFIG_INET
+
+/* option intel-gige: Linux device driver for Ethernet controller Intel PCI
+   Gigabit Ethernet */
+#undef CONFIG_INTEL_GIGE
+
+/* option pcmcia-isa: isa bus support in the pcmcia core */
+#undef CONFIG_ISA
+
+/* option lance: Linux device driver for Ethernet controller AMD LANCE and
+   PCnet (at1500, ne2100) */
+#undef CONFIG_LANCE
+
+/* 386 */
+#undef CONFIG_M386
+
+/* 486 */
+#undef CONFIG_M486
+
+/* 586 */
+#undef CONFIG_M586
+
+/* 686 */
+#undef CONFIG_M686
+
+/* option myson803: Linux device driver for Ethernet controller Myson MTD803
+   Ethernet adapter series */
+#undef CONFIG_MYSON803
+
+/* option natsemi: Linux device driver for Ethernet controller National
+   Semiconductor DP8381x series PCI Ethernet */
+#undef CONFIG_NATSEMI
+
+/* option ne: Linux device driver for Ethernet controller NE2000/NE1000 ISA
+   (ne, ne1000, ne2000) */
+#undef CONFIG_NE2000
+
+/* option ne2k-pci: Linux device driver for Ethernet controller PCI NE2000 */
+#undef CONFIG_NE2K_PCI
+
+/* option ni52: Linux device driver for Ethernet controller NI5210 */
+#undef CONFIG_NI52
+
+/* option ni65: Linux device driver for Ethernet controller NI6510 */
+#undef CONFIG_NI65
+
+/* option nmclan_cs: Linux device driver for New Media Ethernet LAN PCMCIA
+   cards */
+#undef CONFIG_NMCLAN_CS
+
+/* option ns820: Linux device driver for Ethernet controller National
+   Semiconductor DP8382x series PCI Ethernet */
+#undef CONFIG_NS820
+
+/* option orinoco_cs: Linux device driver for Hermes or Prism 2 PCMCIA
+   Wireless adapters (Orinoco) */
+#undef CONFIG_ORINOCO_CS
+
+/* CONFIG_PCMCIA */
+#undef CONFIG_PCMCIA
+
+/* option pcnet32: Linux device driver for Ethernet controller AMD PCI PCnet32
+   (PCI bus NE2100 cards) */
+#undef CONFIG_PCNET32
+
+/* option pcnet_cs: Linux device driver for NS8390-based PCMCIA cards */
+#undef CONFIG_PCNET_CS
+
+/* option rtl8139: Linux device driver for Ethernet controller RealTek
+   8129/8139 (rtl8129, rtl8139) (not 8019/8029!) */
+#undef CONFIG_RTL8139
+
+/* CONFIG_SCSI */
+#undef CONFIG_SCSI
+
+/* option wd7000: Linux device driver for SCSI controller WD 7000 */
+#undef CONFIG_SCSI_7000FASST
+
+/* option advansys: Linux device driver for SCSI controller AdvanSys */
+#undef CONFIG_SCSI_ADVANSYS
+
+/* option aha152x: Linux device driver for SCSI controller Adaptec
+   AHA-152x/2825 (aha152x, aha2825) */
+#undef CONFIG_SCSI_AHA152X
+
+/* option aha1542: Linux device driver for SCSI controller Adaptec AHA-1542 */
+#undef CONFIG_SCSI_AHA1542
+
+/* option aha1740: Linux device driver for SCSI controller Adaptec AHA-1740 */
+#undef CONFIG_SCSI_AHA1740
+
+/* option aic7xxx: Linux device driver for SCSI controller Adaptec AIC7xxx */
+#undef CONFIG_SCSI_AIC7XXX
+
+/* option AM53C974: Linux device driver for SCSI controller AM53/79C974
+   (am53c974, am79c974) */
+#undef CONFIG_SCSI_AM53C974
+
+/* option BusLogic: Linux device driver for SCSI controller BusLogic */
+#undef CONFIG_SCSI_BUSLOGIC
+
+/* option tmscsim: Linux device driver for SCSI controller Tekram DC-390(T)
+   (dc390, dc390t) */
+#undef CONFIG_SCSI_DC390T
+
+/* option dtc: Linux device driver for SCSI controller DTC3180/3280 (dtc3180,
+   dtc3280) */
+#undef CONFIG_SCSI_DTC3280
+
+/* option eata: Linux device driver for SCSI controller EATA ISA/EISA/PCI (DPT
+   and generic EATA/DMA-compliant boards) */
+#undef CONFIG_SCSI_EATA
+
+/* option eata_dma: Linux device driver for SCSI controller EATA-DMA (DPT,
+   NEC, AT&T, SNI, AST, Olivetti, Alphatronix) */
+#undef CONFIG_SCSI_EATA_DMA
+
+/* option eata_pio: Linux device driver for SCSI controller EATA-PIO (old DPT
+   PM2001, PM2012A) */
+#undef CONFIG_SCSI_EATA_PIO
+
+/* option fdomain: Linux device driver for SCSI controller Future Domain 16xx
+   */
+#undef CONFIG_SCSI_FUTURE_DOMAIN
+
+/* option gdth: Linux device driver for GDT SCSI Disk Array Controller */
+#undef CONFIG_SCSI_GDTH
+
+/* option g_NCR5380: Linux device driver for SCSI controller Generic
+   NCR5380/53c400 (ncr5380, ncr53c400) */
+#undef CONFIG_SCSI_GENERIC_NCR5380
+
+/* option in2000: Linux device driver for SCSI controller Always IN 2000 */
+#undef CONFIG_SCSI_IN2000
+
+/* option NCR53c406a: Linux device driver for SCSI controller NCR53c406a chip
+   */
+#undef CONFIG_SCSI_NCR53C406A
+
+/* option 53c78xx: Linux device driver for SCSI controller NCR 53C7,8xx */
+#undef CONFIG_SCSI_NCR53C7xx
+
+/* option ncr53c8xx: Linux device driver for SCSI controller NCR53C8XX
+   (ncr53c8xx, dc390f, dc390u, dc390w) */
+#undef CONFIG_SCSI_NCR53C8XX
+
+/* scsi omit flashpoint */
+#undef CONFIG_SCSI_OMIT_FLASHPOINT
+
+/* option pas16: Linux device driver for SCSI controller PAS16 */
+#undef CONFIG_SCSI_PASS16
+
+/* option ppa: Linux device driver for IOMEGA Parallel Port ZIP drive */
+#undef CONFIG_SCSI_PPA
+
+/* option qlogicfas: Linux device driver for SCSI controller Qlogic FAS */
+#undef CONFIG_SCSI_QLOGIC_FAS
+
+/* option qlogicisp: Linux device driver for SCSI controller Qlogic ISP */
+#undef CONFIG_SCSI_QLOGIC_ISP
+
+/* option seagate: Linux device driver for SCSI controller Seagate ST02,
+   Future Domain TMC-8xx */
+#undef CONFIG_SCSI_SEAGATE
+
+/* option t128: Linux device driver for SCSI controller Trantor
+   T128/T128F/T228 (t128, t128f, t228) */
+#undef CONFIG_SCSI_T128
+
+/* option u14-34f: Linux device driver for SCSI controller UltraStor 14F/34F
+   */
+#undef CONFIG_SCSI_U14_34F
+
+/* option ultrastor: Linux device driver for SCSI controller UltraStor */
+#undef CONFIG_SCSI_ULTRASTOR
+
+/* option seeq8005: Linux device driver for Ethernet controller Seeq8005 */
+#undef CONFIG_SEEQ8005
+
+/* option sk_g16: Linux device driver for Ethernet controller Schneider & Koch
+   G16 */
+#undef CONFIG_SK_G16
+
+/* option smc91c92_cs: Linux device driver for SMC91c92-based PCMCIA cards */
+#undef CONFIG_SMC91C92_CS
+
+/* option starfire: Linux device driver for Ethernet controller Adaptec
+   Starfire network adapter */
+#undef CONFIG_STARFIRE
+
+/* option sundance: Linux device driver for Ethernet controller Sundance ST201
+   "Alta" PCI Ethernet */
+#undef CONFIG_SUNDANCE
+
+/* option tlan: Linux device driver for Ethernet controller TI ThunderLAN */
+#undef CONFIG_TLAN
+
+/* option smc-ultra: Linux device driver for Ethernet controller SMC Ultra */
+#undef CONFIG_ULTRA
+
+/* option smc-ultra32: Linux device driver for Ethernet controller SMC Ultra32
+   */
+#undef CONFIG_ULTRA32
+
+/* option via-rhine: Linux device driver for Ethernet controller VIA Rhine */
+#undef CONFIG_VIA_RHINE
+
+/* option 3c59x: Linux device driver for Ethernet controller 3Com 59x/90x
+   (3c59x, 3c590, 3c592, 3c595, 3c597, 3c90x, 3c900, 3c905) "Vortex/Boomerang"
+   */
+#undef CONFIG_VORTEX
+
+/* option wavelan: Linux device driver for Ethernet controller AT&T WaveLAN &
+   DEC RoamAbout DS */
+#undef CONFIG_WAVELAN
+
+/* option wd: Linux device driver for Ethernet controller WD80x3 */
+#undef CONFIG_WD80x3
+
+/* option winbond-840: Linux device driver for Ethernet controller Winbond
+   W89c840 PCI Ethernet */
+#undef CONFIG_WINBOND840
+
+/* CONFIG_WIRELESS */
+#undef CONFIG_WIRELESS
+
+/* option xirc2ps_cs: Linux device driver for Xircom CreditCard and Realport
+   PCMCIA ethernet */
+#undef CONFIG_XIRC2PS_CS
+
+/* option yellowfin: Linux device driver for Ethernet controller Packet
+   Engines Yellowfin Gigabit-NIC */
+#undef CONFIG_YELLOWFIN
+
+/* option znet: Linux device driver for Ethernet controller Zenith Z-Note
+   (znet, znote) */
+#undef CONFIG_ZNET
+
+/* CONTINUATIONS */
+#undef CONTINUATIONS
+
+/* CPU */
+#undef CPU
+
+/* FAST_TAS */
+#undef FAST_TAS
+
+/* We do not have a floating point implementation. */
+#undef FPE
+
+/* HW_FOOTPRINT */
+#undef HW_FOOTPRINT
+
+/* KERNEL */
+#undef KERNEL
+
+/* Linux device drivers. */
+#undef LINUX_DEV
+
+/* MACH */
+#undef MACH
+
+/* MACH_COUNTERS */
+#undef MACH_COUNTERS
+
+/* MACH_DEBUG */
+#undef MACH_DEBUG
+
+/* MACH_FIXPRI */
+#undef MACH_FIXPRI
+
+/* MACH_HOST */
+#undef MACH_HOST
+
+/* MACH_IPC_COMPAT */
+#undef MACH_IPC_COMPAT
+
+/* MACH_IPC_DEBUG */
+#undef MACH_IPC_DEBUG
+
+/* MACH_IPC_TEST */
+#undef MACH_IPC_TEST
+
+/* Use the in-kernel debugger? */
+#undef MACH_KDB
+
+/* MACH_KERNEL */
+#undef MACH_KERNEL
+
+/* enable use of kmsg device */
+#undef MACH_KMSG
+
+/* MACH_LDEBUG */
+#undef MACH_LDEBUG
+
+/* MACH_LOCK_MON */
+#undef MACH_LOCK_MON
+
+/* lpr device */
+#undef MACH_LPR
+
+/* MACH_MACHINE_ROUTINES */
+#undef MACH_MACHINE_ROUTINES
+
+/* MACH_MP_DEBUG */
+#undef MACH_MP_DEBUG
+
+/* MACH_PAGEMAP */
+#undef MACH_PAGEMAP
+
+/* MACH_PCSAMPLE */
+#undef MACH_PCSAMPLE
+
+/* MACH_TTD */
+#undef MACH_TTD
+
+/* MACH_VM_DEBUG */
+#undef MACH_VM_DEBUG
+
+/* set things up for a uniprocessor */
+#undef MULTIPROCESSOR
+
+/* NCOM */
+#undef NCOM
+
+/* set things up for a uniprocessor */
+#undef NCPUS
+
+/* NLPR */
+#undef NLPR
+
+/* Define to 1 if your C compiler doesn't accept -c and -o together. */
+#undef NO_MINUS_C_MINUS_O
+
+/* Name of package */
+#undef PACKAGE
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* POWER_SAVE */
+#undef POWER_SAVE
+
+/* where is the com port for the remote console */
+#undef RCADDR
+
+/* com port for the remote console */
+#undef RCLINE
+
+/* SIMPLE_CLOCK */
+#undef SIMPLE_CLOCK
+
+/* STAT_TIME */
+#undef STAT_TIME
+
+/* Version number of package */
+#undef VERSION
+
+/* XPR_DEBUG */
+#undef XPR_DEBUG
+
+/* __ELF__ */
+#undef __ELF__
+
+/* __KERNEL__ */
+#undef __KERNEL__
+
+/* i386 */
+#undef i386
