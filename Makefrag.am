@@ -225,8 +225,9 @@ include_mach_HEADERS = \
 	include/mach/vm_statistics.h \
 	include/mach/inline.h
 
-include_mach_execdir = $(includedir)/mach/exec
-include_mach_exec_HEADERS = \
+# If we name this `*_execdir', Automake won't add it to `install-data'...
+include_mach_eXecdir = $(includedir)/mach/exec
+include_mach_eXec_HEADERS = \
 	include/mach/exec/a.out.h \
 	include/mach/exec/elf.h \
 	include/mach/exec/exec.h
