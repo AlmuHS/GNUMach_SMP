@@ -2,6 +2,11 @@
 
 	[task #5956 --- ``Automake'ify GNU Mach's code base'']
 
+	* i386/linux/configure.ac: Move file...
+	* linux/configfrag.ac: ... here.
+	* i386/linux/configure: Remove file.
+	* i386/linux/device-drivers.h.in: Likewise.
+
 	* i386/configure.in: Move file...
 	* i386/configfrag.ac: ... here.
 	* i386/configure: Remove file.
