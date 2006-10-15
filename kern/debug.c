@@ -26,9 +26,6 @@
 
 #include <stdarg.h>
 
-#include <mach_kdb.h>
-#include <cpus.h>
-
 #include "cpu_number.h"
 #include <kern/lock.h>
 #include <kern/thread.h>

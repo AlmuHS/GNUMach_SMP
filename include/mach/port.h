@@ -35,10 +35,6 @@
 #ifndef	_MACH_PORT_H_
 #define _MACH_PORT_H_
 
-#ifdef	MACH_KERNEL
-#include <mach_ipc_compat.h>
-#endif	/* MACH_KERNEL */
-
 #include <mach/boolean.h>
 #include <mach/machine/vm_types.h>
 

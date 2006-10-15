@@ -31,10 +31,6 @@
  *	Task management primitives implementation.
  */
 
-#include <mach_host.h>
-#include <mach_pcsample.h>
-#include <fast_tas.h>
-
 #include <mach/machine/vm_types.h>
 #include <mach/vm_param.h>
 #include <mach/task_info.h>

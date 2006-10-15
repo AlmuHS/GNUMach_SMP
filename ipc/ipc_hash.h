@@ -34,8 +34,6 @@
 #ifndef	_IPC_IPC_HASH_H_
 #define _IPC_IPC_HASH_H_
 
-#include <mach_ipc_debug.h>
-
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
 

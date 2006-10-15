@@ -1,5 +1,3 @@
-#include <device-drivers.h>
-
 char x86 =
 #if defined(CONFIG_M386)
 3;

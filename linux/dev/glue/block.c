@@ -59,7 +59,7 @@
 #include <device/device_types.h>
 #include <device/device_port.h>
 #include <device/disk_status.h>
-#include "device_reply.h"
+#include <device/device_reply.user.h>
 
 #include <linux_emul.h>
 

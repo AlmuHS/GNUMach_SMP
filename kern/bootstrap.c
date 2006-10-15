@@ -29,8 +29,6 @@
 /*
  * Bootstrap the various built-in servers.
  */
-#include <mach_kdb.h>
-#include <bootstrap_symbols.h>
 
 #include <mach/port.h>
 #include <mach/message.h>

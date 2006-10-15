@@ -24,10 +24,7 @@
  * the rights to redistribute these changes.
  */
 
-#include "mach_kdb.h"
 #if MACH_KDB
-
-#include <mach_debug.h>
 
 #if	MACH_DEBUG
 

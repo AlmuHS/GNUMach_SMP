@@ -32,6 +32,6 @@
 
 #define PIC_INT_BASE 0x40
 
-#include "idt-gen.h"
+#include <i386/idt-gen.h>
 
 #endif /* _I386AT_IDT_ */

@@ -82,7 +82,7 @@
 #include <device/if_ether.h>
 #include <device/if_hdr.h>
 #include <device/net_io.h>
-#include "device_reply.h"
+#include <device/device_reply.user.h>
 
 #include <linux_emul.h>
 

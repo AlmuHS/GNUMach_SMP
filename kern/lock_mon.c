@@ -38,11 +38,6 @@
  *		Depending on hardware also records time spent with locks held
  */
 
-#include <cpus.h>
-#include <mach_mp_debug.h>
-#include <mach_lock_mon.h>
-#include <time_stamp.h>
-
 #include <sys/types.h>
 #include <mach/machine/vm_types.h>
 #include <mach/boolean.h>

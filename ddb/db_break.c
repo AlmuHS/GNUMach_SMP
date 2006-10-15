@@ -27,7 +27,7 @@
  *	Author: David B. Golub, Carnegie Mellon University
  *	Date:	7/90
  */
-#include "mach_kdb.h"
+
 #if MACH_KDB
 
 

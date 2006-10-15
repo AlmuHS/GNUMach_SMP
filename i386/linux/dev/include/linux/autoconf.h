@@ -34,8 +34,6 @@
 #undef  CONFIG_M686
 #endif
 
-#include <device-drivers.h>
-
 /*
  * Floppy, IDE, and other block devices
  */

@@ -37,10 +37,6 @@
  *	Data structures for managing processors and sets of processors.
  */
 
-#include <cpus.h>
-#include <mach_fixpri.h>
-#include <mach_host.h>
-
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
 #include <mach/port.h>

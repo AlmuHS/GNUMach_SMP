@@ -27,10 +27,7 @@
  * Interface to new debugger.
  */
 
-#include "mach_kdb.h"
 #if MACH_KDB
-
-#include <cpus.h>
 
 #include <sys/reboot.h>
 #include <vm/pmap.h>

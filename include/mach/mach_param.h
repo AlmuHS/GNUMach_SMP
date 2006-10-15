@@ -34,10 +34,6 @@
 #ifndef	_MACH_MACH_PARAM_H_
 #define _MACH_MACH_PARAM_H_
 
-#ifdef	MACH_KERNEL
-#include <mach_ipc_compat.h>
-#endif	/* MACH_KERNEL */
-
 #define TASK_PORT_REGISTER_MAX	4	/* Number of "registered" ports */
 
 

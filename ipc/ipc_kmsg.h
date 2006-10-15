@@ -34,13 +34,10 @@
 #ifndef	_IPC_IPC_KMSG_H_
 #define _IPC_IPC_KMSG_H_
 
-#include <cpus.h>
-#include <mach_ipc_compat.h>
-
 #include <mach/machine/vm_types.h>
 #include <mach/message.h>
 #include <kern/assert.h>
-#include "cpu_number.h"
+#include <kern/cpu_number.h>
 #include <kern/macro_help.h>
 #include <kern/kalloc.h>
 #include <ipc/ipc_marequest.h>

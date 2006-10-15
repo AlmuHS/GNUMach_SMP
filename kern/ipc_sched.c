@@ -24,9 +24,6 @@
  * the rights to redistribute these changes.
  */
 
-#include <cpus.h>
-#include <mach_host.h>
-
 #include <mach/message.h>
 #include <kern/counters.h>
 #include "cpu_number.h"

@@ -34,9 +34,6 @@
  *	Support for machine independent machine abstraction.
  */
 
-#include <cpus.h>
-#include <mach_host.h>
-
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
 #include <mach/mach_types.h>

@@ -31,8 +31,6 @@
  *	Compute the Mach Factor.
  */
 
-#include <cpus.h>
-
 #include <mach/machine.h>
 #include <mach/processor_info.h>
 #include <kern/sched.h>

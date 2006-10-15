@@ -22,7 +22,7 @@
  *	representing a target of messages and migrating RPCs.
  */
 
-#include "sched_prim.h"
+#include <kern/sched_prim.h>
 #include "ipc_target.h"
 
 void

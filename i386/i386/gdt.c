@@ -32,8 +32,6 @@
  */
 #include <mach/machine/vm_types.h>
 
-#include <platforms.h>
-
 #include "vm_param.h"
 #include "seg.h"
 #include "gdt.h"

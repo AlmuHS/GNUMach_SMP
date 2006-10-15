@@ -24,8 +24,6 @@
  * the rights to redistribute these changes.
  */
 
-#include "mach_ttd.h"
-
 #if MACH_TTD
 
 #include <mach/machine/eflags.h>

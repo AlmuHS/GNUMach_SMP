@@ -15,9 +15,9 @@
 
 #include <mach/machine/asm.h>
 
-#include "ipl.h"
-#include "pic.h"
-#include "i386asm.h"
+#include <i386/ipl.h>
+#include <i386/pic.h>
+#include <i386/i386asm.h>
 
 #define READ_ISR	(OCW_TEMPLATE|READ_NEXT_RD|READ_IS_ONRD)
 

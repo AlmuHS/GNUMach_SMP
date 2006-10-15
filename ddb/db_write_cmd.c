@@ -28,7 +28,6 @@
  *	Date:	7/90
  */
 
-#include "mach_kdb.h"
 #if MACH_KDB
 
 #include <mach/boolean.h>

@@ -32,7 +32,6 @@
  *
  *	Resident memory management module.
  */
-#include <cpus.h>
 
 #include <mach/vm_prot.h>
 #include <kern/counters.h>
@@ -49,7 +48,6 @@
 #include <vm/vm_pageout.h>
 #include <vm/vm_kern.h>
 
-#include <mach_vm_debug.h>
 #if	MACH_VM_DEBUG
 #include <mach/kern_return.h>
 #include <mach_debug/hash_info.h>
@@ -1483,7 +1481,7 @@ vm_page_info(
 }
 #endif	/* MACH_VM_DEBUG */
 
-#include <mach_kdb.h>
+
 #if	MACH_KDB
 #define	printf	kdbprintf
 

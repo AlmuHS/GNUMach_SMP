@@ -26,9 +26,6 @@
 /*
  * Support for 80387 floating point or FP emulator.
  */
-#include <cpus.h>
-#include <fpe.h>
-#include <platforms.h>
 
 #include <mach/exception.h>
 #include <mach/machine/thread_status.h>

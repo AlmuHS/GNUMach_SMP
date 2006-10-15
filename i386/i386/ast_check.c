@@ -24,8 +24,6 @@
  * the rights to redistribute these changes.
  */
 
-#include <cpus.h>
-
 #if	NCPUS > 1
 
 /*

@@ -33,10 +33,6 @@
  *	Functions for letting a port represent a kernel object.
  */
 
-#include <mach_debug.h>
-#include <mach_ipc_test.h>
-#include <mach_machine_routines.h>
-
 #include <mach/port.h>
 #include <mach/kern_return.h>
 #include <mach/message.h>

@@ -35,10 +35,6 @@
 #ifndef	_MACH_THREAD_SPECIAL_PORTS_H_
 #define _MACH_THREAD_SPECIAL_PORTS_H_
 
-#ifdef	MACH_KERNEL
-#include <mach_ipc_compat.h>
-#endif	/* MACH_KERNEL */
-
 #define THREAD_KERNEL_PORT	1	/* Represents the thread to the outside
 					   world.*/
 #define THREAD_EXCEPTION_PORT	3	/* Exception messages for the thread

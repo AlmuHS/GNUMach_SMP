@@ -316,8 +316,6 @@ ipc_pset_destroy(
 	ips_check_unlock(pset);
 }
 
-#include <mach_kdb.h>
-
 
 #if	MACH_KDB
 #define	printf	kdbprintf

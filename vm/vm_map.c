@@ -4676,8 +4676,6 @@ kern_return_t vm_map_machine_attribute(map, address, size, attribute, value)
 	return ret;
 }
 
-#include <mach_kdb.h>
-
 
 #if	MACH_KDB
 

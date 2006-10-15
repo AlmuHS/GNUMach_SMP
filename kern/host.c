@@ -29,9 +29,6 @@
  *	Non-ipc host functions.
  */
 
-#include <cpus.h>
-#include <mach_host.h>
-
 #include <kern/assert.h>
 #include <kern/kalloc.h>
 #include <kern/host.h>

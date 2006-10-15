@@ -27,8 +27,6 @@
  * the rights to redistribute these changes.
  */
 
-#include <mach_ipc_compat.h>
-
 #include <mach/port.h>
 #include <mach/kern_return.h>
 #include <kern/syscall_sw.h>

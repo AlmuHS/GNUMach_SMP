@@ -28,20 +28,14 @@
  * the rights to redistribute these changes.
  */
 
-#include <cpus.h>
-#include <platforms.h>
-#include <mach_kdb.h>
-#include <mach_ttd.h>
-#include <stat_time.h>
-
 #include <mach/machine/asm.h>
 #include <mach/machine/eflags.h>
-#include "proc_reg.h"
-#include "trap.h"
-#include "seg.h"
-#include "ldt.h"
-#include "i386asm.h"
-#include "cpu_number.h"
+#include <i386/proc_reg.h>
+#include <i386/trap.h>
+#include <i386/seg.h>
+#include <i386/ldt.h>
+#include <i386/i386asm.h>
+#include <i386/cpu_number.h>
 
 /*
  * Fault recovery.

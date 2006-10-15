@@ -35,9 +35,6 @@
  *
  */
 
-
-#include <cpus.h>
-
 #include <mach/machine.h>
 #include <kern/ast.h>
 #include "cpu_number.h"

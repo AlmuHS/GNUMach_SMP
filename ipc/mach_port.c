@@ -36,8 +36,6 @@
  *	Exported kernel calls.  See mach/mach_port.defs.
  */
 
-#include <mach_ipc_compat.h>
-
 #include <mach/port.h>
 #include <mach/kern_return.h>
 #include <mach/notify.h>

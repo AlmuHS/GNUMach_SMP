@@ -28,9 +28,7 @@
  * known algorithm unless we see a pressing need otherwise.
  */
 #include <sys/types.h>
-#include <cons.h>
-#include <com.h>
-#include <rc.h>
+#include <device/cons.h>
 
 extern	int kdcnprobe(), kdcninit(), kdcngetc(), kdcnputc();
 #if NCOM > 0 && RCLINE >= 0

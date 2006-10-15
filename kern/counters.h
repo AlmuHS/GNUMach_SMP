@@ -27,8 +27,6 @@
 #ifndef	_KERN_COUNTERS_
 #define	_KERN_COUNTERS_
 
-#include <mach_counters.h>
-
 /*
  *	We can count various interesting events and paths.
  *

@@ -76,8 +76,6 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 /* $ Header:  $ */
 
-#include <mach_kdb.h>
-
 #include <sys/types.h>
 #include <kern/time_out.h>
 #include <device/conf.h>
@@ -86,12 +84,12 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <device/buf.h>		/* for struct uio (!) */
 #include <i386/io_port.h>
 #include <vm/vm_kern.h>
-#include "vm_param.h"
+#include <i386/vm_param.h>
 #include <i386/machspl.h>
 #include <i386at/cram.h>
 #include <i386at/kd.h>
 #include <i386at/kdsoft.h>
-#include <cons.h>
+#include <device/cons.h>
 
 #define DEBUG	1			/* export feep() */
 

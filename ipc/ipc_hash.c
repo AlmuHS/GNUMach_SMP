@@ -43,7 +43,6 @@
 #include <ipc/ipc_init.h>
 #include <ipc/ipc_types.h>
 
-#include <mach_ipc_debug.h>
 #if	MACH_IPC_DEBUG
 #include <mach/kern_return.h>
 #include <mach_debug/hash_info.h>

@@ -21,8 +21,8 @@
  *      Author: Bryan Ford, University of Utah CSL
  */
 
-#include "idt.h"
-#include "gdt.h"
+#include <i386at/idt.h>
+#include <i386/gdt.h>
 
 /* defined in locore.S */
 extern vm_offset_t int_entry_table[];

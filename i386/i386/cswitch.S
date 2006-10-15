@@ -24,14 +24,11 @@
  * the rights to redistribute these changes.
  */
 
-#include <cpus.h>
-#include <platforms.h>
-
 #include <mach/machine/asm.h>
 
-#include "proc_reg.h"
-#include "i386asm.h"
-#include "cpu_number.h"
+#include <i386/proc_reg.h>
+#include <i386/i386asm.h>
+#include <i386/cpu_number.h>
 
 /*
  * Context switch routines for i386.

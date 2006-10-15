@@ -31,8 +31,6 @@
  *	Notification-sending functions.
  */
 
-#include <mach_ipc_compat.h>
-
 #include <mach/port.h>
 #include <mach/message.h>
 #include <mach/notify.h>

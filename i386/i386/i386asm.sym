@@ -28,11 +28,6 @@
  * the rights to redistribute these changes.
  */
 
-#include <platforms.h>
-#include <cpus.h>
-#include <mach_kdb.h>
-#include <stat_time.h>
-
 /*
  * Pass field offsets to assembly code.
  */
@@ -43,13 +38,13 @@
 #include <kern/syscall_emulation.h>
 #include <i386/thread.h>
 #include <i386/pmap.h>
-#include "vm_param.h"
-#include "seg.h"
-#include "tss.h"
-#include "idt.h"
-#include "gdt.h"
-#include "ldt.h"
-#include "mp_desc.h"
+#include <i386/vm_param.h>
+#include <i386/seg.h>
+#include <i386/tss.h>
+#include <i386at/idt.h>
+#include <i386/gdt.h>
+#include <i386/ldt.h>
+#include <i386/mp_desc.h>
 
 
 offset	thread			th	pcb

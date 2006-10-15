@@ -27,11 +27,6 @@
  *	Mach kernel startup.
  */
 
-
-#include <xpr_debug.h>
-#include <cpus.h>
-#include <mach_host.h>
-
 #include <mach/boolean.h>
 #include <mach/machine.h>
 #include <mach/task_special_ports.h>

@@ -33,8 +33,6 @@
  *	Functions to manipulate IPC capabilities.
  */
 
-#include <mach_ipc_compat.h>
-
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
 #include <mach/port.h>

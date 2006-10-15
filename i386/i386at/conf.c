@@ -41,14 +41,12 @@ extern int	kdgetstat(), kdsetstat(), kdportdeath();
 extern vm_offset_t kdmmap();
 #define	kdname			"kd"
 
-#include <com.h>
 #if	NCOM > 0
 extern int	comopen(), comclose(), comread(), comwrite();
 extern int	comgetstat(), comsetstat(), comportdeath();
 #define	comname			"com"
 #endif	/* NCOM > 0 */
 
-#include <lpr.h>
 #if	NLPR > 0
 extern int	lpropen(), lprclose(), lprread(), lprwrite();
 extern int	lprgetstat(), lprsetstat(), lprportdeath();

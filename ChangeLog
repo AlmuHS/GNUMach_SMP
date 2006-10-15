@@ -2,6 +2,295 @@
 
 	[task #5956 --- ``Automake'ify GNU Mach's code base'']
 
+	* kern/bootstrap.c: Don't include `bootstrap_symbols.h'.
+	* ddb/db_command.c: Don't include `cpus.h'.
+	* ddb/db_mp.c: Likewise.
+	* i386/i386/ast_check.c: Likewise.
+	* i386/i386/cswitch.S: Likewise.
+	* i386/i386/db_interface.c: Likewise.
+	* i386/i386/fpu.c: Likewise.
+	* i386/i386/fpu.h: Likewise.
+	* i386/i386/i386asm.sym: Likewise.
+	* i386/i386/locore.S: Likewise.
+	* i386/i386/mp_desc.c: Likewise.
+	* i386/i386/mp_desc.h: Likewise.
+	* i386/i386/pcb.c: Likewise.
+	* i386/i386/trap.c: Likewise.
+	* i386/intel/pmap.c: Likewise.
+	* include/mach/machine.h: Likewise.
+	* ipc/ipc_kmsg.c: Likewise.
+	* ipc/ipc_kmsg.h: Likewise.
+	* kern/ast.c: Likewise.
+	* kern/ast.h: Likewise.
+	* kern/cpu_number.h: Likewise.
+	* kern/debug.c: Likewise.
+	* kern/eventcount.c: Likewise.
+	* kern/host.c: Likewise.
+	* kern/ipc_sched.c: Likewise.
+	* kern/lock.c: Likewise.
+	* kern/lock.h: Likewise.
+	* kern/lock_mon.c: Likewise.
+	* kern/mach_clock.c: Likewise.
+	* kern/mach_factor.c: Likewise.
+	* kern/machine.c: Likewise.
+	* kern/priority.c: Likewise.
+	* kern/processor.c: Likewise.
+	* kern/processor.h: Likewise.
+	* kern/sched.h: Likewise.
+	* kern/sched_prim.c: Likewise.
+	* kern/startup.c: Likewise.
+	* kern/syscall_subr.c: Likewise.
+	* kern/thread.c: Likewise.
+	* kern/timer.c: Likewise.
+	* kern/timer.h: Likewise.
+	* vm/vm_resident.c: Likewise.
+	* kern/sched_prim.c: Don't include `fast_tas.h'.
+	* kern/task.c: Likewise.
+	* kern/task.h: Likewise.
+	* kern/sched_prim.c: Don't include `hw_footprint.h'.
+	* kern/thread.c: Likewise.
+	* kern/thread.h: Likewise.
+	* kern/counters.c: Don't include `mach_counters.h'.
+	* kern/counters.h: Likewise.
+	* ddb/db_ext_symtab.c: Don't include `mach_debug.h'.
+	* i386/i386/pcb.c: Likewise.
+	* kern/ipc_kobject.c: Likewise.
+	* kern/thread.c: Likewise.
+	* kern/zalloc.c: Likewise.
+	* kern/ast.c: Don't include `mach_fixpri.h'.
+	* kern/processor.c: Likewise.
+	* kern/processor.h: Likewise.
+	* kern/sched.h: Likewise.
+	* kern/sched_prim.c: Likewise.
+	* kern/syscall_subr.c: Likewise.
+	* kern/thread.c: Likewise.
+	* kern/thread.h: Likewise.
+	* kern/host.c: Don't include `mach_host.h'.
+	* kern/ipc_sched.c: Likewise.
+	* kern/machine.c: Likewise.
+	* kern/processor.c: Likewise.
+	* kern/processor.h: Likewise.
+	* kern/sched_prim.c: Likewise.
+	* kern/startup.c: Likewise.
+	* kern/task.c: Likewise.
+	* kern/thread.c: Likewise.
+	* kern/thread.h: Likewise.
+	* include/mach/mach.defs: Don't include `mach_ipc_compat.h'.
+	* include/mach/mach_param.h: Likewise.
+	* include/mach/mach_traps.h: Likewise.
+	* include/mach/message.h: Likewise.
+	* include/mach/mig_errors.h: Likewise.
+	* include/mach/notify.h: Likewise.
+	* include/mach/port.h: Likewise.
+	* include/mach/std_types.defs: Likewise.
+	* include/mach/task_special_ports.h: Likewise.
+	* include/mach/thread_special_ports.h: Likewise.
+	* ipc/ipc_kmsg.c: Likewise.
+	* ipc/ipc_kmsg.h: Likewise.
+	* ipc/ipc_marequest.c: Likewise.
+	* ipc/ipc_notify.c: Likewise.
+	* ipc/ipc_notify.h: Likewise.
+	* ipc/ipc_object.c: Likewise.
+	* ipc/ipc_object.h: Likewise.
+	* ipc/ipc_port.c: Likewise.
+	* ipc/ipc_port.h: Likewise.
+	* ipc/ipc_right.c: Likewise.
+	* ipc/ipc_right.h: Likewise.
+	* ipc/ipc_space.c: Likewise.
+	* ipc/ipc_space.h: Likewise.
+	* ipc/mach_debug.c: Likewise.
+	* ipc/mach_msg.c: Likewise.
+	* ipc/mach_msg.h: Likewise.
+	* ipc/mach_port.c: Likewise.
+	* kern/ipc_tt.c: Likewise.
+	* kern/syscall_sw.c: Likewise.
+	* kern/thread.h: Likewise.
+	* include/mach_debug/mach_debug.defs: Don't include `mach_ipc_debug.h'.
+	* ipc/ipc_hash.c: Likewise.
+	* ipc/ipc_hash.h: Likewise.
+	* ipc/ipc_marequest.c: Likewise.
+	* ipc/ipc_marequest.h: Likewise.
+	* kern/ipc_kobject.c: Don't include `mach_ipc_test.h'.
+	* ddb/db_access.c: Don't include `mach_kdb.h'.
+	* ddb/db_aout.c: Likewise.
+	* ddb/db_break.c: Likewise.
+	* ddb/db_command.c: Likewise.
+	* ddb/db_command.h: Likewise.
+	* ddb/db_cond.c: Likewise.
+	* ddb/db_examine.c: Likewise.
+	* ddb/db_expr.c: Likewise.
+	* ddb/db_ext_symtab.c: Likewise.
+	* ddb/db_input.c: Likewise.
+	* ddb/db_lex.c: Likewise.
+	* ddb/db_macro.c: Likewise.
+	* ddb/db_mp.c: Likewise.
+	* ddb/db_output.c: Likewise.
+	* ddb/db_print.c: Likewise.
+	* ddb/db_run.c: Likewise.
+	* ddb/db_sym.c: Likewise.
+	* ddb/db_task_thread.c: Likewise.
+	* ddb/db_trap.c: Likewise.
+	* ddb/db_variables.c: Likewise.
+	* ddb/db_watch.c: Likewise.
+	* ddb/db_watch.h: Likewise.
+	* ddb/db_write_cmd.c: Likewise.
+	* i386/i386/db_disasm.c: Likewise.
+	* i386/i386/db_interface.c: Likewise.
+	* i386/i386/db_trace.c: Likewise.
+	* i386/i386/i386asm.sym: Likewise.
+	* i386/i386/locore.S: Likewise.
+	* i386/i386/trap.c: Likewise.
+	* i386/i386at/kd.c: Likewise.
+	* i386/i386at/model_dep.c: Likewise.
+	* include/mach_debug/mach_debug.defs: Likewise.
+	* ipc/ipc_kmsg.c: Likewise.
+	* ipc/ipc_object.c: Likewise.
+	* ipc/ipc_port.c: Likewise.
+	* ipc/ipc_pset.c: Likewise.
+	* kern/bootstrap.c: Likewise.
+	* kern/debug.c: Likewise.
+	* kern/exception.c: Likewise.
+	* kern/lock.c: Likewise.
+	* kern/xpr.c: Likewise.
+	* vm/vm_fault.c: Likewise.
+	* vm/vm_map.c: Likewise.
+	* vm/vm_object.c: Likewise.
+	* vm/vm_resident.c: Likewise.
+	* kern/lock.h: Don't include `mach_ldebug.h'.
+	* kern/lock_mon.c: Don't include `mach_lock_mon.h'.
+	* kern/ipc_kobject.c: Don't include `mach_machine_routines.h'.
+	* kern/lock_mon.c: Don't include `mach_mp_debug.h'.
+	* vm/memory_object.c: Don't include `mach_pagemap.h'.
+	* vm/vm_fault.c: Likewise.
+	* vm/vm_object.c: Likewise.
+	* vm/vm_object.h: Likewise.
+	* vm/vm_pageout.c: Likewise.
+	* i386/i386/trap.c: Don't include `mach_pcsample.h'.
+	* kern/mach4.srv: Likewise.
+	* kern/mach_clock.c: Likewise.
+	* kern/pc_sample.c: Likewise.
+	* kern/task.c: Likewise.
+	* kern/thread.c: Likewise.
+	* vm/vm_fault.c: Likewise.
+	* device/net_io.c: Don't include `mach_ttd.h'.
+	* i386/i386/kttd_interface.c: Likewise.
+	* i386/i386/locore.S: Likewise.
+	* i386/i386/trap.c: Likewise.
+	* i386/i386at/autoconf.c: Likewise.
+	* include/mach_debug/mach_debug.defs: Don't include `mach_vm_debug.h'.
+	* vm/vm_debug.c: Likewise.
+	* vm/vm_page.h: Likewise.
+	* vm/vm_resident.c: Likewise.
+	* kern/sched_prim.c: Don't include `power_save.h'.
+	* kern/sched.h: Don't include `simple_clock.h'.
+	* kern/sched_prim.c: Likewise.
+	* kern/thread.c: Likewise.
+	* kern/mach_clock.c: Don't include `stat_time.h'.
+	* i386/i386/i386asm.sym: Likewise.
+	* i386/i386/locore.S: Likewise.
+	* kern/sched.h: Likewise.
+	* kern/timer.c: Likewise.
+	* kern/timer.h: Likewise.
+	* kern/startup.c: Don't include `xpr_debug.h'.
+	* kern/xpr.h: Likewise.
+	* i386/i386at/autoconf.c: Don't include `com.h'.
+	* i386/i386at/com.c: Likewise.
+	* i386/i386at/conf.c: Likewise.
+	* i386/i386at/cons_conf.c: Likewise.
+	* i386/i386/fpe_linkage.c: Don't include `fpe.h'.
+	* i386/i386/fpu.c: Likewise.
+	* i386/i386/fpu.h: Likewise.
+	* i386/i386/trap.c: Likewise.
+	* i386/i386at/autoconf.c: Don't include `lpr.h'.
+	* i386/i386at/conf.c: Likewise.
+	* i386/i386at/lpr.c: Likewise.
+	* i386/i386/cswitch.S: Don't include `platforms.h'.
+	* i386/i386/fpu.c: Likewise.
+	* i386/i386/gdt.c: Likewise.
+	* i386/i386/hardclock.c: Likewise.
+	* i386/i386/i386asm.sym: Likewise.
+	* i386/i386/io_emulate.c: Likewise.
+	* i386/i386/locore.S: Likewise.
+	* i386/i386/pic.c: Likewise.
+	* i386/i386/pic.h: Likewise.
+	* i386/i386/pit.c: Likewise.
+	* i386/i386/pit.h: Likewise.
+	* i386/i386/seg.h: Likewise.
+	* i386/i386at/model_dep.c: Likewise.
+	* i386/i386at/com.c: Don't include `rc.h'
+	* i386/i386at/cons_conf.c: Likewise.
+	* i386/i386at/pic_isa.c: Likewise.
+	* device/ds_routines.c: Don't include <i386/linux/device-drivers.h>.
+	* i386/i386at/i386at_ds_routines.c: Likewise.
+	* i386/linux/dev/include/linux/autoconf.h: Likewise.
+	* linux/dev/arch/i386/kernel/setup.c: Likewise.
+	* linux/dev/init/main.c: Likewise.
+	* linux/pcmcia-cs/glue/pcmcia_glue.h: Likewise.
+	* linux/pcmcia-cs/glue/wireless_glue.h: Likewise.
+	* kern/lock_mon.c: Don't include <time_stamp.h>.
+	* device/cons.c: Include <device/cons.h> instead of <cons.h>.
+	* i386/i386at/com.c: Likewise.
+	* i386/i386at/kd.c: Likewise.
+	* i386/i386at/cons_conf.c: Likewise.
+	* i386/i386at/i386at_ds_routines.c: Include <device/device.server.h>
+	instead of "device_interface.h".
+	* device/chario.c: Include <device/device_reply.user.h> instead of
+	"device_reply.h".
+	* device/ds_routines.c: Likewise.
+	* linux/dev/glue/block.c: Likewise.
+	* linux/dev/glue/net.c: Likewise.
+	* linux/pcmcia-cs/glue/ds.c: Likewise.
+	* device/cons.c: Include <device/kmsg.h> instead of <kmsg.h>.
+	* device/kmsg.c: Likewise.
+	* i386/i386/cswitch.S: Include <i386/cpu_number.h> instead of
+	"cpu_number.h".
+	* i386/i386/locore.S: Likewise.
+	* i386/intel/pmap.c: Likewise.
+	* ipc/ipc_kmsg.h: Likewise.
+	* i386/i386/i386asm.sym: Include <i386/gdt.h> instead of "gdt.h".
+	* i386/i386/idt.c: Likewise.
+	* i386/i386at/int_init.c: Likewise.
+	* i386/i386/cswitch.S: Include <i386/i386asm.h> instead of "i386asm.h".
+	* i386/i386/locore.S: Likewise.
+	* i386/i386at/boothdr.S: Likewise.
+	* i386/i386at/interrupt.S: Likewise.
+	* i386/i386at/idt.h: Include <i386/idt-gen.h> instead of "idt-gen.h".
+	* i386/i386at/interrupt.S: Include <i386/ipl.h> instead of "ipl.h".
+	* i386/i386/i386asm.sym: Include <i386/ldt.h> instead of "ldt.h".
+	* i386/i386/locore.S: Likewise.
+	* i386/i386/i386asm.sym: Include <i386/mp_desc.h> instead of
+	"mp_desc.h".
+	* i386/i386at/interrupt.S: Include <i386/pic.h> instead of "pic.h".
+	* i386/i386/cswitch.S: Include <i386/proc_reg.h> instead of
+	"proc_reg.h".
+	* i386/i386/locore.S: Likewise.
+	* i386/i386at/model_dep.c: Likewise.
+	* i386/i386/i386asm.sym: Include <i386/seg.h> instead of "seg.h".
+	* i386/i386/idt.c: Likewise.
+	* i386/i386/locore.S: Likewise.
+	* i386/i386/locore.S: Include <i386/trap.h> instead of "trap.h".
+	* i386/i386/i386asm.sym: Include <i386/tss.h> instead of "tss.h".
+	* i386/i386/i386asm.sym: Include <i386/vm_param.h> instead of
+	"vm_param.h".
+	* i386/i386/idt.c: Likewise.
+	* i386/i386at/kd.c: Likewise.
+	* i386/i386at/model_dep.c: Likewise.
+	* i386/intel/pmap.c: Likewise.
+	* i386/i386/i386asm.sym: Include <i386at/idt.h> instead of "idt.h".
+	* i386/i386/idt.c: Likewise.
+	* i386/i386at/int_init.c: Likewise.
+	* ipc/ipc_target.c: Include <kern/sched_prim.h> instead of
+	"sched_prim.h".
+	* vm/memory_object.c: Include <vm/memory_object_default.user.h> instead
+	of "memory_object_default.h".
+	* vm/vm_object.c: Likewise.
+	* vm/vm_pageout.c: Likewise.
+	* vm/memory_object.c: Include <vm/memory_object_user.user.h> instead of
+	"memory_object_user.h".
+	* vm/vm_fault.c: Likewise.
+	* vm/vm_object.c: Likewise.
+	* vm/vm_pageout.c: Likewise.
+
 	* Makefile.am: New file.
 	* Makerules.am <configure's findings, System dependent Makerules>
 	<Compilation flags, Dependency generation, Autoconf support>: Remove

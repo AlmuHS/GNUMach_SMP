@@ -21,10 +21,10 @@
  *      Author: Bryan Ford, University of Utah CSL
  */
 
-#include "vm_param.h"
-#include "seg.h"
-#include "idt.h"
-#include "gdt.h"
+#include <i386/vm_param.h>
+#include <i386/seg.h>
+#include <i386at/idt.h>
+#include <i386/gdt.h>
 
 struct real_gate idt[IDTSZ];
 

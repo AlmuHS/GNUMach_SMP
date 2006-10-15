@@ -34,8 +34,6 @@
  *	Functions to manipulate IPC ports.
  */
 
-#include <mach_ipc_compat.h>
-
 #include <mach/port.h>
 #include <mach/kern_return.h>
 #include <kern/lock.h>
@@ -1433,8 +1431,6 @@ ipc_port_copyout_receiver(port, space)
 }
 
 #endif	/* MACH_IPC_COMPAT */
-
-#include <mach_kdb.h>
 
 
 #if	MACH_KDB

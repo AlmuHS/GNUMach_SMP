@@ -34,8 +34,6 @@
  *	Functions to handle msg-accepted requests.
  */
 
-#include <mach_ipc_compat.h>
-
 #include <mach/message.h>
 #include <mach/port.h>
 #include <kern/lock.h>
@@ -51,7 +49,6 @@
 #include <ipc/ipc_marequest.h>
 #include <ipc/ipc_notify.h>
 
-#include <mach_ipc_debug.h>
 #if	MACH_IPC_DEBUG
 #include <mach/kern_return.h>
 #include <mach_debug/hash_info.h>

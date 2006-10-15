@@ -27,9 +27,6 @@
 #ifndef	_KERN_TIMER_H_
 #define _KERN_TIMER_H_
 
-#include <cpus.h>
-#include <stat_time.h>
-
 #include <kern/macro_help.h>
 
 #if	STAT_TIME

@@ -33,10 +33,6 @@
 #ifndef	_MACH_MACHINE_H_
 #define _MACH_MACHINE_H_
 
-#ifdef	MACH_KERNEL
-#include <cpus.h>
-#endif	/* MACH_KERNEL */
-
 #include <mach/machine/vm_types.h>
 #include <mach/boolean.h>
 

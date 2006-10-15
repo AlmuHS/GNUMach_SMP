@@ -27,8 +27,6 @@
 /*
  * Wireless glue configuration.
  */
-#include <device-drivers.h>
-
 
 /*
  * Include the pcmcia glue as well, in case the kernel is configured for

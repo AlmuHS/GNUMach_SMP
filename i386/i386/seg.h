@@ -32,7 +32,6 @@
 #define	_I386_SEG_H_
 
 #include <mach/inline.h>
-#include <platforms.h>
 
 /*
  * i386 segmentation.

@@ -31,7 +31,6 @@
  *	Exported kernel calls.  See mach_debug/mach_debug.defs.
  */
 
-#include <mach_vm_debug.h>
 #if MACH_VM_DEBUG
 
 #include <kern/thread.h>

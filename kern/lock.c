@@ -34,9 +34,6 @@
  *	Locking primitives implementation
  */
 
-#include <cpus.h>
-#include <mach_kdb.h>
-
 #include <kern/lock.h>
 #include <kern/thread.h>
 #include <kern/sched_prim.h>

@@ -31,8 +31,6 @@
  *	Functions to manipulate IPC objects.
  */
 
-#include <mach_ipc_compat.h>
-
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
 #include <mach/port.h>
@@ -1279,8 +1277,6 @@ ipc_object_copyout_name_compat(space, object, msgt_name, name)
 }
 
 #endif	/* MACH_IPC_COMPAT */
-
-#include <mach_kdb.h>
 
 
 #if	MACH_KDB

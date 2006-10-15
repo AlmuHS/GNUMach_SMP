@@ -33,10 +33,6 @@
 #ifndef	_MACH_MACH_TRAPS_H_
 #define _MACH_MACH_TRAPS_H_
 
-#ifdef	MACH_KERNEL
-#include <mach_ipc_compat.h>
-#endif	/* MACH_KERNEL */
-
 #include <mach/port.h>
 
 mach_port_t	mach_reply_port

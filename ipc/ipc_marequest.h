@@ -34,8 +34,6 @@
 #ifndef	_IPC_IPC_MAREQUEST_H_
 #define _IPC_IPC_MAREQUEST_H_
 
-#include <mach_ipc_debug.h>
-
 #include <mach/kern_return.h>
 #include <mach/port.h>
 

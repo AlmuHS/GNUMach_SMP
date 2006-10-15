@@ -27,12 +27,6 @@
  *	Matchmaker definitions file for Mach kernel debugging interface.
  */
 
-#ifdef	MACH_KERNEL
-#include <mach_ipc_debug.h>
-#include <mach_vm_debug.h>
-#include <mach_kdb.h>
-#endif
-
 subsystem
 #if	KERNEL_SERVER
 	  KernelServer

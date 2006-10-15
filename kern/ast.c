@@ -35,9 +35,6 @@
  *
  */
 
-#include <cpus.h>
-#include <mach_fixpri.h>
-
 #include <kern/ast.h>
 #include <kern/counters.h>
 #include "cpu_number.h"

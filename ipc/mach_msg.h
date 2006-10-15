@@ -36,8 +36,6 @@
 #ifndef	_IPC_MACH_MSG_H_
 #define _IPC_MACH_MSG_H_
 
-#include <mach_ipc_compat.h>
-
 #include <mach/boolean.h>
 #include <mach/message.h>
 

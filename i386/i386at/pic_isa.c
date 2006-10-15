@@ -27,7 +27,6 @@
 #include <sys/types.h>
 #include <i386/ipl.h>
 #include <i386/pic.h>
-#include <rc.h>
 
 
 /* These interrupts are always present */

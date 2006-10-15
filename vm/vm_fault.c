@@ -32,10 +32,6 @@
  *
  *	Page fault handling module.
  */
-#include <mach_pagemap.h>
-#include <mach_kdb.h>
-#include <mach_pcsample.h>
-
 
 #include <vm/vm_fault.h>
 #include <mach/kern_return.h>
@@ -51,7 +47,7 @@
 #include <vm/vm_pageout.h>
 #include <mach/vm_param.h>
 #include <mach/memory_object.h>
-#include "memory_object_user.h"
+#include <vm/memory_object_user.user.h>
 				/* For memory_object_data_{request,unlock} */
 #include <kern/mach_param.h>
 #include <kern/macro_help.h>

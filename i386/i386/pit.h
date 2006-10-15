@@ -45,7 +45,6 @@ NEGLIGENCE, OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include <platforms.h>
 #if	defined(MB1) || defined(MB2) || EXL > 0 || iPSC386
 /* Definitions for 8254 Programmable Interrupt Timer ports on 386/20 */
 #define PITCTR0_PORT	0xD0		/* counter 0 port */

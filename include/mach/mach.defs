@@ -31,8 +31,6 @@
  */
 
 #ifdef	MACH_KERNEL
-#include <mach_ipc_compat.h>
-
 simport <kern/compat_xxx_defs.h>;	/* for obsolete routines */
 #endif	/* MACH_KERNEL */
 

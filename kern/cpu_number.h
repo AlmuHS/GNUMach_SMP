@@ -27,8 +27,6 @@
 #ifndef _KERN_CPU_NUMBER_H_
 #define _KERN_CPU_NUMBER_H_
 
-#include <cpus.h>
-
 /*
  *	Definitions for cpu identification in multi-processors.
  */

@@ -23,7 +23,7 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 #include <device/io_req.h>
 #include <mach/boolean.h>
 #include <kern/lock.h>
-#include <kmsg.h>
+#include <device/kmsg.h>
 
 
 #define KMSGBUFSIZE	(4096)  /* XXX */

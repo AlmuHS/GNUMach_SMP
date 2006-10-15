@@ -34,8 +34,6 @@
 #ifndef	_VM_VM_OBJECT_H_
 #define _VM_VM_OBJECT_H_
 
-#include <mach_pagemap.h>
-
 #include <mach/kern_return.h>
 #include <mach/boolean.h>
 #include <mach/memory_object.h>

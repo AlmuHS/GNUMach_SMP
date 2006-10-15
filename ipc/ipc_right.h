@@ -36,8 +36,6 @@
 #ifndef	_IPC_IPC_RIGHT_H_
 #define	_IPC_IPC_RIGHT_H_
 
-#include <mach_ipc_compat.h>
-
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
 #include <ipc/ipc_port.h>

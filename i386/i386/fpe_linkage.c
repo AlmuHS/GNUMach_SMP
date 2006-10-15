@@ -28,8 +28,6 @@
  * Support routines for FP emulator.
  */
 
-#include <fpe.h>
-
 #if FPE
 
 #include <cpus.h>

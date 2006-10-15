@@ -34,12 +34,10 @@
  *	The proverbial page-out daemon.
  */
 
-#include <mach_pagemap.h>
-
 #include <mach/mach_types.h>
 #include <mach/memory_object.h>
-#include "memory_object_default.h"
-#include "memory_object_user.h"
+#include <vm/memory_object_default.user.h>
+#include <vm/memory_object_user.user.h>
 #include <mach/vm_param.h>
 #include <mach/vm_statistics.h>
 #include <kern/counters.h>

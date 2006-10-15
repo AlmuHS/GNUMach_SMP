@@ -33,11 +33,9 @@
  *	Virtual memory object module.
  */
 
-#include <mach_pagemap.h>
-
 #include <mach/memory_object.h>
-#include "memory_object_default.h"
-#include "memory_object_user.h"
+#include <vm/memory_object_default.user.h>
+#include <vm/memory_object_user.user.h>
 #include <machine/vm_param.h>
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_space.h>
@@ -2955,8 +2953,6 @@ vm_object_page_map(
 	    vm_object_unlock(object);
 	}
 }
-
-#include <mach_kdb.h>
 
 
 #if	MACH_KDB

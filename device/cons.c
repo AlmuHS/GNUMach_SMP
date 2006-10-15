@@ -24,7 +24,7 @@
 #include <sys/types.h>
 #include <device/conf.h>
 #include <mach/boolean.h>
-#include <cons.h>
+#include <device/cons.h>
 #else
 #include <sys/param.h>
 #include <sys/user.h>
@@ -39,7 +39,7 @@
 
 #ifdef MACH_KMSG
 #include <device/io_req.h>
-#include <kmsg.h>
+#include <device/kmsg.h>
 #endif
 
 static	int cn_inited = 0;

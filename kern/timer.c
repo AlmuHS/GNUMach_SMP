@@ -24,9 +24,6 @@
  * the rights to redistribute these changes.
  */
 
-#include <cpus.h>
-#include <stat_time.h>
-
 #include <mach/kern_return.h>
 #include <mach/port.h>
 #include <kern/queue.h>

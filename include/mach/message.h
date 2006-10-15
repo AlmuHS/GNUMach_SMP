@@ -32,10 +32,6 @@
 #ifndef	_MACH_MESSAGE_H_
 #define _MACH_MESSAGE_H_
 
-#ifdef	MACH_KERNEL
-#include <mach_ipc_compat.h>
-#endif	/* MACH_KERNEL */
-
 #include <mach/kern_return.h>
 #include <mach/port.h>
 

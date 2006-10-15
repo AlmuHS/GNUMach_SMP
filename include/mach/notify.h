@@ -32,10 +32,6 @@
 #ifndef	_MACH_NOTIFY_H_
 #define _MACH_NOTIFY_H_
 
-#ifdef	MACH_KERNEL
-#include <mach_ipc_compat.h>
-#endif	/* MACH_KERNEL */
-
 #include <mach/port.h>
 #include <mach/message.h>
 

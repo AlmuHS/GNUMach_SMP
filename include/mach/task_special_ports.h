@@ -35,10 +35,6 @@
 #ifndef	_MACH_TASK_SPECIAL_PORTS_H_
 #define _MACH_TASK_SPECIAL_PORTS_H_
 
-#ifdef	MACH_KERNEL
-#include <mach_ipc_compat.h>
-#endif	/* MACH_KERNEL */
-
 #define TASK_KERNEL_PORT	1	/* Represents task to the outside
 					   world.*/
 #define TASK_EXCEPTION_PORT	3	/* Exception messages for task are

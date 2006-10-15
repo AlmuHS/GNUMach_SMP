@@ -32,14 +32,6 @@
  *
  */
 
-#include <cpus.h>
-#include <simple_clock.h>
-#include <mach_fixpri.h>
-#include <mach_host.h>
-#include <hw_footprint.h>
-#include <fast_tas.h>
-#include <power_save.h>
-
 #include <mach/machine.h>
 #include <kern/ast.h>
 #include <kern/counters.h>

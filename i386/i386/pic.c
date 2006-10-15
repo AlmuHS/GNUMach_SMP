@@ -49,8 +49,6 @@ OTHER TORTIOUS ACTION, ARISING OUR OF OR IN CONNECTION
 WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include <platforms.h>
-
 #include <sys/types.h>
 #include <i386/ipl.h>
 #include <i386/pic.h>

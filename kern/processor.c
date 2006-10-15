@@ -27,10 +27,6 @@
  *	processor.c: processor and processor_set manipulation routines.
  */
 
-#include <cpus.h>
-#include <mach_fixpri.h>
-#include <mach_host.h>
-
 #include <mach/boolean.h>
 #include <mach/policy.h>
 #include <mach/processor_info.h>

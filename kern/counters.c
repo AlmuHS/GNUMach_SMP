@@ -24,8 +24,6 @@
  * the rights to redistribute these changes.
  */
 
-#include <mach_counters.h>
-
 #include <kern/counters.h>
 
 /*

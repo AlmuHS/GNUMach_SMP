@@ -51,8 +51,6 @@
 #include <asm/system.h>
 #include <asm/io.h>
 
-#include <device-drivers.h>
-
 /*
  * Timing loop count.
  */

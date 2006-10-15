@@ -31,10 +31,6 @@
 #ifndef	_MACH_MIG_ERRORS_H_
 #define _MACH_MIG_ERRORS_H_
 
-#ifdef	MACH_KERNEL
-#include <mach_ipc_compat.h>
-#endif	/* MACH_KERNEL */
-
 #include <mach/kern_return.h>
 #include <mach/message.h>
 

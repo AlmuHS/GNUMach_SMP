@@ -24,10 +24,6 @@
  * the rights to redistribute these changes.
  */
 
-
-
-#include <mach_pcsample.h>
-
 #include <mach/mach_types.h>	/* vm_address_t */
 #include <mach/std_types.h>	/* pointer_t */
 #include <mach/pc_sample.h>

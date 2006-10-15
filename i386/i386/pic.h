@@ -52,8 +52,6 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef	_I386_PIC_H_
 #define	_I386_PIC_H_
 
-#include <platforms.h>
-
 #define NINTR	0x10
 #define	NPICS	0x02
 

@@ -32,8 +32,6 @@
  */
 #include <mach/machine/eflags.h>
 
-#include <platforms.h>
-
 #include <kern/time_out.h>
 #include <i386/thread.h>
 

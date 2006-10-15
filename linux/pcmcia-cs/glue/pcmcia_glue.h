@@ -27,7 +27,6 @@
 /*
  * pcmcia glue configuration
  */
-#include <device-drivers.h>
 #define PCMCIA_DEBUG 4
 /* Maximum number of sockets supported by the glue code. */
 #define MAX_SOCKS 8

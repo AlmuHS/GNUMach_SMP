@@ -34,11 +34,6 @@
 #ifndef	_KERN_THREAD_H_
 #define _KERN_THREAD_H_
 
-#include <mach_ipc_compat.h>
-#include <hw_footprint.h>
-#include <mach_fixpri.h>
-#include <mach_host.h>
-
 #include <mach/boolean.h>
 #include <mach/thread_info.h>
 #include <mach/thread_status.h>

@@ -47,8 +47,8 @@
 #include <mach/vm_prot.h>
 #include <mach/message.h>
 
-#include "memory_object_user.h"
-#include "memory_object_default.h"
+#include <vm/memory_object_user.user.h>
+#include <vm/memory_object_default.user.h>
 
 /*
  *	Implementation dependencies:
@@ -63,7 +63,6 @@
 #include <vm/vm_map.h>		/* For vm_map_pageable */
 #include <ipc/ipc_port.h>
 
-#include <mach_pagemap.h>
 #if	MACH_PAGEMAP
 #include <vm/vm_external.h>
 #endif	/* MACH_PAGEMAP */

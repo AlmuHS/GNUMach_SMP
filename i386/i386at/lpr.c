@@ -28,7 +28,6 @@
  *	All rights reserved.
  */ 
   
-#include <lpr.h>
 #if NLPR > 0
   
 #ifdef	MACH_KERNEL

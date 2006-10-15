@@ -24,8 +24,6 @@
  * the rights to redistribute these changes.
  */
 
-#include <mach_kdb.h>
-
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
 #include <mach/message.h>

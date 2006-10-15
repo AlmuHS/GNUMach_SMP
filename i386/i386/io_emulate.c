@@ -23,7 +23,6 @@
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
-#include <platforms.h>
 
 #include <mach/boolean.h>
 #include <mach/port.h>

@@ -27,8 +27,6 @@
 #ifndef	_I386_MP_DESC_H_
 #define	_I386_MP_DESC_H_
 
-#include <cpus.h>
-
 #if MULTIPROCESSOR
 
 /*

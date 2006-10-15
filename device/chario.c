@@ -47,7 +47,7 @@
 #include <device/device_types.h>
 #include <device/io_req.h>
 #include <device/ds_routines.h>
-#include "device_reply.h"
+#include <device/device_reply.user.h>
 
 #include <device/tty.h>
 

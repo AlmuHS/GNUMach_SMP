@@ -33,9 +33,6 @@
  *
  *	Clock primitives.
  */
-#include <cpus.h>
-#include <mach_pcsample.h>
-#include <stat_time.h>
 
 #include <mach/boolean.h>
 #include <mach/machine.h>

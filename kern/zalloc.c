@@ -42,7 +42,6 @@
 #include <vm/vm_kern.h>
 #include <machine/machspl.h>
 
-#include <mach_debug.h>
 #if	MACH_DEBUG
 #include <mach/kern_return.h>
 #include <mach/machine/vm_types.h>

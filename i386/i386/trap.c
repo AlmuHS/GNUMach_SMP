@@ -27,12 +27,6 @@
  * Hardware trap/fault handler.
  */
 
-#include <cpus.h>
-#include <fpe.h>
-#include <mach_kdb.h>
-#include <mach_ttd.h>
-#include <mach_pcsample.h>
-
 #include <sys/types.h>
 #include <mach/machine/eflags.h>
 #include <i386/trap.h>

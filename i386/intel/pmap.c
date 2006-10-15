@@ -55,8 +55,6 @@
  *	and to when physical maps must be made correct.
  */
 
-#include <cpus.h>
-
 #include <mach/machine/vm_types.h>
 
 #include <mach/boolean.h>
@@ -68,7 +66,7 @@
 #include <vm/pmap.h>
 #include <vm/vm_map.h>
 #include <vm/vm_kern.h>
-#include "vm_param.h"
+#include <i386/vm_param.h>
 #include <mach/vm_prot.h>
 #include <vm/vm_object.h>
 #include <vm/vm_page.h>
@@ -76,7 +74,7 @@
 
 #include <mach/machine/vm_param.h>
 #include <machine/thread.h>
-#include "cpu_number.h"
+#include <i386/cpu_number.h>
 #if	i860
 #include <i860ipsc/nodehw.h>
 #endif

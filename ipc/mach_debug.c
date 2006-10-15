@@ -33,8 +33,6 @@
  *	Exported kernel calls.  See mach_debug/mach_debug.defs.
  */
 
-#include <mach_ipc_compat.h>
-
 #include <mach/kern_return.h>
 #include <mach/port.h>
 #include <mach/machine/vm_types.h>

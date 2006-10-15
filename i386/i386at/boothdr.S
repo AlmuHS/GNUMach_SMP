@@ -1,7 +1,7 @@
 
 #include <mach/machine/asm.h>
 
-#include "i386asm.h"
+#include <i386/i386asm.h>
 
 	/*
 	 * This section will be put first into .text.  See also	i386/ldscript.

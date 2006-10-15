@@ -28,13 +28,11 @@
  *	Date:	7/90
  */
 
-#include "mach_kdb.h"
 #if MACH_KDB
 
 /*
  * Command dispatcher.
  */
-#include <cpus.h>
 
 #include <mach/boolean.h>
 #include <kern/strings.h>

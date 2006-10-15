@@ -24,9 +24,6 @@
  * the rights to redistribute these changes.
  */
 
-#include <cpus.h>
-#include <mach_debug.h>
-
 #include <mach/std_types.h>
 #include <mach/kern_return.h>
 #include <mach/thread_status.h>

@@ -27,9 +27,6 @@
  * the rights to redistribute these changes.
  */
 
-#include <mach_fixpri.h>
-#include <cpus.h>
-
 #include <mach/boolean.h>
 #include <mach/thread_switch.h>
 #include <ipc/ipc_port.h>

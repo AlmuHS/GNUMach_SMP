@@ -40,8 +40,6 @@
  *	a set of reasons for an AST, and passing this set to ast_taken.
  */
 
-#include <cpus.h>
-
 #include "cpu_number.h"
 #include <kern/macro_help.h>
 #include <machine/ast.h>

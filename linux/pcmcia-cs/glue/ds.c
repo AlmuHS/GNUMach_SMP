@@ -51,7 +51,7 @@
 
 #include <i386at/device_emul.h>
 
-#include <device_reply.h>
+#include <device/device_reply.user.h>
 
 /* Eliminate the queue_empty macro from Mach header files.  */
 #undef queue_empty

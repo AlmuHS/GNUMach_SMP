@@ -34,8 +34,6 @@
 #ifndef	_IPC_IPC_NOTIFY_H_
 #define _IPC_IPC_NOTIFY_H_
 
-#include <mach_ipc_compat.h>
-
 extern void
 ipc_notify_init();
 

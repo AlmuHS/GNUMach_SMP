@@ -32,15 +32,12 @@
  *	Basic initialization for I386 - ISA bus machines.
  */
 
-#include <platforms.h>
-#include <mach_kdb.h>
-
 #include <mach/vm_param.h>
 #include <mach/vm_prot.h>
 #include <mach/machine.h>
 #include <mach/machine/multiboot.h>
 
-#include "vm_param.h"
+#include <i386/vm_param.h>
 #include <kern/time_out.h>
 #include <kern/assert.h>
 #include <kern/cpu_number.h>
@@ -48,7 +45,7 @@
 #include <vm/vm_page.h>
 #include <i386/machspl.h>
 #include <i386/pmap.h>
-#include "proc_reg.h"
+#include <i386/proc_reg.h>
 
 /* Location of the kernel's symbol table.
    Both of these are 0 if none is available.  */

@@ -34,9 +34,6 @@
  *	Operations on kernel messages.
  */
 
-#include <cpus.h>
-#include <mach_ipc_compat.h>
-
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
 #include <mach/message.h>
@@ -3144,7 +3141,6 @@ ipc_kmsg_copyout_compat(kmsg, space, map)
 
 #endif	/* MACH_IPC_COMPAT */
 
-#include <mach_kdb.h>
 #if	MACH_KDB
 
 char *

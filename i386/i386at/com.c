@@ -24,7 +24,6 @@
  * the rights to redistribute these changes.
  */
 
-#include <com.h>
 #if NCOM > 0
 
 #include <mach/std_types.h>
@@ -41,8 +40,7 @@
 #include <chips/busses.h>
 #include <i386at/comreg.h>
 
-#include <rc.h>
-#include <cons.h>
+#include <device/cons.h>
 
 extern void timeout(), ttrstrt();
 

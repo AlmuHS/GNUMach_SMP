@@ -35,11 +35,6 @@
 #ifndef	_KERN_SCHED_H_
 #define _KERN_SCHED_H_
 
-#include <cpus.h>
-#include <mach_fixpri.h>
-#include <simple_clock.h>
-#include <stat_time.h>
-
 #include <kern/queue.h>
 #include <kern/lock.h>
 #include <kern/macro_help.h>

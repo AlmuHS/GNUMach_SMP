@@ -34,8 +34,6 @@
 #ifndef	_VM_VM_PAGE_H_
 #define _VM_VM_PAGE_H_
 
-#include <mach_vm_debug.h>
-
 #include <mach/boolean.h>
 #include <mach/vm_prot.h>
 #include <mach/vm_param.h>

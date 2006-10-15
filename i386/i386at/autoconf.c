@@ -25,7 +25,6 @@
  */
 
 #ifdef	MACH_KERNEL
-#include <mach_ttd.h>
 #include <mach/std_types.h>
 #else	/* MACH_KERNEL */
 #include <cpus.h>
@@ -47,13 +46,11 @@
 #define	SPL_TTY		(vm_offset_t)SPLTTY
 
 
-#include <com.h>
 #if NCOM > 0
 extern	struct	bus_driver	comdriver;
 extern int			comintr();
 #endif /* NCOM */
 
-#include <lpr.h>
 #if NLPR > 0
 extern	struct	bus_driver	lprdriver;
 extern int			lprintr();

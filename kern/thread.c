@@ -31,14 +31,6 @@
  *	Thread management primitives implementation.
  */
 
-#include <cpus.h>
-#include <hw_footprint.h>
-#include <mach_host.h>
-#include <mach_fixpri.h>
-#include <mach_pcsample.h>
-#include <simple_clock.h>
-#include <mach_debug.h>
-
 #include <mach/std_types.h>
 #include <mach/policy.h>
 #include <mach/thread_info.h>

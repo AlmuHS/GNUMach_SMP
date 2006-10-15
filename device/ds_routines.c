@@ -58,15 +58,12 @@
 #include <device/ds_routines.h>
 #include <device/net_status.h>
 #include <device/device_port.h>
-#include "device_reply.h"
+#include <device/device_reply.user.h>
 
 #include <machine/machspl.h>
 
 #ifdef i386
 #include <i386at/device_emul.h>
-#ifdef LINUX_DEV
-#include <i386/linux/device-drivers.h>
-#endif
 #endif
 
 #ifdef i386

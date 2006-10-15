@@ -48,9 +48,7 @@
 #ifndef	_KERN_XPR_H_
 #define _KERN_XPR_H_
 
-#ifdef	KERNEL
-#include <xpr_debug.h>
-#else	/* KERNEL */
+#ifndef	KERNEL
 #include <sys/features.h>
 #endif	/* KERNEL */
 

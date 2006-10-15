@@ -38,8 +38,6 @@
  *	It may change a lot real soon.	-cmaeda 11 June 1993
  */
 
-#include <mach_ttd.h>
-
 #include <sys/types.h>
 #include <device/net_status.h>
 #include <machine/machspl.h>		/* spl definitions */

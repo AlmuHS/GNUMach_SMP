@@ -29,8 +29,6 @@
  *	Task and thread related IPC functions.
  */
 
-#include <mach_ipc_compat.h>
-
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
 #include <mach/mach_param.h>
