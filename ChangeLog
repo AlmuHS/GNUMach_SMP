@@ -2,6 +2,10 @@
 
 	[task #5956 --- ``Automake'ify GNU Mach's code base'']
 
+	* configure.ac <config.status.dep.patch>: Point to [bug #18011 ---
+	``GNU Mach: `make install-data' will build the ``to-be-generated
+	files''''].
+	
 	* Makefile.in: Regenerate.
 
 	* Makefrag.am (include_mach_exec): Rename to `include_mach_eXec'.
