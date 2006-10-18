@@ -177,6 +177,7 @@
 
 
 
+
 srcdir = @srcdir@
 top_srcdir = @top_srcdir@
 VPATH = @srcdir@
@@ -1183,7 +1184,7 @@ am_liblinux_pcmcia_cs_wireless_a_OBJECTS = $(am__objects_105)
 liblinux_pcmcia_cs_wireless_a_OBJECTS =  \
 	$(am_liblinux_pcmcia_cs_wireless_a_OBJECTS)
 am__installdirs = "$(DESTDIR)$(exec_bootdir)" "$(DESTDIR)$(infodir)" \
-	"$(DESTDIR)$(include_devicedir)" \
+	"$(DESTDIR)$(exec_msgidsdir)" "$(DESTDIR)$(include_devicedir)" \
 	"$(DESTDIR)$(include_machdir)" \
 	"$(DESTDIR)$(include_mach_eXecdir)" \
 	"$(DESTDIR)$(include_mach_i386dir)"
@@ -1242,6 +1243,8 @@ am__vpath_adj = case $$p in \
     *) f=$$p;; \
   esac;
 am__strip_dir = `echo $$p | sed -e 's|^.*/||'`;
+exec_msgidsDATA_INSTALL = $(INSTALL_DATA)
+DATA = $(exec_msgids_DATA)
 include_deviceHEADERS_INSTALL = $(INSTALL_HEADER)
 include_machHEADERS_INSTALL = $(INSTALL_HEADER)
 include_mach_eXecHEADERS_INSTALL = $(INSTALL_HEADER)
@@ -1594,9 +1597,15 @@ noinst_LIBRARIES = libkernel.a lib_dep_tr_for_defs.a liblinux.a \
 	liblinux_pcmcia_cs_wireless.a
 TESTS = tests/test-mbchk
 info_TEXINFOS = doc/mach.texi
+#	kern/mach.server.defs
+#	kern/mach4.server.defs
+#	kern/mach_debug.server.defs
+#	kern/mach_host.server.defs
+
+# rpctrace can make use of that.
 MOSTLYCLEANFILES = $(nodist_libkernel_a_SOURCES) \
-	$(nodist_lib_dep_tr_for_defs_a_SOURCES) gnumach-undef \
-	gnumach-undef-bad
+	$(nodist_lib_dep_tr_for_defs_a_SOURCES) gnumach.msgids \
+	gnumach-undef gnumach-undef-bad
 
 #
 # Compilation flags
@@ -1785,6 +1794,10 @@ nodist_lib_dep_tr_for_defs_a_SOURCES =  \
 lib_dep_tr_for_defs_a_CPPFLAGS = $(AM_CPPFLAGS) \
 	-E
 
+# `exec_' prefix, so that we don't try to build that file during when running
+# `make install-data', as it may fail there, but isn't needed there either.
+exec_msgidsdir = $(datadir)/msgids
+exec_msgids_DATA = gnumach.msgids
 
 #
 # Architecture specialities.
@@ -5960,6 +5973,23 @@ maintainer-clean-aminfo:
 	  echo " rm -f $$i $$i-[0-9] $$i-[0-9][0-9] $$i_i[0-9] $$i_i[0-9][0-9]"; \
 	  rm -f $$i $$i-[0-9] $$i-[0-9][0-9] $$i_i[0-9] $$i_i[0-9][0-9]; \
 	done
+install-exec_msgidsDATA: $(exec_msgids_DATA)
+	@$(NORMAL_INSTALL)
+	test -z "$(exec_msgidsdir)" || $(mkdir_p) "$(DESTDIR)$(exec_msgidsdir)"
+	@list='$(exec_msgids_DATA)'; for p in $$list; do \
+	  if test -f "$$p"; then d=; else d="$(srcdir)/"; fi; \
+	  f=$(am__strip_dir) \
+	  echo " $(exec_msgidsDATA_INSTALL) '$$d$$p' '$(DESTDIR)$(exec_msgidsdir)/$$f'"; \
+	  $(exec_msgidsDATA_INSTALL) "$$d$$p" "$(DESTDIR)$(exec_msgidsdir)/$$f"; \
+	done
+
+uninstall-exec_msgidsDATA:
+	@$(NORMAL_UNINSTALL)
+	@list='$(exec_msgids_DATA)'; for p in $$list; do \
+	  f=$(am__strip_dir) \
+	  echo " rm -f '$(DESTDIR)$(exec_msgidsdir)/$$f'"; \
+	  rm -f "$(DESTDIR)$(exec_msgidsdir)/$$f"; \
+	done
 install-include_deviceHEADERS: $(include_device_HEADERS)
 	@$(NORMAL_INSTALL)
 	test -z "$(include_devicedir)" || $(mkdir_p) "$(DESTDIR)$(include_devicedir)"
@@ -6382,11 +6412,11 @@ distcleancheck: distclean
 check-am: all-am
 	$(MAKE) $(AM_MAKEFLAGS) check-TESTS
 check: check-recursive
-all-am: Makefile $(INFO_DEPS) $(LIBRARIES) $(PROGRAMS) $(HEADERS) \
-		config.h
+all-am: Makefile $(INFO_DEPS) $(LIBRARIES) $(PROGRAMS) $(DATA) \
+		$(HEADERS) config.h
 installdirs: installdirs-recursive
 installdirs-am:
-	for dir in "$(DESTDIR)$(exec_bootdir)" "$(DESTDIR)$(infodir)" "$(DESTDIR)$(include_devicedir)" "$(DESTDIR)$(include_machdir)" "$(DESTDIR)$(include_mach_eXecdir)" "$(DESTDIR)$(include_mach_i386dir)"; do \
+	for dir in "$(DESTDIR)$(exec_bootdir)" "$(DESTDIR)$(infodir)" "$(DESTDIR)$(exec_msgidsdir)" "$(DESTDIR)$(include_devicedir)" "$(DESTDIR)$(include_machdir)" "$(DESTDIR)$(include_mach_eXecdir)" "$(DESTDIR)$(include_mach_i386dir)"; do \
 	  test -z "$$dir" || $(mkdir_p) "$$dir"; \
 	done
 install: install-recursive
@@ -6505,7 +6535,7 @@ install-data-am: install-include_deviceHEADERS \
 	@$(NORMAL_INSTALL)
 	$(MAKE) $(AM_MAKEFLAGS) install-data-hook
 
-install-exec-am: install-exec_bootPROGRAMS
+install-exec-am: install-exec_bootPROGRAMS install-exec_msgidsDATA
 
 install-info: install-info-recursive
 
@@ -6564,7 +6594,7 @@ ps: ps-recursive
 
 ps-am: $(PSS)
 
-uninstall-am: uninstall-exec_bootPROGRAMS \
+uninstall-am: uninstall-exec_bootPROGRAMS uninstall-exec_msgidsDATA \
 	uninstall-include_deviceHEADERS uninstall-include_machHEADERS \
 	uninstall-include_mach_eXecHEADERS \
 	uninstall-include_mach_i386HEADERS uninstall-info-am
@@ -6581,8 +6611,9 @@ uninstall-info: uninstall-info-recursive
 	distuninstallcheck dvi dvi-am html html-am info info-am \
 	install install-am install-data install-data-am \
 	install-data-hook install-exec install-exec-am \
-	install-exec_bootPROGRAMS install-include_deviceHEADERS \
-	install-include_machHEADERS install-include_mach_eXecHEADERS \
+	install-exec_bootPROGRAMS install-exec_msgidsDATA \
+	install-include_deviceHEADERS install-include_machHEADERS \
+	install-include_mach_eXecHEADERS \
 	install-include_mach_i386HEADERS install-info install-info-am \
 	install-man install-strip installcheck installcheck-am \
 	installdirs installdirs-am maintainer-clean \
@@ -6591,8 +6622,8 @@ uninstall-info: uninstall-info-recursive
 	mostlyclean-aminfo mostlyclean-compile mostlyclean-generic \
 	mostlyclean-recursive mostlyclean-vti pdf pdf-am ps ps-am tags \
 	tags-recursive uninstall uninstall-am \
-	uninstall-exec_bootPROGRAMS uninstall-include_deviceHEADERS \
-	uninstall-include_machHEADERS \
+	uninstall-exec_bootPROGRAMS uninstall-exec_msgidsDATA \
+	uninstall-include_deviceHEADERS uninstall-include_machHEADERS \
 	uninstall-include_mach_eXecHEADERS \
 	uninstall-include_mach_i386HEADERS uninstall-info-am
 
@@ -6629,9 +6660,17 @@ uninstall-info: uninstall-info-recursive
 	  -sheader $*.server.h -server $*.server.c	\
 	  -user /dev/null -header /dev/null		\
 	  < $<
+%.msgids: lib_dep_tr_for_defs_a-%.server.defs.$(OBJEXT)
+	$(MIGCOM) $(MIGCOMFLAGS)		\
+	  -n -list $@				\
+	  < $<
 %.user.h %.user.c: lib_dep_tr_for_defs_a-%.user.defs.$(OBJEXT)
 	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMUFLAGS)		\
 	  -user $*.user.c -server /dev/null -header $*.user.h	\
+	  < $<
+%.msgids: lib_dep_tr_for_defs_a-%.user.defs.$(OBJEXT)
+	$(MIGCOM) $(MIGCOMFLAGS)		\
+	  -n -list $@				\
 	  < $<
 
 # TODO.  Get rid of the .srv files and rather use .defs files and MIG*SFLAGS?
@@ -6688,6 +6727,13 @@ echo-%:
 install-data-hook:
 	rm -f '$(DESTDIR)$(include_machdir)'/machine
 	ln -s '$(systype)' '$(DESTDIR)$(include_machdir)'/machine
+gnumach.msgids: $(nodist_lib_dep_tr_for_defs_a_SOURCES)
+	rm -f gnumach.msgids
+	for f in $(nodist_lib_dep_tr_for_defs_a_SOURCES); do	\
+	  f=`expr "$$f" : '\(.*\)\.defs\.c'`.msgids &&		\
+	  $(MAKE) $(AM_MAKEFLAGS) "$$f" &&			\
+	  cat "$$f" >> $@ || { rm -f $@; false; }		\
+	done
 #	i386/i386/mach_i386.server.defs
 
 #
@@ -6696,10 +6742,6 @@ install-data-hook:
 
 # TODO.  Hm.
 @HOST_i386_TRUE@i386/i386at/boothdr.o: i386/i386/i386asm.h
-#	kern/mach.server.defs
-#	kern/mach4.server.defs
-#	kern/mach_debug.server.defs
-#	kern/mach_host.server.defs
 
 #
 # Architecture specific parts.

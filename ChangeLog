@@ -1,5 +1,7 @@
 2006-10-18  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* Makefile.in: Regenerate.
+
 	Install `PREFIX/share/msgids/gnumach.msgids'.
 	* Makerules.am (%.msgids): Two new rules.
 	* Makefrag.am (MOSTLYCLEANFILES): Add `gnumach.msgids'.
