@@ -1,3 +1,11 @@
+2006-10-18  Thomas Schwinge  <tschwinge@gnu.org>
+
+	Install `PREFIX/share/msgids/gnumach.msgids'.
+	* Makerules.am (%.msgids): Two new rules.
+	* Makefrag.am (MOSTLYCLEANFILES): Add `gnumach.msgids'.
+	(gnumach.msgids): New rule.
+	(exec_msgidsdir, exec_msgids_DATA): New variables.
+
 2006-10-16  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* configure: Regenerate.

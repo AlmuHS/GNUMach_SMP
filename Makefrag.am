@@ -319,6 +319,21 @@ nodist_libkernel_a_SOURCES += \
 #	kern/mach4.server.defs
 #	kern/mach_debug.server.defs
 #	kern/mach_host.server.defs
+
+# rpctrace can make use of that.
+MOSTLYCLEANFILES += \
+	gnumach.msgids
+gnumach.msgids: $(nodist_lib_dep_tr_for_defs_a_SOURCES)
+	rm -f gnumach.msgids
+	for f in $(nodist_lib_dep_tr_for_defs_a_SOURCES); do	\
+	  f=`expr "$$f" : '\(.*\)\.defs\.c'`.msgids &&		\
+	  $(MAKE) $(AM_MAKEFLAGS) "$$f" &&			\
+	  cat "$$f" >> $@ || { rm -f $@; false; }		\
+	done
+# `exec_' prefix, so that we don't try to build that file during when running
+# `make install-data', as it may fail there, but isn't needed there either.
+exec_msgidsdir = $(datadir)/msgids
+exec_msgids_DATA = gnumach.msgids
 
 #
 # Architecture specific parts.
