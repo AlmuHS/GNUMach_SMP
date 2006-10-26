@@ -1,3 +1,10 @@
+2006-10-26  Thomas Schwinge  <tschwinge@gnu.org>
+
+	[task #5956 --- ``Automake'ify GNU Mach's code base'']
+	The Automake build system wants us to have these files in the rcs, so
+	do that.
+	* version.texi: New file, generated.
+
 2006-10-18  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* Makefile.in: Regenerate.
