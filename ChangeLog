@@ -3,7 +3,11 @@
 	[task #5956 --- ``Automake'ify GNU Mach's code base'']
 	The Automake build system wants us to have these files in the rcs, so
 	do that.
-	* version.texi: New file, generated.
+	* doc/mach.info: New file, generated.
+	* doc/mach.info-1: Likewise.
+	* doc/mach.info-2: Likewise.
+	* doc/stamp-vti: Likewise.
+	* doc/version.texi: Likewise.
 
 2006-10-18  Thomas Schwinge  <tschwinge@gnu.org>
 
