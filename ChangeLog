@@ -1,10 +1,13 @@
 2006-10-26  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* Makefile.in: Regenerate.
+
 	[task #5956 --- ``Automake'ify GNU Mach's code base'']
 
 	* Makefrag.am (gnumach.msgids): Remove repetition.
 	* Makerules.am (%.server.msgids, %.user.msgids): Targets renamed from
 	`%.msgids'.  Also consider MIGCOMSFLAGS respective MIGCOMUFLAGS.
+	Thanks to Guillem Jover and Leonardo Lopes Pereira for reporting this.
 
 	The Automake build system wants us to have these files in the rcs, so
 	do that.
