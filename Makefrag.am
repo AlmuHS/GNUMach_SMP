@@ -324,7 +324,7 @@ nodist_libkernel_a_SOURCES += \
 MOSTLYCLEANFILES += \
 	gnumach.msgids
 gnumach.msgids: $(nodist_lib_dep_tr_for_defs_a_SOURCES)
-	rm -f gnumach.msgids
+	rm -f $@
 	for f in $(nodist_lib_dep_tr_for_defs_a_SOURCES); do	\
 	  f=`expr "$$f" : '\(.*\)\.defs\.c'`.msgids &&		\
 	  $(MAKE) $(AM_MAKEFLAGS) "$$f" &&			\

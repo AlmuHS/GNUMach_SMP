@@ -36,7 +36,7 @@
 # convenient to be able to explicitly make the intermediate files when you want
 # to deal with a problem in the MIG stub generator.
 
-# TODO.  Get rid of the following four rules and the lib_dep_tr_for_defs.a
+# TODO.  Get rid of the following six rules and the lib_dep_tr_for_defs.a
 # machinery (see Makefrag.am and i386/Makefrag.am).
 %.server.defs.c: %.srv
 	rm -f $@
@@ -49,17 +49,17 @@
 	  -sheader $*.server.h -server $*.server.c	\
 	  -user /dev/null -header /dev/null		\
 	  < $<
-%.msgids: lib_dep_tr_for_defs_a-%.server.defs.$(OBJEXT)
-	$(MIGCOM) $(MIGCOMFLAGS)		\
-	  -n -list $@				\
+%.server.msgids: lib_dep_tr_for_defs_a-%.server.defs.$(OBJEXT)
+	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMSFLAGS)	\
+	  -n -list $@					\
 	  < $<
 %.user.h %.user.c: lib_dep_tr_for_defs_a-%.user.defs.$(OBJEXT)
 	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMUFLAGS)		\
 	  -user $*.user.c -server /dev/null -header $*.user.h	\
 	  < $<
-%.msgids: lib_dep_tr_for_defs_a-%.user.defs.$(OBJEXT)
-	$(MIGCOM) $(MIGCOMFLAGS)		\
-	  -n -list $@				\
+%.user.msgids: lib_dep_tr_for_defs_a-%.user.defs.$(OBJEXT)
+	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMUFLAGS)	\
+	  -n -list $@					\
 	  < $<
 
 # TODO.  Get rid of the .srv files and rather use .defs files and MIG*SFLAGS?
