@@ -36,8 +36,7 @@
 /*
  *	Expansion of vm_fault for read fault in kernel mode.
  *	Must enter the mapping as writable, since the i386
- *	(and i860 in i386 compatability mode) ignores write
- *	protection in kernel mode.
+ *	ignores write protection in kernel mode.
  */
 kern_return_t
 intel_read_fault(map, vaddr)

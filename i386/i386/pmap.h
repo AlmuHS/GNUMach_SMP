@@ -23,8 +23,5 @@
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
-/*
- * Now using shared pmap module for i386 and i860.
- */
 
 #include <intel/pmap.h>

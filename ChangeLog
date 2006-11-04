@@ -1,5 +1,27 @@
 2006-11-05  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
+	Drop i860 architecture support.
+
+	* i386/i386/pmap.h: Remove i860 comment.
+	* i386/intel/pmap.c: Remove i860 comments.  Don't include
+	`i860ipsc/nodehw.h'.
+	(INVALIDATE_TLB): Remove i860 case.
+	(paging_enabled): Remove variable.
+	(pmap_map): Remove setting INTEL_PTE_NCACHE.
+	(pmap_bootstrap): Remove i860 support.
+	(pmap_page_table_page_alloc): Remove setting INTEL_PTE_NCACHE.
+	(pmap_enter): Remove call to flush function.
+	(set_dirbase): Remove function.
+	* i386/intel/pmap.h: Remove i860 comments.
+	(INTEL_PGBYTES, INTEL_PGSHIFT, intel_btop, intel_ptob,
+	intel_round_page, intel_trunc_page, trunc_intel_to_vm,
+	round_intel_to_vm, vm_to_intel, INTEL_PTE_VALID, set_dirbase): Remove
+	i860 case.
+	(INTEL_PTE_valid): Remove macro.
+	* i386/intel/read_fault.c: Remove i860 comment.
+
+2006-11-05  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
 	Drop PS2 architecture support.
 
 	* i386/i386/fpu.c (fpintr): Remove PS2 from #if.

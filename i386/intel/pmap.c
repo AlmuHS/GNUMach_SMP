@@ -28,7 +28,7 @@
  *	Author:	Avadis Tevanian, Jr., Michael Wayne Young
  *	(These guys wrote the Vax version)
  *
- *	Physical Map management code for Intel i386, i486, and i860.
+ *	Physical Map management code for Intel i386, and i486.
  *
  *	Manages physical address maps.
  *
@@ -75,9 +75,6 @@
 #include <mach/machine/vm_param.h>
 #include <machine/thread.h>
 #include <i386/cpu_number.h>
-#if	i860
-#include <i860ipsc/nodehw.h>
-#endif
 
 #ifdef	ORC
 #define	OLIVETTICACHE	1
@@ -372,17 +369,9 @@ lock_data_t	pmap_system_lock;
 
 #define MAX_TBIS_SIZE	32		/* > this -> TBIA */ /* XXX */
 
-#if	i860
-/* Do a data cache flush until we find the caching bug XXX prp */
-#define INVALIDATE_TLB(s, e) { \
-	flush(); \
-	flush_tlb(); \
-}
-#else	/* i860 */
 #define INVALIDATE_TLB(s, e) { \
 	flush_tlb(); \
 }
-#endif	/* i860 */
 
 
 #if	NCPUS > 1
@@ -449,13 +438,6 @@ void pmap_remove_range();	/* forward */
 #if	NCPUS > 1
 void signal_cpus();		/* forward */
 #endif	/* NCPUS > 1 */
-
-#if	i860
-/*
- * Paging flag
- */
-int             paging_enabled = 0;
-#endif
 
 static inline pt_entry_t *
 pmap_pde(pmap_t pmap, vm_offset_t addr)
@@ -549,9 +531,6 @@ vm_offset_t pmap_map(virt, start, end, prot)
  * 	Useful for mapping memory outside the range
  *	[phys_first_addr, phys_last_addr) (i.e., devices).
  *	Otherwise like pmap_map.
-#if	i860
- *      Sets no-cache bit.
-#endif
  */
 vm_offset_t pmap_map_bd(virt, start, end, prot)
 	register vm_offset_t	virt;
@@ -562,11 +541,7 @@ vm_offset_t pmap_map_bd(virt, start, end, prot)
 	register pt_entry_t	template;
 	register pt_entry_t	*pte;
 
-	template = pa_to_pte(start)
-#if	i860
-		| INTEL_PTE_NCACHE
-#endif
-		| INTEL_PTE_VALID;
+	template = pa_to_pte(start) | INTEL_PTE_VALID;
 	if (prot & VM_PROT_WRITE)
 	    template |= INTEL_PTE_WRITE;
 
@@ -702,89 +677,6 @@ void pmap_bootstrap()
 			}
 		}
 	}
-
-#if	i860
-#error probably doesnt work anymore
- 	XXX move to architecture-specific code just after the pmap_bootstrap call.
-
-	/* kvtophys should now work in phys range */
-
-	/*
-	 * Mark page table pages non-cacheable
-	 */
-
-	pt_pte = (pt_entry_t *)pte_to_pa(*(kpde + pdenum(sva))) + ptenum(sva);
-
-	for (va = load_start; va < tva; va += INTEL_PGBYTES*NPTES) {
-		/* Mark page table non-cacheable */
-		*pt_pte |= INTEL_PTE_NCACHE;
-		pt_pte++;
-	}
-
-	/*
-	 * Map I/O space
-	 */
-
-	ppde = kpde;
-	ppde += pdenum(IO_BASE);
-
-	if (pte_to_pa(*ppde) == 0) {
-		/* This pte has not been allocated */
-		ppte = (pt_entry_t *)kvtophys(virtual_avail);
-		ptend = ppte + NPTES;
-		virtual_avail = phystokv((vm_offset_t)ptend);
-		*ppde = pa_to_pte((vm_offset_t)ppte)
-			| INTEL_PTE_VALID
-			| INTEL_PTE_WRITE;
-		pte = ptend;
-
-		/* Mark page table non-cacheable */
-		*pt_pte |= INTEL_PTE_NCACHE;
-		pt_pte++;
-
-		bzero((char *)ppte, INTEL_PGBYTES);
-	} else {
-		ppte = (pt_entry_t *)(*ppde);	/* first pte of page */
-	}
-	*ppde |= INTEL_PTE_USER;
-
-
-	WRITE_PTE(ppte + ptenum(FIFO_ADDR),
-		  pa_to_pte(FIFO_ADDR_PH)
-		| INTEL_PTE_VALID | INTEL_PTE_WRITE | INTEL_PTE_NCACHE);
-
-	WRITE_PTE(ppte + ptenum(FIFO_ADDR + XEOD_OFF),
-		  pa_to_pte(FIFO_ADDR_PH + XEOD_OFF_PH)
-		| INTEL_PTE_VALID | INTEL_PTE_WRITE | INTEL_PTE_NCACHE);
-
-/* XXX Allowed user access to control reg - cfj */
-	WRITE_PTE(ppte + ptenum(CSR_ADDR),
-		  pa_to_pte(CSR_ADDR_PH)
-		| INTEL_PTE_VALID | INTEL_PTE_WRITE | INTEL_PTE_NCACHE | INTEL_PTE_USER);
-
-/* XXX Allowed user access to perf reg - cfj */
-	WRITE_PTE(ppte + ptenum(PERFCNT_ADDR),
-		  pa_to_pte(PERFCNT_ADDR_PH)
-		| INTEL_PTE_VALID | INTEL_PTE_USER | INTEL_PTE_NCACHE | INTEL_PTE_USER);
-
-	WRITE_PTE(ppte + ptenum(UART_ADDR),
-		  pa_to_pte(UART_ADDR_PH)
-		| INTEL_PTE_VALID | INTEL_PTE_WRITE | INTEL_PTE_NCACHE);
-
-	WRITE_PTE(ppte + ptenum(0xFFFFF000),
-		  pa_to_pte(avail_end)
-		| INTEL_PTE_VALID | INTEL_PTE_WRITE);
-	avail_start = kvtophys(virtual_avail);
-
-/*
- *	Turn on mapping
- */
-
-	flush_and_ctxsw(kernel_pmap->dirbase);
-	paging_enabled = 1;
-
-	printf("Paging enabled.\n");
-#endif
 
 	/* Architecture-specific code will turn on paging
 	   soon after we return from here.  */
@@ -939,21 +831,6 @@ pmap_page_table_page_alloc()
 	 */
 	bzero(phystokv(pa), PAGE_SIZE);
 
-#if	i860
-	/*
-	 *	Mark the page table page(s) non-cacheable.
-	 */
-	{
-	    int		i = ptes_per_vm_page;
-	    pt_entry_t	*pdp;
-
-	    pdp = pmap_pte(kernel_pmap, pa);
-	    do {
-		*pdp |= INTEL_PTE_NCACHE;
-		pdp++;
-	    } while (--i > 0);
-	}
-#endif
 	return pa;
 }
 
@@ -1638,12 +1515,6 @@ Retry:
 		pdp++;
 		ptp += INTEL_PGBYTES;
 	    } while (--i > 0);
-#if	i860
-	    /*
-	     * Flush the data cache.
-	     */
-	    flush();
-#endif	/* i860 */
 
 	    /*
 	     * Now, get the address of the page-table entry.
@@ -2540,16 +2411,6 @@ void pmap_update_interrupt()
 	/* should never be called. */
 }
 #endif	/* NCPUS > 1 */
-
-#if	i860	/* akp */
-void set_dirbase(dirbase)
-	register vm_offset_t	dirbase;
-{
-	/*flush();*/
-	/*flush_tlb();*/
-	flush_and_ctxsw(dirbase);
-}
-#endif	/* i860 */
 
 #ifdef i386
 /* Unmap page 0 to trap NULL references.  */

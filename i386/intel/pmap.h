@@ -58,20 +58,9 @@
 #define round_intel_to_vm(x)	round_i386_to_vm(x)
 #define vm_to_intel(x)		vm_to_i386(x)
 #endif	/* i386 */
-#if	i860
-#define	INTEL_PGBYTES		I860_PGBYTES
-#define INTEL_PGSHIFT		I860_PGSHIFT
-#define	intel_btop(x)		i860_btop(x)
-#define	intel_ptob(x)		i860_ptob(x)
-#define	intel_round_page(x)	i860_round_page(x)
-#define	intel_trunc_page(x)	i860_trunc_page(x)
-#define trunc_intel_to_vm(x)	trunc_i860_to_vm(x)
-#define round_intel_to_vm(x)	round_i860_to_vm(x)
-#define vm_to_intel(x)		vm_to_i860(x)
-#endif	/* i860 */
 
 /*
- *	i386/i486/i860 Page Table Entry
+ *	i386/i486 Page Table Entry
  */
 
 typedef unsigned int	pt_entry_t;
@@ -108,11 +97,7 @@ typedef unsigned int	pt_entry_t;
  *	without using the bit fields).
  */
 
-#if	i860
-#define INTEL_PTE_valid		0x00000001
-#else
 #define INTEL_PTE_VALID		0x00000001
-#endif
 #define INTEL_PTE_WRITE		0x00000002
 #define INTEL_PTE_USER		0x00000004
 #define INTEL_PTE_WTHRU		0x00000008
@@ -121,22 +106,6 @@ typedef unsigned int	pt_entry_t;
 #define INTEL_PTE_MOD		0x00000040
 #define INTEL_PTE_WIRED		0x00000200
 #define INTEL_PTE_PFN		0xfffff000
-
-#if	i860
-#if	NOCACHE
-#define	INTEL_PTE_VALID		(INTEL_PTE_valid	\
-				|INTEL_PTE_WTHRU	\
-				|INTEL_PTE_NCACHE	\
-				|INTEL_PTE_REF		\
-				|INTEL_PTE_MOD		\
-				)
-#else	/* NOCACHE */
-#define	INTEL_PTE_VALID		(INTEL_PTE_valid	\
-				|INTEL_PTE_REF		\
-				|INTEL_PTE_MOD		\
-				)
-#endif	/* NOCACHE */
-#endif	/* i860 */
 
 #define	pa_to_pte(a)		((a) & INTEL_PTE_PFN)
 #define	pte_to_pa(p)		((p) & INTEL_PTE_PFN)
@@ -164,11 +133,7 @@ typedef struct pmap	*pmap_t;
 
 #define PMAP_NULL	((pmap_t) 0)
 
-#if	i860
-/*#define	set_dirbase(dirbase)	flush_and_ctxsw(dirbase)*//*akp*/
-#else
 #define	set_dirbase(dirbase)	set_cr3(dirbase)
-#endif
 
 #if	NCPUS > 1
 /*
@@ -202,7 +167,7 @@ extern	pmap_t	kernel_pmap;
 #endif	/* NCPUS > 1 */
 
 /*
- *	Machine dependent routines that are used only for i386/i486/i860.
+ *	Machine dependent routines that are used only for i386/i486.
  */
 
 pt_entry_t *pmap_pte(pmap_t pmap, vm_offset_t addr);
