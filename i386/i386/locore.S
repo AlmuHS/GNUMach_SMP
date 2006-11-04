@@ -745,7 +745,6 @@ ast_from_interrupt:
  * frame->	saved %ebp
  *		return address in interrupt handler
  *		iunit
- * [ PS2 - saved interrupt number ]
  *		saved SPL
  *		return address == return_to_iret_i
  *		saved %edx
@@ -759,7 +758,6 @@ ast_from_interrupt:
  * frame->	saved %ebp
  *		return address in interrupt handler
  *		iunit
- * [ PS2 - saved interrupt number ]
  *		saved SPL
  *		return address == return_to_iret
  *		pointer to save area on old stack
@@ -777,11 +775,7 @@ ast_from_interrupt:
  * Call kdb, passing it that register save area.
  */
 
-#ifdef	PS2
-#define	RET_OFFSET	20
-#else	/* not PS2 */
 #define	RET_OFFSET	16
-#endif	/* PS2 */
 
 ENTRY(kdb_kintr)
 	movl	%ebp,%eax		/* save caller`s frame pointer */

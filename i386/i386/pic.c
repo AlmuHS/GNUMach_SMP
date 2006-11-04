@@ -134,8 +134,6 @@ picinit()
 	slaves_icw = (char *)PIC_SLAVE_ICW;
 	slaves_ocw = (char *)PIC_SLAVE_OCW;
 
-#ifdef	PS2
-#else	/* PS2 */
 	/*
 	** 3. Select options for each ICW and each OCW for each PIC.
 	*/
@@ -211,8 +209,6 @@ picinit()
 	*/
 	outb ( master_ocw, PICM_OCW1 );
 
-#endif	/* PS2 */
-
 #if 0
 	printf(" spl set to %x \n", curr_pic_mask);
 #endif
@@ -231,9 +227,9 @@ picinit()
 **
 */
 
-#if	defined(AT386) || defined(PS2)
+#if	defined(AT386)
 #define SLAVEMASK       (0xFFFF ^ SLAVE_ON_IR2)
-#endif	/* defined(AT386) || defined(PS2) */
+#endif	/* defined(AT386) */
 #ifdef	iPSC386
 #define SLAVEMASK       (0xFFFF ^ SLAVE_ON_IR7)
 #endif	/* iPSC386 */

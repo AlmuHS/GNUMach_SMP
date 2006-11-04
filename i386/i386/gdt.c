@@ -36,12 +36,6 @@
 #include "seg.h"
 #include "gdt.h"
 
-#if     PS2
-extern unsigned long abios_int_return;
-extern unsigned long abios_th_return;
-extern char intstack[];
-#endif  /* PS2 */
-
 struct real_descriptor gdt[GDTSZ];
 
 void

@@ -51,7 +51,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define PITCTR1_PORT	0xD2		/* counter 1 port */
 #define PITCTR2_PORT	0xD4		/* counter 2 port */
 #define PITCTL_PORT	0xD6		/* PIT control port */
-#else	/* defined(AT386) || defined(PS2) */
+#else	/* defined(AT386) */
 /* Definitions for 8254 Programmable Interrupt Timer ports on AT 386 */
 #define PITCTR0_PORT	0x40		/* counter 0 port */
 #define PITCTR1_PORT	0x41		/* counter 1 port */
@@ -61,7 +61,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 /* bits used in auxiliary control port for timer 2 */
 #define PITAUX_GATE2	0x01		/* aux port, PIT gate 2 input */
 #define PITAUX_OUT2	0x02		/* aux port, PIT clock out 2 enable */
-#endif	/* defined(AT386) || defined(PS2) */
+#endif	/* defined(AT386) */
 
 /* Following are used for Timer 0 */
 #define PIT_C0          0x00            /* select counter 0 */
@@ -80,9 +80,9 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * Clock speed for the timer in hz divided by the constant HZ
  * (defined in param.h)
  */
-#if	AT386 || PS2
+#if	AT386
 #define CLKNUM		1193167
-#endif	/* AT386 || PS2 */
+#endif	/* AT386 */
 #if	defined(MB1)
 #define CLKNUM		12300
 #endif

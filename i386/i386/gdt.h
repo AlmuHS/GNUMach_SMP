@@ -49,18 +49,7 @@
 #define	USER_FPREGS	0x40		/* user-mode access to saved
 					   floating-point registers */
 
-#ifdef PS2
-#define ABIOS_INT_RET   0x48            /* 16 bit return selector for ABIOS */
-#define ABIOS_TH_RET    0x50            /* 16 bit return selector for ABIOS */
-#define	ABIOS_INT_SS	0x58		/* ABIOS interrupt stack selector */
-#define	ABIOS_TH_SS	0x60		/* ABIOS current stack selector */
-#define	ABIOS_FIRST_AVAIL_SEL \
-			0x68		/* first selector for ABIOS
-					   to allocate */
-#define GDTSZ           0x300           /* size of gdt table */
-#else   /* PS2 */
 #define	GDTSZ		11
-#endif  /* PS2 */
 
 
 extern struct real_descriptor gdt[GDTSZ];

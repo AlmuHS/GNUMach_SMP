@@ -1,3 +1,24 @@
+2006-11-05  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	Drop PS2 architecture support.
+
+	* i386/i386/fpu.c (fpintr): Remove PS2 from #if.
+	* i386/i386/gdt.c (abios_int_return, abios_th_return, intstack): Remove
+	extern declaration.
+	* i386/i386/gdt.h (ABIOS_INT_RET, ABIOS_TH_RET, ABIOS_INT_SS,
+	ABIOS_TH_SS, ABIOS_FIRST_AVAIL_SEL): Remove macros.
+	(GDTSZ): Remove PS2 case.
+	* i386/i386/hardclock.c: Don't include `i386/pic.h' and `i386/pio.h'.
+	(hardclock): Remove PS2 prototype and code.
+	* i386/i386/locore.S (RET_OFFSET): Remove PS2 stack layout.
+	* i386/i386/pic.c (picinit): Remove #ifdef PS2.
+	* i386/i386/pic.h: Remove PS2 from #if.
+	* i386/i386/pit.c (clock_int_handler): Remove extern declaration.
+	(clock_request_block, clock_flags, cqbuf): Remove variables.
+	(clkstart): Remove call to abios_clock_start function.
+	(abios_clock_start, ackrtclock): Remove function.
+	* i386/i386/pit.h: Remove PS2 from #if.
+
 2006-10-26  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* Makefile.in: Regenerate.

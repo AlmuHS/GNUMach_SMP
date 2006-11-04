@@ -64,16 +64,6 @@ int pit0_mode = PIT_C0|PIT_SQUAREMODE|PIT_READMODE ;
 
 unsigned int clknumb = CLKNUM;		/* interrupt interval for timer 0 */
 
-#ifdef PS2
-extern int clock_int_handler();
-
-#include <sys/types.h>
-#include <i386ps2/abios.h>
-static struct generic_request *clock_request_block;
-static int     clock_flags;
-char cqbuf[200];        /*XXX temporary.. should use kmem_alloc or whatever..*/
-#endif  /* PS2 */
-
 clkstart()
 {
 	unsigned int	flags;
@@ -84,10 +74,6 @@ clkstart()
 	form_pic_mask();
 
 	s = sploff();         /* disable interrupts */
-
-#ifdef	PS2
-        abios_clock_start();
-#endif /* PS2 */
 
 	/* Since we use only timer 0, we program that.
 	 * 8254 Manual specifically says you do not need to program
@@ -101,47 +87,3 @@ clkstart()
 	outb(pitctr0_port, byte); 
 	splon(s);         /* restore interrupt state */
 }
-
-#define COUNT   10000   /* should be a multiple of 1000! */
-
-#ifdef PS2
-
-abios_clock_start()
-{
-        struct generic_request  temp_request_block;
-        int rc;
-
-        nmi_enable();   /* has to happen somewhere! */
-        temp_request_block.r_current_req_blck_len = ABIOS_MIN_REQ_SIZE;
-        temp_request_block.r_logical_id = abios_next_LID(SYSTIME_ID,
-                                                        ABIOS_FIRST_LID);
-        temp_request_block.r_unit = 0;
-        temp_request_block.r_function = ABIOS_LOGICAL_PARAMETER;
-        temp_request_block.r_return_code = ABIOS_UNDEFINED;
-
-        abios_common_start(&temp_request_block,0);
-        if (temp_request_block.r_return_code != ABIOS_DONE) {
-                panic("couldn init abios time code!\n");
-	      }
-
-        /*
-         * now build the clock request for the hardware system clock
-         */
-        clock_request_block = (struct generic_request *)cqbuf;
-        clock_request_block->r_current_req_blck_len =
-                                temp_request_block.r_request_block_length;
-        clock_request_block->r_logical_id = temp_request_block.r_logical_id;
-        clock_request_block->r_unit = 0;
-        clock_request_block->r_function = ABIOS_DEFAULT_INTERRUPT;
-        clock_request_block->r_return_code = ABIOS_UNDEFINED;
-        clock_flags = temp_request_block.r_logical_id_flags;
-}
-
-ackrtclock()
-{
-        if (clock_request_block) {
-	  clock_request_block->r_return_code = ABIOS_UNDEFINED;
-	  abios_common_interrupt(clock_request_block,clock_flags);
-	}
-      }
-#endif /* PS2 */

@@ -41,24 +41,14 @@
 #if	defined(AT386) || defined(iPSC386)
 #include <i386/ipl.h>
 #endif
-#ifdef	PS2
-#include <i386/pic.h>
-#include <i386/pio.h>
-#endif	/* PS2 */
 
 extern void	clock_interrupt();
 extern char	return_to_iret[];
 
 void
-#ifdef	PS2
-hardclock(iunit, ivect, old_ipl, ret_addr, regs)
-        int     iunit;          /* 'unit' number */
-	int	ivect;		/* interrupt number */
-#else	/* PS2 */
 hardclock(iunit,        old_ipl, ret_addr, regs)
         int     iunit;          /* 'unit' number */
 	int	old_ipl;	/* old interrupt level */
-#endif	/* PS2 */
 	char *	ret_addr;	/* return address in interrupt handler */
 	struct i386_interrupt_state *regs;
 				/* saved registers */
@@ -70,11 +60,11 @@ hardclock(iunit,        old_ipl, ret_addr, regs)
 	    clock_interrupt(tick,			/* usec per tick */
 			    (regs->efl & EFL_VM) ||	/* user mode */
 			    ((regs->cs & 0x03) != 0),	/* user mode */
-#if defined(PS2) || defined(LINUX_DEV)
+#if defined(LINUX_DEV)
 			    FALSE			/* ignore SPL0 */
-#else	/* PS2 */
+#else	/* LINUX_DEV */
 			    old_ipl == SPL0		/* base priority */
-#endif	/* PS2 */
+#endif	/* LINUX_DEV */
 			    );
 	else
 	    /*
@@ -87,11 +77,4 @@ hardclock(iunit,        old_ipl, ret_addr, regs)
 #ifdef LINUX_DEV
 	linux_timer_intr();
 #endif
-
-#ifdef	PS2
-	/*
-	 * Reset the clock interrupt line.
-	 */
-	outb(0x61, inb(0x61) | 0x80);
-#endif	/* PS2 */
 }

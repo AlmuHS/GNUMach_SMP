@@ -692,7 +692,7 @@ fp_state_alloc()
 	ifps->fp_save_state.fp_tag = 0xffff;	/* all empty */
 }
 
-#if	AT386 || PS2
+#if	AT386
 /*
  *	Handle a coprocessor error interrupt on the AT386.
  *	This comes in on line 5 of the slave PIC at SPL1.
@@ -757,4 +757,4 @@ ASSERT_IPL(SPL1);
 	ast_on(cpu_number(), AST_I386_FP);
 	splx(s);
 }
-#endif	/* AT386 || PS2 */
+#endif	/* AT386 */
