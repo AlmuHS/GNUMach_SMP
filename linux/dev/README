@@ -1,0 +1,8 @@
+This hierarchy used to contain modified files, based on files from the
+Linux kernel, as opposed to `../src/' containing only files that have not
+been modified (or have only been modified marginally).  This policy is
+NOT adhered to any further, so please don't change (or even add) files
+below here, but instead merge the files in here back into `../src/'
+(which should really be called `../linux-2.0' or similar) or even better
+--- when adding large chunks --- create a more suitable hierarchy like
+we've done with `../pcmcia-cs/'.

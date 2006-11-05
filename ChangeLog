@@ -1,5 +1,7 @@
 2006-11-05  Thomas Schwinge <tschwinge@gnu.org>
 
+	* linux/dev/README: New file.
+
 	* config.h.in: Regenerate.
 	* configure: Likewise.
 
@@ -10,9 +12,7 @@
 
 	[task #5878 --- ``Backport code from GNU Mach's trunk to
 	gnumach-1-branch: i386_set_gdt, i386_get_gdt'']
-
 	[sync from HEAD, 2002-10-03]
-
 	* i386/include/mach/i386/mach_i386.defs (i386_set_gdt, i386_get_gdt):
 	New routines.
 	* i386/i386/user_ldt.c (i386_set_gdt, i386_get_gdt): New functions.
@@ -26,7 +26,6 @@
 2006-11-05  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	FPU, CPU and IO stubs cleanup.
-
 	* i386/i386/fpu.h (fstcw): New macro.
 	* i386/i386/locore.S (_fninit, _fstcw, _fldcw, _fnstsw, _fnclex)
 	(_clts, _fpsave, _fprestore, set_cr3, get_cr3, flush_tlb, get_cr2)
@@ -47,8 +46,7 @@
 
 2006-11-05  Barry deFreese  <bddebian@comcast.net>
 
-	memcpy/memset cleanup.
-
+	[task #5726 --- ``GCC built-in functions'']
 	* include/string.h: New file.
 	* include/mach/mig_support.h: Include `string.h'.
 	[MACH_KERNEL] (bcopy): Remove extern declaration.
