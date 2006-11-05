@@ -401,3 +401,57 @@ user_ldt_free(user_ldt)
 		user_ldt->desc.limit_low + 1
 		+ sizeof(struct real_descriptor));
 }
+
+
+kern_return_t
+i386_set_gdt (thread_t thread, int *selector, struct real_descriptor desc)
+{
+  int idx;
+
+  if (thread == THREAD_NULL)
+    return KERN_INVALID_ARGUMENT;
+
+  if (*selector == -1)
+    {
+      for (idx = 0; idx < USER_GDT_SLOTS; ++idx)
+        if ((thread->pcb->ims.user_gdt[idx].access & ACC_P) == 0)
+          {
+            *selector = ((idx + sel_idx(USER_GDT)) << 3) | SEL_PL_U;
+            break;
+          }
+      if (idx == USER_GDT_SLOTS)
+        return KERN_NO_SPACE;   /* ? */
+    }
+  else if ((*selector & (SEL_LDT|SEL_PL)) != SEL_PL_U
+           || sel_idx (*selector) < sel_idx(USER_GDT)
+           || sel_idx (*selector) >= sel_idx(USER_GDT) + USER_GDT_SLOTS)
+    return KERN_INVALID_ARGUMENT;
+  else
+    idx = sel_idx (*selector) - sel_idx(USER_GDT);
+
+  if ((desc.access & ACC_P) == 0)
+    memset (&thread->pcb->ims.user_gdt[idx], 0,
+            sizeof thread->pcb->ims.user_gdt[idx]);
+  else if ((desc.access & (ACC_TYPE_USER|ACC_PL)) != (ACC_TYPE_USER|ACC_PL_U))
+    return KERN_INVALID_ARGUMENT;
+  else
+    thread->pcb->ims.user_gdt[idx] = desc;
+
+  return KERN_SUCCESS;
+}
+
+kern_return_t
+i386_get_gdt (thread_t thread, int selector, struct real_descriptor *desc)
+{
+  if (thread == THREAD_NULL)
+    return KERN_INVALID_ARGUMENT;
+
+  if ((selector & (SEL_LDT|SEL_PL)) != SEL_PL_U
+      || sel_idx (selector) < sel_idx(USER_GDT)
+      || sel_idx (selector) >= sel_idx(USER_GDT) + USER_GDT_SLOTS)
+    return KERN_INVALID_ARGUMENT;
+
+  *desc = thread->pcb->ims.user_gdt[sel_idx (selector) - sel_idx(USER_GDT)];
+
+  return KERN_SUCCESS;
+}

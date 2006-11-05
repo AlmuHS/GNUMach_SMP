@@ -191,6 +191,13 @@ void switch_ktss(pcb)
 	    set_ldt(USER_LDT);
 	}
     }
+
+    /* Copy in the per-thread GDT slots.  No reloading is necessary
+       because just restoring the segment registers on the way back to
+       user mode reloads the shadow registers from the in-memory GDT.  */
+    memcpy (gdt_desc_p (mycpu, USER_GDT),
+        pcb->ims.user_gdt, sizeof pcb->ims.user_gdt);
+
 	/*
 	 * Load the floating-point context, if necessary.
 	 */

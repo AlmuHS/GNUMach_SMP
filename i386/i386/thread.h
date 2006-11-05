@@ -41,6 +41,7 @@
 
 #include <i386/iopb.h>
 #include <i386/tss.h>
+#include "gdt.h"
 
 /*
  *	i386_saved_state:
@@ -161,6 +162,7 @@ struct i386_machine_state {
 	struct user_ldt	*	ldt;
 	struct i386_fpsave_state *ifps;
 	struct v86_assist_state	v86s;
+	struct real_descriptor user_gdt[USER_GDT_SLOTS];
 };
 
 typedef struct pcb {

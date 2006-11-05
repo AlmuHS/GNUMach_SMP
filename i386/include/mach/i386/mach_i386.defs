@@ -66,3 +66,19 @@ routine	i386_get_ldt(
 		first_selector	: int;
 		selector_count	: int;
 	out	desc_list	: descriptor_list_t);
+
+/* Modify one of a few available thread-specific segment descriptor slots.
+   The SELECTOR must be a value from a previous call (on any thread),
+   or -1 to allocate an available slot and return the segment selector for it.
+   These slots are copied into the CPU on each thread switch.
+   Returns KERN_NO_SPACE when there are no more slots available.  */
+routine i386_set_gdt(
+                target_thread   : thread_t;
+        inout   selector        : int;
+                desc            : descriptor_t);
+
+/* Fetch a segment descriptor set with a prior i386_set_gdt call.  */
+routine i386_get_gdt(
+                target_thread   : thread_t;
+                selector        : int;
+        out     desc            : descriptor_t);

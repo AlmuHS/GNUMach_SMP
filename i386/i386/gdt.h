@@ -49,8 +49,10 @@
 #define	USER_FPREGS	0x40		/* user-mode access to saved
 					   floating-point registers */
 
-#define	GDTSZ		11
+#define	USER_GDT	0x48		/* user-defined GDT entries */
+#define	USER_GDT_SLOTS	2
 
+#define	GDTSZ		(USER_GDT/8 + USER_GDT_SLOTS)
 
 extern struct real_descriptor gdt[GDTSZ];
 

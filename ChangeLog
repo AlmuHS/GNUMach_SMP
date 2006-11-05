@@ -1,3 +1,18 @@
+2006-11-05  Barry deFreese  <bddebian@comcast.net>
+
+	[task #5878 --- ``Backport code from GNU Mach's trunk to
+	gnumach-1-branch: i386_set_gdt, i386_get_gdt'']
+
+	* i386/include/mach/i386/mach_i386.defs (i386_set_gdt, i386_get_gdt):
+	New routines.
+	* i386/i386/user_ldt.c (i386_set_gdt, i386_get_gdt): New functions.
+	* i386/i386/gdt.h (USER_GDT, USER_GDT_SLOTS): New macros.
+	(GDTSZ): Compute it from USER_GDT and USER_GDT_SLOTS.
+	* i386/i386/thread.h: Include `gdt.h'.
+	(struct i386_machine_state): New member `user_gdt'.
+	* i386/i386/pcb.c (switch_ktss): Copy those slots into the GDT.
+	* linux/dev/include/linux/head.h: New file.
+
 2006-11-05  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	FPU, CPU and IO stubs cleanup.
@@ -36,7 +51,7 @@
 	* device/ds_routines.c (device_write_get, ds_read_done): Likewise.
 	* device/kmsg.c: Likewise.
 	* device/net_io.c (net_filter, net_set_filter, net_getstat): Likewise.
-	* i386/i386/fpu.c (fpu_set_state, fpu_get_state) fp_load)
+	* i386/i386/fpu.c (fpu_set_state, fpu_get_state, fp_load)
 	(fp_state_alloc): Likewise.
 	* i386/i386/iopb.c (io_tss_init, i386_io_port_list): Likewise.
 	* i386/i386/mp_desc.c (mp_desc_init): Likewise.
