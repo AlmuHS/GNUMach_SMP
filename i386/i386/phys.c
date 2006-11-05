@@ -23,7 +23,9 @@
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
- 
+
+#include <string.h>
+
 #include <mach/boolean.h>
 #include <kern/task.h>
 #include <kern/thread.h>
@@ -43,7 +45,7 @@ pmap_zero_page(p)
 	vm_offset_t p;
 {
 	assert(p != vm_page_fictitious_addr);
-	bzero(phystokv(p), PAGE_SIZE);
+	memset((void *)phystokv(p), 0, PAGE_SIZE);
 }
 
 /*
@@ -55,7 +57,7 @@ pmap_copy_page(src, dst)
 	assert(src != vm_page_fictitious_addr);
 	assert(dst != vm_page_fictitious_addr);
 
-	bcopy(phystokv(src), phystokv(dst), PAGE_SIZE);
+	memcpy((void *)phystokv(dst), (void *)phystokv(src), PAGE_SIZE);
 }
 
 /*
@@ -68,7 +70,7 @@ copy_to_phys(src_addr_v, dst_addr_p, count)
 	int count;
 {
 	assert(dst_addr_p != vm_page_fictitious_addr);
-	bcopy(src_addr_v, phystokv(dst_addr_p), count);
+	memcpy((void *)phystokv(dst_addr_p), (void *)src_addr_v, count);
 }
 
 /*
@@ -82,7 +84,7 @@ copy_from_phys(src_addr_p, dst_addr_v, count)
 	int count;
 {
 	assert(src_addr_p != vm_page_fictitious_addr);
-	bcopy(phystokv(src_addr_p), dst_addr_v, count);
+	memcpy((void *)dst_addr_v, (void *)phystokv(src_addr_p), count);
 }
 
 /*

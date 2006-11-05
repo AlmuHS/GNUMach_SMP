@@ -1,3 +1,62 @@
+2006-11-05  Barry deFreese  <bddebian@comcast.net>
+
+	memcpy/memset cleanup.
+
+	* include/string.h: New file.
+	* include/mach/mig_support.h: Include `string.h'.
+	[MACH_KERNEL] (bcopy): Remove extern declaration.
+	[MACH_KERNEL] (memcpy): Remove macro.
+	* device/cirbuf.c: Include `string.h'.
+	(q_to_b, b_to_q): Replace bcopy() with memcpy() and bzero() with
+	memset(), clean memcpy() and memset() invocation.
+	* device/cons.c (cnputc): Likewise.
+	* device/dev_pager.c (device_pager_data_request_done): Likewise.
+	* device/ds_routines.c (device_write_get, ds_read_done): Likewise.
+	* device/kmsg.c: Likewise.
+	* device/net_io.c (net_filter, net_set_filter, net_getstat): Likewise.
+	* i386/i386/fpu.c (fpu_set_state, fpu_get_state) fp_load)
+	(fp_state_alloc): Likewise.
+	* i386/i386/iopb.c (io_tss_init, i386_io_port_list): Likewise.
+	* i386/i386/mp_desc.c (mp_desc_init): Likewise.
+	* i386/i386/pcb.c (pcb_init, thread_setstatus)
+	(thread_getstatus): Likewise.
+	* i386/i386/phys.c (pmap_zero_page, pmap_copy_page, copy_to_phys)
+	(copy_from_phys): Likewise.
+	* i386/i386/trap.c (v86_assist): Likewise.
+	* i386/i386/user_ldt.c (i386_set_ldt, i386_get_ldt): Likewise.
+	* i386/i386at/immc.c (immc_cnputc): Likewise.
+	* i386/i386at/kd_event.c (X_kdb_enter_init, X_kdb_exit_init): Likewise.
+	* i386/intel/pmap.c (pmap_init, pmap_page_table_page_alloc)
+	(pmap_create): Likewise.
+	* ipc/ipc_entry.c (ipc_entry_grow_table): Likewise.
+	* ipc/ipc_kmsg.c (ipc_kmsg_get_from_kernel)
+	(ipc_kmsg_put_to_kernel): Likewise.
+	* ipc/ipc_object.c (ipc_object_alloc, ipc_object_alloc_name): Likewise.
+	* ipc/ipc_port.c (ipc_port_dngrow): Likewise.
+	* ipc/ipc_space.c: Likewise.
+	* ipc/mach_debug.c (mach_port_space_info)
+	(mach_port_space_info): Likewise.
+	* kern/act.c (act_create): Likewise.
+	* kern/boot_script.c: Likewise.
+	* kern/bootstrap.c: Likewise.
+	* kern/eventcount.c (evc_init): Likewise.
+	* kern/host.c (host_info, host_processor_sets): Likewise.
+	* kern/lock.c (lock_init): Likewise.
+	* kern/lock_mon.c (lock_info_clear): Likewise.
+	* kern/mach_clock.c (mapable_time_init): Likewise.
+	* kern/pc_sample.c (get_sampled_pcs): Likewise.
+	* kern/processor.c (processor_set_things): Likewise.
+	* kern/syscall_emulation.c (task_set_emulation_vector_internal)
+	(task_get_emulation_vector, xxx_task_get_emulation_vector): Likewise.
+	* kern/task.c (task_threads): Likewise.
+	* kern/xpr.c (xprbootstrap): Likewise.
+	* kern/zalloc.c (host_zone_info): Likewise.
+	* vm/vm_debug.c (mach_vm_object_pages): Likewise.
+	* vm/vm_kern.c (projected_buffer_allocate, copyinmap)
+	(copyoutmap): Likewise.
+	* vm/vm_object.c (vm_object_bootstrap): Likewise.
+	* vm/vm_resident.c (vm_page_grab_contiguous_pages): Likewise.
+
 2006-11-05  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* DEVELOPMENT: Document the following removals.

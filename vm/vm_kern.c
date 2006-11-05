@@ -34,6 +34,8 @@
  *	Kernel memory management.
  */
 
+#include <string.h>
+
 #include <mach/kern_return.h>
 #include <machine/vm_param.h>
 #include <kern/assert.h>
@@ -149,7 +151,7 @@ projected_buffer_allocate(map, size, persistence, kernel_p,
 	kmem_alloc_pages(object, 0,
 			 *kernel_p, *kernel_p + size,
 			 VM_PROT_READ | VM_PROT_WRITE);
-	bzero(*kernel_p, size);         /*Zero fill*/
+	memset((void*) *kernel_p, 0, size);         /*Zero fill*/
 
 	/* Set up physical mappings for user pmap */
 
@@ -1035,7 +1037,7 @@ int copyinmap(map, fromaddr, toaddr, length)
 {
 	if (vm_map_pmap(map) == kernel_pmap) {
 		/* assume a correct copy */
-		bcopy(fromaddr, toaddr, length);
+		memcpy(toaddr, fromaddr, length);
 		return 0;
 	}
 
@@ -1061,7 +1063,7 @@ int copyoutmap(map, fromaddr, toaddr, length)
 {
 	if (vm_map_pmap(map) == kernel_pmap) {
 		/* assume a correct copy */
-		bcopy(fromaddr, toaddr, length);
+		memcpy(toaddr, fromaddr, length);
 		return 0;
 	}
 

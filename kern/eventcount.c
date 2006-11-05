@@ -35,6 +35,8 @@
  *
  */
 
+#include <string.h>
+
 #include <mach/machine.h>
 #include <kern/ast.h>
 #include "cpu_number.h"
@@ -67,7 +69,7 @@ evc_init(evc_t	ev)
 {
 	int i;
 
-	bzero((char*)ev, sizeof(*ev));
+	memset(ev, 0, sizeof(*ev));
 
 	/* keep track of who is who */
 	for (i = 0; i < MAX_EVCS; i++)

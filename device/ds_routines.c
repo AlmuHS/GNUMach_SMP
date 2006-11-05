@@ -28,6 +28,8 @@
  *	Date: 	3/89
  */
 
+#include <string.h>
+
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
 #include <mach/mig_errors.h>
@@ -618,7 +620,7 @@ device_write_get(ior, wait)
 	if (ior->io_op & IO_INBAND) {
 	    assert(ior->io_count <= sizeof (io_buf_ptr_inband_t));
 	    new_addr = zalloc(io_inband_zone);
-	    bcopy((void*)ior->io_data, (void*)new_addr, ior->io_count);
+	    memcpy((void*)new_addr, ior->io_data, ior->io_count);
 	    ior->io_data = (io_buf_ptr_t)new_addr;
 	    ior->io_alloc_size = sizeof (io_buf_ptr_inband_t);
 
@@ -1083,9 +1085,9 @@ boolean_t ds_read_done(ior)
 	 * Zero memory that the device did not fill.
 	 */
 	if (start_sent < start_data)
-	    bzero((char *)start_sent, start_data - start_sent);
+	    memset((char *)start_sent, 0, start_data - start_sent);
 	if (end_sent > end_data)
-	    bzero((char *)end_data, end_sent - end_data);
+	    memset((char *)end_data, 0, end_sent - end_data);
 
 
 	/*

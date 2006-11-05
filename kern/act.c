@@ -26,6 +26,8 @@
 
 #ifdef MIGRATING_THREADS
 
+#include <string.h>
+
 #include <mach_ipc_compat.h> /* XXX */
 #include <mach/kern_return.h>
 #include <mach/alert.h>
@@ -113,7 +115,7 @@ kern_return_t act_create(task_t task, vm_offset_t user_stack,
 	/* XXX ipt_unlock(act_freelist); */
 	act->ipt_next = 0;
 #endif
-	bzero(act, sizeof(*act)); /*XXX shouldn't be needed */
+	memset(act, 0, sizeof(*act)); /*XXX shouldn't be needed */
 
 #ifdef DEBUG
 	act->lower = act->higher = 0;

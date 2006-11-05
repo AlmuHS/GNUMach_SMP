@@ -34,6 +34,8 @@
  *	Primitive functions to manipulate translation entries.
  */
 
+#include <string.h>
+
 #include <mach/kern_return.h>
 #include <mach/port.h>
 #include <kern/assert.h>
@@ -635,7 +637,7 @@ ipc_entry_grow_table(space)
 		 */
 
 		if (!it_entries_reallocable(oits))
-			(void) memcpy((void *) table, (const void *) otable,
+			memcpy(table, otable,
 			      osize * sizeof(struct ipc_entry));
 
 		for (i = 0; i < osize; i++)

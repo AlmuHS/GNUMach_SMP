@@ -31,6 +31,8 @@
  *	Task management primitives implementation.
  */
 
+#include <string.h>
+
 #include <mach/machine/vm_types.h>
 #include <mach/vm_param.h>
 #include <mach/task_info.h>
@@ -625,7 +627,7 @@ kern_return_t task_threads(
 				return KERN_RESOURCE_SHORTAGE;
 			}
 
-			bcopy((char *) addr, (char *) newaddr, size_needed);
+			memcpy((void *) newaddr, (void *) addr, size_needed);
 			kfree(addr, size);
 			threads = (thread_t *) newaddr;
 		}

@@ -29,6 +29,8 @@
  *	Non-ipc host functions.
  */
 
+#include <string.h>
+
 #include <kern/assert.h>
 #include <kern/kalloc.h>
 #include <kern/host.h>
@@ -182,12 +184,12 @@ kern_return_t	host_info(
 
 		load_info = (host_load_info_t) info;
 
-		bcopy((char *) avenrun,
-		      (char *) load_info->avenrun,
-		      sizeof avenrun);
-		bcopy((char *) mach_factor,
-		      (char *) load_info->mach_factor,
-		      sizeof mach_factor);
+		memcpy(load_info->avenrun,
+		       avenrun,
+		       sizeof avenrun);
+		memcpy(load_info->mach_factor,
+		       mach_factor,
+		       sizeof mach_factor);
 
 		*count = HOST_LOAD_INFO_COUNT;
 		return KERN_SUCCESS;
@@ -302,7 +304,7 @@ host_processor_sets(
 			return KERN_RESOURCE_SHORTAGE;
 		}
 
-		bcopy((char *) addr, (char *) newaddr, size_needed);
+		memcpy((char *) newaddr, (char *) addr, size_needed);
 		kfree(addr, size);
 		psets = (processor_set_t *) newaddr;
 	}

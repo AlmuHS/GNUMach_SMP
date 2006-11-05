@@ -20,6 +20,7 @@
  *      Utah $Hdr: cons.c 1.14 94/12/14$
  */
 
+#include <string.h>
 #ifdef MACH_KERNEL
 #include <sys/types.h>
 #include <device/conf.h>
@@ -268,7 +269,7 @@ cnputc(c)
 		if (consbufused == 0) {
 			consbp = consbuf;
 			consbufused = 1;
-			bzero(consbuf, CONSBUFSIZE);
+			memset(consbuf, 0, CONSBUFSIZE);
 		}
 		*consbp++ = c;
 		if (consbp >= &consbuf[CONSBUFSIZE])

@@ -30,6 +30,9 @@
  * Bootstrap the various built-in servers.
  */
 
+#include <alloca.h>
+#include <string.h>
+
 #include <mach/port.h>
 #include <mach/message.h>
 #include <machine/vm_param.h>
@@ -40,7 +43,6 @@
 #include <kern/lock.h>
 #include <vm/vm_kern.h>
 #include <device/device_port.h>
-#include <alloca.h>
 
 #if	MACH_KDB
 #include <machine/db_machdep.h>
@@ -49,7 +51,6 @@
 
 #if OSKIT_MACH
 #include <stddef.h>
-#include <string.h>
 #include <oskit/machine/base_multiboot.h>
 #include <oskit/exec/exec.h>
 #include <oskit/c/stdio.h>

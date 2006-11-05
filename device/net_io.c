@@ -39,6 +39,8 @@
  */
 
 #include <sys/types.h>
+#include <string.h>
+
 #include <device/net_status.h>
 #include <machine/machspl.h>		/* spl definitions */
 #include <device/net_io.h>
@@ -805,13 +807,13 @@ net_filter(kmsg, send_list)
 			break;
 		    }
 
-		    bcopy(
-			net_kmsg(kmsg)->packet,
+		    memcpy(
 			net_kmsg(new_kmsg)->packet,
+			net_kmsg(kmsg)->packet,
 			ret_count);
-		    bcopy(
-			net_kmsg(kmsg)->header,
+		    memcpy(
 			net_kmsg(new_kmsg)->header,
+			net_kmsg(kmsg)->header,
 			NET_HDW_HDR_MAX);
 		}
  		net_kmsg(new_kmsg)->net_rcv_msg_packet_count = ret_count;
@@ -1297,8 +1299,7 @@ net_set_filter(ifp, rcv_port, priority, filter, filter_count)
 	my_infp->rcv_count = 0;
 
 	/* Copy filter program. */
-	bcopy ((vm_offset_t)filter, (vm_offset_t)my_infp->filter,
-	       filter_bytes);
+	memcpy (my_infp->filter, filter, filter_bytes);
 	my_infp->filter_end =
 	    (filter_t *)((char *)my_infp->filter + filter_bytes);
 
@@ -1410,12 +1411,10 @@ printf ("net_getstat: count: %d, addr_int_count: %d\n",
 		    return (D_INVALID_OPERATION);
 		}
 
-		bcopy((char *)ifp->if_address,
-		      (char *)status,
-		      (unsigned) addr_byte_count);
+		memcpy(status, ifp->if_address, addr_byte_count);
 		if (addr_byte_count < addr_int_count * sizeof(int))
-		    bzero((char *)status + addr_byte_count,
-			  (unsigned) (addr_int_count * sizeof(int)
+		    memset((char *)status + addr_byte_count, 0, 
+			  (addr_int_count * sizeof(int)
 				      - addr_byte_count));
 
 		for (i = 0; i < addr_int_count; i++) {

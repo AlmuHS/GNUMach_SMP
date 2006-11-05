@@ -24,6 +24,8 @@
  * the rights to redistribute these changes.
  */
 
+#include <string.h>
+
 #include <mach/error.h>
 #include <mach/vm_param.h>
 #include <kern/syscall_emulation.h>
@@ -198,9 +200,9 @@ task_set_emulation_vector_internal(task, vector_start, emulation_vector,
 		     * Copy the entries to the new emulation vector,
 		     * deallocate the current one, and use the new one.
 		     */
-		    bcopy((char *)&cur_eml->disp_vector[0],
-			  (char *)&new_eml->disp_vector[cur_start-new_start],
-			  cur_eml->disp_count * sizeof(vm_offset_t));
+		    memcpy(&new_eml->disp_vector[cur_start-new_start],
+			   &cur_eml->disp_vector[0],
+			   cur_eml->disp_count * sizeof(vm_offset_t));
 
 		    if (--cur_eml->ref_count == 0)
 			old_eml = cur_eml;	/* discard old vector */
@@ -258,7 +260,7 @@ task_set_emulation_vector_internal(task, vector_start, emulation_vector,
 	    new_size = count_to_size(new_end - new_start);
 	    new_eml = (eml_dispatch_t) kalloc(new_size);
 
-	    bzero((char *)new_eml, new_size);
+	    memset(new_eml, 0, new_size);
 	    simple_lock_init(&new_eml->lock);
 	    new_eml->ref_count = 1;
 	    new_eml->disp_min   = new_start;
@@ -271,9 +273,9 @@ task_set_emulation_vector_internal(task, vector_start, emulation_vector,
 	 * We have the emulation vector.
 	 * Install the new emulation entries.
 	 */
-	bcopy((char *)&emulation_vector[0],
-	      (char *)&cur_eml->disp_vector[vector_start - cur_eml->disp_min],
-	      emulation_vector_count * sizeof(vm_offset_t));
+	memcpy(&cur_eml->disp_vector[vector_start - cur_eml->disp_min],
+	       &emulation_vector[0],
+	       emulation_vector_count * sizeof(vm_offset_t));
 
 	task_unlock(task);
 
@@ -417,9 +419,9 @@ task_get_emulation_vector(task, vector_start, emulation_vector,
 	 */
 	*vector_start = eml->disp_min;
 	*emulation_vector_count = eml->disp_count;
-	bcopy((char *)eml->disp_vector,
-	      (char *)addr,
-	      vector_size);
+	memcpy((void *)addr,
+	       eml->disp_vector,
+	       vector_size);
 
 	/*
 	 * Unlock the task and free any memory we did not need
@@ -444,7 +446,7 @@ task_get_emulation_vector(task, vector_start, emulation_vector,
 	 */
 	size_left = size_used - vector_size;
 	if (size_left > 0)
-	    bzero((char *)addr + vector_size, size_left);
+	    memset((char *)addr + vector_size, 0, size_left);
 
 	/*
 	 * Make memory into copyin form - this unwires it.
@@ -495,8 +497,8 @@ xxx_task_get_emulation_vector(task, vector_start, emulation_vector,
 
 	*vector_start = eml->disp_min;
 	*emulation_vector_count = eml->disp_count;
-	bcopy((char *)eml->disp_vector, (char *)emulation_vector,
-	      *emulation_vector_count * sizeof(vm_offset_t));
+	memcpy(emulation_vector, eml->disp_vector,
+	       *emulation_vector_count * sizeof(vm_offset_t));
 	simple_unlock(&eml->lock);
 
 	task_unlock(task);

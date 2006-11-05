@@ -26,6 +26,8 @@
 
 #if	NCPUS > 1
 
+#include <string.h> 
+
 #include <kern/cpu_number.h>
 #include <mach/machine.h>
 #include <vm/vm_kern.h>
@@ -127,16 +129,16 @@ mp_desc_init(mycpu)
 		/*
 		 * Copy the tables
 		 */
-		bcopy((char *)idt,
-		  (char *)mpt->idt,
+		memcpy(mpt->idt,
+		  idt,
 		  sizeof(idt));
-		bcopy((char *)gdt,
-		  (char *)mpt->gdt,
+		memcpy(mpt->gdt,
+		  gdt,
 		  sizeof(gdt));
-		bcopy((char *)ldt,
-		  (char *)mpt->ldt,
+		memcpy(mpt->ldt,
+		  ldt,
 		  sizeof(ldt));
-		bzero((char *)&mpt->ktss,
+		memset(&mpt->ktss, 0, 
 		  sizeof(struct i386_tss));
 
 		/*

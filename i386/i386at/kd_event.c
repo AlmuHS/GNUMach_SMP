@@ -56,6 +56,8 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <mach/boolean.h>
 #include <sys/types.h>
+#include <string.h>
+
 #ifdef	MACH_KERNEL
 #include <device/errno.h>
 #include <device/io_req.h>
@@ -532,7 +534,7 @@ X_kdb_enter_init(data, count)
     if (count * sizeof X_kdb_enter_str[0] > sizeof X_kdb_enter_str)
 	return D_INVALID_OPERATION;
 
-    bcopy(data, X_kdb_enter_str, count * sizeof X_kdb_enter_str[0]);
+    memcpy(X_kdb_enter_str, data, count * sizeof X_kdb_enter_str[0]);
     X_kdb_enter_len = count;
     return D_SUCCESS;
 }
@@ -545,7 +547,7 @@ X_kdb_exit_init(data, count)
     if (count * sizeof X_kdb_exit_str[0] > sizeof X_kdb_exit_str)
 	return D_INVALID_OPERATION;
 
-    bcopy(data, X_kdb_exit_str, count * sizeof X_kdb_exit_str[0]);
+    memcpy(X_kdb_exit_str, data, count * sizeof X_kdb_exit_str[0]);
     X_kdb_exit_len = count;
     return D_SUCCESS;
 }

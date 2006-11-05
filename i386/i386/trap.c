@@ -28,6 +28,8 @@
  */
 
 #include <sys/types.h>
+#include <string.h>
+
 #include <mach/machine/eflags.h>
 #include <i386/trap.h>
 #include <machine/machspl.h>	/* for spl_t */
@@ -940,9 +942,9 @@ v86_assist(thread, regs)
 #ifdef	gcc_1_36_worked
 		int_vec = ((struct int_vec *)0)[vec];
 #else
-		bcopy((char *) (sizeof(struct int_vec) * vec),
-		      (char *)&int_vec,
-		      sizeof (struct int_vec));
+		memcpy(&int_vec,
+		       (void *)(sizeof(struct int_vec) * vec),
+		       sizeof (struct int_vec));
 #endif
 		if (copyout((char *)&iret_16,
 			    (char *)Addr8086(regs->ss,sp),

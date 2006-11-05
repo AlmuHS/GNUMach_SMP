@@ -31,6 +31,8 @@
  *	Functions to manipulate IPC objects.
  */
 
+#include <string.h>
+
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
 #include <mach/port.h>
@@ -239,11 +241,11 @@ ipc_object_alloc(
 	if (otype == IOT_PORT) {
 		ipc_port_t port = (ipc_port_t)object;
 
-		bzero((char *)port, sizeof(*port));
+		memset(port, 0, sizeof(*port));
 	} else if (otype == IOT_PORT_SET) {
 		ipc_pset_t pset = (ipc_pset_t)object;
 
-		bzero((char *)pset, sizeof(*pset));
+		memset(pset, 0, sizeof(*pset));
 	}
 	kr = ipc_entry_alloc(space, namep, &entry);
 	if (kr != KERN_SUCCESS) {
@@ -305,11 +307,11 @@ ipc_object_alloc_name(
 	if (otype == IOT_PORT) {
 		ipc_port_t port = (ipc_port_t)object;
 
-		bzero((char *)port, sizeof(*port));
+		memset(port, 0, sizeof(*port));
 	} else if (otype == IOT_PORT_SET) {
 		ipc_pset_t pset = (ipc_pset_t)object;
 
-		bzero((char *)pset, sizeof(*pset));
+		memset(pset, 0, sizeof(*pset));
 	}
 
 	kr = ipc_entry_alloc_name(space, name, &entry);

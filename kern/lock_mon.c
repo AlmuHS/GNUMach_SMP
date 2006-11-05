@@ -39,6 +39,8 @@
  */
 
 #include <sys/types.h>
+#include <string.h>
+
 #include <mach/machine/vm_types.h>
 #include <mach/boolean.h>
 #include <kern/thread.h>
@@ -263,10 +265,10 @@ lock_info_clear()
 	for (bucket = 0; bucket < LOCK_INFO_HASH_COUNT; bucket++) {
 		li = &lock_info[bucket].info[0];
 		for (i= 0; i< LOCK_INFO_PER_BUCKET; i++, li++) {
-			bzero(li, sizeof(struct lock_info));
+			memset(li, 0, sizeof(struct lock_info));
 		}
 	}
-	bzero(&default_lock_info, sizeof(struct lock_info));
+	memset(&default_lock_info, 0, sizeof(struct lock_info));
 }
 
 print_lock_info(li)

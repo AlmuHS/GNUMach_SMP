@@ -27,6 +27,8 @@
  *	processor.c: processor and processor_set manipulation routines.
  */
 
+#include <string.h>
+
 #include <mach/boolean.h>
 #include <mach/policy.h>
 #include <mach/processor_info.h>
@@ -971,7 +973,7 @@ processor_set_things(
 				return KERN_RESOURCE_SHORTAGE;
 			}
 
-			bcopy((char *) addr, (char *) newaddr, size_needed);
+			memcpy((void *) newaddr, (void *) addr, size_needed);
 			kfree(addr, size);
 			addr = newaddr;
 		}

@@ -34,6 +34,8 @@
  *	Functions to manipulate IPC ports.
  */
 
+#include <string.h>
+
 #include <mach/port.h>
 #include <mach/kern_return.h>
 #include <kern/lock.h>
@@ -182,7 +184,7 @@ ipc_port_dngrow(port)
 			osize = oits->its_size;
 			free = otable->ipr_next;
 
-			bcopy((char *)(otable + 1), (char *)(ntable + 1),
+			memcpy((ntable + 1), (otable + 1), 
 			      (osize - 1) * sizeof(struct ipc_port_request));
 		} else {
 			osize = 1;

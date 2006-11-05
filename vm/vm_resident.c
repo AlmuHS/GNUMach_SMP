@@ -33,6 +33,8 @@
  *	Resident memory management module.
  */
 
+#include <string.h>
+
 #include <mach/vm_prot.h>
 #include <kern/counters.h>
 #include <kern/sched_prim.h>
@@ -959,7 +961,7 @@ vm_page_grab_contiguous_pages(
 	} else
 		alloc_size = 0;
 
-	bzero(bits, size);
+	memset(bits, 0, size);
 
 	/*
 	 * A very large granularity call, its rare so that is ok

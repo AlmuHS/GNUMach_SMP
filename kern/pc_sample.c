@@ -24,6 +24,8 @@
  * the rights to redistribute these changes.
  */
 
+#include <string.h>
+
 #include <mach/mach_types.h>	/* vm_address_t */
 #include <mach/std_types.h>	/* pointer_t */
 #include <mach/pc_sample.h>
@@ -174,19 +176,19 @@ get_sampled_pcs(
 	     * Simple case: no wraparound.
 	     * Copy from seqidx1 to seqidx2.
 	     */
-	    bcopy((sampled_pc_array_t)cp->buffer + seqidx1 + 1,
-		  sampled_pcs_out,
-		  nsamples * sizeof(sampled_pc_t));
+	    memcpy(sampled_pcs_out,
+		   (sampled_pc_array_t)cp->buffer + seqidx1 + 1,
+		   nsamples * sizeof(sampled_pc_t));
 	} else {
 	    /* seqidx1 > seqidx2 -- Handle wraparound. */
 
-	    bcopy((sampled_pc_array_t)cp->buffer + seqidx1 + 1,
-		  sampled_pcs_out,
-		  (MAX_PC_SAMPLES - seqidx1 - 1) * sizeof(sampled_pc_t));
+	    memcpy(sampled_pcs_out,
+		   (sampled_pc_array_t)cp->buffer + seqidx1 + 1,
+		   (MAX_PC_SAMPLES - seqidx1 - 1) * sizeof(sampled_pc_t));
 
-	    bcopy((sampled_pc_array_t)cp->buffer,
-		  sampled_pcs_out + (MAX_PC_SAMPLES - seqidx1 - 1),
-		  (seqidx2 + 1) * sizeof(sampled_pc_t));
+	    memcpy(sampled_pcs_out + (MAX_PC_SAMPLES - seqidx1 - 1),
+		   (sampled_pc_array_t)cp->buffer,
+		   (seqidx2 + 1) * sizeof(sampled_pc_t));
 	}
     } else {
 	/*  could either be zero because of overflow, or because

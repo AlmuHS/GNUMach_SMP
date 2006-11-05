@@ -55,6 +55,8 @@
  *	and to when physical maps must be made correct.
  */
 
+#include <string.h>
+
 #include <mach/machine/vm_types.h>
 
 #include <mach/boolean.h>
@@ -715,7 +717,7 @@ void pmap_init()
 	s = round_page(s);
 	if (kmem_alloc_wired(kernel_map, &addr, s) != KERN_SUCCESS)
 		panic("pmap_init");
-	bzero((char *) addr, s);
+	memset((char *) addr, 0, s);
 
 	/*
 	 *	Allocate the structures first to preserve word-alignment.
@@ -829,7 +831,7 @@ pmap_page_table_page_alloc()
 	/*
 	 *	Zero the page.
 	 */
-	bzero(phystokv(pa), PAGE_SIZE);
+	memset((void *)phystokv(pa), 0, PAGE_SIZE);
 
 	return pa;
 }
@@ -894,7 +896,7 @@ pmap_t pmap_create(size)
 							!= KERN_SUCCESS)
 		panic("pmap_create");
 
-	bcopy(kernel_page_dir, p->dirbase, INTEL_PGBYTES);
+	memcpy(p->dirbase, kernel_page_dir, INTEL_PGBYTES);
 	p->ref_count = 1;
 
 	simple_lock_init(&p->lock);

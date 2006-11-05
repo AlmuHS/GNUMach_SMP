@@ -34,6 +34,8 @@
  *	Operations on kernel messages.
  */
 
+#include <string.h>
+
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
 #include <mach/message.h>
@@ -558,7 +560,7 @@ ipc_kmsg_get_from_kernel(msg, size, kmsgp)
 		return MACH_SEND_NO_BUFFER;
 	ikm_init(kmsg, size);
 
-	bcopy((char *) msg, (char *) &kmsg->ikm_header, size);
+	memcpy(&kmsg->ikm_header, msg, size);
 
 	kmsg->ikm_header.msgh_size = size;
 	*kmsgp = kmsg;
@@ -623,7 +625,7 @@ ipc_kmsg_put_to_kernel(
 	assert(!KMSG_IN_DIPC(kmsg));
 #endif	/* DIPC */
 
-	(void) memcpy((void *) msg, (const void *) &kmsg->ikm_header, size);
+	memcpy(msg, &kmsg->ikm_header, size);
 
 	ikm_free(kmsg);
 }

@@ -34,6 +34,8 @@
  *	Locking primitives implementation
  */
 
+#include <string.h>
+
 #include <kern/lock.h>
 #include <kern/thread.h>
 #include <kern/sched_prim.h>
@@ -219,7 +221,7 @@ void lock_init(
 	lock_t		l,
 	boolean_t	can_sleep)
 {
-	bzero((char *)l, sizeof(lock_data_t));
+	memset(l, 0, sizeof(lock_data_t));
 	simple_lock_init(&l->interlock);
 	l->want_write = FALSE;
 	l->want_upgrade = FALSE;

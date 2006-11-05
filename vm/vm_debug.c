@@ -33,6 +33,8 @@
 
 #if MACH_VM_DEBUG
 
+#include <string.h>
+
 #include <kern/thread.h>
 #include <mach/kern_return.h>
 #include <mach/machine/vm_types.h>
@@ -402,8 +404,8 @@ mach_vm_object_pages(object, pagesp, countp)
 				  addr + rsize_used, size - rsize_used);
 
 		if (size_used != rsize_used)
-			bzero((char *) (addr + size_used),
-			      rsize_used - size_used);
+			memset((char *) (addr + size_used), 0, 
+			       rsize_used - size_used);
 
 		kr = vm_map_copyin(ipc_kernel_map, addr, rsize_used,
 				   TRUE, &copy);

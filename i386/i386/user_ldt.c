@@ -28,6 +28,8 @@
  * Each thread in a task may have its own LDT.
  */
 
+#include <string.h>
+
 #include <kern/kalloc.h>
 #include <kern/thread.h>
 
@@ -221,9 +223,9 @@ i386_set_ldt(thread, first_selector, desc_list, count, desc_list_inline)
 	     * from old to new.  Otherwise copy the default ldt.
 	     */
 	    if (old_ldt) {
-		bcopy((char *)&old_ldt->ldt[0],
-		      (char *)&new_ldt->ldt[0],
-		      old_ldt->desc.limit_low + 1);
+		memcpy(&new_ldt->ldt[0],
+		       &old_ldt->ldt[0],
+		       old_ldt->desc.limit_low + 1);
 	    }
 	    else {
 		struct real_descriptor template = {0, 0, 0, ACC_P, 0, 0 ,0};
@@ -253,9 +255,9 @@ i386_set_ldt(thread, first_selector, desc_list, count, desc_list_inline)
 	/*
 	 * Install new descriptors.
 	 */
-	bcopy((char *)desc_list,
-	      (char *)&old_ldt->ldt[first_desc],
-	      count * sizeof(struct real_descriptor));
+	memcpy(&old_ldt->ldt[first_desc],
+	       desc_list,
+	       count * sizeof(struct real_descriptor));
 
 	simple_unlock(&pcb->lock);
 
@@ -355,9 +357,9 @@ i386_get_ldt(thread, first_selector, selector_count, desc_list, count)
 	/*
 	 * copy out the descriptors
 	 */
-	bcopy((char *)&user_ldt->ldt[first_desc],
-	      (char *)*desc_list,
-	      ldt_size);
+	memcpy(*desc_list,
+	       &user_ldt->ldt[first_desc],
+	       ldt_size);
 	*count = ldt_count;
 	simple_unlock(&pcb->lock);
 
@@ -378,7 +380,7 @@ i386_get_ldt(thread, first_selector, selector_count, desc_list, count)
 	     */
 	    size_left = size_used - ldt_size;
 	    if (size_left > 0)
-		bzero((char *)addr + ldt_size, size_left);
+		memset((char *)addr + ldt_size, 0, size_left);
 
 	    /*
 	     * Make memory into copyin form - this unwires it.

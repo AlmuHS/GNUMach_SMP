@@ -19,6 +19,8 @@ the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 /* Now kmsg provides stream interface, not random access methods.  */
 
 #include <sys/types.h>
+#include <string.h>
+
 #include <device/conf.h>
 #include <device/io_req.h>
 #include <mach/boolean.h>

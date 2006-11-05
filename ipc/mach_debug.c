@@ -33,6 +33,8 @@
  *	Exported kernel calls.  See mach_debug/mach_debug.defs.
  */
 
+#include <string.h>
+
 #include <mach/kern_return.h>
 #include <mach/port.h>
 #include <mach/machine/vm_types.h>
@@ -453,7 +455,7 @@ mach_port_space_info(
 				  table_size - rsize_used);
 
 		if (size_used != rsize_used)
-			bzero((char *) (table_addr + size_used),
+			memset((char *) (table_addr + size_used), 0, 
 			      rsize_used - size_used);
 
 		kr = vm_map_copyin(ipc_kernel_map, table_addr, rsize_used,
@@ -488,7 +490,7 @@ mach_port_space_info(
 				  tree_size - rsize_used);
 
 		if (size_used != rsize_used)
-			bzero((char *) (tree_addr + size_used),
+			memset((char *) (tree_addr + size_used), 0, 
 			      rsize_used - size_used);
 
 		kr = vm_map_copyin(ipc_kernel_map, tree_addr, rsize_used,

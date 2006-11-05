@@ -27,6 +27,8 @@
  * Code to manipulate IO permission bitmaps.
  */
 
+#include <string.h>
+
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
 
@@ -246,7 +248,7 @@ io_tss_init(
 	vm_offset_t	addr = kvtolin (io_tss);
 	vm_size_t	limit = (char *)&io_tss->barrier - (char *)io_tss;
 
-	bzero(&io_tss->tss, sizeof(struct i386_tss));
+	memset(&io_tss->tss, 0, sizeof(struct i386_tss));
 	io_tss->tss.io_bit_map_offset
 			= (char *)&io_tss->bitmap - (char *)io_tss;
 	io_tss->tss.ss0 = KERNEL_DS;
@@ -560,7 +562,7 @@ i386_io_port_list(thread, list, list_count)
 		    return KERN_RESOURCE_SHORTAGE;
 		}
 
-		bcopy((void *)addr, (void *)new_addr, size_needed);
+		memcpy((void *)new_addr, (void *)addr, size_needed);
 		kfree(addr, size);
 		devices = (mach_device_t *)new_addr;
 	    }

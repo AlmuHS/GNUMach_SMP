@@ -3,9 +3,7 @@
 /* Written by Shantanu Goel (goel@cs.columbia.edu).  */
 
 #include <mach/mach_types.h>
-#if !KERNEL || OSKIT_MACH
 #include <string.h>
-#endif
 #include "boot_script.h"
 
 

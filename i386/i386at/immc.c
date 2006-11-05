@@ -23,6 +23,8 @@
 
 #ifdef ENABLE_IMMEDIATE_CONSOLE
 
+#include <string.h>
+
 /* This is a special "feature" (read: kludge)
    intended for use only for kernel debugging.
    It enables an extremely simple console output mechanism
@@ -47,8 +49,8 @@ immc_cnputc(unsigned char c)
 	}
 	else if (c == '\n')
 	{
-		bcopy(0xb8000+80*2, 0xb8000, 80*2*24);
-		bzero(0xb8000+80*2*24, 80*2);
+		memcpy(0xb8000, 0xb8000+80*2, 80*2*24);
+		memset(0xb8000+80*2*24, 0, 80*2);
 		ofs = 0;
 	}
 	else

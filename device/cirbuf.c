@@ -30,6 +30,7 @@
  * 	Circular buffers for TTY
  */
 
+#include <string.h>
 #include <device/cirbuf.h>
 #include <kern/kalloc.h>
 
@@ -143,7 +144,7 @@ q_to_b( register struct cirbuf *cb,
 		i = cb->c_cl - cb->c_cf;
 	    if (i > count)
 		i = count;
-	    bcopy(cb->c_cf, cp, i);
+	    memcpy(cp, cb->c_cf, i);
 	    cp += i;
 	    count -= i;
 	    cb->c_cf += i;
@@ -184,7 +185,7 @@ b_to_q( register char *	cp,
 
 	    if (i > count)
 		i = count;
-	    bcopy(cp, cb->c_cl, i);
+	    memcpy(cb->c_cl, cp, i);
 	    cp += i;
 	    count -= i;
 	    cb->c_cc += i;

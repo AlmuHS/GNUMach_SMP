@@ -36,6 +36,8 @@
  *	Functions to manipulate IPC capability spaces.
  */
 
+#include <string.h>
+
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
 #include <mach/port.h>

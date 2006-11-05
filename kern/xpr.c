@@ -27,6 +27,8 @@
 /*
  * xpr silent tracing circular buffer.
  */
+#include <string.h>
+
 #include <kern/xpr.h>
 #include <kern/lock.h>
 #include "cpu_number.h"
@@ -112,7 +114,7 @@ void xprbootstrap()
 		 *	the previous buffer contents.
 		 */
 
-		bzero((char *) addr, size);
+		memset((char *) addr, 0, size);
 	}
 
 	xprbase = (struct xprbuf *) addr;

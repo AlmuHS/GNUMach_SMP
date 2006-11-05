@@ -33,6 +33,8 @@
  *	Virtual memory object module.
  */
 
+#include <string.h>
+
 #include <mach/memory_object.h>
 #include <vm/memory_object_default.user.h>
 #include <vm/memory_object_user.user.h>
@@ -253,7 +255,7 @@ void vm_object_bootstrap(void)
 	 */
 
 	vm_object_template = (vm_object_t) zalloc(vm_object_zone);
-	bzero((char *) vm_object_template, sizeof *vm_object_template);
+	memset(vm_object_template, 0, sizeof *vm_object_template);
 
 	vm_object_template->ref_count = 1;
 	vm_object_template->size = 0;

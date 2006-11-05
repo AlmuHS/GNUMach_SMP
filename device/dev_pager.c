@@ -30,6 +30,8 @@
  * 	Device pager.
  */
 
+#include <string.h>
+
 #include <mach/boolean.h>
 #include <mach/port.h>
 #include <mach/message.h>
@@ -424,8 +426,7 @@ boolean_t device_pager_data_request_done(register io_req_t	ior)
 	    if (ior->io_residual) {
 		if (device_pager_debug)
 		    printf("(device_pager)data_request_done: r: 0x%x\n",ior->io_residual);
-		bzero( (char *) (&ior->io_data[ior->io_count -
-					       ior->io_residual]),
+		memset((&ior->io_data[ior->io_count - ior->io_residual]), 0, 
 		      (unsigned) ior->io_residual);
 	    }
 	} else {
