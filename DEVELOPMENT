@@ -37,5 +37,9 @@ within the native Mach NE2000 NIC device driver, see
 Support for NORMA was removed on 2006-03-20.
 <http://lists.gnu.org/archive/html/bug-hurd/2006-03/msg00007.html>.
 
+Support for PS2, i860, iPSC 386/860 and MB1/MB2/EXL was removed on
+2006-11-05.
+<http://lists.gnu.org/archive/html/bug-hurd/2006-11/msg00001.html>.
+
 Be sure to check the ChangeLog and have a look at the repository at that
 tag's state if you want to work on those parts of GNU Mach.

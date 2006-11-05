@@ -45,13 +45,7 @@ NEGLIGENCE, OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#if	defined(MB1) || defined(MB2) || EXL > 0
-/* Definitions for 8254 Programmable Interrupt Timer ports on 386/20 */
-#define PITCTR0_PORT	0xD0		/* counter 0 port */
-#define PITCTR1_PORT	0xD2		/* counter 1 port */
-#define PITCTR2_PORT	0xD4		/* counter 2 port */
-#define PITCTL_PORT	0xD6		/* PIT control port */
-#else	/* defined(AT386) */
+#if	defined(AT386)
 /* Definitions for 8254 Programmable Interrupt Timer ports on AT 386 */
 #define PITCTR0_PORT	0x40		/* counter 0 port */
 #define PITCTR1_PORT	0x41		/* counter 1 port */
@@ -83,34 +77,3 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #if	AT386
 #define CLKNUM		1193167
 #endif	/* AT386 */
-#if	defined(MB1)
-#define CLKNUM		12300
-#endif
-#if	defined(MB2) || EXL > 0
-#define CLKNUM		12500
-#endif
-
-#if	EXL
-/* added micro-timer support.   --- csy */
-typedef struct time_latch {
-		time_t	ticks;          /* time in HZ since boot */
-		time_t	uticks;         /* time in 1.25 MHZ */
-/* don't need these two for now.   --- csy */
-#if 0
-		time_t  secs;           /* seconds since boot */
-		time_t  epochsecs;      /* seconds since epoch */
-#endif
-	} time_latch;
-/* a couple in-line assembly codes for efficiency. */
-asm  int   intr_disable()
-{
-     pushfl
-     cli
-}
-
-asm  int   intr_restore()
-{
-     popfl
-}
-
-#endif	/* EXL */

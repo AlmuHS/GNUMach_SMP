@@ -1,5 +1,13 @@
 2006-11-05  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
+	* DEVELOPMENT: Document the following removals.
+
+	Drop MB1/MB2/EXL architecture support.
+	* i386/i386/pit.h (PITCTR0_PORT, PITCTR1_PORT, PITCTR2_PORT)
+	(PITCTL_PORT, CLKNUM): Remove MB1/MB2/EXL cases.
+	[EXL] (time_latch): Remove structure and type.
+	[EXL] (intr_disable, intr_restore): Remove functions.
+
 	Drop iPSC architecture support.
 	* i386/i386/hardclock.c: Remove iPSC386 from #if.
 	* i386/i386/locore.S: Remove iPSC386 delays.
