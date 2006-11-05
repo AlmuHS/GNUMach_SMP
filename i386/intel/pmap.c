@@ -77,6 +77,7 @@
 #include <mach/machine/vm_param.h>
 #include <machine/thread.h>
 #include <i386/cpu_number.h>
+#include <i386/proc_reg.h>
 
 #ifdef	ORC
 #define	OLIVETTICACHE	1

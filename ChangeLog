@@ -1,3 +1,25 @@
+2006-11-05  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	FPU, CPU and IO stubs cleanup.
+
+	* i386/i386/fpu.h (fstcw): New macro.
+	* i386/i386/locore.S (_fninit, _fstcw, _fldcw, _fnstsw, _fnclex)
+	(_clts, _fpsave, _fprestore, set_cr3, get_cr3, flush_tlb, get_cr2)
+	(get_ldt, set_ldt, get_tr, set_tr, _setts, outb, inb, outw, inw, outl)
+	(inl, loutb, loutw, linb, linw): Remove functions.
+	* i386/i386/proc_reg.h (flush_tlb): New macro.
+	* i386/i386/db_interface.c: Include `i386/proc_reg.h'.
+	* i386/intel/pmap.c: Likewise.
+	* i386/intel/pmap.h: Likewise.
+	* i386/i386/fpu.c: Include `i386/pio.h'.
+	* i386/i386/pic.c: Likewise.
+	* i386/i386/pit.c: Likewise.
+	* i386/i386at/iopl.c: Likewise.
+	* i386/i386at/kd.c: Likewise.
+	* i386/i386at/kd_event.c: Likewise.
+	* i386/i386at/kd_mouse.c: Likewise.
+	* i386/i386at/rtc.c: Likewise.
+
 2006-11-05  Barry deFreese  <bddebian@comcast.net>
 
 	memcpy/memset cleanup.

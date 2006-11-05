@@ -109,6 +109,8 @@ set_eflags(unsigned eflags)
 	asm volatile("mov %0, %%cr3" : : "r" (_temp__)); \
      })
 
+#define flush_tlb() set_cr3(get_cr3())
+
 #define	set_ts() \
 	set_cr0(get_cr0() | CR0_TS)
 

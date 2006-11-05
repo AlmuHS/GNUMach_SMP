@@ -72,6 +72,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <sys/tty.h>
 #endif	/* MACH_KERNEL */
 #include <i386/machspl.h>
+#include <i386/pio.h>
 #include <i386at/kd.h>
 #include <i386at/kd_queue.h>
 

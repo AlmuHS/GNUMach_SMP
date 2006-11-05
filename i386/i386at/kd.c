@@ -86,6 +86,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <vm/vm_kern.h>
 #include <i386/vm_param.h>
 #include <i386/machspl.h>
+#include <i386/pio.h>
 #include <i386at/cram.h>
 #include <i386at/kd.h>
 #include <i386at/kdsoft.h>

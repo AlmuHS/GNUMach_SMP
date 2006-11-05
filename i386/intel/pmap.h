@@ -42,6 +42,7 @@
 #include <mach/machine/vm_param.h>
 #include <mach/vm_statistics.h>
 #include <mach/kern_return.h>
+#include <i386/proc_reg.h>
 
 /*
  *	Define the generic in terms of the specific

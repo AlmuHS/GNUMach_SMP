@@ -50,6 +50,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <sys/time.h>
 #include <kern/time_out.h>
 #include <i386/machspl.h>
+#include <i386/pio.h>
 #include <i386at/rtc.h>
 
 static unsigned char rtc[RTC_NREG];

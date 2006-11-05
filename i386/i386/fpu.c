@@ -40,6 +40,7 @@
 
 #include <i386/thread.h>
 #include <i386/fpu.h>
+#include <i386/pio.h>
 #include "cpu_number.h"
 
 #if 0

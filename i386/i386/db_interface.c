@@ -38,6 +38,7 @@
 #include <i386/trap.h>
 #include <i386/setjmp.h>
 #include <i386/pmap.h>
+#include <i386/proc_reg.h>
 #include "gdt.h"
 #include "trap.h"
 

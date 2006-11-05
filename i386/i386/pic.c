@@ -53,6 +53,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <i386/ipl.h>
 #include <i386/pic.h>
 #include <i386/machspl.h>
+#include <i386/pio.h>
 
 spl_t	curr_ipl;
 int	pic_mask[NSPL];

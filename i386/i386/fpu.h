@@ -44,6 +44,9 @@
 #define	fnstcw(control) \
 	asm("fnstcw %0" : "=m" (*(unsigned short *)(control)))
 
+#define	fstcw(control) \
+	asm volatile("fstcw %0" : "=m" (*(unsigned short *)(control)))
+
 #define	fldcw(control) \
 	asm volatile("fldcw %0" : : "m" (*(unsigned short *) &(control)) )
 

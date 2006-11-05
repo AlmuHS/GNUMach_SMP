@@ -35,6 +35,7 @@
 
 #include <i386/io_port.h>
 #include <i386/pit.h>
+#include <i386/pio.h>
 
 /*
  * IOPL device.
