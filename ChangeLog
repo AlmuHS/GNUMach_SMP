@@ -11,6 +11,8 @@
 	[task #5878 --- ``Backport code from GNU Mach's trunk to
 	gnumach-1-branch: i386_set_gdt, i386_get_gdt'']
 
+	[sync from HEAD, 2002-10-03]
+
 	* i386/include/mach/i386/mach_i386.defs (i386_set_gdt, i386_get_gdt):
 	New routines.
 	* i386/i386/user_ldt.c (i386_set_gdt, i386_get_gdt): New functions.
@@ -19,7 +21,7 @@
 	* i386/i386/thread.h: Include `gdt.h'.
 	(struct i386_machine_state): New member `user_gdt'.
 	* i386/i386/pcb.c (switch_ktss): Copy those slots into the GDT.
-	* linux/dev/include/linux/head.h: New file.
+	* linux/src/include/linux/head.h (idt,gdt): Remove extern declaration.
 
 2006-11-05  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
