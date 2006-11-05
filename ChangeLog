@@ -1,3 +1,8 @@
+2006-11-05  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* include/string.h: Fix copyright assignment to FSF, keep author's
+	name.
+
 2006-11-05  Thomas Schwinge <tschwinge@gnu.org>
 
 	* linux/dev/README: New file.
