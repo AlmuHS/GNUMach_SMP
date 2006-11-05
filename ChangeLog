@@ -1,3 +1,8 @@
+2006-11-05  Thomas Schwinge <tschwinge@gnu.org>
+
+	[task #5956 --- ``Automake'ify GNU Mach's code base'']
+	* configure.ac <AM_INIT_AUTOMAKE>: Add `no-define' and `1.9'.
+
 2006-11-05  Barry deFreese  <bddebian@comcast.net>
 
 	[task #5878 --- ``Backport code from GNU Mach's trunk to

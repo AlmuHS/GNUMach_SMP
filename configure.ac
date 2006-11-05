@@ -22,8 +22,15 @@ AC_CONFIG_SRCDIR([kern/ipc_kobject.c])
 
 AC_CONFIG_AUX_DIR([build-aux])
 
+AM_INIT_AUTOMAKE(
+dnl Don't define `PACKAGE' and `VERSION'.
+  [no-define]
 dnl Do not clutter the main build directory.
-AM_INIT_AUTOMAKE([subdir-objects])
+  [subdir-objects]
+dnl This is only a very rough estimation of the version we actually need.  Feel
+dnl free to refine that.
+  [1.9]
+)
 
 #
 # Deduce the output variable `systype' from the configuration parameters.
