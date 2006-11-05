@@ -1,5 +1,8 @@
 2006-11-05  Thomas Schwinge <tschwinge@gnu.org>
 
+	* config.h.in: Regenerate.
+	* configure: Likewise.
+
 	[task #5956 --- ``Automake'ify GNU Mach's code base'']
 	* configure.ac <AM_INIT_AUTOMAKE>: Add `no-define' and `1.9'.
 
