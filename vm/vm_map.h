@@ -228,11 +228,7 @@ typedef struct vm_map_version {
  *		(returned) and an abort flag (abort if TRUE).
  */
 
-#if	iPSC386 || iPSC860
-#define VM_MAP_COPY_PAGE_LIST_MAX	64
-#else	/* iPSC386 || iPSC860 */
 #define VM_MAP_COPY_PAGE_LIST_MAX	8
-#endif	/* iPSC386 || iPSC860 */
 
 typedef struct vm_map_copy {
 	int			type;

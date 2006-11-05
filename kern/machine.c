@@ -743,13 +743,6 @@ host_get_boot_info(priv_host, boot_info)
 		return KERN_INVALID_HOST;
 	}
 
-#if	defined(iPSC386) || defined(iPSC860)
-{
-	extern char *ipsc_boot_environ();
-	src = ipsc_boot_environ();
-}
-#endif	/* defined(iPSC386) || defined(iPSC860) */
-
 	(void) strncpy(boot_info, src, KERNEL_BOOT_INFO_MAX);
 	return KERN_SUCCESS;
 }

@@ -1,5 +1,18 @@
 2006-11-05  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
+	Drop iPSC architecture support.
+	* i386/i386/hardclock.c: Remove iPSC386 from #if.
+	* i386/i386/locore.S: Remove iPSC386 delays.
+	* i386/i386/pic.c: Remove iPSC386 support.
+	(SLAVEMASK): Rmove iPSC386 case.
+	* i386/i386/pic.h (ADDR_PIC_BASE, OFF_ICW, OFF_OCW, SIZE_PIC)
+	(PICM_VECTBASE, PICS_VECTBASE): Remove iPSC386 cases.
+	[iPSC386] (I_AM_A_SLAVE, I_AM_A_MASTR): Remove macros.
+	* i386/i386/pit.h: Remove iPSC386 from #if.
+	[iPSC386] (CLKNUM): Remove macro.
+	* kern/machine.c (host_get_boot_info): Remove iPSC386 support.
+	* vm/vm_map.h (VM_MAP_COPY_PAGE_LIST_MAX): Remove iPSC case.
+
 	Drop i860 architecture support.
 	* i386/i386/pmap.h: Remove i860 comment.
 	* i386/intel/pmap.c: Remove i860 comments.

@@ -45,7 +45,7 @@ NEGLIGENCE, OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#if	defined(MB1) || defined(MB2) || EXL > 0 || iPSC386
+#if	defined(MB1) || defined(MB2) || EXL > 0
 /* Definitions for 8254 Programmable Interrupt Timer ports on 386/20 */
 #define PITCTR0_PORT	0xD0		/* counter 0 port */
 #define PITCTR1_PORT	0xD2		/* counter 1 port */
@@ -89,9 +89,6 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #if	defined(MB2) || EXL > 0
 #define CLKNUM		12500
 #endif
-#if	iPSC386
-#define CLKNUM          1000000
-#endif	/* iPSC386 */
 
 #if	EXL
 /* added micro-timer support.   --- csy */

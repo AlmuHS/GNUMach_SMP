@@ -38,7 +38,7 @@
 #ifdef	SYMMETRY
 #include <sqt/intctl.h>
 #endif
-#if	defined(AT386) || defined(iPSC386)
+#if	defined(AT386)
 #include <i386/ipl.h>
 #endif
 

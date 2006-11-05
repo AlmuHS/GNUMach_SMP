@@ -151,23 +151,11 @@ picinit()
 	PICM_ICW3 = ( SLAVE_ON_IR2 );
 	PICS_ICW3 = ( I_AM_SLAVE_2 );
 #endif	/* AT386 */
-#ifdef	iPSC386
-        PICM_ICW3 = ( SLAVE_ON_IR7 );
-        PICS_ICW3 = ( I_AM_SLAVE_7 );
-#endif	/* iPSC386 */
 
-#ifdef	iPSC386
-        /* Use Buffered mode for iPSC386 */
-        PICM_ICW4 = (SNF_MODE_DIS | BUFFERD_MODE | I_AM_A_MASTR |
-                     NRML_EOI_MOD | I8086_EMM_MOD);
-        PICS_ICW4 = (SNF_MODE_DIS | BUFFERD_MODE | I_AM_A_SLAVE |
-                     NRML_EOI_MOD | I8086_EMM_MOD);
-#else	/* iPSC386 */
 	PICM_ICW4 =
  	(SNF_MODE_DIS | NONBUFD_MODE | NRML_EOI_MOD | I8086_EMM_MOD);
 	PICS_ICW4 =
  	(SNF_MODE_DIS | NONBUFD_MODE | NRML_EOI_MOD | I8086_EMM_MOD);
-#endif	/* iPSC386 */
 
 	PICM_OCW1 = (curr_pic_mask & 0x00FF);
 	PICS_OCW1 = ((curr_pic_mask & 0xFF00)>>8);
@@ -230,9 +218,6 @@ picinit()
 #if	defined(AT386)
 #define SLAVEMASK       (0xFFFF ^ SLAVE_ON_IR2)
 #endif	/* defined(AT386) */
-#ifdef	iPSC386
-#define SLAVEMASK       (0xFFFF ^ SLAVE_ON_IR7)
-#endif	/* iPSC386 */
 
 #define SLAVEACTV	0xFF00
 

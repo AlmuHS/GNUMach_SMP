@@ -1473,9 +1473,6 @@ ENTRY(outb)
 	movl	S_ARG0,%edx		/* IO port address */
 	movl	S_ARG1,%eax		/* data to output */
 	outb	%al,%dx			/* send it out */
-#ifdef	iPSC386
-	mull	%ecx			/* Delay a little to make H/W happy */
-#endif	/* iPSC386 */
 	ret
 
 /*
@@ -1487,13 +1484,6 @@ ENTRY(inb)
 	movl	S_ARG0,%edx		/* IO port address */
 	xor	%eax,%eax		/* clear high bits of register */
 	inb	%dx,%al			/* get the byte */
-#ifdef	iPSC386
-/ Do a long multiply to delay a little to make H/W happy.  Must
-/ save and restore EAX which is used to hold result of multiply
-	pushl	%eax
-	mull	%ecx
-	popl	%eax
-#endif	/* iPSC386 */
 	ret
 
 /*
