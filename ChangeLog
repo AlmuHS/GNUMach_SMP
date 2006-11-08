@@ -1,3 +1,74 @@
+2006-11-07  Barry deFreese  <bddebian@comcast.net>
+
+	[task #5726 --- ``GCC built-in functions'']
+	* include/printf.h: New file.
+        (printf_init, _doprnt, printnum, sprintf, printf, indent, iprint): New
+        declarations.
+	* include/string.h (strchr, strcmp, strcpy, strlen, strncmp, strncpy,
+	strrchr, strsep): New extern declarations.
+	* kern/strings.c: Don't include `kern/strings.h', include `string.h'.
+	(strncmp, strncpy, strlen): Fix prototypes into using size_t.
+	* kern/strings.h: Removed file.
+	* kern/debug.c: Include `printf.h'.
+	(do_cnputc): New function.
+	(panic, log): Use do_cnputc instead of cnputc.
+        * chips/busses.c: Don't include `kern/strings.h', include `printf.h' and
+        `string.h'.
+	(_doprnt): Remove extern declaration.
+	(indent): Remove extern declaration.
+	* chips/busses.c: Likewise.
+	* ddb/db_aout.c: Likewise.
+	* ddb/db_command.c: Likewise.
+	* ddb/db_lex.c: Likewise.
+	* ddb/db_macro.c: Likewise.
+	* ddb/db_output.c: Likewise.
+	* ddb/db_print.c: Likewise.
+	* ddb/db_sym.c: Likewise.
+	* device/dev_name.c: Likewise.
+	* device/dev_pager.c: Likewise.
+	* device/dk_label.c: Likewise.
+	* device/ds_routines.c: Likewise.
+	* device/net_io.c: Likewise.
+	* device/subrs.c: Likewise.
+	* i386/i386/db_trace.c: Likewise.
+	* i386/i386/debug_i386.c: Likewise.
+	* i386/i386/fpu.c: Likewise.
+	* i386/i386/io_map.c: Likewise.
+	* i386/i386/kttd_interface.c: Likewise.
+	* i386/i386/pic.c: Likewise.
+	* i386/i386/trap.c: Likewise.
+	* i386/i386at/autoconf.c: Likewise.
+	* i386/i386at/com.c: Likewise.
+	* i386/i386at/i386at_ds_routines.c: Likewise.
+	* i386/i386at/kd.c: Likewise.
+	* i386/i386at/kd_event.c: Likewise.
+	* i386/i386at/kd_mouse.c: Likewise.
+	* i386/i386at/lpr.c: Likewise.
+	* i386/i386at/model_dep.c: Likewise.
+	* i386/intel/pmap.c: Likewise.
+	* ipc/ipc_entry.c: Likewise.
+	* ipc/ipc_hash.c: Likewise.
+	* ipc/ipc_kmsg.c: Likewise.
+	* ipc/ipc_notify.c: Likewise.
+	* ipc/ipc_object.c: Likewise.
+	* ipc/ipc_port.c: Likewise.
+	* ipc/ipc_pset.c: Likewise.
+	* ipc/mach_msg.c: Likewise.
+	* ipc/mach_port.c: Likewise.
+	* ipc/mach_rpc.c: Likewise.
+	* kern/bootstrap.c: Likewise.
+	* kern/eventcount.c: Likewise.
+	* kern/ipc_kobject.c: Likewise.
+	* kern/pc_sample.c: Likewise.
+	* kern/printf.c: Likewise.
+	* kern/sched_prim.c: Likewise.
+	* kern/thread.c: Likewise.
+	* kern/zalloc.c: Likewise.
+	* vm/vm_fault.c: Likewise.
+	* vm/vm_map.c: Likewise.
+	* vm/vm_object.c: Likewise.
+	* vm/vm_resident.c: Likewise.
+
 2006-11-05  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* include/string.h: Fix copyright assignment to FSF, keep author's
