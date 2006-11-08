@@ -34,6 +34,7 @@
  *	Functions to manipulate IPC ports.
  */
 
+#include <printf.h>
 #include <string.h>
 
 #include <mach/port.h>
@@ -1448,8 +1449,6 @@ void
 ipc_port_print(port)
 	ipc_port_t port;
 {
-	extern int indent;
-
 	printf("port 0x%x\n", port);
 
 	indent += 2;

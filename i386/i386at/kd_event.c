@@ -56,6 +56,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <mach/boolean.h>
 #include <sys/types.h>
+#include <printf.h>
 #include <string.h>
 
 #ifdef	MACH_KERNEL

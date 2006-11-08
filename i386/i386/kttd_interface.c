@@ -26,6 +26,9 @@
 
 #if MACH_TTD
 
+#include <sys/types.h>
+#include <printf.h>
+
 #include <mach/machine/eflags.h>
 
 #include <kern/thread.h>
@@ -33,7 +36,6 @@
 #include <mach/thread_status.h>
 #include <mach/vm_param.h>
 #include <i386/seg.h>
-#include <sys/types.h>
 
 #include <ttd/ttd_types.h>
 #include <ttd/ttd_stub.h>

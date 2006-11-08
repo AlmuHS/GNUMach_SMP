@@ -50,6 +50,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 #include <sys/types.h>
+#include <printf.h>
 #include <i386/ipl.h>
 #include <i386/pic.h>
 #include <i386/machspl.h>

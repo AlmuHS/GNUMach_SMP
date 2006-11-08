@@ -34,6 +34,7 @@
  *	Virtual memory mapping module.
  */
 
+#include <printf.h>
 #include <mach/kern_return.h>
 #include <mach/port.h>
 #include <mach/vm_attributes.h>
@@ -4688,7 +4689,6 @@ void vm_map_print(map)
 	register vm_map_t	map;
 {
 	register vm_map_entry_t	entry;
-	extern int indent;
 
 	iprintf("Task map 0x%X: pmap=0x%X,",
  		(vm_offset_t) map, (vm_offset_t) (map->pmap));
@@ -4756,7 +4756,6 @@ void vm_map_print(map)
 void vm_map_copy_print(copy)
 	vm_map_copy_t copy;
 {
-	extern int indent;
 	int i, npages;
 
 	printf("copy object 0x%x\n", copy);

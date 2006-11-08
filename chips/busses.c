@@ -36,6 +36,8 @@
  *
  */
 
+#include <printf.h>
+#include <string.h>
 #include <mach/boolean.h>
 #include <mach/std_types.h>
 #include <chips/busses.h>

@@ -31,6 +31,7 @@
  *	Entry hash table operations.
  */
 
+#include <printf.h>
 #include <mach/boolean.h>
 #include <mach/port.h>
 #include <kern/lock.h>

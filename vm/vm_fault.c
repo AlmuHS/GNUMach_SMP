@@ -33,6 +33,7 @@
  *	Page fault handling module.
  */
 
+#include <printf.h>
 #include <vm/vm_fault.h>
 #include <mach/kern_return.h>
 #include <mach/message.h>	/* for error codes */

@@ -31,7 +31,7 @@
  *	String functions.
  */
 
-#include <kern/strings.h>	/* make sure we sell the truth */
+#include <string.h>
 
 #ifdef	strcpy
 #undef strcmp
@@ -84,7 +84,7 @@ int
 strncmp(
 	register const char *s1,
 	register const char *s2,
-	unsigned long n)
+	size_t n)
 {
 	register unsigned int a, b;
 
@@ -137,7 +137,7 @@ char *
 strncpy(
 	register char *to,
 	register const char *from,
-	register unsigned long count)
+	register size_t count)
 {
 	register char *ret = to;
 
@@ -161,7 +161,7 @@ strncpy(
  *	the terminating null character.
  */
 
-unsigned long
+size_t
 strlen(
 	register const char *string)
 {

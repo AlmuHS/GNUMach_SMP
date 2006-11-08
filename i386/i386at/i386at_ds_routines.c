@@ -23,6 +23,8 @@
  *      Author: Shantanu Goel, University of Utah CSL
  */
 
+#include <printf.h>
+
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
 #include <mach/mig_errors.h>

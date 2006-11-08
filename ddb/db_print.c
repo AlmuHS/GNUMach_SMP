@@ -33,8 +33,8 @@
 /*
  * Miscellaneous printing.
  */
+#include <string.h>
 #include <mach/port.h>
-#include <kern/strings.h>
 #include <kern/task.h>
 #include <kern/thread.h>
 #include <kern/queue.h>

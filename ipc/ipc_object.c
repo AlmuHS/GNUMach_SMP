@@ -31,6 +31,7 @@
  *	Functions to manipulate IPC objects.
  */
 
+#include <printf.h>
 #include <string.h>
 
 #include <mach/boolean.h>

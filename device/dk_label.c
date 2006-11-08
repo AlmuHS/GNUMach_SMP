@@ -31,6 +31,7 @@
  */
 
 #include <sys/types.h>
+#include <printf.h>
 #include <sys/ioctl.h>
 #include <device/device_types.h>
 #include <device/disk_status.h>

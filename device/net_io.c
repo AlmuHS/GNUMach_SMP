@@ -39,6 +39,7 @@
  */
 
 #include <sys/types.h>
+#include <printf.h>
 #include <string.h>
 
 #include <device/net_status.h>

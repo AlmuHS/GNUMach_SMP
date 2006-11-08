@@ -1,6 +1,6 @@
 /*
- * String Handling Functions.
- * Copyright (C) 2006 Free Software Foundation, Inc.
+ * Header file for printf type functions.
+ * Copyright (C) 2006 Free Software Foundation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,37 +15,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- *	Author: Barry deFreese.
  */
 /*
  *     String handling functions.
  *
  */
 
-#ifndef _MACH_SA_SYS_STRING_H_
-#define _MACH_SA_SYS_STRING_H_
+#ifndef _MACH_SA_SYS_PRINTF_H_
+#define _MACH_SA_SYS_PRINTF_H_
 
 #include <sys/types.h>
+#include <stdarg.h>
 
-extern void *memcpy (void *dest, const void *src, size_t n);
+extern void printf_init ();
 
-extern void *memset (void *s, int c, size_t n);
+extern void _doprnt (const char *fmt,
+		     va_list *argp, 
+		     void (*putc)(char, vm_offset_t), 
+		     int radix, 
+		     vm_offset_t putc_arg);
 
-extern char *strchr (const char *s, int c);
+extern void printnum (unsigned long u, int base,
+                      void (*putc)(char, vm_offset_t),
+                      vm_offset_t putc_arg);
 
-extern char *strcpy (char *dest, const char *src);
+extern int sprintf (char *buf, const char *fmt, ...);
 
-extern char *strncpy (char *dest, const char *src, size_t n);
+extern int printf (const char *fmt, ...);
 
-extern char *strrchr (const char *s, int c);
+extern int indent;
+extern int iprintf (const char *fmt, ...);
 
-extern char *strsep (char **strp, const char *delim);
+#endif /* _MACH_SA_SYS_PRINTF_H_ */
 
-extern int strcmp (const char *s1, const char *s2);
-
-extern int strncmp (const char *s1, const char *s2, size_t n);
-
-extern size_t strlen (const char *s);
-
-#endif /* _MACH_SA_SYS_STRING_H_ */

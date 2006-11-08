@@ -34,6 +34,7 @@
  *	data blocks for which quick allocation/deallocation is possible.
  */
 
+#include <printf.h>
 #include <string.h>
 
 #include <kern/macro_help.h>

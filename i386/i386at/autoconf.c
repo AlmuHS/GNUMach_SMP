@@ -24,6 +24,7 @@
  * the rights to redistribute these changes.
  */
 
+#include <printf.h>
 #ifdef	MACH_KERNEL
 #include <mach/std_types.h>
 #else	/* MACH_KERNEL */

@@ -27,6 +27,7 @@
  * Support for 80387 floating point or FP emulator.
  */
 
+#include <printf.h>
 #include <string.h>
 
 #include <mach/exception.h>

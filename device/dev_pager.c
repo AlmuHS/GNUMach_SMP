@@ -30,6 +30,7 @@
  * 	Device pager.
  */
 
+#include <printf.h>
 #include <string.h>
 
 #include <mach/boolean.h>

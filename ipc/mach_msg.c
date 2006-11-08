@@ -36,6 +36,7 @@
  *	Exported message traps.  See mach/message.h.
  */
 
+#include <printf.h>
 #include <mach/kern_return.h>
 #include <mach/port.h>
 #include <mach/message.h>

@@ -32,6 +32,7 @@
  *
  */
 
+#include <printf.h>
 #include <mach/machine.h>
 #include <kern/ast.h>
 #include <kern/counters.h>

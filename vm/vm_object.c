@@ -33,6 +33,7 @@
  *	Virtual memory object module.
  */
 
+#include <printf.h>
 #include <string.h>
 
 #include <mach/memory_object.h>
@@ -2969,7 +2970,6 @@ void vm_object_print(
 	vm_object_t	object)
 {
 	register vm_page_t	p;
-	extern indent;
 
 	register int count;
 

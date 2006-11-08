@@ -28,6 +28,8 @@
  *	Date: 	8/89
  */
 
+#include <printf.h>
+#include <string.h>
 #include <device/device_types.h>
 #include <device/dev_hdr.h>
 #include <device/conf.h>

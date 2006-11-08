@@ -31,6 +31,7 @@
  *	Thread management primitives implementation.
  */
 
+#include <printf.h>
 #include <mach/std_types.h>
 #include <mach/policy.h>
 #include <mach/thread_info.h>

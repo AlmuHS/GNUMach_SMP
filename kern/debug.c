@@ -24,6 +24,7 @@
  * the rights to redistribute these changes.
  */
 
+#include <printf.h>
 #include <stdarg.h>
 
 #include "cpu_number.h"
@@ -44,6 +45,12 @@ extern int db_breakpoints_inserted;
 #if NCPUS>1
 simple_lock_data_t Assert_print_lock; /* uninited, we take our chances */
 #endif
+
+static void
+do_cnputc(char c, vm_offset_t offset)
+{
+	cnputc(c);
+}
 
 void
 Assert(char *exp, char *file, int line)
@@ -144,7 +151,7 @@ panic(const char *s, ...)
 #endif
 	printf(": ");
 	va_start(listp, s);
-	_doprnt(s, &listp, cnputc, 0);
+	_doprnt(s, &listp, do_cnputc, 0, 0);
 	va_end(listp);
 	printf("\n");
 
@@ -175,6 +182,6 @@ log(int level, const char *fmt, ...)
 	level++;
 #endif
 	va_start(listp, fmt);
-	_doprnt(fmt, &listp, cnputc, 0);
+	_doprnt(fmt, &listp, do_cnputc, 0, 0);
 	va_end(listp);
 }

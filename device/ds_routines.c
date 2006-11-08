@@ -28,6 +28,7 @@
  *	Date: 	3/89
  */
 
+#include <printf.h>
 #include <string.h>
 
 #include <mach/boolean.h>

@@ -32,6 +32,9 @@
  *	Basic initialization for I386 - ISA bus machines.
  */
 
+#include <printf.h>
+#include <string.h>
+
 #include <mach/vm_param.h>
 #include <mach/vm_prot.h>
 #include <mach/machine.h>

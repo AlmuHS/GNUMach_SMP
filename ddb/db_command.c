@@ -34,8 +34,8 @@
  * Command dispatcher.
  */
 
+#include <string.h>
 #include <mach/boolean.h>
-#include <kern/strings.h>
 #include <machine/db_machdep.h>
 
 #include <ddb/db_lex.h>

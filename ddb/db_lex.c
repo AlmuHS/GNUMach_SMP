@@ -33,8 +33,8 @@
 /*
  * Lexical analyzer.
  */
+#include <string.h>
 #include <machine/db_machdep.h>
-#include <kern/strings.h>
 #include <ddb/db_lex.h>
 
 char	db_line[DB_LEX_LINE_SIZE];

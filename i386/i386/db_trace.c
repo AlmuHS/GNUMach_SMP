@@ -26,6 +26,8 @@
 
 #if MACH_KDB
 
+#include <string.h>
+
 #include <mach/boolean.h>
 #include <vm/vm_map.h>
 #include <kern/thread.h>

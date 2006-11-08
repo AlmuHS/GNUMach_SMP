@@ -30,8 +30,8 @@
 
 #if MACH_KDB
 
+#include <string.h>
 #include <mach/std_types.h>
-#include <kern/strings.h>
 #include <machine/db_machdep.h>
 #include <ddb/db_sym.h>
 #include <ddb/db_task_thread.h>

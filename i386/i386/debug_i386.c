@@ -21,6 +21,8 @@
  *      Author: Bryan Ford, University of Utah CSL
  */
 
+#include <printf.h>
+
 #include "thread.h"
 #include "trap.h"
 #include "debug.h"

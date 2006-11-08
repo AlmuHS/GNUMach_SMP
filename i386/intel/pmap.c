@@ -55,6 +55,7 @@
  *	and to when physical maps must be made correct.
  */
 
+#include <printf.h>
 #include <string.h>
 
 #include <mach/machine/vm_types.h>

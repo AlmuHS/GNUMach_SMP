@@ -113,9 +113,9 @@
  *		(compatibility)
  */
 
+#include <string.h>
 #include <mach/boolean.h>
 #include <kern/lock.h>
-#include <kern/strings.h>
 #include <stdarg.h>
 
 #define isdigit(d) ((d) >= '0' && (d) <= '9')

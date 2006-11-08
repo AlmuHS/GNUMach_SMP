@@ -28,6 +28,7 @@
  */
 
 #include <sys/types.h>
+#include <printf.h>
 #include <string.h>
 
 #include <mach/machine/eflags.h>

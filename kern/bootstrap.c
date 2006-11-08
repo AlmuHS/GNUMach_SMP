@@ -31,6 +31,7 @@
  */
 
 #include <alloca.h>
+#include <printf.h>
 #include <string.h>
 
 #include <mach/port.h>
@@ -58,7 +59,6 @@
 #else
 #include <mach/machine/multiboot.h>
 #include <mach/exec/exec.h>
-#include <kern/strings.h>
 extern struct multiboot_info boot_info;	/* XXX put this in a header! */
 #endif
 

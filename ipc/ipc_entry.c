@@ -25,7 +25,7 @@
  *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
- *
+ */
 /*
  *	File:	ipc/ipc_entry.c
  *	Author:	Rich Draves
@@ -34,6 +34,7 @@
  *	Primitive functions to manipulate translation entries.
  */
 
+#include <printf.h>
 #include <string.h>
 
 #include <mach/kern_return.h>

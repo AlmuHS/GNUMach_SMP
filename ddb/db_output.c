@@ -34,6 +34,7 @@
  * Printf and character output for debugger.
  */
 
+#include <printf.h>
 #include <stdarg.h>
 #include <mach/boolean.h>
 #include <machine/db_machdep.h>
@@ -200,11 +201,6 @@ void db_end_line()
 	if (db_output_position >= db_max_width-1)
 	    db_printf("\n");
 }
-
-/*
- * Printing
- */
-extern void	_doprnt();
 
 /*VARARGS1*/
 void

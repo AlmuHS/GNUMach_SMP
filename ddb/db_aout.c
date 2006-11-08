@@ -34,6 +34,7 @@
  * Symbol table routines for a.out format files.
  */
 
+#include <string.h>
 #include <mach/std_types.h>
 #include <machine/db_machdep.h>		/* data types */
 #include <ddb/db_sym.h>

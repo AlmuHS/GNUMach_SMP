@@ -33,6 +33,7 @@
  *	Resident memory management module.
  */
 
+#include <printf.h>
 #include <string.h>
 
 #include <mach/vm_prot.h>

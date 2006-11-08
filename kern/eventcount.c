@@ -35,6 +35,7 @@
  *
  */
 
+#include <printf.h>
 #include <string.h>
 
 #include <mach/machine.h>

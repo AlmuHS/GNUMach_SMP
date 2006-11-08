@@ -34,6 +34,7 @@
  *	Operations on kernel messages.
  */
 
+#include <printf.h>
 #include <string.h>
 
 #include <mach/boolean.h>

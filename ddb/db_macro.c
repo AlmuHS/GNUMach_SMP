@@ -26,6 +26,7 @@
 
 #if MACH_KDB
 
+#include <string.h>
 #include <kern/thread.h>
 
 #include <machine/db_machdep.h>
