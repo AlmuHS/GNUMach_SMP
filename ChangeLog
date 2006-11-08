@@ -21,11 +21,10 @@
 	* kern/debug.c: Include `printf.h'.
 	(do_cnputc): New function.
 	(panic, log): Use do_cnputc instead of cnputc.
-        * chips/busses.c: Don't include `kern/strings.h', include `printf.h' and
-        `string.h'.
+	* chips/busses.c: Don't include `kern/strings.h', include `printf.h' and
+	`string.h'.
 	(_doprnt): Remove extern declaration.
 	(indent): Remove extern declaration.
-	* chips/busses.c: Likewise.
 	* ddb/db_aout.c: Likewise.
 	* ddb/db_command.c: Likewise.
 	* ddb/db_lex.c: Likewise.
@@ -83,7 +82,7 @@
 	* include/string.h: Fix copyright assignment to FSF, keep author's
 	name.
 
-2006-11-05  Thomas Schwinge <tschwinge@gnu.org>
+2006-11-05  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* linux/dev/README: New file.
 
