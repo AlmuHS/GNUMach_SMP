@@ -328,7 +328,13 @@ gnumach.msgids: $(nodist_lib_dep_tr_for_defs_a_SOURCES)
 	for f in $(nodist_lib_dep_tr_for_defs_a_SOURCES); do	\
 	  f=`expr "$$f" : '\(.*\)\.defs\.c'`.msgids &&		\
 	  $(MAKE) $(AM_MAKEFLAGS) "$$f" &&			\
-	  cat "$$f" >> $@ || { rm -f $@; false; }		\
+	  cat "$$f" >> $@;					\
+	  r=$$?;						\
+	  rm -f "$$f";						\
+	  if ( exit "$$r" ); then :; else			\
+	    rm -vf $@;						\
+	    exit "$$r";						\
+	  fi;							\
 	done
 # `exec_' prefix, so that we don't try to build that file during when running
 # `make install-data', as it may fail there, but isn't needed there either.

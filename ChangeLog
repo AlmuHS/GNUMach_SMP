@@ -1,3 +1,7 @@
+2006-11-08  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* Makefrag.am (gnumach.msgids): Remove temporary files.
+
 2006-11-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	[task #5726 --- ``GCC built-in functions'']
