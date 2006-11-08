@@ -27,6 +27,7 @@
  *	Mach kernel startup.
  */
 
+#include <printf.h>
 #include <mach/boolean.h>
 #include <mach/machine.h>
 #include <mach/task_special_ports.h>

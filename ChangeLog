@@ -5,6 +5,7 @@
 	(vprintf): Add prototype.
 	* kern/printf.c: Include `printf.h'.
 	(vprintf, printf): Fix prototype and return a dumb value.
+	* kern/startup.c: Include `printf.h'.
 
 2006-11-07  Barry deFreese  <bddebian@comcast.net>
 
