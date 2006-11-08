@@ -114,6 +114,7 @@
  */
 
 #include <string.h>
+#include <printf.h>
 #include <mach/boolean.h>
 #include <kern/lock.h>
 #include <stdarg.h>
@@ -511,18 +512,20 @@ void _doprnt(
  */
 extern void	cnputc( char, /*not really*/vm_offset_t);
 
-void vprintf(const char *fmt, va_list listp)
+int vprintf(const char *fmt, va_list listp)
 {
 	_doprnt(fmt, &listp, cnputc, 16, 0);
+	return 0;
 }
 
 /*VARARGS1*/
-void printf(const char *fmt, ...)
+int printf(const char *fmt, ...)
 {
 	va_list	listp;
 	va_start(listp, fmt);
 	vprintf(fmt, listp);
 	va_end(listp);
+	return 0;
 }
 
 int	indent = 0;

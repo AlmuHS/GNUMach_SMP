@@ -44,7 +44,9 @@ extern int sprintf (char *buf, const char *fmt, ...);
 extern int printf (const char *fmt, ...);
 
 extern int indent;
-extern int iprintf (const char *fmt, ...);
+extern void iprintf (const char *fmt, ...);
+
+extern int vprintf(const char *fmt, va_list listp);
 
 #endif /* _MACH_SA_SYS_PRINTF_H_ */
 

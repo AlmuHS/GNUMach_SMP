@@ -1,3 +1,11 @@
+2006-11-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	[task #5726 --- ``GCC built-in functions'']
+	* include/printf.h (iprintf): Fix prototype.
+	(vprintf): Add prototype.
+	* kern/printf.c: Include `printf.h'.
+	(vprintf, printf): Fix prototype and return a dumb value.
+
 2006-11-07  Barry deFreese  <bddebian@comcast.net>
 
 	[task #5726 --- ``GCC built-in functions'']
