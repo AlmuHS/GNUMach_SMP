@@ -34,7 +34,7 @@
  * Printf and character output for debugger.
  */
 
-#include <printf.h>
+#include <kern/printf.h>
 #include <stdarg.h>
 #include <mach/boolean.h>
 #include <machine/db_machdep.h>

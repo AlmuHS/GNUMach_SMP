@@ -57,6 +57,7 @@
 #include <vm/vm_page.h>
 #include <vm/vm_pageout.h>
 #include <vm/pmap.h>		/* For copy_to_phys, pmap_clear_modify */
+#include <kern/debug.h>		/* For panic() */
 #include <kern/thread.h>		/* For current_thread() */
 #include <kern/host.h>
 #include <vm/vm_kern.h>		/* For kernel_map, vm_move */

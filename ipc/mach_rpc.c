@@ -21,7 +21,7 @@
 
 #ifdef MIGRATING_THREADS
 
-#include <printf.h>
+#include <kern/printf.h>
 #include <mach/kern_return.h>
 #include <mach/port.h>
 #include <mach/rpc.h>

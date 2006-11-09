@@ -28,7 +28,7 @@
 
 #include <mach/std_types.h>
 #include <sys/types.h>
-#include <printf.h>
+#include <kern/printf.h>
 #include <sys/time.h>
 #include <device/conf.h>
 #include <device/errno.h>

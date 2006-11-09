@@ -36,7 +36,7 @@
  *	Functions to manipulate IPC port sets.
  */
 
-#include <printf.h>
+#include <kern/printf.h>
 #include <mach/port.h>
 #include <mach/kern_return.h>
 #include <mach/message.h>

@@ -36,13 +36,14 @@
  *	Exported message traps.  See mach/message.h.
  */
 
-#include <printf.h>
 #include <mach/kern_return.h>
 #include <mach/port.h>
 #include <mach/message.h>
 #include <kern/assert.h>
 #include <kern/counters.h>
+#include <kern/debug.h> /* for panic() */
 #include <kern/lock.h>
+#include <kern/printf.h>
 #include <kern/sched_prim.h>
 #include <kern/ipc_sched.h>
 #include <vm/vm_map.h>

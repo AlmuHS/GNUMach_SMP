@@ -34,12 +34,13 @@
  *	Virtual memory mapping module.
  */
 
-#include <printf.h>
+#include <kern/printf.h>
 #include <mach/kern_return.h>
 #include <mach/port.h>
 #include <mach/vm_attributes.h>
 #include <mach/vm_param.h>
 #include <kern/assert.h>
+#include <kern/debug.h> /* for panic() */
 #include <kern/zalloc.h>
 #include <vm/vm_fault.h>
 #include <vm/vm_map.h>

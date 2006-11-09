@@ -57,4 +57,7 @@
 
 #endif /* NDEBUG */
 
+extern void panic_init();
+extern void panic (const char *s, ...);
+
 #endif /* _mach_debug__debug_ */

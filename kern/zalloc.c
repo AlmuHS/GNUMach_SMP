@@ -34,10 +34,11 @@
  *	data blocks for which quick allocation/deallocation is possible.
  */
 
-#include <printf.h>
 #include <string.h>
 
+#include <kern/debug.h> /* For panic() */
 #include <kern/macro_help.h>
+#include <kern/printf.h>
 #include <kern/sched.h>
 #include <kern/time_out.h>
 #include <kern/zalloc.h>

@@ -30,7 +30,6 @@
  * 	Device pager.
  */
 
-#include <printf.h>
 #include <string.h>
 
 #include <mach/boolean.h>
@@ -42,6 +41,8 @@
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_space.h>
 
+#include <kern/debug.h> /* for panic() */
+#include <kern/printf.h>
 #include <kern/queue.h>
 #include <kern/zalloc.h>
 #include <kern/kalloc.h>

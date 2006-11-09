@@ -41,6 +41,7 @@
 #include <mach/vm_param.h>
 #include <mach/vm_statistics.h>
 #include <kern/counters.h>
+#include <kern/debug.h>  /* for panic() */
 #include <kern/thread.h>
 #include <vm/pmap.h>
 #include <vm/vm_map.h>

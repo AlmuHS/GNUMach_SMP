@@ -31,7 +31,7 @@
  *	Notification-sending functions.
  */
 
-#include <printf.h>
+#include <kern/printf.h>
 #include <mach/port.h>
 #include <mach/message.h>
 #include <mach/notify.h>

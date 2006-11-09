@@ -114,7 +114,7 @@
  */
 
 #include <string.h>
-#include <printf.h>
+#include <kern/printf.h>
 #include <mach/boolean.h>
 #include <kern/lock.h>
 #include <stdarg.h>

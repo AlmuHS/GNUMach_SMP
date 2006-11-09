@@ -24,7 +24,7 @@
  * the rights to redistribute these changes.
  */
 
-#include <printf.h>
+#include <kern/printf.h>
 #include <string.h>
 
 #include <mach/mach_types.h>	/* vm_address_t */

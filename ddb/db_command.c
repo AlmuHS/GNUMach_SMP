@@ -44,6 +44,7 @@
 #include <ddb/db_task_thread.h>
 
 #include <machine/setjmp.h>
+#include <kern/debug.h> /* for panic() */
 #include <kern/thread.h>
 #include <ipc/ipc_pset.h> /* 4proto */
 #include <ipc/ipc_port.h> /* 4proto */

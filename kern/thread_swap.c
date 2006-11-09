@@ -46,6 +46,7 @@
 
 #include <ipc/ipc_kmsg.h>
 #include <kern/counters.h>
+#include <kern/debug.h>  /* for panic() */
 #include <kern/thread.h>
 #include <kern/lock.h>
 #include <vm/vm_map.h>

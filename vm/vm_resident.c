@@ -33,11 +33,12 @@
  *	Resident memory management module.
  */
 
-#include <printf.h>
+#include <kern/printf.h>
 #include <string.h>
 
 #include <mach/vm_prot.h>
 #include <kern/counters.h>
+#include <kern/debug.h> /* for panic() */
 #include <kern/sched_prim.h>
 #include <kern/task.h>
 #include <kern/thread.h>

@@ -33,11 +33,12 @@
  *	Page fault handling module.
  */
 
-#include <printf.h>
+#include <kern/printf.h>
 #include <vm/vm_fault.h>
 #include <mach/kern_return.h>
 #include <mach/message.h>	/* for error codes */
 #include <kern/counters.h>
+#include <kern/debug.h> /* for panic() */
 #include <kern/thread.h>
 #include <kern/sched_prim.h>
 #include <vm/vm_map.h>

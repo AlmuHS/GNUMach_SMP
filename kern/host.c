@@ -32,6 +32,7 @@
 #include <string.h>
 
 #include <kern/assert.h>
+#include <kern/debug.h>  /* for panic() */
 #include <kern/kalloc.h>
 #include <kern/host.h>
 #include <mach/host_info.h>

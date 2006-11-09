@@ -31,7 +31,7 @@
  *	Thread management primitives implementation.
  */
 
-#include <printf.h>
+#include <kern/printf.h>
 #include <mach/std_types.h>
 #include <mach/policy.h>
 #include <mach/thread_info.h>
@@ -41,6 +41,7 @@
 #include <machine/vm_param.h>
 #include <kern/ast.h>
 #include <kern/counters.h>
+#include <kern/debug.h> /* For panic() */
 #include <kern/ipc_tt.h>
 #include <kern/mach_param.h>
 #include <kern/processor.h>

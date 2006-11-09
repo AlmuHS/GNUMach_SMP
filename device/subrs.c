@@ -27,7 +27,8 @@
  * Random device subroutines and stubs.
  */
 
-#include <printf.h>
+#include <kern/debug.h> /* for panic() */
+#include <kern/printf.h>
 #include <vm/vm_kern.h>
 #include <device/buf.h>
 #include <device/if_hdr.h>

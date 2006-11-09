@@ -32,6 +32,7 @@
 
 #include <string.h>
 #include <device/cirbuf.h>
+#include <kern/debug.h> /* for panic() */
 #include <kern/kalloc.h>
 
 

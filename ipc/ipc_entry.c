@@ -34,7 +34,7 @@
  *	Primitive functions to manipulate translation entries.
  */
 
-#include <printf.h>
+#include <kern/printf.h>
 #include <string.h>
 
 #include <mach/kern_return.h>

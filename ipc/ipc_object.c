@@ -31,7 +31,6 @@
  *	Functions to manipulate IPC objects.
  */
 
-#include <printf.h>
 #include <string.h>
 
 #include <mach/boolean.h>
@@ -46,6 +45,8 @@
 #include <ipc/ipc_right.h>
 #include <ipc/ipc_notify.h>
 #include <ipc/ipc_pset.h>
+#include <kern/debug.h> /* for panic() */
+#include <kern/printf.h>
 
 zone_t ipc_object_zones[IOT_NUMBER];
 

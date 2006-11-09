@@ -27,15 +27,16 @@
  * Support for 80387 floating point or FP emulator.
  */
 
-#include <printf.h>
 #include <string.h>
 
 #include <mach/exception.h>
 #include <mach/machine/thread_status.h>
 #include <mach/machine/fp_reg.h>
 
+#include <kern/debug.h> /* for panic() */
 #include <machine/machspl.h>	/* spls */
 #include <kern/mach_param.h>
+#include <kern/printf.h>
 #include <kern/thread.h>
 #include <kern/zalloc.h>
 

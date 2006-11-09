@@ -33,7 +33,7 @@
  *	Virtual memory object module.
  */
 
-#include <printf.h>
+#include <kern/printf.h>
 #include <string.h>
 
 #include <mach/memory_object.h>
@@ -43,6 +43,7 @@
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_space.h>
 #include <kern/assert.h>
+#include <kern/debug.h> /* for panic() */
 #include <kern/lock.h>
 #include <kern/queue.h>
 #include <kern/xpr.h>

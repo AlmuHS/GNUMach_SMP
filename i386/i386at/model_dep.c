@@ -32,7 +32,6 @@
  *	Basic initialization for I386 - ISA bus machines.
  */
 
-#include <printf.h>
 #include <string.h>
 
 #include <mach/vm_param.h>
@@ -44,6 +43,8 @@
 #include <kern/time_out.h>
 #include <kern/assert.h>
 #include <kern/cpu_number.h>
+#include <kern/debug.h> /* for panic() */
+#include <kern/printf.h>
 #include <sys/time.h>
 #include <vm/vm_page.h>
 #include <i386/machspl.h>

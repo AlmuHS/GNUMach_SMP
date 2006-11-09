@@ -33,7 +33,8 @@
  *	Functions for letting a port represent a kernel object.
  */
 
-#include <printf.h>
+#include <kern/debug.h> /* For panic() */
+#include <kern/printf.h>
 #include <mach/port.h>
 #include <mach/kern_return.h>
 #include <mach/message.h>

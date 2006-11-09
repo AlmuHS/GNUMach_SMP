@@ -31,14 +31,15 @@
  */
 
 #include <alloca.h>
-#include <printf.h>
 #include <string.h>
 
 #include <mach/port.h>
 #include <mach/message.h>
 #include <machine/vm_param.h>
 #include <ipc/ipc_port.h>
+#include <kern/debug.h>  /* for panic() */
 #include <kern/host.h>
+#include <kern/printf.h>
 #include <kern/task.h>
 #include <kern/thread.h>
 #include <kern/lock.h>

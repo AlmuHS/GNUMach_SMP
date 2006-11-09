@@ -29,6 +29,7 @@
  */
 #include <string.h>
 
+#include <kern/debug.h>  /* for panic() */
 #include <kern/xpr.h>
 #include <kern/lock.h>
 #include "cpu_number.h"

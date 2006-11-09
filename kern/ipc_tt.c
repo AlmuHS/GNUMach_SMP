@@ -35,6 +35,7 @@
 #include <mach/task_special_ports.h>
 #include <mach/thread_special_ports.h>
 #include <vm/vm_kern.h>
+#include <kern/debug.h>  /* for panic() */
 #include <kern/task.h>
 #include <kern/thread.h>
 #include <kern/ipc_kobject.h>

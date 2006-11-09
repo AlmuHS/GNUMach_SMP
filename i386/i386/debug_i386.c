@@ -21,7 +21,7 @@
  *      Author: Bryan Ford, University of Utah CSL
  */
 
-#include <printf.h>
+#include <kern/printf.h>
 
 #include "thread.h"
 #include "trap.h"

@@ -38,6 +38,7 @@
  *	Must redefine symbols for pager_server functions.
  */
 
+#include <kern/debug.h>  /* for panic() */
 #include <mach/port.h>
 #include <mach/message.h>
 #include <vm/vm_kern.h>		/* for kernel_map */

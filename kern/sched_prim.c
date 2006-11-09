@@ -32,11 +32,12 @@
  *
  */
 
-#include <printf.h>
+#include <kern/printf.h>
 #include <mach/machine.h>
 #include <kern/ast.h>
 #include <kern/counters.h>
 #include <kern/cpu_number.h>
+#include <kern/debug.h> /* for panic() */
 #include <kern/lock.h>
 #include <kern/macro_help.h>
 #include <kern/processor.h>

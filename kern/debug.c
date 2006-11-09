@@ -24,16 +24,14 @@
  * the rights to redistribute these changes.
  */
 
-#include <printf.h>
+#include <kern/printf.h>
 #include <stdarg.h>
 
 #include "cpu_number.h"
 #include <kern/lock.h>
 #include <kern/thread.h>
 
-#warning missing include for panic()
-void panic(const char *s, ...);
-
+#include <kern/debug.h>
 
 extern void cnputc();
 void Debugger();

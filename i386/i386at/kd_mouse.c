@@ -66,7 +66,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <mach/boolean.h>
 #include <sys/types.h>
-#include <printf.h>
+#include <kern/printf.h>
 #ifdef	MACH_KERNEL
 #include <device/errno.h>
 #include <device/io_req.h>

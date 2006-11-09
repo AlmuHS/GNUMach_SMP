@@ -43,6 +43,7 @@
 #include <kern/queue.h>
 #include <kern/lock.h>
 #include <kern/assert.h>
+#include <kern/debug.h>  /* for panic() */
 #include <kern/macro_help.h>
 #include <vm/pmap.h>
 

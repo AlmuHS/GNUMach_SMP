@@ -1,3 +1,90 @@
+2006-11-09  Barry deFreese  <bddebian@comcast.net>
+
+	[task #5726 --- ``GCC built-in functions'']
+	* include/printf.h: Move file...
+	* kern/printf.h: ... here.
+	* kern/debug.h (panic_init, panic): Add prototypes.
+	* chips/busses.c: Don't include `printf.h', include `kern/printf.h'
+	and `kern/debug.h'.
+	* ddb/db_command.c: Likewise.
+	* ddb/db_cond.c: Likewise.
+	* ddb/db_output.c: Likewise.
+	* device/cirbuf.c: Likewise.
+	* device/cons.c: Likewise.
+	* device/dev_name.c: Likewise.
+	* device/dev_pager.c: Likewise.
+	* device/device_init.c: Likewise.
+	* device/dk_label.c: Likewise.
+	* device/ds_routines.c: Likewise.
+	* device/net_io.c: Likewise.
+	* device/subrs.c: Likewise.
+	* i386/i386/debug_i386.c: Likewise.
+	* i386/i386/fpe_linkage.c: Likewise.
+	* i386/i386/fpu.c: Likewise.
+	* i386/i386/io_map.c: Likewise.
+	* i386/i386/kttd_interface.c: Likewise.
+	* i386/i386/mp_desc.c: Likewise.
+	* i386/i386/pcb.c: Likewise.
+	* i386/i386/pic.c: Likewise.
+	* i386/i386/trap.c: Likewise.
+	* i386/i386at/autoconf.c: Likewise.
+	* i386/i386at/com.c: Likewise.
+	* i386/i386at/i386at_ds_routines.c: Likewise.
+	* i386/i386at/kd.c: Likewise.
+	* i386/i386at/kd_event.c: Likewise.
+	* i386/i386at/kd_mouse.c: Likewise.
+	* i386/i386at/lpr.c: Likewise.
+	* i386/i386at/model_dep.c: Likewise.
+	* i386/intel/pmap.c: Likewise.
+	* ipc/ipc_entry.c: Likewise.
+	* ipc/ipc_hash.c: Likewise.
+	* ipc/ipc_kmsg.c: Likewise.
+	* ipc/ipc_mqueue.c: Likewise.
+	* ipc/ipc_notify.c: Likewise.
+	* ipc/ipc_object.c: Likewise.
+	* ipc/ipc_port.c: Likewise.
+	* ipc/ipc_pset.c: Likewise.
+	* ipc/ipc_right.c: Likewise.
+	* ipc/mach_msg.c: Likewise.
+	* ipc/mach_port.c: Likewise.
+	* ipc/mach_rpc.c: Likewise.
+	* kern/act.c: Likewise.
+	* kern/ast.c: Likewise.
+	* kern/bootstrap.c: Likewise.
+	* kern/debug.c: Likewise.
+	* kern/eventcount.c: Likewise.
+	* kern/exception.c: Likewise.
+	* kern/host.c: Likewise.
+	* kern/ipc_host.c: Likewise.
+	* kern/ipc_kobject.c: Likewise.
+	* kern/ipc_mig.c: Likewise.
+	* kern/ipc_sched.c: Likewise.
+	* kern/ipc_tt.c: Likewise.
+	* kern/kalloc.c: Likewise.
+	* kern/lock.c: Likewise.
+	* kern/mach_clock.c: Likewise.
+	* kern/machine.c: Likewise.
+	* kern/pc_sample.c: Likewise.
+	* kern/printf.c: Likewise.
+	* kern/processor.c: Likewise.
+	* kern/sched_prim.c: Likewise.
+	* kern/server_loop.ch: Likewise.
+	* kern/startup.c: Likewise.
+	* kern/task.c: Likewise.
+	* kern/thread.c: Likewise.
+	* kern/thread_swap.c: Likewise.
+	* kern/xpr.c: Likewise.
+	* kern/zalloc.c: Likewise.
+	* vm/memory_object.c: Likewise.
+	* vm/vm_debug.c: Likewise.
+	* vm/vm_fault.c: Likewise.
+	* vm/vm_kern.c: Likewise.
+	* vm/vm_map.c: Likewise.
+	* vm/vm_object.c: Likewise.
+	* vm/vm_object.h: Likewise.
+	* vm/vm_pageout.c: Likewise.
+	* vm/vm_resident.c: Likewise.
+
 2006-11-08  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* aclocal.m4: Regenerate using GNU Autoconf 2.60 and GNU Automake 1.10.

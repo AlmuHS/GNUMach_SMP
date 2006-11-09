@@ -39,6 +39,7 @@
 #include <mach/kern_return.h>
 #include <machine/vm_param.h>
 #include <kern/assert.h>
+#include <kern/debug.h> /* for panic() */
 #include <kern/lock.h>
 #include <kern/thread.h>
 #include <vm/vm_fault.h>

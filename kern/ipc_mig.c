@@ -29,6 +29,7 @@
 #include <mach/message.h>
 #include <mach/thread_status.h>
 #include <kern/ast.h>
+#include <kern/debug.h>  /* for panic() */
 #include <kern/ipc_tt.h>
 #include <kern/thread.h>
 #include <kern/task.h>

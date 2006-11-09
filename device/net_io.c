@@ -39,7 +39,6 @@
  */
 
 #include <sys/types.h>
-#include <printf.h>
 #include <string.h>
 
 #include <device/net_status.h>
@@ -57,7 +56,9 @@
 #include <ipc/ipc_mqueue.h>
 
 #include <kern/counters.h>
+#include <kern/debug.h> /* for panic() */
 #include <kern/lock.h>
+#include <kern/printf.h>
 #include <kern/queue.h>
 #include <kern/sched_prim.h>
 #include <kern/thread.h>

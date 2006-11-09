@@ -34,7 +34,7 @@
  *	Functions to manipulate IPC ports.
  */
 
-#include <printf.h>
+#include <kern/printf.h>
 #include <string.h>
 
 #include <mach/port.h>

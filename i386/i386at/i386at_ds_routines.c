@@ -23,7 +23,7 @@
  *      Author: Shantanu Goel, University of Utah CSL
  */
 
-#include <printf.h>
+#include <kern/printf.h>
 
 #include <mach/boolean.h>
 #include <mach/kern_return.h>

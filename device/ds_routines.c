@@ -28,7 +28,7 @@
  *	Date: 	3/89
  */
 
-#include <printf.h>
+#include <kern/printf.h>
 #include <string.h>
 
 #include <mach/boolean.h>
@@ -44,6 +44,8 @@
 
 #include <kern/ast.h>
 #include <kern/counters.h>
+#include <kern/debug.h> /* for panic() */
+#include <kern/printf.h>
 #include <kern/queue.h>
 #include <kern/zalloc.h>
 #include <kern/thread.h>

@@ -27,13 +27,14 @@
  *	Mach kernel startup.
  */
 
-#include <printf.h>
 #include <mach/boolean.h>
 #include <mach/machine.h>
 #include <mach/task_special_ports.h>
 #include <mach/vm_param.h>
 #include <ipc/ipc_init.h>
 #include <kern/cpu_number.h>
+#include <kern/debug.h> /* for panic() */
+#include <kern/printf.h>
 #include <kern/processor.h>
 #include <kern/sched_prim.h>
 #include <kern/task.h>

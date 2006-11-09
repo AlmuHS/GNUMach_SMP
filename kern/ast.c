@@ -37,6 +37,7 @@
 
 #include <kern/ast.h>
 #include <kern/counters.h>
+#include <kern/debug.h>  /* for panic() */
 #include "cpu_number.h"
 #include <kern/queue.h>
 #include <kern/sched.h>

@@ -24,7 +24,7 @@
  * the rights to redistribute these changes.
  */
 
-#include <printf.h>
+#include <kern/printf.h>
 #include <mach/vm_param.h>
 #include <vm/vm_kern.h>
 #include <vm/vm_map.h>

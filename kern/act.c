@@ -35,6 +35,7 @@
 #include <kern/zalloc.h>
 #include <kern/thread.h>
 #include <kern/task.h>
+#include <kern/debug.h> /* for panic() */
 #include <kern/act.h>
 #include <kern/current.h>
 #include "ipc_target.h"

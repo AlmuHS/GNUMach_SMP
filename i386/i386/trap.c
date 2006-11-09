@@ -28,7 +28,6 @@
  */
 
 #include <sys/types.h>
-#include <printf.h>
 #include <string.h>
 
 #include <mach/machine/eflags.h>
@@ -44,6 +43,8 @@
 #include <vm/vm_map.h>
 
 #include <kern/ast.h>
+#include <kern/debug.h> /* for panic() */
+#include <kern/printf.h>
 #include <kern/thread.h>
 #include <kern/task.h>
 #include <kern/sched.h>

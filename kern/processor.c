@@ -34,6 +34,7 @@
 #include <mach/processor_info.h>
 #include <mach/vm_param.h>
 #include <kern/cpu_number.h>
+#include <kern/debug.h>  /* for panic() */
 #include <kern/lock.h>
 #include <kern/host.h>
 #include <kern/processor.h>

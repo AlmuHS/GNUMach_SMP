@@ -27,7 +27,7 @@
 #if MACH_TTD
 
 #include <sys/types.h>
-#include <printf.h>
+#include <kern/printf.h>
 
 #include <mach/machine/eflags.h>
 
