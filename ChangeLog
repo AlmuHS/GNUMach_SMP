@@ -1,5 +1,7 @@
 2006-11-08  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* aclocal.m4: Regenerate using GNU Autoconf 2.60 and GNU Automake 1.10.
+
 	* Makefrag.am (gnumach.msgids): Remove temporary files.
 
 2006-11-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
