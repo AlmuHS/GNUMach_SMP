@@ -123,7 +123,7 @@ extern void	recompute_priorities();
 extern void	thread_bootstrap_return(void);
 extern void	thread_exception_return(void);
 #ifdef	__GNUC__
-extern void 	__volatile__ thread_syscall_return(kern_return_t);
+extern void 	__attribute__((__noreturn__)) thread_syscall_return(kern_return_t);
 #else
 extern void	thread_syscall_return(kern_return_t);
 #endif
