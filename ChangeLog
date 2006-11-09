@@ -1,6 +1,15 @@
 2006-11-08  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* aclocal.m4: Regenerate using GNU Autoconf 2.60 and GNU Automake 1.10.
+	* INSTALL: Likewise.
+	* Makefile.in: Likewise.
+	* configure: Likewise.
+	* build-aux/config.guess: Likewise.
+	* build-aux/config.sub: Likewise.
+	* build-aux/depcomp: Likewise.
+	* build-aux/install-sh: Likewise.
+	* build-aux/missing: Likewise.
+	* build-aux/texinfo.tex: Likewise.
 
 	* Makefrag.am (gnumach.msgids): Remove temporary files.
 
