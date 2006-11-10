@@ -33,7 +33,7 @@
 #include <mach/vm_param.h>
 #include <ipc/ipc_init.h>
 #include <kern/cpu_number.h>
-#include <kern/debug.h> /* for panic() */
+#include <kern/debug.h>
 #include <kern/printf.h>
 #include <kern/processor.h>
 #include <kern/sched_prim.h>

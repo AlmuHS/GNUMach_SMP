@@ -56,7 +56,7 @@
 #include <ipc/ipc_mqueue.h>
 
 #include <kern/counters.h>
-#include <kern/debug.h> /* for panic() */
+#include <kern/debug.h>
 #include <kern/lock.h>
 #include <kern/printf.h>
 #include <kern/queue.h>

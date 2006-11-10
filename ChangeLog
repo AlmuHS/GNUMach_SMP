@@ -10,7 +10,7 @@
 	* kern/printf.h: ... here.
 	* kern/debug.h (panic_init, panic): Add prototypes.
 	* chips/busses.c: Don't include `printf.h', include `kern/printf.h'
-	and `kern/debug.h'.
+	and `kern/debug.h' for panic().
 	* ddb/db_command.c: Likewise.
 	* ddb/db_cond.c: Likewise.
 	* ddb/db_output.c: Likewise.

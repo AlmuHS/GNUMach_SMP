@@ -45,7 +45,7 @@
 #include <ipc/ipc_right.h>
 #include <ipc/ipc_notify.h>
 #include <ipc/ipc_pset.h>
-#include <kern/debug.h> /* for panic() */
+#include <kern/debug.h>
 #include <kern/printf.h>
 
 zone_t ipc_object_zones[IOT_NUMBER];

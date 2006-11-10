@@ -40,7 +40,7 @@
 #include <mach/vm_attributes.h>
 #include <mach/vm_param.h>
 #include <kern/assert.h>
-#include <kern/debug.h> /* for panic() */
+#include <kern/debug.h>
 #include <kern/zalloc.h>
 #include <vm/vm_fault.h>
 #include <vm/vm_map.h>

@@ -41,7 +41,7 @@
 #include <machine/vm_param.h>
 #include <kern/ast.h>
 #include <kern/counters.h>
-#include <kern/debug.h> /* For panic() */
+#include <kern/debug.h>
 #include <kern/ipc_tt.h>
 #include <kern/mach_param.h>
 #include <kern/processor.h>

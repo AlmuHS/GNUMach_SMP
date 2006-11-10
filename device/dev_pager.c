@@ -41,7 +41,7 @@
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_space.h>
 
-#include <kern/debug.h> /* for panic() */
+#include <kern/debug.h>
 #include <kern/printf.h>
 #include <kern/queue.h>
 #include <kern/zalloc.h>

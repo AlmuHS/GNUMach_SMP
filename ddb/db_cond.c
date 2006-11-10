@@ -33,7 +33,7 @@
 #include <ddb/db_break.h>
 #include <ddb/db_command.h>
 
-#include <kern/debug.h> /* for panic() */
+#include <kern/debug.h>
 
 
 #define DB_MAX_COND	10		/* maximum conditions to be set */

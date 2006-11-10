@@ -35,7 +35,7 @@
 
 #include <string.h>
 
-#include <kern/debug.h> /* for panic() */
+#include <kern/debug.h>
 #include <kern/thread.h>
 #include <mach/kern_return.h>
 #include <mach/machine/vm_types.h>

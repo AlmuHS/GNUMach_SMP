@@ -27,7 +27,7 @@
 #include <mach/message.h>
 #include <kern/counters.h>
 #include "cpu_number.h"
-#include <kern/debug.h>  /* for panic() */
+#include <kern/debug.h>
 #include <kern/lock.h>
 #include <kern/thread.h>
 #include <kern/sched_prim.h>

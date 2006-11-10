@@ -43,7 +43,7 @@
 #include <vm/vm_map.h>
 
 #include <kern/ast.h>
-#include <kern/debug.h> /* for panic() */
+#include <kern/debug.h>
 #include <kern/printf.h>
 #include <kern/thread.h>
 #include <kern/task.h>

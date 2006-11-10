@@ -38,7 +38,7 @@
 #include <mach/port.h>
 #include <mach/message.h>
 #include <kern/assert.h>
-#include <kern/debug.h>  /* for panic() */
+#include <kern/debug.h>
 #include <ipc/port.h>
 #include <ipc/ipc_entry.h>
 #include <ipc/ipc_space.h>

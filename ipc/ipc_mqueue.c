@@ -38,7 +38,7 @@
 #include <mach/message.h>
 #include <kern/assert.h>
 #include <kern/counters.h>
-#include <kern/debug.h> /* for panic() */
+#include <kern/debug.h>
 #include <kern/sched_prim.h>
 #include <kern/ipc_sched.h>
 #include <kern/ipc_kobject.h>

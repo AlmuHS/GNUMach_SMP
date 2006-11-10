@@ -60,7 +60,7 @@
 #include <mach/machine/vm_types.h>
 
 #include <mach/boolean.h>
-#include <kern/debug.h> /* for panic() */
+#include <kern/debug.h>
 #include <kern/printf.h>
 #include <kern/thread.h>
 #include <kern/zalloc.h>

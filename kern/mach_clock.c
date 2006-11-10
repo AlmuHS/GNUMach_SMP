@@ -43,7 +43,7 @@
 #include <mach/vm_prot.h>
 #include <kern/counters.h>
 #include "cpu_number.h"
-#include <kern/debug.h>  /* for panic() */
+#include <kern/debug.h>
 #include <kern/host.h>
 #include <kern/lock.h>
 #include <kern/mach_param.h>

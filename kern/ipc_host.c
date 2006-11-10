@@ -33,7 +33,7 @@
  */
 
 #include <mach/message.h>
-#include <kern/debug.h>  /* for panic() */
+#include <kern/debug.h>
 #include <kern/host.h>
 #include <kern/processor.h>
 #include <kern/task.h>

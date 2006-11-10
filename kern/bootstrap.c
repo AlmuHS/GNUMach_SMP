@@ -37,7 +37,7 @@
 #include <mach/message.h>
 #include <machine/vm_param.h>
 #include <ipc/ipc_port.h>
-#include <kern/debug.h>  /* for panic() */
+#include <kern/debug.h>
 #include <kern/host.h>
 #include <kern/printf.h>
 #include <kern/task.h>

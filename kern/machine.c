@@ -40,7 +40,7 @@
 #include <mach/machine.h>
 #include <mach/host_info.h>
 #include <kern/counters.h>
-#include <kern/debug.h>  /* for panic() */
+#include <kern/debug.h>
 #include <kern/ipc_host.h>
 #include <kern/host.h>
 #include <kern/lock.h>

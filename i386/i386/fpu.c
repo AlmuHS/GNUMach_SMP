@@ -33,7 +33,7 @@
 #include <mach/machine/thread_status.h>
 #include <mach/machine/fp_reg.h>
 
-#include <kern/debug.h> /* for panic() */
+#include <kern/debug.h>
 #include <machine/machspl.h>	/* spls */
 #include <kern/mach_param.h>
 #include <kern/printf.h>

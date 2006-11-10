@@ -77,7 +77,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 /* $ Header:  $ */
 
 #include <sys/types.h>
-#include <kern/debug.h> /* for panic() */
+#include <kern/debug.h>
 #include <kern/printf.h>
 #include <kern/time_out.h>
 #include <device/conf.h>

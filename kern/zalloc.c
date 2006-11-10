@@ -36,7 +36,7 @@
 
 #include <string.h>
 
-#include <kern/debug.h> /* For panic() */
+#include <kern/debug.h>
 #include <kern/macro_help.h>
 #include <kern/printf.h>
 #include <kern/sched.h>

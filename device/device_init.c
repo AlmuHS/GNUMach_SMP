@@ -31,7 +31,7 @@
  */
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_space.h>
-#include <kern/debug.h> /* for panic() */
+#include <kern/debug.h>
 #include <kern/task.h>
 
 #include <device/device_types.h>

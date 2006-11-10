@@ -36,7 +36,7 @@
  *	Exported kernel calls.  See mach/mach_port.defs.
  */
 
-#include <kern/debug.h> /* for panic() */
+#include <kern/debug.h>
 #include <kern/printf.h>
 #include <mach/port.h>
 #include <mach/kern_return.h>

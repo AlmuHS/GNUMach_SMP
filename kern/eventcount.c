@@ -40,7 +40,7 @@
 
 #include <mach/machine.h>
 #include <kern/ast.h>
-#include <kern/debug.h> /* For panic() */
+#include <kern/debug.h>
 #include "cpu_number.h"
 #include <kern/lock.h>
 #include <kern/processor.h>

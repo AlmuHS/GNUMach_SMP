@@ -38,7 +38,7 @@
 
 #include <mach/vm_prot.h>
 #include <kern/counters.h>
-#include <kern/debug.h> /* for panic() */
+#include <kern/debug.h>
 #include <kern/sched_prim.h>
 #include <kern/task.h>
 #include <kern/thread.h>

@@ -21,7 +21,7 @@
  */
 
 #include <string.h>
-#include <kern/debug.h> /* for panic() */
+#include <kern/debug.h>
 #ifdef MACH_KERNEL
 #include <sys/types.h>
 #include <device/conf.h>

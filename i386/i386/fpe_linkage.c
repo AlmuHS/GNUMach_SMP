@@ -37,7 +37,7 @@
 #include <mach/thread_status.h>
 
 #include <kern/cpu_number.h>
-#include <kern/debug.h> /* for panic() */
+#include <kern/debug.h>
 #include <kern/thread.h>
 
 #include <vm/vm_kern.h>

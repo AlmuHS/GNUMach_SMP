@@ -38,7 +38,7 @@
 #include <mach/kern_return.h>
 #include <mach/message.h>	/* for error codes */
 #include <kern/counters.h>
-#include <kern/debug.h> /* for panic() */
+#include <kern/debug.h>
 #include <kern/thread.h>
 #include <kern/sched_prim.h>
 #include <vm/vm_map.h>

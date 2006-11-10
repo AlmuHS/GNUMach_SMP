@@ -38,7 +38,7 @@
 #include <mach/machine/vm_types.h>
 #include <mach/vm_param.h>
 
-#include <kern/debug.h>  /* for panic() */
+#include <kern/debug.h>
 #include <kern/zalloc.h>
 #include <kern/kalloc.h>
 #include <vm/vm_kern.h>
