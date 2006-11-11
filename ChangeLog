@@ -1,7 +1,12 @@
 2006-11-11  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
-	Fix a bunch of "unused variable" warnings.
+	Fix ``assignment used as truth value'' warnings.
+	* device/cons.c (cninit): Add parenthesis.
+	* kern/bootstrap.c (copy_bootstrap): Likewise.
+	* kern/printf.c (_doprnt): Likewise.
+	* vm/vm_map.c (vm_map_lookup): Likewise.
 
+	Fix a bunch of ``unused variable'' warnings.
 	* device/ds_routines.c (ds_device_open): Remove unused `namebuf'
 	variable.
 	* device/kmsg.c (kmsgread): Remove unused `err' variable.

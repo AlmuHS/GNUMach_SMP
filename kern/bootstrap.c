@@ -450,7 +450,7 @@ static void copy_bootstrap(void *e, exec_info_t *boot_exec_info)
 	register vm_map_t	user_map = current_task()->map;
 	int err;
 
-	if (err = exec_load(boot_read, read_exec, e, boot_exec_info))
+	if ((err = exec_load(boot_read, read_exec, e, boot_exec_info)))
 		panic("Cannot load user-bootstrap image: error code %d", err);
 
 #if	MACH_KDB

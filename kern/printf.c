@@ -292,7 +292,7 @@ void _doprnt(
 			break;
 
 		    any = FALSE;
-		    while (i = *p++) {
+		    while ((i = *p++)) {
 			/* NOTE: The '32' here is because ascii space */
 			if (*p <= 32) {
 			    /*

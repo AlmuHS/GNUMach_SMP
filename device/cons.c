@@ -97,7 +97,7 @@ cninit()
 	/*
 	 * Found a console, initialize it.
 	 */
-	if (cp = cn_tab) { 
+	if ((cp = cn_tab)) { 
 		/*
 		 * Initialize as console
 		 */

@@ -4391,7 +4391,7 @@ kern_return_t vm_map_lookup(var_map, vaddr, fault_type, out_version,
 	 *	it for all possible accesses.
 	 */
 
-	if (*wired = (entry->wired_count != 0))
+	if ((*wired = (entry->wired_count != 0)))
 		prot = fault_type = entry->protection;
 
 	/*
