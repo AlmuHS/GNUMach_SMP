@@ -118,14 +118,14 @@ noinst_PROGRAMS += \
 	gnumach.o
 
 # This is the list of routines we decide is OK to steal from the C library.
-clib_routines := memcpy memmove memset bcopy bzero \
-		 strchr strstr strsep strpbrk strtok \
-		 htonl htons ntohl ntohs \
+clib_routines := memcpy memmove memset bcopy bzero		\
+		 strchr strstr strsep strpbrk strtok		\
+		 htonl htons ntohl ntohs			\
 		 etext edata end # actually ld magic, not libc.
 gnumach-undef: gnumach.$(OBJEXT)
 	$(NM) -u $< | sed 's/  *U  *//;s/^_*//' | sort -u > $@
 MOSTLYCLEANFILES += gnumach-undef
-gnumach-undef-bad: gnumach-undef
+gnumach-undef-bad: gnumach-undef Makefile
 	sed '$(foreach r,$(clib_routines),/^$r$$/d;)' $< > $@
 MOSTLYCLEANFILES += gnumach-undef-bad
 clib-routines.o: gnumach-undef gnumach-undef-bad

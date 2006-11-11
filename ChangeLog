@@ -1,3 +1,7 @@
+2006-11-11  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* Makefile.am (gnumach-undef-bad): Depend on the Makefile.
+
 2006-11-11  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	Fix I/O port type.
