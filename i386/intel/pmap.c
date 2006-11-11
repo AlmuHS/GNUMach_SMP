@@ -644,7 +644,6 @@ void pmap_bootstrap()
 			pt_entry_t *pde = kernel_page_dir + lin2pdenum(kvtolin(va));
 			pt_entry_t *ptable = (pt_entry_t*)pmap_grab_page();
 			pt_entry_t *pte;
-			vm_offset_t pteva;
 
 			/* Initialize the page directory entry.  */
 			*pde = pa_to_pte((vm_offset_t)ptable)

@@ -1332,7 +1332,6 @@ net_set_filter(ifp, rcv_port, priority, filter, filter_count)
     if (match != 0)
     {	    /* Insert to hash list */
 	net_hash_entry_t *p;
-	int j;
 	
 	hash_entp->rcv_port = rcv_port;
 	for (i = 0; i < match->jt; i++)		/* match->jt is n_keys */

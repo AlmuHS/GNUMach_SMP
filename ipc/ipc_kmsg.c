@@ -1377,7 +1377,6 @@ ipc_kmsg_copyin_body(kmsg, space, map)
 	ipc_object_t dest;
 	vm_offset_t saddr, eaddr;
 	boolean_t complex;
-	mach_msg_return_t mr;
 	boolean_t use_page_lists, steal_pages;
 
 	dest = (ipc_object_t) kmsg->ikm_header.msgh_remote_port;

@@ -763,7 +763,6 @@ int	regs;
 	struct	tty	*tp;
 	unsigned char	c;
 	unsigned char	scancode;
-	int		o_pri;
 	int		char_idx;
 	boolean_t	up = FALSE;		/* key-up event */
 	extern int	mouse_in_use;
@@ -2973,8 +2972,6 @@ kdcngetc(dev_t dev, int wait)
 int
 kdcnputc(dev_t dev, int c)
 {
-	int	i;
-
 	if (!kd_initialized)
 		return;
 

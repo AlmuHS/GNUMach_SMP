@@ -184,7 +184,6 @@ projected_buffer_map(map, kernel_addr, size, user_p, protection, inheritance)
         vm_prot_t protection;
         vm_inherit_t inheritance;  /*Currently only VM_INHERIT_NONE supported*/
 {
-	vm_object_t object;
 	vm_map_entry_t u_entry, k_entry;
 	vm_offset_t physical_addr, user_addr;
 	vm_size_t r_size;

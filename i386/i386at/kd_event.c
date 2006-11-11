@@ -182,8 +182,6 @@ io_return_t kbdgetstat(dev, flavor, data, count)
 	int *		data;		/* pointer to OUT array */
 	unsigned int	*count;		/* OUT */
 {
-	io_return_t	result;
-
 	switch (flavor) {
 	    case KDGKBDTYPE:
 		*data = KB_VANILLAKB;
@@ -206,8 +204,6 @@ io_return_t kbdsetstat(dev, flavor, data, count)
 	int *		data;
 	unsigned int	count;
 {
-	io_return_t	result;
-
 	switch (flavor) {
 	    case KDSKBDMODE:
 		kb_mode = *data;

@@ -690,9 +690,7 @@ boot_script_exec_cmd (void *hook, task_t task, char *path, int argc,
 		      char **argv, char *strings, int stringlen)
 {
   struct multiboot_module *mod = hook;
-  exec_info_t boot_exec_info;
 
-  register vm_map_t	user_map = current_task()->map;
   int err;
 
   if (task != MACH_PORT_NULL)

@@ -172,7 +172,6 @@ boolean_t	brb = TRUE;
 void kernel_trap(regs)
 	register struct i386_saved_state *regs;
 {
-	int	exc;
 	int	code;
 	int	subcode;
 	register int	type;
@@ -368,8 +367,6 @@ int user_trap(regs)
 	int	code;
 	int	subcode;
 	register int	type;
-	vm_map_t	map;
-	kern_return_t	result;
 	register thread_t thread = current_thread();
 	extern vm_offset_t phys_last_addr;
 
@@ -840,7 +837,6 @@ v86_assist(thread, regs)
 		    {
 			vm_offset_t sp;
 			int	nflags;
-			int	size;
 			union iret_struct iret_struct;
 
 			v86->flags &= ~V86_IRET_PENDING;

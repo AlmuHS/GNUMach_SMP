@@ -147,7 +147,6 @@ kmsgread (dev_t dev, io_req_t ior)
 static boolean_t
 kmsg_read_done (io_req_t ior)
 {
-  int err;
   int amt, len;
 
   simple_lock (&kmsg_lock);

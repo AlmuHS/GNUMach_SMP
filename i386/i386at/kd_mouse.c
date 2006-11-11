@@ -321,8 +321,6 @@ io_return_t mousegetstat(dev, flavor, data, count)
 	int *		  data;		/* pointer to OUT array */
 	unsigned int	  *count;	/* OUT */
 {
-	io_return_t	result;
-
 	switch (flavor) {
 	    case DEV_GET_SIZE:
 		data[DEV_GET_SIZE_DEVICE_SIZE] = 0;

@@ -1,3 +1,34 @@
+2006-11-11  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	Fix a bunch of "unused variable" warnings.
+
+	* device/ds_routines.c (ds_device_open): Remove unused `namebuf'
+	variable.
+	* device/kmsg.c (kmsgread): Remove unused `err' variable.
+	* device/net_io.c (net_set_filter): Remove unused `j' variable.
+        * i386/i386/pcb.c (curr_gdt, curr_ktss): Artificially use parameter of
+        macro.
+	* i386/i386/pic.c (picinit): Remove unused `i' variable.
+	* i386/i386/pit.c (clkstart): Remove unused `flags' variable.
+	* i386/i386/trap.c (kernel_trap): Remove unused `exc' variable.
+	(user_trap): Remove unused `map' and `result' variables.
+	(v86_assist): Remove unused `size' variable.
+	* i386/i386at/i386at_ds_routines.c (ds_device_open): Remove unused
+	`dev' variable.
+	* i386/i386at/kd.c (kdintr): Remove unused `o_pri' variable.
+	(kdcngetc): Remove unused `i' variable.
+        * i386/i386at/kd_event.c (kbdgetstat, kbdsetstat): Remove unused
+        `result' variable.
+	* i386/i386at/kd_mouse.c (mousegetstat): Likewise.
+	* i386/i386at/lpr.c (lprattach): Remove unused `tp' variable.
+	(lprsetstat): Remove unused `dev_addr' and `s' variables.
+	* i386/intel/pmap.c (pmap_bootstrap): Remove unused `pteva' variable.
+	* ipc/ipc_kmsg.c (ipc_kmsg_copyin_body): Remove unused `mr' variable.
+	* kern/bootstrap.c (boot_script_exec_cmd): Remove unused
+	`boot_exec_info' and `user_map' variables.
+	* vm/vm_kern.c (projected_buffer_map): Remove unused `object'
+	variable.
+
 2006-11-10  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
         * kern/sched_prim.h (thread_syscall_return): Replace old `volatile'

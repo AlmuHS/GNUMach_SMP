@@ -67,7 +67,6 @@ unsigned int clknumb = CLKNUM;		/* interrupt interval for timer 0 */
 
 clkstart()
 {
-	unsigned int	flags;
 	unsigned char	byte;
 	int s;
 

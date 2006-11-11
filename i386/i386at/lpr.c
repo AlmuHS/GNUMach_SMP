@@ -113,7 +113,6 @@ void lprattach(struct bus_device *dev)
 {
 	u_char		unit = dev->unit;
 	u_short		addr = (u_short) dev->address;
-	struct tty	*tp = &lpr_tty[unit];
 
 	take_dev_irq(dev);
 	printf(", port = %x, spl = %d, pic = %d.",
@@ -228,8 +227,6 @@ unsigned int	count;
 {
 	io_return_t	result = D_SUCCESS;
 	int 		unit = minor(dev);
-	u_short		dev_addr = (u_short) lprinfo[unit]->address;
-	int		s;
 
 	switch (flavor) {
 	default:

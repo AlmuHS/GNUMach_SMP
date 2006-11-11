@@ -72,7 +72,6 @@ ds_device_open (ipc_port_t open_port, ipc_port_t reply_port,
 		char *name, device_t *devp)
 {
   int i;
-  device_t dev;
   io_return_t err;
 
   /* Open must be called on the master device port.  */

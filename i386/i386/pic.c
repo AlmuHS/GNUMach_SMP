@@ -107,8 +107,6 @@ u_short PICM_ICW4, PICS_ICW4 ;
 picinit()
 {
 
-	u_short i;
-
 	asm("cli");
 
 	/*

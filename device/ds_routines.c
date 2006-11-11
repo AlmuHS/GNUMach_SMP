@@ -109,7 +109,6 @@ ds_device_open(open_port, reply_port, reply_port_type,
 	register mach_device_t	device;
 	register kern_return_t	result;
 	register io_req_t	ior;
-	char			namebuf[64];
 	ipc_port_t		notify;
 
 #ifndef i386
