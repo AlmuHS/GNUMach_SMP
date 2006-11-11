@@ -39,6 +39,7 @@
 	* i386/i386at/lpr.c (lprattach): Remove unused `tp' variable.
 	(lprsetstat): Remove unused `dev_addr' and `s' variables.
 	* i386/intel/pmap.c (pmap_bootstrap): Remove unused `pteva' variable.
+	(SPLVM, SPLX): Artificially use parameter of macro.
 	* ipc/ipc_kmsg.c (ipc_kmsg_copyin_body): Remove unused `mr' variable.
 	* kern/bootstrap.c (boot_script_exec_cmd): Remove unused
 	`boot_exec_info' and `user_map' variables.

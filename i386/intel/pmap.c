@@ -351,8 +351,8 @@ lock_data_t	pmap_system_lock;
 
 #else	/* NCPUS > 1 */
 
-#define SPLVM(spl)
-#define SPLX(spl)
+#define SPLVM(spl) ((void)(spl))
+#define SPLX(spl) ((void)(spl))
 
 #define PMAP_READ_LOCK(pmap, spl)	SPLVM(spl)
 #define PMAP_WRITE_LOCK(spl)		SPLVM(spl)
