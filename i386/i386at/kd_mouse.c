@@ -132,7 +132,7 @@ int		mouse_char_index;		/* mouse response */
  */
 init_mouse_hw(unit, mode)
 {
-	caddr_t base_addr  = (caddr_t)cominfo[unit]->address;
+	unsigned short base_addr  = cominfo[unit]->address;
 
 	outb(base_addr + RIE, 0);
 	outb(base_addr + RLC, LCDLAB);
@@ -293,7 +293,7 @@ serial_mouse_close(dev, flags)
 	spl_t o_pri = splhi();		/* mutex with open() */
 	int unit = minor(dev) & 0x7;
 	int mouse_pic = cominfo[unit]->sysdep1;
-	caddr_t base_addr  = (caddr_t)cominfo[unit]->address;
+	unsigned short base_addr  = cominfo[unit]->address;
 
 	assert(ivect[mouse_pic] == mouseintr);
 	outb(base_addr + RIE, 0);	/* disable serial port */
@@ -516,7 +516,7 @@ done:
  */
 mouseintr(unit)
 {
-	caddr_t base_addr  = (caddr_t)cominfo[unit]->address;
+	unsigned short base_addr  = cominfo[unit]->address;
 	unsigned char id, ls;
 
 	/* get reason for interrupt and line status */

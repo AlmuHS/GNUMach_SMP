@@ -1,5 +1,13 @@
 2006-11-11  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
+	Fix I/O port type.
+	* i386/i386/pic.c (master_icq, master_ocw, slaves_icq, slaves_ocw):
+	Change variables type from char * to unsigned short.
+	(picinit): Remove now-useless cast.
+	* i386/i386at/kd_mouse.c (init_mouse_hw, serial_mouse_close)
+	(mouseintr): Change variable type from caddr_t to unsigned short,
+	remove now-useless cast.
+
 	[task #5726 --- ``GCC built-in functions'']
 	* kern/machine.c: Include `string.h'.
 

@@ -65,7 +65,7 @@ int	iunit[NINTR] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 int 	nintr = NINTR;
 int	npics = NPICS;
 
-char	*master_icw, *master_ocw, *slaves_icw, *slaves_ocw;
+unsigned short	master_icw, master_ocw, slaves_icw, slaves_ocw;
 
 u_short PICM_ICW1, PICM_OCW1, PICS_ICW1, PICS_OCW1 ;
 u_short PICM_ICW2, PICM_OCW2, PICS_ICW2, PICS_OCW2 ;
@@ -129,10 +129,10 @@ picinit()
 	** 2. Generate addresses to each PIC port.
 	*/
 
-	master_icw = (char *)PIC_MASTER_ICW;
-	master_ocw = (char *)PIC_MASTER_OCW;
-	slaves_icw = (char *)PIC_SLAVE_ICW;
-	slaves_ocw = (char *)PIC_SLAVE_OCW;
+	master_icw = PIC_MASTER_ICW;
+	master_ocw = PIC_MASTER_OCW;
+	slaves_icw = PIC_SLAVE_ICW;
+	slaves_ocw = PIC_SLAVE_OCW;
 
 	/*
 	** 3. Select options for each ICW and each OCW for each PIC.
