@@ -1,5 +1,8 @@
 2006-11-11  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
+	[task #5726 --- ``GCC built-in functions'']
+	* kern/machine.c: Include `string.h'.
+
 	Fix ``assignment used as truth value'' warnings.
 	* device/cons.c (cninit): Add parenthesis.
 	* kern/bootstrap.c (copy_bootstrap): Likewise.
