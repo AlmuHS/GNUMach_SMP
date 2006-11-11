@@ -124,8 +124,8 @@ vm_offset_t stack_detach(thread)
 #define	curr_gdt(mycpu)		(mp_gdt[mycpu])
 #define	curr_ktss(mycpu)	(mp_ktss[mycpu])
 #else
-#define	curr_gdt(mycpu)		((mycpu), gdt)
-#define	curr_ktss(mycpu)	((mycpu), &ktss)
+#define	curr_gdt(mycpu)		((void)(mycpu), gdt)
+#define	curr_ktss(mycpu)	((void)(mycpu), &ktss)
 #endif
 
 #define	gdt_desc_p(mycpu,sel) \
