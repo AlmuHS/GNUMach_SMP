@@ -1,3 +1,28 @@
+2006-11-13  Barry deFreese  <bddebian@comcast.net>
+
+	* i386/i386/locore.h: New file.
+	* i386/i386/pcb.h: New file.
+	* i386/i386/pcb.c: Include `pcb.h'.
+	* i386/i386/pit.c (clkstart): Fix type of s into unsigned long.
+	* i386/i386/spl.h (spl0, splsched, splx, splsoftclock, splon, sploff)
+	(splhigh, splimp, spltty, splclock, setsoftclock): Add prototype.
+	* i386/i386at/kd_event.h: New file.
+	* i386/i386at/kd_event.c: Include `kd_event.h'.
+	* i386/i386at/kd_mouse.h: New file.
+	* i386/i386at/kd_mouse.c: Include `kd_mouse.h'.
+	(mouseclose): Fix call of `serial_mouse_close' function.
+	* i386/i386at/kd.c: Include `kd_event.h' and `kd_mouse.h'.
+	* i386/i386at/kd.h (splx, spltty): Remove prototypes.h
+	* i386/i386at/lpr.c: Likewise.
+	* ipc/mach_msg.c: Include `machine/locore.h' and `machine/pcb.h'.
+	* kern/mach_clock.h: New file.
+	* kern/mach_clock.c: Include `kern/queue.h', `kern/timer.h' and
+	`mach_clock.h'.
+	* kern/mach_factor.h: New file.
+	* kern/mach_factor.c: Include `mach_factor.h'.
+	* kern/sched_prim.c: Include `kern/mach_factor.h'.
+	* kern/thread.c: Include `machine/pcb.h'.
+
 2006-11-11  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* Makefile.am (gnumach-undef-bad): Depend on the Makefile.

@@ -57,8 +57,6 @@
 #include <chips/busses.h>
 #include <i386at/lprreg.h>
   
-extern void 	splx();
-extern spl_t	spltty();
 extern void 	timeout();
 extern void 	ttrstrt();
 

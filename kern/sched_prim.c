@@ -39,6 +39,7 @@
 #include <kern/cpu_number.h>
 #include <kern/debug.h>
 #include <kern/lock.h>
+#include <kern/mach_factor.h>
 #include <kern/macro_help.h>
 #include <kern/processor.h>
 #include <kern/queue.h>

@@ -50,6 +50,7 @@
 #include "gdt.h"
 #include "ldt.h"
 #include "ktss.h"
+#include "pcb.h"
 
 #if	NCPUS > 1
 #include <i386/mp_desc.h>

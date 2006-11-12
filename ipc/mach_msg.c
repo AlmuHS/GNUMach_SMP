@@ -58,8 +58,8 @@
 #include <ipc/ipc_thread.h>
 #include <ipc/ipc_entry.h>
 #include <ipc/mach_msg.h>
-
-
+#include <machine/locore.h>
+#include <machine/pcb.h>
 
 extern void exception_raise_continue();
 extern void exception_raise_continue_fast();

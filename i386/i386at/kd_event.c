@@ -77,6 +77,8 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <i386at/kd.h>
 #include <i386at/kd_queue.h>
 
+#include "kd_event.h"
+
 /*
  * Code for /dev/kbd.   The interrupt processing is done in kd.c,
  * which calls into this module to enqueue scancode events when

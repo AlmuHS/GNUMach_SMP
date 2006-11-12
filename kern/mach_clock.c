@@ -48,11 +48,13 @@
 #include <kern/lock.h>
 #include <kern/mach_param.h>
 #include <kern/processor.h>
+#include <kern/queue.h>
 #include <kern/sched.h>
 #include <kern/sched_prim.h>
 #include <kern/thread.h>
 #include <kern/time_out.h>
 #include <kern/time_stamp.h>
+#include <kern/timer.h>
 #include <vm/vm_kern.h>
 #include <sys/time.h>
 #include <machine/mach_param.h>	/* HZ */
@@ -62,6 +64,7 @@
 #include <kern/pc_sample.h>
 #endif
 
+#include "mach_clock.h"
 
 void softclock();		/* forward */
 

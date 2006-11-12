@@ -41,6 +41,7 @@
 #include <mach/port.h>
 #endif	/* MACH_KERNEL */
 
+#include "mach_factor.h"
 
 long	avenrun[3] = {0, 0, 0};
 long	mach_factor[3] = {0, 0, 0};

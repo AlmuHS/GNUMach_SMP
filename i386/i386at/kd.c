@@ -91,6 +91,8 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <i386/pio.h>
 #include <i386at/cram.h>
 #include <i386at/kd.h>
+#include <i386at/kd_event.h>
+#include <i386at/kd_mouse.h>
 #include <i386at/kdsoft.h>
 #include <device/cons.h>
 

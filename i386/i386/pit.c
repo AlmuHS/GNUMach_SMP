@@ -68,7 +68,7 @@ unsigned int clknumb = CLKNUM;		/* interrupt interval for timer 0 */
 clkstart()
 {
 	unsigned char	byte;
-	int s;
+	unsigned long s;
 
 	intpri[0] = SPLHI;
 	form_pic_mask();

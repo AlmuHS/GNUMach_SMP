@@ -87,6 +87,8 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <i386at/kd_queue.h>
 #include <i386at/i8250.h>
 
+#include "kd_mouse.h"
+
 static int (*oldvect)();		/* old interrupt vector */
 static int oldunit;
 static spl_t oldspl;
@@ -263,7 +265,7 @@ mouseclose(dev, flags)
 	case MICROSOFT_MOUSE7:
 	case MOUSE_SYSTEM_MOUSE:
 	case LOGITECH_TRACKMAN:
-		serial_mouse_close(dev);
+		serial_mouse_close(dev, flags);
 		break;
 	case IBM_MOUSE:
 		ibm_ps2_mouse_close(dev);
