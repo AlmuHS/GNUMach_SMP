@@ -34,7 +34,7 @@
 #include <kern/debug.h>
 
 extern void cnputc();
-void Debugger();
+void Debugger() __attribute__ ((noreturn));
 
 #if	MACH_KDB
 extern int db_breakpoints_inserted;
@@ -100,6 +100,8 @@ void Debugger(message)
 #ifdef	i386
 	asm("int3");
 #endif
+
+	panic("Debugger returned!");
 }
 
 /* Be prepared to panic anytime,

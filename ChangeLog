@@ -1,4 +1,15 @@
-2006-11-14  Barry deFreese  <bddebian@comcast.net>
+2006-11-13  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* i386/i386at/iopl.c (ioplmmap): Add `int' return type.
+	* i386/i386at/model_dep.c (halt_all_cpus): Fix typo in declaration.
+	* kern/assert.h (Assert): Add __attribute__ ((noreturn)) to
+	declaration.
+	* kern/debug.c (Debugger): Add __attribute__ ((noreturn)) to
+	declaration.
+	(Debugger): Add call to panic().
+	* kern/debug.h (panic): Add __attribute__ ((noreturn)) to declaration.
+
+2006-11-13  Barry deFreese  <bddebian@comcast.net>
 
 	* device/chario.c (tty_cts): Add `void' return type.
 	* device/cons.c (cninit, cnputc): Add `void' return type.

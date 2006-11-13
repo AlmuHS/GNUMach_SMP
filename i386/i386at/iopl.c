@@ -103,6 +103,7 @@ ioplclose(dev, flags)
 
 /*ARGSUSED*/
 int iopl_all = 1;
+int
 ioplmmap(dev, off, prot)
 int		dev;
 vm_offset_t	off;

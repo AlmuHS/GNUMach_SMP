@@ -88,7 +88,7 @@ extern char	version[];
 
 extern void	setup_main();
 
-void		halt_all_cpu (boolean_t reboot) __attribute__ ((noreturn));
+void		halt_all_cpus (boolean_t reboot) __attribute__ ((noreturn));
 void		halt_cpu (void) __attribute__ ((noreturn));
 
 void		inittodr();	/* forward */
