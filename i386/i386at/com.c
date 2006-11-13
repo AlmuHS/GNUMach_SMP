@@ -487,6 +487,7 @@ unsigned int	count;
 	return (D_SUCCESS);
 }
 
+int
 comintr(unit)
 int unit;
 {
@@ -585,6 +586,7 @@ register int unit;
         splx(s);
 }
 
+void
 comparm(int unit, int baud, int intr, int mode, int modem)
 {
 	u_short addr = (u_short)(cominfo[unit]->address);
@@ -659,6 +661,7 @@ comst_4++;
 /* Check for stuck xmitters */
 int comtimer_interval = 5;
 
+void
 comtimer()
 {
 	spl_t	s = spltty();
@@ -685,6 +688,7 @@ printf("Tty %x was stuck\n", tp);
 /*
  * Set receive modem state from modem status register.
  */
+void
 fix_modem_state(unit, modem_stat)
 int	unit, modem_stat;
 {
@@ -706,6 +710,7 @@ int	unit, modem_stat;
 /*
  * Modem change (input signals)
  */
+void
 commodem_intr(
 	int	unit,
 	int	stat)
@@ -735,6 +740,7 @@ commodem_intr(
 /*
  * Set/get modem bits
  */
+int
 commctl(
 	register struct tty	*tp,
 	int	bits,
@@ -801,6 +807,7 @@ commctl(
 	return commodem[unit];
 }
 
+int
 comstop(tp, flags)
 register struct tty *tp;
 int	flags;

@@ -331,7 +331,7 @@ simpler_thread_setrun(
 	boolean_t	may_preempt)
 {
 	register struct run_queue	*rq;
-	register			whichq;
+	register int			whichq;
 
 	/*
 	 *	XXX should replace queue with a boolean in this case.

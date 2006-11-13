@@ -132,6 +132,7 @@ int		mouse_char_index;		/* mouse response */
 /*
  * init_mouse_hw - initialize the serial port.
  */
+void
 init_mouse_hw(unit, mode)
 {
 	unsigned short base_addr  = cominfo[unit]->address;
@@ -166,6 +167,7 @@ static int mousebufindex = 0;
 int track_man[10];
 
 /*ARGSUSED*/
+int
 mouseopen(dev, flags)
 	dev_t dev;
 	int flags;
@@ -223,7 +225,9 @@ mouseopen(dev, flags)
 	return(0);
 }
 
+void
 serial_mouse_open(dev)
+	dev_t dev;
 {
 	int unit = minor(dev) & 0x7;
 	int mouse_pic = cominfo[unit]->sysdep1;
@@ -241,7 +245,11 @@ serial_mouse_open(dev)
 }
 
 int mouse_packets = 0;
+
+void
 kd_mouse_open(dev, mouse_pic)
+	dev_t dev;
+	int mouse_pic;
 {
 	spl_t s = splhi();	/* disable interrupts */
 	extern int kdintr();
@@ -258,7 +266,10 @@ kd_mouse_open(dev, mouse_pic)
  * mouseclose - Disable interrupts on the serial port, reset driver flags,
  * and restore the serial port interrupt vector.
  */
+void
 mouseclose(dev, flags)
+	dev_t dev;
+	int flags;
 {
 	switch (mouse_type) {
 	case MICROSOFT_MOUSE:
@@ -288,6 +299,7 @@ mouseclose(dev, flags)
 }
 
 /*ARGSUSED*/
+void
 serial_mouse_close(dev, flags)
 	dev_t dev;
 	int flags;
@@ -306,7 +318,10 @@ serial_mouse_close(dev, flags)
 	(void)splx(o_pri);
 }
 
+void
 kd_mouse_close(dev, mouse_pic)
+	dev_t dev;
+	int mouse_pic;
 {
 	spl_t s = splhi();
 
@@ -341,6 +356,7 @@ io_return_t mousegetstat(dev, flavor, data, count)
  */
 
 /*ARGSUSED*/
+int
 mouseioctl(dev, cmd, data, flag)
 	dev_t dev;
 	int cmd;
@@ -378,6 +394,7 @@ mouseioctl(dev, cmd, data, flag)
  */
 
 /*ARGSUSED*/
+int
 mouseselect(dev, rw)
 {
 	int s = SPLKD();
@@ -404,6 +421,7 @@ mouseselect(dev, rw)
 #ifdef	MACH_KERNEL
 boolean_t	mouse_read_done();	/* forward */
 
+int
 mouseread(dev, ior)
 	dev_t	dev;
 	register io_req_t	ior;
@@ -475,6 +493,7 @@ boolean_t mouse_read_done(ior)
 
 #else	/* MACH_KERNEL */
 /*ARGSUSED*/
+int
 mouseread(dev, uio)
 	dev_t dev;
 	struct uio *uio;
@@ -516,6 +535,7 @@ done:
 /*
  * mouseintr - Get a byte and pass it up for handling.  Called at SPLKD.
  */
+int
 mouseintr(unit)
 {
 	unsigned short base_addr  = cominfo[unit]->address;
@@ -563,6 +583,7 @@ int middlegitech = 0;		/* what should the middle button be */
 #define MOUSEBUFSIZE	5		/* num bytes def'd by protocol */
 static u_char mousebuf[MOUSEBUFSIZE];	/* 5-byte packet from mouse */
 
+void
 mouse_handle_byte(ch)
 	u_char ch;
 {
@@ -644,6 +665,7 @@ mouse_handle_byte(ch)
 	}
 }
 
+void
 mouse_packet_mouse_system_mouse(mousebuf)
 u_char mousebuf[MOUSEBUFSIZE];
 {
@@ -679,6 +701,7 @@ u_char mousebuf[MOUSEBUFSIZE];
  * 1  0  Y5 Y4 Y3 Y2 Y1 Y0
  *
  */
+void
 mouse_packet_microsoft_mouse(mousebuf)
 u_char mousebuf[MOUSEBUFSIZE];
 {
@@ -775,7 +798,9 @@ void kd_mouse_read_reset(void)
 	mouse_char_index = 0;
 }
 
+void
 ibm_ps2_mouse_open(dev)
+	dev_t dev;
 {
 	spl_t	s = spltty();
 
@@ -817,7 +842,9 @@ ibm_ps2_mouse_open(dev)
 	splx(s);
 }
 
+void
 ibm_ps2_mouse_close(dev)
+	dev_t dev;
 {
 	spl_t	s = spltty();
 
@@ -847,6 +874,7 @@ ibm_ps2_mouse_close(dev)
  * Y7 Y6 Y5 Y4 Y3 Y2 Y1 Y0
  *
  */
+void
 mouse_packet_ibm_ps2_mouse(mousebuf)
 u_char mousebuf[MOUSEBUFSIZE];
 {
@@ -879,6 +907,7 @@ u_char mousebuf[MOUSEBUFSIZE];
 /*
  * Enqueue a mouse-motion event.  Called at SPLKD.
  */
+void
 mouse_moved(where)
 	struct mouse_motion where;
 {
@@ -894,6 +923,7 @@ mouse_moved(where)
 /*
  * Enqueue an event for mouse button press or release.  Called at SPLKD.
  */
+void
 mouse_button(which, direction)
 	kev_type which;
 	u_char direction;

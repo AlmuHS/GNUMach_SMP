@@ -56,6 +56,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 static unsigned char rtc[RTC_NREG];
 static int first_rtcopen_ever = 1;
 
+void
 rtcinit()
 {
 	outb(RTC_ADDR, RTC_A);
@@ -82,6 +83,7 @@ unsigned char	*regs;
 	return(0);
 }
 
+void
 rtcput(regs)
 unsigned char 	*regs;
 {
@@ -106,12 +108,14 @@ extern struct timezone tz;
 
 static int month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
+int
 yeartoday(year)
 int year;
 {
 	return((year%4) ? 365 : 366);
 }
 
+int
 hexdectodec(n)
 char n;
 {
@@ -125,7 +129,7 @@ int n;
 	return((char)(((n/10)<<4)&0xF0) | ((n%10)&0x0F));
 }
 
-
+int
 readtodc(tp)
 	u_int	*tp;
 {
@@ -178,6 +182,7 @@ readtodc(tp)
 	return(0);
 }
 
+int
 writetodc()
 {
 	struct rtc_st rtclk;

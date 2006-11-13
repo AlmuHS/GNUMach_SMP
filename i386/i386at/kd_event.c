@@ -117,6 +117,7 @@ static boolean_t initialized = FALSE;
  * kbdinit - set up event queue.
  */
 
+void
 kbdinit()
 {
 	spl_t s = SPLKD();
@@ -135,6 +136,7 @@ kbdinit()
  */
 
 /*ARGSUSED*/
+int
 kbdopen(dev, flags)
 	dev_t dev;
 	int flags;
@@ -159,6 +161,7 @@ kbdopen(dev, flags)
  */
 
 /*ARGSUSED*/
+void
 kbdclose(dev, flags)
 	dev_t dev;
 	int flags;
@@ -233,6 +236,7 @@ io_return_t kbdsetstat(dev, flavor, data, count)
  */
 
 /*ARGSUSED*/
+int
 kbdioctl(dev, cmd, data, flag)
 	dev_t dev;
 	int cmd;
@@ -284,6 +288,7 @@ kbdioctl(dev, cmd, data, flag)
  */
 
 /*ARGSUSED*/
+int
 kbdselect(dev, rw)
 {
 	spl_t s = SPLKD();
@@ -312,6 +317,7 @@ kbdselect(dev, rw)
 #ifdef	MACH_KERNEL
 boolean_t	kbd_read_done();	/* forward */
 
+int
 kbdread(dev, ior)
 	dev_t	dev;
 	register io_req_t	ior;
@@ -473,6 +479,7 @@ kbd_enqueue(ev)
 u_int X_kdb_enter_str[512], X_kdb_exit_str[512];
 int   X_kdb_enter_len = 0,  X_kdb_exit_len = 0;
 
+void
 kdb_in_out(p)
 u_int *p;
 {
@@ -505,6 +512,7 @@ register int t = p[0];
 	}
 }
 
+void
 X_kdb_enter()
 {
 register u_int *u_ip, *endp;
@@ -515,6 +523,7 @@ register u_int *u_ip, *endp;
 	    kdb_in_out(u_ip);
 }
 
+void
 X_kdb_exit()
 {
 register u_int *u_ip, *endp;
@@ -552,6 +561,7 @@ X_kdb_exit_init(data, count)
     return D_SUCCESS;
 }
 #else	/* MACH_KERNEL */
+void
 X_kdb_enter_init(kp)
 struct X_kdb *kp;
 {
@@ -563,6 +573,7 @@ struct X_kdb *kp;
 	X_kdb_enter_len = kp->size>>2;
 }
 
+void
 X_kdb_exit_init(kp)
 struct X_kdb *kp;
 {

@@ -459,6 +459,7 @@ ASSERT_IPL(SPL0);
 /*
  * Coprocessor not present.
  */
+void
 fpnoextflt()
 {
 	/*
@@ -502,6 +503,7 @@ ASSERT_IPL(SPL0);
  * FPU overran end of segment.
  * Re-initialize FPU.  Floating point state is not valid.
  */
+void
 fpextovrflt()
 {
 	register thread_t	thread = current_thread();
@@ -553,6 +555,7 @@ fpextovrflt()
 /*
  * FPU error. Called by AST.
  */
+void
 fpexterrflt()
 {
 	register thread_t	thread = current_thread();
@@ -612,6 +615,7 @@ ASSERT_IPL(SPL0);
  * .	if called from fpnoextflt or fp_intr, we are single-cpu
  * .	otherwise, thread is running.
  */
+void
 fp_save(thread)
 	register thread_t	thread;
 {
@@ -630,6 +634,7 @@ fp_save(thread)
  *
  * Locking not needed; always called on the current thread.
  */
+void
 fp_load(thread)
 	register thread_t	thread;
 {
@@ -702,6 +707,7 @@ fp_state_alloc()
  *	Handle a coprocessor error interrupt on the AT386.
  *	This comes in on line 5 of the slave PIC at SPL1.
  */
+void
 fpintr()
 {
 	spl_t	s;

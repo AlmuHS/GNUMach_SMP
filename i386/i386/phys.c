@@ -41,6 +41,7 @@
 /*
  *	pmap_zero_page zeros the specified (machine independent) page.
  */
+void
 pmap_zero_page(p)
 	vm_offset_t p;
 {
@@ -51,6 +52,7 @@ pmap_zero_page(p)
 /*
  *	pmap_copy_page copies the specified (machine independent) pages.
  */
+void
 pmap_copy_page(src, dst)
 	vm_offset_t src, dst;
 {
@@ -65,6 +67,7 @@ pmap_copy_page(src, dst)
  *
  *	Copy virtual memory to physical memory
  */
+void
 copy_to_phys(src_addr_v, dst_addr_p, count)
 	vm_offset_t src_addr_v, dst_addr_p;
 	int count;
@@ -79,6 +82,7 @@ copy_to_phys(src_addr_v, dst_addr_p, count)
  *	Copy physical memory to virtual memory.  The virtual memory
  *	is assumed to be present (e.g. the buffer pool).
  */
+void
 copy_from_phys(src_addr_p, dst_addr_v, count)
 	vm_offset_t src_addr_p, dst_addr_v;
 	int count;

@@ -346,6 +346,7 @@ io_reg_t vga_port_list[] = {
 
 mach_device_t	kd_io_device = 0;
 
+void
 kd_io_map_open(device)
 	mach_device_t	device;
 {
@@ -353,6 +354,7 @@ kd_io_map_open(device)
 	io_port_create(device, vga_port_list);
 }
 
+void
 kd_io_map_close()
 {
 	io_port_destroy(kd_io_device);
@@ -396,6 +398,7 @@ int	kd_pollc = 0;
  *	Ring the bell for a short time.
  *	Warning: uses outb(). You may prefer to use kd_debug_put.
  */
+void
 feep()
 {
 	int i;
@@ -406,6 +409,7 @@ feep()
 	kd_belloff();
 }
 
+void
 pause()
 {
 	int i;
@@ -419,6 +423,7 @@ pause()
  * LOC=0 means put it in the bottom right corner, LOC=1 means put it
  * one column to the left, etc.
  */
+void
 kd_debug_put(loc, c)
 int	loc;
 char	c;
@@ -433,6 +438,7 @@ char	c;
 extern int	mouse_in_use;
 int		old_kb_mode;
 
+void
 cnpollc(on)
 boolean_t on;
 {
@@ -474,6 +480,7 @@ boolean_t on;
  * output:	device is opened and setup
  *
  */
+int
 kdopen(dev, flag, ior)
 	dev_t	dev;
 	int	flag;
@@ -526,6 +533,7 @@ kdopen(dev, flag, ior)
  *
  */
 /*ARGSUSED*/
+void
 kdclose(dev, flag)
 int	dev;
 int	flag;
@@ -560,6 +568,7 @@ int	flag;
  *
  */
 /*ARGSUSED*/
+int
 kdread(dev, uio)
 int	dev;
 struct	uio	*uio;
@@ -584,6 +593,7 @@ struct	uio	*uio;
  *
  */
 /*ARGSUSED*/
+int
 kdwrite(dev, uio)
 int	dev;
 struct	uio	*uio;
@@ -609,6 +619,7 @@ kdmmap(dev, off, prot)
 	return(i386_btop(kd_bitmap_start+off));
 }
 
+int
 kdportdeath(dev, port)
 	dev_t	dev;
 	mach_port_t	port;
@@ -683,6 +694,7 @@ io_return_t kdsetstat(dev, flavor, data, count)
  *	Turn the bell on or off.  Returns error code, if given bogus
  *	on/off value.
  */
+int
 kdsetbell(val, flags)
 int	val;				/* on or off */
 int	flags;				/* flags set for console */
@@ -706,6 +718,7 @@ int	flags;				/* flags set for console */
  *
  *	Get entry from key mapping table.  Returns error code, if any.
  */
+int
 kdgetkbent(kbent)
 struct kbentry *	kbent;
 {
@@ -758,6 +771,7 @@ int	flags;				/* flags set for console */
  *
  */
 /*ARGSUSED*/
+int
 kdintr(vec, regs)
 int	vec;
 int	regs;
@@ -896,6 +910,7 @@ int	regs;
  *	For pending commands, complete the command.  For data bytes,
  *	drop the ack on the floor.
  */
+void
 kd_handle_ack()
 {
 	switch (kd_ack) {
@@ -920,6 +935,7 @@ kd_handle_ack()
  *
  *	Resend a missed keyboard command or data byte.
  */
+void
 kd_resend()
 {
 	if (kd_ack == NOT_WAITING)
@@ -940,6 +956,7 @@ kd_resend()
  *
  * output:	the new state
  */
+int
 do_modifier(state, c, up)
 int	state;
 Scancode	c;
@@ -1062,6 +1079,7 @@ int		*regs;
  *	Return the value for the 2nd index into key_map that
  *	corresponds to the given state.
  */
+int
 kdstate2idx(state, extended)
 int	state;				/* bit vector, not a state index */
 boolean_t	extended;
@@ -1101,6 +1119,7 @@ boolean_t	extended;
  * Entered and left at spltty.  Drops priority to spl0 to display character.
  * ASSUMES that it is never called from interrupt-driven code.
  */
+int
 kdstart(tp)
 struct	tty	*tp;
 {
@@ -1151,6 +1170,7 @@ struct	tty	*tp;
 }
 
 /*ARGSUSED*/
+int
 kdstop(tp, flags)
 	register struct tty *tp;
 	int	flags;
@@ -1177,6 +1197,7 @@ kdstop(tp, flags)
  * output	: Driver is initialized
  *
  */
+void
 kdinit()
 {
 	void	kd_xga_init();
@@ -1243,6 +1264,8 @@ kdinit()
  *
  */
 static unsigned int kd_bellstate = 0;
+
+void
 kd_belloff()
 {
 	unsigned char status;
@@ -1263,6 +1286,7 @@ kd_belloff()
  * output	: bell is turned on
  *
  */
+void
 kd_bellon()
 {
 	unsigned char	status;
@@ -1292,6 +1316,7 @@ kd_bellon()
  */
 int sit_for_0 = 1;
 
+void
 kd_putc(ch)
 u_char	ch;
 {
@@ -1345,6 +1370,7 @@ u_char	ch;
  *		  screen.
  *
  */
+void
 kd_setpos(newpos)
 csrpos_t newpos;
 {
@@ -1371,6 +1397,7 @@ csrpos_t newpos;
  * output	: lines on screen appear to be shifted up one line
  *
  */
+void
 kd_scrollup()
 {
 	csrpos_t to;
@@ -1400,6 +1427,7 @@ kd_scrollup()
  * output	: Lines on screen appear to be moved down one line
  *
  */
+void
 kd_scrolldn()
 {
 	csrpos_t to;
@@ -1433,6 +1461,7 @@ kd_scrolldn()
  *		  defined by the ansi terminal specification
  *
  */
+void
 kd_parseesc()
 {
 	u_char	*escp;
@@ -1504,6 +1533,7 @@ unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
  *	 	  sequence acceptable to the ansi terminal specification
  *
  */
+void
 kd_parserest(cp)
 u_char	*cp;
 {
@@ -1799,6 +1829,7 @@ int	*nump;
 	return(cp - original);
 }
 
+void
 kd_tab()
 {
     int i;
@@ -1819,6 +1850,7 @@ kd_tab()
  * output	: Screen is cleared
  *
  */
+void
 kd_cls()
 {
 	(*kd_dclear)(0, ONE_PAGE/ONE_SPACE, kd_attr);
@@ -1836,6 +1868,7 @@ kd_cls()
  * output	: Cursor position is moved
  *
  */
+void
 kd_home()
 {
 	kd_setpos(0);
@@ -1852,6 +1885,7 @@ kd_home()
  * output	: Cursor moves up one line, or screen is scrolled
  *
  */
+void
 kd_up()
 {
 	if (kd_curpos < ONE_LINE)
@@ -1871,6 +1905,7 @@ kd_up()
  * output	: Cursor moves down one line or the screen is scrolled
  *
  */
+void
 kd_down()
 {
 	if (kd_curpos >= (ONE_PAGE - ONE_LINE))
@@ -1890,6 +1925,7 @@ kd_down()
  * output	: Cursor moves one position to the right
  *
  */
+void
 kd_right()
 {
 	if (kd_curpos < (ONE_PAGE - ONE_SPACE))
@@ -1911,6 +1947,7 @@ kd_right()
  * output	: Cursor moves one position to the left
  *
  */
+void
 kd_left()
 {
 	if (0 < kd_curpos)
@@ -1929,6 +1966,7 @@ kd_left()
  * output	: Cursor moves to the beginning of the current line
  *
  */
+void
 kd_cr()
 {
 	kd_setpos(BEG_OF_LINE(kd_curpos));
@@ -1946,6 +1984,7 @@ kd_cr()
  * output	: Screen is cleared from current cursor postion to bottom
  *
  */
+void
 kd_cltobcur()
 {
 	csrpos_t start;
@@ -1968,6 +2007,7 @@ kd_cltobcur()
  * output	: Screen is cleared from current cursor postion to top
  *
  */
+void
 kd_cltopcur()
 {
 	int	count;
@@ -1987,6 +2027,7 @@ kd_cltopcur()
  * output	: Line is cleared from current cursor position to eoln
  *
  */
+void
 kd_cltoecur()
 {
 	csrpos_t i;
@@ -2009,6 +2050,7 @@ kd_cltoecur()
  * output	: Line is cleared from beginning to current position
  *
  */
+void
 kd_clfrbcur()
 {
 	csrpos_t i;
@@ -2029,6 +2071,7 @@ kd_clfrbcur()
  * output	: lines appear to be deleted
  *
  */
+void
 kd_delln(number)
 int	number;
 {
@@ -2067,6 +2110,7 @@ int	number;
  * output	: New lines appear to be inserted
  *
  */
+void
 kd_insln(number)
 int	number;
 {
@@ -2106,6 +2150,7 @@ int	number;
  * output	: characters appear to be deleted
  *
  */
+void
 kd_delch(number)
 int	number;
 {
@@ -2147,6 +2192,7 @@ int	number;
  * output	: characters appear to be blanked or erased
  *
  */
+void
 kd_erase(number)
 int	number;
 {
@@ -2172,6 +2218,7 @@ int	number;
  * output	: Current line is erased
  *
  */
+void
 kd_eraseln()
 {
 	csrpos_t i;
@@ -2195,6 +2242,7 @@ kd_eraseln()
  * output	: Blanks are inserted at cursor position
  *
  */
+void
 kd_insch(number)
 int	number;
 {
@@ -2236,6 +2284,7 @@ int	number;
  *		  returns TRUE if character is lowercase
  *
  */
+boolean_t
 kd_isupper(c)
 u_char	c;
 {
@@ -2244,6 +2293,7 @@ u_char	c;
 	return(FALSE);
 }
 
+boolean_t
 kd_islower(c)
 u_char	c;
 {
@@ -2261,6 +2311,7 @@ u_char	c;
  *	keyboard command.
  *
  */
+void
 kd_senddata(ch)
 unsigned char	ch;
 {
@@ -2278,6 +2329,7 @@ unsigned char	ch;
  *	clear before sending the data.
  *
  */
+void
 kd_sendcmd(ch)
 unsigned char	ch;
 {
@@ -2301,6 +2353,7 @@ kd_getdata()
 	return(inb(K_RDWR));
 }
 
+unsigned char
 kd_cmdreg_read()
 {
 int ch=KC_CMD_READ;
@@ -2312,6 +2365,7 @@ int ch=KC_CMD_READ;
 	return(inb(K_RDWR));
 }
 
+void
 kd_cmdreg_write(val)
 {
 int ch=KC_CMD_WRITE;
@@ -2323,6 +2377,7 @@ int ch=KC_CMD_WRITE;
 	outb(K_RDWR, val);
 }
 
+void
 kd_mouse_drain()
 {
 	int i;
@@ -2336,7 +2391,7 @@ kd_mouse_drain()
  *
  *	Set kd_state and update the keyboard status LEDs.
  */
-
+void
 set_kd_state(newstate)
 int newstate;
 {
@@ -2368,6 +2423,7 @@ int	state;
  *
  *	Set the keyboard LEDs according to the given byte.
  */
+void
 kd_setleds1(val)
 u_char val;
 {
@@ -2381,6 +2437,7 @@ u_char val;
 	kd_senddata(K_CMD_LEDS);
 }
 
+void
 kd_setleds2()
 {
 	kd_senddata(kd_nextled);
@@ -2394,6 +2451,7 @@ kd_setleds2()
  *	Currently disabled because cngetc ignores caps lock and num
  *	lock anyway.
  */
+void
 cnsetleds(val)
 u_char val;
 {
@@ -2403,6 +2461,7 @@ u_char val;
 	(void)kd_getdata();		/* XXX - assume is ACK */
 }
 
+void
 kdreboot()
 {
 	(*kd_dreset)();
@@ -2421,6 +2480,7 @@ kdreboot()
 static int which_button[] = {0, MOUSE_LEFT, MOUSE_MIDDLE, MOUSE_RIGHT};
 static struct mouse_motion moved;
 
+int
 kd_kbd_magic(scancode)
 {
 int new_button = 0;

@@ -40,7 +40,7 @@ void
 ktss_init()
 {
 	/* XXX temporary exception stack */
-	static exception_stack[1024];
+	static int exception_stack[1024];
 
 	/* Initialize the master TSS descriptor.  */
 	fill_gdt_descriptor(KERNEL_TSS,

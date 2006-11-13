@@ -1981,6 +1981,7 @@ pmap_copy_page(src, dst)
  *		will specify that these pages are to be wired
  *		down (or not) as appropriate.
  */
+void
 pmap_pageable(pmap, start, end, pageable)
 	pmap_t		pmap;
 	vm_offset_t	start;

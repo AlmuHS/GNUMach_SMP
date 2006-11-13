@@ -1080,6 +1080,7 @@ boolean_t ttymodem(
  *
  * Tty must be locked and on master.
  */
+void
 tty_cts(
 	struct tty *	tp,
 	boolean_t	cts_up)

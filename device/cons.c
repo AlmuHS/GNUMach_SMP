@@ -72,6 +72,7 @@ static	char *consbp = consbuf;
 static	int consbufused = 0;
 #endif
 
+void
 cninit()
 {
 	struct consdev *cp;
@@ -225,6 +226,7 @@ cncontrol(dev, cmd, data)
 #endif
 #endif
 
+int
 cngetc()
 {
 	if (cn_tab)
@@ -235,6 +237,7 @@ cngetc()
 }
 
 #ifdef MACH_KERNEL
+int
 cnmaygetc()
 {
 	if (cn_tab)
@@ -245,6 +248,7 @@ cnmaygetc()
 }
 #endif
 
+void
 cnputc(c)
 	int c;
 {

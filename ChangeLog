@@ -1,3 +1,61 @@
+2006-11-14  Barry deFreese  <bddebian@comcast.net>
+
+	* device/chario.c (tty_cts): Add `void' return type.
+	* device/cons.c (cninit, cnputc): Add `void' return type.
+	(cngetc, cnmaygetc): Add `int' return type.
+	* device/net_io.c (net_del_q_info, net_free_dead_infp)
+	(net_free_dead_entp): Add `void' return type.
+	* i386/i386/fpu.c (fpnoextflt, fpextovrflt, fpexterrflt, fp_save)
+	(fp_load, fpintr): Add `void' return type.
+	* i386/i386/ktss.c (ktss_init): Add `int' type to `exception_stack'.
+	* i386/i386/loose_ends.c (delay): Add `void' return type.
+	* i386/i386/phys.c (pmap_zero_page, pmap_copy_page, copy_to_phys)
+	(copy_from_phys): Add `void' return type.
+	* i386/i386/pic.c (picinit, form_pic_mask, intnull, prtnull): Add
+	`void' return type.
+	* i386/i386/pit.c (clkstart): Add `void' return type.
+	* i386/i386at/com.c (comparm, comtimer, fix_modem_state)
+	(commodem_intr): Add `void' return type.
+	(comintr, commctl, comstop): Add `int' return type.
+	* i386/i386at/iopl.c (ioplclose): Add `int' return type.
+	* i386/i386at/kd.c (kd_io_map_openn, kd_io_map_close, feep, pause)
+	(kd_debug_put, cnpollc, kdclose, kd_handle_ack, kd_resend, kdinit)
+	(kd_belloff, kd_bellon, kd_putc, kd_setpos, kd_scrollup, kd_scrolldn)
+	(kd_parseesc, kd_parserest, kd_tab, kd_cls, kd_home, kd_up, kd_down)
+	(kd_right, kd_left, kd_cr, kd_cltobcur, kd_cltopcurn, kd_cltoecur)
+	(kd_clfrbcur, kd_delln, kd_insln, kd_delch, kd_erase, kd_eraseln)
+	(kd_insch, kd_senddata, kd_sendcmd, kd_cmdreg_write, kd_mouse_drain)
+	(set_kd_state, kd_setleds1, kd_setleds2, cnsetleds, kdreboot): Add
+	`void' return type.
+	(kdopen, kdread, kdwrite, kdportdeath, kdsetbell, kdgetkbent, kdintr)
+	(do_modifier, kdstate2idx, kdstart, kdstop, kd_kbd_magic): Add `int'
+	return type.
+	(kd_isupper, kd_islower): Add `boolean_t' return type.
+	(kd_cmdreg_read): Add `unsigned char' return type.
+	* i386/i386at/kd_event.c (kbdinit, kbdclose, kdb_in_out, X_kdb_enter)
+	(X_kdb_exit, X_kdb_enter_init, X_kdb_exit_init): Add `void' return
+	type.
+	(kbdopen, kbdioctl, kbdselect, kbdread): Add `int' return type.
+	* i386/i386at/kd_mouse.c (init_mouse_hw, serial_mouse_open)
+	(kd_mouse_open, mouseclose, serial_mouse_close, kd_mouse_close)
+	(mouse_handle_byte, mouse_packet_mouse_system_mouse)
+	(mouse_packet_microsoft_mouse, ibm_ps2_mouse_open)
+	(ibm_ps2_mouse_close, mouse_packet_ibm_ps2_mouse, mouse_moved)
+	(mouse_button): Add `void' return type.
+	(mouseopen, mouseioctl, mouseselect, mouseread, mouseintr): Add `int'
+	return type.
+	* i386/i386at/lpr.c (lprclose, lprpr_addr): Add `void' return type.
+	(lprprobe, lpropen, lprread, lprwrite, lprportdeath, lprstop, lprpr):
+	Add `int' return type.
+	* i386/i386at/model_dep.c (i386at_init, startrtclock): Add `void'
+	return type.
+	(timemmap): Add `int' return type.
+	* i386/i386at/rtc.c (rtcinit, rtcput): Add `void' return type.
+	(yeartoday, hexdectodec, readtodc, writetodc): Add `int' return type.
+	* i386/intel/pmap.c (pmap_pageable): Add `void' return type.
+	* kern/eventcount.c (simpler_thread_setrun): Add `int' type to
+	`whichrq' variable.
+
 2006-11-13  Barry deFreese  <bddebian@comcast.net>
 
 	* i386/i386/locore.h: New file.

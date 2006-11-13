@@ -2104,6 +2104,7 @@ net_add_q_info (rcv_port)
 	return (int)qlimit;
 }
 
+void
 net_del_q_info (qlimit)
 	int qlimit;
 {
@@ -2121,6 +2122,7 @@ net_del_q_info (qlimit)
  * Deallocates dead net_rcv_port_t.
  * No locks should be held when called.
  */
+void
 net_free_dead_infp (dead_infp)
 	queue_entry_t dead_infp;
 {
@@ -2142,6 +2144,7 @@ net_free_dead_infp (dead_infp)
  * Deallocates dead net_hash_entry_t.
  * No locks should be held when called.
  */
+void
 net_free_dead_entp (dead_entp)
 	queue_entry_t dead_entp;
 {

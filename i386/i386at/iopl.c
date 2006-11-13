@@ -90,6 +90,7 @@ ioplopen(dev, flag, ior)
 
 
 /*ARGSUSED*/
+int
 ioplclose(dev, flags)
 	int	dev;
 	int flags;

@@ -221,6 +221,7 @@ mem_size_init()
  * Basic PC VM initialization.
  * Turns on paging and changes the kernel segments to use high linear addresses.
  */
+void
 i386at_init()
 {
 	/* XXX move to intel/pmap.h */
@@ -387,6 +388,7 @@ void c_boot_entry(vm_offset_t bi)
 #include <vm/pmap.h>
 #include <mach/time_value.h>
 
+int
 timemmap(dev,off,prot)
 	vm_prot_t prot;
 {
@@ -401,6 +403,7 @@ timemmap(dev,off,prot)
 	return (i386_btop(pmap_extract(pmap_kernel(), (vm_offset_t) mtime)));
 }
 
+void
 startrtclock()
 {
 	clkstart();

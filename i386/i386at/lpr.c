@@ -81,6 +81,7 @@ struct tty	lpr_tty[NLPR];
 
 int lpr_alive[NLPR];
 
+int
 lprprobe(port, dev)
 struct bus_device *dev;
 {
@@ -122,6 +123,7 @@ void lprattach(struct bus_device *dev)
 	return;
 }
 
+int
 lpropen(dev, flag, ior)
 int dev;
 int flag;
@@ -158,6 +160,7 @@ u_short addr;
 	return (char_open(dev, tp, flag, ior));
 }
 
+void
 lprclose(dev, flag)
 int dev;
 int flag;
@@ -177,6 +180,7 @@ u_short		addr = 	(u_short) lprinfo[unit]->address;
 }
 
 #ifdef	MACH_KERNEL
+int
 lprread(dev, ior)
 int	dev;
 io_req_t ior;
@@ -184,6 +188,7 @@ io_req_t ior;
 	return char_read(&lpr_tty[minor(dev)], ior);
 }
 
+int
 lprwrite(dev, ior)
 int	dev;
 io_req_t ior;
@@ -191,6 +196,7 @@ io_req_t ior;
 	return char_write(&lpr_tty[minor(dev)], ior);
 }
 
+int
 lprportdeath(dev, port)
 dev_t		dev;
 mach_port_t	port;
@@ -363,6 +369,7 @@ struct tty *tp;
 }
 
 #ifdef	MACH_KERNEL
+int
 lprstop(tp, flags)
 register struct tty *tp;
 int	flags;
@@ -381,12 +388,14 @@ struct tty *tp;
 	splx(s);
 }
 #endif	/* MACH_KERNEL */
+int
 lprpr(unit)
 {
 	lprpr_addr(lprinfo[unit]->address);
 	return 0;
 }
 
+void
 lprpr_addr(addr)
 {
 	printf("DATA(%x) %x, STATUS(%x) %x, INTR_ENAB(%x) %x\n",
