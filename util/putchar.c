@@ -24,5 +24,6 @@
 int putchar(int c)
 {
 	cnputc(c);
+	return c;
 }
 

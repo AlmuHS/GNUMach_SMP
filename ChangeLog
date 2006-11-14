@@ -8,6 +8,7 @@
 	declaration.
 	(Debugger): Add call to panic().
 	* kern/debug.h (panic): Add __attribute__ ((noreturn)) to declaration.
+	* util/putchar.c (putchar): Return printed char.
 
 2006-11-13  Barry deFreese  <bddebian@comcast.net>
 
