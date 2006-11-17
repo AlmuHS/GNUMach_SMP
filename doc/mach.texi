@@ -18,16 +18,15 @@
 @c Get the Mach version we are documenting.
 @include version.texi
 @set EDITION 0.4
-@set UPDATED 2001-09-01
 @c @set ISBN X-XXXXXX-XX-X
 
 @ifinfo
 This file documents the GNU Mach microkernel.
 
-This is Edition @value{EDITION}, last updated @value{UPDATED}, of
-@cite{The GNU Mach Reference Manual}, for Version @value{VERSION}.
+This is edition @value{EDITION}, last updated on @value{UPDATED}, of @cite{The
+GNU Mach Reference Manual}, for version @value{VERSION}.
 
-Copyright @copyright{} 2001 Free Software Foundation, Inc.
+Copyright @copyright{} 2001, 2006 Free Software Foundation, Inc.
 
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.1 or
@@ -86,7 +85,7 @@ ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
 @center for version @value{VERSION}
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2001 Free Software Foundation, Inc.
+Copyright @copyright{} 2001, 2006 Free Software Foundation, Inc.
 @c  @sp 2
 @c  Published by the Free Software Foundation @*
 @c  59 Temple Place -- Suite 330, @*
@@ -160,9 +159,9 @@ ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
 @ifnottex
 @node Top
 @top Main Menu
-This is Edition @value{EDITION}, last updated @value{UPDATED}, of
-@cite{The GNU Mach Reference Manual}, for Version @value{VERSION} of the
-GNU Mach microkernel.
+This is edition @value{EDITION}, last updated on @value{UPDATED}, of @cite{The
+GNU Mach Reference Manual}, for version @value{VERSION} of the GNU Mach
+microkernel.
 @end ifnottex
 
 @menu
@@ -506,7 +505,7 @@ info manual.
 If you already have a running GNU system, and only want to recompile
 the kernel, for example to select a different set of included hardware
 drivers, you can easily do this.  You need the GNU C compiler and
-MiG, the Mach interface generator, which both come in their own
+MIG, the Mach interface generator, which both come in their own
 packages.
 
 Building and installing the kernel is as easy as with any other GNU
@@ -523,438 +522,421 @@ To install the kernel and its header files, just enter the command:
 make install
 @end example
 
-This will install the kernel into $(prefix)/boot/gnumach and the header
-files into $(prefix)/include.  You can also only install the kernel or
-the header files.  For this, the two targets install-kernel and
-install-headers are provided.
+This will install the kernel as @file{EXEC_PREFIX/boot/gnumach}, the header
+files into @file{PREFIX/include/}, the list of message ids as
+@file{PREFIX/share/msgids/gnumach.msgids} and the documentation into
+@file{PREFIX/share/info/}.
 
+Note that there is also a way to only install the header and documentation
+files without having to actually build the whole package: run @command{make
+install-data} after having ran @command{configure} to do so.  (This is needed
+for bootstrapping a cross compiler and similar procedures.)
 
 @node Configuration
 @section Configuration
 
-The following options can be passed to the configure script as command
-line arguments and control what components are built into the kernel, or
-where it is installed.
+See the following tables for the options can be passed to the
+@command{configure} script as command line arguments to control what components
+are built into the kernel, how certain things are configured and so on.
 
-The default for an option is to be disabled, unless otherwise noted.
+See the top-level @file{INSTALL} file for information about generic
+@command{configure} options, like under which paths to install the package's
+components.  It also describes how to control the process by setting
+environment variables.
 
-This table is out-dated.  Please see the file @file{i386/README-Drivers}
-and the output of @code{[GNU Mach]/configure --help=recursive}.
+The file @file{i386/README-Drivers} has some i386-specific information for
+device drivers.  You should only need to consult this file in case a device
+driver is not working for you.
+
+@subsection Table of configure switches not related to device drivers
 
 @table @code
-@item --prefix @var{prefix}
-Sets the prefix to PREFIX.  The default prefix is the empty string, which
-is the correct value for the GNU system.  The prefix is prepended to all
-file names at installation time.
-
 @item --enable-kdb
-Enables the in-kernel debugger.  This is only useful if you actually
-anticipate debugging the kernel.  It is not enabled by default because
-it adds considerably to the unpageable memory footprint of the kernel.
-@xref{Kernel Debugger}.
-
-@item --enable-kmsg
-Enables the kernel message device kmsg.
-
-@item --enable-lpr
-Enables the parallel port devices lpr%d.
-
-@item --enable-floppy
-Enables the PC floppy disk controller devices fd%d.
-
-@item --enable-ide
-Enables the IDE controller devices hd%d, hd%ds%d.
+Enables the in-kernel debugger.  This is only useful if you actually anticipate
+debugging the kernel.  It is not enabled by default because it adds
+considerably to the unpageable memory footprint of the kernel.  @xref{Kernel
+Debugger}.
 @end table
 
-The following options enable drivers for various SCSI controller.
-SCSI devices are named sd%d (disks) or cd%d (CD ROMs).
+@subsection Turning device drivers on or off
+
+Each device driver has an associated configure switch.  The following table
+indicates whether a device driver is enabled by default or not.  It also gives
+--- if possible at all --- the configure switches to use for disabling or
+enabling device drivers, in case you're not satisfied with the default choices.
+Where a @samp{--disable-*} switch is given in the table, the device driver is
+enabled by default and you have to use the switch to disable it and vice versa
+for the @samp{--enable-*} switches, the device driver is disabled by default
+and you have to us the switch to enable it.  To have all device drivers
+disabled that can be disabled and would otherwise have been enabled by default
+you can specify the @samp{--disable-default-device-drivers} switch and then use
+individual @samp{--enable-*} switches to enable only those you actually want to
+have enabled.
+
+@subsection What the configure switches do
+
+Each configure switch has two effects.  First, it defines a @acronym{CPP}
+symbol that turns on or off the hooks that autoconfigure the device and add it
+to the list of available devices.  Second, it adds the source code for the
+driver to a make variable so that the code for the driver is compiled and
+linked into the kernel.  Also follow this route to find the file(s) which are
+implementing a certain device driver.
+
+@subsection Table of configure switches related to device drivers
+
+(@samp{%d} in the following denotes a unit number, starting with @samp{0}.)
 
 @table @code
-@item --enable-advansys
-Enables the AdvanSys SCSI controller devices sd%d, cd%d.
+@item --disable-kmsg
+Disables the kernel message device @samp{kmsg}.
 
-@item --enable-buslogic
-Enables the BusLogic SCSI controller devices sd%d, cd%d.
+@item --disable-lpr
+Disables the parallel port device driver for the @samp{lpr%d} devices.
 
-@item --disable-flashpoint
-Only meaningful in conjunction with @option{--enable-buslogic}.  Omits the
-FlshPoint support.  This option is enabled by default if
-@option{--enable-buslogic} is specified.
+@item --disable-floppy
+Disables the PC floppy disk controller device driver for the @samp{fd%d}
+devices.
 
-@item --enable-u1434f
-Enables the UltraStor 14F/34F SCSI controller devices sd%d, cd%d.
+@item --disable-ide
+Disables the IDE controller device driver for the @samp{hd%d} and
+@samp{hd%ds%d} (disks and their partitions) devices.
+@end table
 
-@item --enable-ultrastor
-Enables the UltraStor SCSI controller devices sd%d, cd%d.
+The following options control drivers for various SCSI controller.  SCSI
+devices are named @samp{sd%d} and @samp{sd%ds$d} (disks and their partitions)
+or @samp{cd%d} (CD ROMs).
 
-@item --enable-aha152x
-@itemx --enable-aha2825
-Enables the Adaptec AHA-152x/2825 SCSI controller devices sd%d, cd%d.
+@table @code
+@item --disable-advansys
+Disables the AdvanSys SCSI controller device driver.
 
-@item --enable-aha1542
-Enables the Adaptec AHA-1542 SCSI controller devices sd%d, cd%d.
+@item --disable-buslogic
+Disables the BusLogic SCSI controller device driver.
 
-@item --enable-aha1740
-Enables the Adaptec AHA-1740 SCSI controller devices sd%d, cd%d.
+@item --enable-flashpoint
+Only meaningful in conjunction with the above BusLogic SCSI controller device
+driver.  Enable the FlashPoint support.
 
-@item --enable-aic7xxx
-Enables the Adaptec AIC7xxx SCSI controller devices sd%d, cd%d.
+@item --disable-u14-34f
+Disables the UltraStor 14F/34F SCSI controller device driver.
 
-@item --enable-futuredomain
-Enables the Future Domain 16xx SCSI controller devices sd%d, cd%d.
+@item --disable-ultrastor
+Disables the UltraStor SCSI controller device driver.
 
-@item --enable-in2000
-Enables the Always IN 2000 SCSI controller devices sd%d, cd%d.
+@item --disable-aha152x
+Disables the Adaptec AHA-152x/2825 SCSI controller device driver.
 
-@item --enable-ncr5380
-@itemx --enable-ncr53c400
-Enables the generic NCR5380/53c400 SCSI controller devices sd%d, cd%d.
+@item --disable-aha1542
+Disables the Adaptec AHA-1542 SCSI controller device driver.
+
+@item --disable-aha1740
+Disables the Adaptec AHA-1740 SCSI controller device driver.
+
+@item --disable-aic7xxx
+Disables the Adaptec AIC7xxx SCSI controller device driver.
+
+@item --disable-fdomain
+Disables the Future Domain 16xx SCSI controller device driver.
+
+@item --disable-in2000
+Disables the Always IN 2000 SCSI controller device driver.
+
+@item --enable-g_NCR5380
+Enables the generic NCR5380/53c400 SCSI controller device driver.
 
 @item --enable-ncr53c406a
-Enables the NCR53c406a SCSI controller devices sd%d, cd%d.
+Enables the NCR53c406a SCSI controller device driver.
 
-@item --enable-pas16
-Enables the PAS16 SCSI controller devices sd%d, cd%d.
+@item --disable-pas16
+Disables the PAS16 SCSI controller device driver.
 
-@item --enable-seagate
-Enables the Seagate ST02 and Future Domain TMC-8xx SCSI controller
-devices sd%d, cd%d.
+@item --disable-seagate
+Disables the Seagate ST02 and Future Domain TMC-8xx SCSI controller
+device driver.
 
-@item --enable-t128
-@itemx --enable-t128f
-@itemx --enable-t228
-Enables the Trantor T128/T128F/T228 SCSI controller devices sd%d, cd%d.
+@item --disable-t128
+Disables the Trantor T128/T128F/T228 SCSI controller device driver.
 
-@item --enable-ncr53c7xx
-Enables the NCR53C7,8xx SCSI controller devices sd%d, cd%d.
+@item --Disable-53c78xx
+Disables the NCR53C7,8xx SCSI controller device driver.
 
-@item --enable-eatadma
-Enables the EATA-DMA (DPT, NEC, AT&T, SNI, AST, Olivetti, Alphatronix)
-SCSI controller devices sd%d, cd%d.
+@item --enable-eata_dma
+Enables the EATA-DMA (DPT, NEC, AT&T, SNI, AST, Olivetti, Alphatronix) SCSI
+controller device driver.
 
-@item --enable-eatapio
-Enables the EATA-PIO (old DPT PM2001, PM2012A) SCSI controller devices
-sd%d, cd%d.
+@item --disable-eata_pio
+Disables the EATA-PIO (old DPT PM2001, PM2012A) SCSI controller device driver.
 
-@item --enable-wd7000
-Enables the WD 7000 SCSI controller devices sd%d, cd%d.
+@item --disable-wd7000
+Disables the WD 7000 SCSI controller device driver.
 
-@item --enable-eata
-Enables the EATA ISA/EISA/PCI (DPT and generic EATA/DMA-compliant boards)
-SCSI controller devices sd%d, cd%d.
+@item --disable-eata
+Disables the EATA ISA/EISA/PCI (DPT and generic EATA/DMA-compliant boards) SCSI
+controller device driver.
 
-@item --enable-am53c974
-@itemx --enable-am79c974
-Enables the AM53/79C974 SCSI controller devices sd%d, cd%d.
+@item --disable-am53c974
+Disables the AM53/79C974 SCSI controller device driver.
 
-@item --enable-dtc3280
-@itemx --enable-dtc3180
-Enables the DTC3180/3280 SCSI controller devices sd%d, cd%d.
+@item --disable-dtc
+Disables the DTC3180/3280 SCSI controller device driver.
 
-@item --enable-ncr53c8xx
-@itemx --enable-dc390w
-@itemx --enable-dc390u
-@itemx --enable-dc390f
-Enables the NCR53C8XX SCSI controller devices sd%d, cd%d.
+@item --disable-ncr53c8xx
+Disables the NCR53C8XX, dc390w, dc390u, dc390f SCSI controller device driver.
 
-@item --enable-dc390t
-@itemx --enable-dc390
-Enables the Tekram DC-390(T) SCSI controller devices sd%d, cd%d.
+@item --disable-tmscsim
+Enables the Tekram DC-390(T) SCSI controller device driver.
 
-@item --enable-ppa
-Enables the IOMEGA Parallel Port ZIP drive device sd%d.
+@item --disable-ppa
+Disables the IOMEGA Parallel Port ZIP drive device driver.
 
-@item --enable-qlogicfas
-Enables the Qlogic FAS SCSI controller devices sd%d, cd%d.
+@item --disable-qlogicfas
+Disables the Qlogic FAS SCSI controller device driver.
 
-@item --enable-qlogicisp
-Enables the Qlogic ISP SCSI controller devices sd%d, cd%d.
+@item --disable-qlogicisp
+Disables the Qlogic ISP SCSI controller device driver.
 
-@item --enable-gdth
-Enables the GDT SCSI Disk Array controller devices sd%d, cd%d.
+@item --disable-gdth
+Disables the GDT SCSI Disk Array controller device driver.
 @end table
 
-The following options enable drivers for various ethernet cards.
-NIC device names are usually eth%d, except for the pocket adaptors.
+The following options enable drivers for various ethernet cards.  NIC devices
+are usually named @samp{eth%d}, except for the pocket adaptors.
 
-GNU Mach does only autodetect one ethernet card.  To enable any further
-cards, the source code has to be edited.
+GNU Mach does only autodetect one ethernet card.  To enable any further cards,
+the source code has to be edited.
 @c XXX Reference to the source code.
 
 @table @code
-@item --enable-ne2000
-@itemx --enable-ne1000
-Enables the NE2000/NE1000 ISA netword card devices eth%d.
+@item --disable-ne
+Disables the NE2000/NE1000 ISA netword card device driver.
 
-@item --enable-3c503
-@itemx --enable-el2
-Enables the 3Com 503 (Etherlink II) netword card devices eth%d.
+@item --disable-3c503
+Dsables the 3Com 503 (Etherlink II) netword card device driver.
 
-@item --enable-3c509
-@itemx --enable-3c579
-@itemx --enable-el3
-Enables the 3Com 509/579 (Etherlink III) netword card devices eth%d.
+@item --disable-3c509
+Disables the 3Com 509/579 (Etherlink III) netword card device driver.
 
-@item --enable-wd80x3
-Enables the WD80X3 netword card devices eth%d.
+@item --disable-wd
+Disables the WD80X3 netword card device driver.
 
-@item --enable-3c501
-@itemx --enable-el1
-Enables the 3COM 501 netword card devices eth%d.
+@item --disable-3c501
+Disables the 3COM 501/Etherlink I netword card device driver.
 
-@item --enable-ul
-Enables the SMC Ultra netword card devices eth%d.
+@item --disable-smc-ultra
+Disables the SMC Ultra netword card device driver.
 
-@item --enable-ul32
-Enables the SMC Ultra 32 netword card devices eth%d.
+@item --disable-smc-ultra32
+Disables the SMC Ultra 32 netword card device driver.
 
-@item --enable-hplanplus
-Enables the HP PCLAN+ (27247B and 27252A) netword card devices eth%d.
+@item --disable-hp-plus
+Disables the HP PCLAN+ (27247B and 27252A) netword card device driver.
 
-@item --enable-hplan
-Enables the HP PCLAN (27245 and other 27xxx series) netword card devices eth%d.
+@item --disable-hp
+Disables the HP PCLAN (27245 and other 27xxx series) netword card device driver.
 
-@item --enable-3c59x
-@itemx --enable-3c90x
-@itemx --enable-vortex
-Enables the 3Com 590/900 series (592/595/597/900/905) "Vortex/Boomerang"
-netword card devices eth%d.
+@item --disable-3c59x
+Disables the 3Com 590/900 series (592/595/597/900/905) "Vortex/Boomerang"
+netword card device driver.
 
-@item --enable-seeq8005
-Enables the Seeq8005 netword card devices eth%d.
+@item --disable-seeq8005
+Disables the Seeq8005 netword card device driver.
 
-@item --enable-hp100
-@itemx --enable-hpj2577
-@itemx --enable-hpj2573
-@itemx --enable-hp27248b
-@itemx --enable-hp2585
-Enables the HP 10/100VG PCLAN (ISA, EISA, PCI) netword card devices
-eth%d.
+@item --disable-hp100
+Disables the HP 10/100VG PCLAN (ISA, EISA, PCI) netword card device driver.
 
-@item --enable-ac3200
-Enables the Ansel Communications EISA 3200 netword card devices eth%d.
+@item --disable-ac3200
+Disables the Ansel Communications EISA 3200 netword card device driver.
 
-@item --enable-e2100
-Enables the Cabletron E21xx netword card devices eth%d.
+@item --disable-e2100
+Disables the Cabletron E21xx netword card device driver.
 
-@item --enable-at1700
-Enables the AT1700 (Fujitsu 86965) netword card devices eth%d.
+@item --disable-at1700
+Disables the AT1700 (Fujitsu 86965) netword card device driver.
 
-@item --enable-eth16i
-@itemx --enable-eth32
-Enables the ICL EtherTeam 16i/32 netword card devices eth%d.
+@item --disable-eth16i
+Disables the ICL EtherTeam 16i/32 netword card device driver.
 
-@item --enable-znet
-@itemx --enable-znote
-Enables the Zenith Z-Note netword card devices eth%d.
+@item --disable-znet
+Disables the Zenith Z-Note netword card device driver.
 
-@item --enable-eexpress
-Enables the EtherExpress 16 netword card devices eth%d.
+@item --disable-eexpress
+Disables the EtherExpress 16 netword card device driver.
 
-@item --enable-eexpresspro
-Enables the EtherExpressPro netword card devices eth%d.
+@item --disable-eepro
+Disables the EtherExpressPro netword card device driver.
 
-@item --enable-eexpresspro100
-Enables the Intel EtherExpressPro PCI 10+/100B/100+ netword card devices
-eth%d.
+@item --disable-eepro100
+Disables the Intel EtherExpressPro PCI 10+/100B/100+ netword card device
+driver.
 
-@item --enable-depca
-@itemx --enable-de100
-@itemx --enable-de101
-@itemx --enable-de200
-@itemx --enable-de201
-@itemx --enable-de202
-@itemx --enable-de210
-@itemx --enable-de422
-Enables the DEPCA, DE10x, DE200, DE201, DE202, DE210, DE422 netword card
-devices eth%d.
+@item --disable-depca
+Disables the DEPCA, DE10x, DE200, DE201, DE202, DE210, DE422 netword card
+device driver.
 
-@item --enable-ewrk3
-@itemx --enable-de203
-@itemx --enable-de204
-@itemx --enable-de205
-Enables the EtherWORKS 3 (DE203, DE204, DE205) netword card devices
-eth%d.
+@item --disable-ewrk3
+Disables the EtherWORKS 3 (DE203, DE204, DE205) netword card device driver.
 
-@item --enable-de4x5
-@itemx --enable-de425
-@itemx --enable-de434
-@itemx --enable-435
-@itemx --enable-de450
-@itemx --enable-500
-Enables the DE425, DE434, DE435, DE450, DE500 netword card devices
-eth%d.
+@item --disable-de4x5
+Enables the DE425, DE434, DE435, DE450, DE500 netword card device driver.
 
-@item --enable-apricot
-Enables the Apricot XEN-II on board ethernet netword card devices eth%d.
+@item --disable-apricot
+Disables the Apricot XEN-II on board ethernet netword card device driver.
 
 @item --enable-wavelan
-Enables the AT&T WaveLAN & DEC RoamAbout DS netword card devices eth%d.
+Enables the AT&T WaveLAN & DEC RoamAbout DS netword card device driver.
 
-@item --enable-3c507
-@itemx --enable-el16
-Enables the 3Com 507 netword card devices eth%d.
+@item --disable-3c507
+Disables the 3Com 507 netword card device driver.
 
-@item --enable-3c505
-@itemx --enable-elplus
-Enables the 3Com 505 netword card devices eth%d.
+@item --disable-3c505
+Disables the 3Com 505/Etherlink II netword card device driver.
 
-@item --enable-de600
-Enables the D-Link DE-600 netword card devices eth%d.
+@item --disable-de600
+Disables the D-Link DE-600 netword card device driver.
 
-@item --enable-de620
-Enables the D-Link DE-620 netword card devices eth%d.
+@item --disable-de620
+Disables the D-Link DE-620 netword card device driver.
 
-@item --enable-skg16
-Enables the Schneider & Koch G16 netword card devices eth%d.
+@item --disable-sk_g16
+Disables the Schneider & Koch G16 netword card device driver.
 
-@item --enable-ni52
-Enables the NI5210 netword card devices eth%d.
+@item --disable-ni52
+Disables the NI5210 netword card device driver.
 
-@item --enable-ni65
-Enables the NI6510 netword card devices eth%d.
+@item --disable-ni65
+Disables the NI6510 netword card device driver.
 
 @item --enable-atp
-Enables the AT-LAN-TEC/RealTek pocket adaptor netword card devices atp%d.
+Enables the AT-LAN-TEC/RealTek pocket adaptor netword card device driver for
+the @samp{atp%d} devices.
 
-@item --enable-lance
-@itemx --enable-at1500
-@itemx --enable-ne2100
-Enables the AMD LANCE and PCnet (AT1500 and NE2100) netword card devices eth%d.
+@item --disable-lance
+Disables the AMD LANCE and PCnet (AT1500 and NE2100) netword card device driver.
 
-@item --enable-elcp
-@itemx --enable-tulip
-Enables the DECchip Tulip (dc21x4x) PCI netword card devices eth%d.
+@itemx --disable-tulip
+Disables the DECchip Tulip (dc21x4x) PCI netword card device driver.
 
-@item --enable-fmv18x
-Enables the FMV-181/182/183/184 netword card devices eth%d.
+@item --disable-fmv18x
+Disables the FMV-181/182/183/184 netword card device driver.
 
-@item --enable-3c515
-Enables the 3Com 515 ISA Fast EtherLink netword card devices eth%d.
+@item --disable-3c515
+Disables the 3Com 515 ISA Fast EtherLink netword card device driver.
 
-@item --enable-pcnet32
-Enables the AMD PCI PCnet32 (PCI bus NE2100 cards) netword card devices
-eth%d.
+@item --disable-pcnet32
+Disables the AMD PCI PCnet32 (PCI bus NE2100 cards) netword card device driver.
 
-@item --enable-ne2kpci
-Enables the PCI NE2000 netword card devices eth%d.
+@item --disable-ne2k-pci
+Disables the PCI NE2000 netword card device driver.
 
-@item --enable-yellowfin
-Enables the Packet Engines Yellowfin Gigabit-NIC netword card devices
-eth%d.
+@item --disable-yellowfin
+Disables the Packet Engines Yellowfin Gigabit-NIC netword card device driver.
 
-@item --enable-rtl8139
-@itemx --enable-rtl8129
-Enables the RealTek 8129/8139 (not 8019/8029!)  netword card devices
-eth%d.
+@item --disable-rtl8139
+Disables the RealTek 8129/8139 (not 8019/8029!) netword card device driver.
 
-@item --enable-epic
-@itemx --enable-epic100
-Enables the SMC 83c170/175 EPIC/100 (EtherPower II) netword card devices eth%d.
+@itemx --disable-epic100
+Disables the SMC 83c170/175 EPIC/100 (EtherPower II) netword card device driver.
 
-@item --enable-tlan
-Enables the TI ThunderLAN netword card devices eth%d.
+@item --disable-tlan
+Disables the TI ThunderLAN netword card device driver.
 
-@item --enable-viarhine
-Enables the VIA Rhine netword card devices eth%d.
+@item --disable-via-rhine
+Disables the VIA Rhine netword card device driver.
 
-@item --enable-hamachi
-Enables the Packet Engines "Hamachi" GNIC-2 Gigabit Ethernet devices eth%d.
+@item --disable-hamachi
+Disables the Packet Engines "Hamachi" GNIC-2 Gigabit Ethernet device driver.
 
-@item --enable-intel-gige
-Enables the Intel PCI Gigabit Ethernet devices eth%d.
+@item --disable-intel-gige
+Disables the Intel PCI Gigabit Ethernet device driver.
 
-@item --enable-myson803
-Enables the Myson MTD803 Ethernet adapter series devices eth%d.
+@item --disable-myson803
+Disables the Myson MTD803 Ethernet adapter series device driver.
 
-@item --enable-natsemi
-Enables the National Semiconductor DP8381x series PCI Ethernet devices eth%d.
+@item --disable-natsemi
+Disables the National Semiconductor DP8381x series PCI Ethernet device driver.
 
-@item --enable-ns820
-Enables the National Semiconductor DP8382x series PCI Ethernet devices eth%d.
+@item --disable-ns820
+Disables the National Semiconductor DP8382x series PCI Ethernet device driver.
 
-@item --enable-starfire
-Enables the Adaptec Starfire network adapter devices eth%d.
+@item --disable-starfire
+Disables the Adaptec Starfire network adapter device driver.
 
-@item --enable-sundance
-Enables the Sundance ST201 "Alta" PCI Ethernet devices eth%d.
+@item --disable-sundance
+Disables the Sundance ST201 "Alta" PCI Ethernet device driver.
 
-@item --enable-winbond-840
-Enables the Winbond W89c840 PCI Ethernet devices eth%d.
+@item --disable-winbond-840
+Disables the Winbond W89c840 PCI Ethernet device driver.
 @end table
 
-The following options either enable drivers for supported PCMCIA
-bridges or control the overall behaviour of the GNU Mach PCMCIA core.
-To make use of GNU Mach PCMCIA support you need to have the
-corresponding userland applications (GNU Mach Card Services)
-installed.  
+The following options either control device drivers for supported PCMCIA
+bridges or control the overall behaviour of the GNU Mach PCMCIA core.  To make
+use of GNU Mach PCMCIA support you need to have the corresponding userland
+applications (GNU Mach Card Services) installed.
 
 @table @code
-@item --enable-i82365
-Enables the driver for the Intel 82365 and compatible PC Card
+@item --disable-i82365
+Disables the device driver for the Intel 82365 and compatible PC Card
 controllers, and Yenta-compatible PCI-to-CardBus controllers.
 
-@item --enable-pcmcia-isa
-Enables ISA-bus related bits in the GNU Mach PCMCIA core.  This is
-generally a good idea, since it does not only have effect if your
-PC Card bridge is attached to the ISA bus, but provides more (ISA)
-interrupts to the Card Services for it to assign to the cards in turn.
+@item --disable-pcmcia-isa
+Disables ISA bus related bits in the GNU Mach PCMCIA core.  Keeping it enabled
+is generally a good idea, since it does not only have effect if your PC Card
+bridge is attached to the ISA bus, but provides more (ISA) interrupts to the
+Card Services for it to assign to the cards in turn.
 @end table
 
-The following options enable drivers for supported PCMCIA Ethernet
-controllers.  NIC device names are usually eth%d.
+The following options control device drivers for supported PCMCIA Ethernet
+controllers.  NIC devices are usually named @samp{eth%d}.
 
 @table @code
-@item --enable-3c574_cs
-Enables the PCMCIA ethernet driver for the 3Com 3c574 ``RoadRunner''.
+@item --disable-3c574_cs
+Disables the PCMCIA ethernet driver for the 3Com 3c574 ``RoadRunner''.
 
-@item --enable-3c589_cs
-Enables the driver for the 3Com 3c589 PCMCIA card.
+@item --disable-3c589_cs
+Disables the driver for the 3Com 3c589 PCMCIA card.
 
-@item --enable-axnet_cs
-Enables the driver for the Asix AX88190-based PCMCIA cards.
+@item --disable-axnet_cs
+Disables the driver for the Asix AX88190-based PCMCIA cards.
 
-@item --enable-fmvj18x_cs
-Enables the driver for PCMCIA cards with the fmvj18x chipset. 
+@item --disable-fmvj18x_cs
+Disables the driver for PCMCIA cards with the fmvj18x chipset. 
 
-@item --enable-nmclan_cs
-Enables the driver for the New Media Ethernet LAN PCMCIA cards.
+@item --disable-nmclan_cs
+Disables the driver for the New Media Ethernet LAN PCMCIA cards.
 
-@item --enable-pcnet_cs
-Enables the driver for NS8390-based PCMCIA cards.
+@item --disable-pcnet_cs
+Disables the driver for NS8390-based PCMCIA cards.
 
-This driver supports the D-Link DE-650 and Linksys EthernetCard cards,
-the newer D-Link and Linksys combo cards, Accton EN2212 cards, the
-RPTI EP400, and the PreMax PE-200 in non-shared-memory mode, and the
-IBM Credit Card Adapter, the NE4100, the Thomas Conrad ethernet card,
-and the Kingston KNE-PCM/x in shared-memory mode.  It will also handle
-the Socket EA card in either mode. 
+This driver supports the D-Link DE-650 and Linksys EthernetCard cards, the
+newer D-Link and Linksys combo cards, Accton EN2212 cards, the RPTI EP400, and
+the PreMax PE-200 in non-shared-memory mode, and the IBM Credit Card Adapter,
+the NE4100, the Thomas Conrad ethernet card, and the Kingston KNE-PCM/x in
+shared-memory mode.  It will also handle the Socket EA card in either mode.
 
-@item --enable-smc91c92_cs
-Enables the driver for SMC91c92-based PCMCIA cards.
+@item --disable-smc91c92_cs
+Disables the driver for SMC91c92-based PCMCIA cards.
 
-@item --enable-xirc2ps_cs
-Enables the driver for Xircom CreditCard and Realport PCMCIA ethernet
-adapters. 
+@item --disable-xirc2ps_cs
+Disables the driver for Xircom CreditCard and Realport PCMCIA ethernet
+adapters.
 @end table
 
-The following options enable drivers for supported PCMCIA Wireless LAN
-network controllers.  NIC device names are usually eth%d.
+The following options control device drivers for supported PCMCIA Wireless LAN
+network controllers.  NIC devices are usually named @samp{eth%d}.
 
-Please mind, that you need to have some userland applications (the GNU
-Mach Wireless Tools) installed, in order to make use of these devices.
+Please mind, that you need to have some userland applications (the GNU Mach
+Wireless Tools) installed, in order to make use of these devices.
 
 @table @code
-@item --enable-orinoco_cs
-Enables the driver for the Hermes or Prism 2 chipset based PCMCIA
-wireless adapters, with Lucent/Agere, Intersil or Symbol firmware. 
+@item --disable-orinoco_cs
+Disables the driver for the Hermes or Prism 2 chipset based PCMCIA wireless
+adapters, with Lucent/Agere, Intersil or Symbol firmware.
 
-This driver is suitable for PCMCIA wireless adapters, such as the
-Lucent WavelanIEEE/Orinoco cards and their OEM (Cabletron/EnteraSys
-RoamAbout 802.11, ELSA Airlancer, Melco Buffalo and others).
-It should also be usable on various Prism II based cards such as the
-Linksys, D-Link and Farallon Skyline. It should also work on Symbol
-cards such as the 3Com AirConnect and Ericsson WLAN.
+This driver is suitable for PCMCIA wireless adapters, such as the Lucent
+WavelanIEEE/Orinoco cards and their OEM (Cabletron/EnteraSys RoamAbout 802.11,
+ELSA Airlancer, Melco Buffalo and others).  It should also be usable on various
+Prism II based cards such as the Linksys, D-Link and Farallon Skyline. It
+should also work on Symbol cards such as the 3Com AirConnect and Ericsson WLAN.
 @end table
 
 
