@@ -1,6 +1,8 @@
 2006-11-17  Constantine Kousoulos  <wuwei@freemail.gr>
 	    Thomas Schwinge  <tschwinge@gnu.org>
 
+	[bug #18010 --- ``GNU Mach: update i386/README-Drivers and
+	doc/mach.texi'']
 	* i386/README-Drivers: Move most of the text into...
 	* doc/mach.texi: ... here and update a number of things.
 	(UPDATED): Don't override.
