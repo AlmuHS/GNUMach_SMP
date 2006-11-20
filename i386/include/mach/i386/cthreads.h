@@ -48,9 +48,7 @@ typedef volatile int spin_lock_t;
 	    _r__; }))
 
 #define	cthread_sp() \
-	({  int	_sp__; \
-	    __asm__("movl %%esp, %0" \
-	      :	"=g" (_sp__) ); \
+	({  register unsigned long _sp__ __asm__("esp"); \
 	    _sp__; })
 
 #endif	/* __GNUC__ */

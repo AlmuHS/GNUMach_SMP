@@ -2427,6 +2427,6 @@ pmap_unmap_page_zero ()
   pte = (int *) pmap_pte (kernel_pmap, 0);
   assert (pte);
   *pte = 0;
-  asm volatile ("movl %%cr3,%%eax; movl %%eax,%%cr3" ::: "ax");
+  asm volatile ("movl %%cr3,%%eax; movl %%eax,%%cr3" ::: "eax");
 }
 #endif /* i386 */

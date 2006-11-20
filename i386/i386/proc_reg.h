@@ -52,7 +52,7 @@ static inline unsigned
 get_eflags()
 {
 	unsigned eflags;
-	asm volatile("pushfd; popl %0" : "=r" (eflags));
+	asm("pushfd; popl %0" : "=r" (eflags));
 	return eflags;
 }
 
@@ -64,8 +64,7 @@ set_eflags(unsigned eflags)
 
 #define get_esp() \
     ({ \
-	register unsigned int _temp__; \
-	asm("mov %%esp, %0" : "=r" (_temp__)); \
+	register unsigned int _temp__ asm("esp"); \
 	_temp__; \
     })
 
@@ -120,7 +119,7 @@ set_eflags(unsigned eflags)
 #define	get_tr() \
     ({ \
 	unsigned short _seg__; \
-	asm volatile("str %0" : "=rm" (_seg__) ); \
+	asm("str %0" : "=rm" (_seg__) ); \
 	_seg__; \
     })
 
@@ -130,7 +129,7 @@ set_eflags(unsigned eflags)
 #define	get_ldt() \
     ({ \
 	unsigned short _seg__; \
-	asm volatile("sldt %0" : "=rm" (_seg__) ); \
+	asm("sldt %0" : "=rm" (_seg__) ); \
 	_seg__; \
     })
 

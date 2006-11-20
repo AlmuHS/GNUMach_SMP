@@ -38,7 +38,7 @@
 
 #define inw(y) \
 ({ unsigned short _tmp__; \
-	asm volatile(".byte 0x66; inl %1, %0" : "=a" (_tmp__) : "d" ((unsigned short)(y))); \
+	asm volatile("inw %1, %0" : "=a" (_tmp__) : "d" ((unsigned short)(y))); \
 	_tmp__; })
 
 #define inb(y) \
@@ -52,7 +52,7 @@
 
 
 #define outw(x, y) \
-{asm volatile(".byte 0x66; outl %0, %1" : : "a" ((unsigned short)(y)) , "d" ((unsigned short)(x))); }
+{ asm volatile("outw %0, %1" : : "a" ((unsigned short)(y)) , "d" ((unsigned short)(x))); }
 
 
 #define outb(x, y) \

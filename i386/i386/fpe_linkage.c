@@ -251,9 +251,9 @@ disable_fpe()
 	 *	would reset fs & gs from the current user thread).
 	 */
 
-	asm volatile("xorl %eax, %eax");
-	asm volatile("movw %ax, %fs");
-	asm volatile("movw %ax, %gs");
+	asm volatile("xorw %ax, %ax\n\t"
+	             "movw %ax, %fs\n\t"
+	             "movw %ax, %gs\n\t":::"ax");
 
 	gdt_desc_p(cpu_number(), USER_FPREGS)->access &= ~ACC_P;
 }
@@ -337,7 +337,7 @@ fpe_exception_fixup(exc, code, subcode)
 	    asm volatile("pushl %0; lcall %1; addl $4,%%esp"
 			:
 			: "r" (&tstate),
-			  "m" (*(char *)&fpe_recover_ptr) );
+			  "m" (fpe_recover_ptr) );
 
 	    (void) thread_setstatus(thread,
 				i386_REGS_SEGS_STATE,

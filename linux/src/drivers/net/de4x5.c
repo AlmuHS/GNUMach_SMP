@@ -2147,7 +2147,7 @@ pci_probe(struct device *dev, u_long ioaddr))
     }
 
     for (index=lastPCI+1; 
-	 (pcibios_find_class(class, index, &pb, &dev_fn)!= PCIBIOS_DEVICE_NOT_FOUND);
+	 (pcibios_find_class(class, index, &pb, &dev_fn)== PCIBIOS_SUCCESSFUL);
 	 index++) {
 	dev_num = PCI_SLOT(dev_fn);
 	if ((!pbus && !dnum) || ((pbus == pb) && (dnum == dev_num))) {
