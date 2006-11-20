@@ -24,3 +24,96 @@ info_TEXINFOS += \
 	doc/mach.texi
 mach_TEXINFOS = \
 	doc/fdl.texi doc/gpl.texi
+
+#
+# Web pages of the GNU Mach Reference Manual.
+#
+
+web = doc/web
+
+# Prepare a checkout in `$(web)/' of the web pages of the GNU Mach Reference
+# Manual, using the same account that was used for the source code.
+.PHONY: $(web)
+$(web):
+	if test -d $@/CVS; then :; else		\
+	  mkdir $@ $@/CVS &&			\
+	  sed -e s%cvsroot%web%			\
+	    < $(top_srcdir)/CVS/Root		\
+	    > $@/CVS/Root &&			\
+	  echo hurd/gnumach-doc			\
+	    > $@/CVS/Repository &&		\
+	  : > $@/CVS/Entries;			\
+	fi
+	cd $@/ &&				\
+	cvs update
+	$(MAKE) $(AM_MAKEFLAGS)			\
+	  html					\
+	  ps					\
+	  pdf
+
+# Update the files, if such a checkout exists.
+html-local:
+	if test -d $(web); then						\
+	  ( cd $(web)/ &&						\
+	    for f in *.html; do						\
+	      if test -f ../../$(HTMLS)/"$$f"; then :; else		\
+		echo "\`$$f' isn't anymore.  Removing." &&		\
+		rm "$$f" &&						\
+		cvs remove "$$f";					\
+	      fi;							\
+	    done ) &&							\
+	  cp $(HTMLS)/*.html $(web)/ &&					\
+	  cd $(web)/ &&							\
+	  { cvs add *.html || :; };					\
+	elif grep -q :ext: $(top_srcdir)/CVS/Root; then			\
+	  echo "*** As it seems that you'd be allowed to check in the"	\
+	    "possible resulting fixes, you may cosider running"		\
+	    " \`make $(web)' to get a checkout of the web pages of the"	\
+	    "GNU Mach manual and have possible changes installed into"	\
+	    "\`$(web)/', ready for checking them in in there.";		\
+	fi
+ps-local:
+	if test -d $(web); then						\
+	  ( cd $(web)/ &&						\
+	    for f in *.ps; do						\
+	      case \ $(PSS)\  in					\
+		\ doc/"$$f"\ ) :;;					\
+		*) echo "\`$$f' isn't anymore.  Removing." &&		\
+		   rm -f "$$f" "$$f".ps &&				\
+		   cvs remove "$$f" "$$f".ps ;;				\
+	      esac;							\
+	    done ) &&							\
+	  cp $(PSS) $(web)/ &&						\
+	  cd $(web)/ &&							\
+	  for f in *.ps; do						\
+	    gzip -9 < "$$f" > "$$f".gz;					\
+	  done &&							\
+	  { cvs add *.ps *.ps.gz || :; };				\
+	elif grep -q :ext: $(top_srcdir)/CVS/Root; then			\
+	  echo "*** As it seems that you'd be allowed to check in the"	\
+	    "possible resulting fixes, you may cosider running"		\
+	    " \`make $(web)' to get a checkout of the web pages of the"	\
+	    "GNU Mach manual and have possible changes installed into"	\
+	    "\`$(web)/', ready for checking them in in there.";		\
+	fi
+pdf-local:
+	if test -d $(web); then						\
+	  ( cd $(web)/ &&						\
+	    for f in *.pdf; do						\
+	      case \ $(PDFS)\  in					\
+		\ doc/"$$f"\ ) :;;					\
+		*) echo "\`$$f' isn't anymore.  Removing." &&		\
+		   rm "$$f" &&						\
+		   cvs remove "$$f";;					\
+	      esac;							\
+	    done ) &&							\
+	  cp $(PDFS) $(web)/ &&						\
+	  cd $(web)/ &&							\
+	  { cvs add *.pdf || :; };					\
+	elif grep -q :ext: $(top_srcdir)/CVS/Root; then			\
+	  echo "*** As it seems that you'd be allowed to check in the"	\
+	    "possible resulting fixes, you may cosider running"		\
+	    " \`make $(web)' to get a checkout of the web pages of the"	\
+	    "GNU Mach manual and have possible changes installed into"	\
+	    "\`$(web)/', ready for checking them in in there.";		\
+	fi

@@ -1,11 +1,16 @@
+2006-11-21  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* doc/Makefrag.am (doc/web, html-local, ps-local, pdf-local): New
+	targets to faciliate keeping the web pages of the GNU Mach Reference
+	Manual updated.
+
 2006-11-20  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	Asm tidy.
-
-        * i386/i386/fpe_linkage.c (disable_fpe): Gather dependent asm
-        statements, add `ax' clobber.
-        (fpe_exception_fixup): Drop bogus cast from input parameter of lcall asm
-        statement.
+	* i386/i386/fpe_linkage.c (disable_fpe): Gather dependent asm
+	statements, add `ax' clobber.
+	(fpe_exception_fixup): Drop bogus cast from input parameter of lcall
+	asm statement.
 	* i386/i386/pio.h (inw, outw): Drop 0x66 prefix an just use the w
 	instruction variant.
 	* i386/i386/proc_reg.h: (get_eflags, get_tr, get_ldt): Drop
@@ -15,7 +20,7 @@
 	* i386/intel/pmap.c (pmap_unmap_page_zero): Fix asm clobber into `eax'.
 
 	De4x5 probe fixup.
-        * linux/src/drivers/net/de4x5.c (pci_probe): Make probe loop stop on
+	* linux/src/drivers/net/de4x5.c (pci_probe): Make probe loop stop on
 	any error, not only device not found.
 
 2006-11-17  Constantine Kousoulos  <wuwei@freemail.gr>
