@@ -1,8 +1,8 @@
 2006-11-21  Thomas Schwinge  <tschwinge@gnu.org>
 
-	* doc/Makefrag.am (doc/web, html-local, ps-local, pdf-local): New
-	targets to faciliate keeping the web pages of the GNU Mach Reference
-	Manual updated.
+	* doc/Makefrag.am (doc/web, html-local, ps-local, pdf-local)
+	($(srcdir)/doc/version.texi): New targets to faciliate keeping the web
+	pages of the GNU Mach Reference Manual updated.
 
 2006-11-20  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 

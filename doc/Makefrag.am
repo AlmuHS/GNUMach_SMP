@@ -32,7 +32,8 @@ mach_TEXINFOS = \
 web = doc/web
 
 # Prepare a checkout in `$(web)/' of the web pages of the GNU Mach Reference
-# Manual, using the same account that was used for the source code.
+# Manual, using the same account that was used for the source code.  Then
+# install the potentially updated files into `$(web)/'.
 .PHONY: $(web)
 $(web):
 	if test -d $@/CVS; then :; else		\
@@ -65,12 +66,6 @@ html-local:
 	  cp $(HTMLS)/*.html $(web)/ &&					\
 	  cd $(web)/ &&							\
 	  { cvs add *.html || :; };					\
-	elif grep -q :ext: $(top_srcdir)/CVS/Root; then			\
-	  echo "*** As it seems that you'd be allowed to check in the"	\
-	    "possible resulting fixes, you may cosider running"		\
-	    " \`make $(web)' to get a checkout of the web pages of the"	\
-	    "GNU Mach manual and have possible changes installed into"	\
-	    "\`$(web)/', ready for checking them in in there.";		\
 	fi
 ps-local:
 	if test -d $(web); then						\
@@ -89,12 +84,6 @@ ps-local:
 	    gzip -9 < "$$f" > "$$f".gz;					\
 	  done &&							\
 	  { cvs add *.ps *.ps.gz || :; };				\
-	elif grep -q :ext: $(top_srcdir)/CVS/Root; then			\
-	  echo "*** As it seems that you'd be allowed to check in the"	\
-	    "possible resulting fixes, you may cosider running"		\
-	    " \`make $(web)' to get a checkout of the web pages of the"	\
-	    "GNU Mach manual and have possible changes installed into"	\
-	    "\`$(web)/', ready for checking them in in there.";		\
 	fi
 pdf-local:
 	if test -d $(web); then						\
@@ -110,10 +99,15 @@ pdf-local:
 	  cp $(PDFS) $(web)/ &&						\
 	  cd $(web)/ &&							\
 	  { cvs add *.pdf || :; };					\
+	fi
+# TODO.  There doesn't seem to be a hook or `-local' target suitable for this.
+$(srcdir)/doc/version.texi: $(srcdir)/doc/stamp-vti
+	@if test -d $(web); then :;					\
 	elif grep -q :ext: $(top_srcdir)/CVS/Root; then			\
 	  echo "*** As it seems that you'd be allowed to check in the"	\
 	    "possible resulting fixes, you may cosider running"		\
 	    " \`make $(web)' to get a checkout of the web pages of the"	\
 	    "GNU Mach manual and have possible changes installed into"	\
-	    "\`$(web)/', ready for checking them in in there.";		\
+	    "\`$(web)/', ready for checking them in in there." &&	\
+	  sleep 2;							\
 	fi
