@@ -1,3 +1,9 @@
+2006-11-26  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	Fix i386's 4GiB overflow.
+	* i386/i386at/model_dep.c (mem_size_init): Truncate memory size to
+	4GiB.
+
 2006-11-21  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* doc/Makefrag.am (doc/web, html-local, ps-local, pdf-local)

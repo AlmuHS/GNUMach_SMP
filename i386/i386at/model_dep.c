@@ -196,11 +196,18 @@ void db_reset_cpu()
 void
 mem_size_init()
 {
+	vm_size_t phys_last_kb;
+
 	/* Physical memory on all PCs starts at physical address 0.
 	   XX make it a constant.  */
 	phys_first_addr = 0;
 
-	phys_last_addr = 0x100000 + (boot_info.mem_upper * 0x400);
+	phys_last_kb = 0x400 + boot_info.mem_upper;
+	/* Avoid 4GiB overflow.  */
+	if (phys_last_kb < 0x400 || phys_last_kb >= 0x400000)
+		phys_last_kb = 0x400000 - 1;
+
+	phys_last_addr = phys_last_kb * 0x400;
 	avail_remaining
 	  = phys_last_addr - (0x100000 - (boot_info.mem_lower * 0x400)
 			      - 0x1000);
