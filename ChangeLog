@@ -1,6 +1,11 @@
+2006-11-28  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* doc/Makefrag.am ($(srcdir)/doc/version.texi): Oppress a potential
+	error message from grep.
+
 2006-11-26  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
-	Fix i386's 4GiB overflow.
+	[bug #17346 --- ``GNU mach can't handle 4GB memory'']
 	* i386/i386at/model_dep.c (mem_size_init): Truncate memory size to
 	4GiB.
 
@@ -12,7 +17,7 @@
 
 2006-11-20  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
-	Asm tidy.
+	[patch #5328 --- ``GNU Mach asm statements tidy'']
 	* i386/i386/fpe_linkage.c (disable_fpe): Gather dependent asm
 	statements, add `ax' clobber.
 	(fpe_exception_fixup): Drop bogus cast from input parameter of lcall
@@ -25,7 +30,7 @@
 	* i386/include/mach/i386/cthreads.h (cthread_sp): Likewise.
 	* i386/intel/pmap.c (pmap_unmap_page_zero): Fix asm clobber into `eax'.
 
-	De4x5 probe fixup.
+	[patch #5375 --- ``Fix de4x5 probe'']
 	* linux/src/drivers/net/de4x5.c (pci_probe): Make probe loop stop on
 	any error, not only device not found.
 
