@@ -58,6 +58,13 @@ AM_CFLAGS += \
 AM_CFLAGS += \
 	-fno-strict-aliasing
 
+# The smashing stack protector might be enabled by default, but might emit
+# unsuitable code.
+if disable_smashing_stack_protector
+AM_CFLAGS += \
+	-fno-stack-protector
+endif
+
 # For pre Automake 1.10.
 AM_CCASFLAGS += \
 	$(AM_CPPFLAGS)

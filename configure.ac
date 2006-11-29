@@ -114,6 +114,30 @@ m4_include([linux/configfrag.ac])
 dnl [fi]
 
 #
+# Compiler features.
+#
+
+# Smashing stack protector.
+[ssp_possible=yes]
+AC_MSG_CHECKING([whether the compiler accepts `-fstack-protector'])
+# Is this a reliable test case?
+AC_LANG_CONFTEST([[void foo (void) { volatile char a[8]; a[3]; }]])
+[# `$CC -c -o ...' might not be portable.  But, oh, well...  Is calling
+# `ac_compile' like this correct, after all?
+if eval "$ac_compile -S -fstack-protector -o conftest.s" 2> /dev/null; then]
+  AC_MSG_RESULT([yes])
+  [# Should we clear up other files as well, having called `AC_LANG_CONFTEST'?
+  rm -f conftest.s
+else
+  ssp_possible=no]
+  AC_MSG_RESULT([no])
+[fi
+# Need that, because some distributions ship compilers that include
+# `-fstack-protector' in the default specs.]
+AM_CONDITIONAL([disable_smashing_stack_protector],
+  [[[ x"$ssp_possible" = xyes ]]])
+
+#
 # Output.
 #
 

@@ -1,3 +1,10 @@
+2006-11-29  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* configure.ac (disable_smashing_stack_protector): New conditional, set
+	depending on the compiler accepting `-fstack-protector' or not.
+	* Makefile.am (CFLAGS): Add `-fno-stack-protector' if
+	`disable_smashing_stack_protector' is set.
+
 2006-11-28  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* doc/Makefrag.am ($(srcdir)/doc/version.texi): Oppress a potential
