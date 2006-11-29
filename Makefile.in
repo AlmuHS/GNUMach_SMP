@@ -197,6 +197,12 @@ POST_UNINSTALL = :
 build_triplet = @build@
 host_triplet = @host@
 noinst_PROGRAMS = gnumach.o$(EXEEXT)
+
+# The smashing stack protector might be enabled by default, but might emit
+# unsuitable code.
+@disable_smashing_stack_protector_TRUE@am__append_1 = \
+@disable_smashing_stack_protector_TRUE@	-fno-stack-protector
+
 DIST_COMMON = README $(am__configure_deps) \
 	$(am__include_mach_i386_HEADERS_DIST) \
 	$(include_device_HEADERS) $(include_mach_HEADERS) \
@@ -219,7 +225,7 @@ DIST_COMMON = README $(am__configure_deps) \
 
 # Do we want the icky kernel debugger?
 # DDB support --- eventually to die.  Please.
-@enable_kdb_TRUE@am__append_1 = \
+@enable_kdb_TRUE@am__append_2 = \
 @enable_kdb_TRUE@	ddb/db_access.c \
 @enable_kdb_TRUE@	ddb/db_aout.c \
 @enable_kdb_TRUE@	ddb/db_break.c \
@@ -244,12 +250,12 @@ DIST_COMMON = README $(am__configure_deps) \
 
 
 # kmsg device.
-@enable_kmsg_TRUE@am__append_2 = \
+@enable_kmsg_TRUE@am__append_3 = \
 @enable_kmsg_TRUE@	device/kmsg.c
 
 
 # Source files for any i386 kernel.
-@HOST_i386_TRUE@am__append_3 = \
+@HOST_i386_TRUE@am__append_4 = \
 @HOST_i386_TRUE@	i386/i386at/autoconf.c \
 @HOST_i386_TRUE@	i386/i386at/boothdr.S \
 @HOST_i386_TRUE@	i386/i386at/com.c \
@@ -271,10 +277,10 @@ DIST_COMMON = README $(am__configure_deps) \
 
 
 # lpr device support.
-@HOST_i386_TRUE@@enable_lpr_TRUE@am__append_4 = \
+@HOST_i386_TRUE@@enable_lpr_TRUE@am__append_5 = \
 @HOST_i386_TRUE@@enable_lpr_TRUE@	i386/i386at/lpr.c
 
-@HOST_i386_TRUE@am__append_5 = \
+@HOST_i386_TRUE@am__append_6 = \
 @HOST_i386_TRUE@	i386/i386/ast_check.c \
 @HOST_i386_TRUE@	i386/i386/cswitch.S \
 @HOST_i386_TRUE@	i386/i386/db_disasm.c \
@@ -308,37 +314,37 @@ DIST_COMMON = README $(am__configure_deps) \
 
 
 # This file is only needed for KDB support.
-@HOST_i386_TRUE@@enable_kdb_TRUE@am__append_6 = \
+@HOST_i386_TRUE@@enable_kdb_TRUE@am__append_7 = \
 @HOST_i386_TRUE@@enable_kdb_TRUE@	i386/i386/_setjmp.S
 
 
 # Files from the generic sources that we want.
-@HOST_i386_TRUE@am__append_7 = i386/intel/pmap.c \
+@HOST_i386_TRUE@am__append_8 = i386/intel/pmap.c \
 @HOST_i386_TRUE@	i386/intel/read_fault.c chips/busses.c \
 @HOST_i386_TRUE@	device/cirbuf.c
 
 # See Makefrag.am about lib_dep_tr_for_defs.a.
-@HOST_i386_TRUE@am__append_8 = \
+@HOST_i386_TRUE@am__append_9 = \
 @HOST_i386_TRUE@	i386/i386/mach_i386.server.defs.c
 
-@HOST_i386_TRUE@am__append_9 = i386/i386/mach_i386.server.h \
+@HOST_i386_TRUE@am__append_10 = i386/i386/mach_i386.server.h \
 @HOST_i386_TRUE@	i386/i386/mach_i386.server.c \
 @HOST_i386_TRUE@	i386/i386/i386asm.h
 
 #
 # Linux device drivers.
 #
-@device_driver_floppy_TRUE@am__append_10 = \
+@device_driver_floppy_TRUE@am__append_11 = \
 @device_driver_floppy_TRUE@	linux/dev/drivers/block/floppy.c
 
-@device_driver_ide_TRUE@am__append_11 = \
+@device_driver_ide_TRUE@am__append_12 = \
 @device_driver_ide_TRUE@	linux/src/drivers/block/cmd640.c \
 @device_driver_ide_TRUE@	linux/src/drivers/block/ide-cd.c \
 @device_driver_ide_TRUE@	linux/src/drivers/block/ide.c \
 @device_driver_ide_TRUE@	linux/src/drivers/block/rz1000.c \
 @device_driver_ide_TRUE@	linux/src/drivers/block/triton.c
 
-@device_driver_group_scsi_TRUE@am__append_12 = \
+@device_driver_group_scsi_TRUE@am__append_13 = \
 @device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/constants.c \
 @device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/hosts.c \
 @device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/scsi.c \
@@ -350,91 +356,91 @@ DIST_COMMON = README $(am__configure_deps) \
 @device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/sr.c \
 @device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/sr_ioctl.c
 
-@device_driver_53c78xx_TRUE@am__append_13 = \
+@device_driver_53c78xx_TRUE@am__append_14 = \
 @device_driver_53c78xx_TRUE@	linux/src/drivers/scsi/53c78xx.c
 
-@device_driver_AM53C974_TRUE@am__append_14 = \
+@device_driver_AM53C974_TRUE@am__append_15 = \
 @device_driver_AM53C974_TRUE@	linux/src/drivers/scsi/AM53C974.c
 
-@device_driver_BusLogic_TRUE@am__append_15 = \
+@device_driver_BusLogic_TRUE@am__append_16 = \
 @device_driver_BusLogic_TRUE@	linux/src/drivers/scsi/BusLogic.c
 
-@device_driver_NCR53c406a_TRUE@am__append_16 = \
+@device_driver_NCR53c406a_TRUE@am__append_17 = \
 @device_driver_NCR53c406a_TRUE@	linux/src/drivers/scsi/NCR53c406a.c
 
-@device_driver_advansys_TRUE@am__append_17 = \
+@device_driver_advansys_TRUE@am__append_18 = \
 @device_driver_advansys_TRUE@	linux/src/drivers/scsi/advansys.c
 
-@device_driver_aha152x_TRUE@am__append_18 = \
+@device_driver_aha152x_TRUE@am__append_19 = \
 @device_driver_aha152x_TRUE@	linux/src/drivers/scsi/aha152x.c
 
-@device_driver_aha1542_TRUE@am__append_19 = \
+@device_driver_aha1542_TRUE@am__append_20 = \
 @device_driver_aha1542_TRUE@	linux/src/drivers/scsi/aha1542.c
 
-@device_driver_aha1740_TRUE@am__append_20 = \
+@device_driver_aha1740_TRUE@am__append_21 = \
 @device_driver_aha1740_TRUE@	linux/src/drivers/scsi/aha1740.c
 
-@device_driver_aic7xxx_TRUE@am__append_21 = \
+@device_driver_aic7xxx_TRUE@am__append_22 = \
 @device_driver_aic7xxx_TRUE@	linux/src/drivers/scsi/aic7xxx.c
 
-@device_driver_dtc_TRUE@am__append_22 = \
+@device_driver_dtc_TRUE@am__append_23 = \
 @device_driver_dtc_TRUE@	linux/src/drivers/scsi/dtc.c
 
-@device_driver_eata_TRUE@am__append_23 = \
+@device_driver_eata_TRUE@am__append_24 = \
 @device_driver_eata_TRUE@	linux/src/drivers/scsi/eata.c
 
-@device_driver_eata_dma_TRUE@am__append_24 = \
+@device_driver_eata_dma_TRUE@am__append_25 = \
 @device_driver_eata_dma_TRUE@	linux/dev/drivers/scsi/eata_dma.c
 
-@device_driver_eata_pio_TRUE@am__append_25 = \
+@device_driver_eata_pio_TRUE@am__append_26 = \
 @device_driver_eata_pio_TRUE@	linux/src/drivers/scsi/eata_pio.c
 
-@device_driver_fdomain_TRUE@am__append_26 = \
+@device_driver_fdomain_TRUE@am__append_27 = \
 @device_driver_fdomain_TRUE@	linux/src/drivers/scsi/fdomain.c
 
-@device_driver_g_NCR5380_TRUE@am__append_27 = \
+@device_driver_g_NCR5380_TRUE@am__append_28 = \
 @device_driver_g_NCR5380_TRUE@	linux/dev/drivers/scsi/g_NCR5380.c
 
-@device_driver_gdth_TRUE@am__append_28 = \
+@device_driver_gdth_TRUE@am__append_29 = \
 @device_driver_gdth_TRUE@	linux/src/drivers/scsi/gdth.c
 
-@device_driver_in2000_TRUE@am__append_29 = \
+@device_driver_in2000_TRUE@am__append_30 = \
 @device_driver_in2000_TRUE@	linux/src/drivers/scsi/in2000.c
 
-@device_driver_ncr53c8xx_TRUE@am__append_30 = \
+@device_driver_ncr53c8xx_TRUE@am__append_31 = \
 @device_driver_ncr53c8xx_TRUE@	linux/src/drivers/scsi/ncr53c8xx.c
 
-@device_driver_pas16_TRUE@am__append_31 = \
+@device_driver_pas16_TRUE@am__append_32 = \
 @device_driver_pas16_TRUE@	linux/src/drivers/scsi/pas16.c
 
-@device_driver_ppa_TRUE@am__append_32 = \
+@device_driver_ppa_TRUE@am__append_33 = \
 @device_driver_ppa_TRUE@	linux/src/drivers/scsi/ppa.c
 
-@device_driver_qlogicfas_TRUE@am__append_33 = \
+@device_driver_qlogicfas_TRUE@am__append_34 = \
 @device_driver_qlogicfas_TRUE@	linux/src/drivers/scsi/qlogicfas.c
 
-@device_driver_qlogicisp_TRUE@am__append_34 = \
+@device_driver_qlogicisp_TRUE@am__append_35 = \
 @device_driver_qlogicisp_TRUE@	linux/src/drivers/scsi/qlogicisp.c
 
-@device_driver_seagate_TRUE@am__append_35 = \
+@device_driver_seagate_TRUE@am__append_36 = \
 @device_driver_seagate_TRUE@	linux/src/drivers/scsi/seagate.c
 
-@device_driver_t128_TRUE@am__append_36 = \
+@device_driver_t128_TRUE@am__append_37 = \
 @device_driver_t128_TRUE@	linux/src/drivers/scsi/t128.c
 
-@device_driver_tmscsim_TRUE@am__append_37 = \
+@device_driver_tmscsim_TRUE@am__append_38 = \
 @device_driver_tmscsim_TRUE@	linux/src/drivers/scsi/tmscsim.c
 
-@device_driver_u14_34f_TRUE@am__append_38 = \
+@device_driver_u14_34f_TRUE@am__append_39 = \
 @device_driver_u14_34f_TRUE@	linux/src/drivers/scsi/u14-34f.c
 
-@device_driver_ultrastor_TRUE@am__append_39 = \
+@device_driver_ultrastor_TRUE@am__append_40 = \
 @device_driver_ultrastor_TRUE@	linux/src/drivers/scsi/ultrastor.c
 
-@device_driver_wd7000_TRUE@am__append_40 = \
+@device_driver_wd7000_TRUE@am__append_41 = \
 @device_driver_wd7000_TRUE@	linux/src/drivers/scsi/wd7000.c
 
-@device_driver_group_net_TRUE@am__append_41 = \
+@device_driver_group_net_TRUE@am__append_42 = \
 @device_driver_group_net_TRUE@	linux/dev/drivers/net/auto_irq.c \
 @device_driver_group_net_TRUE@	linux/dev/glue/net.c \
 @device_driver_group_net_TRUE@	linux/dev/drivers/net/Space.c \
@@ -442,39 +448,39 @@ DIST_COMMON = README $(am__configure_deps) \
 @device_driver_group_net_TRUE@	linux/dev/drivers/net/net_init.c \
 @device_driver_group_net_TRUE@	linux/src/drivers/net/pci-scan.c
 
-@device_driver_3c501_TRUE@am__append_42 = \
+@device_driver_3c501_TRUE@am__append_43 = \
 @device_driver_3c501_TRUE@	linux/src/drivers/net/3c501.c
 
-@device_driver_3c503_TRUE@am__append_43 = \
+@device_driver_3c503_TRUE@am__append_44 = \
 @device_driver_3c503_TRUE@	linux/src/drivers/net/3c503.c \
 @device_driver_3c503_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_3c505_TRUE@am__append_44 = \
+@device_driver_3c505_TRUE@am__append_45 = \
 @device_driver_3c505_TRUE@	linux/src/drivers/net/3c505.c
 
-@device_driver_3c507_TRUE@am__append_45 = \
+@device_driver_3c507_TRUE@am__append_46 = \
 @device_driver_3c507_TRUE@	linux/src/drivers/net/3c507.c
 
-@device_driver_3c509_TRUE@am__append_46 = \
+@device_driver_3c509_TRUE@am__append_47 = \
 @device_driver_3c509_TRUE@	linux/src/drivers/net/3c509.c
 
-@device_driver_3c59x_TRUE@am__append_47 = \
+@device_driver_3c59x_TRUE@am__append_48 = \
 @device_driver_3c59x_TRUE@	linux/src/drivers/net/3c59x.c
 
-@device_driver_3c515_TRUE@am__append_48 = \
+@device_driver_3c515_TRUE@am__append_49 = \
 @device_driver_3c515_TRUE@	linux/src/drivers/net/3c515.c
 
-@device_driver_ac3200_TRUE@am__append_49 = \
+@device_driver_ac3200_TRUE@am__append_50 = \
 @device_driver_ac3200_TRUE@	linux/src/drivers/net/ac3200.c \
 @device_driver_ac3200_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_apricot_TRUE@am__append_50 = \
+@device_driver_apricot_TRUE@am__append_51 = \
 @device_driver_apricot_TRUE@	linux/src/drivers/net/apricot.c
 
-@device_driver_at1700_TRUE@am__append_51 = \
+@device_driver_at1700_TRUE@am__append_52 = \
 @device_driver_at1700_TRUE@	linux/src/drivers/net/at1700.c
 
-@device_driver_atp_TRUE@am__append_52 = \
+@device_driver_atp_TRUE@am__append_53 = \
 @device_driver_atp_TRUE@	linux/src/drivers/net/atp.c
 
 
@@ -482,138 +488,138 @@ DIST_COMMON = README $(am__configure_deps) \
 #liblinux_a_SOURCES += \
 #	linux/src/drivers/net/cb_shim.c
 #endif
-@device_driver_de4x5_TRUE@am__append_53 = \
+@device_driver_de4x5_TRUE@am__append_54 = \
 @device_driver_de4x5_TRUE@	linux/src/drivers/net/de4x5.c
 
-@device_driver_de600_TRUE@am__append_54 = \
+@device_driver_de600_TRUE@am__append_55 = \
 @device_driver_de600_TRUE@	linux/src/drivers/net/de600.c
 
-@device_driver_de620_TRUE@am__append_55 = \
+@device_driver_de620_TRUE@am__append_56 = \
 @device_driver_de620_TRUE@	linux/src/drivers/net/de620.c
 
-@device_driver_depca_TRUE@am__append_56 = \
+@device_driver_depca_TRUE@am__append_57 = \
 @device_driver_depca_TRUE@	linux/src/drivers/net/depca.c
 
-@device_driver_e2100_TRUE@am__append_57 = \
+@device_driver_e2100_TRUE@am__append_58 = \
 @device_driver_e2100_TRUE@	linux/src/drivers/net/e2100.c \
 @device_driver_e2100_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_eepro_TRUE@am__append_58 = \
+@device_driver_eepro_TRUE@am__append_59 = \
 @device_driver_eepro_TRUE@	linux/src/drivers/net/eepro.c
 
-@device_driver_eepro100_TRUE@am__append_59 = \
+@device_driver_eepro100_TRUE@am__append_60 = \
 @device_driver_eepro100_TRUE@	linux/src/drivers/net/eepro100.c
 
-@device_driver_eexpress_TRUE@am__append_60 = \
+@device_driver_eexpress_TRUE@am__append_61 = \
 @device_driver_eexpress_TRUE@	linux/src/drivers/net/eexpress.c
 
-@device_driver_epic100_TRUE@am__append_61 = \
+@device_driver_epic100_TRUE@am__append_62 = \
 @device_driver_epic100_TRUE@	linux/src/drivers/net/epic100.c
 
-@device_driver_eth16i_TRUE@am__append_62 = \
+@device_driver_eth16i_TRUE@am__append_63 = \
 @device_driver_eth16i_TRUE@	linux/src/drivers/net/eth16i.c
 
-@device_driver_ewrk3_TRUE@am__append_63 = \
+@device_driver_ewrk3_TRUE@am__append_64 = \
 @device_driver_ewrk3_TRUE@	linux/src/drivers/net/ewrk3.c
 
-@device_driver_fmv18x_TRUE@am__append_64 = \
+@device_driver_fmv18x_TRUE@am__append_65 = \
 @device_driver_fmv18x_TRUE@	linux/src/drivers/net/fmv18x.c
 
-@device_driver_hamachi_TRUE@am__append_65 = \
+@device_driver_hamachi_TRUE@am__append_66 = \
 @device_driver_hamachi_TRUE@	linux/src/drivers/net/hamachi.c
 
-@device_driver_hp_plus_TRUE@am__append_66 = \
+@device_driver_hp_plus_TRUE@am__append_67 = \
 @device_driver_hp_plus_TRUE@	linux/src/drivers/net/hp-plus.c \
 @device_driver_hp_plus_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_hp_TRUE@am__append_67 = \
+@device_driver_hp_TRUE@am__append_68 = \
 @device_driver_hp_TRUE@	linux/src/drivers/net/hp.c \
 @device_driver_hp_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_hp100_TRUE@am__append_68 = \
+@device_driver_hp100_TRUE@am__append_69 = \
 @device_driver_hp100_TRUE@	linux/src/drivers/net/hp100.c
 
-@device_driver_intel_gige_TRUE@am__append_69 = \
+@device_driver_intel_gige_TRUE@am__append_70 = \
 @device_driver_intel_gige_TRUE@	linux/src/drivers/net/intel-gige.c
 
-@device_driver_lance_TRUE@am__append_70 = \
+@device_driver_lance_TRUE@am__append_71 = \
 @device_driver_lance_TRUE@	linux/src/drivers/net/lance.c
 
-@device_driver_myson803_TRUE@am__append_71 = \
+@device_driver_myson803_TRUE@am__append_72 = \
 @device_driver_myson803_TRUE@	linux/src/drivers/net/myson803.c
 
-@device_driver_natsemi_TRUE@am__append_72 = \
+@device_driver_natsemi_TRUE@am__append_73 = \
 @device_driver_natsemi_TRUE@	linux/src/drivers/net/natsemi.c
 
-@device_driver_ne_TRUE@am__append_73 = \
+@device_driver_ne_TRUE@am__append_74 = \
 @device_driver_ne_TRUE@	linux/src/drivers/net/ne.c \
 @device_driver_ne_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_ne2k_pci_TRUE@am__append_74 = \
+@device_driver_ne2k_pci_TRUE@am__append_75 = \
 @device_driver_ne2k_pci_TRUE@	linux/src/drivers/net/ne2k-pci.c \
 @device_driver_ne2k_pci_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_ni52_TRUE@am__append_75 = \
+@device_driver_ni52_TRUE@am__append_76 = \
 @device_driver_ni52_TRUE@	linux/src/drivers/net/ni52.c
 
-@device_driver_ni65_TRUE@am__append_76 = \
+@device_driver_ni65_TRUE@am__append_77 = \
 @device_driver_ni65_TRUE@	linux/src/drivers/net/ni65.c
 
-@device_driver_ns820_TRUE@am__append_77 = \
+@device_driver_ns820_TRUE@am__append_78 = \
 @device_driver_ns820_TRUE@	linux/src/drivers/net/ns820.c
 
-@device_driver_pcnet32_TRUE@am__append_78 = \
+@device_driver_pcnet32_TRUE@am__append_79 = \
 @device_driver_pcnet32_TRUE@	linux/src/drivers/net/pcnet32.c
 
-@device_driver_rtl8139_TRUE@am__append_79 = \
+@device_driver_rtl8139_TRUE@am__append_80 = \
 @device_driver_rtl8139_TRUE@	linux/src/drivers/net/rtl8139.c
 
-@device_driver_seeq8005_TRUE@am__append_80 = \
+@device_driver_seeq8005_TRUE@am__append_81 = \
 @device_driver_seeq8005_TRUE@	linux/src/drivers/net/seeq8005.c
 
-@device_driver_sk_g16_TRUE@am__append_81 = \
+@device_driver_sk_g16_TRUE@am__append_82 = \
 @device_driver_sk_g16_TRUE@	linux/src/drivers/net/sk_g16.c
 
-@device_driver_smc_ultra_TRUE@am__append_82 = \
+@device_driver_smc_ultra_TRUE@am__append_83 = \
 @device_driver_smc_ultra_TRUE@	linux/src/drivers/net/smc-ultra.c \
 @device_driver_smc_ultra_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_smc_ultra32_TRUE@am__append_83 = \
+@device_driver_smc_ultra32_TRUE@am__append_84 = \
 @device_driver_smc_ultra32_TRUE@	linux/src/drivers/net/smc-ultra32.c \
 @device_driver_smc_ultra32_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_starfire_TRUE@am__append_84 = \
+@device_driver_starfire_TRUE@am__append_85 = \
 @device_driver_starfire_TRUE@	linux/src/drivers/net/starfire.c
 
-@device_driver_sundance_TRUE@am__append_85 = \
+@device_driver_sundance_TRUE@am__append_86 = \
 @device_driver_sundance_TRUE@	linux/src/drivers/net/sundance.c
 
-@device_driver_tlan_TRUE@am__append_86 = \
+@device_driver_tlan_TRUE@am__append_87 = \
 @device_driver_tlan_TRUE@	linux/src/drivers/net/tlan.c
 
-@device_driver_tulip_TRUE@am__append_87 = \
+@device_driver_tulip_TRUE@am__append_88 = \
 @device_driver_tulip_TRUE@	linux/src/drivers/net/tulip.c
 
-@device_driver_via_rhine_TRUE@am__append_88 = \
+@device_driver_via_rhine_TRUE@am__append_89 = \
 @device_driver_via_rhine_TRUE@	linux/src/drivers/net/via-rhine.c
 
-@device_driver_wavelan_TRUE@am__append_89 = \
+@device_driver_wavelan_TRUE@am__append_90 = \
 @device_driver_wavelan_TRUE@	linux/src/drivers/net/wavelan.c
 
-@device_driver_wd_TRUE@am__append_90 = \
+@device_driver_wd_TRUE@am__append_91 = \
 @device_driver_wd_TRUE@	linux/src/drivers/net/wd.c
 
-@device_driver_winbond_840_TRUE@am__append_91 = \
+@device_driver_winbond_840_TRUE@am__append_92 = \
 @device_driver_winbond_840_TRUE@	linux/src/drivers/net/winbond-840.c \
 @device_driver_winbond_840_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_yellowfin_TRUE@am__append_92 = \
+@device_driver_yellowfin_TRUE@am__append_93 = \
 @device_driver_yellowfin_TRUE@	linux/src/drivers/net/yellowfin.c
 
-@device_driver_znet_TRUE@am__append_93 = \
+@device_driver_znet_TRUE@am__append_94 = \
 @device_driver_znet_TRUE@	linux/src/drivers/net/znet.c
 
-@device_driver_group_pcmcia_TRUE@am__append_94 = \
+@device_driver_group_pcmcia_TRUE@am__append_95 = \
 @device_driver_group_pcmcia_TRUE@	linux/pcmcia-cs/glue/pcmcia.c \
 @device_driver_group_pcmcia_TRUE@	linux/pcmcia-cs/modules/cs.c \
 @device_driver_group_pcmcia_TRUE@	linux/pcmcia-cs/modules/ds.c \
@@ -622,40 +628,40 @@ DIST_COMMON = README $(am__configure_deps) \
 @device_driver_group_pcmcia_TRUE@	linux/pcmcia-cs/modules/cistpl.c \
 @device_driver_group_pcmcia_TRUE@	linux/pcmcia-cs/modules/pci_fixup.c
 
-@device_driver_i82365_TRUE@am__append_95 = \
+@device_driver_i82365_TRUE@am__append_96 = \
 @device_driver_i82365_TRUE@	linux/pcmcia-cs/modules/i82365.c
 
-@device_driver_3c574_cs_TRUE@am__append_96 = \
+@device_driver_3c574_cs_TRUE@am__append_97 = \
 @device_driver_3c574_cs_TRUE@	linux/pcmcia-cs/clients/3c574_cs.c
 
-@device_driver_3c589_cs_TRUE@am__append_97 = \
+@device_driver_3c589_cs_TRUE@am__append_98 = \
 @device_driver_3c589_cs_TRUE@	linux/pcmcia-cs/clients/3c589_cs.c
 
-@device_driver_axnet_cs_TRUE@am__append_98 = \
+@device_driver_axnet_cs_TRUE@am__append_99 = \
 @device_driver_axnet_cs_TRUE@	linux/pcmcia-cs/clients/axnet_cs.c
 
-@device_driver_fmvj18x_cs_TRUE@am__append_99 = \
+@device_driver_fmvj18x_cs_TRUE@am__append_100 = \
 @device_driver_fmvj18x_cs_TRUE@	linux/pcmcia-cs/clients/fmvj18x_cs.c
 
-@device_driver_nmclan_cs_TRUE@am__append_100 = \
+@device_driver_nmclan_cs_TRUE@am__append_101 = \
 @device_driver_nmclan_cs_TRUE@	linux/pcmcia-cs/clients/nmclan_cs.c
 
-@device_driver_pcnet_cs_TRUE@am__append_101 = \
+@device_driver_pcnet_cs_TRUE@am__append_102 = \
 @device_driver_pcnet_cs_TRUE@	linux/pcmcia-cs/clients/pcnet_cs.c \
 @device_driver_pcnet_cs_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_smc91c92_cs_TRUE@am__append_102 = \
+@device_driver_smc91c92_cs_TRUE@am__append_103 = \
 @device_driver_smc91c92_cs_TRUE@	linux/pcmcia-cs/clients/smc91c92_cs.c
 
-@device_driver_xirc2ps_cs_TRUE@am__append_103 = \
+@device_driver_xirc2ps_cs_TRUE@am__append_104 = \
 @device_driver_xirc2ps_cs_TRUE@	linux/pcmcia-cs/clients/xirc2ps_cs.c
 
-@device_driver_orinoco_cs_TRUE@am__append_104 = \
+@device_driver_orinoco_cs_TRUE@am__append_105 = \
 @device_driver_orinoco_cs_TRUE@	linux/pcmcia-cs/wireless/hermes.c \
 @device_driver_orinoco_cs_TRUE@	linux/pcmcia-cs/wireless/orinoco.c \
 @device_driver_orinoco_cs_TRUE@	linux/pcmcia-cs/wireless/orinoco_cs.c
 
-@HOST_i386_TRUE@am__append_105 = \
+@HOST_i386_TRUE@am__append_106 = \
 @HOST_i386_TRUE@	linux/src/arch/i386/lib/semaphore.S
 
 exec_boot_PROGRAMS = gnumach$(EXEEXT)
@@ -1434,7 +1440,7 @@ AM_CCASFLAGS = $(AM_CPPFLAGS)
 # all that scruffy Mach code...  Also see <http://savannah.gnu.org/task/?5726>.
 
 # See <http://lists.gnu.org/archive/html/bug-hurd/2006-01/msg00148.html>.
-AM_CFLAGS = -Wall -fno-strict-aliasing
+AM_CFLAGS = -Wall -fno-strict-aliasing $(am__append_1)
 AM_LDFLAGS = 
 
 #
@@ -1458,7 +1464,7 @@ MIGFLAGS =
 # TODO.  Functions in device/subrs.c should each be moved elsewhere.
 
 # Version number.
-libkernel_a_SOURCES = $(am__append_1) ipc/ipc_entry.c ipc/ipc_hash.c \
+libkernel_a_SOURCES = $(am__append_2) ipc/ipc_entry.c ipc/ipc_hash.c \
 	ipc/ipc_init.c ipc/ipc_kmsg.c ipc/ipc_marequest.c \
 	ipc/ipc_mqueue.c ipc/ipc_notify.c ipc/ipc_object.c \
 	ipc/ipc_port.c ipc/ipc_pset.c ipc/ipc_right.c ipc/ipc_space.c \
@@ -1482,9 +1488,9 @@ libkernel_a_SOURCES = $(am__append_1) ipc/ipc_entry.c ipc/ipc_hash.c \
 	vm/vm_user.c vm/memory_object.c device/cons.c \
 	device/dev_lookup.c device/dev_name.c device/dev_pager.c \
 	device/device_init.c device/ds_routines.c device/subrs.c \
-	device/net_io.c device/blkio.c device/chario.c $(am__append_2) \
-	version.c $(am__append_3) $(am__append_4) $(am__append_5) \
-	$(am__append_6) $(am__append_7)
+	device/net_io.c device/blkio.c device/chario.c $(am__append_3) \
+	version.c $(am__append_4) $(am__append_5) $(am__append_6) \
+	$(am__append_7) $(am__append_8)
 nodist_libkernel_a_SOURCES = vm/memory_object_user.user.h \
 	vm/memory_object_user.user.c vm/memory_object_default.user.h \
 	vm/memory_object_default.user.c device/device_reply.user.h \
@@ -1496,7 +1502,7 @@ nodist_libkernel_a_SOURCES = vm/memory_object_user.user.h \
 	kern/mach4.server.h kern/mach4.server.c \
 	kern/mach_debug.server.h kern/mach_debug.server.c \
 	kern/mach_host.server.h kern/mach_host.server.c \
-	$(am__append_9)
+	$(am__append_10)
 gnumach_o_LDADD = libkernel.a liblinux.a liblinux_pcmcia_cs_modules.a \
 	liblinux_pcmcia_cs_clients.a liblinux_pcmcia_cs_wireless.a
 
@@ -1601,7 +1607,7 @@ nodist_lib_dep_tr_for_defs_a_SOURCES =  \
 	device/device.server.defs.c device/device_pager.server.defs.c \
 	ipc/mach_port.server.defs.c kern/mach.server.defs.c \
 	kern/mach4.server.defs.c kern/mach_debug.server.defs.c \
-	kern/mach_host.server.defs.c $(am__append_8)
+	kern/mach_host.server.defs.c $(am__append_9)
 # Preprocess only.
 lib_dep_tr_for_defs_a_CPPFLAGS = $(AM_CPPFLAGS) \
 	-E
@@ -1645,6 +1651,11 @@ exec_msgids_DATA = gnumach.msgids
 mach_TEXINFOS = \
 	doc/fdl.texi doc/gpl.texi
 
+
+#
+# Web pages of the GNU Mach Reference Manual.
+#
+web = doc/web
 liblinux_a_CPPFLAGS = $(AM_CPPFLAGS) \
 	-I$(srcdir)/$(systype)/linux/dev/include \
 	-I$(top_builddir)/linux/dev/include \
@@ -1669,35 +1680,35 @@ liblinux_a_SOURCES = linux/dev/init/version.c \
 	linux/dev/glue/misc.c linux/dev/kernel/sched.c \
 	linux/dev/glue/kmem.c linux/dev/glue/block.c \
 	linux/dev/arch/i386/kernel/setup.c linux/src/drivers/pci/pci.c \
-	linux/dev/drivers/block/genhd.c $(am__append_10) \
-	$(am__append_11) $(am__append_12) $(am__append_13) \
-	$(am__append_14) $(am__append_15) $(am__append_16) \
-	$(am__append_17) $(am__append_18) $(am__append_19) \
-	$(am__append_20) $(am__append_21) $(am__append_22) \
-	$(am__append_23) $(am__append_24) $(am__append_25) \
-	$(am__append_26) $(am__append_27) $(am__append_28) \
-	$(am__append_29) $(am__append_30) $(am__append_31) \
-	$(am__append_32) $(am__append_33) $(am__append_34) \
-	$(am__append_35) $(am__append_36) $(am__append_37) \
-	$(am__append_38) $(am__append_39) $(am__append_40) \
-	$(am__append_41) $(am__append_42) $(am__append_43) \
-	$(am__append_44) $(am__append_45) $(am__append_46) \
-	$(am__append_47) $(am__append_48) $(am__append_49) \
-	$(am__append_50) $(am__append_51) $(am__append_52) \
-	$(am__append_53) $(am__append_54) $(am__append_55) \
-	$(am__append_56) $(am__append_57) $(am__append_58) \
-	$(am__append_59) $(am__append_60) $(am__append_61) \
-	$(am__append_62) $(am__append_63) $(am__append_64) \
-	$(am__append_65) $(am__append_66) $(am__append_67) \
-	$(am__append_68) $(am__append_69) $(am__append_70) \
-	$(am__append_71) $(am__append_72) $(am__append_73) \
-	$(am__append_74) $(am__append_75) $(am__append_76) \
-	$(am__append_77) $(am__append_78) $(am__append_79) \
-	$(am__append_80) $(am__append_81) $(am__append_82) \
-	$(am__append_83) $(am__append_84) $(am__append_85) \
-	$(am__append_86) $(am__append_87) $(am__append_88) \
-	$(am__append_89) $(am__append_90) $(am__append_91) \
-	$(am__append_92) $(am__append_93) $(am__append_105)
+	linux/dev/drivers/block/genhd.c $(am__append_11) \
+	$(am__append_12) $(am__append_13) $(am__append_14) \
+	$(am__append_15) $(am__append_16) $(am__append_17) \
+	$(am__append_18) $(am__append_19) $(am__append_20) \
+	$(am__append_21) $(am__append_22) $(am__append_23) \
+	$(am__append_24) $(am__append_25) $(am__append_26) \
+	$(am__append_27) $(am__append_28) $(am__append_29) \
+	$(am__append_30) $(am__append_31) $(am__append_32) \
+	$(am__append_33) $(am__append_34) $(am__append_35) \
+	$(am__append_36) $(am__append_37) $(am__append_38) \
+	$(am__append_39) $(am__append_40) $(am__append_41) \
+	$(am__append_42) $(am__append_43) $(am__append_44) \
+	$(am__append_45) $(am__append_46) $(am__append_47) \
+	$(am__append_48) $(am__append_49) $(am__append_50) \
+	$(am__append_51) $(am__append_52) $(am__append_53) \
+	$(am__append_54) $(am__append_55) $(am__append_56) \
+	$(am__append_57) $(am__append_58) $(am__append_59) \
+	$(am__append_60) $(am__append_61) $(am__append_62) \
+	$(am__append_63) $(am__append_64) $(am__append_65) \
+	$(am__append_66) $(am__append_67) $(am__append_68) \
+	$(am__append_69) $(am__append_70) $(am__append_71) \
+	$(am__append_72) $(am__append_73) $(am__append_74) \
+	$(am__append_75) $(am__append_76) $(am__append_77) \
+	$(am__append_78) $(am__append_79) $(am__append_80) \
+	$(am__append_81) $(am__append_82) $(am__append_83) \
+	$(am__append_84) $(am__append_85) $(am__append_86) \
+	$(am__append_87) $(am__append_88) $(am__append_89) \
+	$(am__append_90) $(am__append_91) $(am__append_92) \
+	$(am__append_93) $(am__append_94) $(am__append_106)
 
 # pcmcia-cs.
 liblinux_pcmcia_cs_modules_a_CPPFLAGS = $(liblinux_a_CPPFLAGS) \
@@ -1706,25 +1717,25 @@ liblinux_pcmcia_cs_modules_a_CPPFLAGS = $(liblinux_a_CPPFLAGS) \
 liblinux_pcmcia_cs_modules_a_CFLAGS = $(liblinux_a_CFLAGS) \
 	-include $(srcdir)/linux/pcmcia-cs/glue/pcmcia_glue.h
 
-liblinux_pcmcia_cs_modules_a_SOURCES = $(am__append_94) \
-	$(am__append_95)
+liblinux_pcmcia_cs_modules_a_SOURCES = $(am__append_95) \
+	$(am__append_96)
 liblinux_pcmcia_cs_clients_a_CPPFLAGS = $(liblinux_a_CPPFLAGS) \
 	-DPCMCIA_CLIENT -I$(srcdir)/linux/pcmcia-cs/include
 
 liblinux_pcmcia_cs_clients_a_CFLAGS = $(liblinux_a_CFLAGS) \
 	-include $(srcdir)/linux/pcmcia-cs/glue/pcmcia_glue.h
 
-liblinux_pcmcia_cs_clients_a_SOURCES = $(am__append_96) \
-	$(am__append_97) $(am__append_98) $(am__append_99) \
-	$(am__append_100) $(am__append_101) $(am__append_102) \
-	$(am__append_103)
+liblinux_pcmcia_cs_clients_a_SOURCES = $(am__append_97) \
+	$(am__append_98) $(am__append_99) $(am__append_100) \
+	$(am__append_101) $(am__append_102) $(am__append_103) \
+	$(am__append_104)
 liblinux_pcmcia_cs_wireless_a_CPPFLAGS = $(liblinux_a_CPPFLAGS) \
 	-I$(srcdir)/linux/pcmcia-cs/include
 
 liblinux_pcmcia_cs_wireless_a_CFLAGS = $(liblinux_a_CFLAGS) \
 	-include $(srcdir)/linux/pcmcia-cs/glue/wireless_glue.h
 
-liblinux_pcmcia_cs_wireless_a_SOURCES = $(am__append_104)
+liblinux_pcmcia_cs_wireless_a_SOURCES = $(am__append_105)
 
 # Makerules: how to do some things.
 
@@ -1748,9 +1759,9 @@ gnumach_o_SOURCES =
 gnumach_o_LINK = $(LD) -u _start -r -o $@ --start-group
 
 # This is the list of routines we decide is OK to steal from the C library.
-clib_routines := memcpy memmove memset bcopy bzero \
-		 strchr strstr strsep strpbrk strtok \
-		 htonl htons ntohl ntohs \
+clib_routines := memcpy memmove memset bcopy bzero		\
+		 strchr strstr strsep strpbrk strtok		\
+		 htonl htons ntohl ntohs			\
 		 etext edata end # actually ld magic, not libc.
 
 gnumach_SOURCES = 
@@ -5741,7 +5752,6 @@ doc/mach.html: doc/mach.texi $(srcdir)/doc/version.texi doc/$(am__dirstamp)
 	    rm -rf $(@:.html=); else rm -Rf $(@:.html=.htp) $@; fi; \
 	  exit 1; \
 	fi
-$(srcdir)/doc/version.texi:  $(srcdir)/doc/stamp-vti
 $(srcdir)/doc/stamp-vti: doc/mach.texi $(top_srcdir)/configure
 	test -f doc/$(am__dirstamp) || $(MAKE) $(AM_MAKEFLAGS) doc/$(am__dirstamp)
 	@(dir=.; test -f ./doc/mach.texi || dir=$(srcdir); \
@@ -6398,7 +6408,7 @@ dvi-am: $(DVIS)
 
 html: html-recursive
 
-html-am: $(HTMLS)
+html-am: $(HTMLS) html-local
 
 info: info-recursive
 
@@ -6514,11 +6524,11 @@ mostlyclean-am: mostlyclean-aminfo mostlyclean-compile \
 
 pdf: pdf-recursive
 
-pdf-am: $(PDFS)
+pdf-am: $(PDFS) pdf-local
 
 ps: ps-recursive
 
-ps-am: $(PSS)
+ps-am: $(PSS) ps-local
 
 uninstall-am: uninstall-dvi-am uninstall-exec_bootPROGRAMS \
 	uninstall-exec_msgidsDATA uninstall-html-am \
@@ -6537,8 +6547,8 @@ uninstall-am: uninstall-dvi-am uninstall-exec_bootPROGRAMS \
 	dist-bzip2 dist-gzip dist-info dist-shar dist-tarZ dist-zip \
 	distcheck distclean distclean-compile distclean-generic \
 	distclean-hdr distclean-tags distcleancheck distdir \
-	distuninstallcheck dvi dvi-am html html-am info info-am \
-	install install-am install-data install-data-am \
+	distuninstallcheck dvi dvi-am html html-am html-local info \
+	info-am install install-am install-data install-data-am \
 	install-data-hook install-dvi install-dvi-am install-exec \
 	install-exec-am install-exec_bootPROGRAMS \
 	install-exec_msgidsDATA install-html install-html-am \
@@ -6551,10 +6561,11 @@ uninstall-am: uninstall-dvi-am uninstall-exec_bootPROGRAMS \
 	maintainer-clean-aminfo maintainer-clean-generic \
 	maintainer-clean-vti mostlyclean mostlyclean-aminfo \
 	mostlyclean-compile mostlyclean-generic mostlyclean-vti pdf \
-	pdf-am ps ps-am tags tags-recursive uninstall uninstall-am \
-	uninstall-dvi-am uninstall-exec_bootPROGRAMS \
-	uninstall-exec_msgidsDATA uninstall-html-am \
-	uninstall-include_deviceHEADERS uninstall-include_machHEADERS \
+	pdf-am pdf-local ps ps-am ps-local tags tags-recursive \
+	uninstall uninstall-am uninstall-dvi-am \
+	uninstall-exec_bootPROGRAMS uninstall-exec_msgidsDATA \
+	uninstall-html-am uninstall-include_deviceHEADERS \
+	uninstall-include_machHEADERS \
 	uninstall-include_mach_eXecHEADERS \
 	uninstall-include_mach_i386HEADERS uninstall-info-am \
 	uninstall-pdf-am uninstall-ps-am
@@ -6685,12 +6696,93 @@ gnumach.msgids: $(nodist_lib_dep_tr_for_defs_a_SOURCES)
 # Architecture specific parts.
 #
 
+# Prepare a checkout in `$(web)/' of the web pages of the GNU Mach Reference
+# Manual, using the same account that was used for the source code.  Then
+# install the potentially updated files into `$(web)/'.
+.PHONY: $(web)
+$(web):
+	if test -d $@/CVS; then :; else		\
+	  mkdir $@ $@/CVS &&			\
+	  sed -e s%cvsroot%web%			\
+	    < $(top_srcdir)/CVS/Root		\
+	    > $@/CVS/Root &&			\
+	  echo hurd/gnumach-doc			\
+	    > $@/CVS/Repository &&		\
+	  : > $@/CVS/Entries;			\
+	fi
+	cd $@/ &&				\
+	cvs update
+	$(MAKE) $(AM_MAKEFLAGS)			\
+	  html					\
+	  ps					\
+	  pdf
+
+# Update the files, if such a checkout exists.
+html-local:
+	if test -d $(web); then						\
+	  ( cd $(web)/ &&						\
+	    for f in *.html; do						\
+	      if test -f ../../$(HTMLS)/"$$f"; then :; else		\
+		echo "\`$$f' isn't anymore.  Removing." &&		\
+		rm "$$f" &&						\
+		cvs remove "$$f";					\
+	      fi;							\
+	    done ) &&							\
+	  cp $(HTMLS)/*.html $(web)/ &&					\
+	  cd $(web)/ &&							\
+	  { cvs add *.html || :; };					\
+	fi
+ps-local:
+	if test -d $(web); then						\
+	  ( cd $(web)/ &&						\
+	    for f in *.ps; do						\
+	      case \ $(PSS)\  in					\
+		\ doc/"$$f"\ ) :;;					\
+		*) echo "\`$$f' isn't anymore.  Removing." &&		\
+		   rm -f "$$f" "$$f".ps &&				\
+		   cvs remove "$$f" "$$f".ps ;;				\
+	      esac;							\
+	    done ) &&							\
+	  cp $(PSS) $(web)/ &&						\
+	  cd $(web)/ &&							\
+	  for f in *.ps; do						\
+	    gzip -9 < "$$f" > "$$f".gz;					\
+	  done &&							\
+	  { cvs add *.ps *.ps.gz || :; };				\
+	fi
+pdf-local:
+	if test -d $(web); then						\
+	  ( cd $(web)/ &&						\
+	    for f in *.pdf; do						\
+	      case \ $(PDFS)\  in					\
+		\ doc/"$$f"\ ) :;;					\
+		*) echo "\`$$f' isn't anymore.  Removing." &&		\
+		   rm "$$f" &&						\
+		   cvs remove "$$f";;					\
+	      esac;							\
+	    done ) &&							\
+	  cp $(PDFS) $(web)/ &&						\
+	  cd $(web)/ &&							\
+	  { cvs add *.pdf || :; };					\
+	fi
+# TODO.  There doesn't seem to be a hook or `-local' target suitable for this.
+$(srcdir)/doc/version.texi: $(srcdir)/doc/stamp-vti
+	@if test -d $(web); then :;					\
+	elif grep -q :ext: $(top_srcdir)/CVS/Root 2> /dev/null; then	\
+	  echo "*** As it seems that you'd be allowed to check in the"	\
+	    "possible resulting fixes, you may cosider running"		\
+	    " \`make $(web)' to get a checkout of the web pages of the"	\
+	    "GNU Mach manual and have possible changes installed into"	\
+	    "\`$(web)/', ready for checking them in in there." &&	\
+	  sleep 2;							\
+	fi
+
 #
 # Architecture specific parts.
 #
 gnumach-undef: gnumach.$(OBJEXT)
 	$(NM) -u $< | sed 's/  *U  *//;s/^_*//' | sort -u > $@
-gnumach-undef-bad: gnumach-undef
+gnumach-undef-bad: gnumach-undef Makefile
 	sed '$(foreach r,$(clib_routines),/^$r$$/d;)' $< > $@
 clib-routines.o: gnumach-undef gnumach-undef-bad
 	if test -s gnumach-undef-bad; \

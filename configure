@@ -862,6 +862,8 @@ device_driver_group_pcmcia_TRUE
 device_driver_group_pcmcia_FALSE
 device_driver_group_scsi_TRUE
 device_driver_group_scsi_FALSE
+disable_smashing_stack_protector_TRUE
+disable_smashing_stack_protector_FALSE
 LIBOBJS
 LTLIBOBJS'
 ac_subst_files=''
@@ -9174,6 +9176,41 @@ ac_config_links="$ac_config_links linux/src/include/asm:linux/src/include/asm-${
 
 
 #
+# Compiler features.
+#
+
+# Smashing stack protector.
+ssp_possible=yes
+{ echo "$as_me:$LINENO: checking whether the compiler accepts \`-fstack-protector'" >&5
+echo $ECHO_N "checking whether the compiler accepts \`-fstack-protector'... $ECHO_C" >&6; }
+# Is this a reliable test case?
+cat >conftest.$ac_ext <<_ACEOF
+void foo (void) { volatile char a[8]; a[3]; }
+_ACEOF
+# `$CC -c -o ...' might not be portable.  But, oh, well...  Is calling
+# `ac_compile' like this correct, after all?
+if eval "$ac_compile -S -fstack-protector -o conftest.s" 2> /dev/null; then
+  { echo "$as_me:$LINENO: result: yes" >&5
+echo "${ECHO_T}yes" >&6; }
+  # Should we clear up other files as well, having called `AC_LANG_CONFTEST'?
+  rm -f conftest.s
+else
+  ssp_possible=no
+  { echo "$as_me:$LINENO: result: no" >&5
+echo "${ECHO_T}no" >&6; }
+fi
+# Need that, because some distributions ship compilers that include
+# `-fstack-protector' in the default specs.
+ if [ x"$ssp_possible" = xyes ]; then
+  disable_smashing_stack_protector_TRUE=
+  disable_smashing_stack_protector_FALSE='#'
+else
+  disable_smashing_stack_protector_TRUE='#'
+  disable_smashing_stack_protector_FALSE=
+fi
+
+
+#
 # Output.
 #
 
@@ -10139,6 +10176,13 @@ echo "$as_me: error: conditional \"device_driver_group_scsi\" was never defined.
 Usually this means the macro was only invoked conditionally." >&2;}
    { (exit 1); exit 1; }; }
 fi
+if test -z "${disable_smashing_stack_protector_TRUE}" && test -z "${disable_smashing_stack_protector_FALSE}"; then
+  { { echo "$as_me:$LINENO: error: conditional \"disable_smashing_stack_protector\" was never defined.
+Usually this means the macro was only invoked conditionally." >&5
+echo "$as_me: error: conditional \"disable_smashing_stack_protector\" was never defined.
+Usually this means the macro was only invoked conditionally." >&2;}
+   { (exit 1); exit 1; }; }
+fi
 
 : ${CONFIG_STATUS=./config.status}
 ac_clean_files_save=$ac_clean_files
@@ -11098,11 +11142,13 @@ device_driver_group_pcmcia_TRUE!$device_driver_group_pcmcia_TRUE$ac_delim
 device_driver_group_pcmcia_FALSE!$device_driver_group_pcmcia_FALSE$ac_delim
 device_driver_group_scsi_TRUE!$device_driver_group_scsi_TRUE$ac_delim
 device_driver_group_scsi_FALSE!$device_driver_group_scsi_FALSE$ac_delim
+disable_smashing_stack_protector_TRUE!$disable_smashing_stack_protector_TRUE$ac_delim
+disable_smashing_stack_protector_FALSE!$disable_smashing_stack_protector_FALSE$ac_delim
 LIBOBJS!$LIBOBJS$ac_delim
 LTLIBOBJS!$LTLIBOBJS$ac_delim
 _ACEOF
 
-  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 9; then
+  if test `sed -n "s/.*$ac_delim\$/X/p" conf$$subs.sed | grep -c X` = 11; then
     break
   elif $ac_last_try; then
     { { echo "$as_me:$LINENO: error: could not make $CONFIG_STATUS" >&5

@@ -1,5 +1,8 @@
 2006-11-29  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* configure: Regenerate.
+	* Makefile.in: Likewise.
+
 	* configure.ac (disable_smashing_stack_protector): New conditional, set
 	depending on the compiler accepting `-fstack-protector' or not.
 	* Makefile.am (CFLAGS): Add `-fno-stack-protector' if
