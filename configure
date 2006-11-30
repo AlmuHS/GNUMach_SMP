@@ -6359,6 +6359,16 @@ if [ x"$enable_default_device_drivers" != xno ]
 then enable_default_device_drivers=yes
 fi
 
+#
+# Set up `SYSTYPE/SYSTYPE' and `SYSTYPE/include/mach/SYSTYPE' links.
+#
+
+# `${file}' and `$file' have different meanings here with respect to having the
+# files in the referenced directory considered for `make dist' or not.  See
+# <http://lists.gnu.org/archive/html/bug-automake/2006-11/msg00027.html>.
+ac_config_links="$ac_config_links machine:$systype/$systype mach/machine:$systype/include/mach/$systype"
+
+
 
 # Machine-specific configuration.
 
@@ -9168,10 +9178,10 @@ _ACEOF
 fi
 
 #
-# Create `asm-SYSTYPE' links.
+# Set up `asm-SYSTYPE' links.
 #
 
-ac_config_links="$ac_config_links linux/src/include/asm:linux/src/include/asm-${systype} linux/dev/include/asm:linux/dev/include/asm-${systype}"
+ac_config_links="$ac_config_links linux/src/include/asm:linux/src/include/asm-$systype linux/dev/include/asm:linux/dev/include/asm-$systype"
 
 
 
@@ -9214,13 +9224,7 @@ fi
 # Output.
 #
 
-# Set up `machine' and `mach/machine' links in the build directory for easier
-# header file location.
-ac_config_links="$ac_config_links machine:${systype}/${systype} mach/machine:${systype}/include/mach/${systype}"
-
-
 ac_config_headers="$ac_config_headers config.h"
-
 
 ac_config_files="$ac_config_files Makefile version.c"
 
@@ -10649,10 +10653,10 @@ do
   case $ac_config_target in
     "depfiles") CONFIG_COMMANDS="$CONFIG_COMMANDS depfiles" ;;
     "tests/test-mbchk") CONFIG_FILES="$CONFIG_FILES tests/test-mbchk" ;;
-    "linux/src/include/asm") CONFIG_LINKS="$CONFIG_LINKS linux/src/include/asm:linux/src/include/asm-${systype}" ;;
-    "linux/dev/include/asm") CONFIG_LINKS="$CONFIG_LINKS linux/dev/include/asm:linux/dev/include/asm-${systype}" ;;
-    "machine") CONFIG_LINKS="$CONFIG_LINKS machine:${systype}/${systype}" ;;
-    "mach/machine") CONFIG_LINKS="$CONFIG_LINKS mach/machine:${systype}/include/mach/${systype}" ;;
+    "machine") CONFIG_LINKS="$CONFIG_LINKS machine:$systype/$systype" ;;
+    "mach/machine") CONFIG_LINKS="$CONFIG_LINKS mach/machine:$systype/include/mach/$systype" ;;
+    "linux/src/include/asm") CONFIG_LINKS="$CONFIG_LINKS linux/src/include/asm:linux/src/include/asm-$systype" ;;
+    "linux/dev/include/asm") CONFIG_LINKS="$CONFIG_LINKS linux/dev/include/asm:linux/dev/include/asm-$systype" ;;
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
     "version.c") CONFIG_FILES="$CONFIG_FILES version.c" ;;

@@ -72,6 +72,10 @@
 # LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
 # USE OF THIS SOFTWARE.
 
+#
+# DDB support --- eventually to die.  Please.
+#
+
 # Makefile fragment for i386
 
 # Copyright 1997, 1999, 2006 Free Software Foundation, Inc.
@@ -86,6 +90,10 @@
 # "AS IS" CONDITION.  THE FREE SOFTWARE FOUNDATION DISCLAIMS ANY
 # LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
 # USE OF THIS SOFTWARE.
+
+#
+# Source files for any i386 kernel.
+#
 
 # Makefile fragment for the test suite.
 
@@ -213,455 +221,660 @@ DIST_COMMON = README $(am__configure_deps) \
 	$(srcdir)/doc/version.texi $(srcdir)/i386/Makefrag.am \
 	$(srcdir)/i386/linux/Makefrag.am $(srcdir)/linux/Makefrag.am \
 	$(srcdir)/tests/Makefrag.am $(srcdir)/version.c.in \
-	$(top_srcdir)/${systype}/${systype} \
-	$(top_srcdir)/${systype}/include/mach/${systype} \
-	$(top_srcdir)/configure \
-	$(top_srcdir)/linux/dev/include/asm-${systype} \
-	$(top_srcdir)/linux/src/include/asm-${systype} \
-	$(top_srcdir)/tests/test-mbchk.in AUTHORS COPYING ChangeLog \
-	INSTALL NEWS build-aux/compile build-aux/config.guess \
-	build-aux/config.sub build-aux/depcomp build-aux/install-sh \
-	build-aux/mdate-sh build-aux/missing build-aux/texinfo.tex
+	$(top_srcdir)/configure $(top_srcdir)/tests/test-mbchk.in \
+	AUTHORS COPYING ChangeLog INSTALL NEWS build-aux/compile \
+	build-aux/config.guess build-aux/config.sub build-aux/depcomp \
+	build-aux/install-sh build-aux/mdate-sh build-aux/missing \
+	build-aux/texinfo.tex
 
 # Do we want the icky kernel debugger?
-# DDB support --- eventually to die.  Please.
 @enable_kdb_TRUE@am__append_2 = \
 @enable_kdb_TRUE@	ddb/db_access.c \
+@enable_kdb_TRUE@	ddb/db_access.h \
 @enable_kdb_TRUE@	ddb/db_aout.c \
 @enable_kdb_TRUE@	ddb/db_break.c \
+@enable_kdb_TRUE@	ddb/db_break.h \
 @enable_kdb_TRUE@	ddb/db_command.c \
+@enable_kdb_TRUE@	ddb/db_command.h \
 @enable_kdb_TRUE@	ddb/db_cond.c \
 @enable_kdb_TRUE@	ddb/db_examine.c \
 @enable_kdb_TRUE@	ddb/db_expr.c \
+@enable_kdb_TRUE@	ddb/db_expr.h \
 @enable_kdb_TRUE@	ddb/db_ext_symtab.c \
 @enable_kdb_TRUE@	ddb/db_input.c \
 @enable_kdb_TRUE@	ddb/db_lex.c \
+@enable_kdb_TRUE@	ddb/db_lex.h \
 @enable_kdb_TRUE@	ddb/db_macro.c \
 @enable_kdb_TRUE@	ddb/db_mp.c \
 @enable_kdb_TRUE@	ddb/db_output.c \
+@enable_kdb_TRUE@	ddb/db_output.h \
 @enable_kdb_TRUE@	ddb/db_print.c \
+@enable_kdb_TRUE@	ddb/db_print.h \
 @enable_kdb_TRUE@	ddb/db_run.c \
+@enable_kdb_TRUE@	ddb/db_run.h \
 @enable_kdb_TRUE@	ddb/db_sym.c \
+@enable_kdb_TRUE@	ddb/db_sym.h \
 @enable_kdb_TRUE@	ddb/db_task_thread.c \
+@enable_kdb_TRUE@	ddb/db_task_thread.h \
 @enable_kdb_TRUE@	ddb/db_trap.c \
 @enable_kdb_TRUE@	ddb/db_variables.c \
+@enable_kdb_TRUE@	ddb/db_variables.h \
 @enable_kdb_TRUE@	ddb/db_watch.c \
-@enable_kdb_TRUE@	ddb/db_write_cmd.c 
+@enable_kdb_TRUE@	ddb/db_watch.h \
+@enable_kdb_TRUE@	ddb/db_write_cmd.c \
+@enable_kdb_TRUE@	ddb/nlist.h \
+@enable_kdb_TRUE@	ddb/stab.h \
+@enable_kdb_TRUE@	ddb/tr.h
 
 
-# kmsg device.
+#
+# `kmsg' device.
+#
 @enable_kmsg_TRUE@am__append_3 = \
 @enable_kmsg_TRUE@	device/kmsg.c
 
-
-# Source files for any i386 kernel.
 @HOST_i386_TRUE@am__append_4 = \
 @HOST_i386_TRUE@	i386/i386at/autoconf.c \
 @HOST_i386_TRUE@	i386/i386at/boothdr.S \
 @HOST_i386_TRUE@	i386/i386at/com.c \
+@HOST_i386_TRUE@	i386/i386at/comreg.h \
 @HOST_i386_TRUE@	i386/i386at/conf.c \
 @HOST_i386_TRUE@	i386/i386at/cons_conf.c \
+@HOST_i386_TRUE@	i386/i386at/cram.h \
+@HOST_i386_TRUE@	i386/i386at/dev_hdr.h \
+@HOST_i386_TRUE@	i386/i386at/device_emul.h \
+@HOST_i386_TRUE@	i386/i386at/disk.h \
 @HOST_i386_TRUE@	i386/i386at/rtc.c \
 @HOST_i386_TRUE@	i386/i386at/i386at_ds_routines.c \
+@HOST_i386_TRUE@	i386/i386at/i8250.h \
+@HOST_i386_TRUE@	i386/i386at/idt.h \
 @HOST_i386_TRUE@	i386/i386at/immc.c \
 @HOST_i386_TRUE@	i386/i386at/int_init.c \
 @HOST_i386_TRUE@	i386/i386at/interrupt.S \
 @HOST_i386_TRUE@	i386/i386at/iopl.c \
 @HOST_i386_TRUE@	i386/i386at/kd.c \
-@HOST_i386_TRUE@	i386/i386at/kdasm.S \
+@HOST_i386_TRUE@	i386/i386at/kd.h \
 @HOST_i386_TRUE@	i386/i386at/kd_event.c \
+@HOST_i386_TRUE@	i386/i386at/kd_event.h \
 @HOST_i386_TRUE@	i386/i386at/kd_mouse.c \
+@HOST_i386_TRUE@	i386/i386at/kd_mouse.h \
 @HOST_i386_TRUE@	i386/i386at/kd_queue.c \
+@HOST_i386_TRUE@	i386/i386at/kd_queue.h \
+@HOST_i386_TRUE@	i386/i386at/kdasm.S \
+@HOST_i386_TRUE@	i386/i386at/kdsoft.h \
 @HOST_i386_TRUE@	i386/i386at/model_dep.c \
-@HOST_i386_TRUE@	i386/i386at/pic_isa.c
+@HOST_i386_TRUE@	i386/i386at/pic_isa.c \
+@HOST_i386_TRUE@	i386/i386at/rtc.h \
+@HOST_i386_TRUE@	i386/include/mach/sa/stdarg.h
 
 
-# lpr device support.
+#
+# `lpr' device support.
+#
 @HOST_i386_TRUE@@enable_lpr_TRUE@am__append_5 = \
-@HOST_i386_TRUE@@enable_lpr_TRUE@	i386/i386at/lpr.c
+@HOST_i386_TRUE@@enable_lpr_TRUE@	i386/i386at/lpr.c \
+@HOST_i386_TRUE@@enable_lpr_TRUE@	i386/i386at/lprreg.h
 
+
+#
+# Further source files for any i386 kernel.
+#
 @HOST_i386_TRUE@am__append_6 = \
+@HOST_i386_TRUE@	i386/i386/ast.h \
 @HOST_i386_TRUE@	i386/i386/ast_check.c \
+@HOST_i386_TRUE@	i386/i386/ast_types.h \
+@HOST_i386_TRUE@	i386/i386/cpu_number.h \
 @HOST_i386_TRUE@	i386/i386/cswitch.S \
 @HOST_i386_TRUE@	i386/i386/db_disasm.c \
 @HOST_i386_TRUE@	i386/i386/db_interface.c \
+@HOST_i386_TRUE@	i386/i386/db_machdep.h \
 @HOST_i386_TRUE@	i386/i386/db_trace.c \
+@HOST_i386_TRUE@	i386/i386/debug.h \
 @HOST_i386_TRUE@	i386/i386/debug_i386.c \
 @HOST_i386_TRUE@	i386/i386/debug_trace.S \
+@HOST_i386_TRUE@	i386/i386/eflags.h \
 @HOST_i386_TRUE@	i386/i386/fpe_linkage.c \
 @HOST_i386_TRUE@	i386/i386/fpu.c \
+@HOST_i386_TRUE@	i386/i386/fpu.h \
 @HOST_i386_TRUE@	i386/i386/gdt.c \
+@HOST_i386_TRUE@	i386/i386/gdt.h \
 @HOST_i386_TRUE@	i386/i386/hardclock.c \
+@HOST_i386_TRUE@	i386/i386/idt-gen.h \
 @HOST_i386_TRUE@	i386/i386/idt.c \
 @HOST_i386_TRUE@	i386/i386/idt_inittab.S \
 @HOST_i386_TRUE@	i386/i386/io_emulate.c \
+@HOST_i386_TRUE@	i386/i386/io_emulate.h \
 @HOST_i386_TRUE@	i386/i386/io_map.c \
+@HOST_i386_TRUE@	i386/i386/io_port.h \
 @HOST_i386_TRUE@	i386/i386/iopb.c \
+@HOST_i386_TRUE@	i386/i386/iopb.h \
+@HOST_i386_TRUE@	i386/i386/ipl.h \
 @HOST_i386_TRUE@	i386/i386/ktss.c \
+@HOST_i386_TRUE@	i386/i386/ktss.h \
 @HOST_i386_TRUE@	i386/i386/kttd_interface.c \
+@HOST_i386_TRUE@	i386/i386/kttd_machdep.h \
 @HOST_i386_TRUE@	i386/i386/ldt.c \
+@HOST_i386_TRUE@	i386/i386/ldt.h \
+@HOST_i386_TRUE@	i386/i386/lock.h \
 @HOST_i386_TRUE@	i386/i386/locore.S \
+@HOST_i386_TRUE@	i386/i386/locore.h \
 @HOST_i386_TRUE@	i386/i386/loose_ends.c \
+@HOST_i386_TRUE@	i386/i386/mach_param.h \
+@HOST_i386_TRUE@	i386/i386/machine_routines.h \
+@HOST_i386_TRUE@	i386/i386/machspl.h \
 @HOST_i386_TRUE@	i386/i386/mp_desc.c \
+@HOST_i386_TRUE@	i386/i386/mp_desc.h \
 @HOST_i386_TRUE@	i386/i386/pcb.c \
+@HOST_i386_TRUE@	i386/i386/pcb.h \
 @HOST_i386_TRUE@	i386/i386/phys.c \
 @HOST_i386_TRUE@	i386/i386/pic.c \
+@HOST_i386_TRUE@	i386/i386/pic.h \
+@HOST_i386_TRUE@	i386/i386/pio.h \
 @HOST_i386_TRUE@	i386/i386/pit.c \
+@HOST_i386_TRUE@	i386/i386/pit.h \
+@HOST_i386_TRUE@	i386/i386/pmap.h \
+@HOST_i386_TRUE@	i386/i386/proc_reg.h \
+@HOST_i386_TRUE@	i386/i386/sched_param.h \
 @HOST_i386_TRUE@	i386/i386/seg.c \
+@HOST_i386_TRUE@	i386/i386/seg.h \
+@HOST_i386_TRUE@	i386/i386/setjmp.h \
 @HOST_i386_TRUE@	i386/i386/spl.S \
+@HOST_i386_TRUE@	i386/i386/spl.h \
+@HOST_i386_TRUE@	i386/i386/thread.h \
+@HOST_i386_TRUE@	i386/i386/time_stamp.h \
+@HOST_i386_TRUE@	i386/i386/timer.h \
 @HOST_i386_TRUE@	i386/i386/trap.c \
-@HOST_i386_TRUE@	i386/i386/user_ldt.c
+@HOST_i386_TRUE@	i386/i386/trap.h \
+@HOST_i386_TRUE@	i386/i386/tss.h \
+@HOST_i386_TRUE@	i386/i386/user_ldt.c \
+@HOST_i386_TRUE@	i386/i386/user_ldt.h \
+@HOST_i386_TRUE@	i386/i386/vm_param.h \
+@HOST_i386_TRUE@	i386/i386/vm_tuning.h \
+@HOST_i386_TRUE@	i386/i386/xpr.h \
+@HOST_i386_TRUE@	i386/i386/zalloc.h \
+@HOST_i386_TRUE@	i386/intel/pmap.c \
+@HOST_i386_TRUE@	i386/intel/pmap.h \
+@HOST_i386_TRUE@	i386/intel/read_fault.c
 
 
-# This file is only needed for KDB support.
-@HOST_i386_TRUE@@enable_kdb_TRUE@am__append_7 = \
+#
+# Architecture specialities.
+#
+
+#
+# Building a distribution.
+#
+
+# Instead of listing each file individually...
+@HOST_i386_TRUE@am__append_7 = i386/i386/mach_i386.srv \
+@HOST_i386_TRUE@	i386/i386/i386asm.sym i386/ldscript \
+@HOST_i386_TRUE@	i386/README-Drivers i386/include
+
+#
+# KDB support.
+#
+@HOST_i386_TRUE@@enable_kdb_TRUE@am__append_8 = \
 @HOST_i386_TRUE@@enable_kdb_TRUE@	i386/i386/_setjmp.S
 
 
+#
 # Files from the generic sources that we want.
-@HOST_i386_TRUE@am__append_8 = i386/intel/pmap.c \
-@HOST_i386_TRUE@	i386/intel/read_fault.c chips/busses.c \
+#
+@HOST_i386_TRUE@am__append_9 = \
+@HOST_i386_TRUE@	chips/busses.c \
+@HOST_i386_TRUE@	chips/busses.h \
 @HOST_i386_TRUE@	device/cirbuf.c
 
+
+#
+# Automatically generated source files.
+#
+
 # See Makefrag.am about lib_dep_tr_for_defs.a.
-@HOST_i386_TRUE@am__append_9 = \
+@HOST_i386_TRUE@am__append_10 = \
 @HOST_i386_TRUE@	i386/i386/mach_i386.server.defs.c
 
-@HOST_i386_TRUE@am__append_10 = i386/i386/mach_i386.server.h \
+@HOST_i386_TRUE@am__append_11 = i386/i386/mach_i386.server.h \
 @HOST_i386_TRUE@	i386/i386/mach_i386.server.c \
 @HOST_i386_TRUE@	i386/i386/i386asm.h
 
 #
 # Linux device drivers.
 #
-@device_driver_floppy_TRUE@am__append_11 = \
+@device_driver_floppy_TRUE@am__append_12 = \
 @device_driver_floppy_TRUE@	linux/dev/drivers/block/floppy.c
 
-@device_driver_ide_TRUE@am__append_12 = \
+@device_driver_ide_TRUE@am__append_13 = \
 @device_driver_ide_TRUE@	linux/src/drivers/block/cmd640.c \
 @device_driver_ide_TRUE@	linux/src/drivers/block/ide-cd.c \
 @device_driver_ide_TRUE@	linux/src/drivers/block/ide.c \
+@device_driver_ide_TRUE@	linux/src/drivers/block/ide.h \
+@device_driver_ide_TRUE@	linux/src/drivers/block/ide_modes.h \
 @device_driver_ide_TRUE@	linux/src/drivers/block/rz1000.c \
 @device_driver_ide_TRUE@	linux/src/drivers/block/triton.c
 
-@device_driver_group_scsi_TRUE@am__append_13 = \
+@device_driver_group_scsi_TRUE@am__append_14 = \
 @device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/constants.c \
+@device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/constants.h \
 @device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/hosts.c \
+@device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/hosts.h \
 @device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/scsi.c \
+@device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/scsi.h \
 @device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/scsi_ioctl.c \
 @device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/scsi_proc.c \
 @device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/scsicam.c \
 @device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/sd.c \
+@device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/sd.h \
 @device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/sd_ioctl.c \
 @device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/sr.c \
+@device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/sr.h \
 @device_driver_group_scsi_TRUE@	linux/src/drivers/scsi/sr_ioctl.c
 
-@device_driver_53c78xx_TRUE@am__append_14 = \
-@device_driver_53c78xx_TRUE@	linux/src/drivers/scsi/53c78xx.c
+@device_driver_53c78xx_TRUE@am__append_15 = \
+@device_driver_53c78xx_TRUE@	linux/src/drivers/scsi/53c7,8xx.h \
+@device_driver_53c78xx_TRUE@	linux/src/drivers/scsi/53c78xx.c \
+@device_driver_53c78xx_TRUE@	linux/src/drivers/scsi/53c8xx_d.h \
+@device_driver_53c78xx_TRUE@	linux/src/drivers/scsi/53c8xx_u.h
 
-@device_driver_AM53C974_TRUE@am__append_15 = \
-@device_driver_AM53C974_TRUE@	linux/src/drivers/scsi/AM53C974.c
+@device_driver_AM53C974_TRUE@am__append_16 = \
+@device_driver_AM53C974_TRUE@	linux/src/drivers/scsi/AM53C974.c \
+@device_driver_AM53C974_TRUE@	linux/src/drivers/scsi/AM53C974.h
 
-@device_driver_BusLogic_TRUE@am__append_16 = \
-@device_driver_BusLogic_TRUE@	linux/src/drivers/scsi/BusLogic.c
+@device_driver_BusLogic_TRUE@am__append_17 = \
+@device_driver_BusLogic_TRUE@	linux/src/drivers/scsi/BusLogic.c \
+@device_driver_BusLogic_TRUE@	linux/src/drivers/scsi/BusLogic.h
 
-@device_driver_NCR53c406a_TRUE@am__append_17 = \
-@device_driver_NCR53c406a_TRUE@	linux/src/drivers/scsi/NCR53c406a.c
+@device_driver_BusLogic_TRUE@am__append_18 = \
+@device_driver_BusLogic_TRUE@	linux/src/drivers/scsi/FlashPoint.c
 
-@device_driver_advansys_TRUE@am__append_18 = \
-@device_driver_advansys_TRUE@	linux/src/drivers/scsi/advansys.c
+@device_driver_NCR53c406a_TRUE@am__append_19 = \
+@device_driver_NCR53c406a_TRUE@	linux/src/drivers/scsi/NCR53c406a.c \
+@device_driver_NCR53c406a_TRUE@	linux/src/drivers/scsi/NCR53c406a.h
 
-@device_driver_aha152x_TRUE@am__append_19 = \
-@device_driver_aha152x_TRUE@	linux/src/drivers/scsi/aha152x.c
+@device_driver_advansys_TRUE@am__append_20 = \
+@device_driver_advansys_TRUE@	linux/src/drivers/scsi/advansys.c \
+@device_driver_advansys_TRUE@	linux/src/drivers/scsi/advansys.h
 
-@device_driver_aha1542_TRUE@am__append_20 = \
-@device_driver_aha1542_TRUE@	linux/src/drivers/scsi/aha1542.c
+@device_driver_aha152x_TRUE@am__append_21 = \
+@device_driver_aha152x_TRUE@	linux/src/drivers/scsi/aha152x.c \
+@device_driver_aha152x_TRUE@	linux/src/drivers/scsi/aha152x.h
 
-@device_driver_aha1740_TRUE@am__append_21 = \
-@device_driver_aha1740_TRUE@	linux/src/drivers/scsi/aha1740.c
+@device_driver_aha1542_TRUE@am__append_22 = \
+@device_driver_aha1542_TRUE@	linux/src/drivers/scsi/aha1542.c \
+@device_driver_aha1542_TRUE@	linux/src/drivers/scsi/aha1542.h
 
-@device_driver_aic7xxx_TRUE@am__append_22 = \
-@device_driver_aic7xxx_TRUE@	linux/src/drivers/scsi/aic7xxx.c
+@device_driver_aha1740_TRUE@am__append_23 = \
+@device_driver_aha1740_TRUE@	linux/src/drivers/scsi/aha1740.c \
+@device_driver_aha1740_TRUE@	linux/src/drivers/scsi/aha1740.h
 
-@device_driver_dtc_TRUE@am__append_23 = \
-@device_driver_dtc_TRUE@	linux/src/drivers/scsi/dtc.c
+@device_driver_aic7xxx_TRUE@am__append_24 = \
+@device_driver_aic7xxx_TRUE@	linux/src/drivers/scsi/aic7xxx.c \
+@device_driver_aic7xxx_TRUE@	linux/src/drivers/scsi/aic7xxx.h \
+@device_driver_aic7xxx_TRUE@	linux/src/drivers/scsi/aic7xxx/scsi_message.h \
+@device_driver_aic7xxx_TRUE@	linux/src/drivers/scsi/aic7xxx/sequencer.h \
+@device_driver_aic7xxx_TRUE@	linux/src/drivers/scsi/aic7xxx_reg.h
 
-@device_driver_eata_TRUE@am__append_24 = \
-@device_driver_eata_TRUE@	linux/src/drivers/scsi/eata.c
+@device_driver_aic7xxx_TRUE@am__append_25 = \
+@device_driver_aic7xxx_TRUE@	linux/src/drivers/scsi/aic7xxx_proc.c \
+@device_driver_aic7xxx_TRUE@	linux/src/drivers/scsi/aic7xxx_seq.c
 
-@device_driver_eata_dma_TRUE@am__append_25 = \
-@device_driver_eata_dma_TRUE@	linux/dev/drivers/scsi/eata_dma.c
+@device_driver_dtc_TRUE@am__append_26 = \
+@device_driver_dtc_TRUE@	linux/src/drivers/scsi/dtc.c \
+@device_driver_dtc_TRUE@	linux/src/drivers/scsi/dtc.h
 
-@device_driver_eata_pio_TRUE@am__append_26 = \
-@device_driver_eata_pio_TRUE@	linux/src/drivers/scsi/eata_pio.c
+@device_driver_eata_TRUE@am__append_27 = \
+@device_driver_eata_TRUE@	linux/src/drivers/scsi/eata.c \
+@device_driver_eata_TRUE@	linux/src/drivers/scsi/eata.h \
+@device_driver_eata_TRUE@	linux/src/drivers/scsi/eata_generic.h
 
-@device_driver_fdomain_TRUE@am__append_27 = \
-@device_driver_fdomain_TRUE@	linux/src/drivers/scsi/fdomain.c
+@device_driver_eata_dma_TRUE@am__append_28 = \
+@device_driver_eata_dma_TRUE@	linux/dev/drivers/scsi/eata_dma.c \
+@device_driver_eata_dma_TRUE@	linux/src/drivers/scsi/eata_dma.h \
+@device_driver_eata_dma_TRUE@	linux/src/drivers/scsi/eata_dma_proc.h
 
-@device_driver_g_NCR5380_TRUE@am__append_28 = \
-@device_driver_g_NCR5380_TRUE@	linux/dev/drivers/scsi/g_NCR5380.c
+@device_driver_eata_dma_TRUE@am__append_29 = \
+@device_driver_eata_dma_TRUE@	linux/src/drivers/scsi/eata_dma_proc.c
 
-@device_driver_gdth_TRUE@am__append_29 = \
-@device_driver_gdth_TRUE@	linux/src/drivers/scsi/gdth.c
+@device_driver_eata_pio_TRUE@am__append_30 = \
+@device_driver_eata_pio_TRUE@	linux/src/drivers/scsi/eata_pio.c \
+@device_driver_eata_pio_TRUE@	linux/src/drivers/scsi/eata_pio.h
 
-@device_driver_in2000_TRUE@am__append_30 = \
-@device_driver_in2000_TRUE@	linux/src/drivers/scsi/in2000.c
+@device_driver_eata_pio_TRUE@am__append_31 = \
+@device_driver_eata_pio_TRUE@	linux/src/drivers/scsi/eata_pio_proc.c
 
-@device_driver_ncr53c8xx_TRUE@am__append_31 = \
-@device_driver_ncr53c8xx_TRUE@	linux/src/drivers/scsi/ncr53c8xx.c
+@device_driver_fdomain_TRUE@am__append_32 = \
+@device_driver_fdomain_TRUE@	linux/src/drivers/scsi/fdomain.c \
+@device_driver_fdomain_TRUE@	linux/src/drivers/scsi/fdomain.h
 
-@device_driver_pas16_TRUE@am__append_32 = \
-@device_driver_pas16_TRUE@	linux/src/drivers/scsi/pas16.c
+@device_driver_g_NCR5380_TRUE@am__append_33 = \
+@device_driver_g_NCR5380_TRUE@	linux/dev/drivers/scsi/g_NCR5380.c \
+@device_driver_g_NCR5380_TRUE@	linux/src/drivers/scsi/g_NCR5380.h
 
-@device_driver_ppa_TRUE@am__append_33 = \
-@device_driver_ppa_TRUE@	linux/src/drivers/scsi/ppa.c
+@device_driver_gdth_TRUE@am__append_34 = \
+@device_driver_gdth_TRUE@	linux/src/drivers/scsi/gdth.c \
+@device_driver_gdth_TRUE@	linux/src/drivers/scsi/gdth.h \
+@device_driver_gdth_TRUE@	linux/src/drivers/scsi/gdth_ioctl.h \
+@device_driver_gdth_TRUE@	linux/src/drivers/scsi/gdth_proc.h
 
-@device_driver_qlogicfas_TRUE@am__append_34 = \
-@device_driver_qlogicfas_TRUE@	linux/src/drivers/scsi/qlogicfas.c
+@device_driver_gdth_TRUE@am__append_35 = \
+@device_driver_gdth_TRUE@	linux/src/drivers/scsi/gdth_proc.c
 
-@device_driver_qlogicisp_TRUE@am__append_35 = \
-@device_driver_qlogicisp_TRUE@	linux/src/drivers/scsi/qlogicisp.c
+@device_driver_in2000_TRUE@am__append_36 = \
+@device_driver_in2000_TRUE@	linux/src/drivers/scsi/in2000.c \
+@device_driver_in2000_TRUE@	linux/src/drivers/scsi/in2000.h
 
-@device_driver_seagate_TRUE@am__append_36 = \
-@device_driver_seagate_TRUE@	linux/src/drivers/scsi/seagate.c
+@device_driver_ncr53c8xx_TRUE@am__append_37 = \
+@device_driver_ncr53c8xx_TRUE@	linux/src/drivers/scsi/ncr53c8xx.c \
+@device_driver_ncr53c8xx_TRUE@	linux/src/drivers/scsi/ncr53c8xx.h
 
-@device_driver_t128_TRUE@am__append_37 = \
-@device_driver_t128_TRUE@	linux/src/drivers/scsi/t128.c
+@device_driver_pas16_TRUE@am__append_38 = \
+@device_driver_pas16_TRUE@	linux/src/drivers/scsi/pas16.c \
+@device_driver_pas16_TRUE@	linux/src/drivers/scsi/pas16.h
 
-@device_driver_tmscsim_TRUE@am__append_38 = \
-@device_driver_tmscsim_TRUE@	linux/src/drivers/scsi/tmscsim.c
+@device_driver_ppa_TRUE@am__append_39 = \
+@device_driver_ppa_TRUE@	linux/src/drivers/scsi/ppa.c \
+@device_driver_ppa_TRUE@	linux/src/drivers/scsi/ppa.h
 
-@device_driver_u14_34f_TRUE@am__append_39 = \
-@device_driver_u14_34f_TRUE@	linux/src/drivers/scsi/u14-34f.c
+@device_driver_qlogicfas_TRUE@am__append_40 = \
+@device_driver_qlogicfas_TRUE@	linux/src/drivers/scsi/qlogicfas.c \
+@device_driver_qlogicfas_TRUE@	linux/src/drivers/scsi/qlogicfas.h
 
-@device_driver_ultrastor_TRUE@am__append_40 = \
-@device_driver_ultrastor_TRUE@	linux/src/drivers/scsi/ultrastor.c
+@device_driver_qlogicisp_TRUE@am__append_41 = \
+@device_driver_qlogicisp_TRUE@	linux/src/drivers/scsi/qlogicisp.c \
+@device_driver_qlogicisp_TRUE@	linux/src/drivers/scsi/qlogicisp.h
 
-@device_driver_wd7000_TRUE@am__append_41 = \
-@device_driver_wd7000_TRUE@	linux/src/drivers/scsi/wd7000.c
+@device_driver_seagate_TRUE@am__append_42 = \
+@device_driver_seagate_TRUE@	linux/src/drivers/scsi/seagate.c \
+@device_driver_seagate_TRUE@	linux/src/drivers/scsi/seagate.h
 
-@device_driver_group_net_TRUE@am__append_42 = \
+@device_driver_t128_TRUE@am__append_43 = \
+@device_driver_t128_TRUE@	linux/src/drivers/scsi/t128.c \
+@device_driver_t128_TRUE@	linux/src/drivers/scsi/t128.h
+
+@device_driver_tmscsim_TRUE@am__append_44 = \
+@device_driver_tmscsim_TRUE@	linux/src/drivers/scsi/dc390.h \
+@device_driver_tmscsim_TRUE@	linux/src/drivers/scsi/tmscsim.c \
+@device_driver_tmscsim_TRUE@	linux/src/drivers/scsi/tmscsim.h
+
+@device_driver_tmscsim_TRUE@am__append_45 = \
+@device_driver_tmscsim_TRUE@	linux/src/drivers/scsi/scsiiom.c
+
+@device_driver_u14_34f_TRUE@am__append_46 = \
+@device_driver_u14_34f_TRUE@	linux/src/drivers/scsi/u14-34f.c \
+@device_driver_u14_34f_TRUE@	linux/src/drivers/scsi/u14-34f.h
+
+@device_driver_ultrastor_TRUE@am__append_47 = \
+@device_driver_ultrastor_TRUE@	linux/src/drivers/scsi/ultrastor.c \
+@device_driver_ultrastor_TRUE@	linux/src/drivers/scsi/ultrastor.h
+
+@device_driver_wd7000_TRUE@am__append_48 = \
+@device_driver_wd7000_TRUE@	linux/src/drivers/scsi/wd7000.c \
+@device_driver_wd7000_TRUE@	linux/src/drivers/scsi/wd7000.h
+
+@device_driver_group_net_TRUE@am__append_49 = \
 @device_driver_group_net_TRUE@	linux/dev/drivers/net/auto_irq.c \
 @device_driver_group_net_TRUE@	linux/dev/glue/net.c \
 @device_driver_group_net_TRUE@	linux/dev/drivers/net/Space.c \
 @device_driver_group_net_TRUE@	linux/dev/net/core/dev.c \
 @device_driver_group_net_TRUE@	linux/dev/drivers/net/net_init.c \
-@device_driver_group_net_TRUE@	linux/src/drivers/net/pci-scan.c
+@device_driver_group_net_TRUE@	linux/src/drivers/net/pci-scan.c \
+@device_driver_group_net_TRUE@	linux/src/drivers/net/pci-scan.h
 
-@device_driver_3c501_TRUE@am__append_43 = \
+@device_driver_3c501_TRUE@am__append_50 = \
 @device_driver_3c501_TRUE@	linux/src/drivers/net/3c501.c
 
-@device_driver_3c503_TRUE@am__append_44 = \
+@device_driver_3c503_TRUE@am__append_51 = \
 @device_driver_3c503_TRUE@	linux/src/drivers/net/3c503.c \
+@device_driver_3c503_TRUE@	linux/src/drivers/net/3c503.h \
 @device_driver_3c503_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_3c505_TRUE@am__append_45 = \
-@device_driver_3c505_TRUE@	linux/src/drivers/net/3c505.c
+@device_driver_3c505_TRUE@am__append_52 = \
+@device_driver_3c505_TRUE@	linux/src/drivers/net/3c505.c \
+@device_driver_3c505_TRUE@	linux/src/drivers/net/3c505.h
 
-@device_driver_3c507_TRUE@am__append_46 = \
+@device_driver_3c507_TRUE@am__append_53 = \
 @device_driver_3c507_TRUE@	linux/src/drivers/net/3c507.c
 
-@device_driver_3c509_TRUE@am__append_47 = \
+@device_driver_3c509_TRUE@am__append_54 = \
 @device_driver_3c509_TRUE@	linux/src/drivers/net/3c509.c
 
-@device_driver_3c59x_TRUE@am__append_48 = \
+@device_driver_3c59x_TRUE@am__append_55 = \
 @device_driver_3c59x_TRUE@	linux/src/drivers/net/3c59x.c
 
-@device_driver_3c515_TRUE@am__append_49 = \
+@device_driver_3c515_TRUE@am__append_56 = \
 @device_driver_3c515_TRUE@	linux/src/drivers/net/3c515.c
 
-@device_driver_ac3200_TRUE@am__append_50 = \
+@device_driver_ac3200_TRUE@am__append_57 = \
 @device_driver_ac3200_TRUE@	linux/src/drivers/net/ac3200.c \
 @device_driver_ac3200_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_apricot_TRUE@am__append_51 = \
+@device_driver_apricot_TRUE@am__append_58 = \
 @device_driver_apricot_TRUE@	linux/src/drivers/net/apricot.c
 
-@device_driver_at1700_TRUE@am__append_52 = \
+@device_driver_at1700_TRUE@am__append_59 = \
 @device_driver_at1700_TRUE@	linux/src/drivers/net/at1700.c
 
-@device_driver_atp_TRUE@am__append_53 = \
-@device_driver_atp_TRUE@	linux/src/drivers/net/atp.c
+@device_driver_atp_TRUE@am__append_60 = \
+@device_driver_atp_TRUE@	linux/src/drivers/net/atp.c \
+@device_driver_atp_TRUE@	linux/src/drivers/net/atp.h
 
 
 #if device_driver_cb_shim
 #liblinux_a_SOURCES += \
 #	linux/src/drivers/net/cb_shim.c
 #endif
-@device_driver_de4x5_TRUE@am__append_54 = \
-@device_driver_de4x5_TRUE@	linux/src/drivers/net/de4x5.c
+@device_driver_de4x5_TRUE@am__append_61 = \
+@device_driver_de4x5_TRUE@	linux/src/drivers/net/de4x5.c \
+@device_driver_de4x5_TRUE@	linux/src/drivers/net/de4x5.h
 
-@device_driver_de600_TRUE@am__append_55 = \
+@device_driver_de600_TRUE@am__append_62 = \
 @device_driver_de600_TRUE@	linux/src/drivers/net/de600.c
 
-@device_driver_de620_TRUE@am__append_56 = \
-@device_driver_de620_TRUE@	linux/src/drivers/net/de620.c
+@device_driver_de620_TRUE@am__append_63 = \
+@device_driver_de620_TRUE@	linux/src/drivers/net/de620.c \
+@device_driver_de620_TRUE@	linux/src/drivers/net/de620.h
 
-@device_driver_depca_TRUE@am__append_57 = \
-@device_driver_depca_TRUE@	linux/src/drivers/net/depca.c
+@device_driver_depca_TRUE@am__append_64 = \
+@device_driver_depca_TRUE@	linux/src/drivers/net/depca.c \
+@device_driver_depca_TRUE@	linux/src/drivers/net/depca.h
 
-@device_driver_e2100_TRUE@am__append_58 = \
+@device_driver_e2100_TRUE@am__append_65 = \
 @device_driver_e2100_TRUE@	linux/src/drivers/net/e2100.c \
 @device_driver_e2100_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_eepro_TRUE@am__append_59 = \
+@device_driver_eepro_TRUE@am__append_66 = \
 @device_driver_eepro_TRUE@	linux/src/drivers/net/eepro.c
 
-@device_driver_eepro100_TRUE@am__append_60 = \
+@device_driver_eepro100_TRUE@am__append_67 = \
 @device_driver_eepro100_TRUE@	linux/src/drivers/net/eepro100.c
 
-@device_driver_eexpress_TRUE@am__append_61 = \
-@device_driver_eexpress_TRUE@	linux/src/drivers/net/eexpress.c
+@device_driver_eexpress_TRUE@am__append_68 = \
+@device_driver_eexpress_TRUE@	linux/src/drivers/net/eexpress.c \
+@device_driver_eexpress_TRUE@	linux/src/drivers/net/eth82586.h
 
-@device_driver_epic100_TRUE@am__append_62 = \
+@device_driver_epic100_TRUE@am__append_69 = \
 @device_driver_epic100_TRUE@	linux/src/drivers/net/epic100.c
 
-@device_driver_eth16i_TRUE@am__append_63 = \
+@device_driver_eth16i_TRUE@am__append_70 = \
 @device_driver_eth16i_TRUE@	linux/src/drivers/net/eth16i.c
 
-@device_driver_ewrk3_TRUE@am__append_64 = \
-@device_driver_ewrk3_TRUE@	linux/src/drivers/net/ewrk3.c
+@device_driver_ewrk3_TRUE@am__append_71 = \
+@device_driver_ewrk3_TRUE@	linux/src/drivers/net/ewrk3.c \
+@device_driver_ewrk3_TRUE@	linux/src/drivers/net/ewrk3.h
 
-@device_driver_fmv18x_TRUE@am__append_65 = \
+@device_driver_fmv18x_TRUE@am__append_72 = \
 @device_driver_fmv18x_TRUE@	linux/src/drivers/net/fmv18x.c
 
-@device_driver_hamachi_TRUE@am__append_66 = \
+@device_driver_hamachi_TRUE@am__append_73 = \
 @device_driver_hamachi_TRUE@	linux/src/drivers/net/hamachi.c
 
-@device_driver_hp_plus_TRUE@am__append_67 = \
+@device_driver_hp_plus_TRUE@am__append_74 = \
 @device_driver_hp_plus_TRUE@	linux/src/drivers/net/hp-plus.c \
 @device_driver_hp_plus_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_hp_TRUE@am__append_68 = \
+@device_driver_hp_TRUE@am__append_75 = \
 @device_driver_hp_TRUE@	linux/src/drivers/net/hp.c \
 @device_driver_hp_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_hp100_TRUE@am__append_69 = \
-@device_driver_hp100_TRUE@	linux/src/drivers/net/hp100.c
+@device_driver_hp100_TRUE@am__append_76 = \
+@device_driver_hp100_TRUE@	linux/src/drivers/net/hp100.c \
+@device_driver_hp100_TRUE@	linux/src/drivers/net/hp100.h
 
-@device_driver_intel_gige_TRUE@am__append_70 = \
+@device_driver_intel_gige_TRUE@am__append_77 = \
 @device_driver_intel_gige_TRUE@	linux/src/drivers/net/intel-gige.c
 
-@device_driver_lance_TRUE@am__append_71 = \
+@device_driver_lance_TRUE@am__append_78 = \
 @device_driver_lance_TRUE@	linux/src/drivers/net/lance.c
 
-@device_driver_myson803_TRUE@am__append_72 = \
+@device_driver_myson803_TRUE@am__append_79 = \
 @device_driver_myson803_TRUE@	linux/src/drivers/net/myson803.c
 
-@device_driver_natsemi_TRUE@am__append_73 = \
+@device_driver_natsemi_TRUE@am__append_80 = \
 @device_driver_natsemi_TRUE@	linux/src/drivers/net/natsemi.c
 
-@device_driver_ne_TRUE@am__append_74 = \
+@device_driver_ne_TRUE@am__append_81 = \
 @device_driver_ne_TRUE@	linux/src/drivers/net/ne.c \
 @device_driver_ne_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_ne2k_pci_TRUE@am__append_75 = \
+@device_driver_ne2k_pci_TRUE@am__append_82 = \
 @device_driver_ne2k_pci_TRUE@	linux/src/drivers/net/ne2k-pci.c \
 @device_driver_ne2k_pci_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_ni52_TRUE@am__append_76 = \
-@device_driver_ni52_TRUE@	linux/src/drivers/net/ni52.c
+@device_driver_ni52_TRUE@am__append_83 = \
+@device_driver_ni52_TRUE@	linux/src/drivers/net/ni52.c \
+@device_driver_ni52_TRUE@	linux/src/drivers/net/ni52.h
 
-@device_driver_ni65_TRUE@am__append_77 = \
-@device_driver_ni65_TRUE@	linux/src/drivers/net/ni65.c
+@device_driver_ni65_TRUE@am__append_84 = \
+@device_driver_ni65_TRUE@	linux/src/drivers/net/ni65.c \
+@device_driver_ni65_TRUE@	linux/src/drivers/net/ni65.h
 
-@device_driver_ns820_TRUE@am__append_78 = \
+@device_driver_ns820_TRUE@am__append_85 = \
 @device_driver_ns820_TRUE@	linux/src/drivers/net/ns820.c
 
-@device_driver_pcnet32_TRUE@am__append_79 = \
+@device_driver_pcnet32_TRUE@am__append_86 = \
 @device_driver_pcnet32_TRUE@	linux/src/drivers/net/pcnet32.c
 
-@device_driver_rtl8139_TRUE@am__append_80 = \
+@device_driver_rtl8139_TRUE@am__append_87 = \
 @device_driver_rtl8139_TRUE@	linux/src/drivers/net/rtl8139.c
 
-@device_driver_seeq8005_TRUE@am__append_81 = \
-@device_driver_seeq8005_TRUE@	linux/src/drivers/net/seeq8005.c
+@device_driver_seeq8005_TRUE@am__append_88 = \
+@device_driver_seeq8005_TRUE@	linux/src/drivers/net/seeq8005.c \
+@device_driver_seeq8005_TRUE@	linux/src/drivers/net/seeq8005.h
 
-@device_driver_sk_g16_TRUE@am__append_82 = \
-@device_driver_sk_g16_TRUE@	linux/src/drivers/net/sk_g16.c
+@device_driver_sk_g16_TRUE@am__append_89 = \
+@device_driver_sk_g16_TRUE@	linux/src/drivers/net/sk_g16.c \
+@device_driver_sk_g16_TRUE@	linux/src/drivers/net/sk_g16.h
 
-@device_driver_smc_ultra_TRUE@am__append_83 = \
+@device_driver_smc_ultra_TRUE@am__append_90 = \
 @device_driver_smc_ultra_TRUE@	linux/src/drivers/net/smc-ultra.c \
 @device_driver_smc_ultra_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_smc_ultra32_TRUE@am__append_84 = \
+@device_driver_smc_ultra32_TRUE@am__append_91 = \
 @device_driver_smc_ultra32_TRUE@	linux/src/drivers/net/smc-ultra32.c \
 @device_driver_smc_ultra32_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_starfire_TRUE@am__append_85 = \
+@device_driver_starfire_TRUE@am__append_92 = \
 @device_driver_starfire_TRUE@	linux/src/drivers/net/starfire.c
 
-@device_driver_sundance_TRUE@am__append_86 = \
+@device_driver_sundance_TRUE@am__append_93 = \
 @device_driver_sundance_TRUE@	linux/src/drivers/net/sundance.c
 
-@device_driver_tlan_TRUE@am__append_87 = \
-@device_driver_tlan_TRUE@	linux/src/drivers/net/tlan.c
+@device_driver_tlan_TRUE@am__append_94 = \
+@device_driver_tlan_TRUE@	linux/src/drivers/net/tlan.c \
+@device_driver_tlan_TRUE@	linux/src/drivers/net/tlan.h
 
-@device_driver_tulip_TRUE@am__append_88 = \
+@device_driver_tulip_TRUE@am__append_95 = \
 @device_driver_tulip_TRUE@	linux/src/drivers/net/tulip.c
 
-@device_driver_via_rhine_TRUE@am__append_89 = \
+@device_driver_via_rhine_TRUE@am__append_96 = \
 @device_driver_via_rhine_TRUE@	linux/src/drivers/net/via-rhine.c
 
-@device_driver_wavelan_TRUE@am__append_90 = \
-@device_driver_wavelan_TRUE@	linux/src/drivers/net/wavelan.c
+@device_driver_wavelan_TRUE@am__append_97 = \
+@device_driver_wavelan_TRUE@	linux/src/drivers/net/i82586.h \
+@device_driver_wavelan_TRUE@	linux/src/drivers/net/wavelan.c \
+@device_driver_wavelan_TRUE@	linux/src/drivers/net/wavelan.h \
+@device_driver_wavelan_TRUE@	linux/dev/drivers/net/wavelan.p.h
 
-@device_driver_wd_TRUE@am__append_91 = \
+@device_driver_wd_TRUE@am__append_98 = \
 @device_driver_wd_TRUE@	linux/src/drivers/net/wd.c
 
-@device_driver_winbond_840_TRUE@am__append_92 = \
+@device_driver_winbond_840_TRUE@am__append_99 = \
 @device_driver_winbond_840_TRUE@	linux/src/drivers/net/winbond-840.c \
 @device_driver_winbond_840_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_yellowfin_TRUE@am__append_93 = \
+@device_driver_yellowfin_TRUE@am__append_100 = \
 @device_driver_yellowfin_TRUE@	linux/src/drivers/net/yellowfin.c
 
-@device_driver_znet_TRUE@am__append_94 = \
+@device_driver_znet_TRUE@am__append_101 = \
 @device_driver_znet_TRUE@	linux/src/drivers/net/znet.c
 
-@device_driver_group_pcmcia_TRUE@am__append_95 = \
+@device_driver_group_pcmcia_TRUE@am__append_102 = \
 @device_driver_group_pcmcia_TRUE@	linux/pcmcia-cs/glue/pcmcia.c \
+@device_driver_group_pcmcia_TRUE@	linux/pcmcia-cs/glue/pcmcia_glue.h \
 @device_driver_group_pcmcia_TRUE@	linux/pcmcia-cs/modules/cs.c \
+@device_driver_group_pcmcia_TRUE@	linux/pcmcia-cs/modules/cs_internal.h \
 @device_driver_group_pcmcia_TRUE@	linux/pcmcia-cs/modules/ds.c \
 @device_driver_group_pcmcia_TRUE@	linux/pcmcia-cs/modules/rsrc_mgr.c \
 @device_driver_group_pcmcia_TRUE@	linux/pcmcia-cs/modules/bulkmem.c \
 @device_driver_group_pcmcia_TRUE@	linux/pcmcia-cs/modules/cistpl.c \
 @device_driver_group_pcmcia_TRUE@	linux/pcmcia-cs/modules/pci_fixup.c
 
-@device_driver_i82365_TRUE@am__append_96 = \
-@device_driver_i82365_TRUE@	linux/pcmcia-cs/modules/i82365.c
+@device_driver_group_pcmcia_TRUE@am__append_103 = \
+@device_driver_group_pcmcia_TRUE@	linux/pcmcia-cs/glue/ds.c
 
-@device_driver_3c574_cs_TRUE@am__append_97 = \
+@device_driver_i82365_TRUE@am__append_104 = \
+@device_driver_i82365_TRUE@	linux/pcmcia-cs/modules/cirrus.h \
+@device_driver_i82365_TRUE@	linux/pcmcia-cs/modules/ene.h \
+@device_driver_i82365_TRUE@	linux/pcmcia-cs/modules/i82365.c \
+@device_driver_i82365_TRUE@	linux/pcmcia-cs/modules/i82365.h \
+@device_driver_i82365_TRUE@	linux/pcmcia-cs/modules/o2micro.h \
+@device_driver_i82365_TRUE@	linux/pcmcia-cs/modules/ricoh.h \
+@device_driver_i82365_TRUE@	linux/pcmcia-cs/modules/smc34c90.h \
+@device_driver_i82365_TRUE@	linux/pcmcia-cs/modules/ti113x.h \
+@device_driver_i82365_TRUE@	linux/pcmcia-cs/modules/topic.h \
+@device_driver_i82365_TRUE@	linux/pcmcia-cs/modules/vg468.h \
+@device_driver_i82365_TRUE@	linux/pcmcia-cs/modules/yenta.h
+
+@device_driver_3c574_cs_TRUE@am__append_105 = \
 @device_driver_3c574_cs_TRUE@	linux/pcmcia-cs/clients/3c574_cs.c
 
-@device_driver_3c589_cs_TRUE@am__append_98 = \
+@device_driver_3c589_cs_TRUE@am__append_106 = \
 @device_driver_3c589_cs_TRUE@	linux/pcmcia-cs/clients/3c589_cs.c
 
-@device_driver_axnet_cs_TRUE@am__append_99 = \
+@device_driver_axnet_cs_TRUE@am__append_107 = \
+@device_driver_axnet_cs_TRUE@	linux/pcmcia-cs/clients/ax8390.h \
 @device_driver_axnet_cs_TRUE@	linux/pcmcia-cs/clients/axnet_cs.c
 
-@device_driver_fmvj18x_cs_TRUE@am__append_100 = \
+@device_driver_fmvj18x_cs_TRUE@am__append_108 = \
 @device_driver_fmvj18x_cs_TRUE@	linux/pcmcia-cs/clients/fmvj18x_cs.c
 
-@device_driver_nmclan_cs_TRUE@am__append_101 = \
+@device_driver_nmclan_cs_TRUE@am__append_109 = \
 @device_driver_nmclan_cs_TRUE@	linux/pcmcia-cs/clients/nmclan_cs.c
 
-@device_driver_pcnet_cs_TRUE@am__append_102 = \
+@device_driver_pcnet_cs_TRUE@am__append_110 = \
 @device_driver_pcnet_cs_TRUE@	linux/pcmcia-cs/clients/pcnet_cs.c \
 @device_driver_pcnet_cs_TRUE@	linux/src/drivers/net/8390.c
 
-@device_driver_smc91c92_cs_TRUE@am__append_103 = \
+@device_driver_smc91c92_cs_TRUE@am__append_111 = \
+@device_driver_smc91c92_cs_TRUE@	linux/pcmcia-cs/clients/ositech.h \
 @device_driver_smc91c92_cs_TRUE@	linux/pcmcia-cs/clients/smc91c92_cs.c
 
-@device_driver_xirc2ps_cs_TRUE@am__append_104 = \
+@device_driver_xirc2ps_cs_TRUE@am__append_112 = \
 @device_driver_xirc2ps_cs_TRUE@	linux/pcmcia-cs/clients/xirc2ps_cs.c
 
-@device_driver_orinoco_cs_TRUE@am__append_105 = \
+@device_driver_orinoco_cs_TRUE@am__append_113 = \
+@device_driver_orinoco_cs_TRUE@	linux/pcmcia-cs/glue/wireless_glue.h \
 @device_driver_orinoco_cs_TRUE@	linux/pcmcia-cs/wireless/hermes.c \
+@device_driver_orinoco_cs_TRUE@	linux/pcmcia-cs/wireless/hermes.h \
+@device_driver_orinoco_cs_TRUE@	linux/pcmcia-cs/wireless/hermes_rid.h \
+@device_driver_orinoco_cs_TRUE@	linux/pcmcia-cs/wireless/ieee802_11.h \
 @device_driver_orinoco_cs_TRUE@	linux/pcmcia-cs/wireless/orinoco.c \
+@device_driver_orinoco_cs_TRUE@	linux/pcmcia-cs/wireless/orinoco.h \
 @device_driver_orinoco_cs_TRUE@	linux/pcmcia-cs/wireless/orinoco_cs.c
 
-@HOST_i386_TRUE@am__append_106 = \
+@HOST_i386_TRUE@am__append_114 = \
+@HOST_i386_TRUE@	i386/linux/dev/include/linux/autoconf.h \
+@HOST_i386_TRUE@	i386/linux/dev/include/linux_emul.h \
 @HOST_i386_TRUE@	linux/src/arch/i386/lib/semaphore.S
 
 exec_boot_PROGRAMS = gnumach$(EXEEXT)
@@ -677,8 +890,8 @@ am__CONFIG_DISTCLEAN_FILES = config.status config.cache config.log \
  configure.lineno config.status.lineno
 mkinstalldirs = $(install_sh) -d
 CONFIG_HEADER = config.h
-CONFIG_CLEAN_FILES = tests/test-mbchk version.c linux/src/include/asm \
-	linux/dev/include/asm machine mach/machine
+CONFIG_CLEAN_FILES = tests/test-mbchk version.c machine mach/machine \
+	linux/src/include/asm linux/dev/include/asm
 LIBRARIES = $(noinst_LIBRARIES)
 ARFLAGS = cru
 lib_dep_tr_for_defs_a_AR = $(AR) $(ARFLAGS)
@@ -701,57 +914,109 @@ lib_dep_tr_for_defs_a_OBJECTS =  \
 	$(nodist_lib_dep_tr_for_defs_a_OBJECTS)
 libkernel_a_AR = $(AR) $(ARFLAGS)
 libkernel_a_LIBADD =
-am__libkernel_a_SOURCES_DIST = ddb/db_access.c ddb/db_aout.c \
-	ddb/db_break.c ddb/db_command.c ddb/db_cond.c ddb/db_examine.c \
-	ddb/db_expr.c ddb/db_ext_symtab.c ddb/db_input.c ddb/db_lex.c \
-	ddb/db_macro.c ddb/db_mp.c ddb/db_output.c ddb/db_print.c \
-	ddb/db_run.c ddb/db_sym.c ddb/db_task_thread.c ddb/db_trap.c \
-	ddb/db_variables.c ddb/db_watch.c ddb/db_write_cmd.c \
-	ipc/ipc_entry.c ipc/ipc_hash.c ipc/ipc_init.c ipc/ipc_kmsg.c \
-	ipc/ipc_marequest.c ipc/ipc_mqueue.c ipc/ipc_notify.c \
-	ipc/ipc_object.c ipc/ipc_port.c ipc/ipc_pset.c ipc/ipc_right.c \
-	ipc/ipc_space.c ipc/ipc_splay.c ipc/ipc_table.c \
-	ipc/ipc_target.c ipc/ipc_thread.c ipc/mach_msg.c \
-	ipc/mach_port.c ipc/mach_rpc.c ipc/mach_debug.c kern/act.c \
-	kern/ast.c kern/bootstrap.c kern/counters.c kern/debug.c \
-	kern/eventcount.c kern/exception.c kern/host.c kern/ipc_host.c \
-	kern/ipc_kobject.c kern/ipc_mig.c kern/ipc_sched.c \
-	kern/ipc_tt.c kern/kalloc.c kern/lock.c kern/lock_mon.c \
-	kern/mach_clock.c kern/mach_factor.c kern/machine.c \
-	kern/pc_sample.c kern/printf.c kern/priority.c \
-	kern/processor.c kern/profile.c kern/queue.c kern/sched_prim.c \
-	kern/startup.c kern/strings.c kern/syscall_emulation.c \
-	kern/syscall_subr.c kern/syscall_sw.c kern/task.c \
-	kern/thread.c kern/thread_swap.c kern/time_stamp.c \
-	kern/timer.c kern/xpr.c kern/zalloc.c kern/elf-load.c \
-	kern/boot_script.c util/putchar.c util/puts.c vm/vm_debug.c \
-	vm/vm_external.c vm/vm_fault.c vm/vm_init.c vm/vm_kern.c \
-	vm/vm_map.c vm/vm_object.c vm/vm_pageout.c vm/vm_resident.c \
-	vm/vm_user.c vm/memory_object.c device/cons.c \
-	device/dev_lookup.c device/dev_name.c device/dev_pager.c \
-	device/device_init.c device/ds_routines.c device/subrs.c \
-	device/net_io.c device/blkio.c device/chario.c device/kmsg.c \
-	version.c i386/i386at/autoconf.c i386/i386at/boothdr.S \
-	i386/i386at/com.c i386/i386at/conf.c i386/i386at/cons_conf.c \
-	i386/i386at/rtc.c i386/i386at/i386at_ds_routines.c \
-	i386/i386at/immc.c i386/i386at/int_init.c \
+am__libkernel_a_SOURCES_DIST = ddb/db_access.c ddb/db_access.h \
+	ddb/db_aout.c ddb/db_break.c ddb/db_break.h ddb/db_command.c \
+	ddb/db_command.h ddb/db_cond.c ddb/db_examine.c ddb/db_expr.c \
+	ddb/db_expr.h ddb/db_ext_symtab.c ddb/db_input.c ddb/db_lex.c \
+	ddb/db_lex.h ddb/db_macro.c ddb/db_mp.c ddb/db_output.c \
+	ddb/db_output.h ddb/db_print.c ddb/db_print.h ddb/db_run.c \
+	ddb/db_run.h ddb/db_sym.c ddb/db_sym.h ddb/db_task_thread.c \
+	ddb/db_task_thread.h ddb/db_trap.c ddb/db_variables.c \
+	ddb/db_variables.h ddb/db_watch.c ddb/db_watch.h \
+	ddb/db_write_cmd.c ddb/nlist.h ddb/stab.h ddb/tr.h \
+	ipc/ipc_entry.c ipc/ipc_entry.h ipc/ipc_hash.c ipc/ipc_hash.h \
+	ipc/ipc_init.c ipc/ipc_init.h ipc/ipc_kmsg.c ipc/ipc_kmsg.h \
+	ipc/ipc_kmsg_queue.h ipc/ipc_machdep.h ipc/ipc_marequest.c \
+	ipc/ipc_marequest.h ipc/ipc_mqueue.c ipc/ipc_mqueue.h \
+	ipc/ipc_notify.c ipc/ipc_notify.h ipc/ipc_object.c \
+	ipc/ipc_object.h ipc/ipc_port.c ipc/ipc_port.h ipc/ipc_pset.c \
+	ipc/ipc_pset.h ipc/ipc_right.c ipc/ipc_right.h ipc/ipc_space.c \
+	ipc/ipc_space.h ipc/ipc_splay.c ipc/ipc_splay.h \
+	ipc/ipc_table.c ipc/ipc_table.h ipc/ipc_target.c \
+	ipc/ipc_target.h ipc/ipc_thread.c ipc/ipc_thread.h \
+	ipc/ipc_types.h ipc/mach_msg.c ipc/mach_msg.h ipc/mach_port.c \
+	ipc/mach_rpc.c ipc/mach_debug.c ipc/port.h kern/act.c \
+	kern/act.h kern/assert.h kern/ast.c kern/ast.h \
+	kern/boot_script.h kern/bootstrap.c kern/compat_xxx_defs.h \
+	kern/counters.c kern/counters.h kern/cpu_number.h kern/debug.c \
+	kern/debug.h kern/eventcount.c kern/eventcount.h \
+	kern/exception.c kern/host.c kern/host.h kern/ipc_host.c \
+	kern/ipc_host.h kern/ipc_kobject.c kern/ipc_kobject.h \
+	kern/ipc_mig.c kern/ipc_sched.c kern/ipc_sched.h kern/ipc_tt.c \
+	kern/ipc_tt.h kern/kalloc.c kern/kalloc.h kern/kern_types.h \
+	kern/lock.c kern/lock.h kern/lock_mon.c kern/mach_clock.c \
+	kern/mach_clock.h kern/mach_factor.c kern/mach_factor.h \
+	kern/mach_param.h kern/machine.c kern/macro_help.h \
+	kern/pc_sample.c kern/pc_sample.h kern/printf.c kern/printf.h \
+	kern/priority.c kern/processor.c kern/processor.h \
+	kern/profile.c kern/queue.c kern/queue.h kern/refcount.h \
+	kern/sched.h kern/sched_prim.c kern/sched_prim.h \
+	kern/shuttle.h kern/startup.c kern/strings.c \
+	kern/syscall_emulation.c kern/syscall_emulation.h \
+	kern/syscall_subr.c kern/syscall_subr.h kern/syscall_sw.c \
+	kern/syscall_sw.h kern/task.c kern/task.h kern/thread.c \
+	kern/thread.h kern/thread_swap.c kern/thread_swap.h \
+	kern/time_out.h kern/time_stamp.c kern/time_stamp.h \
+	kern/timer.c kern/timer.h kern/xpr.c kern/xpr.h kern/zalloc.c \
+	kern/zalloc.h kern/elf-load.c kern/boot_script.c \
+	util/putchar.c util/puts.c vm/memory_object.c \
+	vm/memory_object.h vm/pmap.h vm/vm_debug.c vm/vm_external.c \
+	vm/vm_external.h vm/vm_fault.c vm/vm_fault.h vm/vm_init.c \
+	vm/vm_kern.c vm/vm_kern.h vm/vm_map.c vm/vm_map.h \
+	vm/vm_object.c vm/vm_object.h vm/vm_page.h vm/vm_pageout.c \
+	vm/vm_pageout.h vm/vm_resident.c vm/vm_user.c vm/vm_user.h \
+	device/blkio.c device/buf.h device/chario.c device/cirbuf.h \
+	device/conf.h device/cons.c device/cons.h device/dev_hdr.h \
+	device/dev_lookup.c device/dev_master.h device/dev_name.c \
+	device/dev_pager.c device/device_init.c device/device_port.h \
+	device/device_types_kernel.h device/ds_routines.c \
+	device/ds_routines.h device/errno.h device/if_ether.h \
+	device/if_hdr.h device/io_req.h device/kmsg.h device/net_io.c \
+	device/net_io.h device/param.h device/subrs.c device/tty.h \
+	device/kmsg.c i386/i386at/autoconf.c i386/i386at/boothdr.S \
+	i386/i386at/com.c i386/i386at/comreg.h i386/i386at/conf.c \
+	i386/i386at/cons_conf.c i386/i386at/cram.h \
+	i386/i386at/dev_hdr.h i386/i386at/device_emul.h \
+	i386/i386at/disk.h i386/i386at/rtc.c \
+	i386/i386at/i386at_ds_routines.c i386/i386at/i8250.h \
+	i386/i386at/idt.h i386/i386at/immc.c i386/i386at/int_init.c \
 	i386/i386at/interrupt.S i386/i386at/iopl.c i386/i386at/kd.c \
-	i386/i386at/kdasm.S i386/i386at/kd_event.c \
-	i386/i386at/kd_mouse.c i386/i386at/kd_queue.c \
+	i386/i386at/kd.h i386/i386at/kd_event.c i386/i386at/kd_event.h \
+	i386/i386at/kd_mouse.c i386/i386at/kd_mouse.h \
+	i386/i386at/kd_queue.c i386/i386at/kd_queue.h \
+	i386/i386at/kdasm.S i386/i386at/kdsoft.h \
 	i386/i386at/model_dep.c i386/i386at/pic_isa.c \
-	i386/i386at/lpr.c i386/i386/ast_check.c i386/i386/cswitch.S \
+	i386/i386at/rtc.h i386/include/mach/sa/stdarg.h \
+	i386/i386at/lpr.c i386/i386at/lprreg.h i386/i386/ast.h \
+	i386/i386/ast_check.c i386/i386/ast_types.h \
+	i386/i386/cpu_number.h i386/i386/cswitch.S \
 	i386/i386/db_disasm.c i386/i386/db_interface.c \
-	i386/i386/db_trace.c i386/i386/debug_i386.c \
-	i386/i386/debug_trace.S i386/i386/fpe_linkage.c \
-	i386/i386/fpu.c i386/i386/gdt.c i386/i386/hardclock.c \
-	i386/i386/idt.c i386/i386/idt_inittab.S i386/i386/io_emulate.c \
-	i386/i386/io_map.c i386/i386/iopb.c i386/i386/ktss.c \
-	i386/i386/kttd_interface.c i386/i386/ldt.c i386/i386/locore.S \
-	i386/i386/loose_ends.c i386/i386/mp_desc.c i386/i386/pcb.c \
-	i386/i386/phys.c i386/i386/pic.c i386/i386/pit.c \
-	i386/i386/seg.c i386/i386/spl.S i386/i386/trap.c \
-	i386/i386/user_ldt.c i386/i386/_setjmp.S i386/intel/pmap.c \
-	i386/intel/read_fault.c chips/busses.c device/cirbuf.c
+	i386/i386/db_machdep.h i386/i386/db_trace.c i386/i386/debug.h \
+	i386/i386/debug_i386.c i386/i386/debug_trace.S \
+	i386/i386/eflags.h i386/i386/fpe_linkage.c i386/i386/fpu.c \
+	i386/i386/fpu.h i386/i386/gdt.c i386/i386/gdt.h \
+	i386/i386/hardclock.c i386/i386/idt-gen.h i386/i386/idt.c \
+	i386/i386/idt_inittab.S i386/i386/io_emulate.c \
+	i386/i386/io_emulate.h i386/i386/io_map.c i386/i386/io_port.h \
+	i386/i386/iopb.c i386/i386/iopb.h i386/i386/ipl.h \
+	i386/i386/ktss.c i386/i386/ktss.h i386/i386/kttd_interface.c \
+	i386/i386/kttd_machdep.h i386/i386/ldt.c i386/i386/ldt.h \
+	i386/i386/lock.h i386/i386/locore.S i386/i386/locore.h \
+	i386/i386/loose_ends.c i386/i386/mach_param.h \
+	i386/i386/machine_routines.h i386/i386/machspl.h \
+	i386/i386/mp_desc.c i386/i386/mp_desc.h i386/i386/pcb.c \
+	i386/i386/pcb.h i386/i386/phys.c i386/i386/pic.c \
+	i386/i386/pic.h i386/i386/pio.h i386/i386/pit.c \
+	i386/i386/pit.h i386/i386/pmap.h i386/i386/proc_reg.h \
+	i386/i386/sched_param.h i386/i386/seg.c i386/i386/seg.h \
+	i386/i386/setjmp.h i386/i386/spl.S i386/i386/spl.h \
+	i386/i386/thread.h i386/i386/time_stamp.h i386/i386/timer.h \
+	i386/i386/trap.c i386/i386/trap.h i386/i386/tss.h \
+	i386/i386/user_ldt.c i386/i386/user_ldt.h i386/i386/vm_param.h \
+	i386/i386/vm_tuning.h i386/i386/xpr.h i386/i386/zalloc.h \
+	i386/intel/pmap.c i386/intel/pmap.h i386/intel/read_fault.c \
+	i386/i386/_setjmp.S chips/busses.c chips/busses.h \
+	device/cirbuf.c
 @enable_kdb_TRUE@am__objects_2 = ddb/db_access.$(OBJEXT) \
 @enable_kdb_TRUE@	ddb/db_aout.$(OBJEXT) ddb/db_break.$(OBJEXT) \
 @enable_kdb_TRUE@	ddb/db_command.$(OBJEXT) \
@@ -782,10 +1047,10 @@ am__libkernel_a_SOURCES_DIST = ddb/db_access.c ddb/db_aout.c \
 @HOST_i386_TRUE@	i386/i386at/interrupt.$(OBJEXT) \
 @HOST_i386_TRUE@	i386/i386at/iopl.$(OBJEXT) \
 @HOST_i386_TRUE@	i386/i386at/kd.$(OBJEXT) \
-@HOST_i386_TRUE@	i386/i386at/kdasm.$(OBJEXT) \
 @HOST_i386_TRUE@	i386/i386at/kd_event.$(OBJEXT) \
 @HOST_i386_TRUE@	i386/i386at/kd_mouse.$(OBJEXT) \
 @HOST_i386_TRUE@	i386/i386at/kd_queue.$(OBJEXT) \
+@HOST_i386_TRUE@	i386/i386at/kdasm.$(OBJEXT) \
 @HOST_i386_TRUE@	i386/i386at/model_dep.$(OBJEXT) \
 @HOST_i386_TRUE@	i386/i386at/pic_isa.$(OBJEXT)
 @HOST_i386_TRUE@@enable_lpr_TRUE@am__objects_5 =  \
@@ -819,12 +1084,13 @@ am__libkernel_a_SOURCES_DIST = ddb/db_access.c ddb/db_aout.c \
 @HOST_i386_TRUE@	i386/i386/seg.$(OBJEXT) \
 @HOST_i386_TRUE@	i386/i386/spl.$(OBJEXT) \
 @HOST_i386_TRUE@	i386/i386/trap.$(OBJEXT) \
-@HOST_i386_TRUE@	i386/i386/user_ldt.$(OBJEXT)
+@HOST_i386_TRUE@	i386/i386/user_ldt.$(OBJEXT) \
+@HOST_i386_TRUE@	i386/intel/pmap.$(OBJEXT) \
+@HOST_i386_TRUE@	i386/intel/read_fault.$(OBJEXT)
 @HOST_i386_TRUE@@enable_kdb_TRUE@am__objects_7 =  \
 @HOST_i386_TRUE@@enable_kdb_TRUE@	i386/i386/_setjmp.$(OBJEXT)
-@HOST_i386_TRUE@am__objects_8 = i386/intel/pmap.$(OBJEXT) \
-@HOST_i386_TRUE@	i386/intel/read_fault.$(OBJEXT) \
-@HOST_i386_TRUE@	chips/busses.$(OBJEXT) device/cirbuf.$(OBJEXT)
+@HOST_i386_TRUE@am__objects_8 = chips/busses.$(OBJEXT) \
+@HOST_i386_TRUE@	device/cirbuf.$(OBJEXT)
 am_libkernel_a_OBJECTS = $(am__objects_2) ipc/ipc_entry.$(OBJEXT) \
 	ipc/ipc_hash.$(OBJEXT) ipc/ipc_init.$(OBJEXT) \
 	ipc/ipc_kmsg.$(OBJEXT) ipc/ipc_marequest.$(OBJEXT) \
@@ -856,21 +1122,21 @@ am_libkernel_a_OBJECTS = $(am__objects_2) ipc/ipc_entry.$(OBJEXT) \
 	kern/xpr.$(OBJEXT) kern/zalloc.$(OBJEXT) \
 	kern/elf-load.$(OBJEXT) kern/boot_script.$(OBJEXT) \
 	util/putchar.$(OBJEXT) util/puts.$(OBJEXT) \
-	vm/vm_debug.$(OBJEXT) vm/vm_external.$(OBJEXT) \
-	vm/vm_fault.$(OBJEXT) vm/vm_init.$(OBJEXT) \
-	vm/vm_kern.$(OBJEXT) vm/vm_map.$(OBJEXT) \
+	vm/memory_object.$(OBJEXT) vm/vm_debug.$(OBJEXT) \
+	vm/vm_external.$(OBJEXT) vm/vm_fault.$(OBJEXT) \
+	vm/vm_init.$(OBJEXT) vm/vm_kern.$(OBJEXT) vm/vm_map.$(OBJEXT) \
 	vm/vm_object.$(OBJEXT) vm/vm_pageout.$(OBJEXT) \
 	vm/vm_resident.$(OBJEXT) vm/vm_user.$(OBJEXT) \
-	vm/memory_object.$(OBJEXT) device/cons.$(OBJEXT) \
-	device/dev_lookup.$(OBJEXT) device/dev_name.$(OBJEXT) \
-	device/dev_pager.$(OBJEXT) device/device_init.$(OBJEXT) \
-	device/ds_routines.$(OBJEXT) device/subrs.$(OBJEXT) \
-	device/net_io.$(OBJEXT) device/blkio.$(OBJEXT) \
-	device/chario.$(OBJEXT) $(am__objects_3) version.$(OBJEXT) \
-	$(am__objects_4) $(am__objects_5) $(am__objects_6) \
-	$(am__objects_7) $(am__objects_8)
+	device/blkio.$(OBJEXT) device/chario.$(OBJEXT) \
+	device/cons.$(OBJEXT) device/dev_lookup.$(OBJEXT) \
+	device/dev_name.$(OBJEXT) device/dev_pager.$(OBJEXT) \
+	device/device_init.$(OBJEXT) device/ds_routines.$(OBJEXT) \
+	device/net_io.$(OBJEXT) device/subrs.$(OBJEXT) \
+	$(am__objects_3) $(am__objects_4) $(am__objects_5) \
+	$(am__objects_6) $(am__objects_7) $(am__objects_8)
 @HOST_i386_TRUE@am__objects_9 = i386/i386/mach_i386.server.$(OBJEXT)
-nodist_libkernel_a_OBJECTS = vm/memory_object_user.user.$(OBJEXT) \
+nodist_libkernel_a_OBJECTS = version.$(OBJEXT) \
+	vm/memory_object_user.user.$(OBJEXT) \
 	vm/memory_object_default.user.$(OBJEXT) \
 	device/device_reply.user.$(OBJEXT) \
 	device/memory_object_reply.user.$(OBJEXT) \
@@ -896,76 +1162,127 @@ am__liblinux_a_SOURCES_DIST = linux/dev/init/version.c \
 	linux/dev/drivers/block/floppy.c \
 	linux/src/drivers/block/cmd640.c \
 	linux/src/drivers/block/ide-cd.c linux/src/drivers/block/ide.c \
+	linux/src/drivers/block/ide.h \
+	linux/src/drivers/block/ide_modes.h \
 	linux/src/drivers/block/rz1000.c \
 	linux/src/drivers/block/triton.c \
 	linux/src/drivers/scsi/constants.c \
-	linux/src/drivers/scsi/hosts.c linux/src/drivers/scsi/scsi.c \
+	linux/src/drivers/scsi/constants.h \
+	linux/src/drivers/scsi/hosts.c linux/src/drivers/scsi/hosts.h \
+	linux/src/drivers/scsi/scsi.c linux/src/drivers/scsi/scsi.h \
 	linux/src/drivers/scsi/scsi_ioctl.c \
 	linux/src/drivers/scsi/scsi_proc.c \
 	linux/src/drivers/scsi/scsicam.c linux/src/drivers/scsi/sd.c \
-	linux/src/drivers/scsi/sd_ioctl.c linux/src/drivers/scsi/sr.c \
+	linux/src/drivers/scsi/sd.h linux/src/drivers/scsi/sd_ioctl.c \
+	linux/src/drivers/scsi/sr.c linux/src/drivers/scsi/sr.h \
 	linux/src/drivers/scsi/sr_ioctl.c \
+	linux/src/drivers/scsi/53c7,8xx.h \
 	linux/src/drivers/scsi/53c78xx.c \
+	linux/src/drivers/scsi/53c8xx_d.h \
+	linux/src/drivers/scsi/53c8xx_u.h \
 	linux/src/drivers/scsi/AM53C974.c \
+	linux/src/drivers/scsi/AM53C974.h \
 	linux/src/drivers/scsi/BusLogic.c \
+	linux/src/drivers/scsi/BusLogic.h \
 	linux/src/drivers/scsi/NCR53c406a.c \
+	linux/src/drivers/scsi/NCR53c406a.h \
 	linux/src/drivers/scsi/advansys.c \
+	linux/src/drivers/scsi/advansys.h \
 	linux/src/drivers/scsi/aha152x.c \
+	linux/src/drivers/scsi/aha152x.h \
 	linux/src/drivers/scsi/aha1542.c \
+	linux/src/drivers/scsi/aha1542.h \
 	linux/src/drivers/scsi/aha1740.c \
-	linux/src/drivers/scsi/aic7xxx.c linux/src/drivers/scsi/dtc.c \
-	linux/src/drivers/scsi/eata.c \
+	linux/src/drivers/scsi/aha1740.h \
+	linux/src/drivers/scsi/aic7xxx.c \
+	linux/src/drivers/scsi/aic7xxx.h \
+	linux/src/drivers/scsi/aic7xxx/scsi_message.h \
+	linux/src/drivers/scsi/aic7xxx/sequencer.h \
+	linux/src/drivers/scsi/aic7xxx_reg.h \
+	linux/src/drivers/scsi/dtc.c linux/src/drivers/scsi/dtc.h \
+	linux/src/drivers/scsi/eata.c linux/src/drivers/scsi/eata.h \
+	linux/src/drivers/scsi/eata_generic.h \
 	linux/dev/drivers/scsi/eata_dma.c \
+	linux/src/drivers/scsi/eata_dma.h \
+	linux/src/drivers/scsi/eata_dma_proc.h \
 	linux/src/drivers/scsi/eata_pio.c \
+	linux/src/drivers/scsi/eata_pio.h \
 	linux/src/drivers/scsi/fdomain.c \
+	linux/src/drivers/scsi/fdomain.h \
 	linux/dev/drivers/scsi/g_NCR5380.c \
-	linux/src/drivers/scsi/gdth.c linux/src/drivers/scsi/in2000.c \
+	linux/src/drivers/scsi/g_NCR5380.h \
+	linux/src/drivers/scsi/gdth.c linux/src/drivers/scsi/gdth.h \
+	linux/src/drivers/scsi/gdth_ioctl.h \
+	linux/src/drivers/scsi/gdth_proc.h \
+	linux/src/drivers/scsi/in2000.c \
+	linux/src/drivers/scsi/in2000.h \
 	linux/src/drivers/scsi/ncr53c8xx.c \
-	linux/src/drivers/scsi/pas16.c linux/src/drivers/scsi/ppa.c \
+	linux/src/drivers/scsi/ncr53c8xx.h \
+	linux/src/drivers/scsi/pas16.c linux/src/drivers/scsi/pas16.h \
+	linux/src/drivers/scsi/ppa.c linux/src/drivers/scsi/ppa.h \
 	linux/src/drivers/scsi/qlogicfas.c \
+	linux/src/drivers/scsi/qlogicfas.h \
 	linux/src/drivers/scsi/qlogicisp.c \
-	linux/src/drivers/scsi/seagate.c linux/src/drivers/scsi/t128.c \
+	linux/src/drivers/scsi/qlogicisp.h \
+	linux/src/drivers/scsi/seagate.c \
+	linux/src/drivers/scsi/seagate.h linux/src/drivers/scsi/t128.c \
+	linux/src/drivers/scsi/t128.h linux/src/drivers/scsi/dc390.h \
 	linux/src/drivers/scsi/tmscsim.c \
+	linux/src/drivers/scsi/tmscsim.h \
 	linux/src/drivers/scsi/u14-34f.c \
+	linux/src/drivers/scsi/u14-34f.h \
 	linux/src/drivers/scsi/ultrastor.c \
+	linux/src/drivers/scsi/ultrastor.h \
 	linux/src/drivers/scsi/wd7000.c \
+	linux/src/drivers/scsi/wd7000.h \
 	linux/dev/drivers/net/auto_irq.c linux/dev/glue/net.c \
 	linux/dev/drivers/net/Space.c linux/dev/net/core/dev.c \
 	linux/dev/drivers/net/net_init.c \
-	linux/src/drivers/net/pci-scan.c linux/src/drivers/net/3c501.c \
-	linux/src/drivers/net/3c503.c linux/src/drivers/net/8390.c \
-	linux/src/drivers/net/3c505.c linux/src/drivers/net/3c507.c \
+	linux/src/drivers/net/pci-scan.c \
+	linux/src/drivers/net/pci-scan.h linux/src/drivers/net/3c501.c \
+	linux/src/drivers/net/3c503.c linux/src/drivers/net/3c503.h \
+	linux/src/drivers/net/8390.c linux/src/drivers/net/3c505.c \
+	linux/src/drivers/net/3c505.h linux/src/drivers/net/3c507.c \
 	linux/src/drivers/net/3c509.c linux/src/drivers/net/3c59x.c \
 	linux/src/drivers/net/3c515.c linux/src/drivers/net/ac3200.c \
 	linux/src/drivers/net/apricot.c linux/src/drivers/net/at1700.c \
-	linux/src/drivers/net/atp.c linux/src/drivers/net/de4x5.c \
+	linux/src/drivers/net/atp.c linux/src/drivers/net/atp.h \
+	linux/src/drivers/net/de4x5.c linux/src/drivers/net/de4x5.h \
 	linux/src/drivers/net/de600.c linux/src/drivers/net/de620.c \
-	linux/src/drivers/net/depca.c linux/src/drivers/net/e2100.c \
+	linux/src/drivers/net/de620.h linux/src/drivers/net/depca.c \
+	linux/src/drivers/net/depca.h linux/src/drivers/net/e2100.c \
 	linux/src/drivers/net/eepro.c linux/src/drivers/net/eepro100.c \
 	linux/src/drivers/net/eexpress.c \
+	linux/src/drivers/net/eth82586.h \
 	linux/src/drivers/net/epic100.c linux/src/drivers/net/eth16i.c \
-	linux/src/drivers/net/ewrk3.c linux/src/drivers/net/fmv18x.c \
-	linux/src/drivers/net/hamachi.c \
+	linux/src/drivers/net/ewrk3.c linux/src/drivers/net/ewrk3.h \
+	linux/src/drivers/net/fmv18x.c linux/src/drivers/net/hamachi.c \
 	linux/src/drivers/net/hp-plus.c linux/src/drivers/net/hp.c \
-	linux/src/drivers/net/hp100.c \
+	linux/src/drivers/net/hp100.c linux/src/drivers/net/hp100.h \
 	linux/src/drivers/net/intel-gige.c \
 	linux/src/drivers/net/lance.c linux/src/drivers/net/myson803.c \
 	linux/src/drivers/net/natsemi.c linux/src/drivers/net/ne.c \
 	linux/src/drivers/net/ne2k-pci.c linux/src/drivers/net/ni52.c \
-	linux/src/drivers/net/ni65.c linux/src/drivers/net/ns820.c \
+	linux/src/drivers/net/ni52.h linux/src/drivers/net/ni65.c \
+	linux/src/drivers/net/ni65.h linux/src/drivers/net/ns820.c \
 	linux/src/drivers/net/pcnet32.c \
 	linux/src/drivers/net/rtl8139.c \
 	linux/src/drivers/net/seeq8005.c \
-	linux/src/drivers/net/sk_g16.c \
+	linux/src/drivers/net/seeq8005.h \
+	linux/src/drivers/net/sk_g16.c linux/src/drivers/net/sk_g16.h \
 	linux/src/drivers/net/smc-ultra.c \
 	linux/src/drivers/net/smc-ultra32.c \
 	linux/src/drivers/net/starfire.c \
 	linux/src/drivers/net/sundance.c linux/src/drivers/net/tlan.c \
-	linux/src/drivers/net/tulip.c \
+	linux/src/drivers/net/tlan.h linux/src/drivers/net/tulip.c \
 	linux/src/drivers/net/via-rhine.c \
-	linux/src/drivers/net/wavelan.c linux/src/drivers/net/wd.c \
+	linux/src/drivers/net/i82586.h linux/src/drivers/net/wavelan.c \
+	linux/src/drivers/net/wavelan.h \
+	linux/dev/drivers/net/wavelan.p.h linux/src/drivers/net/wd.c \
 	linux/src/drivers/net/winbond-840.c \
 	linux/src/drivers/net/yellowfin.c linux/src/drivers/net/znet.c \
+	i386/linux/dev/include/linux/autoconf.h \
+	i386/linux/dev/include/linux_emul.h \
 	linux/src/arch/i386/lib/semaphore.S
 @device_driver_floppy_TRUE@am__objects_10 = linux/dev/drivers/block/liblinux_a-floppy.$(OBJEXT)
 @device_driver_ide_TRUE@am__objects_11 = linux/src/drivers/block/liblinux_a-cmd640.$(OBJEXT) \
@@ -1133,11 +1450,12 @@ liblinux_pcmcia_cs_clients_a_LIBADD =
 am__liblinux_pcmcia_cs_clients_a_SOURCES_DIST =  \
 	linux/pcmcia-cs/clients/3c574_cs.c \
 	linux/pcmcia-cs/clients/3c589_cs.c \
+	linux/pcmcia-cs/clients/ax8390.h \
 	linux/pcmcia-cs/clients/axnet_cs.c \
 	linux/pcmcia-cs/clients/fmvj18x_cs.c \
 	linux/pcmcia-cs/clients/nmclan_cs.c \
 	linux/pcmcia-cs/clients/pcnet_cs.c \
-	linux/src/drivers/net/8390.c \
+	linux/src/drivers/net/8390.c linux/pcmcia-cs/clients/ositech.h \
 	linux/pcmcia-cs/clients/smc91c92_cs.c \
 	linux/pcmcia-cs/clients/xirc2ps_cs.c
 @device_driver_3c574_cs_TRUE@am__objects_95 = linux/pcmcia-cs/clients/liblinux_pcmcia_cs_clients_a-3c574_cs.$(OBJEXT)
@@ -1158,13 +1476,25 @@ liblinux_pcmcia_cs_clients_a_OBJECTS =  \
 liblinux_pcmcia_cs_modules_a_AR = $(AR) $(ARFLAGS)
 liblinux_pcmcia_cs_modules_a_LIBADD =
 am__liblinux_pcmcia_cs_modules_a_SOURCES_DIST =  \
-	linux/pcmcia-cs/glue/pcmcia.c linux/pcmcia-cs/modules/cs.c \
+	linux/pcmcia-cs/glue/pcmcia.c \
+	linux/pcmcia-cs/glue/pcmcia_glue.h \
+	linux/pcmcia-cs/modules/cs.c \
+	linux/pcmcia-cs/modules/cs_internal.h \
 	linux/pcmcia-cs/modules/ds.c \
 	linux/pcmcia-cs/modules/rsrc_mgr.c \
 	linux/pcmcia-cs/modules/bulkmem.c \
 	linux/pcmcia-cs/modules/cistpl.c \
 	linux/pcmcia-cs/modules/pci_fixup.c \
-	linux/pcmcia-cs/modules/i82365.c
+	linux/pcmcia-cs/modules/cirrus.h linux/pcmcia-cs/modules/ene.h \
+	linux/pcmcia-cs/modules/i82365.c \
+	linux/pcmcia-cs/modules/i82365.h \
+	linux/pcmcia-cs/modules/o2micro.h \
+	linux/pcmcia-cs/modules/ricoh.h \
+	linux/pcmcia-cs/modules/smc34c90.h \
+	linux/pcmcia-cs/modules/ti113x.h \
+	linux/pcmcia-cs/modules/topic.h \
+	linux/pcmcia-cs/modules/vg468.h \
+	linux/pcmcia-cs/modules/yenta.h
 @device_driver_group_pcmcia_TRUE@am__objects_103 = linux/pcmcia-cs/glue/liblinux_pcmcia_cs_modules_a-pcmcia.$(OBJEXT) \
 @device_driver_group_pcmcia_TRUE@	linux/pcmcia-cs/modules/liblinux_pcmcia_cs_modules_a-cs.$(OBJEXT) \
 @device_driver_group_pcmcia_TRUE@	linux/pcmcia-cs/modules/liblinux_pcmcia_cs_modules_a-ds.$(OBJEXT) \
@@ -1180,8 +1510,13 @@ liblinux_pcmcia_cs_modules_a_OBJECTS =  \
 liblinux_pcmcia_cs_wireless_a_AR = $(AR) $(ARFLAGS)
 liblinux_pcmcia_cs_wireless_a_LIBADD =
 am__liblinux_pcmcia_cs_wireless_a_SOURCES_DIST =  \
+	linux/pcmcia-cs/glue/wireless_glue.h \
 	linux/pcmcia-cs/wireless/hermes.c \
+	linux/pcmcia-cs/wireless/hermes.h \
+	linux/pcmcia-cs/wireless/hermes_rid.h \
+	linux/pcmcia-cs/wireless/ieee802_11.h \
 	linux/pcmcia-cs/wireless/orinoco.c \
+	linux/pcmcia-cs/wireless/orinoco.h \
 	linux/pcmcia-cs/wireless/orinoco_cs.c
 @device_driver_orinoco_cs_TRUE@am__objects_105 = linux/pcmcia-cs/wireless/liblinux_pcmcia_cs_wireless_a-hermes.$(OBJEXT) \
 @device_driver_orinoco_cs_TRUE@	linux/pcmcia-cs/wireless/liblinux_pcmcia_cs_wireless_a-orinoco.$(OBJEXT) \
@@ -1397,7 +1732,40 @@ top_builddir = @top_builddir@
 top_srcdir = @top_srcdir@
 SUBDIRS = 
 DIST_SUBDIRS = 
-EXTRA_DIST = 
+
+# Instead of listing each file individually...
+
+#
+# Building a distribution.
+#
+
+# Instead of listing each file individually...
+
+#
+# Building a distribution.
+#
+EXTRA_DIST = gensym.awk ipc/mach_port.srv kern/mach.srv kern/mach4.srv \
+	kern/mach_debug.srv kern/mach_host.srv \
+	vm/memory_object_default.cli vm/memory_object_user.cli \
+	device/device.srv device/device_pager.srv \
+	device/device_reply.cli device/memory_object_reply.cli include \
+	$(am__append_7) $(mach_TEXINFOS) $(am__append_18) \
+	$(am__append_25) $(am__append_29) $(am__append_31) \
+	$(am__append_35) $(am__append_45) \
+	linux/src/drivers/scsi/NCR5380.c \
+	linux/src/drivers/scsi/NCR5380.h linux/src/drivers/net/8390.h \
+	linux/src/drivers/net/kern_compat.h $(am__append_103) \
+	linux/dev/README linux/src/COPYING linux/dev/include \
+	linux/src/include linux/pcmcia-cs/include \
+	Makefile.correct_output_files_for_.S_files.patch \
+	config.status.dep.patch ChangeLog.0 ChangeLog.00 DEVELOPMENT
+
+#
+# Building a distribution.
+#
+
+# Enable all available features.
+DISTCHECK_CONFIGURE_FLAGS = --enable-kdb
 
 #
 # The main kernel functionality.
@@ -1451,47 +1819,86 @@ AM_LDFLAGS =
 MIGCOM = $(MIG) -cc cat - /dev/null
 MIGFLAGS = 
 
+#
 # IPC implementation.
+#
 
-# "kernel" implementation (tasks, threads, trivia, etc.).
+#
+# `kernel' implementation (tasks, threads, trivia, etc.).
+#
 
+#
 # Still more trivia.
+#
 
+#
 # Virtual memory implementation.
+#
+
+#
+# Device driver support.
+#
 
 # These device support files are always needed; the others are needed only if
 # particular drivers want the routines.
 # TODO.  Functions in device/subrs.c should each be moved elsewhere.
+libkernel_a_SOURCES = $(am__append_2) ipc/ipc_entry.c ipc/ipc_entry.h \
+	ipc/ipc_hash.c ipc/ipc_hash.h ipc/ipc_init.c ipc/ipc_init.h \
+	ipc/ipc_kmsg.c ipc/ipc_kmsg.h ipc/ipc_kmsg_queue.h \
+	ipc/ipc_machdep.h ipc/ipc_marequest.c ipc/ipc_marequest.h \
+	ipc/ipc_mqueue.c ipc/ipc_mqueue.h ipc/ipc_notify.c \
+	ipc/ipc_notify.h ipc/ipc_object.c ipc/ipc_object.h \
+	ipc/ipc_port.c ipc/ipc_port.h ipc/ipc_pset.c ipc/ipc_pset.h \
+	ipc/ipc_right.c ipc/ipc_right.h ipc/ipc_space.c \
+	ipc/ipc_space.h ipc/ipc_splay.c ipc/ipc_splay.h \
+	ipc/ipc_table.c ipc/ipc_table.h ipc/ipc_target.c \
+	ipc/ipc_target.h ipc/ipc_thread.c ipc/ipc_thread.h \
+	ipc/ipc_types.h ipc/mach_msg.c ipc/mach_msg.h ipc/mach_port.c \
+	ipc/mach_rpc.c ipc/mach_debug.c ipc/port.h kern/act.c \
+	kern/act.h kern/assert.h kern/ast.c kern/ast.h \
+	kern/boot_script.h kern/bootstrap.c kern/compat_xxx_defs.h \
+	kern/counters.c kern/counters.h kern/cpu_number.h kern/debug.c \
+	kern/debug.h kern/eventcount.c kern/eventcount.h \
+	kern/exception.c kern/host.c kern/host.h kern/ipc_host.c \
+	kern/ipc_host.h kern/ipc_kobject.c kern/ipc_kobject.h \
+	kern/ipc_mig.c kern/ipc_sched.c kern/ipc_sched.h kern/ipc_tt.c \
+	kern/ipc_tt.h kern/kalloc.c kern/kalloc.h kern/kern_types.h \
+	kern/lock.c kern/lock.h kern/lock_mon.c kern/mach_clock.c \
+	kern/mach_clock.h kern/mach_factor.c kern/mach_factor.h \
+	kern/mach_param.h kern/machine.c kern/macro_help.h \
+	kern/pc_sample.c kern/pc_sample.h kern/printf.c kern/printf.h \
+	kern/priority.c kern/processor.c kern/processor.h \
+	kern/profile.c kern/queue.c kern/queue.h kern/refcount.h \
+	kern/sched.h kern/sched_prim.c kern/sched_prim.h \
+	kern/shuttle.h kern/startup.c kern/strings.c \
+	kern/syscall_emulation.c kern/syscall_emulation.h \
+	kern/syscall_subr.c kern/syscall_subr.h kern/syscall_sw.c \
+	kern/syscall_sw.h kern/task.c kern/task.h kern/thread.c \
+	kern/thread.h kern/thread_swap.c kern/thread_swap.h \
+	kern/time_out.h kern/time_stamp.c kern/time_stamp.h \
+	kern/timer.c kern/timer.h kern/xpr.c kern/xpr.h kern/zalloc.c \
+	kern/zalloc.h kern/elf-load.c kern/boot_script.c \
+	util/putchar.c util/puts.c vm/memory_object.c \
+	vm/memory_object.h vm/pmap.h vm/vm_debug.c vm/vm_external.c \
+	vm/vm_external.h vm/vm_fault.c vm/vm_fault.h vm/vm_init.c \
+	vm/vm_kern.c vm/vm_kern.h vm/vm_map.c vm/vm_map.h \
+	vm/vm_object.c vm/vm_object.h vm/vm_page.h vm/vm_pageout.c \
+	vm/vm_pageout.h vm/vm_resident.c vm/vm_user.c vm/vm_user.h \
+	device/blkio.c device/buf.h device/chario.c device/cirbuf.h \
+	device/conf.h device/cons.c device/cons.h device/dev_hdr.h \
+	device/dev_lookup.c device/dev_master.h device/dev_name.c \
+	device/dev_pager.c device/device_init.c device/device_port.h \
+	device/device_types_kernel.h device/ds_routines.c \
+	device/ds_routines.h device/errno.h device/if_ether.h \
+	device/if_hdr.h device/io_req.h device/kmsg.h device/net_io.c \
+	device/net_io.h device/param.h device/subrs.c device/tty.h \
+	$(am__append_3) $(am__append_4) $(am__append_5) \
+	$(am__append_6) $(am__append_8) $(am__append_9)
 
+#
 # Version number.
-libkernel_a_SOURCES = $(am__append_2) ipc/ipc_entry.c ipc/ipc_hash.c \
-	ipc/ipc_init.c ipc/ipc_kmsg.c ipc/ipc_marequest.c \
-	ipc/ipc_mqueue.c ipc/ipc_notify.c ipc/ipc_object.c \
-	ipc/ipc_port.c ipc/ipc_pset.c ipc/ipc_right.c ipc/ipc_space.c \
-	ipc/ipc_splay.c ipc/ipc_table.c ipc/ipc_target.c \
-	ipc/ipc_thread.c ipc/mach_msg.c ipc/mach_port.c ipc/mach_rpc.c \
-	ipc/mach_debug.c kern/act.c kern/ast.c kern/bootstrap.c \
-	kern/counters.c kern/debug.c kern/eventcount.c \
-	kern/exception.c kern/host.c kern/ipc_host.c \
-	kern/ipc_kobject.c kern/ipc_mig.c kern/ipc_sched.c \
-	kern/ipc_tt.c kern/kalloc.c kern/lock.c kern/lock_mon.c \
-	kern/mach_clock.c kern/mach_factor.c kern/machine.c \
-	kern/pc_sample.c kern/printf.c kern/priority.c \
-	kern/processor.c kern/profile.c kern/queue.c kern/sched_prim.c \
-	kern/startup.c kern/strings.c kern/syscall_emulation.c \
-	kern/syscall_subr.c kern/syscall_sw.c kern/task.c \
-	kern/thread.c kern/thread_swap.c kern/time_stamp.c \
-	kern/timer.c kern/xpr.c kern/zalloc.c kern/elf-load.c \
-	kern/boot_script.c util/putchar.c util/puts.c vm/vm_debug.c \
-	vm/vm_external.c vm/vm_fault.c vm/vm_init.c vm/vm_kern.c \
-	vm/vm_map.c vm/vm_object.c vm/vm_pageout.c vm/vm_resident.c \
-	vm/vm_user.c vm/memory_object.c device/cons.c \
-	device/dev_lookup.c device/dev_name.c device/dev_pager.c \
-	device/device_init.c device/ds_routines.c device/subrs.c \
-	device/net_io.c device/blkio.c device/chario.c $(am__append_3) \
-	version.c $(am__append_4) $(am__append_5) $(am__append_6) \
-	$(am__append_7) $(am__append_8)
-nodist_libkernel_a_SOURCES = vm/memory_object_user.user.h \
+#
+nodist_libkernel_a_SOURCES = version.c vm/memory_object_user.user.h \
 	vm/memory_object_user.user.c vm/memory_object_default.user.h \
 	vm/memory_object_default.user.c device/device_reply.user.h \
 	device/device_reply.user.c device/memory_object_reply.user.h \
@@ -1502,7 +1909,7 @@ nodist_libkernel_a_SOURCES = vm/memory_object_user.user.h \
 	kern/mach4.server.h kern/mach4.server.c \
 	kern/mach_debug.server.h kern/mach_debug.server.c \
 	kern/mach_host.server.h kern/mach_host.server.c \
-	$(am__append_10)
+	$(am__append_11)
 gnumach_o_LDADD = libkernel.a liblinux.a liblinux_pcmcia_cs_modules.a \
 	liblinux_pcmcia_cs_clients.a liblinux_pcmcia_cs_wireless.a
 
@@ -1607,7 +2014,7 @@ nodist_lib_dep_tr_for_defs_a_SOURCES =  \
 	device/device.server.defs.c device/device_pager.server.defs.c \
 	ipc/mach_port.server.defs.c kern/mach.server.defs.c \
 	kern/mach4.server.defs.c kern/mach_debug.server.defs.c \
-	kern/mach_host.server.defs.c $(am__append_9)
+	kern/mach_host.server.defs.c $(am__append_10)
 # Preprocess only.
 lib_dep_tr_for_defs_a_CPPFLAGS = $(AM_CPPFLAGS) \
 	-E
@@ -1616,10 +2023,6 @@ lib_dep_tr_for_defs_a_CPPFLAGS = $(AM_CPPFLAGS) \
 # `make install-data', as it may fail there, but isn't needed there either.
 exec_msgidsdir = $(datadir)/msgids
 exec_msgids_DATA = gnumach.msgids
-
-#
-# Architecture specialities.
-#
 @HOST_i386_TRUE@LINKFLAGS_gnumach = \
 @HOST_i386_TRUE@	-T '$(srcdir)/$(systype)'/ldscript
 
@@ -1680,35 +2083,35 @@ liblinux_a_SOURCES = linux/dev/init/version.c \
 	linux/dev/glue/misc.c linux/dev/kernel/sched.c \
 	linux/dev/glue/kmem.c linux/dev/glue/block.c \
 	linux/dev/arch/i386/kernel/setup.c linux/src/drivers/pci/pci.c \
-	linux/dev/drivers/block/genhd.c $(am__append_11) \
-	$(am__append_12) $(am__append_13) $(am__append_14) \
-	$(am__append_15) $(am__append_16) $(am__append_17) \
-	$(am__append_18) $(am__append_19) $(am__append_20) \
-	$(am__append_21) $(am__append_22) $(am__append_23) \
-	$(am__append_24) $(am__append_25) $(am__append_26) \
-	$(am__append_27) $(am__append_28) $(am__append_29) \
-	$(am__append_30) $(am__append_31) $(am__append_32) \
-	$(am__append_33) $(am__append_34) $(am__append_35) \
+	linux/dev/drivers/block/genhd.c $(am__append_12) \
+	$(am__append_13) $(am__append_14) $(am__append_15) \
+	$(am__append_16) $(am__append_17) $(am__append_19) \
+	$(am__append_20) $(am__append_21) $(am__append_22) \
+	$(am__append_23) $(am__append_24) $(am__append_26) \
+	$(am__append_27) $(am__append_28) $(am__append_30) \
+	$(am__append_32) $(am__append_33) $(am__append_34) \
 	$(am__append_36) $(am__append_37) $(am__append_38) \
 	$(am__append_39) $(am__append_40) $(am__append_41) \
 	$(am__append_42) $(am__append_43) $(am__append_44) \
-	$(am__append_45) $(am__append_46) $(am__append_47) \
-	$(am__append_48) $(am__append_49) $(am__append_50) \
-	$(am__append_51) $(am__append_52) $(am__append_53) \
-	$(am__append_54) $(am__append_55) $(am__append_56) \
-	$(am__append_57) $(am__append_58) $(am__append_59) \
-	$(am__append_60) $(am__append_61) $(am__append_62) \
-	$(am__append_63) $(am__append_64) $(am__append_65) \
-	$(am__append_66) $(am__append_67) $(am__append_68) \
-	$(am__append_69) $(am__append_70) $(am__append_71) \
-	$(am__append_72) $(am__append_73) $(am__append_74) \
-	$(am__append_75) $(am__append_76) $(am__append_77) \
-	$(am__append_78) $(am__append_79) $(am__append_80) \
-	$(am__append_81) $(am__append_82) $(am__append_83) \
-	$(am__append_84) $(am__append_85) $(am__append_86) \
-	$(am__append_87) $(am__append_88) $(am__append_89) \
-	$(am__append_90) $(am__append_91) $(am__append_92) \
-	$(am__append_93) $(am__append_94) $(am__append_106)
+	$(am__append_46) $(am__append_47) $(am__append_48) \
+	$(am__append_49) $(am__append_50) $(am__append_51) \
+	$(am__append_52) $(am__append_53) $(am__append_54) \
+	$(am__append_55) $(am__append_56) $(am__append_57) \
+	$(am__append_58) $(am__append_59) $(am__append_60) \
+	$(am__append_61) $(am__append_62) $(am__append_63) \
+	$(am__append_64) $(am__append_65) $(am__append_66) \
+	$(am__append_67) $(am__append_68) $(am__append_69) \
+	$(am__append_70) $(am__append_71) $(am__append_72) \
+	$(am__append_73) $(am__append_74) $(am__append_75) \
+	$(am__append_76) $(am__append_77) $(am__append_78) \
+	$(am__append_79) $(am__append_80) $(am__append_81) \
+	$(am__append_82) $(am__append_83) $(am__append_84) \
+	$(am__append_85) $(am__append_86) $(am__append_87) \
+	$(am__append_88) $(am__append_89) $(am__append_90) \
+	$(am__append_91) $(am__append_92) $(am__append_93) \
+	$(am__append_94) $(am__append_95) $(am__append_96) \
+	$(am__append_97) $(am__append_98) $(am__append_99) \
+	$(am__append_100) $(am__append_101) $(am__append_114)
 
 # pcmcia-cs.
 liblinux_pcmcia_cs_modules_a_CPPFLAGS = $(liblinux_a_CPPFLAGS) \
@@ -1717,25 +2120,25 @@ liblinux_pcmcia_cs_modules_a_CPPFLAGS = $(liblinux_a_CPPFLAGS) \
 liblinux_pcmcia_cs_modules_a_CFLAGS = $(liblinux_a_CFLAGS) \
 	-include $(srcdir)/linux/pcmcia-cs/glue/pcmcia_glue.h
 
-liblinux_pcmcia_cs_modules_a_SOURCES = $(am__append_95) \
-	$(am__append_96)
+liblinux_pcmcia_cs_modules_a_SOURCES = $(am__append_102) \
+	$(am__append_104)
 liblinux_pcmcia_cs_clients_a_CPPFLAGS = $(liblinux_a_CPPFLAGS) \
 	-DPCMCIA_CLIENT -I$(srcdir)/linux/pcmcia-cs/include
 
 liblinux_pcmcia_cs_clients_a_CFLAGS = $(liblinux_a_CFLAGS) \
 	-include $(srcdir)/linux/pcmcia-cs/glue/pcmcia_glue.h
 
-liblinux_pcmcia_cs_clients_a_SOURCES = $(am__append_97) \
-	$(am__append_98) $(am__append_99) $(am__append_100) \
-	$(am__append_101) $(am__append_102) $(am__append_103) \
-	$(am__append_104)
+liblinux_pcmcia_cs_clients_a_SOURCES = $(am__append_105) \
+	$(am__append_106) $(am__append_107) $(am__append_108) \
+	$(am__append_109) $(am__append_110) $(am__append_111) \
+	$(am__append_112)
 liblinux_pcmcia_cs_wireless_a_CPPFLAGS = $(liblinux_a_CPPFLAGS) \
 	-I$(srcdir)/linux/pcmcia-cs/include
 
 liblinux_pcmcia_cs_wireless_a_CFLAGS = $(liblinux_a_CFLAGS) \
 	-include $(srcdir)/linux/pcmcia-cs/glue/wireless_glue.h
 
-liblinux_pcmcia_cs_wireless_a_SOURCES = $(am__append_105)
+liblinux_pcmcia_cs_wireless_a_SOURCES = $(am__append_113)
 
 # Makerules: how to do some things.
 
@@ -2071,6 +2474,8 @@ util/putchar.$(OBJEXT): util/$(am__dirstamp) \
 	util/$(DEPDIR)/$(am__dirstamp)
 util/puts.$(OBJEXT): util/$(am__dirstamp) \
 	util/$(DEPDIR)/$(am__dirstamp)
+vm/memory_object.$(OBJEXT): vm/$(am__dirstamp) \
+	vm/$(DEPDIR)/$(am__dirstamp)
 vm/vm_debug.$(OBJEXT): vm/$(am__dirstamp) vm/$(DEPDIR)/$(am__dirstamp)
 vm/vm_external.$(OBJEXT): vm/$(am__dirstamp) \
 	vm/$(DEPDIR)/$(am__dirstamp)
@@ -2085,8 +2490,10 @@ vm/vm_pageout.$(OBJEXT): vm/$(am__dirstamp) \
 vm/vm_resident.$(OBJEXT): vm/$(am__dirstamp) \
 	vm/$(DEPDIR)/$(am__dirstamp)
 vm/vm_user.$(OBJEXT): vm/$(am__dirstamp) vm/$(DEPDIR)/$(am__dirstamp)
-vm/memory_object.$(OBJEXT): vm/$(am__dirstamp) \
-	vm/$(DEPDIR)/$(am__dirstamp)
+device/blkio.$(OBJEXT): device/$(am__dirstamp) \
+	device/$(DEPDIR)/$(am__dirstamp)
+device/chario.$(OBJEXT): device/$(am__dirstamp) \
+	device/$(DEPDIR)/$(am__dirstamp)
 device/cons.$(OBJEXT): device/$(am__dirstamp) \
 	device/$(DEPDIR)/$(am__dirstamp)
 device/dev_lookup.$(OBJEXT): device/$(am__dirstamp) \
@@ -2099,13 +2506,9 @@ device/device_init.$(OBJEXT): device/$(am__dirstamp) \
 	device/$(DEPDIR)/$(am__dirstamp)
 device/ds_routines.$(OBJEXT): device/$(am__dirstamp) \
 	device/$(DEPDIR)/$(am__dirstamp)
-device/subrs.$(OBJEXT): device/$(am__dirstamp) \
-	device/$(DEPDIR)/$(am__dirstamp)
 device/net_io.$(OBJEXT): device/$(am__dirstamp) \
 	device/$(DEPDIR)/$(am__dirstamp)
-device/blkio.$(OBJEXT): device/$(am__dirstamp) \
-	device/$(DEPDIR)/$(am__dirstamp)
-device/chario.$(OBJEXT): device/$(am__dirstamp) \
+device/subrs.$(OBJEXT): device/$(am__dirstamp) \
 	device/$(DEPDIR)/$(am__dirstamp)
 device/kmsg.$(OBJEXT): device/$(am__dirstamp) \
 	device/$(DEPDIR)/$(am__dirstamp)
@@ -2139,13 +2542,13 @@ i386/i386at/iopl.$(OBJEXT): i386/i386at/$(am__dirstamp) \
 	i386/i386at/$(DEPDIR)/$(am__dirstamp)
 i386/i386at/kd.$(OBJEXT): i386/i386at/$(am__dirstamp) \
 	i386/i386at/$(DEPDIR)/$(am__dirstamp)
-i386/i386at/kdasm.$(OBJEXT): i386/i386at/$(am__dirstamp) \
-	i386/i386at/$(DEPDIR)/$(am__dirstamp)
 i386/i386at/kd_event.$(OBJEXT): i386/i386at/$(am__dirstamp) \
 	i386/i386at/$(DEPDIR)/$(am__dirstamp)
 i386/i386at/kd_mouse.$(OBJEXT): i386/i386at/$(am__dirstamp) \
 	i386/i386at/$(DEPDIR)/$(am__dirstamp)
 i386/i386at/kd_queue.$(OBJEXT): i386/i386at/$(am__dirstamp) \
+	i386/i386at/$(DEPDIR)/$(am__dirstamp)
+i386/i386at/kdasm.$(OBJEXT): i386/i386at/$(am__dirstamp) \
 	i386/i386at/$(DEPDIR)/$(am__dirstamp)
 i386/i386at/model_dep.$(OBJEXT): i386/i386at/$(am__dirstamp) \
 	i386/i386at/$(DEPDIR)/$(am__dirstamp)
@@ -2213,8 +2616,6 @@ i386/i386/trap.$(OBJEXT): i386/i386/$(am__dirstamp) \
 	i386/i386/$(DEPDIR)/$(am__dirstamp)
 i386/i386/user_ldt.$(OBJEXT): i386/i386/$(am__dirstamp) \
 	i386/i386/$(DEPDIR)/$(am__dirstamp)
-i386/i386/_setjmp.$(OBJEXT): i386/i386/$(am__dirstamp) \
-	i386/i386/$(DEPDIR)/$(am__dirstamp)
 i386/intel/$(am__dirstamp):
 	@$(MKDIR_P) i386/intel
 	@: > i386/intel/$(am__dirstamp)
@@ -2225,6 +2626,8 @@ i386/intel/pmap.$(OBJEXT): i386/intel/$(am__dirstamp) \
 	i386/intel/$(DEPDIR)/$(am__dirstamp)
 i386/intel/read_fault.$(OBJEXT): i386/intel/$(am__dirstamp) \
 	i386/intel/$(DEPDIR)/$(am__dirstamp)
+i386/i386/_setjmp.$(OBJEXT): i386/i386/$(am__dirstamp) \
+	i386/i386/$(DEPDIR)/$(am__dirstamp)
 chips/$(am__dirstamp):
 	@$(MKDIR_P) chips
 	@: > chips/$(am__dirstamp)
@@ -6196,7 +6599,7 @@ distdir: $(DISTFILES)
 	done
 	$(MAKE) $(AM_MAKEFLAGS) \
 	  top_distdir="$(top_distdir)" distdir="$(distdir)" \
-	  dist-info
+	  dist-info dist-hook
 	-find $(distdir) -type d ! -perm -777 -exec chmod a+rwx {} \; -o \
 	  ! -type d ! -perm -444 -links 1 -exec chmod a+r {} \; -o \
 	  ! -type d ! -perm -400 -exec chmod a+r {} \; -o \
@@ -6544,11 +6947,11 @@ uninstall-am: uninstall-dvi-am uninstall-exec_bootPROGRAMS \
 	all all-am am--refresh check check-TESTS check-am clean \
 	clean-exec_bootPROGRAMS clean-generic clean-noinstLIBRARIES \
 	clean-noinstPROGRAMS ctags ctags-recursive dist dist-all \
-	dist-bzip2 dist-gzip dist-info dist-shar dist-tarZ dist-zip \
-	distcheck distclean distclean-compile distclean-generic \
-	distclean-hdr distclean-tags distcleancheck distdir \
-	distuninstallcheck dvi dvi-am html html-am html-local info \
-	info-am install install-am install-data install-data-am \
+	dist-bzip2 dist-gzip dist-hook dist-info dist-shar dist-tarZ \
+	dist-zip distcheck distclean distclean-compile \
+	distclean-generic distclean-hdr distclean-tags distcleancheck \
+	distdir distuninstallcheck dvi dvi-am html html-am html-local \
+	info info-am install install-am install-data install-data-am \
 	install-data-hook install-dvi install-dvi-am install-exec \
 	install-exec-am install-exec_bootPROGRAMS \
 	install-exec_msgidsDATA install-html install-html-am \
@@ -6570,8 +6973,7 @@ uninstall-am: uninstall-dvi-am uninstall-exec_bootPROGRAMS \
 	uninstall-include_mach_i386HEADERS uninstall-info-am \
 	uninstall-pdf-am uninstall-ps-am
 
-
-%.symc: %.sym $(top_srcdir)/gensym.awk
+%.symc: %.sym gensym.awk
 	$(AWK) -f $(word 2,$^) $< > $@
 %.symc.o: %.symc
 	$(COMPILE) -S -x c -o $@ $<
@@ -6776,6 +7178,14 @@ $(srcdir)/doc/version.texi: $(srcdir)/doc/stamp-vti
 	    "\`$(web)/', ready for checking them in in there." &&	\
 	  sleep 2;							\
 	fi
+dist-hook: dist-hook-linux
+.PHONY: dist-hook-linux
+dist-hook-linux:
+# These symbolic links are copied from the build directory due to including
+# `linux/dev/include linux/src/include' to `EXTRA_DIST' above.
+	rm -f					\
+	  $(distdir)/linux/dev/include/asm	\
+	  $(distdir)/linux/src/include/asm
 
 #
 # Architecture specific parts.
@@ -6789,6 +7199,14 @@ clib-routines.o: gnumach-undef gnumach-undef-bad
 	then cat gnumach-undef-bad; exit 2; else true; fi
 	$(CCLD) -nostdlib -nostartfiles -r -static \
 	  -o $@ `sed 's/^/-Wl,-u,/' < $<` -x c /dev/null -lc
+
+dist-hook:
+# Try to be very safe with respect to spuriously removing various directories
+# in case of an error.
+	find $(distdir)/ -type d -name CVS | while read d; do	\
+	  rm -f "$$d"/{Entries,Repository,Root,Tag} &&		\
+	  rmdir "$$d";						\
+	done
 
 #
 # Legacy support.
