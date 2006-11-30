@@ -559,8 +559,8 @@ if [ x"$device_driver_group_wireless" = xselected ]; then]
 [fi]
 
 #
-# Create `asm-SYSTYPE' links.
+# Set up `asm-SYSTYPE' links.
 #
 
-AC_CONFIG_LINKS([linux/src/include/asm:linux/src/include/asm-${systype}
-		 linux/dev/include/asm:linux/dev/include/asm-${systype}])
+AC_CONFIG_LINKS([linux/src/include/asm:linux/src/include/asm-$systype
+		 linux/dev/include/asm:linux/dev/include/asm-$systype])

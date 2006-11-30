@@ -1,3 +1,30 @@
+2006-11-30  Barry deFreese  <bddebian@comcast.net>
+	    Thomas Schwinge  <tschwinge@gnu.org>
+
+	[bug #18015 --- ``GNU Mach: `make dist' and friends'']
+	* Makefile.am (DISTCHECK_CONFIGURE_FLAGS): New variable.
+	(EXTRA_DIST): Enhance with the patches and documentation files.
+	(dist-hook): New target to remove the `CVS' directories.
+	* Makefrag.am (libkernel_a_SOURCES, EXTRA_DIST): Add header and `mig'
+	input files.
+	(DISTCHECK_CONFIGURE_FLAGS): Enable the kernel debugger.
+	* i386/Makefrag.am: Likewise.  Also add `i386/i386/i386asm.sym',
+	`i386/ldscript' and `i386/README-Drivers'.
+	* i386/linux/Makefrag.am (liblinux_a_SOURCES): Add the header files
+	from `i386/linux/'.
+	* linux/Makefrag.am (liblinux_a_SOURCES, EXTRA_DIST)
+	(liblinux_pcmcia_cs_modules_a_SOURCES)
+	(liblinux_pcmcia_cs_clients_a_SOURCES)
+	(liblinux_pcmcia_cs_wireless_a_SOURCES): Add header and other included
+	files.
+	(dist-hook): Depend on `dist-hook-linux'.
+	(dist-hook-linux): New phony target to remove the `asm' symbolic links.
+	* Makerules.am (EXTRA_DIST): Add `gensym.awk'.
+	* doc/Makefrag.am (EXTRA_DIST): Add `$(mach_TEXINFOS)'.
+	* configure.ac (AC_CONFIG_LINKS): Move instantiation to...
+	* configfrag.ac: ... here and change quotation.
+	* linux/configfrag.ac (AC_CONFIG_LINKS): Change quotation.
+
 2006-11-29  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* configure: Regenerate.

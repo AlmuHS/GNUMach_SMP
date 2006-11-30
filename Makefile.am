@@ -25,6 +25,7 @@
 SUBDIRS =
 DIST_SUBDIRS =
 EXTRA_DIST =
+DISTCHECK_CONFIGURE_FLAGS =
 noinst_LIBRARIES =
 noinst_PROGRAMS =
 TESTS=
@@ -153,6 +154,26 @@ exec_bootdir = \
 	$(exec_prefix)/boot
 exec_boot_PROGRAMS = \
 	gnumach
+
+#
+# Building a distribution.
+#
+
+EXTRA_DIST += \
+	Makefile.correct_output_files_for_.S_files.patch \
+	config.status.dep.patch
+
+EXTRA_DIST += \
+	ChangeLog.0 ChangeLog.00 \
+	DEVELOPMENT
+
+dist-hook:
+# Try to be very safe with respect to spuriously removing various directories
+# in case of an error.
+	find $(distdir)/ -type d -name CVS | while read d; do	\
+	  rm -f "$$d"/{Entries,Repository,Root,Tag} &&		\
+	  rmdir "$$d";						\
+	done
 
 #
 # Legacy support.

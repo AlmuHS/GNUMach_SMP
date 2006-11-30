@@ -17,7 +17,9 @@
 # Building foo.h from foo.sym.
 #
 
-%.symc: %.sym $(top_srcdir)/gensym.awk
+EXTRA_DIST += \
+	gensym.awk
+%.symc: %.sym gensym.awk
 	$(AWK) -f $(word 2,$^) $< > $@
 %.symc.o: %.symc
 	$(COMPILE) -S -x c -o $@ $<

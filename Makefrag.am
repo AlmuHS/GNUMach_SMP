@@ -13,141 +13,290 @@
 # LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
 # USE OF THIS SOFTWARE.
 
+#
+# DDB support --- eventually to die.  Please.
+#
+
 # Do we want the icky kernel debugger?
 if enable_kdb
-# DDB support --- eventually to die.  Please.
 libkernel_a_SOURCES += \
 	ddb/db_access.c \
+	ddb/db_access.h \
 	ddb/db_aout.c \
 	ddb/db_break.c \
+	ddb/db_break.h \
 	ddb/db_command.c \
+	ddb/db_command.h \
 	ddb/db_cond.c \
 	ddb/db_examine.c \
 	ddb/db_expr.c \
+	ddb/db_expr.h \
 	ddb/db_ext_symtab.c \
 	ddb/db_input.c \
 	ddb/db_lex.c \
+	ddb/db_lex.h \
 	ddb/db_macro.c \
 	ddb/db_mp.c \
 	ddb/db_output.c \
+	ddb/db_output.h \
 	ddb/db_print.c \
+	ddb/db_print.h \
 	ddb/db_run.c \
+	ddb/db_run.h \
 	ddb/db_sym.c \
+	ddb/db_sym.h \
 	ddb/db_task_thread.c \
+	ddb/db_task_thread.h \
 	ddb/db_trap.c \
 	ddb/db_variables.c \
+	ddb/db_variables.h \
 	ddb/db_watch.c \
-	ddb/db_write_cmd.c 
+	ddb/db_watch.h \
+	ddb/db_write_cmd.c \
+	ddb/nlist.h \
+	ddb/stab.h \
+	ddb/tr.h
 endif
 
+
+#
 # IPC implementation.
+#
+
 libkernel_a_SOURCES += \
 	ipc/ipc_entry.c \
+	ipc/ipc_entry.h \
 	ipc/ipc_hash.c \
+	ipc/ipc_hash.h \
 	ipc/ipc_init.c \
+	ipc/ipc_init.h \
 	ipc/ipc_kmsg.c \
+	ipc/ipc_kmsg.h \
+	ipc/ipc_kmsg_queue.h \
+	ipc/ipc_machdep.h \
 	ipc/ipc_marequest.c \
+	ipc/ipc_marequest.h \
 	ipc/ipc_mqueue.c \
+	ipc/ipc_mqueue.h \
 	ipc/ipc_notify.c \
+	ipc/ipc_notify.h \
 	ipc/ipc_object.c \
+	ipc/ipc_object.h \
 	ipc/ipc_port.c \
+	ipc/ipc_port.h \
 	ipc/ipc_pset.c \
+	ipc/ipc_pset.h \
 	ipc/ipc_right.c \
+	ipc/ipc_right.h \
 	ipc/ipc_space.c \
+	ipc/ipc_space.h \
 	ipc/ipc_splay.c \
+	ipc/ipc_splay.h \
 	ipc/ipc_table.c \
+	ipc/ipc_table.h \
 	ipc/ipc_target.c \
+	ipc/ipc_target.h \
 	ipc/ipc_thread.c \
+	ipc/ipc_thread.h \
+	ipc/ipc_types.h \
 	ipc/mach_msg.c \
+	ipc/mach_msg.h \
 	ipc/mach_port.c \
 	ipc/mach_rpc.c \
-	ipc/mach_debug.c 
+	ipc/mach_debug.c \
+	ipc/port.h
+EXTRA_DIST += \
+	ipc/mach_port.srv
 
-# "kernel" implementation (tasks, threads, trivia, etc.).
+
+#
+# `kernel' implementation (tasks, threads, trivia, etc.).
+#
+
 libkernel_a_SOURCES += \
 	kern/act.c \
+	kern/act.h \
+	kern/assert.h \
 	kern/ast.c \
+	kern/ast.h \
+	kern/boot_script.h \
 	kern/bootstrap.c \
+	kern/compat_xxx_defs.h \
 	kern/counters.c \
+	kern/counters.h \
+	kern/cpu_number.h \
 	kern/debug.c \
+	kern/debug.h \
 	kern/eventcount.c \
+	kern/eventcount.h \
 	kern/exception.c \
 	kern/host.c \
+	kern/host.h \
 	kern/ipc_host.c \
+	kern/ipc_host.h \
 	kern/ipc_kobject.c \
+	kern/ipc_kobject.h \
 	kern/ipc_mig.c \
 	kern/ipc_sched.c \
+	kern/ipc_sched.h \
 	kern/ipc_tt.c \
+	kern/ipc_tt.h \
 	kern/kalloc.c \
+	kern/kalloc.h \
+	kern/kern_types.h \
 	kern/lock.c \
+	kern/lock.h \
 	kern/lock_mon.c \
 	kern/mach_clock.c \
+	kern/mach_clock.h \
 	kern/mach_factor.c \
+	kern/mach_factor.h \
+	kern/mach_param.h \
 	kern/machine.c \
+	kern/macro_help.h \
 	kern/pc_sample.c \
+	kern/pc_sample.h \
 	kern/printf.c \
+	kern/printf.h \
 	kern/priority.c \
 	kern/processor.c \
+	kern/processor.h \
 	kern/profile.c \
 	kern/queue.c \
+	kern/queue.h \
+	kern/refcount.h \
+	kern/sched.h \
 	kern/sched_prim.c \
+	kern/sched_prim.h \
+	kern/shuttle.h \
 	kern/startup.c \
 	kern/strings.c \
 	kern/syscall_emulation.c \
+	kern/syscall_emulation.h \
 	kern/syscall_subr.c \
+	kern/syscall_subr.h \
 	kern/syscall_sw.c \
+	kern/syscall_sw.h \
 	kern/task.c \
+	kern/task.h \
 	kern/thread.c \
+	kern/thread.h \
 	kern/thread_swap.c \
+	kern/thread_swap.h \
+	kern/time_out.h \
 	kern/time_stamp.c \
+	kern/time_stamp.h \
 	kern/timer.c \
+	kern/timer.h \
 	kern/xpr.c \
+	kern/xpr.h \
 	kern/zalloc.c \
+	kern/zalloc.h \
 	kern/elf-load.c \
 	kern/boot_script.c
+EXTRA_DIST += \
+	kern/mach.srv \
+	kern/mach4.srv \
+	kern/mach_debug.srv \
+	kern/mach_host.srv
 
+
+#
 # Still more trivia.
+#
+
 libkernel_a_SOURCES += \
 	util/putchar.c \
 	util/puts.c
 
+#
 # Virtual memory implementation.
+#
+
 libkernel_a_SOURCES += \
+	vm/memory_object.c \
+	vm/memory_object.h \
+	vm/pmap.h \
 	vm/vm_debug.c \
 	vm/vm_external.c \
+	vm/vm_external.h \
 	vm/vm_fault.c \
+	vm/vm_fault.h \
 	vm/vm_init.c \
 	vm/vm_kern.c \
+	vm/vm_kern.h \
 	vm/vm_map.c \
+	vm/vm_map.h \
 	vm/vm_object.c \
+	vm/vm_object.h \
+	vm/vm_page.h \
 	vm/vm_pageout.c \
+	vm/vm_pageout.h \
 	vm/vm_resident.c \
 	vm/vm_user.c \
-	vm/memory_object.c
+	vm/vm_user.h
+EXTRA_DIST += \
+	vm/memory_object_default.cli \
+	vm/memory_object_user.cli
+
+
+#
+# Device driver support.
+#
 
 # These device support files are always needed; the others are needed only if
 # particular drivers want the routines.
 # TODO.  Functions in device/subrs.c should each be moved elsewhere.
 libkernel_a_SOURCES += \
+	device/blkio.c \
+	device/buf.h \
+	device/chario.c \
+	device/cirbuf.h \
+	device/conf.h \
 	device/cons.c \
+	device/cons.h \
+	device/dev_hdr.h \
 	device/dev_lookup.c \
+	device/dev_master.h \
 	device/dev_name.c \
 	device/dev_pager.c \
 	device/device_init.c \
+	device/device_port.h \
+	device/device_types_kernel.h \
 	device/ds_routines.c \
-	device/subrs.c \
+	device/ds_routines.h \
+	device/errno.h \
+	device/if_ether.h \
+	device/if_hdr.h \
+	device/io_req.h \
+	device/kmsg.h \
 	device/net_io.c \
-	device/blkio.c \
-	device/chario.c
+	device/net_io.h \
+	device/param.h \
+	device/subrs.c \
+	device/tty.h
+EXTRA_DIST += \
+	device/device.srv \
+	device/device_pager.srv \
+	device/device_reply.cli \
+	device/memory_object_reply.cli
 
-# kmsg device.
+
+#
+# `kmsg' device.
+#
+
 if enable_kmsg
 libkernel_a_SOURCES += \
 	device/kmsg.c
 endif
 
+
+#
 # Version number.
-libkernel_a_SOURCES += \
+#
+
+nodist_libkernel_a_SOURCES += \
 	version.c
 
 #
@@ -245,6 +394,18 @@ include_mach_eXec_HEADERS = \
 install-data-hook:
 	rm -f '$(DESTDIR)$(include_machdir)'/machine
 	ln -s '$(systype)' '$(DESTDIR)$(include_machdir)'/machine
+
+#
+# Building a distribution.
+#
+
+# Enable all available features.
+DISTCHECK_CONFIGURE_FLAGS += \
+	--enable-kdb
+
+# Instead of listing each file individually...
+EXTRA_DIST += \
+	include
 
 #
 # Automatically generated source files.

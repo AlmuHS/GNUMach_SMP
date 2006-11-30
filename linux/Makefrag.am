@@ -74,6 +74,8 @@ liblinux_a_SOURCES += \
 	linux/src/drivers/block/cmd640.c \
 	linux/src/drivers/block/ide-cd.c \
 	linux/src/drivers/block/ide.c \
+	linux/src/drivers/block/ide.h \
+	linux/src/drivers/block/ide_modes.h \
 	linux/src/drivers/block/rz1000.c \
 	linux/src/drivers/block/triton.c
 endif
@@ -81,156 +83,216 @@ endif
 if device_driver_group_scsi
 liblinux_a_SOURCES += \
 	linux/src/drivers/scsi/constants.c \
+	linux/src/drivers/scsi/constants.h \
 	linux/src/drivers/scsi/hosts.c \
+	linux/src/drivers/scsi/hosts.h \
 	linux/src/drivers/scsi/scsi.c \
+	linux/src/drivers/scsi/scsi.h \
 	linux/src/drivers/scsi/scsi_ioctl.c \
 	linux/src/drivers/scsi/scsi_proc.c \
 	linux/src/drivers/scsi/scsicam.c \
 	linux/src/drivers/scsi/sd.c \
+	linux/src/drivers/scsi/sd.h \
 	linux/src/drivers/scsi/sd_ioctl.c \
 	linux/src/drivers/scsi/sr.c \
+	linux/src/drivers/scsi/sr.h \
 	linux/src/drivers/scsi/sr_ioctl.c
 endif
 
 if device_driver_53c78xx
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/53c78xx.c
+	linux/src/drivers/scsi/53c7,8xx.h \
+	linux/src/drivers/scsi/53c78xx.c \
+	linux/src/drivers/scsi/53c8xx_d.h \
+	linux/src/drivers/scsi/53c8xx_u.h
 endif
 
 if device_driver_AM53C974
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/AM53C974.c
+	linux/src/drivers/scsi/AM53C974.c \
+	linux/src/drivers/scsi/AM53C974.h
 endif
 
 if device_driver_BusLogic
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/BusLogic.c
+	linux/src/drivers/scsi/BusLogic.c \
+	linux/src/drivers/scsi/BusLogic.h
+EXTRA_DIST += \
+	linux/src/drivers/scsi/FlashPoint.c
 endif
 
 if device_driver_NCR53c406a
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/NCR53c406a.c
+	linux/src/drivers/scsi/NCR53c406a.c \
+	linux/src/drivers/scsi/NCR53c406a.h
 endif
 
 if device_driver_advansys
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/advansys.c
+	linux/src/drivers/scsi/advansys.c \
+	linux/src/drivers/scsi/advansys.h
 endif
 
 if device_driver_aha152x
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/aha152x.c
+	linux/src/drivers/scsi/aha152x.c \
+	linux/src/drivers/scsi/aha152x.h
 endif
 
 if device_driver_aha1542
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/aha1542.c
+	linux/src/drivers/scsi/aha1542.c \
+	linux/src/drivers/scsi/aha1542.h
 endif
 
 if device_driver_aha1740
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/aha1740.c
+	linux/src/drivers/scsi/aha1740.c \
+	linux/src/drivers/scsi/aha1740.h
 endif
 
 if device_driver_aic7xxx
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/aic7xxx.c
+	linux/src/drivers/scsi/aic7xxx.c \
+	linux/src/drivers/scsi/aic7xxx.h \
+	linux/src/drivers/scsi/aic7xxx/scsi_message.h \
+	linux/src/drivers/scsi/aic7xxx/sequencer.h \
+	linux/src/drivers/scsi/aic7xxx_reg.h
+EXTRA_DIST += \
+	linux/src/drivers/scsi/aic7xxx_proc.c \
+	linux/src/drivers/scsi/aic7xxx_seq.c
 endif
 
 if device_driver_dtc
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/dtc.c
+	linux/src/drivers/scsi/dtc.c \
+	linux/src/drivers/scsi/dtc.h
 endif
 
 if device_driver_eata
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/eata.c
+	linux/src/drivers/scsi/eata.c \
+	linux/src/drivers/scsi/eata.h \
+	linux/src/drivers/scsi/eata_generic.h
 endif
 
 if device_driver_eata_dma
 liblinux_a_SOURCES += \
-	linux/dev/drivers/scsi/eata_dma.c
+	linux/dev/drivers/scsi/eata_dma.c \
+	linux/src/drivers/scsi/eata_dma.h \
+	linux/src/drivers/scsi/eata_dma_proc.h
+EXTRA_DIST += \
+	linux/src/drivers/scsi/eata_dma_proc.c
 endif
 
 if device_driver_eata_pio
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/eata_pio.c
+	linux/src/drivers/scsi/eata_pio.c \
+	linux/src/drivers/scsi/eata_pio.h
+EXTRA_DIST += \
+	linux/src/drivers/scsi/eata_pio_proc.c
 endif
 
 if device_driver_fdomain
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/fdomain.c
+	linux/src/drivers/scsi/fdomain.c \
+	linux/src/drivers/scsi/fdomain.h
 endif
 
 if device_driver_g_NCR5380
 liblinux_a_SOURCES += \
-	linux/dev/drivers/scsi/g_NCR5380.c
+	linux/dev/drivers/scsi/g_NCR5380.c \
+	linux/src/drivers/scsi/g_NCR5380.h
 endif
 
 if device_driver_gdth
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/gdth.c
+	linux/src/drivers/scsi/gdth.c \
+	linux/src/drivers/scsi/gdth.h \
+	linux/src/drivers/scsi/gdth_ioctl.h \
+	linux/src/drivers/scsi/gdth_proc.h
+EXTRA_DIST += \
+	linux/src/drivers/scsi/gdth_proc.c
 endif
 
 if device_driver_in2000
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/in2000.c
+	linux/src/drivers/scsi/in2000.c \
+	linux/src/drivers/scsi/in2000.h
 endif
 
 if device_driver_ncr53c8xx
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/ncr53c8xx.c
+	linux/src/drivers/scsi/ncr53c8xx.c \
+	linux/src/drivers/scsi/ncr53c8xx.h
 endif
 
 if device_driver_pas16
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/pas16.c
+	linux/src/drivers/scsi/pas16.c \
+	linux/src/drivers/scsi/pas16.h
 endif
 
 if device_driver_ppa
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/ppa.c
+	linux/src/drivers/scsi/ppa.c \
+	linux/src/drivers/scsi/ppa.h
 endif
 
 if device_driver_qlogicfas
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/qlogicfas.c
+	linux/src/drivers/scsi/qlogicfas.c \
+	linux/src/drivers/scsi/qlogicfas.h
 endif
 
 if device_driver_qlogicisp
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/qlogicisp.c
+	linux/src/drivers/scsi/qlogicisp.c \
+	linux/src/drivers/scsi/qlogicisp.h
 endif
 
 if device_driver_seagate
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/seagate.c
+	linux/src/drivers/scsi/seagate.c \
+	linux/src/drivers/scsi/seagate.h
 endif
 
 if device_driver_t128
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/t128.c
+	linux/src/drivers/scsi/t128.c \
+	linux/src/drivers/scsi/t128.h
 endif
 
 if device_driver_tmscsim
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/tmscsim.c
+	linux/src/drivers/scsi/dc390.h \
+	linux/src/drivers/scsi/tmscsim.c \
+	linux/src/drivers/scsi/tmscsim.h
+EXTRA_DIST += \
+	linux/src/drivers/scsi/scsiiom.c
 endif
 
 if device_driver_u14_34f
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/u14-34f.c
+	linux/src/drivers/scsi/u14-34f.c \
+	linux/src/drivers/scsi/u14-34f.h
 endif
 
 if device_driver_ultrastor
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/ultrastor.c
+	linux/src/drivers/scsi/ultrastor.c \
+	linux/src/drivers/scsi/ultrastor.h
 endif
 
 if device_driver_wd7000
 liblinux_a_SOURCES += \
-	linux/src/drivers/scsi/wd7000.c
+	linux/src/drivers/scsi/wd7000.c \
+	linux/src/drivers/scsi/wd7000.h
 endif
+
+EXTRA_DIST += \
+	linux/src/drivers/scsi/NCR5380.c \
+	linux/src/drivers/scsi/NCR5380.h
 
 if device_driver_group_net
 liblinux_a_SOURCES += \
@@ -239,7 +301,8 @@ liblinux_a_SOURCES += \
 	linux/dev/drivers/net/Space.c \
 	linux/dev/net/core/dev.c \
 	linux/dev/drivers/net/net_init.c \
-	linux/src/drivers/net/pci-scan.c
+	linux/src/drivers/net/pci-scan.c \
+	linux/src/drivers/net/pci-scan.h
 endif
 
 if device_driver_3c501
@@ -250,12 +313,14 @@ endif
 if device_driver_3c503
 liblinux_a_SOURCES += \
 	linux/src/drivers/net/3c503.c \
+	linux/src/drivers/net/3c503.h \
 	linux/src/drivers/net/8390.c
 endif
 
 if device_driver_3c505
 liblinux_a_SOURCES += \
-	linux/src/drivers/net/3c505.c
+	linux/src/drivers/net/3c505.c \
+	linux/src/drivers/net/3c505.h
 endif
 
 if device_driver_3c507
@@ -296,7 +361,8 @@ endif
 
 if device_driver_atp
 liblinux_a_SOURCES += \
-	linux/src/drivers/net/atp.c
+	linux/src/drivers/net/atp.c \
+	linux/src/drivers/net/atp.h
 endif
 
 #if device_driver_cb_shim
@@ -306,7 +372,8 @@ endif
 
 if device_driver_de4x5
 liblinux_a_SOURCES += \
-	linux/src/drivers/net/de4x5.c
+	linux/src/drivers/net/de4x5.c \
+	linux/src/drivers/net/de4x5.h
 endif
 
 if device_driver_de600
@@ -316,12 +383,14 @@ endif
 
 if device_driver_de620
 liblinux_a_SOURCES += \
-	linux/src/drivers/net/de620.c
+	linux/src/drivers/net/de620.c \
+	linux/src/drivers/net/de620.h
 endif
 
 if device_driver_depca
 liblinux_a_SOURCES += \
-	linux/src/drivers/net/depca.c
+	linux/src/drivers/net/depca.c \
+	linux/src/drivers/net/depca.h
 endif
 
 if device_driver_e2100
@@ -342,7 +411,8 @@ endif
 
 if device_driver_eexpress
 liblinux_a_SOURCES += \
-	linux/src/drivers/net/eexpress.c
+	linux/src/drivers/net/eexpress.c \
+	linux/src/drivers/net/eth82586.h
 endif
 
 if device_driver_epic100
@@ -357,7 +427,8 @@ endif
 
 if device_driver_ewrk3
 liblinux_a_SOURCES += \
-	linux/src/drivers/net/ewrk3.c
+	linux/src/drivers/net/ewrk3.c \
+	linux/src/drivers/net/ewrk3.h
 endif
 
 if device_driver_fmv18x
@@ -384,7 +455,8 @@ endif
 
 if device_driver_hp100
 liblinux_a_SOURCES += \
-	linux/src/drivers/net/hp100.c
+	linux/src/drivers/net/hp100.c \
+	linux/src/drivers/net/hp100.h
 endif
 
 if device_driver_intel_gige
@@ -421,12 +493,14 @@ endif
 
 if device_driver_ni52
 liblinux_a_SOURCES += \
-	linux/src/drivers/net/ni52.c
+	linux/src/drivers/net/ni52.c \
+	linux/src/drivers/net/ni52.h
 endif
 
 if device_driver_ni65
 liblinux_a_SOURCES += \
-	linux/src/drivers/net/ni65.c
+	linux/src/drivers/net/ni65.c \
+	linux/src/drivers/net/ni65.h
 endif
 
 if device_driver_ns820
@@ -446,12 +520,14 @@ endif
 
 if device_driver_seeq8005
 liblinux_a_SOURCES += \
-	linux/src/drivers/net/seeq8005.c
+	linux/src/drivers/net/seeq8005.c \
+	linux/src/drivers/net/seeq8005.h
 endif
 
 if device_driver_sk_g16
 liblinux_a_SOURCES += \
-	linux/src/drivers/net/sk_g16.c
+	linux/src/drivers/net/sk_g16.c \
+	linux/src/drivers/net/sk_g16.h
 endif
 
 if device_driver_smc_ultra
@@ -478,7 +554,8 @@ endif
 
 if device_driver_tlan
 liblinux_a_SOURCES += \
-	linux/src/drivers/net/tlan.c
+	linux/src/drivers/net/tlan.c \
+	linux/src/drivers/net/tlan.h
 endif
 
 if device_driver_tulip
@@ -493,7 +570,10 @@ endif
 
 if device_driver_wavelan
 liblinux_a_SOURCES += \
-	linux/src/drivers/net/wavelan.c
+	linux/src/drivers/net/i82586.h \
+	linux/src/drivers/net/wavelan.c \
+	linux/src/drivers/net/wavelan.h \
+	linux/dev/drivers/net/wavelan.p.h
 endif
 
 if device_driver_wd
@@ -517,6 +597,10 @@ liblinux_a_SOURCES += \
 	linux/src/drivers/net/znet.c
 endif
 
+EXTRA_DIST += \
+	linux/src/drivers/net/8390.h \
+	linux/src/drivers/net/kern_compat.h
+
 # pcmcia-cs.
 
 liblinux_pcmcia_cs_modules_a_CPPFLAGS = $(liblinux_a_CPPFLAGS) \
@@ -532,17 +616,31 @@ gnumach_o_LDADD += \
 if device_driver_group_pcmcia
 liblinux_pcmcia_cs_modules_a_SOURCES += \
 	linux/pcmcia-cs/glue/pcmcia.c \
+	linux/pcmcia-cs/glue/pcmcia_glue.h \
 	linux/pcmcia-cs/modules/cs.c \
+	linux/pcmcia-cs/modules/cs_internal.h \
 	linux/pcmcia-cs/modules/ds.c \
 	linux/pcmcia-cs/modules/rsrc_mgr.c \
 	linux/pcmcia-cs/modules/bulkmem.c \
 	linux/pcmcia-cs/modules/cistpl.c \
 	linux/pcmcia-cs/modules/pci_fixup.c
+EXTRA_DIST += \
+	linux/pcmcia-cs/glue/ds.c
 endif
 
 if device_driver_i82365
 liblinux_pcmcia_cs_modules_a_SOURCES += \
-	linux/pcmcia-cs/modules/i82365.c
+	linux/pcmcia-cs/modules/cirrus.h \
+	linux/pcmcia-cs/modules/ene.h \
+	linux/pcmcia-cs/modules/i82365.c \
+	linux/pcmcia-cs/modules/i82365.h \
+	linux/pcmcia-cs/modules/o2micro.h \
+	linux/pcmcia-cs/modules/ricoh.h \
+	linux/pcmcia-cs/modules/smc34c90.h \
+	linux/pcmcia-cs/modules/ti113x.h \
+	linux/pcmcia-cs/modules/topic.h \
+	linux/pcmcia-cs/modules/vg468.h \
+	linux/pcmcia-cs/modules/yenta.h
 endif
 
 liblinux_pcmcia_cs_clients_a_CPPFLAGS = $(liblinux_a_CPPFLAGS) \
@@ -567,6 +665,7 @@ endif
 
 if device_driver_axnet_cs
 liblinux_pcmcia_cs_clients_a_SOURCES += \
+	linux/pcmcia-cs/clients/ax8390.h \
 	linux/pcmcia-cs/clients/axnet_cs.c
 endif
 
@@ -588,6 +687,7 @@ endif
 
 if device_driver_smc91c92_cs
 liblinux_pcmcia_cs_clients_a_SOURCES += \
+	linux/pcmcia-cs/clients/ositech.h \
 	linux/pcmcia-cs/clients/smc91c92_cs.c
 endif
 
@@ -608,10 +708,38 @@ gnumach_o_LDADD += \
 
 if device_driver_orinoco_cs
 liblinux_pcmcia_cs_wireless_a_SOURCES += \
+	linux/pcmcia-cs/glue/wireless_glue.h \
 	linux/pcmcia-cs/wireless/hermes.c \
+	linux/pcmcia-cs/wireless/hermes.h \
+	linux/pcmcia-cs/wireless/hermes_rid.h \
+	linux/pcmcia-cs/wireless/ieee802_11.h \
 	linux/pcmcia-cs/wireless/orinoco.c \
+	linux/pcmcia-cs/wireless/orinoco.h \
 	linux/pcmcia-cs/wireless/orinoco_cs.c
 endif
+
+#
+# Building a distribution.
+#
+
+EXTRA_DIST += \
+	linux/dev/README \
+	linux/src/COPYING
+
+# Instead of listing each file individually...
+EXTRA_DIST += \
+	linux/dev/include \
+	linux/src/include
+EXTRA_DIST += \
+	linux/pcmcia-cs/include
+dist-hook: dist-hook-linux
+.PHONY: dist-hook-linux
+dist-hook-linux:
+# These symbolic links are copied from the build directory due to including
+# `linux/dev/include linux/src/include' to `EXTRA_DIST' above.
+	rm -f					\
+	  $(distdir)/linux/dev/include/asm	\
+	  $(distdir)/linux/src/include/asm
 
 #
 # Architecture specific parts.

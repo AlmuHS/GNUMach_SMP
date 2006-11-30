@@ -141,13 +141,7 @@ AM_CONDITIONAL([disable_smashing_stack_protector],
 # Output.
 #
 
-# Set up `machine' and `mach/machine' links in the build directory for easier
-# header file location.
-AC_CONFIG_LINKS([machine:${systype}/${systype}
-		 mach/machine:${systype}/include/mach/${systype}])
-
 AC_CONFIG_HEADER([config.h])
-
 AC_CONFIG_FILES([Makefile version.c])
 
 #

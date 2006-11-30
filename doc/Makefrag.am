@@ -24,6 +24,8 @@ info_TEXINFOS += \
 	doc/mach.texi
 mach_TEXINFOS = \
 	doc/fdl.texi doc/gpl.texi
+EXTRA_DIST += \
+	$(mach_TEXINFOS)
 
 #
 # Web pages of the GNU Mach Reference Manual.
