@@ -1,5 +1,14 @@
 2006-12-03  Thomas Schwinge  <tschwinge@gnu.org>
 
+	[bug #17120 --- ``GNU Mach debian dir'']
+	* debian/README.Debian: Remove file.
+	* debian/changelog: Likewise.
+	* debian/control: Likewise.
+	* debian/copyright: Likewise.
+	* debian/postinst: Likewise.
+	* debian/prerm: Likewise.
+	* debian/rules: Likewise.
+
 	[bug #18015 --- ``GNU Mach: `make dist' and friends'']
 	* Makefile.am (DISTCLEANFILES): New variable.
 
