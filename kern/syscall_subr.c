@@ -65,7 +65,6 @@
 extern void thread_depress_priority();
 extern kern_return_t thread_depress_abort();
 
-#ifdef CONTINUATIONS
 void swtch_continue()
 {
 	register processor_t	myprocessor;
@@ -75,9 +74,6 @@ void swtch_continue()
 			      myprocessor->processor_set->runq.count > 0);
 	/*NOTREACHED*/
 }
-#else	/* not CONTINUATIONS */
-#define swtch_continue 0
-#endif	/* not CONTINUATIONS */
 
 boolean_t swtch()
 {
@@ -97,7 +93,6 @@ boolean_t swtch()
 	       myprocessor->processor_set->runq.count > 0);
 }
 
-#ifdef CONTINUATIONS
 void swtch_pri_continue()
 {
 	register thread_t	thread = current_thread();
@@ -110,9 +105,6 @@ void swtch_pri_continue()
 			      myprocessor->processor_set->runq.count > 0);
 	/*NOTREACHED*/
 }
-#else	/* not CONTINUATIONS */
-#define swtch_pri_continue 0
-#endif	/* not CONTINUATIONS */
 
 boolean_t  swtch_pri(pri)
 	int pri;
@@ -149,7 +141,6 @@ boolean_t  swtch_pri(pri)
 
 extern int hz;
 
-#ifdef CONTINUATIONS
 void thread_switch_continue()
 {
 	register thread_t	cur_thread = current_thread();
@@ -162,9 +153,6 @@ void thread_switch_continue()
 	thread_syscall_return(KERN_SUCCESS);
 	/*NOTREACHED*/
 }
-#else	/* not CONTINUATIONS */
-#define thread_switch_continue 0
-#endif	/* not CONTINUATIONS */
 
 /*
  *	thread_switch:

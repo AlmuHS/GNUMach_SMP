@@ -18,7 +18,6 @@ dnl USE OF THIS SOFTWARE.
 #
 
 # Some of the i386-specific code checks for these.
-AC_DEFINE([CONTINUATIONS], [1], [CONTINUATIONS])
 AC_DEFINE([__ELF__], [1], [__ELF__])
 AC_DEFINE([i386], [1], [i386])
 

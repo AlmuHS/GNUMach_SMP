@@ -44,6 +44,9 @@ Support for PS2, i860, iPSC 386/860 and MB1/MB2/EXL was removed on
 Support for the old ipc interface, MACH_IPC_COMPAT, was removed on 2006-12-03.
 <http://savannah.gnu.org/patch/?5017>.
 
+Support for building without CONTINUATIONS was removed on 2006-12-03.
+<http://savannah.gnu.org/patch/?5019>.
+
 
 Be sure to check the ChangeLog and have a look at the repository at that
 tag's state if you want to work on those parts of GNU Mach.

@@ -63,10 +63,6 @@
 
 extern void exception_raise_continue();
 extern void exception_raise_continue_fast();
-#ifndef CONTINUATIONS
-#define mach_msg_receive_continue	0
-#define msg_receive_continue		0
-#endif
 
 /*
  *	Routine:	mach_msg_send
@@ -198,7 +194,6 @@ mach_msg_receive(msg, option, rcv_size, rcv_name, time_out, notify)
 		return mr;
 	/* hold ref for object; mqueue is locked */
 
-#ifdef CONTINUATIONS
 	/*
 	 *	ipc_mqueue_receive may not return, because if we block
 	 *	then our kernel stack may be discarded.  So we save
@@ -212,7 +207,6 @@ mach_msg_receive(msg, option, rcv_size, rcv_name, time_out, notify)
 	self->ith_notify = notify;
 	self->ith_object = object;
 	self->ith_mqueue = mqueue;
-#endif
 
 	if (option & MACH_RCV_LARGE) {
 		mr = ipc_mqueue_receive(mqueue, option & MACH_RCV_TIMEOUT,
@@ -278,7 +272,6 @@ mach_msg_receive(msg, option, rcv_size, rcv_name, time_out, notify)
 	return ipc_kmsg_put(msg, kmsg, kmsg->ikm_header.msgh_size);
 }
 
-#ifdef CONTINUATIONS
 /*
  *	Routine:	mach_msg_receive_continue
  *	Purpose:
@@ -376,7 +369,6 @@ mach_msg_receive_continue()
 	thread_syscall_return(mr);
 	/*NOTREACHED*/
 }
-#endif /* CONTINUATIONS */
 
 /*
  *	Routine:	mach_msg_trap [mach trap]
@@ -400,7 +392,6 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 {
 	mach_msg_return_t mr;
 
-#ifdef	CONTINUATIONS
 	/* first check for common cases */
 
 	if (option == (MACH_SEND_MSG|MACH_RCV_MSG)) {
@@ -1653,7 +1644,6 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 		thread_syscall_return(MACH_MSG_SUCCESS);
 		/*NOTREACHED*/
 	}
-#endif	/* CONTINUATIONS */
 
 	if (option & MACH_SEND_MSG) {
 		mr = mach_msg_send(msg, option, send_size,
@@ -1672,7 +1662,6 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 	return MACH_MSG_SUCCESS;
 }
 
-#ifdef CONTINUATIONS
 /*
  *	Routine:	mach_msg_continue
  *	Purpose:
@@ -1775,4 +1764,3 @@ mach_msg_interrupt(thread)
 	thread->swap_func = thread_exception_return;
 	return TRUE;
 }
-#endif /* CONTINUATIONS */

@@ -676,18 +676,8 @@ void vm_pageout_scan()
 			thread_will_wait_with_timeout(current_thread(), msecs);
 			counter(c_vm_pageout_scan_block++);
 			thread_block(vm_pageout_scan_continue);
-#ifndef CONTINUATIONS
-			/*
-			 *	Unfortunately, we don't have call_continuation
-			 *	so we can't rely on tail-recursion.
-			 */
-
-			vm_pageout_scan_continue();
-			goto Restart;
-#else	/* CONTINUATIONS */
 			call_continuation(vm_pageout_scan_continue);
 			/*NOTREACHED*/
-#endif	/* CONTINUATIONS */
 		}
 
 		vm_pageout_inactive++;
@@ -886,10 +876,8 @@ void vm_pageout_scan_continue()
 	}
 	vm_page_unlock_queues();
 
-#ifdef	CONTINUATIONS
 	vm_pageout_continue();
 	/*NOTREACHED*/
-#endif	/* CONTINUATIONS */
 }
 
 /*

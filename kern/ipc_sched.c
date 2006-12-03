@@ -166,7 +166,6 @@ thread_will_wait_with_timeout(
 #define	check_bound_processor(thread)	TRUE
 #endif	/* NCPUS > 1 */
 
-#ifdef CONTINUATIONS
 /*
  *	Routine:	thread_handoff
  *	Purpose:
@@ -282,4 +281,3 @@ thread_handoff(
 	counter_always(c_thread_handoff_hits++);
 	return TRUE;
 }
-#endif /* CONTINUATIONS */

@@ -241,7 +241,6 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 	boolean_t	look_for_page;
 	vm_prot_t	access_required;
 
-#ifdef CONTINUATIONS
 	if (resume) {
 		register vm_fault_state_t *state =
 			(vm_fault_state_t *) current_thread()->ith_other;
@@ -255,10 +254,6 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 		access_required = state->vmfp_access;
 		goto after_thread_block;
 	}
-#else /* not CONTINUATIONS */
-	assert(continuation == 0);
-	assert(!resume);
-#endif /* not CONTINUATIONS */
 
 	vm_stat_sample(SAMPLED_PC_VM_FAULTS_ANY);
 	vm_stat.faults++;		/* needs lock XXX */
@@ -363,7 +358,6 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 
 				PAGE_ASSERT_WAIT(m, interruptible);
 				vm_object_unlock(object);
-#ifdef CONTINUATIONS
 				if (continuation != (void (*)()) 0) {
 					register vm_fault_state_t *state =
 						(vm_fault_state_t *) current_thread()->ith_other;
@@ -385,7 +379,6 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 					counter(c_vm_fault_page_block_busy_user++);
 					thread_block(continuation);
 				} else
-#endif /* CONTINUATIONS */
 				{
 					counter(c_vm_fault_page_block_busy_kernel++);
 					thread_block((void (*)()) 0);
@@ -1097,7 +1090,6 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
     block_and_backoff:
 	vm_fault_cleanup(object, first_m);
 
-#ifdef CONTINUATIONS
 	if (continuation != (void (*)()) 0) {
 		register vm_fault_state_t *state =
 			(vm_fault_state_t *) current_thread()->ith_other;
@@ -1112,7 +1104,6 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 		counter(c_vm_fault_page_block_backoff_user++);
 		thread_block(continuation);
 	} else
-#endif /* CONTINUATIONS */
 	{
 		counter(c_vm_fault_page_block_backoff_kernel++);
 		thread_block((void (*)()) 0);
@@ -1146,7 +1137,6 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
  *		and deallocated when leaving vm_fault.
  */
 
-#ifdef CONTINUATIONS
 void
 vm_fault_continue()
 {
@@ -1160,7 +1150,6 @@ vm_fault_continue()
 			TRUE, state->vmf_continuation);
 	/*NOTREACHED*/
 }
-#endif /* CONTINUATIONS */
 
 kern_return_t vm_fault(map, vaddr, fault_type, change_wiring,
 		       resume, continuation)
@@ -1184,7 +1173,6 @@ kern_return_t vm_fault(map, vaddr, fault_type, change_wiring,
 	register
 	vm_page_t		m;	/* Fast access to result_page */
 
-#ifdef CONTINUATIONS
 	if (resume) {
 		register vm_fault_state_t *state =
 			(vm_fault_state_t *) current_thread()->ith_other;
@@ -1227,10 +1215,6 @@ kern_return_t vm_fault(map, vaddr, fault_type, change_wiring,
 		current_thread()->ith_other = state;
 
 	}
-#else /* not CONTINUATIONS */
-	assert(continuation == 0);
-	assert(!resume);
-#endif /* not CONTINUATIONS */
 
     RetryFault: ;
 
@@ -1265,7 +1249,6 @@ kern_return_t vm_fault(map, vaddr, fault_type, change_wiring,
 	object->ref_count++;
 	vm_object_paging_begin(object);
 
-#ifdef CONTINUATIONS
 	if (continuation != (void (*)()) 0) {
 		register vm_fault_state_t *state =
 			(vm_fault_state_t *) current_thread()->ith_other;
@@ -1292,7 +1275,6 @@ kern_return_t vm_fault(map, vaddr, fault_type, change_wiring,
 				   &prot, &result_page, &top_page,
 				   FALSE, vm_fault_continue);
 	} else
-#endif /* CONTINUATIONS */
 	{
 		kr = vm_fault_page(object, offset, fault_type,
 				   (change_wiring && !wired), !change_wiring,
@@ -1321,7 +1303,6 @@ kern_return_t vm_fault(map, vaddr, fault_type, change_wiring,
 			kr = KERN_SUCCESS;
 			goto done;
 		case VM_FAULT_MEMORY_SHORTAGE:
-#ifdef CONTINUATIONS
 			if (continuation != (void (*)()) 0) {
 				register vm_fault_state_t *state =
 					(vm_fault_state_t *) current_thread()->ith_other;
@@ -1340,7 +1321,6 @@ kern_return_t vm_fault(map, vaddr, fault_type, change_wiring,
 
 				VM_PAGE_WAIT(vm_fault_continue);
 			} else
-#endif /* CONTINUATIONS */
 				VM_PAGE_WAIT((void (*)()) 0);
 			goto RetryFault;
 		case VM_FAULT_FICTITIOUS_SHORTAGE:
@@ -1506,7 +1486,6 @@ kern_return_t vm_fault(map, vaddr, fault_type, change_wiring,
 #undef	RELEASE_PAGE
 
     done:
-#ifdef CONTINUATIONS
 	if (continuation != (void (*)()) 0) {
 		register vm_fault_state_t *state =
 			(vm_fault_state_t *) current_thread()->ith_other;
@@ -1515,7 +1494,6 @@ kern_return_t vm_fault(map, vaddr, fault_type, change_wiring,
 		(*continuation)(kr);
 		/*NOTREACHED*/
 	}
-#endif /* CONTINUATIONS */
 
 	return(kr);
 }

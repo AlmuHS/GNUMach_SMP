@@ -126,7 +126,6 @@ void evc_notify_abort(thread_t thread)
     splx(s);
 }
 
-#ifdef CONTINUATIONS
 /*
  * Just so that we return success, and give
  * up the stack while blocked
@@ -137,9 +136,6 @@ evc_continue(void)
 	thread_syscall_return(KERN_SUCCESS);
 	/* NOTREACHED */
 }
-#else /* not CONTINUATIONS */
-#define evc_continue 0
-#endif /* not CONTINUATIONS */
 
 /*
  * User-trappable

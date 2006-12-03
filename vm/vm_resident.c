@@ -1202,10 +1202,6 @@ void vm_page_wait(
 	void (*continuation)(void))
 {
 
-#ifndef CONTINUATIONS
-	assert (continuation == 0);
-#endif
-
 	/*
 	 *	We can't use vm_page_free_reserved to make this
 	 *	determination.  Consider: some thread might
