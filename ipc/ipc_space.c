@@ -149,33 +149,6 @@ ipc_space_create(
 	space->is_tree_small = 0;
 	space->is_tree_hash = 0;
 
-#if	MACH_IPC_COMPAT
-    {
-	mach_port_t name;
-	ipc_port_t port;
-	kern_return_t kr;
-
-	/*
-	 *	ipc_port_alloc_compat probably won't look at is_notify,
-	 *	but make sure all fields have sane values anyway.
-	 */
-
-	space->is_notify = IP_NULL;
-
-	kr = ipc_port_alloc_compat(space, &name, &port);
-	if (kr != KERN_SUCCESS) {
-		ipc_space_destroy(space);
-		is_release(space);
-		return kr;
-	}
-
-	ip_reference(port);
-	port->ip_srights++;
-	ip_unlock(port);
-	space->is_notify = port;
-    }
-#endif	/* MACH_IPC_COMPAT */
-
 	*spacep = space;
 	return KERN_SUCCESS;
 }
@@ -297,11 +270,6 @@ ipc_space_destroy(
 		ipc_right_clean(space, name, &tentry->ite_entry);
 	}
 	ipc_splay_traverse_finish(&space->is_tree);
-
-#if	MACH_IPC_COMPAT
-	if (IP_VALID(space->is_notify))
-		ipc_port_release_send(space->is_notify);
-#endif	/* MACH_IPC_COMPAT */
 
 	/*
 	 *	Because the space is now dead,

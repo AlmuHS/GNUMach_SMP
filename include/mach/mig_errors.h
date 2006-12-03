@@ -86,16 +86,4 @@ typedef	int	(*mig_routine_t)();	/* PCC cannot handle void (*)() */
 #endif
 #endif
 
-/* Definitions for the old IPC interface. */
-
-#if	MACH_IPC_COMPAT
-
-typedef struct {
-	msg_header_t		Head;
-	msg_type_t		RetCodeType;
-	kern_return_t		RetCode;
-} death_pill_t;
-
-#endif	/* MACH_IPC_COMPAT */
-
 #endif	/* _MACH_MIG_ERRORS_H_ */

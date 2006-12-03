@@ -148,30 +148,6 @@ typedef struct ipc_port_request {
 
 #define	IPR_NULL		((ipc_port_request_t) 0)
 
-#if	MACH_IPC_COMPAT
-/*
- *	For backwards compatibility, the ip_pdrequest field can hold a
- *	send right instead of a send-once right.  This is indicated by
- *	the low bit of the pointer.  This works because the zone package
- *	guarantees that the two low bits of port pointers are zero.
- */
-
-#define	ip_pdsendp(soright)	((unsigned int)(soright) & 1)
-#define ip_pdsend(soright)	((ipc_port_t)((unsigned int)(soright) &~ 1))
-#define	ip_pdsendm(sright)	((ipc_port_t)((unsigned int)(sright) | 1))
-
-/*
- *	For backwards compatibility, the ipr_soright field can hold
- *	a space pointer.  This is indicated by the low bit of the pointer.
- *	This works because the zone package guarantees that the two low
- *	bits of port and space pointers are zero.
- */
-
-#define	ipr_spacep(soright)	((unsigned int)(soright) & 1)
-#define ipr_space(soright)	((ipc_space_t)((unsigned int)(soright) &~ 1))
-#define	ipr_spacem(space)	((ipc_port_t)((unsigned int)(space) | 1))
-#endif	/* MACH_IPC_COMPAT */
-
 /*
  *	Taking the ipc_port_multiple lock grants the privilege
  *	to lock multiple ports at once.  No ports must locked
@@ -348,19 +324,6 @@ ipc_port_dealloc_special(/* ipc_port_t */);
 
 #define	ipc_port_release(port)		\
 		ipc_object_release(&(port)->ip_object)
-
-#if	MACH_IPC_COMPAT
-
-extern kern_return_t
-ipc_port_alloc_compat(/* ipc_space_t, mach_port_t *, ipc_port_t * */);
-
-extern mach_port_t
-ipc_port_copyout_send_compat(/* ipc_port_t, ipc_space_t */);
-
-extern mach_port_t
-ipc_port_copyout_receiver(/* ipc_port_t, ipc_space_t */);
-
-#endif	/* MACH_IPC_COMPAT */
 
 extern void
 ipc_port_print(/* ipc_port_t */);

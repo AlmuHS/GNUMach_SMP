@@ -214,13 +214,6 @@ ipc_right_dnrequest(
 				/* port is locked and active */
 
 				if (notify == IP_NULL) {
-#if	MACH_IPC_COMPAT
-					if (bits & IE_BITS_COMPAT) {
-						assert(entry->ie_request != 0);
-
-						previous = IP_NULL;
-					} else
-#endif	/* MACH_IPC_COMPAT */
 					previous = ipc_right_dncancel_macro(
 						space, port, name, entry);
 
@@ -260,19 +253,9 @@ ipc_right_dnrequest(
 				ip_unlock(port);
 
 				entry->ie_request = request;
-#if	MACH_IPC_COMPAT
-				entry->ie_bits = bits &~ IE_BITS_COMPAT;
-#endif	/* MACH_IPC_COMPAT */
 				is_write_unlock(space);
 				break;
 			}
-
-#if	MACH_IPC_COMPAT
-			if (bits & IE_BITS_COMPAT) {
-				is_write_unlock(space);
-				return KERN_INVALID_NAME;
-			}
-#endif	/* MACH_IPC_COMPAT */
 
 			bits = entry->ie_bits;
 			assert(bits & MACH_PORT_TYPE_DEAD_NAME);
@@ -334,19 +317,6 @@ ipc_right_dncancel(
 	dnrequest = ipc_port_dncancel(port, name, entry->ie_request);
 	entry->ie_request = 0;
 
-#if	MACH_IPC_COMPAT
-	assert(!ipr_spacep(dnrequest) == !(entry->ie_bits & IE_BITS_COMPAT));
-
-	/* if this is actually a space ptr, just release the ref */
-
-	if (entry->ie_bits & IE_BITS_COMPAT) {
-		assert(space == ipr_space(dnrequest));
-
-		is_release(space);
-		dnrequest = IP_NULL;
-	}
-#endif	/* MACH_IPC_COMPAT */
-
 	return dnrequest;
 }
 
@@ -369,57 +339,6 @@ ipc_right_inuse(space, name, entry)
 	ipc_entry_bits_t bits = entry->ie_bits;
 
 	if (IE_BITS_TYPE(bits) != MACH_PORT_TYPE_NONE) {
-#if	MACH_IPC_COMPAT
-		mach_port_type_t type = IE_BITS_TYPE(bits);
-
-		/*
-		 *	There is yet hope.  If the port has died, we
-		 *	must clean up the entry so it's as good as new.
-		 */
-
-		if ((bits & IE_BITS_COMPAT) &&
-		    ((type == MACH_PORT_TYPE_SEND) ||
-		     (type == MACH_PORT_TYPE_SEND_ONCE))) {
-			ipc_port_t port;
-			boolean_t active;
-
-			assert(IE_BITS_UREFS(bits) > 0);
-			assert(entry->ie_request != 0);
-
-			port = (ipc_port_t) entry->ie_object;
-			assert(port != IP_NULL);
-
-			ip_lock(port);
-			active = ip_active(port);
-			ip_unlock(port);
-
-			if (!active) {
-				if (type == MACH_PORT_TYPE_SEND) {
-					/* clean up msg-accepted request */
-
-					if (bits & IE_BITS_MAREQUEST)
-						ipc_marequest_cancel(
-								space, name);
-
-					ipc_hash_delete(
-						space, (ipc_object_t) port,
-						name, entry);
-				} else {
-					assert(IE_BITS_UREFS(bits) == 1);
-					assert(!(bits & IE_BITS_MAREQUEST));
-				}
-
-				ipc_port_release(port);
-
-				entry->ie_request = 0;
-				entry->ie_object = IO_NULL;
-				entry->ie_bits &= ~IE_BITS_RIGHT_MASK;
-
-				return FALSE;
-			}
-		}
-#endif	/* MACH_IPC_COMPAT */
-
 		is_write_unlock(space);
 		return TRUE;
 	}
@@ -437,11 +356,6 @@ ipc_right_inuse(space, name, entry)
  *		If returns FALSE, the port is also locked and active.
  *		Otherwise, entry is converted to a dead name, freeing
  *		a reference to port.
- *
- *		[MACH_IPC_COMPAT] If the port is dead, and this is a
- *		compat mode entry, then the port reference is released
- *		and the entry is destroyed.  The call returns TRUE,
- *		and the space is left locked.
  */
 
 boolean_t
@@ -486,18 +400,6 @@ ipc_right_check(space, port, name, entry)
 	}
 
 	ipc_port_release(port);
-
-#if	MACH_IPC_COMPAT
-	if (bits & IE_BITS_COMPAT) {
-		assert(entry->ie_request != 0);
-		entry->ie_request = 0;
-
-		entry->ie_object = IO_NULL;
-		ipc_entry_dealloc(space, name, entry);
-
-		return TRUE;
-	}
-#endif	/* MACH_IPC_COMPAT */
 
 	/* convert entry to dead name */
 
@@ -723,10 +625,6 @@ ipc_right_destroy(
 			ipc_entry_dealloc(space, name, entry);
 			is_write_unlock(space);
 
-#if	MACH_IPC_COMPAT
-			if (bits & IE_BITS_COMPAT)
-				return KERN_INVALID_NAME;
-#endif	/* MACH_IPC_COMPAT */
 			break;
 		}
 
@@ -796,8 +694,6 @@ ipc_right_destroy(
  *	Returns:
  *		KERN_SUCCESS		A user ref was released.
  *		KERN_INVALID_RIGHT	Entry has wrong type.
- *		KERN_INVALID_NAME	[MACH_IPC_COMPAT]
- *			Caller should pretend lookup of entry failed.
  */
 
 kern_return_t
@@ -839,11 +735,6 @@ ipc_right_dealloc(space, name, entry)
 		assert(port != IP_NULL);
 
 		if (ipc_right_check(space, port, name, entry)) {
-#if	MACH_IPC_COMPAT
-			if (bits & IE_BITS_COMPAT)
-				goto invalid_name;
-#endif	/* MACH_IPC_COMPAT */
-
 			bits = entry->ie_bits;
 			assert(IE_BITS_TYPE(bits) == MACH_PORT_TYPE_DEAD_NAME);
 			goto dead_name;
@@ -878,11 +769,6 @@ ipc_right_dealloc(space, name, entry)
 		assert(port != IP_NULL);
 
 		if (ipc_right_check(space, port, name, entry)) {
-#if	MACH_IPC_COMPAT
-			if (bits & IE_BITS_COMPAT)
-				goto invalid_name;
-#endif	/* MACH_IPC_COMPAT */
-
 			bits = entry->ie_bits;
 			assert(IE_BITS_TYPE(bits) == MACH_PORT_TYPE_DEAD_NAME);
 			goto dead_name;
@@ -970,12 +856,6 @@ ipc_right_dealloc(space, name, entry)
 	}
 
 	return KERN_SUCCESS;
-
-#if	MACH_IPC_COMPAT
-    invalid_name:
-	is_write_unlock(space);
-	return KERN_INVALID_NAME;
-#endif	/* MACH_IPC_COMPAT */
 }
 
 /*
@@ -991,8 +871,6 @@ ipc_right_dealloc(space, name, entry)
  *		KERN_INVALID_RIGHT	Entry has wrong type.
  *		KERN_INVALID_VALUE	Bad delta for the right.
  *		KERN_UREFS_OVERFLOW	OK delta, except would overflow.
- *		KERN_INVALID_NAME	[MACH_IPC_COMPAT]
- *			Caller should pretend lookup of entry failed.
  */
 
 kern_return_t
@@ -1075,17 +953,6 @@ ipc_right_delta(space, name, entry, right, delta)
 		assert(port->ip_receiver_name == name);
 		assert(port->ip_receiver == space);
 
-#if	MACH_IPC_COMPAT
-		if (bits & IE_BITS_COMPAT) {
-			assert(entry->ie_request != 0);
-			dnrequest = ipc_right_dncancel(space, port,
-						       name, entry);
-			assert(dnrequest == IP_NULL);
-
-			entry->ie_object = IO_NULL;
-			ipc_entry_dealloc(space, name, entry);
-		} else
-#endif	/* MACH_IPC_COMPAT */
 		if (bits & MACH_PORT_TYPE_SEND) {
 			assert(IE_BITS_TYPE(bits) ==
 					MACH_PORT_TYPE_SEND_RECEIVE);
@@ -1148,11 +1015,6 @@ ipc_right_delta(space, name, entry, right, delta)
 		assert(port != IP_NULL);
 
 		if (ipc_right_check(space, port, name, entry)) {
-#if	MACH_IPC_COMPAT
-			if (bits & IE_BITS_COMPAT)
-				goto invalid_name;
-#endif	/* MACH_IPC_COMPAT */
-
 			assert(!(entry->ie_bits & MACH_PORT_TYPE_SEND_ONCE));
 			goto invalid_right;
 		}
@@ -1193,11 +1055,6 @@ ipc_right_delta(space, name, entry, right, delta)
 				ip_unlock(port);
 				goto invalid_right;
 			}
-
-#if	MACH_IPC_COMPAT
-			if (bits & IE_BITS_COMPAT)
-				goto invalid_name;
-#endif	/* MACH_IPC_COMPAT */
 
 			bits = entry->ie_bits;
 		} else if ((bits & MACH_PORT_TYPE_DEAD_NAME) == 0)
@@ -1246,11 +1103,6 @@ ipc_right_delta(space, name, entry, right, delta)
 		assert(port != IP_NULL);
 
 		if (ipc_right_check(space, port, name, entry)) {
-#if	MACH_IPC_COMPAT
-			if (bits & IE_BITS_COMPAT)
-				goto invalid_name;
-#endif	/* MACH_IPC_COMPAT */
-
 			assert((entry->ie_bits & MACH_PORT_TYPE_SEND) == 0);
 			goto invalid_right;
 		}
@@ -1331,12 +1183,6 @@ ipc_right_delta(space, name, entry, right, delta)
     urefs_overflow:
 	is_write_unlock(space);
 	return KERN_UREFS_OVERFLOW;
-
-#if	MACH_IPC_COMPAT
-    invalid_name:
-	is_write_unlock(space);
-	return KERN_INVALID_NAME;
-#endif	/* MACH_IPC_COMPAT */
 }
 
 /*
@@ -1366,13 +1212,6 @@ ipc_right_info(
 		ipc_port_t port = (ipc_port_t) entry->ie_object;
 
 		if (ipc_right_check(space, port, name, entry)) {
-#if	MACH_IPC_COMPAT
-			if (bits & IE_BITS_COMPAT) {
-				is_write_unlock(space);
-				return KERN_INVALID_NAME;
-			}
-#endif	/* MACH_IPC_COMPAT */
-
 			bits = entry->ie_bits;
 			assert(IE_BITS_TYPE(bits) == MACH_PORT_TYPE_DEAD_NAME);
 		} else
@@ -1382,11 +1221,6 @@ ipc_right_info(
 	type = IE_BITS_TYPE(bits);
 	request = entry->ie_request;
 
-#if	MACH_IPC_COMPAT
-	if (bits & IE_BITS_COMPAT)
-		type |= MACH_PORT_TYPE_COMPAT;
-	else
-#endif	/* MACH_IPC_COMPAT */
 	if (request != 0)
 		type |= MACH_PORT_TYPE_DNREQUEST;
 	if (bits & IE_BITS_MAREQUEST)
@@ -1445,11 +1279,6 @@ ipc_right_copyin_check(
 		ip_unlock(port);
 
 		if (!active) {
-#if	MACH_IPC_COMPAT
-			if (bits & IE_BITS_COMPAT)
-				return FALSE;
-#endif	/* MACH_IPC_COMPAT */
-
 			break;
 		}
 
@@ -1627,11 +1456,6 @@ ipc_right_copyin(
 		assert(port != IP_NULL);
 
 		if (ipc_right_check(space, port, name, entry)) {
-#if	MACH_IPC_COMPAT
-			if (bits & IE_BITS_COMPAT)
-				goto invalid_name;
-#endif	/* MACH_IPC_COMPAT */
-
 			bits = entry->ie_bits;
 			goto copy_dead;
 		}
@@ -1674,11 +1498,6 @@ ipc_right_copyin(
 		assert(port != IP_NULL);
 
 		if (ipc_right_check(space, port, name, entry)) {
-#if	MACH_IPC_COMPAT
-			if (bits & IE_BITS_COMPAT)
-				goto invalid_name;
-#endif	/* MACH_IPC_COMPAT */
-
 			bits = entry->ie_bits;
 			goto move_dead;
 		}
@@ -1750,11 +1569,6 @@ ipc_right_copyin(
 		assert(port != IP_NULL);
 
 		if (ipc_right_check(space, port, name, entry)) {
-#if	MACH_IPC_COMPAT
-			if (bits & IE_BITS_COMPAT)
-				goto invalid_name;
-#endif	/* MACH_IPC_COMPAT */
-
 			bits = entry->ie_bits;
 			goto move_dead;
 		}
@@ -1829,11 +1643,6 @@ ipc_right_copyin(
 
     invalid_right:
 	return KERN_INVALID_RIGHT;
-
-#if	MACH_IPC_COMPAT
-    invalid_name:
-	return KERN_INVALID_NAME;
-#endif	/* MACH_IPC_COMPAT */
 }
 
 /*
@@ -1959,11 +1768,6 @@ ipc_right_copyin_two(
 	assert(port != IP_NULL);
 
 	if (ipc_right_check(space, port, name, entry)) {
-#if	MACH_IPC_COMPAT
-		if (bits & IE_BITS_COMPAT)
-			goto invalid_name;
-#endif	/* MACH_IPC_COMPAT */
-
 		goto invalid_right;
 	}
 	/* port is locked and active */
@@ -2012,11 +1816,6 @@ ipc_right_copyin_two(
 
     invalid_right:
 	return KERN_INVALID_RIGHT;
-
-#if	MACH_IPC_COMPAT
-    invalid_name:
-	return KERN_INVALID_NAME;
-#endif	/* MACH_IPC_COMPAT */
 }
 
 /*
@@ -2251,14 +2050,6 @@ ipc_right_rename(
 		assert(port != IP_NULL);
 
 		if (ipc_right_check(space, port, oname, oentry)) {
-#if	MACH_IPC_COMPAT
-			if (bits & IE_BITS_COMPAT) {
-				ipc_entry_dealloc(space, nname, nentry);
-				is_write_unlock(space);
-				return KERN_INVALID_NAME;
-			}
-#endif	/* MACH_IPC_COMPAT */
-
 			bits = oentry->ie_bits;
 			assert(IE_BITS_TYPE(bits) == MACH_PORT_TYPE_DEAD_NAME);
 			assert(oentry->ie_request == 0);
@@ -2350,412 +2141,3 @@ ipc_right_rename(
 
 	return KERN_SUCCESS;
 }
-
-#if	MACH_IPC_COMPAT
-
-/*
- *	Routine:	ipc_right_copyin_compat
- *	Purpose:
- *		Copyin a capability from a space.
- *		If successful, the caller gets a ref
- *		for the resulting object, which is always valid.
- *	Conditions:
- *		The space is write-locked, and is unlocked upon return.
- *		The space must be active.
- *	Returns:
- *		KERN_SUCCESS		Acquired a valid object.
- *		KERN_INVALID_RIGHT	Name doesn't denote correct right.
- *		KERN_INVALID_NAME	[MACH_IPC_COMPAT]
- *			Caller should pretend lookup of entry failed.
- */
-
-kern_return_t
-ipc_right_copyin_compat(space, name, entry, msgt_name, dealloc, objectp)
-	ipc_space_t space;
-	mach_port_t name;
-	ipc_entry_t entry;
-	mach_msg_type_name_t msgt_name;
-	boolean_t dealloc;
-	ipc_object_t *objectp;
-{
-	ipc_entry_bits_t bits = entry->ie_bits;
-
-	assert(space->is_active);
-
-	switch (msgt_name) {
-	    case MSG_TYPE_PORT:
-		if (dealloc) {
-			ipc_port_t port;
-			ipc_port_t dnrequest;
-
-			/*
-			 *	Pulls a send right out of the space,
-			 *	leaving the space with no rights.
-			 *	Not allowed to destroy the port,
-			 *	so the space can't have receive rights.
-			 *	Doesn't operate on dead names.
-			 */
-
-			if (IE_BITS_TYPE(bits) != MACH_PORT_TYPE_SEND)
-				goto invalid_right;
-
-			port = (ipc_port_t) entry->ie_object;
-			assert(port != IP_NULL);
-
-			if (ipc_right_check(space, port, name, entry)) {
-				if (bits & IE_BITS_COMPAT)
-					goto invalid_name;
-
-				goto invalid_right;
-			}
-			/* port is locked and active */
-
-			dnrequest = ipc_right_dncancel_macro(space, port,
-							     name, entry);
-
-			assert(port->ip_srights > 0);
-			ip_unlock(port);
-
-			if (bits & IE_BITS_MAREQUEST)
-				ipc_marequest_cancel(space, name);
-
-			entry->ie_object = IO_NULL;
-			ipc_entry_dealloc(space, name, entry);
-			is_write_unlock(space);
-
-			if (dnrequest != IP_NULL)
-				ipc_notify_port_deleted(dnrequest, name);
-
-			*objectp = (ipc_object_t) port;
-			break;
-		} else {
-			ipc_port_t port;
-
-			/*
-			 *	Pulls a send right out of the space,
-			 *	making a send right if necessary.
-			 *	Doesn't operate on dead names.
-			 */
-
-			if ((bits & MACH_PORT_TYPE_SEND_RECEIVE) == 0)
-				goto invalid_right;
-
-			port = (ipc_port_t) entry->ie_object;
-			assert(port != IP_NULL);
-
-			if (ipc_right_check(space, port, name, entry)) {
-				if (bits & IE_BITS_COMPAT)
-					goto invalid_name;
-
-				goto invalid_right;
-			}
-			/* port is locked and active */
-
-			is_write_unlock(space);
-
-			if ((bits & MACH_PORT_TYPE_SEND) == 0) {
-				assert(IE_BITS_TYPE(bits) ==
-						MACH_PORT_TYPE_RECEIVE);
-				assert(IE_BITS_UREFS(bits) == 0);
-
-				port->ip_mscount++;
-			}
-
-			port->ip_srights++;
-			ip_reference(port);
-			ip_unlock(port);
-
-			*objectp = (ipc_object_t) port;
-			break;
-		}
-
-	    case MSG_TYPE_PORT_ALL:
-		if (dealloc) {
-			ipc_port_t port;
-			ipc_port_t dnrequest = IP_NULL;
-			ipc_port_t nsrequest = IP_NULL;
-			mach_port_mscount_t mscount = 0; /* '=0' to shut up lint */
-
-			/*
-			 *	Like MACH_MSG_TYPE_MOVE_RECEIVE, except that
-			 *	the space is always left without rights,
-			 *	so we kill send rights if necessary.
-			 */
-
-			if ((bits & MACH_PORT_TYPE_RECEIVE) == 0)
-				goto invalid_right;
-
-			port = (ipc_port_t) entry->ie_object;
-			assert(port != IP_NULL);
-
-			ip_lock(port);
-			assert(ip_active(port));
-			assert(port->ip_receiver_name == name);
-			assert(port->ip_receiver == space);
-
-			dnrequest = ipc_right_dncancel_macro(space, port,
-							     name, entry);
-
-			if (bits & IE_BITS_MAREQUEST)
-				ipc_marequest_cancel(space, name);
-
-			entry->ie_object = IO_NULL;
-			ipc_entry_dealloc(space, name, entry);
-			is_write_unlock(space);
-
-			if (bits & MACH_PORT_TYPE_SEND) {
-				assert(IE_BITS_TYPE(bits) ==
-						MACH_PORT_TYPE_SEND_RECEIVE);
-				assert(IE_BITS_UREFS(bits) > 0);
-				assert(port->ip_srights > 0);
-
-				if (--port->ip_srights == 0) {
-					nsrequest = port->ip_nsrequest;
-					if (nsrequest != IP_NULL) {
-						port->ip_nsrequest = IP_NULL;
-						mscount = port->ip_mscount;
-					}
-				}
-			}
-
-			ipc_port_clear_receiver(port);
-
-			port->ip_receiver_name = MACH_PORT_NULL;
-			port->ip_destination = IP_NULL;
-			ip_unlock(port);
-
-			if (nsrequest != IP_NULL)
-				ipc_notify_no_senders(nsrequest, mscount);
-
-			if (dnrequest != IP_NULL)
-				ipc_notify_port_deleted(dnrequest, name);
-
-			*objectp = (ipc_object_t) port;
-			break;
-		} else {
-			ipc_port_t port;
-
-			/*
-			 *	Like MACH_MSG_TYPE_MOVE_RECEIVE, except that
-			 *	the space is always left with send rights,
-			 *	so we make a send right if necessary.
-			 */
-
-			if ((bits & MACH_PORT_TYPE_RECEIVE) == 0)
-				goto invalid_right;
-
-			port = (ipc_port_t) entry->ie_object;
-			assert(port != IP_NULL);
-
-			ip_lock(port);
-			assert(ip_active(port));
-			assert(port->ip_receiver_name == name);
-			assert(port->ip_receiver == space);
-
-			if ((bits & MACH_PORT_TYPE_SEND) == 0) {
-				assert(IE_BITS_TYPE(bits) ==
-						MACH_PORT_TYPE_RECEIVE);
-				assert(IE_BITS_UREFS(bits) == 0);
-
-				/* ip_mscount will be cleared below */
-				port->ip_srights++;
-				bits |= MACH_PORT_TYPE_SEND | 1;
-			}
-
-			ipc_hash_insert(space, (ipc_object_t) port,
-					name, entry);
-
-			entry->ie_bits = bits &~ MACH_PORT_TYPE_RECEIVE;
-			is_write_unlock(space);
-
-			ipc_port_clear_receiver(port); /* clears ip_mscount */
-
-			port->ip_receiver_name = MACH_PORT_NULL;
-			port->ip_destination = IP_NULL;
-			ip_reference(port);
-			ip_unlock(port);
-
-			*objectp = (ipc_object_t) port;
-			break;
-		}
-
-	    default:
-#if MACH_ASSERT
-		assert(!"ipc_right_copyin_compat: strange rights");
-#else
-		panic("ipc_right_copyin_compat: strange rights");
-#endif
-	}
-
-	return KERN_SUCCESS;
-
-    invalid_right:
-	is_write_unlock(space);
-	return KERN_INVALID_RIGHT;
-
-    invalid_name:
-	is_write_unlock(space);
-	return KERN_INVALID_NAME;
-}
-
-/*
- *	Routine:	ipc_right_copyin_header
- *	Purpose:
- *		Copyin a capability from a space.
- *		If successful, the caller gets a ref
- *		for the resulting object, which is always valid.
- *		The type of the acquired capability is returned.
- *	Conditions:
- *		The space is write-locked, and is unlocked upon return.
- *		The space must be active.
- *	Returns:
- *		KERN_SUCCESS		Acquired a valid object.
- *		KERN_INVALID_RIGHT	Name doesn't denote correct right.
- *		KERN_INVALID_NAME	[MACH_IPC_COMPAT]
- *			Caller should pretend lookup of entry failed.
- */
-
-kern_return_t
-ipc_right_copyin_header(space, name, entry, objectp, msgt_namep)
-	ipc_space_t space;
-	mach_port_t name;
-	ipc_entry_t entry;
-	ipc_object_t *objectp;
-	mach_msg_type_name_t *msgt_namep;
-{
-	ipc_entry_bits_t bits = entry->ie_bits;
-	mach_port_type_t type = IE_BITS_TYPE(bits);
-
-	assert(space->is_active);
-
-	switch (type) {
-	    case MACH_PORT_TYPE_PORT_SET:
-	    case MACH_PORT_TYPE_DEAD_NAME:
-		goto invalid_right;
-
-	    case MACH_PORT_TYPE_RECEIVE: {
-		ipc_port_t port;
-
-		/*
-		 *	Like MACH_MSG_TYPE_MAKE_SEND.
-		 */
-
-		port = (ipc_port_t) entry->ie_object;
-		assert(port != IP_NULL);
-
-		ip_lock(port);
-		assert(ip_active(port));
-		assert(port->ip_receiver_name == name);
-		assert(port->ip_receiver == space);
-		is_write_unlock(space);
-
-		port->ip_mscount++;
-		port->ip_srights++;
-		ip_reference(port);
-		ip_unlock(port);
-
-		*objectp = (ipc_object_t) port;
-		*msgt_namep = MACH_MSG_TYPE_PORT_SEND;
-		break;
-	    }
-
-	    case MACH_PORT_TYPE_SEND:
-	    case MACH_PORT_TYPE_SEND_RECEIVE: {
-		ipc_port_t port;
-
-		/*
-		 *	Like MACH_MSG_TYPE_COPY_SEND,
-		 *	except that the port must be alive.
-		 */
-
-		assert(IE_BITS_UREFS(bits) > 0);
-
-		port = (ipc_port_t) entry->ie_object;
-		assert(port != IP_NULL);
-
-		if (ipc_right_check(space, port, name, entry)) {
-			if (bits & IE_BITS_COMPAT)
-				goto invalid_name;
-
-			goto invalid_right;
-		}
-		/* port is locked and active */
-
-		assert(port->ip_srights > 0);
-		is_write_unlock(space);
-
-		port->ip_srights++;
-		ip_reference(port);
-		ip_unlock(port);
-
-		*objectp = (ipc_object_t) port;
-		*msgt_namep = MACH_MSG_TYPE_PORT_SEND;
-		break;
-	    }
-
-	    case MACH_PORT_TYPE_SEND_ONCE: {
-		ipc_port_t port;
-		ipc_port_t dnrequest, notify;
-
-		/*
-		 *	Like MACH_MSG_TYPE_MOVE_SEND_ONCE,
-		 *	except that the port must be alive
-		 *	and a port-deleted notification is generated.
-		 */
-
-		assert(IE_BITS_UREFS(bits) == 1);
-		assert((bits & IE_BITS_MAREQUEST) == 0);
-
-		port = (ipc_port_t) entry->ie_object;
-		assert(port != IP_NULL);
-
-		if (ipc_right_check(space, port, name, entry)) {
-			if (bits & IE_BITS_COMPAT)
-				goto invalid_name;
-
-			goto invalid_right;
-		}
-		/* port is locked and active */
-
-		assert(port->ip_sorights > 0);
-
-		dnrequest = ipc_right_dncancel_macro(space, port, name, entry);
-		ip_unlock(port);
-
-		entry->ie_object = IO_NULL;
-		ipc_entry_dealloc(space, name, entry);
-
-		notify = ipc_space_make_notify(space);
-		is_write_unlock(space);
-
-		if (dnrequest != IP_NULL)
-			ipc_notify_port_deleted(dnrequest, name);
-
-		if (IP_VALID(notify))
-			ipc_notify_port_deleted_compat(notify, name);
-
-		*objectp = (ipc_object_t) port;
-		*msgt_namep = MACH_MSG_TYPE_PORT_SEND_ONCE;
-		break;
-	    }
-
-	    default:
-#if MACH_ASSERT
-		assert(!"ipc_right_copyin_header: strange rights");
-#else
-		panic("ipc_right_copyin_header: strange rights");
-#endif
-	}
-
-	return KERN_SUCCESS;
-
-    invalid_right:
-	is_write_unlock(space);
-	return KERN_INVALID_RIGHT;
-
-    invalid_name:
-	is_write_unlock(space);
-	return KERN_INVALID_NAME;
-}
-
-#endif	/* MACH_IPC_COMPAT */

@@ -34,7 +34,6 @@
 #define __dead
 #endif
 
-#include <mach_ipc_compat.h>
 #include <mach/vm_param.h>
 #include <mach/port.h>
 #include <kern/lock.h>
@@ -141,10 +140,6 @@ struct Act {
 	struct ipc_port *self_port;		/* a send right */
 	struct ipc_port *exception_port;	/* a send right */
 	struct ipc_port *syscall_port;		/* a send right */
-#if	MACH_IPC_COMPAT
-	struct ipc_port *reply_port;		/* a send right */
-	struct task	*reply_task;
-#endif	MACH_IPC_COMPAT
 };
 typedef struct Act Act;
 typedef struct Act *act_t;

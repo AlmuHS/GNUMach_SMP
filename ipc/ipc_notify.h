@@ -55,16 +55,4 @@ ipc_notify_send_once(/* ipc_port_t */);
 extern void
 ipc_notify_dead_name(/* ipc_port_t, mach_port_t */);
 
-#if	MACH_IPC_COMPAT
-
-extern void
-ipc_notify_port_deleted_compat(/* ipc_port_t, mach_port_t */);
-
-extern void
-ipc_notify_msg_accepted_compat(/* ipc_port_t, mach_port_t */);
-
-extern void
-ipc_notify_port_destroyed_compat(/* ipc_port_t, ipc_port_t */);
-
-#endif	/* MACH_IPC_COMPAT */
 #endif	/* _IPC_IPC_NOTIFY_H_ */

@@ -95,33 +95,6 @@ type mach_port_send_once_t =		MACH_MSG_TYPE_PORT_SEND_ONCE
 type mach_port_poly_t = polymorphic
 	ctype: mach_port_t;
 
-
-/* Definitions for the old IPC interface. */
-
-#if	MACH_IPC_COMPAT
-
-type port_name_t = MSG_TYPE_PORT_NAME
-	ctype: mach_port_t;
-type port_name_array_t = ^array[] of port_name_t
-	ctype: mach_port_array_t;
-type port_type_t = int
-	ctype: mach_port_type_t;
-type port_type_array_t = ^array[] of port_type_t
-	ctype: mach_port_type_array_t;
-type port_set_name_t = port_name_t
-	ctype: mach_port_t;
-
-type port_t = MACH_MSG_TYPE_COPY_SEND
-	ctype: mach_port_t;
-type port_all_t = MACH_MSG_TYPE_MOVE_RECEIVE
-	ctype: mach_port_t;
-type port_rcv_t = MACH_MSG_TYPE_MOVE_RECEIVE
-	ctype: mach_port_t;
-type port_array_t = ^array[] of port_t
-	ctype: mach_port_array_t;
-
-#endif	/* MACH_IPC_COMPAT */
-
 import <mach/std_types.h>;
 
 #endif	/* _MACH_STD_TYPES_DEFS_ */

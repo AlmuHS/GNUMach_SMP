@@ -117,19 +117,4 @@ kernel_trap(set_ras_address,-53,2)
 
 #endif	/* UNIXOID_TRAPS */
 
-/* Traps for the old IPC interface. */
-
-#if	MACH_IPC_COMPAT
-
-kernel_trap(task_self,-10,0)
-kernel_trap(thread_reply,-11,0)
-kernel_trap(task_notify,-12,0)
-kernel_trap(thread_self,-13,0)
-kernel_trap(msg_send_trap,-20,4)
-kernel_trap(msg_receive_trap,-21,5)
-kernel_trap(msg_rpc_trap,-22,6)
-kernel_trap(host_self,-55,0)
-
-#endif	/* MACH_IPC_COMPAT */
-
 #endif	/* _MACH_SYSCALL_SW_H_ */

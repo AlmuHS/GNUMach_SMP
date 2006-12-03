@@ -266,13 +266,4 @@ ipc_kmsg_copyout_pseudo(/* ipc_kmsg_t, ipc_space_t, vm_map_t */);
 extern void
 ipc_kmsg_copyout_dest(/* ipc_kmsg_t, ipc_space_t */);
 
-#if	MACH_IPC_COMPAT
-
-extern mach_msg_return_t
-ipc_kmsg_copyin_compat(/* ipc_kmsg_t, ipc_space_t, vm_map_t */);
-
-extern mach_msg_return_t
-ipc_kmsg_copyout_compat(/* ipc_kmsg_t, ipc_space_t, vm_map_t */);
-
-#endif	/* MACH_IPC_COMPAT */
 #endif	/* _IPC_IPC_KMSG_H_ */

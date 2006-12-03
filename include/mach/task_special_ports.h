@@ -63,20 +63,4 @@
 #define task_set_bootstrap_port(task, port)	\
 		(task_set_special_port((task), TASK_BOOTSTRAP_PORT, (port)))
 
-
-/* Definitions for the old IPC interface. */
-
-#if	MACH_IPC_COMPAT
-
-#define TASK_NOTIFY_PORT	2	/* Task receives kernel IPC
-					   notifications here. */
-
-#define task_get_notify_port(task, port)	\
-		(task_get_special_port((task), TASK_NOTIFY_PORT, (port)))
-
-#define task_set_notify_port(task, port)	\
-		(task_set_special_port((task), TASK_NOTIFY_PORT, (port)))
-
-#endif	/* MACH_IPC_COMPAT */
-
 #endif	/* _MACH_TASK_SPECIAL_PORTS_H_ */

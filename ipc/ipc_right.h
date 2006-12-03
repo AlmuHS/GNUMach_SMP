@@ -108,15 +108,4 @@ extern kern_return_t
 ipc_right_rename(/* ipc_space_t, mach_port_t, ipc_entry_t,
 		    mach_port_t, ipc_entry_t */);
 
-#if	MACH_IPC_COMPAT
-
-extern kern_return_t
-ipc_right_copyin_compat(/* ipc_space_t, mach_port_t, ipc_entry_t,
-			   mach_msg_type_name_t, boolean_t, ipc_object_t * */);
-
-extern kern_return_t
-ipc_right_copyin_header(/* ipc_space_t, mach_port_t, ipc_entry_t,
-			   ipc_object_t *, mach_msg_type_name_t * */);
-
-#endif	/* MACH_IPC_COMPAT */
 #endif	/* _IPC_IPC_RIGHT_H_ */

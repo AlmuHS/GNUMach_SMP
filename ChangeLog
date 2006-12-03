@@ -1,5 +1,55 @@
 2006-12-03  Thomas Schwinge  <tschwinge@gnu.org>
 
+	[patch #5017 --- ``Remove obsolete IPC interfaces.'']
+	
+	* DEVELOPMENT: Document the removal.
+	
+	* configfrag.ac (MACH_IPC_COMPAT): Don't define.
+
+2006-12-03  Leonardo Lopes Pereira  <leonardolopespereira@gmail.com>
+
+	[patch #5017 --- ``Remove obsolete IPC interfaces.'']
+	* kern/act.c [MIGRATING_THREADS]: Don't include <mach_ipc_compat.h>.
+	* kern/act.h: Likewise.
+	* i386/include/mach/i386/machine_types.defs: Adapt all users of
+	MACH_IPC_COMPAT as if it were always defined to `0'.
+	* include/mach/mach.defs: Likewise.
+	* include/mach/mach_param.h: Likewise.
+	* include/mach/mach_traps.h: Likewise.
+	* include/mach/message.h: Likewise.
+	* include/mach/mig_errors.h: Likewise.
+	* include/mach/notify.h: Likewise.
+	* include/mach/port.h: Likewise.
+	* include/mach/std_types.defs: Likewise.
+	* include/mach/syscall_sw.h: Likewise.
+	* include/mach/task_special_ports.h: Likewise. 
+	* include/mach/thread_special_ports.h: Likewise.
+	* ipc/ipc_kmsg.c: Likewise.
+	* ipc/ipc_kmsg.h: Likewise.
+	* ipc/ipc_marequest.c: Likewise.
+	* ipc/ipc_notify.c: Likewise.
+	* ipc/ipc_notify.h: Likewise.
+	* ipc/ipc_object.c: Likewise.
+	* ipc/ipc_object.h: Likewise.
+	* ipc/ipc_port.c: Likewise.
+	* ipc/ipc_port.h: Likewise.
+	* ipc/ipc_right.c: Likewise.
+	* ipc/ipc_right.h: Likewise.
+	* ipc/ipc_space.c: Likewise.
+	* ipc/ipc_space.h: Likewise.
+	* ipc/mach_debug.c: Likewise.
+	* ipc/mach_msg.c: Likewise
+	* ipc/mach_msg.h: Likewise.
+	* ipc/mach_port.c: Likewise.
+	* kern/act.c: Likewise.
+	* kern/act.h: Likewise.
+	* kern/ipc_host.c: Likewise.
+	* kern/ipc_tt.c: Likewise.
+	* kern/syscall_sw.c: Likewise.
+	* kern/thread.h: Likewise.
+
+2006-12-03  Thomas Schwinge  <tschwinge@gnu.org>
+
 	[bug #17120 --- ``GNU Mach debian dir'']
 	* debian/README.Debian: Remove file.
 	* debian/changelog: Likewise.

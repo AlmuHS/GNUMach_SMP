@@ -231,39 +231,6 @@ ipc_thread_init(thread)
 
 	thread->ith_mig_reply = MACH_PORT_NULL;
 	thread->ith_rpc_reply = IP_NULL;
-
-#if	MACH_IPC_COMPAT
-    {
-	ipc_space_t space = thread->task->itk_space;
-	ipc_port_t port;
-	mach_port_t name;
-	kern_return_t kr;
-
-	kr = ipc_port_alloc_compat(space, &name, &port);
-	if (kr != KERN_SUCCESS)
-		panic("ipc_thread_init");
-	/* port is locked and active */
-
-	/*
-	 *	Now we have a reply port.  We need to make a naked
-	 *	send right to stash in ith_reply.  We can't use
-	 *	ipc_port_make_send, because we can't unlock the port
-	 *	before making the right.  Also we don't want to
-	 *	increment ip_mscount.  The net effect of all this
-	 *	is the same as doing
-	 *		ipc_port_alloc_kernel		get the port
-	 *		ipc_port_make_send		make the send right
-	 *		ipc_object_copyin_from_kernel	grab receive right
-	 *		ipc_object_copyout_compat	and give to user
-	 */
-
-	port->ip_srights++;
-	ip_reference(port);
-	ip_unlock(port);
-
-	thread->ith_reply = port;
-    }
-#endif	/* MACH_IPC_COMPAT */
 }
 
 /*
@@ -343,43 +310,6 @@ ipc_thread_terminate(thread)
 		ipc_port_release_send(thread->ith_sself);
 	if (IP_VALID(thread->ith_exception))
 		ipc_port_release_send(thread->ith_exception);
-
-#if	MACH_IPC_COMPAT
-	if (IP_VALID(thread->ith_reply)) {
-		ipc_space_t space = thread->task->itk_space;
-		ipc_port_t port = thread->ith_reply;
-		ipc_entry_t entry;
-		mach_port_t name;
-
-		/* destroy any rights the task may have for the port */
-
-		is_write_lock(space);
-		if (space->is_active &&
-		    ipc_right_reverse(space, (ipc_object_t) port,
-				      &name, &entry)) {
-			/* reply port is locked and active */
-			ip_unlock(port);
-
-			(void) ipc_right_destroy(space, name, entry);
-			/* space is unlocked */
-		} else
-			is_write_unlock(space);
-
-		ipc_port_release_send(port);
-	}
-
-	/*
-	 *	Note we do *not* destroy any rights the space may have
-	 *	for the thread's kernel port.  The old IPC code did this,
-	 *	to avoid generating a notification when the port is
-	 *	destroyed.  However, this isn't a good idea when
-	 *	the kernel port is interposed, because then it doesn't
-	 *	happen, exposing the interposition to the task.
-	 *	Because we don't need the efficiency hack, I flushed
-	 *	this behaviour, introducing a small incompatibility
-	 *	with the old IPC code.
-	 */
-#endif	/* MACH_IPC_COMPAT */
 
 	/* destroy the kernel port */
 
@@ -644,163 +574,6 @@ mach_reply_port(void)
 	return name;
 }
 
-#if	MACH_IPC_COMPAT
-
-/*
- *	Routine:	retrieve_task_notify
- *	Purpose:
- *		Return a reference (or null) for
- *		the task's notify port.
- *	Conditions:
- *		Nothing locked.
- */
-
-ipc_port_t
-retrieve_task_notify(task)
-	task_t task;
-{
-	ipc_space_t space = task->itk_space;
-	ipc_port_t port;
-
-	is_read_lock(space);
-	if (space->is_active) {
-		port = space->is_notify;
-		if (IP_VALID(port))
-			ipc_port_reference(port);
-	} else
-		port = IP_NULL;
-	is_read_unlock(space);
-
-	return port;
-}
-
-/*
- *	Routine:	retrieve_thread_reply
- *	Purpose:
- *		Return a reference (or null) for
- *		the thread's reply port.
- *	Conditions:
- *		Nothing locked.
- */
-
-ipc_port_t
-retrieve_thread_reply(thread)
-	thread_t thread;
-{
-	ipc_port_t port;
-
-	ith_lock(thread);
-	if (thread->ith_self != IP_NULL) {
-		port = thread->ith_reply;
-		if (IP_VALID(port))
-			ipc_port_reference(port);
-	} else
-		port = IP_NULL;
-	ith_unlock(thread);
-
-	return port;
-}
-
-/*
- *	Routine:	task_self [mach trap]
- *	Purpose:
- *		Give the caller send rights for his task port.
- *		If new, the send right is marked with IE_BITS_COMPAT.
- *	Conditions:
- *		Nothing locked.
- *	Returns:
- *		MACH_PORT_NULL if there are any resource failures
- *		or other errors.
- */
-
-port_name_t
-task_self()
-{
-	task_t task = current_task();
-	ipc_port_t sright;
-	mach_port_t name;
-
-	sright = retrieve_task_self_fast(task);
-	name = ipc_port_copyout_send_compat(sright, task->itk_space);
-	return (port_name_t) name;
-}
-
-/*
- *	Routine:	task_notify [mach trap]
- *	Purpose:
- *		Give the caller the name of his own notify port.
- *	Conditions:
- *		Nothing locked.
- *	Returns:
- *		MACH_PORT_NULL if there isn't a notify port,
- *		if it is dead, or if the caller doesn't hold
- *		receive rights for it.
- */
-
-port_name_t
-task_notify()
-{
-	task_t task = current_task();
-	ipc_port_t notify;
-	mach_port_t name;
-
-	notify = retrieve_task_notify(task);
-	name = ipc_port_copyout_receiver(notify, task->itk_space);
-	return (port_name_t) name;
-}
-
-/*
- *	Routine:	thread_self [mach trap]
- *	Purpose:
- *		Give the caller send rights for his own thread port.
- *		If new, the send right is marked with IE_BITS_COMPAT.
- *	Conditions:
- *		Nothing locked.
- *	Returns:
- *		MACH_PORT_NULL if there are any resource failures
- *		or other errors.
- */
-
-port_name_t
-thread_self()
-{
-	thread_t thread = current_thread();
-	task_t task = thread->task;
-	ipc_port_t sright;
-	mach_port_t name;
-
-	sright = retrieve_thread_self_fast(thread);
-	name = ipc_port_copyout_send_compat(sright, task->itk_space);
-	return (port_name_t) name;
-}
-
-/*
- *	Routine:	thread_reply [mach trap]
- *	Purpose:
- *		Give the caller the name of his own reply port.
- *	Conditions:
- *		Nothing locked.
- *	Returns:
- *		MACH_PORT_NULL if there isn't a reply port,
- *		if it is dead, or if the caller doesn't hold
- *		receive rights for it.
- */
-
-port_name_t
-thread_reply()
-{
-	task_t task = current_task();
-	thread_t thread = current_thread();
-	ipc_port_t reply;
-	mach_port_t name;
-
-	reply = retrieve_thread_reply(thread);
-	name = ipc_port_copyout_receiver(reply, task->itk_space);
-	return (port_name_t) name;
-}
-
-#endif	/* MACH_IPC_COMPAT */
-
 /*
  *	Routine:	task_get_special_port [kernel call]
  *	Purpose:
@@ -828,24 +601,6 @@ task_get_special_port(
 		return KERN_INVALID_ARGUMENT;
 
 	switch (which) {
-#if	MACH_IPC_COMPAT
-	    case TASK_NOTIFY_PORT: {
-		ipc_space_t space = task->itk_space;
-
-		is_read_lock(space);
-		if (!space->is_active) {
-			is_read_unlock(space);
-			return KERN_FAILURE;
-		}
-
-		port = ipc_port_copy_send(space->is_notify);
-		is_read_unlock(space);
-
-		*portp = port;
-		return KERN_SUCCESS;
-	    }
-#endif	/* MACH_IPC_COMPAT */
-
 	    case TASK_KERNEL_PORT:
 		whichp = &task->itk_sself;
 		break;
@@ -903,26 +658,6 @@ task_set_special_port(
 		return KERN_INVALID_ARGUMENT;
 
 	switch (which) {
-#if	MACH_IPC_COMPAT
-	    case TASK_NOTIFY_PORT: {
-		ipc_space_t space = task->itk_space;
-
-		is_write_lock(space);
-		if (!space->is_active) {
-			is_write_unlock(space);
-			return KERN_FAILURE;
-		}
-
-		old = space->is_notify;
-		space->is_notify = port;
-		is_write_unlock(space);
-
-		if (IP_VALID(old))
-			ipc_port_release_send(old);
-		return KERN_SUCCESS;
-	    }
-#endif	/* MACH_IPC_COMPAT */
-
 	    case TASK_KERNEL_PORT:
 		whichp = &task->itk_sself;
 		break;
@@ -981,12 +716,6 @@ thread_get_special_port(thread, which, portp)
 		return KERN_INVALID_ARGUMENT;
 
 	switch (which) {
-#if	MACH_IPC_COMPAT
-	    case THREAD_REPLY_PORT:
-		whichp = &thread->ith_reply;
-		break;
-#endif	/* MACH_IPC_COMPAT */
-
 	    case THREAD_KERNEL_PORT:
 		whichp = &thread->ith_sself;
 		break;
@@ -1040,12 +769,6 @@ thread_set_special_port(thread, which, port)
 		return KERN_INVALID_ARGUMENT;
 
 	switch (which) {
-#if	MACH_IPC_COMPAT
-	    case THREAD_REPLY_PORT:
-		whichp = &thread->ith_reply;
-		break;
-#endif	/* MACH_IPC_COMPAT */
-
 	    case THREAD_KERNEL_PORT:
 		whichp = &thread->ith_sself;
 		break;

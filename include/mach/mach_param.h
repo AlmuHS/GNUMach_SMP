@@ -36,14 +36,4 @@
 
 #define TASK_PORT_REGISTER_MAX	4	/* Number of "registered" ports */
 
-
-/* Definitions for the old IPC interface. */
-
-#if	MACH_IPC_COMPAT
-
-#define PORT_BACKLOG_DEFAULT	5
-#define PORT_BACKLOG_MAX	16
-
-#endif	/* MACH_IPC_COMPAT */
-
 #endif	/* _MACH_MACH_PARAM_H_ */

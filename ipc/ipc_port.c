@@ -570,55 +570,6 @@ ipc_port_alloc_name(
 	return KERN_SUCCESS;
 }
 
-#if	MACH_IPC_COMPAT
-/*
- *	Routine:	ipc_port_delete_compat
- *	Purpose:
- *		Find and destroy a compat entry for a dead port.
- *		If successful, generate a port-deleted notification.
- *	Conditions:
- *		Nothing locked; the port is dead.
- *		Frees a ref for the space.
- */
-
-void
-ipc_port_delete_compat(port, space, name)
-	ipc_port_t port;
-	ipc_space_t space;
-	mach_port_t name;
-{
-	ipc_entry_t entry;
-	kern_return_t kr;
-
-	assert(!ip_active(port));
-
-	kr = ipc_right_lookup_write(space, name, &entry);
-	if (kr == KERN_SUCCESS) {
-		ipc_port_t sright;
-
-		/* space is write-locked and active */
-
-		if ((ipc_port_t) entry->ie_object == port) {
-			assert(entry->ie_bits & IE_BITS_COMPAT);
-
-			sright = ipc_space_make_notify(space);
-
-			kr = ipc_right_destroy(space, name, entry);
-			/* space is unlocked */
-			assert(kr == KERN_INVALID_NAME);
-		} else {
-			is_write_unlock(space);
-			sright = IP_NULL;
-		}
-
-		if (IP_VALID(sright))
-			ipc_notify_port_deleted_compat(sright, name);
-	}
-
-	is_release(space);
-}
-#endif	/* MACH_IPC_COMPAT */
-
 /*
  *	Routine:	ipc_port_destroy
  *	Purpose:
@@ -661,28 +612,6 @@ ipc_port_destroy(
 		port->ip_receiver_name = MACH_PORT_NULL;
 		port->ip_destination = IP_NULL;
 		ip_unlock(port);
-
-#if	MACH_IPC_COMPAT
-		/*
-		 *	pdrequest might actually be a send right instead
-		 *	of a send-once right, indicated by the low bit
-		 *	of the pointer value.  If this is the case,
-		 *	we must use ipc_notify_port_destroyed_compat.
-		 */
-
-		if (ip_pdsendp(pdrequest)) {
-			ipc_port_t sright = ip_pdsend(pdrequest);
-
-			if (!ipc_port_check_circularity(port, sright)) {
-				/* consumes our refs for port and sright */
-				ipc_notify_port_destroyed_compat(sright, port);
-				return;
-			} else {
-				/* consume sright and destroy port */
-				ipc_port_release_send(sright);
-			}
-		} else
-#endif	/* MACH_IPC_COMPAT */
 
 		if (!ipc_port_check_circularity(port, pdrequest)) {
 			/* consumes our refs for port and pdrequest */
@@ -770,14 +699,6 @@ ipc_port_destroy(
 
 			soright = ipr->ipr_soright;
 			assert(soright != IP_NULL);
-
-#if	MACH_IPC_COMPAT
-			if (ipr_spacep(soright)) {
-				ipc_port_delete_compat(port,
-						ipr_space(soright), name);
-				continue;
-			}
-#endif	/* MACH_IPC_COMPAT */
 
 			ipc_notify_dead_name(soright, name);
 		}
@@ -1275,166 +1196,6 @@ ipc_port_dealloc_special(
 	ipc_port_clear_receiver(port);
 	ipc_port_destroy(port);
 }
-
-#if	MACH_IPC_COMPAT
-
-/*
- *	Routine:	ipc_port_alloc_compat
- *	Purpose:
- *		Allocate a port.
- *	Conditions:
- *		Nothing locked.  If successful, the port is returned
- *		locked.  (The caller doesn't have a reference.)
- *
- *		Like ipc_port_alloc, except that the new entry
- *		is IE_BITS_COMPAT.
- *	Returns:
- *		KERN_SUCCESS		The port is allocated.
- *		KERN_INVALID_TASK	The space is dead.
- *		KERN_NO_SPACE		No room for an entry in the space.
- *		KERN_RESOURCE_SHORTAGE	Couldn't allocate memory.
- */
-
-kern_return_t
-ipc_port_alloc_compat(space, namep, portp)
-	ipc_space_t space;
-	mach_port_t *namep;
-	ipc_port_t *portp;
-{
-	ipc_port_t port;
-	ipc_entry_t entry;
-	mach_port_t name;
-	ipc_table_size_t its;
-	ipc_port_request_t table;
-	ipc_table_elems_t size;
-	ipc_port_request_index_t free, i;
-	kern_return_t kr;
-
-	port = ip_alloc();
-	if (port == IP_NULL)
-		return KERN_RESOURCE_SHORTAGE;
-
-	its = &ipc_table_dnrequests[0];
-	table = it_dnrequests_alloc(its);
-	if (table == IPR_NULL) {
-		ip_free(port);
-		return KERN_RESOURCE_SHORTAGE;
-	}
-
-	kr = ipc_entry_alloc(space, &name, &entry);
-	if (kr != KERN_SUCCESS) {
-		ip_free(port);
-		it_dnrequests_free(its, table);
-		return kr;
-	}
-	/* space is write-locked */
-
-	entry->ie_object = (ipc_object_t) port;
-	entry->ie_request = 1;
-	entry->ie_bits |= IE_BITS_COMPAT|MACH_PORT_TYPE_RECEIVE;
-
-	ip_lock_init(port);
-	ip_lock(port);
-	is_write_unlock(space);
-
-	port->ip_references = 1; /* for entry, not caller */
-	port->ip_bits = io_makebits(TRUE, IOT_PORT, 0);
-
-	ipc_port_init(port, space, name);
-
-	size = its->its_size;
-	assert(size > 1);
-	free = 0;
-
-	for (i = 2; i < size; i++) {
-		ipc_port_request_t ipr = &table[i];
-
-		ipr->ipr_name = MACH_PORT_NULL;
-		ipr->ipr_next = free;
-		free = i;
-	}
-
-	table->ipr_next = free;
-	table->ipr_size = its;
-	port->ip_dnrequests = table;
-
-	table[1].ipr_name = name;
-	table[1].ipr_soright = ipr_spacem(space);
-	is_reference(space);
-
-	*namep = name;
-	*portp = port;
-	return KERN_SUCCESS;
-}
-
-/*
- *	Routine:	ipc_port_copyout_send_compat
- *	Purpose:
- *		Copyout a naked send right (possibly null/dead),
- *		or if that fails, destroy the right.
- *		Like ipc_port_copyout_send, except that if a
- *		new translation is created it has the compat bit.
- *	Conditions:
- *		Nothing locked.
- */
-
-mach_port_t
-ipc_port_copyout_send_compat(sright, space)
-	ipc_port_t sright;
-	ipc_space_t space;
-{
-	mach_port_t name;
-
-	if (IP_VALID(sright)) {
-		kern_return_t kr;
-
-		kr = ipc_object_copyout_compat(space, (ipc_object_t) sright,
-					       MACH_MSG_TYPE_PORT_SEND, &name);
-		if (kr != KERN_SUCCESS) {
-			ipc_port_release_send(sright);
-			name = MACH_PORT_NULL;
-		}
-	} else
-		name = (mach_port_t) sright;
-
-	return name;
-}
-
-/*
- *	Routine:	ipc_port_copyout_receiver
- *	Purpose:
- *		Copyout a port reference (possibly null)
- *		by giving the caller his name for the port,
- *		if he is the receiver.
- *	Conditions:
- *		Nothing locked.  Consumes a ref for the port.
- */
-
-mach_port_t
-ipc_port_copyout_receiver(port, space)
-	ipc_port_t port;
-	ipc_space_t space;
-{
-	mach_port_t name;
-
-	if (!IP_VALID(port))
-		return MACH_PORT_NULL;
-
-	ip_lock(port);
-	if (port->ip_receiver == space) {
-		name = port->ip_receiver_name;
-		assert(MACH_PORT_VALID(name));
-	} else
-		name = MACH_PORT_NULL;
-
-	ip_release(port);
-	ip_check_unlock(port);
-
-	return name;
-}
-
-#endif	/* MACH_IPC_COMPAT */
-
 
 #if	MACH_KDB
 #define	printf	kdbprintf

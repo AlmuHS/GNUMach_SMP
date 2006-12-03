@@ -103,32 +103,6 @@ mach_host_self(void)
 	return ipc_port_copyout_send(sright, current_space());
 }
 
-#if	MACH_IPC_COMPAT
-
-/*
- *	Routine:	host_self [mach trap]
- *	Purpose:
- *		Give the caller send rights for his own host port.
- *		If new, the send right is marked with IE_BITS_COMPAT.
- *	Conditions:
- *		Nothing locked.
- *	Returns:
- *		MACH_PORT_NULL if there are any resource failures
- *		or other errors.
- */
-
-port_name_t
-host_self(void)
-{
-	ipc_port_t sright;
-
-	sright = ipc_port_make_send(realhost.host_self);
-	return (port_name_t)
-		ipc_port_copyout_send_compat(sright, current_space());
-}
-
-#endif	/* MACH_IPC_COMPAT */
-
 /*
  *	ipc_processor_init:
  *

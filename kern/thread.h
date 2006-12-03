@@ -154,9 +154,6 @@ struct thread {
 	struct ipc_port *ith_self;	/* not a right, doesn't hold ref */
 	struct ipc_port *ith_sself;	/* a send right */
 	struct ipc_port *ith_exception;	/* a send right */
-#if	MACH_IPC_COMPAT
-	struct ipc_port *ith_reply;	/* a send right */
-#endif	/* MACH_IPC_COMPAT */
 
 	mach_port_t ith_mig_reply;	/* reply port for mig */
 	struct ipc_port *ith_rpc_reply;	/* reply port for kernel RPCs */

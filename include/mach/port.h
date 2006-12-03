@@ -150,36 +150,4 @@ typedef struct old_mach_port_status {
 /*boolean_t*/natural_t		mps_nsrequest;	/* no-senders requested? */
 } old_mach_port_status_t;
 
-
-/* Definitions for the old IPC interface. */
-
-#if	MACH_IPC_COMPAT
-
-typedef integer_t	port_name_t;		/* A capability's name */
-typedef port_name_t	port_set_name_t;	/* Descriptive alias */
-typedef port_name_t	*port_name_array_t;
-
-typedef integer_t	port_type_t;		/* What kind of capability? */
-typedef port_type_t	*port_type_array_t;
-
-	/* Values for port_type_t */
-
-#define PORT_TYPE_NONE		0		/* No rights */
-#define PORT_TYPE_SEND		1		/* Send rights */
-#define PORT_TYPE_RECEIVE	3		/* obsolete */
-#define PORT_TYPE_OWN		5		/* obsolete */
-#define PORT_TYPE_RECEIVE_OWN	7		/* Send, receive, ownership */
-#define PORT_TYPE_SET		9		/* Set ownership */
-#define PORT_TYPE_LAST		10		/* Last assigned */
-
-typedef	port_name_t	port_t;			/* Port with send rights */
-typedef	port_t		port_rcv_t;		/* Port with receive rights */
-typedef	port_t		port_own_t;		/* Port with ownership rights */
-typedef	port_t		port_all_t;		/* Port with receive and ownership */
-typedef	port_t		*port_array_t;
-
-#define PORT_NULL	((port_name_t) 0)	/* Used to denote no port; legal value */
-
-#endif	/* MACH_IPC_COMPAT */
-
 #endif	/* _MACH_PORT_H_ */

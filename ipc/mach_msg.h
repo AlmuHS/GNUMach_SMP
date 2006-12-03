@@ -57,10 +57,4 @@ mach_msg_continue();
 extern boolean_t
 mach_msg_interrupt(/* thread_t */);
 
-#if	MACH_IPC_COMPAT
-
-extern void
-msg_receive_continue();
-
-#endif	/* MACH_IPC_COMPAT */
 #endif	/* _IPC_MACH_MSG_H_ */

@@ -597,173 +597,6 @@ routine task_ras_control(
 
 
 skip;	/* old host_ipc_statistics */
-
-
-#if	MACH_IPC_COMPAT
-
-/*
- *	Returns the set of port and port set names
- *	to which the target task has access, along with
- *	the type (set or port) for each name.
- */
-routine port_names(
-		task		: ipc_space_t;
-	out	port_names_p	: port_name_array_t;
-	out	port_types	: port_type_array_t);
-
-/*
- *	Returns the type (set or port) for the port name
- *	within the target task.
- */
-routine port_type(
-		task		: ipc_space_t;
-		port_name	: port_name_t;
-	out	port_type_p	: port_type_t);
-
-/*
- *	Changes the name by which a port (or port set) is known to
- *	the target task.
- */
-routine port_rename(
-		task		: ipc_space_t;
-		old_name	: port_name_t;
-		new_name	: port_name_t);
-
-/*
- *	Allocate a new port (with all rights) in the target task.
- *	The port name in that task is returned.
- */
-routine port_allocate(
-		task		: ipc_space_t;
-	out	port_name	: port_name_t);
-
-/*
- *	Deallocate the port with the given name from the target task.
- */
-routine port_deallocate(
-		task		: ipc_space_t;
-		port_name	: port_name_t);
-
-/*
- *	Set the number of messages that may be queued to
- *	the port in the target task with the given name
- *	before further message queueing operations block.
- *	The target task must hold receive rights for the
- *	port named.
- */
-routine port_set_backlog(
-		task		: ipc_space_t;
-		port_name	: port_name_t;
-		backlog		: int);
-
-/*
- *	Return information about the port with the given
- *	name in the target task.  Only the ownership and
- *	receive_rights results are meaningful unless the
- *	target task holds receive rights for the port.
- */
-routine port_status(
-		task		: ipc_space_t;
-		port_name	: port_name_t;
-	out	enabled		: port_set_name_t;
-	out	num_msgs	: int;
-	out	backlog		: int;
-	out	ownership	: boolean_t;
-	out	receive_rights	: boolean_t);
-
-/*
- *	Allocate a new port set in the target task, returning
- *	the name of that new port set.  [The new set is
- *	initially empty.]
- */
-routine port_set_allocate(
-		task		: ipc_space_t;
-	out	set_name	: port_set_name_t);
-
-/*
- *	Deallocate the named port set from the target task.
- *	Ports that are currently members of the named port
- *	set are first removed from the set.
- */
-routine port_set_deallocate(
-		task		: ipc_space_t;
-		set_name	: port_set_name_t);
-
-/*
- *	Add the named port to the port set named within
- *	the target task.  [If the port currently is a member
- *	of another port set, it is removed from that set.]
- */
-routine port_set_add(
-		task		: ipc_space_t;
-		set_name	: port_set_name_t;
-		port_name	: port_name_t);
-
-/*
- *	Remove the named port from the port set named within
- *	the target task.
- */
-routine port_set_remove(
-		task		: ipc_space_t;
-		port_name	: port_name_t);
-
-/*
- *	Returns the current set of ports that are members
- *	of the named port set in the target task.
- */
-routine port_set_status(
-		task		: ipc_space_t;
-		set_name	: port_set_name_t;
-	out	members		: port_name_array_t);
-
-/*
- *	Insert send rights for the specified port into
- *	the target task with the specified port name.
- *	[If the name is in use, or the target task already
- *	has another name for the specified port, then
- *	the operation will fail.]
- */
-routine port_insert_send(
-		task		: ipc_space_t;
-		my_port		: port_t;
-		his_name	: port_name_t);
-
-/*
- *	Returns send rights for the named port in the
- *	target task, removing that port name and port
- *	send rights from the target task.  [If the
- *	target task holds receive rights for this port,
- *	the operation will fail.]
- */
-routine port_extract_send(
-		task		: ipc_space_t;
-		his_name	: port_name_t;
-	out	his_port	: port_t);
-
-/*
- *	Insert receive rights for the specified port into
- *	the target task with the specified port name.
- *	[If the name is in use, or the target task already
- *	has another name for the specified port, then
- *	the operation will fail.
- */
-routine port_insert_receive(
-		task		: ipc_space_t;
-		my_port		: port_all_t;
-		his_name	: port_name_t);
-
-/*
- *	Returns receive rights for the named port in the
- *	target task, removing that port name and all port
- *	rights from the target task.
- */
-routine port_extract_receive(
-		task		: ipc_space_t;
-		his_name	: port_name_t;
-	out	his_port	: port_all_t);
-
-#else	/* MACH_IPC_COMPAT */
-
 skip;	/* old port_names */
 skip;	/* old port_type */
 skip;	/* old port_rename */
@@ -780,8 +613,6 @@ skip;	/* old port_insert_send */
 skip;	/* old port_extract_send */
 skip;	/* old port_insert_receive */
 skip;	/* old port_extract_receive */
-
-#endif	/* MACH_IPC_COMPAT */
 
 /*
  *	Map a user-defined memory object into the virtual address
@@ -915,27 +746,7 @@ simpleroutine memory_object_change_attributes(
 
 skip;	/* old host_callout_statistics_reset */
 skip;	/* old port_set_select */
-
-#if	MACH_IPC_COMPAT
-
-/*
- *	Sets a backup port for the named port.  The task
- *	must have receive rights for the named port.
- *	Returns the previous backup port, if any.
- */
-
-routine port_set_backup(
-		task		: ipc_space_t;
-		port_name	: port_name_t;
-		backup		: port_t = MACH_MSG_TYPE_MAKE_SEND
-				  ctype: mach_port_t;
-	out	previous	: port_t);
-
-#else	/* MACH_IPC_COMPAT */
-
 skip;	/* old port_set_backup */
-
-#endif	/* MACH_IPC_COMPAT */
 
 /*
  *	Set/Get special properties of memory associated

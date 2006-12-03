@@ -381,11 +381,7 @@ mach_port_space_info(
 
 		iin->iin_name = MACH_PORT_MAKEB(index, bits);
 		iin->iin_collision = (bits & IE_BITS_COLLISION) ? TRUE : FALSE;
-#if	MACH_IPC_COMPAT
-		iin->iin_compat = (bits & IE_BITS_COMPAT) ? TRUE : FALSE;
-#else	/* MACH_IPC_COMPAT */
 		iin->iin_compat = FALSE;
-#endif	/* MACH_IPC_COMPAT */
 		iin->iin_marequest = (bits & IE_BITS_MAREQUEST) ? TRUE : FALSE;
 		iin->iin_type = IE_BITS_TYPE(bits);
 		iin->iin_urefs = IE_BITS_UREFS(bits);
@@ -406,11 +402,7 @@ mach_port_space_info(
 
 		iin->iin_name = tentry->ite_name;
 		iin->iin_collision = (bits & IE_BITS_COLLISION) ? TRUE : FALSE;
-#if	MACH_IPC_COMPAT
-		iin->iin_compat = (bits & IE_BITS_COMPAT) ? TRUE : FALSE;
-#else	/* MACH_IPC_COMPAT */
 		iin->iin_compat = FALSE;
-#endif	/* MACH_IPC_COMPAT */
 		iin->iin_marequest = (bits & IE_BITS_MAREQUEST) ? TRUE : FALSE;
 		iin->iin_type = IE_BITS_TYPE(bits);
 		iin->iin_urefs = IE_BITS_UREFS(bits);

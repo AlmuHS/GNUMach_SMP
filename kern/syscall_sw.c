@@ -100,34 +100,19 @@ mach_trap_t	mach_trap_table[] = {
 	MACH_TRAP(kern_invalid, 0),		/* 7 */		/* Unix */
 	MACH_TRAP(kern_invalid, 0),		/* 8 */		/* Unix */
 	MACH_TRAP(kern_invalid, 0),		/* 9 */		/* Unix */
-
-#if	MACH_IPC_COMPAT
-	MACH_TRAP(task_self, 0),		/* 10 */	/* obsolete */
-	MACH_TRAP(thread_reply, 0),		/* 11 */	/* obsolete */
-	MACH_TRAP(task_notify, 0),		/* 12 */	/* obsolete */
-	MACH_TRAP(thread_self, 0),		/* 13 */	/* obsolete */
-#else	/* MACH_IPC_COMPAT */
 	MACH_TRAP(null_port, 0),		/* 10 */
 	MACH_TRAP(null_port, 0),		/* 11 */
 	MACH_TRAP(null_port, 0),		/* 12 */
 	MACH_TRAP(null_port, 0),		/* 13 */
-#endif	/* MACH_IPC_COMPAT */
 	MACH_TRAP(kern_invalid, 0),		/* 14 */
 	MACH_TRAP(kern_invalid, 0),		/* 15 */
 	MACH_TRAP(kern_invalid, 0),		/* 16 */
 	MACH_TRAP_STACK(evc_wait, 1),		/* 17 */
 	MACH_TRAP_STACK(evc_wait_clear, 1),	/* 18 */
 	MACH_TRAP(kern_invalid, 0),		/* 19 */
-
-#if	MACH_IPC_COMPAT
-	MACH_TRAP(msg_send_trap, 4),		/* 20 */	/* obsolete */
-	MACH_TRAP_STACK(msg_receive_trap, 5),	/* 21 */	/* obsolete */
-	MACH_TRAP_STACK(msg_rpc_trap, 6),	/* 22 */	/* obsolete */
-#else	/* MACH_IPC_COMPAT */
 	MACH_TRAP(kern_invalid, 0),		/* 20 */
 	MACH_TRAP(kern_invalid, 0),		/* 21 */
 	MACH_TRAP(kern_invalid, 0),		/* 22 */
-#endif	/* MACH_IPC_COMPAT */
 	MACH_TRAP(kern_invalid, 0),		/* 23 */
 	MACH_TRAP(kern_invalid, 0),		/* 24 */
 	MACH_TRAP_STACK(mach_msg_trap, 7),	/* 25 */
@@ -164,11 +149,7 @@ mach_trap_t	mach_trap_table[] = {
 	MACH_TRAP(kern_invalid, 0),		/* 52 emul: htg_syscall */
 	MACH_TRAP(kern_invalid, 0),	        /* 53 emul: set_ras_address */
 	MACH_TRAP(kern_invalid, 0),	        /* 54 */
-#if	MACH_IPC_COMPAT
-	MACH_TRAP(host_self, 0),		/* 55 */
-#else	/* MACH_IPC_COMPAT */
 	MACH_TRAP(null_port, 0),		/* 55 */
-#endif	/* MACH_IPC_COMPAT */
 	MACH_TRAP(null_port, 0),		/* 56 */
 	MACH_TRAP(kern_invalid, 0),		/* 57 */
 	MACH_TRAP(kern_invalid, 0),		/* 58 */

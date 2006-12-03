@@ -157,9 +157,6 @@ ipc_marequest_init()
  *
  *		The "notify" argument should name a receive right
  *		that is used to create the send-once notify port.
- *
- *		[MACH_IPC_COMPAT] If "notify" is MACH_PORT_NULL,
- *		then an old-style msg-accepted request is created.
  *	Conditions:
  *		Nothing locked; refs held for space and port.
  *	Returns:
@@ -183,10 +180,6 @@ ipc_marequest_create(space, port, notify, marequestp)
 	ipc_port_t soright;
 	ipc_marequest_t marequest;
 	ipc_marequest_bucket_t bucket;
-
-#if	!MACH_IPC_COMPAT
-	assert(notify != MACH_PORT_NULL);
-#endif	/* !MACH_IPC_COMPAT */
 
 	marequest = imar_alloc();
 	if (marequest == IMAR_NULL)
@@ -222,11 +215,6 @@ ipc_marequest_create(space, port, notify, marequestp)
 			return MACH_SEND_NOTIFY_IN_PROGRESS;
 		}
 
-#if	MACH_IPC_COMPAT
-		if (notify == MACH_PORT_NULL)
-			soright = IP_NULL;
-		else
-#endif	/* MACH_IPC_COMPAT */
 		if ((soright = ipc_port_lookup_notify(space, notify))
 								== IP_NULL) {
 			is_write_unlock(space);
@@ -249,11 +237,6 @@ ipc_marequest_create(space, port, notify, marequestp)
 
 		imarb_unlock(bucket);
 	} else {
-#if	MACH_IPC_COMPAT
-		if (notify == MACH_PORT_NULL)
-			soright = IP_NULL;
-		else
-#endif	/* MACH_IPC_COMPAT */
 		if ((soright = ipc_port_lookup_notify(space, notify))
 								== IP_NULL) {
 			is_write_unlock(space);
@@ -368,9 +351,6 @@ ipc_marequest_destroy(marequest)
 	ipc_space_t space = marequest->imar_space;
 	mach_port_t name;
 	ipc_port_t soright;
-#if	MACH_IPC_COMPAT
-	ipc_port_t sright = IP_NULL;
-#endif	/* MACH_IPC_COMPAT */
 
 	is_write_lock(space);
 
@@ -405,10 +385,6 @@ ipc_marequest_destroy(marequest)
 
 			entry->ie_bits &= ~IE_BITS_MAREQUEST;
 
-#if	MACH_IPC_COMPAT
-			if (soright == IP_NULL)
-				sright = ipc_space_make_notify(space);
-#endif	/* MACH_IPC_COMPAT */
 		} else
 			name = MACH_PORT_NULL;
 	}
@@ -417,18 +393,6 @@ ipc_marequest_destroy(marequest)
 	is_release(space);
 
 	imar_free(marequest);
-
-#if	MACH_IPC_COMPAT
-	if (soright == IP_NULL) {
-		if (IP_VALID(sright)) {
-			assert(name != MACH_PORT_NULL);
-			ipc_notify_msg_accepted_compat(sright, name);
-		}
-
-		return;
-	}
-	assert(sright == IP_NULL);
-#endif	/* MACH_IPC_COMPAT */
 
 	assert(soright != IP_NULL);
 	ipc_notify_msg_accepted(soright, name);

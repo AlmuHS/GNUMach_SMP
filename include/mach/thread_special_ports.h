@@ -56,20 +56,4 @@
 #define thread_set_exception_port(thread, port)	\
 		(thread_set_special_port((thread), THREAD_EXCEPTION_PORT, (port)))
 
-
-/* Definitions for the old IPC interface. */
-
-#if	MACH_IPC_COMPAT
-
-#define THREAD_REPLY_PORT	2	/* Default reply port for the thread's
-					   use. */
-
-#define thread_get_reply_port(thread, port)	\
-		(thread_get_special_port((thread), THREAD_REPLY_PORT, (port)))
-
-#define thread_set_reply_port(thread, port)	\
-		(thread_set_special_port((thread), THREAD_REPLY_PORT, (port)))
-
-#endif	/* MACH_IPC_COMPAT */
-
 #endif	/* _MACH_THREAD_SPECIAL_PORTS_H_ */

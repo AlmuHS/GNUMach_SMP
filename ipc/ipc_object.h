@@ -160,30 +160,6 @@ ipc_object_copyout_dest(/* ipc_space_t, ipc_object_t,
 extern kern_return_t
 ipc_object_rename(/* ipc_space_t, mach_port_t, mach_port_t */);
 
-#if	MACH_IPC_COMPAT
-
-extern mach_msg_type_name_t
-ipc_object_copyout_type_compat(/* mach_msg_type_name_t */);
-
-extern kern_return_t
-ipc_object_copyin_compat(/* ipc_space_t, mach_port_t,
-			    mach_msg_type_name_t, boolean_t,
-			    ipc_object_t * */);
-
-extern kern_return_t
-ipc_object_copyin_header(/* ipc_space_t, mach_port_t,
-			    ipc_object_t *, mach_msg_type_name_t * */);
-
-extern kern_return_t
-ipc_object_copyout_compat(/* ipc_space_t, ipc_object_t,
-			     mach_msg_type_name_t, mach_port_t * */);
-
-extern kern_return_t
-ipc_object_copyout_name_compat(/* ipc_space_t, ipc_object_t,
-				  mach_msg_type_name_t, mach_port_t */);
-
-#endif	/* MACH_IPC_COMPAT */
-
 extern void
 ipc_object_print(/* ipc_object_t */);
 

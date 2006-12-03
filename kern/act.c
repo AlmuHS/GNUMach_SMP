@@ -28,7 +28,6 @@
 
 #include <string.h>
 
-#include <mach_ipc_compat.h> /* XXX */
 #include <mach/kern_return.h>
 #include <mach/alert.h>
 #include <kern/mach_param.h> /* XXX INCALL_... */
@@ -933,12 +932,6 @@ act_get_special_port(Act *act, int which, ipc_port_t *portp)
 		return KERN_INVALID_ARGUMENT;
 
 	switch (which) {
-#if	MACH_IPC_COMPAT
-	    case THREAD_REPLY_PORT:
-		whichp = &act->reply_port;
-		break;
-#endif	/* MACH_IPC_COMPAT */
-
 	    case THREAD_KERNEL_PORT:
 		whichp = &act->self_port;
 		break;
@@ -993,12 +986,6 @@ act_set_special_port(Act *act, int which, ipc_port_t port)
 		return KERN_INVALID_ARGUMENT;
 
 	switch (which) {
-#if	MACH_IPC_COMPAT
-	    case THREAD_REPLY_PORT:
-		whichp = &act->reply_port;
-		break;
-#endif	/* MACH_IPC_COMPAT */
-
 	    case THREAD_KERNEL_PORT:
 		whichp = &act->self_port;
 		break;

@@ -58,14 +58,4 @@ type natural_t = unsigned32;
  */
 type integer_t = int32;
 
-
-#if	MACH_IPC_COMPAT
-/*
- * For the old IPC interface
- */
-#define	MSG_TYPE_PORT_NAME	MACH_MSG_TYPE_INTEGER_32
-
-#endif	/* MACH_IPC_COMPAT */
-
-
 #endif	/* _MACHINE_MACHINE_TYPES_DEFS_ */

@@ -76,10 +76,6 @@ struct ipc_space {
 	ipc_entry_num_t is_tree_total;	/* number of entries in the tree */
 	ipc_entry_num_t is_tree_small;	/* # of small entries in the tree */
 	ipc_entry_num_t is_tree_hash;	/* # of hashed entries in the tree */
-
-#if	MACH_IPC_COMPAT
-	struct ipc_port *is_notify;	/* notification port */
-#endif	/* MACH_IPC_COMPAT */
 };
 
 #define	IS_NULL			((ipc_space_t) 0)
@@ -136,23 +132,4 @@ kern_return_t	ipc_space_create(/* ipc_table_size_t, ipc_space_t * */);
 kern_return_t	ipc_space_create_special(struct ipc_space **);
 void		ipc_space_destroy(struct ipc_space *);
 
-#if	MACH_IPC_COMPAT
-
-/*
- *	Routine:	ipc_space_make_notify
- *	Purpose:
- *		Given a space, return a send right for a notification.
- *		May return IP_NULL/IP_DEAD.
- *	Conditions:
- *		The space is locked (read or write) and active.
- *
- *	ipc_port_t
- *	ipc_space_make_notify(space)
- *		ipc_space_t space;
- */
-
-#define	ipc_space_make_notify(space)	\
-		ipc_port_copy_send(space->is_notify)
-
-#endif	/* MACH_IPC_COMPAT */
 #endif	/* _IPC_IPC_SPACE_H_ */

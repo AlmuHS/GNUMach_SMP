@@ -89,30 +89,4 @@ typedef struct {
     mach_port_t		not_port;
 } mach_dead_name_notification_t;
 
-
-/* Definitions for the old IPC interface. */
-
-#if	MACH_IPC_COMPAT
-
-/*
- *	Notifications sent upon interesting system events.
- */
-
-#define NOTIFY_FIRST			0100
-#define NOTIFY_PORT_DELETED		( NOTIFY_FIRST + 001 )
-#define NOTIFY_MSG_ACCEPTED		( NOTIFY_FIRST + 002 )
-#define NOTIFY_OWNERSHIP_RIGHTS		( NOTIFY_FIRST + 003 )
-#define NOTIFY_RECEIVE_RIGHTS		( NOTIFY_FIRST + 004 )
-#define NOTIFY_PORT_DESTROYED		( NOTIFY_FIRST + 005 )
-#define NOTIFY_NO_MORE_SENDERS		( NOTIFY_FIRST + 006 )
-#define NOTIFY_LAST			( NOTIFY_FIRST + 015 )
-
-typedef struct {
-	msg_header_t	notify_header;
-	msg_type_t	notify_type;
-	port_t		notify_port;
-} notification_t;
-
-#endif	/* MACH_IPC_COMPAT */
-
 #endif	/* _MACH_NOTIFY_H_ */
