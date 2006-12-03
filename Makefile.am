@@ -31,6 +31,7 @@ noinst_PROGRAMS =
 TESTS=
 info_TEXINFOS =
 MOSTLYCLEANFILES =
+DISTCLEANFILES =
 AM_CPPFLAGS =
 AM_CCASFLAGS =
 AM_CFLAGS =
@@ -174,6 +175,10 @@ dist-hook:
 	  rm -f "$$d"/{Entries,Repository,Root,Tag} &&		\
 	  rmdir "$$d";						\
 	done
+
+DISTCLEANFILES += \
+	Makefile.orig \
+	config.status.orig
 
 #
 # Legacy support.
