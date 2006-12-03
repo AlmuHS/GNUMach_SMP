@@ -9,7 +9,7 @@
 2006-12-03  Leonardo Lopes Pereira  <leonardolopespereira@gmail.com>
 
 	[patch #5019 --- ``Remove checks for continuations'']
-	* ipc/mach_msg.c: Adopt all users of CONTINUATIONS as if it were always
+	* ipc/mach_msg.c: Adapt all users of CONTINUATIONS as if it were always
 	defined.
 	* kern/eventcount.c: Likewise.
 	* kern/ipc_sched.c: Likewise.
