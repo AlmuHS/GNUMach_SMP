@@ -28,9 +28,6 @@ AC_DEFINE([i386], [1], [i386])
 # i386/bogus/com.h
 AC_DEFINE([NCOM], [4], [NCOM])
 
-# i386/bogus/fpe.h
-AC_DEFINE([FPE], [0], [We do not have a floating point implementation.])
-
 # i386/bogus/lpr.h
 AC_DEFINE([NLPR], [1], [NLPR])
 

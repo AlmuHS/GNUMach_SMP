@@ -45,9 +45,8 @@
 #define	USER_LDT	0x28		/* place for per-thread LDT */
 #define	USER_TSS	0x30		/* place for per-thread TSS
 					   that holds IO bitmap */
-#define	FPE_CS		0x38		/* floating-point emulator code */
-#define	USER_FPREGS	0x40		/* user-mode access to saved
-					   floating-point registers */
+/*			0x38		   was FPE_CS, now free */
+/*			0x40		   was USER_FPREGS, now free */
 
 #define	USER_GDT	0x48		/* user-defined GDT entries */
 #define	USER_GDT_SLOTS	2

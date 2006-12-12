@@ -333,7 +333,6 @@ DIST_COMMON = README $(am__configure_deps) \
 @HOST_i386_TRUE@	i386/i386/debug_i386.c \
 @HOST_i386_TRUE@	i386/i386/debug_trace.S \
 @HOST_i386_TRUE@	i386/i386/eflags.h \
-@HOST_i386_TRUE@	i386/i386/fpe_linkage.c \
 @HOST_i386_TRUE@	i386/i386/fpu.c \
 @HOST_i386_TRUE@	i386/i386/fpu.h \
 @HOST_i386_TRUE@	i386/i386/gdt.c \
@@ -993,7 +992,7 @@ am__libkernel_a_SOURCES_DIST = ddb/db_access.c ddb/db_access.h \
 	i386/i386/db_disasm.c i386/i386/db_interface.c \
 	i386/i386/db_machdep.h i386/i386/db_trace.c i386/i386/debug.h \
 	i386/i386/debug_i386.c i386/i386/debug_trace.S \
-	i386/i386/eflags.h i386/i386/fpe_linkage.c i386/i386/fpu.c \
+	i386/i386/eflags.h i386/i386/fpu.c \
 	i386/i386/fpu.h i386/i386/gdt.c i386/i386/gdt.h \
 	i386/i386/hardclock.c i386/i386/idt-gen.h i386/i386/idt.c \
 	i386/i386/idt_inittab.S i386/i386/io_emulate.c \
@@ -1062,7 +1061,6 @@ am__libkernel_a_SOURCES_DIST = ddb/db_access.c ddb/db_access.h \
 @HOST_i386_TRUE@	i386/i386/db_trace.$(OBJEXT) \
 @HOST_i386_TRUE@	i386/i386/debug_i386.$(OBJEXT) \
 @HOST_i386_TRUE@	i386/i386/debug_trace.$(OBJEXT) \
-@HOST_i386_TRUE@	i386/i386/fpe_linkage.$(OBJEXT) \
 @HOST_i386_TRUE@	i386/i386/fpu.$(OBJEXT) \
 @HOST_i386_TRUE@	i386/i386/gdt.$(OBJEXT) \
 @HOST_i386_TRUE@	i386/i386/hardclock.$(OBJEXT) \
@@ -2570,8 +2568,6 @@ i386/i386/debug_i386.$(OBJEXT): i386/i386/$(am__dirstamp) \
 	i386/i386/$(DEPDIR)/$(am__dirstamp)
 i386/i386/debug_trace.$(OBJEXT): i386/i386/$(am__dirstamp) \
 	i386/i386/$(DEPDIR)/$(am__dirstamp)
-i386/i386/fpe_linkage.$(OBJEXT): i386/i386/$(am__dirstamp) \
-	i386/i386/$(DEPDIR)/$(am__dirstamp)
 i386/i386/fpu.$(OBJEXT): i386/i386/$(am__dirstamp) \
 	i386/i386/$(DEPDIR)/$(am__dirstamp)
 i386/i386/gdt.$(OBJEXT): i386/i386/$(am__dirstamp) \
@@ -3313,7 +3309,6 @@ mostlyclean-compile:
 	-rm -f i386/i386/db_trace.$(OBJEXT)
 	-rm -f i386/i386/debug_i386.$(OBJEXT)
 	-rm -f i386/i386/debug_trace.$(OBJEXT)
-	-rm -f i386/i386/fpe_linkage.$(OBJEXT)
 	-rm -f i386/i386/fpu.$(OBJEXT)
 	-rm -f i386/i386/gdt.$(OBJEXT)
 	-rm -f i386/i386/hardclock.$(OBJEXT)
@@ -3643,7 +3638,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@i386/i386/$(DEPDIR)/db_trace.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@i386/i386/$(DEPDIR)/debug_i386.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@i386/i386/$(DEPDIR)/debug_trace.Po@am__quote@
-@AMDEP_TRUE@@am__include@ @am__quote@i386/i386/$(DEPDIR)/fpe_linkage.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@i386/i386/$(DEPDIR)/fpu.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@i386/i386/$(DEPDIR)/gdt.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@i386/i386/$(DEPDIR)/hardclock.Po@am__quote@

@@ -80,7 +80,6 @@ libkernel_a_SOURCES += \
 	i386/i386/debug_i386.c \
 	i386/i386/debug_trace.S \
 	i386/i386/eflags.h \
-	i386/i386/fpe_linkage.c \
 	i386/i386/fpu.c \
 	i386/i386/fpu.h \
 	i386/i386/gdt.c \

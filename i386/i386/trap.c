@@ -480,11 +480,6 @@ printf("user trap %d error %d sub %08x\n", type, code, subcode);
 		break;
 
 	    case T_SEGMENT_NOT_PRESENT:
-#if	FPE
-		if (fp_emul_error(regs))
-		    return 0;
-#endif	/* FPE */
-
 		exc = EXC_BAD_INSTRUCTION;
 		code = EXC_I386_SEGNPFLT;
 		subcode = regs->err & 0xffff;
@@ -1035,11 +1030,7 @@ i386_exception(exc, code, subcode)
 	ast_off(cpu_number(), AST_I386_FP);
 	splx(s);
 
-#if	FPE
-	fpe_exception_fixup(exc, code, subcode);
-#else
 	exception(exc, code, subcode);
-#endif
 	/*NOTREACHED*/
 }
 

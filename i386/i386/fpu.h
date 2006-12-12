@@ -69,32 +69,6 @@
 #define fwait() \
     	asm("fwait");
 
-/*
- * If floating-point instructions are emulated,
- * we must load the floating-point register selector
- * when switching to a new thread.
- */
-#if	FPE
-extern void	disable_fpe();
-extern void	enable_fpe();
-
-#define	fpu_save_context(thread) \
-    { \
-	if (fp_kind == FP_SOFT) \
-	    disable_fpe(); \
-	else \
-	    set_ts(); \
-    }
-
-#define	fpu_load_context(pcb) \
-    { \
-	register struct i386_fpsave_state *ifps; \
-	if (fp_kind == FP_SOFT && (ifps = pcb->ims.ifps) != 0) \
-	    enable_fpe(ifps); \
-    }
-
-#else	/* no FPE */
-
 #define	fpu_load_context(pcb)
 
 /*
@@ -123,8 +97,6 @@ extern void	enable_fpe();
     }
 
 #endif	/* NCPUS == 1 */
-
-#endif	/* no FPE */
 
 extern int	fp_kind;
 

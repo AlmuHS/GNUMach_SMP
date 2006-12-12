@@ -138,19 +138,11 @@ init_fpu()
 	    set_cr0(get_cr0() | CR0_TS | CR0_MP);
 	}
 	else {
-#if	FPE
-	    /*
-	     * Use the floating-point emulator.
-	     */
-	    fp_kind = FP_SOFT;
-	    fpe_init();
-#else	/* no fpe */
 	    /*
 	     * NO FPU.
 	     */
 	    fp_kind = FP_NO;
 	    set_cr0(get_cr0() | CR0_EM);
-#endif
 	}
 }
 
@@ -277,39 +269,7 @@ ASSERT_IPL(SPL0);
 	    ifps->fp_save_state.fp_opcode  = user_fp_state->fp_opcode;
 	    ifps->fp_save_state.fp_dp      = user_fp_state->fp_dp;
 	    ifps->fp_save_state.fp_ds      = user_fp_state->fp_ds;
-
-#if	FPE
-	    if (fp_kind == FP_SOFT) {
-		/*
-		 * The emulator stores the registers by physical
-		 * register number, not from top-of-stack.
-		 * Shuffle the registers into the correct order.
-		 */
-		register char *src;	/* user regs */
-		register char *dst;	/* kernel regs */
-		int	i;
-
-		src = (char *)user_fp_regs;
-		dst = (char *)&ifps->fp_regs;
-		i = (ifps->fp_save_state.fp_status & FPS_TOS)
-			>> FPS_TOS_SHIFT;	/* physical register
-						   for st(0) */
-		if (i == 0)
-		    memcpy(dst, src, 8 * 10);
-		else {
-		    memcpy(dst + 10 * i,
-			  src, 
-			  10 * (8 - i));
-		    memcpy(dst, 
-			  src + 10 * (8 - i),
-			  10 * i);
-		}
-	    }
-	    else
-		ifps->fp_regs = *user_fp_regs;
-#else	/* no FPE */
 	    ifps->fp_regs = *user_fp_regs;
-#endif	/* FPE */
 
 	    simple_unlock(&pcb->lock);
 	    if (new_ifps != 0)
@@ -387,39 +347,7 @@ ASSERT_IPL(SPL0);
 	    user_fp_state->fp_opcode  = ifps->fp_save_state.fp_opcode;
 	    user_fp_state->fp_dp      = ifps->fp_save_state.fp_dp;
 	    user_fp_state->fp_ds      = ifps->fp_save_state.fp_ds;
-
-#if	FPE
-	    if (fp_kind == FP_SOFT) {
-		/*
-		 * The emulator stores the registers by physical
-		 * register number, not from top-of-stack.
-		 * Shuffle the registers into the correct order.
-		 */
-		register char *src;	/* kernel regs */
-		register char *dst;	/* user regs */
-		int	i;
-
-		src = (char *)&ifps->fp_regs;
-		dst = (char *)user_fp_regs;
-		i = (ifps->fp_save_state.fp_status & FPS_TOS)
-			>> FPS_TOS_SHIFT;	/* physical register
-						   for st(0) */
-		if (i == 0)
-		    memcpy(dst, src, 8 * 10);
-		else {
-		    memcpy(dst, 
-			  src + 10 * i,
-			  10 * (8 - i));
-		    memcpy(dst + 10 * (8 - i), 
-			  src, 
-			  10 * i);
-		}
-	    }
-	    else
-		*user_fp_regs = ifps->fp_regs;
-#else	/* no FPE */
 	    *user_fp_regs = ifps->fp_regs;
-#endif	/* FPE */
 	}
 	simple_unlock(&pcb->lock);
 

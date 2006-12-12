@@ -1,3 +1,17 @@
+2006-12-13  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	Drop useless and broken FPE support.
+
+	* i386/configfrac.ac (FPE): Don't define.
+	* i386/i386/gdt.h (FPE_CS, USER_FPREGS): Remove macros.
+	* i386/i386/fpu.c (init_fpu, fpu_set_state, fpu_get_state): Remove FPE
+	support.
+	* i386/i386/fpu.h: Likewise.
+	* i386/i386/trap.c (user_trap, i386_exception): Likewise.
+	* i386/i386/fpe_linkage.c: Remove file.
+	* i386/Makefrag.am: Remove i386/i386/fpe_linkage.c.
+	* Makefile.in: Regenerate.
+
 2006-12-03  Thomas Schwinge  <tschwinge@gnu.org>
 
 	[patch #5019 --- ``Remove checks for continuations'']
