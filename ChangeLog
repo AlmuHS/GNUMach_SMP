@@ -15,6 +15,13 @@
 	* i386/i386/locore.S (cpu_features): New variable.
 	(discover_x86_cpu_type): Record CPUID feature word 0.
 
+	Add support for cr3/cr4 flags.
+
+	* i386/i386/proc_reg.h (CR3_PCD, CR3_PWT, CR4_VME, CR4_PVI, CR4_TSD)
+	(CR4_DE, CR4_PSE, CR4_PAE, CR4_MCE, CR4_PGE, CR4_PCE, CR4_OSFXSR)
+	(CR4_OSXMMEXCPT, get_cr4, set_cr4): New macros.
+	* i386/intel/pmap.h (INTEL_PTE_GLOBAL): New macro.
+
 2006-12-13  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	Drop useless and broken FPE support.

@@ -45,6 +45,30 @@
 #define	CR0_MP	0x00000002		/*	 monitor coprocessor */
 #define	CR0_PE	0x00000001		/*	 enable protected mode */
 
+/*
+ * CR3
+ */
+#define	CR3_PCD	0x0010			/* Page-level Cache Disable */
+#define	CR3_PWT	0x0008			/* Page-level Writes Transparent */
+
+/*
+ * CR4
+ */
+#define	CR4_VME		0x0001		/* Virtual-8086 Mode Extensions */
+#define	CR4_PVI		0x0002		/* Protected-Mode Virtual Interrupts */
+#define	CR4_TSD		0x0004		/* Time Stamp Disable */
+#define	CR4_DE		0x0008		/* Debugging Extensions */
+#define	CR4_PSE		0x0010		/* Page Size Extensions */
+#define	CR4_PAE		0x0020		/* Physical Address Extension */
+#define	CR4_MCE		0x0040		/* Machine-Check Enable */
+#define	CR4_PGE		0x0080		/* Page Global Enable */
+#define	CR4_PCE		0x0100		/* Performance-Monitoring Counter
+					 * Enable */
+#define	CR4_OSFXSR	0x0200		/* Operating System Support for FXSAVE
+					 * and FXRSTOR instructions */
+#define	CR4_OSXMMEXCPT	0x0400		/* Operating System Support for Unmasked
+					 * SIMD Floating-Point Exceptions */
+
 #ifndef	__ASSEMBLER__
 #ifdef	__GNUC__
 
@@ -109,6 +133,20 @@ set_eflags(unsigned eflags)
      })
 
 #define flush_tlb() set_cr3(get_cr3())
+
+#define	get_cr4() \
+    ({ \
+	register unsigned int _temp__; \
+	asm("mov %%cr4, %0" : "=r" (_temp__)); \
+	_temp__; \
+    })
+
+#define	set_cr4(value) \
+    ({ \
+	register unsigned int _temp__ = (value); \
+	asm volatile("mov %0, %%cr4" : : "r" (_temp__)); \
+     })
+
 
 #define	set_ts() \
 	set_cr0(get_cr0() | CR0_TS)
