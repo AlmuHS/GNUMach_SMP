@@ -66,7 +66,7 @@ extern unsigned int cpu_features[1];
 #define CPU_FEATURE_TM		29
 #define CPU_FEATURE_PBE		31
 
-#define CPU_HAS_FEATURE(feature) (cpu_feature[(feature) / 32] & (1 << ((feature) % 32)))
+#define CPU_HAS_FEATURE(feature) (cpu_features[(feature) / 32] & (1 << ((feature) % 32)))
 
 #endif /* _MACHINE__LOCORE_H_ */
 
