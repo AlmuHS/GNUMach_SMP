@@ -1136,6 +1136,11 @@ syscall_addr:
 	jmp	_take_trap		/* treat as a trap */
 
 
+	.data
+DATA(cpu_features)
+	.long	0
+	.text
+
 /* Discover what kind of cpu we have; return the family number
    (3, 4, 5, 6, for 386, 486, 586, 686 respectively).  */
 ENTRY(discover_x86_cpu_type)
@@ -1172,6 +1177,7 @@ ENTRY(discover_x86_cpu_type)
 	   use it to find out what we are. */
 0:	movl	$1,%eax			/* Fetch CPU type info ... */
 	cpuid				/*  ... into eax */
+	movl	%edx,cpu_features	/* Keep a copy */
 	shrl	$8,%eax			/* Slide family bits down */
 	andl	$15,%eax		/* And select them */
 

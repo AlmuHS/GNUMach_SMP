@@ -1,3 +1,20 @@
+2006-12-19  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	Add support for x86 features.
+
+	* i386/i386/locore.h (cpu_features): New variable declaration.
+	(CPU_FEATURE_FPU, CPU_FEATURE_VME, CPU_FEATURE_DE,
+	CPU_FEATURE_PSE, CPU_FEATURE_TSC, CPU_FEATURE_MSR, CPU_FEATURE_PAE,
+	CPU_FEATURE_MCE, CPU_FEATURE_CX8, CPU_FEATURE_APIC, CPU_FEATURE_SEP,
+	CPU_FEATURE_MTRR, CPU_FEATURE_PGE, CPU_FEATURE_MCA, CPU_FEATURE_CMOV,
+	CPU_FEATURE_PAT, CPU_FEATURE_PSE_36, CPU_FEATURE_PSN,
+	CPU_FEATURE_CFLSH, CPU_FEATURE_DS, CPU_FEATURE_ACPI, CPU_FEATURE_MMX,
+	CPU_FEATURE_FXSR, CPU_FEATURE_SSE, CPU_FEATURE_SSE2, CPU_FEATURE_SS,
+	CPU_FEATURE_HTT, CPU_FEATURE_TM, CPU_FEATURE_PBE, CPU_HAS_FEATURE): New
+	macros
+	* i386/i386/locore.S (cpu_features): New variable.
+	(discover_x86_cpu_type): Record CPUID feature word 0.
+
 2006-12-13  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	Drop useless and broken FPE support.
