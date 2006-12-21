@@ -50,6 +50,7 @@
 #include <i386/machspl.h>
 #include <i386/pmap.h>
 #include <i386/proc_reg.h>
+#include <i386/locore.h>
 
 /* Location of the kernel's symbol table.
    Both of these are 0 if none is available.  */
@@ -264,6 +265,8 @@ i386at_init()
 	kernel_page_dir[lin2pdenum(0)] =
 		kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS)];
 	set_cr3((unsigned)kernel_page_dir);
+	if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
+		set_cr4(get_cr4() | CR4_PGE);
 	set_cr0(get_cr0() | CR0_PG | CR0_WP);
 	flush_instr_queue();
 
@@ -301,6 +304,7 @@ void c_boot_entry(vm_offset_t bi)
 {
 	/* Stash the boot_image_info pointer.  */
 	boot_info = *(struct multiboot_info*)phystokv(bi);
+	int cpu_type;
 
 	/* XXX we currently assume phys_mem_va is always 0 here -
 	   if it isn't, we must tweak the pointers in the boot_info.  */
@@ -337,6 +341,8 @@ void c_boot_entry(vm_offset_t bi)
 	}
 #endif	/* MACH_KDB */
 
+	cpu_type = discover_x86_cpu_type ();
+
 	/*
 	 * Do basic VM initialization
 	 */
@@ -367,7 +373,7 @@ void c_boot_entry(vm_offset_t bi)
 	machine_slot[0].running = TRUE;
 	machine_slot[0].cpu_subtype = CPU_SUBTYPE_AT386;
 
-	switch (discover_x86_cpu_type ())
+	switch (cpu_type)
 	  {
 	  case 3:
 	  default:

@@ -1,5 +1,13 @@
 2006-12-19  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
+	Add support for global pages.
+	* i386/i386at/model_dep.c: Include <i386/locore.h>.
+	(i386at_init): Set CR4_PGE if available.
+        (c_boot_entry): Call discover_x86_cpu_type() before i386at_init().
+	* i386/intel/pmap.c: Include <i386/locore.h>.
+	(pmap_map_bd): Use INTEL_PTE_GLOBAL if available.
+	(pmap_bootstrap): Likewise.
+
 	Add support for cr3/cr4 flags.
 	* i386/i386/proc_reg.h (CR3_PCD, CR3_PWT, CR4_VME, CR4_PVI, CR4_TSD)
 	(CR4_DE, CR4_PSE, CR4_PAE, CR4_MCE, CR4_PGE, CR4_PCE, CR4_OSFXSR)

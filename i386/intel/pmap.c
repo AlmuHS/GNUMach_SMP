@@ -80,6 +80,7 @@
 #include <machine/thread.h>
 #include <i386/cpu_number.h>
 #include <i386/proc_reg.h>
+#include <i386/locore.h>
 
 #ifdef	ORC
 #define	OLIVETTICACHE	1
@@ -547,6 +548,8 @@ vm_offset_t pmap_map_bd(virt, start, end, prot)
 	register pt_entry_t	*pte;
 
 	template = pa_to_pte(start) | INTEL_PTE_VALID;
+	if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
+		template |= INTEL_PTE_GLOBAL;
 	if (prot & VM_PROT_WRITE)
 	    template |= INTEL_PTE_WRITE;
 
@@ -627,6 +630,7 @@ void pmap_bootstrap()
 	 */
 	{
 		vm_offset_t va;
+		pt_entry_t global = CPU_HAS_FEATURE(CPU_FEATURE_PGE) ? INTEL_PTE_GLOBAL : 0;
 
 		/*
 		 * Map virtual memory for all known physical memory, 1-1,
@@ -647,7 +651,7 @@ void pmap_bootstrap()
 
 			/* Initialize the page directory entry.  */
 			*pde = pa_to_pte((vm_offset_t)ptable)
-				| INTEL_PTE_VALID | INTEL_PTE_WRITE;
+				| INTEL_PTE_VALID | INTEL_PTE_WRITE | global;
 
 			/* Initialize the page table.  */
 			for (pte = ptable; (va < phys_last_addr) && (pte < ptable+NPTES); pte++)
@@ -664,12 +668,12 @@ void pmap_bootstrap()
 					    && (va + INTEL_PGBYTES <= (vm_offset_t)etext))
 					{
 						WRITE_PTE_FAST(pte, pa_to_pte(va)
-							| INTEL_PTE_VALID);
+							| INTEL_PTE_VALID | global);
 					}
 					else
 					{
 						WRITE_PTE_FAST(pte, pa_to_pte(va)
-							| INTEL_PTE_VALID | INTEL_PTE_WRITE);
+							| INTEL_PTE_VALID | INTEL_PTE_WRITE | global);
 					}
 					va += INTEL_PGBYTES;
 				}
