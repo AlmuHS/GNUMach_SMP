@@ -1,3 +1,13 @@
+2007-01-02  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	Drop old and broken support for Olivetti XP7 & XP9
+	* i386/intel/pma.c [ORC] (OLIVETTICACHE): Remove macro.
+	[OLIVETTICACHE] (pstart): Remove declaration.
+	(CACHE_LINE, CACHE_SIZE, CACHE_PAGE, WRITE_PTE, WRITE_PTE_FAST): Remove
+	macros.
+	[OLIVETTICACHE] (write_pte): Remove function.
+	* DEVELOPMENT: Document the removal.
+
 2006-12-19  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	Add support for global pages.

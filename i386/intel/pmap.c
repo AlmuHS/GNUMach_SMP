@@ -82,51 +82,7 @@
 #include <i386/proc_reg.h>
 #include <i386/locore.h>
 
-#ifdef	ORC
-#define	OLIVETTICACHE	1
-#endif	/* ORC */
-
-#ifndef	OLIVETTICACHE
 #define	WRITE_PTE(pte_p, pte_entry)		*(pte_p) = (pte_entry);
-#define	WRITE_PTE_FAST(pte_p, pte_entry)	*(pte_p) = (pte_entry);
-#else	/* OLIVETTICACHE */
-#error might not work anymore
-
-/* This gross kludgery is needed for Olivetti XP7 & XP9 boxes to get
- * around an apparent hardware bug. Other than at startup it doesn't
- * affect run-time performacne very much, so we leave it in for all
- * machines.
- */
-extern	unsigned	*pstart();
-#define CACHE_LINE	8
-#define CACHE_SIZE	512
-#define CACHE_PAGE	0x1000;
-
-#define	WRITE_PTE(pte_p, pte_entry) { write_pte(pte_p, pte_entry); }
-
-write_pte(pte_p, pte_entry)
-pt_entry_t	*pte_p, pte_entry;
-{
-	unsigned long count;
-	volatile unsigned long hold, *addr1, *addr2;
-
-	if ( pte_entry != *pte_p )
-		*pte_p = pte_entry;
-	else {
-		/* This isn't necessarily the optimal algorithm */
-		addr1 = (unsigned long *)pstart;
-		for (count = 0; count < CACHE_SIZE; count++) {
-			addr2 = addr1 + CACHE_PAGE;
-			hold = *addr1;		/* clear cache bank - A - */
-			hold = *addr2;		/* clear cache bank - B - */
-			addr1 += CACHE_LINE;
-		}
-	}
-}
-
-#define	WRITE_PTE_FAST(pte_p, pte_entry)*pte_p = pte_entry;
-
-#endif	/* OLIVETTICACHE */
 
 /*
  *	Private data structures.
@@ -557,7 +513,7 @@ vm_offset_t pmap_map_bd(virt, start, end, prot)
 		pte = pmap_pte(kernel_pmap, virt);
 		if (pte == PT_ENTRY_NULL)
 			panic("pmap_map_bd: Invalid kernel address\n");
-		WRITE_PTE_FAST(pte, template)
+		WRITE_PTE(pte, template)
 		pte_increment_pa(template);
 		virt += PAGE_SIZE;
 		start += PAGE_SIZE;
@@ -658,7 +614,7 @@ void pmap_bootstrap()
 			{
 				if ((pte - ptable) < ptenum(va))
 				{
-					WRITE_PTE_FAST(pte, 0);
+					WRITE_PTE(pte, 0);
 				}
 				else
 				{
@@ -667,12 +623,12 @@ void pmap_bootstrap()
 					if ((va >= (vm_offset_t)_start)
 					    && (va + INTEL_PGBYTES <= (vm_offset_t)etext))
 					{
-						WRITE_PTE_FAST(pte, pa_to_pte(va)
+						WRITE_PTE(pte, pa_to_pte(va)
 							| INTEL_PTE_VALID | global);
 					}
 					else
 					{
-						WRITE_PTE_FAST(pte, pa_to_pte(va)
+						WRITE_PTE(pte, pa_to_pte(va)
 							| INTEL_PTE_VALID | INTEL_PTE_WRITE | global);
 					}
 					va += INTEL_PGBYTES;
@@ -680,7 +636,7 @@ void pmap_bootstrap()
 			}
 			for (; pte < ptable+NPTES; pte++)
 			{
-				WRITE_PTE_FAST(pte, 0);
+				WRITE_PTE(pte, 0);
 				va += INTEL_PGBYTES;
 			}
 		}
