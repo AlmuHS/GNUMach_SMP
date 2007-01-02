@@ -1,7 +1,11 @@
 2007-01-02  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
+	Fix loop indexing.
+	* i386/intel/pmap.c (pmap_change_wiring): Increment pte in the
+	unwiring loop.
+
 	Drop old and broken support for Olivetti XP7 & XP9
-	* i386/intel/pma.c [ORC] (OLIVETTICACHE): Remove macro.
+	* i386/intel/pmap.c [ORC] (OLIVETTICACHE): Remove macro.
 	[OLIVETTICACHE] (pstart): Remove declaration.
 	(CACHE_LINE, CACHE_SIZE, CACHE_PAGE, WRITE_PTE, WRITE_PTE_FAST): Remove
 	macros.

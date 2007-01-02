@@ -1675,6 +1675,7 @@ void pmap_change_wiring(map, v, wired)
 	    i = ptes_per_vm_page;
 	    do {
 		*pte &= ~INTEL_PTE_WIRED;
+		pte++;
 	    } while (--i > 0);
 	}
 
