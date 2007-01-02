@@ -232,7 +232,8 @@ ds_notify (mach_msg_header_t *msg)
       mach_no_senders_notification_t *ns;
 
       ns = (mach_no_senders_notification_t *) msg;
-      dev = (device_t) ns->not_header.msgh_remote_port;
+      dev = dev_port_lookup((ipc_port_t) ns->not_header.msgh_remote_port);
+      assert(dev);
       if (dev->emul_ops->no_senders)
 	(*dev->emul_ops->no_senders) (ns);
       return TRUE;

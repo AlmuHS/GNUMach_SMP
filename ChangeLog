@@ -1,5 +1,9 @@
 2007-01-02  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
+        Fix translation of port into device in the "no sender" notification.
+	* i386/i386at/i386at_ds_routines.c (ds_notify): Use dev_port_lookup()
+	for translating the remote port.
+
 	Fix loop indexing.
 	* i386/intel/pmap.c (pmap_change_wiring): Increment pte in the
 	unwiring loop.
