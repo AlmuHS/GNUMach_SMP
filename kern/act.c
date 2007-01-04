@@ -69,7 +69,7 @@ global_act_init()
 {
 #ifndef ACT_STATIC_KLUDGE
 	act_zone = zinit(
-			sizeof(struct Act),
+			sizeof(struct Act), 0,
 			ACT_MAX * sizeof(struct Act), /* XXX */
 			ACT_CHUNK * sizeof(struct Act),
 			0, "activations");

@@ -697,9 +697,9 @@ void pmap_init()
 	 *	and of the physical-to-virtual entries.
 	 */
 	s = (vm_size_t) sizeof(struct pmap);
-	pmap_zone = zinit(s, 400*s, 4096, 0, "pmap"); /* XXX */
+	pmap_zone = zinit(s, 0, 400*s, 4096, 0, "pmap"); /* XXX */
 	s = (vm_size_t) sizeof(struct pv_entry);
-	pv_list_zone = zinit(s, 10000*s, 4096, 0, "pv_list"); /* XXX */
+	pv_list_zone = zinit(s, 0, 10000*s, 4096, 0, "pv_list"); /* XXX */
 
 #if	NCPUS > 1
 	/*

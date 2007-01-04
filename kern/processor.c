@@ -113,7 +113,7 @@ void pset_sys_init(void)
 	/*
 	 * Allocate the zone for processor sets.
 	 */
-	pset_zone = zinit(sizeof(struct processor_set), 128*PAGE_SIZE,
+	pset_zone = zinit(sizeof(struct processor_set), 0, 128*PAGE_SIZE,
 		PAGE_SIZE, 0, "processor sets");
 
 	/*

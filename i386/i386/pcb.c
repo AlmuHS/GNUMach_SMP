@@ -311,7 +311,7 @@ thread_t switch_context(old, continuation, new)
 
 void pcb_module_init()
 {
-	pcb_zone = zinit(sizeof(struct pcb),
+	pcb_zone = zinit(sizeof(struct pcb), 0,
 			 THREAD_MAX * sizeof(struct pcb),
 			 THREAD_CHUNK * sizeof(struct pcb),
 			 0, "i386 pcb state");

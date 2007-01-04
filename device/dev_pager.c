@@ -174,6 +174,7 @@ void dev_pager_hash_init(void)
 	size = sizeof(struct dev_pager_entry);
 	dev_pager_hash_zone = zinit(
 				size,
+				0,
 				size * 1000,
 				PAGE_SIZE,
 				FALSE,
@@ -727,6 +728,7 @@ void device_pager_init(void)
 	 */
 	size = sizeof(struct dev_pager);
 	dev_pager_zone = zinit(size,
+				0,
 				(vm_size_t) size * 1000,
 				PAGE_SIZE,
 				FALSE,

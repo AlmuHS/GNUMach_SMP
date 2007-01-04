@@ -1494,6 +1494,7 @@ net_io_init()
 
 	size = sizeof(struct net_rcv_port);
 	net_rcv_zone = zinit(size,
+			     0,
 			     size * 1000,
 			     PAGE_SIZE,
 			     FALSE,
@@ -1501,6 +1502,7 @@ net_io_init()
 
  	size = sizeof(struct net_hash_entry);
  	net_hash_entry_zone = zinit(size,
+				    0,
  				    size * 100,
  				    PAGE_SIZE,
  				    FALSE,

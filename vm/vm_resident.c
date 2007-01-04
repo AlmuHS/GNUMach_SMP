@@ -425,7 +425,7 @@ void pmap_startup(
  */
 void		vm_page_module_init(void)
 {
-	vm_page_zone = zinit((vm_size_t) sizeof(struct vm_page),
+	vm_page_zone = zinit((vm_size_t) sizeof(struct vm_page), 0,
 			     VM_MAX_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS,
 			     PAGE_SIZE,
 			     0, "vm pages");

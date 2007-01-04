@@ -1,3 +1,36 @@
+2006-12-30  Richard Braun  <syn@hurdfr.org>
+
+	Add alignment support in the zone allocator.
+	* kern/zalloc.c (ALIGN_SIZE_UP): New macro.
+	(zinit): New `align' parameter.
+	(zget_space): Likewise.
+	(zalloc): Updated call to zget_space() with the zone alignment.
+	* kern/zalloc.h (zone): New member `align'.
+	(zinit): Declaration updated as required.
+	* device/dev_lookup.c (dev_lookup_init): Updated call to zinit() with
+	alignment of 0.
+	* device/dev_pager.c (dev_pager_hash_init): Likewise.
+	(device_pager_init): Likewise.
+	* device/ds_routines.c (ds_init): Likewise.
+	(ds_trap_init): Likewise.
+	* device/net_io.c (net_io_init): Likewise.
+	* i386/i386/fpu.c (fpu_module_init): Likewise.
+	* i386/i386/pcb.c (pcb_module_init): Likewise.
+	* i386/intel/pmap.c (pmap_init): Likewise.
+	* ipc/ipc_init.c (ipc_bootstrap): Likewise.
+	* ipc/ipc_marequest.c (ipc_marequest_init): Likewise.
+	* kern/act.c (global_act_init): Likewise.
+	* kern/kalloc.c (kalloc_init): Likewise.
+	* kern/processor.c (pset_sys_init): Likewise.
+	* kern/task.c (task_init): Likewise.
+	* kern/thread.c (thread_init): Likewise.
+	* kern/zalloc.c (zone_bootstrap): Likewise.
+	* vm/vm_external.c (vm_external_module_initialize): Likewise.
+	* vm/vm_fault.c (vm_fault_init): Likewise.
+	* vm/vm_map.c (vm_map_init): Likewise.
+	* vm/vm_object.c (vm_object_bootstrap): Likewise.
+	* vm/vm_resident.c (vm_page_module_init): Likewise.
+
 2007-01-02  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
         Fix translation of port into device in the "no sender" notification.

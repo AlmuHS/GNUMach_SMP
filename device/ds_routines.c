@@ -1471,7 +1471,7 @@ void ds_init()
 	 */
 	device_io_map->wait_for_space = TRUE;
 
-	io_inband_zone = zinit(sizeof(io_buf_ptr_inband_t),
+	io_inband_zone = zinit(sizeof(io_buf_ptr_inband_t), 0,
 			    1000 * sizeof(io_buf_ptr_inband_t),
 			    10 * sizeof(io_buf_ptr_inband_t),
 			    FALSE,
@@ -1519,7 +1519,7 @@ zone_t io_trap_zone;
 void
 ds_trap_init(void)
 {
-	io_trap_zone = zinit(IOTRAP_REQSIZE,
+	io_trap_zone = zinit(IOTRAP_REQSIZE, 0,
 			     256 * IOTRAP_REQSIZE,
 			     16 * IOTRAP_REQSIZE,
 			     FALSE,

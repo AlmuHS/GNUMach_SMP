@@ -77,25 +77,25 @@ ipc_bootstrap(void)
 	ipc_port_timestamp_lock_init();
 	ipc_port_timestamp_data = 0;
 
-	ipc_space_zone = zinit(sizeof(struct ipc_space),
+	ipc_space_zone = zinit(sizeof(struct ipc_space), 0,
 			       ipc_space_max * sizeof(struct ipc_space),
 			       sizeof(struct ipc_space),
 			       IPC_ZONE_TYPE, "ipc spaces");
 
 	ipc_tree_entry_zone =
-		zinit(sizeof(struct ipc_tree_entry),
+		zinit(sizeof(struct ipc_tree_entry), 0,
 			ipc_tree_entry_max * sizeof(struct ipc_tree_entry),
 			sizeof(struct ipc_tree_entry),
 			IPC_ZONE_TYPE, "ipc tree entries");
 
 	ipc_object_zones[IOT_PORT] =
-		zinit(sizeof(struct ipc_port),
+		zinit(sizeof(struct ipc_port), 0,
 		      ipc_port_max * sizeof(struct ipc_port),
 		      sizeof(struct ipc_port),
 		      0, "ipc ports");
 
 	ipc_object_zones[IOT_PORT_SET] =
-		zinit(sizeof(struct ipc_pset),
+		zinit(sizeof(struct ipc_pset), 0,
 		      ipc_pset_max * sizeof(struct ipc_pset),
 		      sizeof(struct ipc_pset),
 		      IPC_ZONE_TYPE, "ipc port sets");

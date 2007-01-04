@@ -72,6 +72,9 @@ MACRO_BEGIN								\
 	}								\
 MACRO_END
 
+#define ALIGN_SIZE_UP(size, align) \
+((size) = (((size) + ((align) - 1)) & ~((align) - 1)))
+
 /*
  * Support for garbage collection of unused zone pages:
  */
@@ -146,7 +149,7 @@ MACRO_BEGIN						\
 	}						\
 MACRO_END
 
-static vm_offset_t zget_space();
+static vm_offset_t zget_space(vm_offset_t size, vm_size_t align);
 
 decl_simple_lock_data(,zget_space_lock)
 vm_offset_t zalloc_next_space;
@@ -182,8 +185,9 @@ int			num_zones;
  *	are stored in a zone, which is initially a static structure that
  *	is initialized by zone_init.
  */
-zone_t zinit(size, max, alloc, memtype, name)
+zone_t zinit(size, align, max, alloc, memtype, name)
 	vm_size_t	size;		/* the size of an element */
+	vm_size_t	align;		/* alignment of elements */
 	vm_size_t	max;		/* maximum memory to use */
 	vm_size_t	alloc;		/* allocation size */
 	unsigned int	memtype;	/* flags specifying type of memory */
@@ -192,12 +196,11 @@ zone_t zinit(size, max, alloc, memtype, name)
 	register zone_t		z;
 
 	if (zone_zone == ZONE_NULL)
-		z = (zone_t) zget_space(sizeof(struct zone));
+		z = (zone_t) zget_space(sizeof(struct zone), 0);
 	else
 		z = (zone_t) zalloc(zone_zone);
 	if (z == ZONE_NULL)
 		panic("zinit");
-
  	if (alloc == 0)
 		alloc = PAGE_SIZE;
 
@@ -210,11 +213,18 @@ zone_t zinit(size, max, alloc, memtype, name)
 	if ((max = round_page(max)) < (alloc = round_page(alloc)))
 		max = alloc;
 
+	if (align > 0) {
+		if (align >= PAGE_SIZE)
+			panic("zinit");
+		ALIGN_SIZE_UP(size, align);
+	}
+
 	z->free_elements = 0;
 	z->cur_size = 0;
 	z->max_size = max;
 	z->elem_size = ((size-1) + sizeof(z->free_elements)) -
 			((size-1) % sizeof(z->free_elements));
+	z->align = align;
 
 	z->alloc_size = alloc;
 	z->type = memtype;
@@ -268,13 +278,18 @@ void zcram(zone_t zone, vm_offset_t newmem, vm_size_t size)
  * of memory from zone_map.
  */
 
-static vm_offset_t zget_space(vm_offset_t size)
+static vm_offset_t zget_space(vm_offset_t size, vm_size_t align)
 {
 	vm_offset_t	new_space = 0;
 	vm_offset_t	result;
 	vm_size_t	space_to_add = 0; /*'=0' to quiet gcc warnings */
 
 	simple_lock(&zget_space_lock);
+	if (align > 0) {
+		assert(align < PAGE_SIZE);
+		ALIGN_SIZE_UP(zalloc_next_space, align);
+	}
+
 	while ((zalloc_next_space + size) > zalloc_end_of_space) {
 		/*
 		 *	Add at least one page to allocation area.
@@ -359,7 +374,7 @@ void zone_bootstrap()
 	zalloc_wasted_space = 0;
 
 	zone_zone = ZONE_NULL;
-	zone_zone = zinit(sizeof(struct zone), 128 * sizeof(struct zone),
+	zone_zone = zinit(sizeof(struct zone), 0, 128 * sizeof(struct zone),
 			  sizeof(struct zone), 0, "zones");
 }
 
@@ -487,7 +502,7 @@ vm_offset_t zalloc(zone_t zone)
 				zone_lock(zone);
 				REMOVE_FROM_ZONE(zone, addr, vm_offset_t);
 			} else {
-				addr = zget_space(zone->elem_size);
+				addr = zget_space(zone->elem_size, zone->align);
 				if (addr == 0)
 					panic("zalloc: zone %s exhausted",
 					      zone->zone_name);

@@ -59,6 +59,7 @@ struct zone {
 	vm_size_t	cur_size;	/* current memory utilization */
 	vm_size_t	max_size;	/* how large can this zone grow */
 	vm_size_t	elem_size;	/* size of an element */
+	vm_size_t	align;		/* alignment of elements */
 	vm_size_t	alloc_size;	/* size used for more memory */
 	boolean_t	doing_alloc;	/* is zone expanding now? */
 	char		*zone_name;	/* a name for the zone */
@@ -71,8 +72,8 @@ typedef struct zone *zone_t;
 #define		ZONE_NULL	((zone_t) 0)
 
 /* Exported to everyone */
-zone_t		zinit(vm_size_t size, vm_size_t max, vm_size_t alloc,
-		      unsigned int memtype, char *name);
+zone_t		zinit(vm_size_t size, vm_size_t align, vm_size_t max,
+		      vm_size_t alloc, unsigned int memtype, char *name);
 vm_offset_t	zalloc(zone_t zone);
 vm_offset_t	zget(zone_t zone);
 void		zfree(zone_t zone, vm_offset_t elem);

@@ -244,7 +244,7 @@ vm_object_t vm_object_allocate(
  */
 void vm_object_bootstrap(void)
 {
-	vm_object_zone = zinit((vm_size_t) sizeof(struct vm_object),
+	vm_object_zone = zinit((vm_size_t) sizeof(struct vm_object), 0,
 				round_page(512*1024),
 				round_page(12*1024),
 				0, "objects");

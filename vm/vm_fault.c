@@ -107,7 +107,7 @@ extern struct db_watchpoint *db_watchpoint_list;
  */
 void vm_fault_init()
 {
-	vm_fault_state_zone = zinit(sizeof(vm_fault_state_t),
+	vm_fault_state_zone = zinit(sizeof(vm_fault_state_t), 0,
 				    THREAD_MAX * sizeof(vm_fault_state_t),
 				    sizeof(vm_fault_state_t),
 				    0, "vm fault state");

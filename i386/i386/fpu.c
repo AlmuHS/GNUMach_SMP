@@ -152,7 +152,7 @@ init_fpu()
 void
 fpu_module_init()
 {
-	ifps_zone = zinit(sizeof(struct i386_fpsave_state),
+	ifps_zone = zinit(sizeof(struct i386_fpsave_state), 0,
 			  THREAD_MAX * sizeof(struct i386_fpsave_state),
 			  THREAD_CHUNK * sizeof(struct i386_fpsave_state),
 			  0, "i386 fpsave state");

@@ -143,7 +143,7 @@ ipc_marequest_init()
 	}
 
 	ipc_marequest_zone =
-		zinit(sizeof(struct ipc_marequest),
+		zinit(sizeof(struct ipc_marequest), 0,
 		      ipc_marequest_max * sizeof(struct ipc_marequest),
 		      sizeof(struct ipc_marequest),
 		      IPC_ZONE_TYPE, "ipc msg-accepted requests");

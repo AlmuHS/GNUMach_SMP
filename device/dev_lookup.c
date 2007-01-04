@@ -401,7 +401,7 @@ dev_lookup_init()
 
 	simple_lock_init(&dev_port_lock);
 
-	dev_hdr_zone = zinit(sizeof(struct mach_device),
+	dev_hdr_zone = zinit(sizeof(struct mach_device), 0,
 			     sizeof(struct mach_device) * NDEVICES,
 			     PAGE_SIZE,
 			     FALSE,

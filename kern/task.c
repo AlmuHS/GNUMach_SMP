@@ -61,7 +61,7 @@ extern void eml_task_deallocate(task_t);
 void task_init(void)
 {
 	task_zone = zinit(
-			sizeof(struct task),
+			sizeof(struct task), 0,
 			TASK_MAX * sizeof(struct task),
 			TASK_CHUNK * sizeof(struct task),
 			0, "tasks");

@@ -145,7 +145,7 @@ void kalloc_init()
 		if (size == MINSIZE) {
 			first_k_zone = i;
 		}
-		k_zone[i] = zinit(size, k_zone_max[i] * size, size,
+		k_zone[i] = zinit(size, 0, k_zone_max[i] * size, size,
 				  size >= PAGE_SIZE ? ZONE_COLLECTABLE : 0,
 				  k_zone_name[i]);
 	}

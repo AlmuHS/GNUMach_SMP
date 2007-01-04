@@ -299,7 +299,7 @@ void stack_privilege(
 void thread_init(void)
 {
 	thread_zone = zinit(
-			sizeof(struct thread),
+			sizeof(struct thread), 0,
 			THREAD_MAX * sizeof(struct thread),
 			THREAD_CHUNK * sizeof(struct thread),
 			0, "threads");

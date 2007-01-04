@@ -142,16 +142,16 @@ void		vm_external_module_initialize()
 {
 	vm_size_t	size = (vm_size_t) sizeof(struct vm_external);
 
-	vm_external_zone = zinit(size, 16*1024*size, size,
+	vm_external_zone = zinit(size, 0, 16*1024*size, size,
 				 0, "external page bitmaps");
 
-	vm_object_small_existence_map_zone = zinit(SMALL_SIZE,
+	vm_object_small_existence_map_zone = zinit(SMALL_SIZE, 0,
 					round_page(LARGE_SIZE * SMALL_SIZE),
 					round_page(SMALL_SIZE),
 					ZONE_EXHAUSTIBLE,
 					"object small existence maps");
 
-	vm_object_large_existence_map_zone = zinit(LARGE_SIZE,
+	vm_object_large_existence_map_zone = zinit(LARGE_SIZE, 0,
 					round_page(8 * LARGE_SIZE),
 					round_page(LARGE_SIZE),
 					ZONE_EXHAUSTIBLE,

@@ -158,17 +158,17 @@ int		kentry_count = 256;		/* to init kentry_data_size */
 
 void vm_map_init()
 {
-	vm_map_zone = zinit((vm_size_t) sizeof(struct vm_map), 40*1024,
+	vm_map_zone = zinit((vm_size_t) sizeof(struct vm_map), 0, 40*1024,
 					PAGE_SIZE, 0, "maps");
 	vm_map_entry_zone = zinit((vm_size_t) sizeof(struct vm_map_entry),
-					1024*1024, PAGE_SIZE*5,
+					0, 1024*1024, PAGE_SIZE*5,
 					0, "non-kernel map entries");
-	vm_map_kentry_zone = zinit((vm_size_t) sizeof(struct vm_map_entry),
+	vm_map_kentry_zone = zinit((vm_size_t) sizeof(struct vm_map_entry), 0,
 					kentry_data_size, kentry_data_size,
 					ZONE_FIXED /* XXX */, "kernel map entries");
 
 	vm_map_copy_zone = zinit((vm_size_t) sizeof(struct vm_map_copy),
-					16*1024, PAGE_SIZE, 0,
+					0, 16*1024, PAGE_SIZE, 0,
 					"map copies");
 
 	/*
