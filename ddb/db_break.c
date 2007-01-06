@@ -43,6 +43,9 @@
 #include <ddb/db_variables.h>
 #include <ddb/db_command.h>
 #include <ddb/db_task_thread.h>
+#include <ddb/db_output.h>
+#include <ddb/db_cond.h>
+#include <ddb/db_expr.h>
 
 #define	NBREAKPOINTS	100
 #define NTHREAD_LIST	(NBREAKPOINTS*3)
@@ -122,7 +125,6 @@ db_delete_thread_breakpoint(bkpt, task_thd)
 {
 	register db_thread_breakpoint_t tp;
 	register db_thread_breakpoint_t *tpp;
-	void	 db_cond_free();
 
 	if (task_thd == 0) {
 	    /* delete all the thread-breakpoints */
@@ -594,7 +596,7 @@ db_list_breakpoints()
 void
 db_delete_cmd()
 {
-	register n;
+	register int n;
 	thread_t thread;
 	vm_offset_t task_thd;
 	boolean_t user_global = FALSE;
@@ -677,7 +679,7 @@ db_breakpoint_cmd(addr, have_addr, count, modif)
 	db_expr_t	count;
 	char *		modif;
 {
-	register n;
+	register int n;
 	thread_t thread;
 	boolean_t user_global = db_option(modif, 'U');
 	boolean_t task_bpt = db_option(modif, 'T');

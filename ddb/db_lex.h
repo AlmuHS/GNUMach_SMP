@@ -41,6 +41,7 @@ struct db_lex_context {
 	char *l_eptr;		/* line end pointer */
 };
 
+extern int	db_lex();
 extern int	db_read_line(/* char *rep_str */);
 extern void	db_flush_line();
 extern int	db_read_char();

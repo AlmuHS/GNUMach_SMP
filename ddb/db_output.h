@@ -36,5 +36,5 @@ extern void	db_force_whitespace();
 extern int	db_print_position();
 extern void	db_end_line();
 extern void	db_printf( const char *fmt, ...);
-
+extern void db_putchar(int c);
 

@@ -67,4 +67,6 @@ struct db_command {
 	struct db_command *more;   /* another level of command */
 };
 
+extern boolean_t db_exec_cmd_nest(char *cmd, int size);
+
 #endif /* MACH_KDB */

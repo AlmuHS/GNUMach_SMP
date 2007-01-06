@@ -27,6 +27,10 @@
 #if MACH_KDB
 
 #include <machine/db_machdep.h>
+#include <ddb/db_command.h>
+#include <ddb/db_expr.h>
+#include <ddb/db_lex.h>
+#include <ddb/db_output.h>
 #include <ddb/db_task_thread.h>
 #include <ddb/db_variables.h>
 
@@ -51,9 +55,9 @@ db_lookup_task(target_task)
 	task_t target_task;
 {
 	register task_t task;
-	register task_id;
+	register int task_id;
 	register processor_set_t pset;
-	register npset = 0;
+	register int npset = 0;
 
 	task_id = 0;
 	if (queue_first(&all_psets) == 0)
@@ -82,7 +86,7 @@ db_lookup_task_thread(task, target_thread)
 	thread_t target_thread;
 {
 	register thread_t thread;
-	register thread_id;
+	register int thread_id;
 
 	thread_id = 0;
 	if (queue_first(&task->thread_list) == 0)
@@ -104,11 +108,11 @@ int
 db_lookup_thread(target_thread)
 	thread_t target_thread;
 {
-	register thread_id;
+	register int thread_id;
 	register task_t task;
 	register processor_set_t pset;
-	register ntask = 0;
-	register npset = 0;
+	register int ntask = 0;
+	register int npset = 0;
 
 	if (queue_first(&all_psets) == 0)
 	    return(-1);
@@ -150,11 +154,11 @@ db_check_thread_address_valid(thread)
  */
 task_t
 db_lookup_task_id(task_id)
-	register task_id;
+	register int task_id;
 {
 	register task_t task;
 	register processor_set_t pset;
-	register npset = 0;
+	register int npset = 0;
 
 	if (task_id > DB_MAX_TASKID)
 	    return(TASK_NULL);
@@ -179,7 +183,7 @@ db_lookup_task_id(task_id)
 static thread_t
 db_lookup_thread_id(task, thread_id)
 	task_t	 task;
-	register thread_id;
+	register int thread_id;
 {
 	register thread_t thread;
 

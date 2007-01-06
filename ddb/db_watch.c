@@ -37,9 +37,13 @@
 #include <vm/vm_map.h>
 
 #include <machine/db_machdep.h>
+#include <ddb/db_command.h>
 #include <ddb/db_lex.h>
 #include <ddb/db_watch.h>
 #include <ddb/db_access.h>
+#include <ddb/db_expr.h>
+#include <ddb/db_output.h>
+#include <ddb/db_run.h>
 #include <ddb/db_sym.h>
 #include <ddb/db_task_thread.h>
 

@@ -124,6 +124,7 @@ db_lookup_i386_kreg(
 	return 0;
 }
 
+int
 db_i386_reg_value(
 	struct	db_variable	*vp,
 	db_expr_t		*valuep,

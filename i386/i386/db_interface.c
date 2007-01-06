@@ -45,9 +45,16 @@
 #include "vm_param.h"
 #include <vm/vm_map.h>
 #include <kern/cpu_number.h>
+#include <kern/printf.h>
 #include <kern/thread.h>
 #include <kern/task.h>
+#include <ddb/db_access.h>
+#include <ddb/db_command.h>
+#include <ddb/db_output.h>
+#include <ddb/db_run.h>
 #include <ddb/db_task_thread.h>
+#include <ddb/db_trap.h>
+#include <machine/db_interface.h>
 #include <machine/machspl.h>
 
 struct	 i386_saved_state *i386_last_saved_statep;
@@ -59,6 +66,7 @@ extern	thread_t db_default_thread;
 /*
  * Print trap reason.
  */
+void
 kdbprinttrap(type, code)
 	int	type, code;
 {
@@ -258,7 +266,7 @@ int
 db_user_to_kernel_address(
 	task_t		task,
 	vm_offset_t	addr,
-	unsigned	*kaddr,
+	unsigned int	*kaddr,
 	int		flag)
 {
 	register pt_entry_t *ptp;
@@ -518,7 +526,7 @@ db_task_name(
 	task_t		task)
 {
 	register char *p;
-	register n;
+	register int n;
 	unsigned vaddr, kaddr;
 
 	vaddr = DB_USER_STACK_ADDR;

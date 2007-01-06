@@ -35,7 +35,11 @@
  */
 #include <string.h>
 #include <machine/db_machdep.h>
+#include <ddb/db_command.h>
+#include <ddb/db_examine.h>
+#include <ddb/db_input.h>
 #include <ddb/db_lex.h>
+#include <ddb/db_output.h>
 
 char	db_line[DB_LEX_LINE_SIZE];
 char	db_last_line[DB_LEX_LINE_SIZE];
@@ -175,9 +179,9 @@ db_flush_lex()
 void
 db_skip_to_eol()
 {
-	register skip;
-	register t;
-	register n;
+	register int skip;
+	register int t;
+	register int n;
 	register char *p;
 
 	t = db_read_token();
@@ -202,7 +206,7 @@ int
 db_lex()
 {
 	register char *cp;
-	register c;
+	register int c;
 
 	c = db_read_char();
 	while (c <= ' ' || c > '~') {

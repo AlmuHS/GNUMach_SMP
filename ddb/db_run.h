@@ -24,6 +24,9 @@
  * the rights to redistribute these changes.
  */
 
+#include <kern/task.h>
+#include <machine/db_machdep.h>
+
 extern int db_run_mode;
 
 /* modes the system may be running in */
@@ -35,3 +38,13 @@ extern int db_run_mode;
 #define	STEP_CONTINUE	4
 #define STEP_INVISIBLE	5
 #define	STEP_COUNT	6
+
+extern void db_single_step(db_regs_t *regs, task_t task);
+
+extern void db_single_step_cmd(
+	db_expr_t	addr,
+	int			have_addr,
+	db_expr_t	count,
+	char		*modif);
+
+extern boolean_t db_in_single_step(void);

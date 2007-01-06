@@ -52,6 +52,11 @@
 
 #include <i386/io_emulate.h>
 
+#if MACH_KDB
+#include <ddb/db_run.h>
+#include <ddb/db_watch.h>
+#endif
+
 #include "debug.h"
 
 extern void exception();

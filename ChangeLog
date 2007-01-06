@@ -1,3 +1,91 @@
+2006-01-06  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* ddb/db_break.c (db_delete_thread_breakpoint): Don't declare
+	`db_cond_free'.
+	* ddb/db_run.c: Include <ddb/db_cond.h>.
+	(db_stop_at_pc): Don't declare `db_cond_check'.
+	* ddb/db_input.c: Include <ddb/db_input.h>.
+	* ddb/db_macro.c: Include <ddb/db_macro.h>.
+	* ddb/db_trap.c: Include <ddb/db_trap.h>.
+	* i386/i386/db_interface.h: Include <machine/thread.h>.
+	* i386/i386/db_interface.c: Include <machine/db_interface.h>.
+	* i386/i386/db_machdep.h: Include <machine/db_interface.h>.
+	(db_check_access, db_phys_eq, db_task_name): Remove declarations.
+	
+2006-01-06  Barry deFreese  <bddebian@comcast.net>
+
+	* ddb/db_aout.c: Include <ddb/db_output.h>.
+	* ddb/db_break.c: Include <ddb/db_cond.h>, <ddb/db_expr.h> and
+	<ddb/db_output.h>.
+	(db_delete_cmd, db_breakpoint_cmd): Explicitly define untyped variables
+	as `int'.
+	* ddb/db_command.c: Include <ddb/db_examine.h>, <ddb/db_expr.h> and
+	<ddb/db_macro.h>.
+	* ddb/db_command.h (db_exec_cmd_nest): New declaration.
+	* ddb/db_cond.c: Include <ddb/db_cond.h>, <ddb/db_expr.h> and
+	<ddb/db_output.h>.
+	(db_cond_cmd): Explicitly define untyped variable as `int'.
+	* ddb/db_cond.h: New file.
+	* ddb/db_examine.c: Include <machine/db_interface.h>,
+	<ddb/db_examine.h> and <ddb/db_expr.h>.
+	(db_strcpy, db_examine): Remove forward declarations.
+	(db_xcdump): Explicitly define untyped variables as `int'.
+	* ddb/db_examine.h: New file.
+	* ddb/db_expr.c: Include <ddb/db_expr.h>, <ddb/db_output.h>,
+	<ddb/db_sym.h> and <ddb/db_variables.h>.
+	* ddb/db_input.c: Include <ddb/db_command.h>.
+	* ddb/db_input.h: New file.
+	* ddb/db_lex.c: Include <ddb/db_command.h>, <ddb/db_examine.h>,
+	<ddb/db_input.h> and <ddb/db_output.h>.
+	(db_skip_to_eol, db_lex): Explicitly define untyped variables as `int'.
+	* ddb/db_lex.h (db_lex): New declaration.
+	* ddb/db_macro.c: Include <ddb/db_examine.h>, <ddb/db_expr.h> and
+	<ddb/db_output.h>.
+	(db_def_macro_cmd, db_exec_macro): Explicitly define untyped variables
+	as `int'.
+	* ddb/db_macro.h: New file.
+	* ddb/db_output.c: Include <ddb/db_command.h>.
+	* ddb/db_output.h (db_putchar): New declaration.
+	* ddb/db_print.c: Include <machine/db_interface.h>, <ddb/db_command.h>
+	and <ddb/db_output.h>.
+	(db_show_regs): Explicitly define untyped variables as `int'.
+	* ddb/db_run.c: Include <ddb/db_command.h>, <ddb/db_examine.h>,
+	<ddb/db_output.h> and <ddb/db_watch.h>.
+	* ddb/db_run.h: Include <kern/task.h> and <machine/db_machdep.h>.
+	(db_single_step, db_single_step_cmd, db_in_single_step): New
+	declarations.
+	* ddb/db_sym.c: Include <ddb/db_command.h> and <ddb/db_output.h>.
+	(db_sym_parse_and_lookup): Explicitly define untyped variables as
+	`int'.
+	* ddb/db_sym.h (db_line_at_pc): New declaration.
+	* ddb/db_task_thread.c: Include <ddb/db_command.h>, <ddb/db_expr.h>,
+	<ddb/db_lex.h> and <ddb/db_output.h>.
+	(db_lookup_task, db_lookup_task_thread, db_lookup_thread)
+	(db_lookup_task_id, db_lookup_thread_id): Explicitly define untyped
+	variables as `int'.
+	* ddb/db_trap.c: Include <ddb/db_examine.h> and <ddb/db_output.h>.
+	* ddb/db_trap.h: New file.
+	* ddb/db_variables.c: Include <ddb/db_command.h>, <ddb/db_examine.h>,
+	<ddb/db_expr.h> and <ddb/db_output.h>.
+	(db_get_suffix, db_cmp_variable_name): Explicitly define untyped
+	variables as `int'.
+	* ddb/db_variables.h (db_get_variable): New declaration.
+	* ddb/db_watch.c: Include <ddb/db_command.h>, <ddb/db_expr.h>,
+	<ddb/db_output.h> and <ddb/db_run.h>.
+	* ddb/db_write_cmd.c: Include <ddb/db_expr.h> and <ddb/db_output.h>.
+	* i386/i386/db_interface.c: Include <kern/printf.h>, <ddb/db_access.h>,
+	<ddb/db_command.h>, <ddb/db_output.h>, <ddb/db_run.h> and
+	<ddb/db_trap.h>.
+	(kdbprinttrap): Add `void' return type.
+	(db_user_to_kernel_address, db_task_name): Explicitly define untyped
+	variables as `int'.
+	* i386/i386/db_interface.h: New file.
+	* i386/i386/db_trace.c (db_i386_reg_value): Add `int' return type.
+	* i386/i386/trap.c [MACH_KDB]: Include <ddb/db_run.h> and
+	<ddb/db_watch.h>.
+	* ipc/ipc_kmsg.c [MACH_KDB]: Include <ddb/db_output.h>.
+	* kern/lock.c [MACH_KDB]: Include <ddb/db_output.h>.
+
 2007-01-06  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* configure.ac (AM_INIT_AUTOMAKE): Add ``-Wall -Wno-portability''.

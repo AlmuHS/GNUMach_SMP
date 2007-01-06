@@ -33,7 +33,10 @@
 #include <ddb/db_lex.h>
 #include <ddb/db_variables.h>
 #include <ddb/db_command.h>
-
+#include <ddb/db_examine.h>
+#include <ddb/db_expr.h>
+#include <ddb/db_macro.h>
+#include <ddb/db_output.h>
 
 
 /*
@@ -73,7 +76,7 @@ void
 db_def_macro_cmd()
 {
 	register char *p;
-	register c;
+	register int c;
 	register struct db_user_macro *mp, *ep;
 
 	if (db_read_token() != tIDENT) {
@@ -141,7 +144,7 @@ db_exec_macro(name)
 	char *name;
 {
 	register struct db_user_macro *mp;
-	register n;
+	register int n;
 
 	if ((mp = db_lookup_macro(name)) == 0)
 	    return(-1);

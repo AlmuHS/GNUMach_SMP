@@ -38,8 +38,10 @@
 #include <ddb/db_command.h>
 #include <ddb/db_access.h>
 #include <ddb/db_break.h>
+#include <ddb/db_examine.h>
+#include <ddb/db_output.h>
 #include <ddb/db_task_thread.h>
-
+#include <ddb/db_trap.h>
 
 
 extern jmp_buf_t *db_recover;

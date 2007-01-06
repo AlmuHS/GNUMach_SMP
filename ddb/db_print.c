@@ -41,9 +41,12 @@
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_space.h>
 
+#include <machine/db_interface.h>
 #include <machine/db_machdep.h>
 #include <machine/thread.h>
 
+#include <ddb/db_command.h>
+#include <ddb/db_output.h>
 #include <ddb/db_lex.h>
 #include <ddb/db_variables.h>
 #include <ddb/db_sym.h>
@@ -63,7 +66,7 @@ db_show_regs(addr, have_addr, count, modif)
 	db_expr_t	value;
 	db_addr_t	offset;
 	char *		name;
-	register	i;
+	register	int i;
 	struct db_var_aux_param aux_param;
 	task_t		task = TASK_NULL;
 

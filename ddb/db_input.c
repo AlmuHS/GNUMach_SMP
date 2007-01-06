@@ -32,9 +32,9 @@
 
 #include <mach/boolean.h>
 #include <machine/db_machdep.h>
+#include <ddb/db_command.h>
+#include <ddb/db_input.h>
 #include <ddb/db_output.h>
-
-
 
 #ifndef DB_HISTORY_SIZE
 #define DB_HISTORY_SIZE 4000

@@ -32,7 +32,11 @@
 
 #include <machine/db_machdep.h>
 
+#include <ddb/db_command.h>
+#include <ddb/db_examine.h>
+#include <ddb/db_expr.h>
 #include <ddb/db_lex.h>
+#include <ddb/db_output.h>
 #include <ddb/db_variables.h>
 #include <ddb/db_task_thread.h>
 
@@ -71,7 +75,7 @@ db_get_suffix(suffix, suffix_value)
 	register char	*suffix;
 	short		*suffix_value;
 {
-	register value;
+	register int value;
 
 	for (value = 0; *suffix && *suffix != '.' && *suffix != ':'; suffix++) {
 	    if (*suffix < '0' || *suffix > '9')
@@ -91,7 +95,7 @@ db_cmp_variable_name(vp, name, ap)
 	register db_var_aux_param_t	ap;
 {
 	register char *var_np, *np;
-	register level;
+	register int level;
 
 	for (np = name, var_np = vp->name; *var_np; ) {
 	    if (*np++ != *var_np++)

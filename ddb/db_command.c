@@ -42,6 +42,9 @@
 #include <ddb/db_output.h>
 #include <ddb/db_command.h>
 #include <ddb/db_task_thread.h>
+#include <ddb/db_macro.h>
+#include <ddb/db_expr.h>
+#include <ddb/db_examine.h>
 
 #include <machine/setjmp.h>
 #include <kern/debug.h>

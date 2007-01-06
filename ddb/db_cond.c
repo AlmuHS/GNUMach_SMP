@@ -32,6 +32,9 @@
 #include <ddb/db_lex.h>
 #include <ddb/db_break.h>
 #include <ddb/db_command.h>
+#include <ddb/db_cond.h>
+#include <ddb/db_expr.h>
+#include <ddb/db_output.h>
 
 #include <kern/debug.h>
 
@@ -122,7 +125,7 @@ db_cond_print(bkpt)
 void
 db_cond_cmd()
 {
-	register  c;
+	register  int c;
 	register  struct db_cond *cp;
 	register  char *p;
 	db_expr_t value;

@@ -34,6 +34,7 @@
 #include <mach/machine/vm_types.h>
 #include <mach/machine/vm_param.h>
 #include <mach/machine/eflags.h>
+#include <machine/db_interface.h>
 #include <i386/thread.h>		/* for thread_status */
 #include <i386/trap.h>
 
@@ -87,17 +88,12 @@ db_regs_t	ddb_regs;	/* register state */
 	((!(user) && DB_VALID_KERN_ADDR(addr)) ||		\
 	 ((user) && (addr) < VM_MIN_KERNEL_ADDRESS))
 
-boolean_t 	db_check_access(/* vm_offset_t, int, task_t */);
-boolean_t	db_phys_eq(/* task_t, vm_offset_t, task_t, vm_offset_t */);
-
 /* macros for printing OS server dependent task name */
 
 #define DB_TASK_NAME(task)	db_task_name(task)
 #define DB_TASK_NAME_TITLE	"COMMAND                "
 #define DB_TASK_NAME_LEN	23
 #define DB_NULL_TASK_NAME	"?                      "
-
-void		db_task_name(/* task_t */);
 
 /* macro for checking if a thread has used floating-point */
 

@@ -37,6 +37,7 @@
 #include <string.h>
 #include <mach/std_types.h>
 #include <machine/db_machdep.h>		/* data types */
+#include <ddb/db_output.h>
 #include <ddb/db_sym.h>
 
 #ifndef	DB_NO_AOUT

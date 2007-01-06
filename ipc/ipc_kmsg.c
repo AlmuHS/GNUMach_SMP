@@ -59,6 +59,10 @@
 
 #include <ipc/ipc_machdep.h>
 
+#if MACH_KDB
+#include <ddb/db_output.h>
+#endif
+
 extern int copyinmap();
 extern int copyoutmap();
 void ipc_msg_print(); /* forward */

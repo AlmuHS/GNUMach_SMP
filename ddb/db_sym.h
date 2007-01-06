@@ -198,3 +198,10 @@ extern struct db_sym_switch {
 #define	X_db_search_symbol(s,o,t,d)	x_db[(s)->type].search_symbol(s,o,t,d)
 #define	X_db_line_at_pc(s,p,f,l,a)	x_db[(s)->type].line_at_pc(s,p,f,l,a)
 #define	X_db_symbol_values(s,p,n,v)	x_db[(s)->type].symbol_values(p,n,v)
+
+extern boolean_t db_line_at_pc(
+	db_sym_t sym,
+	char **filename,
+	int *linenum,
+	db_expr_t pc);
+

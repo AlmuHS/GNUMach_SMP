@@ -33,6 +33,8 @@
 #include <string.h>
 #include <mach/std_types.h>
 #include <machine/db_machdep.h>
+#include <ddb/db_command.h>
+#include <ddb/db_output.h>
 #include <ddb/db_sym.h>
 #include <ddb/db_task_thread.h>
 
@@ -194,7 +196,7 @@ db_sym_parse_and_lookup(func, symtab, symstr)
 	char		*symstr;
 {
 	register 	char *p;
-	register 	n;
+	register 	int n;
 	int	 	n_name;
 	int	 	line_number;
 	char	 	*file_name = 0;

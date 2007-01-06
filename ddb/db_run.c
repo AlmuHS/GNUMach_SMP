@@ -41,6 +41,12 @@
 #include <ddb/db_access.h>
 #include <ddb/db_run.h>
 #include <ddb/db_task_thread.h>
+#include <ddb/db_command.h>
+#include <ddb/db_examine.h>
+#include <ddb/db_output.h>
+#include <ddb/db_watch.h>
+#include <ddb/db_cond.h>
+
 
 int	db_run_mode;
 
@@ -71,7 +77,6 @@ db_stop_at_pc(is_breakpoint, task)
 {
 	register  db_addr_t	pc;
 	register  db_thread_breakpoint_t bkpt;
-	boolean_t db_cond_check();
 
 	db_clear_task_single_step(DDB_REGS, task);
 	db_clear_breakpoints();

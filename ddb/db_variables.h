@@ -75,4 +75,6 @@ extern struct db_variable	*db_evars;
 extern struct db_variable	db_regs[];	/* machine registers */
 extern struct db_variable	*db_eregs;
 
+extern int db_get_variable(db_expr_t *valuep);
+
 #endif	/* _DB_VARIABLES_H_ */

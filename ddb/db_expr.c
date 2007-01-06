@@ -35,6 +35,10 @@
 #include <ddb/db_lex.h>
 #include <ddb/db_access.h>
 #include <ddb/db_command.h>
+#include <ddb/db_expr.h>
+#include <ddb/db_output.h>
+#include <ddb/db_sym.h>
+#include <ddb/db_variables.h>
 #include <kern/task.h>
 
 

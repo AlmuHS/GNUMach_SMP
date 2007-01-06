@@ -32,6 +32,7 @@
 
 #include <mach/boolean.h>
 #include <machine/db_machdep.h>
+#include <machine/db_interface.h>
 
 #include <ddb/db_access.h>
 #include <ddb/db_lex.h>
@@ -39,6 +40,8 @@
 #include <ddb/db_command.h>
 #include <ddb/db_sym.h>
 #include <ddb/db_task_thread.h>
+#include <ddb/db_examine.h>
+#include <ddb/db_expr.h>
 #include <kern/thread.h>
 #include <kern/task.h>
 #include <mach/vm_param.h>
@@ -52,9 +55,6 @@ thread_t	db_examine_thread = THREAD_NULL;
 
 extern	db_addr_t db_disasm(db_addr_t pc, boolean_t altform, task_t task);
 			/* instruction disassembler */
-
-void db_examine();/*forwards*/
-void db_strcpy();
 
 /*
  * Examine (print) data.
@@ -458,7 +458,7 @@ db_xcdump(addr, size, count, task)
 	int		count;
 	task_t		task;
 {
-	register 	i, n;
+	register 	int i, n;
 	db_expr_t	value;
 	int		bcount;
 	db_addr_t	off;

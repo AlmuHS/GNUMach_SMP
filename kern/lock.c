@@ -42,6 +42,7 @@
 #include <kern/sched_prim.h>
 #if	MACH_KDB
 #include <machine/db_machdep.h>
+#include <ddb/db_output.h>
 #include <ddb/db_sym.h>
 #endif
 
