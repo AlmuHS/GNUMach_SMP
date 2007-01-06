@@ -30,6 +30,8 @@ dnl Do not clutter the main build directory.
 dnl This is only a very rough estimation of the version we actually need.  Feel
 dnl free to refine that.
   [1.9]
+dnl We require GNU make.
+  [-Wall -Wno-portability]
 )
 
 #
