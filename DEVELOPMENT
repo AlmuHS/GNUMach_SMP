@@ -56,3 +56,25 @@ http://lists.gnu.org/archive/html/bug-hurd/2006-12/msg00107.html
 
 Be sure to check the ChangeLog and have a look at the repository at that
 tag's state if you want to work on those parts of GNU Mach.
+
+LAYOUT OF THE SOURCE TREE (very incomplete)
+
+  * include/ 
+
+[TODO: Check.]
+
+    ... is mainly for installed header and definition files, but it also holds
+    pseudo-clones of C library headers, which don't get installed because the C
+    library has better versions.  In that category are <mach/error.h>,
+    <mach/mach_traps.h>, <mach/mig_support.h>, <sys/ioctl.h>, <sys/reboot.h>,
+    <sys/time.h>, <sys/types.h>, <alloca.h> and <string.h>.  By putting such
+    headers into there, the relevant kernel code is easier to understand,
+    because the user will expect that the file named <alloca.h> or
+    <sys/types.h> does more or less what the normal C library file does, and
+    calling those <kern/alloca.h> or <kern/types.h> would make the reader have
+    to wonder or remember what they are.  The directory is, essentially, a
+    special `/usr/include' for use by the kernel itself when compiling.  It
+    only should get things which belong in `/usr/include'.  The reason for
+    <alloca.h> and <sys/types.h> is because those are files found in
+    `/usr/include', even if on an actual installed system the versions in
+    `/usr/include' are provided by a different package.
