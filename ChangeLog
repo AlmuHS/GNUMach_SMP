@@ -1,3 +1,8 @@
+2007-01-21  Marcus Brinkmann  <marcus@gnu.org>
+
+	* doc/mach.texi: Many typos fixed.  Submitted by Ralf Wildenhues
+	<Ralf.Wildenhues@gmx.de>.
+
 2006-01-11  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* DEVELOPMENT (LAYOUT OF THE SOURCE TREE): New section.
