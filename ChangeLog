@@ -2,7 +2,7 @@
 
 	* doc/mach.texi: Many typos fixed.
 
-2006-01-11  Thomas Schwinge  <tschwinge@gnu.org>
+2007-01-11  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* DEVELOPMENT (LAYOUT OF THE SOURCE TREE): New section.
 
@@ -27,7 +27,7 @@
 	* doc/stamp-vti: Likewise.
 	* doc/version.texi: Likewise.
 
-2006-01-06  Thomas Schwinge  <tschwinge@gnu.org>
+2007-01-06  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* ddb/db_break.c (db_delete_thread_breakpoint): Don't declare
 	`db_cond_free'.
@@ -41,7 +41,7 @@
 	* i386/i386/db_machdep.h: Include <machine/db_interface.h>.
 	(db_check_access, db_phys_eq, db_task_name): Remove declarations.
 	
-2006-01-06  Barry deFreese  <bddebian@comcast.net>
+2007-01-06  Barry deFreese  <bddebian@comcast.net>
 
 	* ddb/db_aout.c: Include <ddb/db_output.h>.
 	* ddb/db_break.c: Include <ddb/db_cond.h>, <ddb/db_expr.h> and
