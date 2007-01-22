@@ -1,3 +1,10 @@
+2007-01-22  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* COPYING: Update via GNU automake 1.10.
+	* doc/fdl.texi: Update from <http://www.gnu.org/licenses/fdl.texi>.
+	* doc/gpl.texi: Update from <http://www.gnu.org/licenses/gpl.texi>.
+	* doc/mach.texi: Use the GFDL 1.2.
+
 2007-01-21  Ralf Wildenhues  <Ralf.Wildenhues@gmx.de>
 
 	* doc/mach.texi: Many typos fixed.
