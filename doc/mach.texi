@@ -340,7 +340,7 @@ Kernel Debugger
 
 Documentation License
 
-* Free Documentation License::    The GNU Free Documentation License.
+* GNU Free Documentation License:: The GNU Free Documentation License.
 * CMU License::                   The CMU license applies to the original Mach
                                   kernel and its documentation.
 
@@ -7108,9 +7108,7 @@ indirection.  It may be followed by a @code{:} and modifiers as
 described above.
 @end table
 
-
 @include gpl.texi
-
 
 @node Documentation License
 @appendix Documentation License
@@ -7122,14 +7120,12 @@ Parts of this manual are derived from the Mach manual packages
 originally provided by Carnegie Mellon University.
 
 @menu
-* Free Documentation License::    The GNU Free Documentation License.
+* GNU Free Documentation License:: The GNU Free Documentation License.
 * CMU License::                   The CMU license applies to the original Mach
                                   kernel and its documentation.
 @end menu
 
-@lowersections
 @include fdl.texi
-@raisesections
 
 @node CMU License
 @appendixsec CMU License
