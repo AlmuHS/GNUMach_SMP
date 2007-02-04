@@ -35,9 +35,6 @@
 #include <kern/time_out.h>
 #include <i386/thread.h>
 
-#ifdef	SYMMETRY
-#include <sqt/intctl.h>
-#endif
 #if	defined(AT386)
 #include <i386/ipl.h>
 #endif
