@@ -1,5 +1,7 @@
 2007-02-04  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* doc/mach.texi (thread_switch): Enhance a bit.
+
 	* doc/Makefrag.am ($(web)): Use ``mkdir -p''.
 
 	* doc/mach.texi: Fix unusual hyphens.

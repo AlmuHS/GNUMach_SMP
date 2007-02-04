@@ -4550,14 +4550,15 @@ whose control port was presented.
 The function @code{thread_switch} provides low-level access to the
 scheduler's context switching code.  @var{new_thread} is a hint that
 implements hand-off scheduling.  The operating system will attempt to
-switch directly to the new thread (by passing the normal logic that
+switch directly to the new thread (bypassing the normal logic that
 selects the next thread to run) if possible.  Since this is a hint, it
 may be incorrect; it is ignored if it doesn't specify a thread on the
 same host as the current thread or if that thread can't be switched to
-(i.e., not runnable or already running on another processor).  In this
-case, the normal logic to select the next thread to run is used; the
-current thread may continue running if there is no other appropriate
-thread to run.
+(i.e., not runnable or already running on another processor or giving
+a plainly invalid hint, such as @code{MACH_PORT_NULL}).  In this case,
+the normal logic to select the next thread to run is used; the current
+thread may continue running if there is no other appropriate thread to
+run.
 
 Options for @var{option} are defined in @file{mach/thread_switch.h} and
 specify the interpretation of @var{time}.  The possible values for
@@ -4568,8 +4569,9 @@ specify the interpretation of @var{time}.  The possible values for
 No options, the time argument is ignored.
 
 @item SWITCH_OPTION_WAIT
-The thread is blocked for the specified time.  This can be aborted by
-@code{thread_abort}.
+The thread is blocked for the specified time (in milliseconds;
+specifying @code{0} will wait for the next tick).  This can be aborted
+by @code{thread_abort}.
 
 @item SWITCH_OPTION_DEPRESS
 The thread's priority is depressed to the lowest possible value for the
