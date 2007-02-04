@@ -36,9 +36,36 @@
  *	as a result.  Service timers once an hour.
  */
 
+/*
+ *	TIMER_MAX is needed if a 32-bit rollover timer needs to be adjusted for
+ *	maximum value.
+ */
+#undef TIMER_MAX
+
+/*
+ *	TIMER_RATE is the rate of the timer in ticks per second.  It is used to
+ *	calculate percent cpu usage.
+ */
 #define TIMER_RATE	1000000
+
+/*
+ *	TIMER_HIGH_UNIT is the unit for high_bits in terms of low_bits.
+ *	Setting it to TIMER_RATE makes the high unit seconds.
+ */
 #define TIMER_HIGH_UNIT	TIMER_RATE
+
+/*
+ *	TIMER_ADJUST is used to adjust the value of a timer after it has been
+ *	copied into a time_value_t.  No adjustment is needed if high_bits is in
+ *	seconds.
+ */
 #undef	TIMER_ADJUST
+
+/*
+ *	MACHINE_TIMER_ROUTINES should defined if the timer routines are
+ *	implemented in machine-dependent code (e.g. assembly language).
+ */
+#undef	MACHINE_TIMER_ROUTINES
 
 #else	/* STAT_TIME */
 /*
