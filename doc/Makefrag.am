@@ -39,7 +39,7 @@ web = doc/web
 .PHONY: $(web)
 $(web):
 	if test -d $@/CVS; then :; else		\
-	  mkdir $@ $@/CVS &&			\
+	  mkdir -p $@ $@/CVS &&			\
 	  sed -e s%cvsroot%web%			\
 	    < $(top_srcdir)/CVS/Root		\
 	    > $@/CVS/Root &&			\
