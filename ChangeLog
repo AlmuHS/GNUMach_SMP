@@ -1,5 +1,7 @@
 2007-02-04  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* doc/mach.texi: Fix unusual hyphens.
+	
 	* i386/i386/hardclock.c: Don't check for the `SYMMETRY' platform.
 
 	* kern/timer.h: Add some comments from...

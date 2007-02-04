@@ -4578,7 +4578,7 @@ This depression is independent of operations that change the thread's
 priority (e.g. @code{thread_priority} will not abort the depression).
 The minimum time and units of time can be obtained as the
 @code{min_timeout} value from @code{host_info}.  The depression is also
-aborted when the current thread is next run (either via hand­off
+aborted when the current thread is next run (either via hand-off
 scheduling or because the processor set has nothing better to do).
 @end table
 
@@ -6944,8 +6944,8 @@ session.  If the execution is resumed again, the numbers may change.
 The current thread can be distinguished from others by a @code{#} after
 the thread id instead of @code{:}.  Without @code{l} option, it only
 shows thread id, thread structure address and the status for each
-thread.  The status consists of 5 letters, R(run), W(wait), S(sus­
-pended), O(swapped out) and N(interruptible), and if corresponding
+thread.  The status consists of 5 letters, R(run), W(wait), S(suspended),
+O(swapped out) and N(interruptible), and if corresponding
 status bit is off, @code{.}  is printed instead.  If @code{l} option is
 specified, more detail information is printed for each thread.
 
