@@ -31,8 +31,6 @@
  *	Exported kernel calls.  See mach_debug/mach_debug.defs.
  */
 
-#if MACH_VM_DEBUG
-
 #include <string.h>
 
 #include <kern/debug.h>
@@ -53,6 +51,7 @@
 #include <ipc/ipc_port.h>
 
 
+#if MACH_VM_DEBUG
 
 /*
  *	Routine:	vm_object_real_name
