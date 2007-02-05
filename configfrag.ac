@@ -19,83 +19,87 @@ dnl USE OF THIS SOFTWARE.
 
 AC_DEFINE([MACH], [1], [MACH])
 AC_DEFINE([CMU], [1], [CMU])
-AC_DEFINE([MACH_KERNEL], [1], [MACH_KERNEL])
+AC_DEFINE([MACH_KERNEL], [1], [Standalone MACH kernel])
 AC_DEFINE([KERNEL], [1], [KERNEL])
 
 #
 # Formerly in `bogus/'.
 #
 
-# bogus/bootstrap_symbols.h
+# When set, the bootstrap task symbols are preserved by the kernel debugger.
+# Used in `kern/bootstrap.c'.
 AC_DEFINE([BOOTSTRAP_SYMBOLS], [0], [BOOTSTRAP_SYMBOLS])
 
-# bogus/cpus.h
+# Multiprocessor support is broken.
 AC_DEFINE([NCPUS], [1], [set things up for a uniprocessor])
 AH_TEMPLATE([MULTIPROCESSOR], [set things up for a uniprocessor])
 
-# bogus/fast_tas.h
+# Restartable Atomic Sequences to get a really fast test-n-set.  Can't be
+# enabled, as the `void recover_ras()' function is missing.
 AC_DEFINE([FAST_TAS], [0], [FAST_TAS])
 
-# bogus/hw_footprint.h
+# Cache footprint support.
 AC_DEFINE([HW_FOOTPRINT], [0], [HW_FOOTPRINT])
 
-# bogus/mach_counters.h
+# Counters.
 AC_DEFINE([MACH_COUNTERS], [0], [MACH_COUNTERS])
 
-# bogus/mach_debug.h
+# IPC debugging interface.
 AC_DEFINE([MACH_DEBUG], [1], [MACH_DEBUG])
 
-# bogus/mach_fixpri.h
+# Fixed priority threads.
 AC_DEFINE([MACH_FIXPRI], [1], [MACH_FIXPRI])
 
-# bogus/mach_host.h
+# Mach host (resource alloc.).
 AC_DEFINE([MACH_HOST], [0], [MACH_HOST])
 
-# bogus/mach_ipc_debug.h
+# IPC debugging calls.
 AC_DEFINE([MACH_IPC_DEBUG], [1], [MACH_IPC_DEBUG])
 
-# bogus/mach_ipc_test.h
+# Testing code/printfs.
 AC_DEFINE([MACH_IPC_TEST], [0], [MACH_IPC_TEST])
 
-# bogus/mach_ldebug.h
+# Sanity-check simple locking.
 AC_DEFINE([MACH_LDEBUG], [0], [MACH_LDEBUG])
 
-# bogus/mach_lock_mon.h
+# MP lock monitoring.  Registers use of locks, contention.  Depending on
+# hardware also records time spent with locks held.  Used in `kern/lock_mon.c'.
 AC_DEFINE([MACH_LOCK_MON], [0], [MACH_LOCK_MON])
 
-# bogus/mach_machine_routines.h
+# Does the architecture provide machine-specific interfaces?
 # TODO.  Defining a default value here and potentially overriding it later
 # might or might not work.  See
 # <http://lists.gnu.org/archive/html/autoconf/2006-10/msg00005.html>.  So,
-# comment this out so that the i386-specific one will be used instead. Doesn't
+# comment this out so that the i386-specific one will be used instead.  Doesn't
 # do any harm as we're i386-only so far.
 #AC_DEFINE([MACH_MACHINE_ROUTINES], [0], [MACH_MACHINE_ROUTINES])
 
-# bogus/mach_mp_debug.h
+# MP debugging.  Use alternate locking routines to detect deadlocks.  Used in
+# `kern/lock_mon.c'.
 AC_DEFINE([MACH_MP_DEBUG], [0], [MACH_MP_DEBUG])
 
-# bogus/mach_pagemap.h
+# Paged-out page map hints.
 AC_DEFINE([MACH_PAGEMAP], [1], [MACH_PAGEMAP])
 
-# bogus/mach_pcsample.h
+# Do pc sample histogram.
 AC_DEFINE([MACH_PCSAMPLE], [1], [MACH_PCSAMPLE])
 
-# bogus/mach_ttd.h
+# TTD Remote Kernel Debugging.
 AC_DEFINE([MACH_TTD], [0], [MACH_TTD])
 
-# bogus/mach_vm_debug.h
+# VM debugging calls.
 AC_DEFINE([MACH_VM_DEBUG], [1], [MACH_VM_DEBUG])
 
-# bogus/power_save.h
+# Mach-dep power conservation.
 AC_DEFINE([POWER_SAVE], [1], [POWER_SAVE])
 
-# bogus/simple_clock.h
+# No hardware clock rollover.
 AC_DEFINE([SIMPLE_CLOCK], [0], [SIMPLE_CLOCK])
 
-# bogus/stat_time.h
+# Use statistical timing.
 AC_DEFINE([STAT_TIME], [1], [STAT_TIME])
 
-# bogus/xpr_debug.h
+# Kernel tracing.
 AC_DEFINE([XPR_DEBUG], [1], [XPR_DEBUG])
 
 #
@@ -142,3 +146,7 @@ fi]
 # <http://lists.gnu.org/archive/html/bug-automake/2006-11/msg00027.html>.
 AC_CONFIG_LINKS([machine:$systype/$systype
 		 mach/machine:$systype/include/mach/$systype])
+
+dnl Local Variables:
+dnl mode: autoconf
+dnl End:
