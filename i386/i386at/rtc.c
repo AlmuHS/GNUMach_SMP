@@ -48,7 +48,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <sys/types.h>
 #include <sys/time.h>
-#include <kern/time_out.h>
+#include <kern/mach_clock.h>
 #include <i386/machspl.h>
 #include <i386/pio.h>
 #include <i386at/rtc.h>

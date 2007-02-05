@@ -39,6 +39,7 @@
 #include <kern/cpu_number.h>
 #include <kern/debug.h>
 #include <kern/lock.h>
+#include <kern/mach_clock.h>
 #include <kern/mach_factor.h>
 #include <kern/macro_help.h>
 #include <kern/processor.h>
@@ -48,7 +49,6 @@
 #include <kern/syscall_subr.h>
 #include <kern/thread.h>
 #include <kern/thread_swap.h>
-#include <kern/time_out.h>
 #include <vm/pmap.h>
 #include <vm/vm_kern.h>
 #include <vm/vm_map.h>
@@ -57,9 +57,6 @@
 #if	MACH_FIXPRI
 #include <mach/policy.h>
 #endif	/* MACH_FIXPRI */
-
-
-extern int hz;
 
 int		min_quantum;	/* defines max context switch rate */
 

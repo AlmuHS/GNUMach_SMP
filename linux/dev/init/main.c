@@ -79,7 +79,6 @@ struct drive_info_struct
  */
 static void calibrate_delay (void);
 
-extern int hz;
 extern vm_offset_t phys_last_addr;
 
 extern void *alloc_contig_mem (unsigned, unsigned, unsigned, vm_page_t *);

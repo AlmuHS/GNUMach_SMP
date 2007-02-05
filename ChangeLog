@@ -1,5 +1,28 @@
 2007-02-05  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* i386/i386/hardclock.c: Include <kern/mach_clock.h> instead of
+	<kern/time_out.h>.
+	* i386/i386/pit.c: Likewise.
+	* i386/i386at/kd.c: Likewise.
+	* i386/i386at/model_dep.c: Likewise.
+	* i386/i386at/rtc.c: Likewise.
+	* kern/ipc_sched.c: Likewise.
+	* kern/mach_factor.c: Likewise.
+	* kern/priority.c: Likewise.
+	* kern/sched_prim.c: Likewise.
+	* kern/startup.c: Likewise.
+	* kern/syscall_subr.c: Likewise.
+	* kern/thread.h: Likewise.
+	* kern/zalloc.c: Likewise.
+
+	* kern/host.c: Include <kern/mach_clock.h>.
+	(tick): Remove declaration.
+	* kern/pc_sample.c: Likewise.
+	* kern/thread.c: Likewise.
+	* kern/sched_prim.c (hz): Remove declaration.
+	* kern/syscall_subr.c (hz): Likewise.
+	* linux/dev/init/main.c (hz): Likewise.
+
 	* kern/time_out.h: Remove file after having installed the missing bits
 	in...
 	* kern/mach_clock.h: ... here.

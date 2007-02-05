@@ -43,11 +43,11 @@
 #include <mach/vm_prot.h>
 #include <kern/ast.h>
 #include <kern/cpu_number.h>
+#include <kern/mach_clock.h>
 #include <kern/queue.h>
 #include <kern/pc_sample.h>
 #include <kern/processor.h>
 #include <kern/sched_prim.h>	/* event_t, continuation_t */
-#include <kern/time_out.h>
 #include <kern/timer.h>
 #include <kern/lock.h>
 #include <kern/sched.h>

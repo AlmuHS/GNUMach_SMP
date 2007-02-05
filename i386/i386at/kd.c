@@ -78,8 +78,8 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <sys/types.h>
 #include <kern/debug.h>
+#include <kern/mach_clock.h>
 #include <kern/printf.h>
-#include <kern/time_out.h>
 #include <device/conf.h>
 #include <device/tty.h>
 #include <device/io_req.h>

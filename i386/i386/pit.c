@@ -49,7 +49,7 @@ NEGLIGENCE, OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#include <kern/time_out.h>
+#include <kern/mach_clock.h>
 #include <i386/ipl.h>
 #include <i386/pit.h>
 #include <i386/pio.h>

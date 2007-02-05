@@ -52,6 +52,7 @@
 #include <kern/thread_swap.h>
 #include <kern/host.h>
 #include <kern/zalloc.h>
+#include <kern/mach_clock.h>
 #include <vm/vm_kern.h>
 #include <ipc/ipc_kmsg.h>
 #include <ipc/ipc_port.h>
@@ -67,8 +68,6 @@ struct zone *thread_zone;
 
 queue_head_t		reaper_queue;
 decl_simple_lock_data(,	reaper_lock)
-
-extern int		tick;
 
 extern void		pcb_module_init(void);
 

@@ -41,10 +41,8 @@
 #include <mach/port.h>
 #include <kern/processor.h>
 #include <kern/ipc_host.h>
-
+#include <kern/mach_clock.h>
 #include <mach/vm_param.h>
-
-
 
 host_data_t	realhost;
 
@@ -155,7 +153,6 @@ kern_return_t	host_info(
 	case HOST_SCHED_INFO:
 	    {
 		register host_sched_info_t	sched_info;
-		extern int	tick;	/* microseconds per clock tick */
 		extern int	min_quantum;
 					/* minimum quantum, in microseconds */
 

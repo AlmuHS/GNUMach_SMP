@@ -33,6 +33,7 @@
 #include <kern/host.h>
 #include <kern/thread.h>
 #include <kern/pc_sample.h>
+#include <kern/mach_clock.h>
 
 #if	MACH_PCSAMPLE
 
@@ -66,7 +67,6 @@ thread_enable_pc_sampling(
     sampled_pc_flavor_t flavors)
 {
     vm_offset_t buf;
-    extern int tick;
 
     if (thread == THREAD_NULL)  {
 	return KERN_INVALID_ARGUMENT;
@@ -92,7 +92,6 @@ task_enable_pc_sampling(
     sampled_pc_flavor_t flavors)
 {
     vm_offset_t buf;
-    extern int tick;
 
     if (task == TASK_NULL)  {
 	return KERN_INVALID_ARGUMENT;

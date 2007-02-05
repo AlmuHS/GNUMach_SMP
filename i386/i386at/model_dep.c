@@ -40,10 +40,10 @@
 #include <mach/machine/multiboot.h>
 
 #include <i386/vm_param.h>
-#include <kern/time_out.h>
 #include <kern/assert.h>
 #include <kern/cpu_number.h>
 #include <kern/debug.h>
+#include <kern/mach_clock.h>
 #include <kern/printf.h>
 #include <sys/time.h>
 #include <vm/vm_page.h>

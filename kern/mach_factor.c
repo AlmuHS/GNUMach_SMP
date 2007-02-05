@@ -33,9 +33,9 @@
 
 #include <mach/machine.h>
 #include <mach/processor_info.h>
+#include <kern/mach_clock.h>
 #include <kern/sched.h>
 #include <kern/processor.h>
-#include <kern/time_out.h>
 #if	MACH_KERNEL
 #include <mach/kern_return.h>
 #include <mach/port.h>

@@ -34,13 +34,13 @@
 #include <ipc/ipc_init.h>
 #include <kern/cpu_number.h>
 #include <kern/debug.h>
+#include <kern/mach_clock.h>
 #include <kern/printf.h>
 #include <kern/processor.h>
 #include <kern/sched_prim.h>
 #include <kern/task.h>
 #include <kern/thread.h>
 #include <kern/thread_swap.h>
-#include <kern/time_out.h>
 #include <kern/timer.h>
 #include <kern/zalloc.h>
 #include <vm/vm_kern.h>

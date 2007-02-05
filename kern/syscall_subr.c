@@ -33,13 +33,13 @@
 #include <ipc/ipc_space.h>
 #include <kern/counters.h>
 #include <kern/ipc_kobject.h>
+#include <kern/mach_clock.h>
 #include <kern/processor.h>
 #include <kern/sched.h>
 #include <kern/sched_prim.h>
 #include <kern/ipc_sched.h>
 #include <kern/task.h>
 #include <kern/thread.h>
-#include <kern/time_out.h>
 #include <machine/machspl.h>	/* for splsched */
 
 #if	MACH_FIXPRI
@@ -138,8 +138,6 @@ boolean_t  swtch_pri(pri)
 	return(myprocessor->runq.count > 0 ||
 	       myprocessor->processor_set->runq.count > 0);
 }
-
-extern int hz;
 
 void thread_switch_continue()
 {

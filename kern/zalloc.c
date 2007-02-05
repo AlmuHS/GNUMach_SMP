@@ -39,8 +39,8 @@
 #include <kern/debug.h>
 #include <kern/macro_help.h>
 #include <kern/printf.h>
+#include <kern/mach_clock.h>
 #include <kern/sched.h>
-#include <kern/time_out.h>
 #include <kern/zalloc.h>
 #include <mach/vm_param.h>
 #include <vm/vm_kern.h>

@@ -32,7 +32,7 @@
  */
 #include <mach/machine/eflags.h>
 
-#include <kern/time_out.h>
+#include <kern/mach_clock.h>
 #include <i386/thread.h>
 
 #if	defined(AT386)

@@ -29,10 +29,10 @@
 #include "cpu_number.h"
 #include <kern/debug.h>
 #include <kern/lock.h>
+#include <kern/mach_clock.h>
 #include <kern/thread.h>
 #include <kern/sched_prim.h>
 #include <kern/processor.h>
-#include <kern/time_out.h>
 #include <kern/thread_swap.h>
 #include <kern/ipc_sched.h>
 #include <machine/machspl.h>	/* for splsched/splx */
