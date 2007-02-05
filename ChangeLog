@@ -1,5 +1,9 @@
 2007-02-05  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* kern/time_out.h: Remove file after having installed the missing bits
+	in...
+	* kern/mach_clock.h: ... here.
+
 	* configfrag.ac: Enhance comments.
 	
 	* vm/vm_debug.c (MACH_VM_DEBUG): Correctly place conditional.
