@@ -1,5 +1,7 @@
 2007-02-05  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* kern/mach_clock.c: Don't include <kern/time_out.h>.
+
 	* i386/i386/hardclock.c: Include <kern/mach_clock.h> instead of
 	<kern/time_out.h>.
 	* i386/i386/pit.c: Likewise.
