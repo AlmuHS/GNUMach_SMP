@@ -1,6 +1,6 @@
 # Main Makefile fragment for GNU Mach.
 
-# Copyright 1997, 1999, 2004, 2006 Free Software Foundation, Inc.
+# Copyright (C) 1997, 1999, 2004, 2006, 2007 Free Software Foundation, Inc.
 
 # Permission to use, copy, modify and distribute this software and its
 # documentation is hereby granted, provided that both the copyright
@@ -503,9 +503,21 @@ exec_msgidsdir = $(datadir)/msgids
 exec_msgids_DATA = gnumach.msgids
 
 #
+# Specific code.
+#
+
+# Linux device drivers and the glue code.
+include linux/Makefrag.am
+
+#
+# Platform specific parts.
+#
+
+#
 # Architecture specific parts.
 #
 
-if HOST_i386
+# ix86.
+if HOST_ix86
 include i386/Makefrag.am
 endif

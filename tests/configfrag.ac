@@ -1,17 +1,20 @@
 dnl Configure fragment for the test suite.
 
-dnl Copyright 2006 Free Software Foundation, Inc.
+dnl Copyright (C) 2006, 2007 Free Software Foundation, Inc.
 
-dnl Permission to use, copy, modify and distribute this software and its
-dnl documentation is hereby granted, provided that both the copyright
-dnl notice and this permission notice appear in all copies of the
-dnl software, derivative works or modified versions, and any portions
-dnl thereof, and that both notices appear in supporting documentation.
-dnl
-dnl THE FREE SOFTWARE FOUNDATION ALLOWS FREE USE OF THIS SOFTWARE IN ITS
-dnl "AS IS" CONDITION.  THE FREE SOFTWARE FOUNDATION DISCLAIMS ANY
-dnl LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
-dnl USE OF THIS SOFTWARE.
+dnl This program is free software; you can redistribute it and/or modify it
+dnl under the terms of the GNU General Public License as published by the
+dnl Free Software Foundation; either version 2, or (at your option) any later
+dnl version.
+dnl 
+dnl This program is distributed in the hope that it will be useful, but
+dnl WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+dnl or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+dnl for more details.
+dnl 
+dnl You should have received a copy of the GNU General Public License along
+dnl with this program; if not, write to the Free Software Foundation, Inc.,
+dnl 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 #
 # Programs.
@@ -24,3 +27,7 @@ AC_CHECK_PROG([MBCHK], [mbchk], [mbchk], [:])
 #
 
 AC_CONFIG_FILES([tests/test-mbchk], [chmod +x tests/test-mbchk])
+
+dnl Local Variables:
+dnl mode: autoconf
+dnl End:

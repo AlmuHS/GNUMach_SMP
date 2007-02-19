@@ -1,6 +1,7 @@
 dnl Configure script for GNU Mach.
 
-dnl Copyright 1997, 1998, 1999, 2004, 2006 Free Software Foundation, Inc.
+dnl Copyright (C) 1997, 1998, 1999, 2004, 2006, 2007
+dnl Free Software Foundation, Inc.
 
 dnl Permission to use, copy, modify and distribute this software and its
 dnl documentation is hereby granted, provided that both the copyright
@@ -35,27 +36,35 @@ dnl We require GNU make.
 )
 
 #
-# Deduce the output variable `systype' from the configuration parameters.
+# Deduce the architecture we're building for.
 #
 
 AC_CANONICAL_HOST
 
-m4_define([set_HOST], [[
-  case $host_cpu in
-    $2)] AM_CONDITIONAL([HOST_$1], [true]) [
-      systype=$1;;
-    *)] AM_CONDITIONAL([HOST_$1], [false]) [;;
-  esac
-]])
+AC_ARG_ENABLE([platform],
+  AS_HELP_STRING([--enable-platform=PLATFORM], [specify the platform to build a
+    kernel for.  Defaults to `at' for `i?86'.  No other possibilities.]),
+  [host_platform=$enable_platform],
+  [host_platform=default])
+[# Supported configurations.
+case $host_platform:$host_cpu in
+  default:i?86)
+    host_platform=at;;
+  at:i?86)
+    :;;
+  *)]
+    AC_MSG_ERROR([unsupported combination of cpu type `$host_cpu' and platform
+      `$host_platform'.])[;;
+esac]
+AC_SUBST([host_platform])
 
-[systype=unsupported]
-# Our supported architectures.
-set_HOST([i386],[i?86])
-
-[if test -f "$srcdir"/"$systype"/Makefrag.am; then :; else]
-  AC_MSG_ERROR([unsupported CPU type $host_cpu])
-[fi]
-
+[# This is used in a few places.
+case $host_cpu in
+  i?86)
+    systype=i386;;
+  *)
+    systype=$host_cpu;;
+esac]
 AC_SUBST([systype])
 
 #
@@ -91,29 +100,30 @@ AC_CHECK_PROG([PATCH], [patch], [patch], [patch-not-found])
 # The test suite.
 m4_include([tests/configfrag.ac])
 
-# General options.
-m4_include([configfrag.ac])
+# Default set of device drivers.
+AC_ARG_ENABLE([default-device-drivers],
+  AS_HELP_STRING([--disable-default-device-drivers], [have the options marked
+    with ``enabled by default'' disabled by default; then use the `--enable-*'
+    options to enable only those you actually want to have enabled]))
+[if [ x"$enable_default_device_drivers" != xno ]
+then enable_default_device_drivers=yes
+fi]
+
+# Platform-specific configuration.
+
+# PC AT.
+# TODO.  Currently handled in `i386/configfrag.ac'.
 
 # Machine-specific configuration.
 
-# i386.
-[if [ "$systype" = i386 ]; then]
-  m4_include([i386/configfrag.ac])
-[fi]
+# ix86.
+m4_include([i386/configfrag.ac])
+
+# General options.
+m4_include([configfrag.ac])
 
 # Linux code snarfed into GNU Mach.
-dnl Strictly speaking, we could have a `linux' option too, but it's currently
-dnl not possible to built a useful kernel without at least one Linux driver, so
-dnl that's not really necessary.
-dnl
-dnl The following doesn't work because of ``configure: error: conditional
-dnl "device_driver_floppy" was never defined.''.
-dnl AC_ARG_ENABLE([linux-device-drivers],
-dnl   AS_HELP_STRING([--disable-linux-device-drivers],
-dnl    [disable any use of Linux's device drivers]))
-dnl [if [ x"$enable_linux_device_drivers" != xno ]; then]
 m4_include([linux/configfrag.ac])
-dnl [fi]
 
 #
 # Compiler features.

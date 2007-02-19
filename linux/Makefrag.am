@@ -1,29 +1,31 @@
 # Makefile fragment for Linux device drivers and the glue code.
 
-# Copyright (C) 2006 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2007 Free Software Foundation, Inc.
 
-# This program is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License as
-# published by the Free Software Foundation; either version 2, or (at
-# your option) any later version.
-#
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2, or (at your option) any later
+# version.
+# 
 # This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program; if not, write to the Free Software
-# Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+# 
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 #
 # Files for device driver support.
 #
 
+if CODE_linux
 noinst_LIBRARIES += \
 	liblinux.a
 gnumach_o_LDADD += \
 	liblinux.a
+endif
 
 liblinux_a_CPPFLAGS = $(AM_CPPFLAGS) \
 	-I$(srcdir)/$(systype)/linux/dev/include \
@@ -608,12 +610,13 @@ liblinux_pcmcia_cs_modules_a_CPPFLAGS = $(liblinux_a_CPPFLAGS) \
 liblinux_pcmcia_cs_modules_a_CFLAGS = $(liblinux_a_CFLAGS) \
 	-include $(srcdir)/linux/pcmcia-cs/glue/pcmcia_glue.h
 liblinux_pcmcia_cs_modules_a_SOURCES =
+if device_driver_group_pcmcia
 noinst_LIBRARIES += \
 	liblinux_pcmcia_cs_modules.a
 gnumach_o_LDADD += \
 	liblinux_pcmcia_cs_modules.a
+endif
 
-if device_driver_group_pcmcia
 liblinux_pcmcia_cs_modules_a_SOURCES += \
 	linux/pcmcia-cs/glue/pcmcia.c \
 	linux/pcmcia-cs/glue/pcmcia_glue.h \
@@ -626,7 +629,6 @@ liblinux_pcmcia_cs_modules_a_SOURCES += \
 	linux/pcmcia-cs/modules/pci_fixup.c
 EXTRA_DIST += \
 	linux/pcmcia-cs/glue/ds.c
-endif
 
 if device_driver_i82365
 liblinux_pcmcia_cs_modules_a_SOURCES += \
@@ -648,10 +650,12 @@ liblinux_pcmcia_cs_clients_a_CPPFLAGS = $(liblinux_a_CPPFLAGS) \
 liblinux_pcmcia_cs_clients_a_CFLAGS = $(liblinux_a_CFLAGS) \
 	-include $(srcdir)/linux/pcmcia-cs/glue/pcmcia_glue.h
 liblinux_pcmcia_cs_clients_a_SOURCES =
+if device_driver_group_pcmcia
 noinst_LIBRARIES += \
 	liblinux_pcmcia_cs_clients.a
 gnumach_o_LDADD += \
 	liblinux_pcmcia_cs_clients.a
+endif
 
 if device_driver_3c574_cs
 liblinux_pcmcia_cs_clients_a_SOURCES += \
@@ -701,10 +705,12 @@ liblinux_pcmcia_cs_wireless_a_CPPFLAGS = $(liblinux_a_CPPFLAGS) \
 liblinux_pcmcia_cs_wireless_a_CFLAGS = $(liblinux_a_CFLAGS) \
 	-include $(srcdir)/linux/pcmcia-cs/glue/wireless_glue.h
 liblinux_pcmcia_cs_wireless_a_SOURCES =
+if device_driver_group_pcmcia
 noinst_LIBRARIES += \
 	liblinux_pcmcia_cs_wireless.a
 gnumach_o_LDADD += \
 	liblinux_pcmcia_cs_wireless.a
+endif
 
 if device_driver_orinoco_cs
 liblinux_pcmcia_cs_wireless_a_SOURCES += \
@@ -745,6 +751,6 @@ dist-hook-linux:
 # Architecture specific parts.
 #
 
-if HOST_i386
+if HOST_ix86
 include i386/linux/Makefrag.am
 endif

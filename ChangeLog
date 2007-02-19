@@ -1,3 +1,37 @@
+2007-02-19  Thomas Schwinge  <tschwinge@gnu.org>
+
+	Add a `--enable-platform' option for future use.  Allow building
+	without any Linux code.
+	* Makefile.am: Don't include `linux/Makefrag.am' in there...
+	* Makefrag.am: ... but rather in here.
+	* configfrag.ac (MACH_MACHINE_ROUTINES): AC_DEFINE_UNQUOTED based on
+	then shell variable `mach_machine_routines'.
+	(--disable-default-device-drivers): Don't define in there...
+	* configure.ac: ... but rather in here.
+	(--enable-platform): New option.
+	(host_platform): New variable.
+	(HOST_i386): Don't define there...
+	* i386/configfrag.ac (HOST_ix86): ... but rather here, rename it and
+	adapt all users.
+	(PLATFORM_at): New conditional.
+	(MACH_MACHINE_ROUTINES): Don't AC_DEFINE, but rather set a shell
+	variable `mach_machine_routines'.
+	* linux/Makefrag.am (noinst_LIBRARIES, gnumach_o_LDADD): Only enhance
+	``if CODE_linux'' or ``if device_driver_group_pcmcia''.
+	* linux/configfrag.ac (AC_OPTION): Rename to `AC_OPTION_Linux_ix86_at'
+	and rework a bit.  Adapt all users.
+	(AC_OPTION_nodef): Rename to `AC_OPTION_Linux_ix86_at_nodef' and rework
+	a bit.  Adapt all users.
+	(CODE_linux): New conditional.
+	* i386/Makefrag.am (LINKFLAGS_gnumach): Don't evaluate $(systype).
+
+	* Makefile.am: Update the FSF's postal address.
+	* doc/Makefrag.am: Likewise.
+	* i386/linux/Makefrag.am: Likewise.
+	* linux/Makefrag.am: Likewise.
+	* tests/Makefrag.am: Likewise.
+	* tests/configfrag.ac: Move to GPL.
+
 2007-02-05  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* kern/mach_clock.c: Don't include <kern/time_out.h>.
@@ -40,7 +74,7 @@
 	* doc/Makefrag.am ($(web)): Use ``mkdir -p''.
 
 	* doc/mach.texi: Fix unusual hyphens.
-	
+
 	* i386/i386/hardclock.c: Don't check for the `SYMMETRY' platform.
 
 	* kern/timer.h: Add some comments from...

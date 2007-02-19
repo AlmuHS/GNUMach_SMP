@@ -1,6 +1,6 @@
 dnl Configure fragment for i386.
 
-dnl Copyright 1999, 2004, 2006 Free Software Foundation, Inc.
+dnl Copyright (C) 1999, 2004, 2006, 2007 Free Software Foundation, Inc.
 
 dnl Permission to use, copy, modify and distribute this software and its
 dnl documentation is hereby granted, provided that both the copyright
@@ -17,25 +17,49 @@ dnl USE OF THIS SOFTWARE.
 # Definitions.
 #
 
-# Some of the i386-specific code checks for these.
-AC_DEFINE([__ELF__], [1], [__ELF__])
-AC_DEFINE([i386], [1], [i386])
+[case $host_cpu in
+  i?86)]
+    AM_CONDITIONAL([HOST_ix86], [true])
+
+    # Some of the i386-specific code checks for these.
+    AC_DEFINE([__ELF__], [1], [__ELF__])
+    AC_DEFINE([i386], [1], [i386])
+
+    [# Does the architecture provide machine-specific interfaces?
+    mach_machine_routines=1;;
+  *)]
+    AM_CONDITIONAL([HOST_ix86], [false])[;;
+esac
+
+case $host_platform in
+  at)]
+    AM_CONDITIONAL([PLATFORM_at], [true])[;;
+  *)]
+    AM_CONDITIONAL([PLATFORM_at], [false])[;;
+esac
 
 #
 # Formerly in `i386/bogus/'.
 #
 
+ncom=0
+nlpr=0
+case $host_platform:$host_cpu in
+  at:i?86)
+    ncom=4
+    nlpr=1
+
+    # i386/bogus/platforms.h]
+    AC_DEFINE([AT386], [1], [AT386])[;;
+  *)
+    :;;
+esac]
+
 # i386/bogus/com.h
-AC_DEFINE([NCOM], [4], [NCOM])
+AC_DEFINE_UNQUOTED([NCOM], [$ncom], [NCOM])
 
 # i386/bogus/lpr.h
-AC_DEFINE([NLPR], [1], [NLPR])
-
-# i386/bogus/mach_machine_routines.h
-AC_DEFINE([MACH_MACHINE_ROUTINES], [1], [MACH_MACHINE_ROUTINES])
-
-# i386/bogus/platforms.h
-AC_DEFINE([AT386], [1], [AT386])
+AC_DEFINE_UNQUOTED([NLPR], [$nlpr], [NLPR])
 
 # i386/bogus/rc.h
 #
@@ -58,11 +82,22 @@ AC_DEFINE([RCADDR], [0x3f8], [where is the com port for the remote console])
 #
 
 AC_ARG_ENABLE([lpr],
-  AS_HELP_STRING([--disable-lpr], [disable use of lpr device]))
-[enable_lpr=${enable_lpr-$enable_default_device_drivers}
+  AS_HELP_STRING([--enable-lpr], [lpr device; enabled by default for ix86-at]))
+[case $host_platform:$host_cpu in
+  at:i?86)
+    enable_lpr=${enable_lpr-$enable_default_device_drivers};;
+  *)
+    if [ x"$enable_lpr" = xyes ]; then]
+      AC_MSG_ERROR([cannot enable `lpr' in this configuration.])
+    [fi;;
+esac
 if [ x"$enable_lpr" = xyes ]; then]
   AC_DEFINE([MACH_LPR], [], [lpr device])
   AM_CONDITIONAL([enable_lpr], [true])
 [else]
   AM_CONDITIONAL([enable_lpr], [false])
 [fi]
+
+dnl Local Variables:
+dnl mode: autoconf
+dnl End:

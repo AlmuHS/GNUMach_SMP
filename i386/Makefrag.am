@@ -1,6 +1,6 @@
-# Makefile fragment for i386
+# Makefile fragment for i386.
 
-# Copyright 1997, 1999, 2006 Free Software Foundation, Inc.
+# Copyright (C) 1997, 1999, 2006, 2007 Free Software Foundation, Inc.
 
 # Permission to use, copy, modify and distribute this software and its
 # documentation is hereby granted, provided that both the copyright
@@ -195,7 +195,7 @@ nodist_libkernel_a_SOURCES += \
 EXTRA_DIST += \
 	i386/ldscript
 LINKFLAGS_gnumach = \
-	-T '$(srcdir)/$(systype)'/ldscript
+	-T '$(srcdir)'/i386/ldscript
 
 #
 # Installation.

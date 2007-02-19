@@ -1,6 +1,6 @@
 dnl Configure fragment for Linux code snarfed into GNU Mach.
 
-dnl Copyright 1997, 1999, 2004, 2006 Free Software Foundation, Inc.
+dnl Copyright (C) 1997, 1999, 2004, 2006, 2007 Free Software Foundation, Inc.
 
 dnl Permission to use, copy, modify and distribute this software and its
 dnl documentation is hereby granted, provided that both the copyright
@@ -14,32 +14,10 @@ dnl LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
 dnl USE OF THIS SOFTWARE.
 
 #
-# Which host CPU?
+# Internals.
 #
 
-AC_DEFUN([hurd_host_CPU], [
-  AC_DEFINE([CONFIG_M$1], [1], [$1])
-  AC_DEFINE([CPU], [$1], [CPU])
-])
-
-[if [ x"$systype" = xi386 ]; then
-  case "$host_cpu" in
-    i386)] hurd_host_CPU([386])[;;
-    i486)] hurd_host_CPU([486])[;;
-    i586)] hurd_host_CPU([586])[;;
-    i686)] hurd_host_CPU([686])[;;
-    *)] hurd_host_CPU([486])[;;
-  esac
-fi]
-
-#
-# Definitions.
-#
-
-# The glue code dependend code checks for this.
-AC_DEFINE([LINUX_DEV], [1], [Linux device drivers.])
-# Instead of Mach's KERNEL, Linux uses __KERNEL__.  Whee.
-AC_DEFINE([__KERNEL__], [1], [__KERNEL__])
+[have_linux_code=no]
 
 #
 # Helper functions.
@@ -50,7 +28,7 @@ AC_DEFINE([__KERNEL__], [1], [__KERNEL__])
 # for the group `group' will be set-up.
 #
 
-device_driver_group() {
+[device_driver_group() {
   case $1 in
     '')
       # No group.
@@ -67,44 +45,63 @@ device_driver_group() {
       # Pull in group `pcmcia'.
       device_driver_group pcmcia
       device_driver_group_wireless=selected;;
-    *)
-      AC_MSG_ERROR([invalid device driver group `$1']);;
+    *)]
+      AC_MSG_ERROR([invalid device driver group `$1'])[;;
   esac
-}
+}]
 
 #
-# AC_OPTION(name,description,option[,class]).  Process configuration option
-# --enable-`name' (with description `description').  If it's set, then `option'
-# is defined with AC_DEFINE.  The option optionally pulls in group `group'; see
-# the comments on device_driver_group for more information.  By default, the
-# value from $enable_default_device_drivers is considered when deciding whether
-# to activate the option by default or not.
+# AC_OPTION_Linux_ix86_at(name,description,option[,class]).  Process
+# configuration option --enable-`name' (with description `description').  If
+# it's set, then `option' is defined with AC_DEFINE.  The option optionally
+# pulls in group `group'; see the comments on device_driver_group for more
+# information.  For ix86-at, the value from $enable_default_device_drivers is
+# considered when deciding whether to activate the option by default or not.
 #
-
-AC_DEFUN([AC_OPTION], [
+AC_DEFUN([AC_OPTION_Linux_ix86_at], [
 [unset enableval]
 AC_ARG_ENABLE([$1],
-  AS_HELP_STRING([--disable-$1], [disable $2]))
-[enableval=${enableval-$enable_default_device_drivers}]
+  AS_HELP_STRING([--enable-$1], [$2; enabled by default for ix86-at]))
+[#TODO.
+case $host_platform:$host_cpu in
+  at:i?86)
+    enableval=${enableval-$enable_default_device_drivers};;
+  *)
+    if [ x"$enableval" = xyes ]; then
+      # TODO.  That might not always be true.]
+      AC_MSG_ERROR([cannot enable `$1' in this configuration.])
+    [fi;;
+esac]
 AM_CONDITIONAL([device_driver_]m4_bpatsubst([$1], [-], [_]),
-  [test x"$enableval" = xyes])
-[if test x"$enableval" = xyes; then]
+  [[[ x"$enableval" = xyes ]]])
+[if [ x"$enableval" = xyes ]; then
+  have_linux_code=yes]
   AC_DEFINE([$3], [1], [option $1: $2])
   [device_driver_group $4
 fi]])
 
 #
-# AC_OPTION_nodef() is like AC_OPTION(), but doesn't consider
-# $enable_default_device_drivers.
+# AC_OPTION_Linux_ix86_at_nodef() is like AC_OPTION_Linux_ix86_at(), but
+# doesn't consider $enable_default_device_drivers.
 #
-
-AC_DEFUN([AC_OPTION_nodef], [
+AC_DEFUN([AC_OPTION_Linux_ix86_at_nodef], [
 [unset enableval]
 AC_ARG_ENABLE([$1],
-  AS_HELP_STRING([--enable-$1], [enable $2]))
+  AS_HELP_STRING([--enable-$1], [$2]))
+[#TODO.
+case $host_platform:$host_cpu in
+  at:i?86)
+    :;;
+  *)
+    if [ x"$enableval" = xyes ]; then
+      # TODO.  That might not always be true.]
+      AC_MSG_ERROR([cannot enable `$1' in this configuration.])
+    [fi;;
+esac]
 AM_CONDITIONAL([device_driver_]m4_bpatsubst([$1], [-], [_]),
-  [test x"$enableval" = xyes])
-[if test x"$enableval" = xyes; then]
+  [[[ x"$enableval" = xyes ]]])
+[if [ x"$enableval" = xyes ]; then
+  have_linux_code=yes]
   AC_DEFINE([$3], [1], [option $1: $2])
   [device_driver_group $4
 fi]])
@@ -114,10 +111,10 @@ fi]])
 #
 
 AC_DEFUN([AC_Linux_DRIVER], [
-  AC_OPTION([$1], [Linux device driver for $2], [$3], [$4])
+  AC_OPTION_Linux_ix86_at([$1], [Linux device driver for $2], [$3], [$4])
 ])
 AC_DEFUN([AC_Linux_DRIVER_nodef], [
-  AC_OPTION_nodef([$1], [Linux device driver for $2], [$3], [$4])
+  AC_OPTION_Linux_ix86_at_nodef([$1], [Linux device driver for $2], [$3], [$4])
 ])
 
 #
@@ -149,7 +146,7 @@ AC_Linux_DRIVER([BusLogic],
 # TODO.  What's that?  And what about FlashPoint.c?
 dnl Dirty implementation...
 AC_ARG_ENABLE([flashpoint],
-  AS_HELP_STRING([--enable-flashpoint], [enable SCSI flashpoint]),
+  AS_HELP_STRING([--enable-flashpoint], [SCSI flashpoint]),
   [test x"$enableval" = xno &&
    AC_DEFINE([CONFIG_SCSI_OMIT_FLASHPOINT], [], [scsi omit flashpoint])])
 # Disabled by default.
@@ -484,7 +481,7 @@ AC_Linux_DRIVER([i82365],
   [CONFIG_I82365],
   [pcmcia])
 
-AC_OPTION([pcmcia-isa],
+AC_OPTION_Linux_ix86_at([pcmcia-isa],
   [isa bus support in the pcmcia core],
   [CONFIG_ISA],
   [pcmcia])
@@ -559,8 +556,41 @@ if [ x"$device_driver_group_wireless" = xselected ]; then]
 [fi]
 
 #
-# Set up `asm-SYSTYPE' links.
+# Internals.
 #
 
-AC_CONFIG_LINKS([linux/src/include/asm:linux/src/include/asm-$systype
-		 linux/dev/include/asm:linux/dev/include/asm-$systype])
+AC_DEFUN([hurd_host_CPU], [
+  AC_DEFINE([CONFIG_M$1], [1], [$1])
+  AC_DEFINE([CPU], [$1], [CPU])])
+
+[if [ "$have_linux_code" = yes ]; then]
+  AM_CONDITIONAL([CODE_linux], [true])
+
+  [case $host_cpu in
+    i386)]
+      hurd_host_CPU([386])[;;
+    i486)]
+      hurd_host_CPU([486])[;;
+    i586)]
+      hurd_host_CPU([586])[;;
+    i686)]
+      hurd_host_CPU([686])[;;
+    *)
+      # TODO.  Warn here?]
+      hurd_host_CPU([486])[;;
+  esac]
+
+  # The glue code dependend code checks for this.
+  AC_DEFINE([LINUX_DEV], [1], [Linux device drivers.])
+  # Instead of Mach's KERNEL, Linux uses __KERNEL__.  Whee.
+  AC_DEFINE([__KERNEL__], [1], [__KERNEL__])
+
+  # Set up `asm-SYSTYPE' links.
+  AC_CONFIG_LINKS([linux/src/include/asm:linux/src/include/asm-$systype
+		   linux/dev/include/asm:linux/dev/include/asm-$systype])
+[else] AM_CONDITIONAL([CODE_linux], [false])
+[fi]
+
+dnl Local Variables:
+dnl mode: autoconf
+dnl End:
