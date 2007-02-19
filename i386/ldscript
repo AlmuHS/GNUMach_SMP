@@ -47,10 +47,12 @@ SECTIONS
   } =0x90909090
   .plt            : { *(.plt) }
   /*
-   * _start needs to be at 0x100000, so that's where .text will be begin
-   * and .text.start will be first in there.  See also i386/i386at/boothdr.S.
+   * There are specific requirements about entry points, so we have it
+   * configurable via `_START': `.text' will begin there and `.text.start' will
+   * be first in there.  See also `i386/i386at/boothdr.S' and
+   * `LINKFLAGS_gnumach' in `i386/Makefrag.am'.
    */
-  . = 0x100000;
+  . = _START;
   .text           :
   {
     *(.text.start)

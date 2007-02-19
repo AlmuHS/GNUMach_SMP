@@ -94,9 +94,11 @@ nodist_libkernel_a_SOURCES =
 MOSTLYCLEANFILES += \
 	$(nodist_libkernel_a_SOURCES)
 
-gnumach_o_LDADD =
-gnumach_o_LDADD += \
+gnumach_o_LDADD = \
 	libkernel.a
+
+gnumach_SOURCES =
+gnumach_LINKFLAGS =
 
 # Makerules: how to do some things.
 include Makerules.am
@@ -140,8 +142,7 @@ clib-routines.o: gnumach-undef gnumach-undef-bad
 	$(CCLD) -nostdlib -nostartfiles -r -static \
 	  -o $@ `sed 's/^/-Wl,-u,/' < $<` -x c /dev/null -lc
 
-gnumach_SOURCES =
-gnumach_LINK = $(LD) $(LINKFLAGS) $(LINKFLAGS_$@) -o $@
+gnumach_LINK = $(LD) $(LINKFLAGS) $(gnumach_LINKFLAGS) -o $@
 gnumach_LDADD = gnumach.o clib-routines.o
 
 #

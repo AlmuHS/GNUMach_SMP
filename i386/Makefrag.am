@@ -194,8 +194,11 @@ nodist_libkernel_a_SOURCES += \
 
 EXTRA_DIST += \
 	i386/ldscript
-LINKFLAGS_gnumach = \
+if PLATFORM_at
+gnumach_LINKFLAGS += \
+	--defsym _START=0x100000 \
 	-T '$(srcdir)'/i386/ldscript
+endif
 
 #
 # Installation.
