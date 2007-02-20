@@ -183,16 +183,22 @@ void
 db_find_trace_symbols(void)
 {
 	db_expr_t	value;
-	if (db_value_of_name("_user_trap", &value))
+#ifdef __ELF__
+#define P
+#else
+#define P "_"
+#endif
+	if (db_value_of_name(P"user_trap", &value))
 	    db_user_trap_symbol_value = (db_addr_t) value;
-	if (db_value_of_name("_kernel_trap", &value))
+	if (db_value_of_name(P"kernel_trap", &value))
 	    db_kernel_trap_symbol_value = (db_addr_t) value;
-	if (db_value_of_name("_interrupt", &value))
+	if (db_value_of_name(P"interrupt", &value))
 	    db_interrupt_symbol_value = (db_addr_t) value;
-	if (db_value_of_name("_return_to_iret", &value))
+	if (db_value_of_name(P"return_to_iret", &value))
 	    db_return_to_iret_symbol_value = (db_addr_t) value;
-	if (db_value_of_name("_syscall", &value))
+	if (db_value_of_name(P"syscall", &value))
 	    db_syscall_symbol_value = (db_addr_t) value;
+#undef P
 	db_trace_symbols_found = TRUE;
 }
 
@@ -450,14 +456,14 @@ db_i386_stack_trace(
 				 	DB_STGY_XTRN, (db_addr_t *)&offset,
 					TASK_NULL),
 				 &name, (db_expr_t *)&call_func);
-		if (call_func == db_user_trap_symbol_value ||
-		    call_func == db_kernel_trap_symbol_value) {
+		if ((db_user_trap_symbol_value && call_func == db_user_trap_symbol_value) ||
+		    (db_kernel_trap_symbol_value && call_func == db_kernel_trap_symbol_value)) {
 		    frame_type = TRAP;
 		    narg = 1;
-		} else if (call_func == db_interrupt_symbol_value) {
+		} else if (db_interrupt_symbol_value && call_func == db_interrupt_symbol_value) {
 		    frame_type = INTERRUPT;
 		    goto next_frame;
-		} else if (call_func == db_syscall_symbol_value) {
+		} else if (db_syscall_symbol_value && call_func == db_syscall_symbol_value) {
 		    frame_type = SYSCALL;
 		    goto next_frame;
 		} else {
