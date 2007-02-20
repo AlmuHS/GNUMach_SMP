@@ -6,6 +6,9 @@
 	(db_i386_stack_trace): Check that adresses of known functions were
 	really found.
 
+	* linux/dev/glue/block.c (free_buffer): Fix
+	vm_page_lock_queues/vm_page_unlock_queues pair.
+
 2007-02-19  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* Makefile.am (gnumach_LINKFLAGS): New variable.

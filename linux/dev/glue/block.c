@@ -339,7 +339,7 @@ free_buffer (void *p, int size)
 	      queue_remove (&d->pages, m, vm_page_t, pageq);
 	      vm_page_lock_queues ();
 	      vm_page_free (m);
-	      vm_page_lock_queues ();
+	      vm_page_unlock_queues ();
 	      return;
 	    }
 	}
