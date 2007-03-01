@@ -2471,9 +2471,7 @@ void vm_object_collapse(
 
 				if (p->offset < backing_offset ||
 				    new_offset >= size) {
-					vm_page_lock_queues();
-					vm_page_free(p);
-					vm_page_unlock_queues();
+					VM_PAGE_FREE(p);
 				} else {
 				    pp = vm_page_lookup(object, new_offset);
 				    if (pp != VM_PAGE_NULL && !pp->absent) {
@@ -2482,9 +2480,7 @@ void vm_object_collapse(
 					 *	Throw away the backing object's
 					 *	page.
 					 */
-					vm_page_lock_queues();
-					vm_page_free(p);
-					vm_page_unlock_queues();
+					VM_PAGE_FREE(p);
 				    }
 				    else {
 					if (pp != VM_PAGE_NULL) {
@@ -2508,9 +2504,7 @@ void vm_object_collapse(
 					     */
 					    panic("vm_object_collapse: bad case");
 
-					    vm_page_lock_queues();
-					    vm_page_free(pp);
-					    vm_page_unlock_queues();
+					    VM_PAGE_FREE(pp);
 
 					    /*
 					     *	Fall through to move the backing
@@ -2755,9 +2749,7 @@ void vm_object_page_remove(
 				if (!p->fictitious)
 					pmap_page_protect(p->phys_addr,
 							  VM_PROT_NONE);
-				vm_page_lock_queues();
-				vm_page_free(p);
-				vm_page_unlock_queues();
+				VM_PAGE_FREE(p);
 			}
 		}
 	} else {
@@ -2770,9 +2762,7 @@ void vm_object_page_remove(
 				if (!p->fictitious)
 				    pmap_page_protect(p->phys_addr,
 						      VM_PROT_NONE);
-				vm_page_lock_queues();
-				vm_page_free(p);
-				vm_page_unlock_queues();
+				VM_PAGE_FREE(p);
 			}
 			p = next;
 		}
@@ -2941,9 +2931,7 @@ vm_object_page_map(
 	    if ((old_page = vm_page_lookup(object, offset))
 			!= VM_PAGE_NULL)
 	    {
-		vm_page_lock_queues();
-		vm_page_free(old_page);
-		vm_page_unlock_queues();
+		VM_PAGE_FREE(old_page);
 	    }
 
 	    vm_page_init(m, addr);

@@ -337,9 +337,7 @@ free_buffer (void *p, int size)
 	  if (m->phys_addr == (vm_offset_t) p)
 	    {
 	      queue_remove (&d->pages, m, vm_page_t, pageq);
-	      vm_page_lock_queues ();
-	      vm_page_free (m);
-	      vm_page_unlock_queues ();
+	      VM_PAGE_FREE (m);
 	      return;
 	    }
 	}

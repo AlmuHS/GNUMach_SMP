@@ -1,13 +1,19 @@
+2007-03-01  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* linux/dev/glue/block.c (free_buffer): Use `VM_PAGE_FREE'.
+	* vm/vm_object.c (vm_object_collapse, vm_object_page_remove)
+	(vm_object_page_map): Likewise.
+
 2007-02-20  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* linux/dev/glue/block.c (free_buffer): Fix
+	vm_page_lock_queues/vm_page_unlock_queues pair.
 
 	Fix ddb's trace command.
 	* i386/i386/db_trace.c (db_find_trace_symbols): Drop _ prefix on ELF
 	targets.
 	(db_i386_stack_trace): Check that adresses of known functions were
 	really found.
-
-	* linux/dev/glue/block.c (free_buffer): Fix
-	vm_page_lock_queues/vm_page_unlock_queues pair.
 
 2007-02-19  Thomas Schwinge  <tschwinge@gnu.org>
 
