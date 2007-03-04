@@ -17,12 +17,6 @@ dnl with this program; if not, write to the Free Software Foundation, Inc.,
 dnl 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 #
-# Programs.
-#
-
-AC_CHECK_PROG([MBCHK], [mbchk], [mbchk], [:])
-
-#
 # Tests.
 #
 

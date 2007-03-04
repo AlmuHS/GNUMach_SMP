@@ -1,3 +1,8 @@
+2007-03-04  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* tests/configfrag.ac (MBCHK): Remove check.
+	* tests/test-mbchk.in: Fail correctly if `mbchk' is not available.
+
 2007-03-01  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* linux/dev/glue/block.c (free_buffer): Use `VM_PAGE_FREE'.
