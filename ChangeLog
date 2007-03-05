@@ -1,3 +1,10 @@
+2007-03-05  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	[bug #18349 --- ``General Protection Trap'' in `ipc_kmsg_enqueue']
+	* device/net_io.c (net_deliver): Call net_filter() with splimp held.
+	* linux/dev/glue/net.c (device_write): Call net_packet() with splimp
+	held.
+
 2007-03-04  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* tests/configfrag.ac (MBCHK): Remove check.

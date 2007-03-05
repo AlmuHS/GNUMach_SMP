@@ -488,7 +488,6 @@ device_write (void *d, ipc_port_t reply_port,
       __skb_queue_tail (&dev->buffs[0], skb);
       mark_bh (NET_BH);
     }
-  splx (s);
 
   /* Send packet to filters.  */
   {
@@ -517,6 +516,7 @@ device_write (void *d, ipc_port_t reply_port,
                     ethernet_priority (kmsg));
       }
   }
+  splx (s);
 
   return MIG_NO_REPLY;
 }
