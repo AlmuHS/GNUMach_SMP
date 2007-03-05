@@ -444,13 +444,13 @@ boolean_t net_deliver(nonblocking)
 	} else
 	    return FALSE;
 	simple_unlock(&net_queue_lock);
+	(void) spl0();
 
 	/*
 	 * Run the packet through the filters,
 	 * getting back a queue of packets to send.
 	 */
 	net_filter(kmsg, &send_list);
-	(void) spl0();
 
 	if (!nonblocking) {
 	    /*
