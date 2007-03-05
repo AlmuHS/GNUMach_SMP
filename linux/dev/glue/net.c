@@ -488,6 +488,7 @@ device_write (void *d, ipc_port_t reply_port,
       __skb_queue_tail (&dev->buffs[0], skb);
       mark_bh (NET_BH);
     }
+  splx (s);
 
   /* Send packet to filters.  */
   {
@@ -512,11 +513,12 @@ device_write (void *d, ipc_port_t reply_port,
                          + sizeof (struct packet_header);
         packet->type = header->ether_type;
         net_kmsg (kmsg)->sent = TRUE; /* Mark packet as sent.  */
+        s = splimp ();
         net_packet (&dev->net_data->ifnet, kmsg, packet->length,
                     ethernet_priority (kmsg));
+        splx (s);
       }
   }
-  splx (s);
 
   return MIG_NO_REPLY;
 }
