@@ -1,3 +1,8 @@
+2007-03-06  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* i386/i386/user_ldt.c (i386_set_gdt): Call switch_ktss() if target is
+	current thread.
+
 2007-03-05  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	[bug #18349 --- ``General Protection Trap'' in `ipc_kmsg_enqueue']

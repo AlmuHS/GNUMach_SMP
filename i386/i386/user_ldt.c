@@ -437,6 +437,13 @@ i386_set_gdt (thread_t thread, int *selector, struct real_descriptor desc)
   else
     thread->pcb->ims.user_gdt[idx] = desc;
 
+  /*
+   * If we are modifying the GDT for the current thread,
+   * make sure it is properly set.
+   */
+  if (thread == current_thread())
+    switch_ktss(thread->pcb);
+
   return KERN_SUCCESS;
 }
 
