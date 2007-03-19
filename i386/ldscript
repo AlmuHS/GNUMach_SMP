@@ -50,7 +50,7 @@ SECTIONS
    * There are specific requirements about entry points, so we have it
    * configurable via `_START': `.text' will begin there and `.text.start' will
    * be first in there.  See also `i386/i386at/boothdr.S' and
-   * `LINKFLAGS_gnumach' in `i386/Makefrag.am'.
+   * `gnumach_LINKFLAGS' in `i386/Makefrag.am'.
    */
   . = _START;
   .text           :
