@@ -988,8 +988,8 @@ disk, and directly start a more advanced bootloader.
 
 @cindex GRUB
 @cindex GRand Unified Bootloader
-Currently, @dfn{GRUB}@footnote{The GRand Unified Bootloader, available
-from @uref{http://www.uruk.org/grub/}.} is the preferred GNU bootloader.
+@dfn{GRUB}@footnote{The GRand Unified Bootloader, available
+from @uref{http://gnu.org/software/grub/}.} is the GNU bootloader.
 GRUB provides advanced functionality, and is capable of loading several
 different kernels (such as Mach, Linux, DOS, and the *BSD family).
 @xref{Top, , Introduction, grub, GRUB Manual}.
@@ -1007,6 +1007,8 @@ started.  @xref{Top, , Overview, multiboot, Multiboot Specification}.
 @node Modules
 @section Modules
 @pindex serverboot
+
+This is outdated.
 
 Because the microkernel does not provide filesystem support and other
 features necessary to load the first system task from a storage medium,
@@ -6394,7 +6396,7 @@ except that the data is sent ``in-line'' in the request IPC message
 The function @code{device_map} creates a new memory manager for
 @var{device} and returns a port to it in @var{pager}.  The memory
 manager is usable as a memory object in a @code{vm_map} call.  The call
-is device dependant.
+is device dependent.
 
 The protection for the memory object is specified by @var{prot}.  The
 memory object starts at @var{offset} within the device and extends

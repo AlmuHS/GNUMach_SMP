@@ -1,5 +1,7 @@
 2007-03-24  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* doc/mach.texi: Fix a typo and the url for GNU GRUB.
+
 	* device/kmsg.h: Include <sys/types.h>, <device/device_types.h> and
 	<device/io_req.h>.
 
