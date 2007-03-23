@@ -173,7 +173,8 @@ nodist_lib_dep_tr_for_defs_a_SOURCES += \
 	i386/i386/mach_i386.server.defs.c
 nodist_libkernel_a_SOURCES += \
 	i386/i386/mach_i386.server.h \
-	i386/i386/mach_i386.server.c
+	i386/i386/mach_i386.server.c \
+	i386/i386/mach_i386.server.msgids
 #	i386/i386/mach_i386.server.defs
 
 #

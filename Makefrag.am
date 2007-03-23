@@ -430,8 +430,10 @@ nodist_lib_dep_tr_for_defs_a_SOURCES += \
 nodist_libkernel_a_SOURCES += \
 	vm/memory_object_user.user.h \
 	vm/memory_object_user.user.c \
+	vm/memory_object_user.user.msgids \
 	vm/memory_object_default.user.h \
-	vm/memory_object_default.user.c
+	vm/memory_object_default.user.c \
+	vm/memory_object_default.user.msgids
 #	vm/memory_object_user.user.defs
 #	vm/memory_object_default.user.defs
 nodist_lib_dep_tr_for_defs_a_SOURCES += \
@@ -440,8 +442,10 @@ nodist_lib_dep_tr_for_defs_a_SOURCES += \
 nodist_libkernel_a_SOURCES += \
 	device/device_reply.user.h \
 	device/device_reply.user.c \
+	device/device_reply.user.msgids \
 	device/memory_object_reply.user.h \
-	device/memory_object_reply.user.c
+	device/memory_object_reply.user.c \
+	device/memory_object_reply.user.msgids
 #	device/device_reply.user.defs
 #	device/memory_object_reply.user.defs
 
@@ -452,15 +456,18 @@ nodist_lib_dep_tr_for_defs_a_SOURCES += \
 nodist_libkernel_a_SOURCES += \
 	device/device.server.h \
 	device/device.server.c \
+	device/device.server.msgids \
 	device/device_pager.server.h \
-	device/device_pager.server.c
+	device/device_pager.server.c \
+	device/device_pager.server.msgids
 #	device/device.server.defs
 #	device/device_pager.server.defs
 nodist_lib_dep_tr_for_defs_a_SOURCES += \
 	ipc/mach_port.server.defs.c
 nodist_libkernel_a_SOURCES += \
 	ipc/mach_port.server.h \
-	ipc/mach_port.server.c
+	ipc/mach_port.server.c \
+	ipc/mach_port.server.msgids
 #	ipc/mach_port.server.defs
 nodist_lib_dep_tr_for_defs_a_SOURCES += \
 	kern/mach.server.defs.c \
@@ -470,12 +477,16 @@ nodist_lib_dep_tr_for_defs_a_SOURCES += \
 nodist_libkernel_a_SOURCES += \
 	kern/mach.server.h \
 	kern/mach.server.c \
+	kern/mach.server.msgids \
 	kern/mach4.server.h \
 	kern/mach4.server.c \
+	kern/mach4.server.msgids \
 	kern/mach_debug.server.h \
 	kern/mach_debug.server.c \
+	kern/mach_debug.server.msgids \
 	kern/mach_host.server.h \
-	kern/mach_host.server.c
+	kern/mach_host.server.c \
+	kern/mach_host.server.msgids
 #	kern/mach.server.defs
 #	kern/mach4.server.defs
 #	kern/mach_debug.server.defs
@@ -484,19 +495,9 @@ nodist_libkernel_a_SOURCES += \
 # rpctrace can make use of that.
 MOSTLYCLEANFILES += \
 	gnumach.msgids
-gnumach.msgids: $(nodist_lib_dep_tr_for_defs_a_SOURCES)
-	rm -f $@
-	for f in $(nodist_lib_dep_tr_for_defs_a_SOURCES); do	\
-	  f=`expr "$$f" : '\(.*\)\.defs\.c'`.msgids &&		\
-	  $(MAKE) $(AM_MAKEFLAGS) "$$f" &&			\
-	  cat "$$f" >> $@;					\
-	  r=$$?;						\
-	  rm -f "$$f";						\
-	  if ( exit "$$r" ); then :; else			\
-	    rm -vf $@;						\
-	    exit "$$r";						\
-	  fi;							\
-	done
+gnumach.msgids: $(filter %.msgids,$(nodist_libkernel_a_SOURCES))
+	cat $^ > $@.new
+	mv $@.new $@
 # `exec_' prefix, so that we don't try to build that file during when running
 # `make install-data', as it may fail there, but isn't needed there either.
 exec_msgidsdir = $(datadir)/msgids

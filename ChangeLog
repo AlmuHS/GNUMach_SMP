@@ -1,3 +1,12 @@
+2007-03-23  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* Makerules.am (%.server.msgids, %.user.msgids): Merge into the
+	existing ``%.h %.c'' rules.
+	Comment out the currently unused rpc stub rules.
+	* Makefrag.am (gnumach.msgids): Rewrite.
+	(nodist_libkernel_a_SOURCES): Add all ``.msgids'' files.
+	* i386/Makefrag.am (nodist_libkernel_a_SOURCES): Likewise.
+
 2007-03-19  Tim Retout  <tim@retout.co.uk>
 
 	* i386/ldscript: Correct 'LINKFLAGS_gnumach' in comment.
