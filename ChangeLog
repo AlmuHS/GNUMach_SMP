@@ -1,5 +1,8 @@
 2007-03-24  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* device/kmsg.h: Include <sys/types.h>, <device/device_types.h> and
+	<device/io_req.h>.
+
 	* Makefrag.am (libkernel_a_SOURCES): Move `device/kmsg.h' into
 	[enable_kmsg].
 
