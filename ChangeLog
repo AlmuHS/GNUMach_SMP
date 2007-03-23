@@ -1,3 +1,8 @@
+2007-03-24  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* Makefrag.am (libkernel_a_SOURCES): Move `device/kmsg.h' into
+	[enable_kmsg].
+
 2007-03-23  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* Makerules.am (%.server.msgids, %.user.msgids): Merge into the

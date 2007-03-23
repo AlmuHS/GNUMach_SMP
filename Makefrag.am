@@ -269,7 +269,6 @@ libkernel_a_SOURCES += \
 	device/if_ether.h \
 	device/if_hdr.h \
 	device/io_req.h \
-	device/kmsg.h \
 	device/net_io.c \
 	device/net_io.h \
 	device/param.h \
@@ -288,7 +287,8 @@ EXTRA_DIST += \
 
 if enable_kmsg
 libkernel_a_SOURCES += \
-	device/kmsg.c
+	device/kmsg.c \
+	device/kmsg.h
 endif
 
 
