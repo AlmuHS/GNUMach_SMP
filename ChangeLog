@@ -1,5 +1,7 @@
 2007-03-24  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* i386/i386at/conf.c (block_io_mmap): Remove declaration.
+
 	* doc/mach.texi: Fix a typo and the url for GNU GRUB.
 
 	* device/kmsg.h: Include <sys/types.h>, <device/device_types.h> and

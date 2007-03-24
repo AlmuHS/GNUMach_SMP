@@ -30,8 +30,6 @@
 #include <mach/machine/vm_types.h>
 #include <device/conf.h>
 
-extern vm_offset_t block_io_mmap();
-
 extern int	timeopen(), timeclose();
 extern vm_offset_t timemmap();
 #define	timename		"time"
