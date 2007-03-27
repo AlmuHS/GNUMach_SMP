@@ -22,5 +22,4 @@
 
 liblinux_a_SOURCES += \
 	i386/linux/dev/include/linux/autoconf.h \
-	i386/linux/dev/include/linux_emul.h \
 	linux/src/arch/i386/lib/semaphore.S

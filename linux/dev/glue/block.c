@@ -60,8 +60,10 @@
 #include <device/device_port.h>
 #include <device/disk_status.h>
 #include <device/device_reply.user.h>
+#include <device/device_emul.h>
 
-#include <linux_emul.h>
+/* TODO.  This should be fixed to not be i386 specific.  */
+#include <i386at/disk.h>
 
 #define MACH_INCLUDE
 #include <linux/fs.h>

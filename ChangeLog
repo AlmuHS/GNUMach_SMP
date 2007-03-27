@@ -1,5 +1,33 @@
 2007-03-27  Thomas Schwinge  <tschwinge@gnu.org>
 
+	Unconditionally use the device driver multiplexing.  Suggested by
+	Gianluca Guida <glguida@gmail.com>.   
+	* i386/i386at/dev_hdr.h: Merge into `device/dev_hdr.h' and remove.
+	* i386/i386at/device_emul.h: Rename to `device/device_emul.h'.  Adapt
+	all users.
+	* i386/i386at/i386at_ds_routines.c: Merge into `device/ds_routines.c'
+	and remove.
+	* i386/linux/dev/include/linux_emul.h: Remove file.
+	* Makefrag.am (libkernel_a_SOURCES): Add `device/device_emul.h'.
+	* i386/Makefrag.am (libkernel_a_SOURCES): Remove
+	`i386/i386at/dev_hdr.h', `i386/i386at/device_emul.h' and
+	`i386/i386at/i386at_ds_routines.c'.
+	* i386/linux/Makefrag.am (liblinux_a_SOURCES): Remove
+	`i386/linux/dev/include/linux_emul.h'.
+	* dev/dev_hdr.h: Adapt all users of `i386' as if it were always
+	defined.
+	* device/dev_lookup.c: Likewise.
+	* device/ds_routines.c: Likewise.
+	* device/device_init.c (ds_init): Rename to `mach_device_init'.
+	* device/ds_routines.c (ds_init): Likewise.
+	(ds_trap_init): Rename to `mach_device_trap_init'.
+	(mach_device_trap_init): Make it `static'.
+	* linux/dev/glue/block.c: Don't include <linux_emul.h>, but instead
+	include <device/device_emul.h> and <i386at/disk.h>.
+	* linux/dev/glue/net.c: Don't include <linux_emul.h>, but instead
+	include <device/device_emul.h>.
+	* linux/pcmcia-cs/glue/ds.c: Likewise.
+
 	* kern/pcsample.h: Remove the automatic cvs log appending machinery.
 	* linux/dev/drivers/scsi/g_NCR5380.c: Likewise.
 	* linux/src/drivers/net/sk_g16.h: Likewise.

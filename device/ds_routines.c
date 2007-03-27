@@ -28,6 +28,31 @@
  *	Date: 	3/89
  */
 
+/*
+ * Mach device server routines (i386at version).
+ *
+ * Copyright (c) 1996 The University of Utah and
+ * the Computer Systems Laboratory at the University of Utah (CSL).
+ * All rights reserved.
+ *
+ * Permission to use, copy, modify and distribute this software is hereby
+ * granted provided that (1) source code retains these copyright, permission,
+ * and disclaimer notices, and (2) redistributions including binaries
+ * reproduce the notices in supporting documentation, and (3) all advertising
+ * materials mentioning features or use of this software display the following
+ * acknowledgement: ``This product includes software developed by the
+ * Computer Systems Laboratory at the University of Utah.''
+ *
+ * THE UNIVERSITY OF UTAH AND CSL ALLOW FREE USE OF THIS SOFTWARE IN ITS "AS
+ * IS" CONDITION.  THE UNIVERSITY OF UTAH AND CSL DISCLAIM ANY LIABILITY OF
+ * ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+ *
+ * CSL requests users of this software to return to csl-dist@cs.utah.edu any
+ * improvements that they make and grant CSL redistribution rights.
+ *
+ *      Author: Shantanu Goel, University of Utah CSL
+ */
+
 #include <kern/printf.h>
 #include <string.h>
 
@@ -64,42 +89,321 @@
 #include <device/net_status.h>
 #include <device/device_port.h>
 #include <device/device_reply.user.h>
+#include <device/device_emul.h>
 
 #include <machine/machspl.h>
-
-#ifdef i386
-#include <i386at/device_emul.h>
+
+#ifdef LINUX_DEV
+extern struct device_emulation_ops linux_block_emulation_ops;
+#ifdef CONFIG_INET
+extern struct device_emulation_ops linux_net_emulation_ops;
+#ifdef CONFIG_PCMCIA
+extern struct device_emulation_ops linux_pcmcia_emulation_ops;
 #endif
+#endif
+#endif
+extern struct device_emulation_ops mach_device_emulation_ops;
 
-#ifdef i386
+/* List of emulations.  */
+static struct device_emulation_ops *emulation_list[] =
+{
+#ifdef LINUX_DEV
+  &linux_block_emulation_ops,
+#ifdef CONFIG_INET
+  &linux_net_emulation_ops,
+#ifdef CONFIG_PCMCIA
+  &linux_pcmcia_emulation_ops,
+#endif
+#endif
+#endif
+  &mach_device_emulation_ops,
+};
+
+#define NUM_EMULATION (sizeof (emulation_list) / sizeof (emulation_list[0]))
+
+io_return_t
+ds_device_open (ipc_port_t open_port, ipc_port_t reply_port,
+		mach_msg_type_name_t reply_port_type, dev_mode_t mode,
+		char *name, device_t *devp)
+{
+  int i;
+  io_return_t err;
+
+  /* Open must be called on the master device port.  */
+  if (open_port != master_device_port)
+    return D_INVALID_OPERATION;
+
+  /* There must be a reply port.  */
+  if (! IP_VALID (reply_port))
+    {
+      printf ("ds_* invalid reply port\n");
+      Debugger ("ds_* reply_port");
+      return MIG_NO_REPLY;
+    }
+
+  /* Call each emulation's open routine to find the device.  */
+  for (i = 0; i < NUM_EMULATION; i++)
+    {
+      err = (*emulation_list[i]->open) (reply_port, reply_port_type,
+					mode, name, devp);
+      if (err != D_NO_SUCH_DEVICE)
+	break;
+    }
+
+  return err;
+}
+
+io_return_t
+ds_device_close (device_t dev)
+{
+  /* Refuse if device is dead or not completely open.  */
+  if (dev == DEVICE_NULL)
+    return D_NO_SUCH_DEVICE;
+
+  return (dev->emul_ops->close
+	  ? (*dev->emul_ops->close) (dev->emul_data)
+	  : D_SUCCESS);
+}
+
+io_return_t
+ds_device_write (device_t dev, ipc_port_t reply_port,
+		 mach_msg_type_name_t reply_port_type, dev_mode_t mode,
+		 recnum_t recnum, io_buf_ptr_t data, unsigned int count,
+		 int *bytes_written)
+{
+  /* Refuse if device is dead or not completely open.  */
+  if (dev == DEVICE_NULL)
+    return D_NO_SUCH_DEVICE;
+
+  if (data == 0)
+    return D_INVALID_SIZE;
+
+  if (! dev->emul_ops->write)
+    return D_INVALID_OPERATION;
+
+  return (*dev->emul_ops->write) (dev->emul_data, reply_port,
+				  reply_port_type, mode, recnum,
+				  data, count, bytes_written);
+}
+
+io_return_t
+ds_device_write_inband (device_t dev, ipc_port_t reply_port,
+			mach_msg_type_name_t reply_port_type,
+			dev_mode_t mode, recnum_t recnum,
+			io_buf_ptr_inband_t data, unsigned count,
+			int *bytes_written)
+{
+  /* Refuse if device is dead or not completely open.  */
+  if (dev == DEVICE_NULL)
+    return D_NO_SUCH_DEVICE;
+
+  if (data == 0)
+    return D_INVALID_SIZE;
+
+  if (! dev->emul_ops->write_inband)
+    return D_INVALID_OPERATION;
+
+  return (*dev->emul_ops->write_inband) (dev->emul_data, reply_port,
+					 reply_port_type, mode, recnum,
+					 data, count, bytes_written);
+}
+
+io_return_t
+ds_device_read (device_t dev, ipc_port_t reply_port,
+		mach_msg_type_name_t reply_port_type, dev_mode_t mode,
+		recnum_t recnum, int count, io_buf_ptr_t *data,
+		unsigned *bytes_read)
+{
+  /* Refuse if device is dead or not completely open.  */
+  if (dev == DEVICE_NULL)
+    return D_NO_SUCH_DEVICE;
+
+  if (! dev->emul_ops->read)
+    return D_INVALID_OPERATION;
+
+  return (*dev->emul_ops->read) (dev->emul_data, reply_port,
+				 reply_port_type, mode, recnum,
+				 count, data, bytes_read);
+}
+
+io_return_t
+ds_device_read_inband (device_t dev, ipc_port_t reply_port,
+		       mach_msg_type_name_t reply_port_type, dev_mode_t mode,
+		       recnum_t recnum, int count, char *data,
+		       unsigned *bytes_read)
+{
+  /* Refuse if device is dead or not completely open.  */
+  if (dev == DEVICE_NULL)
+    return D_NO_SUCH_DEVICE;
+
+  if (! dev->emul_ops->read_inband)
+    return D_INVALID_OPERATION;
+
+  return (*dev->emul_ops->read_inband) (dev->emul_data, reply_port,
+					reply_port_type, mode, recnum,
+					count, data, bytes_read);
+}
+
+io_return_t
+ds_device_set_status (device_t dev, dev_flavor_t flavor,
+		      dev_status_t status, mach_msg_type_number_t status_count)
+{
+  /* Refuse if device is dead or not completely open.  */
+  if (dev == DEVICE_NULL)
+    return D_NO_SUCH_DEVICE;
+
+  if (! dev->emul_ops->set_status)
+    return D_INVALID_OPERATION;
+
+  return (*dev->emul_ops->set_status) (dev->emul_data, flavor, status,
+				       status_count);
+}
+
+io_return_t
+ds_device_get_status (device_t dev, dev_flavor_t flavor, dev_status_t status,
+		      mach_msg_type_number_t *status_count)
+{
+  /* Refuse if device is dead or not completely open.  */
+  if (dev == DEVICE_NULL)
+    return D_NO_SUCH_DEVICE;
+
+  if (! dev->emul_ops->get_status)
+    return D_INVALID_OPERATION;
+
+  return (*dev->emul_ops->get_status) (dev->emul_data, flavor, status,
+				       status_count);
+}
+
+io_return_t
+ds_device_set_filter (device_t dev, ipc_port_t receive_port, int priority,
+		      filter_t *filter, unsigned filter_count)
+{
+  /* Refuse if device is dead or not completely open.  */
+  if (dev == DEVICE_NULL)
+    return D_NO_SUCH_DEVICE;
+
+  if (! dev->emul_ops->set_filter)
+    return D_INVALID_OPERATION;
+
+  return (*dev->emul_ops->set_filter) (dev->emul_data, receive_port,
+				       priority, filter, filter_count);
+}
+
+io_return_t
+ds_device_map (device_t dev, vm_prot_t prot, vm_offset_t offset,
+	       vm_size_t size, ipc_port_t *pager, boolean_t unmap)
+{
+  /* Refuse if device is dead or not completely open.  */
+  if (dev == DEVICE_NULL)
+    return D_NO_SUCH_DEVICE;
+
+  if (! dev->emul_ops->map)
+    return D_INVALID_OPERATION;
+
+  return (*dev->emul_ops->map) (dev->emul_data, prot,
+				offset, size, pager, unmap);
+}
+
+boolean_t
+ds_notify (mach_msg_header_t *msg)
+{
+  if (msg->msgh_id == MACH_NOTIFY_NO_SENDERS)
+    {
+      device_t dev;
+      mach_no_senders_notification_t *ns;
+
+      ns = (mach_no_senders_notification_t *) msg;
+      dev = dev_port_lookup((ipc_port_t) ns->not_header.msgh_remote_port);
+      assert(dev);
+      if (dev->emul_ops->no_senders)
+	(*dev->emul_ops->no_senders) (ns);
+      return TRUE;
+    }
+
+  printf ("ds_notify: strange notification %d\n", msg->msgh_id);
+  return FALSE;
+}
+
+io_return_t
+ds_device_write_trap (device_t dev, dev_mode_t mode,
+		      recnum_t recnum, vm_offset_t data, vm_size_t count)
+{
+  /* Refuse if device is dead or not completely open.  */
+  if (dev == DEVICE_NULL)
+    return D_NO_SUCH_DEVICE;
+
+  if (! dev->emul_ops->write_trap)
+    return D_INVALID_OPERATION;
+
+  return (*dev->emul_ops->write_trap) (dev->emul_data,
+				       mode, recnum, data, count);
+}
+
+io_return_t
+ds_device_writev_trap (device_t dev, dev_mode_t mode,
+		       recnum_t recnum, io_buf_vec_t *iovec, vm_size_t count)
+{
+  /* Refuse if device is dead or not completely open.  */
+  if (dev == DEVICE_NULL)
+    return D_NO_SUCH_DEVICE;
+
+  if (! dev->emul_ops->writev_trap)
+    return D_INVALID_OPERATION;
+
+  return (*dev->emul_ops->writev_trap) (dev->emul_data,
+					mode, recnum, iovec, count);
+}
+
+void
+device_reference (device_t dev)
+{
+  /* Refuse if device is dead or not completely open.  */
+  if (dev == DEVICE_NULL)
+    return;
+
+  if (dev->emul_ops->reference)
+    (*dev->emul_ops->reference) (dev->emul_data);
+}
+
+void
+device_deallocate (device_t dev)
+{
+  /* Refuse if device is dead or not completely open.  */
+  if (dev == DEVICE_NULL)
+    return;
+
+  if (dev->emul_ops->dealloc)
+    (*dev->emul_ops->dealloc) (dev->emul_data);
+}
+
+/*
+ * What follows is the interface for the native Mach devices.
+ */
+
 ipc_port_t
-mach_convert_device_to_port (void *d)
+mach_convert_device_to_port (mach_device_t device)
 {
   ipc_port_t port;
-  mach_device_t device = d;
 
   if (! device)
     return IP_NULL;
+
   device_lock(device);
+
   if (device->state == DEV_STATE_OPEN)
     port = ipc_port_make_send(device->port);
   else
     port = IP_NULL;
+
   device_unlock(device);
+
   mach_device_deallocate(device);
+
   return port;
 }
-#endif /* i386 */
 
-#ifdef i386
 static io_return_t
 device_open(reply_port, reply_port_type, mode, name, device_p)
-#else
-io_return_t
-ds_device_open(open_port, reply_port, reply_port_type,
-	       mode, name, device_p)
-	ipc_port_t	open_port;
-#endif
 	ipc_port_t	reply_port;
 	mach_msg_type_name_t reply_port_type;
 	dev_mode_t	mode;
@@ -110,24 +414,6 @@ ds_device_open(open_port, reply_port, reply_port_type,
 	register kern_return_t	result;
 	register io_req_t	ior;
 	ipc_port_t		notify;
-
-#ifndef i386
-	/*
-	 * Open must be called on the master device port.
-	 */
-	if (open_port != master_device_port)
-	    return (D_INVALID_OPERATION);
-
-	/*
-	 * There must be a reply port.
-	 */
-	if (!IP_VALID(reply_port)) {
-	    printf("ds_* invalid reply port\n");
-	    Debugger("ds_* reply_port");
-	    return (MIG_NO_REPLY);	/* no sense in doing anything */
-	}
-
-#endif	/* ! i386 */
 
 	/*
 	 * Find the device.
@@ -165,11 +451,7 @@ ds_device_open(open_port, reply_port, reply_port_type,
 
 	    device->open_count++;
 	    device_unlock(device);
-#ifdef i386
 	    *device_p = &device->dev;
-#else
-	    *device_p = device;
-#endif
 	    return (D_SUCCESS);
 	    /*
 	     * Return deallocates device reference while acquiring
@@ -293,32 +575,17 @@ ds_open_done(ior)
 		(void) ds_device_open_reply(ior->io_reply_port,
 					    ior->io_reply_port_type,
 					    result,
-#ifdef i386
-					    (mach_convert_device_to_port
-					     (device)));
-#else
-					    convert_device_to_port(device));
-#endif
+					    mach_convert_device_to_port(device));
 	} else
 		mach_device_deallocate(device);
 
 	return (TRUE);
 }
 
-#ifdef i386
 static io_return_t
 device_close(device)
-#else
-io_return_t
-ds_device_close(device)
-#endif
 	register mach_device_t	device;
 {
-#ifndef i386
-	if (device == DEVICE_NULL)
-	    return (D_NO_SUCH_DEVICE);
-#endif
-
 	device_lock(device);
 
 	/*
@@ -378,17 +645,10 @@ ds_device_close(device)
 /*
  * Write to a device.
  */
-#ifdef i386
 static io_return_t
-device_write(d, reply_port, reply_port_type, mode, recnum,
+device_write(device, reply_port, reply_port_type, mode, recnum,
 	     data, data_count, bytes_written)
-	void *d;
-#else
-io_return_t
-ds_device_write(device, reply_port, reply_port_type, mode, recnum,
-		data, data_count, bytes_written)
-	register mach_device_t	device;
-#endif
+	mach_device_t		device;
 	ipc_port_t		reply_port;
 	mach_msg_type_name_t	reply_port_type;
 	dev_mode_t		mode;
@@ -397,27 +657,11 @@ ds_device_write(device, reply_port, reply_port_type, mode, recnum,
 	unsigned int		data_count;
 	int			*bytes_written;	/* out */
 {
-#ifdef i386
-	register mach_device_t	device = d;
-#endif
 	register io_req_t	ior;
 	register io_return_t	result;
 
-#ifndef i386
-	/*
-	 * Refuse if device is dead or not completely open.
-	 */
-	if (device == DEVICE_NULL)
-	    return (D_NO_SUCH_DEVICE);
-#endif
-
 	if (device->state != DEV_STATE_OPEN)
 	    return (D_NO_SUCH_DEVICE);
-
-#ifndef i386
-	if (data == 0)
-	   return (D_INVALID_SIZE);
-#endif
 
 	/*
 	 * XXX Need logic to reject ridiculously big requests.
@@ -492,17 +736,10 @@ ds_device_write(device, reply_port, reply_port_type, mode, recnum,
 /*
  * Write to a device, but memory is in message.
  */
-#ifdef i386
 static io_return_t
-device_write_inband(d, reply_port, reply_port_type, mode, recnum,
+device_write_inband(device, reply_port, reply_port_type, mode, recnum,
 		    data, data_count, bytes_written)
-	void *d;
-#else
-io_return_t
-ds_device_write_inband(device, reply_port, reply_port_type, mode, recnum,
-		       data, data_count, bytes_written)
-	register mach_device_t	device;
-#endif
+	mach_device_t		device;
 	ipc_port_t		reply_port;
 	mach_msg_type_name_t	reply_port_type;
 	dev_mode_t		mode;
@@ -511,27 +748,11 @@ ds_device_write_inband(device, reply_port, reply_port_type, mode, recnum,
 	unsigned int		data_count;
 	int			*bytes_written; /* out */
 {
-#ifdef i386
-	register mach_device_t	device = d;
-#endif
 	register io_req_t	ior;
 	register io_return_t	result;
 
-#ifndef i386
-	/*
-	 * Refuse if device is dead or not completely open.
-	 */
-	if (device == DEVICE_NULL)
-	    return (D_NO_SUCH_DEVICE);
-#endif
-
 	if (device->state != DEV_STATE_OPEN)
 	    return (D_NO_SUCH_DEVICE);
-
-#ifndef i386
-	if (data == 0)
-	   return (D_INVALID_SIZE);
-#endif
 
 	/* XXX note that a CLOSE may proceed at any point */
 
@@ -713,7 +934,7 @@ device_write_dealloc(ior)
 	 *	To prevent a possible deadlock with the default pager,
 	 *	we have to release space in the device_io_map before
 	 *	we allocate any memory.  (Which vm_map_copy_invoke_cont
-	 *	might do.)  See the discussion in ds_init.
+	 *	might do.)  See the discussion in mach_device_init.
 	 */
 
 	kmem_io_map_deallocate(device_io_map,
@@ -831,17 +1052,10 @@ ds_write_done(ior)
 /*
  * Read from a device.
  */
-#ifdef i386
 static io_return_t
-device_read(d, reply_port, reply_port_type, mode, recnum,
+device_read(device, reply_port, reply_port_type, mode, recnum,
 	    bytes_wanted, data, data_count)
-	void *d;
-#else
-io_return_t
-ds_device_read(device, reply_port, reply_port_type, mode, recnum,
-	       bytes_wanted, data, data_count)
-	register mach_device_t	device;
-#endif
+	mach_device_t		device;
 	ipc_port_t		reply_port;
 	mach_msg_type_name_t	reply_port_type;
 	dev_mode_t		mode;
@@ -850,9 +1064,6 @@ ds_device_read(device, reply_port, reply_port_type, mode, recnum,
 	io_buf_ptr_t		*data;		/* out */
 	unsigned int		*data_count;	/* out */
 {
-#ifdef i386
-	register mach_device_t	device = d;
-#endif
 	register io_req_t	ior;
 	register io_return_t	result;
 
@@ -860,14 +1071,6 @@ ds_device_read(device, reply_port, reply_port_type, mode, recnum,
 	*data = *data;
 	*data_count = *data_count;
 #endif /* lint */
-
-#ifndef i386
-	/*
-	 * Refuse if device is dead or not completely open.
-	 */
-	if (device == DEVICE_NULL)
-	    return (D_NO_SUCH_DEVICE);
-#endif
 
 	if (device->state != DEV_STATE_OPEN)
 	    return (D_NO_SUCH_DEVICE);
@@ -931,17 +1134,10 @@ ds_device_read(device, reply_port, reply_port_type, mode, recnum,
 /*
  * Read from a device, but return the data 'inband.'
  */
-#ifdef i386
 static io_return_t
-device_read_inband(d, reply_port, reply_port_type, mode, recnum,
+device_read_inband(device, reply_port, reply_port_type, mode, recnum,
 		   bytes_wanted, data, data_count)
-	void *d;
-#else
-io_return_t
-ds_device_read_inband(device, reply_port, reply_port_type, mode, recnum,
-		      bytes_wanted, data, data_count)
-	register mach_device_t	device;
-#endif
+	mach_device_t		device;
 	ipc_port_t		reply_port;
 	mach_msg_type_name_t	reply_port_type;
 	dev_mode_t		mode;
@@ -950,9 +1146,6 @@ ds_device_read_inband(device, reply_port, reply_port_type, mode, recnum,
 	char			*data;		/* pointer to OUT array */
 	unsigned int		*data_count;	/* out */
 {
-#ifdef i386
-	register mach_device_t	device = d;
-#endif
 	register io_req_t	ior;
 	register io_return_t	result;
 
@@ -960,14 +1153,6 @@ ds_device_read_inband(device, reply_port, reply_port_type, mode, recnum,
 	*data = *data;
 	*data_count = *data_count;
 #endif /* lint */
-
-#ifndef i386
-	/*
-	 * Refuse if device is dead or not completely open.
-	 */
-	if (device == DEVICE_NULL)
-	    return (D_NO_SUCH_DEVICE);
-#endif
 
 	if (device->state != DEV_STATE_OPEN)
 	    return (D_NO_SUCH_DEVICE);
@@ -1029,7 +1214,6 @@ ds_device_read_inband(device, reply_port, reply_port_type, mode, recnum,
 
 	return (MIG_NO_REPLY);	/* reply has already been sent. */
 }
-
 
 /*
  * Allocate wired-down memory for device read.
@@ -1158,31 +1342,13 @@ boolean_t ds_read_done(ior)
 	return (TRUE);
 }
 
-#ifdef i386
 static io_return_t
-device_set_status(d, flavor, status, status_count)
-	void *d;
-#else
-io_return_t
-ds_device_set_status(device, flavor, status, status_count)
-	register mach_device_t	device;
-#endif
+device_set_status(device, flavor, status, status_count)
+	mach_device_t		device;
 	dev_flavor_t		flavor;
 	dev_status_t		status;
 	mach_msg_type_number_t	status_count;
 {
-#ifdef i386
-	register mach_device_t device = d;
-#endif
-
-#ifndef i386
-	/*
-	 * Refuse if device is dead or not completely open.
-	 */
-	if (device == DEVICE_NULL)
-	    return (D_NO_SUCH_DEVICE);
-#endif
-
 	if (device->state != DEV_STATE_OPEN)
 	    return (D_NO_SUCH_DEVICE);
 
@@ -1194,31 +1360,13 @@ ds_device_set_status(device, flavor, status, status_count)
 					      status_count));
 }
 
-#ifdef i386
 io_return_t
-mach_device_get_status(d, flavor, status, status_count)
-	void *d;
-#else
-io_return_t
-ds_device_get_status(device, flavor, status, status_count)
-	register mach_device_t	device;
-#endif
+mach_device_get_status(device, flavor, status, status_count)
+	mach_device_t		device;
 	dev_flavor_t		flavor;
 	dev_status_t		status;		/* pointer to OUT array */
 	mach_msg_type_number_t	*status_count;	/* out */
 {
-#ifdef i386
-	register mach_device_t	device = d;
-#endif
-
-#ifndef i386
-	/*
-	 * Refuse if device is dead or not completely open.
-	 */
-	if (device == DEVICE_NULL)
-	    return (D_NO_SUCH_DEVICE);
-#endif
-
 	if (device->state != DEV_STATE_OPEN)
 	    return (D_NO_SUCH_DEVICE);
 
@@ -1230,32 +1378,14 @@ ds_device_get_status(device, flavor, status, status_count)
 					      status_count));
 }
 
-#ifdef i386
 static io_return_t
-device_set_filter(d, receive_port, priority, filter, filter_count)
-	void *d;
-#else
-io_return_t
-ds_device_set_filter(device, receive_port, priority, filter, filter_count)
-	register mach_device_t	device;
-#endif
+device_set_filter(device, receive_port, priority, filter, filter_count)
+	mach_device_t		device;
 	ipc_port_t		receive_port;
 	int			priority;
 	filter_t		filter[];	/* pointer to IN array */
 	unsigned int		filter_count;
 {
-#ifdef i386
-	register mach_device_t	device = d;
-#endif
-
-#ifndef i386
-	/*
-	 * Refuse if device is dead or not completely open.
-	 */
-	if (device == DEVICE_NULL)
-	    return (D_NO_SUCH_DEVICE);
-#endif
-
 	if (device->state != DEV_STATE_OPEN)
 	    return (D_NO_SUCH_DEVICE);
 
@@ -1274,38 +1404,20 @@ ds_device_set_filter(device, receive_port, priority, filter, filter_count)
 					       filter_count));
 }
 
-#ifdef i386
 static io_return_t
-device_map(d, protection, offset, size, pager, unmap)
-	void *d;
-#else
-io_return_t
-ds_device_map(device, protection, offset, size, pager, unmap)
-	register mach_device_t	device;
-#endif
+device_map(device, protection, offset, size, pager, unmap)
+	mach_device_t		device;
 	vm_prot_t		protection;
 	vm_offset_t		offset;
 	vm_size_t		size;
 	ipc_port_t		*pager;	/* out */
 	boolean_t		unmap;	/* ? */
 {
-#ifdef i386
-	register mach_device_t device = d;
-#endif
-
 #ifdef	lint
 	unmap = unmap;
 #endif	/* lint */
 	if (protection & ~VM_PROT_ALL)
 		return (KERN_INVALID_ARGUMENT);
-
-#ifndef i386
-	/*
-	 * Refuse if device is dead or not completely open.
-	 */
-	if (device == DEVICE_NULL)
-	    return (D_NO_SUCH_DEVICE);
-#endif
 
 	if (device->state != DEV_STATE_OPEN)
 	    return (D_NO_SUCH_DEVICE);
@@ -1319,11 +1431,7 @@ ds_device_map(device, protection, offset, size, pager, unmap)
 /*
  * Doesn't do anything (yet).
  */
-#ifdef i386
 static void
-#else
-void
-#endif
 ds_no_senders(notification)
 	mach_no_senders_notification_t *notification;
 {
@@ -1331,23 +1439,6 @@ ds_no_senders(notification)
 	       notification->not_header.msgh_remote_port,
 	       notification->not_count);
 }
-
-#ifndef i386
-boolean_t
-ds_notify(msg)
-	mach_msg_header_t *msg;
-{
-	switch (msg->msgh_id) {
-		case MACH_NOTIFY_NO_SENDERS:
-		ds_no_senders((mach_no_senders_notification_t *) msg);
-		return TRUE;
-
-		default:
-		printf("ds_notify: strange notification %d\n", msg->msgh_id);
-		return FALSE;
-	}
-}
-#endif
 
 queue_head_t		io_done_list;
 decl_simple_lock_data(,	io_done_list_lock)
@@ -1394,7 +1485,7 @@ void io_done_thread_continue()
 	    register spl_t	s;
 	    register io_req_t	ior;
 
-#if defined (i386) && defined (LINUX_DEV) && defined (CONFIG_INET)
+#if defined (LINUX_DEV) && defined (CONFIG_INET)
 	    free_skbuffs ();
 #endif
 	    s = splio();
@@ -1438,9 +1529,9 @@ void io_done_thread()
 
 #define	DEVICE_IO_MAP_SIZE	(2 * 1024 * 1024)
 
-extern void ds_trap_init(void);		/* forward */
+static void mach_device_trap_init(void);		/* forward */
 
-void ds_init()
+void mach_device_init()
 {
 	vm_offset_t	device_io_min, device_io_max;
 
@@ -1477,7 +1568,7 @@ void ds_init()
 			    FALSE,
 			    "io inband read buffers");
 
-	ds_trap_init();
+	mach_device_trap_init();
 }
 
 void iowait(ior)
@@ -1514,10 +1605,10 @@ void iowait(ior)
 zone_t io_trap_zone;
 
 /*
- * Initialization.  Called from ds_init().
+ * Initialization.  Called from mach_device_init().
  */
-void
-ds_trap_init(void)
+static void
+mach_device_trap_init(void)
 {
 	io_trap_zone = zinit(IOTRAP_REQSIZE, 0,
 			     256 * IOTRAP_REQSIZE,
@@ -1564,32 +1655,12 @@ ds_trap_write_done(io_req_t ior)
 /*
  * Like device_write except that data is in user space.
  */
-#ifdef i386
 static io_return_t
-device_write_trap (void *d, dev_mode_t mode,
+device_write_trap (mach_device_t device, dev_mode_t mode,
 		   recnum_t recnum, vm_offset_t data, vm_size_t data_count)
-#else
-io_return_t
-ds_device_write_trap(device_t		device,
-		     dev_mode_t		mode,
-		     recnum_t		recnum,
-		     vm_offset_t	data,
-		     vm_size_t		data_count)
-#endif
 {
-#ifdef i386
-	mach_device_t device = d;
-#endif
 	io_req_t ior;
 	io_return_t result;
-
-#ifndef i386
-	/*
-	 * Refuse if device is dead or not completely open.
-	 */
-	if (device == DEVICE_NULL)
-		return (D_NO_SUCH_DEVICE);
-#endif
 
 	if (device->state != DEV_STATE_OPEN)
 		return (D_NO_SUCH_DEVICE);
@@ -1652,35 +1723,15 @@ ds_device_write_trap(device_t		device,
 	return (result);
 }
 
-#ifdef i386
 static io_return_t
-device_writev_trap (void *d, dev_mode_t mode,
+device_writev_trap (mach_device_t device, dev_mode_t mode,
 		    recnum_t recnum, io_buf_vec_t *iovec, vm_size_t iocount)
-#else
-io_return_t
-ds_device_writev_trap(device_t		device,
-		      dev_mode_t	mode,
-		      recnum_t		recnum,
-		      io_buf_vec_t	*iovec,
-		      vm_size_t		iocount)
-#endif
 {
-#ifdef i386
-	mach_device_t device = d;
-#endif
 	io_req_t ior;
 	io_return_t result;
 	io_buf_vec_t	stack_iovec[16]; /* XXX */
 	vm_size_t data_count;
 	int i;
-
-#ifndef i386
-	/*
-	 * Refuse if device is dead or not completely open.
-	 */
-	if (device == DEVICE_NULL)
-		return (D_NO_SUCH_DEVICE);
-#endif
 
 	if (device->state != DEV_STATE_OPEN)
 		return (D_NO_SUCH_DEVICE);
@@ -1763,7 +1814,6 @@ ds_device_writev_trap(device_t		device,
 	return (result);
 }
 
-#ifdef i386
 struct device_emulation_ops mach_device_emulation_ops =
 {
   mach_device_reference,
@@ -1783,4 +1833,3 @@ struct device_emulation_ops mach_device_emulation_ops =
   device_write_trap,
   device_writev_trap
 };
-#endif

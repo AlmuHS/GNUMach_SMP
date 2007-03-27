@@ -1,7 +1,7 @@
 /*
  * pcmcia-socket `device' driver
  *
- * Copyright (C) 2006 Free Software Foundation, Inc.
+ * Copyright (C) 2006, 2007 Free Software Foundation, Inc.
  * Written by Stefan Siegl <stesie@brokenpipe.de>.
  *
  * This file is part of GNU Mach.
@@ -49,7 +49,7 @@
 #include <device/io_req.h>
 #include <device/ds_routines.h>
 
-#include <i386at/device_emul.h>
+#include <device/device_emul.h>
 
 #include <device/device_reply.user.h>
 

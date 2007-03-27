@@ -255,6 +255,7 @@ libkernel_a_SOURCES += \
 	device/conf.h \
 	device/cons.c \
 	device/cons.h \
+	device/device_emul.h \
 	device/dev_hdr.h \
 	device/dev_lookup.c \
 	device/dev_master.h \

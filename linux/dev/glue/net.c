@@ -83,8 +83,7 @@
 #include <device/if_hdr.h>
 #include <device/net_io.h>
 #include <device/device_reply.user.h>
-
-#include <linux_emul.h>
+#include <device/device_emul.h>
 
 #define MACH_INCLUDE
 #include <linux/kernel.h>

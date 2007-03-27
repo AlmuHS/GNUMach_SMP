@@ -39,7 +39,7 @@
 
 
 
-extern void	ds_init();
+extern void	mach_device_init();
 extern void	dev_lookup_init();
 extern void	net_io_init();
 extern void	device_pager_init();
@@ -57,7 +57,7 @@ device_service_create()
 	if (master_device_port == IP_NULL)
 	    panic("can't allocate master device port");
 
-	ds_init();
+	mach_device_init();
 	dev_lookup_init();
 	net_io_init();
 	device_pager_init();

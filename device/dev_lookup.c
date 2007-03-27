@@ -42,9 +42,7 @@
 #include <ipc/ipc_port.h>
 #include <kern/ipc_kobject.h>
 
-#ifdef i386
-#include <i386at/device_emul.h>
-#endif
+#include <device/device_emul.h>
 
 /*
  * Device structure routines: reference counting, port->device.
@@ -255,7 +253,7 @@ dev_port_enter(device)
 	register mach_device_t	device;
 {
 	mach_device_reference(device);
-#ifdef i386
+
 	ipc_kobject_set(device->port,
 			(ipc_kobject_t) &device->dev, IKOT_DEVICE);
 	device->dev.emul_data = device;
@@ -264,9 +262,6 @@ dev_port_enter(device)
 
 	  device->dev.emul_ops = &mach_device_emulation_ops;
 	}
-#else
-	ipc_kobject_set(device->port, (ipc_kobject_t) device, IKOT_DEVICE);
-#endif
 }
 
 /*
@@ -296,12 +291,8 @@ dev_port_lookup(port)
 	ip_lock(port);
 	if (ip_active(port) && (ip_kotype(port) == IKOT_DEVICE)) {
 	    device = (device_t) port->ip_kobject;
-#ifdef i386
 	    if (device->emul_ops->reference)
 	      (*device->emul_ops->reference)(device->emul_data);
-#else
-	    mach_device_reference(device);
-#endif
 	}
 	else
 	    device = DEVICE_NULL;
@@ -318,26 +309,10 @@ ipc_port_t
 convert_device_to_port(device)
 	register device_t	device;
 {
-#ifndef i386
-	register ipc_port_t	port;
-#endif
-
 	if (device == DEVICE_NULL)
 	    return IP_NULL;
 
-#ifdef i386
 	return (*device->emul_ops->dev_to_port) (device->emul_data);
-#else
-	device_lock(device);
-	if (device->state == DEV_STATE_OPEN)
-	    port = ipc_port_make_send(device->port);
-	else
-	    port = IP_NULL;
-	device_unlock(device);
-
-	mach_device_deallocate(device);
-	return port;
-#endif
 }
 
 /*

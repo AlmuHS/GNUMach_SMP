@@ -25,11 +25,8 @@ libkernel_a_SOURCES += \
 	i386/i386at/conf.c \
 	i386/i386at/cons_conf.c \
 	i386/i386at/cram.h \
-	i386/i386at/dev_hdr.h \
-	i386/i386at/device_emul.h \
 	i386/i386at/disk.h \
 	i386/i386at/rtc.c \
-	i386/i386at/i386at_ds_routines.c \
 	i386/i386at/i8250.h \
 	i386/i386at/idt.h \
 	i386/i386at/immc.c \
