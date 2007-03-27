@@ -20,10 +20,6 @@
  *    Phone: x49-7545-8-2256 , x49-7541-42305
  */
 
-/*
- * $Log: AM53C974.h,v $
- */
-
 #ifndef AM53C974_H
 #define AM53C974_H
 

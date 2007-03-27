@@ -30,7 +30,6 @@
  */
 
 /*
- * $Log: NCR5380.c,v $
  * Revision 1.7  1996/3/2	Ray Van Tassle (rayvt@comm.mot.com)
  * added proc_info
  * added support needed for DTC 3180/3280

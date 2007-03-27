@@ -22,7 +22,6 @@
  *                                                                      *
  * Tested with Linux 1.2.13, ..., 2.1.103                               *
  *                                                                      *
- * $Log: gdth.c,v $
  * Revision 1.16  1998/09/28 16:08:46  achim
  * GDT_PCIMPR: DPMEM remapping, if required
  * mdelay() added
@@ -88,7 +87,7 @@
  * Initial revision
  *
  *
- * $Id: gdth.c,v 1.1 1999/04/26 05:54:35 tb Exp $ 
+ * $Id: gdth.c,v 1.1.4.1 2007/03/27 21:04:30 tschwinge Exp $ 
  ************************************************************************/
 
 #ifdef MODULE

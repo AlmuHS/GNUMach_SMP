@@ -42,10 +42,6 @@
  *    Phone: x49-7545-8-2256 , x49-7541-42305
  */
 
-/*
- * $Log: AM53C974.c,v $
- */
-
 #ifdef AM53C974_DEBUG
  #define DEB(x) x
  #ifdef AM53C974_DEBUG_KEYWAIT

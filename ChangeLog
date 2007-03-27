@@ -1,3 +1,22 @@
+2007-03-27  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* kern/pcsample.h: Remove the automatic cvs log appending machinery.
+	* linux/dev/drivers/scsi/g_NCR5380.c: Likewise.
+	* linux/src/drivers/net/sk_g16.h: Likewise.
+	* linux/src/drivers/scsi/AM53C974.c: Likewise.
+	* linux/src/drivers/scsi/AM53C974.h: Likewise.
+	* linux/src/drivers/scsi/NCR5380.c: Likewise.
+	* linux/src/drivers/scsi/NCR5380.h: Likewise.
+	* linux/src/drivers/scsi/aha152x.c: Likewise.
+	* linux/src/drivers/scsi/aha1542.h: Likewise.
+	* linux/src/drivers/scsi/g_NCR5380.c: Likewise.
+	* linux/src/drivers/scsi/g_NCR5380.h: Likewise.
+	* linux/src/drivers/scsi/gdth.c: Likewise.
+	* linux/src/drivers/scsi/qlogicisp.c: Likewise.
+	* linux/src/drivers/scsi/qlogicisp.h: Likewise.
+	* linux/src/drivers/scsi/t128.c: Likewise.
+	* linux/src/drivers/scsi/t128.h: Likewise.
+
 2007-03-24  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* i386/i386at/conf.c (block_io_mmap): Remove declaration.

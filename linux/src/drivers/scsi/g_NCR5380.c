@@ -69,10 +69,6 @@
  *     
  */
  
-/*
- * $Log: generic_NCR5380.c,v $
- */
-
 #define AUTOPROBE_IRQ
 #define AUTOSENSE
 

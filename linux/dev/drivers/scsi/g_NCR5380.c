@@ -68,10 +68,6 @@
  * 	IRQ line if overridden on the command line.
  *     
  */
- 
-/*
- * $Log: generic_NCR5380.c,v $
- */
 
 #ifdef MACH
 #define GENERIC_NCR5380_OVERRIDE {{(NCR5380_map_type)0x350,5,0,BOARD_NCR53C400}};

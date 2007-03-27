@@ -25,7 +25,9 @@
  */
 /*
  * HISTORY
- * $Log: pc_sample.h,v $
+ * Revision 1.1.1.1  1997/02/25 21:28:25  thomas
+ * Initial source
+ *
  * Revision 1.1.1.1  1996/10/30 01:38:13  thomas
  * Imported from UK22
  *

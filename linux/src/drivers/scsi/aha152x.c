@@ -20,31 +20,7 @@
  * General Public License for more details.
  *
  *
- * $Id: aha152x.c,v 1.1.4.1 2006/10/08 13:52:36 tschwinge Exp $
- *
- * $Log: aha152x.c,v $
- * Revision 1.1  1999/04/26 05:44:22  tb
- * 1999-04-12  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
- *
- * 	* linux/dev/drivers/block/ide.c (init_hwif_data) [MACH]: Print Mach
- * 	device name instead of Linux one.
- * 	* linux/dev/drivers/block/genhd.c (disk_name): Likewise.
- * 	* linux/dev/drivers/scsi/sd.c (sd_init_onedisk): Likewise.
- * 	(sd_detect): Likewise.
- * 	* linux/dev/drivers/sr.c (sr_detect): Likewise.
- * 	(get_sectorsize): Likewise.
- *
- * 1999-02-04  OKUJI Yoshinori  <okuji@kuicr.kyoto-u.ac.jp>
- *
- * 	* device/kmsg.c (kmsginit): Add a missing semicolon.
- * 	(kmsggetstat): Fix typos,
- * 	DEV_GET_DEVICE_SIZE -> DEV_GET_SIZE_DEVICE_SIZE and
- * 	DEV_GET_RECORD_SIZE -> DEV_GET_SIZE_RECORD_SIZE.
- * 	(kmsg_putchar): Fix a typo kmsg_done_init -> kmsg_init_done.
- * 	* linux/dev/glue/block.c (device_get_status): Allocate a hd_geometry
- * 	on the stack.
- * 	* linux/dev/drivers/block/ide.c: New file.
- * 	* linux/dev/drivers/scsi/sd_ioctl.c: New file.
+ * $Id: aha152x.c,v 1.1.4.2 2007/03/27 21:04:30 tschwinge Exp $
  *
  * Revision 1.18  1996/09/07 20:10:40  fischer
  * - fixed can_queue handling (multiple outstanding commands working again)
