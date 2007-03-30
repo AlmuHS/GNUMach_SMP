@@ -116,12 +116,12 @@ include doc/Makefrag.am
 # Kernel Image
 #
 
+# We need the following junk because of the include-files-from-libc.a magic.
 # TODO.  Is the following kosher from a Automake point of view?  (I.e. a
 # program `gnumach.o' that is then later used again as an object file.)
 gnumach_o_SOURCES =
-# TODO.  ``--start-group''.  Want to keep it that way?
 # TODO.  ``-u _start''.  System dependent?
-gnumach_o_LINK = $(LD) -u _start -r -o $@ --start-group
+gnumach_o_LINK = $(LD) -u _start -r -o $@
 noinst_PROGRAMS += \
 	gnumach.o
 
