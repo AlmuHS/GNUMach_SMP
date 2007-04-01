@@ -58,10 +58,6 @@ extern int	kbdgetstat(), kbdsetstat();
 extern int	mouseopen(), mouseclose(), mouseread(), mousegetstat();
 #define	mousename		"mouse"
 
-extern int	ioplopen(), ioplclose();
-extern vm_offset_t ioplmmap();
-#define	ioplname		"iopl"
-
 extern int	kmsgopen(), kmsgclose(), kmsgread(), kmsggetstat();
 #define kmsgname		"kmsg"
 
@@ -114,11 +110,6 @@ struct dev_ops	dev_name_list[] =
 
 	{ kbdname,	kbdopen,	kbdclose,	kbdread,
 	  nodev,	kbdgetstat,	kbdsetstat,	nomap,
-	  nodev,	nulldev,	nulldev,	0,
-	  nodev },
-
-	{ ioplname,	ioplopen,	ioplclose,	nodev,
-	  nodev,	nodev,		nodev,		ioplmmap,
 	  nodev,	nulldev,	nulldev,	0,
 	  nodev },
 

@@ -32,7 +32,6 @@ libkernel_a_SOURCES += \
 	i386/i386at/immc.c \
 	i386/i386at/int_init.c \
 	i386/i386at/interrupt.S \
-	i386/i386at/iopl.c \
 	i386/i386at/kd.c \
 	i386/i386at/kd.h \
 	i386/i386at/kd_event.c \
@@ -85,8 +84,6 @@ libkernel_a_SOURCES += \
 	i386/i386/idt-gen.h \
 	i386/i386/idt.c \
 	i386/i386/idt_inittab.S \
-	i386/i386/io_emulate.c \
-	i386/i386/io_emulate.h \
 	i386/i386/io_map.c \
 	i386/i386/io_port.h \
 	i386/i386/iopb.c \

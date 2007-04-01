@@ -1,3 +1,16 @@
+2007-04-02  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* i386/i386/io_emulate.c: Remove file.
+	* i386/i386/io_emulate.h: Likewise.
+	* i386/i386at/iopl.c: Likewise.
+	* i386/Makefrag.am (libkernel_a_SOURCES): Remove the aforementioned
+	files.
+	* i386/i386/trap.c: Don't include <i386/io_emulate.h>.
+	(v86_assist, check_io_fault): Remove functions.
+	(user_trap): Remove the code referencing the above functions.
+	* i386/i386at/conf.c (dev_name_list): Remove the `iopl' device.
+	* DEVELOPMENT: Document this.
+
 2007-03-30  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* Makefile.am (gnumach_o_LINK): Remove ``--start-group''.
