@@ -1,3 +1,9 @@
+2007-04-11  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* config.status.dep.patch: Update to match more files.  This fixes
+	building GNU Mach with ``make -j2'' and higher.  The problem was
+	reported by Michael Casadevall <sonicmctails@gmail.com>.
+
 2007-04-02  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* i386/i386/io_emulate.c: Remove file.
