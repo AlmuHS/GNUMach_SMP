@@ -46,6 +46,7 @@
 #include <kern/macro_help.h>
 #include <kern/ipc_kobject.h>
 #include <ipc/ipc_mqueue.h>
+#include <ipc/ipc_space.h>
 #include <ipc/ipc_table.h>
 #include <ipc/ipc_thread.h>
 #include "ipc_target.h"

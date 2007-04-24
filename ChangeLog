@@ -1,3 +1,7 @@
+2007-04-24  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* ipc/ipc_port.h: Include <ipc/ipc_space.h>.
+
 2007-04-11  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* config.status.dep.patch: Update to match more files.  This fixes
