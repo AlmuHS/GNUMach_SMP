@@ -1,3 +1,9 @@
+2007-04-24  Michael Casadevall  <sonicmctails@gmail.com>
+
+	* linux/src/drivers/net/ne.c (bad_clone_list): Add the RealTek 8029 PCI
+	card's signature.
+	<http://lists.gnu.org/archive/html/bug-hurd/2007-04/msg00039.html>
+
 2007-04-24  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* ipc/ipc_port.h: Include <ipc/ipc_space.h>.

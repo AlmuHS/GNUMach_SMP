@@ -97,6 +97,7 @@ bad_clone_list[] = {
     {"ET-100","ET-200", {0x00, 0x45, 0x54}}, /* YANG and YA clone */
     {"COMPEX","COMPEX16",{0x00,0x80,0x48}}, /* Broken ISA Compex cards */
     {"E-LAN100", "E-LAN200", {0x00, 0x00, 0x5d}}, /* Broken ne1000 clones */
+    {"RealTek 8029", "RealTek 8029", {0x00, 0x3e, 0x4d}}, /* RealTek PCI cards */
     {0,}
 };
 #endif
