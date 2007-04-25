@@ -1,5 +1,8 @@
 2007-04-25  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* linux/pcmcia-cs/glue/ds.c (kmalloc, kfree): Call `linux_kmalloc',
+	respective `linux_kfree' instead.
+
 	* kern/kalloc.h (kalloc, kget, kfree, kalloc_init): List the arguments.
 
 2007-04-24  Michael Casadevall  <sonicmctails@gmail.com>

@@ -26,7 +26,13 @@
 /*
  * Prepare the namespace for inclusion of Mach header files.
  */
+
 #undef PAGE_SHIFT
+
+/*
+ * This is really ugly.  But this is glue code, so...  It's about the `kfree'
+ * symbols in <linux/malloc.h> and <kern/kalloc.h>.
+ */
 #undef kfree
 
 /*
@@ -120,11 +126,11 @@ device_deallocate(void *p)
     {
       *link = user->next;
       user->user_magic = 0;
-      kfree(user);
+      linux_kfree(user);
     }
 
   /* now finally reap the device */
-  kfree(device);
+  linux_kfree(device);
 }
 
 /*
@@ -179,7 +185,7 @@ device_open (ipc_port_t reply_port, mach_msg_type_name_t reply_port_type,
   io_return_t err = D_SUCCESS;
 
   struct mach_device *dev;
-  dev = kmalloc(sizeof(struct mach_socket_device), GFP_KERNEL);
+  dev = linux_kmalloc(sizeof(struct mach_socket_device), GFP_KERNEL);
   if(! dev)
     {
       err = D_NO_MEMORY;
@@ -203,7 +209,7 @@ device_open (ipc_port_t reply_port, mach_msg_type_name_t reply_port_type,
 	s->state |= SOCKET_BUSY;
     }
 
-  user_info_t *user = kmalloc(sizeof(user_info_t), GFP_KERNEL);
+  user_info_t *user = linux_kmalloc(sizeof(user_info_t), GFP_KERNEL);
   if(! user) 
     {
       err = D_NO_MEMORY;
@@ -254,7 +260,7 @@ device_open (ipc_port_t reply_port, mach_msg_type_name_t reply_port_type,
 	      ipc_port_dealloc_kernel(dev->port);
 	    }
 
-	  kfree(dev);
+	  linux_kfree(dev);
 	  dev = NULL;
 	}
     }
