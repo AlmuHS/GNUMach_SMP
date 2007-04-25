@@ -31,10 +31,10 @@
 
 #define MINSIZE 16
 
-extern vm_offset_t kalloc();
-extern vm_offset_t kget();
-extern void kfree();
+extern vm_offset_t kalloc (vm_size_t size);
+extern vm_offset_t kget (vm_size_t size);
+extern void kfree (vm_offset_t data, vm_size_t size);
 
-extern void kalloc_init();
+extern void kalloc_init (void);
 
 #endif	/* _KERN_KALLOC_H_ */

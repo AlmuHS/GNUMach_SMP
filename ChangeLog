@@ -1,3 +1,7 @@
+2007-04-25  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* kern/kalloc.h (kalloc, kget, kfree, kalloc_init): List the arguments.
+
 2007-04-24  Michael Casadevall  <sonicmctails@gmail.com>
 
 	* linux/src/drivers/net/ne.c (bad_clone_list): Add the RealTek 8029 PCI
