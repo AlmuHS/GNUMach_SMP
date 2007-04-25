@@ -525,7 +525,7 @@ vmalloc_list_remove (struct vmalloc_struct *p)
   p->next->prev = p->prev;
   p->prev->next = p->next;
 
-  kfree (p, sizeof (struct vmalloc_struct));
+  kfree ((vm_offset_t) p, sizeof (struct vmalloc_struct));
 }
 
 /* Allocate SIZE bytes of memory.  The pages need not be contiguous.  */

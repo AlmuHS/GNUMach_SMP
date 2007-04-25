@@ -1,5 +1,8 @@
 2007-04-25  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* linux/dev/glue/kmem.c (vmalloc_list_remove): Cast first argument in
+	the `kfree' call to what is expected.
+
 	* linux/pcmcia-cs/glue/ds.c (kmalloc, kfree): Call `linux_kmalloc',
 	respective `linux_kfree' instead.
 
