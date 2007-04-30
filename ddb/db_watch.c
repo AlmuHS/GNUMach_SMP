@@ -150,7 +150,7 @@ db_delete_watchpoint(task, addr)
 }
 
 void
-db_list_watchpoints()
+db_list_watchpoints(void)
 {
 	register db_watchpoint_t watch;
 	int	 task_id;
@@ -260,7 +260,7 @@ db_listwatch_cmd()
 }
 
 void
-db_set_watchpoints()
+db_set_watchpoints(void)
 {
 	register db_watchpoint_t	watch;
 	vm_map_t			map;
@@ -278,7 +278,7 @@ db_set_watchpoints()
 }
 
 void
-db_clear_watchpoints()
+db_clear_watchpoints(void)
 {
 	db_watchpoints_inserted = FALSE;
 }

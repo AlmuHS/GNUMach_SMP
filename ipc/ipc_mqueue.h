@@ -55,24 +55,24 @@ typedef struct ipc_mqueue {
 #define	imq_unlock(mq)		simple_unlock(&(mq)->imq_lock_data)
 
 extern void
-ipc_mqueue_init(/* ipc_mqueue_t */);
+ipc_mqueue_init(ipc_mqueue_t);
 
 extern void
-ipc_mqueue_move(/* ipc_mqueue_t, ipc_mqueue_t, ipc_port_t */);
+ipc_mqueue_move(ipc_mqueue_t, ipc_mqueue_t, ipc_port_t);
 
 extern void
-ipc_mqueue_changed(/* ipc_mqueue_t, mach_msg_return_t */);
+ipc_mqueue_changed(ipc_mqueue_t, mach_msg_return_t);
 
 extern mach_msg_return_t
-ipc_mqueue_send(/* ipc_kmsg_t, mach_msg_option_t, mach_msg_timeout_t */);
+ipc_mqueue_send(ipc_kmsg_t, mach_msg_option_t, mach_msg_timeout_t);
 
 #define	IMQ_NULL_CONTINUE	((void (*)()) 0)
 
 extern mach_msg_return_t
-ipc_mqueue_receive(/* ipc_mqueue_t, mach_msg_option_t,
-		      mach_msg_size_t, mach_msg_timeout_t,
-		      boolean_t, void (*)(),
-		      ipc_kmsg_t *, mach_port_seqno_t * */);
+ipc_mqueue_receive(ipc_mqueue_t, mach_msg_option_t,
+		   mach_msg_size_t, mach_msg_timeout_t,
+		   boolean_t, void (*)(),
+		   ipc_kmsg_t *, mach_port_seqno_t *);
 
 /*
  *	extern void

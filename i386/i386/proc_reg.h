@@ -73,7 +73,7 @@
 #ifdef	__GNUC__
 
 static inline unsigned
-get_eflags()
+get_eflags(void)
 {
 	unsigned eflags;
 	asm("pushfd; popl %0" : "=r" (eflags));

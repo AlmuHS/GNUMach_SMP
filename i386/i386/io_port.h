@@ -37,7 +37,7 @@ typedef	unsigned short	io_reg_t;
  * Allocate and destroy io port sets for users to map into
  * threads.
  */
-extern void	io_port_create(/* device_t, io_reg_t * */);
-extern void	io_port_destroy(/* device_t */);
+extern void	io_port_create(mach_device_t, io_reg_t *);
+extern void	io_port_destroy(mach_device_t);
 
 #endif	/* _I386_IO_PORT_H_ */

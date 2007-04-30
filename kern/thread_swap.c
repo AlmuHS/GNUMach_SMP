@@ -70,7 +70,7 @@ decl_simple_lock_data(,	swapper_lock_data)
  *
  *	Initialize the swapper module.
  */
-void swapper_init()
+void swapper_init(void)
 {
 	queue_init(&swapin_queue);
 	simple_lock_init(&swapper_lock_data);
@@ -154,7 +154,7 @@ void thread_doswapin(thread)
  *	This procedure executes as a kernel thread.  Threads that need to
  *	be swapped in are swapped in by this thread.
  */
-void swapin_thread_continue()
+void swapin_thread_continue(void)
 {
 	for (;;) {
 		register thread_t thread;
@@ -182,7 +182,7 @@ void swapin_thread_continue()
 	}
 }
 
-void swapin_thread()
+void swapin_thread(void)
 {
 	stack_privilege(current_thread());
 

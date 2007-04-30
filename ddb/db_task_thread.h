@@ -41,11 +41,11 @@
 extern task_t	db_default_task;		/* default target task */
 extern thread_t	db_default_thread;		/* default target thread */
 
-extern int		db_lookup_task(/* task_t */);
-extern int		db_lookup_thread(/* thread_t */);
-extern int		db_lookup_task_thread(/* task_t, thread_t */);
-extern boolean_t	db_check_thread_address_valid(/* db_expr_t */);
-extern boolean_t	db_get_next_thread(/* thread_t *, int */);
-extern void		db_init_default_thread();
+extern int		db_lookup_task(task_t);
+extern int		db_lookup_thread(thread_t);
+extern int		db_lookup_task_thread(task_t, thread_t);
+extern boolean_t	db_check_thread_address_valid(thread_t);
+extern boolean_t	db_get_next_thread(thread_t *, int);
+extern void		db_init_default_thread(void);
 
 #endif  /* _DDB_DB_TASK_THREAD_H_ */

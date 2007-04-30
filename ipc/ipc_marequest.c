@@ -96,7 +96,7 @@ ipc_marequest_bucket_t ipc_marequest_table;
  */
 
 void
-ipc_marequest_init()
+ipc_marequest_init(void)
 {
 	ipc_marequest_index_t i;
 

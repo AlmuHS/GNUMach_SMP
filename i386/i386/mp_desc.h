@@ -74,7 +74,7 @@ extern struct real_descriptor	*mp_gdt[NCPUS];
 /*
  * Each CPU calls this routine to set up its descriptor tables.
  */
-extern struct mp_desc_table *	mp_desc_init(/* int */);
+extern struct mp_desc_table *	mp_desc_init(int);
 
 
 #endif /* MULTIPROCESSOR */

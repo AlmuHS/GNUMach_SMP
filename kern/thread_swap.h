@@ -35,10 +35,10 @@
 /*
  *	exported routines
  */
-extern void	swapper_init();
-extern void	thread_swapin( /* thread_t thread */ );
-extern void	thread_doswapin( /* thread_t thread */ );
-extern void	swapin_thread();
-extern void	thread_swapout( /* thread_t thread */ );
+extern void	swapper_init(void);
+extern void	thread_swapin(thread_t thread);
+extern void	thread_doswapin(thread_t thread);
+extern void	swapin_thread(void);
+extern void	thread_swapout(thread_t thread);
 
 #endif	/* _KERN_THREAD_SWAP_H_ */

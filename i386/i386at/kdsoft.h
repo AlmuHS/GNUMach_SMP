@@ -58,6 +58,24 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 /*
+ * Globals used for both character-based controllers and bitmap-based
+ * controllers.
+ */
+typedef	short	csrpos_t;	/* cursor position, ONE_SPACE bytes per char */
+
+extern u_char 	*vid_start;	/* VM start of video RAM or frame buffer */
+extern csrpos_t kd_curpos;		/* should be set only by kd_setpos */
+extern short	kd_lines;		/* num lines in tty display */
+extern short	kd_cols;
+extern char	kd_attr;		/* current character attribute */
+
+
+/*
+ * Globals used only for bitmap-based controllers.
+ * XXX - probably needs reworking for color.
+ */
+
+/*
  * This driver handles two types of graphics cards.  The first type
  * (e.g., EGA, CGA), treats the screen as a page of characters and
  * has a hardware cursor.  The second type (e.g., the Blit) treats the
@@ -118,7 +136,11 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *  system to reboot.
  */
 
-extern void bmpput(), bmpmvup(), bmpmvdown(), bmpclear(), bmpsetcursor();
+extern void bmpput(csrpos_t, char, char);
+extern void bmpmvup(csrpos_t, csrpos_t, int);
+extern void bmpmvdown(csrpos_t, csrpos_t, int);
+extern void bmpclear(csrpos_t, int, char);
+extern void bmpsetcursor(csrpos_t);
 
 extern void	(*kd_dput)();		/* put attributed char */
 extern void	(*kd_dmvup)();		/* block move up */
@@ -128,24 +150,6 @@ extern void	(*kd_dsetcursor)();
 				/* set cursor position on displayed page */
 extern void	(*kd_dreset)();		/* prepare for reboot */
 
-
-/*
- * Globals used for both character-based controllers and bitmap-based
- * controllers.
- */
-typedef	short	csrpos_t;	/* cursor position, ONE_SPACE bytes per char */
-
-extern u_char 	*vid_start;	/* VM start of video RAM or frame buffer */
-extern csrpos_t kd_curpos;		/* should be set only by kd_setpos */
-extern short	kd_lines;		/* num lines in tty display */
-extern short	kd_cols;
-extern char	kd_attr;		/* current character attribute */
-
-
-/*
- * Globals used only for bitmap-based controllers.
- * XXX - probably needs reworking for color.
- */
 
 /*
  * The following font layout is assumed:

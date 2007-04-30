@@ -41,6 +41,9 @@
 #include <kern/macro_help.h>
 #include <kern/kalloc.h>
 #include <ipc/ipc_marequest.h>
+#include <ipc/ipc_object.h>
+#include <ipc/ipc_types.h>
+#include <vm/vm_map.h>
 
 /*
  *	This structure is only the header for a kmsg buffer;
@@ -217,53 +220,52 @@ MACRO_BEGIN								\
 MACRO_END
 
 extern void
-ipc_kmsg_destroy(/* ipc_kmsg_t */);
+ipc_kmsg_destroy(ipc_kmsg_t);
 
 extern void
-ipc_kmsg_clean(/* ipc_kmsg_t */);
+ipc_kmsg_clean(ipc_kmsg_t);
 
 extern void
-ipc_kmsg_free(/* ipc_kmsg_t */);
+ipc_kmsg_free(ipc_kmsg_t);
 
 extern mach_msg_return_t
-ipc_kmsg_get(/* mach_msg_header_t *, mach_msg_size_t, ipc_kmsg_t * */);
+ipc_kmsg_get(mach_msg_header_t *, mach_msg_size_t, ipc_kmsg_t *);
 
 extern mach_msg_return_t
-ipc_kmsg_get_from_kernel(/* mach_msg_header_t *, mach_msg_size_t,
-			    ipc_kmsg_t * */);
+ipc_kmsg_get_from_kernel(mach_msg_header_t *, mach_msg_size_t, ipc_kmsg_t *);
 
 extern mach_msg_return_t
-ipc_kmsg_put(/* mach_msg_header_t *, ipc_kmsg_t, mach_msg_size_t */);
+ipc_kmsg_put(mach_msg_header_t *, ipc_kmsg_t, mach_msg_size_t);
 
 extern void
-ipc_kmsg_put_to_kernel(/* mach_msg_header_t *, ipc_kmsg_t, mach_msg_size_t */);
+ipc_kmsg_put_to_kernel(mach_msg_header_t *, ipc_kmsg_t, mach_msg_size_t);
 
 extern mach_msg_return_t
-ipc_kmsg_copyin_header(/* mach_msg_header_t *, ipc_space_t, mach_port_t */);
+ipc_kmsg_copyin_header(mach_msg_header_t *, ipc_space_t, mach_port_t);
 
 extern mach_msg_return_t
-ipc_kmsg_copyin(/* ipc_kmsg_t, ipc_space_t, vm_map_t, mach_port_t */);
+ipc_kmsg_copyin(ipc_kmsg_t, ipc_space_t, vm_map_t, mach_port_t);
 
 extern void
-ipc_kmsg_copyin_from_kernel(/* ipc_kmsg_t */);
+ipc_kmsg_copyin_from_kernel(ipc_kmsg_t);
 
 extern mach_msg_return_t
-ipc_kmsg_copyout_header(/* mach_msg_header_t *, ipc_space_t, mach_port_t */);
+ipc_kmsg_copyout_header(mach_msg_header_t *, ipc_space_t, mach_port_t);
 
 extern mach_msg_return_t
-ipc_kmsg_copyout_object(/* ipc_space_t, ipc_object_t,
-			   mach_msg_type_name_t, mach_port_t * */);
+ipc_kmsg_copyout_object(ipc_space_t, ipc_object_t,
+			mach_msg_type_name_t, mach_port_t *);
 
 extern mach_msg_return_t
-ipc_kmsg_copyout_body(/* vm_offset_t, vm_offset_t, ipc_space_t, vm_map_t */);
+ipc_kmsg_copyout_body(vm_offset_t, vm_offset_t, ipc_space_t, vm_map_t);
 
 extern mach_msg_return_t
-ipc_kmsg_copyout(/* ipc_kmsg_t, ipc_space_t, vm_map_t, mach_port_t */);
+ipc_kmsg_copyout(ipc_kmsg_t, ipc_space_t, vm_map_t, mach_port_t);
 
 extern mach_msg_return_t
-ipc_kmsg_copyout_pseudo(/* ipc_kmsg_t, ipc_space_t, vm_map_t */);
+ipc_kmsg_copyout_pseudo(ipc_kmsg_t, ipc_space_t, vm_map_t);
 
 extern void
-ipc_kmsg_copyout_dest(/* ipc_kmsg_t, ipc_space_t */);
+ipc_kmsg_copyout_dest(ipc_kmsg_t, ipc_space_t);
 
 #endif	/* _IPC_IPC_KMSG_H_ */

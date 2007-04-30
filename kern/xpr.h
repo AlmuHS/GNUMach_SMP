@@ -89,11 +89,9 @@ struct xprbuf {
 	int	cpuinfo;
 };
 
-#ifndef WANT_PROTOTYPES
-extern void xpr();
-#endif
-extern void xpr_dump();
-extern void xprinit();
-extern void xprbootstrap();
+extern void xpr(char *, int, int, int, int, int);
+extern void xpr_dump(struct xprbuf *, int);
+extern void xprinit(void);
+extern void xprbootstrap(void);
 
 #endif /* _KERN_XPR_H_ */

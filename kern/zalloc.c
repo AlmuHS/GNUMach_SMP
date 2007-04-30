@@ -95,10 +95,10 @@ extern vm_offset_t zone_map_min_address;
     (&(zone_page_table[(atop(((vm_offset_t)addr) - zone_map_min_address))]))
 
 
-extern void		zone_page_alloc();
-extern void		zone_page_dealloc();
-extern void		zone_page_in_use();
-extern void		zone_page_free();
+extern void		zone_page_alloc(vm_offset_t, vm_size_t);
+extern void		zone_page_dealloc(vm_offset_t, vm_size_t);
+extern void		zone_page_in_use(vm_offset_t, vm_size_t);
+extern void		zone_page_free(vm_offset_t, vm_size_t);
 
 zone_t		zone_zone;	/* this is the zone containing other zones */
 
@@ -165,7 +165,7 @@ vm_offset_t			zone_map_min_address;
 vm_offset_t			zone_map_max_address;
 int				zone_pages;
 
-extern void zone_page_init();
+extern void zone_page_init(vm_offset_t, vm_size_t, int);
 
 #define	ZONE_PAGE_USED  0
 #define ZONE_PAGE_UNUSED -1
@@ -361,7 +361,7 @@ static vm_offset_t zget_space(vm_offset_t size, vm_size_t align)
  *	earlier in memory initialization.  zone_bootstrap is called
  *	before zone_init.
  */
-void zone_bootstrap()
+void zone_bootstrap(void)
 {
 	simple_lock_init(&all_zones_lock);
 	first_zone = ZONE_NULL;
@@ -378,7 +378,7 @@ void zone_bootstrap()
 			  sizeof(struct zone), 0, "zones");
 }
 
-void zone_init()
+void zone_init(void)
 {
 	vm_offset_t	zone_min;
 	vm_offset_t	zone_max;
@@ -732,7 +732,7 @@ struct zone_free_entry {
  *	pages.  zone_gc is called by consider_zone_gc when the system
  *	begins to run out of memory.
  */
-static void zone_gc()
+static void zone_gc(void)
 {
 	int		max_zones;
 	zone_t		z;
@@ -841,7 +841,7 @@ unsigned zone_gc_max_rate = 0;		/* in ticks */
  */
 
 void
-consider_zone_gc()
+consider_zone_gc(void)
 {
 	/*
 	 *	By default, don't attempt zone GC more frequently

@@ -419,7 +419,7 @@ db_help_cmd()
 int	(*ddb_display)();
 
 void
-db_command_loop()
+db_command_loop(void)
 {
 	jmp_buf_t db_jmpbuf;
 	jmp_buf_t *prev = db_recover;

@@ -74,7 +74,7 @@ db_read_line(repeat_last)
 }
 
 void
-db_flush_line()
+db_flush_line(void)
 {
 	db_lp = db_line;
 	db_last_lp = db_lp;
@@ -115,7 +115,7 @@ db_restore_lex_context(lp)
 }
 
 int
-db_read_char()
+db_read_char(void)
 {
 	int	c;
 
@@ -145,7 +145,7 @@ db_unread_token(t)
 }
 
 int
-db_read_token()
+db_read_token(void)
 {
 	int	t;
 
@@ -167,7 +167,7 @@ char		db_tok_string[TOK_STRING_SIZE];
 db_expr_t	db_radix = 16;
 
 void
-db_flush_lex()
+db_flush_lex(void)
 {
 	db_flush_line();
 	db_look_char = 0;
@@ -177,7 +177,7 @@ db_flush_lex()
 #define	DB_DISP_SKIP	40		/* number of chars to display skip */
 
 void
-db_skip_to_eol()
+db_skip_to_eol(void)
 {
 	register int skip;
 	register int t;
@@ -203,7 +203,7 @@ db_skip_to_eol()
 }
 
 int
-db_lex()
+db_lex(void)
 {
 	register char *cp;
 	register int c;

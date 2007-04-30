@@ -1,6 +1,6 @@
 /*
  * Header file for printf type functions.
- * Copyright (C) 2006 Free Software Foundation.
+ * Copyright (C) 2006, 2007 Free Software Foundation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@
 #include <sys/types.h>
 #include <stdarg.h>
 
-extern void printf_init ();
+extern void printf_init (void);
 
 extern void _doprnt (const char *fmt,
 		     va_list *argp, 

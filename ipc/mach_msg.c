@@ -283,7 +283,7 @@ mach_msg_receive(msg, option, rcv_size, rcv_name, time_out, notify)
  */
 
 void
-mach_msg_receive_continue()
+mach_msg_receive_continue(void)
 {
 	ipc_thread_t self = current_thread();
 	ipc_space_t space = current_space();
@@ -1673,7 +1673,7 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
  */
 
 void
-mach_msg_continue()
+mach_msg_continue(void)
 {
 	ipc_thread_t thread = current_thread();
 	task_t task = thread->task;

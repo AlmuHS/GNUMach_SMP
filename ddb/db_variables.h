@@ -36,11 +36,13 @@
 /*
  * Debugger variables.
  */
+struct db_var_aux_param; /* forward */
+typedef struct db_var_aux_param	*db_var_aux_param_t; /* forward */
 struct db_variable {
 	char	*name;		/* Name of variable */
 	db_expr_t *valuep;	/* pointer to value of variable */
 				/* function to call when reading/writing */
-	int	(*fcn)(/* db_variable, db_expr_t, int, db_var_aux_param_t */);
+	int	(*fcn)(struct db_variable *, db_expr_t *, int, db_var_aux_param_t);
 	short	min_level;	/* number of minimum suffix levels */
 	short	max_level;	/* number of maximum suffix levels */
 	short	low;		/* low value of level 1 suffix */
@@ -67,7 +69,8 @@ struct db_var_aux_param {
 	thread_t	thread;			/* target task */
 };
 
-typedef struct db_var_aux_param	*db_var_aux_param_t;
+/* Already defined above.  */
+/* typedef struct db_var_aux_param	*db_var_aux_param_t; */
 	
 
 extern struct db_variable	db_vars[];	/* debugger variables */

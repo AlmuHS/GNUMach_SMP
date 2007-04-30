@@ -72,8 +72,8 @@ typedef struct db_breakpoint *db_breakpoint_t;
 
 extern db_breakpoint_t	db_find_breakpoint( task_t task, db_addr_t addr);
 extern boolean_t	db_find_breakpoint_here( task_t task, db_addr_t addr);
-extern void		db_set_breakpoints();
-extern void		db_clear_breakpoints();
+extern void		db_set_breakpoints(void);
+extern void		db_clear_breakpoints(void);
 extern db_thread_breakpoint_t	db_find_thread_breakpoint_here
 					( task_t task, db_addr_t addr );
 extern db_thread_breakpoint_t	db_find_breakpoint_number

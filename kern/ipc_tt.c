@@ -537,7 +537,7 @@ mach_task_self(void)
  */
 
 mach_port_t
-mach_thread_self()
+mach_thread_self(void)
 {
 	thread_t thread = current_thread();
 	task_t task = thread->task;

@@ -46,7 +46,6 @@
 #include <kern/macro_help.h>
 #include <kern/ipc_kobject.h>
 #include <ipc/ipc_mqueue.h>
-#include <ipc/ipc_space.h>
 #include <ipc/ipc_table.h>
 #include <ipc/ipc_thread.h>
 #include "ipc_target.h"
@@ -185,7 +184,7 @@ extern ipc_port_timestamp_t ipc_port_timestamp_data;
 		simple_unlock(&ipc_port_timestamp_lock_data)
 
 extern ipc_port_timestamp_t
-ipc_port_timestamp();
+ipc_port_timestamp(void);
 
 /*
  *	Compares two timestamps, and returns TRUE if one
@@ -207,14 +206,14 @@ ipc_port_timestamp();
 				     (ipc_object_t *) (portp))
 
 extern kern_return_t
-ipc_port_dnrequest(/* ipc_port_t, mach_port_t, ipc_port_t,
-		      ipc_port_request_index_t * */);
+ipc_port_dnrequest(ipc_port_t, mach_port_t, ipc_port_t,
+		   ipc_port_request_index_t *);
 
 extern kern_return_t
-ipc_port_dngrow(/* ipc_port_t */);
+ipc_port_dngrow(ipc_port_t);
 
 extern ipc_port_t
-ipc_port_dncancel(/* ipc_port_t, mach_port_t, ipc_port_request_index_t */);
+ipc_port_dncancel(ipc_port_t, mach_port_t, ipc_port_request_index_t);
 
 #define	ipc_port_dnrename(port, index, oname, nname)			\
 MACRO_BEGIN								\
@@ -257,58 +256,58 @@ MACRO_BEGIN								\
 MACRO_END
 
 extern struct ipc_mqueue *
-ipc_port_lock_mqueue(/* ipc_port_t */);
+ipc_port_lock_mqueue(ipc_port_t);
 
 extern void
-ipc_port_set_seqno(/* ipc_port_t, mach_port_seqno_t */);
+ipc_port_set_seqno(ipc_port_t, mach_port_seqno_t);
 
 extern void
-ipc_port_clear_receiver(/* ipc_port_t */);
+ipc_port_clear_receiver(ipc_port_t);
 
 extern void
-ipc_port_init(/* ipc_port_t, ipc_space_t, mach_port_t */);
+ipc_port_init(ipc_port_t, ipc_space_t, mach_port_t);
 
 extern kern_return_t
-ipc_port_alloc(/* ipc_space_t, mach_port_t *, ipc_port_t * */);
+ipc_port_alloc(ipc_space_t, mach_port_t *, ipc_port_t *);
 
 extern kern_return_t
-ipc_port_alloc_name(/* ipc_space_t, mach_port_t, ipc_port_t * */);
+ipc_port_alloc_name(ipc_space_t, mach_port_t, ipc_port_t *);
 
 extern void
-ipc_port_destroy(/* ipc_port_t */);
+ipc_port_destroy(ipc_port_t);
 
 extern boolean_t
-ipc_port_check_circularity(/* ipc_port_t, ipc_port_t */);
+ipc_port_check_circularity(ipc_port_t, ipc_port_t);
 
 extern ipc_port_t
-ipc_port_lookup_notify(/* ipc_space_t, mach_port_t */);
+ipc_port_lookup_notify(ipc_space_t, mach_port_t);
 
 extern ipc_port_t
-ipc_port_make_send(/* ipc_port_t */);
+ipc_port_make_send(ipc_port_t);
 
 extern ipc_port_t
-ipc_port_copy_send(/* ipc_port_t */);
+ipc_port_copy_send(ipc_port_t);
 
 extern mach_port_t
-ipc_port_copyout_send(/* ipc_port_t, ipc_space_t */);
+ipc_port_copyout_send(ipc_port_t, ipc_space_t);
 
 extern void
-ipc_port_release_send(/* ipc_port_t */);
+ipc_port_release_send(ipc_port_t);
 
 extern ipc_port_t
-ipc_port_make_sonce(/* ipc_port_t */);
+ipc_port_make_sonce(ipc_port_t);
 
 extern void
-ipc_port_release_sonce(/* ipc_port_t */);
+ipc_port_release_sonce(ipc_port_t);
 
 extern void
-ipc_port_release_receive(/* ipc_port_t */);
+ipc_port_release_receive(ipc_port_t);
 
 extern ipc_port_t
-ipc_port_alloc_special(/* ipc_space_t */);
+ipc_port_alloc_special(ipc_space_t);
 
 extern void
-ipc_port_dealloc_special(/* ipc_port_t */);
+ipc_port_dealloc_special(ipc_port_t, ipc_space_t);
 
 #define	ipc_port_alloc_kernel()		\
 		ipc_port_alloc_special(ipc_space_kernel)
@@ -327,6 +326,6 @@ ipc_port_dealloc_special(/* ipc_port_t */);
 		ipc_object_release(&(port)->ip_object)
 
 extern void
-ipc_port_print(/* ipc_port_t */);
+ipc_port_print(ipc_port_t);
 
 #endif	/* _IPC_IPC_PORT_H_ */

@@ -88,7 +88,7 @@ int arg1, arg2, arg3, arg4, arg5;
 	x->cpuinfo = cpu_number();
 }
 
-void xprbootstrap()
+void xprbootstrap(void)
 {
 	vm_offset_t addr;
 	vm_size_t size;
@@ -125,7 +125,7 @@ void xprbootstrap()
 
 int		xprinitial = 0;
 
-void xprinit()
+void xprinit(void)
 {
 	xprflags |= xprinitial;
 }

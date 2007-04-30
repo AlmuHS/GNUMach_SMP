@@ -162,8 +162,8 @@ boolean_t	cpu_update_needed[NCPUS];
  *	External declarations for PMAP_ACTIVATE.
  */
 
-void		process_pmap_updates();
-void		pmap_update_interrupt();
+void		process_pmap_updates(pmap_t);
+void		pmap_update_interrupt(void);
 extern	pmap_t	kernel_pmap;
 
 #endif	/* NCPUS > 1 */

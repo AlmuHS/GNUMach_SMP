@@ -150,16 +150,14 @@ extern kern_return_t	task_assign_default(
  *	Internal only routines
  */
 
-extern void		task_init();
-extern void		task_reference();
-extern void		task_deallocate();
-extern kern_return_t	task_hold();
-extern kern_return_t	task_dowait();
-extern kern_return_t	task_release();
-extern kern_return_t	task_halt();
+extern void		task_init(void);
+extern void		task_reference(task_t);
+extern void		task_deallocate(task_t);
+extern kern_return_t	task_hold(task_t);
+extern kern_return_t	task_dowait(task_t, boolean_t);
+extern kern_return_t	task_release(task_t);
 
-extern kern_return_t	task_suspend_nowait();
-extern task_t		kernel_task_create();
+extern task_t		kernel_task_create(task_t, vm_size_t);
 
 extern task_t	kernel_task;
 

@@ -66,7 +66,7 @@ ast_init()
 }
 
 void
-ast_taken()
+ast_taken(void)
 {
 	register thread_t self = current_thread();
 	register ast_t reasons;

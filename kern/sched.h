@@ -37,6 +37,7 @@
 
 #include <kern/queue.h>
 #include <kern/lock.h>
+#include <kern/kern_types.h>
 #include <kern/macro_help.h>
 
 #if	MACH_FIXPRI
@@ -106,8 +107,8 @@ typedef struct run_queue	*run_queue_t;
  *	Scheduler routines.
  */
 
-extern struct run_queue	*rem_runq();
-extern struct thread	*choose_thread();
+extern struct run_queue	*rem_runq(thread_t);
+extern struct thread	*choose_thread(processor_t);
 extern queue_head_t	action_queue;	/* assign/shutdown queue */
 decl_simple_lock_data(extern,action_lock);
 

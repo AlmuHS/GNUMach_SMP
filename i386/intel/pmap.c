@@ -2312,7 +2312,7 @@ void process_pmap_updates(my_pmap)
 /*
  *	Interrupt routine for TBIA requested from other processor.
  */
-void pmap_update_interrupt()
+void pmap_update_interrupt(void)
 {
 	register int		my_cpu;
 	register pmap_t		my_pmap;

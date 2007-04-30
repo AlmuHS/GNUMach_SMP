@@ -124,13 +124,13 @@ typedef struct timer_save	timer_save_data_t, *timer_save_t;
 #define start_timer(timer)
 #define timer_switch(timer)
 #else	/* STAT_TIME */
-extern void	start_timer();
-extern void	timer_switch();
+extern void	start_timer(timer_t);
+extern void	timer_switch(timer_t);
 #endif	/* STAT_TIME */
 
-extern void		timer_read();
-extern void		thread_read_times();
-extern unsigned		timer_delta();
+extern void		timer_read(timer_t, time_value_t *);
+extern void		thread_read_times(thread_t, time_value_t *, time_value_t *);
+extern unsigned		timer_delta(timer_t, timer_save_t);
 
 #if	STAT_TIME
 /*
@@ -148,10 +148,10 @@ MACRO_END
 /*
  *	Exported hardware interface to timers
  */
-extern void	time_trap_uentry();
-extern void	time_trap_uexit();
-extern timer_t	time_int_entry();
-extern void	time_int_exit();
+extern void	time_trap_uentry(unsigned);
+extern void	time_trap_uexit(int);
+extern timer_t	time_int_entry(unsigned, timer_t);
+extern void	time_int_exit(unsigned, timer_t);
 #endif	/* STAT_TIME */
 
 /*

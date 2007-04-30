@@ -124,13 +124,13 @@ struct bus_device {
  */
 struct bus_driver {
 	int	(*probe)(		/* see if the driver is there */
-		    /*	vm_offset_t	address,
-			struct bus_ctlr * */ );
+			vm_offset_t	address,
+			struct bus_ctlr *);
 	int	(*slave)(          	/* see if any slave is there */	
-		    /*	struct bus_device *,
-			vm_offset_t	  */ );
+			struct bus_device *,
+			vm_offset_t);
 	void	(*attach)(		/* setup driver after probe */
-		    /*	struct bus_device * */);
+			struct bus_device *);
 	int	(*dgo)();		/* start transfer */
 	vm_offset_t *addr;		/* device csr addresses */
 	char	*dname;			/* name of a device */

@@ -62,10 +62,10 @@
  *	lock and then be a good citizen and really suspend.
  */
 
-extern void thread_depress_priority();
-extern kern_return_t thread_depress_abort();
+extern void thread_depress_priority(thread_t, mach_msg_timeout_t);
+extern kern_return_t thread_depress_abort(thread_t);
 
-void swtch_continue()
+void swtch_continue(void)
 {
 	register processor_t	myprocessor;
 
@@ -75,7 +75,7 @@ void swtch_continue()
 	/*NOTREACHED*/
 }
 
-boolean_t swtch()
+boolean_t swtch(void)
 {
 	register processor_t	myprocessor;
 
@@ -93,7 +93,7 @@ boolean_t swtch()
 	       myprocessor->processor_set->runq.count > 0);
 }
 
-void swtch_pri_continue()
+void swtch_pri_continue(void)
 {
 	register thread_t	thread = current_thread();
 	register processor_t	myprocessor;
@@ -139,7 +139,7 @@ boolean_t  swtch_pri(pri)
 	       myprocessor->processor_set->runq.count > 0);
 }
 
-void thread_switch_continue()
+void thread_switch_continue(void)
 {
 	register thread_t	cur_thread = current_thread();
 

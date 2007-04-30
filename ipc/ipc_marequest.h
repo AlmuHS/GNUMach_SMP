@@ -36,6 +36,8 @@
 
 #include <mach/kern_return.h>
 #include <mach/port.h>
+#include <mach_debug/hash_info.h>
+#include <ipc/ipc_types.h>
 
 /*
  *	A msg-accepted request is made when MACH_SEND_NOTIFY is used
@@ -70,27 +72,27 @@ typedef struct ipc_marequest {
 
 
 extern void
-ipc_marequest_init();
+ipc_marequest_init(void);
 
 #if	MACH_IPC_DEBUG
 
 extern unsigned int
-ipc_marequest_info(/* unsigned int *, hash_info_bucket_t *, unsigned int */);
+ipc_marequest_info(unsigned int *, hash_info_bucket_t *, unsigned int);
 
 #endif	/* MACH_IPC_DEBUG */
 
 extern mach_msg_return_t
-ipc_marequest_create(/* ipc_space_t space, mach_port_t name,
-			ipc_port_t soright, ipc_marequest_t *marequestp */);
+ipc_marequest_create(ipc_space_t space, ipc_port_t port,
+		     mach_port_t notify, ipc_marequest_t *marequestp);
 
 extern void
-ipc_marequest_cancel(/* ipc_space_t space, mach_port_t name */);
+ipc_marequest_cancel(ipc_space_t space, mach_port_t name);
 
 extern void
-ipc_marequest_rename(/* ipc_space_t space,
-			mach_port_t old, mach_port_t new */);
+ipc_marequest_rename(ipc_space_t space,
+		     mach_port_t old, mach_port_t new);
 
 extern void
-ipc_marequest_destroy(/* ipc_marequest_t marequest */);
+ipc_marequest_destroy(ipc_marequest_t marequest);
 
 #endif	/* _IPC_IPC_MAREQUEST_H_ */

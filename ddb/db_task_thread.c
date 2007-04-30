@@ -231,7 +231,7 @@ db_get_next_thread(threadp, position)
  *	( it is called in entering DDB session )
  */
 void
-db_init_default_thread()
+db_init_default_thread(void)
 {
 	if (db_lookup_thread(db_default_thread) < 0) {
 	    db_default_thread = THREAD_NULL;

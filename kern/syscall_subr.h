@@ -27,9 +27,9 @@
 #ifndef	_KERN_SYSCALL_SUBR_H_
 #define _KERN_SYSCALL_SUBR_H_
 
-extern int	swtch();
-extern int	swtch_pri();
-extern int	thread_switch();
-extern void	thread_depress_timeout();
+extern int	swtch(void);
+extern int	swtch_pri(int);
+extern int	thread_switch(mach_port_t, int, mach_msg_timeout_t);
+extern void	thread_depress_timeout(thread_t);
 
 #endif	/* _KERN_SYSCALL_SUBR_H_ */

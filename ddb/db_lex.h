@@ -41,18 +41,18 @@ struct db_lex_context {
 	char *l_eptr;		/* line end pointer */
 };
 
-extern int	db_lex();
-extern int	db_read_line(/* char *rep_str */);
-extern void	db_flush_line();
-extern int	db_read_char();
-extern void	db_unread_char(/* char c */);
-extern int	db_read_token();
-extern void	db_unread_token(/* int t */);
-extern void	db_flush_lex();
-extern void	db_switch_input(/* char *, int */);
-extern void	db_save_lex_context(/* struct db_lex_context * */);
-extern void	db_restore_lex_context(/* struct db_lex_context * */);
-extern void	db_skip_to_eol();
+extern int	db_lex(void);
+extern int	db_read_line(char *rep_str);
+extern void	db_flush_line(void);
+extern int	db_read_char(void);
+extern void	db_unread_char(int c);
+extern int	db_read_token(void);
+extern void	db_unread_token(int t);
+extern void	db_flush_lex(void);
+extern void	db_switch_input(char *, int);
+extern void	db_save_lex_context(struct db_lex_context *);
+extern void	db_restore_lex_context(struct db_lex_context *);
+extern void	db_skip_to_eol(void);
 
 extern db_expr_t db_tok_number;
 extern char	db_tok_string[TOK_STRING_SIZE];

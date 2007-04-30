@@ -48,14 +48,14 @@ typedef struct db_watchpoint {
 	struct db_watchpoint *link;	/* link in in-use or free chain */
 } *db_watchpoint_t;
 
-extern boolean_t db_find_watchpoint(/* task_t task, db_addr_t addr,
-				     db_regs_t *regs */);
-extern void db_set_watchpoints();
-extern void db_clear_watchpoints();
+extern boolean_t db_find_watchpoint(vm_map_t map, db_addr_t addr,
+				     db_regs_t *regs);
+extern void db_set_watchpoints(void);
+extern void db_clear_watchpoints(void);
 
-extern void db_set_watchpoint(/* task_t task, db_addr_t addr, vm_size_t size */);
-extern void db_delete_watchpoint(/* task_t task, db_addr_t addr */);
-extern void db_list_watchpoints();
+extern void db_set_watchpoint(task_t task, db_addr_t addr, vm_size_t size);
+extern void db_delete_watchpoint(task_t task, db_addr_t addr);
+extern void db_list_watchpoints(void);
 
 #endif	/* _DDB_DB_WATCH_ */
 

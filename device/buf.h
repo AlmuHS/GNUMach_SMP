@@ -93,7 +93,7 @@
 /*
  * Export standard minphys routine.
  */
-extern	minphys();
+extern	minphys(io_req_t);
 
 /*
  * Alternate name for iodone

@@ -40,7 +40,7 @@ mach_port_t	mach_reply_port
 			()
 	 { return MACH_PORT_NULL; }
 #else	/* LINTLIBRARY */
-			();
+			(void);
 #endif	/* LINTLIBRARY */
 
 mach_port_t	mach_thread_self
@@ -48,7 +48,7 @@ mach_port_t	mach_thread_self
 			()
 	 { return MACH_PORT_NULL; }
 #else	/* LINTLIBRARY */
-			();
+			(void);
 #endif	/* LINTLIBRARY */
 
 #ifdef	__386BSD__
@@ -59,7 +59,7 @@ mach_port_t	mach_task_self
 			()
 	 { return MACH_PORT_NULL; }
 #else	/* LINTLIBRARY */
-			();
+			(self);
 #endif	/* LINTLIBRARY */
 
 mach_port_t	mach_host_self
@@ -67,7 +67,7 @@ mach_port_t	mach_host_self
 			()
 	 { return MACH_PORT_NULL; }
 #else	/* LINTLIBRARY */
-			();
+			(void);
 #endif	/* LINTLIBRARY */
 
 #endif	/* _MACH_MACH_TRAPS_H_ */

@@ -121,7 +121,7 @@ typedef struct io_req *	io_req_t;
 /*
  * Standard completion routine for io_requests.
  */
-void	iodone(/* io_req_t */);
+void	iodone(io_req_t);
 
 /*
  * Macros to allocate and free IORs - will convert to zones later.

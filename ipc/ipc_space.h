@@ -41,9 +41,11 @@
 
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
+#include <mach/mach_types.h>
 #include <kern/macro_help.h>
 #include <kern/lock.h>
 #include <ipc/ipc_splay.h>
+#include <ipc/ipc_types.h>
 
 /*
  *	Every task has a space of IPC capabilities.
@@ -128,7 +130,7 @@ extern void ipc_space_release(struct ipc_space *space);
 #define	is_reference(is)	ipc_space_reference(is)
 #define	is_release(is)		ipc_space_release(is)
 
-kern_return_t	ipc_space_create(/* ipc_table_size_t, ipc_space_t * */);
+kern_return_t	ipc_space_create(ipc_table_size_t, ipc_space_t *);
 kern_return_t	ipc_space_create_special(struct ipc_space **);
 void		ipc_space_destroy(struct ipc_space *);
 

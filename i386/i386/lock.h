@@ -119,7 +119,7 @@
 
 #endif	/* __GNUC__ */
 
-extern void simple_lock_pause();
+extern void simple_lock_pause(void);
 
 #endif /* NCPUS > 1 */
 

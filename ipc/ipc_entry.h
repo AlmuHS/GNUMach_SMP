@@ -38,11 +38,13 @@
 #ifndef	_IPC_IPC_ENTRY_H_
 #define _IPC_IPC_ENTRY_H_
 
+#include <mach/mach_types.h>
 #include <mach/port.h>
 #include <mach/kern_return.h>
 #include <kern/zalloc.h>
 #include <ipc/port.h>
 #include <ipc/ipc_table.h>
+#include <ipc/ipc_types.h>
 
 /*
  *	Spaces hold capabilities for ipc_object_t's (ports and port sets).
@@ -134,25 +136,21 @@ extern zone_t ipc_tree_entry_zone;
 
 
 extern ipc_entry_t
-ipc_entry_lookup(/* ipc_space_t space, mach_port_t name */);
+ipc_entry_lookup(ipc_space_t space, mach_port_t name);
 
 extern kern_return_t
-ipc_entry_get(/* ipc_space_t space,
-		 mach_port_t *namep, ipc_entry_t *entryp */);
+ipc_entry_get(ipc_space_t space, mach_port_t *namep, ipc_entry_t *entryp);
 
 extern kern_return_t
-ipc_entry_alloc(/* ipc_space_t space,
-		   mach_port_t *namep, ipc_entry_t *entryp */);
+ipc_entry_alloc(ipc_space_t space, mach_port_t *namep, ipc_entry_t *entryp);
 
 extern kern_return_t
-ipc_entry_alloc_name(/* ipc_space_t space, mach_port_t name,
-			ipc_entry_t *entryp */);
+ipc_entry_alloc_name(ipc_space_t space, mach_port_t name, ipc_entry_t *entryp);
 
 extern void
-ipc_entry_dealloc(/* ipc_space_t space, mach_port_t name,
-		     ipc_entry_t entry */);
+ipc_entry_dealloc(ipc_space_t space, mach_port_t name, ipc_entry_t entry);
 
 extern kern_return_t
-ipc_entry_grow_table(/* ipc_space_t space */);
+ipc_entry_grow_table(ipc_space_t space);
 
 #endif	/* _IPC_IPC_ENTRY_H_ */

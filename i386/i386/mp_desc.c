@@ -218,7 +218,7 @@ int simple_lock_pause_loop = 100;
 unsigned int simple_lock_pause_count = 0;	/* debugging */
 
 void
-simple_lock_pause()
+simple_lock_pause(void)
 {
 	static volatile int dummy;
 	int i;

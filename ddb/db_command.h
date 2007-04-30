@@ -37,11 +37,10 @@
 #include <machine/db_machdep.h>
 #include <machine/setjmp.h>
 
-extern void		db_command_loop();
-extern boolean_t	db_exec_conditional_cmd();
-extern boolean_t	db_option(/* char *, int */);
+extern void		db_command_loop(void);
+extern boolean_t	db_option(char *, int);
 
-extern void		db_error(/* char * */);	/* report error */
+extern void		db_error(char *);	/* report error */
 
 extern db_addr_t	db_dot;		/* current location */
 extern db_addr_t	db_last_addr;	/* last explicit address typed */

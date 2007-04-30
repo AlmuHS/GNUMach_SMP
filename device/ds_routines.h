@@ -35,18 +35,20 @@
 
 #include <vm/vm_map.h>
 #include <device/device_types.h>
+#include <device/io_req.h>
+#include <mach/machine/vm_types.h>
 
 /*
  * Map for device IO memory.
  */
 vm_map_t	device_io_map;
 
-kern_return_t	device_read_alloc();
-kern_return_t	device_write_get();
-boolean_t	device_write_dealloc();
+kern_return_t	device_read_alloc(io_req_t, vm_size_t);
+kern_return_t	device_write_get(io_req_t, boolean_t *);
+boolean_t	device_write_dealloc(io_req_t);
 
-boolean_t	ds_open_done();
-boolean_t	ds_read_done();
-boolean_t	ds_write_done();
+boolean_t	ds_open_done(io_req_t);
+boolean_t	ds_read_done(io_req_t);
+boolean_t	ds_write_done(io_req_t);
 
 #endif	/* DS_ROUTINES_H */

@@ -79,11 +79,11 @@ typedef	struct queue_entry	*queue_entry_t;
 #define enqueue(queue,elt)	enqueue_tail(queue, elt)
 #define	dequeue(queue)		dequeue_head(queue)
 
-void		enqueue_head();
-void		enqueue_tail();
-queue_entry_t	dequeue_head();
-queue_entry_t	dequeue_tail();
-void		remqueue();
+void		enqueue_head(queue_t, queue_entry_t);
+void		enqueue_tail(queue_t, queue_entry_t);
+queue_entry_t	dequeue_head(queue_t);
+queue_entry_t	dequeue_tail(queue_t);
+void		remqueue(queue_t, queue_entry_t);
 
 /*
  *	Macro:		queue_init

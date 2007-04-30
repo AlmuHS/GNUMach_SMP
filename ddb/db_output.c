@@ -79,7 +79,7 @@ extern void	db_check_interrupt();
  * Force pending whitespace.
  */
 void
-db_force_whitespace()
+db_force_whitespace(void)
 {
 	register int last_print, next_tab;
 
@@ -189,7 +189,7 @@ db_id_putc(char c, vm_offset_t dummy)
  * Return output position
  */
 int
-db_print_position()
+db_print_position(void)
 {
 	return (db_output_position);
 }
@@ -197,7 +197,7 @@ db_print_position()
 /*
  * End line if too long.
  */
-void db_end_line()
+void db_end_line(void)
 {
 	if (db_output_position >= db_max_width-1)
 	    db_printf("\n");

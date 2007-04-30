@@ -384,7 +384,7 @@ db_find_breakpoint_here(task, addr)
 boolean_t	db_breakpoints_inserted = TRUE;
 
 void
-db_set_breakpoints()
+db_set_breakpoints(void)
 {
 	register db_breakpoint_t bkpt;
 	register task_t	task;
@@ -429,7 +429,7 @@ db_set_breakpoints()
 }
 
 void
-db_clear_breakpoints()
+db_clear_breakpoints(void)
 {
 	register db_breakpoint_t bkpt, *bkptp;
 	register task_t	task;

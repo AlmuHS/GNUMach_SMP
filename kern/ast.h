@@ -83,7 +83,7 @@ extern volatile ast_t need_ast[NCPUS];
 
 #endif	/* MACHINE_AST */
 
-extern void ast_taken();
+extern void ast_taken(void);
 
 /*
  *	ast_needed, ast_on, ast_off, ast_context, and ast_propagate

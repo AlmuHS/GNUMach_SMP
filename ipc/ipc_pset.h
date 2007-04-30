@@ -66,22 +66,22 @@ typedef struct ipc_pset {
 #define	ips_release(pset)	io_release(&(pset)->ips_object)
 
 extern kern_return_t
-ipc_pset_alloc(/* ipc_space_t, mach_port_t *, ipc_pset_t * */);
+ipc_pset_alloc(ipc_space_t, mach_port_t *, ipc_pset_t *);
 
 extern kern_return_t
-ipc_pset_alloc_name(/* ipc_space_t, mach_port_t, ipc_pset_t * */);
+ipc_pset_alloc_name(ipc_space_t, mach_port_t, ipc_pset_t *);
 
 extern void
-ipc_pset_add(/* ipc_pset_t, ipc_port_t */);
+ipc_pset_add(ipc_pset_t, ipc_port_t);
 
 extern void
-ipc_pset_remove(/* ipc_pset_t, ipc_port_t */);
+ipc_pset_remove(ipc_pset_t, ipc_port_t);
 
 extern kern_return_t
-ipc_pset_move(/* ipc_space_t, mach_port_t, mach_port_t */);
+ipc_pset_move(ipc_space_t, ipc_port_t, ipc_pset_t);
 
 extern void
-ipc_pset_destroy(/* ipc_pset_t */);
+ipc_pset_destroy(ipc_pset_t);
 
 #define	ipc_pset_reference(pset)	\
 		ipc_object_reference(&(pset)->ips_object)
@@ -90,6 +90,6 @@ ipc_pset_destroy(/* ipc_pset_t */);
 		ipc_object_release(&(pset)->ips_object)
 
 extern void
-ipc_pset_print(/* ipc_pset_t */);
+ipc_pset_print(ipc_pset_t);
 
 #endif	/* _IPC_IPC_PSET_H_ */

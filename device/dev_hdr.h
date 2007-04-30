@@ -106,22 +106,22 @@ typedef	struct mach_device *mach_device_t;
 /*
  * To find and remove device entries
  */
-mach_device_t	device_lookup();	/* by name */
+mach_device_t	device_lookup(char *);	/* by name */
 
-void		mach_device_reference();
-void		mach_device_deallocate();
+void		mach_device_reference(mach_device_t);
+void		mach_device_deallocate(mach_device_t);
 
 /*
  * To find and remove port-to-device mappings
  */
-device_t	dev_port_lookup();
-void		dev_port_enter();
-void		dev_port_remove();
+device_t	dev_port_lookup(ipc_port_t);
+void		dev_port_enter(mach_device_t);
+void		dev_port_remove(mach_device_t);
 
 /*
  * To call a routine on each device
  */
-boolean_t	dev_map();
+boolean_t	dev_map(boolean_t (*)(), mach_port_t);
 
 /*
  * To lock and unlock state and open-count

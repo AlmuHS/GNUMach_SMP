@@ -150,42 +150,41 @@ extern void	db_printsym( db_expr_t off, db_strategy_t strategy);
 /*
  * Symbol table switch, defines the interface
  * to symbol-table specific routines.
- * [NOTE: incomplete prototypes cuz broken compiler]
  */
 
 extern struct db_sym_switch {
 
 	boolean_t	(*init)(
-/*				char *start,
+				char *start,
 				char *end,
 				char *name,
 				char *task_addr
-*/				);
+				);
 
 	db_sym_t	(*lookup)(
-/*				db_symtab_t *stab,
+				db_symtab_t *stab,
 				char *symstr
-*/				);
+				);
 	db_sym_t	(*search_symbol)(
-/*				db_symtab_t *stab,
+				db_symtab_t *stab,
 				db_addr_t off,
 				db_strategy_t strategy,
 				db_expr_t *diffp
-*/				);
+				);
 
 	boolean_t	(*line_at_pc)(
-/*				db_symtab_t	*stab,
+				db_symtab_t	*stab,
 				db_sym_t	sym,
 				char		**file,
 				int		*line,
 				db_expr_t	pc
-*/				);
+				);
 
 	void		(*symbol_values)(
-/*				db_sym_t	sym,
+				db_sym_t	sym,
 				char		**namep,
 				db_expr_t	*valuep
-*/				);
+				);
 
 } x_db[];
 
@@ -204,4 +203,3 @@ extern boolean_t db_line_at_pc(
 	char **filename,
 	int *linenum,
 	db_expr_t pc);
-

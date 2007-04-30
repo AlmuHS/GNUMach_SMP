@@ -55,7 +55,7 @@ static	long	fract[3] = {
 	983,			/* (59.0/60.) 1 minute average */
 };
 
-void compute_mach_factor()
+void compute_mach_factor(void)
 {
 	register processor_set_t	pset;
 	register processor_t		processor;

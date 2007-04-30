@@ -153,7 +153,7 @@ boolean_t	_doprnt_truncates = FALSE;
 boolean_t	_doprnt_lock_initialized = FALSE;
 decl_simple_lock_data(,_doprnt_lock)
 
-void printf_init()
+void printf_init(void)
 {
 	if (!_doprnt_lock_initialized)
 	{

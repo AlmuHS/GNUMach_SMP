@@ -115,7 +115,7 @@ const char     		*panicstr;
 int			paniccpu;
 
 void
-panic_init()
+panic_init(void)
 {
 	if (!panic_lock_initialized)
 	{

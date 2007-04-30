@@ -80,11 +80,11 @@ void		zfree(zone_t zone, vm_offset_t elem);
 void		zcram(zone_t zone, vm_offset_t newmem, vm_size_t size);
 
 /* Exported only to vm/vm_init.c */
-void		zone_bootstrap();
-void		zone_init();
+void		zone_bootstrap(void);
+void		zone_init(void);
 
 /* Exported only to vm/vm_pageout.c */
-void		consider_zone_gc();
+void		consider_zone_gc(void);
 
 
 /* Memory type bits for zones */

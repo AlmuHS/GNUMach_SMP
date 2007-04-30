@@ -1,3 +1,93 @@
+2007-04-30  Thomas Schwinge  <tschwinge@gnu.org>
+
+	We're not in the eighties anymore.  List arguments in function
+	prototypes and definitions for a lot of symbols.  Also drop some unused
+	prototypes.  I refrain from listing every changed symbol.
+	* chips/busses.h: Do as described.
+	* ddb/db_break.c: Likewise.
+	* ddb/db_break.h: Likewise.
+	* ddb/db_command.c: Likewise.
+	* ddb/db_command.h: Likewise.
+	* ddb/db_lex.c: Likewise.
+	* ddb/db_lex.h: Likewise.
+	* ddb/db_output.c: Likewise.
+	* ddb/db_output.h: Likewise.
+	* ddb/db_sym.h: Likewise.
+	* ddb/db_task_thread.c: Likewise.
+	* ddb/db_task_thread.h: Likewise.
+	* ddb/db_variables.h: Likewise.
+	* ddb/db_watch.c: Likewise.
+	* ddb/db_watch.h: Likewise.
+	* device/buf.h: Likewise.
+	* device/conf.h: Likewise.
+	* device/dev_hdr.h: Likewise.
+	* device/ds_routines.h: Likewise.
+	* device/if_ether.h: Likewise.
+	* device/io_req.h: Likewise.
+	* device/net_io.h: Likewise.
+	* i386/i386/io_port.h: Likewise.
+	* i386/i386/lock.h: Likewise.
+	* i386/i386/mp_desc.c: Likewise.
+	* i386/i386/mp_desc.h: Likewise.
+	* i386/i386/proc_reg.h: Likewise.
+	* i386/i386/user_ldt.h: Likewise.
+	* i386/i386at/kd_queue.h: Likewise.
+	* i386/i386at/kdsoft.h: Likewise.
+	* i386/intel/pmap.c: Likewise.
+	* i386/intel/pmap.h: Likewise.
+	* include/mach/mach_traps.h: Likewise.
+	* ipc/ipc_entry.h: Likewise.
+	* ipc/ipc_hash.h: Likewise.
+	* ipc/ipc_kmsg.h: Likewise.
+	* ipc/ipc_marequest.c: Likewise.
+	* ipc/ipc_marequest.h: Likewise.
+	* ipc/ipc_mqueue.h: Likewise.
+	* ipc/ipc_notify.h: Likewise.
+	* ipc/ipc_object.h: Likewise.
+	* ipc/ipc_port.h: Likewise.
+	* ipc/ipc_pset.h: Likewise.
+	* ipc/ipc_right.h: Likewise.
+	* ipc/ipc_space.h: Likewise.
+	* ipc/ipc_table.h: Likewise.
+	* ipc/mach_msg.c: Likewise.
+	* ipc/mach_msg.h: Likewise.
+	* kern/ast.c: Likewise.
+	* kern/ast.h: Likewise.
+	* kern/debug.c: Likewise.
+	* kern/debug.h: Likewise.
+	* kern/ipc_tt.c: Likewise.
+	* kern/ipc_tt.h: Likewise.
+	* kern/mach_factor.c: Likewise.
+	* kern/mach_factor.h: Likewise.
+	* kern/printf.c: Likewise.
+	* kern/printf.h: Likewise.
+	* kern/queue.h: Likewise.
+	* kern/sched.h: Likewise.
+	* kern/syscall_subr.c: Likewise.
+	* kern/syscall_subr.h: Likewise.
+	* kern/task.h: Likewise.
+	* kern/thread_swap.c: Likewise.
+	* kern/thread_swap.h: Likewise.
+	* kern/timer.h: Likewise.
+	* kern/xpr.c: Likewise.
+	* kern/xpr.h: Likewise.
+	* kern/zalloc.c: Likewise.
+	* kern/zalloc.h: Likewise.
+	* ipc/ipc_port.h: Don't include <ipc/ipc_space.h>.
+	* device/net_io.h: Include <device/if_hdr.h> and <device/io_req.h>.
+	* ipc/ipc_entry.h: Include <mach/mach_types.h> and <ipc/ipc_types.h>.
+	* ipc/ipc_kmsg.h: Include <ipc/ipc_object.h>, <ipc/ipc_types.h> and
+	<vm/vm_map.h>.
+	* ipc/ipc_marequest.h: Include <mach_debug/hash_info.h> and
+	<ipc/ipc_types.h>.
+	* ipc/ipc_object.h: Include <ipc/ipc_types.h>.
+	* ipc/ipc_right.h: Include <ipc/ipc_entry.h>.
+	* ipc/ipc_space.h: Include <mach/mach_types.h> and <ipc/ipc_types.h>.
+	* kern/ipc_tt.h: Include <mach/mach_types.h>.
+	* kern/sched.h: Include <kern/kern_types.h>.
+	* ipc/ipc_hash.c (ipc_hash_index_t): Move type definition...
+	* ipc/ipc_hash.h: ... into here.
+
 2007-04-25  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* DEVELOPMENT: Add url.

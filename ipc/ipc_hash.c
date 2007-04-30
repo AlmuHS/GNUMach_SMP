@@ -136,8 +136,6 @@ ipc_hash_delete(
  *	Within each bucket, move-to-front is used.
  */
 
-typedef natural_t ipc_hash_index_t;
-
 ipc_hash_index_t ipc_hash_global_size;
 ipc_hash_index_t ipc_hash_global_mask;
 

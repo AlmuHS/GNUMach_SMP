@@ -1,6 +1,5 @@
 /*
- *
- * Copyright (C) 2006 Free Software Foundation, Inc.
+ * Copyright (C) 2006, 2007 Free Software Foundation, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +26,6 @@
 
 #include <sys/types.h>
 
-extern void compute_mach_factor();
+extern void compute_mach_factor(void);
 
 #endif /* _KERN_MACH_FACTOR_H_ */
