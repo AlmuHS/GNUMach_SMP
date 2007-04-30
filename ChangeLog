@@ -1,3 +1,7 @@
+2007-05-01  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* assigns: Remove file.  See `copyright.list' on the GNU server instead.
+
 2007-04-30  Thomas Schwinge  <tschwinge@gnu.org>
 
 	We're not in the eighties anymore.  List arguments in function
