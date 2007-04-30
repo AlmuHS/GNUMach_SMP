@@ -59,7 +59,7 @@ mach_port_t	mach_task_self
 			()
 	 { return MACH_PORT_NULL; }
 #else	/* LINTLIBRARY */
-			(self);
+			(void);
 #endif	/* LINTLIBRARY */
 
 mach_port_t	mach_host_self

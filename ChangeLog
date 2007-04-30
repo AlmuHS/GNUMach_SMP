@@ -74,6 +74,7 @@
 	* kern/zalloc.c: Likewise.
 	* kern/zalloc.h: Likewise.
 	* ipc/ipc_port.h: Don't include <ipc/ipc_space.h>.
+	* device/dev_hdr.h: Include <ipc/ipc_types.h>.
 	* device/net_io.h: Include <device/if_hdr.h> and <device/io_req.h>.
 	* ipc/ipc_entry.h: Include <mach/mach_types.h> and <ipc/ipc_types.h>.
 	* ipc/ipc_kmsg.h: Include <ipc/ipc_object.h>, <ipc/ipc_types.h> and
@@ -85,6 +86,7 @@
 	* ipc/ipc_space.h: Include <mach/mach_types.h> and <ipc/ipc_types.h>.
 	* kern/ipc_tt.h: Include <mach/mach_types.h>.
 	* kern/sched.h: Include <kern/kern_types.h>.
+	* kern/syscall_subr.h: Include <kern/kern_types.h>.
 	* ipc/ipc_hash.c (ipc_hash_index_t): Move type definition...
 	* ipc/ipc_hash.h: ... into here.
 

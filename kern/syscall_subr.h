@@ -24,6 +24,8 @@
  * the rights to redistribute these changes.
  */
 
+#include <kern/kern_types.h>
+
 #ifndef	_KERN_SYSCALL_SUBR_H_
 #define _KERN_SYSCALL_SUBR_H_
 

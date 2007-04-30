@@ -56,6 +56,7 @@
 #ifndef	_DEVICE_DEV_HDR_H_
 #define	_DEVICE_DEV_HDR_H_
 
+#include <ipc/ipc_types.h>
 #include <mach/port.h>
 #include <kern/lock.h>
 #include <kern/queue.h>
