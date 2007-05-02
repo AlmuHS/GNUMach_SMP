@@ -61,11 +61,16 @@ dnl USE OF THIS SOFTWARE.
 AC_DEFUN([AC_OPTION_Linux_ix86_at], [
 [unset enableval]
 AC_ARG_ENABLE([$1],
-  AS_HELP_STRING([--enable-$1], [$2; enabled by default for ix86-at]))
-[#TODO.
+  AS_HELP_STRING([--enable-$1], [$2]))
+[#TODO.  Could use some M4 magic to avoid a lot of shell code.
 case $host_platform:$host_cpu in
   at:i?86)
-    enableval=${enableval-$enable_default_device_drivers};;
+    case $enable_device_drivers:'$2' in
+      default:*by\ default* | qemu:*for\ qemu*)
+        enableval=${enableval-yes};;
+      *)
+        enableval=${enableval-no};;
+    esac;;
   *)
     if [ x"$enableval" = xyes ]; then
       # TODO.  That might not always be true.]
@@ -108,10 +113,16 @@ fi]])
 
 #
 # AC_Linux_DRIVER(machname, description, definition, [group]).  Convenience.
+# TODO.  The naming of those is nearly everything but reasonable.
 #
 
 AC_DEFUN([AC_Linux_DRIVER], [
-  AC_OPTION_Linux_ix86_at([$1], [Linux device driver for $2], [$3], [$4])
+  AC_OPTION_Linux_ix86_at([$1], [Linux device driver for $2; on ix86-at enabled]
+    [by default], [$3], [$4])
+])
+AC_DEFUN([AC_Linux_DRIVER_qemu], [
+  AC_OPTION_Linux_ix86_at([$1], [Linux device driver for $2; on ix86-at enabled]
+    [by default and for qemu], [$3], [$4])
 ])
 AC_DEFUN([AC_Linux_DRIVER_nodef], [
   AC_OPTION_Linux_ix86_at_nodef([$1], [Linux device driver for $2], [$3], [$4])
@@ -121,11 +132,11 @@ AC_DEFUN([AC_Linux_DRIVER_nodef], [
 # Configuration options.
 #
 
-AC_Linux_DRIVER([floppy],
+AC_Linux_DRIVER_qemu([floppy],
   [PC floppy],
   [CONFIG_BLK_DEV_FD])
 
-AC_Linux_DRIVER([ide],
+AC_Linux_DRIVER_qemu([ide],
   [IDE disk controllers],
   [CONFIG_BLK_DEV_IDE])
 
@@ -388,7 +399,7 @@ AC_Linux_DRIVER([natsemi],
   [Ethernet controller National Semiconductor DP8381x series PCI Ethernet],
   [CONFIG_NATSEMI],
   [net])
-AC_Linux_DRIVER([ne],
+AC_Linux_DRIVER_qemu([ne],
   [Ethernet controller NE2000/NE1000 ISA (ne, ne1000, ne2000)],
   [CONFIG_NE2000],
   [net])
@@ -482,7 +493,7 @@ AC_Linux_DRIVER([i82365],
   [pcmcia])
 
 AC_OPTION_Linux_ix86_at([pcmcia-isa],
-  [isa bus support in the pcmcia core],
+  [isa bus support in the pcmcia core; on ix86-at enabled by default],
   [CONFIG_ISA],
   [pcmcia])
 

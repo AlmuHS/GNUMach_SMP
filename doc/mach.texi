@@ -552,10 +552,9 @@ driver is not working for you.
 
 @table @code
 @item --enable-kdb
-Enables the in-kernel debugger.  This is only useful if you actually anticipate
-debugging the kernel.  It is not enabled by default because it adds
-considerably to the unpageable memory footprint of the kernel.  @xref{Kernel
-Debugger}.
+In-kernel debugger.  This is only useful if you actually anticipate debugging
+the kernel.  It is not enabled by default because it adds considerably to the
+unpageable memory footprint of the kernel.  @xref{Kernel Debugger}.
 @end table
 
 @subsection Turning device drivers on or off
@@ -564,14 +563,16 @@ Each device driver has an associated configure switch.  The following table
 indicates whether a device driver is enabled by default or not.  It also gives
 --- if possible at all --- the configure switches to use for disabling or
 enabling device drivers, in case you're not satisfied with the default choices.
-Where a @samp{--disable-*} switch is given in the table, the device driver is
-enabled by default and you have to use the switch to disable it and vice versa
-for the @samp{--enable-*} switches, the device driver is disabled by default
-and you have to us the switch to enable it.  To have all device drivers
-disabled that can be disabled and would otherwise have been enabled by default
-you can specify the @samp{--disable-default-device-drivers} switch and then use
-individual @samp{--enable-*} switches to enable only those you actually want to
-have enabled.
+You can specify @samp{--enable-device-drivers=WHICH} (where WHICH on
+@samp{ix86-at} must be one of @samp{default}, @samp{qemu}, @samp{none}) to
+preset a certain subset of all available device drivers.
+@samp{--enable-device-drivers} is sugar for
+@samp{--enable-device-drivers=default} (and is the implicit default
+nevertheless) and @samp{--disable-device-drivers} is short for
+@samp{--enable-device-drivers=none}.  @samp{qemu} will include only the set of
+device drivers that is useful when using the resulting kernel binary to drive a
+Hurd system in the @acronym{QEMU} system emulator.  This is only useful for
+reducing the kernel build time and the kernel image size.
 
 @subsection What the configure switches do
 
@@ -588,18 +589,20 @@ implementing a certain device driver.
 
 @table @code
 @item --disable-kmsg
-Disables the kernel message device @samp{kmsg}.
+Kernel message device @samp{kmsg}.
 
-@item --disable-lpr
-Disables the parallel port device driver for the @samp{lpr%d} devices.
+@item --enable-lpr
+Parallel port device driver for the @samp{lpr%d} devices.  On @samp{ix86-at}
+enabled by @samp{default}.
 
-@item --disable-floppy
-Disables the PC floppy disk controller device driver for the @samp{fd%d}
-devices.
+@item --enable-floppy
+PC floppy disk controller device driver for the @samp{fd%d} devices.  On
+@samp{ix86-at} enabled by @samp{default} and for @samp{qemu}.
 
-@item --disable-ide
-Disables the IDE controller device driver for the @samp{hd%d} and
-@samp{hd%ds%d} (disks and their partitions) devices.
+@item --enable-ide
+IDE controller device driver for the @samp{hd%d} and @samp{hd%ds%d} (disks and
+their partitions) devices.  On @samp{ix86-at} enabled by @samp{default} and for
+@samp{qemu}.
 @end table
 
 The following options control drivers for various SCSI controller.  SCSI
@@ -607,265 +610,335 @@ devices are named @samp{sd%d} and @samp{sd%ds$d} (disks and their partitions)
 or @samp{cd%d} (CD ROMs).
 
 @table @code
-@item --disable-advansys
-Disables the AdvanSys SCSI controller device driver.
+@item --enable-advansys
+AdvanSys SCSI controller device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-buslogic
-Disables the BusLogic SCSI controller device driver.
+@item --enable-buslogic
+BusLogic SCSI controller device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
 @item --enable-flashpoint
 Only meaningful in conjunction with the above BusLogic SCSI controller device
 driver.  Enable the FlashPoint support.
 
-@item --disable-u14-34f
-Disables the UltraStor 14F/34F SCSI controller device driver.
+@item --enable-u14-34f
+UltraStor 14F/34F SCSI controller device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-ultrastor
-Disables the UltraStor SCSI controller device driver.
+@item --enable-ultrastor
+UltraStor SCSI controller device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-aha152x
-Disables the Adaptec AHA-152x/2825 SCSI controller device driver.
+@item --enable-aha152x
+Adaptec AHA-152x/2825 SCSI controller device driver.  On @samp{ix86-at} enabled
+by @samp{default}.
 
-@item --disable-aha1542
-Disables the Adaptec AHA-1542 SCSI controller device driver.
+@item --enable-aha1542
+Adaptec AHA-1542 SCSI controller device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-aha1740
-Disables the Adaptec AHA-1740 SCSI controller device driver.
+@item --enable-aha1740
+Adaptec AHA-1740 SCSI controller device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-aic7xxx
-Disables the Adaptec AIC7xxx SCSI controller device driver.
+@item --enable-aic7xxx
+Adaptec AIC7xxx SCSI controller device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-fdomain
-Disables the Future Domain 16xx SCSI controller device driver.
+@item --enable-fdomain
+Future Domain 16xx SCSI controller device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-in2000
-Disables the Always IN 2000 SCSI controller device driver.
+@item --enable-in2000
+Always IN 2000 SCSI controller device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
 @item --enable-g_NCR5380
-Enables the generic NCR5380/53c400 SCSI controller device driver.
+Generic NCR5380/53c400 SCSI controller device driver.
 
-@item --enable-ncr53c406a
-Enables the NCR53c406a SCSI controller device driver.
+@item --enable-NCR53c406a
+NCR53c406a SCSI controller device driver.
 
-@item --disable-pas16
-Disables the PAS16 SCSI controller device driver.
+@item --enable-pas16
+PAS16 SCSI controller device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-seagate
-Disables the Seagate ST02 and Future Domain TMC-8xx SCSI controller
-device driver.
+@item --enable-seagate
+Seagate ST02 and Future Domain TMC-8xx SCSI controller device driver.  On
+@samp{ix86-at} enabled by @samp{default}.
 
-@item --disable-t128
-Disables the Trantor T128/T128F/T228 SCSI controller device driver.
+@item --enable-t128
+Trantor T128/T128F/T228 SCSI controller device driver.  On @samp{ix86-at}
+enabled by @samp{default}.
 
-@item --Disable-53c78xx
-Disables the NCR53C7,8xx SCSI controller device driver.
+@item --enable-53c78xx
+NCR53C7,8xx SCSI controller device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
 @item --enable-eata_dma
-Enables the EATA-DMA (DPT, NEC, AT&T, SNI, AST, Olivetti, Alphatronix) SCSI
-controller device driver.
+EATA-DMA (DPT, NEC, AT&T, SNI, AST, Olivetti, Alphatronix) SCSI controller
+device driver.
 
-@item --disable-eata_pio
-Disables the EATA-PIO (old DPT PM2001, PM2012A) SCSI controller device driver.
+@item --enable-eata_pio
+EATA-PIO (old DPT PM2001, PM2012A) SCSI controller device driver.  On
+@samp{ix86-at} enabled by @samp{default}.
 
-@item --disable-wd7000
-Disables the WD 7000 SCSI controller device driver.
+@item --enable-wd7000
+WD 7000 SCSI controller device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-eata
-Disables the EATA ISA/EISA/PCI (DPT and generic EATA/DMA-compliant boards) SCSI
-controller device driver.
+@item --enable-eata
+EATA ISA/EISA/PCI (DPT and generic EATA/DMA-compliant boards) SCSI controller
+device driver.  On @samp{ix86-at} enabled by @samp{default}.
 
-@item --disable-am53c974
-Disables the AM53/79C974 SCSI controller device driver.
+@item --enable-am53c974
+AM53/79C974 SCSI controller device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-dtc
-Disables the DTC3180/3280 SCSI controller device driver.
+@item --enable-dtc
+DTC3180/3280 SCSI controller device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-ncr53c8xx
-Disables the NCR53C8XX, dc390w, dc390u, dc390f SCSI controller device driver.
+@item --enable-ncr53c8xx
+NCR53C8XX, dc390w, dc390u, dc390f SCSI controller device driver.  On
+@samp{ix86-at} enabled by @samp{default}.
 
-@item --disable-tmscsim
-Enables the Tekram DC-390(T) SCSI controller device driver.
+@item --enable-tmscsim
+Tekram DC-390(T) SCSI controller device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-ppa
-Disables the IOMEGA Parallel Port ZIP drive device driver.
+@item --enable-ppa
+IOMEGA Parallel Port ZIP drive device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-qlogicfas
-Disables the Qlogic FAS SCSI controller device driver.
+@item --enable-qlogicfas
+Qlogic FAS SCSI controller device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-qlogicisp
-Disables the Qlogic ISP SCSI controller device driver.
+@item --enable-qlogicisp
+Qlogic ISP SCSI controller device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-gdth
-Disables the GDT SCSI Disk Array controller device driver.
+@item --enable-gdth
+GDT SCSI Disk Array controller device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 @end table
 
 The following options enable drivers for various ethernet cards.  NIC devices
 are usually named @samp{eth%d}, except for the pocket adaptors.
 
-GNU Mach does only autodetect one ethernet card.  To enable any further cards,
-the source code has to be edited.
+@c GNU Mach does only autodetect one ethernet card.  To enable any further
+@c cards, the source code has to be edited.
 @c XXX Reference to the source code.
 
 @table @code
-@item --disable-ne
-Disables the NE2000/NE1000 ISA network card device driver.
+@item --enable-ne
+NE2000/NE1000 ISA network card device driver.  On @samp{ix86-at} enabled by
+@samp{default} and for @samp{qemu}.
 
-@item --disable-3c503
-Disables the 3Com 503 (Etherlink II) network card device driver.
+@item --enable-3c503
+3Com 503 (Etherlink II) network card device driver.  On @samp{ix86-at} enabled
+by @samp{default}.
 
-@item --disable-3c509
-Disables the 3Com 509/579 (Etherlink III) network card device driver.
+@item --enable-3c509
+3Com 509/579 (Etherlink III) network card device driver.  On @samp{ix86-at}
+enabled by @samp{default}.
 
-@item --disable-wd
-Disables the WD80X3 network card device driver.
+@item --enable-wd
+WD80X3 network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-3c501
-Disables the 3COM 501/Etherlink I network card device driver.
+@item --enable-3c501
+3COM 501/Etherlink I network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-smc-ultra
-Disables the SMC Ultra network card device driver.
+@item --enable-smc-ultra
+SMC Ultra network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-smc-ultra32
-Disables the SMC Ultra 32 network card device driver.
+@item --enable-smc-ultra32
+SMC Ultra 32 network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-hp-plus
-Disables the HP PCLAN+ (27247B and 27252A) network card device driver.
+@item --enable-hp-plus
+HP PCLAN+ (27247B and 27252A) network card device driver.  On @samp{ix86-at}
+enabled by @samp{default}.
 
-@item --disable-hp
-Disables the HP PCLAN (27245 and other 27xxx series) network card device driver.
+@item --enable-hp
+HP PCLAN (27245 and other 27xxx series) network card device driver.  On
+@samp{ix86-at} enabled by @samp{default}.
 
-@item --disable-3c59x
-Disables the 3Com 590/900 series (592/595/597/900/905) "Vortex/Boomerang"
-network card device driver.
+@item --enable-3c59x
+3Com 590/900 series (592/595/597/900/905) "Vortex/Boomerang" network card
+device driver.  On @samp{ix86-at} enabled by @samp{default}.
 
-@item --disable-seeq8005
-Disables the Seeq8005 network card device driver.
+@item --enable-seeq8005
+Seeq8005 network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-hp100
-Disables the HP 10/100VG PCLAN (ISA, EISA, PCI) network card device driver.
+@item --enable-hp100
+HP 10/100VG PCLAN (ISA, EISA, PCI) network card device driver.  On
+@samp{ix86-at} enabled by @samp{default}.
 
-@item --disable-ac3200
-Disables the Ansel Communications EISA 3200 network card device driver.
+@item --enable-ac3200
+Ansel Communications EISA 3200 network card device driver.  On @samp{ix86-at}
+enabled by @samp{default}.
 
-@item --disable-e2100
-Disables the Cabletron E21xx network card device driver.
+@item --enable-e2100
+Cabletron E21xx network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-at1700
-Disables the AT1700 (Fujitsu 86965) network card device driver.
+@item --enable-at1700
+AT1700 (Fujitsu 86965) network card device driver.  On @samp{ix86-at} enabled
+by @samp{default}.
 
-@item --disable-eth16i
-Disables the ICL EtherTeam 16i/32 network card device driver.
+@item --enable-eth16i
+ICL EtherTeam 16i/32 network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-znet
-Disables the Zenith Z-Note network card device driver.
+@item --enable-znet
+Zenith Z-Note network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-eexpress
-Disables the EtherExpress 16 network card device driver.
+@item --enable-eexpress
+EtherExpress 16 network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-eepro
-Disables the EtherExpressPro network card device driver.
+@item --enable-eepro
+EtherExpressPro network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-eepro100
-Disables the Intel EtherExpressPro PCI 10+/100B/100+ network card device
-driver.
+@item --enable-eepro100
+Intel EtherExpressPro PCI 10+/100B/100+ network card device driver.  On
+@samp{ix86-at} enabled by @samp{default}.
 
-@item --disable-depca
-Disables the DEPCA, DE10x, DE200, DE201, DE202, DE210, DE422 network card
-device driver.
+@item --enable-depca
+DEPCA, DE10x, DE200, DE201, DE202, DE210, DE422 network card device driver.  On
+@samp{ix86-at} enabled by @samp{default}.
 
-@item --disable-ewrk3
-Disables the EtherWORKS 3 (DE203, DE204, DE205) network card device driver.
+@item --enable-ewrk3
+EtherWORKS 3 (DE203, DE204, DE205) network card device driver.  On
+@samp{ix86-at} enabled by @samp{default}.
 
-@item --disable-de4x5
-Enables the DE425, DE434, DE435, DE450, DE500 network card device driver.
+@item --enable-de4x5
+DE425, DE434, DE435, DE450, DE500 network card device driver.  On
+@samp{ix86-at} enabled by @samp{default}.
 
-@item --disable-apricot
-Disables the Apricot XEN-II on board ethernet network card device driver.
+@item --enable-apricot
+Apricot XEN-II on board ethernet network card device driver.  On @samp{ix86-at}
+enabled by @samp{default}.
 
 @item --enable-wavelan
-Enables the AT&T WaveLAN & DEC RoamAbout DS network card device driver.
+AT&T WaveLAN & DEC RoamAbout DS network card device driver.
 
-@item --disable-3c507
-Disables the 3Com 507 network card device driver.
+@item --enable-3c507
+3Com 507 network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-3c505
-Disables the 3Com 505/Etherlink II network card device driver.
+@item --enable-3c505
+3Com 505/Etherlink II network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-de600
-Disables the D-Link DE-600 network card device driver.
+@item --enable-de600
+D-Link DE-600 network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-de620
-Disables the D-Link DE-620 network card device driver.
+@item --enable-de620
+D-Link DE-620 network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-sk_g16
-Disables the Schneider & Koch G16 network card device driver.
+@item --enable-sk_g16
+Schneider & Koch G16 network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-ni52
-Disables the NI5210 network card device driver.
+@item --enable-ni52
+NI5210 network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-ni65
-Disables the NI6510 network card device driver.
+@item --enable-ni65
+NI6510 network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
 @item --enable-atp
-Enables the AT-LAN-TEC/RealTek pocket adaptor network card device driver for
-the @samp{atp%d} devices.
+AT-LAN-TEC/RealTek pocket adaptor network card device driver for the
+@samp{atp%d} devices.
 
-@item --disable-lance
-Disables the AMD LANCE and PCnet (AT1500 and NE2100) network card device driver.
+@item --enable-lance
+AMD LANCE and PCnet (AT1500 and NE2100) network card device driver.  On
+@samp{ix86-at} enabled by @samp{default}.
 
-@itemx --disable-tulip
-Disables the DECchip Tulip (dc21x4x) PCI network card device driver.
+@itemx --enable-tulip
+DECchip Tulip (dc21x4x) PCI network card device driver.  On @samp{ix86-at}
+enabled by @samp{default}.
 
-@item --disable-fmv18x
-Disables the FMV-181/182/183/184 network card device driver.
+@item --enable-fmv18x
+FMV-181/182/183/184 network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-3c515
-Disables the 3Com 515 ISA Fast EtherLink network card device driver.
+@item --enable-3c515
+3Com 515 ISA Fast EtherLink network card device driver.  On @samp{ix86-at}
+enabled by @samp{default}.
 
-@item --disable-pcnet32
-Disables the AMD PCI PCnet32 (PCI bus NE2100 cards) network card device driver.
+@item --enable-pcnet32
+AMD PCI PCnet32 (PCI bus NE2100 cards) network card device driver.  On
+@samp{ix86-at} enabled by @samp{default}.
 
-@item --disable-ne2k-pci
-Disables the PCI NE2000 network card device driver.
+@item --enable-ne2k-pci
+PCI NE2000 network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-yellowfin
-Disables the Packet Engines Yellowfin Gigabit-NIC network card device driver.
+@item --enable-yellowfin
+Packet Engines Yellowfin Gigabit-NIC network card device driver.  On
+@samp{ix86-at} enabled by @samp{default}.
 
-@item --disable-rtl8139
-Disables the RealTek 8129/8139 (not 8019/8029!) network card device driver.
+@item --enable-rtl8139
+RealTek 8129/8139 (not 8019/8029!) network card device driver.  On
+@samp{ix86-at} enabled by @samp{default}.
 
-@itemx --disable-epic100
-Disables the SMC 83c170/175 EPIC/100 (EtherPower II) network card device driver.
+@itemx --enable-epic100
+SMC 83c170/175 EPIC/100 (EtherPower II) network card device driver.  On
+@samp{ix86-at} enabled by @samp{default}.
 
-@item --disable-tlan
-Disables the TI ThunderLAN network card device driver.
+@item --enable-tlan
+TI ThunderLAN network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-via-rhine
-Disables the VIA Rhine network card device driver.
+@item --enable-via-rhine
+VIA Rhine network card device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-hamachi
-Disables the Packet Engines "Hamachi" GNIC-2 Gigabit Ethernet device driver.
+@item --enable-hamachi
+Packet Engines "Hamachi" GNIC-2 Gigabit Ethernet device driver.  On
+@samp{ix86-at} enabled by @samp{default}.
 
-@item --disable-intel-gige
-Disables the Intel PCI Gigabit Ethernet device driver.
+@item --enable-intel-gige
+Intel PCI Gigabit Ethernet device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-myson803
-Disables the Myson MTD803 Ethernet adapter series device driver.
+@item --enable-myson803
+Myson MTD803 Ethernet adapter series device driver.  On @samp{ix86-at} enabled
+by @samp{default}.
 
-@item --disable-natsemi
-Disables the National Semiconductor DP8381x series PCI Ethernet device driver.
+@item --enable-natsemi
+National Semiconductor DP8381x series PCI Ethernet device driver.  On
+@samp{ix86-at} enabled by @samp{default}.
 
-@item --disable-ns820
-Disables the National Semiconductor DP8382x series PCI Ethernet device driver.
+@item --enable-ns820
+National Semiconductor DP8382x series PCI Ethernet device driver.  On
+@samp{ix86-at} enabled by @samp{default}.
 
-@item --disable-starfire
-Disables the Adaptec Starfire network adapter device driver.
+@item --enable-starfire
+Adaptec Starfire network adapter device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-sundance
-Disables the Sundance ST201 "Alta" PCI Ethernet device driver.
+@item --enable-sundance
+Sundance ST201 "Alta" PCI Ethernet device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-winbond-840
-Disables the Winbond W89c840 PCI Ethernet device driver.
+@item --enable-winbond-840
+Winbond W89c840 PCI Ethernet device driver.  On @samp{ix86-at} enabled by
+@samp{default}.
 @end table
 
 The following options either control device drivers for supported PCMCIA
@@ -874,51 +947,59 @@ use of GNU Mach PCMCIA support you need to have the corresponding userland
 applications (GNU Mach Card Services) installed.
 
 @table @code
-@item --disable-i82365
-Disables the device driver for the Intel 82365 and compatible PC Card
-controllers, and Yenta-compatible PCI-to-CardBus controllers.
+@item --enable-i82365
+Device driver for the Intel 82365 and compatible PC Card controllers, and
+Yenta-compatible PCI-to-CardBus controllers.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-pcmcia-isa
-Disables ISA bus related bits in the GNU Mach PCMCIA core.  Keeping it enabled
-is generally a good idea, since it does not only have effect if your PC Card
+@item --enable-pcmcia-isa
+ISA bus related bits in the GNU Mach PCMCIA core.  Keeping it enabled is
+generally a good idea, since it does not only have effect if your PC Card
 bridge is attached to the ISA bus, but provides more (ISA) interrupts to the
-Card Services for it to assign to the cards in turn.
+Card Services for it to assign to the cards in turn.  On @samp{ix86-at} enabled
+by @samp{default}.
 @end table
 
 The following options control device drivers for supported PCMCIA Ethernet
 controllers.  NIC devices are usually named @samp{eth%d}.
 
 @table @code
-@item --disable-3c574_cs
-Disables the PCMCIA ethernet driver for the 3Com 3c574 ``RoadRunner''.
+@item --enable-3c574_cs
+PCMCIA ethernet driver for the 3Com 3c574 ``RoadRunner''.  On @samp{ix86-at}
+enabled by @samp{default}.
 
-@item --disable-3c589_cs
-Disables the driver for the 3Com 3c589 PCMCIA card.
+@item --enable-3c589_cs
+Driver for the 3Com 3c589 PCMCIA card.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-axnet_cs
-Disables the driver for the Asix AX88190-based PCMCIA cards.
+@item --enable-axnet_cs
+Driver for the Asix AX88190-based PCMCIA cards.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-fmvj18x_cs
-Disables the driver for PCMCIA cards with the fmvj18x chipset. 
+@item --enable-fmvj18x_cs
+Driver for PCMCIA cards with the fmvj18x chipset.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-nmclan_cs
-Disables the driver for the New Media Ethernet LAN PCMCIA cards.
+@item --enable-nmclan_cs
+Driver for the New Media Ethernet LAN PCMCIA cards.  On @samp{ix86-at} enabled
+by @samp{default}.
 
-@item --disable-pcnet_cs
-Disables the driver for NS8390-based PCMCIA cards.
+@item --enable-pcnet_cs
+Driver for NS8390-based PCMCIA cards.  This driver supports the D-Link DE-650
+and Linksys EthernetCard cards, the newer D-Link and Linksys combo cards,
+Accton EN2212 cards, the RPTI EP400, and the PreMax PE-200 in non-shared-memory
+mode, and the IBM Credit Card Adapter, the NE4100, the Thomas Conrad ethernet
+card, and the Kingston KNE-PCM/x in shared-memory mode.  It will also handle
+the Socket EA card in either mode.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-This driver supports the D-Link DE-650 and Linksys EthernetCard cards, the
-newer D-Link and Linksys combo cards, Accton EN2212 cards, the RPTI EP400, and
-the PreMax PE-200 in non-shared-memory mode, and the IBM Credit Card Adapter,
-the NE4100, the Thomas Conrad ethernet card, and the Kingston KNE-PCM/x in
-shared-memory mode.  It will also handle the Socket EA card in either mode.
+@item --enable-smc91c92_cs
+Driver for SMC91c92-based PCMCIA cards.  On @samp{ix86-at} enabled by
+@samp{default}.
 
-@item --disable-smc91c92_cs
-Disables the driver for SMC91c92-based PCMCIA cards.
-
-@item --disable-xirc2ps_cs
-Disables the driver for Xircom CreditCard and Realport PCMCIA ethernet
-adapters.
+@item --enable-xirc2ps_cs
+Driver for Xircom CreditCard and Realport PCMCIA ethernet adapters.  On
+@samp{ix86-at} enabled by @samp{default}.
 @end table
 
 The following options control device drivers for supported PCMCIA Wireless LAN
@@ -928,15 +1009,15 @@ Please mind, that you need to have some userland applications (the GNU Mach
 Wireless Tools) installed, in order to make use of these devices.
 
 @table @code
-@item --disable-orinoco_cs
-Disables the driver for the Hermes or Prism 2 chipset based PCMCIA wireless
-adapters, with Lucent/Agere, Intersil or Symbol firmware.
-
-This driver is suitable for PCMCIA wireless adapters, such as the Lucent
-WavelanIEEE/Orinoco cards and their OEM (Cabletron/EnteraSys RoamAbout 802.11,
-ELSA Airlancer, Melco Buffalo and others).  It should also be usable on various
-Prism II based cards such as the Linksys, D-Link and Farallon Skyline. It
-should also work on Symbol cards such as the 3Com AirConnect and Ericsson WLAN.
+@item --enable-orinoco_cs
+Driver for the Hermes or Prism 2 chipset based PCMCIA wireless adapters, with
+Lucent/Agere, Intersil or Symbol firmware.  This driver is suitable for PCMCIA
+wireless adapters, such as the Lucent WavelanIEEE/Orinoco cards and their OEM
+(Cabletron/EnteraSys RoamAbout 802.11, ELSA Airlancer, Melco Buffalo and
+others).  It should also be usable on various Prism II based cards such as the
+Linksys, D-Link and Farallon Skyline. It should also work on Symbol cards such
+as the 3Com AirConnect and Ericsson WLAN.  On @samp{ix86-at} enabled by
+@samp{default}.
 @end table
 
 

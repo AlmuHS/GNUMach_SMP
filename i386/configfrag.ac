@@ -82,10 +82,15 @@ AC_DEFINE([RCADDR], [0x3f8], [where is the com port for the remote console])
 #
 
 AC_ARG_ENABLE([lpr],
-  AS_HELP_STRING([--enable-lpr], [lpr device; enabled by default for ix86-at]))
+  AS_HELP_STRING([--enable-lpr], [lpr device; on ix86-at enabled by default]))
 [case $host_platform:$host_cpu in
   at:i?86)
-    enable_lpr=${enable_lpr-$enable_default_device_drivers};;
+    case $enable_device_drivers in
+      default)
+        enable_lpr=${enable_lpr-yes};;
+      *)
+        enable_lpr=${enable_lpr-no};;
+    esac;;
   *)
     if [ x"$enable_lpr" = xyes ]; then]
       AC_MSG_ERROR([cannot enable `lpr' in this configuration.])

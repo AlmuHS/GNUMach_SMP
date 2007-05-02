@@ -1,3 +1,14 @@
+2007-05-02  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* configure.ac (--disable-default-device-drivers): Transform into...
+	(--enable-device-drivers): ... this new option and extend it.
+	* i386/configfrag.ac (--enable-lpr): Adapt to that.
+	* linux/configfrag.ac (AC_OPTION_Linux_ix86_at, AC_Linux_DRIVER):
+	Likewise.
+	(AC_Linux_DRIVER_qemu): New definition.  Use it for the `floppy', `ide'
+	and `ne' device drivers.
+	* doc/mach.texi: Document all that.
+
 2007-05-01  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* assigns: Remove file.  See `copyright.list' on the GNU server instead.
