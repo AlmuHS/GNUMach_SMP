@@ -138,7 +138,7 @@ void		vm_external_state_set(e, offset, state)
 	e->existence_map[byte] |= (1 << (bit & 07));
 }
 
-void		vm_external_module_initialize()
+void		vm_external_module_initialize(void)
 {
 	vm_size_t	size = (vm_size_t) sizeof(struct vm_external);
 

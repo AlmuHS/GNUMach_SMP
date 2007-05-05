@@ -42,6 +42,7 @@
 #include <mach/machine/vm_types.h>
 #include <mach/vm_prot.h>
 #include <mach/boolean.h>
+#include <kern/thread.h>
 
 /*
  *	The following is a description of the interface to the
@@ -62,21 +63,15 @@
  *	but it is not part of the interface.
  */
 
-extern vm_offset_t	pmap_steal_memory();	/* During VM initialization,
-						 * steal a chunk of memory.
-						 */
-extern unsigned int	pmap_free_pages();	/* During VM initialization,
-						 * report remaining unused
-						 * physical pages.
-						 */
-extern void		pmap_startup();		/* During VM initialization,
-						 * use remaining physical pages
-						 * to allocate page frames.
-						 */
-extern void		pmap_init();		/* Initialization,
-						 * after kernel runs
-						 * in virtual memory.
-						 */
+/* During VM initialization, steal a chunk of memory.  */
+extern vm_offset_t	pmap_steal_memory(vm_size_t);
+/* During VM initialization, report remaining unused physical pages.  */
+extern unsigned int	pmap_free_pages(void);
+/* During VM initialization, use remaining physical pages to allocate page
+ * frames.  */
+extern void		pmap_startup(vm_offset_t *, vm_offset_t *);
+/* Initialization, after kernel runs in virtual memory.  */
+extern void		pmap_init(void);
 
 #ifndef	MACHINE_PAGES
 /*
@@ -95,14 +90,10 @@ extern void		pmap_init();		/* Initialization,
  *	However, for best performance pmap_free_pages should be accurate.
  */
 
-extern boolean_t	pmap_next_page();	/* During VM initialization,
-						 * return the next unused
-						 * physical page.
-						 */
-extern void		pmap_virtual_space();	/* During VM initialization,
-						 * report virtual space
-						 * available for the kernel.
-						 */
+/* During VM initialization, return the next unused physical page.  */
+extern boolean_t	pmap_next_page(vm_offset_t *);
+/* During VM initialization, report virtual space available for the kernel.  */
+extern void		pmap_virtual_space(vm_offset_t *, vm_offset_t *);
 #endif	/* MACHINE_PAGES */
 
 /*
@@ -139,12 +130,10 @@ void pmap_protect(pmap_t pmap, vm_offset_t sva, vm_offset_t eva, vm_prot_t prot)
 /*
  *	Routines to set up hardware state for physical maps to be used.
  */
-extern void		pmap_activate();	/* Prepare pmap_t to run
-						 * on a given processor.
-						 */
-extern void		pmap_deactivate();	/* Release pmap_t from
-						 * use on processor.
-						 */
+/* Prepare pmap_t to run on a given processor.  */
+extern void		pmap_activate(pmap_t, thread_t, int);
+/* Release pmap_t from use on processor.  */
+extern void		pmap_deactivate(pmap_t, thread_t, int);
 
 
 /*
@@ -178,7 +167,6 @@ boolean_t pmap_is_modified(vm_offset_t pa);
 /*
  *	Statistics routines
  */
-extern void		pmap_statistics();	/* Return statistics */
 
 #ifndef	pmap_resident_count
 extern int		pmap_resident_count();
@@ -187,48 +175,37 @@ extern int		pmap_resident_count();
 /*
  *	Sundry required routines
  */
-extern vm_offset_t	pmap_extract();		/* Return a virtual-to-physical
-						 * mapping, if possible.
-						 */
-
-extern boolean_t	pmap_access();		/* Is virtual address valid? */
-
-extern void		pmap_collect();		/* Perform garbage
-						 * collection, if any
-						 */
-
-extern void		pmap_change_wiring();	/* Specify pageability */
+/* Return a virtual-to-physical mapping, if possible.  */
+extern vm_offset_t	pmap_extract(pmap_t, vm_offset_t);
+/* Is virtual address valid? */
+extern boolean_t	pmap_access();
+/* Perform garbage collection, if any.  */
+extern void		pmap_collect(pmap_t);
+/* Specify pageability.  */
+extern void		pmap_change_wiring(pmap_t, vm_offset_t, boolean_t);
 
 #ifndef	pmap_phys_address
-extern vm_offset_t	pmap_phys_address();	/* Transform address
-						 * returned by device
-						 * driver mapping function
-						 * to physical address
-						 * known to this module.
-						 */
+/* Transform address returned by device driver mapping function to physical
+ * address known to this module.  */
+extern vm_offset_t	pmap_phys_address();
 #endif	/* pmap_phys_address */
 #ifndef	pmap_phys_to_frame
-extern int		pmap_phys_to_frame();	/* Inverse of
-						 * pmap_phys_address,
-						 * for use by device driver
-						 * mapping function in
-						 * machine-independent
-						 * pseudo-devices.
-						 */
+/* Inverse of pmap_phys_address, for use by device driver mapping function in
+ * machine-independent pseudo-devices.  */
+extern int		pmap_phys_to_frame();
 #endif	/* pmap_phys_to_frame */
 
 /*
  *	Optional routines
  */
 #ifndef	pmap_copy
-extern void		pmap_copy();		/* Copy range of
-						 * mappings, if desired.
-						 */
+/* Copy range of mappings, if desired.  */
+extern void		pmap_copy(pmap_t, pmap_t, vm_offset_t, vm_size_t,
+				  vm_offset_t);
 #endif	/* pmap_copy */
 #ifndef pmap_attribute
-extern kern_return_t	pmap_attribute();	/* Get/Set special
-						 * memory attributes
-						 */
+/* Get/Set special memory attributes.  */
+extern kern_return_t	pmap_attribute();
 #endif	/* pmap_attribute */
 
 /*

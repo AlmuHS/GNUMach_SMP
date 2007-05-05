@@ -70,20 +70,21 @@ typedef int	vm_external_state_t;
  *	Routines exported by this module.
  */
 
-extern void		vm_external_module_initialize();
-						/* Initialize the module */
+/* Initialize the module */
+extern void		vm_external_module_initialize(void);
+/* Create a vm_external_t */
+extern vm_external_t	vm_external_create(vm_offset_t);
+/* Destroy one */
+extern void vm_external_destroy(vm_external_t);
 
-extern vm_external_t	vm_external_create();	/* Create a vm_external_t */
-extern void vm_external_destroy();		/* Destroy one */
-
-extern void		vm_external_state_set();/* Set state of a page. */
+/* Set state of a page.  */
+extern void		vm_external_state_set(vm_external_t, vm_offset_t,
+					      vm_external_state_t);
+/* Retrieve the state for a given page, if known.  */
 #define	vm_external_state_get(e,offset)	(((e) != VM_EXTERNAL_NULL) ? \
 					  _vm_external_state_get(e, offset) : \
 					  VM_EXTERNAL_STATE_UNKNOWN)
-						/* Retrieve the state
-						 * for a given page, if known.
-						 */
-extern vm_external_state_t _vm_external_state_get();
-						/* HIDDEN routine */
+/* HIDDEN routine */
+extern vm_external_state_t _vm_external_state_get(vm_external_t, vm_offset_t);
 
 #endif	/* _VM_VM_EXTERNAL_H_ */

@@ -38,6 +38,7 @@
 #include <mach/vm_prot.h>
 #include <mach/vm_param.h>
 #include <vm/vm_object.h>
+#include <vm/vm_types.h>
 #include <kern/queue.h>
 #include <kern/lock.h>
 #include <kern/zalloc.h>
@@ -122,10 +123,6 @@ struct vm_page {
 	vm_prot_t	page_lock;	/* Uses prohibited by data manager (O) */
 	vm_prot_t	unlock_request;	/* Outstanding unlock request (O) */
 };
-
-typedef struct vm_page	*vm_page_t;
-
-#define VM_PAGE_NULL		((vm_page_t) 0)
 
 /*
  *	For debugging, this macro can be defined to perform

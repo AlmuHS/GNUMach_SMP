@@ -55,10 +55,6 @@ typedef struct ipc_port *	pager_request_t;
 #define	PAGER_REQUEST_NULL	((pager_request_t) 0)
 
 /*
- *	Types defined:
- *
- *	vm_object_t		Virtual memory object.
- *
  *	We use "struct ipc_port *" instead of "ipc_port_t"
  *	to avoid include file circularities.
  */
@@ -161,9 +157,6 @@ struct vm_object {
 	vm_external_t		existence_info;
 #endif	/* MACH_PAGEMAP */
 };
-
-typedef struct vm_object	*vm_object_t;
-#define VM_OBJECT_NULL		((vm_object_t) 0)
 
 extern
 vm_object_t	kernel_object;		/* the single kernel object */

@@ -1,3 +1,34 @@
+2007-05-05  Thomas Schwinge  <tschwinge@gnu.org>
+
+	We're not in the eighties anymore.  List arguments in function
+	prototypes and definitions for a lot of symbols.  Also drop some unused
+	prototypes.  I refrain from listing every changed symbol.
+	* vm/memory_object.c: Do as described.
+	* vm/memory_object.h: Likewise.
+	* vm/pmap.h: Likewise.
+	* vm/vm_external.c: Likewise.
+	* vm/vm_external.h: Likewise.
+	* vm/vm_fault.c: Likewise.
+	* vm/vm_fault.h: Likewise.
+	* vm/vm_kern.h: Likewise.
+	* vm/vm_map.c: Likewise.
+	* vm/vm_map.h: Likewise.
+	* vm/vm_pageout.h: Likewise.
+	* vm/vm_user.h: Likewise.
+	* vm/memory_object.h: Include <ipc/ipc_types.h>.
+	* vm/pmap.h: Include <kern/thread.h>.
+	* vm/vm_fault.h: Include <mach/vm_prot.h>, <vm/vm_map.h> and
+	<vm/vm_types.h>.
+	* vm/vm_map.h: Include <mach/vm_attributes.h> and <vm/vm_types.h>.
+	(vm_map_t, VM_MAP_NULL): Remove type and definition.
+	* vm/vm_object.h (vm_object_t, VM_OBJECT_NULL): Remove type and
+	definition.
+	* vm/vm_page.h: Include <vm/vm_types.h>.
+	(vm_page_t, VM_PAGE_NULL): Remove type and definition.
+	* vm/vm_user.h: Include <mach/std_types.h>.
+	* kern/task.h: Include <vm/vm_types.h> instead of <vm/vm_map.h>.
+	* vm/vm_types.h: New file: the above-removed types and definitions.
+
 2007-05-02  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* configure.ac (--disable-default-device-drivers): Transform into...

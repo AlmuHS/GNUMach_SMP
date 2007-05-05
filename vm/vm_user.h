@@ -36,15 +36,23 @@
 #define _VM_VM_USER_H_
 
 #include <mach/kern_return.h>
+#include <mach/std_types.h>
 
-extern kern_return_t	vm_allocate();
-extern kern_return_t	vm_deallocate();
-extern kern_return_t	vm_inherit();
-extern kern_return_t	vm_protect();
-extern kern_return_t	vm_statistics();
-extern kern_return_t	vm_read();
-extern kern_return_t	vm_write();
-extern kern_return_t	vm_copy();
-extern kern_return_t	vm_map();
+extern kern_return_t	vm_allocate(vm_map_t, vm_offset_t *, vm_size_t,
+				    boolean_t);
+extern kern_return_t	vm_deallocate(vm_map_t, vm_offset_t, vm_size_t);
+extern kern_return_t	vm_inherit(vm_map_t, vm_offset_t, vm_size_t,
+				   vm_inherit_t);
+extern kern_return_t	vm_protect(vm_map_t, vm_offset_t, vm_size_t, boolean_t,
+				   vm_prot_t);
+extern kern_return_t	vm_statistics(vm_map_t, vm_statistics_data_t *);
+extern kern_return_t	vm_read(vm_map_t, vm_address_t, vm_size_t, pointer_t *,
+				vm_size_t *);
+extern kern_return_t	vm_write(vm_map_t, vm_address_t, pointer_t, vm_size_t);
+extern kern_return_t	vm_copy(vm_map_t, vm_address_t, vm_size_t,
+				vm_address_t);
+extern kern_return_t	vm_map(vm_map_t, vm_offset_t *, vm_size_t, vm_offset_t,
+			       boolean_t, ipc_port_t, vm_offset_t, boolean_t,
+			       vm_prot_t, vm_prot_t, vm_inherit_t);
 
 #endif	/* _VM_VM_USER_H_ */

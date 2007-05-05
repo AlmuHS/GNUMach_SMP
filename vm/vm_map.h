@@ -43,18 +43,19 @@
 #include <mach/kern_return.h>
 #include <mach/boolean.h>
 #include <mach/machine/vm_types.h>
+#include <mach/vm_attributes.h>
 #include <mach/vm_prot.h>
 #include <mach/vm_inherit.h>
 #include <vm/pmap.h>
 #include <vm/vm_object.h>
 #include <vm/vm_page.h>
+#include <vm/vm_types.h>
 #include <kern/lock.h>
 #include <kern/macro_help.h>
 
 /*
  *	Types defined:
  *
- *	vm_map_t		the high-level address map data structure.
  *	vm_map_entry_t		an entry in an address map.
  *	vm_map_version_t	a timestamp of a map, for use with vm_map_lookup
  *	vm_map_copy_t		represents memory copied from an address map,
@@ -171,9 +172,6 @@ struct vm_map {
 	boolean_t		wiring_required;/* All memory wired? */
 	unsigned int		timestamp;	/* Version number */
 };
-typedef struct vm_map *vm_map_t;
-
-#define		VM_MAP_NULL	((vm_map_t) 0)
 
 #define vm_map_to_entry(map)	((struct vm_map_entry *) &(map)->hdr.links)
 #define vm_map_first_entry(map)	((map)->hdr.links.next)
@@ -356,43 +354,73 @@ MACRO_END
 extern vm_offset_t	kentry_data;
 extern vm_offset_t	kentry_data_size;
 extern int		kentry_count;
-extern void		vm_map_init();		/* Initialize the module */
+/* Initialize the module */
+extern void		vm_map_init(void);
 
-extern vm_map_t		vm_map_create();	/* Create an empty map */
-extern vm_map_t		vm_map_fork();		/* Create a map in the image
-						 * of an existing map */
+/* Create an empty map */
+extern vm_map_t		vm_map_create(pmap_t, vm_offset_t, vm_offset_t,
+				      boolean_t);
+/* Create a map in the image of an existing map */
+extern vm_map_t		vm_map_fork(vm_map_t);
 
-extern void		vm_map_reference();	/* Gain a reference to
-						 * an existing map */
-extern void		vm_map_deallocate();	/* Lose a reference */
+/* Gain a reference to an existing map */
+extern void		vm_map_reference(vm_map_t);
+/* Lose a reference */
+extern void		vm_map_deallocate(vm_map_t);
 
-extern kern_return_t	vm_map_enter();		/* Enter a mapping */
-extern kern_return_t	vm_map_find_entry();	/* Enter a mapping primitive */
-extern kern_return_t	vm_map_remove();	/* Deallocate a region */
-extern kern_return_t	vm_map_protect();	/* Change protection */
-extern kern_return_t	vm_map_inherit();	/* Change inheritance */
+/* Enter a mapping */
+extern kern_return_t	vm_map_enter(vm_map_t, vm_offset_t *, vm_size_t,
+				     vm_offset_t, boolean_t, vm_object_t,
+				     vm_offset_t, boolean_t, vm_prot_t,
+				     vm_prot_t, vm_inherit_t);
+/* Enter a mapping primitive */
+extern kern_return_t	vm_map_find_entry(vm_map_t, vm_offset_t *, vm_size_t,
+					  vm_offset_t, vm_object_t,
+					  vm_map_entry_t *);
+/* Deallocate a region */
+extern kern_return_t	vm_map_remove(vm_map_t, vm_offset_t, vm_offset_t);
+/* Change protection */
+extern kern_return_t	vm_map_protect(vm_map_t, vm_offset_t, vm_offset_t,
+				       vm_prot_t, boolean_t);
+/* Change inheritance */
+extern kern_return_t	vm_map_inherit(vm_map_t, vm_offset_t, vm_offset_t,
+				       vm_inherit_t);
 
-extern void		vm_map_print();		/* Debugging: print a map */
+/* Debugging: print a map */
+extern void		vm_map_print(vm_map_t);
 
-extern kern_return_t	vm_map_lookup();	/* Look up an address */
-extern boolean_t	vm_map_verify();	/* Verify that a previous
-						 * lookup is still valid */
+/* Look up an address */
+extern kern_return_t	vm_map_lookup(vm_map_t *, vm_offset_t, vm_prot_t,
+				      vm_map_version_t *, vm_object_t *,
+				      vm_offset_t *, vm_prot_t *, boolean_t *);
+/* Verify that a previous lookup is still valid */
+extern boolean_t	vm_map_verify(vm_map_t, vm_map_version_t *);
 /* vm_map_verify_done is now a macro -- see below */
-extern kern_return_t	vm_map_copyin();	/* Make a copy of a region */
-extern kern_return_t	vm_map_copyin_page_list();/* Make a copy of a region
-						 * using a page list copy */
-extern kern_return_t	vm_map_copyout();	/* Place a copy into a map */
-extern kern_return_t	vm_map_copy_overwrite();/* Overwrite existing memory
-						 * with a copy */
-extern void		vm_map_copy_discard();	/* Discard a copy without
-						 * using it */
-extern kern_return_t	vm_map_copy_discard_cont();/* Page list continuation
-						 * version of previous */
+/* Make a copy of a region */
+extern kern_return_t	vm_map_copyin(vm_map_t, vm_offset_t, vm_size_t,
+				      boolean_t, vm_map_copy_t *);
+/* Make a copy of a region using a page list copy */
+extern kern_return_t	vm_map_copyin_page_list(vm_map_t, vm_offset_t,
+						vm_size_t, boolean_t,
+						boolean_t, vm_map_copy_t *,
+						boolean_t);
+/* Place a copy into a map */
+extern kern_return_t	vm_map_copyout(vm_map_t, vm_offset_t *, vm_map_copy_t);
+/* Overwrite existing memory with a copy */
+extern kern_return_t	vm_map_copy_overwrite(vm_map_t, vm_offset_t,
+					      vm_map_copy_t, boolean_t);
+/* Discard a copy without using it */
+extern void		vm_map_copy_discard(vm_map_copy_t);
+extern vm_map_copy_t	vm_map_copy_copy(vm_map_copy_t);
+/* Page list continuation version of previous */
+extern kern_return_t	vm_map_copy_discard_cont(vm_map_copyin_args_t,
+						 vm_map_copy_t *);
 
-extern kern_return_t	vm_map_machine_attribute();
-						/* Add or remove machine-
-						   dependent attributes from
-						   map regions */
+/* Add or remove machine- dependent attributes from map regions */
+extern kern_return_t	vm_map_machine_attribute(vm_map_t, vm_offset_t,
+						 vm_size_t,
+						 vm_machine_attribute_t,
+						 vm_machine_attribute_val_t *);
 
 /*
  *	Functions implemented as macros
@@ -415,7 +443,9 @@ extern kern_return_t	vm_map_machine_attribute();
 /*
  *	Pageability functions.  Includes macro to preserve old interface.
  */
-extern kern_return_t	vm_map_pageable_common();
+extern kern_return_t	vm_map_pageable_common(vm_map_t, vm_offset_t,
+					       vm_offset_t, vm_prot_t,
+					       boolean_t);
 
 #define vm_map_pageable(map, s, e, access)	\
 		vm_map_pageable_common(map, s, e, access, FALSE)

@@ -1119,7 +1119,7 @@ kern_return_t	vm_set_default_memory_manager(host, default_manager)
  *		valid (not IP_NULL or IP_DEAD).
  */
 
-ipc_port_t	memory_manager_default_reference()
+ipc_port_t	memory_manager_default_reference(void)
 {
 	ipc_port_t current_manager;
 
@@ -1172,7 +1172,7 @@ boolean_t	memory_manager_default_port(port)
 	return result;
 }
 
-void		memory_manager_default_init()
+void		memory_manager_default_init(void)
 {
 	memory_manager_default = IP_NULL;
 	simple_lock_init(&memory_manager_default_lock);

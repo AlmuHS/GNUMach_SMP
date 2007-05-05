@@ -156,7 +156,7 @@ vm_offset_t	kentry_data;
 vm_size_t	kentry_data_size;
 int		kentry_count = 256;		/* to init kentry_data_size */
 
-void vm_map_init()
+void vm_map_init(void)
 {
 	vm_map_zone = zinit((vm_size_t) sizeof(struct vm_map), 0, 40*1024,
 					PAGE_SIZE, 0, "maps");

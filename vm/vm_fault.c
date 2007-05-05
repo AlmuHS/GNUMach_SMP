@@ -105,7 +105,7 @@ extern struct db_watchpoint *db_watchpoint_list;
  *	Purpose:
  *		Initialize our private data structures.
  */
-void vm_fault_init()
+void vm_fault_init(void)
 {
 	vm_fault_state_zone = zinit(sizeof(vm_fault_state_t), 0,
 				    THREAD_MAX * sizeof(vm_fault_state_t),

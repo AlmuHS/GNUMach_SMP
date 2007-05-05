@@ -28,16 +28,12 @@
 #define	_VM_MEMORY_OBJECT_H_
 
 #include <mach/boolean.h>
+#include <ipc/ipc_types.h>
 
-/*
- *	We use "struct ipc_port *" instead of "ipc_port_t"
- *	to avoid include file circularities.
- */
+extern ipc_port_t memory_manager_default_reference(void);
+extern boolean_t memory_manager_default_port(ipc_port_t);
+extern void memory_manager_default_init(void);
 
-extern struct ipc_port *memory_manager_default_reference();
-extern boolean_t memory_manager_default_port();
-extern void memory_manager_default_init();
-
-extern struct ipc_port *memory_manager_default;
+extern ipc_port_t memory_manager_default;
 
 #endif	/* _VM_MEMORY_OBJECT_H_ */

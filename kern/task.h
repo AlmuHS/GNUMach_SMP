@@ -45,7 +45,7 @@
 #include <kern/pc_sample.h>
 #include <kern/processor.h>
 #include <kern/syscall_emulation.h>
-#include <vm/vm_map.h>
+#include <vm/vm_types.h>
 
 struct task {
 	/* Synchronization/destruction information */

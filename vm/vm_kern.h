@@ -37,24 +37,41 @@
 #include <mach/kern_return.h>
 #include <vm/vm_map.h>
 
-extern kern_return_t    projected_buffer_allocate();
-extern kern_return_t    projected_buffer_deallocate();
-extern kern_return_t    projected_buffer_map();
-extern kern_return_t    projected_buffer_collect();
+extern kern_return_t    projected_buffer_allocate(vm_map_t, vm_size_t, int,
+						  vm_offset_t *, vm_offset_t *,
+						  vm_prot_t, vm_inherit_t);
+extern kern_return_t    projected_buffer_deallocate(vm_map_t, vm_offset_t,
+						    vm_offset_t);
+extern kern_return_t    projected_buffer_map(vm_map_t, vm_offset_t, vm_size_t,
+					     vm_offset_t *, vm_prot_t,
+					     vm_inherit_t);
+extern kern_return_t    projected_buffer_collect(vm_map_t);
 
-extern void		kmem_init();
+extern void		kmem_init(vm_offset_t, vm_offset_t);
 
-extern kern_return_t	kmem_alloc();
-extern kern_return_t	kmem_alloc_pageable();
-extern kern_return_t	kmem_alloc_wired();
-extern kern_return_t	kmem_alloc_aligned();
-extern kern_return_t	kmem_realloc();
-extern void		kmem_free();
+extern kern_return_t	kmem_alloc(vm_map_t, vm_offset_t *, vm_size_t);
+extern kern_return_t	kmem_alloc_pageable(vm_map_t, vm_offset_t *,
+					    vm_size_t);
+extern kern_return_t	kmem_alloc_wired(vm_map_t, vm_offset_t *, vm_size_t);
+extern kern_return_t	kmem_alloc_aligned(vm_map_t, vm_offset_t *, vm_size_t);
+extern kern_return_t	kmem_realloc(vm_map_t, vm_offset_t, vm_size_t,
+				     vm_offset_t *, vm_size_t);
+extern void		kmem_free(vm_map_t, vm_offset_t, vm_size_t);
 
-extern vm_map_t		kmem_suballoc();
+extern vm_map_t		kmem_suballoc(vm_map_t, vm_offset_t *, vm_offset_t *,
+				      vm_size_t, boolean_t);
 
-extern kern_return_t	kmem_io_map_copyout();
-extern void		kmem_io_map_deallocate();
+extern kern_return_t	kmem_io_map_copyout(vm_map_t, vm_offset_t *,
+					    vm_offset_t *, vm_size_t *,
+					    vm_map_copy_t, vm_size_t);
+extern void		kmem_io_map_deallocate(vm_map_t, vm_offset_t,
+					       vm_size_t);
+
+extern int
+copyinmap (vm_map_t map, char *fromaddr, char *toaddr, int length);
+
+extern int
+copyoutmap (vm_map_t map, char *fromaddr, char *toaddr, int length);
 
 extern vm_map_t	kernel_map;
 extern vm_map_t	kernel_pageable_map;
