@@ -51,7 +51,6 @@ intel_read_fault(map, vaddr)
 	vm_page_t		result_page;	/* Result of vm_fault_page */
 	vm_page_t		top_page;	/* Placeholder page */
 	boolean_t		wired;		/* Is map region wired? */
-	boolean_t		su;
 	kern_return_t		result;
 	register vm_page_t	m;
 
@@ -62,7 +61,7 @@ intel_read_fault(map, vaddr)
 	 *	to begin search.
 	 */
 	result = vm_map_lookup(&map, vaddr, VM_PROT_READ, &version,
-			&object, &offset, &prot, &wired, &su);
+			&object, &offset, &prot, &wired);
 	if (result != KERN_SUCCESS)
 	    return (result);
 
@@ -135,7 +134,7 @@ intel_read_fault(map, vaddr)
 
 	    result = vm_map_lookup(&map, vaddr, VM_PROT_READ, &version,
 				&retry_object, &retry_offset, &retry_prot,
-				&wired, &su);
+				&wired);
 	    if (result != KERN_SUCCESS) {
 		vm_object_lock(m->object);
 		RELEASE_PAGE(m);

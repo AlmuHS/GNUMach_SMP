@@ -1,5 +1,8 @@
 2007-05-05  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* i386/intel/read_fault.c (intel_read_fault): Remove the last parameter
+	from the calls of `vm_map_lookup'.
+
 	We're not in the eighties anymore.  List arguments in function
 	prototypes and definitions for a lot of symbols.  Also drop some unused
 	prototypes.  I refrain from listing every changed symbol.
