@@ -1,5 +1,8 @@
 2007-05-05  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* i386/i386at/model_dep.c (halt_cpu, halt_all_cpus): Call
+	`machine_idle' to avoid busy-looping.
+
 	* i386/intel/read_fault.c (intel_read_fault): Remove the last parameter
 	from the calls of `vm_map_lookup'.
 

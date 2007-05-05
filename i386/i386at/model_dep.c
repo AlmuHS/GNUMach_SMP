@@ -106,7 +106,7 @@ extern void linux_init(void);
 /*
  * Find devices.  The system is alive.
  */
-void machine_init()
+void machine_init(void)
 {
 	/*
 	 * Initialize the console.
@@ -159,7 +159,8 @@ void machine_idle (int cpu)
 void halt_cpu(void)
 {
 	asm volatile("cli");
-	while(1);
+	while (TRUE)
+	  machine_idle (cpu_number ());
 }
 
 /*
@@ -176,8 +177,8 @@ void halt_all_cpus(reboot)
 	    printf("In tight loop: hit ctl-alt-del to reboot\n");
 	    (void) spl0();
 	}
-	for (;;)
-	    continue;
+	while (TRUE)
+	  machine_idle (cpu_number ());
 }
 
 void exit(int rc)
@@ -185,7 +186,7 @@ void exit(int rc)
 	halt_all_cpus(0);
 }
 
-void db_reset_cpu()
+void db_reset_cpu(void)
 {
 	halt_all_cpus(1);
 }
@@ -195,7 +196,7 @@ void db_reset_cpu()
  * Compute physical memory size and other parameters.
  */
 void
-mem_size_init()
+mem_size_init(void)
 {
 	vm_size_t phys_last_kb;
 
@@ -230,7 +231,7 @@ mem_size_init()
  * Turns on paging and changes the kernel segments to use high linear addresses.
  */
 void
-i386at_init()
+i386at_init(void)
 {
 	/* XXX move to intel/pmap.h */
 	extern pt_entry_t *kernel_page_dir;
@@ -417,13 +418,13 @@ timemmap(dev,off,prot)
 }
 
 void
-startrtclock()
+startrtclock(void)
 {
 	clkstart();
 }
 
 void
-inittodr()
+inittodr(void)
 {
 	time_value_t	new_time;
 
@@ -440,12 +441,12 @@ inittodr()
 }
 
 void
-resettodr()
+resettodr(void)
 {
 	writetodc();
 }
 
-unsigned int pmap_free_pages()
+unsigned int pmap_free_pages(void)
 {
 	return atop(avail_remaining);
 }
@@ -567,7 +568,7 @@ boolean_t pmap_next_page(addrp)
    the standard memory allocation mechanism
    during system initialization.  */
 vm_offset_t
-pmap_grab_page()
+pmap_grab_page(void)
 {
 	vm_offset_t addr;
 	if (!pmap_next_page(&addr))
