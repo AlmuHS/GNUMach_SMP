@@ -46,6 +46,7 @@
 /*
  * IO request element, queued on device for delayed replies.
  */
+typedef struct io_req *io_req_t;
 struct io_req {
 	struct io_req *	io_next;	/* next, ... */
 	struct io_req *	io_prev;	/* prev pointers: link in done,
@@ -68,8 +69,8 @@ struct io_req {
 	long		io_alloc_size;	/* amount allocated */
 	long		io_residual;	/* amount NOT done */
 	io_return_t	io_error;	/* error code */
-	boolean_t	(*io_done)();	/* call when done - returns TRUE
-					   if IO really finished */
+	/* call when done - returns TRUE if IO really finished */
+	boolean_t	(*io_done)(io_req_t);
 	struct ipc_port	*io_reply_port;	/* reply port, for asynchronous
 					   messages */
 	mach_msg_type_name_t io_reply_port_type;
@@ -84,7 +85,6 @@ struct io_req {
 					   number */
 	long            io_rectotal;   /* total number of blocks to move */
 };
-typedef struct io_req *	io_req_t;
 
 /*
  * LOCKING NOTE: Operations on io_req's are in general single threaded by

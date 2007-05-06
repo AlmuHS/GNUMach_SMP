@@ -1,3 +1,9 @@
+2007-05-06  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* device/buf.h (minphys): Add return type.
+	* device/device_types_kernel.h: We're not in the eighties anymore...
+	* device/io_req.h: Likewise.
+
 2007-05-05  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* i386/i386at/model_dep.c (halt_cpu, halt_all_cpus): Call
