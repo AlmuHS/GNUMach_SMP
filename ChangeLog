@@ -1,5 +1,9 @@
 2007-05-06  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* device/kmsg.c: Include <device/ds_routines.h>.
+	(kmsg_lock): Use `decl_simple_lock_data'.
+	(kmsgread, kmsg_read_done): Add two typecasts.
+
 	* device/buf.h (minphys): Add return type.
 	* device/device_types_kernel.h: We're not in the eighties anymore...
 	* device/io_req.h: Likewise.

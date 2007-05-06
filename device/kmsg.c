@@ -1,5 +1,7 @@
 /* GNU Mach Kernel Message Device.
-   Copyright (C) 1998, 1999 Free Software Foundation, Inc.
+
+   Copyright (C) 1998, 1999, 2007 Free Software Foundation, Inc.
+
    Written by OKUJI Yoshinori.
 
 This is free software; you can redistribute it and/or modify
@@ -16,12 +18,13 @@ You should have received a copy of the GNU General Public License
 along with the software; see the file COPYING.  If not, write to
 the Free Software Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.  */
 
-/* Now kmsg provides stream interface, not random access methods.  */
+/* kmsg provides a stream interface.  */
 
 #include <sys/types.h>
 #include <string.h>
 
 #include <device/conf.h>
+#include <device/ds_routines.h>
 #include <device/io_req.h>
 #include <mach/boolean.h>
 #include <kern/lock.h>
@@ -41,7 +44,7 @@ static queue_head_t kmsg_read_queue;
 /* Used for exclusive access to the device */
 static int kmsg_in_use;
 /* Used for exclusive access to the routines */
-static simple_lock_data_t kmsg_lock;
+decl_simple_lock_data (static, kmsg_lock);
 /* If already initialized or not  */
 static int kmsg_init_done = 0;
 
@@ -108,7 +111,7 @@ kmsgread (dev_t dev, io_req_t ior)
 	}
 
       ior->io_done = kmsg_read_done;
-      enqueue_tail (&kmsg_read_queue, ior);
+      enqueue_tail (&kmsg_read_queue, (queue_entry_t) ior);
       simple_unlock (&kmsg_lock);
       return D_IO_QUEUED;
     }
@@ -154,7 +157,7 @@ kmsg_read_done (io_req_t ior)
     {
       /* The queue is empty.  */
       ior->io_done = kmsg_read_done;
-      enqueue_tail (&kmsg_read_queue, ior);
+      enqueue_tail (&kmsg_read_queue, (queue_entry_t) ior);
       simple_unlock (&kmsg_lock);
       return FALSE;
     }
