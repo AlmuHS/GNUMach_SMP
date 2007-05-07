@@ -36,6 +36,9 @@
 #include "gdt.h"
 #include "ktss.h"
 
+/* A kernel TSS with a complete I/O bitmap.  */
+struct task_tss ktss;
+
 void
 ktss_init()
 {
@@ -44,16 +47,15 @@ ktss_init()
 
 	/* Initialize the master TSS descriptor.  */
 	fill_gdt_descriptor(KERNEL_TSS,
-			    kvtolin(&ktss), sizeof(ktss)+65536/8+1-1,
+			    kvtolin(&ktss), sizeof(struct task_tss) - 1,
 			    ACC_PL_K|ACC_TSS, 0);
 
 	/* Initialize the master TSS.  */
-	ktss.ss0 = KERNEL_DS;
-	ktss.esp0 = (unsigned)(exception_stack+1024);
-	ktss.io_bit_map_offset = sizeof(ktss);
-
+	ktss.tss.ss0 = KERNEL_DS;
+	ktss.tss.esp0 = (unsigned)(exception_stack+1024);
+	ktss.tss.io_bit_map_offset = IOPB_INVAL;                                                                                                
 	/* Set the last byte in the I/O bitmap to all 1's.  */
-	((unsigned char*)&ktss)[sizeof(ktss)+65536/8] = 0xff;
+	ktss.barrier = 0xff;
 
 	/* Load the TSS.  */
 	ltr(KERNEL_TSS);

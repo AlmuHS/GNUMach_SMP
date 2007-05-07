@@ -46,6 +46,7 @@
 #include <kern/processor.h>
 #include <kern/syscall_emulation.h>
 #include <vm/vm_types.h>
+#include <machine/task.h>
 
 struct task {
 	/* Synchronization/destruction information */
@@ -98,6 +99,9 @@ struct task {
 	vm_offset_t	fast_tas_base[TASK_FAST_TAS_NRAS];
 	vm_offset_t	fast_tas_end[TASK_FAST_TAS_NRAS];
 #endif	/* FAST_TAS */
+
+	/* Hardware specific data.  */
+	machine_task_t	machine;
 };
 
 #define task_lock(task)		simple_lock(&(task)->lock)

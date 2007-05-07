@@ -29,6 +29,8 @@
 
 #include <mach/inline.h>
 
+#include <machine/io_perm.h>
+
 /*
  *	i386 Task State Segment
  */
@@ -65,6 +67,17 @@ struct i386_tss {
 					/* offset to start of IO permission
 					   bit map */
 };
+
+
+/* The structure extends the above TSS structure by an I/O permission bitmap
+   and the barrier.  */
+struct task_tss
+ {
+  struct i386_tss tss;
+  unsigned char iopb[IOPB_BYTES];
+  unsigned char barrier;
+};
+
 
 /* Load the current task register.  */
 MACH_INLINE void

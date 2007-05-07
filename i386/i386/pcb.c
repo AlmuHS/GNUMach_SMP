@@ -24,6 +24,7 @@
  * the rights to redistribute these changes.
  */
 
+#include <stddef.h>
 #include <string.h>
 
 #include <mach/std_types.h>
@@ -43,7 +44,6 @@
 #include <i386/thread.h>
 #include <i386/proc_reg.h>
 #include <i386/seg.h>
-#include <i386/tss.h>
 #include <i386/user_ldt.h>
 #include <i386/fpu.h>
 #include "eflags.h"
@@ -52,6 +52,8 @@
 #include "ktss.h"
 #include "pcb.h"
 
+#include <machine/tss.h>
+
 #if	NCPUS > 1
 #include <i386/mp_desc.h>
 #endif
@@ -59,8 +61,6 @@
 extern thread_t	Switch_context();
 extern void	Thread_continue();
 
-extern iopb_tss_t	iopb_create();
-extern void		iopb_destroy();
 extern void		user_ldt_free();
 
 zone_t		pcb_zone;
@@ -126,7 +126,7 @@ vm_offset_t stack_detach(thread)
 #define	curr_ktss(mycpu)	(mp_ktss[mycpu])
 #else
 #define	curr_gdt(mycpu)		((void)(mycpu), gdt)
-#define	curr_ktss(mycpu)	((void)(mycpu), &ktss)
+#define	curr_ktss(mycpu)	((void)(mycpu), (struct task_tss *)&ktss)
 #endif
 
 #define	gdt_desc_p(mycpu,sel) \
@@ -137,7 +137,6 @@ void switch_ktss(pcb)
 {
 	int			mycpu = cpu_number();
     {
-	register iopb_tss_t	tss = pcb->ims.io_tss;
 	vm_offset_t		pcb_stack_top;
 
 	/*
@@ -153,25 +152,7 @@ void switch_ktss(pcb)
 			? (int) (&pcb->iss + 1)
 			: (int) (&pcb->iss.v86_segs);
 
-	if (tss == 0) {
-	    /*
-	     *	No per-thread IO permissions.
-	     *	Use standard kernel TSS.
-	     */
-	    if (!(gdt_desc_p(mycpu,KERNEL_TSS)->access & ACC_TSS_BUSY))
-		set_tr(KERNEL_TSS);
-	    curr_ktss(mycpu)->esp0 = pcb_stack_top;
-	}
-	else {
-	    /*
-	     * Set the IO permissions.  Use this thread`s TSS.
-	     */
-	    *gdt_desc_p(mycpu,USER_TSS)
-	    	= *(struct real_descriptor *)tss->iopb_desc;
-	    tss->tss.esp0 = pcb_stack_top;
-	    set_tr(USER_TSS);
-	    gdt_desc_p(mycpu,KERNEL_TSS)->access &= ~ ACC_TSS_BUSY;
-	}
+	curr_ktss(mycpu)->tss.esp0 = pcb_stack_top;
     }
 
     {
@@ -207,6 +188,24 @@ void switch_ktss(pcb)
 
 }
 
+/* If NEW_IOPB is not null, the SIZE denotes the number of bytes in
+   the new bitmap.  Expects iopb_lock to be held.  */
+void
+update_ktss_iopb (unsigned char *new_iopb, io_port_t size)
+{
+  struct task_tss *tss = curr_ktss (cpu_number ());
+
+  if (new_iopb && size > 0)
+    {
+      tss->tss.io_bit_map_offset
+       = offsetof (struct task_tss, barrier) - size;
+      memcpy (((char *) tss) + tss->tss.io_bit_map_offset,
+             new_iopb, size);
+    }
+  else
+    tss->tss.io_bit_map_offset = IOPB_INVAL;
+}
+
 /*
  *	stack_handoff:
  *
@@ -236,6 +235,19 @@ void stack_handoff(old, new)
 				     old, mycpu);
 		PMAP_ACTIVATE_USER(vm_map_pmap(new_task->map),
 				   new, mycpu);
+
+		simple_lock (&new_task->machine.iopb_lock);
+#if NCPUS>1
+#warning SMP support missing (avoid races with io_perm_modify).
+#else
+		/* This optimization only works on a single processor
+		   machine, where old_task's iopb can not change while
+		   we are switching.  */
+		if (old_task->machine.iopb || new_task->machine.iopb)
+#endif
+		  update_ktss_iopb (new_task->machine.iopb,
+				    new_task->machine.iopb_size);
+		simple_unlock (&new_task->machine.iopb_lock);
 	}
     }
 
@@ -298,6 +310,19 @@ thread_t switch_context(old, continuation, new)
 				     old, mycpu);
 		PMAP_ACTIVATE_USER(vm_map_pmap(new_task->map),
 				   new, mycpu);
+
+		simple_lock (&new_task->machine.iopb_lock);
+#if NCPUS>1
+#warning SMP support missing (avoid races with io_perm_modify).
+#else
+		/* This optimization only works on a single processor
+		   machine, where old_task's iopb can not change while
+		   we are switching.  */
+		if (old_task->machine.iopb || new_task->machine.iopb)
+#endif
+		  update_ktss_iopb (new_task->machine.iopb,
+				    new_task->machine.iopb_size);
+		simple_unlock (&new_task->machine.iopb_lock);
 	}
     }
 
@@ -317,7 +342,6 @@ void pcb_module_init()
 			 0, "i386 pcb state");
 
 	fpu_module_init();
-	iopb_init();
 }
 
 void pcb_init(thread)
@@ -361,8 +385,6 @@ void pcb_terminate(thread)
 	counter(if (--c_threads_current < c_threads_min)
 			c_threads_min = c_threads_current);
 
-	if (pcb->ims.io_tss != 0)
-		iopb_destroy(pcb->ims.io_tss);
 	if (pcb->ims.ifps != 0)
 		fp_free(pcb->ims.ifps);
 	if (pcb->ims.ldt != 0)
@@ -516,7 +538,6 @@ kern_return_t thread_setstatus(thread, flavor, tstate, count)
 	     */
 	    case i386_ISA_PORT_MAP_STATE: {
 		register struct i386_isa_port_map_state *state;
-		register iopb_tss_t	tss;
 
 		if (count < i386_ISA_PORT_MAP_STATE_COUNT)
 			return(KERN_INVALID_ARGUMENT);
@@ -673,32 +694,20 @@ kern_return_t thread_getstatus(thread, flavor, tstate, count)
 	     */
 	    case i386_ISA_PORT_MAP_STATE: {
 		register struct i386_isa_port_map_state *state;
-		register iopb_tss_t tss;
 
 		if (*count < i386_ISA_PORT_MAP_STATE_COUNT)
 			return(KERN_INVALID_ARGUMENT);
 
 		state = (struct i386_isa_port_map_state *) tstate;
-		tss = thread->pcb->ims.io_tss;
 
-		if (tss == 0) {
-		    int i;
-
-		    /*
-		     *	The thread has no ktss, so no IO permissions.
-		     */
-
-		    for (i = 0; i < sizeof state->pm; i++)
-			state->pm[i] = 0xff;
-		} else {
-		    /*
-		     *	The thread has its own ktss.
-		     */
-
-		    memcpy(state->pm,
-			   tss->bitmap,
-			   sizeof state->pm);
-		}
+		simple_lock (&thread->task->machine.iopb_lock);
+		if (thread->task->machine.iopb == 0)
+		  memset (state->pm, 0xff, sizeof state->pm);
+		else
+		  memcpy((char *) state->pm,
+			 (char *) thread->task->machine.iopb,
+			 sizeof state->pm);
+		simple_unlock (&thread->task->machine.iopb_lock);
 
 		*count = i386_ISA_PORT_MAP_STATE_COUNT;
 		break;

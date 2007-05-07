@@ -39,7 +39,6 @@
 
 #include <kern/lock.h>
 
-#include <i386/iopb.h>
 #include <i386/tss.h>
 #include "gdt.h"
 
@@ -158,7 +157,6 @@ struct i386_interrupt_state {
  */
 
 struct i386_machine_state {
-	iopb_tss_t		io_tss;
 	struct user_ldt	*	ldt;
 	struct i386_fpsave_state *ifps;
 	struct v86_assist_state	v86s;

@@ -35,26 +35,31 @@ subsystem
 
 #include <mach/std_types.defs>
 #include <mach/mach_types.defs>
-#include <device/device_types.defs>
-
-type	device_list_t	=	^array[] of device_t;
 
 type	descriptor_t	= 	struct[2] of int;
 type	descriptor_list_t =	array[*] of descriptor_t;
 
 import <mach/machine/mach_i386_types.h>;
 
-routine	i386_io_port_add(
-		target_thread	: thread_t;
-		device		: device_t);
+#if	KERNEL_SERVER
+simport <machine/io_perm.h>;
+#endif
 
-routine	i386_io_port_remove(
-		target_thread	: thread_t;
-		device		: device_t);
+type	io_port_t	=	MACH_MSG_TYPE_INTEGER_16;
+type	io_perm_t	=	mach_port_t
+		ctype: mach_port_t
+#if	KERNEL_SERVER
+		intran: io_perm_t convert_port_to_io_perm(mach_port_t)
+		outtran: mach_port_t convert_io_perm_to_port(io_perm_t)
+#if TODO_REMOVE_ME
+		destructor: io_perm_deallocate(io_perm_t)
+#endif
+#endif	/* KERNEL_SERVER */
+		;
 
-routine	i386_io_port_list(
-		target_thread	: thread_t;
-	out	device_list	: device_list_t);
+skip;	/* i386_io_port_add */
+skip;	/* i386_io_port_remove */
+skip;	/* i386_io_port_list */
 
 routine	i386_set_ldt(
 		target_thread	: thread_t;
@@ -67,8 +72,27 @@ routine	i386_get_ldt(
 		selector_count	: int;
 	out	desc_list	: descriptor_list_t);
 
-skip;	/* i386_io_perm_create */
-skip;	/* i386_io_perm_modify */
+/* Request a new port IO_PERM that represents the capability to access
+   the I/O ports [FROM; TO] directly.  MASTER_PORT is the master device port.
+
+   The function returns KERN_INVALID_ARGUMENT if TARGET_TASK is not a task,
+   or FROM is greater than TO.  */
+routine	i386_io_perm_create(
+		master_port	: mach_port_t;
+		from		: io_port_t;
+		to		: io_port_t;
+	out	io_perm		: io_perm_t);
+
+/* Modify the I/O permissions for TARGET_TASK.  If ENABLE is TRUE, the
+   permission to access the I/O ports specified by IO_PERM is granted,
+   otherwise it is withdrawn.
+
+   The function returns KERN_INVALID_ARGUMENT if TARGET_TASK is not a valid
+   task or IO_PERM not a valid I/O permission port.  */
+routine	i386_io_perm_modify(
+		target_task	: task_t;
+		io_perm		: io_perm_t;
+		enable		: boolean_t);
 
 /* Modify one of a few available thread-specific segment descriptor slots.
    The SELECTOR must be a value from a previous call (on any thread),

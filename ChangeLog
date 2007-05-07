@@ -1,3 +1,105 @@
+2007-05-07  Thomas Schwinge  <tschwinge@gnu.org>
+
+	[bug #15295 --- ``Mach lets processes write to I/O ports'']
+
+	* i386/Makefrag.am (libkernel_a_SOURCES): Add `i386/i386/io_perm.c',
+	`i386/i386/io_perm.h', `i386/i386/machine_task.c', `i386/i386/task.h'
+	and remove `i386/i386/io_port.h', `i386/i386/iopb.c',
+	`i386/i386/iopb.h'.
+
+	* i386/i386/io_port.h: Remove file.
+	* i386/i386at/kd.c: Don't include <i386/io_port.h>.
+	(vga_port_list, kd_io_device, kd_io_map_open, kd_io_map_close): Don't
+	define and don't use anymore.
+
+	* include/stddef.h: New file.
+
+	* i386/i386/io_perm.c: Include <string.h>, <device/device_emul.h>,
+	<ipc/ipc_space.h> and don't include <oskit/ds_oskit.h>.
+	(io_perm_device_emulation_ops): New variable.
+	(dev_open_alloc, setup_no_senders): Remove declarations.
+	(convert_io_perm_to_port, convert_port_to_io_perm, io_perm_deallocate):
+	Rewrite.
+	(no_senders): New function.
+	(i386_io_perm_create, i386_io_perm_modify): Rewrite partially, to adapt
+	to the GNU Mach environment.
+	* i386/i386/io_perm.h: Include <device/dev_hdr.h> and
+	<ipc/ipc_types.h>.
+	(io_perm, io_perm_t): New structure and accompanying type definition.
+	(IO_PERM_NULL): Define.
+	* i386/i386/locore.S (ktss): Move variable to...
+	* i386/i386/ktss.c: ... here, make it a ``struct task_tss''.
+	(ktss_init): Initialize the `task_tss' structure and the i/o permission
+	bit map.
+	* i386/i386/ktss.h: Adapt to that.
+	* i386/i386/machine_task.c (machine_task_module_init): Adapt the `zinit'
+	call to the GNU Mach environment.
+	* i386/i386/mp_desc.c: Include <machine/ktss.h>.
+	* i386/i386/tss.h: Include <machine/io_perm.h>.
+	(task_tss): New structure, equivalent to the OSKit-Mach one.
+	* i386/include/mach/i386/mach_i386.defs: Don't include
+	<device/device_types.defs>.
+	(device_list_t): Remove type.
+	* i386/include/mach/i386/mach_i386_types.h (device_list_t): Remove type
+	definition.
+
+2007-05-07  Marcus Brinkmann  <marcus@gnu.org>
+
+	[bug #15295 --- ``Mach lets processes write to I/O ports'']
+
+	* i386/i386/iopb.h, i386/i386/iopb.c: Obsolete files removed.
+
+	* i386/i386/pcb.c (switch_context): Update the I/O permission
+	bitmap from stack_handoff() here (not only in stack_handoff()).
+
+	* i386/i386/machine_task.c (machine_task_module_init): Set
+	ZONE_COLLECTABLE and ZONE_EXHAUSTIBLE flags for the iopb zone.
+	Requested by Roland McGrath <roland@frob.com>.
+
+	* i386/i386/io_perm.h: New file.
+	* i386/i386/io_perm.c: New file.
+	* i386/i386/machine_task.c: New file.
+	* i386/i386/mp_desc.h: (struct mp_desc_table): Change type of ktss to
+	struct task_tss.
+	(mp_ktss): Likewise for array of pointers to the struct.
+	* i386/i386/mp_desc.c: Include `machine/tss.h' and `machine/io_perm.h'.
+	(mp_ktss): Change type to array of struct task_tss.
+	(mp_desc_init): Cast pointer to x86_tss into pointer to task_tss,
+	and use size of struct task_tss instead size of struct x86_tss.
+	Initialize the task_tss structure.
+	* i386/i386/pcb.c: Include `stddef.h' and `machine/tss.h'.
+	(iopb_create, iopb_destroy): Prototypes removed.
+	(curr_ktss): Cast pointer to base_tss to pointer to struct
+	task_tss.
+	(switch_ktss): Always use kernel TSS.
+	(update_ktss_iopb): New function.
+	(stack_handoff): Call update_ktss_iopb.
+	(pcb_module_init): Do not call iopb_init.
+	(pcb_terminate): Do not call iopb_destroy.
+	(thread_setstatus): Remove local variable tss.
+	(thread_getstatus): Rewrite i386_ISA_PORT_MAP_STATE case handler.
+	* i386/i386/task.h: New file.
+	* i386/i386/thread.h: Do not include `i386/iopb.h'.
+	(struct i386_machine_state): Remove member io_tss.
+	* i386/include/mach/i386/mach_i386.defs [KERNEL_SERVER]: Include
+	`machine/io_perm.h'.  Define intran, outtran and destructor.
+	(io_port_t): New type.
+	(io_perm_t): Likewise.
+	(i386_io_port_add): Interface removed.
+	(i386_io_port_remove): Likewise.
+	(i386_io_port_list): Likewise.
+	(i386_io_perm_create): New interface.
+	(i386_io_perm_modify): Likewise.
+	* i386/include/mach/i386/mach_i386_types.h [MACH_KERNEL]: Include
+	`i386/io_perm.h'.
+	[!MACH_KERNEL]: Define types io_port_t and io_perm_t.
+	* kern/task.c (task_init): Call machine_task_module_init.
+	(task_create): Call machine_task_init.
+	(task_deallocate): Call machine_task_terminate.
+	(task_collect_scan): Call machine_task_collect.
+	* task.h: Include `machine/task.h'.
+	(struct task): Add member machine.
+
 2007-05-06  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* device/kmsg.c: Include <device/ds_routines.h>.

@@ -67,6 +67,7 @@ void task_init(void)
 			0, "tasks");
 
 	eml_init();
+	machine_task_module_init ();
 
 	/*
 	 * Create the kernel task as the first task.
@@ -145,6 +146,7 @@ kern_return_t task_create(
 	eml_task_reference(new_task, parent_task);
 
 	ipc_task_init(new_task, parent_task);
+	machine_task_init (new_task);
 
 	new_task->total_user_time.seconds = 0;
 	new_task->total_user_time.microseconds = 0;
@@ -219,6 +221,8 @@ void task_deallocate(
 	task_unlock(task);
 	if (c != 0)
 		return;
+
+	machine_task_terminate (task);
 
 	eml_task_deallocate(task);
 
@@ -1092,6 +1096,7 @@ void task_collect_scan(void)
 			pset_unlock(pset);
 			simple_unlock(&all_psets_lock);
 
+			machine_task_collect (task);
 			pmap_collect(task->map->pmap);
 
 			if (prev_task != TASK_NULL)

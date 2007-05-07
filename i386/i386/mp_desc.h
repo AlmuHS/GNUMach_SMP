@@ -52,7 +52,7 @@ struct mp_desc_table {
 	struct real_gate	idt[IDTSZ];	/* IDT */
 	struct real_descriptor	gdt[GDTSZ];	/* GDT */
 	struct real_descriptor	ldt[LDTSZ];	/* LDT */
-	struct i386_tss		ktss;
+	struct task_tss		ktss;
 };
 
 /*
@@ -63,7 +63,7 @@ extern struct mp_desc_table	*mp_desc_table[NCPUS];
 /*
  * The kernel TSS gets its own pointer.
  */
-extern struct i386_tss		*mp_ktss[NCPUS];
+extern struct task_tss		*mp_ktss[NCPUS];
 
 /*
  * So does the GDT.

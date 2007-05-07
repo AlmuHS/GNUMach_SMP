@@ -84,7 +84,6 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <device/tty.h>
 #include <device/io_req.h>
 #include <device/buf.h>		/* for struct uio (!) */
-#include <i386/io_port.h>
 #include <vm/vm_kern.h>
 #include <i386/vm_param.h>
 #include <i386/machspl.h>
@@ -333,33 +332,6 @@ unsigned char	key_map[NUMKEYS][WIDTH_KMAP] = {
 short	kd_index_reg	= EGA_IDX_REG;
 short	kd_io_reg	= EGA_IO_REG;
 
-/*
- * IO port sets for different controllers.
- */
-io_reg_t vga_port_list[] = {
-	0x3b4, 0x3b5, 0x3b8, 0x3b9, 0x3ba,	/* MDA/EGA */
-	0x3d4, 0x3d5, 0x3d8, 0x3d9, 0x3da,	/* CGA/EGA */
-	0x3c0, 0x3c1, 0x3c2, 0x3c3, 0x3c4, 0x3c5, 0x3c6, 0x3c7,
-	0x3c8, 0x3c9, 0x3ca, 0x3cb, 0x3cc, 0x3cd, 0x3ce, 0x3cf,
-	IO_REG_NULL
-};
-
-mach_device_t	kd_io_device = 0;
-
-void
-kd_io_map_open(device)
-	mach_device_t	device;
-{
-	kd_io_device = device;
-	io_port_create(device, vga_port_list);
-}
-
-void
-kd_io_map_close()
-{
-	io_port_destroy(kd_io_device);
-	kd_io_device = 0;
-}
 
 /*
  * Globals used only for bitmap-based controllers.  See kdsoft.h for
@@ -508,11 +480,6 @@ kdopen(dev, flag, ior)
 		tp->t_ospeed = tp->t_ispeed = B9600;
 		tp->t_flags = ODDP|EVENP|ECHO|CRMOD|XTABS;
 		kdinit();
-
-		/* XXX kd_io_map_open allocates memory */
-		simple_unlock(&tp->t_lock);
-		kd_io_map_open(ior->io_device);
-		simple_lock(&tp->t_lock);
 	}
 	tp->t_state |= TS_CARR_ON;
 	simple_unlock(&tp->t_lock);
@@ -549,10 +516,7 @@ int	flag;
 	    splx(s);
 	}
 
-	kd_io_map_close();
-
 	return;
-
 }
 
 

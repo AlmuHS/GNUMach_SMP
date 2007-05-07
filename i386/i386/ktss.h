@@ -25,6 +25,6 @@
 
 #include "tss.h"
 
-extern struct i386_tss ktss;
+extern struct task_tss ktss;
 
 #endif /* _I386_KTSS_ */

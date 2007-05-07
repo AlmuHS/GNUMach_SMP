@@ -1441,12 +1441,3 @@ Entry(cpu_shutdown)
         xor     %ecx,%ecx       /* generate a divide by zero */
         div     %ecx,%eax       /* reboot now */
         ret                     /* this will "never" be executed */
-
-
-/*
- * Allocate enough space for a kernel TSS with a complete I/O bitmap,
- * for making v86-mode BIOS calls.  XXX
- */
-	.data
-	.globl	EXT(ktss)
-	.comm	EXT(ktss),0x68+65536/8+1

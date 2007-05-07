@@ -35,6 +35,9 @@
 
 #include <i386/mp_desc.h>
 #include <i386/lock.h>
+#include <machine/ktss.h>
+#include <machine/tss.h>
+#include <machine/io_perm.h>
 
 /*
  * The i386 needs an interrupt stack to keep the PCB stack from being
@@ -82,7 +85,7 @@ struct mp_desc_table	*mp_desc_table[NCPUS] = { 0 };
 /*
  * Pointer to TSS for access in load_context.
  */
-struct i386_tss		*mp_ktss[NCPUS] = { 0 };
+struct task_tss		*mp_ktss[NCPUS] = { 0 };
 
 /*
  * Pointer to GDT to reset the KTSS busy bit.
@@ -95,7 +98,6 @@ struct real_descriptor	*mp_gdt[NCPUS] = { 0 };
 extern struct real_gate		idt[IDTSZ];
 extern struct real_descriptor	gdt[GDTSZ];
 extern struct real_descriptor	ldt[LDTSZ];
-extern struct i386_tss		ktss;
 
 /*
  * Allocate and initialize the per-processor descriptor tables.
@@ -112,7 +114,7 @@ mp_desc_init(mycpu)
 		 * Master CPU uses the tables built at boot time.
 		 * Just set the TSS and GDT pointers.
 		 */
-		mp_ktss[mycpu] = &ktss;
+		mp_ktss[mycpu] = (struct task_tss *) &ktss;
 		mp_gdt[mycpu] = gdt;
 		return 0;
 	}
@@ -140,7 +142,7 @@ mp_desc_init(mycpu)
 		  ldt,
 		  sizeof(ldt));
 		memset(&mpt->ktss, 0, 
-		  sizeof(struct i386_tss));
+		  sizeof(struct task_tss));
 
 		/*
 		 * Fix up the entries in the GDT to point to
@@ -152,11 +154,12 @@ mp_desc_init(mycpu)
 			ACC_P|ACC_PL_K|ACC_LDT, 0);
 		fill_descriptor(&mpt->gdt[sel_idx(KERNEL_TSS)],
 			(unsigned)&mpt->ktss,
-			sizeof(struct i386_tss) - 1,
+			sizeof(struct task_tss) - 1,
 			ACC_P|ACC_PL_K|ACC_TSS, 0);
 
-		mpt->ktss.ss0 = KERNEL_DS;
-		mpt->ktss.io_bit_map_offset = 0x0FFF;	/* no IO bitmap */
+		mpt->ktss.tss.ss0 = KERNEL_DS;
+		mpt->ktss.tss.io_bit_map_offset = IOPB_INVAL;
+		mpt->ktss.barrier = 0xFF;
 
 		return mpt;
 	}
