@@ -270,10 +270,11 @@ ASSERT_IPL(SPL0);
 	    ifps->fp_save_state.fp_dp      = user_fp_state->fp_dp;
 	    ifps->fp_save_state.fp_ds      = user_fp_state->fp_ds;
 	    ifps->fp_regs = *user_fp_regs;
+	    ifps->fp_valid = TRUE;
 
 	    simple_unlock(&pcb->lock);
 	    if (new_ifps != 0)
-		zfree(ifps_zone, (vm_offset_t) ifps);
+		zfree(ifps_zone, (vm_offset_t) new_ifps);
 	}
 
 	return KERN_SUCCESS;
