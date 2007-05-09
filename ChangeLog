@@ -1,3 +1,8 @@
+2007-05-09  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* include/mach/mach_types.defs (userprefix, serverprefix): Set, if
+	requested.
+
 2007-05-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* i386/i386/fpu.c (fpu_set_state): Set fp_valid to TRUE.  Free the

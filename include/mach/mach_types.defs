@@ -50,6 +50,14 @@
 #if	KERNEL_SERVER
 #endif	/* KERNEL_SERVER */
 
+#ifdef USERPREFIX
+userprefix USERPREFIX;
+#endif
+
+#ifdef SERVERPREFIX
+serverprefix SERVERPREFIX;
+#endif
+
 type mach_port_status_t = struct[9] of integer_t;
 
 type old_mach_port_status_t = struct[8] of integer_t;	/* compatibility */
