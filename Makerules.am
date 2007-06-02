@@ -29,54 +29,8 @@ EXTRA_DIST += \
 	  -e 's/^[*]/#define/'			\
 	  -e 's/mAgIc[^-0-9]*//'
 
-#
-# Building RPC stubs.
-#
-
-# These chained rules could be (and used to be) single rules using pipes or
-# could even --- if you dare to --- use the `mig' shell script, but it's
-# convenient to be able to explicitly make the intermediate files when you want
-# to deal with a problem in the MIG stub generator.
-
-# TODO.  Get rid of the following four rules and the lib_dep_tr_for_defs.a
-# machinery (see Makefrag.am and i386/Makefrag.am).
-%.server.defs.c: %.srv
-	rm -f $@
-	cp -p $< $@
-%.user.defs.c: %.cli
-	rm -f $@
-	cp -p $< $@
-%.server.h %.server.c %.server.msgids: lib_dep_tr_for_defs_a-%.server.defs.$(OBJEXT)
-	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMSFLAGS)	\
-	  -sheader $*.server.h -server $*.server.c	\
-	  -list $*.server.msgids			\
-	  < $<
-%.user.h %.user.c %.user.msgids: lib_dep_tr_for_defs_a-%.user.defs.$(OBJEXT)
-	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMUFLAGS)	\
-	  -user $*.user.c -header $*.user.h		\
-	  -list $*.user.msgids				\
-	  < $<
-
-# TODO.  Get rid of the .srv files and rather use .defs files and MIG*SFLAGS?
-#%.server.defs: %.srv
-#	$(CPP) $(AM_CPPFLAGS) $(CPPFLAGS) -o $@ $<
-#%.server.defs: %.defs
-#	$(CPP) $(AM_CPPFLAGS) $(CPPFLAGS) $(MIGSFLAGS) -o $@ $<
-#%.server.h %.server.c %.server.msgids: %.server.defs
-#	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMSFLAGS)	\
-#	  -sheader $*.server.h -server $*.server.c	\
-#	  -list $*.server.msgids			\
-#	  < $<
-# TODO.  Get rid of the .cli files and rather use .defs files and MIG*UFLAGS?
-#%.user.defs: %.cli
-#	$(CPP) $(AM_CPPFLAGS) $(CPPFLAGS) -o $@ $<
-#%.user.defs: %.defs
-#	$(CPP) $(AM_CPPFLAGS) $(CPPFLAGS) $(MIGUFLAGS) -o $@ $<
-#%.user.h %.user.c %.user.msgids: %.user.defs
-#	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMUFLAGS)	\
-#	  -user $*.user.c -header $*.user.h		\
-#	  -list $*.user.msgids				\
-#	  < $<
+# Makerules.mig: how to do some MIG-related things.
+include Makerules.mig.am
 
 #
 # gzip files.

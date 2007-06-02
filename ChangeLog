@@ -1,5 +1,10 @@
 2007-06-02  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* Makerules.mig.am: New file, factored out of code of...
+	* Makefrag.am: ... this file and...
+	* Makerules.am: ... this file.
+	* i386/Makefrag.am: Update comment.
+
 	* Makefile.am (MIGFLAGS): Remove.
 	(MIGCOM): Add ``-n''.
 	* Makerules.am: Adapt to that.

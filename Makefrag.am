@@ -411,18 +411,8 @@ EXTRA_DIST += \
 #
 # Automatically generated source files.
 #
-
-# TODO.  Get rid of that stuff and lib_dep_tr_for_defs.a.  See the thread at
-# <http://lists.gnu.org/archive/html/automake/2006-10/msg00039.html> about what
-# we really want to do.
-noinst_LIBRARIES += \
-	lib_dep_tr_for_defs.a
-nodist_lib_dep_tr_for_defs_a_SOURCES =
-MOSTLYCLEANFILES += \
-	$(nodist_lib_dep_tr_for_defs_a_SOURCES)
-# Preprocess only.
-lib_dep_tr_for_defs_a_CPPFLAGS = $(AM_CPPFLAGS) \
-	-E
+# See Makerules.mig.am.
+#
 
 # User stubs.
 nodist_lib_dep_tr_for_defs_a_SOURCES += \

@@ -1,0 +1,118 @@
+# Makerules.mig: how to do some MIG-related things.
+
+# Copyright (C) 2006, 2007 Free Software Foundation, Inc.
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the GNU General Public License as published by the
+# Free Software Foundation; either version 2, or (at your option) any later
+# version.
+# 
+# This program is distributed in the hope that it will be useful, but
+# WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+# or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
+# for more details.
+# 
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
+# 
+# Written by Thomas Schwinge.
+
+# serial 0
+
+# TODO.  This file should probably be distributed with GNU MIG and then there
+# should be some mechanism so that every package using it is automagically
+# using the latest available (or best-matching) version of it.  Which is not
+# trivial, as the file is already needed to build the build system.  But then,
+# this file does not really depend on GNU Automake.  Hmm...
+
+# USAGE.
+
+# Before `include'ing this file, `noinst_LIBRARIES' and `MOSTLYCLEANFILES' have
+# to be initialized.
+
+# For using these rules, `AM_CPPFLAGS', `MIGCOM', `MIGCOMFLAGS', `MIGCOMSFLAGS'
+# and `MIGCOMUFLAGS' have to be defined as desired.
+
+# Then you can (read: currently ``have to''; see below for comments) use
+# constructs like:
+#
+# # User stubs.
+# nodist_lib_dep_tr_for_defs_a_SOURCES += \
+# 	vm/memory_object_user.user.defs.c
+# nodist_libkernel_a_SOURCES += \
+# 	vm/memory_object_user.user.h \
+# 	vm/memory_object_user.user.c \
+# 	vm/memory_object_user.user.msgids
+#
+# # Server stubs.
+# nodist_lib_dep_tr_for_defs_a_SOURCES += \
+# 	device/device.server.defs.c
+# nodist_libkernel_a_SOURCES += \
+# 	device/device.server.h \
+# 	device/device.server.c \
+# 	device/device.server.msgids
+
+#
+# Building RPC stubs.
+#
+
+# TODO.  Get rid of that stuff, lib_dep_tr_for_defs.a and the four following
+# rules.  See the thread at
+# <http://lists.gnu.org/archive/html/automake/2006-10/msg00039.html> about what
+# we really want to do.  This requires work on GNU Automake.
+
+noinst_LIBRARIES += \
+	lib_dep_tr_for_defs.a
+nodist_lib_dep_tr_for_defs_a_SOURCES =
+MOSTLYCLEANFILES += \
+	$(nodist_lib_dep_tr_for_defs_a_SOURCES)
+# Preprocess only.
+lib_dep_tr_for_defs_a_CPPFLAGS = $(AM_CPPFLAGS) \
+	-E
+
+%.server.defs.c: %.srv
+	rm -f $@
+	cp -p $< $@
+%.user.defs.c: %.cli
+	rm -f $@
+	cp -p $< $@
+%.server.h %.server.c %.server.msgids: lib_dep_tr_for_defs_a-%.server.defs.$(OBJEXT)
+	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMSFLAGS)	\
+	  -sheader $*.server.h -server $*.server.c	\
+	  -list $*.server.msgids			\
+	  < $<
+%.user.h %.user.c %.user.msgids: lib_dep_tr_for_defs_a-%.user.defs.$(OBJEXT)
+	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMUFLAGS)	\
+	  -user $*.user.c -header $*.user.h		\
+	  -list $*.user.msgids				\
+	  < $<
+
+# This is how it should be done, but this is not integrated into GNU Automake
+# and is missing automatic inter-file dependency management because of that.
+
+# These chained rules could be (and used to be) single rules using pipes or
+# could even --- if you dare to --- use the `mig' shell script, but it's
+# convenient to be able to explicitly make the intermediate files when you want
+# to deal with a problem in the MIG stub generator.
+
+# TODO.  Get rid of the .srv files and rather use .defs files and MIG*SFLAGS?
+#%.server.defs: %.srv
+#	$(CPP) $(AM_CPPFLAGS) $(CPPFLAGS) -o $@ $<
+#%.server.defs: %.defs
+#	$(CPP) $(AM_CPPFLAGS) $(CPPFLAGS) $(MIGSFLAGS) -o $@ $<
+#%.server.h %.server.c %.server.msgids: %.server.defs
+#	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMSFLAGS)	\
+#	  -sheader $*.server.h -server $*.server.c	\
+#	  -list $*.server.msgids			\
+#	  < $<
+# TODO.  Get rid of the .cli files and rather use .defs files and MIG*UFLAGS?
+#%.user.defs: %.cli
+#	$(CPP) $(AM_CPPFLAGS) $(CPPFLAGS) -o $@ $<
+#%.user.defs: %.defs
+#	$(CPP) $(AM_CPPFLAGS) $(CPPFLAGS) $(MIGUFLAGS) -o $@ $<
+#%.user.h %.user.c %.user.msgids: %.user.defs
+#	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMUFLAGS)	\
+#	  -user $*.user.c -header $*.user.h		\
+#	  -list $*.user.msgids				\
+#	  < $<

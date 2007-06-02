@@ -162,8 +162,9 @@ libkernel_a_SOURCES += \
 #
 # Automatically generated source files.
 #
+# See Makerules.mig.am.
+#
 
-# See Makefrag.am about lib_dep_tr_for_defs.a.
 nodist_lib_dep_tr_for_defs_a_SOURCES += \
 	i386/i386/mach_i386.server.defs.c
 nodist_libkernel_a_SOURCES += \
