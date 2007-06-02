@@ -76,9 +76,7 @@ AM_CCASFLAGS += \
 #
 
 # MIGCOM.
-MIGCOM = $(MIG) -cc cat - /dev/null
-
-MIGFLAGS =
+MIGCOM = $(MIG) -n -cc cat - /dev/null
 
 # We need this because we use $(CPP) to preprocess MIG .defs files.
 CPP = @CPP@ -x c

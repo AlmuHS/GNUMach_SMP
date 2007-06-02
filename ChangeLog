@@ -1,3 +1,9 @@
+2007-06-02  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* Makefile.am (MIGFLAGS): Remove.
+	(MIGCOM): Add ``-n''.
+	* Makerules.am: Adapt to that.
+
 2007-05-09  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* include/mach/mach_types.defs (userprefix, serverprefix): Set, if

@@ -49,13 +49,12 @@ EXTRA_DIST += \
 %.server.h %.server.c %.server.msgids: lib_dep_tr_for_defs_a-%.server.defs.$(OBJEXT)
 	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMSFLAGS)	\
 	  -sheader $*.server.h -server $*.server.c	\
-	  -user /dev/null -header /dev/null		\
 	  -list $*.server.msgids			\
 	  < $<
 %.user.h %.user.c %.user.msgids: lib_dep_tr_for_defs_a-%.user.defs.$(OBJEXT)
-	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMUFLAGS)		\
-	  -user $*.user.c -server /dev/null -header $*.user.h	\
-	  -list $*.user.msgids					\
+	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMUFLAGS)	\
+	  -user $*.user.c -header $*.user.h		\
+	  -list $*.user.msgids				\
 	  < $<
 
 # TODO.  Get rid of the .srv files and rather use .defs files and MIG*SFLAGS?
@@ -66,7 +65,6 @@ EXTRA_DIST += \
 #%.server.h %.server.c %.server.msgids: %.server.defs
 #	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMSFLAGS)	\
 #	  -sheader $*.server.h -server $*.server.c	\
-#	  -user /dev/null -header /dev/null		\
 #	  -list $*.server.msgids			\
 #	  < $<
 # TODO.  Get rid of the .cli files and rather use .defs files and MIG*UFLAGS?
@@ -75,9 +73,9 @@ EXTRA_DIST += \
 #%.user.defs: %.defs
 #	$(CPP) $(AM_CPPFLAGS) $(CPPFLAGS) $(MIGUFLAGS) -o $@ $<
 #%.user.h %.user.c %.user.msgids: %.user.defs
-#	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMUFLAGS)		\
-#	  -user $*.user.c -server /dev/null -header $*.user.h	\
-#	  -list $*.user.msgids					\
+#	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMUFLAGS)	\
+#	  -user $*.user.c -header $*.user.h		\
+#	  -list $*.user.msgids				\
 #	  < $<
 
 #
