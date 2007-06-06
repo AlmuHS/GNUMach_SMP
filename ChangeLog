@@ -12,7 +12,7 @@
 2007-05-09  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* include/mach/mach_types.defs (userprefix, serverprefix): Set, if
-	requested.
+	requested (by setting USERPREFIX respective SERVERPREFIX).
 
 2007-05-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
