@@ -504,13 +504,13 @@ printf("user trap %d error %d sub %08x\n", type, code, subcode);
 		break;
 
 	    case T_PAGE_FAULT:
+		subcode = regs->cr2;
 #if 0
 		printf("user page fault at linear address %08x\n", subcode);
 		dump_ss (regs);
 
 #endif
 		assert(subcode < LINEAR_MIN_KERNEL_ADDRESS);
-		subcode = regs->cr2;
 		(void) vm_fault(thread->task->map,
 				trunc_page((vm_offset_t)subcode),
 				(regs->err & T_PF_WRITE)
