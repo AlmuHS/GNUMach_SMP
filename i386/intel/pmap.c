@@ -1506,6 +1506,9 @@ Retry:
 		template |= INTEL_PTE_USER;
 	    if (prot & VM_PROT_WRITE)
 		template |= INTEL_PTE_WRITE;
+	    if (machine_slot[cpu_number()].cpu_type >= CPU_TYPE_I486
+		&& pa >= phys_last_addr)
+		template |= INTEL_PTE_NCACHE|INTEL_PTE_WTHRU;
 	    if (wired)
 		template |= INTEL_PTE_WIRED;
 	    PMAP_UPDATE_TLBS(pmap, v, v + PAGE_SIZE);
@@ -1615,6 +1618,9 @@ Retry:
 		template |= INTEL_PTE_USER;
 	    if (prot & VM_PROT_WRITE)
 		template |= INTEL_PTE_WRITE;
+	    if (machine_slot[cpu_number()].cpu_type >= CPU_TYPE_I486
+		&& pa >= phys_last_addr)
+		template |= INTEL_PTE_NCACHE|INTEL_PTE_WTHRU;
 	    if (wired)
 		template |= INTEL_PTE_WIRED;
 	    i = ptes_per_vm_page;
