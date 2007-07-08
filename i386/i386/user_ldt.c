@@ -83,10 +83,10 @@ boolean_t selector_check(thread, sel, type)
 
 	access = ldt->ldt[sel_idx(sel)].access;
 	
-	if ((access & (ACC_P|ACC_PL|ACC_TYPE_USER))
+	if ((access & (ACC_P|ACC_PL|ACC_TYPE_USER|SZ_64))
 		!= (ACC_P|ACC_PL_U|ACC_TYPE_USER))
 	    return FALSE;
-		/* present, pl == pl.user, not system */
+		/* present, pl == pl.user, not system, not 64bits */
 
 	return acc_type[(access & 0xe)>>1][type];
 }
@@ -432,7 +432,8 @@ i386_set_gdt (thread_t thread, int *selector, struct real_descriptor desc)
   if ((desc.access & ACC_P) == 0)
     memset (&thread->pcb->ims.user_gdt[idx], 0,
             sizeof thread->pcb->ims.user_gdt[idx]);
-  else if ((desc.access & (ACC_TYPE_USER|ACC_PL)) != (ACC_TYPE_USER|ACC_PL_U))
+  else if ((desc.access & (ACC_TYPE_USER|ACC_PL)) != (ACC_TYPE_USER|ACC_PL_U) || (desc.granularity & SZ_64))
+
     return KERN_INVALID_ARGUMENT;
   else
     thread->pcb->ims.user_gdt[idx] = desc;

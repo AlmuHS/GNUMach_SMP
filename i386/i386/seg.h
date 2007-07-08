@@ -62,6 +62,7 @@ struct real_gate {
 
 #endif /* !__ASSEMBLER__ */
 
+#define	SZ_64		0x2			/* 64-bit segment */
 #define	SZ_32		0x4			/* 32-bit segment */
 #define SZ_16		0x0			/* 16-bit segment */
 #define	SZ_G		0x8			/* 4K limit field */

@@ -1,3 +1,9 @@
+2007-07-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* i386/i386/seg.h (SZ_64): New macro.
+	* i386/i386/user_ldt.c (selector_check, i386_set_gdt): Check
+	user-provided descriptor against SZ_64.
+
 2007-07-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* i386/intel/pmap.c (pmap_enter): Use INTEL_PTE_NCACHE|INTEL_PTE_WTHRU
