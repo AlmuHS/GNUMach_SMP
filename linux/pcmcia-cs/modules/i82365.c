@@ -184,7 +184,7 @@ static socket_info_t socket[8] = {
 
 #ifdef CONFIG_ISA
 static int grab_irq;
-#ifdef USE_SPIN_LOCKS
+#ifdef __SMP__
 static spinlock_t isa_lock = SPIN_LOCK_UNLOCKED;
 #endif
 #define ISA_LOCK(s, f) \

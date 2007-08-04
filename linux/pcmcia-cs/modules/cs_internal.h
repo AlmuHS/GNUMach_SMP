@@ -131,7 +131,7 @@ typedef struct config_t {
 #define MAX_CIS_DATA	512
 
 typedef struct socket_info_t {
-#ifdef USE_SPIN_LOCKS
+#ifdef __SMP__
     spinlock_t			lock;
 #endif
     ss_entry_t			ss_entry;

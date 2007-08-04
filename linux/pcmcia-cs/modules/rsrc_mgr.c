@@ -109,7 +109,7 @@ static irq_info_t irq_table[16] = { { 0, 0, 0 }, /* etc */ };
 
 #if defined(CONFIG_PNP_BIOS) || !defined(HAVE_MEMRESERVE)
 
-#ifdef USE_SPIN_LOCKS
+#ifdef __SMP__
 static spinlock_t rsrc_lock = SPIN_LOCK_UNLOCKED;
 #endif
 

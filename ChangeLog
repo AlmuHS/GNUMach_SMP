@@ -24,6 +24,10 @@
 	* linux/dev/include/asm-i386/smp.h: New file.
 	* linux/dev/init/main.c [__SMP__ && __i386] (smp_loops_per_tick):
 	Restore variable.
+	* linux/pcmcia-cs/modules/cs_internal.h: Use __SMP__ instead of
+	USE_SPIN_LOCKS.
+	* linux/pcmcia-cs/modules/i82365.c: Likewise.
+	* linux/pcmcia-cs/modules/rsrc_mgr.c: Likewise.
 
 2007-07-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
