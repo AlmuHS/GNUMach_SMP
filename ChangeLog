@@ -28,6 +28,7 @@
 	USE_SPIN_LOCKS.
 	* linux/pcmcia-cs/modules/i82365.c: Likewise.
 	* linux/pcmcia-cs/modules/rsrc_mgr.c: Likewise.
+	* linux/dev/include/asm-i386/system.h: Update to Linux 2.2 for SMP.
 
 2007-07-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 

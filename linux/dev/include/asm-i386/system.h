@@ -221,14 +221,33 @@ static inline unsigned long __xchg(unsigned long x, void * ptr, int size)
 }
 
 #define mb()  __asm__ __volatile__ (""   : : :"memory")
-#define sti() __asm__ __volatile__ ("sti": : :"memory")
-#define cli() __asm__ __volatile__ ("cli": : :"memory")
-
-#define save_flags(x) \
+#define __sti() __asm__ __volatile__ ("sti": : :"memory")
+#define __cli() __asm__ __volatile__ ("cli": : :"memory")
+#define __save_flags(x) \
 __asm__ __volatile__("pushfl ; popl %0":"=g" (x): /* no input */ :"memory")
-
-#define restore_flags(x) \
+#define __restore_flags(x) \
 __asm__ __volatile__("pushl %0 ; popfl": /* no output */ :"g" (x):"memory")
+
+#ifdef __SMP__
+
+extern void __global_cli(void);
+extern void __global_sti(void);
+extern unsigned long __global_save_flags(void);
+extern void __global_restore_flags(unsigned long);
+#define cli() __global_cli()
+#define sti() __global_sti()
+#define save_flags(x) ((x)=__global_save_flags())
+#define restore_flags(x) __global_restore_flags(x)
+
+#else
+
+#define cli() __cli()
+#define sti() __sti()
+#define save_flags(x) __save_flags(x)
+#define restore_flags(x) __restore_flags(x)
+
+#endif
+
 
 #define iret() __asm__ __volatile__ ("iret": : :"memory")
 
