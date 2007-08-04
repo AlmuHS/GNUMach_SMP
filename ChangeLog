@@ -12,6 +12,8 @@
 	(interrupt_stack_alloc): Call init_alloc_aligned() instead of
 	init_alloc().
 	* i386/i386/mp_desc.h: Include <i386at/idt.h> instead of "idt.h"
+	* i386/i386/cswitch.S: Use EXT(interrupt_stack) instead of
+	_interrupt_stack.
 
 2007-07-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 

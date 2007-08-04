@@ -124,7 +124,7 @@ ENTRY(switch_to_shutdown_context)
 	movl	4(%esp),%ebx			/* get routine to run next */
 	movl	8(%esp),%esi			/* get its argument */
 
-	movl	_interrupt_stack(,%edx,4),%ecx	/* point to its interrupt stack */
+	movl	EXT(interrupt_stack)(,%edx,4),%ecx	/* point to its interrupt stack */
 	lea	INTSTACK_SIZE(%ecx),%esp	/* switch to it (top) */
 
 	pushl	%eax				/* push thread */
