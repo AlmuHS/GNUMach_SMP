@@ -36,7 +36,6 @@
 
 #if NCPUS > 1
 #define CONFIG_SMP 1
-#define __SMP__ 1
 #endif
 
 /*

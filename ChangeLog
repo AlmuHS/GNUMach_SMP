@@ -20,7 +20,7 @@
 	* i386/i386/i386asm.sym (MP_GDT, MP_IDT): Remove macros.
 	* i386/i386/lock.h: Don't include_next "lock.h".
 	* i386/linux/dev/include/linux/autoconf.h [NCPUS > 1]: Define
-	CONFIG_SMP and __SMP__.
+	CONFIG_SMP.
 	* linux/dev/include/asm-i386/smp.h: New file.
 	* linux/dev/init/main.c [__SMP__ && __i386] (smp_loops_per_tick):
 	Restore variable.
@@ -29,6 +29,10 @@
 	* linux/pcmcia-cs/modules/i82365.c: Likewise.
 	* linux/pcmcia-cs/modules/rsrc_mgr.c: Likewise.
 	* linux/dev/include/asm-i386/system.h: Update to Linux 2.2 for SMP.
+	* configfrag.ac (mach_ncpus): Define to 1.
+	(NCPUS): Set to $mach_ncpus.
+	[$mach_ncpus > 1] (MULTIPROCESSOR): Set to 1.
+	* linux/configfrag.ac [$mach_ncpus > 1] (__SMP__): Define.
 
 2007-07-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 

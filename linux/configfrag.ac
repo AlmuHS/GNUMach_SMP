@@ -595,6 +595,9 @@ AC_DEFUN([hurd_host_CPU], [
   AC_DEFINE([LINUX_DEV], [1], [Linux device drivers.])
   # Instead of Mach's KERNEL, Linux uses __KERNEL__.  Whee.
   AC_DEFINE([__KERNEL__], [1], [__KERNEL__])
+  [if [ $mach_ncpus -gt 1 ]; then]
+    AC_DEFINE([__SMP__], [1], [__SMP__])
+  [fi]
 
   # Set up `asm-SYSTYPE' links.
   AC_CONFIG_LINKS([linux/src/include/asm:linux/src/include/asm-$systype
