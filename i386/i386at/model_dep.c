@@ -452,7 +452,7 @@ unsigned int pmap_free_pages(void)
 }
 
 /* Always returns page-aligned regions.  */
-static boolean_t
+boolean_t
 init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 {
 	vm_offset_t addr;

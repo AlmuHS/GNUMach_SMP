@@ -11,6 +11,7 @@
 	* i386/i386/mp_desc.c: Include <machine/vm_param.h>
 	(interrupt_stack_alloc): Call init_alloc_aligned() instead of
 	init_alloc().
+	* i386/i386at/model_dep.c: Make init_alloc_aligned() extern.
 	* i386/i386/mp_desc.h: Include <i386at/idt.h> instead of "idt.h"
 	* i386/i386/cswitch.S: Use EXT(interrupt_stack) instead of
 	_interrupt_stack.
