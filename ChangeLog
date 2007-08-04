@@ -1,3 +1,8 @@
+2007-08-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* i386/i386/locore.S (TIME_TRAP_UENTRY, TIME_TRAP_SENTRY)
+	(TIME_TRAP_UEXIT): Use TH_SYSTEM_TIMER instead of old TH_SYS_TIMER.
+
 2007-07-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* i386/i386/seg.h (SZ_64): New macro.

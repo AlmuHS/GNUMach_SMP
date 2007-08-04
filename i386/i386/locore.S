@@ -127,7 +127,7 @@ LEXT(retry_table_end)			;\
 	addl	%ebx,LOW_BITS(%ecx)		/* add to low bits */	;\
 	jns	0f				/* if overflow, */	;\
 	call	timer_normalize			/* normalize timer */	;\
-0:	addl	$(TH_SYS_TIMER-TH_USER_TIMER),%ecx			;\
+0:	addl	$(TH_SYSTEM_TIMER-TH_USER_TIMER),%ecx			;\
 						/* switch to sys timer */;\
 	movl	%ecx,CX(_current_timer,%edx)	/* make it current */	;\
 	sti					/* allow interrupts */
@@ -151,7 +151,7 @@ LEXT(retry_table_end)			;\
 	pushl	%eax				/* save %eax */		;\
 	call	timer_normalize			/* normalize timer */	;\
 	popl	%eax				/* restore %eax */	;\
-0:	addl	$(TH_SYS_TIMER-TH_USER_TIMER),%ecx			;\
+0:	addl	$(TH_SYSTEM_TIMER-TH_USER_TIMER),%ecx			;\
 						/* switch to sys timer */;\
 	movl	%ecx,CX(_current_timer,%edx)	/* make it current */	;\
 	sti					/* allow interrupts */
@@ -172,7 +172,7 @@ LEXT(retry_table_end)			;\
 	addl	%ebx,LOW_BITS(%ecx)		/* add to low bits */	;\
 	jns	0f				/* if overflow,	*/	;\
 	call	timer_normalize			/* normalize timer */	;\
-0:	addl	$(TH_USER_TIMER-TH_SYS_TIMER),%ecx			;\
+0:	addl	$(TH_USER_TIMER-TH_SYSTEM_TIMER),%ecx			;\
 						/* switch to user timer	*/;\
 	movl	%ecx,CX(_current_timer,%edx)	/* make it current */
 
