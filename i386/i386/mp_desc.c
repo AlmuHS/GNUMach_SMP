@@ -190,7 +190,7 @@ interrupt_stack_alloc()
 	 * Allocate an interrupt stack for each CPU except for
 	 * the master CPU (which uses the bootstrap stack)
 	 */
-	if (!init_alloc(INTSTACK_SIZE*(cpu_count-1), &stack_start))
+	if (!init_alloc_aligned(INTSTACK_SIZE*(cpu_count-1), &stack_start))
 		panic("not enough memory for interrupt stacks");
 
 	/*
