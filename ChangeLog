@@ -19,6 +19,8 @@
 	_interrupt_stack.
 	* i386/i386/i386asm.sym (MP_GDT, MP_IDT): Remove macros.
 	* i386/i386/lock.h: Don't include_next "lock.h".
+	* i386/linux/dev/include/linux/autoconf.h [NCPUS > 1]: Define
+	CONFIG_SMP and __SMP__.
 
 2007-07-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
