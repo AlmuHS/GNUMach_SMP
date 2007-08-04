@@ -37,4 +37,4 @@
 
 #define	PRI_SHIFT	18
 
-#endif	_I386_SCHED_PARAM_H_
+#endif	/* _I386_SCHED_PARAM_H_ */
