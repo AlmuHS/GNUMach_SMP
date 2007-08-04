@@ -21,6 +21,7 @@
 	* i386/i386/lock.h: Don't include_next "lock.h".
 	* i386/linux/dev/include/linux/autoconf.h [NCPUS > 1]: Define
 	CONFIG_SMP and __SMP__.
+	* linux/dev/include/asm-i386/smp.h: New file.
 
 2007-07-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
