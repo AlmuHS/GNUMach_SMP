@@ -109,7 +109,7 @@ LEXT(retry_table_end)			;\
  * the time-stamp in the current timer is used.
  * To save time, we allocate the current time-stamps here.
  */
-	.comm	_current_tstamp, 4*NCPUS
+	.comm	EXT(current_tstamp), 4*NCPUS
 
 /*
  * Update time on user trap entry.
@@ -120,16 +120,16 @@ LEXT(retry_table_end)			;\
 #define	TIME_TRAP_UENTRY \
 	cli					/* block interrupts */	;\
 	movl	VA_ETC,%ebx			/* get timer value */	;\
-	movl	CX(_current_tstamp,%edx),%ecx	/* get old time stamp */;\
-	movl	%ebx,CX(_current_tstamp,%edx)	/* set new time stamp */;\
+	movl	CX(EXT(current_tstamp),%edx),%ecx	/* get old time stamp */;\
+	movl	%ebx,CX(EXT(current_tstamp),%edx)	/* set new time stamp */;\
 	subl	%ecx,%ebx			/* elapsed = new-old */	;\
-	movl	CX(_current_timer,%edx),%ecx	/* get current timer */	;\
+	movl	CX(EXT(current_timer),%edx),%ecx	/* get current timer */	;\
 	addl	%ebx,LOW_BITS(%ecx)		/* add to low bits */	;\
 	jns	0f				/* if overflow, */	;\
 	call	timer_normalize			/* normalize timer */	;\
 0:	addl	$(TH_SYSTEM_TIMER-TH_USER_TIMER),%ecx			;\
 						/* switch to sys timer */;\
-	movl	%ecx,CX(_current_timer,%edx)	/* make it current */	;\
+	movl	%ecx,CX(EXT(current_timer),%edx)	/* make it current */	;\
 	sti					/* allow interrupts */
 
 /*
@@ -142,10 +142,10 @@ LEXT(retry_table_end)			;\
 #define	TIME_TRAP_SENTRY \
 	cli					/* block interrupts */	;\
 	movl	VA_ETC,%ebx			/* get timer value */	;\
-	movl	CX(_current_tstamp,%edx),%ecx	/* get old time stamp */;\
-	movl	%ebx,CX(_current_tstamp,%edx)	/* set new time stamp */;\
+	movl	CX(EXT(current_tstamp),%edx),%ecx	/* get old time stamp */;\
+	movl	%ebx,CX(EXT(current_tstamp),%edx)	/* set new time stamp */;\
 	subl	%ecx,%ebx			/* elapsed = new-old */	;\
-	movl	CX(_current_timer,%edx),%ecx	/* get current timer */	;\
+	movl	CX(EXT(current_timer),%edx),%ecx	/* get current timer */	;\
 	addl	%ebx,LOW_BITS(%ecx)		/* add to low bits */	;\
 	jns	0f				/* if overflow, */	;\
 	pushl	%eax				/* save %eax */		;\
@@ -153,7 +153,7 @@ LEXT(retry_table_end)			;\
 	popl	%eax				/* restore %eax */	;\
 0:	addl	$(TH_SYSTEM_TIMER-TH_USER_TIMER),%ecx			;\
 						/* switch to sys timer */;\
-	movl	%ecx,CX(_current_timer,%edx)	/* make it current */	;\
+	movl	%ecx,CX(EXT(current_timer),%edx)	/* make it current */	;\
 	sti					/* allow interrupts */
 
 /*
@@ -165,16 +165,16 @@ LEXT(retry_table_end)			;\
 #define	TIME_TRAP_UEXIT \
 	cli					/* block interrupts */	;\
 	movl	VA_ETC,%ebx			/* get timer */		;\
-	movl	CX(_current_tstamp,%edx),%ecx	/* get old time stamp */;\
-	movl	%ebx,CX(_current_tstamp,%edx)	/* set new time stamp */;\
+	movl	CX(EXT(current_tstamp),%edx),%ecx	/* get old time stamp */;\
+	movl	%ebx,CX(EXT(current_tstamp),%edx)	/* set new time stamp */;\
 	subl	%ecx,%ebx			/* elapsed = new-old */	;\
-	movl	CX(_current_timer,%edx),%ecx	/* get current timer */	;\
+	movl	CX(EXT(current_timer),%edx),%ecx	/* get current timer */	;\
 	addl	%ebx,LOW_BITS(%ecx)		/* add to low bits */	;\
 	jns	0f				/* if overflow,	*/	;\
 	call	timer_normalize			/* normalize timer */	;\
 0:	addl	$(TH_USER_TIMER-TH_SYSTEM_TIMER),%ecx			;\
 						/* switch to user timer	*/;\
-	movl	%ecx,CX(_current_timer,%edx)	/* make it current */
+	movl	%ecx,CX(EXT(current_timer),%edx)	/* make it current */
 
 /*
  * update time on interrupt entry.
@@ -185,14 +185,14 @@ LEXT(retry_table_end)			;\
  */
 #define	TIME_INT_ENTRY \
 	movl	VA_ETC,%ecx			/* get timer */		;\
-	movl	CX(_current_tstamp,%edx),%ebx	/* get old time stamp */;\
-	movl	%ecx,CX(_current_tstamp,%edx)	/* set new time stamp */;\
+	movl	CX(EXT(current_tstamp),%edx),%ebx	/* get old time stamp */;\
+	movl	%ecx,CX(EXT(current_tstamp),%edx)	/* set new time stamp */;\
 	subl	%ebx,%ecx			/* elapsed = new-old */	;\
-	movl	CX(_current_timer,%edx),%ebx	/* get current timer */	;\
+	movl	CX(EXT(current_timer),%edx),%ebx	/* get current timer */	;\
 	addl	%ecx,LOW_BITS(%ebx)		/* add to low bits */	;\
 	leal	CX(0,%edx),%ecx			/* timer is 16 bytes */	;\
-	lea	CX(_kernel_timer,%edx),%ecx	/* get interrupt timer*/;\
-	movl	%ecx,CX(_current_timer,%edx)	/* set timer
+	lea	CX(EXT(kernel_timer),%edx),%ecx	/* get interrupt timer*/;\
+	movl	%ecx,CX(EXT(current_timer),%edx)	/* set timer
 
 /*
  * update time on interrupt exit.
@@ -202,10 +202,10 @@ LEXT(retry_table_end)			;\
  */
 #define	TIME_INT_EXIT \
 	movl	VA_ETC,%eax			/* get timer */		;\
-	movl	CX(_current_tstamp,%edx),%ecx	/* get old time stamp */;\
-	movl	%eax,CX(_current_tstamp,%edx)	/* set new time stamp */;\
+	movl	CX(EXT(current_tstamp),%edx),%ecx	/* get old time stamp */;\
+	movl	%eax,CX(EXT(current_tstamp),%edx)	/* set new time stamp */;\
 	subl	%ecx,%eax			/* elapsed = new-old */	;\
-	movl	CX(_current_timer,%edx),%ecx	/* get current timer */	;\
+	movl	CX(EXT(current_timer),%edx),%ecx	/* get current timer */	;\
 	addl	%eax,LOW_BITS(%ecx)		/* add to low bits */	;\
 	jns	0f				/* if overflow, */	;\
 	call	timer_normalize			/* normalize timer */	;\
@@ -213,7 +213,7 @@ LEXT(retry_table_end)			;\
 	jz	0f				/* if overflow, */	;\
 	movl	%ebx,%ecx			/* get old timer */	;\
 	call	timer_normalize			/* normalize timer */	;\
-0:	movl	%ebx,CX(_current_timer,%edx)	/* set timer */
+0:	movl	%ebx,CX(EXT(current_timer),%edx)	/* set timer */
 
 
 /*
@@ -242,16 +242,16 @@ timer_normalize:
 ENTRY(timer_switch)
 	CPU_NUMBER(%edx)			/* get this CPU  */
 	movl	VA_ETC,%ecx			/* get timer */
-	movl	CX(_current_tstamp,%edx),%eax	/* get old time stamp  */
-	movl	%ecx,CX(_current_tstamp,%edx)	/* set new time stamp */
+	movl	CX(EXT(current_tstamp),%edx),%eax	/* get old time stamp  */
+	movl	%ecx,CX(EXT(current_tstamp),%edx)	/* set new time stamp */
 	subl	%ecx,%eax			/* elapsed = new - old */
-	movl	CX(_current_timer,%edx),%ecx	/* get current timer */
+	movl	CX(EXT(current_timer),%edx),%ecx	/* get current timer */
 	addl	%eax,LOW_BITS(%ecx)		/* add to low bits */
 	jns	0f				/* if overflow, */
 	call	timer_normalize			/* normalize timer */
 0:
 	movl	S_ARG0,%ecx			/* get new timer */
-	movl	%ecx,CX(_current_timer,%edx)	/* set timer */
+	movl	%ecx,CX(EXT(current_timer),%edx)	/* set timer */
 	ret
 
 /*
@@ -260,9 +260,9 @@ ENTRY(timer_switch)
 ENTRY(start_timer)
 	CPU_NUMBER(%edx)			/* get this CPU */
 	movl	VA_ETC,%ecx			/* get timer */
-	movl	%ecx,CX(_current_tstamp,%edx)	/* set initial time stamp */
+	movl	%ecx,CX(EXT(current_tstamp),%edx)	/* set initial time stamp */
 	movl	S_ARG0,%ecx			/* get timer */
-	movl	%ecx,CX(_current_timer,%edx)	/* set initial timer */
+	movl	%ecx,CX(EXT(current_timer),%edx)	/* set initial timer */
 	ret
 
 #endif	/* accurate timing */
