@@ -8,13 +8,17 @@
 	and _current_timer.
 	* i386/i386/io_perm.c (i386_io_perm_create): Lock io_perm->port, not
 	inexistent device->port.
+	* i386/i386at/model_dep.c: Make init_alloc_aligned() extern.
 	* i386/i386/mp_desc.c: Include <machine/vm_param.h>
 	(interrupt_stack_alloc): Call init_alloc_aligned() instead of
 	init_alloc().
-	* i386/i386at/model_dep.c: Make init_alloc_aligned() extern.
+	(cpu_control, interrupt_processor, cpu_start, start_other_cpus): New
+	functions.
 	* i386/i386/mp_desc.h: Include <i386at/idt.h> instead of "idt.h"
 	* i386/i386/cswitch.S: Use EXT(interrupt_stack) instead of
 	_interrupt_stack.
+	* i386/i386/i386asm.sym (MP_GDT, MP_IDT): Remove macros.
+	* i386/i386/lock.h: Don't include_next "lock.h".
 
 2007-07-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 

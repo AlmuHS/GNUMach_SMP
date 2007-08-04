@@ -117,10 +117,6 @@ expr	(VM_MIN_KERNEL_ADDRESS>>PDESHIFT)*sizeof(pt_entry_t)	KERNELBASEPDE
 expr	RB_KDB
 #endif	/* MACH_KDB */
 
-#if	NCPUS > 1
-offset	mp_desc_table		mp	gdt
-offset	mp_desc_table		mp	idt
-#endif	/* NCPUS > 1 */
 expr	INTSTACK_SIZE
 
 #if	!STAT_TIME

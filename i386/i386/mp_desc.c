@@ -237,4 +237,36 @@ simple_lock_pause(void)
 	    dummy++;	/* keep the compiler from optimizing the loop away */
 }
 
+kern_return_t
+cpu_control(int cpu, int *info, unsigned int count)
+{
+	printf("cpu_control(%d, %p, %d) not implemented\n",
+	       cpu, info, count);
+	return KERN_FAILURE;
+}
+
+void
+interrupt_processor(int cpu)
+{
+	printf("interrupt cpu %d\n",cpu);
+}
+
+kern_return_t
+cpu_start(int cpu)
+{
+	if (machine_slot[cpu].running)
+		return KERN_FAILURE;
+
+	return intel_startCPU(cpu);
+}
+
+void
+start_other_cpus(void)
+{
+	int cpu;
+	for (cpu = 0; cpu < NCPUS; cpu++)
+		if (cpu != cpu_number())
+			cpu_start(cpu);
+}
+
 #endif	/* NCPUS > 1 */

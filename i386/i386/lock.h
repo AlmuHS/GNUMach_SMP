@@ -124,7 +124,5 @@ extern void simple_lock_pause(void);
 #endif /* NCPUS > 1 */
 
 
-#include_next "lock.h"
-
 
 #endif	/* _I386_LOCK_H_ */
