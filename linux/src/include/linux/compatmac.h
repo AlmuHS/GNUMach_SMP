@@ -111,8 +111,8 @@ static inline void *ioremap(unsigned long base, long length)
 #define time_after(t1,t2)            (((long)t1-t2) > 0)
 
 
-#define test_and_set_bit(nr, addr)   set_bit(nr, addr)
-#define test_and_clear_bit(nr, addr) clear_bit(nr, addr)
+//#define test_and_set_bit(nr, addr)   set_bit(nr, addr)
+//#define test_and_clear_bit(nr, addr) clear_bit(nr, addr)
 
 /* Not yet implemented on 2.0 */
 #define ASYNC_SPD_SHI  -1

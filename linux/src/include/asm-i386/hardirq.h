@@ -4,6 +4,7 @@
 #include <linux/tasks.h>
 
 extern unsigned int local_irq_count[NR_CPUS];
+extern unsigned int local_bh_count[NR_CPUS];
 
 /*
  * Are we in an interrupt context? Either doing bottom half

@@ -175,7 +175,7 @@ static char *version =
 #endif
 
 #if LINUX_VERSION_CODE < 0x20138
-#define test_and_set_bit(val,addr) set_bit(val,addr)
+//#define test_and_set_bit(val,addr) set_bit(val,addr)
 #endif
 
 #if LINUX_VERSION_CODE < 0x020100

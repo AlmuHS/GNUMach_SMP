@@ -445,7 +445,7 @@ static const char *version = "de4x5.c:V0.5351 1998/10/4 davies@maniac.ultranet.c
 #include <linux/version.h>
 #if	LINUX_VERSION_CODE < LinuxVersionCode(2,1,0)
 #  define __initfunc(__arginit) __arginit
-#  define test_and_set_bit      set_bit
+//#  define test_and_set_bit      set_bit
 #  define net_device_stats      enet_statistics
 #  define copy_to_user(a,b,c)   memcpy_tofs(a,b,c)
 #  define copy_from_user(a,b,c) memcpy_fromfs(a,b,c)

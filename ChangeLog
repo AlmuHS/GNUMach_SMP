@@ -33,6 +33,26 @@
 	(NCPUS): Set to $mach_ncpus.
 	[$mach_ncpus > 1] (MULTIPROCESSOR): Set to 1.
 	* linux/configfrag.ac [$mach_ncpus > 1] (__SMP__): Define.
+	* linux/dev/arch/i386/kernel/irq.c: Include <asm/hardirq.h>.
+	(local_bh_count, local_irq_count, global_irq_holder, global_irq_lock)
+	(global_irq_count, check_smp_invalidate, show, wait_on_bh)
+	(wait_on_irq, synchronize_bh, synchronize_irq, get_irqlock)
+	(__global_cli, __global_sti, __global_save_flags)
+	(__global_restore_flags): New variables and functions from Linux 2.2
+	* linux/src/drivers/net/3c515.c (test_and_set_bit): Remove macro.
+	* linux/src/drivers/net/de4x5.c (test_and_set_bit): Remove macro.
+	* linux/src/drivers/net/eth16i.c (test_and_set_bit): Remove macro.
+	* linux/src/drivers/net/kern_compat.h (test_and_set_bit): Remove macro.
+	* linux/src/drivers/net/pcnet32.c (test_and_set_bit): Remove macro.
+	* linux/src/include/linux/compatmac.h (test_and_set_bit)
+	(test_and_clear_bit): Remove macro.
+	* linux/src/include/asm-i386/atomic.h (atomic_read): New macro.
+	* linux/src/include/asm-i386/bitops.h (test_and_set_bit)
+	(test_and_clear_bit, test_and_change_bit): New inline functions.
+	* linux/src/include/asm-i386/hardirq.h (local_bh_count): New
+	declaration.
+	* linux/src/include/linux/tasks.h (NR_CPUS): Set to NCPUS.
+	(NO_PROC_ID): New macro.
 
 2007-07-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 

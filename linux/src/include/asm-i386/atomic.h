@@ -21,6 +21,8 @@
 
 typedef int atomic_t;
 
+#define atomic_read(v) (*v)
+
 static __inline__ void atomic_add(atomic_t i, atomic_t *v)
 {
 	__asm__ __volatile__(

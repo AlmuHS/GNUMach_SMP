@@ -85,7 +85,7 @@ static int max_interrupt_work = 20;
 #define IRQ(irq, dev_id, pt_regs) (irq, dev_id, pt_regs)
 
 #if (LINUX_VERSION_CODE < 0x20123)
-#define test_and_set_bit(val, addr) set_bit(val, addr)
+//#define test_and_set_bit(val, addr) set_bit(val, addr)
 #elif defined(MODULE)
 MODULE_AUTHOR("Donald Becker <becker@cesdis.gsfc.nasa.gov>");
 MODULE_DESCRIPTION("3Com 3c515 Corkscrew driver");

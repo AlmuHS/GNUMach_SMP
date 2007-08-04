@@ -2,7 +2,7 @@
 #define _KERN_COMPAT_H
 /* kern_compat.h: Linux PCI network adapter backward compatibility code. */
 /*
-	$Revision: 1.1.2.1 $ $Date: 2006/01/22 15:54:41 $
+	$Revision: 1.1.2.2 $ $Date: 2007/08/04 21:02:21 $
 
 	Kernel compatibility defines.
 	This file provides macros to mask the difference between kernel versions.
@@ -76,7 +76,7 @@ __attribute__((section(".modinfo"))) =		\
 */
 #if LINUX_VERSION_CODE < 0x20123
 #define hard_smp_processor_id() smp_processor_id()
-#define test_and_set_bit(val, addr) set_bit(val, addr)
+//#define test_and_set_bit(val, addr) set_bit(val, addr)
 #define cpu_to_le16(val) (val)
 #define cpu_to_le32(val) (val)
 #define le16_to_cpu(val) (val)

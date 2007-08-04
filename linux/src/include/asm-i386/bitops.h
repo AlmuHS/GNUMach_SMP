@@ -61,6 +61,40 @@ extern __inline__ int change_bit(int nr, SMPVOL void * addr)
 	return oldbit;
 }
 
+extern __inline__ int test_and_set_bit(int nr, volatile void * addr)
+{
+	int oldbit;
+
+	__asm__ __volatile__( LOCK_PREFIX
+		"btsl %2,%1\n\tsbbl %0,%0"
+		:"=r" (oldbit),"=m" (ADDR)
+		:"Ir" (nr));
+	return oldbit;
+}
+
+extern __inline__ int test_and_clear_bit(int nr, volatile void * addr)
+{
+	int oldbit;
+
+	__asm__ __volatile__( LOCK_PREFIX
+		"btrl %2,%1\n\tsbbl %0,%0"
+		:"=r" (oldbit),"=m" (ADDR)
+		:"Ir" (nr));
+	return oldbit;
+}
+
+extern __inline__ int test_and_change_bit(int nr, volatile void * addr)
+{
+	int oldbit;
+
+	__asm__ __volatile__( LOCK_PREFIX
+		"btcl %2,%1\n\tsbbl %0,%0"
+		:"=r" (oldbit),"=m" (ADDR)
+		:"Ir" (nr));
+	return oldbit;
+}
+
+
 /*
  * This routine doesn't need to be atomic.
  */

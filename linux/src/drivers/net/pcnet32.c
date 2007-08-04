@@ -105,7 +105,7 @@ static int pcnet32_debug = 1;
 #define le32_to_cpu(val)  (val)
 #endif
 #if (LINUX_VERSION_CODE < 0x20123)
-#define test_and_set_bit(val, addr) set_bit(val, addr)
+//#define test_and_set_bit(val, addr) set_bit(val, addr)
 #endif
 
 #define TX_RING_SIZE			(1 << (PCNET_LOG_TX_BUFFERS))
