@@ -56,6 +56,10 @@
  */
 unsigned long loops_per_sec = 1;
 
+#if defined(__SMP__) && defined(__i386__)
+unsigned long smp_loops_per_tick = 1000000;
+#endif
+
 /*
  * End of physical memory.
  */

@@ -22,6 +22,8 @@
 	* i386/linux/dev/include/linux/autoconf.h [NCPUS > 1]: Define
 	CONFIG_SMP and __SMP__.
 	* linux/dev/include/asm-i386/smp.h: New file.
+	* linux/dev/init/main.c [__SMP__ && __i386] (smp_loops_per_tick):
+	Restore variable.
 
 2007-07-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
