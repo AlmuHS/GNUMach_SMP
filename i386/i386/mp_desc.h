@@ -40,7 +40,7 @@
 
 #include "seg.h"
 #include "tss.h"
-#include "idt.h"
+#include <i386at/idt.h>
 #include "gdt.h"
 #include "ldt.h"
 

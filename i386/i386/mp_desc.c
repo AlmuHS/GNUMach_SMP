@@ -38,6 +38,7 @@
 #include <machine/ktss.h>
 #include <machine/tss.h>
 #include <machine/io_perm.h>
+#include <machine/vm_param.h>
 
 /*
  * The i386 needs an interrupt stack to keep the PCB stack from being

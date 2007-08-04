@@ -209,7 +209,7 @@ i386_io_perm_create (ipc_port_t master_port, io_port_t from, io_port_t to,
   ipc_port_t notify;
 
   notify = ipc_port_make_sonce(io_perm->port);
-  ip_lock(device->port);
+  ip_lock(io_perm->port);
   ipc_port_nsrequest(io_perm->port, 1, notify, &notify);
   assert(notify == IP_NULL);
 

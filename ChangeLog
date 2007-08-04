@@ -6,6 +6,10 @@
 	(TIME_INT_ENTRY, TIME_INT_EXIT, timer_switch, start_timer): Use
 	EXT(current_tstamp) and EXT(current_timer) instead of _current_tstampt
 	and _current_timer.
+	* i386/i386/io_perm.c (i386_io_perm_create): Lock io_perm->port, not
+	inexistent device->port.
+	* i386/i386/mp_desc.c: Include <machine/vm_param.h>
+	* i386/i386/mp_desc.h: Include <i386at/idt.h> instead of "idt.h"
 
 2007-07-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
