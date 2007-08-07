@@ -641,9 +641,13 @@ ENTRY(all_intrs)
 
 	pushl	%ds			/* save segment registers */
 	pushl	%es
+	pushl	%fs
+	pushl	%gs
 	mov	%ss,%dx			/* switch to kernel segments */
 	mov	%dx,%ds
 	mov	%dx,%es
+	mov	%dx,%fs
+	mov	%dx,%gs
 
 	CPU_NUMBER(%edx)
 
@@ -681,7 +685,9 @@ LEXT(return_to_iret)			/* ( label for kdb_kintr and hardclock) */
 	cmpl	$0,CX(EXT(need_ast),%edx)
 	jnz	ast_from_interrupt	/* take it if so */
 1:
-	pop	%es			/* restore segment regs */
+	pop	%gs			/* restore segment regs */
+	pop	%fs
+	pop	%es
 	pop	%ds
 	pop	%edx
 	pop	%ecx
@@ -699,11 +705,13 @@ _return_to_iret_i:			/* ( label for kdb_kintr) */
 /*
  *	Take an AST from an interrupt.
  *	On PCB stack.
- * sp->	es	-> edx
- *	ds	-> ecx
- *	edx	-> eax
- *	ecx	-> trapno
- *	eax	-> code
+ * sp->	gs	-> edx
+ *	fs	-> ecx
+ *	es	-> eax
+ *	ds	-> trapno
+ *	edx	-> code
+ *	ecx
+ *	eax
  *	eip
  *	cs
  *	efl
@@ -711,7 +719,9 @@ _return_to_iret_i:			/* ( label for kdb_kintr) */
  *	ss
  */
 ast_from_interrupt:
-	pop	%es			/* restore all registers ... */
+	pop	%gs			/* restore all registers ... */
+	pop	%fs
+	pop	%es
 	pop	%ds
 	popl	%edx
 	popl	%ecx
@@ -726,6 +736,8 @@ ast_from_interrupt:
 	mov	%ss,%dx			/* switch to kernel segments */
 	mov	%dx,%ds
 	mov	%dx,%es
+	mov	%dx,%fs
+	mov	%dx,%gs
 
 	CPU_NUMBER(%edx)
 	TIME_TRAP_UENTRY
@@ -763,7 +775,9 @@ ast_from_interrupt:
  *		pointer to save area on old stack
  *	      [ saved %ebx, if accurate timing ]
  *
- * old stack:	saved %es
+ * old stack:	saved %gs
+ *		saved %fs
+ *		saved %es
  *		saved %ds
  *		saved %edx
  *		saved %ecx
@@ -815,14 +829,10 @@ kdb_from_iret:
 	pushl	%ebp
 	pushl	%esi
 	pushl	%edi
-	push	%fs
-	push	%gs
 	pushl	%esp			/* pass regs */
 	call	EXT(kdb_kentry)		/* to kdb */
 	addl	$4,%esp			/* pop parameters */
-	pop	%gs			/* restore registers */
-	pop	%fs
-	popl	%edi
+	popl	%edi			/* restore registers */
 	popl	%esi
 	popl	%ebp
 #if	STAT_TIME
@@ -901,14 +911,10 @@ ttd_from_iret:
 	pushl	%ebp
 	pushl	%esi
 	pushl	%edi
-	push	%fs
-	push	%gs
 	pushl	%esp			/* pass regs */
 	call	_kttd_netentry		/* to kdb */
 	addl	$4,%esp			/* pop parameters */
-	pop	%gs			/* restore registers */
-	pop	%fs
-	popl	%edi
+	popl	%edi			/* restore registers */
 	popl	%esi
 	popl	%ebp
 #if	STAT_TIME

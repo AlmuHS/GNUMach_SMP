@@ -1,3 +1,20 @@
+2007-07-09  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* i386/i386/db_interface.c (int_regs): Drop gs and fs fields.
+	(kdb_kentry): Get fs and gs from struct i386_interrupt_state instead of
+	struct int_regs.
+	* i386/i386/kttd_interface.c (int_regs, kttd_netentry): Likewise.
+	* i386/i386/locore.S (all_intrs): Save fs and gs and set them to kernel
+	segment too.
+	(return_to_iret): Restore fs and gs too.
+	(return_to_iret_i): Likewise.
+	(ast_from_interrupt): Set fs and gs to kernel segment too.
+	(kdb_from_iret): Don't save/restore fs and gs either.
+	(ttd_from_iret): Likewise.
+	* i386/i386/thread.h (i386_interrupt_state): Add gs and fs fields.
+	* linux/src/include/asm-i386/irq.h (SAVE_ALL): Set gs to kernel
+	segment too.
+
 2007-08-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* i386/i386/locore.S (TIME_TRAP_UENTRY, TIME_TRAP_SENTRY)

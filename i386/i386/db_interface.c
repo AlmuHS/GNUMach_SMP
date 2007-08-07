@@ -187,8 +187,6 @@ kdb_trap(
  *	instead of those at its call to KDB.
  */
 struct int_regs {
-	int	gs;
-	int	fs;
 	int	edi;
 	int	esi;
 	int	ebp;
@@ -227,8 +225,8 @@ kdb_kentry(
 	    ddb_regs.edi = int_regs->edi;
 	    ddb_regs.ds  = is->ds;
 	    ddb_regs.es  = is->es;
-	    ddb_regs.fs  = int_regs->fs;
-	    ddb_regs.gs  = int_regs->gs;
+	    ddb_regs.fs  = is->fs;
+	    ddb_regs.gs  = is->gs;
 
 	    cnpollc(TRUE);
 	    db_task_trap(-1, 0, (ddb_regs.cs & 0x3) != 0);
@@ -250,8 +248,8 @@ kdb_kentry(
 	    int_regs->edi = ddb_regs.edi;
 	    is->ds  = ddb_regs.ds & 0xffff;
 	    is->es  = ddb_regs.es & 0xffff;
-	    int_regs->fs = ddb_regs.fs & 0xffff;
-	    int_regs->gs = ddb_regs.gs & 0xffff;
+	    is->fs  = ddb_regs.fs & 0xffff;
+	    is->gs  = ddb_regs.gs & 0xffff;
 	}
 #if	NCPUS > 1
 	db_leave();

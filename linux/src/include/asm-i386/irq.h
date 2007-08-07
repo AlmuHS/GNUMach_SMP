@@ -38,6 +38,7 @@ extern void enable_irq(unsigned int);
 	"movl $" STR(KERNEL_DS) ",%edx\n\t" \
 	"mov %dx,%ds\n\t" \
 	"mov %dx,%es\n\t" \
+	"mov %dx,%gs\n\t" \
 	"movl $" STR(USER_DS) ",%edx\n\t" \
 	"mov %dx,%fs\n\t"   \
 	"movl $0,%edx\n\t"  \

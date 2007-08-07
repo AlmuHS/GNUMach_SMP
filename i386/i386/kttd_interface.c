@@ -491,8 +491,6 @@ boolean_t kttd_trap(int	type, int code, struct i386_saved_state *regs)
  *	instead of those at its call to KDB.
  */
 struct int_regs {
-	int	gs;
-	int	fs;
 	int	edi;
 	int	esi;
 	int	ebp;
@@ -541,8 +539,8 @@ kttd_netentry(int_regs)
 	kttd_regs.edi = int_regs->edi;
 	kttd_regs.ds  = is->ds;
 	kttd_regs.es  = is->es;
-	kttd_regs.fs  = int_regs->fs;
-	kttd_regs.gs  = int_regs->gs;
+	kttd_regs.fs  = is->fs;
+	kttd_regs.gs  = is->gs;
 
 	kttd_active++;
 	kttd_task_trap(-1, 0, (kttd_regs.cs & 0x3) != 0);
@@ -564,8 +562,8 @@ kttd_netentry(int_regs)
 	int_regs->edi = kttd_regs.edi;
 	is->ds  = kttd_regs.ds & 0xffff;
 	is->es  = kttd_regs.es & 0xffff;
-	int_regs->fs = kttd_regs.fs & 0xffff;
-	int_regs->gs = kttd_regs.gs & 0xffff;
+	is->fs  = kttd_regs.fs & 0xffff;
+	is->gs  = kttd_regs.gs & 0xffff;
 
 	if (kttd_run_status == RUNNING)
 		printf("kttd_netentry: %%%%% run_status already RUNNING! %%%%%\n");

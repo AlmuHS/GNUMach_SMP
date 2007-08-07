@@ -139,6 +139,8 @@ struct v86_assist_state {
  */
 
 struct i386_interrupt_state {
+	int	gs;
+	int	fs;
 	int	es;
 	int	ds;
 	int	edx;
