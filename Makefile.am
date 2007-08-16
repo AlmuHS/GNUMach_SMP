@@ -127,9 +127,10 @@ noinst_PROGRAMS += \
 clib_routines := memcpy memmove memset bcopy bzero		\
 		 strchr strstr strsep strpbrk strtok		\
 		 htonl htons ntohl ntohs			\
-		 etext edata end # actually ld magic, not libc.
+		 udivdi3 __udivdi3				\
+		 etext _edata end _end # actually ld magic, not libc.
 gnumach-undef: gnumach.$(OBJEXT)
-	$(NM) -u $< | sed 's/  *U  *//;s/^_*//' | sort -u > $@
+	$(NM) -u $< | sed 's/  *U  *//' | sort -u > $@
 MOSTLYCLEANFILES += gnumach-undef
 gnumach-undef-bad: gnumach-undef Makefile
 	sed '$(foreach r,$(clib_routines),/^$r$$/d;)' $< > $@
@@ -138,7 +139,7 @@ clib-routines.o: gnumach-undef gnumach-undef-bad
 	if test -s gnumach-undef-bad; \
 	then cat gnumach-undef-bad; exit 2; else true; fi
 	$(CCLD) -nostdlib -nostartfiles -r -static \
-	  -o $@ `sed 's/^/-Wl,-u,/' < $<` -x c /dev/null -lc
+	  -o $@ `sed 's/^/-Wl,-u,/' < $<` -x c /dev/null -lc -lgcc
 
 gnumach_LINK = $(LD) $(LINKFLAGS) $(gnumach_LINKFLAGS) -o $@
 gnumach_LDADD = gnumach.o clib-routines.o
