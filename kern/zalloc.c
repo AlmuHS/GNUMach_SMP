@@ -320,7 +320,8 @@ static vm_offset_t zget_space(vm_offset_t size, vm_size_t align)
 			zone_page_init(new_space, space_to_add,
 							ZONE_PAGE_USED);
 			simple_lock(&zget_space_lock);
-			ALIGN_SIZE_UP(zalloc_next_space, align);
+			if (align > 0)
+				ALIGN_SIZE_UP(zalloc_next_space, align);
 			continue;
 		}
 
