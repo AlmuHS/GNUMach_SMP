@@ -1,3 +1,7 @@
+2007-10-02  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* kern/zalloc.c (zget_space): Fix last change.
+
 2007-09-03  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* kern/zalloc.c (zget_space): Align zalloc_next_space again after
