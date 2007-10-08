@@ -1,3 +1,8 @@
+2007-10-08  Stefan Siegl  <stesie@brokenpipe.de>
+
+	* linux/dev/glue/net.c (device_open): Set LINUX_IFF_ALLMULTI flag
+	on device and propagate.
+
 2007-10-02  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* kern/zalloc.c (zget_space): Fix last change.

@@ -398,8 +398,11 @@ device_open (ipc_port_t reply_port, mach_msg_type_name_t reply_port_type,
 	}
       else
 	{
-	  dev->flags |= LINUX_IFF_UP | LINUX_IFF_RUNNING;
+	  dev->flags |= LINUX_IFF_UP | LINUX_IFF_RUNNING | LINUX_IFF_ALLMULTI;
 	  skb_queue_head_init (&dev->buffs[0]);
+
+	  if (dev->set_multicast_list)
+	    dev->set_multicast_list (dev);
 	}
       if (IP_VALID (reply_port))
 	ds_device_open_reply (reply_port, reply_port_type,
