@@ -1,3 +1,7 @@
+2007-10-09  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* linux/dev/glue/net.c (device_open) <LINUX_IFF_ALLMULTI>: Comment.
+
 2007-10-08  Stefan Siegl  <stesie@brokenpipe.de>
 
 	* linux/dev/glue/net.c (device_open): Set LINUX_IFF_ALLMULTI flag

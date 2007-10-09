@@ -398,6 +398,9 @@ device_open (ipc_port_t reply_port, mach_msg_type_name_t reply_port_type,
 	}
       else
 	{
+	  /* IPv6 heavily relies on multicasting (especially router and
+	     neighbor solicits and advertisements), so enable reception of
+	     those multicast packets by setting `LINUX_IFF_ALLMULTI'.  */
 	  dev->flags |= LINUX_IFF_UP | LINUX_IFF_RUNNING | LINUX_IFF_ALLMULTI;
 	  skb_queue_head_init (&dev->buffs[0]);
 
