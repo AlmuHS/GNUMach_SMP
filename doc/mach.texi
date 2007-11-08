@@ -20,7 +20,7 @@
 @set EDITION 0.4
 @c @set ISBN X-XXXXXX-XX-X
 
-@ifinfo
+@copying
 This file documents the GNU Mach microkernel.
 
 This is edition @value{EDITION}, last updated on @value{UPDATED}, of @cite{The
@@ -28,6 +28,13 @@ GNU Mach Reference Manual}, for version @value{VERSION}.
 
 Copyright @copyright{} 2001, 2002, 2006, 2007 Free Software Foundation, Inc.
 
+@c  @sp 2
+@c  Published by the Free Software Foundation @*
+@c  59 Temple Place -- Suite 330, @*
+@c  Boston, MA 02111-1307 USA @*
+@c  ISBN @value{ISBN} @*
+
+@quotation
 Permission is granted to copy, distribute and/or modify this document
 under the terms of the GNU Free Documentation License, Version 1.2 or
 any later version published by the Free Software Foundation; with the
@@ -63,7 +70,8 @@ thereof, and that both notices appear in supporting documentation.
 CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
 CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
 ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
-@end ifinfo
+@end quotation
+@end copying
 
 @iftex
 @shorttitlepage The GNU Mach Reference Manual
@@ -85,48 +93,7 @@ ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
 @center for version @value{VERSION}
 @page
 @vskip 0pt plus 1filll
-Copyright @copyright{} 2001, 2002, 2006, 2007 Free Software Foundation, Inc.
-@c  @sp 2
-@c  Published by the Free Software Foundation @*
-@c  59 Temple Place -- Suite 330, @*
-@c  Boston, MA 02111-1307 USA @*
-@c  ISBN @value{ISBN} @*
-
-Permission is granted to copy, distribute and/or modify this document
-under the terms of the GNU Free Documentation License, Version 1.2 or
-any later version published by the Free Software Foundation; with the
-Invariant Sections being ``Free Software Needs Free Documentation'' and
-``GNU Lesser General Public License'', the Front-Cover texts being (a)
-(see below), and with the Back-Cover Texts being (b) (see below).  A
-copy of the license is included in the section entitled ``GNU Free
-Documentation License''.
-
-(a) The FSF's Front-Cover Text is:
-
-     A GNU Manual
-
-(b) The FSF's Back-Cover Text is:
-
-     You have freedom to copy and modify this GNU Manual, like GNU
-     software.  Copies published by the Free Software Foundation raise
-     funds for GNU development.
-
-This work is based on manual pages under the following copyright and license:
-
-@noindent
-Mach Operating System@*
-Copyright @copyright{} 1991,1990 Carnegie Mellon University@*
-All Rights Reserved.
-
-Permission to use, copy, modify and distribute this software and its
-documentation is hereby granted, provided that both the copyright
-notice and this permission notice appear in all copies of the
-software, derivative works or modified versions, and any portions
-thereof, and that both notices appear in supporting documentation.
-
-CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
-CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
-ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+@insertcopying
 @end titlepage
 @c  @titlepage
 @c  @finalout
@@ -159,9 +126,8 @@ ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
 @ifnottex
 @node Top
 @top Main Menu
-This is edition @value{EDITION}, last updated on @value{UPDATED}, of @cite{The
-GNU Mach Reference Manual}, for version @value{VERSION} of the GNU Mach
-microkernel.
+
+@insertcopying
 @end ifnottex
 
 @menu
