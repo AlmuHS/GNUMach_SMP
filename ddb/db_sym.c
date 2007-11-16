@@ -98,11 +98,11 @@ db_qualify(symname, symtabname)
 	register char	*s;
 
 	s = tmp;
-	while (*s++ = *symtabname++) {
+	while ((*s++ = *symtabname++)) {
 	}
 	s[-1] = ':';
 	*s++ = ':';
-	while (*s++ = *symname++) {
+	while ((*s++ = *symname++)) {
 	}
 	return tmp;
 }
@@ -173,7 +173,7 @@ db_lookup(symstr)
 	 * Return on first match.
 	 */
 	for (i = symtab_start; i < symtab_end; i++) {
-		if (sp = X_db_lookup(&db_symtabs[i], symstr)) {
+		if ((sp = X_db_lookup(&db_symtabs[i], symstr))) {
 			db_last_symtab = &db_symtabs[i];
 			return sp;
 		}

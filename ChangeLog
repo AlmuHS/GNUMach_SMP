@@ -1,3 +1,9 @@
+2007-11-15  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* ddb/db_examine.c (db_strcpy): Add extra parentheses around
+	assignment used as boolean.
+	* ddb/db_sym.c (db_qualify, db_lookup): Likewise.
+
 2007-11-08  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* doc/mach.texi: Do the copyright and licensing things as suggested by

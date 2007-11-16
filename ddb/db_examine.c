@@ -340,7 +340,7 @@ db_strcpy(dst, src)
 	register char *dst;
 	register char *src;
 {
-	while (*dst++ = *src++)
+	while ((*dst++ = *src++))
 	    ;
 }
 
