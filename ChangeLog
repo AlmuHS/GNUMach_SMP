@@ -1,3 +1,8 @@
+2007-11-18  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* i386/intel/pmap.c (pmap_map_bd): Use
+	INTEL_PTE_NCACHE|INTEL_PTE_WTHRU.  Get pmap lock.
+
 2007-11-15  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* ddb/db_examine.c (db_strcpy): Add extra parentheses around

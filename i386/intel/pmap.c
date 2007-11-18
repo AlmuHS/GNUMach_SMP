@@ -502,13 +502,17 @@ vm_offset_t pmap_map_bd(virt, start, end, prot)
 {
 	register pt_entry_t	template;
 	register pt_entry_t	*pte;
+	int			spl;
 
-	template = pa_to_pte(start) | INTEL_PTE_VALID;
+	template = pa_to_pte(start)
+		| INTEL_PTE_NCACHE|INTEL_PTE_WTHRU
+		| INTEL_PTE_VALID;
 	if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
 		template |= INTEL_PTE_GLOBAL;
 	if (prot & VM_PROT_WRITE)
 	    template |= INTEL_PTE_WRITE;
 
+	PMAP_READ_LOCK(pmap, spl);
 	while (start < end) {
 		pte = pmap_pte(kernel_pmap, virt);
 		if (pte == PT_ENTRY_NULL)
@@ -518,6 +522,7 @@ vm_offset_t pmap_map_bd(virt, start, end, prot)
 		virt += PAGE_SIZE;
 		start += PAGE_SIZE;
 	}
+	PMAP_READ_UNLOCK(pmap, spl);
 	return(virt);
 }
 
