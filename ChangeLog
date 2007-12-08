@@ -1,3 +1,10 @@
+2007-12-05  Guillem Jover  <guillem@hadrons.org>
+
+	* i386/Makefrag.am (i386/i386at/interrupt.o): New target, depends on
+	i386/i386/i386asm.h
+	(i386/i386/cswitch.o): Likewise.
+	(i386/i386/locore.o): Likewise.
+
 2007-11-18  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* i386/intel/pmap.c (pmap_map_bd): Use
