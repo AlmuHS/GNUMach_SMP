@@ -235,6 +235,9 @@ AC_CONFIG_COMMANDS_POST([
 # Again, a real patch is being used here and not some `sed' magic, so that
 # it'll fail loudly in case some internals we're relying on are changed.
 #
+# TODO.  Remove this block as soon as we don't want to support such legacy
+# versions of Automake anymore.
+#
 
 AC_CONFIG_COMMANDS([frob_Makefile_for_correct_output_files_for_.S_files],[
   # Do we have a version of Automake that doesn't have this bug?
@@ -259,7 +262,7 @@ AC_CONFIG_COMMANDS([frob_Makefile_for_correct_output_files_for_.S_files],[
 
 
 #
-# Makefile.dependency_tracking_for_.S_files.patch
+# Dependency tracking for `.S' files
 #
 # The used version of Automake might not support automatic dependency tracking
 # for (preprocessed) Assembler source files.  We might add such support here.
@@ -267,6 +270,9 @@ AC_CONFIG_COMMANDS([frob_Makefile_for_correct_output_files_for_.S_files],[
 # tracking (missing only for .S files) is not considered a fundamental problem,
 # we save the costs of adding such support here.  You should instead consider
 # updating to Automake 1.10 or better.
+#
+# TODO.  Remove this block as soon as we don't want to support such legacy
+# versions of Automake anymore.
 #
 
 AC_CONFIG_COMMANDS([frob_Makefile_for_dependency_tracking_for_.S_files],[
@@ -278,6 +284,14 @@ AC_CONFIG_COMMANDS([frob_Makefile_for_dependency_tracking_for_.S_files],[
     AC_MSG_NOTICE([Your build of GNU Mach won't have dependency tracking for]
       [(preprocessed) Assembler source files.  Consider updating to Automake]
       [1.10 or better if you need such support.])
+    [# Make ``make -j'' parallel builds work at least.
+    cat >> Makefile <<"EOT"
+
+i386/i386at/boothdr.o: i386/i386/i386asm.h
+i386/i386at/interrupt.o: i386/i386/i386asm.h
+i386/i386/cswitch.o: i386/i386/i386asm.h
+i386/i386/locore.o: i386/i386/i386asm.h
+EOT]
 dnl In case someone feels like completing this instead of simply using a fixed
 dnl version of Automake...
 dnl    if "$PATCH" -f; then :; else]

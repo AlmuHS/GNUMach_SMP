@@ -1,3 +1,11 @@
+2007-12-10  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* i386/Makefrag.am (i386/i386at/boothdr.o, i386/i386at/interrupt.o)
+	(i386/i386/cswitch.o, i386/i386/locore.o): Remove targets.
+	* configure.ac <Dependency tracking for `.S' files>: Add a hack to
+	re-add the four targets with have been removed above for the (legacy)
+	case only where they are actually needed.
+
 2007-12-05  Guillem Jover  <guillem@hadrons.org>
 
 	* i386/Makefrag.am (i386/i386at/interrupt.o): New target, depends on

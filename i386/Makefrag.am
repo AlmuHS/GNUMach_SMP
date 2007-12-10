@@ -172,16 +172,6 @@ nodist_libkernel_a_SOURCES += \
 	i386/i386/mach_i386.server.c \
 	i386/i386/mach_i386.server.msgids
 #	i386/i386/mach_i386.server.defs
-
-#
-# Static dependencies.
-#
-
-# TODO.  Hm.
-i386/i386at/boothdr.o: i386/i386/i386asm.h
-i386/i386at/interrupt.o: i386/i386/i386asm.h
-i386/i386/cswitch.o: i386/i386/i386asm.h
-i386/i386/locore.o: i386/i386/i386asm.h
 
 EXTRA_DIST += \
 	i386/i386/i386asm.sym
