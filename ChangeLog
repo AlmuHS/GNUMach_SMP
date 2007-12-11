@@ -1,3 +1,8 @@
+2007-12-11  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* linux/dev/include/linux/nfs.h: Remove unused file.
+	* linux/src/include/linux/nfs.h: Likewise.
+
 2007-12-10  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* i386/Makefrag.am (i386/i386at/boothdr.o, i386/i386at/interrupt.o)
