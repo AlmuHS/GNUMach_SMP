@@ -572,7 +572,7 @@ out:
 }
 
 #define BH_Bounce	16
-#define MAX_BUF		VM_MAP_COPY_PAGE_LIST_MAX
+#define MAX_BUF		8
 
 /* Perform read/write operation RW on device DEV
    starting at *off to/from buffer *BUF of size *RESID.
@@ -627,7 +627,7 @@ rdwr_full (int rw, kdev_t dev, loff_t *off, char **buf, int *resid, int bshift)
       bh->b_size = cc;
       bhp[i] = bh;
       nb += cc >> bshift;
-      blk += nb;
+      blk += cc >> bshift;
       if (++i == MAX_BUF)
 	break;
     }

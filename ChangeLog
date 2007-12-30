@@ -2,6 +2,9 @@
 
 	* kern/debug.c (panic) [MACH_KDB]: Don't wait before running the
 	debugger.
+	* linux/dev/glue/block.c (MAX_BUF): Set to sane stack-friendly 8
+	instead of blindly following VM_MAP_COPY_PAGE_LIST_MAX.
+	(rdwr_full): increment blk by cc >> bshift instead of nb.
 
 2007-12-11  Thomas Schwinge  <tschwinge@gnu.org>
 
