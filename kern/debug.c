@@ -155,6 +155,9 @@ panic(const char *s, ...)
 	va_end(listp);
 	printf("\n");
 
+#if	MACH_KDB
+	Debugger("panic");
+#else
 	/* Give the user time to see the message */
 	{
 	  int i = 1000;		/* seconds */
@@ -162,9 +165,6 @@ panic(const char *s, ...)
 	    delay (1000000);	/* microseconds */
 	}
 
-#if	MACH_KDB
-	Debugger("panic");
-#else
 	halt_all_cpus (1);
 #endif
 }

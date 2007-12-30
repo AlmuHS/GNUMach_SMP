@@ -1,3 +1,8 @@
+2007-12-30  Samuel thibault <samuel.thibault@ens-lyon.org>
+
+	* kern/debug.c (panic) [MACH_KDB]: Don't wait before running the
+	debugger.
+
 2007-12-11  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* linux/dev/include/linux/nfs.h: Remove unused file.
