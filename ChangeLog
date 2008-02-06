@@ -1,4 +1,9 @@
-2007-12-30  Samuel thibault <samuel.thibault@ens-lyon.org>
+2008-02-06  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* linux/src/drivers/block/triton.c (ide_init_triton): Enable Bus
+	Mastering if not enabled by BIOS.
+
+2007-12-30  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* kern/debug.c (panic) [MACH_KDB]: Don't wait before running the
 	debugger.
