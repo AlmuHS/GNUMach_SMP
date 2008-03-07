@@ -1,3 +1,7 @@
+2008-03-07  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* i386/i386/locore.S (syscall): Clear direction flag at entry.
+
 2008-02-06  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* linux/src/drivers/block/triton.c (ide_init_triton): Enable Bus

@@ -966,6 +966,8 @@ ENTRY(syscall)
 syscall_entry:
 	pushf				/* save flags as soon as possible */
 syscall_entry_2:
+	cld				/* clear direction flag */
+
 	pushl	%eax			/* save system call number */
 	pushl	$0			/* clear trap number slot */
 
