@@ -107,7 +107,7 @@ $(srcdir)/doc/version.texi: $(srcdir)/doc/stamp-vti
 	@if test -d $(web); then :;					\
 	elif grep -q :ext: $(top_srcdir)/CVS/Root 2> /dev/null; then	\
 	  echo "*** As it seems that you'd be allowed to check in the"	\
-	    "possible resulting fixes, you may cosider running"		\
+	    "possible resulting fixes, you may consider running"	\
 	    " \`make $(web)' to get a checkout of the web pages of the"	\
 	    "GNU Mach manual and have possible changes installed into"	\
 	    "\`$(web)/', ready for checking them in in there." &&	\
