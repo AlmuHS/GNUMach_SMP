@@ -1,3 +1,8 @@
+2008-05-09  Andrei Barbu  <teval0@gmail.com>
+
+	* i386/i386/loose_ends.c (DELAY): Use volatile qualifier instead of
+	register to prevent optimization.
+
 2008-03-10  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* doc/Makefrag.am: Fix typo.
