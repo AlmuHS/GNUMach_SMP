@@ -1,6 +1,6 @@
 # Makefile for GNU Mach.
 
-# Copyright (C) 2006, 2007 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2007, 2008 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -76,7 +76,7 @@ AM_CCASFLAGS += \
 #
 
 # MIGCOM.
-MIGCOM = $(MIG) -n -cc cat - /dev/null
+MIGCOM = $(MIG) -n - /dev/null
 
 # We need this because we use $(CPP) to preprocess MIG .defs files.
 CPP = @CPP@ -x c

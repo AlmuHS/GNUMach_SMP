@@ -1,3 +1,9 @@
+2008-05-19  Thomas Schwinge  <tschwinge@gnu.org>
+
+	[patch #6508 -- Building with -g3]
+	* Makefile.am (MIGCOM): Let it filter through CPP again.
+	Suggested by Andrei Barbu <teval0@gmail.com>.
+
 2008-05-09  Andrei Barbu  <teval0@gmail.com>
 
 	* i386/i386/loose_ends.c (DELAY): Use volatile qualifier instead of
