@@ -1,3 +1,10 @@
+2008-05-25  Andrei Barbu <teval0@gmail.com>
+
+	* ddb/db_aout.c (aout_db_symbol_values): Add stab parameter.
+	* ddb/db_sym.h (db_sym_switch): Add stab parameter to symbol_values
+	member.
+	(X_db_symbol_values): Pass stab parameter to symbole_values function.
+
 2008-05-19  Thomas Schwinge  <tschwinge@gnu.org>
 
 	[patch #6508 -- Building with -g3]

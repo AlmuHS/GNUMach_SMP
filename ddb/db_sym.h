@@ -181,6 +181,7 @@ extern struct db_sym_switch {
 				);
 
 	void		(*symbol_values)(
+				db_symtab_t	*stab,
 				db_sym_t	sym,
 				char		**namep,
 				db_expr_t	*valuep
@@ -196,7 +197,7 @@ extern struct db_sym_switch {
 #define	X_db_lookup(s,n)		x_db[(s)->type].lookup(s,n)
 #define	X_db_search_symbol(s,o,t,d)	x_db[(s)->type].search_symbol(s,o,t,d)
 #define	X_db_line_at_pc(s,p,f,l,a)	x_db[(s)->type].line_at_pc(s,p,f,l,a)
-#define	X_db_symbol_values(s,p,n,v)	x_db[(s)->type].symbol_values(p,n,v)
+#define	X_db_symbol_values(s,p,n,v)	x_db[(s)->type].symbol_values(s,p,n,v)
 
 extern boolean_t db_line_at_pc(
 	db_sym_t sym,

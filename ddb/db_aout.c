@@ -376,7 +376,8 @@ aout_db_search_symbol(symtab, off, strategy, diffp)
  * Return the name and value for a symbol.
  */
 void
-aout_db_symbol_values(sym, namep, valuep)
+aout_db_symbol_values(stab, sym, namep, valuep)
+	db_symtab_t	*stab;
 	db_sym_t	sym;
 	char		**namep;
 	db_expr_t	*valuep;
