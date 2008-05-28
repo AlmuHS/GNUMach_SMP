@@ -1,3 +1,8 @@
+2008-05-28  Thomas Schwinge  <tschwinge@gnu.org>
+
+	[bug #23417, patch #6508 -- Building with -g3]
+	* Makefile.am (MIGCOM): Revert the 2008-05-19 change.
+
 2008-05-25  Andrei Barbu <teval0@gmail.com>
 
 	* ddb/db_aout.c (aout_db_symbol_values): Add stab parameter.
