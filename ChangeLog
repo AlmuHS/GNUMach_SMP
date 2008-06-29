@@ -1,3 +1,8 @@
+2008-06-29  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* i386/i386/fpu.c (fpintr): Do not panic if the we receive the
+	interrupt twice in the same thread.
+
 2008-05-28  Thomas Schwinge  <tschwinge@gnu.org>
 
 	[bug #23417, patch #6508 -- Building with -g3]

@@ -674,7 +674,7 @@ ASSERT_IPL(SPL1);
 	    /* leave fp_intr_thread THREAD_NULL */
 	    return;
 	}
-	if (fp_intr_thread != THREAD_NULL)
+	if (fp_intr_thread != THREAD_NULL && fp_intr_thread != thread)
 	    panic("fp_intr: already caught intr");
 	fp_intr_thread = thread;
 #endif	/* NCPUS == 1 */
