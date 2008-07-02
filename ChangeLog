@@ -1,3 +1,8 @@
+2008-07-02  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* linux/dev/include/asm/segment.h (__put_user, __get_user): Add
+	always_inline attribute.
+
 2008-06-29  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* i386/i386/fpu.c (fpintr): Do not panic if the we receive the

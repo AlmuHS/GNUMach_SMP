@@ -44,7 +44,7 @@ struct __segment_dummy { unsigned long a[100]; };
 #define __sd(x) ((struct __segment_dummy *) (x))
 #define __const_sd(x) ((const struct __segment_dummy *) (x))
 
-static inline void __put_user(unsigned long x, void * y, int size)
+static inline void __attribute__((always_inline)) __put_user(unsigned long x, void * y, int size)
 {
 	switch (size) {
 		case 1:
@@ -67,7 +67,7 @@ static inline void __put_user(unsigned long x, void * y, int size)
 	}
 }
 
-static inline unsigned long __get_user(const void * y, int size)
+static inline unsigned long __attribute__((always_inline)) __get_user(const void * y, int size)
 {
 	unsigned long result;
 
