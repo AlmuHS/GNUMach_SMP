@@ -1,3 +1,8 @@
+2008-07-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* linux/src/drivers/net/rtl8139.c (rtl8129_open): Move IRQ
+	initialization after ring initialization.
+
 2008-07-02  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* linux/dev/include/asm/segment.h (__put_user, __get_user): Add

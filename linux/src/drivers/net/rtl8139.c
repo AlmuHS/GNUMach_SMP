@@ -705,10 +705,6 @@ static int rtl8129_open(struct net_device *dev)
 	int rx_buf_len_idx;
 
 	MOD_INC_USE_COUNT;
-	if (request_irq(dev->irq, &rtl8129_interrupt, SA_SHIRQ, dev->name, dev)) {
-		MOD_DEC_USE_COUNT;
-		return -EAGAIN;
-	}
 
 	/* The Rx ring allocation size is 2^N + delta, which is worst-case for
 	   the kernel binary-buddy allocation.  We allocate the Tx bounce buffers
@@ -736,6 +732,11 @@ static int rtl8129_open(struct net_device *dev)
 	tp->tx_flag = (TX_FIFO_THRESH<<11) & 0x003f0000;
 	tp->rx_config =
 		(RX_FIFO_THRESH << 13) | (rx_buf_len_idx << 11) | (RX_DMA_BURST<<8);
+
+	if (request_irq(dev->irq, &rtl8129_interrupt, SA_SHIRQ, dev->name, dev)) {
+		MOD_DEC_USE_COUNT;
+		return -EAGAIN;
+	}
 
 	rtl_hw_start(dev);
 	netif_start_tx_queue(dev);
