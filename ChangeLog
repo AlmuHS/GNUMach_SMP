@@ -22,6 +22,16 @@
 	* device/net_io.h (net_ast): Add prototype.
 	* ipc/ipc_kmsg.c: Include <device/net_io.h>
 	* kern/ast.c: Include <device/net_io.h>
+	* i386/i386at/kd.h (kd_isupper, kd_islower, kd_senddata, kd_sendcmd,
+	kd_cmdreg_write, kd_mouse_drain, set_kd_state, kd_setleds1, kd_setleds2,
+	cnsetleds, kdreboot, kd_putc, kd_parseesc, kd_down, kd_up, kd_cr,
+	kd_tab, kd_left, kd_right, kd_scrollup, kd_scrolldn, kd_cls, kd_home,
+	kd_atoi, kd_insch, kd_cltobcur, kd_cltopcur, kd_cltoecur, kd_clfrbcur,
+	kd_eraseln, kd_insln, kd_delln, kd_delch, kd_erase, kd_bellon,
+	kd_belloff, kdinit, kdsetkbent, kdgetkbent, kdsetbell, kd_resend,
+	kd_handle_ack, kd_kbd_magic, kdstate2idx, kd_parserest, kdcnmaygetc,
+	kd_slmwd, kd_slmscu, kd_slmscd): Add prototypes.
+	* i386/i386at/kd.c (do_modifier): Add prototype.
 
 2008-07-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 

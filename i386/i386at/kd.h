@@ -685,4 +685,55 @@ typedef struct {
 #define MOUSE_MOTION	4		/* mouse motion */
 #define KEYBD_EVENT	5		/* key up/down */
 
+extern boolean_t kd_isupper (u_char);
+extern boolean_t kd_islower (u_char);
+extern void kd_senddata (unsigned char);
+extern void kd_sendcmd (unsigned char);
+extern void kd_cmdreg_write (int);
+extern void kd_mouse_drain (void);
+extern void set_kd_state (int);
+extern void kd_setleds1 (u_char);
+extern void kd_setleds2 (void);
+extern void cnsetleds (u_char);
+extern void kdreboot (void);
+extern void kd_putc (u_char);
+extern void kd_parseesc (void);
+extern void kd_down (void);
+extern void kd_up (void);
+extern void kd_cr (void);
+extern void kd_tab (void);
+extern void kd_left (void);
+extern void kd_right (void);
+extern void kd_scrollup (void);
+extern void kd_scrolldn (void);
+extern void kd_cls (void);
+extern void kd_home (void);
+extern int kd_atoi (u_char *, int *);
+extern void kd_insch (int number);
+extern void kd_cltobcur (void);
+extern void kd_cltopcur (void);
+extern void kd_cltoecur (void);
+extern void kd_clfrbcur (void);
+extern void kd_eraseln (void);
+extern void kd_insln (int);
+extern void kd_delln (int);
+extern void kd_delch (int);
+extern void kd_erase (int);
+extern void kd_bellon (void);
+extern void kd_belloff (void);
+extern void kdinit (void);
+extern int kdsetkbent (struct kbentry *, int);
+extern int kdgetkbent (struct kbentry *);
+extern int kdsetbell (int, int);
+extern void kd_resend (void);
+extern void kd_handle_ack (void);
+extern int kd_kbd_magic (int);
+extern int kdstate2idx (int, boolean_t);
+extern void kd_parserest (u_char *);
+extern int kdcnmaygetc (void);
+
+extern void kd_slmwd (void *start, int count, int value);
+extern void kd_slmscu (void *from, void *to, int count);
+extern void kd_slmscd (void *from, void *to, int count);
+
 #endif	/* _KD_H_ */

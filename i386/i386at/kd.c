@@ -118,6 +118,7 @@ int kdcnprobe(struct consdev *cp);
 int kdcninit(struct consdev *cp);
 int kdcngetc(dev_t dev, int wait);
 int kdcnputc(dev_t dev, int c);
+int do_modifier (int, Scancode, boolean_t);
 
 /*
  * These routines define the interface to the device-specific layer.
