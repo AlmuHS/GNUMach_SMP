@@ -45,6 +45,7 @@
 #include <ipc/ipc_kmsg.h>
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_thread.h>
+#include <device/ds_routines.h>
 
 #if	MACH_MACHINE_ROUTINES
 #include <machine/machine_routines.h>

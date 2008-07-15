@@ -17,6 +17,8 @@
 	* kern/sched_prim.c: Likewise.
 	* kern/time_stamp.c: Likewise.
 	* vm/vm_kern.c: Likewise.
+	* device/ds_routine.h (ds_notify): Add prototype.
+	* kern/ipc_kobject.c: Include <device/ds_routines.h>
 
 2008-07-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
