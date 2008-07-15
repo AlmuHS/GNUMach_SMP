@@ -34,6 +34,8 @@
 
 #include <string.h>
 
+#include <device/cons.h>
+
 #include <mach/vm_param.h>
 #include <mach/vm_prot.h>
 #include <mach/machine.h>

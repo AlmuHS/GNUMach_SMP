@@ -27,6 +27,7 @@
 #include <stdarg.h>
 #include <asm/system.h>
 #include <kern/assert.h>
+#include <device/cons.h>
 
 static char buf[2048];
 
@@ -40,7 +41,6 @@ printk (char *fmt, ...)
 {
   va_list args;
   int n, flags;
-  extern void cnputc ();
   char *p, *msg, *buf_end;
   static int msg_level = -1;
   

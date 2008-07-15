@@ -114,6 +114,7 @@
  */
 
 #include <string.h>
+#include <device/cons.h>
 #include <kern/printf.h>
 #include <mach/boolean.h>
 #include <kern/lock.h>
@@ -510,11 +511,10 @@ void _doprnt(
 /*
  * Printing (to console)
  */
-extern void	cnputc( char, /*not really*/vm_offset_t);
 
 int vprintf(const char *fmt, va_list listp)
 {
-	_doprnt(fmt, &listp, cnputc, 16, 0);
+	_doprnt(fmt, &listp, (void (*)( char, vm_offset_t)) cnputc, 16, 0);
 	return 0;
 }
 
@@ -550,7 +550,7 @@ void iprintf(const char *fmt, ...)
 	    }
 	}
 	va_start(listp, fmt);
-	_doprnt(fmt, &listp, cnputc, 16, 0);
+	_doprnt(fmt, &listp, (void (*)( char, vm_offset_t)) cnputc, 16, 0);
 	va_end(listp);
 }
 

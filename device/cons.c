@@ -250,7 +250,7 @@ cnmaygetc()
 
 void
 cnputc(c)
-	int c;
+	char c;
 {
 	if (c == 0)
 		return;

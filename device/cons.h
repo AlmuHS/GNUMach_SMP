@@ -21,6 +21,8 @@
  *	Utah $Hdr: cons.h 1.10 94/12/14$
  */
 
+#include <sys/types.h>
+
 struct consdev {
 #ifdef MACH_KERNEL
 	char	*cn_name;	/* name of device in dev_name_list */
@@ -47,3 +49,11 @@ struct consdev {
 #ifdef KERNEL
 extern	struct consdev constab[];
 #endif
+
+extern void cninit();
+
+extern int cngetc();
+
+extern int cnmaygetc();
+
+extern void cnputc(char);

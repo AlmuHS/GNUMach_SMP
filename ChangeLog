@@ -1,3 +1,15 @@
+2008-07-15  Barry deFreese  <bddebian@comcast.net>
+
+	* device/cons.c (cnputc): Turn parameter `c' into a char.
+	* device/cons.h (cninit, cngetc, cnmaygetc, cnputc): Add prototypes.
+	* i386/i386at/model_dep.c: Include <device/cons.h>
+	* kern/printf.c: Include <device/cons.h>
+	(cnputc): Remove prototype.
+	(vprintf, iprintf): Explicitely cast cnputc into the type _doprnt
+	expects.
+	* linux/dev/kernel/printk.c: Include <device/cons.h>
+	(cnputc): Remove prototype.
+
 2008-07-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* linux/src/drivers/net/rtl8139.c (rtl8129_open): Move IRQ
