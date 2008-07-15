@@ -60,6 +60,8 @@
 
 #include <ipc/ipc_machdep.h>
 
+#include <device/net_io.h>
+
 #if MACH_KDB
 #include <ddb/db_output.h>
 #endif

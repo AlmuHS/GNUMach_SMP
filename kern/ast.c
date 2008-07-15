@@ -44,6 +44,7 @@
 #include <kern/sched_prim.h>
 #include <kern/thread.h>
 #include <kern/processor.h>
+#include <device/net_io.h>
 
 #include <machine/machspl.h>	/* for splsched */
 
