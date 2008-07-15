@@ -28,6 +28,7 @@
 #include <mach/port.h>
 #include <mach/message.h>
 #include <mach/thread_status.h>
+#include <machine/locore.h>
 #include <kern/ast.h>
 #include <kern/debug.h>
 #include <kern/ipc_tt.h>

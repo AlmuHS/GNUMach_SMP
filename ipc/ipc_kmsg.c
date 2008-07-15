@@ -41,6 +41,7 @@
 #include <mach/kern_return.h>
 #include <mach/message.h>
 #include <mach/port.h>
+#include <machine/locore.h>
 #include <kern/assert.h>
 #include <kern/kalloc.h>
 #include <vm/vm_map.h>

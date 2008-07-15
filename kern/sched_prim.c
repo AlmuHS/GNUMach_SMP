@@ -34,6 +34,8 @@
 
 #include <kern/printf.h>
 #include <mach/machine.h>
+#include <machine/locore.h>
+#include <machine/machspl.h>	/* For def'n of splsched() */
 #include <kern/ast.h>
 #include <kern/counters.h>
 #include <kern/cpu_number.h>
@@ -52,7 +54,6 @@
 #include <vm/pmap.h>
 #include <vm/vm_kern.h>
 #include <vm/vm_map.h>
-#include <machine/machspl.h>	/* For def'n of splsched() */
 
 #if	MACH_FIXPRI
 #include <mach/policy.h>

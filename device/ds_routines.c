@@ -62,6 +62,7 @@
 #include <mach/port.h>
 #include <mach/vm_param.h>
 #include <mach/notify.h>
+#include <machine/locore.h>
 #include <machine/machspl.h>		/* spl definitions */
 
 #include <ipc/ipc_port.h>

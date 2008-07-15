@@ -9,6 +9,14 @@
 	expects.
 	* linux/dev/kernel/printk.c: Include <device/cons.h>
 	(cnputc): Remove prototype.
+	* device/ds_routines.c: Include <machine/locore.h>
+	* ipc/ipc_kmsg.c: Likewise.
+	* kern/bootstrap.c: Likewise.
+	* kern/exception.c: Likewise.
+	* kern/ipc_mig.c: Likewise.
+	* kern/sched_prim.c: Likewise.
+	* kern/time_stamp.c: Likewise.
+	* vm/vm_kern.c: Likewise.
 
 2008-07-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 

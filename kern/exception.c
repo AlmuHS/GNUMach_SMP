@@ -29,6 +29,7 @@
 #include <mach/message.h>
 #include <mach/port.h>
 #include <mach/mig_errors.h>
+#include <machine/locore.h>
 #include <ipc/port.h>
 #include <ipc/ipc_entry.h>
 #include <ipc/ipc_object.h>

@@ -25,6 +25,7 @@
  */
 
 #include <mach/std_types.h>
+#include <machine/locore.h>
 #include <sys/time.h>
 #include <kern/time_stamp.h>
 

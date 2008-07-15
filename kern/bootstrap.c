@@ -35,6 +35,7 @@
 
 #include <mach/port.h>
 #include <mach/message.h>
+#include <machine/locore.h>
 #include <machine/vm_param.h>
 #include <ipc/ipc_port.h>
 #include <kern/debug.h>
