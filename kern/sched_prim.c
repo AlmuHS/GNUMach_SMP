@@ -69,8 +69,6 @@ int		sched_usec;
 
 thread_t	sched_thread_id;
 
-void recompute_priorities(void);	/* forward */
-void update_priority(thread_t);
 void set_pri(thread_t, int, boolean_t);
 void do_thread_scan(void);
 

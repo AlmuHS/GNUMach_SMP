@@ -104,6 +104,11 @@ extern boolean_t thread_handoff(
 	continuation_t	continuation,
 	thread_t	new_thread);
 extern void	recompute_priorities();
+extern void	update_priority(
+	thread_t	thread);
+extern void	compute_my_priority(
+	thread_t	thread);
+
 
 /*
  *	Routines defined as macros

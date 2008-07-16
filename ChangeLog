@@ -35,6 +35,11 @@
 	* kern/ipc_kobject.c: Include <vm/vm_object.h>
 	* vm/vm_object.h: Include <sys/types.h> and <ipc/ipc_types.h>.
 	(vm_object_coalesce, vm_object_pager_wakeup): Add prototypes.
+	* kern/priority.c: Include <kern/sched_prim.h>.
+	* kern/sched_prim.c (recompute_priorities, update_priority): Remove
+	prototypes.
+	* kern/sched_prim.h (update_priority, compute_my_priority): Add
+	prototypes.
 
 2008-07-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 

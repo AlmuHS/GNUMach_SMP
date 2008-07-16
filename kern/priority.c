@@ -41,6 +41,7 @@
 #include <kern/mach_clock.h>
 #include <kern/mach_param.h>
 #include <kern/sched.h>
+#include <kern/sched_prim.h>
 #include <kern/thread.h>
 #include <kern/processor.h>
 #include <kern/timer.h>
