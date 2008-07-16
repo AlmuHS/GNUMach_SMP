@@ -265,6 +265,31 @@ extern kern_return_t	thread_resume(
 	thread_t	thread);
 extern kern_return_t	thread_abort(
 	thread_t	thread);
+extern void		thread_start(
+	thread_t	thread,
+	continuation_t	start);
+extern thread_t		kernel_thread(
+	task_t		task,
+	continuation_t	start,
+	void		*arg);
+extern kern_return_t	thread_priority(
+	thread_t	thread,
+	int		priority,
+	boolean_t	set_max);
+extern void		thread_set_own_priority(
+	int		priority);
+extern kern_return_t	thread_max_priority(
+	thread_t	thread,
+	processor_set_t	pset,
+	int		max_priority);
+extern kern_return_t	thread_policy(
+	thread_t	thread,
+	int		policy,
+	int		data);
+extern void		consider_thread_collect(
+	void);
+extern void		stack_privilege(
+	thread_t	thread);
 extern kern_return_t	thread_get_state(
 	thread_t	thread,
 	int		flavor,

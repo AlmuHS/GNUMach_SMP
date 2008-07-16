@@ -30,6 +30,7 @@
 #include <mach/mach_types.h>	/* vm_address_t */
 #include <mach/std_types.h>	/* pointer_t */
 #include <mach/pc_sample.h>
+#include <machine/trap.h>
 #include <kern/host.h>
 #include <kern/thread.h>
 #include <kern/pc_sample.h>

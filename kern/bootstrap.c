@@ -45,6 +45,7 @@
 #include <kern/thread.h>
 #include <kern/lock.h>
 #include <vm/vm_kern.h>
+#include <vm/vm_user.h>
 #include <device/device_port.h>
 
 #if	MACH_KDB

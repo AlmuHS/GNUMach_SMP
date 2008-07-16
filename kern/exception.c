@@ -32,6 +32,7 @@
 #include <machine/locore.h>
 #include <ipc/port.h>
 #include <ipc/ipc_entry.h>
+#include <ipc/ipc_notify.h>
 #include <ipc/ipc_object.h>
 #include <ipc/ipc_space.h>
 #include <ipc/ipc_port.h>

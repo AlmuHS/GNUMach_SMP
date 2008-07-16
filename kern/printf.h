@@ -48,5 +48,7 @@ extern void iprintf (const char *fmt, ...);
 
 extern int vprintf(const char *fmt, va_list listp);
 
+extern void safe_gets (char *str, int maxlen);
+
 #endif /* _MACH_SA_SYS_PRINTF_H_ */
 

@@ -84,6 +84,7 @@ void		enqueue_tail(queue_t, queue_entry_t);
 queue_entry_t	dequeue_head(queue_t);
 queue_entry_t	dequeue_tail(queue_t);
 void		remqueue(queue_t, queue_entry_t);
+void		insque(queue_entry_t, queue_entry_t);
 
 /*
  *	Macro:		queue_init

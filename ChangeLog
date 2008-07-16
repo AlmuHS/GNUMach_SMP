@@ -42,6 +42,24 @@
 	prototypes.
 	* kern/time_stamp.h (timestamp_init): Add prototype.
 	* kern/startup.c: Include <kern/time_stamp.h>.
+	* ipc/ipc_kmsg.c: Include <vm/vm_user.h> and <ipc/ipc_hash.h>.
+	* ipc/ipc_mqueue (ipc_mqueue_copyin): Add prototype.
+	* kern/bootstrap.c: Include <vm/vm_user.h>.
+	* kern/exceptions.c: Include <ipc/ipc_notify.h>.
+	* kern/ipc_kobject.h (ipc_kobject_notify): Add prototype.
+	* kern/ipc_mig.c: Include <device/dev_hdr.h>.
+	* kern/pc_sample.c: Include <machine/trap.h>.
+	* kern/printf.h (safe_gets): Add prototype.
+	* kern/processor.c: Include <kern/ipc_tt.h>.
+	* kern/queue.h (insque): Add prototype.
+	* kern/startup.c: Include <kern/mach_factor.h> and <kern/xpr.h>.
+	* kern/thread.h (thread_start, kernel_thread, thread_priority,
+	thread_set_own_priority, thread_max_priority, thread_policy,
+	consider_thread_collect, stack_privilege): Add prototypes.
+	* kern/timer.h (timer_normalize, timer_init, init_timers): Add
+	prototypes.
+	* vm/vm_map.h (vm_map_lookup_entry, vm_map_entry_delete): Add
+	prototypes.
 
 2008-07-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 

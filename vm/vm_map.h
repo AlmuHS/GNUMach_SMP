@@ -393,6 +393,9 @@ extern void		vm_map_print(vm_map_t);
 extern kern_return_t	vm_map_lookup(vm_map_t *, vm_offset_t, vm_prot_t,
 				      vm_map_version_t *, vm_object_t *,
 				      vm_offset_t *, vm_prot_t *, boolean_t *);
+/* Find a map entry */
+extern boolean_t	vm_map_lookup_entry(vm_map_t, vm_offset_t,
+					    vm_map_entry_t *);
 /* Verify that a previous lookup is still valid */
 extern boolean_t	vm_map_verify(vm_map_t, vm_map_version_t *);
 /* vm_map_verify_done is now a macro -- see below */
@@ -421,6 +424,9 @@ extern kern_return_t	vm_map_machine_attribute(vm_map_t, vm_offset_t,
 						 vm_size_t,
 						 vm_machine_attribute_t,
 						 vm_machine_attribute_val_t *);
+
+/* Delete entry from map */
+extern void		vm_map_entry_delete(vm_map_t, vm_map_entry_t);
 
 /*
  *	Functions implemented as macros

@@ -47,8 +47,10 @@
 #include <vm/vm_map.h>
 #include <vm/vm_object.h>
 #include <vm/vm_kern.h>
+#include <vm/vm_user.h>
 #include <ipc/port.h>
 #include <ipc/ipc_entry.h>
+#include <ipc/ipc_hash.h>
 #include <ipc/ipc_kmsg.h>
 #include <ipc/ipc_thread.h>
 #include <ipc/ipc_marequest.h>

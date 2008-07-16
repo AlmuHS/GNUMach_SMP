@@ -113,6 +113,11 @@ extern void ipc_kobject_set(
 extern void ipc_kobject_destroy(
 	ipc_port_t		port);
 
+/* Deliver notifications to kobjects that care about them */
+extern boolean_t ipc_kobject_notify (
+	mach_msg_header_t	*request_header,
+	mach_msg_header_t	*reply_header);
+
 #define	null_conversion(port)	(port)
 
 #endif	/* _KERN_IPC_KOBJECT_H_ */

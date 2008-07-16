@@ -131,6 +131,8 @@ extern void	timer_switch(timer_t);
 extern void		timer_read(timer_t, time_value_t *);
 extern void		thread_read_times(thread_t, time_value_t *, time_value_t *);
 extern unsigned		timer_delta(timer_t, timer_save_t);
+extern void		timer_normalize(timer_t);
+extern void		timer_init(timer_t);
 
 #if	STAT_TIME
 /*
@@ -177,5 +179,7 @@ MACRO_BEGIN							\
 		(save).low = temp;				\
 	}							\
 MACRO_END
+
+extern void init_timers();
 
 #endif	/* _KERN_TIMER_H_ */

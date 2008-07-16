@@ -34,6 +34,7 @@
 #include <ipc/ipc_init.h>
 #include <kern/cpu_number.h>
 #include <kern/debug.h>
+#include <kern/mach_factor.h>
 #include <kern/mach_clock.h>
 #include <kern/printf.h>
 #include <kern/processor.h>
@@ -42,6 +43,7 @@
 #include <kern/thread.h>
 #include <kern/thread_swap.h>
 #include <kern/timer.h>
+#include <kern/xpr.h>
 #include <kern/time_stamp.h>
 #include <kern/zalloc.h>
 #include <vm/vm_kern.h>

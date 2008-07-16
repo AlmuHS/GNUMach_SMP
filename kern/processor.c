@@ -37,6 +37,7 @@
 #include <kern/debug.h>
 #include <kern/lock.h>
 #include <kern/host.h>
+#include <kern/ipc_tt.h>
 #include <kern/processor.h>
 #include <kern/sched.h>
 #include <kern/task.h>
