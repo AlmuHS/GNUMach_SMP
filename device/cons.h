@@ -50,10 +50,10 @@ struct consdev {
 extern	struct consdev constab[];
 #endif
 
-extern void cninit();
+extern void cninit(void);
 
-extern int cngetc();
+extern int cngetc(void);
 
-extern int cnmaygetc();
+extern int cnmaygetc(void);
 
 extern void cnputc(char);

@@ -180,6 +180,6 @@ MACRO_BEGIN							\
 	}							\
 MACRO_END
 
-extern void init_timers();
+extern void init_timers(void);
 
 #endif	/* _KERN_TIMER_H_ */
