@@ -62,4 +62,7 @@ unsigned	ts_tick_count;
 
 #define	TS_FORMAT_DEFAULT	1
 #define TS_FORMAT_MMAX		2
+
+extern void timestamp_init(void);
+
 #endif	/* _KERN_TIME_STAMP_H_ */

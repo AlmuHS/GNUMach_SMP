@@ -42,6 +42,7 @@
 #include <kern/thread.h>
 #include <kern/thread_swap.h>
 #include <kern/timer.h>
+#include <kern/time_stamp.h>
 #include <kern/zalloc.h>
 #include <vm/vm_kern.h>
 #include <vm/vm_map.h>

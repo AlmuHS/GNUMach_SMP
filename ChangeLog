@@ -40,6 +40,8 @@
 	prototypes.
 	* kern/sched_prim.h (update_priority, compute_my_priority): Add
 	prototypes.
+	* kern/time_stamp.h (timestamp_init): Add prototype.
+	* kern/startup.c: Include <kern/time_stamp.h>.
 
 2008-07-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
