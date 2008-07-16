@@ -32,6 +32,9 @@
 	kd_handle_ack, kd_kbd_magic, kdstate2idx, kd_parserest, kdcnmaygetc,
 	kd_slmwd, kd_slmscu, kd_slmscd): Add prototypes.
 	* i386/i386at/kd.c (do_modifier): Add prototype.
+	* kern/ipc_kobject.c: Include <vm/vm_object.h>
+	* vm/vm_object.h: Include <sys/types.h> and <ipc/ipc_types.h>.
+	(vm_object_coalesce, vm_object_pager_wakeup): Add prototypes.
 
 2008-07-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 

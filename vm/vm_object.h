@@ -34,6 +34,7 @@
 #ifndef	_VM_VM_OBJECT_H_
 #define _VM_VM_OBJECT_H_
 
+#include <sys/types.h>
 #include <mach/kern_return.h>
 #include <mach/boolean.h>
 #include <mach/memory_object.h>
@@ -46,6 +47,7 @@
 #include <kern/debug.h>
 #include <kern/macro_help.h>
 #include <vm/pmap.h>
+#include <ipc/ipc_types.h>
 
 #if	MACH_PAGEMAP
 #include <vm/vm_external.h>
@@ -234,6 +236,16 @@ extern void vm_object_page_map(
 extern void		vm_object_print(vm_object_t);
 
 extern vm_object_t	vm_object_request_object(struct ipc_port *);
+
+extern boolean_t vm_object_coalesce(
+   vm_object_t prev_object,
+   vm_object_t next_object,
+   vm_offset_t prev_offset,
+   vm_offset_t next_offset,
+   vm_size_t   prev_size,
+   vm_size_t   next_size);
+
+extern void vm_object_pager_wakeup(ipc_port_t  pager);
 
 /*
  *	Event waiting handling
