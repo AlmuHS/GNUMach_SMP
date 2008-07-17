@@ -43,6 +43,7 @@
 
 #include <vm/vm_map.h>
 #include <vm/vm_kern.h>
+#include <vm/vm_user.h>
 
 #include <device/device_types.h>
 #include <device/io_req.h>

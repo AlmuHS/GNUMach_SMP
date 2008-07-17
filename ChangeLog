@@ -60,6 +60,11 @@
 	prototypes.
 	* vm/vm_map.h (vm_map_lookup_entry, vm_map_entry_delete): Add
 	prototypes.
+	* device/chario.c: Include <vm/vm_user.h>
+	* device/device_init.c (chario_init): Remove prototype.
+	* device/tty.h (ttyinput_many, tty_cts, tty_get_status,
+	tty_set_status, tty_flush, ttrstrt, ttstart, ttyclose, tty_portdeath,
+	chario_init): Add prototypes.
 
 2008-07-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 

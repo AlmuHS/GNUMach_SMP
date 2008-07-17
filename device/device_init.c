@@ -43,7 +43,6 @@ extern void	mach_device_init();
 extern void	dev_lookup_init();
 extern void	net_io_init();
 extern void	device_pager_init();
-extern void	chario_init(void);
 
 extern void	io_done_thread();
 extern void	net_thread();
