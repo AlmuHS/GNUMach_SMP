@@ -1944,7 +1944,7 @@ do_runq_scan(
 
 			    stuck_threads[stuck_count++] = thread;
 if (do_thread_scan_debug)
-    printf("do_runq_scan: adding thread %#x\n", thread);
+    printf("do_runq_scan: adding thread %p\n", thread);
 		    }
 		    count--;
 		    thread = next;

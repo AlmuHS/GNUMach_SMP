@@ -340,7 +340,7 @@ kern_return_t	device_pager_data_request(
 #endif /* lint */
 
 	if (device_pager_debug)
-		printf("(device_pager)data_request: pager=%d, offset=0x%x, length=0x%x\n",
+		printf("(device_pager)data_request: pager=%p, offset=0x%x, length=0x%x\n",
 			pager, offset, length);
 
 	ds = dev_pager_hash_lookup((ipc_port_t)pager);
@@ -428,7 +428,7 @@ boolean_t device_pager_data_request_done(register io_req_t	ior)
 	    size_read = ior->io_count;
 	    if (ior->io_residual) {
 		if (device_pager_debug)
-		    printf("(device_pager)data_request_done: r: 0x%x\n",ior->io_residual);
+		    printf("(device_pager)data_request_done: r: 0x%lx\n",ior->io_residual);
 		memset((&ior->io_data[ior->io_count - ior->io_residual]), 0, 
 		      (unsigned) ior->io_residual);
 	    }
@@ -606,7 +606,7 @@ kern_return_t device_pager_init_pager(
 	register dev_pager_t	ds;
 
 	if (device_pager_debug)
-		printf("(device_pager)init: pager=%d, request=%d, name=%d\n",
+		printf("(device_pager)init: pager=%p, request=%p, name=%p\n",
 		       pager, pager_request, pager_name);
 
 	assert(pager_page_size == PAGE_SIZE);

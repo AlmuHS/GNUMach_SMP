@@ -29,7 +29,7 @@
 
 void dump_ss(struct i386_saved_state *st)
 {
-	printf("Dump of i386_saved_state %08x:\n", st);
+	printf("Dump of i386_saved_state %p:\n", st);
 	printf("EAX %08x EBX %08x ECX %08x EDX %08x\n",
 		st->eax, st->ebx, st->ecx, st->edx);
 	printf("ESI %08x EDI %08x EBP %08x ESP %08x\n",

@@ -660,7 +660,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 				m->offset + object->paging_offset,
 				PAGE_SIZE, access_required)) != KERN_SUCCESS) {
 				if (rc != MACH_SEND_INTERRUPTED)
-					printf("%s(0x%x, 0x%x, 0x%x, 0x%x, 0x%x) failed, %d\n",
+					printf("%s(0x%p, 0x%p, 0x%x, 0x%x, 0x%x) failed, %d\n",
 						"memory_object_data_request",
 						object->pager,
 						object->pager_request,

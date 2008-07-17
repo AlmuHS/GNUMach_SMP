@@ -80,6 +80,23 @@
 	* kern/bootstrap.c: Include <ipc/mach_port.h>.
 	* kern/ipc_mig.c: Likewise.
 	* kern/syscall_sw.c: Likewise.
+	* device/dev_pager.c (device_pager_data_request,
+	device_pager_data_request_done, device_pager_init_pager): Fix printf
+	formats.
+	* i386/i386/debug_i386.c (dump_ss): Likewise.
+	* i386/i386/trap.c (user_trap): Likewise.
+	* i386/i386at/com.c (comtimer): Likewise.
+	* ipc/ipc_notify (ipc_notify_port_deleted, ipc_notify_msg_accepted,
+	ipc_notify_port_destroyed, ipc_notify_no_senders,
+	ipc_notify_send_once, ipc_notify_dead_name): Likewise.
+	* kern/ipc_kobject.c (ipc_kobject_destroy): Likewise.
+	* kern/sched_prim.c (do_runq_scan): Likewise.
+	* linux/pcmcia-cs/clients/smc91c92_cs.c (smc_start_xmit): Likewise.
+	* linux/src/drivers/net/sundance.c (start_tx): Likewise.
+	* vm/vm_fault.c (vm_fault_page): Likewise.
+	* vm/vm_map.c (vm_map_pmap_enter): Likewise.
+	* vm/vm_object.c (vm_object_collapse): Likewise.
+
 
 2008-07-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 

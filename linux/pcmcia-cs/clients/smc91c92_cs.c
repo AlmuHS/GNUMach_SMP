@@ -1472,7 +1472,7 @@ static int smc_start_xmit(struct sk_buff *skb, struct net_device *dev)
     tx_timeout_check(dev, smc_tx_timeout);
     skb_tx_check(dev, skb);
 
-    DEBUG(2, "%s: smc_start_xmit(length = %d) called,"
+    DEBUG(2, "%s: smc_start_xmit(length = %ld) called,"
 	  " status %4.4x.\n", dev->name, skb->len, inw(ioaddr + 2));
 
     if (smc->saved_skb) {

@@ -2539,7 +2539,7 @@ void vm_object_collapse(
 				/* Fall through to... */
 
 			    default:
-				printf("vm_object_collapse: %#x (pager %#x, request %#x) up to %#x\n",
+				printf("vm_object_collapse: %p (pager %p, request %p) up to %p\n",
 					backing_object, backing_object->pager, backing_object->pager_request,
 					object);
 				if (vm_object_collapse_debug > 2)

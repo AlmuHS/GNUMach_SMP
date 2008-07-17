@@ -318,7 +318,7 @@ ipc_kobject_destroy(
 
 	    default:
 #if	MACH_ASSERT
-		printf("ipc_kobject_destroy: port 0x%x, kobj 0x%x, type %d\n",
+		printf("ipc_kobject_destroy: port 0x%p, kobj 0x%x, type %d\n",
 		       port, port->ip_kobject, ip_kotype(port));
 #endif	/* MACH_ASSERT */
 		break;

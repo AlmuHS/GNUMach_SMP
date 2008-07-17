@@ -374,7 +374,7 @@ int user_trap(regs)
 	extern vm_offset_t phys_last_addr;
 
 	if ((vm_offset_t)thread < phys_last_addr) {
-		printf("user_trap: bad thread pointer 0x%x\n", thread);
+		printf("user_trap: bad thread pointer 0x%p\n", thread);
 		printf("trap type %d, code 0x%x, va 0x%x, eip 0x%x\n",
 		       regs->trapno, regs->err, regs->cr2, regs->eip);
 		asm volatile ("1: hlt; jmp 1b");

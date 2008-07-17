@@ -676,7 +676,7 @@ comtimer()
 		if (++comtimer_state[i] < 2)
 			continue;
 		/* Its stuck */
-printf("Tty %x was stuck\n", tp);
+printf("Tty %p was stuck\n", tp);
 		nch = getc(&tp->t_outq);
 		outb(TXRX((int)tp->t_addr), nch);
 	}

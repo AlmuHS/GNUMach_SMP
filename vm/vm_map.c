@@ -676,7 +676,7 @@ vm_map_pmap_enter(map, addr, end_addr, object, offset, protection)
 
 		if (vm_map_pmap_enter_print) {
 			printf("vm_map_pmap_enter:");
-			printf("map: %x, addr: %x, object: %x, offset: %x\n",
+			printf("map: %p, addr: %x, object: %p, offset: %x\n",
 				map, addr, object, offset);
 		}
 
