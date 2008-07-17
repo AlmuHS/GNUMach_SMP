@@ -46,6 +46,7 @@
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_pset.h>
 #include <ipc/ipc_thread.h>
+#include <ipc/mach_port.h>
 #include <device/dev_hdr.h>
 #include <device/device_types.h>
 

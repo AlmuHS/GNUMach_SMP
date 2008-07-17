@@ -35,6 +35,7 @@
 #include <mach/mach_traps.h>
 #include <mach/message.h>
 #include <kern/syscall_subr.h>
+#include <ipc/mach_port.h>
 
 
 /*

@@ -59,6 +59,7 @@
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_pset.h>
 #include <ipc/ipc_right.h>
+#include <ipc/mach_port.h>
 
 
 
@@ -740,6 +741,8 @@ mach_port_mod_refs(
  *		KERN_INVALID_RIGHT	Name doesn't denote receive rights.
  */
 
+kern_return_t
+mach_port_get_receive_status(ipc_space_t, mach_port_t, mach_port_status_t *);
 kern_return_t
 old_mach_port_get_receive_status(space, name, statusp)
 	ipc_space_t space;

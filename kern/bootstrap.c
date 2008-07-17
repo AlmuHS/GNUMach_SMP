@@ -38,6 +38,7 @@
 #include <machine/locore.h>
 #include <machine/vm_param.h>
 #include <ipc/ipc_port.h>
+#include <ipc/mach_port.h>
 #include <kern/debug.h>
 #include <kern/host.h>
 #include <kern/printf.h>

@@ -74,6 +74,12 @@
 	* kern/machine.c: Likewise.
 	(halt_cpu): Remove prototype.
 	* vm/pmap.h (pmap_grab_page): Add prototype.
+	* ipc/mach_port.h: New header.
+	* ipc/mach_port.c: Include <ipc/mach_port.h>.
+	(mach_port_get_receive_status): Add forward declaration.
+	* kern/bootstrap.c: Include <ipc/mach_port.h>.
+	* kern/ipc_mig.c: Likewise.
+	* kern/syscall_sw.c: Likewise.
 
 2008-07-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
