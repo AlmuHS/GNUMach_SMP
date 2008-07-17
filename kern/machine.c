@@ -51,6 +51,7 @@
 #include <kern/task.h>
 #include <kern/thread.h>
 #include <machine/machspl.h>	/* for splsched */
+#include <machine/model_dep.h>
 #include <sys/reboot.h>
 
 
@@ -686,10 +687,6 @@ Restart_pset:
  *	Actually do the processor shutdown.  This is called at splsched,
  *	running on the processor's shutdown stack.
  */
-
-#ifdef __GNUC__
-extern __volatile__ void halt_cpu();
-#endif
 
 #ifdef __GNUC__
 __volatile__

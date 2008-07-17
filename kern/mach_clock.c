@@ -59,6 +59,7 @@
 #include <sys/time.h>
 #include <machine/mach_param.h>	/* HZ */
 #include <machine/machspl.h>
+#include <machine/model_dep.h>
 
 #if MACH_PCSAMPLE
 #include <kern/pc_sample.h>

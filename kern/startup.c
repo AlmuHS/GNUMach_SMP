@@ -52,6 +52,7 @@
 #include <vm/vm_page.h>
 #include <machine/machspl.h>
 #include <machine/pmap.h>
+#include <machine/model_dep.h>
 #include <mach/version.h>
 
 

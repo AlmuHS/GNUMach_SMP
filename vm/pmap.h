@@ -209,6 +209,15 @@ extern kern_return_t	pmap_attribute();
 #endif	/* pmap_attribute */
 
 /*
+ *	Grab a physical page:
+ *	the standard memory allocation mechanism
+ *	during system initialization.
+ */
+extern vm_offset_t pmap_grab_page (void);
+
+extern boolean_t pmap_valid_page(vm_offset_t x);
+
+/*
  * Routines defined as macros.
  */
 #ifndef	PMAP_ACTIVATE_USER

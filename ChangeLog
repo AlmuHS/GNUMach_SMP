@@ -65,6 +65,15 @@
 	* device/tty.h (ttyinput_many, tty_cts, tty_get_status,
 	tty_set_status, tty_flush, ttrstrt, ttstart, ttyclose, tty_portdeath,
 	chario_init): Add prototypes.
+	* i386/i386/model_dep.h: New header.
+	* i386/i386at/model_dep.c: Include <i386/model_dep.h>.
+	* kern/debug.c: Include <machine/model_dep.h>.
+	* kern/mach_clock.c: Likewise.
+	* kern/sched_prim.c: Likewise.
+	* kern/startup.c: Likewise.
+	* kern/machine.c: Likewise.
+	(halt_cpu): Remove prototype.
+	* vm/pmap.h (pmap_grab_page): Add prototype.
 
 2008-07-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 

@@ -53,6 +53,7 @@
 #include <i386/pmap.h>
 #include <i386/proc_reg.h>
 #include <i386/locore.h>
+#include <i386/model_dep.h>
 
 /* Location of the kernel's symbol table.
    Both of these are 0 if none is available.  */

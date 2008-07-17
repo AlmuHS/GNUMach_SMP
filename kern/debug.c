@@ -33,6 +33,8 @@
 
 #include <kern/debug.h>
 
+#include <machine/model_dep.h>
+
 extern void cnputc();
 void Debugger() __attribute__ ((noreturn));
 
