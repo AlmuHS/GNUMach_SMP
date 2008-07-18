@@ -94,6 +94,7 @@ boolean_t	db_disasm_16 = FALSE;
 #define	STI	33			/* FP stack */
 #define	X	34			/* extended FP op */
 #define	XA	35			/* for 'fstcw %ax' */
+#define	Iba	36			/* byte immediate, don't print if 0xa */
 
 struct inst {
 	char *	i_name;			/* name */
@@ -749,8 +750,8 @@ struct inst db_inst_table[256] = {
 /*d1*/	{ "",	   TRUE,  LONG,  op2(o1, E),  (char *)db_Grp2 },
 /*d2*/	{ "",	   TRUE,  BYTE,  op2(CL, E),  (char *)db_Grp2 },
 /*d3*/	{ "",	   TRUE,  LONG,  op2(CL, E),  (char *)db_Grp2 },
-/*d4*/	{ "aam",   TRUE,  NONE,  0,	      0 },
-/*d5*/	{ "aad",   TRUE,  NONE,  0,	      0 },
+/*d4*/	{ "aam",   FALSE, NONE,  op1(Iba),    0 },
+/*d5*/	{ "aad",   FALSE, NONE,  op1(Iba),    0 },
 /*d6*/	{ "",      FALSE, NONE,  0,	      0 },
 /*d7*/	{ "xlat",  FALSE, BYTE,  op1(BX),     0 },
 
@@ -1331,6 +1332,12 @@ db_disasm(
 		case Ib:
 		    get_value_inc(imm, loc, 1, FALSE, task);	/* unsigned */
 		    db_printf("$%#n", imm);
+		    break;
+
+		case Iba:
+		    get_value_inc(imm, loc, 1, FALSE, task);
+		    if (imm != 0x0a)
+			db_printf("$%#r", imm);
 		    break;
 
 		case Ibs:
