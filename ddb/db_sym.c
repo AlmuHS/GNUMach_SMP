@@ -450,7 +450,7 @@ db_task_printsym(off, strategy, task)
 
 	cursym = db_search_task_symbol(off, strategy, &d, task);
 	db_symbol_values(0, cursym, &name, &value);
-	if (name == 0 || d >= db_maxoff || value == 0) {
+	if (name == 0 || d >= db_maxoff || value == 0 || *name == 0) {
 		db_printf("%#n", off);
 		return;
 	}
