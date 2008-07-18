@@ -315,11 +315,12 @@ db_read_bytes(
 	    if (task == TASK_NULL)
 	        task = db_current_task();
 	    while (--size >= 0) {
-		if (addr++ < VM_MIN_KERNEL_ADDRESS && task == TASK_NULL) {
+		if (addr < VM_MIN_KERNEL_ADDRESS && task == TASK_NULL) {
 		    db_printf("\nbad address %x\n", addr);
 		    db_error(0);
 		    /* NOTREACHED */
 		}
+		addr++;
 		*data++ = *src++;
 	    }
 	    return;

@@ -3,6 +3,8 @@
 	* i386/i386/db_disasm.c (Iba): New macro.
 	(db_inst_table): Use Iba for aam and aad instructions.
 	(db_disasm): Decode operands for Iba case.
+	* i386/i386/db_interface.c (db_read_bytes): Do not increment the
+	address before printing it.
 
 2008-07-15  Barry deFreese  <bddebian@comcast.net>
 
