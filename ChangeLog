@@ -9,6 +9,10 @@
 	u_int16_t, int32_t, uint32_t, u_int32_t, int64_t, uint64_t,
 	u_int64_t): New types.
 	* ddb/db_sym.c (db_task_printsym): Do not print empty symbols.
+	* ddb/db_break.c (db_set_breakpoint): Add db_breakpoint_t return type,
+	return the breakpoint in non-ddb case.
+	* ddb/db_break.h (BKPT_EXTERNAL): New macro.
+	(db_set_breakpoint): Add declaration.
 
 2008-07-15  Barry deFreese  <bddebian@comcast.net>
 

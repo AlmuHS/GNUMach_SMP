@@ -64,6 +64,7 @@ struct db_breakpoint {
 #define BKPT_USR_GLOBAL		0x8	/* global user space break point */
 #define BKPT_SET_IN_MEM		0x10	/* break point is set in memory */
 #define BKPT_1ST_SET		0x20	/* 1st time set of user global bkpt */
+#define BKPT_EXTERNAL		0x40	/* break point is not from ddb */
 	vm_size_t	bkpt_inst;	/* saved instruction at bkpt */
 	struct db_breakpoint *link;	/* link in in-use or free chain */
 };
@@ -82,5 +83,9 @@ extern db_thread_breakpoint_t	db_find_breakpoint_number
 extern db_breakpoint_t	db_set_temp_breakpoint( task_t task, db_addr_t addr);
 extern void		db_delete_temp_breakpoint
 					( task_t task, db_breakpoint_t bkpt);
+
+extern db_breakpoint_t  db_set_breakpoint(task_t task, db_addr_t addr, 
+					  int count, thread_t thread, 
+					  boolean_t task_bpt);
 
 #endif	/* _DDB_DB_BREAK_H_ */

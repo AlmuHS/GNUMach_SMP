@@ -264,7 +264,7 @@ db_check_breakpoint_valid()
 	}
 }
 
-void
+db_breakpoint_t
 db_set_breakpoint(task, addr, count, thread, task_bpt)
 	task_t		task;
 	db_addr_t	addr;
@@ -281,17 +281,17 @@ db_set_breakpoint(task, addr, count, thread, task_bpt)
 	    if (thread == THREAD_NULL
 		|| db_find_thread_breakpoint(bkpt, thread)) {
 		db_printf("Already set.\n");
-		return;
+		return NULL;
 	    }
 	} else {
 	    if (!DB_CHECK_ACCESS(addr, BKPT_SIZE, task)) {
 		db_printf("Cannot set break point at %X\n", addr);
-		return;
+		return NULL;
 	    }
 	    alloc_bkpt = bkpt = db_breakpoint_alloc();
 	    if (bkpt == 0) {
 		db_printf("Too many breakpoints.\n");
-		return;
+		return NULL;
 	    }
 	    bkpt->task = task;
 	    bkpt->flags = (task && thread == THREAD_NULL)?
@@ -306,12 +306,14 @@ db_set_breakpoint(task, addr, count, thread, task_bpt)
 	    if (alloc_bkpt)
 		db_breakpoint_free(alloc_bkpt);
 	    db_printf("Too many thread_breakpoints.\n");
+	    return NULL;
 	} else {
 	    db_printf("set breakpoint #%d\n", db_breakpoint_number);
 	    if (alloc_bkpt) {
 		bkpt->link = db_breakpoint_list;
 		db_breakpoint_list = bkpt;
 	    }
+	    return bkpt;
 	}
 }
 
