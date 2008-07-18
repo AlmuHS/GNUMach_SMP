@@ -28,6 +28,7 @@
 	(x_db): Initialize `free_symbol' memberi with dummy_db_free_symbol.
 	* i386/i386/db_trace.c (db_i386_stack_trace): Call db_free_symbol.
 	* kern/lock_mon.c (print_lock_info): Likewise.
+	* include/sys/types.h (quad): Remove type.
 
 2008-07-15  Barry deFreese  <bddebian@comcast.net>
 
@@ -127,7 +128,6 @@
 	* vm/vm_fault.c (vm_fault_page): Likewise.
 	* vm/vm_map.c (vm_map_pmap_enter): Likewise.
 	* vm/vm_object.c (vm_object_collapse): Likewise.
-
 
 2008-07-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 

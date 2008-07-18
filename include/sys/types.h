@@ -84,10 +84,6 @@ typedef	unsigned short	u_short;	/* unsigned short */
 typedef	unsigned int	u_int;		/* unsigned int */
 typedef unsigned long	u_long;		/* unsigned long */
 
-typedef struct _quad_ {
-	unsigned int	val[2];		/* 2 32-bit values make... */
-} quad;					/* an 8-byte item */
-
 typedef unsigned int	daddr_t;	/* disk address */
 
 #define	major(i)	(((i) >> 8) & 0xFF)
