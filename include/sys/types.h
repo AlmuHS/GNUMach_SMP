@@ -58,6 +58,20 @@ typedef	unsigned int	time_t;
 
 #define RAND_MAX	0x7fffffff
 
+/* Posix types */
+typedef signed8_t	int8_t;
+typedef unsigned8_t	uint8_t;
+typedef unsigned8_t	u_int8_t;
+typedef signed16_t	int16_t;
+typedef unsigned16_t	uint16_t;
+typedef unsigned16_t	u_int16_t;
+typedef signed32_t	int32_t;
+typedef unsigned32_t	uint32_t;
+typedef unsigned32_t	u_int32_t;
+typedef signed64_t	int64_t;
+typedef unsigned64_t	uint64_t;
+typedef unsigned64_t	u_int64_t;
+
 /* Symbols not allowed by POSIX */
 #ifndef _POSIX_SOURCE
 
