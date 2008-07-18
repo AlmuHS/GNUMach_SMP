@@ -1,6 +1,6 @@
 /*
  * Mach Port Functions.
- * Copyright (C) 2006 Free Software Foundation, Inc.
+ * Copyright (C) 2008 Free Software Foundation, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -47,7 +47,7 @@ mach_port_deallocate(
     ipc_space_t space,
     mach_port_t name);
 
-kern_return_t
+extern kern_return_t
 mach_port_insert_right(
     ipc_space_t     space,
     mach_port_t     name,
