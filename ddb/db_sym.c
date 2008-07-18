@@ -129,6 +129,8 @@ db_value_of_name(name, valuep)
 	if (sym == DB_SYM_NULL)
 	    return (FALSE);
 	db_symbol_values(0, sym, &name, valuep);
+	
+	db_free_symbol(sym);
 	return (TRUE);
 }
 
@@ -177,6 +179,7 @@ db_lookup(symstr)
 			db_last_symtab = &db_symtabs[i];
 			return sp;
 		}
+		db_free_symbol(sp);
 	}
 	return 0;
 }
@@ -273,11 +276,16 @@ db_name_is_ambiguous(sym_name)
 		return FALSE;
 
 	for (i = 0; i < db_nsymtab; i++) {
-		if (X_db_lookup(&db_symtabs[i], sym_name)) {
+	  	db_sym_t sp;
+		if (sp = X_db_lookup(&db_symtabs[i], sym_name)) {
 			if (found_once)
+			{
+				db_free_symbol(sp);
 				return TRUE;
+			}
 			found_once = TRUE;
 		}
+		db_free_symbol(sp);
 	}
 	return FALSE;
 }
@@ -316,6 +324,7 @@ db_search_task_symbol(val, strategy, offp, task)
 	*/
       if (ret == DB_SYM_NULL || (*offp) > 0x1000000)
 	{
+	  db_free_symbol(ret);
 	  task = db_current_task();
 	  ret = db_search_in_task_symbol(val, strategy, offp, task);
 	}
@@ -354,6 +363,7 @@ db_search_in_task_symbol(val, strategy, offp, task)
 	    { /* first hit */
 	      db_last_symtab = sp;
 	      diff = newdiff;
+	      db_free_symbol(ret);
 	      ret = sym;
 	      continue;
 	    }
@@ -363,6 +373,7 @@ db_search_in_task_symbol(val, strategy, offp, task)
 	    { /* closer null map match */
 	      db_last_symtab = sp;
 	      diff = newdiff;
+	      db_free_symbol(ret);
 	      ret = sym;
 	      continue;
 	    }
@@ -376,6 +387,7 @@ db_search_in_task_symbol(val, strategy, offp, task)
 		 */
 	      db_last_symtab = sp;
 	      diff = newdiff;
+	      db_free_symbol(ret);
 	      ret = sym;
 	      continue;
 	    }
@@ -452,6 +464,7 @@ db_task_printsym(off, strategy, task)
 	db_symbol_values(0, cursym, &name, &value);
 	if (name == 0 || d >= db_maxoff || value == 0 || *name == 0) {
 		db_printf("%#n", off);
+		db_free_symbol(cursym);
 		return;
 	}
 	db_printf("%s", name);
@@ -465,6 +478,7 @@ db_task_printsym(off, strategy, task)
 			db_printf("]");
 		}
 	}
+	db_free_symbol(cursym);
 }
 
 void
@@ -487,6 +501,13 @@ db_line_at_pc( sym, filename, linenum, pc)
 		FALSE;
 }
 
+void db_free_symbol(db_sym_t s)
+{
+	return (db_last_symtab) ?
+		X_db_free_symbol( db_last_symtab, s) :
+		FALSE;
+}
+
 /*
  * Switch into symbol-table specific routines
  */
@@ -499,6 +520,8 @@ extern boolean_t coff_db_sym_init(), coff_db_line_at_pc();
 extern db_sym_t coff_db_lookup(), coff_db_search_symbol();
 extern void coff_db_symbol_values();
 
+void dummy_db_free_symbol(sym_t) { }
+
 struct db_sym_switch x_db[] = {
 
 	/* BSD a.out format (really, sdb/dbx(1) symtabs) */
@@ -506,14 +529,14 @@ struct db_sym_switch x_db[] = {
 	{ 0,},
 #else	/* DB_NO_AOUT */
 	{ aout_db_sym_init, aout_db_lookup, aout_db_search_symbol,
-	  aout_db_line_at_pc, aout_db_symbol_values },
+	  aout_db_line_at_pc, aout_db_symbol_values, dummy_db_free_symbol },
 #endif	/* DB_NO_AOUT */
 
 #ifdef	DB_NO_COFF
 	{ 0,},
 #else	/* DB_NO_COFF */
 	{ coff_db_sym_init, coff_db_lookup, coff_db_search_symbol,
-	  coff_db_line_at_pc, coff_db_symbol_values },
+	  coff_db_line_at_pc, coff_db_symbol_values, dummy_db_free_symbol },
 #endif	/* DB_NO_COFF */
 
 	/* Machdep, not inited here */

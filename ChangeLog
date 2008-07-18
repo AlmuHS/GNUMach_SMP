@@ -13,6 +13,21 @@
 	return the breakpoint in non-ddb case.
 	* ddb/db_break.h (BKPT_EXTERNAL): New macro.
 	(db_set_breakpoint): Add declaration.
+	* (ddb/db_sym.h): Add _DDB_DB_SYM_H_ header protection.
+	(db_find_sym_and_offset, db_find_xtrn_sym_and_offset,
+	db_find_task_sym_and_offset, db_find_xtrn_task_sym_and_offset): Call
+	db_free_symbol.
+	(db_free_symbol): New declaration.
+	(db_sym_switch): New `free_symbol' member.
+	(X_db_free_symbol): New macro.
+	* ddb/db_sym.c (db_value_of_name, db_lookup, db_name_is_ambiguous,
+	db_search_task_symbol, db_search_in_task_symbol, db_task_printsym):
+	Call db_free_symbol.
+	(db_free_symbol): New function.
+	(dummy_db_free_symbol): New empty function.
+	(x_db): Initialize `free_symbol' memberi with dummy_db_free_symbol.
+	* i386/i386/db_trace.c (db_i386_stack_trace): Call db_free_symbol.
+	* kern/lock_mon.c (print_lock_info): Likewise.
 
 2008-07-15  Barry deFreese  <bddebian@comcast.net>
 

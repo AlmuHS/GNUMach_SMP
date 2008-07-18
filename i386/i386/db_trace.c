@@ -452,10 +452,14 @@ db_i386_stack_trace(
 	    if (INKERNEL((unsigned)callpc) && user_frame == 0) {
 		db_addr_t call_func = 0;
 
-		db_symbol_values(0, db_search_task_symbol(callpc,
-				 	DB_STGY_XTRN, (db_addr_t *)&offset,
-					TASK_NULL),
+		db_sym_t sym_tmp;
+		db_symbol_values(0, 
+				 sym_tmp = db_search_task_symbol(callpc,
+								 DB_STGY_XTRN, 
+								 (db_addr_t *)&offset,
+								 TASK_NULL),
 				 &name, (db_expr_t *)&call_func);
+		db_free_symbol(sym_tmp);
 		if ((db_user_trap_symbol_value && call_func == db_user_trap_symbol_value) ||
 		    (db_kernel_trap_symbol_value && call_func == db_kernel_trap_symbol_value)) {
 		    frame_type = TRAP;

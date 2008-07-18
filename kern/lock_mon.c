@@ -281,7 +281,7 @@ struct lock_info *li;
 		   li->masked, (li->masked*100)/sum,
 		   li->stack, li->stack/sum,
 		   li->time, li->time/sum);
-	db_search_symbol(li->lock, 0, &off);
+	db_free_symbol(db_search_symbol(li->lock, 0, &off));
 	if (off < 1024)
 		db_printsym(li->lock, 0);
 	else {

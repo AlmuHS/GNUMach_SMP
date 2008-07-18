@@ -28,6 +28,9 @@
  *	Date:	8/90
  */
 
+#ifndef	_DDB_DB_SYM_H_
+#define	_DDB_DB_SYM_H_
+
 #include <mach/boolean.h>
 #include <mach/machine/vm_types.h>
 #include <machine/db_machdep.h>
@@ -115,22 +118,43 @@ extern void	db_symbol_values( db_symtab_t *stab,
 /* find name&value given approx val */
 
 #define db_find_sym_and_offset(val,namep,offp)	\
-	db_symbol_values(0, db_search_symbol(val,DB_STGY_ANY,offp),namep,0)
+        do {								\
+	  db_sym_t	s;						\
+	  db_symbol_values(0, s = db_search_symbol(val,DB_STGY_ANY,offp) \
+			   ,namep,0);					\
+	  db_free_symbol(s);						\
+	} while(0);
+
 
 /* ditto, but no locals */
 #define db_find_xtrn_sym_and_offset(val,namep,offp)	\
-	db_symbol_values(0, db_search_symbol(val,DB_STGY_XTRN,offp),namep,0)
+        do {								\
+	  db_sym_t	s;						\
+	  db_symbol_values(0, s = db_search_symbol(val,DB_STGY_XTRN,offp) \
+			   ,namep,0);					\
+	  db_free_symbol(s);						\
+	} while(0);
 
 /* find name&value given approx val */
 
 #define db_find_task_sym_and_offset(val,namep,offp,task)	\
-	db_symbol_values(0, db_search_task_symbol(val,DB_STGY_ANY,offp,task),  \
-			 namep, 0)
+        do {								\
+	  db_sym_t	s;						\
+	  db_symbol_values(0, s = db_search_task_symbol(val,DB_STGY_ANY \
+							,offp,task),	\
+			   namep, 0);					\
+	  db_free_symbol(s);						\
+	} while(0);
 
 /* ditto, but no locals */
 #define db_find_xtrn_task_sym_and_offset(val,namep,offp,task)	\
-	db_symbol_values(0, db_search_task_symbol(val,DB_STGY_XTRN,offp,task), \
-			 namep,0)
+        do {								\
+	  db_sym_t	s;						\
+	  db_symbol_values(0, s = db_search_task_symbol(val,DB_STGY_XTRN \
+							,offp,task),	\
+			   namep,0);					\
+	  db_free_symbol(s);						\
+	} while(0);
 
 /* find symbol in current task */
 #define db_search_symbol(val,strgy,offp)	\
@@ -146,6 +170,10 @@ extern void	db_task_printsym( db_expr_t off,
 
 /* print closest symbol to a value */
 extern void	db_printsym( db_expr_t off, db_strategy_t strategy);
+
+/* free a symbol */
+extern void db_free_symbol(db_sym_t s);
+
 
 /*
  * Symbol table switch, defines the interface
@@ -187,6 +215,9 @@ extern struct db_sym_switch {
 				db_expr_t	*valuep
 				);
 
+	void		(*free_symbol)(
+				db_sym_t	sym
+				);
 } x_db[];
 
 #ifndef	symtab_type
@@ -198,9 +229,12 @@ extern struct db_sym_switch {
 #define	X_db_search_symbol(s,o,t,d)	x_db[(s)->type].search_symbol(s,o,t,d)
 #define	X_db_line_at_pc(s,p,f,l,a)	x_db[(s)->type].line_at_pc(s,p,f,l,a)
 #define	X_db_symbol_values(s,p,n,v)	x_db[(s)->type].symbol_values(s,p,n,v)
+#define	X_db_free_symbol(s,m)		x_db[(s)->type].free_symbol(m)
 
 extern boolean_t db_line_at_pc(
 	db_sym_t sym,
 	char **filename,
 	int *linenum,
 	db_expr_t pc);
+
+#endif
