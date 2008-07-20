@@ -466,6 +466,42 @@ extern kern_return_t	vm_map_pageable_common(vm_map_t, vm_offset_t,
 extern vm_object_t	vm_submap_object;
 
 /*
+ *  vm_map_copyin_object:
+ *
+ *  Create a copy object from an object.
+ *  Our caller donates an object reference.
+ */
+extern kern_return_t vm_map_copyin_object(
+    vm_object_t object,
+    vm_offset_t offset,     /* offset of region in object */
+    vm_size_t   size,       /* size of region in object */
+    vm_map_copy_t   *copy_result);   /* OUT */
+
+/*
+ *  vm_map_submap:      [ kernel use only ]
+ *
+ *  Mark the given range as handled by a subordinate map.
+ *
+ *  This range must have been created with vm_map_find using
+ *  the vm_submap_object, and no other operations may have been
+ *  performed on this range prior to calling vm_map_submap.
+ *
+ *  Only a limited number of operations can be performed
+ *  within this rage after calling vm_map_submap:
+ *      vm_fault
+ *  [Don't try vm_map_copyin!]
+ *
+ *  To remove a submapping, one must first remove the
+ *  range from the superior map, and then destroy the
+ *  submap (if desired).  [Better yet, don't try it.]
+ */
+extern kern_return_t vm_map_submap(
+    vm_map_t   map,
+    vm_offset_t    start,
+    vm_offset_t    end,
+    vm_map_t        submap);
+
+/*
  *	Wait and wakeup macros for in_transition map entries.
  */
 #define vm_map_entry_wait(map, interruptible)    	\
@@ -476,5 +512,23 @@ extern vm_object_t	vm_submap_object;
         MACRO_END
 
 #define vm_map_entry_wakeup(map)        thread_wakeup((event_t)&(map)->hdr)
+
+/*
+ *      This routine is called only when it is known that
+ *      the entry must be split.
+ */
+extern void _vm_map_clip_start(
+        struct vm_map_header *map_header,
+        vm_map_entry_t entry,
+        vm_offset_t start);
+
+/*
+ *      vm_map_clip_end:        [ internal use only ]
+ *
+ *      Asserts that the given entry ends at or before
+ *      the specified address; if necessary,
+ *      it splits the entry into two.
+ */
+void _vm_map_clip_end();
 
 #endif	/* _VM_VM_MAP_H_ */

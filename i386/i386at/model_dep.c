@@ -49,11 +49,22 @@
 #include <kern/printf.h>
 #include <sys/time.h>
 #include <vm/vm_page.h>
+#include <i386/fpu.h>
+#include <i386/gdt.h>
+#include <i386/ktss.h>
+#include <i386/ldt.h>
 #include <i386/machspl.h>
+#include <i386/pic.h>
+#include <i386/pit.h>
 #include <i386/pmap.h>
 #include <i386/proc_reg.h>
 #include <i386/locore.h>
 #include <i386/model_dep.h>
+#include <i386at/autoconf.h>
+#include <i386at/idt.h>
+#include <i386at/int_init.h>
+#include <i386at/kd.h>
+#include <i386at/rtc.h>
 
 /* Location of the kernel's symbol table.
    Both of these are 0 if none is available.  */
@@ -369,7 +380,7 @@ void c_boot_entry(vm_offset_t bi)
 	 */
 	if (strstr(kernel_cmdline, "-d ")) {
 		cninit();		/* need console for debugger */
-		Debugger();
+		Debugger("init");
 	}
 #endif	/* MACH_KDB */
 

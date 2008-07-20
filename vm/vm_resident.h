@@ -1,5 +1,5 @@
 /*
- * Arch dependent functions
+ * Resident memory management module functions.
  * Copyright (C) 2008 Free Software Foundation, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,38 +16,30 @@
  * along with this program; if not, write to the Free Software
  * Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- *	Author: Barry deFreese.
+ *  Author: Barry deFreese.
  */
 /*
- *     Arch dependent functions.
+ *     Resident memory management module functions.
  *
  */
 
-#ifndef _I386AT_MODEL_DEP_H_
-#define _I386AT_MODEL_DEP_H_
+#ifndef _VM_RESIDENT_H_
+#define _VM_RESIDENT_H_
 
 #include <mach/std_types.h>
 
 /*
- * Find devices.  The system is alive.
+ *  vm_page_replace:
+ *
+ *  Exactly like vm_page_insert, except that we first
+ *  remove any existing page at the given offset in object
+ *  and we don't do deactivate-behind.
+ *
+ *  The object and page must be locked.
  */
-extern void machine_init (void);
+extern void vm_page_replace (
+    register vm_page_t mem,
+    register vm_object_t object,
+    register vm_offset_t offset);
 
-/* Conserve power on processor CPU.  */
-extern void machine_idle (int cpu);
-
-/*
- * Halt a cpu.
- */
-extern void halt_cpu (void) __attribute__ ((noreturn));
-
-/*
- * Halt the system or reboot.
- */
-extern void halt_all_cpus (boolean_t reboot) __attribute__ ((noreturn));
-
-extern void resettodr (void);
-
-extern void startrtclock (void);
-
-#endif /* _I386AT_MODEL_DEP_H_ */
+#endif /* _VM_RESIDENT_H_ */

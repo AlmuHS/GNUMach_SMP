@@ -134,4 +134,5 @@ struct rtc_st {
 	} \
 }	
 
-
+extern int readtodc(u_int *tp);
+extern int writetodc(void);

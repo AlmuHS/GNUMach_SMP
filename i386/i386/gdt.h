@@ -59,4 +59,6 @@ extern struct real_descriptor gdt[GDTSZ];
 #define fill_gdt_descriptor(segment, base, limit, access, sizebits) \
 	fill_descriptor(&gdt[segment/8], base, limit, access, sizebits)
 
+extern void gdt_init(void);
+
 #endif /* _I386_GDT_ */

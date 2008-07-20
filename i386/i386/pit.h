@@ -77,3 +77,5 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #if	AT386
 #define CLKNUM		1193167
 #endif	/* AT386 */
+
+extern void clkstart(void);

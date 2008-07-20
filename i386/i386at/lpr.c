@@ -55,6 +55,7 @@
 #include <i386/ipl.h>
 #include <i386/pio.h>
 #include <chips/busses.h>
+#include <i386at/autoconf.h>
 #include <i386at/lprreg.h>
   
 extern void 	timeout();

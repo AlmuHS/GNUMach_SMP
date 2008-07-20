@@ -81,6 +81,7 @@
 #include <vm/memory_object.h>
 #include <vm/vm_map.h>
 #include <vm/vm_kern.h>
+#include <vm/vm_user.h>
 
 #include <device/device_types.h>
 #include <device/dev_hdr.h>

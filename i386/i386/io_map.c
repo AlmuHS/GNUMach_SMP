@@ -26,6 +26,7 @@
 
 #include <kern/printf.h>
 #include <mach/vm_param.h>
+#include <vm/pmap.h>
 #include <vm/vm_kern.h>
 #include <vm/vm_map.h>
 

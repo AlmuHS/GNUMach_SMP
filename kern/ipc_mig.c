@@ -32,9 +32,11 @@
 #include <kern/ast.h>
 #include <kern/debug.h>
 #include <kern/ipc_tt.h>
+#include <kern/syscall_subr.h>
 #include <kern/thread.h>
 #include <kern/task.h>
 #include <kern/ipc_kobject.h>
+#include <kern/ipc_tt.h>
 #include <vm/vm_map.h>
 #include <vm/vm_user.h>
 #include <ipc/port.h>
@@ -49,7 +51,7 @@
 #include <ipc/mach_port.h>
 #include <device/dev_hdr.h>
 #include <device/device_types.h>
-
+#include <device/ds_routines.h>
 
 /*
  *	Routine:	mach_msg_send_from_kernel

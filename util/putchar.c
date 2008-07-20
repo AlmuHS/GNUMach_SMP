@@ -21,6 +21,8 @@
  *      Author: Bryan Ford, University of Utah CSL
  */
 
+#include <device/cons.h>
+
 int putchar(int c)
 {
 	cnputc(c);

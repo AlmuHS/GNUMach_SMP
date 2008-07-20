@@ -65,7 +65,7 @@ static inline int
 schedule_task(struct tq_struct *task)
 {
   printk(KERN_INFO "schedule_task: not implemented, task=%p\n", task);
-  Debugger();
+  Debugger("schedule_task");
   return 0; /* fail */
 }
 

@@ -348,7 +348,7 @@ decl_simple_lock_data(, *lock)
 				return;
 			db_printf("cpu %d looping on simple_lock(%x) called by %x\n",
 				cpu_number(), lock, *(((int *)&lock) -1));
-			Debugger();
+			Debugger("simple_lock timeout");
 			count = 0;
 		}
 }
@@ -362,7 +362,7 @@ retry_bit_lock(index, addr)
 		if (count++ > 1000000) {
 			db_printf("cpu %d looping on bit_lock(%x, %x) called by %x\n",
 				cpu_number(), index, addr, *(((int *)&index) -1));
-			Debugger();
+			Debugger("bit_lock timeout");
 			count = 0;
 		}
 }

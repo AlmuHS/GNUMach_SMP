@@ -149,6 +149,7 @@ extern kern_return_t	task_assign(
 extern kern_return_t	task_assign_default(
 	task_t		task,
 	boolean_t	assign_threads);
+extern void consider_task_collect(void);
 
 /*
  *	Internal only routines

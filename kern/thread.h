@@ -318,6 +318,7 @@ extern kern_return_t	thread_assign(
 	processor_set_t	new_pset);
 extern kern_return_t	thread_assign_default(
 	thread_t	thread);
+extern void		stack_collect(void);
 #endif
 
 /*

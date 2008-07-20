@@ -86,4 +86,7 @@ convert_port_to_space(struct ipc_port *);
 extern void
 space_deallocate(ipc_space_t);
 
+mach_port_t
+mach_reply_port (void);
+
 #endif	/* _KERN_IPC_TT_H_ */

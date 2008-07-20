@@ -41,6 +41,7 @@
 #include <kern/host.h>
 #include <kern/task.h>
 #include <vm/vm_fault.h>
+#include <vm/vm_kern.h>
 #include <vm/vm_map.h>
 #include <vm/vm_object.h>
 #include <vm/vm_page.h>

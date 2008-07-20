@@ -1,5 +1,5 @@
 /*
- * Arch dependent functions
+ * Kernel read_fault on i386 functions
  * Copyright (C) 2008 Free Software Foundation, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,38 +16,20 @@
  * along with this program; if not, write to the Free Software
  * Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- *	Author: Barry deFreese.
+ *  Author: Barry deFreese.
  */
 /*
- *     Arch dependent functions.
+ *     Kernel read_fault on i386 functions.
  *
  */
 
-#ifndef _I386AT_MODEL_DEP_H_
-#define _I386AT_MODEL_DEP_H_
+#ifndef _READ_FAULT_H_
+#define _READ_FAULT_H_
 
 #include <mach/std_types.h>
 
-/*
- * Find devices.  The system is alive.
- */
-extern void machine_init (void);
+extern kern_return_t intel_read_fault(
+        vm_map_t map,
+        vm_offset_t vaddr);
 
-/* Conserve power on processor CPU.  */
-extern void machine_idle (int cpu);
-
-/*
- * Halt a cpu.
- */
-extern void halt_cpu (void) __attribute__ ((noreturn));
-
-/*
- * Halt the system or reboot.
- */
-extern void halt_all_cpus (boolean_t reboot) __attribute__ ((noreturn));
-
-extern void resettodr (void);
-
-extern void startrtclock (void);
-
-#endif /* _I386AT_MODEL_DEP_H_ */
+#endif /* _READ_FAULT_H_ */

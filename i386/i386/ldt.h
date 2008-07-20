@@ -61,6 +61,8 @@ extern struct real_descriptor ldt[LDTSZ];
 	fill_gate((struct real_gate*)&ldt[selector/8], \
 		  offset, dest_selector, access, word_count)
 
+void ldt_init(void);
+
 #endif /* !__ASSEMBLER__ */
 
 #endif /* _I386_LDT_ */

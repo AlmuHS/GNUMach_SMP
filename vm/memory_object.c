@@ -41,6 +41,7 @@
 #include <mach/mach_types.h>
 
 #include <mach/kern_return.h>
+#include <vm/vm_map.h>
 #include <vm/vm_object.h>
 #include <mach/memory_object.h>
 #include <mach/boolean.h>
@@ -80,23 +81,6 @@ decl_simple_lock_data(,memory_manager_default_lock)
  *		object (first argument) as part of the automatic
  *		argument conversion. Explicit deallocation is necessary.
  */
-
-/*
- *	If successful, destroys the map copy object.
- */
-kern_return_t memory_object_data_provided(object, offset, data, data_cnt,
-					  lock_value)
-	vm_object_t	object;
-	vm_offset_t	offset;
-	pointer_t	data;
-	unsigned int	data_cnt;
-	vm_prot_t	lock_value;
-{
-        return memory_object_data_supply(object, offset, (vm_map_copy_t) data,
-					 data_cnt, lock_value, FALSE, IP_NULL,
-					 0);
-}
-
 
 kern_return_t memory_object_data_supply(object, offset, data_copy, data_cnt,
 	lock_value, precious, reply_to, reply_to_type)
@@ -322,6 +306,24 @@ retry_lookup:
 
 	return(result);
 }
+
+
+/*
+ *	If successful, destroys the map copy object.
+ */
+kern_return_t memory_object_data_provided(object, offset, data, data_cnt,
+					  lock_value)
+	vm_object_t	object;
+	vm_offset_t	offset;
+	pointer_t	data;
+	unsigned int	data_cnt;
+	vm_prot_t	lock_value;
+{
+        return memory_object_data_supply(object, offset, (vm_map_copy_t) data,
+					 data_cnt, lock_value, FALSE, IP_NULL,
+					 0);
+}
+
 
 kern_return_t memory_object_data_error(object, offset, size, error_value)
 	vm_object_t	object;

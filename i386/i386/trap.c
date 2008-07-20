@@ -32,6 +32,8 @@
 
 #include <mach/machine/eflags.h>
 #include <i386/trap.h>
+#include <i386/fpu.h>
+#include <intel/read_fault.h>
 #include <machine/machspl.h>	/* for spl_t */
 
 #include <mach/exception.h>
@@ -39,6 +41,7 @@
 #include "vm_param.h"
 #include <mach/machine/thread_status.h>
 
+#include <vm/vm_fault.h>
 #include <vm/vm_kern.h>
 #include <vm/vm_map.h>
 

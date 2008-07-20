@@ -43,6 +43,7 @@
 #include <kern/debug.h>
 #include <kern/lock.h>
 #include <kern/thread.h>
+#include <vm/pmap.h>
 #include <vm/vm_fault.h>
 #include <vm/vm_kern.h>
 #include <vm/vm_map.h>

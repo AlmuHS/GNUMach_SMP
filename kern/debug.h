@@ -60,4 +60,6 @@
 extern void panic_init(void);
 extern void panic (const char *s, ...) __attribute__ ((noreturn));
 
+extern void Debugger (char *message) __attribute__ ((noreturn));
+
 #endif /* _mach_debug__debug_ */

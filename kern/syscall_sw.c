@@ -29,6 +29,7 @@
 
 #include <mach/port.h>
 #include <mach/kern_return.h>
+#include <kern/debug.h>
 #include <kern/syscall_sw.h>
 
 /* Include declarations of the trap functions. */

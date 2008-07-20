@@ -42,12 +42,15 @@
 #include <kern/ast.h>
 #include <kern/counters.h>
 #include <kern/debug.h>
+#include <kern/eventcount.h>
+#include <kern/ipc_mig.h>
 #include <kern/ipc_tt.h>
 #include <kern/mach_param.h>
 #include <kern/processor.h>
 #include <kern/queue.h>
 #include <kern/sched.h>
 #include <kern/sched_prim.h>
+#include <kern/syscall_subr.h>
 #include <kern/thread.h>
 #include <kern/thread_swap.h>
 #include <kern/host.h>

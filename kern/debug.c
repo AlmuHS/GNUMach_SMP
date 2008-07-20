@@ -33,10 +33,10 @@
 
 #include <kern/debug.h>
 
+#include <machine/loose_ends.h>
 #include <machine/model_dep.h>
 
 extern void cnputc();
-void Debugger() __attribute__ ((noreturn));
 
 #if	MACH_KDB
 extern int db_breakpoints_inserted;

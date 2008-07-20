@@ -58,4 +58,15 @@ extern vm_offset_t set_user_regs (
    struct exec_info *exec_info,
    vm_size_t   arg_size);
 
+extern void load_context (thread_t new);
+
+extern void stack_attach (
+   thread_t thread, 
+   vm_offset_t stack, 
+   void (*continuation)());
+
+extern vm_offset_t stack_detach (thread_t thread);
+
+extern void switch_ktss (pcb_t pcb);
+
 #endif /* _I386_PCB_H_ */

@@ -42,6 +42,7 @@
 #include <mach/machine/vm_param.h>
 #include <mach/vm_statistics.h>
 #include <mach/kern_return.h>
+#include <mach/vm_prot.h>
 #include <i386/proc_reg.h>
 
 /*
@@ -362,6 +363,33 @@ pt_entry_t *pmap_pte(pmap_t pmap, vm_offset_t addr);
 #define	pmap_copy(dst_pmap,src_pmap,dst_addr,len,src_addr)
 #define	pmap_attribute(pmap,addr,size,attr,value) \
 					(KERN_INVALID_ADDRESS)
+
+/*
+ *  Bootstrap the system enough to run with virtual memory.
+ *  Allocate the kernel page directory and page tables,
+ *  and direct-map all physical memory.
+ *  Called with mapping off.
+ */
+extern void pmap_bootstrap(void);
+
+extern void pmap_unmap_page_zero (void);
+
+/*
+ *  pmap_zero_page zeros the specified (machine independent) page.
+ */
+extern void pmap_zero_page (vm_offset_t);
+
+/*
+ *  pmap_copy_page copies the specified (machine independent) pages.
+ */
+extern void pmap_copy_page (vm_offset_t, vm_offset_t);
+
+/*
+ *  kvtophys(addr)
+ *
+ *  Convert a kernel virtual address to a physical address
+ */
+extern vm_offset_t kvtophys (vm_offset_t);
 
 #endif	/* __ASSEMBLER__ */
 

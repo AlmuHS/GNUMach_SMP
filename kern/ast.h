@@ -127,4 +127,8 @@ MACRO_END
  *	be followed by ast_propagate().
  */
 
+extern void ast_init (void);
+
+extern void ast_check (void);
+
 #endif	/* _KERN_AST_H_ */

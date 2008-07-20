@@ -34,6 +34,7 @@
 #include <ipc/ipc_init.h>
 #include <kern/cpu_number.h>
 #include <kern/debug.h>
+#include <kern/machine.h>
 #include <kern/mach_factor.h>
 #include <kern/mach_clock.h>
 #include <kern/printf.h>
@@ -51,6 +52,7 @@
 #include <vm/vm_object.h>
 #include <vm/vm_page.h>
 #include <machine/machspl.h>
+#include <machine/pcb.h>
 #include <machine/pmap.h>
 #include <machine/model_dep.h>
 #include <mach/version.h>

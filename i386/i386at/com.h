@@ -1,5 +1,5 @@
 /*
- * Arch dependent functions
+ * Communication functions
  * Copyright (C) 2008 Free Software Foundation, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,38 +16,30 @@
  * along with this program; if not, write to the Free Software
  * Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- *	Author: Barry deFreese.
+ *  Author: Barry deFreese.
  */
 /*
- *     Arch dependent functions.
+ *     Communication functions.
  *
  */
 
-#ifndef _I386AT_MODEL_DEP_H_
-#define _I386AT_MODEL_DEP_H_
+#ifndef _COM_H_
+#define _COM_H_
 
 #include <mach/std_types.h>
 
 /*
- * Find devices.  The system is alive.
+ * Set receive modem state from modem status register.
  */
-extern void machine_init (void);
+extern void fix_modem_state(int unit, int modem_stat);
 
-/* Conserve power on processor CPU.  */
-extern void machine_idle (int cpu);
+extern void comtimer(void);
 
 /*
- * Halt a cpu.
+ * Modem change (input signals)
  */
-extern void halt_cpu (void) __attribute__ ((noreturn));
+extern void commodem_intr(int unit, int stat);
 
-/*
- * Halt the system or reboot.
- */
-extern void halt_all_cpus (boolean_t reboot) __attribute__ ((noreturn));
+extern int comgetc(int unit);
 
-extern void resettodr (void);
-
-extern void startrtclock (void);
-
-#endif /* _I386AT_MODEL_DEP_H_ */
+#endif /* _COM_H_ */

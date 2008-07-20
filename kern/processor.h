@@ -237,12 +237,12 @@ typedef mach_port_t	*processor_set_name_array_t;
 
 #ifdef KERNEL
 #if	MACH_HOST
-extern void	pset_sys_bootstrap(void);
 extern void	pset_sys_init(void);
 #endif	/* MACH_HOST */
 
 /* Pset internal functions */
 
+extern void	pset_sys_bootstrap(void);
 extern void	pset_reference(processor_set_t);
 extern void	pset_deallocate(processor_set_t);
 extern void	pset_remove_processor(processor_set_t, processor_t);

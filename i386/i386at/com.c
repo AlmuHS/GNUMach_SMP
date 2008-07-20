@@ -39,6 +39,8 @@
 #include <i386/pio.h>
 #include <i386/machspl.h>
 #include <chips/busses.h>
+#include <i386at/autoconf.h>
+#include <i386at/com.h>
 #include <i386at/comreg.h>
 
 #include <device/cons.h>

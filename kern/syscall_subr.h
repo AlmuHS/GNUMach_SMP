@@ -24,6 +24,8 @@
  * the rights to redistribute these changes.
  */
 
+#include <sys/types.h>
+#include <mach/mach_types.h>
 #include <kern/kern_types.h>
 
 #ifndef	_KERN_SYSCALL_SUBR_H_
@@ -33,5 +35,6 @@ extern int	swtch(void);
 extern int	swtch_pri(int);
 extern int	thread_switch(mach_port_t, int, mach_msg_timeout_t);
 extern void	thread_depress_timeout(thread_t);
+extern kern_return_t thread_depress_abort(thread_t);
 
 #endif	/* _KERN_SYSCALL_SUBR_H_ */

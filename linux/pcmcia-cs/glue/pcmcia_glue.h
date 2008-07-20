@@ -255,12 +255,6 @@ init_dev_name(struct net_device *dev, dev_node_t node)
 #define module_exit(a)
 
 /*
- * Debugging convenience.
- */
-extern void Debugger(void);
-
-
-/*
  * TODO: We don't have `disable_irq_nosync', do we need it?  This is used
  * by the axnet_cs client driver only.
  */

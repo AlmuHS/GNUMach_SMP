@@ -33,6 +33,8 @@
 
 char *trap_name(unsigned int trapnum);
 
+unsigned int interrupted_pc(thread_t);
+
 #endif /* !__ASSEMBLER__ */
 
 #endif	/* _I386_TRAP_H_ */

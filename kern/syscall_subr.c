@@ -37,6 +37,7 @@
 #include <kern/processor.h>
 #include <kern/sched.h>
 #include <kern/sched_prim.h>
+#include <kern/syscall_subr.h>
 #include <kern/ipc_sched.h>
 #include <kern/task.h>
 #include <kern/thread.h>
@@ -62,8 +63,7 @@
  *	lock and then be a good citizen and really suspend.
  */
 
-extern void thread_depress_priority(thread_t, mach_msg_timeout_t);
-extern kern_return_t thread_depress_abort(thread_t);
+void thread_depress_priority(thread_t, mach_msg_timeout_t);
 
 void swtch_continue(void)
 {

@@ -218,6 +218,28 @@ extern vm_offset_t pmap_grab_page (void);
 extern boolean_t pmap_valid_page(vm_offset_t x);
 
 /*
+ *      Make the specified pages (by pmap, offset)
+ *      pageable (or not) as requested.
+ */
+extern void pmap_pageable(
+    pmap_t      pmap,
+    vm_offset_t start,
+    vm_offset_t end,
+    boolean_t   pageable);
+
+/*
+ *      Back-door routine for mapping kernel VM at initialization.
+ *      Useful for mapping memory outside the range
+ *      [phys_first_addr, phys_last_addr) (i.e., devices).
+ *      Otherwise like pmap_map.
+ */
+extern vm_offset_t pmap_map_bd(
+        vm_offset_t virt,
+        vm_offset_t start,
+        vm_offset_t end,
+        vm_prot_t prot);
+
+/*
  * Routines defined as macros.
  */
 #ifndef	PMAP_ACTIVATE_USER

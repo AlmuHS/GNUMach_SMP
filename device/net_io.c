@@ -367,6 +367,36 @@ decl_simple_lock_data(,net_hash_header_lock)
 extern boolean_t net_do_filter();	/* CSPF */
 extern int bpf_do_filter();		/* BPF */
 
+int hash_ent_remove (
+   struct ifnet *ifp,
+   net_hash_header_t hp,
+   int used,
+   net_hash_entry_t *head, 
+	net_hash_entry_t entp,
+   queue_entry_t *dead_p);
+
+void net_free_dead_infp (queue_entry_t dead_infp);
+void net_free_dead_entp (queue_entry_t dead_entp);
+
+int bpf_validate(
+    bpf_insn_t f,
+    int bytes,
+    bpf_insn_t *match);
+
+int bpf_eq (
+    bpf_insn_t f1,
+	bpf_insn_t f2,
+    register int bytes);
+
+int net_add_q_info (ipc_port_t rcv_port);
+
+int bpf_match (
+   net_hash_header_t hash,
+   int n_keys,
+   unsigned int *keys,
+   net_hash_entry_t **hash_headpp,
+      net_hash_entry_t *entpp);
+
 
 /*
  *	ethernet_priority:

@@ -68,8 +68,10 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <sys/types.h>
 #include <kern/printf.h>
 #ifdef	MACH_KERNEL
+#include <device/ds_routines.h>
 #include <device/errno.h>
 #include <device/io_req.h>
+#include <device/subrs.h>
 #else	/* MACH_KERNEL */
 #include <sys/file.h>
 #include <sys/errno.h>
@@ -81,8 +83,10 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <sys/tty.h>
 #endif	/* MACH_KERNEL */
 #include <i386/ipl.h>
+#include <i386/pic.h>
 #include <i386/pio.h>
 #include <chips/busses.h>
+#include <i386at/com.h>
 #include <i386at/kd.h>
 #include <i386at/kd_queue.h>
 #include <i386at/i8250.h>

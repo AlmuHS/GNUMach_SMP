@@ -21,6 +21,9 @@
  *      Author: Bryan Ford, University of Utah CSL
  */
 
+#include <device/cons.h>
+#include <util/putchar.h>
+
 /* Simple puts() implementation that just uses putchar().
    Note that our libc's printf() is implemented
    in terms of only puts() and putchar(), so that's all we need.  */

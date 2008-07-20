@@ -34,4 +34,8 @@
 
 #include <i386/idt-gen.h>
 
+#ifndef __ASSEMBLER__
+extern void idt_init (void);
+#endif
+
 #endif /* _I386AT_IDT_ */

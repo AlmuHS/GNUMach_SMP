@@ -77,4 +77,9 @@ extern vm_map_t	kernel_map;
 extern vm_map_t	kernel_pageable_map;
 extern vm_map_t ipc_kernel_map;
 
+extern boolean_t projected_buffer_in_range(
+        vm_map_t map,
+        vm_offset_t start,
+		vm_offset_t end);
+
 #endif	/* _VM_VM_KERN_H_ */

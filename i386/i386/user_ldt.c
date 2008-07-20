@@ -35,6 +35,7 @@
 
 #include <vm/vm_kern.h>
 
+#include <i386/pcb.h>
 #include <i386/seg.h>
 #include <i386/thread.h>
 #include <i386/user_ldt.h>

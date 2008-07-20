@@ -176,4 +176,9 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define READ_IR_ONRD		0x00
 #define READ_IS_ONRD		0x01
 
+#ifndef __ASSEMBLER__
+extern void form_pic_mask (void);
+extern void picinit (void);
+#endif
+
 #endif	/* _I386_PIC_H_ */

@@ -42,12 +42,27 @@
 #include <kern/assert.h>
 #include <kern/debug.h>
 #include <kern/zalloc.h>
+#include <vm/pmap.h>
 #include <vm/vm_fault.h>
 #include <vm/vm_map.h>
 #include <vm/vm_object.h>
 #include <vm/vm_page.h>
+#include <vm/vm_resident.h>
 #include <vm/vm_kern.h>
 #include <ipc/ipc_port.h>
+
+/* Forward declarations */
+kern_return_t vm_map_delete(
+    vm_map_t   map,
+    vm_offset_t    start,
+    vm_offset_t    end);
+
+kern_return_t vm_map_copyout_page_list(
+    vm_map_t    dst_map,
+    vm_offset_t *dst_addr,  /* OUT */
+    vm_map_copy_t   copy);
+
+void vm_map_copy_page_discard (vm_map_copy_t copy);
 
 /*
  * Macros to copy a vm_map_entry. We must be careful to correctly

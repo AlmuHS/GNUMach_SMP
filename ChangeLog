@@ -1,3 +1,110 @@
+2008-07-20  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* linux/pcmcia-cs/glue/wireless_glue.h (schedule_task): Add parameter
+	to Debugger() call.
+	* kern/lock_mon.c (retry_simple_lock, retry_bit_lock): Likewise.
+	* kern/machine.c (Debugger): Remove declaration.
+
+2008-07-19  Barry deFreese  <bddebian@comcast.net>
+
+	* device/dev_hdr.h (dev_name_lookup, dev_set_indirection): Add
+	prototypes.
+	* device/dev_pager.c: Include <vm/vm_user.h>.
+	* device/ds_routines.c: Likewise.
+	* device/subrs.c: Likewise.
+	* device/device_init.c: Include <device/tty.h>.
+	* device/ds_routines.h (iowait): Add prototype.
+	* device/net_io.h (net_kmsg_collect): Add prototype.
+	* device/net_io.c (hash_ent_remove, net_free_dead_infp,
+	net_free_dead_entp, bpf_validate, bpf_eq, net_add_q_info,
+	bpf_match): Add forward declarations.
+	* device/subrs.h: New header.
+	* i386/i386/fpu.h: Include <sys/types.h>.
+	Change <i386/thread.h> include to <kern/thread.h>.
+	(fp_save, fp_load, fp_free, fpu_module_init, fpu_set_state, 
+	fpu_get_state, fpnoextflt, fpextovrflt, fpexterrflt, init_fpu):
+	Add prototypes.
+	* i386/i386/gdt.h (gdt_init): Add prototype.
+	* i386/i386/io_map.c: Include <vm/pmap.h>.
+	* vm/vm_kern.c: Likewise.
+	* i386/i386/ktss.h (ktss_init): Add prototype.
+	* i386/i386/ldt.h (ldt_init): Add prototype.
+	* i386/i386/loose_ends.h: New header.
+	* i386/i386/loose_ends.c (delay): Complete prototype.
+	* i386/i386/model_dep.h (startrtclock): Add prototype.
+	* i386/i386/pcb.h (load_context, stack_attach, stack_detach, 
+	switch_ktss): Add prototypes.
+	* i386/i386/pic.h (form_pic_mask, picinit): Add prototypes.
+	* i386/i386/pit.c: Include <i386/pic.h>.
+	* i386/i386at/kd_mouse.c: Likewise.
+	* i386/i386/pit.h (clkstart): Add prototype.
+	* i386/i386/trap.c: Include <i386/fpu.h>, <intel/read_fault.h>,
+	<vm/vm_fault.h>.
+	* i386/i386/trap.h (interrupted_pc): Add prototype.
+	* i386/i386/user_ldt.c: Include <i386/pcb.h>.
+	* i386/i386at/autoconf.h: New header.
+	* i386/i386at/com.h: New header.
+	* i386/i386at/com.c: Include <i386at/autoconf.h>, <i386at/com.h>.
+	* i386/i386at/idt.h (idt_init): Add prototype.
+	* i386/i386at/int_init.h: New header.
+	* i386/i386at/kd.c: Include <i386/loose_ends.h>.
+	* kern/debug.c: Likewise.
+	* i386/i386at/kd_event.c: Include <device/ds_routines.h>.
+	* i386/i386at/kd_mouse.c: Likewise.
+	* i386/i386at/kd_mouse.c: Include <device/subrs.h>, <i386at/com.h>.
+	* i386/i386at/lpr.c: Include <i386at/autoconf.h>
+	* i386/i386at/model_dep.c: Include: <i386/fpu.h>, <i386/gdt.h>, 
+	<i386/ktss.h>, <i386/ldt.h>, <i386/pic.h>, <i386/pit.h>, 
+	<i386at/autoconf.h>, <i386at/idt.h>, <i386at/int_init.h>, 
+	<i386at/kd.h>, <i386at/rtc.h>.
+	* i386/i386at/rtc.h (readtodc, writetodc): Add prototypes.
+	* i386/intel/pmap.h: Include <mach/vm_prot.h>.
+	(pmap_bootstrap, pmap_unmap_page_zero, pmap_zero_page, pmap_copy_page,
+	kvtophys): Add prototypes.
+	* i386/intel/read_fault.h: New header.
+	* kern/ast.h (ast_init, ast_check): Add prototypes.
+	* kern/debug.c (Debugger): Move prototype to...
+	* kern/debug.h (Debugger): ... here.
+	* kern/eventcount.h (evc_notify_abort): Add prototype.
+	* kern/ipc_mig.c: Include <kern/syscall_subr.h>, <kern/ipc_tt.h>, 
+	<device/ds_routines.h>
+	* kern/ipc_mig.h: New header.
+	* kern/ipc_tt.h (mach_reply_port): Add prototype.
+	* kern/machine.h: New header.
+	* kern/processor.h (pset_sys_bootstrap): Move prototype outside of
+	MACH_HOST check.
+	* kern/sched_prim.h (thread_bind, compute_priority,
+	thread_timeout_setup): Add prototypes.
+	* kern/startup.c: Include <kern/machine.h>, <machine/pcb.h>.
+	* kern/syscall_subr.c: Include <kern/syscall_subr.h>.
+	(thread_depress_abort): Remove prototype.
+	* kern/syscall_subr.h: Include <sys/types.h>, <mach/mach_types.h>
+	(thread_depress_abort): Add prototype.
+	* kern/syscall_sw.c: Include: <kern/debug.h>.
+	* kern/task.h (consider_task_collect): Add prototype.
+	* kern/thread.c: Include <kern/eventcount.h>, <kern/ipc_mig.h>, 
+	<kern/syscall_subr.h>.
+	* kern/thread.h (stack_collect): Add prototype.
+	* linux/pcmcia-cs/glue/pcmcia_glue.h (Debugger): Remove prototype.
+	* util/putchar.c: Include <device/cons.h>.
+	* util/putchar.h: New header.
+	* util/puts.c: Include <device/cons.h>, <util/putchar.h>.
+	* vm/memory_object.c: Include <vm/vm_map.h>.
+	(memory_object_data_provided): Move function below
+	memory_object_data_supply definition.
+	* vm/vm_init.c: Include <vm/vm_fault.h>.
+	* vm/vm_kern.h (projected_buffer_in_range): Add prototype.
+	* vm/vm_map.c: Include <vm/pmap.h>, <vm/vm_resident.h>.
+	(vm_map_delete, vm_map_copyout_page_list, vm_map_copy_page_discard):
+	Add forward declaration.
+	* vm/vm_map.h (vm_map_copyin_object, vm_map_submap,
+	_vm_map_clip_start, _vm_map_clip_end): Add prototypes.
+	* vm/vm_pageout.c: Include <device/net_io.h>, <kern/task.h>, 
+	<machine/locore.h>.
+	* vm/vm_resident.h: New header.
+	* vm/vm_user.c: Include <vm/vm_kern.h>.
+	* vm/pmap.h (pmap_pageable, pmap_map_bd): Add prototype.
+
 2008-07-18  Andrei Barbu  <andrei@0xab.com>
 
 	* i386/i386/db_disasm.c (Iba): New macro.

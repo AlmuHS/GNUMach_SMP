@@ -78,6 +78,8 @@ extern io_return_t net_write(struct ifnet *, int (*)(), io_req_t);
 
 extern vm_size_t net_kmsg_size;
 
+extern void net_kmsg_collect (void);
+
 #define net_kmsg_alloc()	((ipc_kmsg_t) kalloc(net_kmsg_size))
 #define net_kmsg_free(kmsg)	kfree((vm_offset_t) (kmsg), net_kmsg_size)
 

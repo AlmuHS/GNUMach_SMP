@@ -1,5 +1,4 @@
 /*
- * Arch dependent functions
  * Copyright (C) 2008 Free Software Foundation, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -16,38 +15,28 @@
  * along with this program; if not, write to the Free Software
  * Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
  *
- *	Author: Barry deFreese.
+ *  Author: Barry deFreese.
  */
 /*
- *     Arch dependent functions.
+ *     Device auto configuration.
  *
  */
 
-#ifndef _I386AT_MODEL_DEP_H_
-#define _I386AT_MODEL_DEP_H_
+#ifndef _AUTOCONF_H_
+#define _AUTOCONF_H_
 
 #include <mach/std_types.h>
 
 /*
- * Find devices.  The system is alive.
+ * probeio:
+ *
+ *  Probe and subsequently attach devices out on the AT bus.
+ *
+ *
  */
-extern void machine_init (void);
+void probeio(void);
 
-/* Conserve power on processor CPU.  */
-extern void machine_idle (int cpu);
+extern void take_dev_irq (
+    struct bus_device *dev);
 
-/*
- * Halt a cpu.
- */
-extern void halt_cpu (void) __attribute__ ((noreturn));
-
-/*
- * Halt the system or reboot.
- */
-extern void halt_all_cpus (boolean_t reboot) __attribute__ ((noreturn));
-
-extern void resettodr (void);
-
-extern void startrtclock (void);
-
-#endif /* _I386AT_MODEL_DEP_H_ */
+#endif /* _AUTOCONF_H_ */

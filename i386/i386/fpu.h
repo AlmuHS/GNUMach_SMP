@@ -32,8 +32,9 @@
  * floating-point processor.
  */
 
+#include <sys/types.h>
 #include <i386/proc_reg.h>
-#include <i386/thread.h>
+#include <kern/thread.h>
 
 /*
  * FPU instructions.
@@ -99,5 +100,19 @@
 #endif	/* NCPUS == 1 */
 
 extern int	fp_kind;
+extern void fp_save(thread_t thread);
+extern void fp_load(thread_t thread);
+extern void fp_free(struct i386_fpsave_state *fps);
+extern void fpu_module_init(void);
+extern kern_return_t fpu_set_state(
+    thread_t    thread,
+    struct i386_float_state *state);
+extern kern_return_t fpu_get_state(
+    thread_t    thread,
+    struct i386_float_state *state);
+extern void fpnoextflt(void);
+extern void fpextovrflt(void);
+extern void fpexterrflt(void);
+extern void init_fpu(void);
 
 #endif	/* _I386_FPU_H_ */

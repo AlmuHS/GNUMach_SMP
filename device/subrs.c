@@ -30,6 +30,7 @@
 #include <kern/debug.h>
 #include <kern/printf.h>
 #include <vm/vm_kern.h>
+#include <vm/vm_user.h>
 #include <device/buf.h>
 #include <device/if_hdr.h>
 #include <device/if_ether.h>

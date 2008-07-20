@@ -49,6 +49,7 @@
 
 #include <vm/vm_page.h>
 #include <vm/vm_kern.h>
+#include <vm/vm_user.h>
 
 #include <device/device_types.h>
 #include <device/ds_routines.h>

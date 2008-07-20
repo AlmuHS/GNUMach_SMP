@@ -187,7 +187,6 @@ host_reboot(host, options)
 		return (KERN_INVALID_HOST);
 
 	if (options & RB_DEBUGGER) {
-		extern void Debugger();
 		Debugger("Debugger");
 	} else {
 #ifdef parisc

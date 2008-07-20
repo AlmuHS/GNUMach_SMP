@@ -36,7 +36,7 @@
 
 #include <device/device_types.h>
 #include <device/device_port.h>
-
+#include <device/tty.h>
 
 
 extern void	mach_device_init();
