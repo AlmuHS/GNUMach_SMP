@@ -8,6 +8,11 @@
 	* kern/mach_clock.c (timeout): Make the `fcn' parameter take a void *
 	instead of char *.
 	* kern/mach_clock.h (timeout): Likewise.
+	* device/net_io.c (net_set_filter): Reference the proper member
+	instead of casting pointers.
+	* device/subrs.c (ether_sprintf): Set type of `i' to `int'.
+	* i386/i386/trap.c (kernel_trap): Pass page fault address to printf.
+	* i386/i386at/rtc.c (rtcget): Fix parenthesis to really test the bit.
 
 2008-07-19  Barry deFreese  <bddebian@comcast.net>
 

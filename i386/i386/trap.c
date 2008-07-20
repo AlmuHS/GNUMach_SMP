@@ -245,7 +245,7 @@ dump_ss(regs);
 			assert(thread);
 			map = thread->task->map;
 			if (map == kernel_map) {
-				printf("kernel page fault at %08x:\n");
+				printf("kernel page fault at %08x:\n", subcode);
 				dump_ss(regs);
 				panic("kernel thread accessed user space!\n");
 			}

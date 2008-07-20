@@ -75,7 +75,7 @@ unsigned char	*regs;
 		first_rtcopen_ever = 0;
 	}
 	outb(RTC_ADDR, RTC_D);
-	if (inb(RTC_DATA) & RTC_VRT == 0) return(-1);
+	if ((inb(RTC_DATA) & RTC_VRT) == 0) return(-1);
 	outb(RTC_ADDR, RTC_A);
 	while (inb(RTC_DATA) & RTC_UIP)		/* busy wait */
 		outb(RTC_ADDR, RTC_A);

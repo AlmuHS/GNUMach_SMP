@@ -1371,10 +1371,10 @@ net_set_filter(ifp, rcv_port, priority, filter, filter_count)
 	
 	/* Not checking for the same key values */
 	if (*p == 0) {
-	    queue_init ((queue_t) hash_entp);
+	    queue_init (&hash_entp->chain);
 	    *p = hash_entp;
 	} else {
-	    enqueue_tail((queue_t)*p, hash_entp);
+	    enqueue_tail(&(*p)->chain, &hash_entp->chain);
 	}
 
 	((net_hash_header_t)my_infp)->ref_count++;
