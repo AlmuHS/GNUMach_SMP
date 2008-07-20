@@ -4,6 +4,7 @@
 	to Debugger() call.
 	* kern/lock_mon.c (retry_simple_lock, retry_bit_lock): Likewise.
 	* kern/machine.c (Debugger): Remove declaration.
+	* device/net_io.c (net_deliver): Fix parenthesis to really round up.
 
 2008-07-19  Barry deFreese  <bddebian@comcast.net>
 

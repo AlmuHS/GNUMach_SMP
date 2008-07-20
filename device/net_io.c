@@ -508,8 +508,8 @@ boolean_t net_deliver(nonblocking)
 		    MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND, 0);
 	    /* remember message sizes must be rounded up */
 	    kmsg->ikm_header.msgh_size =
-		    ((mach_msg_size_t) (sizeof(struct net_rcv_msg)
-					- NET_RCV_MAX + count))+3 &~ 3;
+		    (((mach_msg_size_t) (sizeof(struct net_rcv_msg)
+					- NET_RCV_MAX + count)) + 3) &~ 3;
 	    kmsg->ikm_header.msgh_local_port = MACH_PORT_NULL;
 	    kmsg->ikm_header.msgh_kind = MACH_MSGH_KIND_NORMAL;
 	    kmsg->ikm_header.msgh_id = NET_RCV_MSG_ID;
