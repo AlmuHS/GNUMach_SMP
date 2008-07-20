@@ -13,6 +13,9 @@
 	* device/subrs.c (ether_sprintf): Set type of `i' to `int'.
 	* i386/i386/trap.c (kernel_trap): Pass page fault address to printf.
 	* i386/i386at/rtc.c (rtcget): Fix parenthesis to really test the bit.
+	* linux/src/include/linux/tqueue.h (queue_task_irq,
+	queue_task_irq_off, queue_task, run_task_queue): Turn into static
+	inlines.
 
 2008-07-19  Barry deFreese  <bddebian@comcast.net>
 
