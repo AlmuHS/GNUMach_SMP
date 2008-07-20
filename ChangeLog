@@ -5,6 +5,9 @@
 	* kern/lock_mon.c (retry_simple_lock, retry_bit_lock): Likewise.
 	* kern/machine.c (Debugger): Remove declaration.
 	* device/net_io.c (net_deliver): Fix parenthesis to really round up.
+	* kern/mach_clock.c (timeout): Make the `fcn' parameter take a void *
+	instead of char *.
+	* kern/mach_clock.h (timeout): Likewise.
 
 2008-07-19  Barry deFreese  <bddebian@comcast.net>
 

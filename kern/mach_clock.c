@@ -528,8 +528,8 @@ timer_elt_data_t timeout_timers[NTIMERS];
  *	interval:	timeout interval, in hz.
  */
 void timeout(fcn, param, interval)
-	int	(*fcn)(/* char * param */);
-	char *	param;
+	int	(*fcn)( void * param );
+	void *	param;
 	int	interval;
 {
 	spl_t	s;

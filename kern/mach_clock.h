@@ -99,7 +99,7 @@ extern kern_return_t host_adjust_time(
 extern void mapable_time_init (void);
 
 /* For public timer elements.  */
-extern void timeout(int (*fcn)(), char *param, int interval);
+extern void timeout(int (*fcn)(void *), void *param, int interval);
 extern boolean_t untimeout(int (*fcn)(), char *param);
 
 #endif /* _KERN_MACH_CLOCK_H_ */
