@@ -47,10 +47,10 @@
 
 extern void timeout(), ttrstrt();
 
-int comprobe(), comintr(), comstart(), commctl();
-void comattach();
+int comprobe(), comstart(), commctl();
+void comstop(), comattach(), comintr();
 static void comparam();
-int comstop(), comgetstat(), comsetstat();
+int comgetstat(), comsetstat();
 
 static vm_offset_t com_std[NCOM] = { 0 };
 struct bus_device *cominfo[NCOM];
@@ -489,7 +489,7 @@ unsigned int	count;
 	return (D_SUCCESS);
 }
 
-int
+void
 comintr(unit)
 int unit;
 {
@@ -809,7 +809,7 @@ commctl(
 	return commodem[unit];
 }
 
-int
+void
 comstop(tp, flags)
 register struct tty *tp;
 int	flags;

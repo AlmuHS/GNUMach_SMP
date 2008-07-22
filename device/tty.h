@@ -52,10 +52,10 @@ struct tty {
 	struct cirbuf	t_outq;		/* output buffer */
 	char *		t_addr;		/* device pointer */
 	int		t_dev;		/* device number */
-	int		(*t_start)(struct tty *);
+	void		(*t_start)(struct tty *);
 					/* routine to start output */
 #define	t_oproc	t_start
-	int		(*t_stop)(struct tty *, int);
+	void		(*t_stop)(struct tty *, int);
 					/* routine to stop output */
 	int		(*t_mctl)(struct tty *, int, int);
 					/* (optional) routine to control

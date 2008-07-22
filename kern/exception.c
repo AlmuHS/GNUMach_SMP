@@ -51,15 +51,15 @@
 
 
 
-extern void exception();
-extern void exception_try_task();
-extern void exception_no_server();
+extern void exception() __attribute__ ((noreturn));
+extern void exception_try_task() __attribute__ ((noreturn));
+extern void exception_no_server() __attribute__ ((noreturn));
 
-extern void exception_raise();
+extern void exception_raise() __attribute__ ((noreturn));
 extern kern_return_t exception_parse_reply();
-extern void exception_raise_continue();
-extern void exception_raise_continue_slow();
-extern void exception_raise_continue_fast();
+extern void exception_raise_continue() __attribute__ ((noreturn));
+extern void exception_raise_continue_slow() __attribute__ ((noreturn));
+extern void exception_raise_continue_fast() __attribute__ ((noreturn));
 
 #if	MACH_KDB
 extern void thread_kdb_return();
@@ -113,7 +113,6 @@ exception(_exception, code, subcode)
 		ith_unlock(self);
 		exception_try_task(_exception, code, subcode);
 		/*NOTREACHED*/
-		return;
 	}
 
 	ip_lock(exc_port);
@@ -122,7 +121,6 @@ exception(_exception, code, subcode)
 		ip_unlock(exc_port);
 		exception_try_task(_exception, code, subcode);
 		/*NOTREACHED*/
-		return;
 	}
 
 	/*
@@ -183,7 +181,6 @@ exception_try_task(_exception, code, subcode)
 		itk_unlock(task);
 		exception_no_server();
 		/*NOTREACHED*/
-		return;
 	}
 
 	ip_lock(exc_port);
@@ -192,7 +189,6 @@ exception_try_task(_exception, code, subcode)
 		ip_unlock(exc_port);
 		exception_no_server();
 		/*NOTREACHED*/
-		return;
 	}
 
 	/*
@@ -268,6 +264,7 @@ exception_no_server()
 
 	(void) task_terminate(self->task);
 	thread_halt_self();
+	panic("terminating the task didn't kill us");
 	/*NOTREACHED*/
 }
 
@@ -758,7 +755,6 @@ exception_raise(dest_port, thread_port, task_port,
 		ip_unlock(reply_port);
 		exception_raise_continue_slow(MACH_RCV_PORT_DIED, IKM_NULL, /*dummy*/0);
 		/*NOTREACHED*/
-		return;
 	}
 
 	imq_lock(reply_mqueue);
@@ -933,7 +929,6 @@ exception_raise_continue_slow(mr, kmsg, seqno)
 	    (mr == MACH_RCV_PORT_DIED)) {
 		thread_exception_return();
 		/*NOTREACHED*/
-		return;
 	}
 
 	if (self->ith_exc != KERN_SUCCESS) {
@@ -941,7 +936,6 @@ exception_raise_continue_slow(mr, kmsg, seqno)
 				   self->ith_exc_code,
 				   self->ith_exc_subcode);
 		/*NOTREACHED*/
-		return;
 	}
 
 	exception_no_server();
@@ -991,7 +985,6 @@ exception_raise_continue_fast(reply_port, kmsg)
 	if (kr == KERN_SUCCESS) {
 		thread_exception_return();
 		/*NOTREACHED*/
-		return; /* help for the compiler */
 	}
 
 	if (self->ith_exc != KERN_SUCCESS) {

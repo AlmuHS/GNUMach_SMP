@@ -70,7 +70,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifdef	KERNEL
 #ifndef	__ASSEMBLER__
 #include <machine/machspl.h>
-extern int	(*ivect[])();
+extern void	(*ivect[])();
 extern int	iunit[];
 extern int	intpri[];
 #endif	/* __ASSEMBLER__ */

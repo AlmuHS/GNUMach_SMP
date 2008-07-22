@@ -118,7 +118,7 @@ boolean_t kdcheckmagic();
 int kdcnprobe(struct consdev *cp);
 int kdcninit(struct consdev *cp);
 int kdcngetc(dev_t dev, int wait);
-int kdcnputc(dev_t dev, int c);
+void kdcnputc(dev_t dev, int c);
 int do_modifier (int, Scancode, boolean_t);
 
 /*
@@ -461,9 +461,9 @@ kdopen(dev, flag, ior)
 	io_req_t ior;
 {
 	struct 	tty	*tp;
-	int	kdstart();
+	void	kdstart();
 	spl_t	o_pri;
-	int	kdstop();
+	void	kdstop();
 
 	tp = &kd_tty;
 	o_pri = spltty();
@@ -737,7 +737,7 @@ int	flags;				/* flags set for console */
  *
  */
 /*ARGSUSED*/
-int
+void
 kdintr(vec, regs)
 int	vec;
 int	regs;
@@ -1085,7 +1085,7 @@ boolean_t	extended;
  * Entered and left at spltty.  Drops priority to spl0 to display character.
  * ASSUMES that it is never called from interrupt-driven code.
  */
-int
+void
 kdstart(tp)
 struct	tty	*tp;
 {
@@ -1136,7 +1136,7 @@ struct	tty	*tp;
 }
 
 /*ARGSUSED*/
-int
+void
 kdstop(tp, flags)
 	register struct tty *tp;
 	int	flags;
@@ -2975,6 +2975,7 @@ kdcnprobe(struct consdev *cp)
 
 	cp->cn_dev = makedev(maj, unit);
 	cp->cn_pri = pri;
+	return 0;
 }
 
 int
@@ -2997,7 +2998,7 @@ kdcngetc(dev_t dev, int wait)
 		return kdcnmaygetc();
 }
 
-int
+void
 kdcnputc(dev_t dev, int c)
 {
 	if (!kd_initialized)

@@ -73,7 +73,7 @@ struct bus_ctlr {
 	struct bus_driver  *driver;	/* myself, as a device */
 	char		   *name;	/* readability */
 	int		    unit;	/* index in driver */
-	int		  (*intr)();	/* interrupt handler(s) */
+	void		  (*intr)();	/* interrupt handler(s) */
 	vm_offset_t	    address;	/* device virtual address */
 	int		    am;		/* address modifier */
 	vm_offset_t	    phys_address;/* device phys address */
@@ -93,7 +93,7 @@ struct bus_device {
 	struct bus_driver  *driver;	/* autoconf info */
 	char		   *name;	/* my name */
 	int		    unit;
-	int		  (*intr)();
+	void		  (*intr)();
 	vm_offset_t	    address;	/* device address */
 	int		    am;		/* address modifier */
 	vm_offset_t	    phys_address;/* device phys address */

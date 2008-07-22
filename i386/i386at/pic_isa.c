@@ -33,7 +33,7 @@
 extern intnull(), fpintr(), hardclock(), kdintr();
 extern prtnull();
 
-int (*ivect[NINTR])() = {
+void (*ivect[NINTR])() = {
 	/* 00 */	hardclock,	/* always */
 #if RCLINE < 0
 	/* 01 */	kdintr,		/* kdintr, ... */

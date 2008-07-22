@@ -124,7 +124,7 @@ u_char lastbuttons;		/* previous state of mouse buttons */
 #define MOUSE_DOWN	0
 #define MOUSE_ALL_UP	0x7
 
-int mouseintr();
+void mouseintr();
 void mouse_enqueue();
 int mouse_baud = BCNT1200;
 
@@ -539,7 +539,7 @@ done:
 /*
  * mouseintr - Get a byte and pass it up for handling.  Called at SPLKD.
  */
-int
+void
 mouseintr(unit)
 {
 	unsigned short base_addr  = cominfo[unit]->address;

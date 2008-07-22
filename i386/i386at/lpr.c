@@ -65,7 +65,8 @@ extern void 	ttrstrt();
  * Driver information for auto-configuration stuff.
  */
 
-int 	lprprobe(), lprintr(), lprstart(), lprstop();
+int 	lprprobe(), lprstop();
+void	lprintr(), lprstart();
 void	lprattach(struct bus_device *);
 #ifdef	MACH_KERNEL
 int lprstop(), lprgetstat(), lprsetstat();
@@ -280,7 +281,7 @@ int lprioctl(dev, cmd, addr, mode)
 }
 #endif	/* MACH_KERNEL */
 
-int lprintr(unit)
+void lprintr(unit)
 int unit;
 {
 	register struct tty *tp = &lpr_tty[unit];
@@ -295,7 +296,7 @@ int unit;
 	lprstart(tp);
 }   
 
-int lprstart(tp)
+void lprstart(tp)
 struct tty *tp;
 {
 	spl_t s = spltty();
@@ -305,13 +306,13 @@ struct tty *tp;
 
 	if (tp->t_state & (TS_TIMEOUT|TS_TTSTOP|TS_BUSY)) {
 		splx(s);
-		return(0);
+		return;
 	}
 
 	if (status & 0x20) {
 		printf("Printer out of paper!\n");
 		splx(s);
-		return(0);
+		return;
 	}
 
 	if (tp->t_outq.c_cc <= TTLOWAT(tp)) {
@@ -331,7 +332,7 @@ struct tty *tp;
 	}
 	if (tp->t_outq.c_cc == 0) {
 		splx(s);
-		return(0);
+		return;
 	}
 #ifdef	MACH_KERNEL
 	nch = getc(&tp->t_outq);
@@ -366,7 +367,7 @@ struct tty *tp;
 	}
 #endif	/* MACH_KERNEL */
 	splx(s);
-	return(0);
+	return;
 }
 
 #ifdef	MACH_KERNEL

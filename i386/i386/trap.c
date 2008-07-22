@@ -60,10 +60,10 @@
 
 #include "debug.h"
 
-extern void exception();
-extern void thread_exception_return();
+extern void exception() __attribute__ ((noreturn));
+extern void thread_exception_return() __attribute__ ((noreturn));
 
-extern void i386_exception();
+extern void i386_exception()  __attribute__ ((noreturn));
 
 #if	MACH_KDB
 boolean_t	debug_all_traps_with_kdb = FALSE;

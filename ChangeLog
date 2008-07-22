@@ -1,3 +1,28 @@
+2008-07-19  Barry deFreese  <bddebian@comcast.net>
+
+	* chips/busses.h (bus_ctlr, bus_device): Make intr return void instead
+	of int.
+	* device/tty.h (tty): Make t_start and t_stop return void instead of
+	int.
+	* i386/i386/ipl.h (ivect[]): return void instead of int.
+	* i386/i386at/pic_isa.h (ivect[]): Likewise.
+	* i386/i386at/kd_mouse.c (mouseintr): Likewise.
+	* i386/i386at/com.c (comintr, comstop): Likewise.
+	* i386/i386at/kd.c (kdcnputc, kdstart, kdstop, kdintr): Likewise.
+	* i386/i386/trap.c (exception, thread_exception_return, i386_exception):
+	 Add __attribute__ ((noreturn)).
+	* i386/i386at/kd.c (kdcnprobe): Return 0 at end of function.
+	* i386/i386at/lpr.c (lprintr, lprstart): Return void instead of int.
+	(lprstart): Don't return numeric values any longer.
+	* kern/eventcount.c (evc_wait_clear): Return a value.
+	* kern/exceptions.c (exception, exception_try_task, exception_no_server, 
+	exception_raise, exception_raise_continue, exception_raise_continue_slow, 
+	exception_raise_continue_fast): Add __attribute__ ((noreturn)).
+	(exception, exceptio_try_task, exception_raise, 
+	exception_raise_continue_slow, exception_raise_continue_fast): 
+	Remove spurious returns.
+	(exception_no_server): Add panic() on return from thread_halt_self().
+
 2008-07-20  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* linux/pcmcia-cs/glue/wireless_glue.h (schedule_task): Add parameter
