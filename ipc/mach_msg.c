@@ -222,8 +222,8 @@ mach_msg_receive(msg, option, rcv_size, rcv_name, time_out, notify)
 
 				assert(real_size > rcv_size);
 
-				(void) copyout((vm_offset_t) &real_size,
-					       (vm_offset_t) &msg->msgh_size,
+				(void) copyout(&real_size,
+					       &msg->msgh_size,
 					       sizeof(mach_msg_size_t));
 			}
 
@@ -313,8 +313,8 @@ mach_msg_receive_continue(void)
 
 				assert(real_size > rcv_size);
 
-				(void) copyout((vm_offset_t) &real_size,
-					       (vm_offset_t) &msg->msgh_size,
+				(void) copyout(&real_size,
+					       &msg->msgh_size,
 					       sizeof(mach_msg_size_t));
 			}
 
@@ -460,7 +460,7 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 		ikm_cache() = IKM_NULL;
 		ikm_check_initialized(kmsg, IKM_SAVED_KMSG_SIZE);
 
-		if (copyinmsg((vm_offset_t) msg, (vm_offset_t) &kmsg->ikm_header,
+		if (copyinmsg(msg, &kmsg->ikm_header,
 			      send_size)) {
 			ikm_free(kmsg);
 			goto slow_get;
@@ -1244,7 +1244,7 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 		ikm_check_initialized(kmsg, kmsg->ikm_size);
 
 		if ((kmsg->ikm_size != IKM_SAVED_KMSG_SIZE) ||
-		    copyoutmsg((vm_offset_t) &kmsg->ikm_header, (vm_offset_t) msg,
+		    copyoutmsg(&kmsg->ikm_header, msg,
 			       reply_size) ||
 		    (ikm_cache() != IKM_NULL))
 			goto slow_put;

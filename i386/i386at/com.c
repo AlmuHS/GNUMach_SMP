@@ -433,7 +433,7 @@ io_return_t comportdeath(dev, port)
 dev_t		dev;
 mach_port_t	port;
 {
-	return (tty_portdeath(&com_tty[minor(dev)], port));
+	return (tty_portdeath(&com_tty[minor(dev)], (ipc_port_t)port));
 }
 
 io_return_t

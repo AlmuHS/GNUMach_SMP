@@ -234,7 +234,7 @@ pt_entry_t *pmap_pte(pmap_t pmap, vm_offset_t addr);
 	    /*								\
 	     *	If this is the kernel pmap, switch to its page tables.	\
 	     */								\
-	    set_dirbase(kvtophys(tpmap->dirbase));			\
+	    set_dirbase(kvtophys((vm_offset_t)tpmap->dirbase));			\
 	}								\
 	else {								\
 	    /*								\
@@ -252,7 +252,7 @@ pt_entry_t *pmap_pte(pmap_t pmap, vm_offset_t addr);
 	     *	No need to invalidate the TLB - the entire user pmap	\
 	     *	will be invalidated by reloading dirbase.		\
 	     */								\
-	    set_dirbase(kvtophys(tpmap->dirbase));			\
+	    set_dirbase(kvtophys((vm_offset_t)tpmap->dirbase));			\
 									\
 	    /*								\
 	     *	Mark that this cpu is using the pmap.			\
@@ -341,7 +341,7 @@ pt_entry_t *pmap_pte(pmap_t pmap, vm_offset_t addr);
 #define	PMAP_ACTIVATE_USER(pmap, th, my_cpu)	{			\
 	register pmap_t		tpmap = (pmap);				\
 									\
-	set_dirbase(kvtophys(tpmap->dirbase));				\
+	set_dirbase(kvtophys((vm_offset_t)tpmap->dirbase));				\
 	if (tpmap != kernel_pmap) {					\
 	    tpmap->cpus_using = TRUE;					\
 	}								\

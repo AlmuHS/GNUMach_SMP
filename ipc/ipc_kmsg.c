@@ -531,7 +531,7 @@ ipc_kmsg_get(msg, size, kmsgp)
 		ikm_init(kmsg, size);
 	}
 
-	if (copyinmsg((char *) msg, (char *) &kmsg->ikm_header, size)) {
+	if (copyinmsg(msg, &kmsg->ikm_header, size)) {
 		ikm_free(kmsg);
 		return MACH_SEND_INVALID_DATA;
 	}
@@ -601,7 +601,7 @@ ipc_kmsg_put(msg, kmsg, size)
 
 	ikm_check_initialized(kmsg, kmsg->ikm_size);
 
-	if (copyoutmsg((char *) &kmsg->ikm_header, (char *) msg, size))
+	if (copyoutmsg(&kmsg->ikm_header, msg, size))
 		mr = MACH_RCV_INVALID_DATA;
 	else
 		mr = MACH_MSG_SUCCESS;

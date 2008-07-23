@@ -435,7 +435,7 @@ read_exec(void *handle, vm_offset_t file_ofs, vm_size_t file_size,
 	if (file_size > 0)
 	{
 		err = copyout((char *)phystokv (mod->mod_start) + file_ofs,
-			      mem_addr, file_size);
+			      (void *)mem_addr, file_size);
 		assert(err == 0);
 	}
 

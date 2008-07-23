@@ -927,7 +927,7 @@ void pmap_destroy(p)
 		vm_object_unlock(pmap_object);
 	    }
 	}
-	kmem_free(kernel_map, p->dirbase, INTEL_PGBYTES);
+	kmem_free(kernel_map, (vm_offset_t)p->dirbase, INTEL_PGBYTES);
 	zfree(pmap_zone, (vm_offset_t) p);
 }
 

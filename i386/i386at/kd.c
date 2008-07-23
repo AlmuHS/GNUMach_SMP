@@ -590,7 +590,7 @@ kdportdeath(dev, port)
 	dev_t	dev;
 	mach_port_t	port;
 {
-	return (tty_portdeath(&kd_tty, port));
+	return (tty_portdeath(&kd_tty, (ipc_port_t)port));
 }
 
 /*ARGSUSED*/

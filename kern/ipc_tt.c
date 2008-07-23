@@ -833,7 +833,7 @@ mach_ports_register(
 	 */
 
 	for (i = 0; i < portsCnt; i++)
-		ports[i] = memory[i];
+		ports[i] = (ipc_port_t)memory[i];
 	for (; i < TASK_PORT_REGISTER_MAX; i++)
 		ports[i] = IP_NULL;
 

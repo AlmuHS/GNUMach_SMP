@@ -603,7 +603,7 @@ mouse_handle_byte(ch)
 	        mousebuf[mousebufindex++] = ch;
 	    if (mouse_char_wanted) {
 		mouse_char_wanted = FALSE;
-		wakeup(&mousebuf);
+		wakeup((vm_offset_t)&mousebuf);
 	    }
 	    return;
 	}

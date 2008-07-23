@@ -693,7 +693,7 @@ exception_raise(dest_port, thread_port, task_port,
 	ikm_check_initialized(kmsg, kmsg->ikm_size);
 	assert(kmsg->ikm_size == IKM_SAVED_KMSG_SIZE);
 
-	if (copyoutmsg((vm_offset_t) &kmsg->ikm_header, (vm_offset_t)receiver->ith_msg,
+	if (copyoutmsg(&kmsg->ikm_header, receiver->ith_msg,
 		       sizeof(struct mach_exception)) ||
 	    (ikm_cache() != IKM_NULL)) {
 		mr = ipc_kmsg_put(receiver->ith_msg, kmsg,

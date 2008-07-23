@@ -1,3 +1,25 @@
+2008-07-23  Barry deFreese  <bddebian@comcast.net>
+
+	* i386/i386/locore.h (copyinmsg, copyoutmsg): 
+	Make parameters const void* and void* instead of vm_offset_t.
+	* i386/i386at/com.c (comportdeath): Cast port as ipc_port_t in 
+	tty_portdeath call.
+	* i386/i386at/kd.c (kdportdeath): Likewise.
+	* i386/i386at/lpr.c (lprportdeath): Likewise.
+	* i386/i386at/kd_mouse.c (mouse_handle_byte): Cast param to wakeup() as 
+	vm_offset_t.
+	* i386/intel/pmap.c (pmap_destroy): Cast arg 2 of kmem_free() to 
+	vm_offset_t.
+	* i386/intel/pmap.h: Cast all arg 1 params to kvtophy() to vm_offset_t.
+	* ipc/ipc_kmsg.c: Remove casts from params to copyinmsg and 
+	copyoutmsg calls.
+	* ipc/mach_msg.c: Likewise.
+	* kern/exceptions.c: Likewise.
+	* ipc/mach_msg.c: Remove casts from params to copyout calls.
+	* ipc/bootstrap.c: Likewise.
+	* kern/ipc_tt.c (mach_ports_register): Cast memory[i] as ipc_port_t in 
+	assignment.
+
 2008-07-19  Barry deFreese  <bddebian@comcast.net>
 
 	* chips/busses.h (bus_ctlr, bus_device): Make intr return void instead

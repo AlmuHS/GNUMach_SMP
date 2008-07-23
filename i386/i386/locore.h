@@ -26,11 +26,11 @@
 
 extern int copyin (const void *userbuf, void *kernelbuf, size_t cn);
 
-extern int copyinmsg (vm_offset_t userbuf, vm_offset_t kernelbuf, size_t cn);
+extern int copyinmsg (const void *userbuf, void *kernelbuf, size_t cn);
 
 extern int copyout (const void *kernelbuf, void *userbuf, size_t cn);
 
-extern int copyoutmsg (vm_offset_t kernelbuf, vm_offset_t userbuf, size_t cn);
+extern int copyoutmsg (const void *kernelbuf, void *userbuf, size_t cn);
 
 extern int call_continuation (continuation_t continuation);
 
