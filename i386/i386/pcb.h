@@ -27,6 +27,7 @@
 #define _I386_PCB_H_
 
 #include <sys/types.h>
+#include <mach/exec/exec.h>
 
 extern void pcb_init (thread_t thread);
 

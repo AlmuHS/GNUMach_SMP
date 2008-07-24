@@ -112,7 +112,7 @@ host_ipc_hash_info(
 	mach_msg_type_number_t 		*countp)
 {
 	vm_offset_t addr;
-	vm_size_t size;
+	vm_size_t size = 0;	/* Suppress gcc warning */
 	hash_info_bucket_t *info;
 	unsigned int potential, actual;
 	kern_return_t kr;
@@ -277,11 +277,11 @@ mach_port_space_info(
 	ipc_info_name_t *table_info;
 	unsigned int table_potential, table_actual;
 	vm_offset_t table_addr;
-	vm_size_t table_size;
+	vm_size_t table_size = 0;	/* Suppress gcc warning */
 	ipc_info_tree_name_t *tree_info;
 	unsigned int tree_potential, tree_actual;
 	vm_offset_t tree_addr;
-	vm_size_t tree_size;
+	vm_size_t tree_size = 0;	/* Suppress gcc warning */
 	ipc_tree_entry_t tentry;
 	ipc_entry_t table;
 	ipc_entry_num_t tsize;

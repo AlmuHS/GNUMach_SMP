@@ -1007,7 +1007,7 @@ void ttyinput(
  */
 void ttyinput_many(
 	struct tty	*tp,
-	unsigned char	*chars,
+	char		*chars,
 	int		count)
 {
 	/*

@@ -1,5 +1,22 @@
 2008-07-23  Barry deFreese  <bddebian@comcast.net>
 
+	* device/chario.c (ttyinput_many): Change chars param to char *.
+	* device/tty.h (ttyinput_many): Likewise.
+	* i386/i386/pcb.h: Include <mach/exec/exec.h>.
+	* i386/i386at/autoconf.h: Include <chips/busses.h>.
+	* i386/i386at/model_dep.c (inittodr): Cast &new_time.seconds to u_int *.
+	* ipc/mach_port.c (mach_port_insert_right): Cast poly to ipc_object_t.
+	* ipc/mach_debug.c (host_ipc_hash_info): Initialize size to 0 to make
+	the compiler believe that there is no bug.
+	* ipc/mach_debug.c (mach_port_space_info): Likewise for tree_size and 
+	table_size.
+	* i386/i386at/com.c (commctl): Likewise for b.
+	* i386/i386/trap.c (user_trap): Likewise for exc.
+	* i386/i386/user_ldt.c (i386_set_ldt): Likewise for old_copy_object.
+	* i386/i386at/com.c (comintr): Check line_stat&iOR instead of line&iOR.
+
+2008-07-23  Barry deFreese  <bddebian@comcast.net>
+
 	* i386/i386/locore.h (copyinmsg, copyoutmsg): 
 	Make parameters const void* and void* instead of vm_offset_t.
 	* i386/i386at/com.c (comportdeath): Cast port as ipc_port_t in 

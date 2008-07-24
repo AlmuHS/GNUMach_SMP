@@ -445,7 +445,7 @@ inittodr(void)
 	new_time.seconds = 0;
 	new_time.microseconds = 0;
 
-	(void) readtodc(&new_time.seconds);
+	(void) readtodc((u_int *)&new_time.seconds);
 
 	{
 	    spl_t	s = splhigh();

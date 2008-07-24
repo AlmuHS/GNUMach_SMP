@@ -26,6 +26,7 @@
 #define _AUTOCONF_H_
 
 #include <mach/std_types.h>
+#include <chips/busses.h>
 
 /*
  * probeio:

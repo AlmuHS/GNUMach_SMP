@@ -529,7 +529,7 @@ int unit;
 			    ((tp->t_flags&(EVENP|ODDP)) == EVENP ||
 			     (tp->t_flags&(EVENP|ODDP)) == ODDP)) {
 				/* parity error */;
-			} else 	if (line&iOR && !comoverrun) {
+			} else 	if (line_stat&iOR && !comoverrun) {
 				printf("com%d: overrun\n", unit);
 				comoverrun = 1;
 			} else if (line_stat & (iFE | iBRKINTR)) {
@@ -751,7 +751,7 @@ commctl(
 	spl_t		s;
 	int		unit;
 	vm_offset_t	dev_addr;
-	register int	b;
+	register int	b = 0;	/* Suppress gcc warning */
 
 	unit = minor(tp->t_dev);
 

@@ -369,7 +369,7 @@ dump_ss(regs);
 int user_trap(regs)
 	register struct i386_saved_state *regs;
 {
-	int	exc;
+	int	exc = 0;	/* Suppress gcc warning */
 	int	code;
 	int	subcode;
 	register int	type;

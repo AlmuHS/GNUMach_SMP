@@ -111,7 +111,7 @@ i386_set_ldt(thread, first_selector, desc_list, count, desc_list_inline)
 	pcb_t		pcb;
 	vm_size_t	ldt_size_needed;
 	int		first_desc = sel_idx(first_selector);
-	vm_map_copy_t	old_copy_object;
+	vm_map_copy_t	old_copy_object = NULL;	/* Suppress gcc warning */
 
 	if (thread == THREAD_NULL)
 	    return KERN_INVALID_ARGUMENT;

@@ -106,7 +106,7 @@ extern void ttyinput(
 
 extern void ttyinput_many(
 	struct tty *	tp,
-	unsigned char *	chars,
+	char *		chars,
 	int		count);
 
 extern boolean_t ttymodem(
