@@ -37,14 +37,14 @@ typedef volatile int spin_lock_t;
 	({  register int _u__ ; \
 	    __asm__ volatile("xorl %0, %0; \n\
 			  xchgl %0, %1" \
-			: "=&r" (_u__), "=m" (*(p)) ); \
+			: "=&r" (_u__), "=m" (*(p)) : "memory" ); \
 	    0; })
 
 #define	spin_try_lock(p)\
 	(!({  boolean_t _r__; \
 	    __asm__ volatile("movl $1, %0; \n\
 			  xchgl %0, %1" \
-			: "=&r" (_r__), "=m" (*(p)) ); \
+			: "=&r" (_r__), "=m" (*(p)) : "memory" ); \
 	    _r__; }))
 
 #define	cthread_sp() \

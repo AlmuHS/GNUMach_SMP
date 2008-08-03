@@ -1,3 +1,10 @@
+2008-08-03  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* i386/i386/lock.h (_simple_lock_xchg_, bit_lock, bit_unlock): Add
+	memory clobbers.
+	* i386/include/mach/i386/cthreads.h (spin_unlock, spin_try_lock): Add
+	memory clobbers.
+
 2008-07-23  Barry deFreese  <bddebian@comcast.net>
 
 	* device/chario.c (ttyinput_many): Change chars param to char *.

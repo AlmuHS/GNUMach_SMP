@@ -47,7 +47,7 @@
     ({	register int _old_val_; \
 	asm volatile("xchgl %0, %2" \
 		    : "=r" (_old_val_) \
-		    : "0" (new_val), "m" (*(lock)) \
+		    : "0" (new_val), "m" (*(lock) : "memory") \
 		    ); \
 	_old_val_; \
     })
@@ -81,7 +81,7 @@
 			btsl	%0, %1	\n\
 			jb	0b" \
 		    : \
-		    : "r" (bit), "m" (*(volatile int *)(l))); \
+		    : "r" (bit), "m" (*(volatile int *)(l)) : "memory"); \
 	0; \
     })
 
@@ -90,7 +90,7 @@
 	asm volatile("	lock		\n\
 			btrl	%0, %1" \
 		    : \
-		    : "r" (bit), "m" (*(volatile int *)(l))); \
+		    : "r" (bit), "m" (*(volatile int *)(l)) : "memory"); \
 	0; \
     })
 
