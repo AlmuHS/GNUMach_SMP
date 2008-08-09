@@ -1618,3 +1618,31 @@ int net_dev_init(void)
 	init_bh(NET_BH, net_bh);
 	return 0;
 }
+
+/*
+ *      Change the flags of device DEV to FLAGS.
+ */
+int dev_change_flags (struct device *dev, short flags)
+{
+    if (securelevel > 0)
+        flags &= ~IFF_PROMISC;
+
+    /*
+     *    Set the flags on our device.
+     */
+
+    dev->flags = (flags &
+            (IFF_BROADCAST | IFF_DEBUG | IFF_LOOPBACK |
+             IFF_POINTOPOINT | IFF_NOTRAILERS | IFF_RUNNING |
+             IFF_NOARP | IFF_PROMISC | IFF_ALLMULTI | IFF_SLAVE
+             | IFF_MASTER | IFF_MULTICAST))
+        | (dev->flags & (IFF_SOFTHEADERS|IFF_UP));
+
+    /* The flags are taken into account (multicast, promiscuous, ...)
+       in the set_multicast_list handler. */
+    if ((dev->flags & IFF_UP) && dev->set_multicast_list != NULL)
+        dev->set_multicast_list (dev);
+
+    return 0;
+}
+

@@ -72,6 +72,7 @@ struct net_status {
 
 #define	NET_DSTADDR		(('n'<<16) + 3)
 
+#define	NET_FLAGS		(('n'<<16) + 4)
 
 /*
  * Input packet filter definition

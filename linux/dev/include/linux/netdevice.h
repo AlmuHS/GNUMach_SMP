@@ -271,6 +271,7 @@ extern void		net_bh(void);
 extern void		dev_tint(struct linux_device *dev);
 #endif
 
+extern int		dev_change_flags(struct linux_device *dev, short flags);
 extern int		dev_get_info(char *buffer, char **start, off_t offset, int length, int dummy);
 extern int		dev_ioctl(unsigned int cmd, void *);
 

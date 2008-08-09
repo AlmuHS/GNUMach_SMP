@@ -1,3 +1,13 @@
+2008-07-29  Zheng Da  <zhengda1936@gmail.com>
+            Manuel Menal <mmenal@hurdfr.org>
+
+	* include/device/net_status.h (NET_FLAGS): New macro.
+	* linux/dev/glue/net.c (device_get_status): Handle NET_FLAGS case.
+	(device_set_status): Likewise, calls dev_change_flags.
+	* linux/dev/include/linux/netdevice.h (dev_change_flags): Declare
+	function.
+	* linux/dev/net/core/dev.c (dev_change_flags): Add function.
+
 2008-08-03  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* i386/i386/lock.h (_simple_lock_xchg_, bit_lock, bit_unlock): Add
