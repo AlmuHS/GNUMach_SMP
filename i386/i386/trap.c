@@ -513,7 +513,8 @@ printf("user trap %d error %d sub %08x\n", type, code, subcode);
 		dump_ss (regs);
 
 #endif
-		assert(subcode < LINEAR_MIN_KERNEL_ADDRESS);
+		if (subcode >= LINEAR_MIN_KERNEL_ADDRESS)
+			i386_exception(EXC_BAD_ACCESS, EXC_I386_PGFLT, subcode);
 		(void) vm_fault(thread->task->map,
 				trunc_page((vm_offset_t)subcode),
 				(regs->err & T_PF_WRITE)
