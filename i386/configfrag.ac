@@ -102,6 +102,16 @@ if [ x"$enable_lpr" = xyes ]; then]
 [else]
   AM_CONDITIONAL([enable_lpr], [false])
 [fi]
+
+
+AC_ARG_ENABLE([pae],
+  AS_HELP_STRING([--enable-pae], [enable PAE support]))
+[if [ x"$enable_pae" = xyes ]; then]
+  AC_DEFINE([PAE], [1], [PAE support])
+  AM_CONDITIONAL([enable_pae], [true])
+[else]
+  AM_CONDITIONAL([enable_pae], [false])
+[fi]
 
 dnl Local Variables:
 dnl mode: autoconf

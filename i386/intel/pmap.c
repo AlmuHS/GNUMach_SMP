@@ -579,7 +579,21 @@ void pmap_bootstrap()
 	/*
 	 * Allocate and clear a kernel page directory.
 	 */
+#if PAE
+	{
+		vm_offset_t addr;
+		init_alloc_aligned(PDPNUM * INTEL_PGBYTES, &addr);
+		kernel_pmap->dirbase = kernel_page_dir = (pt_entry_t*)addr;
+	}
+	kernel_pmap->pdpbase = (pt_entry_t*)pmap_grab_page();
+	{
+		int i;
+		for (i = 0; i < PDPNUM; i++)
+			kernel_pmap->pdpbase[i] = pa_to_pte((vm_offset_t) kernel_pmap->dirbase + i * INTEL_PGBYTES) | INTEL_PTE_VALID;
+	}
+#else	/* PAE */
 	kernel_pmap->dirbase = kernel_page_dir = (pt_entry_t*)pmap_grab_page();
+#endif	/* PAE */
 	{
 		int i;
 		for (i = 0; i < NPDES; i++)
@@ -859,11 +873,24 @@ pmap_t pmap_create(size)
 		panic("pmap_create");
 
 	if (kmem_alloc_wired(kernel_map,
-			     (vm_offset_t *)&p->dirbase, INTEL_PGBYTES)
+			     (vm_offset_t *)&p->dirbase, PDPNUM * INTEL_PGBYTES)
 							!= KERN_SUCCESS)
 		panic("pmap_create");
 
-	memcpy(p->dirbase, kernel_page_dir, INTEL_PGBYTES);
+	memcpy(p->dirbase, kernel_page_dir, PDPNUM * INTEL_PGBYTES);
+
+#if PAE
+	if (kmem_alloc_wired(kernel_map,
+			     (vm_offset_t *)&p->pdpbase, INTEL_PGBYTES)
+							!= KERN_SUCCESS)
+		panic("pmap_create");
+	{
+		int i;
+		for (i = 0; i < PDPNUM; i++)
+			p->pdpbase[i] = pa_to_pte(kvtophys((vm_offset_t) p->dirbase + i * INTEL_PGBYTES)) | INTEL_PTE_VALID;
+	}
+#endif	/* PAE */
+
 	p->ref_count = 1;
 
 	simple_lock_init(&p->lock);
@@ -927,7 +954,10 @@ void pmap_destroy(p)
 		vm_object_unlock(pmap_object);
 	    }
 	}
-	kmem_free(kernel_map, (vm_offset_t)p->dirbase, INTEL_PGBYTES);
+	kmem_free(kernel_map, (vm_offset_t)p->dirbase, PDPNUM * INTEL_PGBYTES);
+#if PAE
+	kmem_free(kernel_map, (vm_offset_t)p->pdpbase, INTEL_PGBYTES);
+#endif	/* PAE */
 	zfree(pmap_zone, (vm_offset_t) p);
 }
 

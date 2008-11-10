@@ -1,3 +1,26 @@
+2008-11-10  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	[task #8135 --- ``PAE for GNU Mach']
+	* i386/configfrag.ac: Add --enable-pae option, which defines PAE.
+	* i386/i386/i386asm.sym (PDPSHIFT, PDEMASK): New assembly macros.
+	* i386/i386/locore.S [PAE] (copyout_retry): Use page directory pointer
+	bits.
+	* i386/i386at/model_dep.c [PAE] (i386at_init): Set second initial 2MB
+	page.  Enable PAE bit.  Set cr3 to page directory pointer table instead
+	of page directory.
+	* i386/intel/pmap.c [PAE] (pmap_bootstrap, pmap_create): Allocate 4
+	pages for dirbase.  Setup pdpbase.
+	[PAE] (pmap_destroy): Free 4 pages from dirbase.  Free pdpbase.
+	* i386/intel/pmap.h [PAE] (pt_entry_t): Typedef to unsigned long long.
+	[PAE] (PDPSHIFT, PDPNUM, PDPMASK): New macros.
+	[PAE] (PDESHIFT, PDEMASK, PTEMASK): Set to PAE values.
+	[PAE] (lin2pdenum, NPDES): Make them take the page directory pointer
+	index into account too.
+	[PAE] (struct pmap): Add `pdpbase' member.
+	(set_dirbase): Remove macro, replaced by...
+	(set_pmap): New macro, taking a pmap instead of the dirbase.
+	(PMAP_ACTIVATE_USER): Use set_pmap instead of set_dirbase.
+
 2008-11-05  Shakthi Kannan  <shakshurd@gmail.com>
 
 	* ipc/mach_port.c (mach_port_insert_right): Cast poly into

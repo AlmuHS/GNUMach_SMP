@@ -279,7 +279,16 @@ i386at_init(void)
 	 */
 	kernel_page_dir[lin2pdenum(0)] =
 		kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS)];
+#if PAE
+	kernel_page_dir[lin2pdenum(0) + 1] =
+		kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS) + 1];
+	set_cr3((unsigned)kernel_pmap->pdpbase);
+	if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
+		panic("CPU doesn't have support for PAE.");
+	set_cr4(get_cr4() | CR4_PAE);
+#else
 	set_cr3((unsigned)kernel_page_dir);
+#endif	/* PAE */
 	if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
 		set_cr4(get_cr4() | CR4_PGE);
 	set_cr0(get_cr0() | CR0_PG | CR0_WP);
@@ -296,7 +305,10 @@ i386at_init(void)
 
 	/* Get rid of the temporary direct mapping and flush it out of the TLB.  */
 	kernel_page_dir[lin2pdenum(0)] = 0;
-	set_cr3((unsigned)kernel_page_dir);
+#if PAE
+	kernel_page_dir[lin2pdenum(0) + 1] = 0;
+#endif	/* PAE */
+	flush_tlb();
 
 
 

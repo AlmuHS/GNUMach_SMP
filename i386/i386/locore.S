@@ -1267,8 +1267,18 @@ Entry(copyoutmsg)
  */
 copyout_retry:
 	movl	%cr3,%ecx		/* point to page directory */
+#if PAE
+	movl	%edi,%eax		/* get page directory pointer bits */
+	shrl	$(PDPSHIFT),%eax	/* from user address */
+	movl	KERNELBASE(%ecx,%eax,4),%ecx
+					/* get page directory pointer */
+	andl	$(PTE_PFN),%ecx		/* isolate page frame address */
+#endif	/* PAE */
 	movl	%edi,%eax		/* get page directory bits */
 	shrl	$(PDESHIFT),%eax	/* from user address */
+#if PAE
+	andl	$(PDEMASK),%eax
+#endif	/* PAE */
 	movl	KERNELBASE(%ecx,%eax,4),%ecx
 					/* get page directory pointer */
 	testl	$(PTE_V),%ecx		/* present? */

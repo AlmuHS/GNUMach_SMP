@@ -65,21 +65,41 @@
  *	i386/i486 Page Table Entry
  */
 
+#if PAE
+typedef unsigned long long	pt_entry_t;
+#else	/* PAE */
 typedef unsigned int	pt_entry_t;
+#endif	/* PAE */
 #define PT_ENTRY_NULL	((pt_entry_t *) 0)
 
 #endif	/* __ASSEMBLER__ */
 
 #define INTEL_OFFMASK	0xfff	/* offset within page */
+#if PAE
+#define PDPSHIFT	30	/* page directory pointer */
+#define PDPNUM		4	/* number of page directory pointers */
+#define PDPMASK		3	/* mask for page directory pointer index */
+#define PDESHIFT	21	/* page descriptor shift */
+#define PDEMASK		0x1ff	/* mask for page descriptor index */
+#define PTESHIFT	12	/* page table shift */
+#define PTEMASK		0x1ff	/* mask for page table index */
+#else	/* PAE */
+#define PDPNUM		1	/* number of page directory pointers */
 #define PDESHIFT	22	/* page descriptor shift */
 #define PDEMASK		0x3ff	/* mask for page descriptor index */
 #define PTESHIFT	12	/* page table shift */
 #define PTEMASK		0x3ff	/* mask for page table index */
+#endif	/* PAE */
 
 /*
  *	Convert linear offset to page descriptor index
  */
+#if PAE
+/* Making it include the page directory pointer table index too */
+#define lin2pdenum(a)	(((a) >> PDESHIFT) & 0x7ff)
+#else
 #define lin2pdenum(a)	(((a) >> PDESHIFT) & PDEMASK)
+#endif
 
 /*
  *	Convert page descriptor index to linear address
@@ -92,7 +112,7 @@ typedef unsigned int	pt_entry_t;
 #define ptenum(a)	(((a) >> PTESHIFT) & PTEMASK)
 
 #define NPTES	(intel_ptob(1)/sizeof(pt_entry_t))
-#define NPDES	(intel_ptob(1)/sizeof(pt_entry_t))
+#define NPDES	(PDPNUM * (intel_ptob(1)/sizeof(pt_entry_t)))
 
 /*
  *	Hardware pte bit definitions (to be used directly on the ptes
@@ -124,7 +144,10 @@ typedef	volatile long	cpu_set;	/* set of CPUs - must be <= 32 */
 					/* changed by other processors */
 
 struct pmap {
-	pt_entry_t	*dirbase;	/* page directory pointer register */
+	pt_entry_t	*dirbase;	/* page directory table */
+#if PAE
+	pt_entry_t	*pdpbase;	/* page directory pointer table */
+#endif	/* PAE */
 	int		ref_count;	/* reference count */
 	decl_simple_lock_data(,lock)
 					/* lock on map */
@@ -136,7 +159,11 @@ typedef struct pmap	*pmap_t;
 
 #define PMAP_NULL	((pmap_t) 0)
 
-#define	set_dirbase(dirbase)	set_cr3(dirbase)
+#if PAE
+#define	set_pmap(pmap)	set_cr3(kvtophys((vm_offset_t)(pmap)->pdpbase))
+#else	/* PAE */
+#define	set_pmap(pmap)	set_cr3(kvtophys((vm_offset_t)(pmap)->dirbase))
+#endif	/* PAE */
 
 #if	NCPUS > 1
 /*
@@ -234,7 +261,7 @@ pt_entry_t *pmap_pte(pmap_t pmap, vm_offset_t addr);
 	    /*								\
 	     *	If this is the kernel pmap, switch to its page tables.	\
 	     */								\
-	    set_dirbase(kvtophys((vm_offset_t)tpmap->dirbase));			\
+	    set_pmap(tpmap);						\
 	}								\
 	else {								\
 	    /*								\
@@ -252,7 +279,7 @@ pt_entry_t *pmap_pte(pmap_t pmap, vm_offset_t addr);
 	     *	No need to invalidate the TLB - the entire user pmap	\
 	     *	will be invalidated by reloading dirbase.		\
 	     */								\
-	    set_dirbase(kvtophys((vm_offset_t)tpmap->dirbase));			\
+	    set_pmap(tpmap);						\
 									\
 	    /*								\
 	     *	Mark that this cpu is using the pmap.			\
@@ -341,7 +368,7 @@ pt_entry_t *pmap_pte(pmap_t pmap, vm_offset_t addr);
 #define	PMAP_ACTIVATE_USER(pmap, th, my_cpu)	{			\
 	register pmap_t		tpmap = (pmap);				\
 									\
-	set_dirbase(kvtophys((vm_offset_t)tpmap->dirbase));				\
+	set_pmap(tpmap);						\
 	if (tpmap != kernel_pmap) {					\
 	    tpmap->cpus_using = TRUE;					\
 	}								\
