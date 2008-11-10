@@ -1,3 +1,9 @@
+2008-11-05  Shakthi Kannan  <shakshurd@gmail.com>
+
+	* ipc/mach_port.c (mach_port_insert_right): Cast poly into
+	(ipc_object_t) to fix compiler warning when calling
+	ipc_object_copyout_name.
+
 2008-08-31  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* i386/i386/trap.c (user_trap): On page fault, raise exception instead
