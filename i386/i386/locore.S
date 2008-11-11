@@ -1270,7 +1270,7 @@ copyout_retry:
 #if PAE
 	movl	%edi,%eax		/* get page directory pointer bits */
 	shrl	$(PDPSHIFT),%eax	/* from user address */
-	movl	KERNELBASE(%ecx,%eax,4),%ecx
+	movl	KERNELBASE(%ecx,%eax,PTE_SIZE),%ecx
 					/* get page directory pointer */
 	andl	$(PTE_PFN),%ecx		/* isolate page frame address */
 #endif	/* PAE */
@@ -1279,7 +1279,7 @@ copyout_retry:
 #if PAE
 	andl	$(PDEMASK),%eax
 #endif	/* PAE */
-	movl	KERNELBASE(%ecx,%eax,4),%ecx
+	movl	KERNELBASE(%ecx,%eax,PTE_SIZE),%ecx
 					/* get page directory pointer */
 	testl	$(PTE_V),%ecx		/* present? */
 	jz	0f			/* if not, fault is OK */
@@ -1287,7 +1287,7 @@ copyout_retry:
 	movl	%edi,%eax		/* get page table bits */
 	shrl	$(PTESHIFT),%eax
 	andl	$(PTEMASK),%eax		/* from user address */
-	leal	KERNELBASE(%ecx,%eax,4),%ecx
+	leal	KERNELBASE(%ecx,%eax,PTE_SIZE),%ecx
 					/* point to page table entry */
 	movl	(%ecx),%eax		/* get it */
 	testl	$(PTE_V),%eax		/* present? */

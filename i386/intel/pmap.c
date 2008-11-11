@@ -589,7 +589,7 @@ void pmap_bootstrap()
 	{
 		int i;
 		for (i = 0; i < PDPNUM; i++)
-			kernel_pmap->pdpbase[i] = pa_to_pte((vm_offset_t) kernel_pmap->dirbase + i * INTEL_PGBYTES) | INTEL_PTE_VALID;
+			WRITE_PTE(&kernel_pmap->pdpbase[i], pa_to_pte((vm_offset_t) kernel_pmap->dirbase + i * INTEL_PGBYTES) | INTEL_PTE_VALID);
 	}
 #else	/* PAE */
 	kernel_pmap->dirbase = kernel_page_dir = (pt_entry_t*)pmap_grab_page();
@@ -625,8 +625,8 @@ void pmap_bootstrap()
 			pt_entry_t *pte;
 
 			/* Initialize the page directory entry.  */
-			*pde = pa_to_pte((vm_offset_t)ptable)
-				| INTEL_PTE_VALID | INTEL_PTE_WRITE | global;
+			WRITE_PTE(pde, pa_to_pte((vm_offset_t)ptable)
+				| INTEL_PTE_VALID | INTEL_PTE_WRITE);
 
 			/* Initialize the page table.  */
 			for (pte = ptable; (va < phys_last_addr) && (pte < ptable+NPTES); pte++)
@@ -887,7 +887,7 @@ pmap_t pmap_create(size)
 	{
 		int i;
 		for (i = 0; i < PDPNUM; i++)
-			p->pdpbase[i] = pa_to_pte(kvtophys((vm_offset_t) p->dirbase + i * INTEL_PGBYTES)) | INTEL_PTE_VALID;
+			WRITE_PTE(&p->pdpbase[i], pa_to_pte(kvtophys((vm_offset_t) p->dirbase + i * INTEL_PGBYTES)) | INTEL_PTE_VALID);
 	}
 #endif	/* PAE */
 

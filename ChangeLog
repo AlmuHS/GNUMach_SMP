@@ -2,9 +2,10 @@
 
 	[task #8135 --- ``PAE for GNU Mach']
 	* i386/configfrag.ac: Add --enable-pae option, which defines PAE.
-	* i386/i386/i386asm.sym (PDPSHIFT, PDEMASK): New assembly macros.
+	* i386/i386/i386asm.sym (PDPSHIFT, PDEMASK, PTE_SIZE): New assembly
+	macros.
 	* i386/i386/locore.S [PAE] (copyout_retry): Use page directory pointer
-	bits.
+	bits, take PTE_SIZE into account.
 	* i386/i386at/model_dep.c [PAE] (i386at_init): Set second initial 2MB
 	page.  Enable PAE bit.  Set cr3 to page directory pointer table instead
 	of page directory.
