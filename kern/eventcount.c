@@ -190,7 +190,6 @@ kern_return_t evc_wait(natural_t ev_id)
 kern_return_t evc_wait_clear(natural_t ev_id)
 {
 	spl_t		s;
-	kern_return_t	ret;
 	evc_t		ev;
 
 	if ((ev_id >= MAX_EVCS) ||

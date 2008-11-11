@@ -1,3 +1,7 @@
+2008-11-11  Shakthi Kannan  <shakshurd@gmail.com>
+
+	* kern/eventcount.c (evc_wait_clear): Remove unused variable 'ret'.
+
 2008-11-10  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	[task #8135 --- ``PAE for GNU Mach']
