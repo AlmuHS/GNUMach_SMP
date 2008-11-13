@@ -26,7 +26,8 @@ This file documents the GNU Mach microkernel.
 This is edition @value{EDITION}, last updated on @value{UPDATED}, of @cite{The
 GNU Mach Reference Manual}, for version @value{VERSION}.
 
-Copyright @copyright{} 2001, 2002, 2006, 2007 Free Software Foundation, Inc.
+Copyright @copyright{} 2001, 2002, 2006, 2007, 2008 Free Software
+Foundation, Inc.
 
 @c  @sp 2
 @c  Published by the Free Software Foundation @*
@@ -521,6 +522,13 @@ driver is not working for you.
 In-kernel debugger.  This is only useful if you actually anticipate debugging
 the kernel.  It is not enabled by default because it adds considerably to the
 unpageable memory footprint of the kernel.  @xref{Kernel Debugger}.
+@end table
+
+@table @code
+@item --enable-pae
+@acronym{PAE, Physical Address Extension} feature (@samp{ix86}-only),
+which is available on modern @samp{ix86} processors; disabled by
+default.
 @end table
 
 @subsection Turning device drivers on or off

@@ -1,6 +1,8 @@
-2008-11-12  Thomas Schwinge  <tschwinge@gnu.org>
+2008-11-13  Thomas Schwinge  <tschwinge@gnu.org>
 
+	[task #8135 -- PAE for GNU Mach]
 	* i386/configfrag.ac (enable_pae): Add checks: this is ix86-only.
+	* doc/mach.texi (Configuration): Document the new option.
 
 2008-11-11  Shakthi Kannan  <shakshurd@gmail.com>
 
