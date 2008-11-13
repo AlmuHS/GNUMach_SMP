@@ -1,3 +1,7 @@
+2008-11-12  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* i386/configfrag.ac (enable_pae): Add checks: this is ix86-only.
+
 2008-11-11  Shakthi Kannan  <shakshurd@gmail.com>
 
 	* kern/eventcount.c (evc_wait_clear): Remove unused variable 'ret'.
