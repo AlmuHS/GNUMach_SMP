@@ -4,24 +4,24 @@
 
 2008-11-10  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
-	[task #8135 --- ``PAE for GNU Mach']
+	[task #8135 -- PAE for GNU Mach]
 	* i386/configfrag.ac: Add --enable-pae option, which defines PAE.
 	* i386/i386/i386asm.sym (PDPSHIFT, PDEMASK, PTE_SIZE): New assembly
 	macros.
-	* i386/i386/locore.S [PAE] (copyout_retry): Use page directory pointer
+	* i386/i386/locore.S (copyout_retry) [PAE]: Use page directory pointer
 	bits, take PTE_SIZE into account.
-	* i386/i386at/model_dep.c [PAE] (i386at_init): Set second initial 2MB
+	* i386/i386at/model_dep.c (i386at_init) [PAE]: Set second initial 2MB
 	page.  Enable PAE bit.  Set cr3 to page directory pointer table instead
 	of page directory.
-	* i386/intel/pmap.c [PAE] (pmap_bootstrap, pmap_create): Allocate 4
+	* i386/intel/pmap.c (pmap_bootstrap, pmap_create) [PAE]: Allocate 4
 	pages for dirbase.  Setup pdpbase.
-	[PAE] (pmap_destroy): Free 4 pages from dirbase.  Free pdpbase.
-	* i386/intel/pmap.h [PAE] (pt_entry_t): Typedef to unsigned long long.
-	[PAE] (PDPSHIFT, PDPNUM, PDPMASK): New macros.
-	[PAE] (PDESHIFT, PDEMASK, PTEMASK): Set to PAE values.
-	[PAE] (lin2pdenum, NPDES): Make them take the page directory pointer
+	(pmap_destroy) [PAE]: Free 4 pages from dirbase.  Free pdpbase.
+	* i386/intel/pmap.h (pt_entry_t) [PAE]: Typedef to unsigned long long.
+	(PDPSHIFT, PDPNUM, PDPMASK) [PAE]: New macros.
+	(PDESHIFT, PDEMASK, PTEMASK) [PAE]: Set to PAE values.
+	(lin2pdenum, NPDES) [PAE]: Make them take the page directory pointer
 	index into account too.
-	[PAE] (struct pmap): Add `pdpbase' member.
+	(struct pmap) [PAE]: Add `pdpbase' member.
 	(set_dirbase): Remove macro, replaced by...
 	(set_pmap): New macro, taking a pmap instead of the dirbase.
 	(PMAP_ACTIVATE_USER): Use set_pmap instead of set_dirbase.
@@ -600,7 +600,7 @@
 
 2007-05-07  Thomas Schwinge  <tschwinge@gnu.org>
 
-	[bug #15295 --- ``Mach lets processes write to I/O ports'']
+	[bug #15295 -- Mach lets processes write to I/O ports]
 
 	* i386/Makefrag.am (libkernel_a_SOURCES): Add `i386/i386/io_perm.c',
 	`i386/i386/io_perm.h', `i386/i386/machine_task.c', `i386/i386/task.h'
@@ -645,7 +645,7 @@
 
 2007-05-07  Marcus Brinkmann  <marcus@gnu.org>
 
-	[bug #15295 --- ``Mach lets processes write to I/O ports'']
+	[bug #15295 -- Mach lets processes write to I/O ports]
 
 	* i386/i386/iopb.h, i386/i386/iopb.c: Obsolete files removed.
 
@@ -858,8 +858,8 @@
 
 	* DEVELOPMENT: Add url.
 
-	[task #5878 --- ``Backport code from GNU Mach's trunk to
-	gnumach-1-branch: i386_set_gdt, i386_get_gdt'']
+	[task #5878 -- Backport code from GNU Mach's trunk to
+	gnumach-1-branch: i386_set_gdt, i386_get_gdt]
 	* i386/include/mach/i386/mach_i386.defs (i386_set_gdt, i386_get_gdt):
 	Shift by two to maintain rpc id compatibility with OSKit-Mach.
 
@@ -983,7 +983,7 @@
 
 2007-03-05  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
-	[bug #18349 --- ``General Protection Trap'' in `ipc_kmsg_enqueue']
+	[bug #18349 -- ``General Protection Trap'' in `ipc_kmsg_enqueue']
 	* linux/dev/glue/net.c (device_write): Call net_packet() with splimp
 	held.
 
@@ -1326,7 +1326,7 @@
 
 2006-12-03  Thomas Schwinge  <tschwinge@gnu.org>
 
-	[patch #5019 --- ``Remove checks for continuations'']
+	[patch #5019 -- Remove checks for continuations]
 
 	* DEVELOPMENT: Document the removal.
 
@@ -1334,7 +1334,7 @@
 
 2006-12-03  Leonardo Lopes Pereira  <leonardolopespereira@gmail.com>
 
-	[patch #5019 --- ``Remove checks for continuations'']
+	[patch #5019 -- Remove checks for continuations]
 	* ipc/mach_msg.c: Adapt all users of CONTINUATIONS as if it were always
 	defined.
 	* kern/eventcount.c: Likewise.
@@ -1346,7 +1346,7 @@
 
 2006-12-03  Thomas Schwinge  <tschwinge@gnu.org>
 
-	[patch #5017 --- ``Remove obsolete IPC interfaces.'']
+	[patch #5017 -- Remove obsolete IPC interfaces]
 
 	* DEVELOPMENT: Document the removal.
 
@@ -1354,7 +1354,7 @@
 
 2006-12-03  Leonardo Lopes Pereira  <leonardolopespereira@gmail.com>
 
-	[patch #5017 --- ``Remove obsolete IPC interfaces.'']
+	[patch #5017 -- Remove obsolete IPC interfaces]
 	* kern/act.c [MIGRATING_THREADS]: Don't include <mach_ipc_compat.h>.
 	* kern/act.h: Likewise.
 	* i386/include/mach/i386/machine_types.defs: Adapt all users of
@@ -1396,7 +1396,7 @@
 
 2006-12-03  Thomas Schwinge  <tschwinge@gnu.org>
 
-	[bug #17120 --- ``GNU Mach debian dir'']
+	[bug #17120 -- GNU Mach debian dir]
 	* debian/README.Debian: Remove file.
 	* debian/changelog: Likewise.
 	* debian/control: Likewise.
@@ -1405,7 +1405,7 @@
 	* debian/prerm: Likewise.
 	* debian/rules: Likewise.
 
-	[bug #18015 --- ``GNU Mach: `make dist' and friends'']
+	[bug #18015 -- GNU Mach: `make dist' and friends]
 	* Makefile.am (DISTCLEANFILES): New variable.
 
 2006-11-30  Thomas Schwinge  <tschwinge@gnu.org>
@@ -1416,7 +1416,7 @@
 2006-11-30  Barry deFreese  <bddebian@comcast.net>
 	    Thomas Schwinge  <tschwinge@gnu.org>
 
-	[bug #18015 --- ``GNU Mach: `make dist' and friends'']
+	[bug #18015 -- GNU Mach: `make dist' and friends]
 	* Makefile.am (DISTCHECK_CONFIGURE_FLAGS): New variable.
 	(EXTRA_DIST): Enhance with the patches and documentation files.
 	(dist-hook): New target to remove the `CVS' directories.
@@ -1457,7 +1457,7 @@
 
 2006-11-26  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
-	[bug #17346 --- ``GNU mach can't handle 4GB memory'']
+	[bug #17346 -- GNU mach can't handle 4GB memory]
 	* i386/i386at/model_dep.c (mem_size_init): Truncate memory size to
 	4GiB.
 
@@ -1469,7 +1469,7 @@
 
 2006-11-20  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
-	[patch #5328 --- ``GNU Mach asm statements tidy'']
+	[patch #5328 -- GNU Mach asm statements tidy]
 	* i386/i386/fpe_linkage.c (disable_fpe): Gather dependent asm
 	statements, add `ax' clobber.
 	(fpe_exception_fixup): Drop bogus cast from input parameter of lcall
@@ -1482,15 +1482,14 @@
 	* i386/include/mach/i386/cthreads.h (cthread_sp): Likewise.
 	* i386/intel/pmap.c (pmap_unmap_page_zero): Fix asm clobber into `eax'.
 
-	[patch #5375 --- ``Fix de4x5 probe'']
+	[patch #5375 -- Fix de4x5 probe]
 	* linux/src/drivers/net/de4x5.c (pci_probe): Make probe loop stop on
 	any error, not only device not found.
 
 2006-11-17  Constantine Kousoulos  <wuwei@freemail.gr>
 	    Thomas Schwinge  <tschwinge@gnu.org>
 
-	[bug #18010 --- ``GNU Mach: update i386/README-Drivers and
-	doc/mach.texi'']
+	[bug #18010 -- GNU Mach: update i386/README-Drivers and doc/mach.texi]
 	* i386/README-Drivers: Move most of the text into...
 	* doc/mach.texi: ... here and update a number of things.
 	(UPDATED): Don't override.
@@ -1604,7 +1603,7 @@
 	(mouseintr): Change variable type from caddr_t to unsigned short,
 	remove now-useless cast.
 
-	[task #5726 --- ``GCC built-in functions'']
+	[task #5726 -- GCC built-in functions]
 	* kern/machine.c: Include `string.h'.
 
 	Fix ``assignment used as truth value'' warnings.
@@ -1649,7 +1648,7 @@
 
 2006-11-09  Barry deFreese  <bddebian@comcast.net>
 
-	[task #5726 --- ``GCC built-in functions'']
+	[task #5726 -- GCC built-in functions]
 	* include/printf.h: Move file...
 	* kern/printf.h: ... here.
 	* kern/debug.h (panic_init, panic): Add prototypes.
@@ -1751,7 +1750,7 @@
 
 2006-11-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
-	[task #5726 --- ``GCC built-in functions'']
+	[task #5726 -- GCC built-in functions]
 	* include/printf.h (iprintf): Fix prototype.
 	(vprintf): Add prototype.
 	* kern/printf.c: Include `printf.h'.
@@ -1760,7 +1759,7 @@
 
 2006-11-07  Barry deFreese  <bddebian@comcast.net>
 
-	[task #5726 --- ``GCC built-in functions'']
+	[task #5726 -- GCC built-in functions]
 	* include/printf.h: New file.
 	(printf_init, _doprnt, printnum, sprintf, printf, indent, iprint): New
 	declarations.
@@ -1840,12 +1839,12 @@
 	* config.h.in: Regenerate.
 	* configure: Likewise.
 
-	[task #5956 --- ``Automake'ify GNU Mach's code base'']
+	[task #5956 -- Automake'ify GNU Mach's code base]
 	* configure.ac <AM_INIT_AUTOMAKE>: Add `no-define' and `1.9'.
 
 2006-11-05  Barry deFreese  <bddebian@comcast.net>
 
-	[task #5878 --- ``Backport code from GNU Mach's trunk to
+	[task #5878 -- Backport code from GNU Mach's trunk to
 	gnumach-1-branch: i386_set_gdt, i386_get_gdt'']
 	[sync from HEAD, 2002-10-03]
 	* i386/include/mach/i386/mach_i386.defs (i386_set_gdt, i386_get_gdt):
@@ -1881,7 +1880,7 @@
 
 2006-11-05  Barry deFreese  <bddebian@comcast.net>
 
-	[task #5726 --- ``GCC built-in functions'']
+	[task #5726 -- GCC built-in functions]
 	* include/string.h: New file.
 	* include/mach/mig_support.h: Include `string.h'.
 	[MACH_KERNEL] (bcopy): Remove extern declaration.
@@ -2004,7 +2003,7 @@
 
 	* Makefile.in: Regenerate.
 
-	[task #5956 --- ``Automake'ify GNU Mach's code base'']
+	[task #5956 -- Automake'ify GNU Mach's code base]
 
 	* Makefrag.am (gnumach.msgids): Remove repetition.
 	* Makerules.am (%.server.msgids, %.user.msgids): Targets renamed from
@@ -2033,8 +2032,8 @@
 
 	* configure: Regenerate.
 
-	[bug #18011 --- ``GNU Mach: `make install-data' will build the
-	``to-be-generated files'''']
+	[bug #18011 -- `make install-data' will build the
+	``to-be-generated files'']
 	* config.status.dep.patch: Do an educated guess instead of using the
 	`Makefile'.
 	* configure.ac <config.status.dep.patch>: Update description.
@@ -2049,13 +2048,12 @@
 	* i386/include/Makefile.in: Remove unused file.  Thanks to Guillem
 	Jover for spotting this.
 
-	[task #5956 --- ``Automake'ify GNU Mach's code base'']
+	[task #5956 -- Automake'ify GNU Mach's code base]
 
 	* configure: Regenerate.
 
-	* configure.ac <config.status.dep.patch>: Point to [bug #18011 ---
-	``GNU Mach: `make install-data' will build the ``to-be-generated
-	files''''].
+	* configure.ac <config.status.dep.patch>: Point to [bug #18011 --
+	`make install-data' will build the ``to-be-generated files''].
 
 	* Makefile.in: Regenerate.
 
@@ -2655,7 +2653,7 @@
 
 2006-10-03  Thomas Schwinge  <tschwinge@gnu.org>
 
-	[task #5941 --- ``Linker script for GNU Mach'']
+	[task #5941 -- Linker script for GNU Mach]
 
 	* Makefile.in (kernel.o): Remove `$(systype)-objfiles-prepend' hackery.
 	* i386/Makefile.in (sysdep.a): Likewise.
@@ -2716,7 +2714,7 @@
 
 2006-09-19  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
-	[bug #17338 --- ``GNU Mach vs. GCC 4.1'']
+	[bug #17338 -- GNU Mach vs. GCC 4.1]
 	* i386/i386/seg.h (struct pseudo_descriptor): Pack structure and
 	move the padding field to the end.
 	(lgdt): Pass the whole structure to the lgdt assembly command.
@@ -2923,7 +2921,7 @@
 
 2006-05-08  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
-	[bug #7118 --- ``GNU Mach can't handle 1G memory'']
+	[bug #7118 -- GNU Mach can't handle 1G memory]
 	* i386/i386at/model_dep.c (mem_size_init): Limit memory to what can
 	actually be used (minus a little extra for virtual mappings).
 	* i386/intel/pmap.c (pmap_bootstrap): Extend the virtual mapping area
@@ -2993,8 +2991,8 @@
 	Remove unused and unsupported code.  Consult the file `DEVELOPMENT'
 	for details.
 
-	[patch #4982 --- ``remove of unused / unsuported functions of
-	gnumach-1-branch'']
+	[patch #4982 -- remove of unused / unsuported functions of
+	gnumach-1-branch]
 	* bogus/norma_device.h: Remove file.
 	* bogus/norma_ether.h: Likewise.
 	* bogus/norma_ipc.h: Likewise.
@@ -3055,8 +3053,8 @@
 	Remove unused and unsupported code.  Consult the file `DEVELOPMENT'
 	for details.
 
-	[patch #4982 --- ``remove of unused / unsuported functions of
-	gnumach-1-branch'']
+	[patch #4982 -- remove of unused / unsuported functions of
+	gnumach-1-branch]
 	* ipc/fipc.c: Remove file.
 	* ipc/fipc.h: Likewise.
 	* Makefile.in (ipc-cfiles): Remove `fipc.c'.
@@ -3079,7 +3077,7 @@
 
 2006-03-04  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
-	[patch #4737 --- ``User TSS fixup'']
+	[patch #4737 -- User TSS fixup]
 	* i386/i386/iopb.c: Include "vm_param.h".
 	(io_tss_init): Fix address and limit of user TSS.
 
