@@ -32,9 +32,9 @@
 /* Each emulation layer provides these operations.  */
 struct device_emulation_ops
 {
-  void (*reference) (void *);
-  void (*dealloc) (void *);
-  ipc_port_t (*dev_to_port) (void *);
+  void (*reference) (mach_device_t);
+  void (*dealloc) (mach_device_t);
+  ipc_port_t (*dev_to_port) (mach_device_t);
   io_return_t (*open) (ipc_port_t, mach_msg_type_name_t,
 		       dev_mode_t, char *, device_t *);
   io_return_t (*close) (void *);
@@ -55,9 +55,9 @@ struct device_emulation_ops
   io_return_t (*map) (void *, vm_prot_t, vm_offset_t,
 		      vm_size_t, ipc_port_t *, boolean_t);
   void (*no_senders) (mach_no_senders_notification_t *);
-  io_return_t (*write_trap) (void *, dev_mode_t,
+  io_return_t (*write_trap) (mach_device_t, dev_mode_t,
 			     recnum_t, vm_offset_t, vm_size_t);
-  io_return_t (*writev_trap) (void *, dev_mode_t,
+  io_return_t (*writev_trap) (mach_device_t, dev_mode_t,
 			      recnum_t, io_buf_vec_t *, vm_size_t);
 };
 

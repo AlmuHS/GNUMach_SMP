@@ -75,7 +75,7 @@ struct dev_ops	dev_name_list[] =
 	   cninit() we stick something appropriate here through the
 	   indirect list */
 	{ "cn",		nulldev,	nulldev,	nulldev,
-	  nulldev,	nulldev,	nulldev,	nulldev,
+	  nulldev,	nulldev,	nulldev,	nomap,
 	  nodev,	nulldev,	nulldev,	0,
 	  nodev },
 

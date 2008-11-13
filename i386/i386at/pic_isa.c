@@ -30,8 +30,8 @@
 
 
 /* These interrupts are always present */
-extern intnull(), fpintr(), hardclock(), kdintr();
-extern prtnull();
+extern void intnull(), fpintr(), hardclock(), kdintr();
+extern void prtnull();
 
 void (*ivect[NINTR])() = {
 	/* 00 */	hardclock,	/* always */

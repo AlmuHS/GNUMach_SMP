@@ -1,3 +1,16 @@
+2008-07-19  Barry deFreese  <bdefreese@debian.org>
+
+	* device/device_emul.h (struct device_emulation_ops): Make members
+	reference, dealloc, dev_to_port, write_trap, and writev_trap take
+	mach_device_t parameter instead of void *.
+	* i386/i386at/autoconf.c: Make forward declarations for comintr()
+	and lprintr() match prototype. Add brackets around initialization
+	members for bus_ctlr and bus_device structs.
+	* i386/i386at/conf.c (dev_name_list): Pass nomap instead of nulldev
+	for map field.
+	* i386/i386at/pic_isa.c (intnull, fpintr, hardclock, kdintr,
+	prtnull): Declare the type of the value returned by functions to void.
+
 2008-11-13  Thomas Schwinge  <tschwinge@gnu.org>
 
 	[task #8135 -- PAE for GNU Mach]
