@@ -1,5 +1,7 @@
 2008-11-17  Thomas Schwinge  <tschwinge@gnu.org>
 
+	* Makefile.am (install_sh, INSTALL): Point to `build-aux/install-sh'.
+
 	* configure.ac: Require GNU Automake 1.10.1.
 	* Makefile.am: Adapt.
 	* Makefile.correct_output_files_for_.S_files.patch: Remove.
