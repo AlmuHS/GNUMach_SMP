@@ -1,7 +1,7 @@
 dnl Configure script for GNU Mach.
 
-dnl Copyright (C) 1997, 1998, 1999, 2004, 2006, 2007
-dnl Free Software Foundation, Inc.
+dnl Copyright (C) 1997, 1998, 1999, 2004, 2006, 2007, 2008 Free Software
+dnl Foundation, Inc.
 
 dnl Permission to use, copy, modify and distribute this software and its
 dnl documentation is hereby granted, provided that both the copyright
@@ -24,13 +24,11 @@ AC_CONFIG_SRCDIR([kern/ipc_kobject.c])
 AC_CONFIG_AUX_DIR([build-aux])
 
 AM_INIT_AUTOMAKE(
+  [1.10.1]
 dnl Don't define `PACKAGE' and `VERSION'.
   [no-define]
 dnl Do not clutter the main build directory.
   [subdir-objects]
-dnl This is only a very rough estimation of the version we actually need.  Feel
-dnl free to refine that.
-  [1.9]
 dnl We require GNU make.
   [-Wall -Wno-portability]
 )
@@ -213,138 +211,6 @@ AC_CONFIG_COMMANDS_POST([
   [else] AC_MSG_ERROR([failed to patch using `config.status.dep.patch'.]
       [You have a serious problem.  Please contact <$PACKAGE_BUGREPORT>.])
   [fi
-])
-
-
-#
-# Makefile.correct_output_files_for_.S_files.patch
-#
-# The used version of Automake might emit rules that don't put compiled (pre
-# processed) Assembler files where they belong.  We're bitten by this bug
-# because we use the Automake option `subdir-objects', to not clutter the main
-# build directory with all the object files.  The problem is that the emitted
-# rules will place those in the main build directory, but later, when creating
-# the libraries, look for them in the subdirectories.
-#
-# See <http://sourceware.org/cgi-bin/gnatsweb.pl?cmd=view%20audit-trail&database=automake&pr=492>.
-#
-# Another note: even with versions of Automake that don't have this issue
-# fixed, a correct rule is emitted for linux/src/arch/i386/lib/semaphore.S, see
-# the comment by Thomas Schwinge on 2006-10-10 on the above bug report.
-#
-# Again, a real patch is being used here and not some `sed' magic, so that
-# it'll fail loudly in case some internals we're relying on are changed.
-#
-# TODO.  Remove this block as soon as we don't want to support such legacy
-# versions of Automake anymore.
-#
-
-AC_CONFIG_COMMANDS([frob_Makefile_for_correct_output_files_for_.S_files],[
-  # Do we have a version of Automake that doesn't have this bug?
-  if grep -q CPPASCOMPILE.\*-c.\*-o < "$srcdir"/Makefile.in
-  then] AC_MSG_NOTICE([... not a problem with the used version of Automake.])
-  [# We don't.
-  elif "$PATCH" -f \
-    < "$srcdir"/Makefile.correct_output_files_for_.S_files.patch
-  then]
-    AC_MSG_NOTICE([Applied a patch to fix a bug in your version of Automake.]
-      [The applied fix should work in most cases.  You could also consider]
-      [updating to Automake 1.10 or better.])
-  [else]
-    AC_MSG_ERROR([failed to patch using ]
-      [`Makefile.correct_output_files_for_.S_files.patch'.]
-      [You have a serious problem.  Please contact <$PACKAGE_BUGREPORT>.])
-  [fi
-],[
-  PACKAGE_BUGREPORT=$PACKAGE_BUGREPORT
-  PATCH=$PATCH
-])
-
-
-#
-# Dependency tracking for `.S' files
-#
-# The used version of Automake might not support automatic dependency tracking
-# for (preprocessed) Assembler source files.  We might add such support here.
-# But since adding such support is nontrivial and the nonexistent dependency
-# tracking (missing only for .S files) is not considered a fundamental problem,
-# we save the costs of adding such support here.  You should instead consider
-# updating to Automake 1.10 or better.
-#
-# TODO.  Remove this block as soon as we don't want to support such legacy
-# versions of Automake anymore.
-#
-
-AC_CONFIG_COMMANDS([frob_Makefile_for_dependency_tracking_for_.S_files],[
-  # Do we have a version of Automake that doesn't have this bug?
-  if grep -q CPPASCOMPILE.\*depbase < "$srcdir"/Makefile.in
-  then] AC_MSG_NOTICE([... not a problem with the used version of Automake.])
-  [# We don't.
-  else]
-    AC_MSG_NOTICE([Your build of GNU Mach won't have dependency tracking for]
-      [(preprocessed) Assembler source files.  Consider updating to Automake]
-      [1.10 or better if you need such support.])
-    [# Make ``make -j'' parallel builds work at least.
-    cat >> Makefile <<"EOT"
-
-i386/i386at/boothdr.o: i386/i386/i386asm.h
-i386/i386at/interrupt.o: i386/i386/i386asm.h
-i386/i386/cswitch.o: i386/i386/i386asm.h
-i386/i386/locore.o: i386/i386/i386asm.h
-EOT]
-dnl In case someone feels like completing this instead of simply using a fixed
-dnl version of Automake...
-dnl    if "$PATCH" -f; then :; else]
-dnl      AC_MSG_ERROR([failed to patch using]
-dnl        [`Makefile.dependency_tracking_for_.S_files.patch'.]
-dnl        [You have a serious problem.  Please contact <$PACKAGE_BUGREPORT>.])
-dnl    [fi < "$srcdir"/Makefile.dependency_tracking_for_.S_files.patch
-dnl
-dnl    # Change the Makefile to care for dependencies of .S files.
-dnl    ( cd "$srcdir"/ &&
-dnl      find ./ -name \*.S ) | \
-dnl        sed -e 's%^\./%%' -e 's%\.S$%%' -e 's%^\(.*\)/%\1 %' | \
-dnl	  while read d f; do
-dnl	    echo &&
-dnl	    echo "$d"/"$f"'.$(OBJEXT): '"$d"'/$(am__dirstamp) ' \
-dnl	      "$d"'/$(DEPDIR)/$(am__dirstamp)' &&
-dnl	    echo 'include '"$d"'/$(DEPDIR)/'"$f"'.Po' &&
-dnl
-dnl	    # Create the dependency files if they don't exist so far.
-dnl	    if test -f "$d"/"$DEPDIR"/"$f"'.Po'; then :; else
-dnl	      echo '# dummy' > "$d"/"$DEPDIR"/"$f"'.Po'
-dnl	    fi
-dnl	  done >> Makefile
-dnl
-dnl TODO.  linux/src/arch/i386/lib/.deps/liblinux_a-semaphore.Po vs.
-dnl linux/src/arch/i386/lib/.deps/semaphore.Po.  Because of the above
-dnl mentioned special rule for `semaphore.S' the .S.o rule is not used.
-dnl
-dnl gcc -nostdinc -imacros config.h -Ii386 -I. -I../i386 -I../include -I../i386/include/mach/sa -DASSEMBLER -g -O2 -c ../i386/i386at/boothdr.S
-dnl
-dnl Makefile
-dnl
-dnl COMPILE = $(CC) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CFLAGS) $(CFLAGS)
-dnl .c.o:
-dnl         depbase=`echo $@ | sed 's|[^/]*$$|$(DEPDIR)/&|;s|\.o$$||'`; \
-dnl         if $(COMPILE) -MT $@ -MD -MP -MF "$$depbase.Tpo" -c -o $@ $<; \
-dnl         then mv -f "$$depbase.Tpo" "$$depbase.Po"; else rm -f "$$depbase.Tpo"; exit 1; fi
-dnl #       source='$<' object='$@' libtool=no \
-dnl #       DEPDIR=$(DEPDIR) $(CCDEPMODE) $(depcomp) \
-dnl #       $(COMPILE) -c -o $@ $<
-dnl
-dnl CCAS = gcc
-dnl CCASCOMPILE = $(CCAS) $(AM_CCASFLAGS) $(CCASFLAGS)
-dnl .S.o:
-dnl        $(CCASCOMPILE) -c $<
-dnl
-dnl source=../i386/i386at/boothdr.S object=i386/i386at/boothdr.o libtool=no DEPDIR=.deps depmode=gcc3 ../depcomp gcc -nostdinc -imacros config.h -Ii386 -I. -I../i386 -I../include -I../i386/include/mach/sa -DASSEMBLER -g -O2 -c -o i386/i386at/boothdr.o ../i386/i386at/boothdr.S
-dnl ... creates a correct i386/i386at/.deps/boothdr.Po.
-  [fi
-dnl ],[
-dnl  DEPDIR=$DEPDIR
-dnl  PACKAGE_BUGREPORT=$PACKAGE_BUGREPORT
-dnl  PATCH=$PATCH
 ])
 
 #

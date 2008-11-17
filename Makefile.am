@@ -66,10 +66,6 @@ if disable_smashing_stack_protector
 AM_CFLAGS += \
 	-fno-stack-protector
 endif
-
-# For pre Automake 1.10.
-AM_CCASFLAGS += \
-	$(AM_CPPFLAGS)
 
 #
 # MIG Setup.
