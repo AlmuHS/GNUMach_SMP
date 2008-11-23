@@ -1,3 +1,10 @@
+2008-11-23  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* i386/i386/proc_reg.h (get_cr0, get_cr2, get_cr3, get_cr4, get_tr,
+	get_ldt): Add volatile qualifier to asm statement to prevent gcc from
+	optimizing it away since there seems to be no way to clobber these
+	properly in the set_* macros.
+
 2008-11-17  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* Makefile.am (install_sh, INSTALL): Point to `build-aux/install-sh'.
