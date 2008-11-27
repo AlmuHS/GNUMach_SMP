@@ -134,6 +134,11 @@ set_eflags(unsigned eflags)
 
 #define flush_tlb() set_cr3(get_cr3())
 
+#define invlpg(addr) \
+    ({ \
+	asm volatile("invlpg (%0)" : : "r" (addr)); \
+    })
+
 #define	get_cr4() \
     ({ \
 	register unsigned int _temp__; \

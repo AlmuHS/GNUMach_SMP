@@ -1,3 +1,9 @@
+2008-11-27  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* i386/i386/proc_reg.h (invlpg): New macro.
+	* i386/intel/pmap.c (INVALIDATE_TLB): If portion to be flushed is less
+	than 32 pages, use calls to invlpg instead of flush_tlb.
+
 2008-11-23  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* i386/i386/proc_reg.h (get_cr0, get_cr2, get_cr3, get_cr4, get_tr,

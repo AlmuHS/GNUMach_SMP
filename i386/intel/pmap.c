@@ -332,7 +332,13 @@ lock_data_t	pmap_system_lock;
 #define MAX_TBIS_SIZE	32		/* > this -> TBIA */ /* XXX */
 
 #define INVALIDATE_TLB(s, e) { \
-	flush_tlb(); \
+	if (((e) - (s)) > 32 * PAGE_SIZE) { \
+		flush_tlb(); \
+	} else { \
+		vm_offset_t i; \
+		for (i = s; i < e; i += PAGE_SIZE) \
+			invlpg(i); \
+	} \
 }
 
 
