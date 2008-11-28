@@ -1,6 +1,6 @@
 # Makefile fragment for the documentation.
 
-# Copyright (C) 2006, 2007 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2007, 2008 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -105,7 +105,11 @@ pdf-local:
 # TODO.  There doesn't seem to be a hook or `-local' target suitable for this.
 $(srcdir)/doc/version.texi: $(srcdir)/doc/stamp-vti
 	@if test -d $(web); then :;					\
-	elif grep -q :ext: $(top_srcdir)/CVS/Root 2> /dev/null; then	\
+	elif grep 2> /dev/null						\
+	       -q :ext: $(top_srcdir)/CVS/Root 2> /dev/null &&		\
+	     grep 2> /dev/null 						\
+	       -q ^Tgnumach-1-branch$$ $(top_srcdir)/CVS/Tag;		\
+	then								\
 	  echo "*** As it seems that you'd be allowed to check in the"	\
 	    "possible resulting fixes, you may consider running"	\
 	    " \`make $(web)' to get a checkout of the web pages of the"	\

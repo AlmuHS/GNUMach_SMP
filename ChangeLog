@@ -1,3 +1,8 @@
+2008-11-28  Thomas Schwinge  <tschwinge@gnu.org>
+
+	* doc/Makefrag.am: Only advertize updating the web pages on
+	gnumach-1-branch.
+
 2008-11-27  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* i386/i386/proc_reg.h (invlpg): New macro.
