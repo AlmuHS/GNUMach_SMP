@@ -1818,9 +1818,9 @@ device_writev_trap (mach_device_t device, dev_mode_t mode,
 
 struct device_emulation_ops mach_device_emulation_ops =
 {
-  mach_device_reference,
-  mach_device_deallocate,
-  mach_convert_device_to_port,
+  (void*) mach_device_reference,
+  (void*) mach_device_deallocate,
+  (void*) mach_convert_device_to_port,
   device_open,
   device_close,
   device_write,
@@ -1832,6 +1832,6 @@ struct device_emulation_ops mach_device_emulation_ops =
   device_set_filter,
   device_map,
   ds_no_senders,
-  device_write_trap,
-  device_writev_trap
+  (void*) device_write_trap,
+  (void*) device_writev_trap
 };

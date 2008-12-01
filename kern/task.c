@@ -116,7 +116,9 @@ kern_return_t task_create(
 {
 	register task_t	new_task;
 	register processor_set_t	pset;
+#if FAST_TAS
 	int i;
+#endif
 
 	new_task = (task_t) zalloc(task_zone);
 	if (new_task == TASK_NULL) {

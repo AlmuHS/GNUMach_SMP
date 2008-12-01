@@ -46,6 +46,8 @@ vm_map_t	device_io_map;
 kern_return_t	device_read_alloc(io_req_t, vm_size_t);
 kern_return_t	device_write_get(io_req_t, boolean_t *);
 boolean_t	device_write_dealloc(io_req_t);
+void		device_reference(device_t);
+void		device_deallocate(device_t);
 
 boolean_t	ds_notify(mach_msg_header_t *msg);
 boolean_t	ds_open_done(io_req_t);

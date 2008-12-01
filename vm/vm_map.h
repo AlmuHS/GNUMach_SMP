@@ -414,6 +414,7 @@ extern kern_return_t	vm_map_copy_overwrite(vm_map_t, vm_offset_t,
 					      vm_map_copy_t, boolean_t);
 /* Discard a copy without using it */
 extern void		vm_map_copy_discard(vm_map_copy_t);
+extern void		vm_map_copy_page_discard(vm_map_copy_t);
 extern vm_map_copy_t	vm_map_copy_copy(vm_map_copy_t);
 /* Page list continuation version of previous */
 extern kern_return_t	vm_map_copy_discard_cont(vm_map_copyin_args_t,

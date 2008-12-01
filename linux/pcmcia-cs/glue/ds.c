@@ -91,7 +91,7 @@ struct mach_socket_device {
 
 
 static void
-device_deallocate(void *p)
+ds_device_deallocate(void *p)
 {
   mach_device_t device = (mach_device_t) p;
 
@@ -146,7 +146,7 @@ dev_to_port(void *d)
 
   ipc_port_t port = ipc_port_make_send(dev->port);
 
-  device_deallocate(dev);
+  ds_device_deallocate(dev);
   return port;
 }
 
@@ -441,8 +441,8 @@ device_get_status(void *d, dev_flavor_t req, dev_status_t arg,
 
 struct device_emulation_ops linux_pcmcia_emulation_ops =
   {
-    mach_device_reference,
-    device_deallocate,
+    (void*) mach_device_reference,
+    ds_device_deallocate,
     dev_to_port,
     device_open,
     device_close,

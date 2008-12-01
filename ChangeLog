@@ -1,3 +1,29 @@
+2008-11-15  Shakthi Kannan  <shakshurd@gmail.com>
+
+	* device/ds_routines.h (device_reference, device_deallocate): Add
+	function prototypes.
+	* kern/task.c (task_create): Moved unused i variable inside FAST_TAS.  
+	* vm/vm_map.h (vm_map_copy_page_discard): Add function prototype.
+	* vm/vm_kern.c (projected_buffer_deallocate): Give &map->hdr
+	instead of map to _vm_map_clip_start and _vm_map_clip_end functions.
+
+2008-12-01  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* device/device_emul.h (device_emulation_ops): Turn back reference,
+	dealloc, dev_to_port, write_trap and writev_trap into taking a void*,
+	as they do not always take a mach_device_t.
+	* device/ds_routines.c (mach_device_emulation_ops): Cast
+	mach_device_reference, mach_device_deallocate,
+	mach_convert_device_to_port, device_write_trap and device_writev_trap
+	to (void*) to make them accept a void* argument.
+	* linux/pcmcia-cs/glue/ds.c (device_deallocate): Rename function
+	into...
+	(ds_device_deallocate): ... this.
+	(dev_to_port): Call ds_device_deallocate instead of device_deallocate.
+	(linux_pcmcia_emulation_ops): Use ds_device_deallocate instead of
+	device_deallocate, cast mach_device_reference to (void*) to make it
+	accept a void* argument.
+
 2008-11-28  Thomas Schwinge  <tschwinge@gnu.org>
 
 	* doc/Makefrag.am: Only advertize updating the web pages on
