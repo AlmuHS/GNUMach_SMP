@@ -576,7 +576,7 @@ void pmap_bootstrap()
 	 */
 	kernel_virtual_start = phys_last_addr;
 	kernel_virtual_end = phys_last_addr + morevm
-		+ (phys_last_addr - phys_first_addr) / 15;
+		+ (phys_last_addr - phys_first_addr);
 
 	if (kernel_virtual_end < phys_last_addr
 			|| kernel_virtual_end > VM_MAX_KERNEL_ADDRESS)
