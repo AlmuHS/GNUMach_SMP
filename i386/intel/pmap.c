@@ -332,13 +332,10 @@ lock_data_t	pmap_system_lock;
 #define MAX_TBIS_SIZE	32		/* > this -> TBIA */ /* XXX */
 
 #define INVALIDATE_TLB(s, e) { \
-	if (((e) - (s)) > 32 * PAGE_SIZE) { \
+	if (((e) - (s)) > 32 * PAGE_SIZE) \
 		flush_tlb(); \
-	} else { \
-		vm_offset_t i; \
-		for (i = s; i < e; i += PAGE_SIZE) \
-			invlpg(i); \
-	} \
+	else \
+		invlpg_user(s, e); \
 }
 
 
@@ -1125,16 +1122,12 @@ void pmap_remove(map, s, e)
 	register pt_entry_t	*pde;
 	register pt_entry_t	*spte, *epte;
 	vm_offset_t		l;
+	vm_offset_t		_s = s;
 
 	if (map == PMAP_NULL)
 		return;
 
 	PMAP_READ_LOCK(map, spl);
-
-	/*
-	 *	Invalidate the translation buffer first
-	 */
-	PMAP_UPDATE_TLBS(map, s, e);
 
 	pde = pmap_pde(map, s);
 	while (s < e) {
@@ -1150,6 +1143,7 @@ void pmap_remove(map, s, e)
 	    s = l;
 	    pde++;
 	}
+	PMAP_UPDATE_TLBS(map, _s, e);
 
 	PMAP_READ_UNLOCK(map, spl);
 }
@@ -1215,29 +1209,22 @@ void pmap_page_protect(phys, prot)
 
 	    prev = pv_e = pv_h;
 	    do {
+		register vm_offset_t va;
+
 		pmap = pv_e->pmap;
 		/*
 		 * Lock the pmap to block pmap_extract and similar routines.
 		 */
 		simple_lock(&pmap->lock);
 
-		{
-		    register vm_offset_t va;
+		va = pv_e->va;
+		pte = pmap_pte(pmap, va);
 
-		    va = pv_e->va;
-		    pte = pmap_pte(pmap, va);
-
-		    /*
-		     * Consistency checks.
-		     */
-		    /* assert(*pte & INTEL_PTE_VALID); XXX */
-		    /* assert(pte_to_phys(*pte) == phys); */
-
-		    /*
-		     * Invalidate TLBs for all CPUs using this mapping.
-		     */
-		    PMAP_UPDATE_TLBS(pmap, va, va + PAGE_SIZE);
-		}
+		/*
+		 * Consistency checks.
+		 */
+		/* assert(*pte & INTEL_PTE_VALID); XXX */
+		/* assert(pte_to_phys(*pte) == phys); */
 
 		/*
 		 * Remove the mapping if new protection is NONE
@@ -1295,6 +1282,7 @@ void pmap_page_protect(phys, prot)
 		     */
 		    prev = pv_e;
 		}
+		PMAP_UPDATE_TLBS(pmap, va, va + PAGE_SIZE);
 
 		simple_unlock(&pmap->lock);
 
@@ -1329,6 +1317,7 @@ void pmap_protect(map, s, e, prot)
 	register pt_entry_t	*spte, *epte;
 	vm_offset_t		l;
 	int		spl;
+	vm_offset_t	_s = s;
 
 	if (map == PMAP_NULL)
 		return;
@@ -1363,11 +1352,6 @@ void pmap_protect(map, s, e, prot)
 	SPLVM(spl);
 	simple_lock(&map->lock);
 
-	/*
-	 *	Invalidate the translation buffer first
-	 */
-	PMAP_UPDATE_TLBS(map, s, e);
-
 	pde = pmap_pde(map, s);
 	while (s < e) {
 	    l = (s + PDE_MAPPED_SIZE) & ~(PDE_MAPPED_SIZE-1);
@@ -1387,6 +1371,7 @@ void pmap_protect(map, s, e, prot)
 	    s = l;
 	    pde++;
 	}
+	PMAP_UPDATE_TLBS(map, _s, e);
 
 	simple_unlock(&map->lock);
 	SPLX(spl);
@@ -1441,9 +1426,9 @@ if (pmap_debug) printf("pmap(%x, %x)\n", v, pa);
 		 *	Invalidate the translation buffer,
 		 *	then remove the mapping.
 		 */
-		PMAP_UPDATE_TLBS(pmap, v, v + PAGE_SIZE);
 		pmap_remove_range(pmap, v, pte,
 				  pte + ptes_per_vm_page);
+		PMAP_UPDATE_TLBS(pmap, v, v + PAGE_SIZE);
 	    }
 	    PMAP_READ_UNLOCK(pmap, spl);
 	    return;
@@ -1552,7 +1537,6 @@ Retry:
 		template |= INTEL_PTE_NCACHE|INTEL_PTE_WTHRU;
 	    if (wired)
 		template |= INTEL_PTE_WIRED;
-	    PMAP_UPDATE_TLBS(pmap, v, v + PAGE_SIZE);
 	    i = ptes_per_vm_page;
 	    do {
 		if (*pte & INTEL_PTE_MOD)
@@ -1561,6 +1545,7 @@ Retry:
 		pte++;
 		pte_increment_pa(template);
 	    } while (--i > 0);
+	    PMAP_UPDATE_TLBS(pmap, v, v + PAGE_SIZE);
 	}
 	else {
 
@@ -1569,17 +1554,12 @@ Retry:
 	     */
 	    if (*pte) {
 		/*
-		 *	Invalidate the translation buffer,
-		 *	then remove the mapping.
-		 */
-		PMAP_UPDATE_TLBS(pmap, v, v + PAGE_SIZE);
-
-		/*
 		 *	Don't free the pte page if removing last
 		 *	mapping - we will immediately replace it.
 		 */
 		pmap_remove_range(pmap, v, pte,
 				  pte + ptes_per_vm_page);
+		PMAP_UPDATE_TLBS(pmap, v, v + PAGE_SIZE);
 	    }
 
 	    if (valid_page(pa)) {
@@ -1807,8 +1787,6 @@ void pmap_collect(p)
 	 *	Garbage collect map.
 	 */
 	PMAP_READ_LOCK(p, spl);
-	PMAP_UPDATE_TLBS(p, VM_MIN_ADDRESS, VM_MAX_ADDRESS);
-
 	for (pdp = p->dirbase;
 	     pdp < &p->dirbase[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS)];
 	     pdp += ptes_per_vm_page)
@@ -1881,6 +1859,8 @@ void pmap_collect(p)
 		}
 	    }
 	}
+	PMAP_UPDATE_TLBS(p, VM_MIN_ADDRESS, VM_MAX_ADDRESS);
+
 	PMAP_READ_UNLOCK(p, spl);
 	return;
 
@@ -2044,6 +2024,7 @@ phys_attribute_clear(phys, bits)
 	     * There are some mappings.
 	     */
 	    for (pv_e = pv_h; pv_e != PV_ENTRY_NULL; pv_e = pv_e->next) {
+		register vm_offset_t va;
 
 		pmap = pv_e->pmap;
 		/*
@@ -2051,25 +2032,16 @@ phys_attribute_clear(phys, bits)
 		 */
 		simple_lock(&pmap->lock);
 
-		{
-		    register vm_offset_t va;
-
-		    va = pv_e->va;
-		    pte = pmap_pte(pmap, va);
+		va = pv_e->va;
+		pte = pmap_pte(pmap, va);
 
 #if	0
-		    /*
-		     * Consistency checks.
-		     */
-		    assert(*pte & INTEL_PTE_VALID);
-		    /* assert(pte_to_phys(*pte) == phys); */
+		/*
+		 * Consistency checks.
+		 */
+		assert(*pte & INTEL_PTE_VALID);
+		/* assert(pte_to_phys(*pte) == phys); */
 #endif
-
-		    /*
-		     * Invalidate TLBs for all CPUs using this mapping.
-		     */
-		    PMAP_UPDATE_TLBS(pmap, va, va + PAGE_SIZE);
-		}
 
 		/*
 		 * Clear modify or reference bits.
@@ -2080,6 +2052,7 @@ phys_attribute_clear(phys, bits)
 			*pte &= ~bits;
 		    } while (--i > 0);
 		}
+		PMAP_UPDATE_TLBS(pmap, va, va + PAGE_SIZE);
 		simple_unlock(&pmap->lock);
 	    }
 	}

@@ -72,6 +72,9 @@
 #ifndef	__ASSEMBLER__
 #ifdef	__GNUC__
 
+#include <i386/gdt.h>
+#include <i386/ldt.h>
+
 static inline unsigned
 get_eflags(void)
 {
@@ -137,6 +140,20 @@ set_eflags(unsigned eflags)
 #define invlpg(addr) \
     ({ \
 	asm volatile("invlpg (%0)" : : "r" (addr)); \
+    })
+
+#define invlpg_user(start, end) \
+    ({ \
+	register unsigned long var = trunc_page(start); \
+	asm volatile( \
+		    "movw %w2,%%es\n" \
+		"1:\tinvlpg %%es:(%0)\n" \
+		  "\taddl %c4,%0\n" \
+		  "\tcmpl %0,%1\n" \
+		  "\tjb 1b\n" \
+		  "\tmovl %w3,%%es" \
+		: "+r" (var) : "r" (end), \
+		  "q" (USER_DS), "q" (KERNEL_DS), "i" (PAGE_SIZE)); \
     })
 
 #define	get_cr4() \

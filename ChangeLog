@@ -1,3 +1,14 @@
+2008-12-30  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* i386/i386/proc_reg.h [__ASSEMBLER__ && __GNUC__]: Include
+	<i386/gdt.h> and <i386/ldt.h>
+	(invlpg_user): New macro.
+	* i386/intel/pmap.c (INVALIDATE_TLB): Call invlpg_user instead
+	of invlpg.
+	(pmap_remove, pmap_page_protect, pmap_protect, pmap_enter,
+	pmap_collect, phys_attribute_clear): Call PMAP_UPDATE_TLBS
+	after pde update instead of before.
+
 2008-12-29  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* i386/intel/pmap.c (pmap_bootstrap): Extend kernel virtual memory to
