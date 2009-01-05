@@ -45,7 +45,7 @@
 #define	USER_LDT	0x28		/* place for per-thread LDT */
 #define	USER_TSS	0x30		/* place for per-thread TSS
 					   that holds IO bitmap */
-/*			0x38		   was FPE_CS, now free */
+#define	LINEAR_DS	0x38		/* linear mapping */
 /*			0x40		   was USER_FPREGS, now free */
 
 #define	USER_GDT	0x48		/* user-defined GDT entries */

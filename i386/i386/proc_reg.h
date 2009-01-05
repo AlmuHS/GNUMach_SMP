@@ -142,7 +142,7 @@ set_eflags(unsigned eflags)
 	asm volatile("invlpg (%0)" : : "r" (addr)); \
     })
 
-#define invlpg_user(start, end) \
+#define invlpg_linear(start, end) \
     ({ \
 	register unsigned long var = trunc_page(start); \
 	asm volatile( \
@@ -151,9 +151,9 @@ set_eflags(unsigned eflags)
 		  "\taddl %c4,%0\n" \
 		  "\tcmpl %0,%1\n" \
 		  "\tjb 1b\n" \
-		  "\tmovl %w3,%%es" \
+		  "\tmovw %w3,%%es" \
 		: "+r" (var) : "r" (end), \
-		  "q" (USER_DS), "q" (KERNEL_DS), "i" (PAGE_SIZE)); \
+		  "q" (LINEAR_DS), "q" (KERNEL_DS), "i" (PAGE_SIZE)); \
     })
 
 #define	get_cr4() \

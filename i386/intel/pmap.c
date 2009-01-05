@@ -335,7 +335,7 @@ lock_data_t	pmap_system_lock;
 	if (((e) - (s)) > 32 * PAGE_SIZE) \
 		flush_tlb(); \
 	else \
-		invlpg_user(s, e); \
+		invlpg_linear(s, e); \
 }
 
 

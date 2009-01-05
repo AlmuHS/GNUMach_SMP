@@ -50,6 +50,10 @@ gdt_init()
 			    LINEAR_MIN_KERNEL_ADDRESS, 
 			    LINEAR_MAX_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS - 1,
 			    ACC_PL_K|ACC_DATA_W, SZ_32);
+	fill_gdt_descriptor(LINEAR_DS,
+			    0,
+			    0xffffffff,
+			    ACC_PL_K|ACC_DATA_W, SZ_32);
 
 	/* Load the new GDT.  */
 	{

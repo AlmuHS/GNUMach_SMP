@@ -1,3 +1,13 @@
+2009-01-05  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* i386/i386/gdt.h (LINEAR_DS): New macro.
+	* i386/i386/gdt.c (gdt_init): Initialize LINEAR_DS descriptor.
+	* i386/i386/proc_reg.h (invlpg_user): Rename macro into...
+	(invlpg_linear): ... this.  Use movw instead of movl to set KERNEL_DS
+	selector.  Use LINEAR_DS selector instead of USER_DS selector.
+	* i386/intel/pmap.c (INVALIDATE_TLB): Call invlpg_linear instead of
+	invlpg_user.
+
 2008-12-30  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* i386/i386/proc_reg.h [__ASSEMBLER__ && __GNUC__]: Include
