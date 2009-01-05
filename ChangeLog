@@ -6,7 +6,7 @@
 	(invlpg_linear): ... this.  Use movw instead of movl to set KERNEL_DS
 	selector.  Use LINEAR_DS selector instead of USER_DS selector.
 	* i386/intel/pmap.c (INVALIDATE_TLB): Call invlpg_linear instead of
-	invlpg_user.
+	invlpg_user.  For now, disable use of invlpg.
 
 2008-12-30  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 

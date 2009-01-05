@@ -331,12 +331,16 @@ lock_data_t	pmap_system_lock;
 
 #define MAX_TBIS_SIZE	32		/* > this -> TBIA */ /* XXX */
 
+#if 0
 #define INVALIDATE_TLB(s, e) { \
 	if (((e) - (s)) > 32 * PAGE_SIZE) \
 		flush_tlb(); \
 	else \
 		invlpg_linear(s, e); \
 }
+#else
+#define INVALIDATE_TLB(s, e) flush_tlb()
+#endif
 
 
 #if	NCPUS > 1
