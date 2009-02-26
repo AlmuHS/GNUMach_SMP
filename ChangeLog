@@ -1,3 +1,12 @@
+2009-02-26  Samuel Thibault  <samuel.thibault@ens-lyon.org>
+
+	* i386/i386/prog_reg.h (invlpg_linear): Rename macro into...
+	(invlpg_linear_range): ... this.
+	(invlpg_linear): New macro.
+	* i386/intel/pmap.c (INVALIDATE_TLB): Call invlpg_linear instead
+	of flush_tlb when e - S is compile-time known to be PAGE_SIZE,
+	instead of run-time known to be less than 32 * PAGE_SIZE.
+
 2009-01-05  Samuel Thibault  <samuel.thibault@ens-lyon.org>
 
 	* i386/i386/gdt.h (LINEAR_DS): New macro.

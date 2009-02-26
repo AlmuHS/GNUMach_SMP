@@ -142,7 +142,16 @@ set_eflags(unsigned eflags)
 	asm volatile("invlpg (%0)" : : "r" (addr)); \
     })
 
-#define invlpg_linear(start, end) \
+#define invlpg_linear(start) \
+    ({ \
+	asm volatile( \
+		    "movw %w1,%%es\n" \
+		  "\tinvlpg %%es:(%0)\n" \
+		  "\tmovw %w2,%%es" \
+		:: "r" (start), "q" (LINEAR_DS), "q" (KERNEL_DS)); \
+    })
+
+#define invlpg_linear_range(start, end) \
     ({ \
 	register unsigned long var = trunc_page(start); \
 	asm volatile( \

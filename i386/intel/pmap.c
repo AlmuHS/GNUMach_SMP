@@ -332,11 +332,14 @@ lock_data_t	pmap_system_lock;
 #define MAX_TBIS_SIZE	32		/* > this -> TBIA */ /* XXX */
 
 #if 0
+/* It is hard to know when a TLB flush becomes less expensive than a bunch of
+ * invlpgs.  But it surely is more expensive than just one invlpg.  */
 #define INVALIDATE_TLB(s, e) { \
-	if (((e) - (s)) > 32 * PAGE_SIZE) \
-		flush_tlb(); \
+	if (__builtin_constant_p((e) - (s))
+		&& (e) - (s) == PAGE_SIZE)
+		invlpg_linear(s); \
 	else \
-		invlpg_linear(s, e); \
+		flush_tlb(); \
 }
 #else
 #define INVALIDATE_TLB(s, e) flush_tlb()
