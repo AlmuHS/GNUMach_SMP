@@ -335,8 +335,8 @@ lock_data_t	pmap_system_lock;
 /* It is hard to know when a TLB flush becomes less expensive than a bunch of
  * invlpgs.  But it surely is more expensive than just one invlpg.  */
 #define INVALIDATE_TLB(s, e) { \
-	if (__builtin_constant_p((e) - (s))
-		&& (e) - (s) == PAGE_SIZE)
+	if (__builtin_constant_p((e) - (s)) \
+		&& (e) - (s) == PAGE_SIZE) \
 		invlpg_linear(s); \
 	else \
 		flush_tlb(); \
