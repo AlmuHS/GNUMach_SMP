@@ -214,7 +214,7 @@ zone_t zinit(size, align, max, alloc, memtype, name)
 		max = alloc;
 
 	if (align > 0) {
-		if (align >= PAGE_SIZE)
+		if (PAGE_SIZE % align || align % sizeof(z->free_elements))
 			panic("zinit");
 		ALIGN_SIZE_UP(size, align);
 	}
