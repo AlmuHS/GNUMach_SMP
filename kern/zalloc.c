@@ -835,7 +835,10 @@ static void zone_gc(void)
 		 * hang because zone_map is already locked by vm_map_delete */
 
 		extern zone_t		vm_map_kentry_zone;	/* zone for kernel entry structures */
-		zfree(vm_map_kentry_zone, zalloc(vm_map_kentry_zone));
+		vm_offset_t entry1 = zalloc(vm_map_kentry_zone),
+			    entry2 = zalloc(vm_map_kentry_zone);
+		zfree(vm_map_kentry_zone, entry1);
+		zfree(vm_map_kentry_zone, entry2);
 
 		kmem_free(zone_map, free_addr, PAGE_SIZE);
 	}
