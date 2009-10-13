@@ -828,6 +828,15 @@ static void zone_gc(void)
 
 		free_addr = zone_map_min_address +
 			PAGE_SIZE * (freep - zone_page_table);
+
+		/* Hack Hack */
+		/* Needed to make vm_map_delete's vm_map_clip_end always be
+		 * able to get an element without having to call zget_space and
+		 * hang because zone_map is already locked by vm_map_delete */
+
+		extern zone_t		vm_map_kentry_zone;	/* zone for kernel entry structures */
+		zfree(vm_map_kentry_zone, zalloc(vm_map_kentry_zone));
+
 		kmem_free(zone_map, free_addr, PAGE_SIZE);
 	}
 }
