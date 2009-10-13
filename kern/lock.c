@@ -104,7 +104,7 @@ boolean_t simple_lock_try(simple_lock_t l)
 #endif	/* NCPUS > 1 */
 
 #if	NCPUS > 1
-int lock_wait_time = 100;
+static int lock_wait_time = 100;
 #else	/* NCPUS > 1 */
 
 	/*
@@ -112,7 +112,7 @@ int lock_wait_time = 100;
 	 *	thought something magical would happen to the
 	 *	want_write bit while we are executing.
 	 */
-int lock_wait_time = 0;
+static int lock_wait_time = 0;
 #endif	/* NCPUS > 1 */
 
 #if	MACH_SLOCKS && NCPUS == 1
