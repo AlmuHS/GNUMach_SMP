@@ -798,7 +798,7 @@ kern_return_t vm_map_enter(
 			 */
 
 			if (((start + mask) & ~mask) < start)
-				return(KERN_NO_SPACE);
+				RETURN(KERN_NO_SPACE);
 			start = ((start + mask) & ~mask);
 			end = start + size;
 
