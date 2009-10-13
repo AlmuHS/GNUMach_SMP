@@ -2146,8 +2146,10 @@ start_pass_1:
 	 *	the copy cannot be interrupted.
 	 */
 
-	if (interruptible && contains_permanent_objects)
+	if (interruptible && contains_permanent_objects) {
+		vm_map_unlock(dst_map);
 		return(KERN_FAILURE);	/* XXX */
+	}
 
 	/*
 	 * XXXO	If there are no permanent objects in the destination,
