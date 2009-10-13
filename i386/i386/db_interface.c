@@ -311,7 +311,7 @@ db_read_bytes(
 	unsigned	kern_addr;
 
 	src = (char *)addr;
-	if (addr >= VM_MIN_KERNEL_ADDRESS || task == TASK_NULL) {
+	if ((addr >= VM_MIN_KERNEL_ADDRESS && addr < VM_MAX_KERNEL_ADDRESS) || task == TASK_NULL) {
 	    if (task == TASK_NULL)
 	        task = db_current_task();
 	    while (--size >= 0) {
