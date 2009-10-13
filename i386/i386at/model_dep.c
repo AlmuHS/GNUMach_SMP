@@ -235,8 +235,8 @@ mem_size_init(void)
 
 	/* Reserve 1/16 of the memory address space for virtual mappings.
 	 * Yes, this loses memory.  Blame i386.  */
-	if (phys_last_addr > (VM_MAX_KERNEL_ADDRESS / 8) * 7) {
-		phys_last_addr = (VM_MAX_KERNEL_ADDRESS / 8) * 7;
+	if (phys_last_addr > (VM_MAX_KERNEL_ADDRESS / 16) * 15) {
+		phys_last_addr = (VM_MAX_KERNEL_ADDRESS / 16) * 15;
 		printf("Truncating memory size to %dMiB\n", (phys_last_addr - phys_first_addr) / (1024 * 1024));
 	}
 
