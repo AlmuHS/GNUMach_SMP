@@ -220,8 +220,10 @@ mem_size_init(void)
 
 	phys_last_kb = 0x400 + boot_info.mem_upper;
 	/* Avoid 4GiB overflow.  */
-	if (phys_last_kb < 0x400 || phys_last_kb >= 0x400000)
+	if (phys_last_kb < 0x400 || phys_last_kb >= 0x400000) {
+		printf("Truncating memory size to 4GiB\n");
 		phys_last_kb = 0x400000 - 1;
+	}
 
 	phys_last_addr = phys_last_kb * 0x400;
 	avail_remaining
@@ -233,8 +235,10 @@ mem_size_init(void)
 
 	/* Reserve 1/16 of the memory address space for virtual mappings.
 	 * Yes, this loses memory.  Blame i386.  */
-	if (phys_last_addr > (VM_MAX_KERNEL_ADDRESS / 16) * 15)
-		phys_last_addr = (VM_MAX_KERNEL_ADDRESS / 16) * 15;
+	if (phys_last_addr > (VM_MAX_KERNEL_ADDRESS / 8) * 7) {
+		phys_last_addr = (VM_MAX_KERNEL_ADDRESS / 8) * 7;
+		printf("Truncating memory size to %dMiB\n", (phys_last_addr - phys_first_addr) / (1024 * 1024));
+	}
 
 	phys_first_addr = round_page(phys_first_addr);
 	phys_last_addr = trunc_page(phys_last_addr);
