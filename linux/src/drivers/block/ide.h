@@ -23,7 +23,7 @@
  * REALLY_SLOW_IO can be defined in ide.c and ide-cd.c, if necessary
  */
 #undef REALLY_FAST_IO			/* define if ide ports are perfect */
-#define INITIAL_MULT_COUNT	0	/* off=0; on=2,4,8,16,32, etc.. */
+#define INITIAL_MULT_COUNT	16	/* off=0; on=2,4,8,16,32, etc.. */
 
 #ifndef SUPPORT_SLOW_DATA_PORTS		/* 1 to support slow data ports */
 #define SUPPORT_SLOW_DATA_PORTS	1	/* 0 to reduce kernel size */

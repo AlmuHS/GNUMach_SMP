@@ -105,7 +105,7 @@ zone_t		zone_zone;	/* this is the zone containing other zones */
 boolean_t	zone_ignore_overflow = TRUE;
 
 vm_map_t	zone_map = VM_MAP_NULL;
-vm_size_t	zone_map_size = 12 * 1024 * 1024;
+vm_size_t	zone_map_size = 64 * 1024 * 1024;
 
 /*
  *	The VM system gives us an initial chunk of memory.

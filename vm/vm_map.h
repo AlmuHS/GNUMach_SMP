@@ -226,7 +226,7 @@ typedef struct vm_map_version {
  *		(returned) and an abort flag (abort if TRUE).
  */
 
-#define VM_MAP_COPY_PAGE_LIST_MAX	8
+#define VM_MAP_COPY_PAGE_LIST_MAX	64
 
 typedef struct vm_map_copy {
 	int			type;
