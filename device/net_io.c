@@ -771,13 +771,16 @@ net_filter(kmsg, send_list)
  	    if ((infp->filter[0] & NETF_TYPE_MASK) == NETF_BPF) {
  		ret_count = bpf_do_filter(infp, net_kmsg(kmsg)->packet
 					  + sizeof(struct packet_header),
-					  count, net_kmsg(kmsg)->header,
+					  count - sizeof(struct packet_header),
+					  net_kmsg(kmsg)->header,
 					  ifp->if_header_size, &hash_headp,
 					  &entp);
 		if (entp == (net_hash_entry_t) 0)
 		  dest = infp->rcv_port;
 		else
 		  dest = entp->rcv_port;
+		if (ret_count)
+		  ret_count += sizeof(struct packet_header);
  	    } else {
  		ret_count = net_do_filter(infp, net_kmsg(kmsg)->packet, count,
  					  net_kmsg(kmsg)->header);
