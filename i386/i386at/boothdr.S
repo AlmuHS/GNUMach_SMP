@@ -39,7 +39,6 @@ boot_hdr:
 #endif /* __ELF__ */
 
 boot_entry:
-	cld
 
 	/* Switch to our own interrupt stack.  */
 	movl	$_intstack+INTSTACK_SIZE,%esp
