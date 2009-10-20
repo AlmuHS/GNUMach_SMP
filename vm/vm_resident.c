@@ -1043,7 +1043,6 @@ count_ones:
 			 * search for beans here
 			 */
 			bits_so_far = 0;
-count_zeroes:
 			while ((bitpos < NBPEL) && ((v & 1) == 0)) {
 			    bitpos++;
 			    v >>= 1;
@@ -1063,7 +1062,6 @@ count_zeroes:
 	/*
 	 *	We could not find enough contiguous pages.
 	 */
-not_found_em:
 	simple_unlock(&vm_page_queue_free_lock);
 
 	ret = KERN_RESOURCE_SHORTAGE;
