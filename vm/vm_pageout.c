@@ -551,7 +551,6 @@ void vm_pageout_scan()
 	 *	internal memory even if we never reach vm_page_free_target.
 	 */
 
-    Restart:
 	stack_collect();
 	net_kmsg_collect();
 	consider_task_collect();
