@@ -699,7 +699,7 @@ void thread_deallocate(
 	 *	Clean up any machine-dependent resources.
 	 */
 	if ((thread->state & TH_SWAPPED) == 0) {
-		spl_t _s_ = splsched();
+		splsched();
 		stack_free(thread);
 		(void) splx(s);
 		thread_deallocate_stack++;
