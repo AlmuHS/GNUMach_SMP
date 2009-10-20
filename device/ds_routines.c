@@ -941,7 +941,7 @@ device_write_dealloc(ior)
 
 	kmem_io_map_deallocate(device_io_map,
 		     	 trunc_page(ior->io_data),
-			(vm_size_t) ior->io_alloc_size);
+			 ior->io_alloc_size);
 
 	if (vm_map_copy_has_cont(io_copy)) {
 

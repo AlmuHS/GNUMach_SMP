@@ -140,6 +140,6 @@ void brelse(bp)
 
 	(void) vm_deallocate(kernel_map,
 			(vm_offset_t) ior->io_data,
-			(vm_size_t) ior->io_alloc_size);
+			ior->io_alloc_size);
 	io_req_free(ior);
 }

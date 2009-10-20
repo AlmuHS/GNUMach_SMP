@@ -66,7 +66,7 @@ struct io_req {
 #define	io_data		io_un.data
 
 	long		io_count;	/* amount requested */
-	long		io_alloc_size;	/* amount allocated */
+	vm_size_t	io_alloc_size;	/* amount allocated */
 	long		io_residual;	/* amount NOT done */
 	io_return_t	io_error;	/* error code */
 	/* call when done - returns TRUE if IO really finished */
