@@ -225,10 +225,9 @@ mem_size_init(void)
 		phys_last_kb = 0x400000 - 1;
 	}
 
+	/* TODO: support mmap */
+
 	phys_last_addr = phys_last_kb * 0x400;
-	avail_remaining
-	  = phys_last_addr - (0x100000 - (boot_info.mem_lower * 0x400)
-			      - 0x1000);
 
 	printf("AT386 boot: physical memory from 0x%x to 0x%x\n",
 	       phys_first_addr, phys_last_addr);
@@ -242,6 +241,10 @@ mem_size_init(void)
 
 	phys_first_addr = round_page(phys_first_addr);
 	phys_last_addr = trunc_page(phys_last_addr);
+
+	avail_remaining
+	  = phys_last_addr - (0x100000 - (boot_info.mem_lower * 0x400)
+			      - 0x1000);
 }
 
 /*
