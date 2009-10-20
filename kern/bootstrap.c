@@ -90,7 +90,7 @@ task_insert_send_right(
 		kern_return_t kr;
 
 		kr = mach_port_insert_right(task->itk_space, name,
-			    (ipc_object_t)port, MACH_MSG_TYPE_PORT_SEND);
+			    port, MACH_MSG_TYPE_PORT_SEND);
 		if (kr == KERN_SUCCESS)
 			break;
 		assert(kr == KERN_NAME_EXISTS);
@@ -357,6 +357,7 @@ static void get_compat_strings(char *flags_str, char *root_str)
 	*cp = '\0';
 }
 
+#if 0
 /*
  * Copy boot_data (executable) to the user portion of this task.
  */
@@ -381,6 +382,7 @@ boot_map(
 static boolean_t load_bootstrap_symbols = TRUE;
 #else
 static boolean_t load_bootstrap_symbols = FALSE;
+#endif
 #endif
 
 
@@ -450,7 +452,7 @@ read_exec(void *handle, vm_offset_t file_ofs, vm_size_t file_size,
 
 static void copy_bootstrap(void *e, exec_info_t *boot_exec_info)
 {
-	register vm_map_t	user_map = current_task()->map;
+	//register vm_map_t	user_map = current_task()->map;
 	int err;
 
 	if ((err = exec_load(boot_read, read_exec, e, boot_exec_info)))
