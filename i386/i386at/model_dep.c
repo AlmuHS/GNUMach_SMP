@@ -117,6 +117,8 @@ vm_offset_t int_stack_top, int_stack_high;
 extern void linux_init(void);
 #endif
 
+boolean_t init_alloc_aligned(vm_size_t size, vm_offset_t *addrp);
+
 /*
  * Find devices.  The system is alive.
  */
@@ -267,6 +269,41 @@ i386at_init(void)
 	 */
 	mem_size_init();
 
+	/* Copy content pointed by boot_info before losing access to it when it
+	 * is too far in physical memory.  */
+	if (boot_info.flags & MULTIBOOT_CMDLINE) {
+		vm_offset_t addr;
+		int len = strlen ((char*)phystokv(boot_info.cmdline)) + 1;
+		assert(init_alloc_aligned(round_page(len), &addr));
+		kernel_cmdline = (char*) addr;
+		memcpy(kernel_cmdline, (char*)phystokv(boot_info.cmdline), len);
+		boot_info.cmdline = (vm_offset_t) kernel_cmdline;
+	}
+
+	if (boot_info.flags & MULTIBOOT_MODS) {
+		struct multiboot_module *m;
+		vm_offset_t addr;
+		int i;
+
+		assert(init_alloc_aligned(round_page(boot_info.mods_count * sizeof(*m)), &addr));
+		m = (void*) addr;
+		memcpy(m, (void*) phystokv(boot_info.mods_addr), boot_info.mods_count * sizeof(*m));
+		boot_info.mods_addr = (vm_offset_t) m;
+
+		for (i = 0; i < boot_info.mods_count; i++) {
+			vm_size_t size = m[i].mod_end - m[i].mod_start;
+			assert(init_alloc_aligned(round_page(size), &addr));
+			memcpy((void*) addr, (void*) phystokv(m[i].mod_start), size);
+			m[i].mod_start = addr;
+			m[i].mod_end = addr + size;
+
+			size = strlen((char*) phystokv(m[i].string)) + 1;
+			assert(init_alloc_aligned(round_page(size), &addr));
+			memcpy((void*) addr, (void*) phystokv(m[i].string), size);
+			m[i].string = addr;
+		}
+	}
+
 	/*
 	 *	Initialize kernel physical map, mapping the
 	 *	region from loadpt to avail_start.
@@ -348,10 +385,6 @@ void c_boot_entry(vm_offset_t bi)
 	   it will be stored and printed at the first opportunity.  */
 	printf(version);
 	printf("\n");
-
-	/* Find the kernel command line, if there is one.  */
-	if (boot_info.flags & MULTIBOOT_CMDLINE)
-		kernel_cmdline = (char*)phystokv(boot_info.cmdline);
 
 #if	MACH_KDB
 	/*
