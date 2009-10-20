@@ -34,6 +34,7 @@
 #include <mach/std_types.h>
 #include <sys/types.h>
 #include <kern/printf.h>
+#include <kern/mach_clock.h>
 #include <sys/time.h>
 #include <device/conf.h>
 #include <device/errno.h>
@@ -58,8 +59,6 @@
 #include <i386at/autoconf.h>
 #include <i386at/lprreg.h>
   
-extern void 	timeout();
-extern void 	ttrstrt();
 
 /* 
  * Driver information for auto-configuration stuff.

@@ -40,8 +40,8 @@ extern int		tick;		/* number of usec per tick */
 /* Time-out element.  */
 struct timer_elt {
 	queue_chain_t	chain;		/* chain in order of expiration */
-	int		(*fcn)();	/* function to call */
-	char *		param;		/* with this parameter */
+	void		(*fcn)();	/* function to call */
+	void *		param;		/* with this parameter */
 	unsigned long	ticks;		/* expiration time, in ticks */
 	int		set;		/* unset | set | allocated */
 };
@@ -99,7 +99,7 @@ extern kern_return_t host_adjust_time(
 extern void mapable_time_init (void);
 
 /* For public timer elements.  */
-extern void timeout(int (*fcn)(void *), void *param, int interval);
-extern boolean_t untimeout(int (*fcn)(), char *param);
+extern void timeout(void (*fcn)(void *), void *param, int interval);
+extern boolean_t untimeout(void (*fcn)(void *), void *param);
 
 #endif /* _KERN_MACH_CLOCK_H_ */

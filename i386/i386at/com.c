@@ -29,6 +29,7 @@
 #include <mach/std_types.h>
 #include <sys/types.h>
 #include <kern/printf.h>
+#include <kern/mach_clock.h>
 #include <sys/time.h>
 #include <device/conf.h>
 #include <device/errno.h>
@@ -44,8 +45,6 @@
 #include <i386at/comreg.h>
 
 #include <device/cons.h>
-
-extern void timeout(), ttrstrt();
 
 int comprobe(), comstart(), commctl();
 void comstop(), comattach(), comintr();
@@ -383,7 +382,7 @@ io_return_t comopen(
 
 	if (!comtimer_active) {
 		comtimer_active = TRUE;
-		comtimer();
+		comtimer(NULL);
 	}
 
 	s = spltty();
@@ -664,7 +663,7 @@ comst_4++;
 int comtimer_interval = 5;
 
 void
-comtimer()
+comtimer(void * param)
 {
 	spl_t	s = spltty();
 	struct tty *tp = com_tty;

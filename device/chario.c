@@ -895,8 +895,9 @@ void tty_output(
  * Send any buffered recvd chars up to user
  */
 void ttypush(
-	register struct tty	*tp)
+	void * _tp)
 {
+	register struct tty	*tp = _tp;
 	spl_t	s = spltty();
 	register int	state;
 

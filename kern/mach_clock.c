@@ -278,8 +278,8 @@ void softclock()
 	 */
 	spl_t	s;
 	register timer_elt_t	telt;
-	register int	(*fcn)();
-	register char	*param;
+	register void	(*fcn)( void * param );
+	register void	*param;
 
 	while (TRUE) {
 	    s = splsched();
@@ -528,7 +528,7 @@ timer_elt_data_t timeout_timers[NTIMERS];
  *	interval:	timeout interval, in hz.
  */
 void timeout(fcn, param, interval)
-	int	(*fcn)( void * param );
+	void	(*fcn)( void * param );
 	void *	param;
 	int	interval;
 {
@@ -556,8 +556,8 @@ void timeout(fcn, param, interval)
  * and removed.
  */
 boolean_t untimeout(fcn, param)
-	register int	(*fcn)();
-	register char *	param;
+	register void	(*fcn)( void * param );
+	register void *	param;
 {
 	spl_t	s;
 	register timer_elt_t elt;

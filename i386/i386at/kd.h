@@ -720,7 +720,7 @@ extern void kd_delln (int);
 extern void kd_delch (int);
 extern void kd_erase (int);
 extern void kd_bellon (void);
-extern void kd_belloff (void);
+extern void kd_belloff (void *param);
 extern void kdinit (void);
 extern int kdsetkbent (struct kbentry *, int);
 extern int kdgetkbent (struct kbentry *);

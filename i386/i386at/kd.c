@@ -102,8 +102,6 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 void kd_enqsc();			/* enqueues a scancode */
 
-void timeout();
-
 #if 0
 #define BROKEN_KEYBOARD_RESET
 #endif
@@ -380,7 +378,7 @@ feep()
 	kd_bellon();
 	for (i = 0; i < 50000; ++i)
 		;
-	kd_belloff();
+	kd_belloff(NULL);
 }
 
 void
@@ -671,7 +669,7 @@ int	flags;				/* flags set for console */
 	if (val == KD_BELLON)
 		kd_bellon();
 	else if (val == KD_BELLOFF)
-		kd_belloff();
+		kd_belloff(NULL);
 	else
 		err = D_INVALID_OPERATION;
 
@@ -1232,7 +1230,7 @@ kdinit()
 static unsigned int kd_bellstate = 0;
 
 void
-kd_belloff()
+kd_belloff(void * param)
 {
 	unsigned char status;
 
