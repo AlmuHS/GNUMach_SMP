@@ -60,8 +60,8 @@ struct tty {
 	int		(*t_mctl)(struct tty *, int, int);
 					/* (optional) routine to control
 					   modem signals */
-	char		t_ispeed;	/* input speed */
-	char		t_ospeed;	/* output speed */
+	unsigned char	t_ispeed;	/* input speed */
+	unsigned char	t_ospeed;	/* output speed */
 	char		t_breakc;	/* character to deliver when 'break'
 					   condition received */
 	int		t_flags;	/* mode flags */
