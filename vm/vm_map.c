@@ -4396,12 +4396,13 @@ kern_return_t vm_map_lookup(var_map, vaddr, fault_type, out_version,
 
 	prot = entry->protection;
 
-	if ((fault_type & (prot)) != fault_type)
+	if ((fault_type & (prot)) != fault_type) {
 		if ((prot & VM_PROT_NOTIFY) && (fault_type & VM_PROT_WRITE)) {
 			RETURN(KERN_WRITE_PROTECTION_FAILURE);
 		} else {
 			RETURN(KERN_PROTECTION_FAILURE);
 		}
+	}
 
 	/*
 	 *	If this page is not pageable, we have to get
