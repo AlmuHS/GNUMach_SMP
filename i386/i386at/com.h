@@ -33,7 +33,7 @@
  */
 extern void fix_modem_state(int unit, int modem_stat);
 
-extern void comtimer(void);
+extern void comtimer(void * param);
 
 /*
  * Modem change (input signals)
