@@ -693,7 +693,9 @@ void pmap_init()
 	register long		npages;
 	vm_offset_t		addr;
 	register vm_size_t	s;
+#if	NCPUS > 1
 	int			i;
+#endif	/* NCPUS > 1 */
 
 	/*
 	 *	Allocate memory for the pv_head_table and its lock bits,
