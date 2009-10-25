@@ -537,7 +537,7 @@ kern_return_t thread_setstatus(thread, flavor, tstate, count)
 	     * Temporary - replace by i386_io_map
 	     */
 	    case i386_ISA_PORT_MAP_STATE: {
-		register struct i386_isa_port_map_state *state;
+		//register struct i386_isa_port_map_state *state;
 
 		if (count < i386_ISA_PORT_MAP_STATE_COUNT)
 			return(KERN_INVALID_ARGUMENT);
