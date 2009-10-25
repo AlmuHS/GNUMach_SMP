@@ -35,9 +35,7 @@
 #include <mach/machine.h>
 #include <machine/cpu.h>
 #endif	/* MACH_KERNEL */
-#ifdef LINUX_DEV
 #include <i386/pic.h>
-#endif
 #include <i386/ipl.h>
 #include <chips/busses.h>
 
