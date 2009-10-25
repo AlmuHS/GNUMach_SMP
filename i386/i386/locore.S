@@ -192,7 +192,7 @@ LEXT(retry_table_end)			;\
 	addl	%ecx,LOW_BITS(%ebx)		/* add to low bits */	;\
 	leal	CX(0,%edx),%ecx			/* timer is 16 bytes */	;\
 	lea	CX(EXT(kernel_timer),%edx),%ecx	/* get interrupt timer*/;\
-	movl	%ecx,CX(EXT(current_timer),%edx)	/* set timer
+	movl	%ecx,CX(EXT(current_timer),%edx)	/* set timer */
 
 /*
  * update time on interrupt exit.
