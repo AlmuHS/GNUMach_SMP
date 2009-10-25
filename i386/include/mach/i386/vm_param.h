@@ -66,8 +66,13 @@
 #define i386_trunc_page(x)	(((unsigned)(x)) & ~(I386_PGBYTES-1))
 
 /* User address spaces are 3GB each,
-   starting at virtual and linear address 0.  */
+   starting at virtual and linear address 0.
+
+   VM_MAX_ADDRESS can be reduced to leave more space for the kernel, but must
+   not be increased to more than 3GB as glibc and hurd servers would not cope
+   with that.
+   */
 #define VM_MIN_ADDRESS		((vm_offset_t) 0)
-#define VM_MAX_ADDRESS		((vm_offset_t) 0xc0000000)
+#define VM_MAX_ADDRESS		((vm_offset_t) 0x80000000)
 
 #endif	/* _MACH_I386_VM_PARAM_H_ */
