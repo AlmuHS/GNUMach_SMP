@@ -1226,7 +1226,7 @@ net_set_filter(ifp, rcv_port, priority, filter, filter_count)
 		    && my_infp == 0
 		    && (infp->filter_end - infp->filter) == filter_count
 		    && bpf_eq((bpf_insn_t)infp->filter,
-			      filter, filter_bytes))
+			      (bpf_insn_t)filter, filter_bytes))
 		    my_infp = infp;
 
 		for (i = 0; i < NET_HASH_SIZE; i++) {
