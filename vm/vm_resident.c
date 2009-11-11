@@ -935,7 +935,7 @@ vm_page_grab_contiguous_pages(
 	register int	first_set;
 	int		size, alloc_size;
 	kern_return_t	ret;
-	vm_page_t       mem, prevmem;
+	vm_page_t       mem, *prevmemp;
 
 #ifndef	NBBY
 #define	NBBY	8	/* size in bits of sizeof()`s unity */
@@ -1088,7 +1088,7 @@ found_em:
 
 	    /* running pointers */
 	    mem = vm_page_queue_free;
-	    prevmem = VM_PAGE_NULL;
+	    prevmemp = &vm_page_queue_free;
 
 	    while (mem) {
 
@@ -1098,8 +1098,7 @@ found_em:
 
 		if ((addr >= first_phys) &&
 		    (addr <  last_phys)) {
-		    if (prevmem)
-			prevmem->pageq.next = mem->pageq.next;
+		    *prevmemp = mem->pageq.next;
 		    pages[(addr - first_phys) >> PAGE_SHIFT] = mem;
 		    mem->free = FALSE;
 		    mem->extcounted = mem->external = external;
@@ -1108,7 +1107,7 @@ found_em:
 		     */
 		    if (--npages == 0) break;
 		} else
-		    prevmem = mem;
+		    prevmemp = &mem->pageq.next;
 
 		mem = (vm_page_t) mem->pageq.next;
 	    }
