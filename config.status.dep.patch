@@ -1,18 +1,18 @@
---- config.status.save	2006-10-09 22:28:47.000000000 +0200
-+++ config.status	2006-10-09 22:29:34.000000000 +0200
-@@ -1610,7 +1610,14 @@
-    { (exit 1); exit 1; }; }; }
- 
-     # echo "creating $dirpart/$file"
--    echo '# dummy' > "$dirpart/$file"
-+    # Try to guess what file this dependency file is from...
-+    f=$srcdir/`dirname "$fdir"`/`basename "$file" .Po | sed s/lib[^-]\*-//`
-+    for f in "$f"*; do
-+      case $f in
-+	*.c | *.S) echo "$f"': $(filter-out $(DIST_SOURCES),$(SOURCES))';;
-+	*) echo '# dummy';;
-+      esac
-+    done > "$dirpart/$file"
+--- config.status	2009-10-26 23:57:14.000000000 +0100
++++ config.status.new	2009-10-27 00:04:26.000000000 +0100
+@@ -1553,7 +1553,14 @@
+ 	  s/.*/./; q'`
+       as_dir=$dirpart/$fdir; as_fn_mkdir_p
+       # echo "creating $dirpart/$file"
+-      echo '# dummy' > "$dirpart/$file"
++      # Try to guess what file this dependency file is from...
++      f=$srcdir/`dirname "$fdir"`/`basename "$file" .Po | sed s/lib[^-]\*-//`
++      for f in "$f"*; do
++        case $f in
++	  *.c | *.S) echo "$f"': $(filter-out $(DIST_SOURCES),$(SOURCES))';;
++	  *) echo '# dummy';;
++        esac
++      done > "$dirpart/$file"
+     done
    done
- done
-  ;;
+ }
