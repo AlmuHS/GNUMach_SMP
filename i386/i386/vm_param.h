@@ -50,10 +50,13 @@
 
 /*
  *	Physical memory is direct-mapped to virtual memory
- *	starting at virtual address phys_mem_va.
+ *	starting at virtual address VM_MIN_KERNEL_ADDRESS.
  */
-extern vm_offset_t phys_mem_va;
-#define phystokv(a)	((vm_offset_t)(a) + phys_mem_va)
+#define phystokv(a)	((vm_offset_t)(a) + VM_MIN_KERNEL_ADDRESS)
+/*
+ * This can not be used with virtual mappings, but can be used during bootstrap
+ */
+#define _kvtophys(a)	((vm_offset_t)(a) - VM_MIN_KERNEL_ADDRESS)
 
 /*
  *	Kernel virtual memory is actually at 0xc0000000 in linear addresses.

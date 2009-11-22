@@ -80,9 +80,6 @@ static vm_offset_t kern_sym_start, kern_sym_end;
 vm_offset_t phys_first_addr = 0;
 vm_offset_t phys_last_addr;
 
-/* Virtual address of physical memory, for the kvtophys/phystokv macros.  */
-vm_offset_t phys_mem_va;
-
 /* A copy of the multiboot info structure passed by the boot loader.  */
 struct multiboot_info boot_info;
 
@@ -376,9 +373,6 @@ void c_boot_entry(vm_offset_t bi)
 	/* Stash the boot_image_info pointer.  */
 	boot_info = *(struct multiboot_info*)phystokv(bi);
 	int cpu_type;
-
-	/* XXX we currently assume phys_mem_va is always 0 here -
-	   if it isn't, we must tweak the pointers in the boot_info.  */
 
 	/* Before we do _anything_ else, print the hello message.
 	   If there are no initialized console devices yet,
