@@ -371,7 +371,7 @@ i386at_init(void)
 void c_boot_entry(vm_offset_t bi)
 {
 	/* Stash the boot_image_info pointer.  */
-	boot_info = *(struct multiboot_info*)phystokv(bi);
+	boot_info = *(typeof(boot_info)*)phystokv(bi);
 	int cpu_type;
 
 	/* Before we do _anything_ else, print the hello message.
