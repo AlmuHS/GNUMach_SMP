@@ -501,7 +501,7 @@ db_search_null(
 	register unsigned *kaddr;
 
 	kaddr = (unsigned *)*skaddr;
-	for (vaddr = *svaddr; vaddr > evaddr; vaddr -= sizeof(unsigned)) {
+	for (vaddr = *svaddr; vaddr > evaddr; ) {
 	    if (vaddr % INTEL_PGBYTES == 0) {
 		vaddr -= sizeof(unsigned);
 		if (db_user_to_kernel_address(task, vaddr, skaddr, 0) < 0)
