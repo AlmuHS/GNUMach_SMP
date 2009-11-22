@@ -2410,6 +2410,8 @@ pmap_unmap_page_zero ()
   int *pte;
 
   pte = (int *) pmap_pte (kernel_pmap, 0);
+  if (!pte)
+    return;
   assert (pte);
   *pte = 0;
   INVALIDATE_TLB(kernel_pmap, 0, PAGE_SIZE);
