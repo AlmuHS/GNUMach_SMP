@@ -296,7 +296,7 @@ lock_data_t	pmap_system_lock;
  \
 	/* invalidate our own TLB if pmap is in use */ \
 	if ((pmap)->cpus_using & cpu_mask) { \
-	    INVALIDATE_TLB((s), (e)); \
+	    INVALIDATE_TLB((pmap), (s), (e)); \
 	} \
 }
 
@@ -317,7 +317,7 @@ lock_data_t	pmap_system_lock;
 #define PMAP_UPDATE_TLBS(pmap, s, e) { \
 	/* invalidate our own TLB if pmap is in use */ \
 	if ((pmap)->cpus_using) { \
-	    INVALIDATE_TLB((s), (e)); \
+	    INVALIDATE_TLB((pmap), (s), (e)); \
 	} \
 }
 
@@ -328,7 +328,7 @@ lock_data_t	pmap_system_lock;
 #if 0
 /* It is hard to know when a TLB flush becomes less expensive than a bunch of
  * invlpgs.  But it surely is more expensive than just one invlpg.  */
-#define INVALIDATE_TLB(s, e) { \
+#define INVALIDATE_TLB(pmap, s, e) { \
 	if (__builtin_constant_p((e) - (s)) \
 		&& (e) - (s) == PAGE_SIZE) \
 		invlpg_linear(s); \
@@ -336,7 +336,7 @@ lock_data_t	pmap_system_lock;
 		flush_tlb(); \
 }
 #else
-#define INVALIDATE_TLB(s, e) flush_tlb()
+#define INVALIDATE_TLB(pmap, s, e) flush_tlb()
 #endif
 
 
@@ -2323,7 +2323,8 @@ void process_pmap_updates(my_pmap)
 	    if (pmap == my_pmap ||
 		pmap == kernel_pmap) {
 
-		INVALIDATE_TLB(update_list_p->item[j].start,
+		INVALIDATE_TLB(pmap,
+				update_list_p->item[j].start,
 				update_list_p->item[j].end);
 	    }
 	}
@@ -2411,6 +2412,6 @@ pmap_unmap_page_zero ()
   pte = (int *) pmap_pte (kernel_pmap, 0);
   assert (pte);
   *pte = 0;
-  asm volatile ("movl %%cr3,%%eax; movl %%eax,%%cr3" ::: "eax");
+  INVALIDATE_TLB(kernel_pmap, 0, PAGE_SIZE);
 }
 #endif /* i386 */
