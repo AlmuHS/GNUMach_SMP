@@ -207,7 +207,8 @@ EXTRA_DIST += \
 
 libkernel_a_SOURCES += \
 	util/putchar.c \
-	util/puts.c
+	util/puts.c \
+	util/atoi.c
 
 #
 # Virtual memory implementation.

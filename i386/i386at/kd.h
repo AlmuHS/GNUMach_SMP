@@ -708,7 +708,6 @@ extern void kd_scrollup (void);
 extern void kd_scrolldn (void);
 extern void kd_cls (void);
 extern void kd_home (void);
-extern int kd_atoi (u_char *, int *);
 extern void kd_insch (int number);
 extern void kd_cltobcur (void);
 extern void kd_cltopcur (void);

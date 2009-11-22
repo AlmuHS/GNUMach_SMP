@@ -95,10 +95,9 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <i386at/kd_mouse.h>
 #include <i386at/kdsoft.h>
 #include <device/cons.h>
+#include <util/atoi.h>
 
 #define DEBUG	1			/* export feep() */
-
-#define DEFAULT		-1		/* see kd_atoi */
 
 void kd_enqsc();			/* enqueues a scancode */
 
@@ -1505,17 +1504,17 @@ u_char	*cp;
 	csrpos_t newpos;
 
 	for(i=0;i<=15;i++)
-		number[i] = DEFAULT;
+		number[i] = MACH_ATOI_DEFAULT;
 
 	do {
-		cp += kd_atoi(cp, &number[npar]);
+		cp += mach_atoi(cp, &number[npar]);
 	} while (*cp == ';' && ++npar <= 15 && cp++);
 	
 	switch(*cp) {
 	case 'm':
 		for (i=0;i<=npar;i++)
 			switch(number[i]) {
-			case DEFAULT:
+			case MACH_ATOI_DEFAULT:
 			case 0:
 				kd_attrflags = 0;
 				kd_color = KA_NORMAL;
@@ -1575,14 +1574,14 @@ u_char	*cp;
 		esc_spt = esc_seq;
 		break;
 	case '@':
-		if (number[0] == DEFAULT)
+		if (number[0] == MACH_ATOI_DEFAULT)
 			kd_insch(1);
 		else
 			kd_insch(number[0]);
 		esc_spt = esc_seq;
 		break;
 	case 'A':
-		if (number[0] == DEFAULT)
+		if (number[0] == MACH_ATOI_DEFAULT)
 			kd_up();
 		else
 			while (number[0]--)
@@ -1590,7 +1589,7 @@ u_char	*cp;
 		esc_spt = esc_seq;
 		break;
 	case 'B':
-		if (number[0] == DEFAULT)
+		if (number[0] == MACH_ATOI_DEFAULT)
 			kd_down();
 		else
 			while (number[0]--)
@@ -1598,7 +1597,7 @@ u_char	*cp;
 		esc_spt = esc_seq;
 		break;
 	case 'C':
-		if (number[0] == DEFAULT)
+		if (number[0] == MACH_ATOI_DEFAULT)
 			kd_right();
 		else
 			while (number[0]--)
@@ -1606,7 +1605,7 @@ u_char	*cp;
 		esc_spt = esc_seq;
 		break;
 	case 'D':
-		if (number[0] == DEFAULT)
+		if (number[0] == MACH_ATOI_DEFAULT)
 			kd_left();
 		else
 			while (number[0]--)
@@ -1615,7 +1614,7 @@ u_char	*cp;
 		break;
 	case 'E':
 		kd_cr();
-		if (number[0] == DEFAULT)
+		if (number[0] == MACH_ATOI_DEFAULT)
 			kd_down();
 		else
 			while (number[0]--)
@@ -1624,7 +1623,7 @@ u_char	*cp;
 		break;
 	case 'F':
 		kd_cr();
-		if (number[0] == DEFAULT)
+		if (number[0] == MACH_ATOI_DEFAULT)
 			kd_up();
 		else
 			while (number[0]--)
@@ -1632,7 +1631,7 @@ u_char	*cp;
 		esc_spt = esc_seq;
 		break;
 	case 'G':
-		if (number[0] == DEFAULT)
+		if (number[0] == MACH_ATOI_DEFAULT)
 			number[0] = 0;
 		else
 			if (number[0] > 0)
@@ -1642,18 +1641,18 @@ u_char	*cp;
 		break;
 	case 'f':
 	case 'H':
-		if (number[0] == DEFAULT && number[1] == DEFAULT)
+		if (number[0] == MACH_ATOI_DEFAULT && number[1] == MACH_ATOI_DEFAULT)
 		{
 			kd_home();
 			esc_spt = esc_seq;
 			break;
 		}
-		if (number[0] == DEFAULT)
+		if (number[0] == MACH_ATOI_DEFAULT)
 			number[0] = 0;
 		else if (number[0] > 0)
 			--number[0];		/* numbered from 1 */
 		newpos = (number[0] * ONE_LINE);   /* setup row */
-		if (number[1] == DEFAULT)
+		if (number[1] == MACH_ATOI_DEFAULT)
 			number[1] = 0;
 		else if (number[1] > 0)
 			number[1]--;
@@ -1667,7 +1666,7 @@ u_char	*cp;
 		break;				/* done or not ready */
 	case 'J':
 		switch(number[0]) {
-		case DEFAULT:
+		case MACH_ATOI_DEFAULT:
 		case 0:
 			kd_cltobcur();	/* clears from current
 					   pos to bottom.
@@ -1688,7 +1687,7 @@ u_char	*cp;
 		break;
 	case 'K':
 		switch(number[0]) {
-		case DEFAULT:
+		case MACH_ATOI_DEFAULT:
 		case 0:
 			kd_cltoecur();	/* clears from current
 					   pos to eoln.
@@ -1709,28 +1708,28 @@ u_char	*cp;
 		esc_spt = esc_seq;
 		break;
 	case 'L':
-		if (number[0] == DEFAULT)
+		if (number[0] == MACH_ATOI_DEFAULT)
 			kd_insln(1);
 		else
 			kd_insln(number[0]);
 		esc_spt = esc_seq;
 		break;
 	case 'M':
-		if (number[0] == DEFAULT)
+		if (number[0] == MACH_ATOI_DEFAULT)
 			kd_delln(1);
 		else
 			kd_delln(number[0]);
 		esc_spt = esc_seq;
 		break;
 	case 'P':
-		if (number[0] == DEFAULT)
+		if (number[0] == MACH_ATOI_DEFAULT)
 			kd_delch(1);
 		else
 			kd_delch(number[0]);
 		esc_spt = esc_seq;
 		break;
 	case 'S':
-		if (number[0] == DEFAULT)
+		if (number[0] == MACH_ATOI_DEFAULT)
 			kd_scrollup();
 		else
 			while (number[0]--)
@@ -1738,7 +1737,7 @@ u_char	*cp;
 		esc_spt = esc_seq;
 		break;
 	case 'T':
-		if (number[0] == DEFAULT)
+		if (number[0] == MACH_ATOI_DEFAULT)
 			kd_scrolldn();
 		else
 			while (number[0]--)
@@ -1746,7 +1745,7 @@ u_char	*cp;
 		esc_spt = esc_seq;
 		break;
 	case 'X':
-		if (number[0] == DEFAULT)
+		if (number[0] == MACH_ATOI_DEFAULT)
 			kd_erase(1);
 		else
 			kd_erase(number[0]);
@@ -1760,37 +1759,6 @@ u_char	*cp;
 		break;
 	}
 	return;
-}
-
-/*
- * kd_atoi:
- *
- *	This function converts an ascii string into an integer, and
- *	returns DEFAULT if no integer was found.  Note that this is why
- *	we don't use the regular atio(), because ZERO is ZERO and not
- *	the DEFAULT in all cases.
- *
- * input	: string
- * output	: a number or possibly DEFAULT, and the count of characters
- *		  consumed by the conversion
- *
- */
-int
-kd_atoi(cp, nump)
-u_char	*cp;
-int	*nump;
-{
-	int	number;
-	u_char	*original;
-
-	original = cp;
-	for (number = 0; ('0' <= *cp) && (*cp <= '9'); cp++)
-		number = (number * 10) + (*cp - '0');
-	if (original == cp)
-		*nump = DEFAULT;
-	else
-		*nump = number;
-	return(cp - original);
 }
 
 void
