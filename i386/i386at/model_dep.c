@@ -335,6 +335,11 @@ i386at_init(void)
 	set_cr0(get_cr0() | CR0_PG | CR0_WP);
 	flush_instr_queue();
 
+	/* Interrupt stacks are allocated in physical memory,
+	   while kernel stacks are allocated in kernel virtual memory,
+	   so phys_last_addr serves as a convenient dividing point.  */
+	int_stack_high = phystokv(phys_last_addr);
+
 	/*
 	 * Initialize and activate the real i386 protected-mode structures.
 	 */
@@ -357,11 +362,6 @@ i386at_init(void)
 	   as the interrupt stack for now.  Later this will have to change,
 	   because the init stack will get freed after bootup.  */
 	asm("movl %%esp,%0" : "=m" (int_stack_top));
-
-	/* Interrupt stacks are allocated in physical memory,
-	   while kernel stacks are allocated in kernel virtual memory,
-	   so phys_last_addr serves as a convenient dividing point.  */
-	int_stack_high = phystokv(phys_last_addr);
 }
 
 /*
