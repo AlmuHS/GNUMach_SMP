@@ -272,9 +272,9 @@ i386at_init(void)
 		vm_offset_t addr;
 		int len = strlen ((char*)phystokv(boot_info.cmdline)) + 1;
 		assert(init_alloc_aligned(round_page(len), &addr));
-		kernel_cmdline = (char*) addr;
+		kernel_cmdline = (char*) phystokv(addr);
 		memcpy(kernel_cmdline, (char*)phystokv(boot_info.cmdline), len);
-		boot_info.cmdline = (vm_offset_t) kernel_cmdline;
+		boot_info.cmdline = addr;
 	}
 
 	if (boot_info.flags & MULTIBOOT_MODS) {
@@ -283,20 +283,20 @@ i386at_init(void)
 		int i;
 
 		assert(init_alloc_aligned(round_page(boot_info.mods_count * sizeof(*m)), &addr));
-		m = (void*) addr;
+		m = (void*) phystokv(addr);
 		memcpy(m, (void*) phystokv(boot_info.mods_addr), boot_info.mods_count * sizeof(*m));
-		boot_info.mods_addr = (vm_offset_t) m;
+		boot_info.mods_addr = addr;
 
 		for (i = 0; i < boot_info.mods_count; i++) {
 			vm_size_t size = m[i].mod_end - m[i].mod_start;
 			assert(init_alloc_aligned(round_page(size), &addr));
-			memcpy((void*) addr, (void*) phystokv(m[i].mod_start), size);
+			memcpy((void*) phystokv(addr), (void*) phystokv(m[i].mod_start), size);
 			m[i].mod_start = addr;
 			m[i].mod_end = addr + size;
 
 			size = strlen((char*) phystokv(m[i].string)) + 1;
 			assert(init_alloc_aligned(round_page(size), &addr));
-			memcpy((void*) addr, (void*) phystokv(m[i].string), size);
+			memcpy((void*) phystokv(addr), (void*) phystokv(m[i].string), size);
 			m[i].string = addr;
 		}
 	}
@@ -323,12 +323,12 @@ i386at_init(void)
 #if PAE
 	kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS) + 1] =
 		kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS) + 1];
-	set_cr3((unsigned)kernel_pmap->pdpbase);
+	set_cr3((unsigned)_kvtophys(kernel_pmap->pdpbase));
 	if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
 		panic("CPU doesn't have support for PAE.");
 	set_cr4(get_cr4() | CR4_PAE);
 #else
-	set_cr3((unsigned)kernel_page_dir);
+	set_cr3((unsigned)_kvtophys(kernel_page_dir));
 #endif	/* PAE */
 	if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
 		set_cr4(get_cr4() | CR4_PGE);
@@ -361,7 +361,7 @@ i386at_init(void)
 	/* Interrupt stacks are allocated in physical memory,
 	   while kernel stacks are allocated in kernel virtual memory,
 	   so phys_last_addr serves as a convenient dividing point.  */
-	int_stack_high = phys_last_addr;
+	int_stack_high = phystokv(phys_last_addr);
 }
 
 /*

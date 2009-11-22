@@ -192,6 +192,7 @@ interrupt_stack_alloc()
 	 */
 	if (!init_alloc_aligned(INTSTACK_SIZE*(cpu_count-1), &stack_start))
 		panic("not enough memory for interrupt stacks");
+	stack_start = phystokv(stack_start);
 
 	/*
 	 * Set up pointers to the top of the interrupt stack.

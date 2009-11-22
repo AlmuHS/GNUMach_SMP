@@ -578,11 +578,11 @@ void pmap_bootstrap()
 	 * mapped into the kernel address space,
 	 * and extends to a stupid arbitrary limit beyond that.
 	 */
-	kernel_virtual_start = phys_last_addr;
-	kernel_virtual_end = phys_last_addr + morevm
+	kernel_virtual_start = phystokv(phys_last_addr);
+	kernel_virtual_end = phystokv(phys_last_addr) + morevm
 		+ (phys_last_addr - phys_first_addr);
 
-	if (kernel_virtual_end < phys_last_addr
+	if (kernel_virtual_end < kernel_virtual_start
 			|| kernel_virtual_end > VM_MAX_KERNEL_ADDRESS)
 		kernel_virtual_end = VM_MAX_KERNEL_ADDRESS;
 
@@ -593,16 +593,16 @@ void pmap_bootstrap()
 	{
 		vm_offset_t addr;
 		init_alloc_aligned(PDPNUM * INTEL_PGBYTES, &addr);
-		kernel_pmap->dirbase = kernel_page_dir = (pt_entry_t*)addr;
+		kernel_pmap->dirbase = kernel_page_dir = (pt_entry_t*)phystokv(addr);
 	}
-	kernel_pmap->pdpbase = (pt_entry_t*)pmap_grab_page();
+	kernel_pmap->pdpbase = (pt_entry_t*)phystokv(pmap_grab_page());
 	{
 		int i;
 		for (i = 0; i < PDPNUM; i++)
-			WRITE_PTE(&kernel_pmap->pdpbase[i], pa_to_pte((vm_offset_t) kernel_pmap->dirbase + i * INTEL_PGBYTES) | INTEL_PTE_VALID);
+			WRITE_PTE(&kernel_pmap->pdpbase[i], pa_to_pte(_kvtophys((void *) kernel_pmap->dirbase + i * INTEL_PGBYTES)) | INTEL_PTE_VALID);
 	}
 #else	/* PAE */
-	kernel_pmap->dirbase = kernel_page_dir = (pt_entry_t*)pmap_grab_page();
+	kernel_pmap->dirbase = kernel_page_dir = (pt_entry_t*)phystokv(pmap_grab_page());
 #endif	/* PAE */
 	{
 		int i;
@@ -628,18 +628,18 @@ void pmap_bootstrap()
 		 * to allocate new kernel page tables later.
 		 * XX fix this
 		 */
-		for (va = phys_first_addr; va < kernel_virtual_end; )
+		for (va = phystokv(phys_first_addr); va < kernel_virtual_end; )
 		{
 			pt_entry_t *pde = kernel_page_dir + lin2pdenum(kvtolin(va));
-			pt_entry_t *ptable = (pt_entry_t*)pmap_grab_page();
+			pt_entry_t *ptable = (pt_entry_t*)phystokv(pmap_grab_page());
 			pt_entry_t *pte;
 
 			/* Initialize the page directory entry.  */
-			WRITE_PTE(pde, pa_to_pte((vm_offset_t)ptable)
+			WRITE_PTE(pde, pa_to_pte((vm_offset_t)_kvtophys(ptable))
 				| INTEL_PTE_VALID | INTEL_PTE_WRITE);
 
 			/* Initialize the page table.  */
-			for (pte = ptable; (va < phys_last_addr) && (pte < ptable+NPTES); pte++)
+			for (pte = ptable; (va < phystokv(phys_last_addr)) && (pte < ptable+NPTES); pte++)
 			{
 				if ((pte - ptable) < ptenum(va))
 				{
@@ -652,12 +652,12 @@ void pmap_bootstrap()
 					if ((va >= (vm_offset_t)_start)
 					    && (va + INTEL_PGBYTES <= (vm_offset_t)etext))
 					{
-						WRITE_PTE(pte, pa_to_pte(va)
+						WRITE_PTE(pte, pa_to_pte(_kvtophys(va))
 							| INTEL_PTE_VALID | global);
 					}
 					else
 					{
-						WRITE_PTE(pte, pa_to_pte(va)
+						WRITE_PTE(pte, pa_to_pte(_kvtophys(va))
 							| INTEL_PTE_VALID | INTEL_PTE_WRITE | global);
 					}
 					va += INTEL_PGBYTES;
@@ -1481,7 +1481,7 @@ Retry:
 	     */
 	    PMAP_READ_UNLOCK(pmap, spl);
 
-	    ptp = pmap_page_table_page_alloc();
+	    ptp = phystokv(pmap_page_table_page_alloc());
 
 	    /*
 	     * Re-lock the pmap and check that another thread has
@@ -1496,7 +1496,7 @@ Retry:
 		 * Oops...
 		 */
 		PMAP_READ_UNLOCK(pmap, spl);
-		pmap_page_table_page_dealloc(ptp);
+		pmap_page_table_page_dealloc(kvtophys(ptp));
 		PMAP_READ_LOCK(pmap, spl);
 		continue;
 	    }
