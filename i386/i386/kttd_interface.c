@@ -395,7 +395,7 @@ boolean_t kttd_trap(int	type, int code, struct i386_saved_state *regs)
 
 	kttd_regs = *regs;
 
-	if ((regs->cs & 0x3) == 0) {
+	if ((regs->cs & 0x3) == KERNEL_RING) {
 	    /*
 	     * Kernel mode - esp and ss not saved
 	     */
@@ -442,7 +442,7 @@ boolean_t kttd_trap(int	type, int code, struct i386_saved_state *regs)
 	regs->ecx    = kttd_regs.ecx;
 	regs->edx    = kttd_regs.edx;
 	regs->ebx    = kttd_regs.ebx;
-	if (regs->cs & 0x3) {
+	if ((regs->cs & 0x3) != KERNEL_RING) {
 	    /*
 	     * user mode - saved esp and ss valid
 	     */
@@ -513,7 +513,7 @@ kttd_netentry(int_regs)
 	if (kttd_debug)
 		printf("kttd_NETENTRY after slphigh()\n");
 
-	if (is->cs & 0x3) {
+	if ((is->cs & 0x3) != KERNEL_RING) {
 	    /*
 	     * Interrupted from User Space
 	     */
@@ -546,7 +546,7 @@ kttd_netentry(int_regs)
 	kttd_task_trap(-1, 0, (kttd_regs.cs & 0x3) != 0);
 	kttd_active--;
 
-	if (kttd_regs.cs & 0x3) {
+	if ((kttd_regs.cs & 0x3) != KERNEL_RING) {
 	    ((int *)(is+1))[0] = kttd_regs.uesp;
 	    ((int *)(is+1))[1] = kttd_regs.ss & 0xffff;
 	}

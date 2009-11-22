@@ -37,6 +37,8 @@
  * i386 segmentation.
  */
 
+#define	KERNEL_RING	0
+
 #ifndef __ASSEMBLER__
 
 /*
@@ -95,7 +97,7 @@ struct real_gate {
 #define	ACC_CODE_CR	0x1e			    /* code, conforming,
 						       readable */
 #define	ACC_PL		0x60			/* access rights: */
-#define	ACC_PL_K	0x00			/* kernel access only */
+#define	ACC_PL_K	(KERNEL_RING << 5)	/* kernel access only */
 #define	ACC_PL_U	0x60			/* user access */
 #define	ACC_P		0x80			/* segment present */
 
@@ -104,7 +106,7 @@ struct real_gate {
  */
 #define	SEL_LDT		0x04			/* local selector */
 #define	SEL_PL		0x03			/* privilege level: */
-#define	SEL_PL_K	0x00			    /* kernel selector */
+#define	SEL_PL_K	KERNEL_RING		    /* kernel selector */
 #define	SEL_PL_U	0x03			    /* user selector */
 
 /*

@@ -134,7 +134,7 @@ kdb_trap(
 	    /* XXX Should switch to ddb`s own stack here. */
 
 	    ddb_regs = *regs;
-	    if ((regs->cs & 0x3) == 0) {
+	    if ((regs->cs & 0x3) == KERNEL_RING) {
 		/*
 		 * Kernel mode - esp and ss not saved
 		 */
@@ -152,7 +152,7 @@ kdb_trap(
 	    regs->ecx    = ddb_regs.ecx;
 	    regs->edx    = ddb_regs.edx;
 	    regs->ebx    = ddb_regs.ebx;
-	    if (regs->cs & 0x3) {
+	    if ((regs->cs & 0x3) != KERNEL_RING) {
 		/*
 		 * user mode - saved esp and ss valid
 		 */
@@ -205,7 +205,7 @@ kdb_kentry(
 	if (db_enter())
 #endif	/* NCPUS > 1 */
 	{
-	    if (is->cs & 0x3) {
+	    if ((is->cs & 0x3) != KERNEL_RING) {
 		ddb_regs.uesp = ((int *)(is+1))[0];
 		ddb_regs.ss   = ((int *)(is+1))[1];
 	    }
@@ -232,7 +232,7 @@ kdb_kentry(
 	    db_task_trap(-1, 0, (ddb_regs.cs & 0x3) != 0);
 	    cnpollc(FALSE);
 
-	    if (ddb_regs.cs & 0x3) {
+	    if ((ddb_regs.cs & 0x3) != KERNEL_RING) {
 		((int *)(is+1))[0] = ddb_regs.uesp;
 		((int *)(is+1))[1] = ddb_regs.ss & 0xffff;
 	    }

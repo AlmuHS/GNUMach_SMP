@@ -112,6 +112,8 @@ expr	IDTSZ
 expr	GDTSZ
 expr	LDTSZ
 
+expr	KERNEL_RING
+
 expr	KERNEL_CS
 expr	KERNEL_DS
 expr	KERNEL_TSS

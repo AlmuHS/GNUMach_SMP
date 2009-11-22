@@ -38,8 +38,8 @@
 /*
  * Kernel descriptors for Mach - 32-bit flat address space.
  */
-#define	KERNEL_CS	0x08		/* kernel code */
-#define	KERNEL_DS	0x10		/* kernel data */
+#define	KERNEL_CS	(0x08 | KERNEL_RING)		/* kernel code */
+#define	KERNEL_DS	(0x10 | KERNEL_RING)		/* kernel data */
 #define	KERNEL_LDT	0x18		/* master LDT */
 #define	KERNEL_TSS	0x20		/* master TSS (uniprocessor) */
 #define	USER_LDT	0x28		/* place for per-thread LDT */
