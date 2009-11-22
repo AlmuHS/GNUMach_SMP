@@ -28,7 +28,7 @@
 
 /* The kernel address space is 1GB, starting at virtual address 0.  */
 #define VM_MIN_KERNEL_ADDRESS	((vm_offset_t) 0x00000000)
-#define VM_MAX_KERNEL_ADDRESS	((vm_offset_t) (LINEAR_MAX_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS))
+#define VM_MAX_KERNEL_ADDRESS	((vm_offset_t) (LINEAR_MAX_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS + VM_MIN_KERNEL_ADDRESS))
 
 /* The kernel virtual address space is actually located
    at high linear addresses.
@@ -58,7 +58,7 @@ extern vm_offset_t phys_mem_va;
 /*
  *	Kernel virtual memory is actually at 0xc0000000 in linear addresses.
  */
-#define kvtolin(a)	((vm_offset_t)(a) + LINEAR_MIN_KERNEL_ADDRESS)
-#define lintokv(a)	((vm_offset_t)(a) - LINEAR_MIN_KERNEL_ADDRESS)
+#define kvtolin(a)	((vm_offset_t)(a) - VM_MIN_KERNEL_ADDRESS + LINEAR_MIN_KERNEL_ADDRESS)
+#define lintokv(a)	((vm_offset_t)(a) - LINEAR_MIN_KERNEL_ADDRESS + VM_MIN_KERNEL_ADDRESS)
 
 #endif /* _I386_KERNEL_I386_VM_PARAM_ */

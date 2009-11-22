@@ -236,8 +236,8 @@ mem_size_init(void)
 
 	/* Reserve 1/6 of the memory address space for virtual mappings.
 	 * Yes, this loses memory.  Blame i386.  */
-	if (phys_last_addr > (VM_MAX_KERNEL_ADDRESS / 6) * 5) {
-		phys_last_addr = (VM_MAX_KERNEL_ADDRESS / 6) * 5;
+	if (phys_last_addr > ((VM_MAX_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS) / 6) * 5) {
+		phys_last_addr = ((VM_MAX_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS) / 6) * 5;
 		printf("Truncating memory size to %dMiB\n", (phys_last_addr - phys_first_addr) / (1024 * 1024));
 	}
 
@@ -321,10 +321,10 @@ i386at_init(void)
 	 * Also, set the WP bit so that on 486 or better processors
 	 * page-level write protection works in kernel mode.
 	 */
-	kernel_page_dir[lin2pdenum(0)] =
+	kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS)] =
 		kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS)];
 #if PAE
-	kernel_page_dir[lin2pdenum(0) + 1] =
+	kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS) + 1] =
 		kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS) + 1];
 	set_cr3((unsigned)kernel_pmap->pdpbase);
 	if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
@@ -348,9 +348,9 @@ i386at_init(void)
 	ktss_init();
 
 	/* Get rid of the temporary direct mapping and flush it out of the TLB.  */
-	kernel_page_dir[lin2pdenum(0)] = 0;
+	kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS)] = 0;
 #if PAE
-	kernel_page_dir[lin2pdenum(0) + 1] = 0;
+	kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS) + 1] = 0;
 #endif	/* PAE */
 	flush_tlb();
 
