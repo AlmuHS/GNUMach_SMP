@@ -284,7 +284,6 @@ void cpu_launch_first_thread(th)
 	if (th == THREAD_NULL)
 	    panic("cpu_launch_first_thread");
 
-	startrtclock();		/* needs an active thread */
 	PMAP_ACTIVATE_KERNEL(mycpu);
 
 	active_threads[mycpu] = th;
@@ -295,6 +294,8 @@ void cpu_launch_first_thread(th)
 	timer_switch(&th->system_timer);
 
 	PMAP_ACTIVATE_USER(vm_map_pmap(th->task->map), th, mycpu);
+
+	startrtclock();		/* needs an active thread */
 
 	load_context(th);
 	/*NOTREACHED*/
