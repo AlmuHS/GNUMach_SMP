@@ -33,6 +33,7 @@
 #include <mach/machine/eflags.h>
 #include <i386/trap.h>
 #include <i386/fpu.h>
+#include <i386/model_dep.h>
 #include <intel/read_fault.h>
 #include <machine/machspl.h>	/* for spl_t */
 
@@ -374,7 +375,6 @@ int user_trap(regs)
 	int	subcode;
 	register int	type;
 	register thread_t thread = current_thread();
-	extern vm_offset_t phys_last_addr;
 
 	if ((vm_offset_t)thread < phys_last_addr) {
 		printf("user_trap: bad thread pointer 0x%p\n", thread);

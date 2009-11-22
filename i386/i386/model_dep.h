@@ -50,4 +50,11 @@ extern void resettodr (void);
 
 extern void startrtclock (void);
 
+/*
+ *	More-specific code provides these;
+ *	they indicate the total extent of physical memory
+ *	that we know about and might ever have to manage.
+ */
+extern vm_offset_t phys_first_addr, phys_last_addr;
+
 #endif /* _I386AT_MODEL_DEP_H_ */

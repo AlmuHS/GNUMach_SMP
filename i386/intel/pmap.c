@@ -81,6 +81,7 @@
 #include <i386/cpu_number.h>
 #include <i386/proc_reg.h>
 #include <i386/locore.h>
+#include <i386/model_dep.h>
 
 #define	WRITE_PTE(pte_p, pte_entry)		*(pte_p) = (pte_entry);
 
@@ -140,13 +141,6 @@ char	*pv_lock_table;		/* pointer to array of bits */
 
 /* Has pmap_init completed? */
 boolean_t	pmap_initialized = FALSE;
-
-/*
- *	More-specific code provides these;
- *	they indicate the total extent of physical memory
- *	that we know about and might ever have to manage.
- */
-extern vm_offset_t phys_first_addr, phys_last_addr;
 
 /*
  *	Range of kernel virtual addresses available for kernel memory mapping.
