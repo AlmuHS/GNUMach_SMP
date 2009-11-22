@@ -72,7 +72,7 @@
    not be increased to more than 3GB as glibc and hurd servers would not cope
    with that.
    */
-#define VM_MIN_ADDRESS		((vm_offset_t) 0)
-#define VM_MAX_ADDRESS		((vm_offset_t) 0xc0000000)
+#define VM_MIN_ADDRESS		(0)
+#define VM_MAX_ADDRESS		(0xc0000000UL)
 
 #endif	/* _MACH_I386_VM_PARAM_H_ */

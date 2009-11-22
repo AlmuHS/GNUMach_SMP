@@ -27,14 +27,14 @@
 #include <mach/vm_param.h>
 
 /* The kernel address space is 1GB, starting at virtual address 0.  */
-#define VM_MIN_KERNEL_ADDRESS	((vm_offset_t) 0x00000000)
-#define VM_MAX_KERNEL_ADDRESS	((vm_offset_t) (LINEAR_MAX_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS + VM_MIN_KERNEL_ADDRESS))
+#define VM_MIN_KERNEL_ADDRESS	(0x00000000)
+#define VM_MAX_KERNEL_ADDRESS	((LINEAR_MAX_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS + VM_MIN_KERNEL_ADDRESS))
 
 /* The kernel virtual address space is actually located
    at high linear addresses.
    This is the kernel address range in linear addresses.  */
-#define LINEAR_MIN_KERNEL_ADDRESS	((vm_offset_t) VM_MAX_ADDRESS)
-#define LINEAR_MAX_KERNEL_ADDRESS	((vm_offset_t) 0xffffffff)
+#define LINEAR_MIN_KERNEL_ADDRESS	(VM_MAX_ADDRESS)
+#define LINEAR_MAX_KERNEL_ADDRESS	(0xffffffffUL)
 
 #define KERNEL_STACK_SIZE	(1*I386_PGBYTES)
 #define INTSTACK_SIZE		(1*I386_PGBYTES)
