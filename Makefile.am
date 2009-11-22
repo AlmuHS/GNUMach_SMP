@@ -133,7 +133,7 @@ noinst_PROGRAMS += \
 	gnumach.o
 
 # This is the list of routines we decide is OK to steal from the C library.
-clib_routines := memcpy memmove memset bcopy bzero		\
+clib_routines := memcmp memcpy memmove memset bcopy bzero	\
 		 strchr strstr strsep strpbrk strtok		\
 		 htonl htons ntohl ntohs			\
 		 udivdi3 __udivdi3				\
