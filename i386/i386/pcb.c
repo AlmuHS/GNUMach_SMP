@@ -156,11 +156,11 @@ void switch_ktss(pcb)
     }
 
     {
-	register user_ldt_t	ldt = pcb->ims.ldt;
+	register user_ldt_t	tldt = pcb->ims.ldt;
 	/*
 	 * Set the thread`s LDT.
 	 */
-	if (ldt == 0) {
+	if (tldt == 0) {
 	    /*
 	     * Use system LDT.
 	     */
@@ -170,7 +170,7 @@ void switch_ktss(pcb)
 	    /*
 	     * Thread has its own LDT.
 	     */
-	    *gdt_desc_p(mycpu,USER_LDT) = ldt->desc;
+	    *gdt_desc_p(mycpu,USER_LDT) = tldt->desc;
 	    set_ldt(USER_LDT);
 	}
     }
