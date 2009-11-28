@@ -126,6 +126,10 @@ panic_init(void)
 	}
 }
 
+#if ! MACH_KBD
+extern boolean_t reboot_on_panic;
+#endif
+
 /*VARARGS1*/
 void
 panic(const char *s, ...)
@@ -167,7 +171,7 @@ panic(const char *s, ...)
 	    delay (1000000);	/* microseconds */
 	}
 
-	halt_all_cpus (1);
+	halt_all_cpus (reboot_on_panic);
 #endif
 }
 

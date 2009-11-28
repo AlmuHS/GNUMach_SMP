@@ -107,6 +107,10 @@ void		inittodr();	/* forward */
 
 int		rebootflag = 0;	/* exported to kdintr */
 
+#if ! MACH_KBD
+boolean_t reboot_on_panic = 1;
+#endif
+
 /* XX interrupt stack pointer and highwater mark, for locore.S.  */
 vm_offset_t int_stack_top, int_stack_high;
 
@@ -428,6 +432,11 @@ void c_boot_entry(vm_offset_t bi)
 		cninit();		/* need console for debugger */
 		Debugger("init");
 	}
+#else
+	if (strstr (kernel_cmdline, "-H "))
+	  {
+	    reboot_on_panic = 0;
+	  }
 #endif	/* MACH_KDB */
 
 	machine_slot[0].is_cpu = TRUE;
