@@ -431,6 +431,10 @@ AC_Linux_DRIVER([seeq8005],
   [Ethernet controller Seeq8005],
   [CONFIG_SEEQ8005],
   [net])
+AC_Linux_DRIVER([sis900],
+  [Ethernet controller SiS 900],
+  [CONFIG_SIS900],
+  [net])
 AC_Linux_DRIVER([sk_g16],
   [Ethernet controller Schneider & Koch G16],
   [CONFIG_SK_G16],

@@ -93,6 +93,7 @@ extern int yellowfin_probe(struct device *);
 extern int eepro100_probe(struct device *);
 extern int epic100_probe(struct device *);
 extern int rtl8139_probe(struct device *);
+extern int sis900_probe(struct device *);
 extern int tlan_probe(struct device *);
 extern int isa515_probe(struct device *);
 extern int pcnet32_probe(struct device *);
@@ -136,6 +137,9 @@ ethif_probe(struct device *dev)
 #endif
 #ifdef CONFIG_RTL8139
 	&& rtl8139_probe(dev)
+#endif
+#ifdef CONFIG_SIS900
+	&& sis900_probe(dev)
 #endif
 #ifdef CONFIG_VIA_RHINE
 	&& via_rhine_probe(dev)
