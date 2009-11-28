@@ -111,7 +111,7 @@ struct i386_thread_state {
 	(sizeof (struct i386_fp_save) + sizeof (struct i386_fp_regs))
 
 struct i386_float_state {
-	int		fpkind;			/* FP_NO..FP_387 (readonly) */
+	int		fpkind;			/* FP_NO..FP_387X (readonly) */
 	int		initialized;
 	unsigned char	hw_state[FP_STATE_BYTES]; /* actual "hardware" state */
 	int		exc_status;		/* exception status (readonly) */

@@ -67,6 +67,12 @@
 #define	frstor(state) \
 	asm volatile("frstor %0" : : "m" (state))
 
+#define	fxsave(state) \
+	asm volatile("fxsave %0" : "=m" (*state))
+
+#define	fxrstor(state) \
+	asm volatile("fxrstor %0" : : "m" (state))
+
 #define fwait() \
     	asm("fwait");
 
@@ -86,7 +92,10 @@
 	if (ifps != 0 && !ifps->fp_valid) { \
 	    /* registers are in FPU - save to memory */ \
 	    ifps->fp_valid = TRUE; \
-	    fnsave(&ifps->fp_save_state); \
+	    if (fp_kind == FP_387X) \
+		fxsave(&ifps->xfp_save_state); \
+	    else \
+		fnsave(&ifps->fp_save_state); \
 	    set_ts(); \
 	} \
     }

@@ -46,9 +46,29 @@ struct i386_fp_save	{
 };
 
 struct i386_fp_regs {
-	unsigned short	fp_reg_word[5][8];
+	unsigned short	fp_reg_word[8][5];
 					/* space for 8 80-bit FP registers */
 };
+
+struct i386_xfp_save {
+	unsigned short	fp_control;	/* control */
+	unsigned short	fp_status;	/* status */
+	unsigned short	fp_tag;		/* register tags */
+	unsigned short	fp_opcode;	/* opcode of failed instruction */
+	unsigned int	fp_eip;		/* eip at failed instruction */
+	unsigned short	fp_cs;		/* cs at failed instruction */
+	unsigned short	fp_unused_1;
+	unsigned int	fp_dp;		/* data address */
+	unsigned short	fp_ds;		/* data segment */
+	unsigned short	fp_unused_2;
+	unsigned int	fp_mxcsr;	/* MXCSR */
+	unsigned int	fp_mxcsr_mask;	/* MXCSR_MASK */
+	unsigned char	fp_reg_word[8][16];
+					/* space for 8 128-bit FP registers */
+	unsigned char	fp_xreg_word[8][16];
+					/* space for 8 128-bit XMM registers */
+	unsigned int	padding[56];
+} __attribute__((aligned(16)));
 
 /*
  * Control register
@@ -104,5 +124,6 @@ struct i386_fp_regs {
 #define	FP_SOFT		1		/* software FP emulator */
 #define	FP_287		2		/* 80287 */
 #define	FP_387		3		/* 80387 or 80486 */
+#define	FP_387X		4		/* FXSAVE/RSTOR-capable */
 
 #endif	/* _MACH_I386_FP_REG_H_ */
