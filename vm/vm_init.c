@@ -82,4 +82,5 @@ void vm_mem_bootstrap()
 void vm_mem_init()
 {
 	vm_object_init();
+	memory_object_proxy_init();
 }

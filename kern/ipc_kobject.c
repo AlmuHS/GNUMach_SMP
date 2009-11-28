@@ -355,6 +355,9 @@ ipc_kobject_notify(request_header, reply_header)
 		case IKOT_DEVICE:
 		return ds_notify(request_header);
 
+		case IKOT_PAGER_PROXY:
+		return memory_object_proxy_notify(request_header);
+
 		default:
 		return FALSE;
 	}

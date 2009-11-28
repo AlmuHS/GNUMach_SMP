@@ -79,4 +79,34 @@ skip	/* pc_sampling reserved 1*/;
 skip	/* pc_sampling reserved 2*/;
 skip	/* pc_sampling reserved 3*/;
 skip	/* pc_sampling reserved 4*/;
+
+#else
+
+skip;	/* task_enable_pc_sampling */
+skip;	/* task_disable_pc_sampling */
+skip;	/* task_get_sampled_pcs */
+skip;	/* thread_enable_pc_sampling */
+skip;	/* thread_disable_pc_sampling */
+skip;	/* thread_get_sampled_pcs */
+
+skip	/* pc_sampling reserved 1*/;
+skip	/* pc_sampling reserved 2*/;
+skip	/* pc_sampling reserved 3*/;
+skip	/* pc_sampling reserved 4*/;
+
 #endif
+
+
+/* Create a new proxy memory object from [START;START+LEN) in the
+   given OBJECT at OFFSET in the new object with the maximum
+   protection MAX_PROTECTION and return it in *PORT.  */
+type vm_offset_array_t = array[*:1024] of vm_offset_t;
+routine memory_object_create_proxy(
+		task		: ipc_space_t;
+		max_protection	: vm_prot_t;
+		object		: memory_object_array_t =
+				  array[*:1024] of memory_object_t;
+		offset		: vm_offset_array_t;
+		start		: vm_offset_array_t;
+		len		: vm_offset_array_t;
+		out proxy	: mach_port_t);

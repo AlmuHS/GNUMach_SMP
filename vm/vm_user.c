@@ -276,6 +276,12 @@ kern_return_t vm_copy(map, source_address, size, dest_address)
 	return KERN_SUCCESS;
 }
 
+
+/* XXX From memory_object_proxy.c  */
+kern_return_t
+memory_object_proxy_lookup (ipc_port_t proxy_object, ipc_port_t *object,
+                            vm_prot_t *max_protection);
+
 /*
  *	Routine:	vm_map
  */
@@ -325,7 +331,22 @@ kern_return_t vm_map(
 		copy = FALSE;
 	} else if ((object = vm_object_enter(memory_object, size, FALSE))
 			== VM_OBJECT_NULL)
-		return(KERN_INVALID_ARGUMENT);
+	  {
+	    ipc_port_t real_memobj;
+	    vm_prot_t prot;
+	    result = memory_object_proxy_lookup (memory_object, &real_memobj,
+						 &prot);
+	    if (result != KERN_SUCCESS)
+	      return result;
+
+	    /* Reduce the allowed access to the memory object.  */
+	    max_protection &= prot;
+	    cur_protection &= prot;
+
+	    if ((object = vm_object_enter(real_memobj, size, FALSE))
+		== VM_OBJECT_NULL)
+	      return KERN_INVALID_ARGUMENT;
+	  }
 
 	/*
 	 *	Perform the copy if requested

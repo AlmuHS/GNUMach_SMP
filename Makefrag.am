@@ -215,6 +215,7 @@ libkernel_a_SOURCES += \
 #
 
 libkernel_a_SOURCES += \
+	vm/memory_object_proxy.c \
 	vm/memory_object.c \
 	vm/memory_object.h \
 	vm/pmap.h \

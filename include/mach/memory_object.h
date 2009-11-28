@@ -46,6 +46,9 @@ typedef	mach_port_t	memory_object_t;
 					/*  the object to map; used by the */
 					/*  kernel to retrieve or store data */
 
+typedef	mach_port_t *	memory_object_array_t;
+					/* should be memory_object_t * */
+
 typedef	mach_port_t	memory_object_control_t;
 					/* Provided to a memory manager; ... */
 					/*  used to control a memory object */

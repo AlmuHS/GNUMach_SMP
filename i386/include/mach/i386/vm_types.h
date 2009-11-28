@@ -74,6 +74,7 @@ typedef unsigned int	uint32;
  * e.g. an offset into a virtual memory space.
  */
 typedef	natural_t	vm_offset_t;
+typedef	vm_offset_t *	vm_offset_array_t;
 
 /*
  * A vm_size_t is the proper type for e.g.
