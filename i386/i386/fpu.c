@@ -494,7 +494,7 @@ fphandleerr()
 	 */
 #if	NCPUS == 1
 	if (fp_thread == THREAD_NULL) {
-		printf("fpintr: FPU not belonging to anyone!\n");
+		printf("fphandleerr: FPU not belonging to anyone!\n");
 		clear_ts();
 		fninit();
 		clear_fpu();
