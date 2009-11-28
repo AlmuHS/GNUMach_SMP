@@ -101,7 +101,7 @@ init_fpu()
 	 * then trying to read the correct bit patterns from
 	 * the control and status registers.
 	 */
-	set_cr0(get_cr0() & ~(CR0_EM|CR0_TS));	/* allow use of FPU */
+	set_cr0(get_cr0() & ~(CR0_EM|CR0_TS|CR0_NE));	/* allow use of FPU */
 
 	fninit();
 	status = fnstsw();
