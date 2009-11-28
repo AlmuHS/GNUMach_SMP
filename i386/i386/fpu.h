@@ -113,6 +113,7 @@ extern kern_return_t fpu_get_state(
 extern void fpnoextflt(void);
 extern void fpextovrflt(void);
 extern void fpexterrflt(void);
+extern void fpastintr(void);
 extern void init_fpu(void);
 
 #endif	/* _I386_FPU_H_ */

@@ -95,13 +95,17 @@ void
 init_fpu()
 {
 	unsigned short	status, control;
+	unsigned int native = 0;
+
+	if (machine_slot[cpu_number()].cpu_type >= CPU_TYPE_I486)
+		native = CR0_NE;
 
 	/*
 	 * Check for FPU by initializing it,
 	 * then trying to read the correct bit patterns from
 	 * the control and status registers.
 	 */
-	set_cr0(get_cr0() & ~(CR0_EM|CR0_TS|CR0_NE));	/* allow use of FPU */
+	set_cr0((get_cr0() & ~(CR0_EM|CR0_TS)) | native);	/* allow use of FPU */
 
 	fninit();
 	status = fnstsw();
@@ -480,11 +484,77 @@ fpextovrflt()
 	/*NOTREACHED*/
 }
 
+static int
+fphandleerr()
+{
+	register thread_t	thread = current_thread();
+
+	/*
+	 * Save the FPU context to the thread using it.
+	 */
+#if	NCPUS == 1
+	if (fp_thread == THREAD_NULL) {
+		printf("fpintr: FPU not belonging to anyone!\n");
+		clear_ts();
+		fninit();
+		clear_fpu();
+		return 1;
+	}
+
+	if (fp_thread != thread) {
+	    /*
+	     * FPU exception is for a different thread.
+	     * When that thread again uses the FPU an exception will be
+	     * raised in fp_load. Remember the condition in fp_valid (== 2).
+	     */
+	    clear_ts();
+	    fp_save(fp_thread);
+	    fp_thread->pcb->ims.ifps->fp_valid = 2;
+	    fninit();
+	    clear_fpu();
+	    /* leave fp_intr_thread THREAD_NULL */
+	    return 1;
+	}
+#endif	/* NCPUS == 1 */
+
+	/*
+	 * Save the FPU state and turn off the FPU.
+	 */
+	clear_ts();
+	fp_save(thread);
+	fninit();
+	clear_fpu();
+
+	return 0;
+}
+
+/*
+ * FPU error. Called by exception handler.
+ */
+void
+fpexterrflt()
+{
+	register thread_t	thread = current_thread();
+
+	if (fphandleerr())
+		return;
+
+	/*
+	 * Raise FPU exception.
+	 * Locking not needed on pcb->ims.ifps,
+	 * since thread is running.
+	 */
+	i386_exception(EXC_ARITHMETIC,
+		       EXC_I386_EXTERR,
+		       thread->pcb->ims.ifps->fp_save_state.fp_status);
+	/*NOTREACHED*/
+}
+
 /*
  * FPU error. Called by AST.
  */
 void
-fpexterrflt()
+fpastintr()
 {
 	register thread_t	thread = current_thread();
 
@@ -647,41 +717,14 @@ ASSERT_IPL(SPL1);
 	 */
 	outb(0xf0, 0);
 
-	/*
-	 * Save the FPU context to the thread using it.
-	 */
-#if	NCPUS == 1
-	if (fp_thread == THREAD_NULL) {
-		printf("fpintr: FPU not belonging to anyone!\n");
-		clear_ts();
-		fninit();
-		clear_fpu();
+	if (fphandleerr())
 		return;
-	}
 
-	if (fp_thread != thread) {
-	    /*
-	     * FPU exception is for a different thread.
-	     * When that thread again uses the FPU an exception will be
-	     * raised in fp_load. Remember the condition in fp_valid (== 2).
-	     */
-	    clear_ts();
-	    fp_save(fp_thread);
-	    fp_thread->pcb->ims.ifps->fp_valid = 2;
-	    fninit();
-	    clear_fpu();
-	    /* leave fp_intr_thread THREAD_NULL */
-	    return;
-	}
+#if	NCPUS == 1
 	if (fp_intr_thread != THREAD_NULL && fp_intr_thread != thread)
 	    panic("fp_intr: already caught intr");
 	fp_intr_thread = thread;
 #endif	/* NCPUS == 1 */
-
-	clear_ts();
-	fp_save(thread);
-	fninit();
-	clear_fpu();
 
 	/*
 	 * Since we are running on the interrupt stack, we must

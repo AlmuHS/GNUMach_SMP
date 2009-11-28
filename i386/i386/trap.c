@@ -594,7 +594,7 @@ i386_astintr()
 	    ast_off(mycpu, AST_I386_FP);
 	    (void) spl0();
 
-	    fpexterrflt();
+	    fpastintr();
 	}
 	else {
 	    /*
