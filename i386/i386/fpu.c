@@ -141,8 +141,7 @@ init_fpu()
 	    /*
 	     * NO FPU.
 	     */
-	    fp_kind = FP_NO;
-	    set_cr0(get_cr0() | CR0_EM);
+	    panic("No FPU!");
 	}
 }
 
