@@ -191,3 +191,16 @@ log(int level, const char *fmt, ...)
 	_doprnt(fmt, &listp, do_cnputc, 0, 0);
 	va_end(listp);
 }
+
+unsigned char __stack_chk_guard [ sizeof (vm_offset_t) ] =
+{
+	[ sizeof (vm_offset_t) - 3 ] = '\r',
+	[ sizeof (vm_offset_t) - 2 ] = '\n',
+	[ sizeof (vm_offset_t) - 1 ] = 0xff,
+};
+
+void
+__stack_chk_fail (void)
+{
+	panic("stack smashing detected");
+}
