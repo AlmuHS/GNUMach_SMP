@@ -218,7 +218,7 @@ void *
 linux_kmalloc (unsigned int size, int priority)
 {
   int order, coalesced = 0;
-  unsigned flags;
+  unsigned long flags;
   struct pagehdr *ph;
   struct blkhdr *bh, *new_bh;
 
@@ -310,7 +310,7 @@ again:
 void
 linux_kfree (void *p)
 {
-  unsigned flags;
+  unsigned long flags;
   struct blkhdr *bh;
   struct pagehdr *ph;
 
@@ -385,7 +385,8 @@ unsigned long
 __get_free_pages (int priority, unsigned long order, int dma)
 {
   int i, pages_collected = 0;
-  unsigned flags, bits, off, j, len;
+  unsigned bits, off, j, len;
+  unsigned long flags;
 
   assert ((PAGE_SIZE << order) <= MEM_CHUNK_SIZE);
 
@@ -444,7 +445,8 @@ void
 free_pages (unsigned long addr, unsigned long order)
 {
   int i;
-  unsigned flags, bits, len, j;
+  unsigned bits, len, j;
+  unsigned long flags;
 
   assert ((addr & PAGE_MASK) == 0);
 

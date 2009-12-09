@@ -1539,7 +1539,7 @@ void aha152x_done(struct Scsi_Host *shpnt, int error)
 void aha152x_intr(int irqno, void *dev_id, struct pt_regs * regs)
 {
   struct Scsi_Host *shpnt = aha152x_host[irqno-IRQ_MIN];
-  unsigned int flags;
+  unsigned long flags;
   int done=0, phase;
 
 #if defined(DEBUG_RACE)

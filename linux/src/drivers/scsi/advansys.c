@@ -2033,8 +2033,8 @@ STATIC void      AscSetISAPNPWaitForKey(void);
 STATIC uchar     AscGetChipIRQ(PortAddr, ushort);
 STATIC uchar     AscSetChipIRQ(PortAddr, uchar, ushort);
 STATIC ushort    AscGetChipBiosAddress(PortAddr, ushort);
-STATIC int       DvcEnterCritical(void);
-STATIC void      DvcLeaveCritical(int);
+STATIC long      DvcEnterCritical(void);
+STATIC void      DvcLeaveCritical(long);
 STATIC void      DvcInPortWords(PortAddr, ushort *, int);
 STATIC void      DvcOutPortWords(PortAddr, ushort *, int);
 STATIC void      DvcOutPortDWords(PortAddr, ulong *, int);
@@ -2870,8 +2870,8 @@ typedef struct adv_scsi_req_q {
 /*
  * Device drivers must define the following functions.
  */
-STATIC int   DvcEnterCritical(void);
-STATIC void  DvcLeaveCritical(int);
+STATIC long  DvcEnterCritical(void);
+STATIC void  DvcLeaveCritical(long);
 STATIC void  DvcSleepMilliSecond(ulong);
 STATIC uchar DvcAdvReadPCIConfigByte(ADV_DVC_VAR *, ushort);
 STATIC void  DvcAdvWritePCIConfigByte(ADV_DVC_VAR *, ushort, uchar);
@@ -5400,7 +5400,7 @@ advansys_queuecommand(Scsi_Cmnd *scp, void (*done)(Scsi_Cmnd *))
 {
     struct Scsi_Host    *shp;
     asc_board_t         *boardp;
-    int                 flags;
+    long                flags;
     Scsi_Cmnd           *done_scp;
 
     shp = scp->host;
@@ -5495,7 +5495,7 @@ advansys_abort(Scsi_Cmnd *scp)
     asc_board_t         *boardp;
     ASC_DVC_VAR         *asc_dvc_varp;
     ADV_DVC_VAR         *adv_dvc_varp;
-    int                 flags;
+    long                flags;
     int                 do_scsi_done;
     int                 scp_found;
     Scsi_Cmnd           *done_scp = NULL;
@@ -5734,7 +5734,7 @@ advansys_reset(Scsi_Cmnd *scp, unsigned int reset_flags)
     asc_board_t          *boardp;
     ASC_DVC_VAR          *asc_dvc_varp;
     ADV_DVC_VAR          *adv_dvc_varp;
-    int                  flags;
+    long                 flags;
     Scsi_Cmnd            *done_scp = NULL, *last_scp = NULL;
     Scsi_Cmnd            *tscp, *new_last_scp;
     int                  do_scsi_done;
@@ -6269,7 +6269,7 @@ advansys_interrupt(int irq, void *dev_id, struct pt_regs *regs)
 #endif /* version >= v1.3.70 */
 {
 #if LINUX_VERSION_CODE < ASC_LINUX_VERSION(2,1,95)
-    int             flags;
+    long            flags;
 #else /* version >= v2.1.95 */
     unsigned long   flags;
 #endif /* version >= v2.1.95 */
@@ -9227,10 +9227,10 @@ DvcSleepMilliSecond(ulong n)
     }
 }
 
-STATIC int
+STATIC long
 DvcEnterCritical(void)
 {
-    int    flags;
+    long   flags;
 
     save_flags(flags);
     cli();
@@ -9238,7 +9238,7 @@ DvcEnterCritical(void)
 }
 
 STATIC void
-DvcLeaveCritical(int flags)
+DvcLeaveCritical(long flags)
 {
     restore_flags(flags);
 }
@@ -10198,7 +10198,7 @@ asc_prt_hex(char *f, uchar *s, int l)
 STATIC int
 interrupts_enabled(void)
 {
-    int flags;
+    long flags;
 
     save_flags(flags);
     if (flags & 0x0200) {
@@ -15078,7 +15078,7 @@ AdvISR(ADV_DVC_VAR *asc_dvc)
     uchar                       int_stat;
     ushort                      next_done_loc, target_bit;
     int                         completed_q;
-    int                         flags;
+    long                        flags;
     ADV_SCSI_REQ_Q              *scsiq;
     ASC_REQ_SENSE               *sense_data;
     int                         ret;

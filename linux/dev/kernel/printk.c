@@ -41,7 +41,8 @@ int
 printk (char *fmt, ...)
 {
   va_list args;
-  int n, flags;
+  int n;
+  unsigned long flags;
   char *p, *msg, *buf_end;
   static int msg_level = -1;
   

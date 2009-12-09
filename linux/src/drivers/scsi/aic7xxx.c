@@ -2800,7 +2800,7 @@ aic7xxx_done_cmds_complete(struct aic7xxx_host *p)
 {
   Scsi_Cmnd *cmd;
 #if LINUX_VERSION_CODE < KERNEL_VERSION(2,1,95)
-  unsigned int cpu_flags = 0;
+  unsigned long cpu_flags = 0;
 #endif
 
   DRIVER_LOCK

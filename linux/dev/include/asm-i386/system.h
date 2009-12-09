@@ -224,9 +224,9 @@ static inline unsigned long __xchg(unsigned long x, void * ptr, int size)
 #define __sti() __asm__ __volatile__ ("sti": : :"memory")
 #define __cli() __asm__ __volatile__ ("cli": : :"memory")
 #define __save_flags(x) \
-__asm__ __volatile__("pushfl ; popl %0":"=g" (x): /* no input */ :"memory")
+__asm__ __volatile__("pushf ; pop %0" : "=r" (x): /* no input */ :"memory")
 #define __restore_flags(x) \
-__asm__ __volatile__("pushl %0 ; popfl": /* no output */ :"g" (x):"memory")
+__asm__ __volatile__("push %0 ; popf": /* no output */ :"g" (x):"memory")
 
 #ifdef __SMP__
 
