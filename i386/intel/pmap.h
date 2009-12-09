@@ -48,7 +48,7 @@
  *	Define the generic in terms of the specific
  */
 
-#if	i386
+#if defined(__i386__)
 #define	INTEL_PGBYTES		I386_PGBYTES
 #define INTEL_PGSHIFT		I386_PGSHIFT
 #define	intel_btop(x)		i386_btop(x)
@@ -58,7 +58,7 @@
 #define trunc_intel_to_vm(x)	trunc_i386_to_vm(x)
 #define round_intel_to_vm(x)	round_i386_to_vm(x)
 #define vm_to_intel(x)		vm_to_i386(x)
-#endif	/* i386 */
+#endif /* __i386__ */
 
 /*
  *	i386/i486 Page Table Entry

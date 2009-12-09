@@ -100,7 +100,7 @@ void SoftDebugger(message)
 	gimmeabreak();
 #endif
 
-#ifdef	i386
+#if defined(__i386__)
 	asm("int3");
 #endif
 }
