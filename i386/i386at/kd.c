@@ -592,7 +592,7 @@ io_return_t kdgetstat(dev, flavor, data, count)
 	dev_t		dev;
 	int		flavor;
 	int *		data;		/* pointer to OUT array */
-	unsigned int	*count;		/* OUT */
+	natural_t	*count;		/* OUT */
 {
 	io_return_t	result;
 
@@ -622,7 +622,7 @@ io_return_t kdsetstat(dev, flavor, data, count)
 	dev_t		dev;
 	int		flavor;
 	int *		data;
-	unsigned int	count;
+	natural_t	count;
 {
 	io_return_t	result;
 

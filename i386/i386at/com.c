@@ -447,7 +447,7 @@ comgetstat(dev, flavor, data, count)
 dev_t		dev;
 int		flavor;
 int		*data;		/* pointer to OUT array */
-unsigned int	*count;		/* out */
+natural_t	*count;		/* out */
 {
 	io_return_t	result = D_SUCCESS;
 	int		unit = minor(dev);
@@ -470,7 +470,7 @@ comsetstat(dev, flavor, data, count)
 dev_t		dev;
 int		flavor;
 int *		data;
-unsigned int	count;
+natural_t	count;
 {
 	io_return_t	result = D_SUCCESS;
 	int 		unit = minor(dev);
