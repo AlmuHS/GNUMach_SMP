@@ -19,33 +19,37 @@
 
 libkernel_a_SOURCES += \
 	i386/i386at/autoconf.c \
+	i386/i386at/conf.c \
+	i386/i386at/cons_conf.c \
+	i386/i386at/idt.h \
+	i386/i386at/kd_event.c \
+	i386/i386at/kd_event.h \
+	i386/i386at/kd_queue.c \
+	i386/i386at/kd_queue.h \
+	i386/i386at/model_dep.c \
+	i386/include/mach/sa/stdarg.h
+
+if PLATFORM_at
+libkernel_a_SOURCES += \
 	i386/i386at/boothdr.S \
 	i386/i386at/com.c \
 	i386/i386at/comreg.h \
-	i386/i386at/conf.c \
-	i386/i386at/cons_conf.c \
 	i386/i386at/cram.h \
 	i386/i386at/disk.h \
 	i386/i386at/i8250.h \
-	i386/i386at/idt.h \
 	i386/i386at/immc.c \
 	i386/i386at/int_init.c \
 	i386/i386at/interrupt.S \
 	i386/i386at/kd.c \
 	i386/i386at/kd.h \
-	i386/i386at/kd_event.c \
-	i386/i386at/kd_event.h \
 	i386/i386at/kd_mouse.c \
 	i386/i386at/kd_mouse.h \
-	i386/i386at/kd_queue.c \
-	i386/i386at/kd_queue.h \
 	i386/i386at/kdasm.S \
 	i386/i386at/kdsoft.h \
-	i386/i386at/model_dep.c \
 	i386/i386at/pic_isa.c \
 	i386/i386at/rtc.c \
-	i386/i386at/rtc.h \
-	i386/include/mach/sa/stdarg.h
+	i386/i386at/rtc.h
+endif
 
 #
 # `lpr' device support.
@@ -80,11 +84,9 @@ libkernel_a_SOURCES += \
 	i386/i386/fpu.h \
 	i386/i386/gdt.c \
 	i386/i386/gdt.h \
-	i386/i386/hardclock.c \
 	i386/i386/idt-gen.h \
 	i386/i386/idt.c \
 	i386/i386/idt_inittab.S \
-	i386/i386/io_map.c \
 	i386/i386/io_perm.c \
 	i386/i386/io_perm.h \
 	i386/i386/ipl.h \
@@ -107,11 +109,7 @@ libkernel_a_SOURCES += \
 	i386/i386/pcb.c \
 	i386/i386/pcb.h \
 	i386/i386/phys.c \
-	i386/i386/pic.c \
-	i386/i386/pic.h \
 	i386/i386/pio.h \
-	i386/i386/pit.c \
-	i386/i386/pit.h \
 	i386/i386/pmap.h \
 	i386/i386/proc_reg.h \
 	i386/i386/sched_param.h \
@@ -139,6 +137,15 @@ libkernel_a_SOURCES += \
 EXTRA_DIST += \
 	i386/i386/mach_i386.srv
 
+if PLATFORM_at
+libkernel_a_SOURCES += \
+	i386/i386/hardclock.c \
+	i386/i386/io_map.c \
+	i386/i386/pic.c \
+	i386/i386/pic.h \
+	i386/i386/pit.c \
+	i386/i386/pit.h
+endif
 
 #
 # KDB support.
@@ -225,3 +232,11 @@ EXTRA_DIST += \
 # Instead of listing each file individually...
 EXTRA_DIST += \
 	i386/include
+
+#
+# Platform specific parts.
+#
+
+if PLATFORM_xen
+include i386/xen/Makefrag.am
+endif

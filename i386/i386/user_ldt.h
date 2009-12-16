@@ -36,6 +36,9 @@
 #include <i386/seg.h>
 
 struct user_ldt {
+#ifdef	MACH_XEN
+	vm_offset_t		alloc;	/* allocation before alignment */
+#endif	/* MACH_XEN */
 	struct real_descriptor	desc;	/* descriptor for self */
 	struct real_descriptor	ldt[1];	/* descriptor table (variable) */
 };

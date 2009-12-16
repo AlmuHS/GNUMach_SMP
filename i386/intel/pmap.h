@@ -126,12 +126,21 @@ typedef unsigned int	pt_entry_t;
 #define INTEL_PTE_NCACHE 	0x00000010
 #define INTEL_PTE_REF		0x00000020
 #define INTEL_PTE_MOD		0x00000040
+#ifdef	MACH_XEN
+/* Not supported */
+#define INTEL_PTE_GLOBAL	0x00000000
+#else	/* MACH_XEN */
 #define INTEL_PTE_GLOBAL	0x00000100
+#endif	/* MACH_XEN */
 #define INTEL_PTE_WIRED		0x00000200
 #define INTEL_PTE_PFN		0xfffff000
 
 #define	pa_to_pte(a)		((a) & INTEL_PTE_PFN)
+#ifdef	MACH_PSEUDO_PHYS
+#define	pte_to_pa(p)		ma_to_pa((p) & INTEL_PTE_PFN)
+#else	/* MACH_PSEUDO_PHYS */
 #define	pte_to_pa(p)		((p) & INTEL_PTE_PFN)
+#endif	/* MACH_PSEUDO_PHYS */
 #define	pte_increment_pa(p)	((p) += INTEL_OFFMASK+1)
 
 /*
@@ -158,6 +167,14 @@ struct pmap {
 typedef struct pmap	*pmap_t;
 
 #define PMAP_NULL	((pmap_t) 0)
+
+#ifdef	MACH_XEN
+extern void pmap_set_page_readwrite(void *addr);
+extern void pmap_set_page_readonly(void *addr);
+extern void pmap_set_page_readonly_init(void *addr);
+extern void pmap_map_mfn(void *addr, unsigned long mfn);
+extern void pmap_clear_bootstrap_pagetable(pt_entry_t *addr);
+#endif	/* MACH_XEN */
 
 #if PAE
 #define	set_pmap(pmap)	set_cr3(kvtophys((vm_offset_t)(pmap)->pdpbase))

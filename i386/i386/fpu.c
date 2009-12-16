@@ -109,6 +109,10 @@ void
 init_fpu()
 {
 	unsigned short	status, control;
+
+#ifdef	MACH_HYP
+	clear_ts();
+#else	/* MACH_HYP */
 	unsigned int native = 0;
 
 	if (machine_slot[cpu_number()].cpu_type >= CPU_TYPE_I486)
@@ -120,6 +124,7 @@ init_fpu()
 	 * the control and status registers.
 	 */
 	set_cr0((get_cr0() & ~(CR0_EM|CR0_TS)) | native);	/* allow use of FPU */
+#endif	/* MACH_HYP */
 
 	fninit();
 	status = fnstsw();
@@ -153,8 +158,10 @@ init_fpu()
 		    struct i386_xfp_save save;
 		    unsigned long mask;
 		    fp_kind = FP_387X;
+#ifndef MACH_HYP
 		    printf("Enabling FXSR\n");
 		    set_cr4(get_cr4() | CR4_OSFXSR);
+#endif /* MACH_HYP */
 		    fxsave(&save);
 		    mask = save.fp_mxcsr_mask;
 		    if (!mask)
@@ -163,10 +170,14 @@ init_fpu()
 		} else
 		    fp_kind = FP_387;
 	    }
+#ifdef MACH_HYP
+	    set_ts();
+#else	/* MACH_HYP */
 	    /*
 	     * Trap wait instructions.  Turn off FPU for now.
 	     */
 	    set_cr0(get_cr0() | CR0_TS | CR0_MP);
+#endif	/* MACH_HYP */
 	}
 	else {
 	    /*
@@ -675,6 +686,7 @@ fpexterrflt()
 	/*NOTREACHED*/
 }
 
+#ifndef MACH_XEN
 /*
  * FPU error. Called by AST.
  */
@@ -731,6 +743,7 @@ ASSERT_IPL(SPL0);
 		           thread->pcb->ims.ifps->fp_save_state.fp_status);
 	/*NOTREACHED*/
 }
+#endif /* MACH_XEN */
 
 /*
  * Save FPU state.
@@ -846,7 +859,7 @@ fp_state_alloc()
 	}
 }
 
-#if	AT386
+#if	AT386 && !defined(MACH_XEN)
 /*
  *	Handle a coprocessor error interrupt on the AT386.
  *	This comes in on line 5 of the slave PIC at SPL1.

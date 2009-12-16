@@ -527,8 +527,8 @@ unpageable memory footprint of the kernel.  @xref{Kernel Debugger}.
 @table @code
 @item --enable-pae
 @acronym{PAE, Physical Address Extension} feature (@samp{ix86}-only),
-which is available on modern @samp{ix86} processors; disabled by
-default.
+which is available on modern @samp{ix86} processors; on @samp{ix86-at} disabled
+by default, on @samp{ix86-xen} enabled by default.
 @end table
 
 @subsection Turning device drivers on or off

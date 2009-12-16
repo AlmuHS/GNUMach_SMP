@@ -72,8 +72,10 @@
 #ifndef	__ASSEMBLER__
 #ifdef	__GNUC__
 
+#ifndef	MACH_HYP
 #include <i386/gdt.h>
 #include <i386/ldt.h>
+#endif	/* MACH_HYP */
 
 static inline unsigned
 get_eflags(void)
@@ -122,6 +124,16 @@ set_eflags(unsigned eflags)
 	_temp__; \
     })
 
+#ifdef	MACH_HYP
+extern unsigned long cr3;
+#define get_cr3() (cr3)
+#define	set_cr3(value) \
+    ({ \
+	cr3 = (value); \
+	if (!hyp_set_cr3(value)) \
+		panic("set_cr3"); \
+    })
+#else	/* MACH_HYP */
 #define	get_cr3() \
     ({ \
 	register unsigned int _temp__; \
@@ -134,9 +146,11 @@ set_eflags(unsigned eflags)
 	register unsigned int _temp__ = (value); \
 	asm volatile("mov %0, %%cr3" : : "r" (_temp__)); \
      })
+#endif	/* MACH_HYP */
 
 #define flush_tlb() set_cr3(get_cr3())
 
+#ifndef	MACH_HYP
 #define invlpg(addr) \
     ({ \
 	asm volatile("invlpg (%0)" : : "r" (addr)); \
@@ -164,6 +178,7 @@ set_eflags(unsigned eflags)
 		: "+r" (var) : "r" (end), \
 		  "q" (LINEAR_DS), "q" (KERNEL_DS), "i" (PAGE_SIZE)); \
     })
+#endif	/* MACH_HYP */
 
 #define	get_cr4() \
     ({ \
@@ -179,11 +194,18 @@ set_eflags(unsigned eflags)
      })
 
 
+#ifdef	MACH_HYP
+#define	set_ts() \
+	hyp_fpu_taskswitch(1)
+#define	clear_ts() \
+	hyp_fpu_taskswitch(0)
+#else	/* MACH_HYP */
 #define	set_ts() \
 	set_cr0(get_cr0() | CR0_TS)
 
 #define	clear_ts() \
 	asm volatile("clts")
+#endif	/* MACH_HYP */
 
 #define	get_tr() \
     ({ \

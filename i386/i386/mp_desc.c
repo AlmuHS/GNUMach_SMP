@@ -31,6 +31,7 @@
 #include <kern/cpu_number.h>
 #include <kern/debug.h>
 #include <mach/machine.h>
+#include <mach/xen.h>
 #include <vm/vm_kern.h>
 
 #include <i386/mp_desc.h>
@@ -149,6 +150,9 @@ mp_desc_init(mycpu)
 		 * Fix up the entries in the GDT to point to
 		 * this LDT and this TSS.
 		 */
+#ifdef	MACH_HYP
+		panic("TODO %s:%d\n",__FILE__,__LINE__);
+#else	/* MACH_HYP */
 		fill_descriptor(&mpt->gdt[sel_idx(KERNEL_LDT)],
 			(unsigned)&mpt->ldt,
 			LDTSZ * sizeof(struct real_descriptor) - 1,
@@ -161,6 +165,7 @@ mp_desc_init(mycpu)
 		mpt->ktss.tss.ss0 = KERNEL_DS;
 		mpt->ktss.tss.io_bit_map_offset = IOPB_INVAL;
 		mpt->ktss.barrier = 0xFF;
+#endif	/* MACH_HYP */
 
 		return mpt;
 	}

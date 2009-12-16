@@ -34,6 +34,7 @@ extern int	timeopen(), timeclose();
 extern vm_offset_t timemmap();
 #define	timename		"time"
 
+#ifndef	MACH_HYP
 extern int	kdopen(), kdclose(), kdread(), kdwrite();
 extern int	kdgetstat(), kdsetstat(), kdportdeath();
 extern vm_offset_t kdmmap();
@@ -50,16 +51,25 @@ extern int	lpropen(), lprclose(), lprread(), lprwrite();
 extern int	lprgetstat(), lprsetstat(), lprportdeath();
 #define	lprname			"lpr"
 #endif	/* NLPR > 0 */
+#endif	/* MACH_HYP */
 
 extern int	kbdopen(), kbdclose(), kbdread();
 extern int	kbdgetstat(), kbdsetstat();
 #define	kbdname			"kbd"
 
+#ifndef	MACH_HYP
 extern int	mouseopen(), mouseclose(), mouseread(), mousegetstat();
 #define	mousename		"mouse"
+#endif	/* MACH_HYP */
 
 extern int	kmsgopen(), kmsgclose(), kmsgread(), kmsggetstat();
 #define kmsgname		"kmsg"
+
+#ifdef	MACH_HYP
+extern int	hypcnopen(), hypcnclose(), hypcnread(), hypcnwrite();
+extern int	hypcngetstat(), hypcnsetstat(), hypcnportdeath();
+#define hypcnname		"hyp"
+#endif	/* MACH_HYP */
 
 /*
  * List of devices - console must be at slot 0
@@ -79,16 +89,19 @@ struct dev_ops	dev_name_list[] =
 	  nodev,	nulldev,	nulldev,	0,
 	  nodev },
 
+#ifndef	MACH_HYP
 	{ kdname,	kdopen,		kdclose,	kdread,
 	  kdwrite,	kdgetstat,	kdsetstat,	kdmmap,
 	  nodev,	nulldev,	kdportdeath,	0,
 	  nodev },
+#endif	/* MACH_HYP */
 
 	{ timename,	timeopen,	timeclose,	nulldev,
 	  nulldev,	nulldev,	nulldev,	timemmap,
 	  nodev,	nulldev,	nulldev,	0,
 	  nodev },
 
+#ifndef	MACH_HYP
 #if	NCOM > 0
 	{ comname,	comopen,	comclose,	comread,
 	  comwrite,	comgetstat,	comsetstat,	nomap,
@@ -107,6 +120,7 @@ struct dev_ops	dev_name_list[] =
 	  nodev,	mousegetstat,	nulldev,	nomap,
 	  nodev,	nulldev,	nulldev,	0,
 	  nodev },
+#endif	/* MACH_HYP */
 
 	{ kbdname,	kbdopen,	kbdclose,	kbdread,
 	  nodev,	kbdgetstat,	kbdsetstat,	nomap,
@@ -119,6 +133,13 @@ struct dev_ops	dev_name_list[] =
           nodev,        nulldev,        nulldev,         0,
           nodev },
 #endif
+
+#ifdef	MACH_HYP
+	{ hypcnname,	hypcnopen,	hypcnclose,	hypcnread,
+	  hypcnwrite,	hypcngetstat,	hypcnsetstat,	nomap,
+	  nodev,	nulldev,	hypcnportdeath,	0,
+	  nodev },
+#endif	/* MACH_HYP */
 
 };
 int	dev_name_count = sizeof(dev_name_list)/sizeof(dev_name_list[0]);

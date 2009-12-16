@@ -28,6 +28,9 @@
  * same LDT.
  */
 #include <mach/machine/vm_types.h>
+#include <mach/xen.h>
+
+#include <intel/pmap.h>
 
 #include "vm_param.h"
 #include "seg.h"
@@ -36,15 +39,23 @@
 
 extern int syscall();
 
+#ifdef	MACH_XEN
+/* It is actually defined in xen_boothdr.S */
+extern
+#endif	/* MACH_XEN */
 struct real_descriptor ldt[LDTSZ];
 
 void
 ldt_init()
 {
+#ifdef	MACH_XEN
+	pmap_set_page_readwrite(ldt);
+#else	/* MACH_XEN */
 	/* Initialize the master LDT descriptor in the GDT.  */
 	fill_gdt_descriptor(KERNEL_LDT,
 			    kvtolin(&ldt), sizeof(ldt)-1,
 			    ACC_PL_K|ACC_LDT, 0);
+#endif	/* MACH_XEN */
 
 	/* Initialize the LDT descriptors.  */
 	fill_ldt_gate(USER_SCALL,
@@ -61,5 +72,9 @@ ldt_init()
 			    ACC_PL_U|ACC_DATA_W, SZ_32);
 
 	/* Activate the LDT.  */
+#ifdef	MACH_HYP
+	hyp_set_ldt(&ldt, LDTSZ);
+#else	/* MACH_HYP */
 	lldt(KERNEL_LDT);
+#endif	/* MACH_HYP */
 }

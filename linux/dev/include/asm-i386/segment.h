@@ -3,8 +3,13 @@
 
 #ifdef MACH
 
+#ifdef MACH_HYP
+#define KERNEL_CS	0x09
+#define KERNEL_DS	0x11
+#else /* MACH_HYP */
 #define KERNEL_CS	0x08
 #define KERNEL_DS	0x10
+#endif /* MACH_HYP */
 
 #define USER_CS		0x17
 #define USER_DS		0x1F

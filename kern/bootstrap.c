@@ -63,7 +63,12 @@
 #else
 #include <mach/machine/multiboot.h>
 #include <mach/exec/exec.h>
+#ifdef	MACH_XEN
+#include <mach/xen.h>
+extern struct start_info boot_info;	/* XXX put this in a header! */
+#else	/* MACH_XEN */
 extern struct multiboot_info boot_info;	/* XXX put this in a header! */
+#endif	/* MACH_XEN */
 #endif
 
 #include "boot_script.h"
@@ -101,10 +106,23 @@ task_insert_send_right(
 
 void bootstrap_create()
 {
+  int compat;
+#ifdef	MACH_XEN
+  struct multiboot_module *bmods = ((struct multiboot_module *)
+                                   boot_info.mod_start);
+  int n;
+  for (n = 0; bmods[n].mod_start; n++) {
+    bmods[n].mod_start = kvtophys(bmods[n].mod_start + (vm_offset_t) bmods);
+    bmods[n].mod_end = kvtophys(bmods[n].mod_end + (vm_offset_t) bmods);
+    bmods[n].string = kvtophys(bmods[n].string + (vm_offset_t) bmods);
+  }
+  boot_info.mods_count = n;
+  boot_info.flags |= MULTIBOOT_MODS;
+#else	/* MACH_XEN */
   struct multiboot_module *bmods = ((struct multiboot_module *)
 				    phystokv(boot_info.mods_addr));
-  int compat;
 
+#endif	/* MACH_XEN */
   if (!(boot_info.flags & MULTIBOOT_MODS)
       || (boot_info.mods_count == 0))
     panic ("No bootstrap code loaded with the kernel!");

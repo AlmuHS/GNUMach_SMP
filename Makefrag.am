@@ -375,7 +375,8 @@ include_mach_HEADERS = \
 	include/mach/vm_param.h \
 	include/mach/vm_prot.h \
 	include/mach/vm_statistics.h \
-	include/mach/inline.h
+	include/mach/inline.h \
+	include/mach/xen.h
 
 # If we name this `*_execdir', Automake won't add it to `install-data'...
 include_mach_eXecdir = $(includedir)/mach/exec
@@ -506,6 +507,11 @@ include linux/Makefrag.am
 #
 # Platform specific parts.
 #
+
+# Xen.
+if PLATFORM_xen
+include xen/Makefrag.am
+endif
 
 #
 # Architecture specific parts.

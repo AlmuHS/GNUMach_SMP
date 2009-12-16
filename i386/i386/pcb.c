@@ -31,6 +31,7 @@
 #include <mach/kern_return.h>
 #include <mach/thread_status.h>
 #include <mach/exec/exec.h>
+#include <mach/xen.h>
 
 #include "vm_param.h"
 #include <kern/counters.h>
@@ -152,7 +153,12 @@ void switch_ktss(pcb)
 			? (int) (&pcb->iss + 1)
 			: (int) (&pcb->iss.v86_segs);
 
+#ifdef	MACH_XEN
+	/* No IO mask here */
+	hyp_stack_switch(KERNEL_DS, pcb_stack_top);
+#else	/* MACH_XEN */
 	curr_ktss(mycpu)->tss.esp0 = pcb_stack_top;
+#endif	/* MACH_XEN */
     }
 
     {
@@ -164,22 +170,47 @@ void switch_ktss(pcb)
 	    /*
 	     * Use system LDT.
 	     */
+#ifdef	MACH_HYP
+	    hyp_set_ldt(&ldt, LDTSZ);
+#else	/* MACH_HYP */
 	    set_ldt(KERNEL_LDT);
+#endif	/* MACH_HYP */
 	}
 	else {
 	    /*
 	     * Thread has its own LDT.
 	     */
+#ifdef	MACH_HYP
+	    hyp_set_ldt(tldt->ldt,
+	    		(tldt->desc.limit_low|(tldt->desc.limit_high<<16)) /
+				sizeof(struct real_descriptor));
+#else	/* MACH_HYP */
 	    *gdt_desc_p(mycpu,USER_LDT) = tldt->desc;
 	    set_ldt(USER_LDT);
+#endif	/* MACH_HYP */
 	}
     }
+
+#ifdef	MACH_XEN
+    {
+	int i;
+	for (i=0; i < USER_GDT_SLOTS; i++) {
+	    if (memcmp(gdt_desc_p (mycpu, USER_GDT + (i << 3)),
+		&pcb->ims.user_gdt[i], sizeof pcb->ims.user_gdt[i])) {
+		if (hyp_do_update_descriptor(kv_to_ma(gdt_desc_p (mycpu, USER_GDT + (i << 3))),
+			*(unsigned long long *) &pcb->ims.user_gdt[i]))
+		    panic("couldn't set user gdt %d\n",i);
+	    }
+	}
+    }
+#else /* MACH_XEN */
 
     /* Copy in the per-thread GDT slots.  No reloading is necessary
        because just restoring the segment registers on the way back to
        user mode reloads the shadow registers from the in-memory GDT.  */
     memcpy (gdt_desc_p (mycpu, USER_GDT),
         pcb->ims.user_gdt, sizeof pcb->ims.user_gdt);
+#endif /* MACH_XEN */
 
 	/*
 	 * Load the floating-point context, if necessary.

@@ -37,7 +37,12 @@
  * i386 segmentation.
  */
 
+/* Note: the value of KERNEL_RING is handled by hand in locore.S */
+#ifdef	MACH_HYP
+#define	KERNEL_RING	1
+#else	/* MACH_HYP */
 #define	KERNEL_RING	0
+#endif	/* MACH_HYP */
 
 #ifndef __ASSEMBLER__
 
@@ -118,6 +123,7 @@ struct real_gate {
 #ifndef __ASSEMBLER__
 
 #include <mach/inline.h>
+#include <mach/xen.h>
 
 
 /* Format of a "pseudo-descriptor", used for loading the IDT and GDT.  */
@@ -152,9 +158,15 @@ MACH_INLINE void lldt(unsigned short ldt_selector)
 
 /* Fill a segment descriptor.  */
 MACH_INLINE void
-fill_descriptor(struct real_descriptor *desc, unsigned base, unsigned limit,
+fill_descriptor(struct real_descriptor *_desc, unsigned base, unsigned limit,
 		unsigned char access, unsigned char sizebits)
 {
+	/* TODO: when !MACH_XEN, setting desc and just memcpy isn't simpler actually */
+#ifdef	MACH_XEN
+	struct real_descriptor __desc, *desc = &__desc;
+#else	/* MACH_XEN */
+	struct real_descriptor *desc = _desc;
+#endif	/* MACH_XEN */
 	if (limit > 0xfffff)
 	{
 		limit >>= 12;
@@ -167,6 +179,10 @@ fill_descriptor(struct real_descriptor *desc, unsigned base, unsigned limit,
 	desc->limit_high = limit >> 16;
 	desc->granularity = sizebits;
 	desc->base_high = base >> 24;
+#ifdef	MACH_XEN
+	if (hyp_do_update_descriptor(kv_to_ma(_desc), *(unsigned long long*)desc))
+		panic("couldn't update descriptor(%p to %08lx%08lx)\n", kv_to_ma(_desc), *(((unsigned long*)desc)+1), *(unsigned long *)desc);
+#endif	/* MACH_XEN */
 }
 
 /* Fill a gate with particular values.  */

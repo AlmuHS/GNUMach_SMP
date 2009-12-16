@@ -36,6 +36,7 @@
 #include <i386/ldt.h>
 #include <i386/i386asm.h>
 #include <i386/cpu_number.h>
+#include <i386/xen.h>
 
 /*
  * Fault recovery.
@@ -323,8 +324,9 @@ ENTRY(t_segnp)
 trap_check_kernel_exit:
 	testl	$(EFL_VM),16(%esp)	/* is trap from V86 mode? */
 	jnz	EXT(alltraps)		/* isn`t kernel trap if so */
-	testl	$3,12(%esp)		/* is trap from kernel mode? */
-	jne	EXT(alltraps)		/* if so:  */
+	/* Note: handling KERNEL_RING value by hand */
+	testl	$2,12(%esp)		/* is trap from kernel mode? */
+	jnz	EXT(alltraps)		/* if so:  */
 					/* check for the kernel exit sequence */
 	cmpl	$_kret_iret,8(%esp)	/* on IRET? */
 	je	fault_iret
@@ -410,7 +412,8 @@ push_segregs:
 ENTRY(t_debug)
 	testl	$(EFL_VM),8(%esp)	/* is trap from V86 mode? */
 	jnz	0f			/* isn`t kernel trap if so */
-	testl	$3,4(%esp)		/* is trap from kernel mode? */
+	/* Note: handling KERNEL_RING value by hand */
+	testl	$2,4(%esp)		/* is trap from kernel mode? */
 	jnz	0f			/* if so: */
 	cmpl	$syscall_entry,(%esp)	/* system call entry? */
 	jne	0f			/* if so: */
@@ -429,7 +432,11 @@ ENTRY(t_debug)
 ENTRY(t_page_fault)
 	pushl	$(T_PAGE_FAULT)		/* mark a page fault trap */
 	pusha				/* save the general registers */
+#ifdef	MACH_XEN
+	movl	%ss:hyp_shared_info+CR2,%eax
+#else	/* MACH_XEN */
 	movl	%cr2,%eax		/* get the faulting address */
+#endif	/* MACH_XEN */
 	movl	%eax,12(%esp)		/* save in esp save slot */
 	jmp	trap_push_segs		/* continue fault */
 
@@ -465,7 +472,8 @@ trap_set_segs:
 	cld				/* clear direction flag */
 	testl	$(EFL_VM),R_EFLAGS(%esp) /* in V86 mode? */
 	jnz	trap_from_user		/* user mode trap if so */
-	testb	$3,R_CS(%esp)		/* user mode trap? */
+	/* Note: handling KERNEL_RING value by hand */
+	testb	$2,R_CS(%esp)		/* user mode trap? */
 	jz	trap_from_kernel	/* kernel trap if not */
 trap_from_user:
 
@@ -679,7 +687,8 @@ LEXT(return_to_iret)			/* ( label for kdb_kintr and hardclock) */
 
 	testl	$(EFL_VM),I_EFL(%esp)	/* if in V86 */
 	jnz	0f			/* or */
-	testb	$3,I_CS(%esp)		/* user mode, */
+	/* Note: handling KERNEL_RING value by hand */
+	testb	$2,I_CS(%esp)		/* user mode, */
 	jz	1f			/* check for ASTs */
 0:
 	cmpl	$0,CX(EXT(need_ast),%edx)
@@ -1156,9 +1165,14 @@ ENTRY(discover_x86_cpu_type)
 	movl	%esp,%ebp		/* Save stack pointer */
 	and	$~0x3,%esp		/* Align stack pointer */
 
+#ifdef	MACH_HYP
+#warning Assuming not Cyrix CPU
+#else	/* MACH_HYP */
 	inb	$0xe8,%al		/* Enable ID flag for Cyrix CPU ... */
 	andb	$0x80,%al		/* ... in CCR4 reg bit7 */
 	outb	%al,$0xe8
+#endif	/* MACH_HYP */
+
 	pushfl				/* Fetch flags ... */
 	popl	%eax			/*  ... into eax */
 	movl	%eax,%ecx		/* Save original flags for return */
@@ -1266,13 +1280,24 @@ Entry(copyoutmsg)
  * XXX only have to do this on 386's.
  */
 copyout_retry:
+#ifdef	MACH_HYP
+	movl	cr3,%ecx		/* point to page directory */
+#else	/* MACH_HYP */
 	movl	%cr3,%ecx		/* point to page directory */
+#endif	/* MACH_HYP */
 #if PAE
 	movl	%edi,%eax		/* get page directory pointer bits */
 	shrl	$(PDPSHIFT),%eax	/* from user address */
 	movl	KERNELBASE(%ecx,%eax,PTE_SIZE),%ecx
 					/* get page directory pointer */
+#ifdef	MACH_PSEUDO_PHYS
+	shrl	$(PTESHIFT),%ecx
+	movl	pfn_list,%eax
+	movl	(%eax,%ecx,4),%ecx	/* mfn_to_pfn */
+	shll	$(PTESHIFT),%ecx
+#else	/* MACH_PSEUDO_PHYS */
 	andl	$(PTE_PFN),%ecx		/* isolate page frame address */
+#endif	/* MACH_PSEUDO_PHYS */
 #endif	/* PAE */
 	movl	%edi,%eax		/* get page directory bits */
 	shrl	$(PDESHIFT),%eax	/* from user address */
@@ -1283,7 +1308,14 @@ copyout_retry:
 					/* get page directory pointer */
 	testl	$(PTE_V),%ecx		/* present? */
 	jz	0f			/* if not, fault is OK */
+#ifdef	MACH_PSEUDO_PHYS
+	shrl	$(PTESHIFT),%ecx
+	movl	pfn_list,%eax
+	movl	(%eax,%ecx,4),%ecx	/* mfn_to_pfn */
+	shll	$(PTESHIFT),%ecx
+#else	/* MACH_PSEUDO_PHYS */
 	andl	$(PTE_PFN),%ecx		/* isolate page frame address */
+#endif	/* MACH_PSEUDO_PHYS */
 	movl	%edi,%eax		/* get page table bits */
 	shrl	$(PTESHIFT),%eax
 	andl	$(PTEMASK),%eax		/* from user address */
@@ -1297,9 +1329,17 @@ copyout_retry:
 /*
  * Not writable - must fake a fault.  Turn off access to the page.
  */
+#ifdef	MACH_HYP
+	pushl	%edx
+	pushl	%ecx
+	call	hyp_invalidate_pte
+	popl	%ecx
+	popl	%edx
+#else	/* MACH_HYP */
 	andl	$(PTE_INVALID),(%ecx)	/* turn off valid bit */
 	movl	%cr3,%eax		/* invalidate TLB */
 	movl	%eax,%cr3
+#endif	/* MACH_HYP */
 0:
 
 /*

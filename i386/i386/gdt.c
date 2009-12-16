@@ -31,11 +31,18 @@
  * Global descriptor table.
  */
 #include <mach/machine/vm_types.h>
+#include <mach/xen.h>
+
+#include <intel/pmap.h>
 
 #include "vm_param.h"
 #include "seg.h"
 #include "gdt.h"
 
+#ifdef	MACH_XEN
+/* It is actually defined in xen_boothdr.S */
+extern
+#endif	/* MACH_XEN */
 struct real_descriptor gdt[GDTSZ];
 
 void
@@ -50,11 +57,21 @@ gdt_init()
 			    LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS,
 			    LINEAR_MAX_KERNEL_ADDRESS - (LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS) - 1,
 			    ACC_PL_K|ACC_DATA_W, SZ_32);
+#ifndef	MACH_HYP
 	fill_gdt_descriptor(LINEAR_DS,
 			    0,
 			    0xffffffff,
 			    ACC_PL_K|ACC_DATA_W, SZ_32);
+#endif	/* MACH_HYP */
 
+#ifdef	MACH_XEN
+	unsigned long frame = kv_to_mfn(gdt);
+	pmap_set_page_readonly(gdt);
+	if (hyp_set_gdt(kv_to_la(&frame), GDTSZ))
+		panic("couldn't set gdt\n");
+	if (hyp_vm_assist(VMASST_CMD_enable, VMASST_TYPE_4gb_segments))
+		panic("couldn't set 4gb segments vm assist");
+#else	/* MACH_XEN */
 	/* Load the new GDT.  */
 	{
 		struct pseudo_descriptor pdesc;
@@ -63,6 +80,7 @@ gdt_init()
 		pdesc.linear_base = kvtolin(&gdt);
 		lgdt(&pdesc);
 	}
+#endif	/* MACH_XEN */
 
 	/* Reload all the segment registers from the new GDT.
 	   We must load ds and es with 0 before loading them with KERNEL_DS
@@ -79,5 +97,14 @@ gdt_init()
 		     "movw	%w1,%%es\n"
 		     "movw	%w1,%%ss\n"
 		     : : "i" (KERNEL_CS), "r" (KERNEL_DS), "r" (0));
+#ifdef	MACH_XEN
+#if VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
+	/* things now get shifted */
+#ifdef	MACH_PSEUDO_PHYS
+	pfn_list = (void*) pfn_list + VM_MIN_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS;
+#endif	/* MACH_PSEUDO_PHYS */
+	la_shift += LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS;
+#endif
+#endif	/* MACH_XEN */
 }
 

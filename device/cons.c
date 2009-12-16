@@ -260,6 +260,15 @@ cnputc(c)
 	kmsg_putchar (c);
 #endif
 	
+#if defined(MACH_HYP) && 0
+	{
+		/* Also output on hypervisor's emergency console, for
+		 * debugging */
+		unsigned char d = c;
+		hyp_console_write(&d, 1);
+	}
+#endif	/* MACH_HYP */
+	
 	if (cn_tab) {
 		(*cn_tab->cn_putc)(cn_tab->cn_dev, c);
 		if (c == '\n')

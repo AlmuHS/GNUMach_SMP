@@ -36,19 +36,22 @@ dnl We require GNU make.
 #
 # Deduce the architecture we're building for.
 #
+# TODO: Should we also support constructs like `i686_xen-pc-gnu' or
+# `i686-pc_xen-gnu'?
 
 AC_CANONICAL_HOST
 
 AC_ARG_ENABLE([platform],
   AS_HELP_STRING([--enable-platform=PLATFORM], [specify the platform to build a
-    kernel for.  Defaults to `at' for `i?86'.  No other possibilities.]),
+    kernel for.  Defaults to `at' for `i?86'.  The other possibility is
+    `xen'.]),
   [host_platform=$enable_platform],
   [host_platform=default])
 [# Supported configurations.
 case $host_platform:$host_cpu in
   default:i?86)
     host_platform=at;;
-  at:i?86)
+  at:i?86 | xen:i?86)
     :;;
   *)]
     AC_MSG_ERROR([unsupported combination of cpu type `$host_cpu' and platform
@@ -123,6 +126,9 @@ esac]
 
 # PC AT.
 # TODO.  Currently handled in `i386/configfrag.ac'.
+
+# Xen.
+m4_include([xen/configfrag.ac])
 
 # Machine-specific configuration.
 

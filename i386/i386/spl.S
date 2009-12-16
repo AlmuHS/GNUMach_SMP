@@ -20,6 +20,8 @@
 #include <mach/machine/asm.h>
 #include <i386/ipl.h>
 #include <i386/pic.h>
+#include <i386/i386asm.h>
+#include <i386/xen.h>
 
 /*
  * Set IPL to the specified value.
@@ -42,6 +44,7 @@
 /*
  * Program PICs with mask in %eax.
  */
+#ifndef	MACH_XEN
 #define SETMASK()				\
 	cmpl	EXT(curr_pic_mask),%eax;	\
 	je	9f;				\
@@ -50,6 +53,21 @@
 	movb	%ah,%al;			\
 	outb	%al,$(PIC_SLAVE_OCW);		\
 9:
+#else	/* MACH_XEN */
+#define pic_mask int_mask
+#define SETMASK()				\
+	pushl	%ebx;				\
+	movl	%eax,%ebx;			\
+	xchgl	%eax,hyp_shared_info+EVTMASK;	\
+	notl	%ebx;				\
+	andl	%eax,%ebx;			/* Get unmasked events */ \
+	testl	hyp_shared_info+PENDING, %ebx;	\
+	popl	%ebx;				\
+	jz	9f;				/* Check whether there was some pending */ \
+lock	orl	$1,hyp_shared_info+CPU_PENDING_SEL; /* Yes, activate it */ \
+	movb	$1,hyp_shared_info+CPU_PENDING; \
+9:
+#endif	/* MACH_XEN */
 
 ENTRY(spl0)
 	movl	EXT(curr_ipl),%eax	/* save current ipl */

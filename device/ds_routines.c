@@ -104,6 +104,10 @@ extern struct device_emulation_ops linux_pcmcia_emulation_ops;
 #endif
 #endif
 #endif
+#ifdef MACH_HYP
+extern struct device_emulation_ops hyp_block_emulation_ops;
+extern struct device_emulation_ops hyp_net_emulation_ops;
+#endif
 extern struct device_emulation_ops mach_device_emulation_ops;
 
 /* List of emulations.  */
@@ -117,6 +121,10 @@ static struct device_emulation_ops *emulation_list[] =
   &linux_pcmcia_emulation_ops,
 #endif
 #endif
+#endif
+#ifdef MACH_HYP
+  &hyp_block_emulation_ops,
+  &hyp_net_emulation_ops,
 #endif
   &mach_device_emulation_ops,
 };

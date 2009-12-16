@@ -25,10 +25,25 @@
 
 /* XXX use xu/vm_param.h */
 #include <mach/vm_param.h>
+#include <xen/public/xen.h>
 
 /* The kernel address space is 1GB, starting at virtual address 0.  */
-#define VM_MIN_KERNEL_ADDRESS	(0x00000000)
-#define VM_MAX_KERNEL_ADDRESS	((LINEAR_MAX_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS + VM_MIN_KERNEL_ADDRESS))
+#ifdef	MACH_XEN
+#define VM_MIN_KERNEL_ADDRESS	0x20000000UL
+#else	/* MACH_XEN */
+#define VM_MIN_KERNEL_ADDRESS	0x00000000UL
+#endif	/* MACH_XEN */
+
+#ifdef	MACH_XEN
+#if	PAE
+#define HYP_VIRT_START	HYPERVISOR_VIRT_START_PAE
+#else	/* PAE */
+#define HYP_VIRT_START	HYPERVISOR_VIRT_START_NONPAE
+#endif	/* PAE */
+#define VM_MAX_KERNEL_ADDRESS	(HYP_VIRT_START - LINEAR_MIN_KERNEL_ADDRESS + VM_MIN_KERNEL_ADDRESS)
+#else	/* MACH_XEN */
+#define VM_MAX_KERNEL_ADDRESS	(LINEAR_MAX_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS + VM_MIN_KERNEL_ADDRESS)
+#endif	/* MACH_XEN */
 
 /* The kernel virtual address space is actually located
    at high linear addresses.
@@ -36,8 +51,14 @@
 #define LINEAR_MIN_KERNEL_ADDRESS	(VM_MAX_ADDRESS)
 #define LINEAR_MAX_KERNEL_ADDRESS	(0xffffffffUL)
 
+#ifdef	MACH_XEN
+/* need room for mmu updates (2*8bytes) */
+#define KERNEL_STACK_SIZE	(4*I386_PGBYTES)
+#define INTSTACK_SIZE		(4*I386_PGBYTES)
+#else	/* MACH_XEN */
 #define KERNEL_STACK_SIZE	(1*I386_PGBYTES)
 #define INTSTACK_SIZE		(1*I386_PGBYTES)
+#endif	/* MACH_XEN */
 						/* interrupt stack size */
 
 /*

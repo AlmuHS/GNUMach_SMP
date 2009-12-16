@@ -137,7 +137,7 @@ clib_routines := memcmp memcpy memmove memset bcopy bzero	\
 		 strchr strstr strsep strpbrk strtok		\
 		 htonl htons ntohl ntohs			\
 		 udivdi3 __udivdi3				\
-		 etext _edata end _end # actually ld magic, not libc.
+		 _START _start etext _edata end _end # actually ld magic, not libc.
 gnumach-undef: gnumach.$(OBJEXT)
 	$(NM) -u $< | sed 's/  *U  *//' | sort -u > $@
 MOSTLYCLEANFILES += gnumach-undef

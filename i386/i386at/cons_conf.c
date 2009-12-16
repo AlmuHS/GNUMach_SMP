@@ -30,19 +30,27 @@
 #include <sys/types.h>
 #include <device/cons.h>
 
+#ifdef	MACH_HYP
+extern	int hypcnprobe(), hypcninit(), hypcngetc(), hypcnputc();
+#else	/* MACH_HYP */
 extern	int kdcnprobe(), kdcninit(), kdcngetc(), kdcnputc();
 #if NCOM > 0 && RCLINE >= 0
 extern	int comcnprobe(), comcninit(), comcngetc(), comcnputc();
 #endif
+#endif	/* MACH_HYP */
 
 /*
  * The rest of the consdev fields are filled in by the respective
  * cnprobe routine.
  */
 struct	consdev constab[] = {
+#ifdef	MACH_HYP
+	{"hyp",	hypcnprobe,	hypcninit,	hypcngetc,	hypcnputc},
+#else	/* MACH_HYP */
 	{"kd",	kdcnprobe,	kdcninit,	kdcngetc,	kdcnputc},
 #if NCOM > 0 && RCLINE >= 0 && 1
 	{"com",	comcnprobe,	comcninit,	comcngetc,	comcnputc},
 #endif
+#endif	/* MACH_HYP */
 	{0}
 };

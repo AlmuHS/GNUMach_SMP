@@ -24,6 +24,8 @@
  * the rights to redistribute these changes.
  */
 
+#include <mach/xen.h>
+
 #include <kern/printf.h>
 #include <stdarg.h>
 
@@ -164,6 +166,9 @@ panic(const char *s, ...)
 #if	MACH_KDB
 	Debugger("panic");
 #else
+# ifdef	MACH_HYP
+	hyp_crash();
+# else
 	/* Give the user time to see the message */
 	{
 	  int i = 1000;		/* seconds */
@@ -172,6 +177,7 @@ panic(const char *s, ...)
 	}
 
 	halt_all_cpus (reboot_on_panic);
+# endif	/* MACH_HYP */
 #endif
 }
 

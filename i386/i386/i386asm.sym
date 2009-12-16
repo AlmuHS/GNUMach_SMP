@@ -45,6 +45,7 @@
 #include <i386/gdt.h>
 #include <i386/ldt.h>
 #include <i386/mp_desc.h>
+#include <i386/xen.h>
 
 
 offset	thread			th	pcb
@@ -90,6 +91,9 @@ expr	VM_MIN_ADDRESS
 expr	VM_MAX_ADDRESS
 expr	VM_MIN_KERNEL_ADDRESS				KERNELBASE
 expr	KERNEL_STACK_SIZE
+#if VM_MIN_KERNEL_ADDRESS == LINEAR_MIN_KERNEL_ADDRESS
+expr    PFN_LIST					pfn_list
+#endif
 
 #if PAE
 expr	PDPSHIFT
@@ -117,7 +121,9 @@ expr	KERNEL_RING
 expr	KERNEL_CS
 expr	KERNEL_DS
 expr	KERNEL_TSS
+#ifndef	MACH_XEN
 expr	KERNEL_LDT
+#endif	/* MACH_XEN */
 
 expr	(VM_MIN_KERNEL_ADDRESS>>PDESHIFT)*sizeof(pt_entry_t)	KERNELBASEPDE
 
@@ -135,3 +141,12 @@ expr	TIMER_HIGH_UNIT
 offset	thread			th	system_timer
 offset	thread			th	user_timer
 #endif
+
+#ifdef	MACH_XEN
+offset	shared_info		si	vcpu_info[0].evtchn_upcall_mask	CPU_CLI
+offset	shared_info		si	vcpu_info[0].evtchn_upcall_pending	CPU_PENDING
+offset	shared_info		si	vcpu_info[0].evtchn_pending_sel	CPU_PENDING_SEL
+offset	shared_info		si	evtchn_pending	PENDING
+offset	shared_info		si	evtchn_mask	EVTMASK
+offset	shared_info		si	vcpu_info[0].arch.cr2	CR2
+#endif	/* MACH_XEN */
