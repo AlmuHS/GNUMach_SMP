@@ -47,7 +47,7 @@
 #include <asm/io.h>
 #include <asm/hardirq.h>
 
-extern int linux_timer_intr (void);
+extern void linux_timer_intr (void);
 extern spl_t splhigh (void);
 extern spl_t spl0 (void);
 extern void form_pic_mask (void);
@@ -99,13 +99,13 @@ extern spl_t curr_ipl;
 extern int curr_pic_mask;
 extern int pic_mask[];
 
-extern int intnull (), prtnull ();
+extern void intnull (), prtnull ();
 
 /*
  * Generic interrupt handler for Linux devices.
  * Set up a fake `struct pt_regs' then call the real handler.
  */
-static int
+static void
 linux_intr (int irq)
 {
   struct pt_regs regs;
@@ -128,9 +128,6 @@ linux_intr (int irq)
   restore_flags (flags);
 
   intr_count--;
-
-  /* Not used. by OKUJI Yoshinori. */
-  return 0;
 }
 
 /*
@@ -208,11 +205,10 @@ enable_irq (unsigned int irq_nr)
 /*
  * Default interrupt handler for Linux.
  */
-int
+void
 linux_bad_intr (int irq)
 {
   mask_irq (irq);
-  return 0;
 }
 
 static int
@@ -685,7 +681,7 @@ void __global_restore_flags(unsigned long flags)
 
 #endif
 
-static int (*old_clock_handler) ();
+static void (*old_clock_handler) ();
 static int old_clock_pri;
 
 void

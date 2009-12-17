@@ -93,7 +93,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include "kd_mouse.h"
 
-static int (*oldvect)();		/* old interrupt vector */
+static void (*oldvect)();		/* old interrupt vector */
 static int oldunit;
 static spl_t oldspl;
 extern	struct	bus_device *cominfo[];
@@ -256,7 +256,7 @@ kd_mouse_open(dev, mouse_pic)
 	int mouse_pic;
 {
 	spl_t s = splhi();	/* disable interrupts */
-	extern int kdintr();
+	extern void kdintr();
 
 	oldvect = ivect[mouse_pic];
 	ivect[mouse_pic] = kdintr;
