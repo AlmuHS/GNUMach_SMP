@@ -166,7 +166,7 @@ static unsigned long bios32_service(unsigned long service)
 	unsigned long flags;
 
 	save_flags(flags); cli();
-	__asm__("lcall (%%edi)"
+	__asm__("lcall *(%%edi)"
 		: "=a" (return_code),
 		  "=b" (address),
 		  "=c" (length),
@@ -209,7 +209,7 @@ static int check_pcibios(void)
 		pci_indirect.address = pcibios_entry;
 
 		save_flags(flags); cli();
-		__asm__("lcall (%%edi)\n\t"
+		__asm__("lcall *(%%edi)\n\t"
 			"jc 1f\n\t"
 			"xor %%ah, %%ah\n"
 			"1:\tshl $8, %%eax\n\t"
@@ -254,7 +254,7 @@ static int pci_bios_find_class (unsigned int class_code, unsigned short index,
 	unsigned long flags;
 
 	save_flags(flags); cli();
-	__asm__ ("lcall (%%edi)\n\t"
+	__asm__ ("lcall *(%%edi)\n\t"
 		"jc 1f\n\t"
 		"xor %%ah, %%ah\n"
 		"1:"
@@ -279,7 +279,7 @@ static int pci_bios_find_device (unsigned short vendor, unsigned short device_id
 	unsigned long flags;
 
 	save_flags(flags); cli();
-	__asm__("lcall (%%edi)\n\t"
+	__asm__("lcall *(%%edi)\n\t"
 		"jc 1f\n\t"
 		"xor %%ah, %%ah\n"
 		"1:"
@@ -304,7 +304,7 @@ static int pci_bios_read_config_byte(unsigned char bus,
 	unsigned long flags;
 
 	save_flags(flags); cli();
-	__asm__("lcall (%%esi)\n\t"
+	__asm__("lcall *(%%esi)\n\t"
 		"jc 1f\n\t"
 		"xor %%ah, %%ah\n"
 		"1:"
@@ -326,7 +326,7 @@ static int pci_bios_read_config_word (unsigned char bus,
 	unsigned long flags;
 
 	save_flags(flags); cli();
-	__asm__("lcall (%%esi)\n\t"
+	__asm__("lcall *(%%esi)\n\t"
 		"jc 1f\n\t"
 		"xor %%ah, %%ah\n"
 		"1:"
@@ -348,7 +348,7 @@ static int pci_bios_read_config_dword (unsigned char bus,
 	unsigned long flags;
 
 	save_flags(flags); cli();
-	__asm__("lcall (%%esi)\n\t"
+	__asm__("lcall *(%%esi)\n\t"
 		"jc 1f\n\t"
 		"xor %%ah, %%ah\n"
 		"1:"
@@ -370,7 +370,7 @@ static int pci_bios_write_config_byte (unsigned char bus,
 	unsigned long flags;
 
 	save_flags(flags); cli();
-	__asm__("lcall (%%esi)\n\t"
+	__asm__("lcall *(%%esi)\n\t"
 		"jc 1f\n\t"
 		"xor %%ah, %%ah\n"
 		"1:"
@@ -392,7 +392,7 @@ static int pci_bios_write_config_word (unsigned char bus,
 	unsigned long flags;
 
 	save_flags(flags); cli();
-	__asm__("lcall (%%esi)\n\t"
+	__asm__("lcall *(%%esi)\n\t"
 		"jc 1f\n\t"
 		"xor %%ah, %%ah\n"
 		"1:"
@@ -414,7 +414,7 @@ static int pci_bios_write_config_dword (unsigned char bus,
 	unsigned long flags;
 
 	save_flags(flags); cli();
-	__asm__("lcall (%%esi)\n\t"
+	__asm__("lcall *(%%esi)\n\t"
 		"jc 1f\n\t"
 		"xor %%ah, %%ah\n"
 		"1:"
