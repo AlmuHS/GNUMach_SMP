@@ -46,7 +46,8 @@
 
 #include <device/cons.h>
 
-int comprobe(), comstart(), commctl();
+int comprobe(), commctl();
+void comstart(struct tty *);
 void comstop(), comattach(), comintr();
 static void comparam();
 int comgetstat(), comsetstat();
@@ -609,7 +610,7 @@ comparm(int unit, int baud, int intr, int mode, int modem)
 
 int comst_1, comst_2, comst_3, comst_4, comst_5 = 14;
 
-int
+void
 comstart(tp)
 struct tty *tp;
 {
@@ -618,7 +619,7 @@ struct tty *tp;
 
 	if (tp->t_state & (TS_TIMEOUT|TS_TTSTOP|TS_BUSY)) {
 comst_1++;
-		return(0);
+		return;
 	}
 	if ((!queue_empty(&tp->t_delayed_write)) &&
 	    (tp->t_outq.c_cc <= TTLOWAT(tp))) {
@@ -627,7 +628,7 @@ comst_2++;
 	}
 	if (!tp->t_outq.c_cc) {
 comst_3++;
-		return(0);
+		return;
 	}
 
 #if 0
@@ -651,12 +652,11 @@ comst_4++;
 	    timeout(ttrstrt, (char *)tp, (nch & 0x7f) + 6);
 	    tp->t_state |= TS_TIMEOUT;
 comst_4++;
-	    return(0);
+	    return;
 	}
 	outb(TXRX((int)tp->t_addr), nch);
 	tp->t_state |= TS_BUSY;
 #endif
-	return(0);
 }
 
 /* Check for stuck xmitters */
