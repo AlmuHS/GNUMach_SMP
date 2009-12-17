@@ -1098,7 +1098,7 @@ found_em:
 
 		if ((addr >= first_phys) &&
 		    (addr <  last_phys)) {
-		    *prevmemp = mem->pageq.next;
+		    *prevmemp = (vm_page_t) mem->pageq.next;
 		    pages[(addr - first_phys) >> PAGE_SHIFT] = mem;
 		    mem->free = FALSE;
 		    mem->extcounted = mem->external = external;
@@ -1107,7 +1107,7 @@ found_em:
 		     */
 		    if (--npages == 0) break;
 		} else
-		    prevmemp = &mem->pageq.next;
+		    prevmemp = (vm_page_t *) &mem->pageq.next;
 
 		mem = (vm_page_t) mem->pageq.next;
 	    }
