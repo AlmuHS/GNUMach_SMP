@@ -1,11 +1,28 @@
 #ifndef _ASM_SEGMENT_H
 #define _ASM_SEGMENT_H
 
+#ifdef MACH
+
+#ifdef MACH_HYP
+#define KERNEL_CS	0x09
+#define KERNEL_DS	0x11
+#else /* MACH_HYP */
+#define KERNEL_CS	0x08
+#define KERNEL_DS	0x10
+#endif /* MACH_HYP */
+
+#define USER_CS		0x17
+#define USER_DS		0x1F
+
+#else /* !MACH */
+
 #define KERNEL_CS	0x10
 #define KERNEL_DS	0x18
 
 #define USER_CS		0x23
 #define USER_DS		0x2B
+
+#endif /* !MACH */
 
 #ifndef __ASSEMBLY__
 
@@ -32,7 +49,7 @@ struct __segment_dummy { unsigned long a[100]; };
 #define __sd(x) ((struct __segment_dummy *) (x))
 #define __const_sd(x) ((const struct __segment_dummy *) (x))
 
-static inline void __put_user(unsigned long x, void * y, int size)
+static inline void __attribute__((always_inline)) __put_user(unsigned long x, void * y, int size)
 {
 	switch (size) {
 		case 1:
@@ -55,7 +72,7 @@ static inline void __put_user(unsigned long x, void * y, int size)
 	}
 }
 
-static inline unsigned long __get_user(const void * y, int size)
+static inline unsigned long __attribute__((always_inline)) __get_user(const void * y, int size)
 {
 	unsigned long result;
 
@@ -80,27 +97,28 @@ static inline unsigned long __get_user(const void * y, int size)
 	}
 }
 
+#if defined(__GNUC__) && (__GNUC__ == 2) && (__GNUC_MINOR__ < 95)
 static inline void __generic_memcpy_tofs(void * to, const void * from, unsigned long n)
 {
     __asm__ volatile
-	("	cld
-		push %%es
-		push %%fs
-		cmpl $3,%0
-		pop %%es
-		jbe 1f
-		movl %%edi,%%ecx
-		negl %%ecx
-		andl $3,%%ecx
-		subl %%ecx,%0
-		rep; movsb
-		movl %0,%%ecx
-		shrl $2,%%ecx
-		rep; movsl
-		andl $3,%0
-	1:	movl %0,%%ecx
-		rep; movsb
-		pop %%es"
+	("cld\n"
+	"push %%es\n"
+	"push %%fs\n"
+	"cmpl $3,%0\n"
+	"pop %%es\n"
+	"jbe 1f\n"
+	"movl %%edi,%%ecx\n"
+	"negl %%ecx\n"
+	"andl $3,%%ecx\n"
+	"subl %%ecx,%0\n"
+	"rep; movsb\n"
+	"movl %0,%%ecx\n"
+	"shrl $2,%%ecx\n"
+	"rep; movsl\n"
+	"andl $3,%0\n"
+	"1: movl %0,%%ecx\n"
+	"rep; movsb\n"
+	"pop %%es\n"
 	:"=abd" (n)
 	:"0" (n),"D" ((long) to),"S" ((long) from)
 	:"cx","di","si");
@@ -171,24 +189,24 @@ __asm__("cld\n\t" \
 
 static inline void __generic_memcpy_fromfs(void * to, const void * from, unsigned long n)
 {
-    __asm__ volatile
-	("	cld
-		cmpl $3,%0
-		jbe 1f
-		movl %%edi,%%ecx
-		negl %%ecx
-		andl $3,%%ecx
-		subl %%ecx,%0
-		fs; rep; movsb
-		movl %0,%%ecx
-		shrl $2,%%ecx
-		fs; rep; movsl
-		andl $3,%0
-	1:	movl %0,%%ecx
-		fs; rep; movsb"
-	:"=abd" (n)
-	:"0" (n),"D" ((long) to),"S" ((long) from)
-	:"cx","di","si", "memory");
+  __asm__ volatile
+    ("cld\n"
+     "cmpl $3,%0\n"
+     "jbe 1f\n"
+     "movl %%edi,%%ecx\n"
+     "negl %%ecx\n"
+     "andl $3,%%ecx\n"
+     "subl %%ecx,%0\n"
+     "fs; rep; movsb\n"
+     "movl %0,%%ecx\n"
+     "shrl $2,%%ecx\n"
+     "fs; rep; movsl\n"
+     "andl $3,%0\n"
+     "1:movl %0,%%ecx\n"
+     "fs; rep; movsb\n"
+     :"=abd" (n)
+     :"0" (n),"D" ((long) to),"S" ((long) from)
+     :"cx","di","si", "memory");
 }
 
 static inline void __constant_memcpy_fromfs(void * to, const void * from, unsigned long n)
@@ -259,6 +277,29 @@ __asm__("cld\n\t" \
 (__builtin_constant_p(n) ? \
  __constant_memcpy_tofs((to),(from),(n)) : \
  __generic_memcpy_tofs((to),(from),(n)))
+
+
+#else /* code for gcc-2.95.x and newer follows */
+
+static inline void memcpy_fromfs(void * to, const void * from, unsigned long n)
+{
+  char *d = (char *)to;
+  const char *s = (const char *)from;
+  while (n-- > 0) {
+    *d++ = __get_user(s++, 1);
+  }
+}
+
+static inline void memcpy_tofs(void * to, const void * from, unsigned long n)
+{
+  char *d = (char *)to;
+  const char *s = (const char *)from;
+  while (n-- > 0) {
+    __put_user(*s++, d++, 1);
+  }
+}
+
+#endif /* not gcc-2.95 */
 
 /*
  * These are deprecated..
