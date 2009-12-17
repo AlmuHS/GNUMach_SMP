@@ -59,6 +59,7 @@
 #include <i386/mp_desc.h>
 #endif
 
+extern thread_t	Load_context();
 extern thread_t	Switch_context();
 extern void	Thread_continue();
 

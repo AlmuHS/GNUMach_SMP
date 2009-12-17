@@ -71,6 +71,7 @@ void	lprattach(struct bus_device *);
 #ifdef	MACH_KERNEL
 int lprgetstat(), lprsetstat();
 #endif	/* MACH_KERNEL */
+void lprpr_addr();
 
 struct bus_device *lprinfo[NLPR];	/* ??? */
 
