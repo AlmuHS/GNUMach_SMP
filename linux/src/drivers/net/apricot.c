@@ -98,7 +98,7 @@ struct i596_tbd {
     unsigned short size;
     unsigned short pad;
     struct i596_tbd *next;
-    char *data;
+    unsigned char *data;
 };
 
 struct tx_cmd {
@@ -115,7 +115,7 @@ struct i596_rfd {
     long rbd; 
     unsigned short count;
     unsigned short size;
-    char data[1532];
+    unsigned char data[1532];
 };
 
 #define RX_RING_SIZE 8
@@ -187,7 +187,7 @@ static void i596_interrupt(int irq, void *dev_id, struct pt_regs *regs);
 static int i596_close(struct device *dev);
 static struct enet_statistics *i596_get_stats(struct device *dev);
 static void i596_add_cmd(struct device *dev, struct i596_cmd *cmd);
-static void print_eth(char *);
+static void print_eth(unsigned char *);
 static void set_multicast_list(struct device *dev);
 
 
@@ -659,20 +659,20 @@ i596_start_xmit(struct sk_buff *skb, struct device *dev)
 }
 
 
-static void print_eth(char *add)
+static void print_eth(unsigned char *add)
 {
     int i;
 
     printk ("Dest  ");
     for (i = 0; i < 6; i++)
-	printk(" %2.2X", (unsigned char)add[i]);
+	printk(" %2.2X", add[i]);
     printk ("\n");
 
     printk ("Source");
     for (i = 0; i < 6; i++)
-	printk(" %2.2X", (unsigned char)add[i+6]);
+	printk(" %2.2X", add[i+6]);
     printk ("\n");
-    printk ("type %2.2X%2.2X\n", (unsigned char)add[12], (unsigned char)add[13]);
+    printk ("type %2.2X%2.2X\n", add[12], add[13]);
 }
 
 int apricot_probe(struct device *dev)
@@ -980,7 +980,7 @@ static void set_multicast_list(struct device *dev)
 			memcpy(cp, dmi,6);
 			cp+=6;
 		}
-		print_eth (((char *)(cmd + 1)) + 2);
+		print_eth (((unsigned char *)(cmd + 1)) + 2);
 		i596_add_cmd(dev, cmd);
 	}
 	else
