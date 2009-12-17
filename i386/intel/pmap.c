@@ -354,7 +354,12 @@ lock_data_t	pmap_system_lock;
 		flush_tlb(); \
 }
 #else
-#define INVALIDATE_TLB(pmap, s, e) flush_tlb()
+#define INVALIDATE_TLB(pmap, s, e) { \
+	(void) (pmap); \
+	(void) (s); \
+	(void) (e); \
+	flush_tlb(); \
+}
 #endif
 #endif	/* MACH_HYP */
 

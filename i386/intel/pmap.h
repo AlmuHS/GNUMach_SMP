@@ -375,15 +375,19 @@ pt_entry_t *pmap_pte(pmap_t pmap, vm_offset_t addr);
  */
 
 #define	PMAP_ACTIVATE_KERNEL(my_cpu)	{				\
+	(void) (my_cpu);						\
 	kernel_pmap->cpus_using = TRUE;					\
 }
 
 #define	PMAP_DEACTIVATE_KERNEL(my_cpu)	{				\
+	(void) (my_cpu);						\
 	kernel_pmap->cpus_using = FALSE;				\
 }
 
 #define	PMAP_ACTIVATE_USER(pmap, th, my_cpu)	{			\
 	register pmap_t		tpmap = (pmap);				\
+	(void) (th);							\
+	(void) (my_cpu);						\
 									\
 	set_pmap(tpmap);						\
 	if (tpmap != kernel_pmap) {					\
@@ -392,6 +396,8 @@ pt_entry_t *pmap_pte(pmap_t pmap, vm_offset_t addr);
 }
 
 #define PMAP_DEACTIVATE_USER(pmap, thread, cpu)	{			\
+	(void) (thread);						\
+	(void) (cpu);							\
 	if ((pmap) != kernel_pmap)					\
 	    (pmap)->cpus_using = FALSE;					\
 }
