@@ -765,8 +765,10 @@ ast_from_interrupt:
  *
  * frame->	saved %ebp
  *		return address in interrupt handler
+ * #ifndef MACH_XEN
  *		iunit
  *		saved SPL
+ * #endif
  *		return address == return_to_iret_i
  *		saved %edx
  *		saved %ecx
@@ -778,8 +780,10 @@ ast_from_interrupt:
  * OR:
  * frame->	saved %ebp
  *		return address in interrupt handler
+ * #ifndef MACH_XEN
  *		iunit
  *		saved SPL
+ * #endif
  *		return address == return_to_iret
  *		pointer to save area on old stack
  *	      [ saved %ebx, if accurate timing ]
