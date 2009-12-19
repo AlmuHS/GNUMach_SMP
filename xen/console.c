@@ -112,8 +112,11 @@ static void hypcnintr(int unit, spl_t spl, void *ret_addr, void *regs) {
 		mb();
 		console->in_cons++;
 #ifdef	MACH_KDB
-		if (c == (char)'£')
-			panic("£ pressed");
+		if (c == (char)'£') {
+			printf("£ pressed\n");
+			kdb_kintr();
+			continue;
+		}
 #endif	/* MACH_KDB */
 		if ((tp->t_state & (TS_ISOPEN|TS_WOPEN)))
 			(*linesw[tp->t_line].l_rint)(c, tp);

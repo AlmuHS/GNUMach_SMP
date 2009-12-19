@@ -798,7 +798,11 @@ ast_from_interrupt:
  * Call kdb, passing it that register save area.
  */
 
+#ifdef	MACH_XEN
+#define	RET_OFFSET	8
+#else	/* MACH_XEN */
 #define	RET_OFFSET	16
+#endif	/* MACH_XEN */
 
 ENTRY(kdb_kintr)
 	movl	%ebp,%eax		/* save caller`s frame pointer */
