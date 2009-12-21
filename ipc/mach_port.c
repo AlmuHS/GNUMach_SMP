@@ -602,8 +602,13 @@ mach_port_deallocate(
 		return KERN_INVALID_TASK;
 
 	kr = ipc_right_lookup_write(space, name, &entry);
-	if (kr != KERN_SUCCESS)
+	if (kr != KERN_SUCCESS) {
+		if (name != MACH_PORT_NULL && name != MACH_PORT_DEAD) {
+			printf("task %p deallocating an invalid port %u, most probably a bug.\n", current_task(), name);
+			SoftDebugger("mach_port_deallocate");
+		}
 		return kr;
+	}
 	/* space is write-locked */
 
 	kr = ipc_right_dealloc(space, name, entry); /* unlocks space */
