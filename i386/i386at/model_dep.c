@@ -560,7 +560,7 @@ void c_boot_entry(vm_offset_t bi)
 	 */
 	if (strstr(kernel_cmdline, "-d ")) {
 		cninit();		/* need console for debugger */
-		Debugger("init");
+		SoftDebugger("init");
 	}
 #else
 	if (strstr (kernel_cmdline, "-H "))

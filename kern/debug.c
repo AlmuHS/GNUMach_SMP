@@ -73,16 +73,15 @@ Assert(char *exp, char *file, int line)
 	Debugger("assertion failure");
 }
 
-void Debugger(message)
+void SoftDebugger(message)
 	char *	message;
 {
-#if	!MACH_KDB
-	panic("Debugger invoked, but there isn't one!");
-#endif
+	printf("Debugger invoked: %s\n", message);
 
-#ifdef	lint
-	message++;
-#endif	/* lint */
+#if	!MACH_KDB
+	printf("But no debugger, continuing.\n");
+	return;
+#endif
 
 #if	defined(vax) || defined(PC532)
 	asm("bpt");
@@ -104,6 +103,16 @@ void Debugger(message)
 #ifdef	i386
 	asm("int3");
 #endif
+}
+
+void Debugger(message)
+	char *	message;
+{
+#if	!MACH_KDB
+	panic("Debugger invoked, but there isn't one!");
+#endif
+
+	SoftDebugger(message);
 
 	panic("Debugger returned!");
 }

@@ -2543,7 +2543,7 @@ void vm_object_collapse(
 					backing_object, backing_object->pager, backing_object->pager_request,
 					object);
 				if (vm_object_collapse_debug > 2)
-				    Debugger("vm_object_collapse");
+				    SoftDebugger("vm_object_collapse");
 			}
 
 			object->pager = backing_object->pager;

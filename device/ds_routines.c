@@ -147,7 +147,7 @@ ds_device_open (ipc_port_t open_port, ipc_port_t reply_port,
   if (! IP_VALID (reply_port))
     {
       printf ("ds_* invalid reply port\n");
-      Debugger ("ds_* reply_port");
+      SoftDebugger ("ds_* reply_port");
       return MIG_NO_REPLY;
     }
 
@@ -1092,7 +1092,7 @@ device_read(device, reply_port, reply_port_type, mode, recnum,
 	 */
 	if (!IP_VALID(reply_port)) {
 	    printf("ds_* invalid reply port\n");
-	    Debugger("ds_* reply_port");
+	    SoftDebugger("ds_* reply_port");
 	    return (MIG_NO_REPLY);	/* no sense in doing anything */
 	}
 
@@ -1174,7 +1174,7 @@ device_read_inband(device, reply_port, reply_port_type, mode, recnum,
 	 */
 	if (!IP_VALID(reply_port)) {
 	    printf("ds_* invalid reply port\n");
-	    Debugger("ds_* reply_port");
+	    SoftDebugger("ds_* reply_port");
 	    return (MIG_NO_REPLY);	/* no sense in doing anything */
 	}
 
