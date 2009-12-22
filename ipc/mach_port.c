@@ -590,6 +590,7 @@ mach_port_destroy(
  *		KERN_INVALID_RIGHT	The right isn't correct.
  */
 
+static int debug_mach_port_deallocate = 0;
 kern_return_t
 mach_port_deallocate(
 	ipc_space_t	space,
@@ -605,7 +606,8 @@ mach_port_deallocate(
 	if (kr != KERN_SUCCESS) {
 		if (name != MACH_PORT_NULL && name != MACH_PORT_DEAD) {
 			printf("task %p deallocating an invalid port %u, most probably a bug.\n", current_task(), name);
-			SoftDebugger("mach_port_deallocate");
+			if (debug_mach_port_deallocate)
+				SoftDebugger("mach_port_deallocate");
 		}
 		return kr;
 	}
