@@ -111,7 +111,7 @@ static void hypcnintr(int unit, spl_t spl, void *ret_addr, void *regs) {
 		int c = hyp_ring_cell(console->in, console->in_cons);
 		mb();
 		console->in_cons++;
-#ifdef	MACH_KDB
+#if	MACH_KDB
 		if (c == (char)'£') {
 			printf("£ pressed\n");
 			kdb_kintr();
