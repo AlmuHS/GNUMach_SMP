@@ -60,6 +60,9 @@ extern int	kbdgetstat(), kbdsetstat();
 #ifndef	MACH_HYP
 extern int	mouseopen(), mouseclose(), mouseread(), mousegetstat();
 #define	mousename		"mouse"
+
+extern vm_offset_t memmmap();
+#define	memname			"mem"
 #endif	/* MACH_HYP */
 
 extern int	kmsgopen(), kmsgclose(), kmsgread(), kmsggetstat();
@@ -126,6 +129,13 @@ struct dev_ops	dev_name_list[] =
 	  nodev,	kbdgetstat,	kbdsetstat,	nomap,
 	  nodev,	nulldev,	nulldev,	0,
 	  nodev },
+
+#ifndef	MACH_HYP
+	{ memname,	nulldev,	nulldev,	nodev,
+	  nodev,	nodev,		nodev,		memmmap,
+	  nodev,	nulldev,	nulldev,	0,
+	  nodev },
+#endif	/* MACH_HYP */
 
 #ifdef	MACH_KMSG
         { kmsgname,     kmsgopen,       kmsgclose,       kmsgread,
