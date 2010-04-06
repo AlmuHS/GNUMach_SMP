@@ -110,12 +110,13 @@ void bootstrap_create()
 #ifdef	MACH_XEN
   struct multiboot_module *bmods = ((struct multiboot_module *)
                                    boot_info.mod_start);
-  int n;
-  for (n = 0; bmods[n].mod_start; n++) {
-    bmods[n].mod_start = kvtophys(bmods[n].mod_start + (vm_offset_t) bmods);
-    bmods[n].mod_end = kvtophys(bmods[n].mod_end + (vm_offset_t) bmods);
-    bmods[n].string = kvtophys(bmods[n].string + (vm_offset_t) bmods);
-  }
+  int n = 0;
+  if (bmods)
+    for (n = 0; bmods[n].mod_start; n++) {
+      bmods[n].mod_start = kvtophys(bmods[n].mod_start + (vm_offset_t) bmods);
+      bmods[n].mod_end = kvtophys(bmods[n].mod_end + (vm_offset_t) bmods);
+      bmods[n].string = kvtophys(bmods[n].string + (vm_offset_t) bmods);
+    }
   boot_info.mods_count = n;
   boot_info.flags |= MULTIBOOT_MODS;
 #else	/* MACH_XEN */
