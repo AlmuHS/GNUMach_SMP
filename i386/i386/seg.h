@@ -180,8 +180,8 @@ fill_descriptor(struct real_descriptor *_desc, unsigned base, unsigned limit,
 	desc->granularity = sizebits;
 	desc->base_high = base >> 24;
 #ifdef	MACH_XEN
-	if (hyp_do_update_descriptor(kv_to_ma(_desc), *(unsigned long long*)desc))
-		panic("couldn't update descriptor(%p to %08lx%08lx)\n", kv_to_ma(_desc), *(((unsigned long*)desc)+1), *(unsigned long *)desc);
+	if (hyp_do_update_descriptor(kv_to_ma(_desc), *(uint64_t*)desc))
+		panic("couldn't update descriptor(%p to %08lx%08lx)\n", (vm_offset_t) kv_to_ma(_desc), *(((unsigned long*)desc)+1), *(unsigned long *)desc);
 #endif	/* MACH_XEN */
 }
 

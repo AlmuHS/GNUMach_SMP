@@ -199,7 +199,7 @@ void switch_ktss(pcb)
 	    if (memcmp(gdt_desc_p (mycpu, USER_GDT + (i << 3)),
 		&pcb->ims.user_gdt[i], sizeof pcb->ims.user_gdt[i])) {
 		if (hyp_do_update_descriptor(kv_to_ma(gdt_desc_p (mycpu, USER_GDT + (i << 3))),
-			*(unsigned long long *) &pcb->ims.user_gdt[i]))
+			*(uint64_t *) &pcb->ims.user_gdt[i]))
 		    panic("couldn't set user gdt %d\n",i);
 	    }
 	}

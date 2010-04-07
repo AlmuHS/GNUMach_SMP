@@ -67,12 +67,17 @@ extern unsigned long *mfn_list;
 #endif	/* MACH_PSEUDO_PHYS */
 
 #define pa_to_mfn(a)		(pfn_to_mfn(atop(a)))
+#ifdef PAE
+#define pa_to_ma(a)		({ vm_offset_t __a = (vm_offset_t) (a); (((pt_entry_t) pa_to_mfn(__a)) << PAGE_SHIFT) | (__a & PAGE_MASK); })
+#define ma_to_pa(a)		({ pt_entry_t __a = (pt_entry_t) (a); (mfn_to_pfn(__a >> PAGE_SHIFT) << PAGE_SHIFT) | (__a & PAGE_MASK); })
+#else
 #define pa_to_ma(a)		({ vm_offset_t __a = (vm_offset_t) (a); ptoa(pa_to_mfn(__a)) | (__a & PAGE_MASK); })
-#define ma_to_pa(a)		({ vm_offset_t __a = (vm_offset_t) (a); (mfn_to_pfn(atop((vm_offset_t)(__a))) << PAGE_SHIFT) | (__a & PAGE_MASK); })
+#define ma_to_pa(a)		({ vm_offset_t __a = (vm_offset_t) (a); (mfn_to_pfn(atop((__a))) << PAGE_SHIFT) | (__a & PAGE_MASK); })
+#endif
 
 #define kv_to_mfn(a)		pa_to_mfn(_kvtophys(a))
 #define kv_to_ma(a)		pa_to_ma(_kvtophys(a))
-#define mfn_to_kv(mfn)		(phystokv(ma_to_pa(ptoa(mfn))))
+#define mfn_to_kv(mfn)		phystokv(ptoa(mfn_to_pfn(mfn)))
 
 #include <machine/xen.h>
 

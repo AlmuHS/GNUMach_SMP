@@ -152,7 +152,7 @@ MACH_INLINE type hyp_##name(type1 arg1, type2 arg2, type3 arg3, type4 arg4, type
 _hypcall1(long, set_trap_table, vm_offset_t /* struct trap_info * */, traps);
 
 _hypcall4(int, mmu_update, vm_offset_t /* struct mmu_update * */, req, int, count, vm_offset_t /* int * */, success_count, domid_t, domid)
-MACH_INLINE int hyp_mmu_update_pte(unsigned long pte, unsigned long long val)
+MACH_INLINE int hyp_mmu_update_pte(pt_entry_t pte, pt_entry_t val)
 {
 	struct mmu_update update =
 	{
@@ -167,8 +167,8 @@ MACH_INLINE int hyp_mmu_update_pte(unsigned long pte, unsigned long long val)
 #define HYP_BATCH_MMU_UPDATES 256
 
 #define hyp_mmu_update_la(la, val) hyp_mmu_update_pte( \
-	(unsigned long)(((pt_entry_t*)(kernel_pmap->dirbase[lin2pdenum((unsigned long)la)] & INTEL_PTE_PFN)) \
-		+ ptenum((unsigned long)la)), val)
+	(kernel_pmap->dirbase[lin2pdenum((vm_offset_t)(la))] & INTEL_PTE_PFN) \
+		+ ptenum((vm_offset_t)(la)) * sizeof(pt_entry_t), val)
 
 _hypcall2(long, set_gdt, vm_offset_t /* unsigned long * */, frame_list, unsigned int, entries)
 
@@ -178,10 +178,16 @@ _hypcall4(long, set_callbacks,  unsigned long, es,  void *, ea,
 				unsigned long, fss, void *, fsa);
 _hypcall1(long, fpu_taskswitch, int, set);
 
+#ifdef PAE
+#define hyp_high(pte) ((pte) >> 32)
+#else
+#define hyp_high(pte) 0
+#endif
 _hypcall4(long, update_descriptor, unsigned long, ma_lo, unsigned long, ma_hi, unsigned long, desc_lo, unsigned long, desc_hi);
 #define hyp_do_update_descriptor(ma, desc) ({ \
-	unsigned long long __desc = (desc); \
-	hyp_update_descriptor(ma, 0, __desc, __desc >> 32); \
+	pt_entry_t __ma = (ma); \
+	uint64_t __desc = (desc); \
+	hyp_update_descriptor(__ma & 0xffffffffU, hyp_high(__ma), __desc & 0xffffffffU, __desc >> 32); \
 })
 
 #include <xen/public/memory.h>
@@ -200,8 +206,8 @@ MACH_INLINE void hyp_free_mfn(unsigned long mfn)
 
 _hypcall4(int, update_va_mapping, unsigned long, va, unsigned long, val_lo, unsigned long, val_hi, unsigned long, flags);
 #define hyp_do_update_va_mapping(va, val, flags) ({ \
-	unsigned long long __val = (val); \
-	hyp_update_va_mapping(va, __val & 0xffffffffU, __val >> 32, flags); \
+	pt_entry_t __val = (val); \
+	hyp_update_va_mapping(va, __val & 0xffffffffU, hyp_high(__val), flags); \
 })
 
 MACH_INLINE void hyp_free_page(unsigned long pfn, void *va)
@@ -271,8 +277,8 @@ MACH_INLINE void hyp_invlpg(vm_offset_t lin) {
 
 _hypcall2(long, set_timer_op, unsigned long, absolute_lo, unsigned long, absolute_hi);
 #define hyp_do_set_timer_op(absolute_nsec) ({ \
-	unsigned long long __absolute = (absolute_nsec); \
-	hyp_set_timer_op(__absolute, __absolute >> 32); \
+	uint64_t __absolute = (absolute_nsec); \
+	hyp_set_timer_op(__absolute & 0xffffffffU, __absolute >> 32); \
 })
 
 #include <xen/public/event_channel.h>

@@ -133,7 +133,11 @@ typedef unsigned int	pt_entry_t;
 #define INTEL_PTE_GLOBAL	0x00000100
 #endif	/* MACH_XEN */
 #define INTEL_PTE_WIRED		0x00000200
+#ifdef PAE
+#define INTEL_PTE_PFN		0xfffffffffffff000ULL
+#else
 #define INTEL_PTE_PFN		0xfffff000
+#endif
 
 #define	pa_to_pte(a)		((a) & INTEL_PTE_PFN)
 #ifdef	MACH_PSEUDO_PHYS
