@@ -683,7 +683,7 @@ void pmap_bootstrap()
 
 				l1_map[n_l1map] = (pt_entry_t*) phystokv(pmap_grab_page());
 				for (j = 0; j < NPTES; j++)
-					l1_map[n_l1map][j] = intel_ptob(pfn_to_mfn((i - lin2pdenum(VM_MIN_KERNEL_ADDRESS)) * NPTES + j)) | INTEL_PTE_VALID | INTEL_PTE_WRITE;
+					l1_map[n_l1map][j] = (((pt_entry_t)pfn_to_mfn((i - lin2pdenum(VM_MIN_KERNEL_ADDRESS)) * NPTES + j)) << PAGE_SHIFT) | INTEL_PTE_VALID | INTEL_PTE_WRITE;
 				pmap_set_page_readonly_init(l1_map[n_l1map]);
 				if (!hyp_mmuext_op_mfn (MMUEXT_PIN_L1_TABLE, kv_to_mfn (l1_map[n_l1map])))
 					panic("couldn't pin page %p(%p)", l1_map[n_l1map], (vm_offset_t) kv_to_ma (l1_map[n_l1map]));
