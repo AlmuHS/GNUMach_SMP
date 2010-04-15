@@ -146,7 +146,7 @@ MACH_INLINE void lidt(struct pseudo_descriptor *pdesc)
 }
 MACH_INLINE void lldt(unsigned short ldt_selector)
 {
-	__asm volatile("lldt %w0" : : "r" (ldt_selector));
+	__asm volatile("lldt %w0" : : "r" (ldt_selector) : "memory");
 }
 
 #ifdef CODE16

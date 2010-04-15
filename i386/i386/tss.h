@@ -83,7 +83,7 @@ struct task_tss
 MACH_INLINE void
 ltr(unsigned short segment)
 {
-	__asm volatile("ltr %0" : : "r" (segment));
+	__asm volatile("ltr %0" : : "r" (segment) : "memory");
 }
 
 #endif	/* _I386_TSS_H_ */
