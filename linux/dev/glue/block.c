@@ -1704,6 +1704,25 @@ device_get_status (void *d, dev_flavor_t flavor, dev_status_t status,
   return D_SUCCESS;
 }
 
+static io_return_t
+device_set_status (void *d, dev_flavor_t flavor, dev_status_t status,
+		   mach_msg_type_number_t *status_count)
+{
+  struct block_data *bd = d;
+
+  switch (flavor)
+    {
+      case BLKRRPART:
+	{
+	  DECL_DATA;
+	  INIT_DATA();
+	  return (*bd->ds->fops->ioctl) (&td.inode, &td.file, flavor, 0);
+	}
+    }
+
+  return D_INVALID_OPERATION;
+}
+
 struct device_emulation_ops linux_block_emulation_ops =
 {
   NULL,
@@ -1715,7 +1734,7 @@ struct device_emulation_ops linux_block_emulation_ops =
   NULL,
   device_read,
   NULL,
-  NULL,
+  device_set_status,
   device_get_status,
   NULL,
   NULL,
