@@ -48,6 +48,7 @@ extern int printf (const char *, ...);
    Increase MEM_CHUNKS if the kernel is running out of memory.  */
 #define MEM_CHUNK_SIZE	(64 * 1024)
 #define MEM_CHUNKS	7
+#define MEM_DMA_LIMIT	(16 * 1024 * 1024)
 
 /* Mininum amount that linux_kmalloc will allocate.  */
 #define MIN_ALLOC	12
@@ -100,7 +101,7 @@ linux_kmem_init ()
     {
       /* Allocate memory.  */
       pages_free[i].start = (unsigned long) alloc_contig_mem (MEM_CHUNK_SIZE,
-							      16 * 1024 * 1024,
+							      MEM_DMA_LIMIT,
 							      0xffff, &pages);
 
       assert (pages_free[i].start);
@@ -109,7 +110,7 @@ linux_kmem_init ()
       /* Sanity check: ensure pages are contiguous and within DMA limits.  */
       for (p = pages, j = 0; j < MEM_CHUNK_SIZE - PAGE_SIZE; j += PAGE_SIZE)
 	{
-	  assert (p->phys_addr < 16 * 1024 * 1024);
+	  assert (p->phys_addr < MEM_DMA_LIMIT);
 	  assert (p->phys_addr + PAGE_SIZE
 		  == ((vm_page_t) p->pageq.next)->phys_addr);
 
