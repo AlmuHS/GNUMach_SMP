@@ -1495,6 +1495,10 @@ static inline void do_rw_disk (ide_drive_t *drive, struct request *rq, unsigned 
 		if (drive->using_dma && !(HWIF(drive)->dmaproc(ide_dma_write, drive)))
 			return;
 #endif /* CONFIG_BLK_DEV_TRITON */
+		if (drive->mult_count)
+			ide_set_handler (drive, &multwrite_intr, WAIT_CMD);
+		else
+			ide_set_handler (drive, &write_intr, WAIT_CMD);
 		OUT_BYTE(drive->mult_count ? WIN_MULTWRITE : WIN_WRITE, io_base+IDE_COMMAND_OFFSET);
 		if (ide_wait_stat(drive, DATA_READY, drive->bad_wstat, WAIT_DRQ)) {
 			printk("%s: no DRQ after issuing %s\n", drive->name,
@@ -1505,10 +1509,8 @@ static inline void do_rw_disk (ide_drive_t *drive, struct request *rq, unsigned 
 			cli();
 		if (drive->mult_count) {
 			HWGROUP(drive)->wrq = *rq; /* scratchpad */
-			ide_set_handler (drive, &multwrite_intr, WAIT_CMD);
 			ide_multwrite(drive, drive->mult_count);
 		} else {
-			ide_set_handler (drive, &write_intr, WAIT_CMD);
 			ide_output_data(drive, rq->buffer, SECTOR_WORDS);
 		}
 		return;
