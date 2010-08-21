@@ -526,6 +526,18 @@ printf("user trap %d error %d sub %08x\n", type, code, subcode);
 		/*NOTREACHED*/
 		break;
 
+#ifdef MACH_XEN
+	    case 15:
+		{
+			static unsigned count = 0;
+			if (!count) {
+				printf("4gb segment access, probably from TLS use, please use a Xenified libc package (i.e. with the nosegneg option)\n");
+				count = 1;
+			}
+			return 0;
+		}
+#endif
+
 	    case T_FLOATING_POINT_ERROR:
 		fpexterrflt();
 		return 0;

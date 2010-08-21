@@ -108,7 +108,11 @@ EXCEP_SPC(0x0b,t_segnp)
 EXCEP_ERR(0x0c,t_stack_fault)
 EXCEP_SPC(0x0d,t_gen_prot)
 EXCEP_SPC(0x0e,t_page_fault)
+#ifdef MACH_XEN
+EXCEP_ERR(0x0f,t_trap_0f)
+#else
 EXCEPTION(0x0f,t_trap_0f)
+#endif
 EXCEPTION(0x10,t_fpu_err)
 EXCEPTION(0x11,t_trap_11)
 EXCEPTION(0x12,t_trap_12)
