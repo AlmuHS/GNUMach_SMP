@@ -531,8 +531,10 @@ printf("user trap %d error %d sub %08x\n", type, code, subcode);
 		{
 			static unsigned count = 0;
 			if (!count) {
-				printf("4gb segment access, probably from TLS use, please use a Xenified libc package (i.e. with the nosegneg option)\n");
 				count = 1;
+				printf("4gb segment access, probably from TLS use, please use a Xenified libc package (i.e. with the nosegneg option)\n");
+				if (hyp_vm_assist(VMASST_CMD_disable, VMASST_TYPE_4gb_segments_notify))
+					panic("couldn't disable 4gb segments vm assist notify");
 			}
 			return 0;
 		}
