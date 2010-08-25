@@ -71,8 +71,10 @@ gdt_init()
 		panic("couldn't set gdt\n");
 	if (hyp_vm_assist(VMASST_CMD_enable, VMASST_TYPE_4gb_segments))
 		panic("couldn't set 4gb segments vm assist");
+#if 0
 	if (hyp_vm_assist(VMASST_CMD_enable, VMASST_TYPE_4gb_segments_notify))
 		panic("couldn't set 4gb segments vm assist notify");
+#endif
 #else	/* MACH_XEN */
 	/* Load the new GDT.  */
 	{
