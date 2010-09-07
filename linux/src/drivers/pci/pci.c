@@ -1121,10 +1121,8 @@ static unsigned int scan_bus(struct pci_bus *bus, unsigned long *mem_startp)
 
 		pcibios_read_config_dword(bus->number, devfn, PCI_VENDOR_ID, &l);
 		/* some broken boards return 0 if a slot is empty: */
-		if (l == 0xffffffff || l == 0x00000000) {
-			is_multi = 0;
+		if (l == 0xffffffff || l == 0x00000000 || l == 0x0000ffff || l == 0xffff0000) 
 			continue;
-		}
 
 		dev = pci_malloc(sizeof(*dev), mem_startp);
 		dev->bus = bus;
