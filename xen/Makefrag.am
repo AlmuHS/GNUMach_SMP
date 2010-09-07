@@ -21,12 +21,63 @@
 #
 
 libkernel_a_SOURCES += \
+	xen/public/arch-x86_32.h \
+	xen/public/arch-x86_64.h \
+	xen/public/arch-x86/xen.h \
+	xen/public/arch-x86/xen-mca.h \
+	xen/public/arch-x86/xen-x86_32.h \
+	xen/public/arch-x86/xen-x86_64.h \
+	xen/public/callback.h \
+	xen/public/COPYING \
+	xen/public/dom0_ops.h \
+	xen/public/domctl.h \
+	xen/public/elfnote.h \
+	xen/public/elfstructs.h \
+	xen/public/event_channel.h \
+	xen/public/features.h \
+	xen/public/grant_table.h \
+	xen/public/io/blkif.h \
+	xen/public/io/console.h \
+	xen/public/io/fbif.h \
+	xen/public/io/fsif.h \
+	xen/public/io/kbdif.h \
+	xen/public/io/netif.h \
+	xen/public/io/pciif.h \
+	xen/public/io/protocols.h \
+	xen/public/io/ring.h \
+	xen/public/io/tpmif.h \
+	xen/public/io/xenbus.h \
+	xen/public/io/xs_wire.h \
+	xen/public/kexec.h \
+	xen/public/libelf.h \
+	xen/public/memory.h \
+	xen/public/nmi.h \
+	xen/public/physdev.h \
+	xen/public/platform.h \
+	xen/public/sched.h \
+	xen/public/sysctl.h \
+	xen/public/trace.h \
+	xen/public/vcpu.h \
+	xen/public/version.h \
+	xen/public/xencomm.h \
+	xen/public/xen-compat.h \
+	xen/public/xen.h \
+	xen/public/xenoprof.h \
 	xen/block.c \
+	xen/block.h \
 	xen/console.c \
+	xen/console.h \
 	xen/evt.c \
+	xen/evt.h \
 	xen/grant.c \
+	xen/grant.h \
 	xen/net.c \
+	xen/net.h \
 	xen/ring.c \
+	xen/ring.h \
 	xen/store.c \
+	xen/store.h \
 	xen/time.c \
-	xen/xen.c
+	xen/time.h \
+	xen/xen.c \
+	xen/xen.h

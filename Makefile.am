@@ -167,11 +167,9 @@ exec_boot_PROGRAMS = \
 #
 
 EXTRA_DIST += \
-	Makefile.correct_output_files_for_.S_files.patch \
 	config.status.dep.patch
 
 EXTRA_DIST += \
-	ChangeLog.0 ChangeLog.00 \
 	DEVELOPMENT
 
 dist-hook:

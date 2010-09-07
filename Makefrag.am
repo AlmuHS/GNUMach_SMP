@@ -102,6 +102,7 @@ libkernel_a_SOURCES += \
 	ipc/mach_msg.c \
 	ipc/mach_msg.h \
 	ipc/mach_port.c \
+	ipc/mach_port.h \
 	ipc/mach_rpc.c \
 	ipc/mach_debug.c \
 	ipc/port.h
@@ -137,6 +138,7 @@ libkernel_a_SOURCES += \
 	kern/ipc_kobject.c \
 	kern/ipc_kobject.h \
 	kern/ipc_mig.c \
+	kern/ipc_mig.h \
 	kern/ipc_sched.c \
 	kern/ipc_sched.h \
 	kern/ipc_tt.c \
@@ -153,6 +155,7 @@ libkernel_a_SOURCES += \
 	kern/mach_factor.h \
 	kern/mach_param.h \
 	kern/machine.c \
+	kern/machine.h \
 	kern/macro_help.h \
 	kern/pc_sample.c \
 	kern/pc_sample.h \
@@ -183,7 +186,6 @@ libkernel_a_SOURCES += \
 	kern/thread.h \
 	kern/thread_swap.c \
 	kern/thread_swap.h \
-	kern/time_out.h \
 	kern/time_stamp.c \
 	kern/time_stamp.h \
 	kern/timer.c \
@@ -207,8 +209,10 @@ EXTRA_DIST += \
 
 libkernel_a_SOURCES += \
 	util/putchar.c \
+	util/putchar.h \
 	util/puts.c \
-	util/atoi.c
+	util/atoi.c \
+	util/atoi.h
 
 #
 # Virtual memory implementation.
@@ -235,6 +239,8 @@ libkernel_a_SOURCES += \
 	vm/vm_pageout.c \
 	vm/vm_pageout.h \
 	vm/vm_resident.c \
+	vm/vm_resident.h \
+	vm/vm_types.h \
 	vm/vm_user.c \
 	vm/vm_user.h
 EXTRA_DIST += \
@@ -276,6 +282,7 @@ libkernel_a_SOURCES += \
 	device/net_io.h \
 	device/param.h \
 	device/subrs.c \
+	device/subrs.h \
 	device/tty.h
 EXTRA_DIST += \
 	device/device.srv \

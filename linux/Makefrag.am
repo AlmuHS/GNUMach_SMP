@@ -528,7 +528,8 @@ endif
 
 if device_driver_sis900
 liblinux_a_SOURCES += \
-	linux/src/drivers/net/sis900.c
+	linux/src/drivers/net/sis900.c \
+	linux/src/drivers/net/sis900.h
 endif
 
 if device_driver_sk_g16

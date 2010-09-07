@@ -19,6 +19,7 @@
 
 libkernel_a_SOURCES += \
 	i386/i386at/autoconf.c \
+	i386/i386at/autoconf.h \
 	i386/i386at/conf.c \
 	i386/i386at/cons_conf.c \
 	i386/i386at/idt.h \
@@ -33,12 +34,14 @@ if PLATFORM_at
 libkernel_a_SOURCES += \
 	i386/i386at/boothdr.S \
 	i386/i386at/com.c \
+	i386/i386at/com.h \
 	i386/i386at/comreg.h \
 	i386/i386at/cram.h \
 	i386/i386at/disk.h \
 	i386/i386at/i8250.h \
 	i386/i386at/immc.c \
 	i386/i386at/int_init.c \
+	i386/i386at/int_init.h \
 	i386/i386at/interrupt.S \
 	i386/i386at/kd.c \
 	i386/i386at/kd.h \
@@ -101,10 +104,12 @@ libkernel_a_SOURCES += \
 	i386/i386/locore.S \
 	i386/i386/locore.h \
 	i386/i386/loose_ends.c \
+	i386/i386/loose_ends.h \
 	i386/i386/mach_param.h \
 	i386/i386/machine_routines.h \
 	i386/i386/machine_task.c \
 	i386/i386/machspl.h \
+	i386/i386/model_dep.h \
 	i386/i386/mp_desc.c \
 	i386/i386/mp_desc.h \
 	i386/i386/pcb.c \
@@ -122,7 +127,6 @@ libkernel_a_SOURCES += \
 	i386/i386/task.h \
 	i386/i386/thread.h \
 	i386/i386/time_stamp.h \
-	i386/i386/timer.h \
 	i386/i386/trap.c \
 	i386/i386/trap.h \
 	i386/i386/tss.h \
@@ -134,7 +138,8 @@ libkernel_a_SOURCES += \
 	i386/i386/zalloc.h \
 	i386/intel/pmap.c \
 	i386/intel/pmap.h \
-	i386/intel/read_fault.c
+	i386/intel/read_fault.c \
+	i386/intel/read_fault.h
 EXTRA_DIST += \
 	i386/i386/mach_i386.srv
 
@@ -240,4 +245,8 @@ EXTRA_DIST += \
 
 if PLATFORM_xen
 include i386/xen/Makefrag.am
+
+libkernel_a_SOURCES += \
+	i386/i386/xen.h
+
 endif
