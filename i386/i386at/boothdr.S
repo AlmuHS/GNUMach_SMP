@@ -58,6 +58,23 @@ boot_entry:
 	/* Push the boot_info pointer to be the second argument.  */
 	pushl	%ebx
 
+	/* Fix ifunc entries */
+	movl    $__rel_iplt_start,%esi
+	movl    $__rel_iplt_end,%edi
+iplt_cont:
+	cmpl    %edi,%esi
+	jae     iplt_done
+	movl    (%esi),%ebx	/* r_offset */
+	movb    4(%esi),%al	/* info */
+	cmpb    $42,%al		/* IRELATIVE */
+	jnz     iplt_next
+	call    *(%ebx)		/* call ifunc */
+	movl    %eax,(%ebx)	/* fixed address */
+iplt_next:
+	addl    $8,%esi
+	jmp     iplt_cont
+iplt_done:
+
 	/* Jump into C code.  */
 	call	EXT(c_boot_entry)
 
