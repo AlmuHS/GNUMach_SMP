@@ -537,10 +537,10 @@ device_get_status (void *d, dev_flavor_t flavor, dev_status_t status,
     {
       struct net_data *net = (struct net_data *) d;
 
-      if (*count != sizeof(short))
+      if (*count != 1)
 	return D_INVALID_SIZE;
 
-      *(short *) status = net->dev->flags;
+      status[0] = net->dev->flags;
       return D_SUCCESS;
     }
 
@@ -605,10 +605,10 @@ device_set_status(void *d, dev_flavor_t flavor, dev_status_t status,
 {
   if (flavor == NET_FLAGS)
     {
-      if (count != sizeof(short))
+      if (count != 1)
         return D_INVALID_SIZE;
 
-      short flags = *(short *) status;
+      short flags = status[0];
       struct net_data *net = (struct net_data *) d;
 
       dev_change_flags (net->dev, flags);
