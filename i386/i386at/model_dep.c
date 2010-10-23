@@ -128,6 +128,8 @@ extern void	setup_main();
 void		halt_all_cpus (boolean_t reboot) __attribute__ ((noreturn));
 void		halt_cpu (void) __attribute__ ((noreturn));
 
+int		discover_x86_cpu_type (void);
+
 void		inittodr();	/* forward */
 
 int		rebootflag = 0;	/* exported to kdintr */
