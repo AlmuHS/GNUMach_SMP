@@ -2360,7 +2360,9 @@ kd_setleds1(val)
 u_char val;
 {
 	if (kd_ack != NOT_WAITING) {
+#ifdef MACH_KBD
 		printf("kd_setleds1: unexpected state (%d)\n", kd_ack);
+#endif
 		return;
 	}
 
