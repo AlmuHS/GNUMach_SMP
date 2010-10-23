@@ -50,4 +50,6 @@ extern int strncmp (const char *s1, const char *s2, size_t n);
 
 extern size_t strlen (const char *s);
 
+extern char *strstr(const char *haystack, const char *needle);
+
 #endif /* _MACH_SA_SYS_STRING_H_ */
