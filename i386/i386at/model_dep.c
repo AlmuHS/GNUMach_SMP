@@ -586,6 +586,7 @@ void c_boot_entry(vm_offset_t bi)
 	    machine_slot[0].cpu_type = CPU_TYPE_PENTIUM;
 	    break;
 	  case 6:
+	  case 15:
 	    machine_slot[0].cpu_type = CPU_TYPE_PENTIUMPRO;
 	    break;
 	  }
