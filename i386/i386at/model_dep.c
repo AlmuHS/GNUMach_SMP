@@ -575,8 +575,9 @@ void c_boot_entry(vm_offset_t bi)
 
 	switch (cpu_type)
 	  {
-	  case 3:
 	  default:
+	    printf("warning: unknown cpu type %d, assuming i386\n", cpu_type);
+	  case 3:
 	    machine_slot[0].cpu_type = CPU_TYPE_I386;
 	    break;
 	  case 4:
