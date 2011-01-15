@@ -748,6 +748,9 @@ int	regs;
 	if (kd_pollc)
 	    return;				/* kdb polling kbd */
 
+	if (!kd_initialized)
+		return;
+
 	tp = &kd_tty;
 #ifdef	old
 	while ((inb(K_STATUS) & K_OBUF_FUL) == 0);	/* this should never loop */

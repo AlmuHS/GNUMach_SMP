@@ -35,11 +35,7 @@ extern void prtnull();
 
 void (*ivect[NINTR])() = {
 	/* 00 */	hardclock,	/* always */
-#if RCLINE < 0
 	/* 01 */	kdintr,		/* kdintr, ... */
-#else
-	/* 01 */	intnull,	/* kdintr, ... */
-#endif
 	/* 02 */	intnull,
 	/* 03 */	intnull,	/* lnpoll, comintr, ... */
 
