@@ -27,6 +27,8 @@
  *	Mach kernel startup.
  */
 
+#include <string.h>
+
 #include <mach/boolean.h>
 #include <mach/machine.h>
 #include <mach/task_special_ports.h>
@@ -76,6 +78,10 @@ extern void	device_service_create();
 void cpu_launch_first_thread();		/* forward */
 void start_kernel_threads();	/* forward */
 
+#if ! MACH_KBD
+boolean_t reboot_on_panic = 1;
+#endif
+
 #if	NCPUS > 1
 extern void	start_other_cpus();
 extern void	action_thread();
@@ -83,6 +89,7 @@ extern void	action_thread();
 
 /* XX */
 extern vm_offset_t phys_first_addr, phys_last_addr;
+extern char *kernel_cmdline;
 
 /*
  *	Running in virtual memory, on the interrupt stack.
@@ -93,6 +100,23 @@ extern vm_offset_t phys_first_addr, phys_last_addr;
 void setup_main()
 {
 	thread_t		startup_thread;
+
+#if	MACH_KDB
+	/*
+	 * Cause a breakpoint trap to the debugger before proceeding
+	 * any further if the proper option flag was specified
+	 * on the kernel's command line.
+	 * XXX check for surrounding spaces.
+	 */
+	if (strstr(kernel_cmdline, "-d ")) {
+	    cninit();		/* need console for debugger */
+	    SoftDebugger("init");
+	}
+#else	/* MACH_KDB */
+	if (strstr (kernel_cmdline, "-H ")) {
+	    reboot_on_panic = 0;
+	}
+#endif	/* MACH_KDB */
 
 	panic_init();
 	printf_init();
