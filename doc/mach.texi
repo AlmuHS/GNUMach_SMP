@@ -6493,7 +6493,7 @@ device port or the device is dead or not completely open.
 
 @deftypefun kern_return_t device_set_filter (@w{device_t @var{device}}, @w{mach_port_t @var{receive_port}}, @w{mach_msg_type_name_t @var{receive_port_type}}, @w{int @var{priority}}, @w{filter_array_t @var{filter}}, @w{mach_msg_type_number_t @var{filter_count}})
 The function @code{device_set_filter} makes it possible to filter out
-selected data arriving at the device and forward it to a port.
+selected data arriving at or leaving the device and forward it to a port.
 @var{filter} is a list of filter commands, which are applied to incoming
 data to determine if the data should be sent to @var{receive_port}.  The
 IPC type of the send right is specified by @var{receive_port_right}, it
@@ -6506,6 +6506,33 @@ actual number of commands is passed in @var{filter_count}.  For the
 purpose of the filter test, an internal stack is provided.  After all
 commands have been processed, the value on the top of the stack
 determines if the data is forwarded or the next filter is tried.
+
+The first command is a header which contains two fields: one for flags
+and the other for the type of interpreter used to run the rest of the
+commands.
+
+Any combination of the following flags is allowed but at least one of them
+must be specified.
+
+@table @code
+@item NETF_IN
+The filter will be applied to data received by the device.
+
+@item NETF_OUT
+The filter will be applied to data transmitted by the device.
+@end table
+
+Unless the type is given explicitly the native NETF interpreter will be used.
+To select an alternative implementation use one of the following types:
+
+@table @code
+@item NETF_BPF
+Use Berkeley Packet Filter.
+@end table
+
+For the listener to know what kind of packet is being received, when the
+filter code accepts a packet the message sent to @var{receive_port} is
+tagged with either NETF_IN or NETF_OUT.
 
 @c XXX The following description was taken verbatim from the
 @c kernel_interface.pdf document.
