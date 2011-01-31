@@ -654,6 +654,8 @@ void pmap_bootstrap()
 	}
 
 #ifdef	MACH_XEN
+	/* We don't actually deal with the CR3 register content at all */
+	hyp_vm_assist(VMASST_CMD_enable, VMASST_TYPE_pae_extended_cr3);
 	/*
 	 * Xen may only provide as few as 512KB extra bootstrap linear memory,
 	 * which is far from enough to map all available memory, so we need to
