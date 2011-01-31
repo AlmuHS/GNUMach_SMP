@@ -263,7 +263,6 @@ MACH_INLINE void hyp_set_ldt(void *ldt, unsigned long nbentries) {
 	if (!count)
 		panic("couldn't set LDT\n");
 }
-/* TODO: use xen_pfn_to_cr3/xen_cr3_to_pfn to cope with pdp above 4GB */
 #define hyp_set_cr3(value) hyp_mmuext_op_mfn(MMUEXT_NEW_BASEPTR, pa_to_mfn(value))
 MACH_INLINE void hyp_invlpg(vm_offset_t lin) {
 	struct mmuext_op ops;

@@ -31,7 +31,9 @@
 	.ascii  ",PAE=no"
 #endif
 	.ascii	",LOADER=generic"
-#ifndef	MACH_PSEUDO_PHYS
+#ifdef	MACH_PSEUDO_PHYS
+	.ascii	",FEATURES=pae_pgdir_above_4gb"
+#else	/* MACH_PSEUDO_PHYS */
 	.ascii	",FEATURES=!auto_translated_physmap"
 #endif
 	.byte	0
@@ -63,8 +65,10 @@
 #endif
 	ELFNOTE(Xen, XEN_ELFNOTE_LOADER,		.asciz, "generic")
 	ELFNOTE(Xen, XEN_ELFNOTE_FEATURES,              .asciz, ""
-#ifndef MACH_PSEUDO_PHYS
-						"!auto_translated_physmap"
+#ifdef MACH_PSEUDO_PHYS
+						"pae_pgdir_above_4gb"
+#else /* MACH_PSEUDO_PHYS */
+						"!auto_translated_physmap|"
 #endif
 	)
 
