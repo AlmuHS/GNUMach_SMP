@@ -123,14 +123,12 @@ struct dev_ops	dev_name_list[] =
 	  nodev,	mousegetstat,	nulldev,	nomap,
 	  nodev,	nulldev,	nulldev,	0,
 	  nodev },
-#endif	/* MACH_HYP */
 
 	{ kbdname,	kbdopen,	kbdclose,	kbdread,
 	  nodev,	kbdgetstat,	kbdsetstat,	nomap,
 	  nodev,	nulldev,	nulldev,	0,
 	  nodev },
 
-#ifndef	MACH_HYP
 	{ memname,	nulldev,	nulldev,	nodev,
 	  nodev,	nodev,		nodev,		memmmap,
 	  nodev,	nulldev,	nulldev,	0,

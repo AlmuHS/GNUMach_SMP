@@ -23,10 +23,6 @@ libkernel_a_SOURCES += \
 	i386/i386at/conf.c \
 	i386/i386at/cons_conf.c \
 	i386/i386at/idt.h \
-	i386/i386at/kd_event.c \
-	i386/i386at/kd_event.h \
-	i386/i386at/kd_queue.c \
-	i386/i386at/kd_queue.h \
 	i386/i386at/model_dep.c \
 	i386/include/mach/sa/stdarg.h
 
@@ -45,6 +41,10 @@ libkernel_a_SOURCES += \
 	i386/i386at/interrupt.S \
 	i386/i386at/kd.c \
 	i386/i386at/kd.h \
+	i386/i386at/kd_event.c \
+	i386/i386at/kd_event.h \
+	i386/i386at/kd_queue.c \
+	i386/i386at/kd_queue.h \
 	i386/i386at/kd_mouse.c \
 	i386/i386at/kd_mouse.h \
 	i386/i386at/kdasm.S \
