@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2007 Samuel Thibault <samuel.thibault@ens-lyon.org>
+ *  Copyright (C) 2007-2011 Samuel Thibault <samuel.thibault@ens-lyon.org>
  *
  * This program is free software ; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,12 +46,16 @@ void hyp_init(void)
 { 
         hyp_grant_init(); 
         hyp_store_init(); 
-	/* these depend on the above */
-        hyp_block_init(); 
-        hyp_net_init(); 
 	evtchn_port_t port = hyp_event_channel_bind_virq(VIRQ_DEBUG, 0);
 	hyp_evt_handler(port, hyp_debug, 0, SPL7);
 } 
+
+void hyp_dev_init(void)
+{
+	/* these depend on hyp_init() and working threads */
+	hyp_block_init(); 
+	hyp_net_init(); 
+}
 
 void _hyp_halt(void)
 {

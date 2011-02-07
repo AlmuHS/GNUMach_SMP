@@ -33,6 +33,7 @@
 #include <ipc/ipc_space.h>
 #include <kern/debug.h>
 #include <kern/task.h>
+#include <xen/xen.h>
 
 #include <device/device_types.h>
 #include <device/device_port.h>
@@ -57,6 +58,9 @@ device_service_create()
 	    panic("can't allocate master device port");
 
 	mach_device_init();
+#ifdef MACH_HYP
+	hyp_dev_init();
+#endif
 	dev_lookup_init();
 	net_io_init();
 	device_pager_init();

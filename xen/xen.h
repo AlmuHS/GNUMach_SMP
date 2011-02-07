@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2006 Samuel Thibault <samuel.thibault@ens-lyon.org>
+ *  Copyright (C) 2006-2010, 2011 Samuel Thibault <samuel.thibault@ens-lyon.org>
  *
  * This program is free software ; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@
 #define XEN_XEN_H
 
 void hyp_init(void);
+void hyp_dev_init(void);
 void hyp_invalidate_pte(pt_entry_t *pte);
 void hyp_idle(void);
 void hyp_p2m_init(void);

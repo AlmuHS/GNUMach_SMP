@@ -213,6 +213,7 @@ void hyp_block_init(void) {
 				panic("%s: couldn't store state (%s)", device_name, hyp_store_error);
 			kfree((vm_offset_t) c, strlen(c)+1);
 		} while (!hyp_store_transaction_stop(t));
+	/* TODO randomly wait? */
 
 		c = hyp_store_read(0, 5, VBD_PATH, "/", vbds[n], "/", "backend");
 		if (!c)
