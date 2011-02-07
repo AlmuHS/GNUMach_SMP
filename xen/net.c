@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2006 Samuel Thibault <samuel.thibault@ens-lyon.org>
+ *  Copyright (C) 2006-2009, 2011 Samuel Thibault <samuel.thibault@ens-lyon.org>
  *
  * This program is free software ; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -46,8 +46,6 @@
 #define ADDRESS_SIZE 6
 #define WINDOW __RING_SIZE((netif_rx_sring_t*)0, PAGE_SIZE)
 
-/* TODO: use rx-copy instead, since we're memcpying anyway */
-
 /* Are we paranoid enough to not leak anything to backend? */
 static const int paranoia = 0;
 
@@ -66,6 +64,7 @@ struct net_data {
 	void		*rx_buf[WINDOW];
 	grant_ref_t	rx_buf_gnt[WINDOW];
 	unsigned long	rx_buf_pfn[WINDOW];
+	int		rx_copy;
 	evtchn_port_t	evt;
 	simple_lock_data_t lock;
 	simple_lock_data_t pushlock;
@@ -100,14 +99,22 @@ int hextoi(char *cp, int *nump)
 static void enqueue_rx_buf(struct net_data *nd, int number) {
 	unsigned reqn = nd->rx.req_prod_pvt++;
 	netif_rx_request_t *req = RING_GET_REQUEST(&nd->rx, reqn);
+	grant_ref_t gref;
 
 	assert(number < WINDOW);
 
 	req->id = number;
-	req->gref = nd->rx_buf_gnt[number] = hyp_grant_accept_transfer(nd->domid, nd->rx_buf_pfn[number]);
+	if (nd->rx_copy) {
+		/* Let domD write the data */
+		gref = hyp_grant_give(nd->domid, nd->rx_buf_pfn[number], 0);
+	} else {
+		/* Accept pages from domD */
+		gref = hyp_grant_accept_transfer(nd->domid, nd->rx_buf_pfn[number]);
+		/* give back page */
+		hyp_free_page(nd->rx_buf_pfn[number], nd->rx_buf[number]);
+	}
 
-	/* give back page */
-	hyp_free_page(nd->rx_buf_pfn[number], nd->rx_buf[number]);
+	req->gref = nd->rx_buf_gnt[number] = gref;
 }
 
 static void hyp_net_intr(int unit) {
@@ -131,12 +138,15 @@ static void hyp_net_intr(int unit) {
 
 		unsigned number = rx_rsp->id;
 		assert(number < WINDOW);
-		unsigned long mfn = hyp_grant_finish_transfer(nd->rx_buf_gnt[number]);
-
+		if (nd->rx_copy) {
+			hyp_grant_takeback(nd->rx_buf_gnt[number]);
+		} else {
+			unsigned long mfn = hyp_grant_finish_transfer(nd->rx_buf_gnt[number]);
 #ifdef	MACH_PSEUDO_PHYS
-		mfn_list[nd->rx_buf_pfn[number]] = mfn;
+			mfn_list[nd->rx_buf_pfn[number]] = mfn;
 #endif	/* MACH_PSEUDO_PHYS */
-		pmap_map_mfn(nd->rx_buf[number], mfn);
+			pmap_map_mfn(nd->rx_buf[number], mfn);
+		}
 
 		kmsg = net_kmsg_get();
 		if (!kmsg)
@@ -147,15 +157,16 @@ static void hyp_net_intr(int unit) {
 			switch (rx_rsp->status) {
 				case NETIF_RSP_DROPPED:
 					printf("Packet dropped\n");
-					goto drop;
+					goto drop_kmsg;
 				case NETIF_RSP_ERROR:
-					panic("Packet error");
+					printf("Packet error\n");
+					goto drop_kmsg;
 				case 0:
 					printf("nul packet\n");
-					goto drop;
+					goto drop_kmsg;
 				default:
 					printf("Unknown error %d\n", rx_rsp->status);
-					goto drop;
+					goto drop_kmsg;
 			}
 
 		data = nd->rx_buf[number] + rx_rsp->offset;
@@ -175,6 +186,8 @@ static void hyp_net_intr(int unit) {
 		net_packet(&nd->ifnet, kmsg, ph->length, ethernet_priority(kmsg));
 		continue;
 
+drop_kmsg:
+		net_kmsg_put(kmsg);
 drop:
 		RING_FINAL_CHECK_FOR_RESPONSES(&nd->rx, more);
 		enqueue_rx_buf(nd, number);
@@ -198,15 +211,15 @@ drop:
 				printf("Packet dropped\n");
 				break;
 			case NETIF_RSP_ERROR:
-				panic("Packet error");
+				printf("Packet error\n");
+				break;
 			case NETIF_RSP_OKAY:
 				break;
 			default:
 				printf("Unknown error %d\n", tx_rsp->status);
-				goto drop_tx;
+				break;
 		}
 		thread_wakeup((event_t) hyp_grant_address(tx_rsp->id));
-drop_tx:
 		thread_wakeup_one(nd);
 		RING_FINAL_CHECK_FOR_RESPONSES(&nd->tx, more);
 	}
@@ -359,10 +372,27 @@ void hyp_net_init(void) {
 		}
 		printf("\n");
 
+		nd->rx_copy = hyp_store_read_int(0, 3, nd->backend, "/", "feature-rx-copy");
+		if (nd->rx_copy == 1) {
+			c = hyp_store_write(0, "1", 5, VIF_PATH, "/", vifs[n], "/", "request-rx-copy");
+			if (!c)
+				panic("eth: couldn't request rx copy feature for VIF %s (%s)", vifs[n], hyp_store_error);
+		} else
+			nd->rx_copy = 0;
+
 		c = hyp_store_write(0, hyp_store_state_connected, 5, VIF_PATH, "/", nd->vif, "/", "state");
 		if (!c)
 			panic("couldn't store state for eth%d (%s)", nd - vif_data, hyp_store_error);
 		kfree((vm_offset_t) c, strlen(c)+1);
+
+		while(1) {
+			i = hyp_store_read_int(0, 3, nd->backend, "/", "state");
+			if (i == MACH_ATOI_DEFAULT)
+				panic("can't read state from %s", nd->backend);
+			if (i == XenbusStateConnected)
+				break;
+			hyp_yield();
+		}
 
 		/* Get a page for packet reception */
 		for (i= 0; i<WINDOW; i++) {
@@ -370,8 +400,10 @@ void hyp_net_init(void) {
 				panic("eth: couldn't allocate space for store tx_ring");
 			nd->rx_buf[i] = (void*)phystokv(kvtophys(addr));
 			nd->rx_buf_pfn[i] = atop(kvtophys((vm_offset_t)nd->rx_buf[i]));
-			if (hyp_do_update_va_mapping(kvtolin(addr), 0, UVMF_INVLPG|UVMF_ALL))
-				panic("eth: couldn't clear rx kv buf %d at %p", i, addr);
+			if (!nd->rx_copy) {
+				if (hyp_do_update_va_mapping(kvtolin(addr), 0, UVMF_INVLPG|UVMF_ALL))
+					panic("eth: couldn't clear rx kv buf %d at %p", i, addr);
+			}
 			/* and enqueue it to backend.  */
 			enqueue_rx_buf(nd, i);
 		}
