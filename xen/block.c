@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2006 Samuel Thibault <samuel.thibault@ens-lyon.org>
+ *  Copyright (C) 2006-2009, 2011 Samuel Thibault <samuel.thibault@ens-lyon.org>
  *
  * This program is free software ; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -158,16 +158,59 @@ void hyp_block_init(void) {
 			prefix = "sd";
 			disk = (i >> 4) & ((1 << 4) - 1);
 			partition = i & ((1 << 4) - 1);
-		} else if ((i >> 8) == 22) {
-			/* IDE secondary */
-			prefix = "hd";
-			disk = ((i >> 6) & ((1 << 2) - 1)) + 2;
-			partition = i & ((1 << 6) - 1);
 		} else if ((i >> 8) == 3) {
 			/* IDE primary */
 			prefix = "hd";
 			disk = (i >> 6) & ((1 << 2) - 1);
 			partition = i & ((1 << 6) - 1);
+		} else if ((i >> 8) == 22) {
+			/* IDE secondary */
+			prefix = "hd";
+			disk = ((i >> 6) & ((1 << 2) - 1)) + 2;
+			partition = i & ((1 << 6) - 1);
+		} else if ((i >> 8) == 33) {
+			/* IDE 3 */
+			prefix = "hd";
+			disk = ((i >> 6) & ((1 << 2) - 1)) + 4;
+			partition = i & ((1 << 6) - 1);
+		} else if ((i >> 8) == 34) {
+			/* IDE 4 */
+			prefix = "hd";
+			disk = ((i >> 6) & ((1 << 2) - 1)) + 6;
+			partition = i & ((1 << 6) - 1);
+		} else if ((i >> 8) == 56) {
+			/* IDE 5 */
+			prefix = "hd";
+			disk = ((i >> 6) & ((1 << 2) - 1)) + 8;
+			partition = i & ((1 << 6) - 1);
+		} else if ((i >> 8) == 57) {
+			/* IDE 6 */
+			prefix = "hd";
+			disk = ((i >> 6) & ((1 << 2) - 1)) + 10;
+			partition = i & ((1 << 6) - 1);
+		} else if ((i >> 8) == 88) {
+			/* IDE 7 */
+			prefix = "hd";
+			disk = ((i >> 6) & ((1 << 2) - 1)) + 12;
+			partition = i & ((1 << 6) - 1);
+		} else if ((i >> 8) == 89) {
+			/* IDE 8 */
+			prefix = "hd";
+			disk = ((i >> 6) & ((1 << 2) - 1)) + 14;
+			partition = i & ((1 << 6) - 1);
+		} else if ((i >> 8) == 90) {
+			/* IDE 9 */
+			prefix = "hd";
+			disk = ((i >> 6) & ((1 << 2) - 1)) + 16;
+			partition = i & ((1 << 6) - 1);
+		} else if ((i >> 8) == 91) {
+			/* IDE 10 */
+			prefix = "hd";
+			disk = ((i >> 6) & ((1 << 2) - 1)) + 18;
+			partition = i & ((1 << 6) - 1);
+		} else {
+			printf("unsupported VBD number %d\n", i);
+			continue;
 		}
 		if (partition)
 			sprintf(device_name, "%s%us%u", prefix, disk, partition);
