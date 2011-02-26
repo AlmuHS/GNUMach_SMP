@@ -26,6 +26,9 @@
 
 #if NCOM > 0
 
+#include <string.h>
+#include <util/atoi.h>
+
 #include <mach/std_types.h>
 #include <sys/types.h>
 #include <kern/printf.h>
@@ -64,14 +67,16 @@ boolean_t comfifo[NCOM];
 boolean_t comtimer_active;
 int comtimer_state[NCOM];
 
-#if RCLINE >= 0
 #define RCBAUD B9600
+static int rcline = -1;
 static struct bus_device *comcndev;
 int comcnprobe(struct consdev *cp);
 int comcninit(struct consdev *cp);
 int comcngetc(dev_t dev, int wait);
 int comcnputc(dev_t dev, int c);
-#endif
+
+/* XX */
+extern char *kernel_cmdline;
 
 #ifndef	PORTSELECTOR
 #define ISPEED	B9600
@@ -177,7 +182,6 @@ comprobe(int port, struct bus_device *dev)
 	return comprobe_general(dev, /*noisy*/ 0);
 }
 
-#if RCLINE >= 0
 /*
  * Probe routine for use by the console
  */
@@ -187,13 +191,19 @@ comcnprobe(struct consdev *cp)
 	struct	bus_device *b;
 	int	maj, unit, pri;
 
+#define CONSOLE_PARAMETER " console=com"
+	u_char *console = (u_char *) strstr(kernel_cmdline, CONSOLE_PARAMETER);
+
+	if (console)
+		mach_atoi(console + strlen(CONSOLE_PARAMETER), &rcline);
+
 	maj = 0;
 	unit = -1;
 	pri = CN_DEAD;
 
 	for (b = bus_device_init; b->driver; b++)
 		if (strcmp(b->name, "com") == 0
-		    && b->unit == RCLINE
+		    && b->unit == rcline
 		    && comprobe_general(b, /*quiet*/ 0))
 		{
 			/* Found one */
@@ -206,7 +216,6 @@ comcnprobe(struct consdev *cp)
 	cp->cn_dev = makedev(maj, unit);
 	cp->cn_pri = pri;
 }
-#endif
 
 
 /*
@@ -237,7 +246,6 @@ comattach(struct bus_device *dev)
 	}
 }
 
-#if RCLINE >= 0
 /*
  * Attach/init routine for console.  This isn't called by
  * configure_bus_device which sets the alive, adaptor, and minfo
@@ -280,7 +288,6 @@ comcninit(struct consdev *cp)
 	}
 
 }
-#endif
 
 /*
  *	Probe for COM<dev> after autoconfiguration.
@@ -861,7 +868,6 @@ comgetc(int unit)
 	return c;
 }
 
-#if RCLINE >= 0
 /*
  * Routines for the console
  */
@@ -893,6 +899,5 @@ comcngetc(dev_t dev, int wait)
 	c = inb(TXRX(addr));
 	return c & 0x7f;
 }
-#endif /* RCLINE */
 
 #endif	/* NCOM */

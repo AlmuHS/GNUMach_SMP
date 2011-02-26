@@ -142,6 +142,9 @@ kbdopen(dev, flags)
 	dev_t dev;
 	int flags;
 {
+	spl_t o_pri = spltty();
+	kdinit();
+	splx(o_pri);
 	kbdinit();
 
 #ifdef	MACH_KERNEL

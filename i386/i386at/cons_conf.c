@@ -34,7 +34,7 @@
 extern	int hypcnprobe(), hypcninit(), hypcngetc(), hypcnputc();
 #else	/* MACH_HYP */
 extern	int kdcnprobe(), kdcninit(), kdcngetc(), kdcnputc();
-#if NCOM > 0 && RCLINE >= 0
+#if NCOM > 0
 extern	int comcnprobe(), comcninit(), comcngetc(), comcnputc();
 #endif
 #endif	/* MACH_HYP */
@@ -48,7 +48,7 @@ struct	consdev constab[] = {
 	{"hyp",	hypcnprobe,	hypcninit,	hypcngetc,	hypcnputc},
 #else	/* MACH_HYP */
 	{"kd",	kdcnprobe,	kdcninit,	kdcngetc,	kdcnputc},
-#if NCOM > 0 && RCLINE >= 0 && 1
+#if NCOM > 0
 	{"com",	comcnprobe,	comcninit,	comcngetc,	comcnputc},
 #endif
 #endif	/* MACH_HYP */
