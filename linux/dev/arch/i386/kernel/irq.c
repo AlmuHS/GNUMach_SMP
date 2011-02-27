@@ -229,6 +229,10 @@ setup_x86_irq (int irq, struct linux_action *new)
       if ((old->flags ^ new->flags) & SA_INTERRUPT)
 	return (-LINUX_EBUSY);
 
+      /* Can't share at different levels */
+      if (intpri[irq] && linux_intr_pri != intpri[irq])
+	return (-LINUX_EBUSY);
+
       /* add new interrupt at end of irq queue */
       do
 	{
