@@ -27,13 +27,8 @@
  * On entry, %eax contains the irq number.
  */
 ENTRY(interrupt)
-	movl	%eax,%ecx		/* save irq number */
-	movb	$(NON_SPEC_EOI),%al	/* non-specific EOI */
-	outb	%al,$(PIC_MASTER_ICW)	/* ack interrupt to master */
-	cmpl	$8,%ecx			/* do we need to ack slave? */
-	jl	1f			/* no, skip it */
-	outb	%al,$(PIC_SLAVE_ICW)
-1:
+	pushl	%eax			/* save irq number */
+	movl	%eax,%ecx		/* copy irq number */
 	shll	$2,%ecx			/* irq * 4 */
 	movl	EXT(intpri)(%ecx),%edx	/* get new ipl */
 	call	spl			/* set ipl */
@@ -43,6 +38,14 @@ ENTRY(interrupt)
 	call	*EXT(ivect)(%ecx)	/* call interrupt handler */
 	addl	$4,%esp			/* pop unit number */
 	call	splx_cli		/* restore previous ipl */
-	cli				/* XXX no more nested interrupts */
 	addl	$4,%esp			/* pop previous ipl */
+	cli				/* XXX no more nested interrupts */
+	popl	%eax			/* restore irq number */
+	movl	%eax,%ecx		/* copy irq number */
+	movb	$(NON_SPEC_EOI),%al	/* non-specific EOI */
+	outb	%al,$(PIC_MASTER_ICW)	/* ack interrupt to master */
+	cmpl	$8,%ecx			/* do we need to ack slave? */
+	jl	1f			/* no, skip it */
+	outb	%al,$(PIC_SLAVE_ICW)
+1:
 	ret				/* return */
