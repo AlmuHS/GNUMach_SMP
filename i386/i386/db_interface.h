@@ -55,4 +55,20 @@ extern boolean_t db_phys_eq (
 
 extern void db_task_name (task_t task);
 
+#define I386_DB_TYPE_X 0
+#define I386_DB_TYPE_W 1
+#define I386_DB_TYPE_RW 3
+
+#define I386_DB_LEN_1 0
+#define I386_DB_LEN_2 1
+#define I386_DB_LEN_4 3
+
+#define I386_DB_LOCAL 1
+#define I386_DB_GLOBAL 2
+
+extern unsigned long dr0 (vm_offset_t linear_addr, int type, int len, int persistence);
+extern unsigned long dr1 (vm_offset_t linear_addr, int type, int len, int persistence);
+extern unsigned long dr2 (vm_offset_t linear_addr, int type, int len, int persistence);
+extern unsigned long dr3 (vm_offset_t linear_addr, int type, int len, int persistence);
+
 #endif /* _I386_DB_INTERFACE_H_ */
