@@ -704,12 +704,17 @@ LEXT(return_to_iret)			/* ( label for kdb_kintr and hardclock) */
 	iret				/* return to caller */
 
 int_from_intstack:
+	cmpl	$EXT(_intstack),%esp	/* seemingly looping? */
+	jb	stack_overflowed	/* if not: */
 	call	EXT(interrupt)		/* call interrupt routine */
 _return_to_iret_i:			/* ( label for kdb_kintr) */
 	pop	%edx			/* must have been on kernel segs */
 	pop	%ecx
 	pop	%eax			/* no ASTs */
 	iret
+
+stack_overflowed:
+	ud2
 
 /*
  *	Take an AST from an interrupt.
