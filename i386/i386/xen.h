@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2006 Samuel Thibault <samuel.thibault@ens-lyon.org>
+ *  Copyright (C) 2006, 2009, 2010, 2011 Samuel Thibault <samuel.thibault@ens-lyon.org>
  *
  * This program is free software ; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -344,6 +344,9 @@ MACH_INLINE void __attribute__((noreturn)) hyp_reboot(void)
 	printf("uh, reboot returned?!\n");
 	for(;;);
 }
+
+_hypcall2(int, set_debugreg, int, reg, unsigned long, value);
+_hypcall1(unsigned long, get_debugreg, int, reg);
 
 /* x86-specific */
 MACH_INLINE unsigned64_t hyp_cpu_clock(void) {

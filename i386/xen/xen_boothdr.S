@@ -1,5 +1,5 @@
 /*
- *  Copyright (C) 2006 Samuel Thibault <samuel.thibault@ens-lyon.org>
+ *  Copyright (C) 2006, 2009, 2010, 2011 Samuel Thibault <samuel.thibault@ens-lyon.org>
  *
  * This program is free software ; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -124,6 +124,7 @@ hyp_shared_info:
 /* Labels just for debuggers */
 #define hypcall(name, n) \
 	.org	hypcalls + n*32 ; \
+.globl __hyp_##name ; \
 __hyp_##name:
 
 hypcalls:
