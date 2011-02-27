@@ -1362,6 +1362,7 @@ void pmap_remove_range(pmap, va, spte, epte)
 	     *	Remove the mapping from the pvlist for
 	     *	this physical page.
 	     */
+	    if (pmap != kernel_pmap)
 	    {
 		register pv_entry_t	pv_h, prev, cur;
 
@@ -1752,8 +1753,10 @@ if (pmap_debug) printf("pmap(%x, %x)\n", v, pa);
 	if (pmap == PMAP_NULL)
 		return;
 
+#if !MACH_KDB
 	if (pmap == kernel_pmap && (v < kernel_virtual_start || v >= kernel_virtual_end))
 	    	panic("pmap_enter(%p, %p) falls in physical memory area!\n", v, pa);
+#endif
 	if (pmap == kernel_pmap && (prot & VM_PROT_WRITE) == 0
 	    && !wired /* hack for io_wire */ ) {
 	    /*
