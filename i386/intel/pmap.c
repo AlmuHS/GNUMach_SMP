@@ -1362,7 +1362,6 @@ void pmap_remove_range(pmap, va, spte, epte)
 	     *	Remove the mapping from the pvlist for
 	     *	this physical page.
 	     */
-	    if (pmap != kernel_pmap)
 	    {
 		register pv_entry_t	pv_h, prev, cur;
 
