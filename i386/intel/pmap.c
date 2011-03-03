@@ -764,11 +764,14 @@ void pmap_bootstrap()
 					else
 					{
 #ifdef	MACH_XEN
+						/* Keep supplementary L1 pages read-only */
 						int i;
 						for (i = 0; i < NSUP_L1; i++)
-							if (va == (vm_offset_t) l1_map[i])
+							if (va == (vm_offset_t) l1_map[i]) {
 								WRITE_PTE(pte, pa_to_pte(_kvtophys(va))
 									| INTEL_PTE_VALID | global);
+								break;
+							}
 						if (i == NSUP_L1)
 #endif	/* MACH_XEN */
 							WRITE_PTE(pte, pa_to_pte(_kvtophys(va))
