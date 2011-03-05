@@ -317,6 +317,8 @@ i386at_init(void)
 {
 	/* XXX move to intel/pmap.h */
 	extern pt_entry_t *kernel_page_dir;
+	int nb_direct, i;
+	vm_offset_t addr;
 
 	/*
 	 * Initialize the PIC prior to any possible call to an spl.
@@ -338,7 +340,6 @@ i386at_init(void)
 	/* Copy content pointed by boot_info before losing access to it when it
 	 * is too far in physical memory.  */
 	if (boot_info.flags & MULTIBOOT_CMDLINE) {
-		vm_offset_t addr;
 		int len = strlen ((char*)phystokv(boot_info.cmdline)) + 1;
 		assert(init_alloc_aligned(round_page(len), &addr));
 		kernel_cmdline = (char*) phystokv(addr);
@@ -348,7 +349,6 @@ i386at_init(void)
 
 	if (boot_info.flags & MULTIBOOT_MODS) {
 		struct multiboot_module *m;
-		vm_offset_t addr;
 		int i;
 
 		assert(init_alloc_aligned(round_page(boot_info.mods_count * sizeof(*m)), &addr));
@@ -384,19 +384,15 @@ i386at_init(void)
 	 * We'll have to temporarily install a direct mapping
 	 * between physical memory and low linear memory,
 	 * until we start using our new kernel segment descriptors.
-	 * One page table (4MB) should do the trick.
 	 * Also, set the WP bit so that on 486 or better processors
 	 * page-level write protection works in kernel mode.
 	 */
-	kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS)] =
-		kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS)];
-#if PAE
-	/* PAE page tables are 2MB only */
-	kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS) + 1] =
-		kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS) + 1];
-	kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS) + 2] =
-		kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS) + 2];
-#endif	/* PAE */
+	init_alloc_aligned(0, &addr);
+	nb_direct = (addr + NPTES * PAGE_SIZE - 1) / (NPTES * PAGE_SIZE);
+	for (i = 0; i < nb_direct; i++)
+		kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS) + i] =
+			kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS) + i];
+
 #ifdef	MACH_XEN
 	{
 		int i;
@@ -445,35 +441,24 @@ i386at_init(void)
 	ktss_init();
 
 	/* Get rid of the temporary direct mapping and flush it out of the TLB.  */
+	for (i = 0 ; i < nb_direct; i++) {
 #ifdef	MACH_XEN
 #ifdef	MACH_PSEUDO_PHYS
-	if (!hyp_mmu_update_pte(kv_to_ma(&kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS)]), 0))
+		if (!hyp_mmu_update_pte(kv_to_ma(&kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS) + i]), 0))
 #else	/* MACH_PSEUDO_PHYS */
-	if (hyp_do_update_va_mapping(VM_MIN_KERNEL_ADDRESS, 0, UVMF_INVLPG | UVMF_ALL))
+		if (hyp_do_update_va_mapping(VM_MIN_KERNEL_ADDRESS + i * INTEL_PGBYTES, 0, UVMF_INVLPG | UVMF_ALL))
 #endif	/* MACH_PSEUDO_PHYS */
-		printf("couldn't unmap frame 0\n");
-#if PAE
-#ifdef	MACH_PSEUDO_PHYS
-	if (!hyp_mmu_update_pte(kv_to_ma(&kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS) + 1]), 0))
-#else	/* MACH_PSEUDO_PHYS */
-	if (hyp_do_update_va_mapping(VM_MIN_KERNEL_ADDRESS + INTEL_PGBYTES, 0, UVMF_INVLPG | UVMF_ALL))
-#endif	/* MACH_PSEUDO_PHYS */
-		printf("couldn't unmap frame 1\n");
-#ifdef	MACH_PSEUDO_PHYS
-	if (!hyp_mmu_update_pte(kv_to_ma(&kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS) + 2]), 0))
-#else	/* MACH_PSEUDO_PHYS */
-	if (hyp_do_update_va_mapping(VM_MIN_KERNEL_ADDRESS + 2*INTEL_PGBYTES, 0, UVMF_INVLPG | UVMF_ALL))
-#endif	/* MACH_PSEUDO_PHYS */
-		printf("couldn't unmap frame 2\n");
-#endif	/* PAE */
-	hyp_free_page(0, (void*) VM_MIN_KERNEL_ADDRESS);
+			printf("couldn't unmap frame %d\n", i);
 #else	/* MACH_XEN */
-	kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS)] = 0;
-#if PAE
-	kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS) + 1] = 0;
-	kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS) + 2] = 0;
-#endif	/* PAE */
+		kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS) + i] = 0;
 #endif	/* MACH_XEN */
+	}
+
+	/* Not used after boot, better give it back.  */
+#ifdef	MACH_XEN
+	hyp_free_page(0, (void*) VM_MIN_KERNEL_ADDRESS);
+#endif	/* MACH_XEN */
+
 	flush_tlb();
 
 #ifdef	MACH_XEN
