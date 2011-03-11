@@ -810,7 +810,7 @@ ast_from_interrupt:
 #ifdef	MACH_XEN
 #define	RET_OFFSET	8
 #else	/* MACH_XEN */
-#define	RET_OFFSET	16
+#define	RET_OFFSET	20
 #endif	/* MACH_XEN */
 
 ENTRY(kdb_kintr)
