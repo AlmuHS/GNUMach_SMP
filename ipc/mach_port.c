@@ -552,6 +552,8 @@ mach_port_allocate(space, right, namep)
  *		KERN_INVALID_NAME	The name doesn't denote a right.
  */
 
+static volatile int mach_port_deallocate_debug = 0;
+
 kern_return_t
 mach_port_destroy(
 	ipc_space_t	space,
@@ -564,8 +566,14 @@ mach_port_destroy(
 		return KERN_INVALID_TASK;
 
 	kr = ipc_right_lookup_write(space, name, &entry);
-	if (kr != KERN_SUCCESS)
+	if (kr != KERN_SUCCESS) {
+		if (name != MACH_PORT_NULL && name != MACH_PORT_DEAD) {
+			printf("task %p destroying an invalid port %u, most probably a bug.\n", current_task(), name);
+			if (mach_port_deallocate_debug)
+				SoftDebugger("mach_port_deallocate");
+		}
 		return kr;
+	}
 	/* space is write-locked and active */
 
 	kr = ipc_right_destroy(space, name, entry); /* unlocks space */
@@ -590,7 +598,6 @@ mach_port_destroy(
  *		KERN_INVALID_RIGHT	The right isn't correct.
  */
 
-static volatile int mach_port_deallocate_debug = 0;
 kern_return_t
 mach_port_deallocate(
 	ipc_space_t	space,
