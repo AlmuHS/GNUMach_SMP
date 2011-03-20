@@ -238,7 +238,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define CURRENT_COLUMN(pos)	(((pos) % ONE_LINE) / ONE_SPACE)
 
 #define NUMKEYS		89
-#define NUMSTATES	5		/* NORMAL_STATE, ... */
+#define NUMSTATES	5		/* NORM_STATE, ... */
 #define NUMOUTPUT 	3		/* max size of byte seq from key */
 #define WIDTH_KMAP	(NUMSTATES * NUMOUTPUT)
 
