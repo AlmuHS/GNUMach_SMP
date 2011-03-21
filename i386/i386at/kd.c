@@ -315,7 +315,7 @@ unsigned char	key_map[NUMKEYS][WIDTH_KMAP] = {
 {K_DA,           K_TWO,NC,NC,    K_DA,          K_DA,        0x1b,0x4e,K_TWO},
 {K_PDN,          K_THREE,NC,NC,  K_PDN,         K_PDN,       0x1b,0x4e,K_THREE},
 {K_INS,          K_ZERO,NC,NC,   K_INS,         K_INS,       0x1b,0x4e,K_ZERO},
-{0x1b,0x5b,0x39, K_PERIOD,NC,NC, K_DEL,NC,NC,   K_DEL,NC,NC, 0x1b,0x4e,K_PERIO},
+{0x1b,0x5b,0x39, K_PERIOD,NC,NC, K_DEL,NC,NC,   K_DEL,NC,NC, 0x1b,0x4e,K_PERIOD},
 {NC,NC,NC,       NC,NC,NC,       NC,NC,NC,      NC,NC,NC,    NC,NC,NC},
 {NC,NC,NC,       NC,NC,NC,       NC,NC,NC,      NC,NC,NC,    NC,NC,NC},
 {NC,NC,NC,       NC,NC,NC,       NC,NC,NC,      NC,NC,NC,    NC,NC,NC},
