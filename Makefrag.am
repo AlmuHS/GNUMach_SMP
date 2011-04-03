@@ -28,14 +28,18 @@ libkernel_a_SOURCES += \
 	ddb/db_command.c \
 	ddb/db_command.h \
 	ddb/db_cond.c \
+	ddb/db_cond.h \
 	ddb/db_examine.c \
+	ddb/db_examine.h \
 	ddb/db_expr.c \
 	ddb/db_expr.h \
 	ddb/db_ext_symtab.c \
 	ddb/db_input.c \
+	ddb/db_input.h \
 	ddb/db_lex.c \
 	ddb/db_lex.h \
 	ddb/db_macro.c \
+	ddb/db_macro.h \
 	ddb/db_mp.c \
 	ddb/db_output.c \
 	ddb/db_output.h \
@@ -48,6 +52,7 @@ libkernel_a_SOURCES += \
 	ddb/db_task_thread.c \
 	ddb/db_task_thread.h \
 	ddb/db_trap.c \
+	ddb/db_trap.h \
 	ddb/db_variables.c \
 	ddb/db_variables.h \
 	ddb/db_watch.c \
