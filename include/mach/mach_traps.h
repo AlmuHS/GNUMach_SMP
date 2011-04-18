@@ -36,38 +36,18 @@
 #include <mach/port.h>
 
 mach_port_t	mach_reply_port
-#ifdef	LINTLIBRARY
-			()
-	 { return MACH_PORT_NULL; }
-#else	/* LINTLIBRARY */
 			(void);
-#endif	/* LINTLIBRARY */
 
 mach_port_t	mach_thread_self
-#ifdef	LINTLIBRARY
-			()
-	 { return MACH_PORT_NULL; }
-#else	/* LINTLIBRARY */
 			(void);
-#endif	/* LINTLIBRARY */
 
 #ifdef	__386BSD__
 #undef mach_task_self
 #endif
 mach_port_t	mach_task_self
-#ifdef	LINTLIBRARY
-			()
-	 { return MACH_PORT_NULL; }
-#else	/* LINTLIBRARY */
 			(void);
-#endif	/* LINTLIBRARY */
 
 mach_port_t	mach_host_self
-#ifdef	LINTLIBRARY
-			()
-	 { return MACH_PORT_NULL; }
-#else	/* LINTLIBRARY */
 			(void);
-#endif	/* LINTLIBRARY */
 
 #endif	/* _MACH_MACH_TRAPS_H_ */

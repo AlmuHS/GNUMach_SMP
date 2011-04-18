@@ -384,7 +384,6 @@ typedef kern_return_t mach_msg_return_t;
 
 extern mach_msg_return_t
 mach_msg_trap
-#if	defined(c_plusplus) || defined(__STDC__)
    (mach_msg_header_t *msg,
     mach_msg_option_t option,
     mach_msg_size_t send_size,
@@ -392,25 +391,9 @@ mach_msg_trap
     mach_port_t rcv_name,
     mach_msg_timeout_t timeout,
     mach_port_t notify);
-#else	/* c_plusplus || __STDC__ */
-#ifdef	LINTLIBRARY
-   (msg, option, send_size, rcv_size, rcv_name, timeout, notify)
-    mach_msg_header_t *msg;
-    mach_msg_option_t option;
-    mach_msg_size_t send_size;
-    mach_msg_size_t rcv_size
-    mach_port_t rcv_name;
-    mach_msg_timeout_t timeout;
-    mach_port_t notify;
-{ return MACH_RCV_SUCCESS; }
-#else	/* LINTLIBRARY */
-   ();
-#endif	/* LINTLIBRARY */
-#endif	/* c_plusplus || __STDC__ */
 
 extern mach_msg_return_t
 mach_msg
-#if	defined(c_plusplus) || defined(__STDC__)
    (mach_msg_header_t *msg,
     mach_msg_option_t option,
     mach_msg_size_t send_size,
@@ -418,21 +401,6 @@ mach_msg
     mach_port_t rcv_name,
     mach_msg_timeout_t timeout,
     mach_port_t notify);
-#else	/* c_plusplus || __STDC__ */
-#ifdef	LINTLIBRARY
-   (msg, option, send_size, rcv_size, rcv_name, timeout, notify)
-    mach_msg_header_t *msg;
-    mach_msg_option_t option;
-    mach_msg_size_t send_size;
-    mach_msg_size_t rcv_size
-    mach_port_t rcv_name;
-    mach_msg_timeout_t timeout;
-    mach_port_t notify;
-{ return MACH_RCV_SUCCESS; }
-#else	/* LINTLIBRARY */
-   ();
-#endif	/* LINTLIBRARY */
-#endif	/* c_plusplus || __STDC__ */
 
 extern __typeof (mach_msg) __mach_msg;
 extern __typeof (mach_msg_trap) __mach_msg_trap;
