@@ -599,6 +599,7 @@ ENTRY(call_continuation)
 	addl	$(-3-IKS_SIZE),%ecx
 	movl	%ecx,%esp			/* pop the stack */
 	xorl	%ebp,%ebp			/* zero frame pointer */
+	pushl	$0				/* Dummy return address */
 	jmp	*%eax				/* goto continuation */
 
 
