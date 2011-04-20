@@ -976,6 +976,7 @@ vm_page_grab_contiguous_pages(
 
 	if ((vm_page_free_count < vm_page_free_reserved)
 	    || (vm_page_external_count >= vm_page_external_limit)) {
+		printf_once("no more room for vm_page_grab_contiguous_pages");
 		simple_unlock(&vm_page_queue_free_lock);
 		return KERN_RESOURCE_SHORTAGE;
 	}
@@ -1064,6 +1065,7 @@ count_ones:
 	 */
 	simple_unlock(&vm_page_queue_free_lock);
 
+	printf_once("no contiguous room for vm_page_grab_contiguous_pages");
 	ret = KERN_RESOURCE_SHORTAGE;
 	goto out;
 

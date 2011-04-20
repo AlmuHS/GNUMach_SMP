@@ -43,6 +43,15 @@ extern int sprintf (char *buf, const char *fmt, ...);
 
 extern int printf (const char *fmt, ...);
 
+#define printf_once(fmt, ...)			\
+	MACRO_BEGIN				\
+	static int __once = 0;			\
+	if (!__once) {				\
+		printf(fmt, ##__VA_ARGS__);	\
+		__once = 1;			\
+	}					\
+	MACRO_END
+
 extern int indent;
 extern void iprintf (const char *fmt, ...);
 

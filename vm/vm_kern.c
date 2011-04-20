@@ -43,6 +43,7 @@
 #include <kern/debug.h>
 #include <kern/lock.h>
 #include <kern/thread.h>
+#include <kern/printf.h>
 #include <vm/pmap.h>
 #include <vm/vm_fault.h>
 #include <vm/vm_kern.h>
@@ -387,6 +388,7 @@ kmem_alloc(map, addrp, size)
 	kr = vm_map_find_entry(map, &addr, size, (vm_offset_t) 0,
 			       VM_OBJECT_NULL, &entry);
 	if (kr != KERN_SUCCESS) {
+		printf_once("no more room for kmem_alloc in %p\n", map);
 		vm_map_unlock(map);
 		vm_object_deallocate(object);
 		return kr;
@@ -453,6 +455,7 @@ kern_return_t kmem_realloc(map, oldaddr, oldsize, newaddrp, newsize)
 			       VM_OBJECT_NULL, &newentry);
 	if (kr != KERN_SUCCESS) {
 		vm_map_unlock(map);
+		printf_once("no more room for kmem_realloc in %p\n", map);
 		return kr;
 	}
 
@@ -537,6 +540,7 @@ kmem_alloc_wired(map, addrp, size)
 	kr = vm_map_find_entry(map, &addr, size, (vm_offset_t) 0,
 			       kernel_object, &entry);
 	if (kr != KERN_SUCCESS) {
+		printf_once("no more room for kmem_alloc_wired in %p\n", map);
 		vm_map_unlock(map);
 		return kr;
 	}
@@ -611,6 +615,7 @@ kmem_alloc_aligned(map, addrp, size)
 	kr = vm_map_find_entry(map, &addr, size, size - 1,
 			       kernel_object, &entry);
 	if (kr != KERN_SUCCESS) {
+		printf_once("no more rooom for kmem_alloc_aligned in %p\n", map);
 		vm_map_unlock(map);
 		return kr;
 	}
@@ -672,8 +677,10 @@ kmem_alloc_pageable(map, addrp, size)
 			  (vm_offset_t) 0, TRUE,
 			  VM_OBJECT_NULL, (vm_offset_t) 0, FALSE,
 			  VM_PROT_DEFAULT, VM_PROT_ALL, VM_INHERIT_DEFAULT);
-	if (kr != KERN_SUCCESS)
+	if (kr != KERN_SUCCESS) {
+		printf_once("no more room for kmem_alloc_pageable in %p\n", map);
 		return kr;
+	}
 
 	*addrp = addr;
 	return KERN_SUCCESS;

@@ -205,11 +205,14 @@ mach_port_names(
 		size = size_needed;
 
 		kr = vm_allocate(ipc_kernel_map, &addr1, size, TRUE);
-		if (kr != KERN_SUCCESS)
+		if (kr != KERN_SUCCESS) {
+			printf_once("no more room in ipc_kernel_map\n");
 			return KERN_RESOURCE_SHORTAGE;
+		}
 
 		kr = vm_allocate(ipc_kernel_map, &addr2, size, TRUE);
 		if (kr != KERN_SUCCESS) {
+			printf_once("no more room in ipc_kernel_map\n");
 			kmem_free(ipc_kernel_map, addr1, size);
 			return KERN_RESOURCE_SHORTAGE;
 		}
@@ -982,8 +985,10 @@ mach_port_get_set_status(
 		ipc_pset_t pset;
 
 		kr = vm_allocate(ipc_kernel_map, &addr, size, TRUE);
-		if (kr != KERN_SUCCESS)
+		if (kr != KERN_SUCCESS) {
+			printf_once("no more room in ipc_kernel_map\n");
 			return KERN_RESOURCE_SHORTAGE;
+		}
 
 		/* can't fault while we hold locks */
 
