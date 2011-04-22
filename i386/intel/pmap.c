@@ -156,7 +156,7 @@ vm_offset_t kernel_virtual_start;
 vm_offset_t kernel_virtual_end;
 
 /* XXX stupid fixed limit - get rid */
-vm_size_t morevm = 40 * 1024 * 1024;	/* VM space for kernel map */
+vm_size_t morevm = 128 * 1024 * 1024;	/* VM space for kernel map */
 
 /*
  *	Index into pv_head table, its lock bits, and the modify/reference

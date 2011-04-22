@@ -48,7 +48,7 @@
 
 
 vm_map_t kalloc_map;
-vm_size_t kalloc_map_size = 8 * 1024 * 1024;
+vm_size_t kalloc_map_size = 64 * 1024 * 1024;
 vm_size_t kalloc_max;
 
 /*

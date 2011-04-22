@@ -1537,7 +1537,7 @@ void io_done_thread()
 	/*NOTREACHED*/
 }
 
-#define	DEVICE_IO_MAP_SIZE	(2 * 1024 * 1024)
+#define	DEVICE_IO_MAP_SIZE	(16 * 1024 * 1024)
 
 static void mach_device_trap_init(void);		/* forward */
 
