@@ -534,13 +534,17 @@ kern_return_t vm_map_find_entry(map, address, size, mask, object, o_entry)
 		 *	wrap around the address.
 		 */
 
-		if (((start + mask) & ~mask) < start)
+		if (((start + mask) & ~mask) < start) {
+			printf_once("no more room for vm_map_find_entry in %p\n", map);
 			return(KERN_NO_SPACE);
+		}
 		start = ((start + mask) & ~mask);
 		end = start + size;
 
-		if ((end > map->max_offset) || (end < start))
+		if ((end > map->max_offset) || (end < start)) {
+			printf_once("no more room for vm_map_find_entry in %p\n", map);
 			return(KERN_NO_SPACE);
+		}
 
 		/*
 		 *	If there are no more entries, we must win.
@@ -763,8 +767,10 @@ kern_return_t vm_map_enter(
 
 		if (start < map->min_offset)
 			start = map->min_offset;
-		if (start > map->max_offset)
+		if (start > map->max_offset) {
+			printf_once("no more room for vm_map_enter in %p\n", map);
 			RETURN(KERN_NO_SPACE);
+		}
 
 		/*
 		 *	Look for the first possible address;
@@ -797,8 +803,10 @@ kern_return_t vm_map_enter(
 			 *	wrap around the address.
 			 */
 
-			if (((start + mask) & ~mask) < start)
+			if (((start + mask) & ~mask) < start) {
+				printf_once("no more room for vm_map_enter in %p\n", map);
 				RETURN(KERN_NO_SPACE);
+			}
 			start = ((start + mask) & ~mask);
 			end = start + size;
 
@@ -813,6 +821,7 @@ kern_return_t vm_map_enter(
 					}
 				}
 
+				printf_once("no more room for vm_map_enter in %p\n", map);
 				RETURN(KERN_NO_SPACE);
 			}
 
@@ -849,8 +858,10 @@ kern_return_t vm_map_enter(
 		 *		the mask requirement.
 		 */
 
-		if ((start & mask) != 0)
+		if ((start & mask) != 0) {
+			printf_once("no more room for vm_map_enter in %p\n", map);
 			return(KERN_NO_SPACE);
+		}
 
 		vm_map_lock(map);
 
@@ -870,8 +881,10 @@ kern_return_t vm_map_enter(
 		 *	...	the starting address isn't allocated
 		 */
 
-		if (vm_map_lookup_entry(map, start, &temp_entry))
+		if (vm_map_lookup_entry(map, start, &temp_entry)) {
+			printf_once("no more room for vm_map_enter in %p\n", map);
 			RETURN(KERN_NO_SPACE);
+		}
 
 		entry = temp_entry;
 
@@ -881,8 +894,10 @@ kern_return_t vm_map_enter(
 		 */
 
 		if ((entry->vme_next != vm_map_to_entry(map)) &&
-		    (entry->vme_next->vme_start < end))
+		    (entry->vme_next->vme_start < end)) {
+			printf_once("no more room for vm_map_enter in %p\n", map);
 			RETURN(KERN_NO_SPACE);
+		}
 	}
 
 	/*
@@ -2486,6 +2501,7 @@ kern_return_t vm_map_copyout(dst_map, dst_addr, copy)
 				}
 			}
 			vm_map_unlock(dst_map);
+			printf_once("no more room for vm_map_copyout in %p\n", dst_map);
 			return(KERN_NO_SPACE);
 		}
 
@@ -2730,6 +2746,7 @@ StartAgain:
 				}
 			}
 			vm_map_unlock(dst_map);
+			printf_once("no more room for vm_map_copyout_page_list in %p\n", dst_map);
 			return(KERN_NO_SPACE);
 		}
 
