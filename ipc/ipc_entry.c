@@ -155,10 +155,8 @@ ipc_entry_get(space, namep, entryp)
 	table = space->is_table;
 	first_free = table->ie_next;
 
-	if (first_free == 0) {
-		printf_once("no more room for ipc_entry_get in space %p\n", space);
+	if (first_free == 0)
 		return KERN_NO_SPACE;
-	}
 
 	free_entry = &table[first_free];
 	table->ie_next = free_entry->ie_next;
