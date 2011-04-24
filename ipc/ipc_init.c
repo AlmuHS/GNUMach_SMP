@@ -53,7 +53,7 @@
 
 
 vm_map_t ipc_kernel_map;
-vm_size_t ipc_kernel_map_size = 1024 * 1024;
+vm_size_t ipc_kernel_map_size = 8 * 1024 * 1024;
 
 int ipc_space_max = SPACE_MAX;
 int ipc_tree_entry_max = ITE_MAX;
