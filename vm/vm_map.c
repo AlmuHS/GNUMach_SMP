@@ -767,10 +767,8 @@ kern_return_t vm_map_enter(
 
 		if (start < map->min_offset)
 			start = map->min_offset;
-		if (start > map->max_offset) {
-			printf_once("no more room for vm_map_enter in %p\n", map);
+		if (start > map->max_offset)
 			RETURN(KERN_NO_SPACE);
-		}
 
 		/*
 		 *	Look for the first possible address;
@@ -858,10 +856,8 @@ kern_return_t vm_map_enter(
 		 *		the mask requirement.
 		 */
 
-		if ((start & mask) != 0) {
-			printf_once("no more room for vm_map_enter in %p\n", map);
+		if ((start & mask) != 0)
 			return(KERN_NO_SPACE);
-		}
 
 		vm_map_lock(map);
 
@@ -881,10 +877,8 @@ kern_return_t vm_map_enter(
 		 *	...	the starting address isn't allocated
 		 */
 
-		if (vm_map_lookup_entry(map, start, &temp_entry)) {
-			printf_once("no more room for vm_map_enter in %p\n", map);
+		if (vm_map_lookup_entry(map, start, &temp_entry))
 			RETURN(KERN_NO_SPACE);
-		}
 
 		entry = temp_entry;
 
@@ -894,10 +888,8 @@ kern_return_t vm_map_enter(
 		 */
 
 		if ((entry->vme_next != vm_map_to_entry(map)) &&
-		    (entry->vme_next->vme_start < end)) {
-			printf_once("no more room for vm_map_enter in %p\n", map);
+		    (entry->vme_next->vme_start < end))
 			RETURN(KERN_NO_SPACE);
-		}
 	}
 
 	/*
