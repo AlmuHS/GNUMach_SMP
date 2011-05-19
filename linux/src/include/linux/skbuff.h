@@ -405,9 +405,7 @@ extern __inline__ unsigned char *skb_put(struct sk_buff *skb, int len)
 	skb->len+=len;
 	if(skb->tail>skb->end)
 	{
-		__label__ here;
-		panic("skput:over: %p:%d", &&here,len);
-here:
+		panic("skput:over: %d", len);
 	}
 	return tmp;
 }
@@ -418,9 +416,7 @@ extern __inline__ unsigned char *skb_push(struct sk_buff *skb, int len)
 	skb->len+=len;
 	if(skb->data<skb->head)
 	{
-		__label__ here;
-		panic("skpush:under: %p:%d", &&here,len);
-here:
+		panic("skpush:under: %d", len);
 	}
 	return skb->data;
 }
