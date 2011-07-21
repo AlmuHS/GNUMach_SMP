@@ -129,13 +129,7 @@
 const char *good_dma_drives[] = {"Micropolis 2112A",
 				 "CONNER CTMA 4000",
 				 "CONNER CTT8000-A",
-				 // Should work, but kvm/qemu seem to produce
-				 // issues:
-				 // hd1 irq timeout: status=0xd8 { Busy }
-				 // hd0: disabled DMA
-				 // hd1: disabled DMA
-				 // ide0: reset: success
-				 //"QEMU HARDDISK",
+				 "QEMU HARDDISK",
 				 NULL};
 
 /*
