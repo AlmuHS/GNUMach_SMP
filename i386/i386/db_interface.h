@@ -62,6 +62,7 @@ extern void db_task_name (task_t task);
 #define I386_DB_LEN_1 0
 #define I386_DB_LEN_2 1
 #define I386_DB_LEN_4 3
+#define I386_DB_LEN_8 2 /* For >= Pentium4 and Xen CPUID >= 15 only */
 
 #define I386_DB_LOCAL 1
 #define I386_DB_GLOBAL 2
