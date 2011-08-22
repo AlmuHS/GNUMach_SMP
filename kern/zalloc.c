@@ -483,7 +483,7 @@ vm_offset_t zalloc(zone_t zone)
 				if (kmem_alloc_pageable(zone_map, &addr,
 							zone->alloc_size)
 							!= KERN_SUCCESS)
-					panic("zalloc: zone %s exhausted",
+					panic("zalloc: no pageable memory for zone %s",
 					      zone->zone_name);
 				zcram(zone, addr, zone->alloc_size);
 				zone_lock(zone);
@@ -496,7 +496,7 @@ vm_offset_t zalloc(zone_t zone)
 				if (kmem_alloc_wired(zone_map,
 						     &addr, zone->alloc_size)
 							!= KERN_SUCCESS)
-					panic("zalloc: zone %s exhausted",
+					panic("zalloc: no wired memory for zone %s",
 					      zone->zone_name);
 				zone_page_init(addr, zone->alloc_size,
 							ZONE_PAGE_USED);
@@ -506,7 +506,7 @@ vm_offset_t zalloc(zone_t zone)
 			} else {
 				addr = zget_space(zone->elem_size, zone->align);
 				if (addr == 0)
-					panic("zalloc: zone %s exhausted",
+					panic("zalloc: no memory for zone %s",
 					      zone->zone_name);
 
 				zone_lock(zone);
