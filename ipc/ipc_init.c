@@ -80,7 +80,7 @@ ipc_bootstrap(void)
 	ipc_space_zone = zinit(sizeof(struct ipc_space), 0,
 			       ipc_space_max * sizeof(struct ipc_space),
 			       sizeof(struct ipc_space),
-			       IPC_ZONE_TYPE, "ipc spaces");
+			       0, "ipc spaces");
 
 	ipc_tree_entry_zone =
 		zinit(sizeof(struct ipc_tree_entry), 0,
