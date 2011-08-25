@@ -230,8 +230,6 @@ int
 register_blkdev (unsigned major, const char *name,
 		 struct file_operations *fops)
 {
-  int err = 0;
-
   if (major == 0)
     {
       for (major = MAX_BLKDEV - 1; major > 0; major--)
@@ -260,8 +258,6 @@ out:
 int
 unregister_blkdev (unsigned major, const char *name)
 {
-  int err;
-
   if (major >= MAX_BLKDEV)
     return -LINUX_EINVAL;
   if (! blkdevs[major].fops || strcmp (blkdevs[major].name, name))
@@ -324,7 +320,6 @@ alloc_buffer (int size)
 static void
 free_buffer (void *p, int size)
 {
-  int i;
   struct temp_data *d;
   vm_page_t m;
 
@@ -388,7 +383,6 @@ __brelse (struct buffer_head *bh)
 struct buffer_head *
 bread (kdev_t dev, int block, int size)
 {
-  int err;
   struct buffer_head *bh;
 
   bh = getblk (dev, block, size);
@@ -922,7 +916,7 @@ static kern_return_t
 init_partition (struct name_map *np, kdev_t *dev,
 		struct device_struct *ds, int slice, int *part)
 {
-  int err, i, j;
+  int i, j;
   struct disklabel *lp;
   struct gendisk *gd = ds->gd;
   struct partition *p;

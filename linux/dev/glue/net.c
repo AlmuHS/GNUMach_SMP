@@ -425,7 +425,6 @@ device_write (void *d, ipc_port_t reply_port,
 {
   unsigned char *p;
   int i, amt, skblen, s;
-  io_return_t err = 0;
   vm_map_copy_t copy = (vm_map_copy_t) data;
   struct net_data *nd = d;
   struct linux_device *dev = nd->dev;
