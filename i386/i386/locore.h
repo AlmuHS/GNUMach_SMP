@@ -32,7 +32,11 @@ extern int copyout (const void *kernelbuf, void *userbuf, size_t cn);
 
 extern int copyoutmsg (const void *kernelbuf, void *userbuf, size_t cn);
 
+extern int inst_fetch (int eip, int cs);
+
 extern int call_continuation (continuation_t continuation);
+
+extern void cpu_shutdown (void);
 
 extern unsigned int cpu_features[1];
 
@@ -67,6 +71,8 @@ extern unsigned int cpu_features[1];
 #define CPU_FEATURE_PBE		31
 
 #define CPU_HAS_FEATURE(feature) (cpu_features[(feature) / 32] & (1 << ((feature) % 32)))
+
+extern int discover_x86_cpu_type (void);
 
 #endif /* _MACHINE__LOCORE_H_ */
 

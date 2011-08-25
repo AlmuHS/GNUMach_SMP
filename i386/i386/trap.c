@@ -33,6 +33,7 @@
 #include <mach/machine/eflags.h>
 #include <i386/trap.h>
 #include <i386/fpu.h>
+#include <i386/locore.h>
 #include <i386/model_dep.h>
 #include <intel/read_fault.h>
 #include <machine/machspl.h>	/* for spl_t */
