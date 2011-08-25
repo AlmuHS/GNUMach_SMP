@@ -1655,10 +1655,9 @@ bpf_do_filter(infp, p, wirelen, header, hlen, hash_headpp, entpp)
 	buflen = NET_RCV_MAX;
 	*entpp = 0;			/* default */
 
-#ifdef lint
 	A = 0;
 	X = 0;
-#endif
+
 	for (; pc < pc_end; ++pc) {
 		switch (pc->code) {
 
