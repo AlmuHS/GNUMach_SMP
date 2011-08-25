@@ -1525,7 +1525,7 @@ static inline void do_rw_disk (ide_drive_t *drive, struct request *rq, unsigned 
  */
 static void execute_drive_cmd (ide_drive_t *drive, struct request *rq)
 {
-	byte *args = rq->buffer;
+	byte *args = (byte *)rq->buffer;
 	if (args) {
 #ifdef DEBUG
 		printk("%s: DRIVE_CMD cmd=0x%02x sc=0x%02x fr=0x%02x xx=0x%02x\n",
@@ -2020,7 +2020,7 @@ static int ide_open(struct inode * inode, struct file * filp)
 		struct request rq;
 		check_disk_change(inode->i_rdev);
 		ide_init_drive_cmd (&rq);
-		rq.buffer = door_lock;
+		rq.buffer = (char *)door_lock;
 		/*
 		 * Ignore the return code from door_lock,
 		 * since the open() has already succeeded,
@@ -2071,7 +2071,7 @@ static void ide_release(struct inode * inode, struct file * file)
 			struct request rq;
 			invalidate_buffers(inode->i_rdev);
 			ide_init_drive_cmd (&rq);
-			rq.buffer = door_unlock;
+			rq.buffer = (char *)door_unlock;
 			(void) ide_do_drive_cmd(drive, &rq, ide_wait);
 		}
 	}
@@ -2321,7 +2321,7 @@ static int ide_ioctl (struct inode *inode, struct file *file,
 					argbuf[3] = args[3];
 				}
 				if (!(err = verify_area(VERIFY_WRITE,(void *)arg, argsize))) {
-					rq.buffer = argbuf;
+					rq.buffer = (char *)argbuf;
 					err = ide_do_drive_cmd(drive, &rq, ide_wait);
 					memcpy_tofs((void *)arg, argbuf, argsize);
 				}
@@ -2455,7 +2455,7 @@ static inline void do_identify (ide_drive_t *drive, byte cmd)
 	ide_fixstring (id->fw_rev,    sizeof(id->fw_rev),    bswap);
 	ide_fixstring (id->serial_no, sizeof(id->serial_no), bswap);
 
-	if (strstr(id->model, "E X A B Y T E N E S T"))
+	if (strstr((char *)id->model, "E X A B Y T E N E S T"))
 		return;
 
 #ifdef CONFIG_BLK_DEV_IDEATAPI
@@ -2474,9 +2474,12 @@ static inline void do_identify (ide_drive_t *drive, byte cmd)
 #endif /* CONFIG_BLK_DEV_PROMISE */
 		if (!drive->ide_scsi) switch (type) {
 			case 0:
-				if (!strstr(id->model, "oppy") && !strstr(id->model, "poyp") && !strstr(id->model, "ZIP"))
+				if (!strstr((char *)id->model, "oppy") &&
+				    !strstr((char *)id->model, "poyp") &&
+				    !strstr((char *)id->model, "ZIP"))
 					printk("cdrom or floppy?, assuming ");
-				if (drive->media != ide_cdrom && !strstr(id->model, "CD-ROM")) {
+				if (drive->media != ide_cdrom &&
+				    !strstr((char *)id->model, "CD-ROM")) {
 #ifdef CONFIG_BLK_DEV_IDEFLOPPY
 					printk("FLOPPY drive\n");
 					drive->media = ide_floppy;
@@ -2616,8 +2619,8 @@ static inline void do_identify (ide_drive_t *drive, byte cmd)
                         drive->bios_cyl = capacity/cylsize;
         }
 
-	if (!strncmp(id->model, "BMI ", 4) &&
-	    strstr(id->model, " ENHANCED IDE ") &&
+	if (!strncmp((char *)id->model, "BMI ", 4) &&
+	    strstr((char *)id->model, " ENHANCED IDE ") &&
 	    drive->select.b.lba)
 		drive->no_geom = 1;
 
@@ -2856,7 +2859,7 @@ static inline byte probe_for_drive (ide_drive_t *drive)
 		(void) do_probe(drive, WIN_PIDENTIFY); /* look for ATAPI device */
 #endif	/* CONFIG_BLK_DEV_IDEATAPI */
 	}
-	if (drive->id && strstr(drive->id->model, "E X A B Y T E N E S T"))
+	if (drive->id && strstr((char *)drive->id->model, "E X A B Y T E N E S T"))
 		enable_nest(drive);
 	if (!drive->present)
 		return 0;			/* drive not found */

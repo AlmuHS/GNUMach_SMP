@@ -289,7 +289,7 @@ read_mbr:
 		printk(" unable to read partition table\n");
 		return -1;
 	}
-	data = bh->b_data;
+	data = (unsigned char *)bh->b_data;
 	/* In some cases we modify the geometry    */
 	/*  of the drive (below), so ensure that   */
 	/*  nobody else tries to re-use this data. */

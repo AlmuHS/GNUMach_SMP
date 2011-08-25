@@ -198,7 +198,7 @@ struct atapi_request_sense {
 };
 
 struct packet_command {
-	char *buffer;
+	unsigned char *buffer;
 	int buflen;
 	int stat;
 	struct atapi_request_sense *sense_data;

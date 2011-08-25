@@ -626,7 +626,7 @@ static void cdrom_queue_request_sense (ide_drive_t *drive,
 
 	pc->c[0] = REQUEST_SENSE;
 	pc->c[4] = len;
-	pc->buffer = (char *)reqbuf;
+	pc->buffer = (unsigned char *)reqbuf;
 	pc->buflen = len;
 	pc->sense_data = (struct atapi_request_sense *)failed_command;
 
@@ -844,7 +844,7 @@ static int cdrom_start_packet_command (ide_drive_t *drive, int xferlen,
    HANDLER is the interrupt handler to call when the command completes
    or there's data ready. */
 static int cdrom_transfer_packet_command (ide_drive_t *drive,
-                                          char *cmd_buf, int cmd_len,
+                                          unsigned char *cmd_buf, int cmd_len,
 					  ide_handler_t *handler)
 {
 	if (CDROM_CONFIG_FLAGS (drive)->drq_interrupt) {
@@ -1660,7 +1660,7 @@ cdrom_read_capacity (ide_drive_t *drive, unsigned *capacity,
 	pc.sense_data = reqbuf;
 
 	pc.c[0] = READ_CAPACITY;
-	pc.buffer = (char *)&capbuf;
+	pc.buffer = (unsigned char *)&capbuf;
 	pc.buflen = sizeof (capbuf);
 
 	stat = cdrom_queue_packet_command (drive, &pc);
@@ -1681,7 +1681,7 @@ cdrom_read_tocentry (ide_drive_t *drive, int trackno, int msf_flag,
 	memset (&pc, 0, sizeof (pc));
 	pc.sense_data = reqbuf;
 
-	pc.buffer =  buf;
+	pc.buffer = (unsigned char *)buf;
 	pc.buflen = buflen;
 	pc.c[0] = SCMD_READ_TOC;
 	pc.c[6] = trackno;
@@ -1813,7 +1813,7 @@ cdrom_read_subchannel (ide_drive_t *drive, int format,
 	memset (&pc, 0, sizeof (pc));
 	pc.sense_data = reqbuf;
 
-	pc.buffer =  buf;
+	pc.buffer = (unsigned char *) buf;
 	pc.buflen = buflen;
 	pc.c[0] = SCMD_READ_SUBCHANNEL;
 	pc.c[1] = 2;     /* MSF addressing */
@@ -1836,7 +1836,7 @@ cdrom_mode_sense (ide_drive_t *drive, int pageno, int modeflag,
 	memset (&pc, 0, sizeof (pc));
 	pc.sense_data = reqbuf;
 
-	pc.buffer =  buf;
+	pc.buffer = (unsigned char *)buf;
 	pc.buflen = buflen;
 	pc.c[0] = MODE_SENSE_10;
 	pc.c[2] = pageno | (modeflag << 6);
@@ -1855,7 +1855,7 @@ cdrom_mode_select (ide_drive_t *drive, int pageno, char *buf, int buflen,
 	memset (&pc, 0, sizeof (pc));
 	pc.sense_data = reqbuf;
 
-	pc.buffer =  buf;
+	pc.buffer = (unsigned char *)buf;
 	pc.buflen = - buflen;
 	pc.c[0] = MODE_SELECT_10;
 	pc.c[1] = 0x10;
@@ -1971,7 +1971,7 @@ cdrom_read_block (ide_drive_t *drive, int format, int lba, int nblocks,
 	memset (&pc, 0, sizeof (pc));
 	pc.sense_data = reqbuf;
 
-	pc.buffer = buf;
+	pc.buffer = (unsigned char *)buf;
 	pc.buflen = buflen;
 
 #if ! STANDARD_ATAPI
@@ -2698,9 +2698,12 @@ void ide_cdrom_setup (ide_drive_t *drive)
 	CDROM_CONFIG_FLAGS (drive)->subchan_as_bcd = 0;
 
 	if (drive->id != NULL) {
-		if (strcmp (drive->id->model, "V003S0DS") == 0 &&
-		    drive->id->fw_rev[4] == '1' &&
-		    drive->id->fw_rev[6] <= '2') {
+		const char *model = (const char *)drive->id->model;
+		const char *fw_rev = (const char *)drive->id->fw_rev;
+
+		if (strcmp (model, "V003S0DS") == 0 &&
+		    fw_rev[4] == '1' &&
+		    fw_rev[6] <= '2') {
 			/* Vertos 300.
 			   Some versions of this drive like to talk BCD. */
 			CDROM_CONFIG_FLAGS (drive)->toctracks_as_bcd = 1;
@@ -2709,27 +2712,27 @@ void ide_cdrom_setup (ide_drive_t *drive)
 			CDROM_CONFIG_FLAGS (drive)->subchan_as_bcd = 1;
 		}
 
-		else if (strcmp (drive->id->model, "V006E0DS") == 0 &&
-		    drive->id->fw_rev[4] == '1' &&
-		    drive->id->fw_rev[6] <= '2') {
+		else if (strcmp (model, "V006E0DS") == 0 &&
+		         fw_rev[4] == '1' &&
+		         fw_rev[6] <= '2') {
 			/* Vertos 600 ESD. */
 			CDROM_CONFIG_FLAGS (drive)->toctracks_as_bcd = 1;
 		}
 
-		else if (strcmp (drive->id->model, "GCD-R580B") == 0)
+		else if (strcmp (model, "GCD-R580B") == 0)
 			drive->cdrom_info.max_sectors = 124;
 
-		else if (strcmp (drive->id->model,
+		else if (strcmp (model,
 				 "NEC CD-ROM DRIVE:260") == 0 &&
-			 strcmp (drive->id->fw_rev, "1.01") == 0) {
+			 strcmp (fw_rev, "1.01") == 0) {
 			/* Old NEC260 (not R). */
 			CDROM_CONFIG_FLAGS (drive)->tocaddr_as_bcd = 1;
 			CDROM_CONFIG_FLAGS (drive)->playmsf_as_bcd = 1;
 			CDROM_CONFIG_FLAGS (drive)->subchan_as_bcd = 1;
 		}
 
-		else if (strcmp (drive->id->model, "WEARNES CDD-120") == 0 &&
-			 strcmp (drive->id->fw_rev, "A1.1") == 0) {
+		else if (strcmp (model, "WEARNES CDD-120") == 0 &&
+			 strcmp (fw_rev, "A1.1") == 0) {
 			/* Wearnes */
 			CDROM_CONFIG_FLAGS (drive)->playmsf_as_bcd = 1;
 			CDROM_CONFIG_FLAGS (drive)->subchan_as_bcd = 1;
@@ -2737,9 +2740,9 @@ void ide_cdrom_setup (ide_drive_t *drive)
 
                 /* Sanyo 3 CD changer uses a non-standard command
                     for CD changing */
-                 else if ((strcmp(drive->id->model, "CD-ROM CDR-C3 G") == 0) ||
-                         (strcmp(drive->id->model, "CD-ROM CDR-C3G") == 0) ||
-                         (strcmp(drive->id->model, "CD-ROM CDR_C36") == 0)) {
+                 else if ((strcmp(model, "CD-ROM CDR-C3 G") == 0) ||
+                         (strcmp(model, "CD-ROM CDR-C3G") == 0) ||
+                         (strcmp(model, "CD-ROM CDR_C36") == 0)) {
                         /* uses CD in slot 0 when value is set to 3 */
                         CDROM_STATE_FLAGS (drive)->sanyo_slot = 3;
                 }
