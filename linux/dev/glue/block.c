@@ -1668,7 +1668,7 @@ device_get_status (void *d, dev_flavor_t flavor, dev_status_t status,
 	  INIT_DATA();
 
 	  if ((*bd->ds->fops->ioctl) (&td.inode, &td.file,
-				      HDIO_GETGEO, &hg))
+				      HDIO_GETGEO, (unsigned long)&hg))
 	    return D_INVALID_OPERATION;
 
 	  dp->dp_type = DPT_WINI;  /* XXX: It may be a floppy...  */
