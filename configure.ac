@@ -149,7 +149,8 @@ m4_include([linux/configfrag.ac])
 [ssp_possible=yes]
 AC_MSG_CHECKING([whether the compiler accepts `-fstack-protector'])
 # Is this a reliable test case?
-AC_LANG_CONFTEST([[void foo (void) { volatile char a[8]; a[3]; }]])
+AC_LANG_CONFTEST(
+  [AC_LANG_SOURCE([[void foo (void) { volatile char a[8]; a[3]; }]])])
 [# `$CC -c -o ...' might not be portable.  But, oh, well...  Is calling
 # `ac_compile' like this correct, after all?
 if eval "$ac_compile -S -fstack-protector -o conftest.s" 2> /dev/null; then]
