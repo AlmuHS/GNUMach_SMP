@@ -40,6 +40,7 @@
 #include <mach/kern_return.h>
 #include <mach/notify.h>
 #include <mach/vm_prot.h>
+#include <kern/printf.h>
 #include <kern/zalloc.h>
 #include <kern/mach_param.h>
 #include <ipc/ipc_port.h>
