@@ -57,6 +57,8 @@
 
 #endif /* NDEBUG */
 
+extern void log (int level, const char *fmt, ...);
+
 extern void panic_init(void);
 extern void panic (const char *s, ...) __attribute__ ((noreturn));
 
