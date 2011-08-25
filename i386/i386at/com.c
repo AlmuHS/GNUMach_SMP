@@ -622,7 +622,9 @@ comstart(tp)
 struct tty *tp;
 {
 	char nch;
+#if 0
 	int i;
+#endif
 
 	if (tp->t_state & (TS_TIMEOUT|TS_TTSTOP|TS_BUSY)) {
 comst_1++;

@@ -385,7 +385,9 @@ static void end_request(int uptodate) {
 	struct request *req = CURRENT;
 #endif /* IDE_DRIVER */
 	struct buffer_head * bh;
+#ifndef MACH
 	int nsect;
+#endif
 
 	req->errors = 0;
 	if (!uptodate) {
