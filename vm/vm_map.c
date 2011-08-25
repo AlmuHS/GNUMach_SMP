@@ -4157,6 +4157,8 @@ vm_map_t vm_map_fork(old_map)
 			object->ref_count++;
 			vm_object_unlock(object);
 
+			new_entry = vm_map_entry_create(new_map);
+
 			if (old_entry->projected_on != 0) {
 			  /*
 			   *   If entry is projected buffer, clone the
@@ -4171,7 +4173,6 @@ vm_map_t vm_map_fork(old_map)
 			   *	Mark both entries as shared.
 			   */
 
-			  new_entry = vm_map_entry_create(new_map);
 			  vm_map_entry_copy(new_entry, old_entry);
 			  old_entry->is_shared = TRUE;
 			  new_entry->is_shared = TRUE;
