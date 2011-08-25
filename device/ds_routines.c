@@ -1489,6 +1489,10 @@ void iodone(ior)
 	splx(s);
 }
 
+#if defined (LINUX_DEV) && defined (CONFIG_INET)
+extern void free_skbuffs ();
+#endif
+
 void io_done_thread_continue()
 {
 	for (;;) {
