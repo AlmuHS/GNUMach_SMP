@@ -51,6 +51,9 @@ AM_CPPFLAGS += \
 	-I$(top_srcdir)/$(systype)/include/mach/sa \
 	-I$(top_srcdir)/include
 
+AM_CFLAGS += \
+	-fno-builtin-log
+
 # Yes, this makes the eyes hurt.  But perhaps someone will finally take care of
 # all that scruffy Mach code...  Also see <http://savannah.gnu.org/task/?5726>.
 AM_CFLAGS += \
