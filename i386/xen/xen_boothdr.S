@@ -26,7 +26,7 @@
 	.ascii  ",ELF_PADDR_OFFSET=0x20000000"
 	.ascii	",HYPERCALL_PAGE=0x2"
 #if PAE
-	.ascii  ",PAE=yes"
+	.ascii  ",PAE=yes[extended-cr3]"
 #else
 	.ascii  ",PAE=no"
 #endif
@@ -59,7 +59,7 @@
 	ELFNOTE(Xen, XEN_ELFNOTE_ENTRY,			.long,  start)
 	ELFNOTE(Xen, XEN_ELFNOTE_HYPERCALL_PAGE,	.long,  hypcalls)
 #if PAE
-	ELFNOTE(Xen, XEN_ELFNOTE_PAE_MODE,		.asciz, "yes")
+	ELFNOTE(Xen, XEN_ELFNOTE_PAE_MODE,		.asciz, "yes[extended-cr3]")
 #else
 	ELFNOTE(Xen, XEN_ELFNOTE_PAE_MODE,		.asciz, "no")
 #endif
