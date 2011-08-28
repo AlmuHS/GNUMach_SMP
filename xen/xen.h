@@ -21,7 +21,6 @@
 
 void hyp_init(void);
 void hyp_dev_init(void);
-void hyp_invalidate_pte(pt_entry_t *pte);
 void hyp_idle(void);
 void hyp_p2m_init(void);
 

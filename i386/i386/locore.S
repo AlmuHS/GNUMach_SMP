@@ -1294,42 +1294,15 @@ Entry(copyoutmsg)
  * XXX only have to do this on 386's.
  */
 copyout_retry:
-#ifdef	MACH_HYP
-	movl	cr3,%ecx		/* point to page directory */
-#else	/* MACH_HYP */
+#if !defined(MACH_HYP) && !PAE
 	movl	%cr3,%ecx		/* point to page directory */
-#endif	/* MACH_HYP */
-#if PAE
-	movl	%edi,%eax		/* get page directory pointer bits */
-	shrl	$(PDPSHIFT),%eax	/* from user address */
-	movl	KERNELBASE(%ecx,%eax,PTE_SIZE),%ecx
-					/* get page directory pointer */
-#ifdef	MACH_PSEUDO_PHYS
-	shrl	$(PTESHIFT),%ecx
-	movl	pfn_list,%eax
-	movl	(%eax,%ecx,4),%ecx	/* mfn_to_pfn */
-	shll	$(PTESHIFT),%ecx
-#else	/* MACH_PSEUDO_PHYS */
-	andl	$(PTE_PFN),%ecx		/* isolate page frame address */
-#endif	/* MACH_PSEUDO_PHYS */
-#endif	/* PAE */
 	movl	%edi,%eax		/* get page directory bits */
 	shrl	$(PDESHIFT),%eax	/* from user address */
-#if PAE
-	andl	$(PDEMASK),%eax
-#endif	/* PAE */
 	movl	KERNELBASE(%ecx,%eax,PTE_SIZE),%ecx
 					/* get page directory pointer */
 	testl	$(PTE_V),%ecx		/* present? */
 	jz	0f			/* if not, fault is OK */
-#ifdef	MACH_PSEUDO_PHYS
-	shrl	$(PTESHIFT),%ecx
-	movl	pfn_list,%eax
-	movl	(%eax,%ecx,4),%ecx	/* mfn_to_pfn */
-	shll	$(PTESHIFT),%ecx
-#else	/* MACH_PSEUDO_PHYS */
 	andl	$(PTE_PFN),%ecx		/* isolate page frame address */
-#endif	/* MACH_PSEUDO_PHYS */
 	movl	%edi,%eax		/* get page table bits */
 	shrl	$(PTESHIFT),%eax
 	andl	$(PTEMASK),%eax		/* from user address */
@@ -1343,18 +1316,11 @@ copyout_retry:
 /*
  * Not writable - must fake a fault.  Turn off access to the page.
  */
-#ifdef	MACH_HYP
-	pushl	%edx
-	pushl	%ecx
-	call	hyp_invalidate_pte
-	popl	%ecx
-	popl	%edx
-#else	/* MACH_HYP */
 	andl	$(PTE_INVALID),(%ecx)	/* turn off valid bit */
 	movl	%cr3,%eax		/* invalidate TLB */
 	movl	%eax,%cr3
-#endif	/* MACH_HYP */
 0:
+#endif /* !defined(MACH_HYP) && !PAE */
 
 /*
  * Copy only what fits on the current destination page.
