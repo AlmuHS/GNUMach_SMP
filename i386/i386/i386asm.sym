@@ -86,6 +86,8 @@ offset	i386_interrupt_state	i	efl
 offset	i386_tss		tss	esp0
 offset	i386_tss		tss	ss0
 
+offset	machine_slot		sub_type	cpu_type
+
 expr	I386_PGBYTES					NBPG
 expr	VM_MIN_ADDRESS
 expr	VM_MAX_ADDRESS

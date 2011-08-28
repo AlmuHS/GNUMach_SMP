@@ -1290,11 +1290,12 @@ Entry(copyoutmsg)
 
 /*
  * Check whether user address space is writable
- * before writing to it - hardware is broken.
- * XXX only have to do this on 386's.
+ * before writing to it - i386 hardware is broken.
  */
 copyout_retry:
 #if !defined(MACH_HYP) && !PAE
+	cmpl	$3,machine_slot+SUB_TYPE_CPU_TYPE
+	ja	0f			/* Skip on i486 and above */
 	movl	%cr3,%ecx		/* point to page directory */
 	movl	%edi,%eax		/* get page directory bits */
 	shrl	$(PDESHIFT),%eax	/* from user address */
