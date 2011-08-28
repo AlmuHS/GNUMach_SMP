@@ -27,7 +27,7 @@
 #include <mach/vm_param.h>
 #include <xen/public/xen.h>
 
-/* The kernel address space is 1GB, starting at virtual address 0.  */
+/* The kernel address space is usually 1GB, usually starting at virtual address 0.  */
 #ifdef	MACH_XEN
 #define VM_MIN_KERNEL_ADDRESS	0x20000000UL
 #else	/* MACH_XEN */
@@ -44,6 +44,9 @@
 #else	/* MACH_XEN */
 #define VM_MAX_KERNEL_ADDRESS	(LINEAR_MAX_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS + VM_MIN_KERNEL_ADDRESS)
 #endif	/* MACH_XEN */
+
+/* Reserve mapping room for kmem_suballoc calls. */
+#define VM_KERNEL_MAP_SIZE (192 * 1024 * 1024)
 
 /* The kernel virtual address space is actually located
    at high linear addresses.

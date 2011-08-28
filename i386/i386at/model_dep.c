@@ -261,6 +261,8 @@ void db_reset_cpu(void)
 void
 mem_size_init(void)
 {
+	vm_offset_t max_phys_size;
+
 	/* Physical memory on all PCs starts at physical address 0.
 	   XX make it a constant.  */
 	phys_first_addr = 0;
@@ -285,12 +287,13 @@ mem_size_init(void)
 	printf("AT386 boot: physical memory from 0x%x to 0x%x\n",
 	       phys_first_addr, phys_last_addr);
 
-	/* Reserve 1/6 of the memory address space for virtual mappings.
+	/* Reserve room for virtual mappings.
 	 * Yes, this loses memory.  Blame i386.  */
-	if (phys_last_addr > ((VM_MAX_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS) / 6) * 5) {
-		phys_last_addr = ((VM_MAX_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS) / 6) * 5;
+	max_phys_size = VM_MAX_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS - VM_KERNEL_MAP_SIZE;
+	if (phys_last_addr - phys_first_addr > max_phys_size) {
+		phys_last_addr = phys_first_addr + max_phys_size;
 		printf("Truncating memory size to %dMiB\n", (phys_last_addr - phys_first_addr) / (1024 * 1024));
-		/* TODO Xen: free lost memory */
+		/* TODO Xen: be nice, free lost memory */
 	}
 
 	phys_first_addr = round_page(phys_first_addr);

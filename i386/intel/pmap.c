@@ -155,9 +155,6 @@ boolean_t	pmap_initialized = FALSE;
 vm_offset_t kernel_virtual_start;
 vm_offset_t kernel_virtual_end;
 
-/* XXX stupid fixed limit - get rid */
-vm_size_t morevm = 128 * 1024 * 1024;	/* VM space for kernel map */
-
 /*
  *	Index into pv_head table, its lock bits, and the modify/reference
  *	bits starting at phys_first_addr.
@@ -620,8 +617,7 @@ void pmap_bootstrap()
 	 * and extends to a stupid arbitrary limit beyond that.
 	 */
 	kernel_virtual_start = phystokv(phys_last_addr);
-	kernel_virtual_end = phystokv(phys_last_addr) + morevm
-		+ (phys_last_addr - phys_first_addr);
+	kernel_virtual_end = phystokv(phys_last_addr) + VM_KERNEL_MAP_SIZE;
 
 	if (kernel_virtual_end < kernel_virtual_start
 			|| kernel_virtual_end > VM_MAX_KERNEL_ADDRESS)
