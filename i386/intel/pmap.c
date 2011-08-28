@@ -868,7 +868,7 @@ void pmap_clear_bootstrap_pagetable(pt_entry_t *base) {
 #endif	/* PAE */
 			for (i = 0; i < NPTES; i++) {
 				pt_entry_t pde = dir[i];
-				unsigned long pfn = mfn_to_pfn(atop(pde));
+				unsigned long pfn = atop(pte_to_pa(pde));
 				void *pgt = (void*) phystokv(ptoa(pfn));
 				if (pde & INTEL_PTE_VALID)
 					hyp_free_page(pfn, pgt);
