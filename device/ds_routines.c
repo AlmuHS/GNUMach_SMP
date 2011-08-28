@@ -99,6 +99,7 @@
 extern struct device_emulation_ops linux_block_emulation_ops;
 #ifdef CONFIG_INET
 extern struct device_emulation_ops linux_net_emulation_ops;
+extern void free_skbuffs ();
 #ifdef CONFIG_PCMCIA
 extern struct device_emulation_ops linux_pcmcia_emulation_ops;
 #endif
@@ -1488,10 +1489,6 @@ void iodone(ior)
 	}
 	splx(s);
 }
-
-#if defined (LINUX_DEV) && defined (CONFIG_INET)
-extern void free_skbuffs ();
-#endif
 
 void io_done_thread_continue()
 {
