@@ -1295,7 +1295,7 @@ Entry(copyoutmsg)
 copyout_retry:
 #if !defined(MACH_HYP) && !PAE
 	cmpl	$3,machine_slot+SUB_TYPE_CPU_TYPE
-	ja	0f			/* Skip on i486 and above */
+	ja	1f			/* Skip on i486 and above */
 	movl	%cr3,%ecx		/* point to page directory */
 	movl	%edi,%eax		/* get page directory bits */
 	shrl	$(PDESHIFT),%eax	/* from user address */
@@ -1321,7 +1321,6 @@ copyout_retry:
 	movl	%cr3,%eax		/* invalidate TLB */
 	movl	%eax,%cr3
 0:
-#endif /* !defined(MACH_HYP) && !PAE */
 
 /*
  * Copy only what fits on the current destination page.
@@ -1331,9 +1330,11 @@ copyout_retry:
 	andl	$(-NBPG),%eax		/* start of next page */
 	subl	%edi,%eax		/* get number of bytes to that point */
 	cmpl	%edx,%eax		/* bigger than count? */
-	jle	1f			/* if so, */
-	movl	%edx,%eax		/* use count */
+	jle	2f			/* if so, */
 1:
+#endif /* !defined(MACH_HYP) && !PAE */
+	movl	%edx,%eax		/* use count */
+2:
 
 	/*cld*/				/* count up: always this way in GCC code */
 	movl	%eax,%ecx		/* move by longwords first */
