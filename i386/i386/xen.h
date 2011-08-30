@@ -25,6 +25,7 @@
 #include <mach/machine/vm_types.h>
 #include <mach/vm_param.h>
 #include <mach/inline.h>
+#include <mach/xen.h>
 #include <machine/vm_param.h>
 #include <intel/pmap.h>
 #include <kern/debug.h>

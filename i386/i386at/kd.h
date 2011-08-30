@@ -75,6 +75,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <mach/boolean.h>
 #include <sys/types.h>
 #include <sys/time.h>
+#include <device/cons.h>
 
 
 /*
@@ -729,7 +730,11 @@ extern void kd_handle_ack (void);
 extern int kd_kbd_magic (int);
 extern int kdstate2idx (int, boolean_t);
 extern void kd_parserest (u_char *);
+extern int kdcnprobe(struct consdev *cp);
+extern int kdcninit(struct consdev *cp);
+extern int kdcngetc(dev_t dev, int wait);
 extern int kdcnmaygetc (void);
+extern int kdcnputc(dev_t dev, int c);
 
 extern void kd_slmwd (void *start, int count, int value);
 extern void kd_slmscu (void *from, void *to, int count);

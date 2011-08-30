@@ -27,6 +27,7 @@
 #define _COM_H_
 
 #include <mach/std_types.h>
+#include <device/cons.h>
 
 /*
  * Set receive modem state from modem status register.
@@ -41,5 +42,10 @@ extern void comtimer(void * param);
 extern void commodem_intr(int unit, int stat);
 
 extern int comgetc(int unit);
+
+extern int comcnprobe(struct consdev *cp);
+extern int comcninit(struct consdev *cp);
+extern int comcngetc(dev_t dev, int wait);
+extern int comcnputc(dev_t dev, int c);
 
 #endif /* _COM_H_ */

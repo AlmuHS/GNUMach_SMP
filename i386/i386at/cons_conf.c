@@ -31,11 +31,11 @@
 #include <device/cons.h>
 
 #ifdef	MACH_HYP
-extern	int hypcnprobe(), hypcninit(), hypcngetc(), hypcnputc();
+#include <xen/console.h>
 #else	/* MACH_HYP */
-extern	int kdcnprobe(), kdcninit(), kdcngetc(), kdcnputc();
+#include "kd.h"
 #if NCOM > 0
-extern	int comcnprobe(), comcninit(), comcngetc(), comcnputc();
+#include "com.h"
 #endif
 #endif	/* MACH_HYP */
 

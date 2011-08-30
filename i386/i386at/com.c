@@ -70,10 +70,6 @@ int comtimer_state[NCOM];
 #define RCBAUD B9600
 static int rcline = -1;
 static struct bus_device *comcndev;
-int comcnprobe(struct consdev *cp);
-int comcninit(struct consdev *cp);
-int comcngetc(dev_t dev, int wait);
-int comcnputc(dev_t dev, int c);
 
 /* XX */
 extern char *kernel_cmdline;

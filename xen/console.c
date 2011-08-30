@@ -216,9 +216,6 @@ int hypcnclose(int dev, int flag)
 
 int hypcnprobe(struct consdev *cp)
 {
-	struct xencons_interface *my_console;
-	my_console = (void*) mfn_to_kv(boot_info.console_mfn);
-
 	cp->cn_dev = makedev(0, 0);
 	cp->cn_pri = CN_INTERNAL;
 	return 0;

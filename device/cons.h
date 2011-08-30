@@ -21,16 +21,18 @@
  *	Utah $Hdr: cons.h 1.10 94/12/14$
  */
 
+#ifndef _DEVICE_CONS_H
+#define _DEVICE_CONS_H
 #include <sys/types.h>
 
 struct consdev {
 #ifdef MACH_KERNEL
 	char	*cn_name;	/* name of device in dev_name_list */
 #endif
-	int	(*cn_probe)();	/* probe hardware and fill in consdev info */
-	int	(*cn_init)();	/* turn on as console */
-	int	(*cn_getc)();	/* kernel getchar interface */
-	int	(*cn_putc)();	/* kernel putchar interface */
+	int	(*cn_probe)(struct consdev *cp);	/* probe hardware and fill in consdev info */
+	int	(*cn_init)(struct consdev *cp);		/* turn on as console */
+	int	(*cn_getc)(dev_t dev, int wait);	/* kernel getchar interface */
+	int	(*cn_putc)(dev_t dev, int c);		/* kernel putchar interface */
 	dev_t	cn_dev;		/* major/minor of device */
 	short	cn_pri;		/* pecking order; the higher the better */
 };
@@ -57,3 +59,4 @@ extern int cngetc(void);
 extern int cnmaygetc(void);
 
 extern void cnputc(char);
+#endif /* _DEVICE_CONS_H */

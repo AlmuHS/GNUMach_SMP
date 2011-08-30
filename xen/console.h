@@ -21,6 +21,8 @@
 #include <machine/xen.h>
 #include <string.h>
 
+#include <device/cons.h>
+
 #define hyp_console_write(str, len)	hyp_console_io (CONSOLEIO_write, (len), kvtolin(str))
 
 #define hyp_console_put(str) ({ \
@@ -29,5 +31,10 @@
 })
 
 extern void hyp_console_init(void);
+
+extern int hypcnputc(dev_t dev, int c);
+extern int hypcngetc(dev_t dev, int wait);
+extern int hypcnprobe(struct consdev *cp);
+extern int hypcninit(struct consdev *cp);
 
 #endif /* XEN_CONSOLE_H */

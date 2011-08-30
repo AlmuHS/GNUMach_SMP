@@ -113,10 +113,6 @@ static void charput(), charmvup(), charmvdown(), charclear(), charsetcursor();
 static void kd_noopreset();
 boolean_t kdcheckmagic();
 
-int kdcnprobe(struct consdev *cp);
-int kdcninit(struct consdev *cp);
-int kdcngetc(dev_t dev, int wait);
-void kdcnputc(dev_t dev, int c);
 int do_modifier (int, Scancode, boolean_t);
 
 /*
@@ -2970,16 +2966,18 @@ kdcngetc(dev_t dev, int wait)
 		return kdcnmaygetc();
 }
 
-void
+int
 kdcnputc(dev_t dev, int c)
 {
 	if (!kd_initialized)
-		return;
+		return -1;
 
 	/* Note that tab is handled in kd_putc */
 	if (c == '\n')
 		kd_putc('\r');
 	kd_putc(c);
+
+	return 0;
 }
 
 /*
