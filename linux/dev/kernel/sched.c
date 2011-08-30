@@ -34,6 +34,9 @@
 
 #include <kern/thread.h>
 #include <kern/sched_prim.h>
+#include <kern/printf.h>
+
+#include <machine/machspl.h>
 
 #define MACH_INCLUDE
 #include <linux/sched.h>
@@ -41,20 +44,12 @@
 #include <linux/fs.h>
 #include <linux/blkdev.h>
 #include <linux/interrupt.h>
+#include <linux/dev/glue/glue.h>
 
 #include <asm/system.h>
 #include <asm/atomic.h>
 
 int securelevel = 0;
-
-extern void *alloc_contig_mem (unsigned, unsigned, unsigned, vm_page_t *);
-extern void free_contig_mem (vm_page_t);
-extern spl_t splhigh (void);
-extern spl_t splx (spl_t);
-extern void linux_soft_intr (void);
-extern int issig (void);
-extern int printf (const char *, ...);
-extern int linux_auto_config;
 
 static void timer_bh (void);
 

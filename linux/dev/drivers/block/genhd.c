@@ -39,6 +39,7 @@
 
 #ifdef MACH
 #include <machine/spl.h>
+#include <linux/dev/glue/glue.h>
 #endif
 
 #define SYS_IND(p)	get_unaligned(&p->sys_ind)
@@ -770,8 +771,6 @@ void device_setup(void)
 	struct gendisk *p;
 	int nr=0;
 #ifdef MACH
-	extern int linux_intr_pri;
-
 	linux_intr_pri = SPL5;
 #endif
 

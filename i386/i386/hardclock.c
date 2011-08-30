@@ -39,12 +39,11 @@
 #include <i386/ipl.h>
 #endif
 
-extern void	clock_interrupt();
-extern char	return_to_iret[];
-
 #ifdef LINUX_DEV
-extern void linux_timer_intr(void);
+#include <linux/dev/glue/glue.h>
 #endif
+
+extern char	return_to_iret[];
 
 void
 hardclock(iunit,        old_ipl, ret_addr, regs)

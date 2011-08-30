@@ -52,12 +52,12 @@
 #include <i386/thread.h>
 #include <i386/fpu.h>
 #include <i386/pio.h>
+#include <i386/pic.h>
 #include <i386/locore.h>
 #include "cpu_number.h"
 
 #if 0
 #include <i386/ipl.h>
-extern int curr_ipl;
 #define ASSERT_IPL(L) \
 { \
       if (curr_ipl != L) { \
@@ -865,7 +865,7 @@ fp_state_alloc()
  *	This comes in on line 5 of the slave PIC at SPL1.
  */
 void
-fpintr()
+fpintr(int unit)
 {
 	spl_t	s;
 	thread_t thread = current_thread();

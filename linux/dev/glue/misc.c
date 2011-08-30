@@ -53,6 +53,7 @@
 #include <sys/types.h>
 #include <mach/vm_param.h>
 #include <kern/thread.h>
+#include <kern/printf.h>
 #include <vm/vm_map.h>
 #include <vm/vm_page.h>
 #include <device/device_types.h>
@@ -66,10 +67,7 @@
 #include <linux/blk.h>
 #include <linux/proc_fs.h>
 #include <linux/kernel_stat.h>
-
-extern boolean_t vm_map_lookup_entry (register vm_map_t, register vm_offset_t,
-				      vm_map_entry_t *);
-extern int printf (const char *, ...);
+#include <linux/dev/glue/glue.h>
 
 int (*dispatch_scsi_info_ptr) (int ino, char *buffer, char **start,
 			       off_t offset, int length, int inout) = 0;

@@ -69,6 +69,8 @@
 #include <mach/vm_param.h>
 #include <mach/notify.h>
 
+#include <kern/printf.h>
+
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_space.h>
 
@@ -84,6 +86,7 @@
 #include <device/net_io.h>
 #include <device/device_reply.user.h>
 #include <device/device_emul.h>
+#include <device/ds_routines.h>
 
 #define MACH_INCLUDE
 #include <linux/kernel.h>
@@ -97,7 +100,7 @@
 #include <linux/etherdevice.h>
 #include <linux/wireless.h>
 
-extern int linux_intr_pri;
+#include <linux/dev/glue/glue.h>
 
 /* One of these is associated with each instance of a device.  */
 struct net_data
@@ -248,7 +251,6 @@ void
 dev_kfree_skb (struct sk_buff *skb, int mode)
 {
   unsigned flags;
-  extern void *io_done_list;
 
   /* Queue sk_buff on done list if there is a
      page list attached or we need to send a reply.

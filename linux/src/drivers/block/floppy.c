@@ -177,6 +177,8 @@ static inline int __get_order(unsigned long size);
 #include <linux/blk.h>
 #include <linux/cdrom.h> /* for the compatibility eject ioctl */
 
+#include <linux/dev/glue/glue.h>
+
 
 #ifndef FLOPPY_MOTOR_MASK
 #define FLOPPY_MOTOR_MASK 0xf0
@@ -4166,8 +4168,6 @@ static void floppy_release_irq_and_dma(void)
 
 
 #ifdef MODULE
-
-extern char *get_options(char *str, int *ints);
 
 char *floppy=NULL;
 

@@ -124,5 +124,6 @@ extern void fpextovrflt(void);
 extern void fpexterrflt(void);
 extern void fpastintr(void);
 extern void init_fpu(void);
+extern void fpintr(int unit);
 
 #endif	/* _I386_FPU_H_ */

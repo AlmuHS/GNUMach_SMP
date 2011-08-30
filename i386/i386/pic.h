@@ -179,6 +179,10 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef __ASSEMBLER__
 extern void form_pic_mask (void);
 extern void picinit (void);
+extern int curr_pic_mask;
+extern int pic_mask[];
+extern void prtnull(int unit);
+extern void intnull(int unit);
 #endif
 
 #endif	/* _I386_PIC_H_ */

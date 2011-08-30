@@ -177,6 +177,8 @@ static inline int __get_order(unsigned long size);
 #include <linux/blk.h>
 #include <linux/cdrom.h> /* for the compatibility eject ioctl */
 
+#include <linux/dev/glue/glue.h>
+
 
 #ifndef FLOPPY_MOTOR_MASK
 #define FLOPPY_MOTOR_MASK 0xf0
@@ -437,7 +439,6 @@ static int probing = 0;
 static volatile int command_status = FD_COMMAND_NONE, fdc_busy = 0;
 static struct wait_queue *fdc_wait = NULL, *command_done = NULL;
 #ifdef MACH
-extern int issig (void);
 #define NO_SIGNAL (! issig () || ! interruptible)
 #else
 #define NO_SIGNAL (!(current->signal & ~current->blocked) || !interruptible)
@@ -4171,8 +4172,6 @@ static void floppy_release_irq_and_dma(void)
 
 
 #ifdef MODULE
-
-extern char *get_options(char *str, int *ints);
 
 char *floppy=NULL;
 

@@ -42,6 +42,8 @@
 
 #include <asm/bugs.h>
 
+#include <linux/dev/glue/glue.h>
+
 /*
  * Versions of gcc older than that listed below may actually compile
  * and link okay, but the end product can have subtle run time bugs.
@@ -64,7 +66,6 @@ extern int bdflush(void *);
 extern int kswapd(void *);
 extern void kswapd_setup(void);
 
-extern void init_IRQ(void);
 extern void init_modules(void);
 extern long console_init(long, long);
 extern long kmalloc_init(long,long);

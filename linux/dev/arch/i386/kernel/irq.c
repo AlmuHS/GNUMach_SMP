@@ -47,10 +47,8 @@
 #include <asm/io.h>
 #include <asm/hardirq.h>
 
-extern void linux_timer_intr (void);
-extern spl_t splhigh (void);
-extern spl_t spl0 (void);
-extern void form_pic_mask (void);
+#include <linux/dev/glue/glue.h>
+#include <machine/machspl.h>
 
 #if 0
 /* XXX: This is the way it's done in linux 2.2. GNU Mach currently uses intr_count. It should be made using local_{bh/irq}_count instead (through hardirq_enter/exit) for SMP support. */
@@ -94,12 +92,6 @@ static struct linux_action *irq_action[16] =
   NULL, NULL, NULL, NULL,
   NULL, NULL, NULL, NULL
 };
-
-extern spl_t curr_ipl;
-extern int curr_pic_mask;
-extern int pic_mask[];
-
-extern void intnull (), prtnull ();
 
 /*
  * Generic interrupt handler for Linux devices.
@@ -446,7 +438,6 @@ static void show(char * str)
 	int i;
 	unsigned long *stack;
 	int cpu = smp_processor_id();
-	extern char *get_options(char *str, int *ints);
 
 	printk("\n%s, CPU %d:\n", str, cpu);
 	printk("irq:  %d [%d %d]\n",

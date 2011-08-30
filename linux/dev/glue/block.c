@@ -61,6 +61,7 @@
 #include <device/disk_status.h>
 #include <device/device_reply.user.h>
 #include <device/device_emul.h>
+#include <device/ds_routines.h>
 
 /* TODO.  This should be fixed to not be i386 specific.  */
 #include <i386at/disk.h>
@@ -78,9 +79,7 @@
 #include <linux/hdreg.h>
 #include <asm/io.h>
 
-extern int linux_auto_config;
-extern int linux_intr_pri;
-extern int linux_to_mach_error (int);
+#include <linux/dev/glue/glue.h>
 
 /* This task queue is not used in Mach: just for fixing undefined symbols. */
 DECLARE_TASK_QUEUE (tq_disk);
@@ -193,9 +192,6 @@ int read_ahead[MAX_BLKDEV] = {0, };
    This is unused in Mach.  It is here to make drivers compile.  */
 struct wait_queue *wait_for_request = NULL;
 
-/* Map for allocating device memory.  */
-extern vm_map_t device_io_map;
-
 /* Initialize block drivers.  */
 int
 blk_dev_init ()
@@ -276,8 +272,6 @@ unregister_blkdev (unsigned major, const char *name)
 void
 set_blocksize (kdev_t dev, int size)
 {
-  extern int *blksize_size[];
-
   if (! blksize_size[MAJOR (dev)])
     return;
 

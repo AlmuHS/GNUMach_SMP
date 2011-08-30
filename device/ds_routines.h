@@ -41,7 +41,9 @@
 /*
  * Map for device IO memory.
  */
-vm_map_t	device_io_map;
+extern vm_map_t		device_io_map;
+
+extern queue_head_t	io_done_list;
 
 kern_return_t	device_read_alloc(io_req_t, vm_size_t);
 kern_return_t	device_write_get(io_req_t, boolean_t *);

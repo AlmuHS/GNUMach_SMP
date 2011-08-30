@@ -18,6 +18,7 @@
 
 #include <kern/printf.h>
 #include <kern/debug.h>
+#include <kern/mach_clock.h>
 
 #include <mach/machine/eflags.h>
 #include <machine/thread.h>
@@ -43,7 +44,6 @@ void hyp_failsafe_c_callback(struct failsafe_callback_regs *regs) {
 	panic("failsafe");
 }
 
-extern void clock_interrupt();
 extern void return_to_iret;
 
 void hypclock_machine_intr(int old_ipl, void *ret_addr, struct i386_interrupt_state *regs, unsigned64_t delta) {

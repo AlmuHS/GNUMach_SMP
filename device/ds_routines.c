@@ -130,6 +130,8 @@ static struct device_emulation_ops *emulation_list[] =
   &mach_device_emulation_ops,
 };
 
+vm_map_t		device_io_map;
+
 #define NUM_EMULATION (sizeof (emulation_list) / sizeof (emulation_list[0]))
 
 io_return_t

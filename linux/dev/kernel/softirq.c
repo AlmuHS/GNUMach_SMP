@@ -13,6 +13,8 @@
 #include <linux/interrupt.h>
 #include <asm/system.h>
 
+#include <linux/dev/glue/glue.h>
+
 int bh_mask_count[32];
 unsigned long bh_active = 0;
 unsigned long bh_mask = 0;
