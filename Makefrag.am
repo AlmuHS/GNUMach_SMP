@@ -1,6 +1,7 @@
 # Main Makefile fragment for GNU Mach.
 
-# Copyright (C) 1997, 1999, 2004, 2006, 2007 Free Software Foundation, Inc.
+# Copyright (C) 1997, 1999, 2004, 2006, 2007, 2009 Free Software
+# Foundation, Inc.
 
 # Permission to use, copy, modify and distribute this software and its
 # documentation is hereby granted, provided that both the copyright
@@ -502,8 +503,8 @@ nodist_libkernel_a_SOURCES += \
 MOSTLYCLEANFILES += \
 	gnumach.msgids
 gnumach.msgids: $(filter %.msgids,$(nodist_libkernel_a_SOURCES))
-	cat $^ > $@.new
-	mv $@.new $@
+	$(AM_V_at) cat $^ > $@.new
+	$(AM_V_GEN) mv $@.new $@
 # `exec_' prefix, so that we don't try to build that file during when running
 # `make install-data', as it may fail there, but isn't needed there either.
 exec_msgidsdir = $(datadir)/msgids

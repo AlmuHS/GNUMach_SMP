@@ -1,6 +1,6 @@
 # Makefile for GNU Mach.
 
-# Copyright (C) 2006, 2007, 2008 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -69,6 +69,26 @@ if disable_smashing_stack_protector
 AM_CFLAGS += \
 	-fno-stack-protector
 endif
+
+#
+# Silent build support.
+#
+
+AWK_V = $(AWK_V_$(V))
+AWK_V_ = $(AWK_V_$(AM_DEFAULT_VERBOSITY))
+AWK_V_0 = @echo "  AWK    $@";
+
+GZIP_V = $(GZIP_V_$(V))
+GZIP_V_ = $(GZIP_V_$(AM_DEFAULT_VERBOSITY))
+GZIP_V_0 = @echo "  GZIP   $@";
+
+NM_V = $(NM_V_$(V))
+NM_V_ = $(NM_V_$(AM_DEFAULT_VERBOSITY))
+NM_V_0 = @echo "  NM     $@";
+
+MIGCOM_V = $(MIGCOM_V_$(V))
+MIGCOM_V_ = $(MIGCOM_V_$(AM_DEFAULT_VERBOSITY))
+MIGCOM_V_0 = @echo "  MIG    $@";
 
 #
 # MIG Setup.
@@ -143,15 +163,15 @@ clib_routines := memcmp memcpy memmove memset			\
 		 __rel_iplt_start __rel_iplt_end		\
 		 _START _start etext _edata end _end # actually ld magic, not libc.
 gnumach-undef: gnumach.$(OBJEXT)
-	$(NM) -u $< | sed 's/  *U  *//' | sort -u > $@
+	$(NM_V) $(NM) -u $< | sed 's/  *U  *//' | sort -u > $@
 MOSTLYCLEANFILES += gnumach-undef
 gnumach-undef-bad: gnumach-undef Makefile
-	sed '$(foreach r,$(clib_routines),/^$r$$/d;)' $< > $@
+	$(AM_V_GEN) sed '$(foreach r,$(clib_routines),/^$r$$/d;)' $< > $@
 MOSTLYCLEANFILES += gnumach-undef-bad
 clib-routines.o: gnumach-undef gnumach-undef-bad
-	if test -s gnumach-undef-bad; \
+	$(AM_V_at) if test -s gnumach-undef-bad; \
 	then cat gnumach-undef-bad; exit 2; else true; fi
-	$(CCLD) -nostdlib -nostartfiles -r -static \
+	$(AM_V_CCLD) $(CCLD) -nostdlib -nostartfiles -r -static \
 	  -o $@ `sed 's/^/-Wl,-u,/' < $<` -x c /dev/null -lc -lgcc
 
 gnumach_LINK = $(LD) $(LINKFLAGS) $(gnumach_LINKFLAGS) -o $@

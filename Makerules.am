@@ -1,6 +1,6 @@
 # Makerules: how to do some things.
 
-# Copyright (C) 2006, 2007 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2007, 2009 Free Software Foundation, Inc.
 
 # Permission to use, copy, modify and distribute this software and its
 # documentation is hereby granted, provided that both the copyright
@@ -20,11 +20,11 @@
 EXTRA_DIST += \
 	gensym.awk
 %.symc: %.sym gensym.awk
-	$(AWK) -f $(word 2,$^) $< > $@
+	$(AWK_V) $(AWK) -f $(word 2,$^) $< > $@
 %.symc.o: %.symc
-	$(COMPILE) -S -x c -o $@ $<
+	$(AM_V_CC) $(COMPILE) -S -x c -o $@ $<
 %.h: %.symc.o
-	sed < $< > $@				\
+	$(AM_V_GEN) sed < $< > $@		\
 	  -e 's/^[^*].*$$//'			\
 	  -e 's/^[*]/#define/'			\
 	  -e 's/mAgIc[^-0-9]*//'
@@ -37,7 +37,7 @@ include Makerules.mig.am
 #
 
 %.gz: %
-	$(GZIP) -9 < $< > $@
+	$(GZIP_V) $(GZIP) -9 < $< > $@
 
 #
 # strip files.

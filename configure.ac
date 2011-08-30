@@ -32,6 +32,9 @@ dnl Do not clutter the main build directory.
 dnl We require GNU make.
   [-Wall -Wno-portability]
 )
+
+m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([no])],
+                            [AC_SUBST([AM_DEFAULT_VERBOSITY], [1])])
 
 #
 # Deduce the architecture we're building for.

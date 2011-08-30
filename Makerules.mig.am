@@ -1,6 +1,6 @@
 # Makerules.mig: how to do some MIG-related things.
 
-# Copyright (C) 2006, 2007 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2007, 2009 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -72,20 +72,20 @@ lib_dep_tr_for_defs_a_CPPFLAGS = $(AM_CPPFLAGS) \
 	-E
 
 %.server.defs.c: %.srv
-	rm -f $@
-	cp -p $< $@
+	$(AM_V_at) rm -f $@
+	$(AM_V_GEN) cp -p $< $@
 %.user.defs.c: %.cli
-	rm -f $@
-	cp -p $< $@
+	$(AM_V_at) rm -f $@
+	$(AM_V_GEN) cp -p $< $@
 %.server.h %.server.c %.server.msgids: lib_dep_tr_for_defs_a-%.server.defs.$(OBJEXT)
-	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMSFLAGS)	\
-	  -sheader $*.server.h -server $*.server.c	\
-	  -list $*.server.msgids			\
+	$(MIGCOM_V) $(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMSFLAGS)	\
+	  -sheader $*.server.h -server $*.server.c		\
+	  -list $*.server.msgids				\
 	  < $<
 %.user.h %.user.c %.user.msgids: lib_dep_tr_for_defs_a-%.user.defs.$(OBJEXT)
-	$(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMUFLAGS)	\
-	  -user $*.user.c -header $*.user.h		\
-	  -list $*.user.msgids				\
+	$(MIGCOM_V) $(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMUFLAGS)	\
+	  -user $*.user.c -header $*.user.h			\
+	  -list $*.user.msgids					\
 	  < $<
 
 # This is how it should be done, but this is not integrated into GNU Automake
