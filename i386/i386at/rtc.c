@@ -53,7 +53,6 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <i386/pio.h>
 #include <i386at/rtc.h>
 
-static unsigned char rtc[RTC_NREG];
 static int first_rtcopen_ever = 1;
 
 void
