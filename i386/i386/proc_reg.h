@@ -144,7 +144,7 @@ extern unsigned long cr3;
 #define	set_cr3(value) \
     ({ \
 	register unsigned int _temp__ = (value); \
-	asm volatile("mov %0, %%cr3" : : "r" (_temp__)); \
+	asm volatile("mov %0, %%cr3" : : "r" (_temp__) : "memory"); \
      })
 #endif	/* MACH_HYP */
 
