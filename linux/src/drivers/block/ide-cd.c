@@ -153,6 +153,10 @@
 
 /***************************************************************************/
 
+#ifdef MACH
+#include <kern/sched_prim.h>
+#endif
+
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/delay.h>
@@ -1379,10 +1383,19 @@ static void cdrom_do_packet_command (ide_drive_t *drive)
 	cdrom_start_packet_command (drive, len, cdrom_do_pc_continuation);
 }
 
-
-#ifndef MACH
 /* Sleep for TIME jiffies.
    Not to be called from an interrupt handler. */
+#ifdef MACH
+static
+void cdrom_sleep (int time)
+{
+	int xxx;
+
+	assert_wait ((event_t) &xxx, TRUE);
+	thread_set_timeout (time);
+	schedule ();
+}
+#else
 static
 void cdrom_sleep (int time)
 {

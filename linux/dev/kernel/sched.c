@@ -326,16 +326,6 @@ schedule (void)
 }
 
 void
-cdrom_sleep (int t)
-{
-  int xxx;
-
-  assert_wait ((event_t) &xxx, TRUE);
-  thread_set_timeout (t);
-  schedule ();
-}
-
-void
 linux_sched_init (void)
 {
   /*
