@@ -42,6 +42,10 @@
 extern void	clock_interrupt();
 extern char	return_to_iret[];
 
+#ifdef LINUX_DEV
+extern void linux_timer_intr(void);
+#endif
+
 void
 hardclock(iunit,        old_ipl, ret_addr, regs)
         int     iunit;          /* 'unit' number */
