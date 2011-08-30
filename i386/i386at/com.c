@@ -657,7 +657,7 @@ comst_4++;
 #else
 	nch = getc(&tp->t_outq);
 	if ((nch & 0200) && ((tp->t_flags & LITOUT) == 0)) {
-	    timeout(ttrstrt, (char *)tp, (nch & 0x7f) + 6);
+	    timeout((timer_func_t *)ttrstrt, (char *)tp, (nch & 0x7f) + 6);
 	    tp->t_state |= TS_TIMEOUT;
 comst_4++;
 	    return;

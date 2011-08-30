@@ -338,7 +338,7 @@ struct tty *tp;
 #ifdef	MACH_KERNEL
 	nch = getc(&tp->t_outq);
 	if ((tp->t_flags & LITOUT) == 0 && (nch & 0200)) {
-		timeout(ttrstrt, (char *)tp, (nch & 0x7f) + 6);
+		timeout((timer_func_t *)ttrstrt, (char *)tp, (nch & 0x7f) + 6);
 		tp->t_state |= TS_TIMEOUT;
 		return;
 	}
