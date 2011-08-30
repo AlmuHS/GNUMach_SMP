@@ -48,6 +48,8 @@
 #endif
 
 
+#include <kern/debug.h>
+
 /*
  * We need some `schedule_task' replacement.  This is defined in
  * kernel/context.c in the Linux kernel.

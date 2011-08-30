@@ -55,6 +55,7 @@
 #include <device/ds_routines.h>
 #include <device/dev_hdr.h>
 #include <device/io_req.h>
+#include <device/memory_object_reply.user.h>
 
 extern vm_offset_t	block_io_mmap();	/* dummy routine to allow
 						   mmap for block devices */
