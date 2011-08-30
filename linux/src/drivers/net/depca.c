@@ -966,7 +966,7 @@ depca_rx(struct device *dev)
 	}
       }
       /* Change buffer ownership for this last frame, back to the adapter */
-      for (; lp->rx_old!=entry; lp->rx_old=(++lp->rx_old)&lp->rxRingMask) {
+      for (; lp->rx_old!=entry; lp->rx_old=(lp->rx_old+1)&lp->rxRingMask) {
 	writel(readl(&lp->rx_ring[lp->rx_old].base) | R_OWN, 
 	                                        &lp->rx_ring[lp->rx_old].base);
       }
@@ -976,7 +976,7 @@ depca_rx(struct device *dev)
     /*
     ** Update entry information
     */
-    lp->rx_new = (++lp->rx_new) & lp->rxRingMask;
+    lp->rx_new = (lp->rx_new + 1) & lp->rxRingMask;
     }
 
     return 0;
@@ -1017,7 +1017,7 @@ depca_tx(struct device *dev)
     }
 
     /* Update all the pointers */
-    lp->tx_old = (++lp->tx_old) & lp->txRingMask;
+    lp->tx_old = (lp->tx_old + 1) & lp->txRingMask;
   }
 
   return 0;
@@ -1540,7 +1540,7 @@ static int load_packet(struct device *dev, struct sk_buff *skb)
 
     /* set up the buffer descriptors */
     len = (skb->len < ETH_ZLEN) ? ETH_ZLEN : skb->len;
-    for (i = entry; i != end; i = (++i) & lp->txRingMask) {
+    for (i = entry; i != end; i = (i + 1) & lp->txRingMask) {
                                                /* clean out flags */
       writel(readl(&lp->tx_ring[i].base) & ~T_FLAGS, &lp->tx_ring[i].base);
       writew(0x0000, &lp->tx_ring[i].misc);    /* clears other error flags */
