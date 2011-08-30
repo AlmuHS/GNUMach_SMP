@@ -7,8 +7,6 @@
 #include <linux/netdevice.h>
 #include <linux/pagemap.h>
 
-#define __exit
-
 #define pci_enable_device(x)			0
 
 #define page_address(x)				(x | PAGE_OFFSET)

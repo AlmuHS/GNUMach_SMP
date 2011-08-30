@@ -1,9 +1,17 @@
 #ifndef _COMPAT_INIT_H
 #define _COMPAT_INIT_H
 
+#include <linux/compiler.h>
+
+#ifdef MODULE
+#define __exitused
+#else
+#define __exitused  __used
+#endif
+
 #define __init
 #define __initdata
-#define __exit
+#define __exit          __exitused __cold notrace
 #define __exitdata
 #define __devinit
 #define __devinitdata
