@@ -229,7 +229,12 @@ add_blkdev_randomness (int major)
 void
 do_gettimeofday (struct timeval *tv)
 {
-  host_get_time (1, tv);
+  /*
+   * XXX: The first argument should be mach_host_self (), but that's too
+   * expensive, and the host argument is not used by host_get_time (),
+   * only checked not to be HOST_NULL.
+   */
+  host_get_time ((host_t) 1, (time_value_t *) tv);
 }
 
 int
