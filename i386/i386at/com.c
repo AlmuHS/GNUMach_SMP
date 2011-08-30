@@ -211,6 +211,8 @@ comcnprobe(struct consdev *cp)
 
 	cp->cn_dev = makedev(maj, unit);
 	cp->cn_pri = pri;
+
+	return 0;
 }
 
 
@@ -283,6 +285,7 @@ comcninit(struct consdev *cp)
 		}
 	}
 
+	return 0;
 }
 
 /*
@@ -882,6 +885,8 @@ comcnputc(dev_t dev, int c)
 	if (c == '\n')
 		comcnputc(dev, '\r');
 	outb(addr, c);
+
+	return 0;
 }
 
 int
