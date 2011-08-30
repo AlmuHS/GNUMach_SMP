@@ -101,9 +101,12 @@ int Using_Versions; /* gcc will handle this global (used as a flag) correctly */
 
 #else
 
+#define EXPORT_SYMBOL(sym)
+
 #define MOD_INC_USE_COUNT	do { } while (0)
 #define MOD_DEC_USE_COUNT	do { } while (0)
 #define MOD_IN_USE		1
+#define SET_MODULE_OWNER(dev)	do{ } while(0)
 
 #endif
 
