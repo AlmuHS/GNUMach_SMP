@@ -39,6 +39,7 @@
 #include <i386/setjmp.h>
 #include <i386/pmap.h>
 #include <i386/proc_reg.h>
+#include <i386/locore.h>
 #include "gdt.h"
 #include "trap.h"
 
@@ -390,6 +391,8 @@ db_write_bytes(
 		oldmap1 = *ptep1;
 		*ptep1 |= INTEL_PTE_WRITE;
 	    }
+	    if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
+		set_cr4(get_cr4() & ~CR4_PGE);
 	    flush_tlb();
 	}
 
@@ -404,6 +407,8 @@ db_write_bytes(
 		*ptep1 = oldmap1;
 	    }
 	    flush_tlb();
+	    if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
+		set_cr4(get_cr4() | CR4_PGE);
 	}
 }
 
