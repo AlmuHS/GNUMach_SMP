@@ -1298,19 +1298,26 @@ Entry(copyoutmsg)
 	movl	%eax,%ecx		/* move by longwords first */
 	shrl	$2,%ecx
 	RECOVER(copyout_fail)
-	RETRY(copyout_retry_longs)
-copyout_retry_longs:
 	rep
 	movsl
 	movl	%eax,%ecx		/* now move remaining bytes */
 	andl	$3,%ecx
 	RECOVER(copyout_fail)
-	RETRY(copyout_retry_bytes)
-copyout_retry_bytes:
 	rep
 	movsb				/* move */
 	xorl	%eax,%eax		/* return 0 for success */
-	jmp	copyout_ret
+
+copyout_ret:
+	mov	%ss,%di			/* restore ES to kernel segment */
+	mov	%di,%es
+
+	popl	%edi			/* restore registers */
+	popl	%esi
+	ret				/* and return */
+
+copyout_fail:
+	movl	$1,%eax			/* return 1 for failure */
+	jmp	copyout_ret		/* pop frame and return */
 
 #if !defined(MACH_HYP) && !PAE
 /*
@@ -1372,19 +1379,8 @@ copyout_retry:
 	subl	%eax,%edx		/* decrement count */
 	jg	copyout_retry		/* restart on next page if not done */
 	xorl	%eax,%eax		/* return 0 for success */
+	jmp	copyout_ret
 #endif /* !defined(MACH_HYP) && !PAE */
-
-copyout_ret:
-	mov	%ss,%di			/* restore ES to kernel segment */
-	mov	%di,%es
-
-	popl	%edi			/* restore registers */
-	popl	%esi
-	ret				/* and return */
-
-copyout_fail:
-	movl	$1,%eax			/* return 1 for failure */
-	jmp	copyout_ret		/* pop frame and return */
 
 /*
  * int inst_fetch(int eip, int cs);
