@@ -1288,14 +1288,36 @@ Entry(copyoutmsg)
 	movl	$USER_DS,%eax		/* use user data segment for accesses */
 	mov	%ax,%es
 
+#if !defined(MACH_HYP) && !PAE
+	cmpl	$3,machine_slot+SUB_TYPE_CPU_TYPE
+	jbe	copyout_retry		/* Use slow version on i386 */
+#endif /* !defined(MACH_HYP) && !PAE */
+
+	movl	%edx,%eax		/* use count */
+	/*cld*/				/* count up: always this way in GCC code */
+	movl	%eax,%ecx		/* move by longwords first */
+	shrl	$2,%ecx
+	RECOVER(copyout_fail)
+	RETRY(copyout_retry_longs)
+copyout_retry_longs:
+	rep
+	movsl
+	movl	%eax,%ecx		/* now move remaining bytes */
+	andl	$3,%ecx
+	RECOVER(copyout_fail)
+	RETRY(copyout_retry_bytes)
+copyout_retry_bytes:
+	rep
+	movsb				/* move */
+	xorl	%eax,%eax		/* return 0 for success */
+	jmp	copyout_ret
+
+#if !defined(MACH_HYP) && !PAE
 /*
  * Check whether user address space is writable
  * before writing to it - i386 hardware is broken.
  */
 copyout_retry:
-#if !defined(MACH_HYP) && !PAE
-	cmpl	$3,machine_slot+SUB_TYPE_CPU_TYPE
-	ja	1f			/* Skip on i486 and above */
 	movl	%cr3,%ecx		/* point to page directory */
 	movl	%edi,%eax		/* get page directory bits */
 	shrl	$(PDESHIFT),%eax	/* from user address */
@@ -1330,11 +1352,9 @@ copyout_retry:
 	andl	$(-NBPG),%eax		/* start of next page */
 	subl	%edi,%eax		/* get number of bytes to that point */
 	cmpl	%edx,%eax		/* bigger than count? */
-	jle	2f			/* if so, */
-1:
-#endif /* !defined(MACH_HYP) && !PAE */
+	jle	1f			/* if so, */
 	movl	%edx,%eax		/* use count */
-2:
+1:
 
 	/*cld*/				/* count up: always this way in GCC code */
 	movl	%eax,%ecx		/* move by longwords first */
@@ -1352,6 +1372,7 @@ copyout_retry:
 	subl	%eax,%edx		/* decrement count */
 	jg	copyout_retry		/* restart on next page if not done */
 	xorl	%eax,%eax		/* return 0 for success */
+#endif /* !defined(MACH_HYP) && !PAE */
 
 copyout_ret:
 	mov	%ss,%di			/* restore ES to kernel segment */
