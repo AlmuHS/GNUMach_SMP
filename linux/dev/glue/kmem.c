@@ -554,7 +554,7 @@ vfree (void *addr)
   if (!p)
     panic ("vmalloc_list_lookup failure");
   
-  kmem_free (kernel_map, addr, p->size);
+  kmem_free (kernel_map, (vm_offset_t) addr, p->size);
   vmalloc_list_remove (p);
 }
 
