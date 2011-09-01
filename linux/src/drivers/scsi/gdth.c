@@ -2851,8 +2851,9 @@ __initfunc (int gdth_detect(Scsi_Host_Template *shtp))
     ushort eisa_slot,device_id,index;
     gdth_pci_str pcistr;
     int i,j,hanum;
+#if LINUX_VERSION_CODE < 0x020000
     unchar b;
-    
+#endif
  
 #ifdef DEBUG_GDTH
     printk("GDT: This driver contains debugging information !! Trace level = %d\n",
@@ -2878,7 +2879,7 @@ __initfunc (int gdth_detect(Scsi_Host_Template *shtp))
     }
 
     /* initializations */
-    gdth_polling = TRUE; b = 0;
+    gdth_polling = TRUE;
     for (i=0; i<GDTH_MAXCMDS; ++i)
         for (j=0; j<MAXHA; ++j)
             gdth_cmd_tab[i][j].cmnd = UNUSED_CMND;
