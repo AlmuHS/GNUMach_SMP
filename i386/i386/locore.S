@@ -774,6 +774,7 @@ ast_from_interrupt:
  * #ifndef MACH_XEN
  *		iunit
  *		saved SPL
+ *		irq
  * #endif
  *		return address == return_to_iret_i
  *		saved %edx
@@ -789,6 +790,7 @@ ast_from_interrupt:
  * #ifndef MACH_XEN
  *		iunit
  *		saved SPL
+ *		irq
  * #endif
  *		return address == return_to_iret
  *		pointer to save area on old stack
