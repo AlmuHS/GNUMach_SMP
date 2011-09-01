@@ -37,7 +37,7 @@
 #include <kern/mach_clock.h>
 #include <sys/time.h>
 #include <device/conf.h>
-#include <device/errno.h>
+#include <device/device_types.h>
 #include <device/tty.h>
 #include <device/io_req.h>
 #else	/* MACH_KERNEL */
@@ -140,11 +140,11 @@ struct tty *tp;
 u_short addr;
   
 	if (unit >= NLPR || (isai = lprinfo[unit]) == 0 || isai->alive == 0)
-		return(ENXIO);
+		return (D_NO_SUCH_DEVICE);
 	tp = &lpr_tty[unit];
 #ifndef	MACH_KERNEL
 	if (tp->t_state & TS_XCLUDE && u.u_uid != 0)
-		return(EBUSY);
+		return (D_ALREADY_OPEN);
 #endif	/* MACH_KERNEL */
 	addr = (u_short) isai->address;
 	tp->t_dev = dev;

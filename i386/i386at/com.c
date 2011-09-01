@@ -35,7 +35,7 @@
 #include <kern/mach_clock.h>
 #include <sys/time.h>
 #include <device/conf.h>
-#include <device/errno.h>
+#include <device/device_types.h>
 #include <device/tty.h>
 #include <device/io_req.h>
 
@@ -335,13 +335,13 @@ io_return_t comopen(
 	io_return_t	result;
 
 	if (unit >= NCOM)
-	    return ENXIO;	/* no such device */
+	    return D_NO_SUCH_DEVICE;	/* no such device */
 	if ((isai = cominfo[unit]) == 0 || isai->alive == 0) {
 	    /*
 	     *	Try to probe it again
 	     */
 	    if (!com_reprobe(unit))
-		return ENXIO;
+		return D_NO_SUCH_DEVICE;
 	}
 	tp = &com_tty[unit];
 

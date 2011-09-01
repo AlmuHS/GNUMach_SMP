@@ -69,7 +69,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <kern/printf.h>
 #ifdef	MACH_KERNEL
 #include <device/ds_routines.h>
-#include <device/errno.h>
+#include <device/device_types.h>
 #include <device/io_req.h>
 #include <device/subrs.h>
 #else	/* MACH_KERNEL */
@@ -179,10 +179,10 @@ mouseopen(dev, flags)
 #ifdef	MACH_KERNEL
 #else	/* MACH_KERNEL */
 	if (flags & FWRITE)
-		return(ENODEV);
+		return (D_NO_SUCH_DEVICE);
 #endif	/* MACH_KERNEL */
 	if (mouse_in_use)
-		return(EBUSY);
+		return (D_ALREADY_OPEN);
 	mouse_in_use = TRUE;		/* locking? */
 	kdq_reset(&mouse_queue);
 	lastbuttons = MOUSE_ALL_UP;

@@ -61,7 +61,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #ifdef	MACH_KERNEL
 #include <device/ds_routines.h>
-#include <device/errno.h>
+#include <device/device_types.h>
 #include <device/io_req.h>
 #else	/* MACH_KERNEL */
 #include <sys/file.h>
