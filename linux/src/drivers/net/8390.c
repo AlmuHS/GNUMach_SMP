@@ -706,13 +706,10 @@ int ethdev_init(struct device *dev)
 		printk(version);
     
     if (dev->priv == NULL) {
-		struct ei_device *ei_local;
-		
 		dev->priv = kmalloc(sizeof(struct ei_device), GFP_KERNEL);
 		if (dev->priv == NULL)
 			return -ENOMEM;
 		memset(dev->priv, 0, sizeof(struct ei_device));
-		ei_local = (struct ei_device *)dev->priv;
     }
     
     dev->hard_start_xmit = &ei_start_xmit;

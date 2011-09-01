@@ -259,7 +259,6 @@ int ppa_detect(Scsi_Host_Template * host)
     struct Scsi_Host *hreg;
     int ports;
     int i, nhosts;
-    unsigned short ppb;
 
     printk("ppa: Version %s\n", PPA_VERSION);
     nhosts = 0;
@@ -267,7 +266,7 @@ int ppa_detect(Scsi_Host_Template * host)
     for (i = 0; i < parbus_no; i++) {
 	if (parbus_base[i] == 0x0000)
 	    continue;
-	ppb = ppa_hosts[i].base = parbus_base[i];
+	ppa_hosts[i].base = parbus_base[i];
 
 	/* sanity checks */
 	if (check_region(parbus_base[i],
