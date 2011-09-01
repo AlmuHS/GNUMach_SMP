@@ -27,6 +27,7 @@
 #include <stdarg.h>
 #include <asm/system.h>
 #include <kern/assert.h>
+#include <kern/printf.h>
 #include <device/cons.h>
 
 static char buf[2048];

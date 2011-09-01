@@ -48,6 +48,7 @@
 #include <linux/delay.h>
 #include <linux/ioport.h>
 #include <linux/string.h>
+#include <linux/pci.h>
 #include <linux/dev/glue/glue.h>
 
 #include <asm/system.h>
