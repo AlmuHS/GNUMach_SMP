@@ -23,8 +23,6 @@
 
 #define KERNEL_SERVER 1
 
-simport <kern/compat_xxx_defs.h>;	/* for obsolete routines */
-
 #ifdef MIGRATING_THREADS
 #define thread_assign		act_thread_assign
 #define thread_assign_default	act_thread_assign_default

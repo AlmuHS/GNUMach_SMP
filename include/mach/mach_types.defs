@@ -228,10 +228,6 @@ type time_value_t		= struct[2] of integer_t;
 
 type emulation_vector_t		= ^array[] of vm_offset_t;
 
-type xxx_emulation_vector_t	= array[*:1024] of vm_offset_t
-					ctype: emulation_vector_t;
-					/* XXX compatibility */
-
 type rpc_signature_info_t	= array[*:1024] of int;
 
 #if	KERNEL_SERVER

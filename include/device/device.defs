@@ -32,10 +32,6 @@
  *	block and character device interfaces to the kernel.
  */
 
-#ifdef	MACH_KERNEL
-simport <kern/compat_xxx_defs.h>;	/* for obsolete routines */
-#endif
-
 subsystem
 #if	KERNEL_SERVER
 	  KernelServer
@@ -99,27 +95,9 @@ routine	device_read_inband(
 	out	data		: io_buf_ptr_inband_t
 	);
 
-/* obsolete */
-routine	xxx_device_set_status(
-		device		: device_t;
-	in	flavor		: dev_flavor_t;
-	in	status		: dev_status_t, IsLong
-	);
-
-/* obsolete */
-routine	xxx_device_get_status(
-		device		: device_t;
-	in	flavor		: dev_flavor_t;
-	out	status		: dev_status_t, IsLong
-	);
-
-/* obsolete */
-routine xxx_device_set_filter(
-		device		: device_t;
-	in	receive_port	: mach_port_send_t;
-	in	priority	: int;
-	in	filter		: filter_array_t, IsLong
-	);
+skip;	/* old xxx_device_set_status */
+skip;	/* old xxx_device_get_status */
+skip;	/* old xxx_device_set_filter*/
 
 routine device_map(
 		device		: device_t;

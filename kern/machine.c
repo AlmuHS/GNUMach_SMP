@@ -67,60 +67,6 @@ queue_head_t	action_queue;	/* assign/shutdown queue */
 decl_simple_lock_data(,action_lock);
 
 /*
- *	xxx_host_info:
- *
- *	Return the host_info structure.  This routine is exported to the
- *	user level.
- */
-kern_return_t xxx_host_info(task, info)
-	task_t		task;
-	machine_info_t	info;
-{
-#ifdef	lint
-	task++;
-#endif	/* lint */
-	*info = machine_info;
-	return(KERN_SUCCESS);
-}
-
-/*
- *	xxx_slot_info:
- *
- *	Return the slot_info structure for the specified slot.  This routine
- *	is exported to the user level.
- */
-kern_return_t xxx_slot_info(task, slot, info)
-	task_t		task;
-	int		slot;
-	machine_slot_t	info;
-{
-#ifdef	lint
-	task++;
-#endif	/* lint */
-	if ((slot < 0) || (slot >= NCPUS))
-		return(KERN_INVALID_ARGUMENT);
-	*info = machine_slot[slot];
-	return(KERN_SUCCESS);
-}
-
-/*
- *	xxx_cpu_control:
- *
- *	Support for user control of cpus.  The user indicates which cpu
- *	he is interested in, and whether or not that cpu should be running.
- */
-kern_return_t xxx_cpu_control(task, cpu, runnable)
-	task_t		task;
-	int		cpu;
-	boolean_t	runnable;
-{
-#ifdef	lint
-	task++; cpu++; runnable++;
-#endif	/* lint */
-	return(KERN_FAILURE);
-}
-
-/*
  *	cpu_up:
  *
  *	Flag specified cpu as up and running.  Called when a processor comes

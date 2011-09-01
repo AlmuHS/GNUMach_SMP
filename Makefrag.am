@@ -128,7 +128,6 @@ libkernel_a_SOURCES += \
 	kern/ast.h \
 	kern/boot_script.h \
 	kern/bootstrap.c \
-	kern/compat_xxx_defs.h \
 	kern/counters.c \
 	kern/counters.h \
 	kern/cpu_number.h \

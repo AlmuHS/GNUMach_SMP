@@ -891,34 +891,6 @@ MACRO_END
 	return (KERN_SUCCESS);
 }
 
-/*
- *	Old version of memory_object_lock_request.
- */
-kern_return_t
-xxx_memory_object_lock_request(object, offset, size,
-			should_clean, should_flush, prot,
-			reply_to, reply_to_type)
-	register vm_object_t	object;
-	register vm_offset_t	offset;
-	register vm_size_t	size;
-	boolean_t		should_clean;
-	boolean_t		should_flush;
-	vm_prot_t		prot;
-	ipc_port_t		reply_to;
-	mach_msg_type_name_t	reply_to_type;
-{
-	register int		should_return;
-
-	if (should_clean)
-		should_return = MEMORY_OBJECT_RETURN_DIRTY;
-	else
-		should_return = MEMORY_OBJECT_RETURN_NONE;
-
-	return(memory_object_lock_request(object,offset,size,
-		      should_return, should_flush, prot,
-		      reply_to, reply_to_type));
-}
-
 kern_return_t
 memory_object_set_attributes_common(object, object_ready, may_cache,
 				    copy_strategy, use_old_pageout)

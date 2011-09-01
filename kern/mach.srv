@@ -37,6 +37,4 @@
 #define thread_get_special_port	act_get_special_port
 #endif /* MIGRATING_THREADS */
 
-simport <kern/compat_xxx_defs.h>;	/* for obsolete routines */
-
 #include <mach/mach.defs>

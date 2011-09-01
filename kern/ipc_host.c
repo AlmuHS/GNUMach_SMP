@@ -199,26 +199,12 @@ ipc_pset_terminate(
 }
 
 /*
- *	processor_set_default, processor_set_default_priv:
+ *	processor_set_default:
  *
- *	Return ports for manipulating default_processor set.  MiG code
- *	differentiates between these two routines.
+ *	Return ports for manipulating default_processor set.
  */
 kern_return_t
 processor_set_default(
-	host_t		host,
-	processor_set_t	*pset)
-{
-	if (host == HOST_NULL)
-		return KERN_INVALID_ARGUMENT;
-
-	*pset = &default_pset;
-	pset_reference(*pset);
-	return KERN_SUCCESS;
-}
-
-kern_return_t
-xxx_processor_set_default_priv(
 	host_t		host,
 	processor_set_t	*pset)
 {

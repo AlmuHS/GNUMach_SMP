@@ -24,6 +24,4 @@
 
 #define KERNEL_SERVER 1
 
-simport <kern/compat_xxx_defs.h>;	/* for obsolete routines */
-
 #include <device/device.defs>

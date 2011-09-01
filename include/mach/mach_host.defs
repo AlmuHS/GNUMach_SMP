@@ -34,10 +34,6 @@
  *	control.  
  */
 
-#ifdef	MACH_KERNEL
-simport <kern/compat_xxx_defs.h>;	/* for obsolete routines */
-#endif
-
 subsystem
 #if	KERNEL_SERVER
 	  KernelServer
@@ -59,19 +55,8 @@ routine host_processors(
 		host_priv	: host_priv_t;
 	out	processor_list	: processor_array_t);
 
-/* obsolete */
-routine yyy_host_info(
-		host		: host_t;
-		flavor		: int;
-	out	host_info_out	: host_info_t, IsLong);
-
-
-/* obsolete */
-routine yyy_processor_info(
-		processor	: processor_t;
-		flavor		: int;
-	out	host		: host_t;
-	out	processor_info_out: processor_info_t, IsLong);
+skip;	/* old yyy_host_info */
+skip;	/* old yyy_processor_info */
 
 /*
  *	Start processor.
@@ -87,10 +72,7 @@ routine	processor_start(
 routine	processor_exit(
 		processor	: processor_t);
 
-/* obsolete */
-routine yyy_processor_control(
-		processor	: processor_t;
-		processor_cmd	: processor_info_t, IsLong);
+skip;	/* old yyy_processor_control */
 
 /*
  *	Get default processor set for host.
@@ -99,13 +81,7 @@ routine processor_set_default(
 		host		: host_t;
 	out	default_set	: processor_set_name_t);
 
-/*
- *	Get rights to default processor set for host.
- *	Replaced by host_processor_set_priv.
- */
-routine xxx_processor_set_default_priv(
-		host		: host_priv_t;
-	out	default_set	: processor_set_t);
+skip;	/* old xxx_processor_set_default_priv */
 
 /*
  *	Create new processor set.  Returns real port for manipulations,
@@ -122,12 +98,7 @@ routine processor_set_create(
 routine processor_set_destroy(
 		set		: processor_set_t);
 
-/* obsolete */
-routine yyy_processor_set_info(
-		set_name	: processor_set_name_t;
-		flavor		: int;
-	out	host		: host_t;
-	out	info_out	: processor_set_info_t, IsLong);
+skip;	/* old yyy_processor_set_info */
 
 /*
  *	Assign processor to processor set.

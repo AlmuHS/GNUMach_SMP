@@ -30,10 +30,6 @@
  *	Matchmaker definitions file for Mach kernel interface.
  */
 
-#ifdef	MACH_KERNEL
-simport <kern/compat_xxx_defs.h>;	/* for obsolete routines */
-#endif	/* MACH_KERNEL */
-
 subsystem
 #if	KERNEL_USER
 	  KernelUser
@@ -388,16 +384,8 @@ skip;	/* old pager_flush_request */
  *	boolean).  The new routine is backwards compatible at the C
  *	language interface.
  */
-simpleroutine xxx_memory_object_lock_request(
-		memory_control	: memory_object_control_t;
-		offset		: vm_offset_t;
-		size		: vm_size_t;
-		should_clean	: boolean_t;
-		should_flush	: boolean_t;
-		lock_value	: vm_prot_t;
-		reply_to	: mach_port_t =
-			MACH_MSG_TYPE_MAKE_SEND_ONCE|polymorphic);
 
+skip;	/* old xxx_memory_object_lock_request */
 
 simpleroutine memory_object_lock_request(
 		memory_control	: memory_object_control_t;
@@ -409,46 +397,11 @@ simpleroutine memory_object_lock_request(
 		reply_to	: mach_port_t =
 			MACH_MSG_TYPE_MAKE_SEND_ONCE|polymorphic);
 
-/* obsolete */
-routine xxx_task_get_emulation_vector(
-		task		: task_t;
-	out	vector_start	: int;
-	out	emulation_vector: xxx_emulation_vector_t, IsLong);
-
-/* obsolete */
-routine xxx_task_set_emulation_vector(
-		task		: task_t;
-		vector_start	: int;
-		emulation_vector: xxx_emulation_vector_t, IsLong);
-
-/*
- *	Returns information about the host on which the
- *	target object resides.  [This object may be
- *	a task, thread, or memory_object_control port.]
- */
-routine xxx_host_info(
-		target_task	: mach_port_t;
-	out	info		: machine_info_data_t);
-
-/*
- *	Returns information about a particular processor on
- *	the host on which the target task resides.
- */
-routine xxx_slot_info(
-		target_task	: task_t;
-		slot		: int;
-	out	info		: machine_slot_data_t);
-
-/*
- *	Performs control operations (currently only
- *	turning off or on) on a particular processor on
- *	the host on which the target task resides.
- */
-routine xxx_cpu_control(
-		target_task	: task_t;
-		cpu		: int;
-		running		: boolean_t);
-
+skip;	/* old xxx_task_get_emulation_vector */
+skip;	/* old xxx_task_set_emulation_vector */
+skip;	/* old xxx_host_info */
+skip;	/* old xxx_slot_info */
+skip;	/* old xxx_cpu_control */
 skip;	/* old thread_statistics */
 skip;	/* old task_statistics */
 skip;	/* old netport_init */
@@ -491,11 +444,7 @@ routine task_set_special_port(
 		which_port	: int;
 		special_port	: mach_port_t);
 
-/* obsolete */
-routine	xxx_task_info(
-		target_task	: task_t;
-		flavor		: int;
-	out	task_info_out	: task_info_t, IsLong);
+skip;	/* old xxx_task_info */
 
 
 /*
@@ -537,17 +486,8 @@ routine	thread_resume(
 routine thread_abort(
 		target_thread	: thread_t);
 
-/* obsolete */
-routine xxx_thread_get_state(
-		target_thread	: thread_t;
-		flavor		: int;
-	out	old_state	: thread_state_t, IsLong);
-
-/* obsolete */
-routine	xxx_thread_set_state(
-		target_thread	: thread_t;
-		flavor		: int;
-		new_state	: thread_state_t, IsLong);
+skip;	/* old xxx_thread_get_state */
+skip;	/* old xxx_thread_set_state */
 
 /*
  *	Returns the current value of the selected special port
@@ -567,11 +507,7 @@ routine thread_set_special_port(
 		which_port	: int;
 		special_port	: mach_port_t);
 
-/* obsolete */
-routine	xxx_thread_info(
-		target_thread	: thread_t;
-		flavor		: int;
-	out	thread_info_out	: thread_info_t, IsLong);
+skip;	/* old xxx_thread_info */
 
 /*
  *	Establish a user-level handler for the specified

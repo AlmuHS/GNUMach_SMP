@@ -336,24 +336,6 @@ task_set_emulation_vector(task, vector_start, emulation_vector,
 }
 
 /*
- *	Compatibility entry.  Vector is passed inline.
- */
-kern_return_t
-xxx_task_set_emulation_vector(task, vector_start, emulation_vector,
-			  emulation_vector_count)
-	task_t 			task;
-	int			vector_start;
-	emulation_vector_t	emulation_vector;
-	unsigned int		emulation_vector_count;
-{
-	return task_set_emulation_vector_internal(
-			task,
-			vector_start,
-			emulation_vector,
-			emulation_vector_count);
-}
-
-/*
  *	task_get_emulation_vector: [Server Entry]
  *
  *	Get the list of emulated system calls for this task.
@@ -457,53 +439,6 @@ task_get_emulation_vector(task, vector_start, emulation_vector,
     }
 
 	return KERN_SUCCESS;
-}
-
-/*
- *	xxx_task_get_emulation:  [Server Entry]
- *	get the list of emulated system calls for this task.
- *	Compatibility code: return list in-line.
- */
-kern_return_t
-xxx_task_get_emulation_vector(task, vector_start, emulation_vector,
-			  emulation_vector_count)
-	task_t 			task;
-	int			*vector_start;
-	emulation_vector_t	emulation_vector; /* pointer to OUT array */
-	unsigned int		*emulation_vector_count;	/*IN/OUT*/
-{
-	register eml_dispatch_t	eml;
-
-	if (task == TASK_NULL)
-	        return( EML_BAD_TASK );
-
-	task_lock(task);
-
-	eml = task->eml_dispatch;
-	if (eml == EML_DISPATCH_NULL) {
-		task_unlock(task);
-		*vector_start = 0;
-		*emulation_vector_count = 0;
-		return( KERN_SUCCESS );
-	}
-
-	simple_lock(&eml->lock);
-
-	if (*emulation_vector_count < eml->disp_count) {
-		simple_unlock(&eml->lock);
-		task_unlock(task);
-		return( EML_BAD_CNT );
-	}
-
-	*vector_start = eml->disp_min;
-	*emulation_vector_count = eml->disp_count;
-	memcpy(emulation_vector, eml->disp_vector,
-	       *emulation_vector_count * sizeof(vm_offset_t));
-	simple_unlock(&eml->lock);
-
-	task_unlock(task);
-
-	return( KERN_SUCCESS );
 }
 
 /*
