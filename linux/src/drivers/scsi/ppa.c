@@ -517,7 +517,7 @@ static inline int ppa_byte_in(unsigned short base, char *buffer, int len)
 	"	shrb $4,%%al\n" \
 	"	orb %%al," #reg "\n"
 
-static inline int ppa_nibble_in(unsigned short str_p, char *buffer, int len)
+static inline int ppa_nibble_in(unsigned short base, char *buffer, int len)
 {
     for (; len; len--) {
         unsigned char h;
