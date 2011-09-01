@@ -231,12 +231,12 @@ register_blkdev (unsigned major, const char *name,
       for (major = MAX_BLKDEV - 1; major > 0; major--)
 	if (blkdevs[major].fops == NULL)
 	  goto out;
-      return -LINUX_EBUSY;
+      return -EBUSY;
     }
   if (major >= MAX_BLKDEV)
-    return -LINUX_EINVAL;
+    return -EINVAL;
   if (blkdevs[major].fops && blkdevs[major].fops != fops)
-    return -LINUX_EBUSY;
+    return -EBUSY;
 
 out:
   blkdevs[major].name = name;
@@ -255,9 +255,9 @@ int
 unregister_blkdev (unsigned major, const char *name)
 {
   if (major >= MAX_BLKDEV)
-    return -LINUX_EINVAL;
+    return -EINVAL;
   if (! blkdevs[major].fops || strcmp (blkdevs[major].name, name))
-    return -LINUX_EINVAL;
+    return -EINVAL;
   blkdevs[major].fops = NULL;
   if (blkdevs[major].labels)
     {
@@ -525,7 +525,7 @@ rdwr_partial (int rw, kdev_t dev, loff_t *off,
     }
   bh->b_data = alloc_buffer (bh->b_size);
   if (! bh->b_data)
-    return -LINUX_ENOMEM;
+    return -ENOMEM;
   ll_rw_block (READ, 1, &bh);
   wait_on_buffer (bh);
   if (buffer_uptodate (bh))
@@ -544,7 +544,7 @@ rdwr_partial (int rw, kdev_t dev, loff_t *off,
 	  wait_on_buffer (bh);
 	  if (! buffer_uptodate (bh))
 	    {
-	      err = -LINUX_EIO;
+	      err = -EIO;
 	      goto out;
 	    }
 	}
@@ -553,7 +553,7 @@ rdwr_partial (int rw, kdev_t dev, loff_t *off,
       *off += c;
     }
   else
-    err = -LINUX_EIO;
+    err = -EIO;
 out:
   free_buffer (bh->b_data, bh->b_size);
   return err;
@@ -606,7 +606,7 @@ rdwr_full (int rw, kdev_t dev, loff_t *off, char **buf, int *resid, int bshift)
 	  bh->b_data = alloc_buffer (cc);
 	  if (! bh->b_data)
 	    {
-	      err = -LINUX_ENOMEM;
+	      err = -ENOMEM;
 	      break;
 	    }
 	  if (rw == WRITE)
@@ -630,7 +630,7 @@ rdwr_full (int rw, kdev_t dev, loff_t *off, char **buf, int *resid, int bshift)
 	  && rw == READ && test_bit (BH_Bounce, &bh->b_state))
 	memcpy (*buf + cc, bh->b_data, bh->b_size);
       else if (! err && ! buffer_uptodate (bh))
-	  err = -LINUX_EIO;
+	  err = -EIO;
       if (test_bit (BH_Bounce, &bh->b_state))
 	free_buffer (bh->b_data, bh->b_size);
     }

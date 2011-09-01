@@ -55,11 +55,7 @@ extern __inline__ int notifier_chain_unregister(struct notifier_block **nl, stru
 		}
 		nl=&((*nl)->next);
 	}
-#ifdef MACH_INCLUDE
-    return -LINUX_ENOENT;
-#else
 	return -ENOENT;
-#endif
 }
 
 /*

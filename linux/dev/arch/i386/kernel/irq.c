@@ -215,15 +215,15 @@ setup_x86_irq (int irq, struct linux_action *new)
     {
       /* Can't share interrupts unless both agree to */
       if (!(old->flags & new->flags & SA_SHIRQ))
-	return (-LINUX_EBUSY);
+	return (-EBUSY);
 
       /* Can't share interrupts unless both are same type */
       if ((old->flags ^ new->flags) & SA_INTERRUPT)
-	return (-LINUX_EBUSY);
+	return (-EBUSY);
 
       /* Can't share at different levels */
       if (intpri[irq] && linux_intr_pri != intpri[irq])
-	return (-LINUX_EBUSY);
+	return (-EBUSY);
 
       /* add new interrupt at end of irq queue */
       do
@@ -263,7 +263,7 @@ request_irq (unsigned int irq, void (*handler) (int, void *, struct pt_regs *),
   assert (irq < 16);
 
   if (!handler)
-    return -LINUX_EINVAL;
+    return -EINVAL;
   
   /*
    * Hmm... Should I use `kalloc()' ?
@@ -272,7 +272,7 @@ request_irq (unsigned int irq, void (*handler) (int, void *, struct pt_regs *),
   action = (struct linux_action *)
     linux_kmalloc (sizeof (struct linux_action), GFP_KERNEL);
   if (action == NULL)
-    return -LINUX_ENOMEM;
+    return -ENOMEM;
   
   action->handler = handler;
   action->next = NULL;

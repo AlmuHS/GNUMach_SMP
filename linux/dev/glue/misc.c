@@ -82,34 +82,34 @@ linux_to_mach_error (int err)
     case 0:
       return D_SUCCESS;
 
-    case -LINUX_EPERM:
+    case -EPERM:
       return D_INVALID_OPERATION;
 
-    case -LINUX_EIO:
+    case -EIO:
       return D_IO_ERROR;
 
-    case -LINUX_ENXIO:
+    case -ENXIO:
       return D_NO_SUCH_DEVICE;
 
-    case -LINUX_EACCES:
+    case -EACCES:
       return D_INVALID_OPERATION;
 
-    case -LINUX_EFAULT:
+    case -EFAULT:
       return D_INVALID_SIZE;
 
-    case -LINUX_EBUSY:
+    case -EBUSY:
       return D_ALREADY_OPEN;
 
-    case -LINUX_EINVAL:
+    case -EINVAL:
       return D_INVALID_SIZE;
 
-    case -LINUX_EROFS:
+    case -EROFS:
       return D_READ_ONLY;
 
-    case -LINUX_EWOULDBLOCK:
+    case -EWOULDBLOCK:
       return D_WOULD_BLOCK;
 
-    case -LINUX_ENOMEM:
+    case -ENOMEM:
       return D_NO_MEMORY;
 
     default:
@@ -146,7 +146,7 @@ verify_area (int rw, const void *p, unsigned long size)
 	  || (entry->protection & prot) != prot)
 	{
 	  vm_map_unlock_read (current_map ());
-	  return -LINUX_EFAULT;
+	  return -EFAULT;
 	}
       if (entry->vme_end - entry->vme_start >= len)
 	break;

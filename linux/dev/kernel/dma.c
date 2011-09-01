@@ -80,10 +80,10 @@ int
 request_dma (unsigned int dmanr, const char *device_id)
 {
   if (dmanr >= MAX_DMA_CHANNELS)
-    return -LINUX_EINVAL;
+    return -EINVAL;
   
   if (xchg (&dma_chan_busy[dmanr].lock, 1) != 0)
-    return -LINUX_EBUSY;
+    return -EBUSY;
   
   dma_chan_busy[dmanr].device_id = device_id;
   

@@ -160,7 +160,7 @@ __do_down (struct semaphore *sem, int task_state)
 
 	  if (task_state == TASK_INTERRUPTIBLE && issig ())
 	    {
-	      ret = -LINUX_EINTR;
+	      ret = -EINTR;
 	      atomic_inc (&sem->count);
 	      break;
 	    }
@@ -180,7 +180,7 @@ __do_down (struct semaphore *sem, int task_state)
     {
       if (task_state == TASK_INTERRUPTIBLE && issig ())
 	{
-	  ret = -LINUX_EINTR;
+	  ret = -EINTR;
 	  atomic_inc (&sem->count);
 	  break;
 	}

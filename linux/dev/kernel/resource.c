@@ -131,7 +131,7 @@ release_region (unsigned int from, unsigned int num)
 int
 check_region (unsigned int from, unsigned int num)
 {
-  return (find_gap (&iolist, from, num) == NULL) ? -LINUX_EBUSY : 0;
+  return (find_gap (&iolist, from, num) == NULL) ? -EBUSY : 0;
 }
 
 /* Called from init/main.c to reserve IO ports. */
