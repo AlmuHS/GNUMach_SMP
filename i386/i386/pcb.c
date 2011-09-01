@@ -96,6 +96,7 @@ void stack_attach(thread, stack, continuation)
 	STACK_IKS(stack)->k_eip = (int) Thread_continue;
 	STACK_IKS(stack)->k_ebx = (int) continuation;
 	STACK_IKS(stack)->k_esp = (int) STACK_IEL(stack);
+	STACK_IKS(stack)->k_ebp = (int) 0;
 
 	/*
 	 *	Point top of kernel stack to user`s registers.
