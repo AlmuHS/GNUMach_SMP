@@ -740,6 +740,6 @@ extern void kd_slmwd (void *start, int count, int value);
 extern void kd_slmscu (void *from, void *to, int count);
 extern void kd_slmscd (void *from, void *to, int count);
 
-extern void kdintr(int vec, int regs);
+extern void kdintr(int vec);
 
 #endif	/* _KD_H_ */

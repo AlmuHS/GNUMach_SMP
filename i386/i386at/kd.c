@@ -732,9 +732,8 @@ int	flags;				/* flags set for console */
  */
 /*ARGSUSED*/
 void
-kdintr(vec, regs)
+kdintr(vec)
 int	vec;
-int	regs;
 {
 	struct	tty	*tp;
 	unsigned char	c;
@@ -799,7 +798,7 @@ int	regs;
 		goto done;
 	} else if (kd_kbd_mouse && kd_kbd_magic(scancode)) {
 		goto done;
-	} else if (kdcheckmagic(scancode, &regs)) {
+	} else if (kdcheckmagic(scancode)) {
 		goto done;
 	} else if (kb_mode == KB_EVENT) {
 		kd_enqsc(scancode);
@@ -985,9 +984,8 @@ boolean_t	up;
  *		are still held down.
  */
 boolean_t
-kdcheckmagic(scancode, regs)
+kdcheckmagic(scancode)
 Scancode	scancode;
-int		*regs;
 {
 	static int magic_state = KS_NORMAL; /* like kd_state */
 	boolean_t up = FALSE;
