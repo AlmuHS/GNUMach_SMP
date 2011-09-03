@@ -46,6 +46,7 @@
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_thread.h>
 #include <vm/vm_object.h>
+#include <vm/memory_object_proxy.h>
 #include <device/ds_routines.h>
 
 #if	MACH_MACHINE_ROUTINES

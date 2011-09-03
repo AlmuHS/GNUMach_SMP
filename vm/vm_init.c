@@ -43,7 +43,7 @@
 #include <vm/vm_page.h>
 #include <vm/vm_kern.h>
 #include <vm/memory_object.h>
-
+#include <vm/memory_object_proxy.h>
 
 
 /*
