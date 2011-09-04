@@ -393,6 +393,11 @@ void pmap_startup(
 		vm_page_init(&pages[i], paddr);
 		pages_initialized++;
 	}
+	i = 0;
+	while (pmap_next_page(&paddr))
+		i++;
+	if (i)
+		printf("%d memory page(s) left away\n", i);
 
 	/*
 	 * Release pages in reverse order so that physical pages

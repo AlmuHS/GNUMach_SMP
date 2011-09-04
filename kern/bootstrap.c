@@ -47,6 +47,7 @@
 #include <kern/lock.h>
 #include <vm/vm_kern.h>
 #include <vm/vm_user.h>
+#include <vm/pmap.h>
 #include <device/device_port.h>
 
 #if	MACH_KDB
@@ -107,10 +108,10 @@ task_insert_send_right(
 void bootstrap_create()
 {
   int compat;
+  int n = 0;
 #ifdef	MACH_XEN
   struct multiboot_module *bmods = ((struct multiboot_module *)
                                    boot_info.mod_start);
-  int n = 0;
   if (bmods)
     for (n = 0; bmods[n].mod_start; n++) {
       bmods[n].mod_start = kvtophys(bmods[n].mod_start + (vm_offset_t) bmods);
@@ -263,8 +264,12 @@ void bootstrap_create()
 	panic ("ERROR in executing boot script: %s",
 	       boot_script_error_string (losers));
     }
-  /* XXX at this point, we could free all the memory used
-     by the boot modules and the boot loader's descriptors and such.  */
+  /* XXX we could free the memory used
+     by the boot loader's descriptors and such.  */
+  for (n = 0; n < boot_info.mods_count; n++) {
+    printf("freeing %dMiB\n", (bmods[n].mod_end - bmods[n].mod_start) >> 20);
+    vm_page_create(bmods[n].mod_start, bmods[n].mod_end);
+  }
 }
 
 static void
