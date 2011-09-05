@@ -46,6 +46,8 @@
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_space.h>
 
+#include <vm/memory_object_proxy.h>
+
 /* The zone which holds our proxy memory objects.  */
 static zone_t memory_object_proxy_zone;
 

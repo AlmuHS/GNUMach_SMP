@@ -44,6 +44,7 @@
 #include <vm/vm_kern.h>
 #include <vm/vm_map.h>
 #include <vm/vm_object.h>
+#include <vm/memory_object_proxy.h>
 #include <vm/vm_page.h>
 
 
@@ -276,11 +277,6 @@ kern_return_t vm_copy(map, source_address, size, dest_address)
 	return KERN_SUCCESS;
 }
 
-
-/* XXX From memory_object_proxy.c  */
-kern_return_t
-memory_object_proxy_lookup (ipc_port_t proxy_object, ipc_port_t *object,
-                            vm_prot_t *max_protection);
 
 /*
  *	Routine:	vm_map
