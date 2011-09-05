@@ -266,10 +266,8 @@ void bootstrap_create()
     }
   /* XXX we could free the memory used
      by the boot loader's descriptors and such.  */
-  for (n = 0; n < boot_info.mods_count; n++) {
-    printf("freeing %dMiB\n", (bmods[n].mod_end - bmods[n].mod_start) >> 20);
+  for (n = 0; n < boot_info.mods_count; n++)
     vm_page_create(bmods[n].mod_start, bmods[n].mod_end);
-  }
 }
 
 static void
