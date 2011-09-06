@@ -64,7 +64,7 @@ extern void load_context (thread_t new);
 extern void stack_attach (
    thread_t thread, 
    vm_offset_t stack, 
-   void (*continuation)());
+   void (*continuation)(thread_t));
 
 extern vm_offset_t stack_detach (thread_t thread);
 
