@@ -123,25 +123,6 @@ user_page_fault_continue(kr)
 	/*NOTREACHED*/
 }
 
-/*
- * Fault recovery in copyin/copyout routines.
- */
-struct recovery {
-	int	fault_addr;
-	int	recover_addr;
-};
-
-extern struct recovery	recover_table[];
-extern struct recovery	recover_table_end[];
-
-/*
- * Recovery from Successful fault in copyout does not
- * return directly - it retries the pte check, since
- * the 386 ignores write protection in kernel mode.
- */
-extern struct recovery	retry_table[];
-extern struct recovery	retry_table_end[];
-
 
 static char *trap_type[] = {
 	"Divide error",
@@ -296,6 +277,7 @@ dump_ss(regs);
 		     */
 		    register struct recovery *rp;
 
+                    /* Linear searching; but the list is small enough.  */
 		    for (rp = retry_table; rp < retry_table_end; rp++) {
 			if (regs->eip == rp->fault_addr) {
 			    regs->eip = rp->recover_addr;
@@ -312,6 +294,7 @@ dump_ss(regs);
 		{
 		    register struct recovery *rp;
 
+                    /* Linear searching; but the list is small enough.  */
 		    for (rp = recover_table;
 			 rp < recover_table_end;
 			 rp++) {

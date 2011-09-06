@@ -1,6 +1,5 @@
 /*
- * Header file for printf type functions.
- * Copyright (C) 2006 Free Software Foundation.
+ * Copyright (C) 2006, 2011 Free Software Foundation.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,17 +23,36 @@
 
 #include <kern/sched_prim.h>
 
+/*
+ * Fault recovery in copyin/copyout routines.
+ */
+struct recovery {
+	int	fault_addr;
+	int	recover_addr;
+};
+
+extern struct recovery recover_table[];
+extern struct recovery recover_table_end[];
+
+/*
+ * Recovery from Successful fault in copyout does not
+ * return directly - it retries the pte check, since
+ * the 386 ignores write protection in kernel mode.
+ */
+extern struct recovery retry_table[];
+extern struct recovery retry_table_end[];
+
+
+extern int call_continuation (continuation_t continuation);
+
+extern int discover_x86_cpu_type (void);
+
 extern int copyin (const void *userbuf, void *kernelbuf, size_t cn);
-
 extern int copyinmsg (const void *userbuf, void *kernelbuf, size_t cn);
-
 extern int copyout (const void *kernelbuf, void *userbuf, size_t cn);
-
 extern int copyoutmsg (const void *kernelbuf, void *userbuf, size_t cn);
 
 extern int inst_fetch (int eip, int cs);
-
-extern int call_continuation (continuation_t continuation);
 
 extern void cpu_shutdown (void);
 
@@ -71,8 +89,6 @@ extern unsigned int cpu_features[1];
 #define CPU_FEATURE_PBE		31
 
 #define CPU_HAS_FEATURE(feature) (cpu_features[(feature) / 32] & (1 << ((feature) % 32)))
-
-extern int discover_x86_cpu_type (void);
 
 #endif /* _MACHINE__LOCORE_H_ */
 
