@@ -59,20 +59,9 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <kern/printf.h>
 #include <string.h>
 
-#ifdef	MACH_KERNEL
 #include <device/ds_routines.h>
 #include <device/device_types.h>
 #include <device/io_req.h>
-#else	/* MACH_KERNEL */
-#include <sys/file.h>
-#include <sys/errno.h>
-#include <kern/thread.h>
-#include <sys/user.h>
-#include <sys/proc.h>
-#include <sys/kernel.h>
-#include <sys/ioctl.h>
-#include <sys/tty.h>
-#endif	/* MACH_KERNEL */
 #include <i386/machspl.h>
 #include <i386/pio.h>
 #include <i386at/kd.h>
@@ -92,24 +81,12 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
 kd_event_queue kbd_queue;		/* queue of keyboard events */
-#ifdef	MACH_KERNEL
 queue_head_t	kbd_read_queue = { &kbd_read_queue, &kbd_read_queue };
-#else	/* MACH_KERNEL */
-struct proc *kbd_sel = 0;		/* selecting process, if any */
-short kbdpgrp = 0;		/* process group leader when dev is open */
-
-int kbdflag = 0;
-#define KBD_COLL	1		/* select collision */
-#define KBD_ASYNC	2		/* user wants asynch notification */
-#define KBD_NBIO	4		/* user wants non-blocking I/O */
-#endif	/* MACH_KERNEL */
 
 
 void kbd_enqueue();
-#ifdef	MACH_KERNEL
 io_return_t X_kdb_enter_init();
 io_return_t X_kdb_exit_init();
-#endif	/* MACH_KERNEL */
 
 static boolean_t initialized = FALSE;
 
@@ -147,14 +124,6 @@ kbdopen(dev, flags)
 	splx(o_pri);
 	kbdinit();
 
-#ifdef	MACH_KERNEL
-#else	/* MACH_KERNEL */
-	if (flags & FWRITE)
-		return(ENODEV);
-
-	if (kbdpgrp == 0)
-		kbdpgrp = u.u_procp->p_pgrp;
-#endif	/* MACH_KERNEL */
 	return(0);
 }
 
@@ -173,18 +142,11 @@ kbdclose(dev, flags)
 	spl_t s = SPLKD();
 
 	kb_mode = KB_ASCII;
-#ifdef	MACH_KERNEL
-#else	/* MACH_KERNEL */
-	kbdpgrp = 0;
-	kbdflag = 0;
-	kbd_sel = 0;
-#endif	/* MACH_KERNEL */
 	kdq_reset(&kbd_queue);
 	splx(s);
 }
 
 
-#ifdef	MACH_KERNEL
 io_return_t kbdgetstat(dev, flavor, data, count)
 	dev_t		dev;
 	int		flavor;
@@ -234,91 +196,12 @@ io_return_t kbdsetstat(dev, flavor, data, count)
 	return (D_SUCCESS);
 }
 
-#else	/* MACH_KERNEL */
-/*
- * kbdioctl - handling for asynch & non-blocking I/O.
- */
-
-/*ARGSUSED*/
-int
-kbdioctl(dev, cmd, data, flag)
-	dev_t dev;
-	int cmd;
-	caddr_t data;
-	int flag;
-{
-	spl_t s = SPLKD();
-	int err = 0;
-
-	switch (cmd) {
-	case KDSKBDMODE:
-		kb_mode = *(int *)data;
-		/* XXX - what to do about unread events? */
-		/* XXX - should check that "data" contains an OK value */
-		break;
-	case KDGKBDTYPE:
-		*(int *)data = KB_VANILLAKB;
-		break;
-	case K_X_KDB_ENTER:
-		X_kdb_enter_init((struct X_kdb *) data);
-		break;
-	case K_X_KDB_EXIT:
-		X_kdb_exit_init( (struct X_kdb *) data);
-		break;
-	case FIONBIO:
-		if (*(int *)data)
-			kbdflag |= KBD_NBIO;
-		else
-			kbdflag &= ~KBD_NBIO;
-		break;
-	case FIOASYNC:
-		if (*(int *)data)
-			kbdflag |= KBD_ASYNC;
-		else
-			kbdflag &= ~KBD_ASYNC;
-		break;
-	default:
-		err = ENOTTY;
-		break;
-	}
-
-	splx(s);
-	return(err);
-}
-
-
-/*
- * kbdselect
- */
-
-/*ARGSUSED*/
-int
-kbdselect(dev, rw)
-{
-	spl_t s = SPLKD();
-
-	if (!kdq_empty(&kbd_queue)) {
-		splx(s);
-		return(1);
-	}
-
-	if (kbd_sel)
-		kbdflag |= KBD_COLL;
-	else
-		kbd_sel = (struct proc *)current_thread();
-					/* eeeyuck */
-
-	splx(s);
-	return(0);
-}
-#endif	/* MACH_KERNEL */
 
 
 /*
  * kbdread - dequeue and return any queued events.
  */
 
-#ifdef	MACH_KERNEL
 boolean_t	kbd_read_done();	/* forward */
 
 int
@@ -391,44 +274,6 @@ boolean_t kbd_read_done(ior)
 	return (TRUE);
 }
 
-#else	/* MACH_KERNEL */
-/*ARGSUSED*/
-kbdread(dev, uio)
-	dev_t dev;
-	struct uio *uio;
-{
-	int s = SPLKD();
-	int err = 0;
-	kd_event *ev;
-	int i;
-	char *cp;
-
-	if (kdq_empty(&kbd_queue))
-		if (kbdflag & KBD_NBIO) {
-			err = EWOULDBLOCK;
-			goto done;
-		} else
-			while (kdq_empty(&kbd_queue)) {
-				splx(s);
-				sleep((caddr_t)&kbd_queue, TTIPRI);
-				s = SPLKD();
-			}
-
-	while (!kdq_empty(&kbd_queue) && uio->uio_resid >= sizeof(kd_event)) {
-		ev = kdq_get(&kbd_queue);
-		for (cp = (char *)ev, i = 0; i < sizeof(kd_event);
-		     ++i, ++cp) {
-			err = ureadc(*cp, uio);
-			if (err)
-				goto done;
-		}
-	}
-
-done:
-	splx(s);
-	return(err);
-}
-#endif	/* MACH_KERNEL */
 
 
 /*
@@ -462,22 +307,11 @@ kbd_enqueue(ev)
 	else
 		kdq_put(&kbd_queue, ev);
 
-#ifdef	MACH_KERNEL
 	{
 	    register io_req_t	ior;
 	    while ((ior = (io_req_t)dequeue_head(&kbd_read_queue)) != 0)
 		iodone(ior);
 	}
-#else	/* MACH_KERNEL */
-	if (kbd_sel) {
-		selwakeup(kbd_sel, kbdflag & KBD_COLL);
-		kbd_sel = 0;
-		kbdflag &= ~KBD_COLL;
-	}
-	if (kbdflag & KBD_ASYNC)
-		gsignal(kbdpgrp, SIGIO);
-	wakeup((caddr_t)&kbd_queue);
-#endif	/* MACH_KERNEL */
 }
 
 u_int X_kdb_enter_str[512], X_kdb_exit_str[512];
@@ -538,7 +372,6 @@ register u_int *u_ip, *endp;
 	   kdb_in_out(u_ip);
 }
 
-#ifdef	MACH_KERNEL
 io_return_t
 X_kdb_enter_init(data, count)
     u_int *data;
@@ -564,28 +397,3 @@ X_kdb_exit_init(data, count)
     X_kdb_exit_len = count;
     return D_SUCCESS;
 }
-#else	/* MACH_KERNEL */
-void
-X_kdb_enter_init(kp)
-struct X_kdb *kp;
-{
-	if (kp->size > sizeof X_kdb_enter_str)
-		u.u_error = ENOENT;
-	else if(copyin(kp->ptr, X_kdb_enter_str, kp->size) == EFAULT)
-		u.u_error = EFAULT;
-
-	X_kdb_enter_len = kp->size>>2;
-}
-
-void
-X_kdb_exit_init(kp)
-struct X_kdb *kp;
-{
-	if (kp->size > sizeof X_kdb_exit_str)
-		u.u_error = ENOENT;
-	else if(copyin(kp->ptr, X_kdb_exit_str, kp->size) == EFAULT)
-		u.u_error = EFAULT;
-
-	X_kdb_exit_len = kp->size>>2;
-}
-#endif	/* MACH_KERNEL */

@@ -67,21 +67,10 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <mach/boolean.h>
 #include <sys/types.h>
 #include <kern/printf.h>
-#ifdef	MACH_KERNEL
 #include <device/ds_routines.h>
 #include <device/device_types.h>
 #include <device/io_req.h>
 #include <device/subrs.h>
-#else	/* MACH_KERNEL */
-#include <sys/file.h>
-#include <sys/errno.h>
-#include <kern/thread.h>
-#include <sys/user.h>
-#include <sys/proc.h>
-#include <sys/kernel.h>
-#include <sys/ioctl.h>
-#include <sys/tty.h>
-#endif	/* MACH_KERNEL */
 #include <i386/ipl.h>
 #include <i386/pic.h>
 #include <i386/pio.h>
@@ -100,20 +89,8 @@ extern	struct	bus_device *cominfo[];
 
 kd_event_queue mouse_queue;		/* queue of mouse events */
 boolean_t mouse_in_use = FALSE;
-#ifdef	MACH_KERNEL
 queue_head_t	mouse_read_queue = { &mouse_read_queue, &mouse_read_queue };
-#else	/* MACH_KERNEL */
-struct proc *mouse_sel = 0;		/* selecting process, if any */
-short mousepgrp = 0;		/* process group leader when dev is open */
-#endif	/* MACH_KERNEL */
 
-#ifdef	MACH_KERNEL
-#else	/* MACH_KERNEL */
-int mouseflag = 0;
-#define MOUSE_COLL	1		/* select collision */
-#define MOUSE_ASYNC	2		/* user wants asynch notification */
-#define MOUSE_NBIO	4		/* user wants non-blocking I/O */
-#endif	/* MACH_KERNEL */
 
 /*
  * The state of the 3 buttons is encoded in the low-order 3 bits (both
@@ -176,20 +153,11 @@ mouseopen(dev, flags)
 	dev_t dev;
 	int flags;
 {
-#ifdef	MACH_KERNEL
-#else	/* MACH_KERNEL */
-	if (flags & FWRITE)
-		return (D_NO_SUCH_DEVICE);
-#endif	/* MACH_KERNEL */
 	if (mouse_in_use)
 		return (D_ALREADY_OPEN);
 	mouse_in_use = TRUE;		/* locking? */
 	kdq_reset(&mouse_queue);
 	lastbuttons = MOUSE_ALL_UP;
-#ifdef	MACH_KERNEL
-#else	/* MACH_KERNEL */
-	mousepgrp = u.u_procp->p_pgrp;
-#endif	/* MACH_KERNEL */
 
 	switch (mouse_type = ((minor(dev) & 0xf8) >> 3)) {
 	case MICROSOFT_MOUSE7:
@@ -294,12 +262,6 @@ mouseclose(dev, flags)
 
 	kdq_reset(&mouse_queue);		/* paranoia */
 	mouse_in_use = FALSE;
-#ifdef	MACH_KERNEL
-#else	/* MACH_KERNEL */
-	mousepgrp = 0;
-	mouseflag = 0;
-	mouse_sel = 0;
-#endif	/* MACH_KERNEL */
 }
 
 /*ARGSUSED*/
@@ -335,7 +297,6 @@ kd_mouse_close(dev, mouse_pic)
 	splx(s);
 }
 
-#ifdef	MACH_KERNEL
 io_return_t mousegetstat(dev, flavor, data, count)
 	dev_t		  dev;
 	int		  flavor;
@@ -354,75 +315,10 @@ io_return_t mousegetstat(dev, flavor, data, count)
 	return D_SUCCESS;
 }
 
-#else	/* MACH_KERNEL */
-/*
- * mouseioctl - handling for asynch & non-blocking I/O.
- */
-
-/*ARGSUSED*/
-int
-mouseioctl(dev, cmd, data, flag)
-	dev_t dev;
-	int cmd;
-	caddr_t data;
-	int flag;
-{
-	int s = SPLKD();
-	int err = 0;
-
-	switch (cmd) {
-	case FIONBIO:
-		if (*(int *)data)
-			mouseflag |= MOUSE_NBIO;
-		else
-			mouseflag &= ~MOUSE_NBIO;
-		break;
-	case FIOASYNC:
-		if (*(int *)data)
-			mouseflag |= MOUSE_ASYNC;
-		else
-			mouseflag &= ~MOUSE_ASYNC;
-		break;
-	default:
-		err = ENOTTY;
-		break;
-	}
-
-	splx(s);
-	return(err);
-}
-
-
-/*
- * mouseselect - check for pending events, etc.
- */
-
-/*ARGSUSED*/
-int
-mouseselect(dev, rw)
-{
-	int s = SPLKD();
-
-	if (!kdq_empty(&mouse_queue)) {
-		splx(s);
-		return(1);
-	}
-
-	if (mouse_sel)
-		mouseflag |= MOUSE_COLL;
-	else
-		mouse_sel = (struct proc *)current_thread();
-					/* eeeyuck */
-
-	splx(s);
-	return(0);
-}
-#endif	/* MACH_KERNEL */
 
 /*
  * mouseread - dequeue and return any queued events.
  */
-#ifdef	MACH_KERNEL
 boolean_t	mouse_read_done();	/* forward */
 
 int
@@ -495,45 +391,6 @@ boolean_t mouse_read_done(ior)
 	return (TRUE);
 }
 
-#else	/* MACH_KERNEL */
-/*ARGSUSED*/
-int
-mouseread(dev, uio)
-	dev_t dev;
-	struct uio *uio;
-{
-	int s = SPLKD();
-	int err = 0;
-	kd_event *ev;
-	int i;
-	char *cp;
-
-	if (kdq_empty(&mouse_queue))
-		if (mouseflag & MOUSE_NBIO) {
-			err = EWOULDBLOCK;
-			goto done;
-		} else
-			while (kdq_empty(&mouse_queue)) {
-				splx(s);
-				sleep((caddr_t)&mouse_queue, TTIPRI);
-				s = SPLKD();
-			}
-
-	while (!kdq_empty(&mouse_queue) && uio->uio_resid >= sizeof(kd_event)) {
-		ev = kdq_get(&mouse_queue);
-		for (cp = (char *)ev, i = 0; i < sizeof(kd_event);
-		     ++i, ++cp) {
-			err = ureadc(*cp, uio);
-			if (err)
-				goto done;
-		}
-	}
-
-done:
-	splx(s);
-	return(err);
-}
-#endif	/* MACH_KERNEL */
 
 
 /*
@@ -780,12 +637,8 @@ int kd_mouse_read(void)
 
 	while (mousebufindex <= mouse_char_index) {
 	    mouse_char_wanted = TRUE;
-#ifdef	MACH_KERNEL
 	    assert_wait((event_t) &mousebuf, FALSE);
 	    thread_block((void (*)()) 0);
-#else	/* MACH_KERNEL */
-	    sleep(&mousebuf, PZERO);
-#endif	/* MACH_KERNEL */
 	}
 
 	ch = mousebuf[mouse_char_index++];
@@ -955,20 +808,9 @@ mouse_enqueue(ev)
 	else
 		kdq_put(&mouse_queue, ev);
 
-#ifdef	MACH_KERNEL
 	{
 	    register io_req_t	ior;
 	    while ((ior = (io_req_t)dequeue_head(&mouse_read_queue)) != 0)
 		iodone(ior);
 	}
-#else	/* MACH_KERNEL */
-	if (mouse_sel) {
-		selwakeup(mouse_sel, mouseflag & MOUSE_COLL);
-		mouse_sel = 0;
-		mouseflag &= ~MOUSE_COLL;
-	}
-	if (mouseflag & MOUSE_ASYNC)
-		gsignal(mousepgrp, SIGIO);
-	wakeup((caddr_t)&mouse_queue);
-#endif	/* MACH_KERNEL */
 }

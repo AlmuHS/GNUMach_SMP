@@ -116,11 +116,6 @@ readtodc(tp)
 	unsigned64_t t = hyp_get_time();
 	u_int n = t / 1000000000;
 
-#ifndef	MACH_KERNEL
-	n += tz.tz_minuteswest * 60;
-	if (tz.tz_dsttime)
-		n -= 3600;
-#endif	/* MACH_KERNEL */
 	*tp = n;
 
 	return(0);

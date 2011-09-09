@@ -22,22 +22,10 @@
 
 #include <string.h>
 #include <kern/debug.h>
-#ifdef MACH_KERNEL
 #include <sys/types.h>
 #include <device/conf.h>
 #include <mach/boolean.h>
 #include <device/cons.h>
-#else
-#include <sys/param.h>
-#include <sys/user.h>
-#include <sys/systm.h>
-#include <sys/buf.h>
-#include <sys/ioctl.h>
-#include <sys/tty.h>
-#include <sys/file.h>
-#include <sys/conf.h>
-#include <hpdev/cons.h>
-#endif
 
 #ifdef MACH_KMSG
 #include <device/io_req.h>
@@ -46,9 +34,6 @@
 
 static	int cn_inited = 0;
 static	struct consdev *cn_tab = 0;	/* physical console device info */
-#ifndef MACH_KERNEL
-static	struct tty *constty = 0;	/* virtual console output device */
-#endif
 
 /*
  * ROM getc/putc primitives.
@@ -76,10 +61,8 @@ void
 cninit()
 {
 	struct consdev *cp;
-#ifdef MACH_KERNEL
 	dev_ops_t cn_ops;
 	int x;
-#endif
 
 	if (cn_inited)
 		return;
@@ -103,7 +86,6 @@ cninit()
 		 * Initialize as console
 		 */
 		(*cp->cn_init)(cp);
-#ifdef MACH_KERNEL
 		/*
 		 * Look up its dev_ops pointer in the device table and
 		 * place it in the device indirection table.
@@ -111,7 +93,6 @@ cninit()
 		if (dev_name_lookup(cp->cn_name, &cn_ops, &x) == FALSE)
 			panic("cninit: dev_name_lookup failed");
 		dev_set_indirection("console", cn_ops, minor(cp->cn_dev));
-#endif
 #if CONSBUFSIZE > 0
 		/*
 		 * Now that the console is initialized, dump any chars in
@@ -134,97 +115,9 @@ cninit()
 	/*
 	 * No console device found, not a problem for BSD, fatal for Mach
 	 */
-#ifdef MACH_KERNEL
 	panic("can't find a console device");
-#endif
 }
 
-#ifndef MACH_KERNEL
-cnopen(dev, flag)
-	dev_t dev;
-{
-	if (cn_tab == NULL)
-		return(0);
-	dev = cn_tab->cn_dev;
-	return ((*cdevsw[major(dev)].d_open)(dev, flag));
-}
- 
-cnclose(dev, flag)
-	dev_t dev;
-{
-	if (cn_tab == NULL)
-		return(0);
-	dev = cn_tab->cn_dev;
-	return ((*cdevsw[major(dev)].d_close)(dev, flag));
-}
- 
-cnread(dev, uio)
-	dev_t dev;
-	struct uio *uio;
-{
-	if (cn_tab == NULL)
-		return(0);
-	dev = cn_tab->cn_dev;
-	return ((*cdevsw[major(dev)].d_read)(dev, uio));
-}
- 
-cnwrite(dev, uio)
-	dev_t dev;
-	struct uio *uio;
-{
-	if (cn_tab == NULL)
-		return(0);
-	dev = cn_tab->cn_dev;
-	return ((*cdevsw[major(dev)].d_write)(dev, uio));
-}
- 
-cnioctl(dev, cmd, data, flag)
-	dev_t dev;
-	caddr_t data;
-{
-	if (cn_tab == NULL)
-		return(0);
-	/*
-	 * Superuser can always use this to wrest control of console
-	 * output from the "virtual" console.
-	 */
-	if (cmd == TIOCCONS && constty) {
-		if (!suser())
-			return(EPERM);
-		constty = NULL;
-		return(0);
-	}
-	dev = cn_tab->cn_dev;
-	return ((*cdevsw[major(dev)].d_ioctl)(dev, cmd, data, flag));
-}
-
-cnselect(dev, rw)
-	dev_t dev;
-	int rw;
-{
-	if (cn_tab == NULL)
-		return(1);
-	return(ttselect(cn_tab->cn_dev, rw));
-}
-
-#ifndef hp300
-/*
- * XXX Should go away when the new CIO MUX driver is in place
- */
-#define	d_control	d_mmap
-cncontrol(dev, cmd, data)
-	dev_t dev;
-	int cmd;
-	int data;
-{
-	if (cn_tab == NULL)
-		return(0);
-	dev = cn_tab->cn_dev;
-	return((*cdevsw[major(dev)].d_control)(dev, cmd, data));
-}
-#undef	d_control
-#endif
-#endif
 
 int
 cngetc()
@@ -236,7 +129,6 @@ cngetc()
 	return (0);
 }
 
-#ifdef MACH_KERNEL
 int
 cnmaygetc()
 {
@@ -246,7 +138,6 @@ cnmaygetc()
 		return ((*romgetc)(0));
 	return (0);
 }
-#endif
 
 void
 cnputc(c)

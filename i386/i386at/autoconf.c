@@ -25,16 +25,7 @@
  */
 
 #include <kern/printf.h>
-#ifdef	MACH_KERNEL
 #include <mach/std_types.h>
-#else	/* MACH_KERNEL */
-#include <cpus.h>
-#include <platforms.h>
-#include <generic.h>
-#include <sys/param.h>
-#include <mach/machine.h>
-#include <machine/cpu.h>
-#endif	/* MACH_KERNEL */
 #include <i386/pic.h>
 #include <i386/ipl.h>
 #include <chips/busses.h>

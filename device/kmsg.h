@@ -1,7 +1,6 @@
 #ifndef _DEVICE_KMSG_H_
 #define _DEVICE_KMSG_H_	1
 
-#ifdef MACH_KERNEL
 
 #include <sys/types.h>
 
@@ -15,6 +14,5 @@ io_return_t kmsggetstat (dev_t dev, int flavor,
 			 int *data, unsigned int *count);
 void kmsg_putchar (int c);
 
-#endif /* MACH_KERNEL */
 
 #endif /* !_DEVICE_KMSG_H_ */

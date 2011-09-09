@@ -26,9 +26,7 @@
 #include <sys/types.h>
 
 struct consdev {
-#ifdef MACH_KERNEL
 	char	*cn_name;	/* name of device in dev_name_list */
-#endif
 	int	(*cn_probe)(struct consdev *cp);	/* probe hardware and fill in consdev info */
 	int	(*cn_init)(struct consdev *cp);		/* turn on as console */
 	int	(*cn_getc)(dev_t dev, int wait);	/* kernel getchar interface */

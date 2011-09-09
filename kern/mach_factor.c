@@ -36,10 +36,8 @@
 #include <kern/mach_clock.h>
 #include <kern/sched.h>
 #include <kern/processor.h>
-#if	MACH_KERNEL
 #include <mach/kern_return.h>
 #include <mach/port.h>
-#endif	/* MACH_KERNEL */
 
 #include "mach_factor.h"
 
