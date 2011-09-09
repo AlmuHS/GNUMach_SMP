@@ -157,7 +157,7 @@ noinst_PROGRAMS += \
 
 # This is the list of routines we decide is OK to steal from the C library.
 clib_routines := memcmp memcpy memmove memset			\
-		 strchr strstr strsep strpbrk strtok		\
+		 strchr strstr strsep strtok			\
 		 htonl htons ntohl ntohs			\
 		 udivdi3 __udivdi3				\
 		 __rel_iplt_start __rel_iplt_end		\
