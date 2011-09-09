@@ -78,7 +78,7 @@ vm_offset_t	kernel_stack[NCPUS];	/* top of active_stack */
 void stack_attach(thread, stack, continuation)
 	register thread_t thread;
 	register vm_offset_t stack;
-	void (*continuation)();
+	void (*continuation)(thread_t);
 {
 	counter(if (++c_stacks_current > c_stacks_max)
 			c_stacks_max = c_stacks_current);
