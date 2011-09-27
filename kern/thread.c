@@ -1329,6 +1329,11 @@ kern_return_t thread_suspend(
 	hold = FALSE;
 	spl = splsched();
 	thread_lock(thread);
+	if (thread->state & TH_UNINT) {
+		thread_unlock(thread);
+		(void) splx(spl);
+		return KERN_FAILURE;
+	}
 	if (thread->user_stop_count++ == 0) {
 		hold = TRUE;
 		thread->suspend_count++;
