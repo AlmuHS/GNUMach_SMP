@@ -81,7 +81,7 @@
 #endif
 
 #if	LINUX_VERSION_CODE >= LinuxVersionCode(1,3,0)
-#	define	SCSI_NCR_PROC_INFO_SUPPORT
+//#	define	SCSI_NCR_PROC_INFO_SUPPORT
 #endif
 
 #if	LINUX_VERSION_CODE >= LinuxVersionCode(1,3,72)

@@ -260,6 +260,14 @@ liblinux_a_SOURCES += \
 	linux/src/drivers/scsi/seagate.h
 endif
 
+if device_driver_sym53c8xx
+liblinux_a_SOURCES += \
+	linux/src/drivers/scsi/sym53c8xx.c \
+	linux/src/drivers/scsi/sym53c8xx_comm.h \
+	linux/src/drivers/scsi/sym53c8xx.h \
+	linux/src/drivers/scsi/sym53c8xx_defs.h
+endif
+
 if device_driver_t128
 liblinux_a_SOURCES += \
 	linux/src/drivers/scsi/t128.c \

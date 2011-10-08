@@ -244,6 +244,10 @@ AC_Linux_DRIVER([seagate],
   [SCSI controller Seagate ST02, Future Domain TMC-8xx],
   [CONFIG_SCSI_SEAGATE],
   [scsi])
+AC_Linux_DRIVER([sym53c8xx],
+  [SCSI controller Symbios 53C8XX],
+  [CONFIG_SCSI_SYM53C8XX],
+  [scsi])
 AC_Linux_DRIVER([t128],
   [SCSI controller Trantor T128/T128F/T228 (t128, t128f, t228)],
   [CONFIG_SCSI_T128],
