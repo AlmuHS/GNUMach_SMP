@@ -5787,7 +5787,8 @@ ncr_attach (Scsi_Host_Template *tpnt, int unit, ncr_device *device)
 			((driver_setup.irqm & 0x20) ? 0 : SA_INTERRUPT),
 #else
 			((driver_setup.irqm & 0x10) ? 0 : SA_SHIRQ) |
-#if LINUX_VERSION_CODE < LinuxVersionCode(2,2,0)
+
+#if 0 && LINUX_VERSION_CODE < LinuxVersionCode(2,2,0)
 			((driver_setup.irqm & 0x20) ? 0 : SA_INTERRUPT),
 #else
 			0,
