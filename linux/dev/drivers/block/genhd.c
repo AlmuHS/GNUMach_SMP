@@ -771,7 +771,7 @@ void device_setup(void)
 	struct gendisk *p;
 	int nr=0;
 #ifdef MACH
-	linux_intr_pri = SPL5;
+	linux_intr_pri = SPL6;
 #endif
 
 #ifndef MACH
