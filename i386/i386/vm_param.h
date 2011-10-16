@@ -45,8 +45,12 @@
 #define VM_MAX_KERNEL_ADDRESS	(LINEAR_MAX_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS + VM_MIN_KERNEL_ADDRESS)
 #endif	/* MACH_XEN */
 
-/* Reserve mapping room for kmem_suballoc calls. */
+/* Reserve mapping room for kmem. */
+#ifdef	MACH_XEN
+#define VM_KERNEL_MAP_SIZE (224 * 1024 * 1024)
+#else
 #define VM_KERNEL_MAP_SIZE (192 * 1024 * 1024)
+#endif
 
 /* The kernel virtual address space is actually located
    at high linear addresses.
