@@ -229,12 +229,12 @@ void hyp_block_init(void) {
 			t = hyp_store_transaction_start();
 
 			/* Get a page for ring */
-			if (kmem_alloc_wired(kernel_map, &addr, PAGE_SIZE) != KERN_SUCCESS)
+			if ((addr = vm_page_grab_phys_addr()) == -1)
 				panic("%s: couldn't allocate space for store ring\n", device_name);
-			ring = (void*) addr;
+			ring = (void*) phystokv(addr);
 			SHARED_RING_INIT(ring);
 			FRONT_RING_INIT(&bd->ring, ring, PAGE_SIZE);
-			grant = hyp_grant_give(domid, atop(kvtophys(addr)), 0);
+			grant = hyp_grant_give(domid, atop(addr), 0);
 
 			/* and give it to backend.  */
 			i = sprintf(port_name, "%u", grant);

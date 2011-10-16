@@ -283,12 +283,12 @@ void hyp_net_init(void) {
 			t = hyp_store_transaction_start();
 
 			/* Get a page for tx_ring */
-			if (kmem_alloc_wired(kernel_map, &addr, PAGE_SIZE) != KERN_SUCCESS)
+			if ((addr = vm_page_grab_phys_addr()) == -1)
 				panic("eth: couldn't allocate space for store tx_ring");
-			tx_ring = (void*) addr;
+			tx_ring = (void*) phystokv(addr);
 			SHARED_RING_INIT(tx_ring);
 			FRONT_RING_INIT(&nd->tx, tx_ring, PAGE_SIZE);
-			grant = hyp_grant_give(domid, atop(kvtophys(addr)), 0);
+			grant = hyp_grant_give(domid, atop(addr), 0);
 
 			/* and give it to backend.  */
 			i = sprintf(port_name, "%u", grant);
@@ -298,12 +298,12 @@ void hyp_net_init(void) {
 			kfree((vm_offset_t) c, strlen(c)+1);
 
 			/* Get a page for rx_ring */
-			if (kmem_alloc_wired(kernel_map, &addr, PAGE_SIZE) != KERN_SUCCESS)
+			if ((addr = vm_page_grab_phys_addr()) == -1)
 				panic("eth: couldn't allocate space for store tx_ring");
-			rx_ring = (void*) addr;
+			rx_ring = (void*) phystokv(addr);
 			SHARED_RING_INIT(rx_ring);
 			FRONT_RING_INIT(&nd->rx, rx_ring, PAGE_SIZE);
-			grant = hyp_grant_give(domid, atop(kvtophys(addr)), 0);
+			grant = hyp_grant_give(domid, atop(addr), 0);
 
 			/* and give it to backend.  */
 			i = sprintf(port_name, "%u", grant);
@@ -396,12 +396,12 @@ void hyp_net_init(void) {
 
 		/* Get a page for packet reception */
 		for (i= 0; i<WINDOW; i++) {
-			if (kmem_alloc_wired(kernel_map, &addr, PAGE_SIZE) != KERN_SUCCESS)
+			if ((addr = vm_page_grab_phys_addr()) == -1)
 				panic("eth: couldn't allocate space for store tx_ring");
-			nd->rx_buf[i] = (void*)phystokv(kvtophys(addr));
-			nd->rx_buf_pfn[i] = atop(kvtophys((vm_offset_t)nd->rx_buf[i]));
+			nd->rx_buf[i] = (void*)phystokv(addr);
+			nd->rx_buf_pfn[i] = atop(addr);
 			if (!nd->rx_copy) {
-				if (hyp_do_update_va_mapping(kvtolin(addr), 0, UVMF_INVLPG|UVMF_ALL))
+				if (hyp_do_update_va_mapping(kvtolin(nd->rx_buf[i]), 0, UVMF_INVLPG|UVMF_ALL))
 					panic("eth: couldn't clear rx kv buf %d at %p", i, addr);
 			}
 			/* and enqueue it to backend.  */
