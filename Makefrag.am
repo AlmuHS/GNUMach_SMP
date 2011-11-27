@@ -62,6 +62,9 @@ libkernel_a_SOURCES += \
 	ddb/nlist.h \
 	ddb/stab.h \
 	ddb/tr.h
+
+# We need frame pointers for trace to work properly.
+AM_CFLAGS += -fno-omit-frame-pointer
 endif
 
 
