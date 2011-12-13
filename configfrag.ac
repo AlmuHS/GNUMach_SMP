@@ -102,6 +102,12 @@ AC_DEFINE([STAT_TIME], [1], [STAT_TIME])
 
 # Kernel tracing.
 AC_DEFINE([XPR_DEBUG], [1], [XPR_DEBUG])
+
+# Slab allocator debugging facilities.
+AC_DEFINE([SLAB_VERIFY], [0], [SLAB_VERIFY])
+
+# Enable the CPU pool layer in the slab allocator.
+AC_DEFINE([SLAB_USE_CPU_POOLS], [0], [SLAB_USE_CPU_POOLS])
 
 #
 # Options.

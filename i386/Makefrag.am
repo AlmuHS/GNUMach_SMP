@@ -136,7 +136,6 @@ libkernel_a_SOURCES += \
 	i386/i386/vm_param.h \
 	i386/i386/vm_tuning.h \
 	i386/i386/xpr.h \
-	i386/i386/zalloc.h \
 	i386/intel/pmap.c \
 	i386/intel/pmap.h \
 	i386/intel/read_fault.c \

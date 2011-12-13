@@ -151,7 +151,6 @@ libkernel_a_SOURCES += \
 	kern/ipc_sched.h \
 	kern/ipc_tt.c \
 	kern/ipc_tt.h \
-	kern/kalloc.c \
 	kern/kalloc.h \
 	kern/kern_types.h \
 	kern/list.h \
@@ -180,6 +179,8 @@ libkernel_a_SOURCES += \
 	kern/rbtree.h \
 	kern/rbtree_i.h \
 	kern/refcount.h \
+	kern/slab.c \
+	kern/slab.h \
 	kern/sched.h \
 	kern/sched_prim.c \
 	kern/sched_prim.h \
@@ -204,8 +205,6 @@ libkernel_a_SOURCES += \
 	kern/timer.h \
 	kern/xpr.c \
 	kern/xpr.h \
-	kern/zalloc.c \
-	kern/zalloc.h \
 	kern/elf-load.c \
 	kern/boot_script.c
 EXTRA_DIST += \
@@ -406,7 +405,7 @@ include_mach_eXec_HEADERS = \
 
 # mach-debug-headers:= $(addprefix mach_debug/, hash_info.h ipc_info.h \
 # 		mach_debug.defs mach_debug_types.defs mach_debug_types.h \
-# 		pc_info.h vm_info.h zone_info.h)
+# 		pc_info.h vm_info.h slab_info.h)
 
 # Other headers for the distribution.  We don't install these, because the
 # GNU C library has correct versions for users to use.

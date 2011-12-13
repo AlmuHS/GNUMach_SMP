@@ -25,6 +25,9 @@ dnl USE OF THIS SOFTWARE.
     AC_DEFINE([__ELF__], [1], [__ELF__])
     AC_DEFINE([i386], [1], [i386])
 
+    # Determines the size of the CPU cache line.
+    AC_DEFINE([CPU_L1_SHIFT], [6], [CPU_L1_SHIFT])
+
     [# Does the architecture provide machine-specific interfaces?
     mach_machine_routines=1;;
   *)]

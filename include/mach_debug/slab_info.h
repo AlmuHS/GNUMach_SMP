@@ -24,38 +24,39 @@
  * the rights to redistribute these changes.
  */
 
-#ifndef	_MACH_DEBUG_ZONE_INFO_H_
-#define _MACH_DEBUG_ZONE_INFO_H_
+#ifndef _MACH_DEBUG_SLAB_INFO_H_
+#define _MACH_DEBUG_SLAB_INFO_H_
 
-#include <mach/boolean.h>
-#include <mach/machine/vm_types.h>
+#include <sys/types.h>
 
 /*
  *	Remember to update the mig type definitions
  *	in mach_debug_types.defs when adding/removing fields.
  */
 
-#define ZONE_NAME_MAX_LEN		80
+#define CACHE_NAME_MAX_LEN 32
 
-typedef struct zone_name {
-	char		zn_name[ZONE_NAME_MAX_LEN];
-} zone_name_t;
+#define CACHE_FLAGS_NO_CPU_POOL		0x01
+#define CACHE_FLAGS_SLAB_EXTERNAL	0x02
+#define CACHE_FLAGS_NO_RECLAIM		0x04
+#define CACHE_FLAGS_VERIFY		0x08
+#define CACHE_FLAGS_DIRECT		0x10
 
-typedef zone_name_t *zone_name_array_t;
+typedef struct cache_info {
+	int flags;
+	size_t cpu_pool_size;
+	size_t obj_size;
+	size_t align;
+	size_t buf_size;
+	size_t slab_size;
+	unsigned long bufs_per_slab;
+	unsigned long nr_objs;
+	unsigned long nr_bufs;
+	unsigned long nr_slabs;
+	unsigned long nr_free_slabs;
+	char name[CACHE_NAME_MAX_LEN];
+} cache_info_t;
 
+typedef cache_info_t *cache_info_array_t;
 
-typedef struct zone_info {
-	integer_t	zi_count;	/* Number of elements used now */
-	vm_size_t	zi_cur_size;	/* current memory utilization */
-	vm_size_t	zi_max_size;	/* how large can this zone grow */
-	vm_size_t	zi_elem_size;	/* size of an element */
-	vm_size_t	zi_alloc_size;	/* size used for more memory */
-/*boolean_t*/integer_t	zi_pageable;	/* zone pageable? */
-/*boolean_t*/integer_t	zi_sleepable;	/* sleep if empty? */
-/*boolean_t*/integer_t	zi_exhaustible;	/* merely return if empty? */
-/*boolean_t*/integer_t	zi_collectable;	/* garbage collect elements? */
-} zone_info_t;
-
-typedef zone_info_t *zone_info_array_t;
-
-#endif	/* _MACH_DEBUG_ZONE_INFO_H_ */
+#endif	/* _MACH_DEBUG_SLAB_INFO_H_ */
