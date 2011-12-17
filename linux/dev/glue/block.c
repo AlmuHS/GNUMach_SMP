@@ -49,6 +49,8 @@
 #include <mach/vm_param.h>
 #include <mach/notify.h>
 
+#include <kern/kalloc.h>
+
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_space.h>
 

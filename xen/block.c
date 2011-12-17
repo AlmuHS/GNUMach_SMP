@@ -18,6 +18,7 @@
 
 #include <sys/types.h>
 #include <mach/mig_errors.h>
+#include <kern/kalloc.h>
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_space.h>
 #include <vm/vm_kern.h>

@@ -54,6 +54,7 @@
 #include <kern/thread.h>
 #include <kern/thread_swap.h>
 #include <kern/host.h>
+#include <kern/kalloc.h>
 #include <kern/slab.h>
 #include <kern/mach_clock.h>
 #include <vm/vm_kern.h>

@@ -35,6 +35,7 @@
 #include <mach/vm_param.h>
 #include <kern/cpu_number.h>
 #include <kern/debug.h>
+#include <kern/kalloc.h>
 #include <kern/lock.h>
 #include <kern/host.h>
 #include <kern/ipc_tt.h>

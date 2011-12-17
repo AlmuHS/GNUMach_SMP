@@ -36,6 +36,7 @@
 #include <mach/thread_special_ports.h>
 #include <vm/vm_kern.h>
 #include <kern/debug.h>
+#include <kern/kalloc.h>
 #include <kern/task.h>
 #include <kern/thread.h>
 #include <kern/ipc_kobject.h>

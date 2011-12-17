@@ -55,6 +55,7 @@
 #include <ipc/ipc_space.h>
 
 #include <kern/slab.h>
+#include <kern/kalloc.h>
 #include <kern/lock.h>
 #include <kern/queue.h>
 #include <kern/thread.h>

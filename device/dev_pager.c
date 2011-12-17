@@ -45,7 +45,6 @@
 #include <kern/printf.h>
 #include <kern/queue.h>
 #include <kern/slab.h>
-#include <kern/kalloc.h>
 
 #include <vm/vm_page.h>
 #include <vm/vm_kern.h>

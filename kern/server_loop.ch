@@ -39,6 +39,7 @@
  */
 
 #include <kern/debug.h>
+#include <kern/kalloc.h>
 #include <mach/port.h>
 #include <mach/message.h>
 #include <vm/vm_kern.h>		/* for kernel_map */

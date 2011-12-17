@@ -69,6 +69,7 @@
 #include <mach/vm_param.h>
 #include <mach/notify.h>
 
+#include <kern/kalloc.h>
 #include <kern/printf.h>
 
 #include <ipc/ipc_port.h>

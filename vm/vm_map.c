@@ -41,6 +41,7 @@
 #include <mach/vm_param.h>
 #include <kern/assert.h>
 #include <kern/debug.h>
+#include <kern/kalloc.h>
 #include <kern/slab.h>
 #include <vm/pmap.h>
 #include <vm/vm_fault.h>

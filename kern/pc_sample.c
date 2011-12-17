@@ -31,6 +31,7 @@
 #include <mach/std_types.h>	/* pointer_t */
 #include <mach/pc_sample.h>
 #include <machine/trap.h>
+#include <kern/kalloc.h>
 #include <kern/host.h>
 #include <kern/thread.h>
 #include <kern/pc_sample.h>

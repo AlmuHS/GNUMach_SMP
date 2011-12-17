@@ -42,6 +42,7 @@
 #include <kern/debug.h>
 #include <kern/host.h>
 #include <kern/printf.h>
+#include <kern/kalloc.h>
 #include <kern/task.h>
 #include <kern/thread.h>
 #include <kern/lock.h>
