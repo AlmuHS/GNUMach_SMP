@@ -42,7 +42,6 @@
 #include <mach/vm_prot.h>
 #include <kern/printf.h>
 #include <kern/slab.h>
-#include <kern/mach_param.h>
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_space.h>
 

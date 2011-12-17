@@ -37,14 +37,6 @@
 #ifndef	_IPC_IPC_INIT_H_
 #define _IPC_IPC_INIT_H_
 
-/* all IPC zones should be exhaustible */
-#define IPC_ZONE_TYPE	ZONE_EXHAUSTIBLE
-
-extern int ipc_space_max;
-extern int ipc_tree_entry_max;
-extern int ipc_port_max;
-extern int ipc_pset_max;
-
 /*
  * Exported interfaces
  */

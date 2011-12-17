@@ -40,7 +40,6 @@
 #include <ipc/ipc_space.h>
 #include <ipc/ipc_types.h>
 #include <kern/debug.h>
-#include <kern/mach_param.h>
 #include <kern/task.h>
 #include <kern/thread.h>
 #include <kern/slab.h>

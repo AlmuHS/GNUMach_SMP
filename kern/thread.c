@@ -45,7 +45,6 @@
 #include <kern/eventcount.h>
 #include <kern/ipc_mig.h>
 #include <kern/ipc_tt.h>
-#include <kern/mach_param.h>
 #include <kern/processor.h>
 #include <kern/queue.h>
 #include <kern/sched.h>

@@ -44,7 +44,6 @@
 
 #include <kern/debug.h>
 #include <machine/machspl.h>	/* spls */
-#include <kern/mach_param.h>
 #include <kern/printf.h>
 #include <kern/thread.h>
 #include <kern/slab.h>

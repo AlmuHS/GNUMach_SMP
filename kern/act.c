@@ -30,7 +30,6 @@
 
 #include <mach/kern_return.h>
 #include <mach/alert.h>
-#include <kern/mach_param.h> /* XXX INCALL_... */
 #include <kern/slab.h>
 #include <kern/thread.h>
 #include <kern/task.h>

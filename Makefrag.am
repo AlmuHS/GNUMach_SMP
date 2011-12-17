@@ -161,7 +161,6 @@ libkernel_a_SOURCES += \
 	kern/mach_clock.h \
 	kern/mach_factor.c \
 	kern/mach_factor.h \
-	kern/mach_param.h \
 	kern/machine.c \
 	kern/machine.h \
 	kern/macro_help.h \

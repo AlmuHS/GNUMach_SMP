@@ -47,7 +47,6 @@
 #include <kern/host.h>
 #include <kern/lock.h>
 #include <kern/mach_clock.h>
-#include <kern/mach_param.h>
 #include <kern/processor.h>
 #include <kern/queue.h>
 #include <kern/sched.h>

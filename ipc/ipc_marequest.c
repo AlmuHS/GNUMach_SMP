@@ -37,7 +37,6 @@
 #include <mach/message.h>
 #include <mach/port.h>
 #include <kern/lock.h>
-#include <kern/mach_param.h>
 #include <kern/kalloc.h>
 #include <kern/slab.h>
 #include <ipc/port.h>
@@ -59,7 +58,6 @@
 
 
 struct kmem_cache ipc_marequest_cache;
-int ipc_marequest_max = IMAR_MAX;
 
 #define	imar_alloc()		((ipc_marequest_t) kmem_cache_alloc(&ipc_marequest_cache))
 #define	imar_free(imar)		kmem_cache_free(&ipc_marequest_cache, (vm_offset_t) (imar))
@@ -102,11 +100,8 @@ ipc_marequest_init(void)
 
 	/* if not configured, initialize ipc_marequest_size */
 
-	if (ipc_marequest_size == 0) {
-		ipc_marequest_size = ipc_marequest_max >> 8;
-		if (ipc_marequest_size < 16)
-			ipc_marequest_size = 16;
-	}
+	if (ipc_marequest_size == 0)
+		ipc_marequest_size = 16;
 
 	/* make sure it is a power of two */
 
@@ -436,7 +431,7 @@ ipc_marequest_info(maxp, info, count)
 		info[i].hib_count = bucket_count;
 	}
 
-	*maxp = ipc_marequest_max;
+	*maxp = (unsigned int)-1;
 	return ipc_marequest_size;
 }
 

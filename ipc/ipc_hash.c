@@ -537,11 +537,8 @@ ipc_hash_init(void)
 
 	/* if not configured, initialize ipc_hash_global_size */
 
-	if (ipc_hash_global_size == 0) {
-		ipc_hash_global_size = ipc_tree_entry_max >> 8;
-		if (ipc_hash_global_size < 32)
-			ipc_hash_global_size = 32;
-	}
+	if (ipc_hash_global_size == 0)
+		ipc_hash_global_size = 256;
 
 	/* make sure it is a power of two */
 

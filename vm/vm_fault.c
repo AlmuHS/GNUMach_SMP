@@ -51,7 +51,6 @@
 #include <mach/memory_object.h>
 #include <vm/memory_object_user.user.h>
 				/* For memory_object_data_{request,unlock} */
-#include <kern/mach_param.h>
 #include <kern/macro_help.h>
 #include <kern/slab.h>
 

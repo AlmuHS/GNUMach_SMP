@@ -35,7 +35,6 @@
  */
 
 #include <mach/kern_return.h>
-#include <kern/mach_param.h>
 #include <kern/ipc_host.h>
 #include <kern/slab.h>
 #include <vm/vm_map.h>
@@ -56,11 +55,6 @@
 static struct vm_map ipc_kernel_map_store;
 vm_map_t ipc_kernel_map = &ipc_kernel_map_store;
 vm_size_t ipc_kernel_map_size = 8 * 1024 * 1024;
-
-int ipc_space_max = SPACE_MAX;
-int ipc_tree_entry_max = ITE_MAX;
-int ipc_port_max = PORT_MAX;
-int ipc_pset_max = SET_MAX;
 
 /*
  *	Routine:	ipc_bootstrap

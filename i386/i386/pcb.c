@@ -36,7 +36,6 @@
 #include "vm_param.h"
 #include <kern/counters.h>
 #include <kern/debug.h>
-#include <kern/mach_param.h>
 #include <kern/thread.h>
 #include <kern/sched_prim.h>
 #include <kern/slab.h>
