@@ -37,7 +37,6 @@
 
 #ifndef	__ASSEMBLER__
 
-#include <kern/zalloc.h>
 #include <kern/lock.h>
 #include <mach/machine/vm_param.h>
 #include <mach/vm_statistics.h>

@@ -54,7 +54,7 @@
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_space.h>
 
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 #include <kern/lock.h>
 #include <kern/queue.h>
 #include <kern/thread.h>
@@ -257,12 +257,12 @@ i386_io_perm_modify (task_t target_task, io_perm_t io_perm, boolean_t enable)
   if (!iopb)
     {
       simple_unlock (&target_task->machine.iopb_lock);
-      iopb = (unsigned char *) zalloc (machine_task_iopb_zone);
+      iopb = (unsigned char *) kmem_cache_alloc (&machine_task_iopb_cache);
       simple_lock (&target_task->machine.iopb_lock);
       if (target_task->machine.iopb)
 	{
 	  if (iopb)
-	    zfree (machine_task_iopb_zone, (vm_offset_t) iopb);
+	    kmem_cache_free (&machine_task_iopb_cache, (vm_offset_t) iopb);
 	  iopb = target_task->machine.iopb;
 	  iopb_size = target_task->machine.iopb_size;
 	}

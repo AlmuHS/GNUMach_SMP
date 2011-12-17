@@ -44,6 +44,7 @@
 #include <mach/mach_types.h>
 #include <kern/macro_help.h>
 #include <kern/lock.h>
+#include <kern/slab.h>
 #include <ipc/ipc_splay.h>
 #include <ipc/ipc_types.h>
 
@@ -82,10 +83,10 @@ struct ipc_space {
 
 #define	IS_NULL			((ipc_space_t) 0)
 
-extern zone_t ipc_space_zone;
+extern struct kmem_cache ipc_space_cache;
 
-#define is_alloc()		((ipc_space_t) zalloc(ipc_space_zone))
-#define	is_free(is)		zfree(ipc_space_zone, (vm_offset_t) (is))
+#define is_alloc()		((ipc_space_t) kmem_cache_alloc(&ipc_space_cache))
+#define	is_free(is)		kmem_cache_free(&ipc_space_cache, (vm_offset_t) (is))
 
 extern struct ipc_space *ipc_space_kernel;
 extern struct ipc_space *ipc_space_reply;

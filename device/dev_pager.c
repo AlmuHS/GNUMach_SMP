@@ -44,7 +44,7 @@
 #include <kern/debug.h>
 #include <kern/printf.h>
 #include <kern/queue.h>
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 #include <kern/kalloc.h>
 
 #include <vm/vm_page.h>
@@ -126,7 +126,7 @@ typedef struct dev_pager *dev_pager_t;
 #define	DEV_PAGER_NULL	((dev_pager_t)0)
 
 
-zone_t		dev_pager_zone;
+struct kmem_cache	dev_pager_cache;
 
 void dev_pager_reference(register dev_pager_t	ds)
 {
@@ -144,7 +144,7 @@ void dev_pager_deallocate(register dev_pager_t	ds)
 	}
 
 	simple_unlock(&ds->lock);
-	zfree(dev_pager_zone, (vm_offset_t)ds);
+	kmem_cache_free(&dev_pager_cache, (vm_offset_t)ds);
 }
 
 /*
@@ -161,7 +161,7 @@ struct dev_pager_entry {
 typedef struct dev_pager_entry *dev_pager_entry_t;
 
 queue_head_t	dev_pager_hashtable[DEV_PAGER_HASH_COUNT];
-zone_t		dev_pager_hash_zone;
+struct kmem_cache	dev_pager_hash_cache;
 decl_simple_lock_data(,
 		dev_pager_hash_lock)
 
@@ -174,13 +174,8 @@ void dev_pager_hash_init(void)
 	register vm_size_t	size;
 
 	size = sizeof(struct dev_pager_entry);
-	dev_pager_hash_zone = zinit(
-				size,
-				0,
-				size * 1000,
-				PAGE_SIZE,
-				FALSE,
-				"dev_pager port hash");
+	kmem_cache_init(&dev_pager_hash_cache, "dev_pager_entry", size, 0,
+			NULL, NULL, NULL, 0);
 	for (i = 0; i < DEV_PAGER_HASH_COUNT; i++)
 	    queue_init(&dev_pager_hashtable[i]);
 	simple_lock_init(&dev_pager_hash_lock);
@@ -192,7 +187,7 @@ void dev_pager_hash_insert(
 {
 	register dev_pager_entry_t new_entry;
 
-	new_entry = (dev_pager_entry_t) zalloc(dev_pager_hash_zone);
+	new_entry = (dev_pager_entry_t) kmem_cache_alloc(&dev_pager_hash_cache);
 	new_entry->name = name_port;
 	new_entry->pager_rec = rec;
 
@@ -220,7 +215,7 @@ void dev_pager_hash_delete(ipc_port_t	name_port)
 	}
 	simple_unlock(&dev_pager_hash_lock);
 	if (entry)
-	    zfree(dev_pager_hash_zone, (vm_offset_t)entry);
+	    kmem_cache_free(&dev_pager_hash_cache, (vm_offset_t)entry);
 }
 
 dev_pager_t dev_pager_hash_lookup(ipc_port_t	name_port)
@@ -273,7 +268,7 @@ kern_return_t	device_pager_setup(
 		return (D_SUCCESS);
 	}
 
-	d = (dev_pager_t) zalloc(dev_pager_zone);
+	d = (dev_pager_t) kmem_cache_alloc(&dev_pager_cache);
 	if (d == DEV_PAGER_NULL)
 		return (KERN_RESOURCE_SHORTAGE);
 
@@ -726,15 +721,11 @@ void device_pager_init(void)
 	register vm_size_t	size;
 
 	/*
-	 * Initialize zone of paging structures.
+	 * Initialize cache of paging structures.
 	 */
 	size = sizeof(struct dev_pager);
-	dev_pager_zone = zinit(size,
-				0,
-				(vm_size_t) size * 1000,
-				PAGE_SIZE,
-				FALSE,
-				"device pager structures");
+	kmem_cache_init(&dev_pager_cache, "dev_pager", size, 0,
+			NULL, NULL, NULL, 0);
 
 	/*
 	 *	Initialize the name port hashing stuff.

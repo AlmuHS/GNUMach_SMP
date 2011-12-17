@@ -39,6 +39,7 @@
 #include <kern/mach_param.h>
 #include <kern/thread.h>
 #include <kern/sched_prim.h>
+#include <kern/slab.h>
 #include <vm/vm_kern.h>
 #include <vm/pmap.h>
 
@@ -65,7 +66,7 @@ extern void	Thread_continue();
 
 extern void		user_ldt_free();
 
-zone_t		pcb_zone;
+struct kmem_cache	pcb_cache;
 
 vm_offset_t	kernel_stack[NCPUS];	/* top of active_stack */
 
@@ -369,10 +370,8 @@ thread_t switch_context(old, continuation, new)
 
 void pcb_module_init()
 {
-	pcb_zone = zinit(sizeof(struct pcb), 0,
-			 THREAD_MAX * sizeof(struct pcb),
-			 THREAD_CHUNK * sizeof(struct pcb),
-			 0, "i386 pcb state");
+	kmem_cache_init(&pcb_cache, "pcb", sizeof(struct pcb), 0,
+			NULL, NULL, NULL, 0);
 
 	fpu_module_init();
 }
@@ -382,7 +381,7 @@ void pcb_init(thread)
 {
 	register pcb_t		pcb;
 
-	pcb = (pcb_t) zalloc(pcb_zone);
+	pcb = (pcb_t) kmem_cache_alloc(&pcb_cache);
 	if (pcb == 0)
 		panic("pcb_init");
 
@@ -422,7 +421,7 @@ void pcb_terminate(thread)
 		fp_free(pcb->ims.ifps);
 	if (pcb->ims.ldt != 0)
 		user_ldt_free(pcb->ims.ldt);
-	zfree(pcb_zone, (vm_offset_t) pcb);
+	kmem_cache_free(&pcb_cache, (vm_offset_t) pcb);
 	thread->pcb = 0;
 }
 

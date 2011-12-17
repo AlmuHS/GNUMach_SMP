@@ -50,13 +50,6 @@ void ipc_table_fill(
 	unsigned int		min,
 	vm_size_t		elemsize);
 
-/*
- *	We borrow the kalloc map, rather than creating
- *	yet another submap of the kernel map.
- */
-
-extern vm_map_t kalloc_map;
-
 ipc_table_size_t ipc_table_entries;
 unsigned int ipc_table_entries_size = 512;
 

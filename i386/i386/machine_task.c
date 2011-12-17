@@ -22,15 +22,15 @@
 
 #include <kern/lock.h>
 #include <mach/mach_types.h>
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 #include <kern/mach_param.h>
 #include <machine/task.h>
 
 #include <machine/io_perm.h>
 
 
-/* The zone which holds our IO permission bitmaps.  */
-zone_t machine_task_iopb_zone;
+/* The cache which holds our IO permission bitmaps.  */
+struct kmem_cache machine_task_iopb_cache;
 
 
 /* Initialize the machine task module.  The function is called once at
@@ -38,11 +38,8 @@ zone_t machine_task_iopb_zone;
 void
 machine_task_module_init (void)
 {
-  machine_task_iopb_zone = zinit (IOPB_BYTES, 0,
-				  TASK_MAX * IOPB_BYTES,
-				  IOPB_BYTES,
-				  ZONE_COLLECTABLE | ZONE_EXHAUSTIBLE,
-				  "i386 machine task iopb");
+  kmem_cache_init (&machine_task_iopb_cache, "i386_task_iopb", IOPB_BYTES, 0,
+		   NULL, NULL, NULL, 0);
 }
 
 
@@ -62,7 +59,8 @@ void
 machine_task_terminate (task_t task)
 {
   if (task->machine.iopb)
-    zfree (machine_task_iopb_zone, (vm_offset_t) task->machine.iopb);
+    kmem_cache_free (&machine_task_iopb_cache,
+		     (vm_offset_t) task->machine.iopb);
 }
 
 
@@ -74,7 +72,8 @@ machine_task_collect (task_t task)
   simple_lock (&task->machine.iopb_lock);
   if (task->machine.iopb_size == 0 && task->machine.iopb)
     {
-      zfree (machine_task_iopb_zone, (vm_offset_t) task->machine.iopb);
+      kmem_cache_free (&machine_task_iopb_cache,
+		       (vm_offset_t) task->machine.iopb);
       task->machine.iopb = 0;
     }
   simple_unlock (&task->machine.iopb_lock);

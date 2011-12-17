@@ -43,6 +43,7 @@
 #include <mach/vm_statistics.h>
 #include <kern/counters.h>
 #include <kern/debug.h>
+#include <kern/slab.h>
 #include <kern/task.h>
 #include <kern/thread.h>
 #include <vm/pmap.h>
@@ -544,8 +545,8 @@ void vm_pageout_scan()
 	 *	into an internal object and then immediately double-page it,
 	 *	sending it to the default pager.
 	 *
-	 *	consider_zone_gc should be last, because the other operations
-	 *	might return memory to zones.  When we pause we use
+	 *	slab_collect should be last, because the other operations
+	 *	might return memory to caches.  When we pause we use
 	 *	vm_pageout_scan_continue as our continuation, so we will
 	 *	reenter vm_pageout_scan periodically and attempt to reclaim
 	 *	internal memory even if we never reach vm_page_free_target.
@@ -555,7 +556,7 @@ void vm_pageout_scan()
 	net_kmsg_collect();
 	consider_task_collect();
 	consider_thread_collect();
-	consider_zone_gc();
+	slab_collect();
 
 	for (burst_count = 0;;) {
 		register vm_page_t m;

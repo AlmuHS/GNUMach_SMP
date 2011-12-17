@@ -42,17 +42,7 @@ skip;	/* host_ipc_statistics_reset */
 skip;	/* host_callout_info */
 skip;	/* host_callout_statistics */
 skip;	/* host_callout_statistics_reset */
-
-/*
- *	Returns information about the memory allocation zones.
- */
-routine host_zone_info(
-		host		: host_t;
-	out	names		: zone_name_array_t,
-					CountInOut, Dealloc;
-	out	info		: zone_info_array_t,
-					CountInOut, Dealloc);
-
+skip;	/* host_zone_info */
 skip;	/* host_ipc_bucket_info */
 
 #if	!defined(MACH_IPC_DEBUG) || MACH_IPC_DEBUG
@@ -226,6 +216,14 @@ routine mach_vm_object_info(
 routine mach_vm_object_pages(
 		object		: memory_object_name_t;
 	out	pages		: vm_page_info_array_t,
+					CountInOut, Dealloc);
+
+/*
+ *	Returns information about the memory allocation caches.
+ */
+routine host_slab_info(
+		host		: host_t;
+	out	info		: cache_info_array_t,
 					CountInOut, Dealloc);
 
 #else	/* !defined(MACH_VM_DEBUG) || MACH_VM_DEBUG */

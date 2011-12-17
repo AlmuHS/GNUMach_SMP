@@ -63,7 +63,7 @@
 #include <kern/debug.h>
 #include <kern/printf.h>
 #include <kern/thread.h>
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 
 #include <kern/lock.h>
 
@@ -113,7 +113,7 @@ pv_entry_t	pv_head_table;		/* array of entries, one per page */
 /*
  *	pv_list entries are kept on a list that can only be accessed
  *	with the pmap system locked (at SPLVM, not in the cpus_active set).
- *	The list is refilled from the pv_list_zone if it becomes empty.
+ *	The list is refilled from the pv_list_cache if it becomes empty.
  */
 pv_entry_t	pv_free_list;		/* free list at SPLVM */
 decl_simple_lock_data(, pv_free_list_lock)
@@ -133,7 +133,7 @@ decl_simple_lock_data(, pv_free_list_lock)
 	simple_unlock(&pv_free_list_lock); \
 }
 
-zone_t		pv_list_zone;		/* zone of pv_entry structures */
+struct kmem_cache	pv_list_cache;		/* cache of pv_entry structures */
 
 /*
  *	Each entry in the pv_head_table is locked by a bit in the
@@ -400,7 +400,7 @@ struct pmap_update_list	cpu_update_list[NCPUS];
 struct pmap	kernel_pmap_store;
 pmap_t		kernel_pmap;
 
-struct zone	*pmap_zone;		/* zone of pmap structures */
+struct kmem_cache	pmap_cache;		/* cache of pmap structures */
 
 int		pmap_debug = 0;		/* flag for debugging prints */
 
@@ -937,13 +937,13 @@ void pmap_init()
 	pmap_phys_attributes = (char *) addr;
 
 	/*
-	 *	Create the zone of physical maps,
+	 *	Create the cache of physical maps,
 	 *	and of the physical-to-virtual entries.
 	 */
 	s = (vm_size_t) sizeof(struct pmap);
-	pmap_zone = zinit(s, 0, 400*s, 4096, 0, "pmap"); /* XXX */
+	kmem_cache_init(&pmap_cache, "pmap", s, 0, NULL, NULL, NULL, 0);
 	s = (vm_size_t) sizeof(struct pv_entry);
-	pv_list_zone = zinit(s, 0, 10000*s, 4096, 0, "pv_list"); /* XXX */
+	kmem_cache_init(&pv_list_cache, "pv_entry", s, 0, NULL, NULL, NULL, 0);
 
 #if	NCPUS > 1
 	/*
@@ -1009,7 +1009,7 @@ pmap_page_table_page_alloc()
 
 	/*
 	 *	We cannot allocate the pmap_object in pmap_init,
-	 *	because it is called before the zone package is up.
+	 *	because it is called before the cache package is up.
 	 *	Allocate it now if it is missing.
 	 */
 	if (pmap_object == VM_OBJECT_NULL)
@@ -1113,11 +1113,11 @@ pmap_t pmap_create(size)
 	}
 
 /*
- *	Allocate a pmap struct from the pmap_zone.  Then allocate
- *	the page descriptor table from the pd_zone.
+ *	Allocate a pmap struct from the pmap_cache.  Then allocate
+ *	the page descriptor table.
  */
 
-	p = (pmap_t) zalloc(pmap_zone);
+	p = (pmap_t) kmem_cache_alloc(&pmap_cache);
 	if (p == PMAP_NULL)
 		panic("pmap_create");
 
@@ -1232,7 +1232,7 @@ void pmap_destroy(p)
 #endif	/* MACH_XEN */
 	kmem_free(kernel_map, (vm_offset_t)p->pdpbase, INTEL_PGBYTES);
 #endif	/* PAE */
-	zfree(pmap_zone, (vm_offset_t) p);
+	kmem_cache_free(&pmap_cache, (vm_offset_t) p);
 }
 
 /*
@@ -1782,7 +1782,7 @@ if (pmap_debug) printf("pmap(%x, %x)\n", v, pa);
 
 	/*
 	 *	Must allocate a new pvlist entry while we're unlocked;
-	 *	zalloc may cause pageout (which will lock the pmap system).
+	 *	Allocating may cause pageout (which will lock the pmap system).
 	 *	If we determine we need a pvlist entry, we will unlock
 	 *	and allocate one.  Then we will retry, throughing away
 	 *	the allocated entry later (if we no longer need it).
@@ -1966,9 +1966,9 @@ Retry:
 			    PMAP_READ_UNLOCK(pmap, spl);
 
 			    /*
-			     * Refill from zone.
+			     * Refill from cache.
 			     */
-			    pv_e = (pv_entry_t) zalloc(pv_list_zone);
+			    pv_e = (pv_entry_t) kmem_cache_alloc(&pv_list_cache);
 			    goto Retry;
 			}
 		    }

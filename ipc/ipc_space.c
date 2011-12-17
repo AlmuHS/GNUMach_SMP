@@ -43,7 +43,7 @@
 #include <mach/port.h>
 #include <kern/assert.h>
 #include <kern/sched_prim.h>
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 #include <ipc/port.h>
 #include <ipc/ipc_entry.h>
 #include <ipc/ipc_splay.h>
@@ -55,7 +55,7 @@
 
 
 
-zone_t ipc_space_zone;
+struct kmem_cache ipc_space_cache;
 ipc_space_t ipc_space_kernel;
 ipc_space_t ipc_space_reply;
 

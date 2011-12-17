@@ -53,7 +53,7 @@
 				/* For memory_object_data_{request,unlock} */
 #include <kern/mach_param.h>
 #include <kern/macro_help.h>
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 
 #if	MACH_PCSAMPLE
 #include <kern/pc_sample.h>
@@ -85,7 +85,7 @@ typedef struct vm_fault_state {
 	vm_prot_t vmfp_access;
 } vm_fault_state_t;
 
-zone_t		vm_fault_state_zone = 0;
+struct kmem_cache	vm_fault_state_cache;
 
 int		vm_object_absent_max = 50;
 
@@ -107,10 +107,8 @@ extern struct db_watchpoint *db_watchpoint_list;
  */
 void vm_fault_init(void)
 {
-	vm_fault_state_zone = zinit(sizeof(vm_fault_state_t), 0,
-				    THREAD_MAX * sizeof(vm_fault_state_t),
-				    sizeof(vm_fault_state_t),
-				    0, "vm fault state");
+	kmem_cache_init(&vm_fault_state_cache, "vm_fault_state",
+			sizeof(vm_fault_state_t), 0, NULL, NULL, NULL, 0);
 }
 
 /*
@@ -1206,12 +1204,12 @@ kern_return_t vm_fault(map, vaddr, fault_type, change_wiring,
 
 		/*
 		 * if this assignment stmt is written as
-		 * 'active_threads[cpu_number()] = zalloc()',
-		 * cpu_number may be evaluated before zalloc;
-		 * if zalloc blocks, cpu_number will be wrong
+		 * 'active_threads[cpu_number()] = kmem_cache_alloc()',
+		 * cpu_number may be evaluated before kmem_cache_alloc;
+		 * if kmem_cache_alloc blocks, cpu_number will be wrong
 		 */
 
-		state = (char *) zalloc(vm_fault_state_zone);
+		state = (char *) kmem_cache_alloc(&vm_fault_state_cache);
 		current_thread()->ith_other = state;
 
 	}
@@ -1490,7 +1488,7 @@ kern_return_t vm_fault(map, vaddr, fault_type, change_wiring,
 		register vm_fault_state_t *state =
 			(vm_fault_state_t *) current_thread()->ith_other;
 
-		zfree(vm_fault_state_zone, (vm_offset_t) state);
+		kmem_cache_free(&vm_fault_state_cache, (vm_offset_t) state);
 		(*continuation)(kr);
 		/*NOTREACHED*/
 	}

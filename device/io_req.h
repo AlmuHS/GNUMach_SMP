@@ -35,6 +35,7 @@
 #include <mach/port.h>
 #include <mach/message.h>
 #include <mach/vm_param.h>
+#include <kern/slab.h>
 #include <kern/kalloc.h>
 #include <kern/lock.h>
 #include <vm/vm_page.h>
@@ -124,7 +125,7 @@ struct io_req {
 void	iodone(io_req_t);
 
 /*
- * Macros to allocate and free IORs - will convert to zones later.
+ * Macros to allocate and free IORs - will convert to caches later.
  */
 #define	io_req_alloc(ior,size)					\
 	MACRO_BEGIN						\
@@ -136,6 +137,6 @@ void	iodone(io_req_t);
 	(kfree((vm_offset_t)(ior), sizeof(struct io_req)))
 
 
-zone_t	io_inband_zone; /* for inband reads */
+struct kmem_cache io_inband_cache; /* for inband reads */
 
 #endif	/* _IO_REQ_ */

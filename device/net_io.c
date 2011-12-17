@@ -61,6 +61,7 @@
 #include <kern/printf.h>
 #include <kern/queue.h>
 #include <kern/sched_prim.h>
+#include <kern/slab.h>
 #include <kern/thread.h>
 
 #include <machine/machspl.h>
@@ -302,7 +303,7 @@ struct net_rcv_port {
 };
 typedef struct net_rcv_port *net_rcv_port_t;
 
-zone_t		net_rcv_zone;	/* zone of net_rcv_port structs */
+struct kmem_cache	net_rcv_cache;	/* cache of net_rcv_port structs */
 
 
 #define NET_HASH_SIZE   256
@@ -324,7 +325,7 @@ struct net_hash_entry {
 };
 typedef struct net_hash_entry *net_hash_entry_t;
 
-zone_t  net_hash_entry_zone;
+struct kmem_cache	net_hash_entry_cache;
 
 /*
  * This structure represents a packet filter with multiple sessions.
@@ -1195,7 +1196,7 @@ net_set_filter(ifp, rcv_port, priority, filter, filter_count)
 	 * If there is no match instruction, we allocate
 	 * a normal packet filter structure.
 	 */
-	my_infp = (net_rcv_port_t) zalloc(net_rcv_zone);
+	my_infp = (net_rcv_port_t) kmem_cache_alloc(&net_rcv_cache);
 	my_infp->rcv_port = rcv_port;
 	is_new_infp = TRUE;
     } else {
@@ -1205,7 +1206,7 @@ net_set_filter(ifp, rcv_port, priority, filter, filter_count)
 	 * a hash table to deal with them.
 	 */
 	my_infp = 0;
-	hash_entp = (net_hash_entry_t) zalloc(net_hash_entry_zone);
+	hash_entp = (net_hash_entry_t) kmem_cache_alloc(&net_hash_entry_cache);
 	is_new_infp = FALSE;
     }    
 
@@ -1310,7 +1311,8 @@ net_set_filter(ifp, rcv_port, priority, filter, filter_count)
 
             ipc_port_release_send(rcv_port);
 	    if (match != 0)
-		    zfree (net_hash_entry_zone, (vm_offset_t)hash_entp);
+		    kmem_cache_free(&net_hash_entry_cache,
+				    (vm_offset_t)hash_entp);
 
 	    rval = D_NO_MEMORY;
 	    goto clean_and_return;
@@ -1526,20 +1528,12 @@ net_io_init()
 	register vm_size_t	size;
 
 	size = sizeof(struct net_rcv_port);
-	net_rcv_zone = zinit(size,
-			     0,
-			     size * 1000,
-			     PAGE_SIZE,
-			     FALSE,
-			     "net_rcv_port");
+	kmem_cache_init(&net_rcv_cache, "net_rcv_port", size, 0,
+			NULL, NULL, NULL, 0);
 
  	size = sizeof(struct net_hash_entry);
- 	net_hash_entry_zone = zinit(size,
-				    0,
- 				    size * 100,
- 				    PAGE_SIZE,
- 				    FALSE,
- 				    "net_hash_entry");
+	kmem_cache_init(&net_hash_entry_cache, "net_hash_entry", size, 0,
+			NULL, NULL, NULL, 0);
 
 	size = ikm_plus_overhead(sizeof(struct net_rcv_msg));
 	net_kmsg_size = round_page(size);
@@ -2167,7 +2161,7 @@ net_free_dead_infp (dead_infp)
 		nextfp = (net_rcv_port_t) queue_next(&infp->input);
 		ipc_port_release_send(infp->rcv_port);
 		net_del_q_info(infp->rcv_qlimit);
-		zfree(net_rcv_zone, (vm_offset_t) infp);
+		kmem_cache_free(&net_rcv_cache, (vm_offset_t) infp);
 	}	    
 }
     
@@ -2190,7 +2184,7 @@ net_free_dead_entp (dead_entp)
 
 		ipc_port_release_send(entp->rcv_port);
 		net_del_q_info(entp->rcv_qlimit);
-		zfree(net_hash_entry_zone, (vm_offset_t) entp);
+		kmem_cache_free(&net_hash_entry_cache, (vm_offset_t) entp);
 	}
 }
 

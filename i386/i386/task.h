@@ -24,7 +24,7 @@
 #define _I386_TASK_H_
 
 #include <kern/kern_types.h>
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 
 /* The machine specific data of a task.  */
 struct machine_task
@@ -41,7 +41,7 @@ struct machine_task
 typedef struct machine_task machine_task_t;
 
 
-extern zone_t machine_task_iopb_zone;
+extern struct kmem_cache machine_task_iopb_cache;
 
 /* Initialize the machine task module.  The function is called once at
    start up by task_init in kern/task.c.  */

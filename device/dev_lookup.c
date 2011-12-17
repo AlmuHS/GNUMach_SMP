@@ -32,7 +32,7 @@
 #include <mach/vm_param.h>
 
 #include <kern/queue.h>
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 
 #include <device/device_types.h>
 #include <device/dev_hdr.h>
@@ -62,7 +62,7 @@ queue_head_t	dev_number_hash_table[NDEVHASH];
 decl_simple_lock_data(,
 		dev_number_lock)
 
-zone_t		dev_hdr_zone;
+struct kmem_cache	dev_hdr_cache;
 
 /*
  * Enter device in the number lookup table.
@@ -151,7 +151,7 @@ device_lookup(name)
 
 	    simple_unlock(&dev_number_lock);
 
-	    new_device = (mach_device_t) zalloc(dev_hdr_zone);
+	    new_device = (mach_device_t) kmem_cache_alloc(&dev_hdr_cache);
 	    simple_lock_init(&new_device->ref_lock);
 	    new_device->ref_count = 1;
 	    simple_lock_init(&new_device->lock);
@@ -187,7 +187,7 @@ device_lookup(name)
 	    simple_unlock(&dev_number_lock);
 
 	    if (new_device != MACH_DEVICE_NULL)
-		zfree(dev_hdr_zone, (vm_offset_t)new_device);
+		kmem_cache_free(&dev_hdr_cache, (vm_offset_t)new_device);
 	}
 
 	return (device);
@@ -233,7 +233,7 @@ mach_device_deallocate(device)
 	simple_unlock(&device->ref_lock);
 	simple_unlock(&dev_number_lock);
 
-	zfree(dev_hdr_zone, (vm_offset_t)device);
+	kmem_cache_free(&dev_hdr_cache, (vm_offset_t)device);
 }
 
 /*
@@ -376,9 +376,6 @@ dev_lookup_init()
 
 	simple_lock_init(&dev_port_lock);
 
-	dev_hdr_zone = zinit(sizeof(struct mach_device), 0,
-			     sizeof(struct mach_device) * NDEVICES,
-			     PAGE_SIZE,
-			     FALSE,
-			     "open device entry");
+	kmem_cache_init(&dev_hdr_cache, "mach_device",
+			sizeof(struct mach_device), 0, NULL, NULL, NULL, 0);
 }

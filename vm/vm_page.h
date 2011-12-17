@@ -41,7 +41,6 @@
 #include <vm/vm_types.h>
 #include <kern/queue.h>
 #include <kern/lock.h>
-#include <kern/zalloc.h>
 
 #include <kern/macro_help.h>
 #include <kern/sched_prim.h>	/* definitions of wait/wakeup */

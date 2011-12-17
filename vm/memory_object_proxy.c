@@ -41,15 +41,15 @@
 #include <mach/notify.h>
 #include <mach/vm_prot.h>
 #include <kern/printf.h>
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 #include <kern/mach_param.h>
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_space.h>
 
 #include <vm/memory_object_proxy.h>
 
-/* The zone which holds our proxy memory objects.  */
-static zone_t memory_object_proxy_zone;
+/* The cache which holds our proxy memory objects.  */
+static struct kmem_cache memory_object_proxy_cache;
 
 struct memory_object_proxy
 {
@@ -64,13 +64,8 @@ typedef struct memory_object_proxy *memory_object_proxy_t;
 void
 memory_object_proxy_init (void)
 {
-  /* For limit, see PORT_MAX.  */
-  memory_object_proxy_zone = zinit (sizeof (struct memory_object_proxy), 0,
-				    (TASK_MAX * 3 + THREAD_MAX)
-				    * sizeof (struct memory_object_proxy),
-				    256 * sizeof (struct memory_object_proxy),
-				    ZONE_EXHAUSTIBLE,
-				    "proxy memory object zone");
+  kmem_cache_init (&memory_object_proxy_cache, "memory_object_proxy",
+		   sizeof (struct memory_object_proxy), 0, NULL, NULL, NULL, 0);
 }
   
 /* Lookup a proxy memory object by its port.  */
@@ -153,13 +148,13 @@ memory_object_create_proxy (ipc_space_t space, vm_prot_t max_protection,
   if (start[0] != 0 || len[0] != (vm_offset_t) ~0)
     return KERN_INVALID_ARGUMENT;
 
-  proxy = (memory_object_proxy_t) zalloc (memory_object_proxy_zone);
+  proxy = (memory_object_proxy_t) kmem_cache_alloc (&memory_object_proxy_cache);
 
   /* Allocate port, keeping a reference for it.  */
   proxy->port = ipc_port_alloc_kernel ();
   if (proxy->port == IP_NULL)
     {
-      zfree (memory_object_proxy_zone, (vm_offset_t) proxy);
+      kmem_cache_free (&memory_object_proxy_cache, (vm_offset_t) proxy);
       return KERN_RESOURCE_SHORTAGE;
     }
   /* Associate the port with the proxy memory object.  */

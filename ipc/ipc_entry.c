@@ -41,7 +41,7 @@
 #include <mach/port.h>
 #include <kern/assert.h>
 #include <kern/sched_prim.h>
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 #include <ipc/port.h>
 #include <ipc/ipc_types.h>
 #include <ipc/ipc_entry.h>
@@ -51,7 +51,7 @@
 #include <ipc/ipc_table.h>
 #include <ipc/ipc_object.h>
 
-zone_t ipc_tree_entry_zone;
+struct kmem_cache ipc_tree_entry_cache;
 
 /*
  *	Routine:	ipc_entry_tree_collision

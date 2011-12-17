@@ -31,7 +31,7 @@
 #include <mach/kern_return.h>
 #include <mach/alert.h>
 #include <kern/mach_param.h> /* XXX INCALL_... */
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 #include <kern/thread.h>
 #include <kern/task.h>
 #include <kern/debug.h>
@@ -47,7 +47,7 @@ static void special_handler(ReturnHandler *rh, struct Act *act);
 #endif
 
 #ifndef ACT_STATIC_KLUDGE
-static zone_t act_zone;
+static struct kmem_cache act_cache;
 #else
 static Act *act_freelist;
 static Act free_acts[ACT_STATIC_KLUDGE];
@@ -68,11 +68,8 @@ void
 global_act_init()
 {
 #ifndef ACT_STATIC_KLUDGE
-	act_zone = zinit(
-			sizeof(struct Act), 0,
-			ACT_MAX * sizeof(struct Act), /* XXX */
-			ACT_CHUNK * sizeof(struct Act),
-			0, "activations");
+	kmem_cache_init(&act_cache, "Act", sizeof(struct Act), 0,
+			NULL, NULL, NULL, 0);
 #else
 	int i;
 
@@ -104,7 +101,7 @@ kern_return_t act_create(task_t task, vm_offset_t user_stack,
 	int rc;
 
 #ifndef ACT_STATIC_KLUDGE
-	act = (Act*)zalloc(act_zone);
+	act = (Act*)kmem_cache_alloc(&act_cache);
 	if (act == 0)
 		return(KERN_RESOURCE_SHORTAGE);
 #else
@@ -170,9 +167,9 @@ static void act_free(Act *inc)
 	/* Drop the task reference.  */
 	task_deallocate(inc->task);
 
-	/* Put the act back on the act zone */
+	/* Put the act back on the act cache */
 #ifndef ACT_STATIC_KLUDGE
-	zfree(act_zone, (vm_offset_t)inc);
+	kmem_cache_free(&act_cache, (vm_offset_t)inc);
 #else
 	/* XXX ipt_lock(act_freelist); */
 	inc->ipt_next = act_freelist;

@@ -28,11 +28,11 @@
 #define _KERN_KALLOC_H_
 
 #include <mach/machine/vm_types.h>
+#include <vm/vm_types.h>
 
-#define MINSIZE 16
+extern vm_map_t kalloc_map;
 
 extern vm_offset_t kalloc (vm_size_t size);
-extern vm_offset_t kget (vm_size_t size);
 extern void kfree (vm_offset_t data, vm_size_t size);
 
 extern void kalloc_init (void);

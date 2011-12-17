@@ -37,6 +37,7 @@
 #include <mach/kern_return.h>
 #include <kern/mach_param.h>
 #include <kern/ipc_host.h>
+#include <kern/slab.h>
 #include <vm/vm_map.h>
 #include <vm/vm_kern.h>
 #include <ipc/ipc_entry.h>
@@ -77,28 +78,17 @@ ipc_bootstrap(void)
 	ipc_port_timestamp_lock_init();
 	ipc_port_timestamp_data = 0;
 
-	ipc_space_zone = zinit(sizeof(struct ipc_space), 0,
-			       ipc_space_max * sizeof(struct ipc_space),
-			       sizeof(struct ipc_space),
-			       0, "ipc spaces");
+	kmem_cache_init(&ipc_space_cache, "ipc_space",
+			sizeof(struct ipc_space), 0, NULL, NULL, NULL, 0);
 
-	ipc_tree_entry_zone =
-		zinit(sizeof(struct ipc_tree_entry), 0,
-			ipc_tree_entry_max * sizeof(struct ipc_tree_entry),
-			sizeof(struct ipc_tree_entry),
-			IPC_ZONE_TYPE, "ipc tree entries");
+	kmem_cache_init(&ipc_tree_entry_cache, "ipc_tree_entry",
+			sizeof(struct ipc_tree_entry), 0, NULL, NULL, NULL, 0);
 
-	ipc_object_zones[IOT_PORT] =
-		zinit(sizeof(struct ipc_port), 0,
-		      ipc_port_max * sizeof(struct ipc_port),
-		      sizeof(struct ipc_port),
-		      0, "ipc ports");
+	kmem_cache_init(&ipc_object_caches[IOT_PORT], "ipc_port",
+			sizeof(struct ipc_port), 0, NULL, NULL, NULL, 0);
 
-	ipc_object_zones[IOT_PORT_SET] =
-		zinit(sizeof(struct ipc_pset), 0,
-		      ipc_pset_max * sizeof(struct ipc_pset),
-		      sizeof(struct ipc_pset),
-		      IPC_ZONE_TYPE, "ipc port sets");
+	kmem_cache_init(&ipc_object_caches[IOT_PORT_SET], "ipc_pset",
+			sizeof(struct ipc_pset), 0, NULL, NULL, NULL, 0);
 
 	/* create special spaces */
 

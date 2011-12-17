@@ -514,7 +514,7 @@ int timeclose()
 /*
  *	Compatibility for device drivers.
  *	New code should use set_timeout/reset_timeout and private timers.
- *	These code can't use a zone to allocate timers, because
+ *	These code can't use a cache to allocate timers, because
  *	it can be called from interrupt handlers.
  */
 

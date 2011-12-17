@@ -43,7 +43,7 @@
 #include <kern/mach_param.h>
 #include <kern/task.h>
 #include <kern/thread.h>
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 #include <kern/kalloc.h>
 #include <kern/processor.h>
 #include <kern/sched_prim.h>	/* for thread_wakeup */
@@ -52,7 +52,7 @@
 #include <machine/machspl.h>	/* for splsched */
 
 task_t	kernel_task = TASK_NULL;
-zone_t	task_zone;
+struct kmem_cache task_cache;
 
 extern void eml_init(void);
 extern void eml_task_reference(task_t, task_t);
@@ -60,11 +60,8 @@ extern void eml_task_deallocate(task_t);
 
 void task_init(void)
 {
-	task_zone = zinit(
-			sizeof(struct task), 0,
-			TASK_MAX * sizeof(struct task),
-			TASK_CHUNK * sizeof(struct task),
-			0, "tasks");
+	kmem_cache_init(&task_cache, "task", sizeof(struct task), 0,
+			NULL, NULL, NULL, 0);
 
 	eml_init();
 	machine_task_module_init ();
@@ -120,7 +117,7 @@ kern_return_t task_create(
 	int i;
 #endif
 
-	new_task = (task_t) zalloc(task_zone);
+	new_task = (task_t) kmem_cache_alloc(&task_cache);
 	if (new_task == TASK_NULL) {
 		panic("task_create: no memory for task structure");
 	}
@@ -235,7 +232,7 @@ void task_deallocate(
 	pset_deallocate(pset);
 	vm_map_deallocate(task->map);
 	is_release(task->itk_space);
-	zfree(task_zone, (vm_offset_t) task);
+	kmem_cache_free(&task_cache, (vm_offset_t) task);
 }
 
 void task_reference(

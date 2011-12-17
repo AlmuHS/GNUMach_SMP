@@ -41,7 +41,7 @@
 #include <mach/mach_types.h>
 #include <mach/port.h>
 #include <mach/kern_return.h>
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 #include <ipc/port.h>
 #include <ipc/ipc_table.h>
 #include <ipc/ipc_types.h>
@@ -129,10 +129,10 @@ typedef struct ipc_tree_entry {
 #define	ite_request	ite_entry.ie_request
 #define	ite_next	ite_entry.hash.tree
 
-extern zone_t ipc_tree_entry_zone;
+extern struct kmem_cache ipc_tree_entry_cache;
 
-#define ite_alloc()	((ipc_tree_entry_t) zalloc(ipc_tree_entry_zone))
-#define	ite_free(ite)	zfree(ipc_tree_entry_zone, (vm_offset_t) (ite))
+#define ite_alloc()	((ipc_tree_entry_t) kmem_cache_alloc(&ipc_tree_entry_cache))
+#define	ite_free(ite)	kmem_cache_free(&ipc_tree_entry_cache, (vm_offset_t) (ite))
 
 
 extern ipc_entry_t

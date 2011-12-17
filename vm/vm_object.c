@@ -47,7 +47,7 @@
 #include <kern/lock.h>
 #include <kern/queue.h>
 #include <kern/xpr.h>
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 #include <vm/memory_object.h>
 #include <vm/vm_fault.h>
 #include <vm/vm_map.h>
@@ -141,7 +141,7 @@ void vm_object_deactivate_pages(vm_object_t);
  * ZZZ Continue this comment.
  */
 
-zone_t		vm_object_zone;		/* vm backing store zone */
+struct kmem_cache	vm_object_cache; /* vm backing store cache */
 
 /*
  *	All wired-down kernel memory belongs to a single virtual
@@ -211,7 +211,7 @@ vm_object_t _vm_object_allocate(
 {
 	register vm_object_t object;
 
-	object = (vm_object_t) zalloc(vm_object_zone);
+	object = (vm_object_t) kmem_cache_alloc(&vm_object_cache);
 
 	*object = *vm_object_template;
 	queue_init(&object->memq);
@@ -244,10 +244,8 @@ vm_object_t vm_object_allocate(
  */
 void vm_object_bootstrap(void)
 {
-	vm_object_zone = zinit((vm_size_t) sizeof(struct vm_object), 0,
-				round_page(512*1024),
-				round_page(12*1024),
-				0, "objects");
+	kmem_cache_init(&vm_object_cache, "vm_object",
+			sizeof(struct vm_object), 0, NULL, NULL, NULL, 0);
 
 	queue_init(&vm_object_cached_list);
 	simple_lock_init(&vm_object_cached_lock_data);
@@ -256,7 +254,7 @@ void vm_object_bootstrap(void)
 	 *	Fill in a template object, for quick initialization
 	 */
 
-	vm_object_template = (vm_object_t) zalloc(vm_object_zone);
+	vm_object_template = (vm_object_t) kmem_cache_alloc(&vm_object_cache);
 	memset(vm_object_template, 0, sizeof *vm_object_template);
 
 	vm_object_template->ref_count = 1;
@@ -660,7 +658,7 @@ void vm_object_terminate(
 	 *	Free the space for the object.
 	 */
 
-	zfree(vm_object_zone, (vm_offset_t) object);
+	kmem_cache_free(&vm_object_cache, (vm_offset_t) object);
 }
 
 /*
@@ -2618,7 +2616,7 @@ void vm_object_collapse(
 			vm_object_unlock(object);
 			if (old_name_port != IP_NULL)
 				ipc_port_dealloc_kernel(old_name_port);
-			zfree(vm_object_zone, (vm_offset_t) backing_object);
+			kmem_cache_free(&vm_object_cache, (vm_offset_t) backing_object);
 			vm_object_lock(object);
 
 			object_collapses++;

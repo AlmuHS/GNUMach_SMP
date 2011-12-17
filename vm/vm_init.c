@@ -35,7 +35,7 @@
  */
 
 #include <mach/machine/vm_types.h>
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 #include <kern/kalloc.h>
 #include <vm/vm_fault.h>
 #include <vm/vm_object.h>
@@ -67,12 +67,12 @@ void vm_mem_bootstrap()
 	 *	Initialize other VM packages
 	 */
 
-	zone_bootstrap();
+	slab_bootstrap();
 	vm_object_bootstrap();
 	vm_map_init();
 	kmem_init(start, end);
 	pmap_init();
-	zone_init();
+	slab_init();
 	kalloc_init();
 	vm_fault_init();
 	vm_page_module_init();

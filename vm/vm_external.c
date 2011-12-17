@@ -31,7 +31,7 @@
  */
 
 #include <mach/boolean.h>
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 #include <vm/vm_external.h>
 #include <mach/vm_param.h>
 #include <kern/assert.h>
@@ -40,7 +40,7 @@
 
 boolean_t	vm_external_unsafe = FALSE;
 
-zone_t		vm_external_zone = ZONE_NULL;
+struct kmem_cache	vm_external_cache;
 
 /*
  *	The implementation uses bit arrays to record whether
@@ -52,8 +52,8 @@ zone_t		vm_external_zone = ZONE_NULL;
 #define		SMALL_SIZE	(VM_EXTERNAL_SMALL_SIZE/8)
 #define		LARGE_SIZE	(VM_EXTERNAL_LARGE_SIZE/8)
 
-zone_t		vm_object_small_existence_map_zone;
-zone_t		vm_object_large_existence_map_zone;
+struct kmem_cache	vm_object_small_existence_map_cache;
+struct kmem_cache	vm_object_large_existence_map_cache;
 
 
 vm_external_t	vm_external_create(size)
@@ -62,20 +62,17 @@ vm_external_t	vm_external_create(size)
 	vm_external_t	result;
 	vm_size_t	bytes;
 	
-	if (vm_external_zone == ZONE_NULL)
-		return(VM_EXTERNAL_NULL);
-
-	result = (vm_external_t) zalloc(vm_external_zone);
+	result = (vm_external_t) kmem_cache_alloc(&vm_external_cache);
 	result->existence_map = (char *) 0;
 
 	bytes = (atop(size) + 07) >> 3;
 	if (bytes <= SMALL_SIZE) {
 		result->existence_map =
-		 (char *) zalloc(vm_object_small_existence_map_zone);
+		 (char *) kmem_cache_alloc(&vm_object_small_existence_map_cache);
 		result->existence_size = SMALL_SIZE;
 	} else if (bytes <= LARGE_SIZE) {
 		result->existence_map =
-		 (char *) zalloc(vm_object_large_existence_map_zone);
+		 (char *) kmem_cache_alloc(&vm_object_large_existence_map_cache);
 		result->existence_size = LARGE_SIZE;
 	}
 	return(result);
@@ -89,14 +86,14 @@ void		vm_external_destroy(e)
 
 	if (e->existence_map != (char *) 0) {
 		if (e->existence_size <= SMALL_SIZE) {
-			zfree(vm_object_small_existence_map_zone,
+			kmem_cache_free(&vm_object_small_existence_map_cache,
 				(vm_offset_t) e->existence_map);
 		} else {
-			zfree(vm_object_large_existence_map_zone,
+			kmem_cache_free(&vm_object_large_existence_map_cache,
 				(vm_offset_t) e->existence_map);
 		}
 	}
-	zfree(vm_external_zone, (vm_offset_t) e);
+	kmem_cache_free(&vm_external_cache, (vm_offset_t) e);
 }
 
 vm_external_state_t _vm_external_state_get(e, offset)
@@ -142,18 +139,14 @@ void		vm_external_module_initialize(void)
 {
 	vm_size_t	size = (vm_size_t) sizeof(struct vm_external);
 
-	vm_external_zone = zinit(size, 0, 16*1024*size, size,
-				 0, "external page bitmaps");
+	kmem_cache_init(&vm_external_cache, "vm_external", size, 0,
+			NULL, NULL, NULL, 0);
 
-	vm_object_small_existence_map_zone = zinit(SMALL_SIZE, 0,
-					round_page(LARGE_SIZE * SMALL_SIZE),
-					round_page(SMALL_SIZE),
-					ZONE_EXHAUSTIBLE,
-					"object small existence maps");
+	kmem_cache_init(&vm_object_small_existence_map_cache,
+			"small_existence_map", SMALL_SIZE, 0,
+			NULL, NULL, NULL, 0);
 
-	vm_object_large_existence_map_zone = zinit(LARGE_SIZE, 0,
-					round_page(8 * LARGE_SIZE),
-					round_page(LARGE_SIZE),
-					ZONE_EXHAUSTIBLE,
-					"object large existence maps");
+	kmem_cache_init(&vm_object_large_existence_map_cache,
+			"large_existence_map", LARGE_SIZE, 0,
+			NULL, NULL, NULL, 0);
 }

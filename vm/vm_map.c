@@ -41,7 +41,7 @@
 #include <mach/vm_param.h>
 #include <kern/assert.h>
 #include <kern/debug.h>
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 #include <vm/pmap.h>
 #include <vm/vm_fault.h>
 #include <vm/vm_map.h>
@@ -70,7 +70,7 @@ void vm_map_copy_page_discard (vm_map_copy_t copy);
  * map entry to the same memory - the wired count in the new entry
  * must be set to zero. vm_map_entry_copy_full() creates a new
  * entry that is identical to the old entry.  This preserves the
- * wire count; it's used for map splitting and zone changing in
+ * wire count; it's used for map splitting and cache changing in
  * vm_map_copyout.
  */
 #define vm_map_entry_copy(NEW,OLD) \
@@ -130,10 +130,10 @@ MACRO_END
  *	vm_object_copy_strategically() in vm_object.c.
  */
 
-zone_t		vm_map_zone;		/* zone for vm_map structures */
-zone_t		vm_map_entry_zone;	/* zone for vm_map_entry structures */
-zone_t		vm_map_kentry_zone;	/* zone for kernel entry structures */
-zone_t		vm_map_copy_zone;	/* zone for vm_map_copy structures */
+struct kmem_cache    vm_map_cache;		/* cache for vm_map structures */
+struct kmem_cache    vm_map_entry_cache;	/* cache for vm_map_entry structures */
+struct kmem_cache    vm_map_kentry_cache;	/* cache for kernel entry structures */
+struct kmem_cache    vm_map_copy_cache; 	/* cache for vm_map_copy structures */
 
 boolean_t	vm_map_lookup_entry();	/* forward declaration */
 
@@ -151,14 +151,14 @@ vm_object_t	vm_submap_object;
  *	Initialize the vm_map module.  Must be called before
  *	any other vm_map routines.
  *
- *	Map and entry structures are allocated from zones -- we must
- *	initialize those zones.
+ *	Map and entry structures are allocated from caches -- we must
+ *	initialize those caches.
  *
- *	There are three zones of interest:
+ *	There are three caches of interest:
  *
- *	vm_map_zone:		used to allocate maps.
- *	vm_map_entry_zone:	used to allocate map entries.
- *	vm_map_kentry_zone:	used to allocate map entries for the kernel.
+ *	vm_map_cache:		used to allocate maps.
+ *	vm_map_entry_cache:	used to allocate map entries.
+ *	vm_map_kentry_cache:	used to allocate map entries for the kernel.
  *
  *	The kernel allocates map entries from a special zone that is initially
  *	"crammed" with memory.  It would be difficult (perhaps impossible) for
@@ -173,23 +173,16 @@ int		kentry_count = 256;		/* to init kentry_data_size */
 
 void vm_map_init(void)
 {
-	vm_map_zone = zinit((vm_size_t) sizeof(struct vm_map), 0, 40*1024,
-					PAGE_SIZE, 0, "maps");
-	vm_map_entry_zone = zinit((vm_size_t) sizeof(struct vm_map_entry),
-					0, 1024*1024, PAGE_SIZE*5,
-					0, "non-kernel map entries");
-	vm_map_kentry_zone = zinit((vm_size_t) sizeof(struct vm_map_entry), 0,
-					kentry_data_size, kentry_data_size,
-					ZONE_FIXED /* XXX */, "kernel map entries");
-
-	vm_map_copy_zone = zinit((vm_size_t) sizeof(struct vm_map_copy),
-					0, 16*1024, PAGE_SIZE, 0,
-					"map copies");
-
-	/*
-	 *	Cram the kentry zone with initial data.
-	 */
-	zcram(vm_map_kentry_zone, kentry_data, kentry_data_size);
+	kmem_cache_init(&vm_map_cache, "vm_map", sizeof(struct vm_map), 0,
+			NULL, NULL, NULL, 0);
+	kmem_cache_init(&vm_map_entry_cache, "vm_map_entry",
+			sizeof(struct vm_map_entry), 0, NULL, NULL, NULL, 0);
+	kmem_cache_init(&vm_map_kentry_cache, "vm_map_kentry",
+			sizeof(struct vm_map_entry), 0, NULL, kentry_pagealloc,
+			NULL, KMEM_CACHE_NOCPUPOOL | KMEM_CACHE_NOOFFSLAB
+			      | KMEM_CACHE_NORECLAIM);
+	kmem_cache_init(&vm_map_copy_cache, "vm_map_copy",
+			sizeof(struct vm_map_copy), 0, NULL, NULL, NULL, 0);
 
 	/*
 	 *	Submap object is initialized by vm_object_init.
@@ -210,7 +203,7 @@ vm_map_t vm_map_create(pmap, min, max, pageable)
 {
 	register vm_map_t	result;
 
-	result = (vm_map_t) zalloc(vm_map_zone);
+	result = (vm_map_t) kmem_cache_alloc(&vm_map_cache);
 	if (result == VM_MAP_NULL)
 		panic("vm_map_create");
 
@@ -250,15 +243,15 @@ vm_map_t vm_map_create(pmap, min, max, pageable)
 vm_map_entry_t _vm_map_entry_create(map_header)
 	register struct vm_map_header *map_header;
 {
-	register zone_t	zone;
+	register kmem_cache_t cache;
 	register vm_map_entry_t	entry;
 
 	if (map_header->entries_pageable)
-	    zone = vm_map_entry_zone;
+	    cache = &vm_map_entry_cache;
 	else
-	    zone = vm_map_kentry_zone;
+	    cache = &vm_map_kentry_cache;
 
-	entry = (vm_map_entry_t) zalloc(zone);
+	entry = (vm_map_entry_t) kmem_cache_alloc(cache);
 	if (entry == VM_MAP_ENTRY_NULL)
 		panic("vm_map_entry_create");
 
@@ -280,14 +273,14 @@ void _vm_map_entry_dispose(map_header, entry)
 	register struct vm_map_header *map_header;
 	register vm_map_entry_t	entry;
 {
-	register zone_t		zone;
+	register kmem_cache_t cache;
 
 	if (map_header->entries_pageable)
-	    zone = vm_map_entry_zone;
+	    cache = &vm_map_entry_cache;
 	else
-	    zone = vm_map_kentry_zone;
+	    cache = &vm_map_kentry_cache;
 
-	zfree(zone, (vm_offset_t) entry);
+	kmem_cache_free(cache, (vm_offset_t) entry);
 }
 
 /*
@@ -368,7 +361,7 @@ void vm_map_deallocate(map)
 
 	pmap_destroy(map->pmap);
 
-	zfree(vm_map_zone, (vm_offset_t) map);
+	kmem_cache_free(&vm_map_cache, (vm_offset_t) map);
 }
 
 /*
@@ -1907,7 +1900,7 @@ free_next_copy:
 				register vm_map_copy_t	new_copy;
 
 				new_copy = (vm_map_copy_t) copy->cpy_cont_args;
-				zfree(vm_map_copy_zone, (vm_offset_t) copy);
+				kmem_cache_free(&vm_map_copy_cache, (vm_offset_t) copy);
 				copy = new_copy;
 				goto free_next_copy;
 			}
@@ -1918,7 +1911,7 @@ free_next_copy:
 
 		break;
 	}
-	zfree(vm_map_copy_zone, (vm_offset_t) copy);
+	kmem_cache_free(&vm_map_copy_cache, (vm_offset_t) copy);
 }
 
 /*
@@ -1952,7 +1945,7 @@ vm_map_copy_copy(copy)
 	 * from the old one into it.
 	 */
 
-	new_copy = (vm_map_copy_t) zalloc(vm_map_copy_zone);
+	new_copy = (vm_map_copy_t) kmem_cache_alloc(&vm_map_copy_cache);
 	*new_copy = *copy;
 
 	if (copy->type == VM_MAP_COPY_ENTRY_LIST) {
@@ -2160,7 +2153,7 @@ start_pass_1:
 
 	/*
 	 * XXXO	If there are no permanent objects in the destination,
-	 * XXXO	and the source and destination map entry zones match,
+	 * XXXO	and the source and destination map entry caches match,
 	 * XXXO and the destination map entry is not shared,
 	 * XXXO	then the map entries can be deleted and replaced
 	 * XXXO	with those from the copy.  The following code is the
@@ -2403,7 +2396,7 @@ start_pass_1:
 	((where)->vme_next = vm_map_copy_first_entry(copy))		\
 		->vme_prev = (where);					\
 	(map)->hdr.nentries += (copy)->cpy_hdr.nentries;		\
-	zfree(vm_map_copy_zone, (vm_offset_t) copy);			\
+	kmem_cache_free(&vm_map_copy_cache, (vm_offset_t) copy);	\
 	MACRO_END
 
 /*
@@ -2459,7 +2452,7 @@ kern_return_t vm_map_copyout(dst_map, dst_addr, copy)
 				  VM_INHERIT_DEFAULT);
 		if (kr != KERN_SUCCESS)
 			return(kr);
-		zfree(vm_map_copy_zone, (vm_offset_t) copy);
+		kmem_cache_free(&vm_map_copy_cache, (vm_offset_t) copy);
 		return(KERN_SUCCESS);
 	}
 
@@ -2516,15 +2509,15 @@ kern_return_t vm_map_copyout(dst_map, dst_addr, copy)
 	     * Mismatches occur when dealing with the default
 	     * pager.
 	     */
-	    zone_t		old_zone;
+	    kmem_cache_t	old_cache;
 	    vm_map_entry_t	next, new;
 
 	    /*
-	     * Find the zone that the copies were allocated from
+	     * Find the cache that the copies were allocated from
 	     */
-	    old_zone = (copy->cpy_hdr.entries_pageable)
-			? vm_map_entry_zone
-			: vm_map_kentry_zone;
+	    old_cache = (copy->cpy_hdr.entries_pageable)
+			? &vm_map_entry_cache
+			: &vm_map_kentry_cache;
 	    entry = vm_map_copy_first_entry(copy);
 
 	    /*
@@ -2547,7 +2540,7 @@ kern_return_t vm_map_copyout(dst_map, dst_addr, copy)
 				vm_map_copy_last_entry(copy),
 				new);
 		next = entry->vme_next;
-		zfree(old_zone, (vm_offset_t) entry);
+		kmem_cache_free(old_cache, (vm_offset_t) entry);
 		entry = next;
 	    }
 	}
@@ -3036,10 +3029,10 @@ error:
 	 *	Consume on success logic.
 	 */
 	if (copy != orig_copy) {
-		zfree(vm_map_copy_zone, (vm_offset_t) copy);
+		kmem_cache_free(&vm_map_copy_cache, (vm_offset_t) copy);
 	}
 	if (result == KERN_SUCCESS) {
-		zfree(vm_map_copy_zone, (vm_offset_t) orig_copy);
+		kmem_cache_free(&vm_map_copy_cache, (vm_offset_t) orig_copy);
 	}
 
 	return(result);
@@ -3116,7 +3109,7 @@ kern_return_t vm_map_copyin(src_map, src_addr, len, src_destroy, copy_result)
 	 *	remember the endpoints prior to rounding.
 	 */
 
-	copy = (vm_map_copy_t) zalloc(vm_map_copy_zone);
+	copy = (vm_map_copy_t) kmem_cache_alloc(&vm_map_copy_cache);
 	vm_map_copy_first_entry(copy) =
 	 vm_map_copy_last_entry(copy) = vm_map_copy_to_entry(copy);
 	copy->type = VM_MAP_COPY_ENTRY_LIST;
@@ -3443,7 +3436,7 @@ kern_return_t vm_map_copyin_object(object, offset, size, copy_result)
 	 *	and null links.
 	 */
 
-	copy = (vm_map_copy_t) zalloc(vm_map_copy_zone);
+	copy = (vm_map_copy_t) kmem_cache_alloc(&vm_map_copy_cache);
 	vm_map_copy_first_entry(copy) =
 	 vm_map_copy_last_entry(copy) = VM_MAP_ENTRY_NULL;
 	copy->type = VM_MAP_COPY_OBJECT;
@@ -3598,7 +3591,7 @@ kern_return_t vm_map_copyin_page_list(src_map, src_addr, len, src_destroy,
 	 *      be page-aligned.
 	 */
 
-	copy = (vm_map_copy_t) zalloc(vm_map_copy_zone);
+	copy = (vm_map_copy_t) kmem_cache_alloc(&vm_map_copy_cache);
 	copy->type = VM_MAP_COPY_PAGE_LIST;
 	copy->cpy_npages = 0;
 	copy->offset = src_addr;

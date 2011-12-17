@@ -45,7 +45,7 @@
 #include <mach/vm_statistics.h>
 #include <machine/vm_param.h>
 #include <kern/xpr.h>
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 #include <vm/pmap.h>
 #include <vm/vm_map.h>
 #include <vm/vm_page.h>
@@ -57,10 +57,6 @@
 #include <mach_debug/hash_info.h>
 #include <vm/vm_user.h>
 #endif
-
-/* in zalloc.c XXX */
-extern vm_offset_t	zdata;
-extern vm_size_t	zdata_size;
 
 /*
  *	Associated with eacn page of user-allocatable memory is a
@@ -126,7 +122,7 @@ unsigned int	vm_page_free_count_minimum;	/* debugging */
  *	These page structures are allocated the way
  *	most other kernel structures are.
  */
-zone_t	vm_page_zone;
+struct kmem_cache	vm_page_cache;
 
 /*
  *	Fictitious pages don't have a physical address,
@@ -239,13 +235,11 @@ void vm_page_bootstrap(
 	vm_page_free_wanted = 0;
 
 	/*
-	 *	Steal memory for the zone system.
+	 *	Steal memory for the kernel map entries.
 	 */
 
 	kentry_data_size = kentry_count * sizeof(struct vm_map_entry);
 	kentry_data = pmap_steal_memory(kentry_data_size);
-
-	zdata = pmap_steal_memory(zdata_size);
 
 	/*
 	 *	Allocate (and initialize) the virtual-to-physical
@@ -430,10 +424,8 @@ void pmap_startup(
  */
 void		vm_page_module_init(void)
 {
-	vm_page_zone = zinit((vm_size_t) sizeof(struct vm_page), 0,
-			     VM_MAX_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS,
-			     PAGE_SIZE,
-			     0, "vm pages");
+	kmem_cache_init(&vm_page_cache, "vm_page", sizeof(struct vm_page), 0,
+			NULL, NULL, NULL, 0);
 }
 
 /*
@@ -455,7 +447,7 @@ void vm_page_create(
 	for (paddr = round_page(start);
 	     paddr < trunc_page(end);
 	     paddr += PAGE_SIZE) {
-		m = (vm_page_t) zalloc(vm_page_zone);
+		m = (vm_page_t) kmem_cache_alloc(&vm_page_cache);
 		if (m == VM_PAGE_NULL)
 			panic("vm_page_create");
 
@@ -810,7 +802,7 @@ void vm_page_more_fictitious(void)
 	int i;
 
 	for (i = 0; i < vm_page_fictitious_quantum; i++) {
-		m = (vm_page_t) zalloc(vm_page_zone);
+		m = (vm_page_t) kmem_cache_alloc(&vm_page_cache);
 		if (m == VM_PAGE_NULL)
 			panic("vm_page_more_fictitious");
 

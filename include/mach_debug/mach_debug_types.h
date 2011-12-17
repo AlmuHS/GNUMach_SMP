@@ -32,7 +32,7 @@
 
 #include <mach_debug/ipc_info.h>
 #include <mach_debug/vm_info.h>
-#include <mach_debug/zone_info.h>
+#include <mach_debug/slab_info.h>
 #include <mach_debug/hash_info.h>
 
 typedef	char	symtab_name_t[32];

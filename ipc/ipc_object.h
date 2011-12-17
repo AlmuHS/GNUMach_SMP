@@ -39,7 +39,7 @@
 #include <ipc/ipc_types.h>
 #include <kern/lock.h>
 #include <kern/macro_help.h>
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 
 typedef unsigned int ipc_object_refs_t;
 typedef unsigned int ipc_object_bits_t;
@@ -57,7 +57,7 @@ typedef struct ipc_object {
 #define	IO_VALID(io)		(((io) != IO_NULL) && ((io) != IO_DEAD))
 
 #define	IO_BITS_KOTYPE		0x0000ffff	/* used by the object */
-#define IO_BITS_OTYPE		0x7fff0000 	/* determines a zone */
+#define IO_BITS_OTYPE		0x7fff0000 	/* determines a cache */
 #define	IO_BITS_ACTIVE		0x80000000U	/* is object alive? */
 
 #define	io_active(io)		((int)(io)->io_bits < 0)	/* hack */
@@ -75,13 +75,13 @@ typedef struct ipc_object {
 #define IOT_PORT_SET		1
 #define IOT_NUMBER		2		/* number of types used */
 
-extern zone_t ipc_object_zones[IOT_NUMBER];
+extern struct kmem_cache ipc_object_caches[IOT_NUMBER];
 
 #define	io_alloc(otype)		\
-		((ipc_object_t) zalloc(ipc_object_zones[(otype)]))
+		((ipc_object_t) kmem_cache_alloc(&ipc_object_caches[(otype)]))
 
 #define	io_free(otype, io)	\
-		zfree(ipc_object_zones[(otype)], (vm_offset_t) (io))
+		kmem_cache_free(&ipc_object_caches[(otype)], (vm_offset_t) (io))
 
 #define	io_lock_init(io)	simple_lock_init(&(io)->io_lock_data)
 #define	io_lock(io)		simple_lock(&(io)->io_lock_data)

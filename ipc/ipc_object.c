@@ -47,8 +47,9 @@
 #include <ipc/ipc_pset.h>
 #include <kern/debug.h>
 #include <kern/printf.h>
+#include <kern/slab.h>
 
-zone_t ipc_object_zones[IOT_NUMBER];
+struct kmem_cache ipc_object_caches[IOT_NUMBER];
 
 
 

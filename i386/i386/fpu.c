@@ -47,7 +47,7 @@
 #include <kern/mach_param.h>
 #include <kern/printf.h>
 #include <kern/thread.h>
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 
 #include <i386/thread.h>
 #include <i386/fpu.h>
@@ -72,7 +72,7 @@
 extern void i386_exception();
 
 int		fp_kind = FP_387;	/* 80387 present */
-zone_t		ifps_zone;		/* zone for FPU save area */
+struct kmem_cache	ifps_cache;	/* cache for FPU save area */
 static unsigned long	mxcsr_feature_mask = 0xffffffff;	/* Always AND user-provided mxcsr with this security mask */
 
 void fp_save(thread_t thread);
@@ -193,10 +193,9 @@ init_fpu()
 void
 fpu_module_init()
 {
-	ifps_zone = zinit(sizeof(struct i386_fpsave_state), 16,
-			  THREAD_MAX * sizeof(struct i386_fpsave_state),
-			  THREAD_CHUNK * sizeof(struct i386_fpsave_state),
-			  0, "i386 fpsave state");
+	kmem_cache_init(&ifps_cache, "i386_fpsave_state",
+			sizeof(struct i386_fpsave_state), 16,
+			NULL, NULL, NULL, 0);
 }
 
 /*
@@ -221,7 +220,7 @@ ASSERT_IPL(SPL0);
 	    clear_fpu();
 	}
 #endif	/* NCPUS == 1 */
-	zfree(ifps_zone, (vm_offset_t) fps);
+	kmem_cache_free(&ifps_cache, (vm_offset_t) fps);
 }
 
 /* The two following functions were stolen from Linux's i387.c */
@@ -335,7 +334,7 @@ ASSERT_IPL(SPL0);
 	    simple_unlock(&pcb->lock);
 
 	    if (ifps != 0) {
-		zfree(ifps_zone, (vm_offset_t) ifps);
+		kmem_cache_free(&ifps_cache, (vm_offset_t) ifps);
 	    }
 	}
 	else {
@@ -356,7 +355,7 @@ ASSERT_IPL(SPL0);
 	    if (ifps == 0) {
 		if (new_ifps == 0) {
 		    simple_unlock(&pcb->lock);
-		    new_ifps = (struct i386_fpsave_state *) zalloc(ifps_zone);
+		    new_ifps = (struct i386_fpsave_state *) kmem_cache_alloc(&ifps_cache);
 		    goto Retry;
 		}
 		ifps = new_ifps;
@@ -396,7 +395,7 @@ ASSERT_IPL(SPL0);
 
 	    simple_unlock(&pcb->lock);
 	    if (new_ifps != 0)
-		zfree(ifps_zone, (vm_offset_t) new_ifps);
+		kmem_cache_free(&ifps_cache, (vm_offset_t) new_ifps);
 	}
 
 	return KERN_SUCCESS;
@@ -609,7 +608,7 @@ fpextovrflt()
 	clear_fpu();
 
 	if (ifps)
-	    zfree(ifps_zone, (vm_offset_t) ifps);
+	    kmem_cache_free(&ifps_cache, (vm_offset_t) ifps);
 
 	/*
 	 * Raise exception.
@@ -785,7 +784,7 @@ fp_load(thread)
 ASSERT_IPL(SPL0);
 	ifps = pcb->ims.ifps;
 	if (ifps == 0) {
-	    ifps = (struct i386_fpsave_state *) zalloc(ifps_zone);
+	    ifps = (struct i386_fpsave_state *) kmem_cache_alloc(&ifps_cache);
 	    memset(ifps, 0, sizeof *ifps);
 	    pcb->ims.ifps = ifps;
 	    fpinit();
@@ -836,7 +835,7 @@ fp_state_alloc()
 	pcb_t	pcb = current_thread()->pcb;
 	struct i386_fpsave_state *ifps;
 
-	ifps = (struct i386_fpsave_state *)zalloc(ifps_zone);
+	ifps = (struct i386_fpsave_state *)kmem_cache_alloc(&ifps_cache);
 	memset(ifps, 0, sizeof *ifps);
 	pcb->ims.ifps = ifps;
 

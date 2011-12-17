@@ -54,7 +54,7 @@
 #include <kern/thread.h>
 #include <kern/thread_swap.h>
 #include <kern/host.h>
-#include <kern/zalloc.h>
+#include <kern/slab.h>
 #include <kern/mach_clock.h>
 #include <vm/vm_kern.h>
 #include <ipc/ipc_kmsg.h>
@@ -67,7 +67,7 @@
 thread_t active_threads[NCPUS];
 vm_offset_t active_stacks[NCPUS];
 
-struct zone *thread_zone;
+struct kmem_cache thread_cache;
 
 queue_head_t		reaper_queue;
 decl_simple_lock_data(,	reaper_lock)
@@ -300,11 +300,8 @@ void stack_privilege(
 
 void thread_init(void)
 {
-	thread_zone = zinit(
-			sizeof(struct thread), 0,
-			THREAD_MAX * sizeof(struct thread),
-			THREAD_CHUNK * sizeof(struct thread),
-			0, "threads");
+	kmem_cache_init(&thread_cache, "thread", sizeof(struct thread), 0,
+			NULL, NULL, NULL, 0);
 
 	/*
 	 *	Fill in a template thread for fast initialization.
@@ -414,7 +411,7 @@ kern_return_t thread_create(
 	 *	Allocate a thread and initialize static fields
 	 */
 
-	new_thread = (thread_t) zalloc(thread_zone);
+	new_thread = (thread_t) kmem_cache_alloc(&thread_cache);
 
 	if (new_thread == THREAD_NULL)
 		return KERN_RESOURCE_SHORTAGE;
@@ -710,7 +707,7 @@ void thread_deallocate(
 	evc_notify_abort(thread);
 
 	pcb_terminate(thread);
-	zfree(thread_zone, (vm_offset_t) thread);
+	kmem_cache_free(&thread_cache, (vm_offset_t) thread);
 }
 
 void thread_reference(
