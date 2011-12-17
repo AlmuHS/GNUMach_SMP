@@ -154,6 +154,7 @@ libkernel_a_SOURCES += \
 	kern/kalloc.c \
 	kern/kalloc.h \
 	kern/kern_types.h \
+	kern/list.h \
 	kern/lock.c \
 	kern/lock.h \
 	kern/lock_mon.c \
@@ -175,6 +176,9 @@ libkernel_a_SOURCES += \
 	kern/profile.c \
 	kern/queue.c \
 	kern/queue.h \
+	kern/rbtree.c \
+	kern/rbtree.h \
+	kern/rbtree_i.h \
 	kern/refcount.h \
 	kern/sched.h \
 	kern/sched_prim.c \

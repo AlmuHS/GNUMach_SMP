@@ -45,8 +45,8 @@ boolean_t	ALWAYS;
 #define		ALWAYS		TRUE
 #endif	/* lint */
 
-#define		MACRO_BEGIN	do {
-#define		MACRO_END	} while (NEVER)
+#define		MACRO_BEGIN	({
+#define		MACRO_END	})
 
 #define		MACRO_RETURN	if (ALWAYS) return
 
