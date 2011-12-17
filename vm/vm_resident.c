@@ -238,7 +238,6 @@ void vm_page_bootstrap(
 	 *	Steal memory for the kernel map entries.
 	 */
 
-	kentry_data_size = kentry_count * sizeof(struct vm_map_entry);
 	kentry_data = pmap_steal_memory(kentry_data_size);
 
 	/*

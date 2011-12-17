@@ -357,6 +357,9 @@ extern int		kentry_count;
 /* Initialize the module */
 extern void		vm_map_init(void);
 
+/* Initialize an empty map */
+extern void		vm_map_setup(vm_map_t, pmap_t, vm_offset_t, vm_offset_t,
+				     boolean_t);
 /* Create an empty map */
 extern vm_map_t		vm_map_create(pmap_t, vm_offset_t, vm_offset_t,
 				      boolean_t);

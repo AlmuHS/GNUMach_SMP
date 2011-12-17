@@ -147,7 +147,8 @@ struct kmem_cache	vm_object_cache; /* vm backing store cache */
  *	All wired-down kernel memory belongs to a single virtual
  *	memory object (kernel_object) to avoid wasting data structures.
  */
-vm_object_t	kernel_object;
+static struct vm_object	kernel_object_store;
+vm_object_t		kernel_object = &kernel_object_store;
 
 /*
  *	Virtual memory objects that are not referenced by
@@ -198,13 +199,23 @@ decl_simple_lock_data(,vm_object_cached_lock_data)
  *	object structure, be sure to add initialization
  *	(see vm_object_init).
  */
-vm_object_t	vm_object_template;
+struct vm_object	vm_object_template;
 
 /*
  *	vm_object_allocate:
  *
  *	Returns a new object with the given size.
  */
+
+static void _vm_object_setup(
+	vm_object_t	object,
+	vm_size_t	size)
+{
+	*object = vm_object_template;
+	queue_init(&object->memq);
+	vm_object_lock_init(object);
+	object->size = size;
+}
 
 vm_object_t _vm_object_allocate(
 	vm_size_t		size)
@@ -213,10 +224,7 @@ vm_object_t _vm_object_allocate(
 
 	object = (vm_object_t) kmem_cache_alloc(&vm_object_cache);
 
-	*object = *vm_object_template;
-	queue_init(&object->memq);
-	vm_object_lock_init(object);
-	object->size = size;
+	_vm_object_setup(object, size);
 
 	return object;
 }
@@ -254,53 +262,50 @@ void vm_object_bootstrap(void)
 	 *	Fill in a template object, for quick initialization
 	 */
 
-	vm_object_template = (vm_object_t) kmem_cache_alloc(&vm_object_cache);
-	memset(vm_object_template, 0, sizeof *vm_object_template);
+	vm_object_template.ref_count = 1;
+	vm_object_template.size = 0;
+	vm_object_template.resident_page_count = 0;
+	vm_object_template.copy = VM_OBJECT_NULL;
+	vm_object_template.shadow = VM_OBJECT_NULL;
+	vm_object_template.shadow_offset = (vm_offset_t) 0;
 
-	vm_object_template->ref_count = 1;
-	vm_object_template->size = 0;
-	vm_object_template->resident_page_count = 0;
-	vm_object_template->copy = VM_OBJECT_NULL;
-	vm_object_template->shadow = VM_OBJECT_NULL;
-	vm_object_template->shadow_offset = (vm_offset_t) 0;
+	vm_object_template.pager = IP_NULL;
+	vm_object_template.paging_offset = 0;
+	vm_object_template.pager_request = PAGER_REQUEST_NULL;
+	vm_object_template.pager_name = IP_NULL;
 
-	vm_object_template->pager = IP_NULL;
-	vm_object_template->paging_offset = 0;
-	vm_object_template->pager_request = PAGER_REQUEST_NULL;
-	vm_object_template->pager_name = IP_NULL;
+	vm_object_template.pager_created = FALSE;
+	vm_object_template.pager_initialized = FALSE;
+	vm_object_template.pager_ready = FALSE;
 
-	vm_object_template->pager_created = FALSE;
-	vm_object_template->pager_initialized = FALSE;
-	vm_object_template->pager_ready = FALSE;
-
-	vm_object_template->copy_strategy = MEMORY_OBJECT_COPY_NONE;
+	vm_object_template.copy_strategy = MEMORY_OBJECT_COPY_NONE;
 		/* ignored if temporary, will be reset before
 		 * permanent object becomes ready */
-	vm_object_template->use_shared_copy = FALSE;
-	vm_object_template->shadowed = FALSE;
+	vm_object_template.use_shared_copy = FALSE;
+	vm_object_template.shadowed = FALSE;
 
-	vm_object_template->absent_count = 0;
-	vm_object_template->all_wanted = 0; /* all bits FALSE */
+	vm_object_template.absent_count = 0;
+	vm_object_template.all_wanted = 0; /* all bits FALSE */
 
-	vm_object_template->paging_in_progress = 0;
-	vm_object_template->can_persist = FALSE;
-	vm_object_template->internal = TRUE;
-	vm_object_template->temporary = TRUE;
-	vm_object_template->alive = TRUE;
-	vm_object_template->lock_in_progress = FALSE;
-	vm_object_template->lock_restart = FALSE;
-	vm_object_template->use_old_pageout = TRUE; /* XXX change later */
-	vm_object_template->last_alloc = (vm_offset_t) 0;
+	vm_object_template.paging_in_progress = 0;
+	vm_object_template.can_persist = FALSE;
+	vm_object_template.internal = TRUE;
+	vm_object_template.temporary = TRUE;
+	vm_object_template.alive = TRUE;
+	vm_object_template.lock_in_progress = FALSE;
+	vm_object_template.lock_restart = FALSE;
+	vm_object_template.use_old_pageout = TRUE; /* XXX change later */
+	vm_object_template.last_alloc = (vm_offset_t) 0;
 
 #if	MACH_PAGEMAP
-	vm_object_template->existence_info = VM_EXTERNAL_NULL;
+	vm_object_template.existence_info = VM_EXTERNAL_NULL;
 #endif	/* MACH_PAGEMAP */
 
 		/*
 	 *	Initialize the "kernel object"
 	 */
 
-	kernel_object = _vm_object_allocate(
+	_vm_object_setup(kernel_object,
 		VM_MAX_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS);
 
 	/*
@@ -308,7 +313,7 @@ void vm_object_bootstrap(void)
 	 *	kernel object so that no limit is imposed on submap sizes.
 	 */
 
-	vm_submap_object = _vm_object_allocate(
+	_vm_object_setup(vm_submap_object,
 		VM_MAX_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS);
 
 #if	MACH_PAGEMAP

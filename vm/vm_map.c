@@ -143,7 +143,8 @@ boolean_t	vm_map_lookup_entry();	/* forward declaration */
  *	vm_map_submap creates the submap.
  */
 
-vm_object_t	vm_submap_object;
+static struct vm_object	vm_submap_object_store;
+vm_object_t		vm_submap_object = &vm_submap_object_store;
 
 /*
  *	vm_map_init:
@@ -160,16 +161,28 @@ vm_object_t	vm_submap_object;
  *	vm_map_entry_cache:	used to allocate map entries.
  *	vm_map_kentry_cache:	used to allocate map entries for the kernel.
  *
- *	The kernel allocates map entries from a special zone that is initially
- *	"crammed" with memory.  It would be difficult (perhaps impossible) for
- *	the kernel to allocate more memory to a entry zone when it became
- *	empty since the very act of allocating memory implies the creation
- *	of a new entry.
+ *	Kernel map entries are allocated from a special cache, using a custom
+ *	page allocation function to avoid recursion. It would be difficult
+ *	(perhaps impossible) for the kernel to allocate more memory to an entry
+ *	cache when it became empty since the very act of allocating memory
+ *	implies the creation of a new entry.
  */
 
 vm_offset_t	kentry_data;
-vm_size_t	kentry_data_size;
-int		kentry_count = 256;		/* to init kentry_data_size */
+vm_size_t	kentry_data_size = 32 * PAGE_SIZE;
+
+static vm_offset_t kentry_pagealloc(vm_size_t size)
+{
+	vm_offset_t result;
+
+	if (size > kentry_data_size)
+		panic("vm_map: kentry memory exhausted");
+
+	result = kentry_data;
+	kentry_data += size;
+	kentry_data_size -= size;
+	return result;
+}
 
 void vm_map_init(void)
 {
@@ -187,6 +200,31 @@ void vm_map_init(void)
 	/*
 	 *	Submap object is initialized by vm_object_init.
 	 */
+}
+
+void vm_map_setup(map, pmap, min, max, pageable)
+	vm_map_t	map;
+	pmap_t		pmap;
+	vm_offset_t	min, max;
+	boolean_t	pageable;
+{
+	vm_map_first_entry(map) = vm_map_to_entry(map);
+	vm_map_last_entry(map)  = vm_map_to_entry(map);
+	map->hdr.nentries = 0;
+	map->hdr.entries_pageable = pageable;
+
+	map->size = 0;
+	map->ref_count = 1;
+	map->pmap = pmap;
+	map->min_offset = min;
+	map->max_offset = max;
+	map->wiring_required = FALSE;
+	map->wait_for_space = FALSE;
+	map->first_free = vm_map_to_entry(map);
+	map->hint = vm_map_to_entry(map);
+	vm_map_lock_init(map);
+	simple_lock_init(&map->ref_lock);
+	simple_lock_init(&map->hint_lock);
 }
 
 /*
@@ -207,23 +245,7 @@ vm_map_t vm_map_create(pmap, min, max, pageable)
 	if (result == VM_MAP_NULL)
 		panic("vm_map_create");
 
-	vm_map_first_entry(result) = vm_map_to_entry(result);
-	vm_map_last_entry(result)  = vm_map_to_entry(result);
-	result->hdr.nentries = 0;
-	result->hdr.entries_pageable = pageable;
-
-	result->size = 0;
-	result->ref_count = 1;
-	result->pmap = pmap;
-	result->min_offset = min;
-	result->max_offset = max;
-	result->wiring_required = FALSE;
-	result->wait_for_space = FALSE;
-	result->first_free = vm_map_to_entry(result);
-	result->hint = vm_map_to_entry(result);
-	vm_map_lock_init(result);
-	simple_lock_init(&result->ref_lock);
-	simple_lock_init(&result->hint_lock);
+	vm_map_setup(result, pmap, min, max, pageable);
 
 	return(result);
 }

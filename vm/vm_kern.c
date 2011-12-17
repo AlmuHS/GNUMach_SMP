@@ -58,7 +58,8 @@
  *	Variables exported by this module.
  */
 
-vm_map_t	kernel_map;
+static struct vm_map	kernel_map_store;
+vm_map_t		kernel_map = &kernel_map_store;
 vm_map_t	kernel_pageable_map;
 
 extern void kmem_alloc_pages();
@@ -811,27 +812,27 @@ kmem_remap_pages(object, offset, start, end, protection)
 }
 
 /*
- *	kmem_suballoc:
+ *	kmem_submap:
  *
- *	Allocates a map to manage a subrange
+ *	Initializes a map to manage a subrange
  *	of the kernel virtual address space.
  *
  *	Arguments are as follows:
  *
+ *	map		Map to initialize
  *	parent		Map to take range from
  *	size		Size of range to find
  *	min, max	Returned endpoints of map
  *	pageable	Can the region be paged
  */
 
-vm_map_t
-kmem_suballoc(parent, min, max, size, pageable)
-	vm_map_t parent;
+void
+kmem_submap(map, parent, min, max, size, pageable)
+	vm_map_t map, parent;
 	vm_offset_t *min, *max;
 	vm_size_t size;
 	boolean_t pageable;
 {
-	vm_map_t map;
 	vm_offset_t addr;
 	kern_return_t kr;
 
@@ -850,20 +851,16 @@ kmem_suballoc(parent, min, max, size, pageable)
 			  vm_submap_object, (vm_offset_t) 0, FALSE,
 			  VM_PROT_DEFAULT, VM_PROT_ALL, VM_INHERIT_DEFAULT);
 	if (kr != KERN_SUCCESS)
-		panic("kmem_suballoc");
+		panic("kmem_submap");
 
 	pmap_reference(vm_map_pmap(parent));
-	map = vm_map_create(vm_map_pmap(parent), addr, addr + size, pageable);
-	if (map == VM_MAP_NULL)
-		panic("kmem_suballoc");
-
+	vm_map_setup(map, vm_map_pmap(parent), addr, addr + size, pageable);
 	kr = vm_map_submap(parent, addr, addr + size, map);
 	if (kr != KERN_SUCCESS)
-		panic("kmem_suballoc");
+		panic("kmem_submap");
 
 	*min = addr;
 	*max = addr + size;
-	return map;
 }
 
 /*
@@ -876,9 +873,8 @@ void kmem_init(start, end)
 	vm_offset_t	start;
 	vm_offset_t	end;
 {
-	kernel_map = vm_map_create(pmap_kernel(),
-				   VM_MIN_KERNEL_ADDRESS, end,
-				   FALSE);
+	vm_map_setup(kernel_map, pmap_kernel(), VM_MIN_KERNEL_ADDRESS, end,
+		     FALSE);
 
 	/*
 	 *	Reserve virtual memory allocated up to this time.

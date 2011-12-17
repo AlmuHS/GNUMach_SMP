@@ -53,7 +53,8 @@
 
 
 
-vm_map_t ipc_kernel_map;
+static struct vm_map ipc_kernel_map_store;
+vm_map_t ipc_kernel_map = &ipc_kernel_map_store;
 vm_size_t ipc_kernel_map_size = 8 * 1024 * 1024;
 
 int ipc_space_max = SPACE_MAX;
@@ -117,8 +118,8 @@ ipc_init()
 {
 	vm_offset_t min, max;
 
-	ipc_kernel_map = kmem_suballoc(kernel_map, &min, &max,
-				       ipc_kernel_map_size, TRUE);
+	kmem_submap(ipc_kernel_map, kernel_map, &min, &max,
+		    ipc_kernel_map_size, TRUE);
 
 	ipc_host_init();
 }

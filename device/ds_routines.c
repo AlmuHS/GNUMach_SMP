@@ -130,7 +130,8 @@ static struct device_emulation_ops *emulation_list[] =
   &mach_device_emulation_ops,
 };
 
-vm_map_t		device_io_map;
+static struct vm_map	device_io_map_store;
+vm_map_t		device_io_map = &device_io_map_store;
 
 #define NUM_EMULATION (sizeof (emulation_list) / sizeof (emulation_list[0]))
 
@@ -1551,11 +1552,9 @@ void mach_device_init()
 	queue_init(&io_done_list);
 	simple_lock_init(&io_done_list_lock);
 
-	device_io_map = kmem_suballoc(kernel_map,
-				      &device_io_min,
-				      &device_io_max,
-				      DEVICE_IO_MAP_SIZE,
-				      FALSE);
+	kmem_submap(device_io_map, kernel_map, &device_io_min, &device_io_max,
+		    DEVICE_IO_MAP_SIZE, FALSE);
+
 	/*
 	 *	If the kernel receives many device_write requests, the
 	 *	device_io_map might run out of space.  To prevent
