@@ -74,38 +74,6 @@ void task_init(void)
 	(void) task_create(TASK_NULL, FALSE, &kernel_task);
 }
 
-/*
- * Create a task running in the kernel address space.  It may
- * have its own map of size mem_size (if 0, it uses the kernel map),
- * and may have ipc privileges.
- */
-task_t	kernel_task_create(
-	task_t		parent_task,
-	vm_size_t	map_size)
-{
-	task_t		new_task;
-	vm_offset_t	min, max;
-
-	/*
-	 * Create the task.
-	 */
-	(void) task_create(parent_task, FALSE, &new_task);
-
-	/*
-	 * Task_create creates the task with a user-space map.
-	 * Remove the map and replace it with the kernel map
-	 * or a submap of the kernel map.
-	 */
-	vm_map_deallocate(new_task->map);
-	if (map_size == 0)
-	    new_task->map = kernel_map;
-	else
-	    new_task->map = kmem_suballoc(kernel_map, &min, &max,
-					  map_size, FALSE);
-
-	return new_task;
-}
-
 kern_return_t task_create(
 	task_t		parent_task,
 	boolean_t	inherit_memory,

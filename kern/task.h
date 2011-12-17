@@ -162,8 +162,6 @@ extern kern_return_t	task_hold(task_t);
 extern kern_return_t	task_dowait(task_t, boolean_t);
 extern kern_return_t	task_release(task_t);
 
-extern task_t		kernel_task_create(task_t, vm_size_t);
-
 extern task_t	kernel_task;
 
 #endif	/* _KERN_TASK_H_ */
