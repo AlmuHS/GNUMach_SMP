@@ -117,6 +117,61 @@ static void enqueue_rx_buf(struct net_data *nd, int number) {
 	req->gref = nd->rx_buf_gnt[number] = gref;
 }
 
+static int recompute_checksum(void *data, int len) {
+	unsigned16_t *header16 = data;
+	unsigned8_t *header8 = data;
+	unsigned length, i;
+	unsigned32_t checksum = 0;
+
+	/* IPv4 header length */
+	length = (header8[0] & 0xf) * 4;
+	if (length < 20)
+		/* Too small for an IP header16 */
+		return -1;
+	if (length > len)
+		/* Does not fit in the ethernet frame */
+		return -1;
+
+	/* Compute IP header checksum */
+	header16[5] = 0;
+	for (i = 0; i < length/2; i++)
+		checksum += ntohs(header16[i]);
+
+	while (checksum >> 16)
+		checksum = (checksum & 0xffff) + (checksum >> 16);
+
+	header16[5] = htons(~checksum);
+
+	if (header8[9] == 6) {
+		/* Need to fix TCP checksum as well */
+		unsigned16_t *tcp_header16 = header16 + length/2;
+		unsigned8_t *tcp_header8 = header8 + length;
+		unsigned tcp_length = ntohs(header16[1]) - length;
+
+		/* Pseudo IP header */
+		checksum = ntohs(header16[6]) + ntohs(header16[7]) +
+			   ntohs(header16[8]) + ntohs(header16[9]) +
+			   header8[9] + tcp_length;
+
+		tcp_header16[8] = 0;
+		for (i = 0; i < tcp_length / 2; i++)
+			checksum += ntohs(tcp_header16[i]);
+		if (tcp_length & 1)
+			checksum += tcp_header8[tcp_length-1] << 8;
+
+		while (checksum >> 16)
+			checksum = (checksum & 0xffff) + (checksum >> 16);
+
+		tcp_header16[8] = htons(~checksum);
+	} else if (header8[9] == 17) {
+		/* Drop any bogus checksum */
+		unsigned16_t *udp_header16 = header16 + length/2;
+		udp_header16[3] = 0;
+	}
+
+	return 0;
+}
+
 static void hyp_net_intr(int unit) {
 	ipc_kmsg_t kmsg;
 	struct ether_header *eh;
@@ -171,6 +226,25 @@ static void hyp_net_intr(int unit) {
 
 		data = nd->rx_buf[number] + rx_rsp->offset;
 		len = rx_rsp->status;
+
+		if (rx_rsp->flags & NETRXF_csum_blank) {
+			struct ether_header *ether = data;
+
+			if (!(rx_rsp->flags & NETRXF_data_validated)) {
+				printf("packet with no checksum and not validated, dropping it\n");
+				goto drop_kmsg;
+			}
+
+			/* TODO: rather tell pfinet to ignore checksums */
+
+			if (ntohs(ether->ether_type) != 0x0800) {
+				printf("packet with no checksum and not IPv4, dropping it\n");
+				goto drop_kmsg;
+			}
+
+			if (recompute_checksum(data + sizeof(*ether), len - sizeof(*ether)))
+				goto drop_kmsg;
+		}
 
 		eh = (void*) (net_kmsg(kmsg)->header);
 		ph = (void*) (net_kmsg(kmsg)->packet);
