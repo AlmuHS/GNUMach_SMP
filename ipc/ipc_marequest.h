@@ -70,6 +70,7 @@ typedef struct ipc_marequest {
 
 #define	IMAR_NULL		((ipc_marequest_t) 0)
 
+#define	IPC_MAREQUEST_SIZE	16
 
 extern void
 ipc_marequest_init(void);

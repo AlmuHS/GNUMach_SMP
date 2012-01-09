@@ -535,10 +535,9 @@ ipc_hash_init(void)
 {
 	ipc_hash_index_t i;
 
-	/* if not configured, initialize ipc_hash_global_size */
+	/* initialize ipc_hash_global_size */
 
-	if (ipc_hash_global_size == 0)
-		ipc_hash_global_size = 256;
+	ipc_hash_global_size = IPC_HASH_GLOBAL_SIZE;
 
 	/* make sure it is a power of two */
 

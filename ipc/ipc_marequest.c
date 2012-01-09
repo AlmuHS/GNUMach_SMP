@@ -98,10 +98,9 @@ ipc_marequest_init(void)
 {
 	ipc_marequest_index_t i;
 
-	/* if not configured, initialize ipc_marequest_size */
+	/* initialize ipc_marequest_size */
 
-	if (ipc_marequest_size == 0)
-		ipc_marequest_size = 16;
+	ipc_marequest_size = IPC_MAREQUEST_SIZE;
 
 	/* make sure it is a power of two */
 

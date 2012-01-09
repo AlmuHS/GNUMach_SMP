@@ -67,6 +67,8 @@ ipc_hash_delete(ipc_space_t space, ipc_object_t obj,
  *	and the local primitives, for table entries.
  */
 
+#define	IPC_HASH_GLOBAL_SIZE	256
+
 extern boolean_t
 ipc_hash_global_lookup(ipc_space_t space, ipc_object_t obj,
 		       mach_port_t *namep, ipc_tree_entry_t *entryp);
