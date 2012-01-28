@@ -139,7 +139,7 @@ void thread_check(thread_t, run_queue_t);
  *	The wait event hash table declarations are as follows:
  */
 
-#define NUMQUEUES	59
+#define NUMQUEUES	1031
 
 queue_head_t		wait_queue[NUMQUEUES];
 decl_simple_lock_data(,	wait_lock[NUMQUEUES])

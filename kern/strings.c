@@ -172,3 +172,22 @@ strlen(
 
 	return string - 1 - ret;
 }
+
+/*
+ * Abstract:
+ *	memset writes value "c" in the "n" bytes starting at address "s".
+ *	The return value is a pointer to the "s" string.
+ */
+
+void *
+memset(
+	void *_s, int c, size_t n)
+{
+	char *s = _s;
+	int i;
+
+	for (i = 0; i < n ; i++)
+		s[i] = c;
+
+	return _s;
+}

@@ -1587,7 +1587,7 @@ void pmap_page_protect(phys, prot)
 		    do {
 #ifdef	MACH_XEN
 			if (!hyp_mmu_update_pte(kv_to_ma(pte), *pte & ~INTEL_PTE_WRITE))
-			    	panic("%s:%d could not enable write on pte %p\n",__FILE__,__LINE__,pte);
+			    	panic("%s:%d could not disable write on pte %p\n",__FILE__,__LINE__,pte);
 #else	/* MACH_XEN */
 			*pte &= ~INTEL_PTE_WRITE;
 #endif	/* MACH_XEN */
