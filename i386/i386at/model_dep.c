@@ -486,7 +486,7 @@ void c_boot_entry(vm_offset_t bi)
 	/* Before we do _anything_ else, print the hello message.
 	   If there are no initialized console devices yet,
 	   it will be stored and printed at the first opportunity.  */
-	printf(version);
+	printf("%s", version);
 	printf("\n");
 
 #ifdef MACH_XEN
