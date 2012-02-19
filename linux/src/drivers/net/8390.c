@@ -703,7 +703,7 @@ static void set_multicast_list(struct device *dev)
 int ethdev_init(struct device *dev)
 {
     if (ei_debug > 1)
-		printk(version);
+		printk("%s", version);
     
     if (dev->priv == NULL) {
 		dev->priv = kmalloc(sizeof(struct ei_device), GFP_KERNEL);
