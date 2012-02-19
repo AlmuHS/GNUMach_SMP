@@ -192,7 +192,7 @@ el2_probe1(struct device *dev, int ioaddr)
     }
 
     if (ei_debug  &&  version_printed++ == 0)
-	printk(version);
+	printk("%s", version);
 
     dev->base_addr = ioaddr;
     /* Allocate dev->priv and fill in 8390 specific dev fields. */
