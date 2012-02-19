@@ -1408,7 +1408,7 @@ static int elp_sense(struct device *dev)
 
 	/* Wait for a while; the adapter may still be booting up */
 	if (elp_debug > 0)
-		printk(stilllooking_msg);
+		printk("%s", stilllooking_msg);
 	if (orig_HCR & DIR) {
 		/* If HCR.DIR is up, we pull it down. HSR.DIR should follow. */
 		outb_control(orig_HCR & ~DIR, addr);
@@ -1439,7 +1439,7 @@ static int elp_sense(struct device *dev)
 	 * a hard reset. Also, do a hard reset if selected at the compile time.
 	 */
 	if (elp_debug > 0)
-		printk(found_msg);
+		printk("%s", found_msg);
 
 	return 0;
 }
