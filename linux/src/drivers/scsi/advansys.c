@@ -9194,7 +9194,7 @@ asc_prt_line(char *buf, int buflen, char *fmt, ...)
     ret = vsprintf(s, fmt, args);
     ASC_ASSERT(ret < ASC_PRTLINE_SIZE);
     if (buf == NULL) {
-        (void) printk(s);
+        (void) printk("%s", s);
         ret = 0;
     } else {
         ret = ASC_MIN(buflen, ret);
