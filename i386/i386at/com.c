@@ -265,7 +265,7 @@ comcninit(struct consdev *cp)
 	outb(LINE_CTL(addr), iDLAB);
 	outb(BAUD_LSB(addr), divisorreg[RCBAUD] & 0xff);
 	outb(BAUD_MSB(addr), divisorreg[RCBAUD] >>8);
-	outb(LINE_CTL(addr), i7BITS|iPEN);
+       outb(LINE_CTL(addr), i8BITS);
 	outb(INTR_ENAB(addr), 0);
 	outb(MODEM_CTL(addr), iDTR|iRTS|iOUT2);
 
