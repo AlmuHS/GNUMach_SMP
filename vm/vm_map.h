@@ -53,6 +53,8 @@
 #include <kern/lock.h>
 #include <kern/macro_help.h>
 
+#define KENTRY_DATA_SIZE (32*PAGE_SIZE)
+
 /*
  *	Types defined:
  *

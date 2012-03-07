@@ -170,7 +170,7 @@ vm_object_t		vm_submap_object = &vm_submap_object_store;
  */
 
 vm_offset_t	kentry_data;
-vm_size_t	kentry_data_size = 32 * PAGE_SIZE;
+vm_size_t	kentry_data_size = KENTRY_DATA_SIZE;
 
 static vm_offset_t kentry_pagealloc(vm_size_t size)
 {
