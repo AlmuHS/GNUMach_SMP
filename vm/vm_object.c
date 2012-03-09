@@ -919,7 +919,7 @@ boolean_t vm_object_pmap_protect_by_page = FALSE;
 void vm_object_pmap_protect(
 	register vm_object_t	object,
 	register vm_offset_t	offset,
-	vm_offset_t		size,
+	vm_size_t		size,
 	pmap_t			pmap,
 	vm_offset_t		pmap_start,
 	vm_prot_t		prot)

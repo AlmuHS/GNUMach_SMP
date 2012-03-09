@@ -1747,7 +1747,7 @@ void pmap_enter(pmap, v, pa, prot, wired)
 	vm_offset_t		old_pa;
 
 	assert(pa != vm_page_fictitious_addr);
-if (pmap_debug) printf("pmap(%x, %x)\n", v, pa);
+if (pmap_debug) printf("pmap(%lx, %lx)\n", v, pa);
 	if (pmap == PMAP_NULL)
 		return;
 

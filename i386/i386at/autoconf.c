@@ -135,7 +135,7 @@ void take_dev_irq(
 		printf("The device below will clobber IRQ %d.\n", pic);
 		printf("You have two devices at the same IRQ.\n");
 		printf("This won't work.  Reconfigure your hardware and try again.\n");
-		printf("%s%d: port = %x, spl = %d, pic = %d.\n",
+		printf("%s%d: port = %lx, spl = %ld, pic = %d.\n",
 		        dev->name, dev->unit, dev->address,
 			dev->sysdep, dev->sysdep1);
 		while (1);

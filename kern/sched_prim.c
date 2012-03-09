@@ -146,7 +146,7 @@ decl_simple_lock_data(,	wait_lock[NUMQUEUES])
 
 /* NOTE: we want a small positive integer out of this */
 #define wait_hash(event) \
-	((((int)(event) < 0) ? ~(int)(event) : (int)(event)) % NUMQUEUES)
+	((((long)(event) < 0) ? ~(long)(event) : (long)(event)) % NUMQUEUES)
 
 void wait_queue_init(void)
 {

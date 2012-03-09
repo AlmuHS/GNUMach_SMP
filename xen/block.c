@@ -517,7 +517,7 @@ device_read (void *d, ipc_port_t reply_port,
       thread_block(NULL);
 
       if (err)
-	printf("error reading %d bytes at sector %d\n", amt,
+	printf("error reading %d bytes at sector %ld\n", amt,
 	  bn + offset / 512);
 
       for (i = 0; i < nbpages; i++)

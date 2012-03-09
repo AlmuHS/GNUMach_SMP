@@ -601,7 +601,7 @@ snputc(char c, vm_offset_t arg)
 }
 
 int
-vsnprintf(char *buf, int size, const char *fmt, va_list args)
+vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
 {
   struct vsnprintf_cookie cookie
     = { .buf = buf, .index = 0, .max_len = size };

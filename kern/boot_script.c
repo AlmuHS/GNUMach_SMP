@@ -17,7 +17,7 @@ struct sym
   int type;
 
   /* Symbol value.  */
-  int val;
+  long val;
 
   /* For function symbols; type of value returned by function.  */
   int ret_type;
@@ -44,7 +44,7 @@ struct arg
   int type;
 
   /* Argument value.  */
-  int val;
+  long val;
 };
 
 /* List of commands.  */
@@ -70,7 +70,7 @@ static int
 create_task (struct cmd *cmd, int *val)
 {
   int err = boot_script_task_create (cmd);
-  *val = (int) cmd->task;
+  *val = (long) cmd->task;
   return err;
 }
 
@@ -91,9 +91,9 @@ prompt_resume_task (struct cmd *cmd, int *val)
 /* List of builtin symbols.  */
 static struct sym builtin_symbols[] =
 {
-  { "task-create", VAL_FUNC, (int) create_task, VAL_TASK, 0 },
-  { "task-resume", VAL_FUNC, (int) resume_task, VAL_NONE, 1 },
-  { "prompt-task-resume", VAL_FUNC, (int) prompt_resume_task, VAL_NONE, 1 },
+  { "task-create", VAL_FUNC, (long) create_task, VAL_TASK, 0 },
+  { "task-resume", VAL_FUNC, (long) resume_task, VAL_NONE, 1 },
+  { "prompt-task-resume", VAL_FUNC, (long) prompt_resume_task, VAL_NONE, 1 },
 };
 #define NUM_BUILTIN (sizeof (builtin_symbols) / sizeof (builtin_symbols[0]))
 
@@ -294,7 +294,8 @@ boot_script_parse_line (void *hook, char *cmdline)
 	  for (p += 2;;)
 	    {
 	      char c;
-	      int i, val, type;
+	      int i, type;
+	      long val;
 	      struct sym *s;
 
 	      /* Parse symbol name.  */
@@ -349,7 +350,7 @@ boot_script_parse_line (void *hook, char *cmdline)
 		  if (! s->run_on_exec)
 		    {
 		      (error
-		       = ((*((int (*) (struct cmd *, int *)) s->val))
+		       = ((*((int (*) (struct cmd *, long *)) s->val))
 			  (cmd, &val)));
 		      if (error)
 			goto bad;
@@ -371,7 +372,7 @@ boot_script_parse_line (void *hook, char *cmdline)
 	      else if (s->type == VAL_NONE)
 		{
 		  type = VAL_SYM;
-		  val = (int) s;
+		  val = (long) s;
  		}
 	      else
 		{
@@ -681,7 +682,7 @@ boot_script_define_function (const char *name, int ret_type,
   if (sym)
     {
       sym->type = VAL_FUNC;
-      sym->val = (int) func;
+      sym->val = (long) func;
       sym->ret_type = ret_type;
       sym->run_on_exec = ret_type == VAL_NONE;
     }

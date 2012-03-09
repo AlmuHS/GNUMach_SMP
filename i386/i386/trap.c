@@ -217,8 +217,8 @@ dump_ss(regs);
 		printf("now %08x\n", subcode);
 #endif
 			if (trunc_page(subcode) == 0
-			    || (subcode >= (int)_start
-				&& subcode < (int)etext)) {
+			    || (subcode >= (long)_start
+				&& subcode < (long)etext)) {
 				printf("Kernel page fault at address 0x%x, "
 				       "eip = 0x%x\n",
 				       subcode, regs->eip);

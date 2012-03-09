@@ -394,7 +394,7 @@ int net_add_q_info (ipc_port_t rcv_port);
 int bpf_match (
    net_hash_header_t hash,
    int n_keys,
-   unsigned int *keys,
+   unsigned long *keys,
    net_hash_entry_t **hash_headpp,
       net_hash_entry_t *entpp);
 
@@ -1638,7 +1638,7 @@ bpf_do_filter(infp, p, wirelen, header, hlen, hash_headpp, entpp)
 
 	register unsigned long A, X;
 	register int k;
-	long mem[BPF_MEMWORDS];
+	unsigned long mem[BPF_MEMWORDS];
 
 	/* Generic pointer to either HEADER or P according to the specified offset. */
 	char *data = NULL;
@@ -2032,7 +2032,7 @@ int
 bpf_match (hash, n_keys, keys, hash_headpp, entpp)
 	net_hash_header_t hash;
 	register int n_keys;
-	register unsigned int *keys;
+	register unsigned long *keys;
 	net_hash_entry_t **hash_headpp, *entpp;
 {
 	register net_hash_entry_t head, entp;

@@ -39,7 +39,7 @@ typedef __builtin_va_list va_list;
 
 #else
 
-#define __va_size(type) ((sizeof(type)+3) & ~0x3)
+#define __va_size(type) ((sizeof(type)+sizeof(unsigned long)-1) & ~(sizeof(unsigned long)-1))
 
 #ifndef _VA_LIST_
 #define _VA_LIST_

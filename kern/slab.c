@@ -1381,7 +1381,7 @@ void kalloc_init(void)
     size = 1 << KALLOC_FIRST_SHIFT;
 
     for (i = 0; i < ARRAY_SIZE(kalloc_caches); i++) {
-        sprintf(name, "kalloc_%u", size);
+        sprintf(name, "kalloc_%lu", size);
         kmem_cache_init(&kalloc_caches[i], name, size, 0, NULL,
                         kalloc_pagealloc, kalloc_pagefree, 0);
         size <<= 1;

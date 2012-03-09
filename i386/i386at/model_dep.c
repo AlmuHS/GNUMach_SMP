@@ -284,7 +284,7 @@ mem_size_init(void)
 		phys_last_addr = phys_last_kb * 0x400;
 #endif	/* MACH_HYP */
 
-	printf("AT386 boot: physical memory from 0x%x to 0x%x\n",
+	printf("AT386 boot: physical memory from 0x%lx to 0x%lx\n",
 	       phys_first_addr, phys_last_addr);
 
 	/* Reserve room for virtual mappings.
@@ -292,7 +292,7 @@ mem_size_init(void)
 	max_phys_size = VM_MAX_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS - VM_KERNEL_MAP_SIZE;
 	if (phys_last_addr - phys_first_addr > max_phys_size) {
 		phys_last_addr = phys_first_addr + max_phys_size;
-		printf("Truncating memory size to %dMiB\n", (phys_last_addr - phys_first_addr) / (1024 * 1024));
+		printf("Truncating memory size to %luMiB\n", (phys_last_addr - phys_first_addr) / (1024 * 1024));
 		/* TODO Xen: be nice, free lost memory */
 	}
 
@@ -514,7 +514,7 @@ void c_boot_entry(vm_offset_t bi)
 		strtab_size = (vm_offset_t)phystokv(boot_info.syms.a.strsize);
 		kern_sym_end = kern_sym_start + 4 + symtab_size + strtab_size;
 
-		printf("kernel symbol table at %08x-%08x (%d,%d)\n",
+		printf("kernel symbol table at %08lx-%08lx (%d,%d)\n",
 		       kern_sym_start, kern_sym_end,
 		       symtab_size, strtab_size);
 	}

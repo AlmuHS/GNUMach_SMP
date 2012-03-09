@@ -73,7 +73,7 @@ typedef unsigned int	uint32;
  * A vm_offset_t is a type-neutral pointer,
  * e.g. an offset into a virtual memory space.
  */
-typedef	natural_t	vm_offset_t;
+typedef	unsigned long	vm_offset_t;
 typedef	vm_offset_t *	vm_offset_array_t;
 
 /*
@@ -88,11 +88,11 @@ typedef	natural_t	vm_size_t;
  */
 typedef signed char		signed8_t;
 typedef signed short		signed16_t;
-typedef signed long		signed32_t;
+typedef signed int		signed32_t;
 typedef signed long long	signed64_t;
 typedef unsigned char		unsigned8_t;
 typedef unsigned short		unsigned16_t;
-typedef unsigned long		unsigned32_t;
+typedef unsigned int		unsigned32_t;
 typedef unsigned long long	unsigned64_t;
 typedef float			float32_t;
 typedef double			float64_t;

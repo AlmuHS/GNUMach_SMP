@@ -154,19 +154,19 @@ void bootstrap_create()
       /* Initialize boot script variables.  We leak these send rights.  */
       losers = boot_script_set_variable
 	("host-port", VAL_PORT,
-	 (int)ipc_port_make_send(realhost.host_priv_self));
+	 (long)ipc_port_make_send(realhost.host_priv_self));
       if (losers)
 	panic ("cannot set boot-script variable host-port: %s",
 	       boot_script_error_string (losers));
       losers = boot_script_set_variable
 	("device-port", VAL_PORT,
-	 (int) ipc_port_make_send(master_device_port));
+	 (long) ipc_port_make_send(master_device_port));
       if (losers)
 	panic ("cannot set boot-script variable device-port: %s",
 	       boot_script_error_string (losers));
 
       losers = boot_script_set_variable ("kernel-command-line", VAL_STR,
-					 (int) kernel_cmdline);
+					 (long) kernel_cmdline);
       if (losers)
 	panic ("cannot set boot-script variable %s: %s",
 	       "kernel-command-line", boot_script_error_string (losers));
@@ -185,12 +185,12 @@ void bootstrap_create()
 	get_compat_strings(flag_string, root_string);
 
 	losers = boot_script_set_variable ("boot-args", VAL_STR,
-					   (int) flag_string);
+					   (long) flag_string);
 	if (losers)
 	  panic ("cannot set boot-script variable %s: %s",
 		 "boot-args", boot_script_error_string (losers));
 	losers = boot_script_set_variable ("root-device", VAL_STR,
-					   (int) root_string);
+					   (long) root_string);
 	if (losers)
 	  panic ("cannot set boot-script variable %s: %s",
 		 "root-device", boot_script_error_string (losers));
@@ -232,7 +232,7 @@ void bootstrap_create()
 	    if (eq == 0)
 	      continue;
 	    *eq++ = '\0';
-	    losers = boot_script_set_variable (word, VAL_STR, (int) eq);
+	    losers = boot_script_set_variable (word, VAL_STR, (long) eq);
 	    if (losers)
 	      panic ("cannot set boot-script variable %s: %s",
 		     word, boot_script_error_string (losers));

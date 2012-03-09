@@ -165,7 +165,7 @@ decl_simple_lock_data(,
 		dev_pager_hash_lock)
 
 #define	dev_pager_hash(name_port) \
-		(((natural_t)(name_port) & 0xffffff) % DEV_PAGER_HASH_COUNT)
+		(((vm_offset_t)(name_port) & 0xffffff) % DEV_PAGER_HASH_COUNT)
 
 void dev_pager_hash_init(void)
 {
@@ -336,7 +336,7 @@ kern_return_t	device_pager_data_request(
 #endif /* lint */
 
 	if (device_pager_debug)
-		printf("(device_pager)data_request: pager=%p, offset=0x%x, length=0x%x\n",
+		printf("(device_pager)data_request: pager=%p, offset=0x%lx, length=0x%x\n",
 			pager, offset, length);
 
 	ds = dev_pager_hash_lookup((ipc_port_t)pager);

@@ -1449,7 +1449,7 @@ static void
 ds_no_senders(notification)
 	mach_no_senders_notification_t *notification;
 {
-	printf("ds_no_senders called! device_port=0x%x count=%d\n",
+	printf("ds_no_senders called! device_port=0x%lx count=%d\n",
 	       notification->not_header.msgh_remote_port,
 	       notification->not_count);
 }

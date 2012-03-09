@@ -48,7 +48,7 @@ ktss_init()
 #ifdef	MACH_XEN
 	/* Xen won't allow us to do any I/O by default anyway, just register
 	 * exception stack */
-	if (hyp_stack_switch(KERNEL_DS, (unsigned)(exception_stack+1024)))
+	if (hyp_stack_switch(KERNEL_DS, (unsigned long)(exception_stack+1024)))
 		panic("couldn't register exception stack\n");
 #else	/* MACH_XEN */
 	/* Initialize the master TSS descriptor.  */

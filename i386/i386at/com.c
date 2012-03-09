@@ -229,7 +229,7 @@ comattach(struct bus_device *dev)
 	u_short	addr = dev->address;
 
 	take_dev_irq(dev);
-	printf(", port = %x, spl = %d, pic = %d. (DOS COM%d)",
+	printf(", port = %lx, spl = %ld, pic = %d. (DOS COM%d)",
 	       dev->address, dev->sysdep, dev->sysdep1, unit+1);
 
 /*	comcarrier[unit] = addr->flags;*/

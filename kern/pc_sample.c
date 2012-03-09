@@ -57,7 +57,7 @@ void take_pc_sample(
     pc = interrupted_pc(t);
     cp->seqno++;
     sample = &((sampled_pc_t *)cp->buffer)[cp->seqno % MAX_PC_SAMPLES];
-    sample->id = (natural_t)t;
+    sample->id = (vm_offset_t)t;
     sample->pc = pc;
     sample->sampletype = flavor;
 }

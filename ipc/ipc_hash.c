@@ -326,7 +326,7 @@ ipc_hash_global_delete(
  */
 
 #define	IH_LOCAL_HASH(obj, size)				\
-		((((mach_port_index_t) (obj)) >> 6) % (size))
+		((((mach_port_index_t) (vm_offset_t) (obj)) >> 6) % (size))
 
 /*
  *	Routine:	ipc_hash_local_lookup

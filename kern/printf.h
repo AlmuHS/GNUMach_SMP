@@ -40,7 +40,7 @@ extern void printnum (unsigned long u, int base,
                       vm_offset_t putc_arg);
 
 extern int sprintf (char *buf, const char *fmt, ...);
-extern int vsnprintf (char *buf, int size, const char *fmt, va_list args);
+extern int vsnprintf (char *buf, size_t size, const char *fmt, va_list args);
 
 extern int printf (const char *fmt, ...);
 

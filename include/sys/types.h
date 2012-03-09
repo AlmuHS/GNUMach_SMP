@@ -30,7 +30,7 @@
 
 #ifndef _SIZE_T
 #define _SIZE_T
-typedef natural_t size_t;
+typedef unsigned long size_t;
 #endif
 
 #ifndef _SSIZE_T

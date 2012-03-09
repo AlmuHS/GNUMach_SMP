@@ -218,7 +218,7 @@ mach_msg_receive(msg, option, rcv_size, rcv_name, time_out, notify)
 		if (mr != MACH_MSG_SUCCESS) {
 			if (mr == MACH_RCV_TOO_LARGE) {
 				mach_msg_size_t real_size =
-					(mach_msg_size_t) (natural_t) kmsg;
+					(mach_msg_size_t) (vm_offset_t) kmsg;
 
 				assert(real_size > rcv_size);
 
@@ -309,7 +309,7 @@ mach_msg_receive_continue(void)
 		if (mr != MACH_MSG_SUCCESS) {
 			if (mr == MACH_RCV_TOO_LARGE) {
 				mach_msg_size_t real_size =
-					(mach_msg_size_t) (natural_t) kmsg;
+					(mach_msg_size_t) (vm_offset_t) kmsg;
 
 				assert(real_size > rcv_size);
 

@@ -93,10 +93,10 @@ void stack_attach(thread, stack, continuation)
 	 *	This function will not return normally,
 	 *	so we don`t have to worry about a return address.
 	 */
-	STACK_IKS(stack)->k_eip = (int) Thread_continue;
-	STACK_IKS(stack)->k_ebx = (int) continuation;
-	STACK_IKS(stack)->k_esp = (int) STACK_IEL(stack);
-	STACK_IKS(stack)->k_ebp = (int) 0;
+	STACK_IKS(stack)->k_eip = (long) Thread_continue;
+	STACK_IKS(stack)->k_ebx = (long) continuation;
+	STACK_IKS(stack)->k_esp = (long) STACK_IEL(stack);
+	STACK_IKS(stack)->k_ebp = (long) 0;
 
 	/*
 	 *	Point top of kernel stack to user`s registers.
@@ -152,8 +152,8 @@ void switch_ktss(pcb)
 	 */
 
 	pcb_stack_top = (pcb->iss.efl & EFL_VM)
-			? (int) (&pcb->iss + 1)
-			: (int) (&pcb->iss.v86_segs);
+			? (long) (&pcb->iss + 1)
+			: (long) (&pcb->iss.v86_segs);
 
 #ifdef	MACH_XEN
 	/* No IO mask here */
