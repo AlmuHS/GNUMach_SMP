@@ -94,6 +94,7 @@ gdt_init(void)
 	   We must load ds and es with 0 before loading them with KERNEL_DS
 	   because some processors will "optimize out" the loads
 	   if the previous selector values happen to be the same.  */
+#ifndef __x86_64__
 	asm volatile("ljmp	%0,$1f\n"
 		     "1:\n"
 		     "movw	%w2,%%ds\n"
@@ -105,6 +106,7 @@ gdt_init(void)
 		     "movw	%w1,%%es\n"
 		     "movw	%w1,%%ss\n"
 		     : : "i" (KERNEL_CS), "r" (KERNEL_DS), "r" (0));
+#endif
 #ifdef	MACH_PV_PAGETABLES
 #if VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
 	/* things now get shifted */
