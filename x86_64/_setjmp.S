@@ -1,6 +1,6 @@
 /* 
  * Mach Operating System
- * Copyright (c) 1991,1990 Carnegie Mellon University
+ * Copyright (c) 1991,1990,1989 Carnegie Mellon University
  * All Rights Reserved.
  * 
  * Permission to use, copy, modify and distribute this software and its
@@ -24,21 +24,42 @@
  * the rights to redistribute these changes.
  */
 /*
- * Setjmp/longjmp buffer for i386.
+ * C library -- _setjmp, _longjmp
+ *
+ *	_longjmp(a,v)
+ * will generate a "return(v)" from
+ * the last call to
+ *	_setjmp(a)
+ * by restoring registers from the stack,
+ * The previous signal state is NOT restored.
+ *
  */
-#ifndef	_I386_SETJMP_H_
-#define	_I386_SETJMP_H_
 
-typedef	struct jmp_buf {
-#ifdef __i386__
-	int	jmp_buf[6];	/* ebx, esi, edi, ebp, esp, eip */
-#else
-       long    jmp_buf[8];     /* rbx, rbp, r12, r13, r14, r15, rsp, rip */
-#endif
-} jmp_buf_t;
+#include <mach/machine/asm.h>
 
-extern int _setjmp(jmp_buf_t*);
+ENTRY(_setjmp)
+	movq	%rbx,0(%rdi)
+	movq	%rbp,8(%rdi)		/* save frame pointer of caller */
+	movq	%r12,16(%rdi)
+	movq	%r13,24(%rdi)
+	movq	%r14,32(%rdi)
+	movq	%r15,40(%rdi)
+	popq	%rdx
+	movq	%rsp,48(%rdi)		/* save stack pointer of caller */
+	movq	%rdx,56(%rdi)		/* save pc of caller */
+	xorq	%rax,%rax
+        jmp     *%rdx
 
-extern void _longjmp(jmp_buf_t*, int) __attribute__ ((noreturn));
-
-#endif	/* _I386_SETJMP_H_ */
+ENTRY(_longjmp)
+	movq	%rsi,%rax		/* return(v) */
+	movq	0(%rdi),%rbx
+	movq	8(%rdi),%rbp
+	movq	16(%rdi),%r12
+	movq	24(%rdi),%r13
+	movq	32(%rdi),%r14
+	movq	40(%rdi),%r15
+	movq	48(%rdi),%rsp
+	orq	%rax,%rax
+	jnz	0f
+	incq	%rax
+0:	jmp	*56(%rdi)		/* done, return.... */
