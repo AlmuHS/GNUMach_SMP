@@ -143,7 +143,7 @@ ENTRY(spl7)
 	SETIPL(SPL7)
 
 ENTRY(splx)
-	movl	4(%esp),%edx		/* get ipl */
+	movl	S_ARG0,%edx		/* get ipl */
 	testl	%edx,%edx		/* spl0? */
 	jz	EXT(spl0)		/* yes, handle specially */
 	cmpl	EXT(curr_ipl),%edx	/* same ipl as current? */
@@ -160,7 +160,7 @@ ENTRY(splx)
 	.align	TEXT_ALIGN
 	.globl	splx_cli
 splx_cli:
-	movl	4(%esp),%edx		/* get ipl */
+	movl	S_ARG0,%edx		/* get ipl */
 	cli				/* disable interrupts */
 	testl	%edx,%edx		/* spl0? */
 	jnz	2f			/* no, skip */
