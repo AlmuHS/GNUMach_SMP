@@ -388,21 +388,20 @@ i386at_init(void)
 	 * Also, set the WP bit so that on 486 or better processors
 	 * page-level write protection works in kernel mode.
 	 */
+#if VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
 	init_alloc_aligned(0, &addr);
 	nb_direct = (addr + NPTES * PAGE_SIZE - 1) / (NPTES * PAGE_SIZE);
 	for (i = 0; i < nb_direct; i++)
 		kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS) + i] =
 			kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS) + i];
+#endif
 
 #ifdef	MACH_XEN
-	{
-		int i;
-		for (i = 0; i < PDPNUM; i++)
-			pmap_set_page_readonly_init((void*) kernel_page_dir + i * INTEL_PGBYTES);
+	for (i = 0; i < PDPNUM; i++)
+		pmap_set_page_readonly_init((void*) kernel_page_dir + i * INTEL_PGBYTES);
 #if PAE
-		pmap_set_page_readonly_init(kernel_pmap->pdpbase);
+	pmap_set_page_readonly_init(kernel_pmap->pdpbase);
 #endif	/* PAE */
-	}
 #endif	/* MACH_XEN */
 #if PAE
 	set_cr3((unsigned)_kvtophys(kernel_pmap->pdpbase));
@@ -442,6 +441,7 @@ i386at_init(void)
 	ldt_init();
 	ktss_init();
 
+#if VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
 	/* Get rid of the temporary direct mapping and flush it out of the TLB.  */
 	for (i = 0 ; i < nb_direct; i++) {
 #ifdef	MACH_XEN
@@ -455,6 +455,7 @@ i386at_init(void)
 		kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS) + i] = 0;
 #endif	/* MACH_XEN */
 	}
+#endif
 
 	/* Not used after boot, better give it back.  */
 #ifdef	MACH_XEN
