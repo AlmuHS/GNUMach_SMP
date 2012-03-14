@@ -72,7 +72,7 @@ spl_t linux_intr_pri;
 /*
  * Flag indicating an interrupt is being handled.
  */
-unsigned long intr_count = 0;
+unsigned int intr_count = 0;
 
 /*
  * List of Linux interrupt handlers.

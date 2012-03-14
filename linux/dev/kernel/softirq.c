@@ -16,15 +16,15 @@
 #include <linux/dev/glue/glue.h>
 
 int bh_mask_count[32];
-unsigned long bh_active = 0;
-unsigned long bh_mask = 0;
+unsigned int bh_active = 0;
+unsigned int bh_mask = 0;
 void (*bh_base[32]) (void);
 
 void
 linux_soft_intr (void)
 {
-  unsigned long active;
-  unsigned long mask, left;
+  unsigned int active;
+  unsigned int mask, left;
   void (**bh) (void);
 
   sti ();

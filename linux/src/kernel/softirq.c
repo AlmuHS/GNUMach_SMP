@@ -21,18 +21,18 @@
 #include <asm/irq.h>
 #include <asm/bitops.h>
 
-unsigned long intr_count = 0;
+unsigned int intr_count = 0;
 
 int bh_mask_count[32];
-unsigned long bh_active = 0;
-unsigned long bh_mask = 0;
+unsigned int bh_active = 0;
+unsigned int bh_mask = 0;
 void (*bh_base[32])(void);
 
 
 asmlinkage void do_bottom_half(void)
 {
-	unsigned long active;
-	unsigned long mask, left;
+	unsigned int active;
+	unsigned int mask, left;
 	void (**bh)(void);
 
 	sti();
