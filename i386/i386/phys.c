@@ -105,9 +105,5 @@ vm_offset_t addr;
 
 	if ((pte = pmap_pte(kernel_pmap, addr)) == PT_ENTRY_NULL)
 		return 0;
-	return i386_trunc_page(
-#ifdef	MACH_PSEUDO_PHYS
-	ma_to_pa
-#endif	/* MACH_PSEUDO_PHYS */
-		(*pte)) | (addr & INTEL_OFFMASK);
+	return pte_to_pa(*pte) | (addr & INTEL_OFFMASK);
 }
