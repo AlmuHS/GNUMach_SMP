@@ -140,7 +140,7 @@ typedef unsigned int	pt_entry_t;
 #endif	/* MACH_XEN */
 #define INTEL_PTE_WIRED		0x00000200
 #ifdef PAE
-#define INTEL_PTE_PFN		0xfffffffffffff000ULL
+#define INTEL_PTE_PFN		0x00007ffffffff000ULL
 #else
 #define INTEL_PTE_PFN		0xfffff000
 #endif
