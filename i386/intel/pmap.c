@@ -831,7 +831,7 @@ void pmap_set_page_readonly_init(void *_vaddr) {
 	vm_offset_t vaddr = (vm_offset_t) _vaddr;
 #if PAE
 	pt_entry_t *pdpbase = (void*) boot_info.pt_base;
-	vm_offset_t dirbase = ptetokv(pdpbase[0]);
+	vm_offset_t dirbase = ptetokv(pdpbase[lin2pdpnum(vaddr)]);
 #else
 	vm_offset_t dirbase = boot_info.pt_base;
 #endif

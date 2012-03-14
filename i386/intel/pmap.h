@@ -101,6 +101,13 @@ typedef unsigned int	pt_entry_t;
 #endif
 
 /*
+ *	Convert linear offset to page directory pointer index
+ */
+#if PAE
+#define lin2pdpnum(a)	(((a) >> PDPSHIFT) & PDPMASK)
+#endif
+
+/*
  *	Convert page descriptor index to linear address
  */
 #define pdenum2lin(a)	((vm_offset_t)(a) << PDESHIFT)
