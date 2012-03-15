@@ -14,7 +14,7 @@ struct irqaction {
 	struct irqaction *next;
 };
 
-extern unsigned long intr_count;
+extern unsigned int intr_count;
 
 extern int bh_mask_count[32];
 extern unsigned int bh_active;
