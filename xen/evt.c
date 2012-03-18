@@ -62,12 +62,12 @@ void hyp_c_callback(void *ret_addr, void *regs)
 
 					if (ivect[n]) {
 						spl_t spl = splx(intpri[n]);
-						asm ("lock; andl %1,%0":"=m"(hyp_shared_info.evtchn_pending[i]):"r"(~(1<<j)));
+						asm ("lock; and %1,%0":"=m"(hyp_shared_info.evtchn_pending[i]):"r"(~(1UL<<j)));
 						ivect[n](iunit[n], spl, ret_addr, regs);
 						splx_cli(spl);
 					} else {
 						printf("warning: lost unbound event %d\n", n);
-						asm ("lock; andl %1,%0":"=m"(hyp_shared_info.evtchn_pending[i]):"r"(~(1<<j)));
+						asm ("lock; and %1,%0":"=m"(hyp_shared_info.evtchn_pending[i]):"r"(~(1UL<<j)));
 					}
 				}
 			}
