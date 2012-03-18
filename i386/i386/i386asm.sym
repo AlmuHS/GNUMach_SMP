@@ -78,6 +78,7 @@ offset	i386_saved_state	r	err
 offset	i386_saved_state	r	efl		R_EFLAGS
 offset	i386_saved_state	r	eip
 offset	i386_saved_state	r	cr2
+offset	i386_saved_state	r	edi
 
 offset	i386_interrupt_state	i	eip
 offset	i386_interrupt_state	i	cs

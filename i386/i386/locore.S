@@ -437,7 +437,7 @@ ENTRY(t_page_fault)
 #else	/* MACH_XEN */
 	movl	%cr2,%eax		/* get the faulting address */
 #endif	/* MACH_XEN */
-	movl	%eax,12(%esp)		/* save in esp save slot */
+	movl	%eax,R_CR2-R_EDI(%esp)	/* save in esp save slot */
 	jmp	trap_push_segs		/* continue fault */
 
 /*
