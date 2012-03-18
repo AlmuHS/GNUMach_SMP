@@ -826,26 +826,27 @@ void pmap_set_page_readonly(void *_vaddr) {
 }
 
 /* This needs to be called instead of pmap_set_page_readonly as long as RC3
- * still points to the bootstrap dirbase.  */
+ * still points to the bootstrap dirbase, to also fix the bootstrap table.  */
 void pmap_set_page_readonly_init(void *_vaddr) {
 	vm_offset_t vaddr = (vm_offset_t) _vaddr;
 #if PAE
 	pt_entry_t *pdpbase = (void*) boot_info.pt_base;
-	vm_offset_t dirbase = ptetokv(pdpbase[lin2pdpnum(vaddr)]);
+	/* The bootstrap table does not necessarily use contiguous pages for the pde tables */
+	pt_entry_t *dirbase = (void*) ptetokv(pdpbase[lin2pdpnum(vaddr)]);
 #else
-	vm_offset_t dirbase = boot_info.pt_base;
+	pt_entry_t *dirbase = (void*) boot_info.pt_base;
 #endif
-	struct pmap linear_pmap = {
-		.dirbase = (void*) dirbase,
-	};
+	pt_entry_t *pte = &dirbase[lin2pdenum(vaddr) & PTEMASK];
 	/* Modify our future kernel map (can't use update_va_mapping for this)... */
-	if (*pmap_pde(kernel_pmap, vaddr) & INTEL_PTE_VALID)
+	if (*pmap_pde(kernel_pmap, vaddr) & INTEL_PTE_VALID) {
 		if (!hyp_mmu_update_la (kvtolin(vaddr), pa_to_pte (kv_to_ma(vaddr)) | INTEL_PTE_VALID))
 			panic("couldn't set hiMMU readonly for vaddr %p(%p)\n", vaddr, (vm_offset_t) kv_to_ma (vaddr));
+	}
 	/* ... and the bootstrap map.  */
-	if (*pmap_pde(&linear_pmap, vaddr) & INTEL_PTE_VALID)
+	if (*pte & INTEL_PTE_VALID) {
 		if (hyp_do_update_va_mapping (vaddr, pa_to_pte (kv_to_ma(vaddr)) | INTEL_PTE_VALID, UVMF_NONE))
 			panic("couldn't set MMU readonly for vaddr %p(%p)\n", vaddr, (vm_offset_t) kv_to_ma (vaddr));
+	}
 }
 
 void pmap_clear_bootstrap_pagetable(pt_entry_t *base) {
