@@ -452,14 +452,18 @@ i386at_init(void)
 #endif	/* PAE */
 #endif	/* MACH_PV_PAGETABLES */
 #if PAE
-	set_cr3((unsigned)_kvtophys(kernel_pmap->pdpbase));
+#ifdef __x86_64__
+	set_cr3((unsigned long)_kvtophys(kernel_pmap->l4base));
+#else
+	set_cr3((unsigned long)_kvtophys(kernel_pmap->pdpbase));
+#endif
 #ifndef	MACH_HYP
 	if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
 		panic("CPU doesn't have support for PAE.");
 	set_cr4(get_cr4() | CR4_PAE);
 #endif	/* MACH_HYP */
 #else
-	set_cr3((unsigned)_kvtophys(kernel_page_dir));
+	set_cr3((unsigned long)_kvtophys(kernel_page_dir));
 #endif	/* PAE */
 #ifndef	MACH_HYP
 	/* Turn paging on.
@@ -527,7 +531,7 @@ i386at_init(void)
 
 /*
  *	C boot entrypoint - called by boot_entry in boothdr.S.
- *	Running in 32-bit flat mode, but without paging yet.
+ *	Running in flat mode, but without paging yet.
  */
 void c_boot_entry(vm_offset_t bi)
 {
