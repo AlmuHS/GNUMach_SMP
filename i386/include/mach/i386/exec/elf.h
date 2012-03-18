@@ -23,11 +23,11 @@
 #ifndef _MACH_I386_EXEC_ELF_H_
 #define _MACH_I386_EXEC_ELF_H_
 
-typedef unsigned long	Elf32_Addr;
+typedef unsigned int	Elf32_Addr;
 typedef unsigned short	Elf32_Half;
-typedef unsigned long	Elf32_Off;
-typedef signed long	Elf32_Sword;
-typedef unsigned long	Elf32_Word;
+typedef unsigned int	Elf32_Off;
+typedef signed int	Elf32_Sword;
+typedef unsigned int	Elf32_Word;
 
 /* Architecture identification parameters for i386.  */
 #define MY_EI_DATA	ELFDATA2LSB
