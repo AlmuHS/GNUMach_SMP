@@ -77,49 +77,49 @@
 #include <i386/ldt.h>
 #endif	/* MACH_HYP */
 
-static inline unsigned
+static inline unsigned long
 get_eflags(void)
 {
-	unsigned eflags;
-	asm("pushfd; popl %0" : "=r" (eflags));
+	unsigned long eflags;
+	asm("pushfd; pop %0" : "=r" (eflags));
 	return eflags;
 }
 
 static inline void
-set_eflags(unsigned eflags)
+set_eflags(unsigned long eflags)
 {
-	asm volatile("pushl %0; popfd" : : "r" (eflags));
+	asm volatile("push %0; popfd" : : "r" (eflags));
 }
 
 #define get_esp() \
     ({ \
-	register unsigned int _temp__ asm("esp"); \
+	register unsigned long _temp__ asm("esp"); \
 	_temp__; \
     })
 
 #define get_eflags() \
     ({ \
-	register unsigned int _temp__; \
-	asm("pushf; popl %0" : "=r" (_temp__)); \
+	register unsigned long _temp__; \
+	asm("pushf; pop %0" : "=r" (_temp__)); \
 	_temp__; \
     })
 
 #define	get_cr0() \
     ({ \
-	register unsigned int _temp__; \
+     register unsigned long _temp__; \
 	asm volatile("mov %%cr0, %0" : "=r" (_temp__)); \
 	_temp__; \
     })
 
 #define	set_cr0(value) \
     ({ \
-	register unsigned int _temp__ = (value); \
+	register unsigned long _temp__ = (value); \
 	asm volatile("mov %0, %%cr0" : : "r" (_temp__)); \
      })
 
 #define	get_cr2() \
     ({ \
-	register unsigned int _temp__; \
+	register unsigned long _temp__; \
 	asm volatile("mov %%cr2, %0" : "=r" (_temp__)); \
 	_temp__; \
     })
@@ -136,14 +136,14 @@ extern unsigned long cr3;
 #else	/* MACH_HYP */
 #define	get_cr3() \
     ({ \
-	register unsigned int _temp__; \
+	register unsigned long _temp__; \
 	asm volatile("mov %%cr3, %0" : "=r" (_temp__)); \
 	_temp__; \
     })
 
 #define	set_cr3(value) \
     ({ \
-	register unsigned int _temp__ = (value); \
+	register unsigned long _temp__ = (value); \
 	asm volatile("mov %0, %%cr3" : : "r" (_temp__) : "memory"); \
      })
 #endif	/* MACH_HYP */
@@ -182,14 +182,14 @@ extern unsigned long cr3;
 
 #define	get_cr4() \
     ({ \
-	register unsigned int _temp__; \
+	register unsigned long _temp__; \
 	asm volatile("mov %%cr4, %0" : "=r" (_temp__)); \
 	_temp__; \
     })
 
 #define	set_cr4(value) \
     ({ \
-	register unsigned int _temp__ = (value); \
+	register unsigned long _temp__ = (value); \
 	asm volatile("mov %0, %%cr4" : : "r" (_temp__)); \
      })
 
