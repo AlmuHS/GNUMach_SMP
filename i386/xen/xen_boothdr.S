@@ -22,8 +22,8 @@
 	.ascii	"GUEST_OS=GNU Mach"
 	.ascii  ",GUEST_VERSION=1.3"
 	.ascii	",XEN_VER=xen-3.0"
-	.ascii  ",VIRT_BASE=0x20000000"
-	.ascii  ",ELF_PADDR_OFFSET=0x20000000"
+	.ascii  ",VIRT_BASE=0xC0000000"
+	.ascii  ",ELF_PADDR_OFFSET=0xC0000000"
 	.ascii	",HYPERCALL_PAGE=0x2"
 #if PAE
 	.ascii  ",PAE=yes[extended-cr3]"
