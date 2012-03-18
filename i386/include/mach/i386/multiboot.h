@@ -158,6 +158,23 @@ struct multiboot_module
 	unsigned		reserved;
 };
 
+#ifdef __x86_64__
+/* The mods_addr field above contains the physical address of the first
+   of 'mods_count' multiboot_module structures.  */
+struct multiboot32_module
+{
+	/* Physical start and end addresses of the module data itself.  */
+	unsigned		mod_start;
+	unsigned		mod_end;
+
+	/* Arbitrary ASCII string associated with the module.  */
+	unsigned		string;
+
+	/* Boot loader must set to 0; OS must ignore.  */
+	unsigned		reserved;
+};
+#endif
+
 
 /* The mmap_addr field above contains the physical address of the first
    of the AddrRangeDesc structure.  "size" represents the size of the
