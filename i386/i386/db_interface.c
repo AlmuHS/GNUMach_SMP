@@ -347,8 +347,10 @@ kdb_trap(
  *	instead of those at its call to KDB.
  */
 struct int_regs {
+#ifdef __i386__
 	long	edi;
 	long	esi;
+#endif
 	long	ebp;
 	long	ebx;
 	struct i386_interrupt_state *is;
@@ -381,8 +383,14 @@ kdb_kentry(
 	    ddb_regs.edx = is->edx;
 	    ddb_regs.ebx = int_regs->ebx;
 	    ddb_regs.ebp = int_regs->ebp;
+#ifdef __i386__
 	    ddb_regs.esi = int_regs->esi;
 	    ddb_regs.edi = int_regs->edi;
+#endif
+#ifdef __x86_64__
+           ddb_regs.esi = is->rsi;
+           ddb_regs.edi = is->rdi;
+#endif
 	    ddb_regs.ds  = is->ds;
 	    ddb_regs.es  = is->es;
 	    ddb_regs.fs  = is->fs;
@@ -404,8 +412,14 @@ kdb_kentry(
 	    is->edx = ddb_regs.edx;
 	    int_regs->ebx = ddb_regs.ebx;
 	    int_regs->ebp = ddb_regs.ebp;
+#ifdef __i386__
 	    int_regs->esi = ddb_regs.esi;
 	    int_regs->edi = ddb_regs.edi;
+#endif
+#ifdef __x86_64__
+           is->rsi = ddb_regs.esi;
+           is->rdi = ddb_regs.edi;
+#endif
 	    is->ds  = ddb_regs.ds & 0xffff;
 	    is->es  = ddb_regs.es & 0xffff;
 	    is->fs  = ddb_regs.fs & 0xffff;
