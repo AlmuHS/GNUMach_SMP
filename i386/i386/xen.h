@@ -38,7 +38,7 @@
 #define wmb() mb()
 MACH_INLINE unsigned long xchgl(volatile unsigned long *ptr, unsigned long x)
 {
-	__asm__ __volatile__("xchgl %0, %1"
+	__asm__ __volatile__("xchg %0, %1"
 			   : "=r" (x)
 			   : "m" (*(ptr)), "0" (x): "memory");
 	return x;
