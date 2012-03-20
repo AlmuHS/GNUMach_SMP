@@ -188,10 +188,10 @@ kdb_trap(
  *	instead of those at its call to KDB.
  */
 struct int_regs {
-	int	edi;
-	int	esi;
-	int	ebp;
-	int	ebx;
+	long	edi;
+	long	esi;
+	long	ebp;
+	long	ebx;
 	struct i386_interrupt_state *is;
 };
 

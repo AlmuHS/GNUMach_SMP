@@ -68,7 +68,7 @@
 
 #define AST_PER_THREAD  (AST_HALT | AST_TERMINATE | MACHINE_AST_PER_THREAD)
 
-typedef unsigned int ast_t;
+typedef unsigned long ast_t;
 
 extern volatile ast_t need_ast[NCPUS];
 

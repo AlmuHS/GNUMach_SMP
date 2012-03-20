@@ -44,5 +44,5 @@ linux_soft_intr (void)
     }
   return;
 bad_bh:
-  printk ("linux_soft_intr:bad interrupt handler entry %08lx\n", mask);
+  printk ("linux_soft_intr:bad interrupt handler entry %08x\n", mask);
 }

@@ -102,7 +102,7 @@ int boot_script_exec (void);
 /* Create an entry in the symbol table for variable NAME,
    whose type is TYPE and value is VAL.  Returns 0 on success,
    non-zero otherwise.  */
-int boot_script_set_variable (const char *name, int type, int val);
+int boot_script_set_variable (const char *name, int type, long val);
 
 /* Define the function NAME, which will return type RET_TYPE.  */
 int boot_script_define_function (const char *name, int ret_type,

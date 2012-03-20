@@ -30,19 +30,21 @@
 void dump_ss(struct i386_saved_state *st)
 {
 	printf("Dump of i386_saved_state %p:\n", st);
-	printf("EAX %08x EBX %08x ECX %08x EDX %08x\n",
+	printf("EAX %08lx EBX %08lx ECX %08lx EDX %08lx\n",
 		st->eax, st->ebx, st->ecx, st->edx);
-	printf("ESI %08x EDI %08x EBP %08x ESP %08x\n",
+	printf("ESI %08lx EDI %08lx EBP %08lx ESP %08lx\n",
 		st->esi, st->edi, st->ebp, st->uesp);
-	printf("CS %04x SS %04x DS %04x ES %04x FS %04x GS %04x\n",
+	printf("CS %04lx SS %04lx "
+		"DS %04lx ES %04lx "
+		"FS %04lx GS %04lx\n",
 		st->cs & 0xffff, st->ss & 0xffff,
 		st->ds & 0xffff, st->es & 0xffff,
 		st->fs & 0xffff, st->gs & 0xffff);
-	printf("v86:            DS %04x ES %04x FS %04x GS %04x\n",
+	printf("v86:            DS %04lx ES %04lx FS %04lx GS %04lx\n",
 		st->v86_segs.v86_ds & 0xffff, st->v86_segs.v86_es & 0xffff,
 		st->v86_segs.v86_gs & 0xffff, st->v86_segs.v86_gs & 0xffff);
-	printf("EIP %08x EFLAGS %08x\n", st->eip, st->efl);
-	printf("trapno %d: %s, error %08x\n",
+	printf("EIP %08lx EFLAGS %08lx\n", st->eip, st->efl);
+	printf("trapno %ld: %s, error %08lx\n",
 		st->trapno, trap_name(st->trapno),
 		st->err);
 }

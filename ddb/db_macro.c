@@ -165,7 +165,7 @@ db_exec_macro(name)
 	return(0);
 }
 
-int
+long
 /* ARGSUSED */
 db_arg_variable(vp, valuep, flag, ap)
 	struct db_variable	*vp;

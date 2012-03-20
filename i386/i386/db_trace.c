@@ -45,7 +45,7 @@
 
 #include "trap.h"
 
-int
+long
 db_i386_reg_value(
 	struct db_variable	*vp,
 	db_expr_t		*valuep,
@@ -56,22 +56,22 @@ db_i386_reg_value(
  * Machine register set.
  */
 struct db_variable db_regs[] = {
-	{ "cs",	(int *)&ddb_regs.cs,  db_i386_reg_value },
-	{ "ds",	(int *)&ddb_regs.ds,  db_i386_reg_value },
-	{ "es",	(int *)&ddb_regs.es,  db_i386_reg_value },
-	{ "fs",	(int *)&ddb_regs.fs,  db_i386_reg_value },
-	{ "gs",	(int *)&ddb_regs.gs,  db_i386_reg_value },
-	{ "ss",	(int *)&ddb_regs.ss,  db_i386_reg_value },
-	{ "eax",(int *)&ddb_regs.eax, db_i386_reg_value },
-	{ "ecx",(int *)&ddb_regs.ecx, db_i386_reg_value },
-	{ "edx",(int *)&ddb_regs.edx, db_i386_reg_value },
-	{ "ebx",(int *)&ddb_regs.ebx, db_i386_reg_value },
-	{ "esp",(int *)&ddb_regs.uesp,db_i386_reg_value },
-	{ "ebp",(int *)&ddb_regs.ebp, db_i386_reg_value },
-	{ "esi",(int *)&ddb_regs.esi, db_i386_reg_value },
-	{ "edi",(int *)&ddb_regs.edi, db_i386_reg_value },
-	{ "eip",(int *)&ddb_regs.eip, db_i386_reg_value },
-	{ "efl",(int *)&ddb_regs.efl, db_i386_reg_value },
+	{ "cs",	(long *)&ddb_regs.cs,  db_i386_reg_value },
+	{ "ds",	(long *)&ddb_regs.ds,  db_i386_reg_value },
+	{ "es",	(long *)&ddb_regs.es,  db_i386_reg_value },
+	{ "fs",	(long *)&ddb_regs.fs,  db_i386_reg_value },
+	{ "gs",	(long *)&ddb_regs.gs,  db_i386_reg_value },
+	{ "ss",	(long *)&ddb_regs.ss,  db_i386_reg_value },
+	{ "eax",(long *)&ddb_regs.eax, db_i386_reg_value },
+	{ "ecx",(long *)&ddb_regs.ecx, db_i386_reg_value },
+	{ "edx",(long *)&ddb_regs.edx, db_i386_reg_value },
+	{ "ebx",(long *)&ddb_regs.ebx, db_i386_reg_value },
+	{ "esp",(long *)&ddb_regs.uesp,db_i386_reg_value },
+	{ "ebp",(long *)&ddb_regs.ebp, db_i386_reg_value },
+	{ "esi",(long *)&ddb_regs.esi, db_i386_reg_value },
+	{ "edi",(long *)&ddb_regs.edi, db_i386_reg_value },
+	{ "eip",(long *)&ddb_regs.eip, db_i386_reg_value },
+	{ "efl",(long *)&ddb_regs.efl, db_i386_reg_value },
 };
 struct db_variable *db_eregs = db_regs + sizeof(db_regs)/sizeof(db_regs[0]);
 
@@ -82,8 +82,8 @@ struct db_variable *db_eregs = db_regs + sizeof(db_regs)/sizeof(db_regs[0]);
 
 struct i386_frame {
 	struct i386_frame	*f_frame;
-	int			f_retaddr;
-	int			f_arg0;
+	long			f_retaddr;
+	long			f_arg0;
 };
 
 #define	TRAP		1
@@ -99,18 +99,18 @@ boolean_t	db_trace_symbols_found = FALSE;
 
 struct i386_kregs {
 	char	*name;
-	int	offset;
+	long	offset;
 } i386_kregs[] = {
-	{ "ebx", (int)(&((struct i386_kernel_state *)0)->k_ebx) },
-	{ "esp", (int)(&((struct i386_kernel_state *)0)->k_esp) },
-	{ "ebp", (int)(&((struct i386_kernel_state *)0)->k_ebp) },
-	{ "edi", (int)(&((struct i386_kernel_state *)0)->k_edi) },
-	{ "esi", (int)(&((struct i386_kernel_state *)0)->k_esi) },
-	{ "eip", (int)(&((struct i386_kernel_state *)0)->k_eip) },
+	{ "ebx", (long)(&((struct i386_kernel_state *)0)->k_ebx) },
+	{ "esp", (long)(&((struct i386_kernel_state *)0)->k_esp) },
+	{ "ebp", (long)(&((struct i386_kernel_state *)0)->k_ebp) },
+	{ "edi", (long)(&((struct i386_kernel_state *)0)->k_edi) },
+	{ "esi", (long)(&((struct i386_kernel_state *)0)->k_esi) },
+	{ "eip", (long)(&((struct i386_kernel_state *)0)->k_eip) },
 	{ 0 },
 };
 
-int *
+long *
 db_lookup_i386_kreg(
 	char	*name,
 	int	*kregp)
@@ -119,19 +119,19 @@ db_lookup_i386_kreg(
 
 	for (kp = i386_kregs; kp->name; kp++) {
 	    if (strcmp(name, kp->name) == 0)
-		return (int *)((int)kregp + kp->offset);
+		return (long *)((long)kregp + kp->offset);
 	}
 	return 0;
 }
 
-int
+long
 db_i386_reg_value(
 	struct	db_variable	*vp,
 	db_expr_t		*valuep,
 	int			flag,
 	db_var_aux_param_t	ap)
 {
-	int			*dp = 0;
+	long			*dp = 0;
 	db_expr_t		null_reg = 0;
 	register thread_t	thread = ap->thread;
 	extern unsigned		int_stack_high;
@@ -153,15 +153,15 @@ db_i386_reg_value(
 	    } else if ((thread->state & TH_SWAPPED) == 0 &&
 			thread->kernel_stack) {
 		dp = db_lookup_i386_kreg(vp->name,
-				(int *)(STACK_IKS(thread->kernel_stack)));
+				(long *)(STACK_IKS(thread->kernel_stack)));
 		if (dp == 0)
 		    dp = &null_reg;
 	    } else if ((thread->state & TH_SWAPPED) &&
 			thread->swap_func != thread_exception_return) {
 /*.....this breaks t/t $taskN.0...*/
 		/* only EIP is valid */
-		if (vp->valuep == (int *) &ddb_regs.eip) {
-		    dp = (int *)(&thread->swap_func);
+		if (vp->valuep == (long *) &ddb_regs.eip) {
+		    dp = (long *)(&thread->swap_func);
 		} else {
 		    dp = &null_reg;
 		}
@@ -170,8 +170,8 @@ db_i386_reg_value(
 	if (dp == 0) {
 	    if (thread->pcb == 0)
 		db_error("no pcb\n");
-	    dp = (int *)((int)(&thread->pcb->iss) +
-		 		    ((int)vp->valuep - (int)&ddb_regs));
+	    dp = (long *)((long)(&thread->pcb->iss) +
+		    ((long)vp->valuep - (long)&ddb_regs));
 	}
 	if (flag == DB_VAR_SET)
 	    *dp = *valuep;
@@ -212,18 +212,18 @@ db_numargs(
 	struct i386_frame *fp,
 	task_t task)
 {
-	int	*argp;
-	int	inst;
-	int	args;
+	long	*argp;
+	long	inst;
+	long	args;
 	extern char	etext[];
 
-	argp = (int *)db_get_task_value((int)&fp->f_retaddr, 4, FALSE, task);
-	if (argp < (int *)VM_MIN_KERNEL_ADDRESS || argp > (int *)etext)
+	argp = (long *)db_get_task_value((long)&fp->f_retaddr, sizeof(long), FALSE, task);
+	if (argp < (long *)VM_MIN_KERNEL_ADDRESS || argp > (long *)etext)
 	    args = db_numargs_default;
-	else if (!DB_CHECK_ACCESS((int)argp, 4, task))
+	else if (!DB_CHECK_ACCESS((long)argp, sizeof(long), task))
 	    args = db_numargs_default;
 	else {
-	    inst = db_get_task_value((int)argp, 4, FALSE, task);
+	    inst = db_get_task_value((long)argp, sizeof(long), FALSE, task);
 	    if ((inst & 0xff) == 0x59)	/* popl %ecx */
 		args = 1;
 	    else if ((inst & 0xffff) == 0xc483)	/* addl %n, %esp */
@@ -236,16 +236,16 @@ db_numargs(
 
 struct interrupt_frame {
 	struct i386_frame *if_frame;	/* point to next frame */
-	int		  if_retaddr;	/* return address to _interrupt */
-	int		  if_unit;	/* unit number */
+	long		  if_retaddr;	/* return address to _interrupt */
+	long		  if_unit;	/* unit number */
 	spl_t		  if_spl;	/* saved spl */
-	int		  if_iretaddr;	/* _return_to_{iret,iret_i} */
-	int		  if_edx;	/* old sp(iret) or saved edx(iret_i) */
-	int		  if_ecx;	/* saved ecx(iret_i) */
-	int		  if_eax;	/* saved eax(iret_i) */
-	int		  if_eip;	/* saved eip(iret_i) */
-	int		  if_cs;	/* saved cs(iret_i) */
-	int		  if_efl;	/* saved efl(iret_i) */
+	long		  if_iretaddr;	/* _return_to_{iret,iret_i} */
+	long		  if_edx;	/* old sp(iret) or saved edx(iret_i) */
+	long		  if_ecx;	/* saved ecx(iret_i) */
+	long		  if_eax;	/* saved eax(iret_i) */
+	long		  if_eip;	/* saved eip(iret_i) */
+	long		  if_cs;	/* saved cs(iret_i) */
+	long		  if_efl;	/* saved efl(iret_i) */
 };
 
 /*
@@ -263,7 +263,7 @@ db_nextframe(
 	struct i386_frame **lfp,	/* in/out */
 	struct i386_frame **fp,		/* in/out */
 	db_addr_t	  *ip,		/* out */
-	int 		  frame_type,	/* in */
+	long 		  frame_type,	/* in */
 	thread_t	  thread)	/* in */
 {
 	struct i386_saved_state *saved_regs;
@@ -277,7 +277,7 @@ db_nextframe(
 	     * it is an (struct i386_saved_state *).
 	     */
 	    saved_regs = (struct i386_saved_state *)
-			db_get_task_value((int)&((*fp)->f_arg0),4,FALSE,task);
+		db_get_task_value((long)&((*fp)->f_arg0),sizeof(long),FALSE,task);
 	    db_printf(">>>>> %s (%d) at ",
 			trap_name(saved_regs->trapno), saved_regs->trapno);
 	    db_task_printsym(saved_regs->eip, DB_STGY_PROC, task);
@@ -310,10 +310,10 @@ db_nextframe(
 	default:
 	miss_frame:
 	    *ip = (db_addr_t)
-		db_get_task_value((int)&(*fp)->f_retaddr, 4, FALSE, task);
+		db_get_task_value((long)&(*fp)->f_retaddr, sizeof(long), FALSE, task);
 	    *lfp = *fp;
 	    *fp = (struct i386_frame *)
-		db_get_task_value((int)&(*fp)->f_frame, 4, FALSE, task);
+		db_get_task_value((long)&(*fp)->f_frame, sizeof(long), FALSE, task);
 	    break;
 	}
 }
@@ -401,7 +401,7 @@ db_stack_trace_cmd(
 	} else {
 	    frame = (struct i386_frame *)addr;
 	    th = (db_default_thread)? db_default_thread: current_thread();
-	    callpc = (db_addr_t)db_get_task_value((int)&frame->f_retaddr, 4,
+	    callpc = (db_addr_t)db_get_task_value((long)&frame->f_retaddr, sizeof(long),
 						  FALSE,
 						  (th == THREAD_NULL) ? TASK_NULL : th->task);
 	}
@@ -420,13 +420,13 @@ db_i386_stack_trace(
 {
 	task_t		task;
 	boolean_t	kernel_only;
-	int		*argp;
-	int		user_frame = 0;
+	long		*argp;
+	long		user_frame = 0;
 	struct i386_frame *lastframe;
 	int		frame_type;
 	char		*filename;
 	int		linenum;
-	extern unsigned	int db_maxoff;
+	extern unsigned	long db_maxoff;
 
 	if (count == -1)
 	    count = 65535;
@@ -438,7 +438,7 @@ db_i386_stack_trace(
 	if (!db_trace_symbols_found)
 	    db_find_trace_symbols();
 
-	if (!INKERNEL((unsigned)callpc) && !INKERNEL((unsigned)frame)) {
+	if (!INKERNEL((unsigned long)callpc) && !INKERNEL((unsigned long)frame)) {
 	    db_printf(">>>>> user space <<<<<\n");
 	    user_frame++;
 	}
@@ -449,7 +449,7 @@ db_i386_stack_trace(
 	    char *	name;
 	    db_expr_t	offset;
 
-	    if (INKERNEL((unsigned)callpc) && user_frame == 0) {
+	    if (INKERNEL((unsigned long)callpc) && user_frame == 0) {
 		db_addr_t call_func = 0;
 
 		db_sym_t sym_tmp;
@@ -474,7 +474,7 @@ db_i386_stack_trace(
 		    frame_type = 0;
 		    narg = db_numargs(frame, task);
 		}
-	    } else if (INKERNEL((unsigned)callpc) ^ INKERNEL((unsigned)frame)) {
+	    } else if (INKERNEL((unsigned long)callpc) ^ INKERNEL((unsigned long)frame)) {
 		frame_type = 0;
 		narg = -1;
 	    } else {
@@ -492,7 +492,7 @@ db_i386_stack_trace(
 
 	    argp = &frame->f_arg0;
 	    while (narg > 0) {
-		db_printf("%x", db_get_task_value((int)argp,4,FALSE,task));
+		db_printf("%x", db_get_task_value((long)argp,sizeof(long),FALSE,task));
 		argp++;
 		if (--narg != 0)
 		    db_printf(",");
@@ -519,7 +519,7 @@ db_i386_stack_trace(
 		break;
 	    }
 	    if (!INKERNEL(lastframe) ||
-		(!INKERNEL((unsigned)callpc) && !INKERNEL((unsigned)frame)))
+		(!INKERNEL((unsigned long)callpc) && !INKERNEL((unsigned long)frame)))
 		user_frame++;
 	    if (user_frame == 1) {
 		db_printf(">>>>> user space <<<<<\n");
@@ -570,6 +570,7 @@ static void db_cproc_state(
 }
 
 /* offsets in a cproc structure */
+/* TODO: longs? */
 int db_cproc_next_offset = 0 * 4;
 int db_cproc_incarnation_offset = 1 * 4;
 int db_cproc_list_offset = 2 * 4;

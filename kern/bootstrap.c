@@ -211,7 +211,7 @@ void bootstrap_create()
 	    char *var = memcpy (alloca (len), *ep, len);
 	    char *val = strchr (var, '=');
 	    *val++ = '\0';
-	    losers = boot_script_set_variable (var, VAL_STR, (int) val);
+	    losers = boot_script_set_variable (var, VAL_STR, (long) val);
 	    if (losers)
 	      panic ("cannot set boot-script variable %s: %s",
 		     var, boot_script_error_string (losers));

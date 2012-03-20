@@ -58,7 +58,7 @@ ktss_init()
 
 	/* Initialize the master TSS.  */
 	ktss.tss.ss0 = KERNEL_DS;
-	ktss.tss.esp0 = (unsigned)(exception_stack+1024);
+	ktss.tss.esp0 = (unsigned long)(exception_stack+1024);
 	ktss.tss.io_bit_map_offset = IOPB_INVAL;                                                                                                
 	/* Set the last byte in the I/O bitmap to all 1's.  */
 	ktss.barrier = 0xff;

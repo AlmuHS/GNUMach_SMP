@@ -67,7 +67,7 @@ static int symtab_index = 0;
 
 /* Create a task and suspend it.  */
 static int
-create_task (struct cmd *cmd, int *val)
+create_task (struct cmd *cmd, long *val)
 {
   int err = boot_script_task_create (cmd);
   *val = (long) cmd->task;
@@ -76,14 +76,14 @@ create_task (struct cmd *cmd, int *val)
 
 /* Resume a task.  */
 static int
-resume_task (struct cmd *cmd, int *val)
+resume_task (struct cmd *cmd, long *val)
 {
   return boot_script_task_resume (cmd);
 }
 
 /* Resume a task when the user hits return.  */
 static int
-prompt_resume_task (struct cmd *cmd, int *val)
+prompt_resume_task (struct cmd *cmd, long *val)
 {
   return boot_script_prompt_task_resume (cmd);
 }
@@ -659,7 +659,7 @@ boot_script_exec ()
 /* Create an entry for the variable NAME with TYPE and value VAL,
    in the symbol table.  */
 int
-boot_script_set_variable (const char *name, int type, int val)
+boot_script_set_variable (const char *name, int type, long val)
 {
   struct sym *sym = sym_enter (name);
 

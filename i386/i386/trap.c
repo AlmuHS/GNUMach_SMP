@@ -220,7 +220,7 @@ dump_ss(regs);
 			    || (subcode >= (long)_start
 				&& subcode < (long)etext)) {
 				printf("Kernel page fault at address 0x%x, "
-				       "eip = 0x%x\n",
+				       "eip = 0x%lx\n",
 				       subcode, regs->eip);
 				goto badtrap;
 			}
@@ -328,7 +328,7 @@ dump_ss(regs);
 			printf("%s trap", trap_type[type]);
 		else
 			printf("trap %d", type);
-		printf(", eip 0x%x\n", regs->eip);
+		printf(", eip 0x%lx\n", regs->eip);
 #if	MACH_TTD
 		if (kttd_enabled && kttd_trap(type, code, regs))
 			return;
@@ -362,7 +362,7 @@ int user_trap(regs)
 
 	if ((vm_offset_t)thread < phys_last_addr) {
 		printf("user_trap: bad thread pointer 0x%p\n", thread);
-		printf("trap type %d, code 0x%x, va 0x%x, eip 0x%x\n",
+		printf("trap type %ld, code 0x%lx, va 0x%lx, eip 0x%lx\n",
 		       regs->trapno, regs->err, regs->cr2, regs->eip);
 		asm volatile ("1: hlt; jmp 1b");
 	}
@@ -540,7 +540,7 @@ printf("user trap %d error %d sub %08x\n", type, code, subcode);
 		    return 0;
 #endif	/* MACH_KDB */
 		splhigh();
-		printf("user trap, type %d, code = %x\n",
+		printf("user trap, type %d, code = %lx\n",
 		       type, regs->err);
 		dump_ss(regs);
 		panic("trap");

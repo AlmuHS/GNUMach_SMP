@@ -245,7 +245,7 @@ db_init_default_thread(void)
  * in the command line
  */
 /* ARGSUSED */
-int
+long
 db_set_default_thread(vp, valuep, flag)
 	struct db_variable *vp;
 	db_expr_t	*valuep;
@@ -270,7 +270,7 @@ db_set_default_thread(vp, valuep, flag)
 /*
  * convert $taskXXX[.YYY] type DDB variable to task or thread address
  */
-int
+long
 db_get_task_thread(vp, valuep, flag, ap)
 	struct db_variable	*vp;
 	db_expr_t		*valuep;

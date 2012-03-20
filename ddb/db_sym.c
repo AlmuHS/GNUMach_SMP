@@ -445,7 +445,7 @@ db_symbol_values(stab, sym, namep, valuep)
  * not accept symbols whose value is zero (and use plain hex).
  */
 
-unsigned int	db_maxoff = 0x4000;
+unsigned long	db_maxoff = 0x4000;
 
 void
 db_task_printsym(off, strategy, task)

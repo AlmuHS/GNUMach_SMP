@@ -810,7 +810,7 @@ set_user_regs(stack_base, stack_size, exec_info, arg_size)
 	arg_addr = stack_base + stack_size - arg_size;
 
 	saved_state = USER_REGS(current_thread());
-	saved_state->uesp = (int)arg_addr;
+	saved_state->uesp = (long)arg_addr;
 	saved_state->eip = exec_info->entry;
 
 	return (arg_addr);

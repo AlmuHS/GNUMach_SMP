@@ -42,7 +42,7 @@ struct db_variable {
 	char	*name;		/* Name of variable */
 	db_expr_t *valuep;	/* pointer to value of variable */
 				/* function to call when reading/writing */
-	int	(*fcn)(struct db_variable *, db_expr_t *, int, db_var_aux_param_t);
+	long	(*fcn)(struct db_variable *, db_expr_t *, int, db_var_aux_param_t);
 	short	min_level;	/* number of minimum suffix levels */
 	short	max_level;	/* number of maximum suffix levels */
 	short	low;		/* low value of level 1 suffix */
@@ -50,7 +50,7 @@ struct db_variable {
 #define DB_VAR_GET	0
 #define DB_VAR_SET	1
 };
-#define	FCN_NULL	((int (*)())0)
+#define	FCN_NULL	((long (*)())0)
 
 #define DB_VAR_LEVEL	3	/* maximum number of suffix level */
 
