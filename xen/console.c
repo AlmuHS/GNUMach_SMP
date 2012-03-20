@@ -47,9 +47,13 @@ int hypputc(int c)
 		hyp_console_io(CONSOLEIO_write, 1, kvtolin(&d));
 	} else {
 		spl_t spl = splhigh();
+		int complain;
 		simple_lock(&outlock);
 		while (hyp_ring_smash(console->out, console->out_prod, console->out_cons)) {
-			hyp_console_put("ring smash\n");
+			if (!complain) {
+				complain = 1;
+				hyp_console_put("ring smash\n");
+			}
 			/* TODO: are we allowed to sleep in putc? */
 			hyp_yield();
 		}
