@@ -319,7 +319,7 @@ i386at_init(void)
 	/* XXX move to intel/pmap.h */
 	extern pt_entry_t *kernel_page_dir;
 	int nb_direct, i;
-	vm_offset_t addr;
+	vm_offset_t addr, delta;
 
 	/*
 	 * Initialize the PIC prior to any possible call to an spl.
@@ -389,8 +389,10 @@ i386at_init(void)
 	 * page-level write protection works in kernel mode.
 	 */
 #if VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
-	init_alloc_aligned(0, &addr);
-	nb_direct = (addr + NPTES * PAGE_SIZE - 1) / (NPTES * PAGE_SIZE);
+	delta = VM_MIN_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS;
+	if ((vm_offset_t)(-delta) < delta)
+		delta = (vm_offset_t)(-delta);
+	nb_direct = delta >> PDESHIFT;
 	for (i = 0; i < nb_direct; i++)
 		kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS) + i] =
 			kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS) + i];
