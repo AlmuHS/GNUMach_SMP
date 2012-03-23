@@ -149,7 +149,7 @@ linux_init (void)
   /*
    * Free unused memory.
    */
-  while (pages && pages->phys_addr < round_page (memory_start))
+  while (pages && phystokv(pages->phys_addr) < round_page (memory_start))
     pages = (vm_page_t) pages->pageq.next;
   if (pages)
     free_contig_mem (pages);
@@ -296,7 +296,7 @@ alloc_contig_mem (unsigned size, unsigned limit,
   kfree ((vm_offset_t) bits, bits_len);
   if (pages)
     *pages = page_list;
-  return (m);
+  return phystokv(m);
 }
 
 /*

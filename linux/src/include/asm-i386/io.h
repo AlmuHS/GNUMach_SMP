@@ -25,6 +25,8 @@
  *		Linus
  */
 
+#include <machine/vm_param.h>
+
 #ifdef SLOW_IO_BY_JUMPING
 #define __SLOW_DOWN_IO __asm__ __volatile__("jmp 1f\n1:\tjmp 1f\n1:")
 #else
@@ -45,12 +47,12 @@
  */
 extern inline unsigned long virt_to_phys(volatile void * address)
 {
-	return (unsigned long) address;
+	return (unsigned long) _kvtophys(address);
 }
 
 extern inline void * phys_to_virt(unsigned long address)
 {
-	return (void *) address;
+	return (void *) phystokv(address);
 }
 
 /*

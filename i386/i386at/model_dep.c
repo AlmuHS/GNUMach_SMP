@@ -703,9 +703,9 @@ init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 	}
 
 	/* Skip our own kernel code, data, and bss.  */
-	if ((avail_next > (vm_offset_t)start) && (addr < (vm_offset_t)end))
+	if ((phystokv(avail_next) > (vm_offset_t)start) && (phystokv(addr) < (vm_offset_t)end))
 	{
-		avail_next = (vm_offset_t)end;
+		avail_next = _kvtophys(end);
 		goto retry;
 	}
 
@@ -720,9 +720,9 @@ init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 		avail_next = mods_end_pa;
 		goto retry;
 	}
-	if ((avail_next > kern_sym_start) && (addr < kern_sym_end))
+	if ((phystokv(avail_next) > kern_sym_start) && (phystokv(addr) < kern_sym_end))
 	{
-		avail_next = kern_sym_end;
+		avail_next = _kvtophys(kern_sym_end);
 		goto retry;
 	}
 	if (boot_info.flags & MULTIBOOT_MODS)

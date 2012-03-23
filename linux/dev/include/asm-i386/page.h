@@ -1,12 +1,7 @@
 #ifndef _I386_PAGE_H
 #define _I386_PAGE_H
 
-#ifndef MACH_INCLUDE
-/* PAGE_SHIFT determines the page size */
-#define PAGE_SHIFT	12
-#define PAGE_SIZE	(1UL << PAGE_SHIFT)
-#define PAGE_MASK	(~(PAGE_SIZE-1))
-#endif
+#include <mach/vm_param.h>
 
 #ifdef __KERNEL__
 

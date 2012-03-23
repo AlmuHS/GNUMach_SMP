@@ -307,7 +307,7 @@ alloc_buffer (int size)
       d = current_thread ()->pcb->data;
       assert (d);
       queue_enter (&d->pages, m, vm_page_t, pageq);
-      return (void *) m->phys_addr;
+      return (void *) phystokv(m->phys_addr);
     }
   return (void *) __get_free_pages (GFP_KERNEL, 0, ~0UL);
 }
@@ -327,7 +327,7 @@ free_buffer (void *p, int size)
       assert (d);
       queue_iterate (&d->pages, m, vm_page_t, pageq)
 	{
-	  if (m->phys_addr == (vm_offset_t) p)
+	  if (phystokv(m->phys_addr) == (vm_offset_t) p)
 	    {
 	      queue_remove (&d->pages, m, vm_page_t, pageq);
 	      VM_PAGE_FREE (m);
@@ -600,9 +600,9 @@ rdwr_full (int rw, kdev_t dev, loff_t *off, char **buf, int *resid, int bshift)
       if (cc > ((nbuf - nb) << bshift))
 	cc = (nbuf - nb) << bshift;
       if (! test_bit (BH_Bounce, &bh->b_state))
-	bh->b_data = (char *) pmap_extract (vm_map_pmap (device_io_map),
+	bh->b_data = (char *) phystokv(pmap_extract (vm_map_pmap (device_io_map),
 					    (((vm_offset_t) *buf)
-					     + (nb << bshift)));
+					     + (nb << bshift))));
       else
 	{
 	  bh->b_data = alloc_buffer (cc);

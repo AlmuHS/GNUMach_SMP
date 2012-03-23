@@ -61,6 +61,7 @@
 
 #include <sys/types.h>
 #include <machine/spl.h>
+#include <machine/vm_param.h>
 
 #include <mach/mach_types.h>
 #include <mach/kern_return.h>
@@ -449,7 +450,7 @@ device_write (void *d, ipc_port_t reply_port,
       assert (copy->cpy_npages == 1);
 
       skb->copy = copy;
-      skb->data = ((void *) copy->cpy_page_list[0]->phys_addr
+      skb->data = ((void *) phystokv(copy->cpy_page_list[0]->phys_addr)
 		   + (copy->offset & PAGE_MASK));
       skb->len = count;
       skb->head = skb->data;
@@ -463,7 +464,7 @@ device_write (void *d, ipc_port_t reply_port,
       skb->end = skb->tail;
       
       memcpy (skb->data,
-	      ((void *) copy->cpy_page_list[0]->phys_addr
+	      ((void *) phystokv(copy->cpy_page_list[0]->phys_addr)
 	       + (copy->offset & PAGE_MASK)),
 	      amt);
       count -= amt;
@@ -473,7 +474,7 @@ device_write (void *d, ipc_port_t reply_port,
 	  amt = PAGE_SIZE;
 	  if (amt > count)
 	    amt = count;
-	  memcpy (p, (void *) copy->cpy_page_list[i]->phys_addr, amt);
+	  memcpy (p, (void *) phystokv(copy->cpy_page_list[i]->phys_addr), amt);
 	  count -= amt;
 	  p += amt;
 	}

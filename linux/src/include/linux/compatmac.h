@@ -47,6 +47,7 @@
 #define COMPATMAC_H
 
 #include <linux/version.h>
+#include <asm/io.h>
 
 #if LINUX_VERSION_CODE < 0x020100    /* Less than 2.1.0 */
 #define TWO_ZERO
@@ -96,11 +97,11 @@ static inline unsigned char get_irq (unsigned char bus, unsigned char fn)
 
 static inline void *ioremap(unsigned long base, long length)
 {
-	if (base < 0x100000) return (void *)base;
+	if (base < 0x100000) return phys_to_virt(base);
 	return vremap (base, length);
 }
 
-#define my_iounmap(x, b)             (((long)x<0x100000)?0:vfree ((void*)x))
+#define my_iounmap(x, b)             (((long)x<(long)phys_to_virt(0x100000))?0:vfree ((void*)x))
 
 #define capable(x)                   suser()
 

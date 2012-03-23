@@ -1856,9 +1856,9 @@ Retry:
 					      | INTEL_PTE_WRITE))
 			panic("%s:%d could not set pde %p(%p,%p) to %p(%p,%p) %p\n",__FILE__,__LINE__, pdp, kvtophys((vm_offset_t)pdp), (vm_offset_t) pa_to_ma(kvtophys((vm_offset_t)pdp)), ptp, kvtophys(ptp), (vm_offset_t) pa_to_ma(kvtophys(ptp)), (vm_offset_t) pa_to_pte(kv_to_ma(ptp)));
 #else	/* MACH_XEN */
-		*pdp = pa_to_pte(ptp) | INTEL_PTE_VALID
-				      | INTEL_PTE_USER
-				      | INTEL_PTE_WRITE;
+		*pdp = pa_to_pte(kvtophys(ptp)) | INTEL_PTE_VALID
+					        | INTEL_PTE_USER
+					        | INTEL_PTE_WRITE;
 #endif	/* MACH_XEN */
 		pdp++;
 		ptp += INTEL_PGBYTES;
