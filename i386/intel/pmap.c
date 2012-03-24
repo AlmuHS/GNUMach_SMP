@@ -716,7 +716,7 @@ void pmap_bootstrap()
 		 * to allocate new kernel page tables later.
 		 * XX fix this
 		 */
-		for (va = phystokv(phys_first_addr); va < kernel_virtual_end; )
+		for (va = phystokv(phys_first_addr); va >= phystokv(phys_first_addr) && va < kernel_virtual_end; )
 		{
 			pt_entry_t *pde = kernel_page_dir + lin2pdenum(kvtolin(va));
 			pt_entry_t *ptable = (pt_entry_t*)phystokv(pmap_grab_page());
