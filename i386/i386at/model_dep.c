@@ -394,6 +394,13 @@ i386at_init(void)
 		kernel_page_dir[lin2pdenum(INIT_VM_MIN_KERNEL_ADDRESS) + i] =
 			kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS) + i];
 #endif
+	/* We need BIOS memory mapped at 0xc0000 & co for Linux drivers */
+#ifdef LINUX_DEV
+#if VM_MIN_KERNEL_ADDRESS != 0
+	kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS)] =
+		kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS)];
+#endif
+#endif
 
 #ifdef	MACH_XEN
 	for (i = 0; i < PDPNUM; i++)
@@ -457,6 +464,13 @@ i386at_init(void)
 		kernel_page_dir[lin2pdenum(INIT_VM_MIN_KERNEL_ADDRESS) + i] = 0;
 #endif	/* MACH_XEN */
 	}
+#endif
+	/* Keep BIOS memory mapped */
+#ifdef LINUX_DEV
+#if VM_MIN_KERNEL_ADDRESS != 0
+	kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS)] =
+		kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS)];
+#endif
 #endif
 
 	/* Not used after boot, better give it back.  */

@@ -1128,6 +1128,12 @@ pmap_t pmap_create(size)
 		panic("pmap_create");
 
 	memcpy(p->dirbase, kernel_page_dir, PDPNUM * INTEL_PGBYTES);
+#ifdef LINUX_DEV
+#if VM_MIN_KERNEL_ADDRESS != 0
+	/* Do not map BIOS in user tasks */
+	p->dirbase[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS)] = 0;
+#endif
+#endif
 #ifdef	MACH_XEN
 	{
 		int i;
