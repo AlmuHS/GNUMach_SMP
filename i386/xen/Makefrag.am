@@ -29,5 +29,6 @@ libkernel_a_SOURCES += \
 if PLATFORM_xen
 gnumach_LINKFLAGS += \
 	--defsym _START=0xC0000000 \
+	--defsym _START_MAP=0xC0000000 \
 	-T '$(srcdir)'/i386/ldscript
 endif

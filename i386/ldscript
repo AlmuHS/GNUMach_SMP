@@ -13,7 +13,7 @@ SECTIONS
    */
   . = _START;
   .text           :
-  AT (0x00100000)
+  AT (_START_MAP)
   {
     *(.text.start)
     *(.text .stub .text.* .gnu.linkonce.t.*)

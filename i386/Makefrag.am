@@ -200,6 +200,7 @@ EXTRA_DIST += \
 if PLATFORM_at
 gnumach_LINKFLAGS += \
 	--defsym _START=0x100000 \
+	--defsym _START_MAP=0x100000 \
 	-T '$(srcdir)'/i386/ldscript
 endif
 
