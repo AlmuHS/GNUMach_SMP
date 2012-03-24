@@ -32,8 +32,10 @@
 /* The kernel address space is usually 1GB, usually starting at virtual address 0.  */
 #ifdef	MACH_XEN
 #define VM_MIN_KERNEL_ADDRESS	0xC0000000UL
+#define INIT_VM_MIN_KERNEL_ADDRESS	VM_MIN_KERNEL_ADDRESS
 #else	/* MACH_XEN */
 #define VM_MIN_KERNEL_ADDRESS	0x00000000UL
+#define INIT_VM_MIN_KERNEL_ADDRESS	0x00000000UL
 #endif	/* MACH_XEN */
 
 #ifdef	MACH_XEN
