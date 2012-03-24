@@ -39,6 +39,19 @@ boot_hdr:
 #endif /* __ELF__ */
 
 boot_entry:
+	/* use segmentation to offset ourself. */
+	lgdt	boot_gdt_descr - KERNELBASE
+	ljmp	$8,$0f
+0:
+	movw	$0,%ax
+	movw	%ax,%ds
+	movw	%ax,%es
+	movw	%ax,%fs
+	movw	%ax,%gs
+	movw	$16,%ax
+	movw	%ax,%ds
+	movw	%ax,%es
+	movw	%ax,%ss
 
 	/* Switch to our own interrupt stack.  */
 	movl	$_intstack+INTSTACK_SIZE,%esp
@@ -79,4 +92,28 @@ iplt_done:
 	call	EXT(c_boot_entry)
 
 	.comm	_intstack,INTSTACK_SIZE
+
+.align 16
+	.word 0
+boot_gdt_descr:
+	.word 3*8+7
+	.long boot_gdt - KERNELBASE
+.align 16
+boot_gdt:
+	/* 0 */
+	.quad 0
+	/* boot CS = 8 */
+	.word 0xffff
+	.word (-KERNELBASE) & 0xffff
+	.byte ((-KERNELBASE) >> 16) & 0xff
+	.byte 0x9a
+	.byte 0xcf
+	.byte ((-KERNELBASE) >> 24) & 0xff
+	/* boot DS = 8 */
+	.word 0xffff
+	.word (-KERNELBASE) & 0xffff
+	.byte ((-KERNELBASE) >> 16) & 0xff
+	.byte 0x92
+	.byte 0xcf
+	.byte ((-KERNELBASE) >> 24) & 0xff
 
