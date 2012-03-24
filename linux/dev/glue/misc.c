@@ -121,6 +121,8 @@ linux_to_mach_error (int err)
 int
 issig ()
 {
+  if (!current_thread())
+    return 0;
   return current_thread ()->wait_result != THREAD_AWAKENED;
 }
 
