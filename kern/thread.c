@@ -2397,7 +2397,7 @@ kern_return_t host_stack_usage(
 	vm_size_t	*maxusagep,
 	vm_offset_t	*maxstackp)
 {
-	unsigned int total;
+	natural_t total;
 	vm_size_t maxusage;
 
 	if (host == HOST_NULL)
