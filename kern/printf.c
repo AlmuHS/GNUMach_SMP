@@ -39,7 +39,10 @@
  *	FILE *fd;
  *	char *format;
  *	{
+ *	va_list listp;
+ *	va_start(listp, fmt);
  *	_doprnt(format, &args, fd);
+ *	va_end(listp);
  *	}
  *
  *  would suffice.  (This example does not handle the fprintf's "return
@@ -165,7 +168,7 @@ void printf_init(void)
 
 void _doprnt(
 	register const char *fmt,
-	va_list		*argp,
+	va_list		argp,
 					/* character output routine */
  	void		(*putc)( char, vm_offset_t),
 	int		radix,		/* default radix - for '%r' */
@@ -248,7 +251,7 @@ void _doprnt(
 		}
 	    }
 	    else if (c == '*') {
-		length = va_arg(*argp, int);
+		length = va_arg(argp, int);
 		c = *++fmt;
 		if (length < 0) {
 		    ladjust = !ladjust;
@@ -266,7 +269,7 @@ void _doprnt(
 		    }
 		}
 		else if (c == '*') {
-		    prec = va_arg(*argp, int);
+		    prec = va_arg(argp, int);
 		    c = *++fmt;
 		}
 	    }
@@ -284,8 +287,8 @@ void _doprnt(
 		    boolean_t	  any;
 		    register int  i;
 
-		    u = va_arg(*argp, unsigned long);
-		    p = va_arg(*argp, char *);
+		    u = va_arg(argp, unsigned long);
+		    p = va_arg(argp, char *);
 		    base = *p++;
 		    printnum(u, base, putc, putc_arg);
 
@@ -333,7 +336,7 @@ void _doprnt(
 		}
 
 		case 'c':
-		    c = va_arg(*argp, int);
+		    c = va_arg(argp, int);
 		    (*putc)(c, putc_arg);
 		    break;
 
@@ -345,7 +348,7 @@ void _doprnt(
 		    if (prec == -1)
 			prec = 0x7fffffff;	/* MAXINT */
 
-		    p = va_arg(*argp, char *);
+		    p = va_arg(argp, char *);
 
 		    if (p == (char *)0)
 			p = "";
@@ -428,7 +431,7 @@ void _doprnt(
 		    goto print_unsigned;
 
 		print_signed:
-		    n = va_arg(*argp, long);
+		    n = va_arg(argp, long);
 		    if (n >= 0) {
 			u = n;
 			sign_char = plus_sign;
@@ -440,7 +443,7 @@ void _doprnt(
 		    goto print_num;
 
 		print_unsigned:
-		    u = va_arg(*argp, unsigned long);
+		    u = va_arg(argp, unsigned long);
 		    goto print_num;
 
 		print_num:
@@ -514,7 +517,7 @@ void _doprnt(
 
 int vprintf(const char *fmt, va_list listp)
 {
-	_doprnt(fmt, &listp, (void (*)( char, vm_offset_t)) cnputc, 16, 0);
+	_doprnt(fmt, listp, (void (*)( char, vm_offset_t)) cnputc, 16, 0);
 	return 0;
 }
 
@@ -550,7 +553,7 @@ void iprintf(const char *fmt, ...)
 	    }
 	}
 	va_start(listp, fmt);
-	_doprnt(fmt, &listp, (void (*)( char, vm_offset_t)) cnputc, 16, 0);
+	_doprnt(fmt, listp, (void (*)( char, vm_offset_t)) cnputc, 16, 0);
 	va_end(listp);
 }
 
@@ -577,7 +580,7 @@ sprintf(char *buf, const char *fmt, ...)
 	char	*start = buf;
 
 	va_start(listp, fmt);
-	_doprnt(fmt, &listp, sputc, 16, (vm_offset_t)&buf);
+	_doprnt(fmt, listp, sputc, 16, (vm_offset_t)&buf);
 	va_end(listp);
 
 	*buf = 0;
@@ -606,7 +609,7 @@ vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
   struct vsnprintf_cookie cookie
     = { .buf = buf, .index = 0, .max_len = size };
 
-  _doprnt (fmt, &args, snputc, 16, (vm_offset_t)&cookie);
+  _doprnt (fmt, args, snputc, 16, (vm_offset_t)&cookie);
   cookie.buf[cookie.index] = '\0';
 
   return cookie.index;

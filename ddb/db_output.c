@@ -213,7 +213,7 @@ db_printf(const char *fmt, ...)
 	db_printf_enter();	/* optional multiP serialization */
 #endif
 	va_start(listp, fmt);
-	_doprnt(fmt, &listp, db_id_putc, db_radix, 0);
+	_doprnt(fmt, listp, db_id_putc, db_radix, 0);
 	va_end(listp);
 }
 
@@ -225,7 +225,7 @@ kdbprintf(const char *fmt, ...)
 {
 	va_list	listp;
 	va_start(listp, fmt);
-	_doprnt(fmt, &listp, db_id_putc, db_radix, 0);
+	_doprnt(fmt, listp, db_id_putc, db_radix, 0);
 	va_end(listp);
 }
 

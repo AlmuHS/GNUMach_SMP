@@ -168,7 +168,7 @@ panic(const char *s, ...)
 #endif
 	printf(": ");
 	va_start(listp, s);
-	_doprnt(s, &listp, do_cnputc, 0, 0);
+	_doprnt(s, listp, do_cnputc, 0, 0);
 	va_end(listp);
 	printf("\n");
 
@@ -203,7 +203,7 @@ log(int level, const char *fmt, ...)
 	level++;
 #endif
 	va_start(listp, fmt);
-	_doprnt(fmt, &listp, do_cnputc, 0, 0);
+	_doprnt(fmt, listp, do_cnputc, 0, 0);
 	va_end(listp);
 }
 

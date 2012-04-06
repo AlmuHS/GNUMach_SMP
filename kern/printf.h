@@ -30,7 +30,7 @@
 extern void printf_init (void);
 
 extern void _doprnt (const char *fmt,
-		     va_list *argp, 
+		     va_list argp, 
 		     void (*putc)(char, vm_offset_t), 
 		     int radix, 
 		     vm_offset_t putc_arg);
