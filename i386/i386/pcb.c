@@ -157,7 +157,8 @@ void switch_ktss(pcb)
 
 #ifdef	MACH_XEN
 	/* No IO mask here */
-	hyp_stack_switch(KERNEL_DS, pcb_stack_top);
+	if (hyp_stack_switch(KERNEL_DS, pcb_stack_top))
+		panic("stack_switch");
 #else	/* MACH_XEN */
 	curr_ktss(mycpu)->tss.esp0 = pcb_stack_top;
 #endif	/* MACH_XEN */
