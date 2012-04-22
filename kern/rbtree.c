@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2010 Richard Braun.
+ * Copyright (c) 2010, 2012 Richard Braun.
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -180,7 +180,7 @@ void rbtree_insert_rebalance(struct rbtree *tree, struct rbtree_node *parent,
         uncle = grand_parent->children[right];
 
         /*
-         * Case 1: uncle is red. Flip colors and repeat at grand parent.
+         * Uncle is red. Flip colors and repeat at grand parent.
          */
         if ((uncle != NULL) && rbtree_is_red(uncle)) {
             rbtree_set_black(uncle);
@@ -192,8 +192,7 @@ void rbtree_insert_rebalance(struct rbtree *tree, struct rbtree_node *parent,
         }
 
         /*
-         * Case 2: node is the right child of its parent. Rotate left at parent
-         * to reduce to case 3.
+         * Node is the right child of its parent. Rotate left at parent.
          */
         if (parent->children[right] == node) {
             rbtree_rotate(tree, parent, left);
@@ -203,8 +202,8 @@ void rbtree_insert_rebalance(struct rbtree *tree, struct rbtree_node *parent,
         }
 
         /*
-         * Case 3: node is the left child of its parent. Handle colors, rotate
-         * right at grand parent, and leave.
+         * Node is the left child of its parent. Handle colors, rotate right
+         * at grand parent, and leave.
          */
         rbtree_set_black(parent);
         rbtree_set_red(grand_parent);
@@ -306,8 +305,8 @@ update_color:
         brother = parent->children[right];
 
         /*
-         * Case 1: brother is red. Recolor and rotate left at parent so that
-         * brother becomes black.
+         * Brother is red. Recolor and rotate left at parent so that brother
+         * becomes black.
          */
         if (rbtree_is_red(brother)) {
             rbtree_set_black(brother);
@@ -317,7 +316,7 @@ update_color:
         }
 
         /*
-         * Case 2: brother has no red child. Recolor and repeat at parent.
+         * Brother has no red child. Recolor and repeat at parent.
          */
         if (((brother->children[RBTREE_LEFT] == NULL)
              || rbtree_is_black(brother->children[RBTREE_LEFT]))
@@ -330,8 +329,7 @@ update_color:
         }
 
         /*
-         * Case 3: brother's right child is black. Recolor and rotate right
-         * at brother to reduce to case 4.
+         * Brother's right child is black. Recolor and rotate right at brother.
          */
         if ((brother->children[right] == NULL)
             || rbtree_is_black(brother->children[right])) {
@@ -342,9 +340,9 @@ update_color:
         }
 
         /*
-         * Case 4: brother's left child is black. Exchange parent and brother
-         * colors (we already know brother is black), set brother's right child
-         * black, rotate left at parent and leave.
+         * Brother's left child is black. Exchange parent and brother colors
+         * (we already know brother is black), set brother's right child black,
+         * rotate left at parent and leave.
          */
         rbtree_set_color(brother, rbtree_color(parent));
         rbtree_set_black(parent);
