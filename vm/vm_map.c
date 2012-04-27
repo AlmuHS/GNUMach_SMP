@@ -42,6 +42,7 @@
 #include <kern/assert.h>
 #include <kern/debug.h>
 #include <kern/kalloc.h>
+#include <kern/rbtree.h>
 #include <kern/slab.h>
 #include <vm/pmap.h>
 #include <vm/vm_fault.h>
@@ -95,7 +96,7 @@ MACRO_END
  *	Synchronization is required prior to most operations.
  *
  *	Maps consist of an ordered doubly-linked list of simple
- *	entries; a single hint is used to speed up lookups.
+ *	entries; a hint and a red-black tree are used to speed up lookups.
  *
  *	Sharing maps have been deleted from this version of Mach.
  *	All shared objects are now mapped directly into the respective
@@ -213,6 +214,7 @@ void vm_map_setup(map, pmap, min, max, pageable)
 	vm_map_last_entry(map)  = vm_map_to_entry(map);
 	map->hdr.nentries = 0;
 	map->hdr.entries_pageable = pageable;
+	rbtree_init(&map->hdr.tree);
 
 	map->size = 0;
 	map->ref_count = 1;
@@ -307,9 +309,39 @@ void _vm_map_entry_dispose(map_header, entry)
 }
 
 /*
+ *	Red-black tree lookup/insert comparison functions
+ */
+static inline int vm_map_entry_cmp_lookup(vm_offset_t addr,
+                                          const struct rbtree_node *node)
+{
+	struct vm_map_entry *entry;
+
+	entry = rbtree_entry(node, struct vm_map_entry, tree_node);
+
+	if (addr < entry->vme_start)
+		return -1;
+	else if (addr < entry->vme_end)
+		return 0;
+	else
+		return 1;
+}
+
+static inline int vm_map_entry_cmp_insert(const struct rbtree_node *a,
+                                          const struct rbtree_node *b)
+{
+	struct vm_map_entry *entry;
+
+	entry = rbtree_entry(a, struct vm_map_entry, tree_node);
+	return vm_map_entry_cmp_lookup(entry->vme_start, b);
+}
+
+/*
  *	vm_map_entry_{un,}link:
  *
  *	Insert/remove entries from maps (or map copies).
+ *
+ *	The start and end addresses of the entries must be properly set
+ *	before using these macros.
  */
 #define vm_map_entry_link(map, after_where, entry)	\
 	_vm_map_entry_link(&(map)->hdr, after_where, entry)
@@ -324,6 +356,8 @@ void _vm_map_entry_dispose(map_header, entry)
 	(entry)->vme_next = (after_where)->vme_next;	\
 	(entry)->vme_prev->vme_next =			\
 	 (entry)->vme_next->vme_prev = (entry);		\
+	rbtree_insert(&(hdr)->tree, &(entry)->tree_node,	\
+		      vm_map_entry_cmp_insert);		\
 	MACRO_END
 
 #define vm_map_entry_unlink(map, entry)			\
@@ -337,6 +371,7 @@ void _vm_map_entry_dispose(map_header, entry)
 	(hdr)->nentries--;				\
 	(entry)->vme_next->vme_prev = (entry)->vme_prev; \
 	(entry)->vme_prev->vme_next = (entry)->vme_next; \
+	rbtree_remove(&(hdr)->tree, &(entry)->tree_node);	\
 	MACRO_END
 
 /*
@@ -413,70 +448,49 @@ boolean_t vm_map_lookup_entry(map, address, entry)
 	register vm_offset_t	address;
 	vm_map_entry_t		*entry;		/* OUT */
 {
-	register vm_map_entry_t		cur;
-	register vm_map_entry_t		last;
+	register struct rbtree_node	*node;
+	register vm_map_entry_t		hint;
 
 	/*
-	 *	Start looking either from the head of the
-	 *	list, or from the hint.
+	 *	First, make a quick check to see if we are already
+	 *	looking at the entry we want (which is often the case).
 	 */
 
 	simple_lock(&map->hint_lock);
-	cur = map->hint;
+	hint = map->hint;
 	simple_unlock(&map->hint_lock);
 
-	if (cur == vm_map_to_entry(map))
-		cur = cur->vme_next;
-
-	if (address >= cur->vme_start) {
-	    	/*
-		 *	Go from hint to end of list.
-		 *
-		 *	But first, make a quick check to see if
-		 *	we are already looking at the entry we
-		 *	want (which is usually the case).
-		 *	Note also that we don't need to save the hint
-		 *	here... it is the same hint (unless we are
-		 *	at the header, in which case the hint didn't
-		 *	buy us anything anyway).
-		 */
-		last = vm_map_to_entry(map);
-		if ((cur != last) && (cur->vme_end > address)) {
-			*entry = cur;
+	if ((hint != vm_map_to_entry(map)) && (address >= hint->vme_start)) {
+		if (address < hint->vme_end) {
+			*entry = hint;
 			return(TRUE);
+		} else {
+			vm_map_entry_t next = hint->vme_next;
+
+			if ((next == vm_map_to_entry(map))
+			    || (address < next->vme_start)) {
+				*entry = hint;
+				return(FALSE);
+			}
 		}
-	}
-	else {
-	    	/*
-		 *	Go from start to hint, *inclusively*
-		 */
-		last = cur->vme_next;
-		cur = vm_map_first_entry(map);
 	}
 
 	/*
-	 *	Search linearly
+	 *	If the hint didn't help, use the red-black tree.
 	 */
 
-	while (cur != last) {
-		if (cur->vme_end > address) {
-			if (address >= cur->vme_start) {
-			    	/*
-				 *	Save this lookup for future
-				 *	hints, and return
-				 */
+	node = rbtree_lookup_nearest(&map->hdr.tree, address,
+				     vm_map_entry_cmp_lookup, RBTREE_LEFT);
 
-				*entry = cur;
-				SAVE_HINT(map, cur);
-				return(TRUE);
-			}
-			break;
-		}
-		cur = cur->vme_next;
+	if (node == NULL) {
+		*entry = vm_map_to_entry(map);
+		SAVE_HINT(map, *entry);
+		return(FALSE);
+	} else {
+		*entry = rbtree_entry(node, struct vm_map_entry, tree_node);
+		SAVE_HINT(map, *entry);
+		return((address < (*entry)->vme_end) ? TRUE : FALSE);
 	}
-	*entry = cur->vme_prev;
-	SAVE_HINT(map, *entry);
-	return(FALSE);
 }
 
 /*
@@ -2414,6 +2428,10 @@ start_pass_1:
  */
 #define	vm_map_copy_insert(map, where, copy)				\
 	MACRO_BEGIN							\
+	struct rbtree_node *node, *tmp;					\
+	rbtree_for_each_remove(&(copy)->cpy_hdr.tree, node, tmp)	\
+		rbtree_insert(&(map)->hdr.tree, node,			\
+			      vm_map_entry_cmp_insert);			\
 	(((where)->vme_next)->vme_prev = vm_map_copy_last_entry(copy))	\
 		->vme_next = ((where)->vme_next);			\
 	((where)->vme_next = vm_map_copy_first_entry(copy))		\
@@ -3138,6 +3156,7 @@ kern_return_t vm_map_copyin(src_map, src_addr, len, src_destroy, copy_result)
 	copy->type = VM_MAP_COPY_ENTRY_LIST;
 	copy->cpy_hdr.nentries = 0;
 	copy->cpy_hdr.entries_pageable = TRUE;
+	rbtree_init(&copy->cpy_hdr.tree);
 
 	copy->offset = src_addr;
 	copy->size = len;

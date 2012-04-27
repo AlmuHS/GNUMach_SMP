@@ -51,6 +51,7 @@
 #include <vm/vm_page.h>
 #include <vm/vm_types.h>
 #include <kern/lock.h>
+#include <kern/rbtree.h>
 #include <kern/macro_help.h>
 
 #define KENTRY_DATA_SIZE (32*PAGE_SIZE)
@@ -102,6 +103,7 @@ struct vm_map_entry {
 #define vme_next		links.next
 #define vme_start		links.start
 #define vme_end			links.end
+	struct rbtree_node	tree_node;	/* links to other entries in tree */
 	union vm_map_object	object;		/* object I point to */
 	vm_offset_t		offset;		/* offset into object */
 	unsigned int
@@ -137,6 +139,7 @@ typedef struct vm_map_entry	*vm_map_entry_t;
  */
 struct vm_map_header {
 	struct vm_map_links	links;		/* first, last, min, max */
+	struct rbtree		tree;		/* Sorted tree of entries */
 	int			nentries;	/* Number of entries */
 	boolean_t		entries_pageable;
 						/* are map entries pageable? */
@@ -152,9 +155,11 @@ struct vm_map_header {
  *
  *	Implementation:
  *		Maps are doubly-linked lists of map entries, sorted
- *		by address.  One hint is used to start
- *		searches again from the last successful search,
- *		insertion, or removal.  Another hint is used to
+ *		by address.  They're also contained in a red-black tree.
+ *		One hint is used to start searches again at the last
+ *		successful search, insertion, or removal.  If the hint
+ *		lookup failed (i.e. the hint didn't refer to the requested
+ *		entry), a BST lookup is performed.  Another hint is used to
  *		quickly find free space.
  */
 struct vm_map {
