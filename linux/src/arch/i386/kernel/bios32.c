@@ -206,7 +206,7 @@ static int check_pcibios(void)
 	int pack;
 
 	if ((pcibios_entry = bios32_service(PCI_SERVICE))) {
-		pci_indirect.address = pcibios_entry;
+		pci_indirect.address = phystokv(pcibios_entry);
 
 		save_flags(flags); cli();
 		__asm__("lcall *(%%edi); cld\n\t"
@@ -903,7 +903,7 @@ unsigned long pcibios_init(unsigned long memory_start, unsigned long memory_end)
 			} else {
 				bios32_entry = check->fields.entry;
 				printk ("pcibios_init : BIOS32 Service Directory entry at 0x%lx\n", bios32_entry);
-				bios32_indirect.address = bios32_entry;
+				bios32_indirect.address = phystokv(bios32_entry);
 			}
 		}
 	}
