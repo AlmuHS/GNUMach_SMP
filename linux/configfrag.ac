@@ -50,6 +50,11 @@ dnl USE OF THIS SOFTWARE.
   esac
 }]
 
+AC_DEFUN([AC_OPTION_Linux_group], [
+AC_ARG_ENABLE([$1-group],
+  AS_HELP_STRING([--enable-$1-group], [$2]))
+])
+
 #
 # AC_OPTION_Linux_ix86_at(name,description,option[,class]).  Process
 # configuration option --enable-`name' (with description `description').  If
@@ -62,7 +67,11 @@ AC_DEFUN([AC_OPTION_Linux_ix86_at], [
 [unset enableval]
 AC_ARG_ENABLE([$1],
   AS_HELP_STRING([--enable-$1], [$2]))
-[#TODO.  Could use some M4 magic to avoid a lot of shell code.
+[if test x$enable_$4_group = xno;
+then
+  enableval=${enableval-no}
+fi
+#TODO.  Could use some M4 magic to avoid a lot of shell code.
 case $host_platform:$host_cpu in
   at:i?86)
     case $enable_device_drivers:'$2' in
@@ -141,6 +150,7 @@ AC_Linux_DRIVER_qemu([ide],
   [CONFIG_BLK_DEV_IDE])
 
 dnl SCSI controllers.
+AC_OPTION_Linux_group([scsi], [SCSI drivers])
 
 AC_Linux_DRIVER([53c78xx],
   [SCSI controller NCR 53C7,8xx],
@@ -270,6 +280,7 @@ AC_Linux_DRIVER([wd7000],
   [scsi])
 
 dnl Ethernet controllers.
+AC_OPTION_Linux_group([net], [Network drivers])
 
 AC_Linux_DRIVER([3c501],
   [Ethernet controller 3COM 501 (3c501) / Etherlink I],
@@ -494,6 +505,7 @@ AC_Linux_DRIVER([znet],
   [net])
 
 dnl PCMCIA device support.
+AC_OPTION_Linux_group([pcmcia], [PCMCIA drivers])
 
 AC_Linux_DRIVER([i82365],
   [Intel 82365 PC Card controller],
@@ -541,6 +553,7 @@ AC_Linux_DRIVER([xirc2ps_cs],
   [pcmcia])
 
 dnl Wireless device drivers.
+AC_OPTION_Linux_group([wireless], [Wireless drivers])
 
 AC_Linux_DRIVER([orinoco_cs],
   [Hermes or Prism 2 PCMCIA Wireless adapters (Orinoco)],
