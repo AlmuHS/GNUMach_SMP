@@ -132,7 +132,7 @@
 /*
  * Time (in seconds) between two garbage collection operations.
  */
-#define KMEM_GC_INTERVAL (1 * hz)
+#define KMEM_GC_INTERVAL (5 * hz)
 
 /*
  * The transfer size of a CPU pool is computed by dividing the pool size by
