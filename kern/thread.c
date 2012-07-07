@@ -208,7 +208,7 @@ void stack_alloc(
 		 *	addresses of a stack given an address in the middle.
 		 */
 
-		if (kmem_alloc_aligned(kernel_map, &stack, KERNEL_STACK_SIZE)
+		if (kmem_alloc_aligned(kmem_map, &stack, KERNEL_STACK_SIZE)
 							!= KERN_SUCCESS)
 			panic("stack_alloc");
 
@@ -268,7 +268,7 @@ void stack_collect(void)
 #if	MACH_DEBUG
 		stack_finalize(stack);
 #endif	/* MACH_DEBUG */
-		kmem_free(kernel_map, stack, KERNEL_STACK_SIZE);
+		kmem_free(kmem_map, stack, KERNEL_STACK_SIZE);
 
 		s = splsched();
 		stack_lock();
