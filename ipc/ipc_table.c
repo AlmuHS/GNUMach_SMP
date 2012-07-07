@@ -39,6 +39,7 @@
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_entry.h>
 #include <kern/kalloc.h>
+#include <kern/slab.h>
 #include <vm/vm_kern.h>
 
 /*
@@ -144,7 +145,7 @@ ipc_table_alloc(
 	if (size < PAGE_SIZE)
 		table = kalloc(size);
 	else
-		if (kmem_alloc(kalloc_map, &table, size) != KERN_SUCCESS)
+		if (kmem_alloc(kmem_map, &table, size) != KERN_SUCCESS)
 			table = 0;
 
 	return table;
@@ -170,7 +171,7 @@ ipc_table_realloc(
 {
 	vm_offset_t new_table;
 
-	if (kmem_realloc(kalloc_map, old_table, old_size,
+	if (kmem_realloc(kmem_map, old_table, old_size,
 			 &new_table, new_size) != KERN_SUCCESS)
 		new_table = 0;
 
@@ -194,5 +195,5 @@ ipc_table_free(
 	if (size < PAGE_SIZE)
 		kfree(table, size);
 	else
-		kmem_free(kalloc_map, table, size);
+		kmem_free(kmem_map, table, size);
 }

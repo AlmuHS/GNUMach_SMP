@@ -165,7 +165,7 @@
 /*
  * Size of the VM submap from which default backend functions allocate.
  */
-#define KMEM_MAP_SIZE (64 * 1024 * 1024)
+#define KMEM_MAP_SIZE (128 * 1024 * 1024)
 
 /*
  * Shift for the first kalloc cache size.
@@ -176,11 +176,6 @@
  * Number of caches backing general purpose allocations.
  */
 #define KALLOC_NR_CACHES 13
-
-/*
- * Size of the VM submap for general purpose allocations.
- */
-#define KALLOC_MAP_SIZE (64 * 1024 * 1024)
 
 /*
  * Values the buftag state member can take.
@@ -283,16 +278,10 @@ static unsigned int kmem_nr_caches;
 static simple_lock_data_t __attribute__((used)) kmem_cache_list_lock;
 
 /*
- * VM submap for slab caches (except general purpose allocations).
+ * VM submap for slab caches.
  */
 static struct vm_map kmem_map_store;
 vm_map_t kmem_map = &kmem_map_store;
-
-/*
- * VM submap for general purpose allocations.
- */
-static struct vm_map kalloc_map_store;
-vm_map_t kalloc_map = &kalloc_map_store;
 
 /*
  * Time of the last memory reclaim, in clock ticks.
@@ -1380,7 +1369,7 @@ static vm_offset_t kalloc_pagealloc(vm_size_t size)
     vm_offset_t addr;
     kern_return_t kr;
 
-    kr = kmem_alloc_wired(kalloc_map, &addr, size);
+    kr = kmem_alloc_wired(kmem_map, &addr, size);
 
     if (kr != KERN_SUCCESS)
         return 0;
@@ -1390,7 +1379,7 @@ static vm_offset_t kalloc_pagealloc(vm_size_t size)
 
 static void kalloc_pagefree(vm_offset_t ptr, vm_size_t size)
 {
-    kmem_free(kalloc_map, ptr, size);
+    kmem_free(kmem_map, ptr, size);
 }
 
 void kalloc_init(void)
@@ -1398,8 +1387,6 @@ void kalloc_init(void)
     char name[KMEM_CACHE_NAME_SIZE];
     size_t i, size;
     vm_offset_t min, max;
-
-    kmem_submap(kalloc_map, kernel_map, &min, &max, KALLOC_MAP_SIZE, FALSE);
 
     size = 1 << KALLOC_FIRST_SHIFT;
 
