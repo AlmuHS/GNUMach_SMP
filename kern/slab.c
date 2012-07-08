@@ -130,7 +130,7 @@
 #define KMEM_BUF_SIZE_THRESHOLD (PAGE_SIZE / 8)
 
 /*
- * Time (in seconds) between two garbage collection operations.
+ * Time (in ticks) between two garbage collection operations.
  */
 #define KMEM_GC_INTERVAL (5 * hz)
 
@@ -286,7 +286,7 @@ vm_map_t kmem_map = &kmem_map_store;
 /*
  * Time of the last memory reclaim, in clock ticks.
  */
-static unsigned int kmem_gc_last_tick;
+static unsigned long kmem_gc_last_tick;
 
 #define kmem_error(format, ...)                         \
     printf("mem: error: %s(): " format "\n", __func__,  \
@@ -1312,10 +1312,10 @@ void slab_collect(void)
 {
     struct kmem_cache *cache;
 
-    if (sched_tick <= (kmem_gc_last_tick + KMEM_GC_INTERVAL))
+    if (elapsed_ticks <= (kmem_gc_last_tick + KMEM_GC_INTERVAL))
         return;
 
-    kmem_gc_last_tick = sched_tick;
+    kmem_gc_last_tick = elapsed_ticks;
 
     simple_lock(&mem_cache_list_lock);
 
