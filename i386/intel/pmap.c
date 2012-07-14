@@ -667,25 +667,27 @@ void pmap_bootstrap()
 	pt_entry_t *l1_map[NSUP_L1];
 	{
 		pt_entry_t *base = (pt_entry_t*) boot_info.pt_base;
-		int i;
+		vm_offset_t la;
 		int n_l1map;
+		for (n_l1map = 0, la = VM_MIN_KERNEL_ADDRESS; la >= VM_MIN_KERNEL_ADDRESS; la += NPTES * PAGE_SIZE) {
 #ifdef	PAE
-		pt_entry_t *l2_map = (pt_entry_t*) ptetokv(base[0]);
+			pt_entry_t *l2_map = (pt_entry_t*) ptetokv(base[lin2pdpnum(la)]);
 #else	/* PAE */
-		pt_entry_t *l2_map = base;
+			pt_entry_t *l2_map = base;
 #endif	/* PAE */
-		for (n_l1map = 0, i = lin2pdenum(VM_MIN_KERNEL_ADDRESS); i < NPTES; i++) {
-			if (!(l2_map[i] & INTEL_PTE_VALID)) {
+			/* Like lin2pdenum, but works with non-contiguous boot L3 */
+			l2_map += (la >> PDESHIFT) & PDEMASK;
+			if (!(*l2_map & INTEL_PTE_VALID)) {
 				struct mmu_update update;
 				int j, n;
 
 				l1_map[n_l1map] = (pt_entry_t*) phystokv(pmap_grab_page());
 				for (j = 0; j < NPTES; j++)
-					l1_map[n_l1map][j] = (((pt_entry_t)pfn_to_mfn((i - lin2pdenum(VM_MIN_KERNEL_ADDRESS)) * NPTES + j)) << PAGE_SHIFT) | INTEL_PTE_VALID | INTEL_PTE_WRITE;
+					l1_map[n_l1map][j] = (((pt_entry_t)pfn_to_mfn(lin2pdenum(la - VM_MIN_KERNEL_ADDRESS) * NPTES + j)) << PAGE_SHIFT) | INTEL_PTE_VALID | INTEL_PTE_WRITE;
 				pmap_set_page_readonly_init(l1_map[n_l1map]);
 				if (!hyp_mmuext_op_mfn (MMUEXT_PIN_L1_TABLE, kv_to_mfn (l1_map[n_l1map])))
 					panic("couldn't pin page %p(%p)", l1_map[n_l1map], (vm_offset_t) kv_to_ma (l1_map[n_l1map]));
-				update.ptr = kv_to_ma(&l2_map[i]);
+				update.ptr = kv_to_ma(l2_map);
 				update.val = kv_to_ma(l1_map[n_l1map]) | INTEL_PTE_VALID | INTEL_PTE_WRITE;
 				hyp_mmu_update(kv_to_la(&update), 1, kv_to_la(&n), DOMID_SELF);
 				if (n != 1)
