@@ -517,6 +517,10 @@ void vm_page_insert(
 	 */
 
 	object->resident_page_count++;
+	assert(object->resident_page_count >= 0);
+
+	if (object->can_persist && (object->ref_count == 0))
+		vm_object_cached_pages_update(1);
 
 	/*
 	 *	Detect sequential access and inactivate previous page.
@@ -585,6 +589,10 @@ void vm_page_replace(
 				m->tabled = FALSE;
 				object->resident_page_count--;
 
+				if (object->can_persist
+				    && (object->ref_count == 0))
+					vm_object_cached_pages_update(-1);
+
 				/*
 				 * Return page to the free list.
 				 * Note the page is not tabled now, so this
@@ -616,6 +624,10 @@ void vm_page_replace(
 	 */
 
 	object->resident_page_count++;
+	assert(object->resident_page_count >= 0);
+
+	if (object->can_persist && (object->ref_count == 0))
+		vm_object_cached_pages_update(1);
 }
 
 /*
@@ -671,6 +683,9 @@ void vm_page_remove(
 	mem->object->resident_page_count--;
 
 	mem->tabled = FALSE;
+
+	if (mem->object->can_persist && (mem->object->ref_count == 0))
+		vm_object_cached_pages_update(-1);
 }
 
 /*

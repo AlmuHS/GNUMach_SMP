@@ -192,6 +192,15 @@ decl_simple_lock_data(,vm_object_cached_lock_data)
 		simple_unlock(&vm_object_cached_lock_data)
 
 /*
+ *	Number of physical pages referenced by cached objects.
+ *	This counter is protected by its own lock to work around
+ *	lock ordering issues.
+ */
+int		vm_object_cached_pages;
+
+decl_simple_lock_data(,vm_object_cached_pages_lock_data)
+
+/*
  *	Virtual memory objects are initialized from
  *	a template (see vm_object_allocate).
  *
@@ -410,6 +419,7 @@ void vm_object_deallocate(
 			queue_enter(&vm_object_cached_list, object,
 				vm_object_t, cached_list);
 			overflow = (++vm_object_cached_count > vm_object_cached_max);
+			vm_object_cached_pages_update(object->resident_page_count);
 			vm_object_cache_unlock();
 
 			vm_object_deactivate_pages(object);
@@ -1860,6 +1870,7 @@ vm_object_t vm_object_lookup(
 				queue_remove(&vm_object_cached_list, object,
 					     vm_object_t, cached_list);
 				vm_object_cached_count--;
+				vm_object_cached_pages_update(-object->resident_page_count);
 			}
 
 			object->ref_count++;
@@ -1891,6 +1902,7 @@ vm_object_t vm_object_lookup_name(
 				queue_remove(&vm_object_cached_list, object,
 					     vm_object_t, cached_list);
 				vm_object_cached_count--;
+				vm_object_cached_pages_update(-object->resident_page_count);
 			}
 
 			object->ref_count++;
@@ -1927,6 +1939,7 @@ void vm_object_destroy(
 		queue_remove(&vm_object_cached_list, object,
 				vm_object_t, cached_list);
 		vm_object_cached_count--;
+		vm_object_cached_pages_update(-object->resident_page_count);
 	}
 	object->ref_count++;
 
@@ -2080,6 +2093,7 @@ restart:
 			queue_remove(&vm_object_cached_list, object,
 					vm_object_t, cached_list);
 			vm_object_cached_count--;
+			vm_object_cached_pages_update(-object->resident_page_count);
 		}
 		object->ref_count++;
 		vm_object_unlock(object);

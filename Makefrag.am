@@ -209,6 +209,7 @@ libkernel_a_SOURCES += \
 EXTRA_DIST += \
 	kern/mach.srv \
 	kern/mach4.srv \
+	kern/gnumach.srv \
 	kern/mach_debug.srv \
 	kern/mach_host.srv
 
@@ -346,6 +347,7 @@ include_mach_HEADERS = \
 	include/mach/exc.defs \
 	include/mach/mach.defs \
 	include/mach/mach4.defs \
+	include/mach/gnumach.defs \
 	include/mach/mach_host.defs \
 	include/mach/mach_port.defs \
 	include/mach/mach_types.defs \
@@ -388,6 +390,7 @@ include_mach_HEADERS = \
 	include/mach/time_value.h \
 	include/mach/version.h \
 	include/mach/vm_attributes.h \
+	include/mach/vm_cache_statistics.h \
 	include/mach/vm_inherit.h \
 	include/mach/vm_param.h \
 	include/mach/vm_prot.h \
@@ -483,6 +486,7 @@ nodist_libkernel_a_SOURCES += \
 nodist_lib_dep_tr_for_defs_a_SOURCES += \
 	kern/mach.server.defs.c \
 	kern/mach4.server.defs.c \
+	kern/gnumach.server.defs.c \
 	kern/mach_debug.server.defs.c \
 	kern/mach_host.server.defs.c
 nodist_libkernel_a_SOURCES += \
@@ -492,6 +496,9 @@ nodist_libkernel_a_SOURCES += \
 	kern/mach4.server.h \
 	kern/mach4.server.c \
 	kern/mach4.server.msgids \
+	kern/gnumach.server.h \
+	kern/gnumach.server.c \
+	kern/gnumach.server.msgids \
 	kern/mach_debug.server.h \
 	kern/mach_debug.server.c \
 	kern/mach_debug.server.msgids \
@@ -500,6 +507,7 @@ nodist_libkernel_a_SOURCES += \
 	kern/mach_host.server.msgids
 #	kern/mach.server.defs
 #	kern/mach4.server.defs
+#	kern/gnumach.server.defs
 #	kern/mach_debug.server.defs
 #	kern/mach_host.server.defs
 

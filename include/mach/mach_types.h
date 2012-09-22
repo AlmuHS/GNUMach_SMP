@@ -52,6 +52,7 @@
 #include <mach/vm_inherit.h>
 #include <mach/vm_prot.h>
 #include <mach/vm_statistics.h>
+#include <mach/vm_cache_statistics.h>
 
 #ifdef	MACH_KERNEL
 #include <kern/task.h>		/* for task_array_t */
