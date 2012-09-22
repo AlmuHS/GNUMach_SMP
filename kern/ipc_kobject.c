@@ -151,7 +151,7 @@ ipc_kobject_server(request)
 				mach_host_server_routine(),
 				device_server_routine(),
 				device_pager_server_routine(),
-				mach4_server_routine();
+				mach4_server_routine(),
 				gnumach_server_routine();
 #if	MACH_DEBUG
 	extern mig_routine_t	mach_debug_server_routine();
