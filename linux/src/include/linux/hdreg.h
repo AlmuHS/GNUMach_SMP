@@ -92,11 +92,12 @@ struct hd_geometry {
 #define HDIO_GETGEO		0x0301	/* get device geometry */
 #define HDIO_GET_UNMASKINTR	0x0302	/* get current unmask setting */
 #define HDIO_GET_MULTCOUNT	0x0304	/* get current IDE blockmode setting */
-#define HDIO_GET_IDENTITY 	0x0307	/* get IDE identification info */
+#define HDIO_OBSOLETE_IDENTITY	0x0307	/* OBSOLETE, DO NOT USE: returns 142 bytes */
 #define HDIO_GET_KEEPSETTINGS 	0x0308	/* get keep-settings-on-reset flag */
 #define HDIO_GET_32BIT 		0x0309	/* get current io_32bit setting */
 #define HDIO_GET_NOWERR		0x030a	/* get ignore-write-error flag */
 #define HDIO_GET_DMA		0x030b	/* get use-dma flag */
+#define HDIO_GET_IDENTITY	0x030d	/* get IDE identification info */
 #define HDIO_DRIVE_CMD		0x031f	/* execute a special drive command */
 
 /* hd/ide ctl's that pass (arg) non-ptr values are numbered 0x032n/0x033n */
@@ -166,14 +167,54 @@ struct hd_driveid {
 	unsigned short  word79;
 	unsigned short  word80;
 	unsigned short  word81;
-	unsigned short  word82;
-	unsigned short  word83;
+	unsigned short  command_sets;	/* bits 0:Smart 1:Security 2:Removable 3:PM */
+	unsigned short  word83;		/* bits 14:Smart Enabled 13:0 zero */
 	unsigned short  word84;
 	unsigned short  word85;
 	unsigned short  word86;
 	unsigned short  word87;
 	unsigned short  dma_ultra;
-	unsigned short  reserved[167];
+	unsigned short	word89;		/* reserved (word 89) */
+	unsigned short	word90;		/* reserved (word 90) */
+	unsigned short	word91;		/* reserved (word 91) */
+	unsigned short	word92;		/* reserved (word 92) */
+	unsigned short	word93;		/* reserved (word 93) */
+	unsigned short	word94;		/* reserved (word 94) */
+	unsigned short	word95;		/* reserved (word 95) */
+	unsigned short	word96;		/* reserved (word 96) */
+	unsigned short	word97;		/* reserved (word 97) */
+	unsigned short	word98;		/* reserved (word 98) */
+	unsigned short	word99;		/* reserved (word 99) */
+	unsigned short	word100;	/* reserved (word 100) */
+	unsigned short	word101;	/* reserved (word 101) */
+	unsigned short	word102;	/* reserved (word 102) */
+	unsigned short	word103;	/* reserved (word 103) */
+	unsigned short	word104;	/* reserved (word 104) */
+	unsigned short	word105;	/* reserved (word 105) */
+	unsigned short	word106;	/* reserved (word 106) */
+	unsigned short	word107;	/* reserved (word 107) */
+	unsigned short	word108;	/* reserved (word 108) */
+	unsigned short	word109;	/* reserved (word 109) */
+	unsigned short	word110;	/* reserved (word 110) */
+	unsigned short	word111;	/* reserved (word 111) */
+	unsigned short	word112;	/* reserved (word 112) */
+	unsigned short	word113;	/* reserved (word 113) */
+	unsigned short	word114;	/* reserved (word 114) */
+	unsigned short	word115;	/* reserved (word 115) */
+	unsigned short	word116;	/* reserved (word 116) */
+	unsigned short	word117;	/* reserved (word 117) */
+	unsigned short	word118;	/* reserved (word 118) */
+	unsigned short	word119;	/* reserved (word 119) */
+	unsigned short	word120;	/* reserved (word 120) */
+	unsigned short	word121;	/* reserved (word 121) */
+	unsigned short	word122;	/* reserved (word 122) */
+	unsigned short	word123;	/* reserved (word 123) */
+	unsigned short	word124;	/* reserved (word 124) */
+	unsigned short	word125;	/* reserved (word 125) */
+	unsigned short	word126;	/* reserved (word 126) */
+	unsigned short	word127;	/* reserved (word 127) */
+	unsigned short	security;	/* bits 0:suuport 1:enabled 2:locked 3:frozen */
+	unsigned short	reserved[127];
 };
 
 #ifdef __KERNEL__

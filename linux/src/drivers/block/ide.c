@@ -3611,9 +3611,6 @@ static void ide_probe_promise_20246(void)
 		hwif->ctl_port = io[tmp + 1] + 2;
 		hwif->noprobe = 0;
 	}
-#ifdef CONFIG_BLK_DEV_TRITON
-	ide_init_promise (bus, fn, &ide_hwifs[2], &ide_hwifs[3], io[4]);
-#endif /* CONFIG_BLK_DEV_TRITON */
 }
 
 #endif /* CONFIG_PCI */
@@ -3646,6 +3643,9 @@ static void probe_for_hwifs (void)
 		ide_probe_pci (PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371_0, &ide_init_triton, 1);
 		ide_probe_pci (PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371SB_1, &ide_init_triton, 0);
 		ide_probe_pci (PCI_VENDOR_ID_INTEL, PCI_DEVICE_ID_INTEL_82371AB, &ide_init_triton, 0);
+		ide_probe_pci (PCI_VENDOR_ID_SI, PCI_DEVICE_ID_SI_5513, &ide_init_triton, 0);
+		ide_probe_pci (PCI_VENDOR_ID_VIA, PCI_DEVICE_ID_VIA_82C586_1, &ide_init_triton, 0);
+		ide_probe_pci (PCI_VENDOR_ID_AL, PCI_DEVICE_ID_AL_M5229, &ide_init_triton, 0);
 #endif /* CONFIG_BLK_DEV_TRITON */
 		ide_probe_promise_20246();
 	}

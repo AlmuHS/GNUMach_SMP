@@ -429,7 +429,8 @@ typedef void (ide_selectproc_t) (ide_drive_t *);
 typedef enum {	ide_unknown,	ide_generic,	ide_triton,
 		ide_cmd640,	ide_dtc2278,	ide_ali14xx,
 		ide_qd6580,	ide_umc8672,	ide_ht6560b,
-		ide_promise,	ide_promise_udma }
+		ide_promise,	ide_hpt343,	ide_udma,
+		ide_ultra66 }
 	hwif_chipset_t;
 
 typedef struct hwif_s {
