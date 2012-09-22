@@ -347,7 +347,7 @@ int pci_drv_register(struct drv_id_info *drv_id, void *initial_device)
 				   pci_tbl[chip_idx].name, pciaddr, irq);
 
 		if ( ! (pci_flags & PCI_UNUSED_IRQ)  &&
-			 (irq == 0 || irq == 255)) {
+			 (irq == 0 || irq >= 16)) {
 			if (pci_bus == 32) 	/* Broken CardBus activation. */
 				printk(KERN_WARNING "Resources for CardBus device '%s' have"
 					   " not been allocated.\n"
