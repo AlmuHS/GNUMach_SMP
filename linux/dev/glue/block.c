@@ -779,6 +779,7 @@ static struct block_data *open_list;
 extern struct device_emulation_ops linux_block_emulation_ops;
 
 static io_return_t device_close (void *);
+static io_return_t device_close_forced (void *, int);
 
 /* Return a send right for block device BD.  */
 static ipc_port_t
@@ -1154,6 +1155,7 @@ out:
 	    {
 	      ipc_kobject_set (bd->port, IKO_NULL, IKOT_NONE);
 	      ipc_port_dealloc_kernel (bd->port);
+	      *devp = IP_NULL;
 	    }
 	  kfree ((vm_offset_t) bd, sizeof (struct block_data));
 	  bd = NULL;
@@ -1164,18 +1166,16 @@ out:
       bd->open_count = 1;
       bd->next = open_list;
       open_list = bd;
+      *devp = &bd -> device;
     }
 
-  if (IP_VALID (reply_port))
-    ds_device_open_reply (reply_port, reply_port_type, err, dev_to_port (bd));
-  else if (! err)
+  if (!IP_VALID (reply_port) && ! err)
     device_close (bd);
-
-  return MIG_NO_REPLY;
+  return err;
 }
 
 static io_return_t
-device_close (void *d)
+device_close_forced (void *d, int force)
 {
   struct block_data *bd = d, *bdp, **prev;
   struct device_struct *ds = bd->ds;
@@ -1192,7 +1192,7 @@ device_close (void *d)
     }
   ds->busy = 1;
 
-  if (--bd->open_count == 0)
+  if (force || --bd->open_count == 0)
     {
       /* Wait for pending I/O to complete.  */
       while (bd->iocount > 0)
@@ -1234,6 +1234,13 @@ device_close (void *d)
     }
   return D_SUCCESS;
 }
+
+static io_return_t
+device_close (void *d)
+{
+  return device_close_forced (d, 0);
+}
+
 
 #define MAX_COPY	(VM_MAP_COPY_PAGE_LIST_MAX << PAGE_SHIFT)
 
@@ -1713,6 +1720,17 @@ device_set_status (void *d, dev_flavor_t flavor, dev_status_t status,
   return D_INVALID_OPERATION;
 }
 
+
+static void
+device_no_senders (mach_no_senders_notification_t *ns)
+{
+  device_t dev;
+
+  dev = dev_port_lookup((ipc_port_t) ns->not_header.msgh_remote_port);
+  assert(dev);
+  device_close_forced (dev->emul_data, 1);
+}
+
 struct device_emulation_ops linux_block_emulation_ops =
 {
   NULL,
@@ -1728,7 +1746,7 @@ struct device_emulation_ops linux_block_emulation_ops =
   device_get_status,
   NULL,
   NULL,
-  NULL,
+  device_no_senders,
   NULL,
   NULL
 };
