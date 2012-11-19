@@ -272,8 +272,10 @@ typedef u32 u_int32;
 #define u_int		unsigned int
 #define u_long		unsigned long
 
+#ifndef MACH
 typedef	u_long		vm_offset_t;
-//typedef	int		vm_size_t;
+typedef	int		vm_size_t;
+#endif
 
 #define bcopy(s, d, n)	memcpy((d), (s), (n))
 #define bzero(d, n)	memset((d), 0, (n))
