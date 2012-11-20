@@ -342,6 +342,9 @@ kern_return_t vm_map(
                 return(KERN_INVALID_ARGUMENT);
         }
 
+	if (size == 0)
+		return KERN_INVALID_ARGUMENT;
+
 	*address = trunc_page(*address);
 	size = round_page(size);
 

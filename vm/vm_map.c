@@ -784,6 +784,9 @@ kern_return_t vm_map_enter(
 
 #define	RETURN(value)	{ result = value; goto BailOut; }
 
+	if (size == 0)
+		return KERN_INVALID_ARGUMENT;
+
  StartAgain: ;
 
 	start = *address;
