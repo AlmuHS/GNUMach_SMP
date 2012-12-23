@@ -637,6 +637,7 @@ boolean_t thread_invoke(
 	    thread_lock(new_thread);
 	    new_thread->state &= ~TH_UNINT;
 	    thread_unlock(new_thread);
+	    thread_wakeup(&new_thread->state);
 
 	    if (continuation != (void (*)()) 0) {
 		(void) spl0();
@@ -658,6 +659,7 @@ boolean_t thread_invoke(
 
 		    new_thread->state &= ~(TH_SWAPPED | TH_UNINT);
 		    thread_unlock(new_thread);
+		    thread_wakeup(&new_thread->state);
 
 #if	NCPUS > 1
 		    new_thread->last_processor = current_processor();
@@ -787,6 +789,7 @@ boolean_t thread_invoke(
 
 	new_thread->state &= ~(TH_SWAPPED | TH_UNINT);
 	thread_unlock(new_thread);
+	thread_wakeup(&new_thread->state);
 
 	/*
 	 *	Thread is now interruptible.

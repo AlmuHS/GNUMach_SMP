@@ -1326,10 +1326,12 @@ kern_return_t thread_suspend(
 	hold = FALSE;
 	spl = splsched();
 	thread_lock(thread);
-	if (thread->state & TH_UNINT) {
+	/* Wait for thread to get interruptible */
+	while (thread->state & TH_UNINT) {
+		assert_wait(&thread->state, TRUE);
 		thread_unlock(thread);
-		(void) splx(spl);
-		return KERN_FAILURE;
+		thread_block(NULL);
+		thread_lock(thread);
 	}
 	if (thread->user_stop_count++ == 0) {
 		hold = TRUE;
