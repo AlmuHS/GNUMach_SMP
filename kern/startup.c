@@ -141,9 +141,9 @@ void setup_main()
 
 	timestamp_init();
 
-	mapable_time_init();
-
 	machine_init();
+
+	mapable_time_init();
 
 	machine_info.max_cpus = NCPUS;
 	machine_info.memory_size = phys_last_addr - phys_first_addr; /* XXX mem_size */

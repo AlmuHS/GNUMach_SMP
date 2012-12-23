@@ -604,6 +604,9 @@ void ide_set_handler (ide_drive_t *drive, ide_handler_t *handler, unsigned int t
  *
  * Returns:	1 if lba_capacity looks sensible
  *		0 otherwise
+ *
+ * Note: we must not change id->cyls here, otherwise a second call
+ * of this routine might no longer find lba_capacity ok.
  */
 static int lba_capacity_is_ok (struct hd_driveid *id)
 {
@@ -611,10 +614,16 @@ static int lba_capacity_is_ok (struct hd_driveid *id)
 	unsigned long chs_sects   = id->cyls * id->heads * id->sectors;
 	unsigned long _10_percent = chs_sects / 10;
 
-	/* very large drives (8GB+) may lie about the number of cylinders */
-	if (id->cyls == 16383 && id->heads == 16 && id->sectors == 63 && lba_sects > chs_sects) {
+	/*
+	 * The ATA spec tells large drives to return
+	 * C/H/S = 16383/16/63 independent of their size.
+	 * Some drives can be jumpered to use 15 heads instead of 16.
+	 */
+	if (id->cyls == 16383 && id->sectors == 63 &&
+	    (id->heads == 15 || id->heads == 16) &&
+	    id->lba_capacity >= 16383*63*id->heads)
 		return 1;	/* lba_capacity is our only option */
-	}
+
 	/* perform a rough sanity check on lba_sects:  within 10% is "okay" */
 	if ((lba_sects - chs_sects) < _10_percent)
 		return 1;	/* lba_capacity is good */
@@ -631,11 +640,13 @@ static int lba_capacity_is_ok (struct hd_driveid *id)
 /*
  * current_capacity() returns the capacity (in sectors) of a drive
  * according to its current geometry/LBA settings.
+ *
+ * It also sets select.b.lba.
  */
 static unsigned long current_capacity (ide_drive_t  *drive)
 {
 	struct hd_driveid *id = drive->id;
-	unsigned long capacity = drive->cyl * drive->head * drive->sect;
+	unsigned long capacity;
 
 	if (!drive->present)
 		return 0;
@@ -645,8 +656,10 @@ static unsigned long current_capacity (ide_drive_t  *drive)
 #endif /* CONFIG_BLK_DEV_IDEFLOPPY */
 	if (drive->media != ide_disk)
 		return 0x7fffffff;	/* cdrom or tape */
+
 	drive->select.b.lba = 0;
 	/* Determine capacity, and use LBA if the drive properly supports it */
+	capacity = drive->cyl * drive->head * drive->sect;
 	if (id != NULL && (id->capability & 2) && lba_capacity_is_ok(id)) {
 		if (id->lba_capacity >= capacity) {
 			capacity = id->lba_capacity;
@@ -2568,8 +2581,7 @@ static inline void do_identify (ide_drive_t *drive, byte cmd)
 	}
 	/* Handle logical geometry translation by the drive */
 	if ((id->field_valid & 1) && id->cur_cyls && id->cur_heads
-	 && (id->cur_heads <= 16) && id->cur_sectors)
-	{
+	    && (id->cur_heads <= 16) && id->cur_sectors) {
 		/*
 		 * Extract the physical drive geometry for our use.
 		 * Note that we purposely do *not* update the bios info.
@@ -2594,7 +2606,8 @@ static inline void do_identify (ide_drive_t *drive, byte cmd)
 		}
 	}
 	/* Use physical geometry if what we have still makes no sense */
-	if ((!drive->head || drive->head > 16) && id->heads && id->heads <= 16) {
+	if ((!drive->head || drive->head > 16) &&
+	    id->heads && id->heads <= 16) {
 		drive->cyl  = id->cyls;
 		drive->head = id->heads;
 		drive->sect = id->sectors;
@@ -2603,21 +2616,22 @@ static inline void do_identify (ide_drive_t *drive, byte cmd)
 	/* calculate drive capacity, and select LBA if possible */
 	capacity = current_capacity (drive);
 
-	/* Correct the number of cyls if the bios value is too small */
-        if (!drive->forced_geom &&
-            capacity > drive->bios_cyl * drive->bios_sect * drive->bios_head) {
-                unsigned long cylsize;
-                cylsize = drive->bios_sect * drive->bios_head;
-                if (cylsize == 0 || capacity/cylsize > 65535) {
-                        drive->bios_sect = 63;
-                        drive->bios_head = 255;
-                        cylsize = 63*255;
-                }
-                if (capacity/cylsize > 65535)
-                        drive->bios_cyl = 65535;
-                else
-                        drive->bios_cyl = capacity/cylsize;
-        }
+	/*
+	 * if possible, give fdisk access to more of the drive,
+	 * by correcting bios_cyls:
+	 */
+	if (capacity > drive->bios_cyl * drive->bios_head * drive->bios_sect
+	    && !drive->forced_geom && drive->bios_sect && drive->bios_head) {
+		int cyl = (capacity / drive->bios_sect) / drive->bios_head;
+		if (cyl <= 65535)
+			drive->bios_cyl = cyl;
+		else {
+			/* OK until 539 GB */
+			drive->bios_sect = 63;
+			drive->bios_head = 255;
+			drive->bios_cyl = capacity / (63*255);
+		}
+	}
 
 	if (!strncmp((char *)id->model, "BMI ", 4) &&
 	    strstr((char *)id->model, " ENHANCED IDE ") &&
@@ -3346,7 +3360,7 @@ done:
  * This routine is called from the partition-table code in genhd.c
  * to "convert" a drive to a logical geometry with fewer than 1024 cyls.
  *
- * The second parameter, "xparm", determines exactly how the translation
+ * The second parameter, "xparm", determines exactly how the translation 
  * will be handled:
  *		 0 = convert to CHS with fewer than 1024 cyls
  *			using the same method as Ontrack DiskManager.
@@ -3354,10 +3368,11 @@ done:
  *		-1 = similar to "0", plus redirect sector 0 to sector 1.
  *		>1 = convert to a CHS geometry with "xparm" heads.
  *
- * Returns 0 if the translation was not possible, if the device was not
+ * Returns 0 if the translation was not possible, if the device was not 
  * an IDE disk drive, or if a geometry was "forced" on the commandline.
  * Returns 1 if the geometry translation was successful.
  */
+
 int ide_xlate_1024 (kdev_t i_rdev, int xparm, const char *msg)
 {
 	ide_drive_t *drive;
@@ -3365,13 +3380,21 @@ int ide_xlate_1024 (kdev_t i_rdev, int xparm, const char *msg)
 	const byte *heads = head_vals;
 	unsigned long tracks;
 
-	if ((drive = get_info_ptr(i_rdev)) == NULL || drive->forced_geom)
+	drive = get_info_ptr(i_rdev);
+	if (!drive)
+		return 0;
+
+	if (drive->forced_geom)
 		return 0;
 
 	if (xparm > 1 && xparm <= drive->bios_head && drive->bios_sect == 63)
 		return 0;		/* we already have a translation */
 
 	printk("%s ", msg);
+
+	if (xparm < 0 && (drive->bios_cyl * drive->bios_head * drive->bios_sect) < (1024 * 16 * 63)) {
+		return 0;		/* small disk: no translation needed */
+	}
 
 	if (drive->id) {
 		drive->cyl  = drive->id->cyls;
