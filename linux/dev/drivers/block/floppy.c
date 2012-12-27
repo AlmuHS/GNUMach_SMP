@@ -3492,6 +3492,8 @@ static void config_types(void)
 				printk("fd%d is unknown type %d",drive,
 				       UDP->cmos);
 		}
+			else
+				allowed_drive_mask &= ~(1 << drive);
 	}
 	if (!first)
 		printk("\n");
