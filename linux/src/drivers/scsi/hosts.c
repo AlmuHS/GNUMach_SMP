@@ -472,6 +472,7 @@ unsigned int scsi_init()
 	 * Initialize our semaphores.  -1 is interpreted to mean
 	 * "inactive" - where as 0 will indicate a time out condition.
 	 */
+	printk("\rprobing scsi %d/%d: %s \e[K", tpnt-builtin_scsi_hosts, MAX_SCSI_HOSTS, tpnt->name);
 	
 	pcount = next_scsi_host;
 	if ((tpnt->detect) &&
@@ -496,6 +497,7 @@ unsigned int scsi_init()
 #endif
 	}
     }
+    printk("\ndone\n");
         
     for(shpnt=scsi_hostlist; shpnt; shpnt = shpnt->next)
     {

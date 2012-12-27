@@ -881,7 +881,7 @@ __initfunc (static inline int port_detect \
 
    sprintf(name, "%s%d", driver_name, j);
 
-   printk("probing eata on %lx\n", port_base);
+   printk("\rprobing eata on %lx", port_base);
 
    if(check_region(port_base, REGION_SIZE)) {
       printk("%s: address 0x%03lx in use, skipping probe.\n", name, port_base);

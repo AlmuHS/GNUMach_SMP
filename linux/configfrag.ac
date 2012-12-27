@@ -157,7 +157,8 @@ AC_ARG_ENABLE([ide-forcedma],
 dnl SCSI controllers.
 AC_OPTION_Linux_group([scsi], [SCSI drivers])
 
-AC_Linux_DRIVER([53c78xx],
+# Disabled by default.
+AC_Linux_DRIVER_nodef([53c78xx],
   [SCSI controller NCR 53C7,8xx],
   [CONFIG_SCSI_NCR53C7xx],
   [scsi])
@@ -196,7 +197,8 @@ AC_Linux_DRIVER([aha1740],
   [SCSI controller Adaptec AHA-1740],
   [CONFIG_SCSI_AHA1740],
   [scsi])
-AC_Linux_DRIVER([aic7xxx],
+# Disabled by default.
+AC_Linux_DRIVER_nodef([aic7xxx],
   [SCSI controller Adaptec AIC7xxx],
   [CONFIG_SCSI_AIC7XXX],
   [scsi])
@@ -227,7 +229,8 @@ AC_Linux_DRIVER_nodef([g_NCR5380],
   [SCSI controller Generic NCR5380/53c400 (ncr5380, ncr53c400)],
   [CONFIG_SCSI_GENERIC_NCR5380],
   [scsi])
-AC_Linux_DRIVER([gdth],
+# Disabled by default.
+AC_Linux_DRIVER_nodef([gdth],
   [GDT SCSI Disk Array Controller],
   [CONFIG_SCSI_GDTH],
   [scsi])
