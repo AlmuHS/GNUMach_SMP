@@ -58,6 +58,11 @@
 #include <vm/vm_user.h>
 #endif
 
+#if	MACH_KDB
+#include <ddb/db_output.h>
+#endif	/* MACH_KDB */
+
+
 /*
  *	Associated with eacn page of user-allocatable memory is a
  *	page structure.

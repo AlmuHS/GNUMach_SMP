@@ -46,6 +46,10 @@
 #include <ipc/ipc_right.h>
 #include <ipc/ipc_space.h>
 
+#if	MACH_KDB
+#include <ddb/db_output.h>
+#endif	/* MACH_KDB */
+
 
 /*
  *	Routine:	ipc_pset_alloc

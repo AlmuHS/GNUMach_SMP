@@ -51,6 +51,9 @@
 #include <ipc/ipc_mqueue.h>
 #include <ipc/ipc_notify.h>
 
+#if	MACH_KDB
+#include <ddb/db_output.h>
+#endif	/* MACH_KDB */
 
 
 decl_simple_lock_data(, ipc_port_multiple_lock_data)

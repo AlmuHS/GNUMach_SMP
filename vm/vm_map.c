@@ -53,6 +53,11 @@
 #include <vm/vm_kern.h>
 #include <ipc/ipc_port.h>
 
+#if	MACH_KDB
+#include <ddb/db_output.h>
+#endif	/* MACH_KDB */
+
+
 /* Forward declarations */
 kern_return_t vm_map_delete(
     vm_map_t   map,

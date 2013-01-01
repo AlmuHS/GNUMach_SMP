@@ -49,6 +49,11 @@
 #include <kern/printf.h>
 #include <kern/slab.h>
 
+#if	MACH_KDB
+#include <ddb/db_output.h>
+#endif	/* MACH_KDB */
+
+
 struct kmem_cache ipc_object_caches[IOT_NUMBER];
 
 

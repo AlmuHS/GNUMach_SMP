@@ -55,6 +55,10 @@
 #include <vm/vm_page.h>
 #include <vm/vm_pageout.h>
 
+#if	MACH_KDB
+#include <ddb/db_output.h>
+#endif	/* MACH_KDB */
+
 
 void memory_object_release(
 	ipc_port_t	pager,
