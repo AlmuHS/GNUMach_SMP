@@ -764,6 +764,7 @@ void vm_pageout_scan()
 			vm_object_unlock(object);
 			vm_page_activate(m);
 			vm_stat.reactivations++;
+			current_task()->reactivations++;
 			vm_page_unlock_queues();
 			vm_pageout_inactive_used++;
 			continue;

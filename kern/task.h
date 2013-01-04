@@ -102,6 +102,15 @@ struct task {
 
 	/* Hardware specific data.  */
 	machine_task_t	machine;
+
+	/* Statistics */
+	natural_t	faults;		/* page faults counter */
+	natural_t	zero_fills;	/* zero fill pages counter */
+	natural_t	reactivations;	/* reactivated pages counter */
+	natural_t	pageins;	/* actual pageins couter */
+	natural_t	cow_faults;	/* copy-on-write faults counter */
+	natural_t	messages_sent;	/* messages sent counter */
+	natural_t	messages_received; /* messages received counter */
 };
 
 #define task_lock(task)		simple_lock(&(task)->lock)

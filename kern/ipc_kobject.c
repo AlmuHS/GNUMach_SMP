@@ -177,15 +177,21 @@ ipc_kobject_server(request)
 #endif	/* MACH_MACHINE_ROUTINES */
 	) {
 	    (*routine)(&request->ikm_header, &reply->ikm_header);
-	}
-	else if (!ipc_kobject_notify(&request->ikm_header,&reply->ikm_header)){
+	    kernel_task->messages_received++;
+	} else {
+	    if (!ipc_kobject_notify(&request->ikm_header,
+		&reply->ikm_header)) {
 		((mig_reply_header_t *) &reply->ikm_header)->RetCode
 		    = MIG_BAD_ID;
 #if	MACH_IPC_TEST
 		printf("ipc_kobject_server: bogus kernel message, id=%d\n",
 		       request->ikm_header.msgh_id);
 #endif	/* MACH_IPC_TEST */
+	    } else {
+		kernel_task->messages_received++;
+	    }
 	}
+	kernel_task->messages_sent++;
     }
 	check_simple_locks();
 

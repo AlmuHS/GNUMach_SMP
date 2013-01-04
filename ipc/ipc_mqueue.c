@@ -374,6 +374,8 @@ ipc_mqueue_send(kmsg, option, time_out)
 	}
     }
 
+	current_task()->messages_sent++;
+
 	return MACH_MSG_SUCCESS;
 }
 
@@ -683,6 +685,8 @@ ipc_mqueue_receive(
 
 	ip_unlock(port);
     }
+
+	current_task()->messages_received++;
 
 	*kmsgp = kmsg;
 	*seqnop = seqno;

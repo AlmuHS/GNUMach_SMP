@@ -108,6 +108,13 @@ kern_return_t task_create(
 	new_task->active = TRUE;
 	new_task->user_stop_count = 0;
 	new_task->thread_count = 0;
+	new_task->faults = 0;
+	new_task->zero_fills = 0;
+	new_task->reactivations = 0;
+	new_task->pageins = 0;
+	new_task->cow_faults = 0;
+	new_task->messages_sent = 0;
+	new_task->messages_received = 0;
 
 	eml_task_reference(new_task, parent_task);
 
@@ -744,6 +751,30 @@ kern_return_t task_info(
 
 		if (*task_info_count > TASK_BASIC_INFO_COUNT)
 		  *task_info_count = TASK_BASIC_INFO_COUNT;
+		break;
+	    }
+
+	    case TASK_EVENTS_INFO:
+	    {
+		register task_events_info_t	event_info;
+
+		if (*task_info_count < TASK_EVENTS_INFO_COUNT) {
+		    return KERN_INVALID_ARGUMENT;
+		}
+
+		event_info = (task_events_info_t) task_info_out;
+
+		task_lock(&task);
+		event_info->faults = task->faults;
+		event_info->zero_fills = task->zero_fills;
+		event_info->reactivations = task->reactivations;
+		event_info->pageins = task->pageins;
+		event_info->cow_faults = task->cow_faults;
+		event_info->messages_sent = task->messages_sent;
+		event_info->messages_received = task->messages_received;
+		task_unlock(&task);
+
+		*task_info_count = TASK_EVENTS_INFO_COUNT;
 		break;
 	    }
 

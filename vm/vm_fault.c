@@ -254,6 +254,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 
 	vm_stat_sample(SAMPLED_PC_VM_FAULTS_ANY);
 	vm_stat.faults++;		/* needs lock XXX */
+	current_task()->faults++;
 
 /*
  *	Recovery actions
@@ -471,6 +472,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 					vm_stat_sample(SAMPLED_PC_VM_ZFILL_FAULTS);
 
 					vm_stat.zero_fill_count++;
+					current_task()->zero_fills;
 					vm_object_lock(object);
 					pmap_clear_modify(m->phys_addr);
 					break;
@@ -552,6 +554,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 				if (m->inactive)  {
 				    	vm_stat_sample(SAMPLED_PC_VM_REACTIVATION_FAULTS);
 					vm_stat.reactivations++;
+					current_task()->reactivations++;
 				}
 
 				VM_PAGE_QUEUES_REMOVE(m);
@@ -651,6 +654,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 
 			vm_stat.pageins++;
 		    	vm_stat_sample(SAMPLED_PC_VM_PAGEIN_FAULTS);
+			current_task()->pageins++;
 
 			if ((rc = memory_object_data_request(object->pager,
 				object->pager_request,
@@ -740,6 +744,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 			vm_page_zero_fill(m);
 			vm_stat_sample(SAMPLED_PC_VM_ZFILL_FAULTS);
 			vm_stat.zero_fill_count++;
+			current_task()->zero_fills;
 			vm_object_lock(object);
 			pmap_clear_modify(m->phys_addr);
 			break;
@@ -855,6 +860,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 
 			vm_stat.cow_faults++;
 			vm_stat_sample(SAMPLED_PC_VM_COW_FAULTS);
+			current_task()->cow_faults;
 			object = first_object;
 			offset = first_offset;
 
@@ -1638,6 +1644,7 @@ kern_return_t vm_fault_wire_fast(map, va, entry)
 	vm_prot_t		prot;
 
 	vm_stat.faults++;		/* needs lock XXX */
+	current_task()->faults++;
 /*
  *	Recovery actions
  */
