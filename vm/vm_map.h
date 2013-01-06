@@ -54,7 +54,8 @@
 #include <kern/rbtree.h>
 #include <kern/macro_help.h>
 
-#define KENTRY_DATA_SIZE (32*PAGE_SIZE)
+/* TODO: make it dynamic */
+#define KENTRY_DATA_SIZE (64*PAGE_SIZE)
 
 /*
  *	Types defined:
