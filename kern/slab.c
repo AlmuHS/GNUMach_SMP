@@ -1317,12 +1317,12 @@ void slab_collect(void)
 
     kmem_gc_last_tick = elapsed_ticks;
 
-    simple_lock(&mem_cache_list_lock);
+    simple_lock(&kmem_cache_list_lock);
 
     list_for_each_entry(&kmem_cache_list, cache, node)
         kmem_cache_reap(cache);
 
-    simple_unlock(&mem_cache_list_lock);
+    simple_unlock(&kmem_cache_list_lock);
 }
 
 void slab_bootstrap(void)
@@ -1536,9 +1536,9 @@ kern_return_t host_slab_info(host_t host, cache_info_array_t *infop,
      * Assume the cache list is unaltered once the kernel is ready.
      */
 
-    simple_lock(&mem_cache_list_lock);
+    simple_lock(&kmem_cache_list_lock);
     nr_caches = kmem_nr_caches;
-    simple_unlock(&mem_cache_list_lock);
+    simple_unlock(&kmem_cache_list_lock);
 
     if (nr_caches <= *infoCntp)
         info = *infop;
