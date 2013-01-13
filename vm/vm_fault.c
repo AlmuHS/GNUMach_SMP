@@ -472,7 +472,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 					vm_stat_sample(SAMPLED_PC_VM_ZFILL_FAULTS);
 
 					vm_stat.zero_fill_count++;
-					current_task()->zero_fills;
+					current_task()->zero_fills++;
 					vm_object_lock(object);
 					pmap_clear_modify(m->phys_addr);
 					break;
@@ -744,7 +744,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 			vm_page_zero_fill(m);
 			vm_stat_sample(SAMPLED_PC_VM_ZFILL_FAULTS);
 			vm_stat.zero_fill_count++;
-			current_task()->zero_fills;
+			current_task()->zero_fills++;
 			vm_object_lock(object);
 			pmap_clear_modify(m->phys_addr);
 			break;
@@ -860,7 +860,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 
 			vm_stat.cow_faults++;
 			vm_stat_sample(SAMPLED_PC_VM_COW_FAULTS);
-			current_task()->cow_faults;
+			current_task()->cow_faults++;
 			object = first_object;
 			offset = first_offset;
 
