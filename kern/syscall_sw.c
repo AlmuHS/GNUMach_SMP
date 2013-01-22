@@ -122,8 +122,12 @@ mach_trap_t	mach_trap_table[] = {
 	MACH_TRAP(mach_thread_self, 0),		/* 27 */
 	MACH_TRAP(mach_task_self, 0),		/* 28 */
 	MACH_TRAP(mach_host_self, 0),		/* 29 */
+#ifdef MACH_KDB
+	MACH_TRAP_STACK(mach_print, 1),		/* 30 */
+#else /* MACH_KDB */
+	MACH_TRAP_STACK(kern_invalid, 0),	/* 30 */
+#endif /* MACH_KDB */
 
-	MACH_TRAP(kern_invalid, 0),		/* 30 */
 	MACH_TRAP(kern_invalid, 0),		/* 31 */
 	MACH_TRAP(kern_invalid, 0),		/* 32 */
 	MACH_TRAP(kern_invalid, 0),		/* 33 emul: task_by_pid */

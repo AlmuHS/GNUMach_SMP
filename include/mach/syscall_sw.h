@@ -52,6 +52,7 @@ kernel_trap(mach_reply_port,-26,0)
 kernel_trap(mach_thread_self,-27,0)
 kernel_trap(mach_task_self,-28,0)
 kernel_trap(mach_host_self,-29,0)
+kernel_trap(mach_print,-30,1)
 
 kernel_trap(swtch_pri,-59,1)
 kernel_trap(swtch,-60,0)
