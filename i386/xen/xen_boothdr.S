@@ -36,6 +36,9 @@
 #else	/* MACH_PSEUDO_PHYS */
 	.ascii	",FEATURES=!auto_translated_physmap"
 #endif
+#ifndef	MACH_PV_DESCRIPTORS
+	.ascii	"|writable_descriptor_tables"
+#endif	/* MACH_PV_DESCRIPTORS */
 	.byte	0
 
 /* Macro taken from linux/include/linux/elfnote.h */
@@ -68,8 +71,11 @@
 #ifdef MACH_PSEUDO_PHYS
 						"pae_pgdir_above_4gb"
 #else /* MACH_PSEUDO_PHYS */
-						"!auto_translated_physmap|"
+						"!auto_translated_physmap"
 #endif
+#ifndef	MACH_PV_DESCRIPTORS
+						"|writable_descriptor_tables"
+#endif	/* MACH_PV_DESCRIPTORS */
 	)
 
 #include <mach/machine/asm.h>

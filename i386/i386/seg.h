@@ -161,12 +161,12 @@ MACH_INLINE void
 fill_descriptor(struct real_descriptor *_desc, unsigned base, unsigned limit,
 		unsigned char access, unsigned char sizebits)
 {
-	/* TODO: when !MACH_XEN, setting desc and just memcpy isn't simpler actually */
-#ifdef	MACH_XEN
+	/* TODO: when !MACH_PV_DESCRIPTORS, setting desc and just memcpy isn't simpler actually */
+#ifdef	MACH_PV_DESCRIPTORS
 	struct real_descriptor __desc, *desc = &__desc;
-#else	/* MACH_XEN */
+#else	/* MACH_PV_DESCRIPTORS */
 	struct real_descriptor *desc = _desc;
-#endif	/* MACH_XEN */
+#endif	/* MACH_PV_DESCRIPTORS */
 	if (limit > 0xfffff)
 	{
 		limit >>= 12;
@@ -179,10 +179,10 @@ fill_descriptor(struct real_descriptor *_desc, unsigned base, unsigned limit,
 	desc->limit_high = limit >> 16;
 	desc->granularity = sizebits;
 	desc->base_high = base >> 24;
-#ifdef	MACH_XEN
+#ifdef	MACH_PV_DESCRIPTORS
 	if (hyp_do_update_descriptor(kv_to_ma(_desc), *(uint64_t*)desc))
 		panic("couldn't update descriptor(%p to %08lx%08lx)\n", (vm_offset_t) kv_to_ma(_desc), *(((unsigned long*)desc)+1), *(unsigned long *)desc);
-#endif	/* MACH_XEN */
+#endif	/* MACH_PV_DESCRIPTORS */
 }
 
 /* Fill a gate with particular values.  */

@@ -173,28 +173,28 @@ void switch_ktss(pcb)
 	    /*
 	     * Use system LDT.
 	     */
-#ifdef	MACH_HYP
+#ifdef	MACH_PV_DESCRIPTORS
 	    hyp_set_ldt(&ldt, LDTSZ);
-#else	/* MACH_HYP */
+#else	/* MACH_PV_DESCRIPTORS */
 	    set_ldt(KERNEL_LDT);
-#endif	/* MACH_HYP */
+#endif	/* MACH_PV_DESCRIPTORS */
 	}
 	else {
 	    /*
 	     * Thread has its own LDT.
 	     */
-#ifdef	MACH_HYP
+#ifdef	MACH_PV_DESCRIPTORS
 	    hyp_set_ldt(tldt->ldt,
 	    		(tldt->desc.limit_low|(tldt->desc.limit_high<<16)) /
 				sizeof(struct real_descriptor));
-#else	/* MACH_HYP */
+#else	/* MACH_PV_DESCRIPTORS */
 	    *gdt_desc_p(mycpu,USER_LDT) = tldt->desc;
 	    set_ldt(USER_LDT);
-#endif	/* MACH_HYP */
+#endif	/* MACH_PV_DESCRIPTORS */
 	}
     }
 
-#ifdef	MACH_XEN
+#ifdef	MACH_PV_DESCRIPTORS
     {
 	int i;
 	for (i=0; i < USER_GDT_SLOTS; i++) {
@@ -206,14 +206,14 @@ void switch_ktss(pcb)
 	    }
 	}
     }
-#else /* MACH_XEN */
+#else /* MACH_PV_DESCRIPTORS */
 
     /* Copy in the per-thread GDT slots.  No reloading is necessary
        because just restoring the segment registers on the way back to
        user mode reloads the shadow registers from the in-memory GDT.  */
     memcpy (gdt_desc_p (mycpu, USER_GDT),
         pcb->ims.user_gdt, sizeof pcb->ims.user_gdt);
-#endif /* MACH_XEN */
+#endif /* MACH_PV_DESCRIPTORS */
 
 	/*
 	 * Load the floating-point context, if necessary.

@@ -38,10 +38,10 @@ extern struct idt_init_entry idt_inittab[];
 
 void idt_init()
 {
-#ifdef	MACH_HYP
+#ifdef	MACH_PV_DESCRIPTORS
 	if (hyp_set_trap_table(kvtolin(idt_inittab)))
 		panic("couldn't set trap table\n");
-#else	/* MACH_HYP */
+#else	/* MACH_PV_DESCRIPTORS */
 	struct idt_init_entry *iie = idt_inittab;
 
 	/* Initialize the exception vectors from the idt_inittab.  */
@@ -59,6 +59,6 @@ void idt_init()
 		pdesc.linear_base = kvtolin(&idt);
 		lidt(&pdesc);
 	}
-#endif	/* MACH_HYP */
+#endif	/* MACH_PV_DESCRIPTORS */
 }
 

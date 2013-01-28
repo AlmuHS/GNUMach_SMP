@@ -25,8 +25,10 @@ dnl 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
   AC_DEFINE([MACH_HYP], [], [be a hypervisor guest])
   AM_CONDITIONAL([PLATFORM_xen], [true])
 
+dnl These are experimental
+
   AC_ARG_ENABLE([pseudo-phys],
-    AS_HELP_STRING([--enable-pseudo-phys], [Pseudo physical support]))
+    AS_HELP_STRING([--disable-pseudo-phys], [Pseudo physical pages support]))
   [if [ x"$enable_pseudo_phys" = xno ]; then]
     AM_CONDITIONAL([enable_pseudo_phys], [false])
   [else]
@@ -34,9 +36,19 @@ dnl 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
     AM_CONDITIONAL([enable_pseudo_phys], [true])
   [fi]
 
+  AC_ARG_ENABLE([pv-descriptors],
+    AS_HELP_STRING([--disable-pv-descriptors], [Paravirtualized segment descriptors support]))
+  [if [ x"$enable_pv_descriptors" = xno ]; then]
+    AM_CONDITIONAL([enable_pv_descriptors], [false])
+  [else]
+    AC_DEFINE([MACH_PV_DESCRIPTORS], [], [Enable paravirtualized segment descriptors support])
+    AM_CONDITIONAL([enable_pv_descriptors], [true])
+  [fi]
+
 [else]
   AM_CONDITIONAL([PLATFORM_xen], [false])
   AM_CONDITIONAL([enable_pseudo_phys], [false])
+  AM_CONDITIONAL([enable_pv_descriptors], [false])
 [fi]
 
 dnl Local Variables:

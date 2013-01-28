@@ -124,9 +124,9 @@ expr	KERNEL_RING
 expr	KERNEL_CS
 expr	KERNEL_DS
 expr	KERNEL_TSS
-#ifndef	MACH_XEN
+#ifndef	MACH_PV_DESCRIPTORS
 expr	KERNEL_LDT
-#endif	/* MACH_XEN */
+#endif	/* MACH_PV_DESCRIPTORS */
 
 expr	(VM_MIN_KERNEL_ADDRESS>>PDESHIFT)*sizeof(pt_entry_t)	KERNELBASEPDE
 
