@@ -39,6 +39,9 @@
 #ifndef	MACH_PV_DESCRIPTORS
 	.ascii	"|writable_descriptor_tables"
 #endif	/* MACH_PV_DESCRIPTORS */
+#ifndef	MACH_RING1
+	.ascii	"|supervisor_mode_kernel"
+#endif	/* MACH_PV_DESCRIPTORS */
 	.byte	0
 
 /* Macro taken from linux/include/linux/elfnote.h */
@@ -76,6 +79,9 @@
 #ifndef	MACH_PV_DESCRIPTORS
 						"|writable_descriptor_tables"
 #endif	/* MACH_PV_DESCRIPTORS */
+#ifndef	MACH_RING1
+						"|supervisor_mode_kernel"
+#endif	/* MACH_RING1 */
 	)
 
 #include <mach/machine/asm.h>

@@ -38,7 +38,7 @@
  */
 
 /* Note: the value of KERNEL_RING is handled by hand in locore.S */
-#ifdef	MACH_HYP
+#ifdef	MACH_RING1
 #define	KERNEL_RING	1
 #else	/* MACH_HYP */
 #define	KERNEL_RING	0
