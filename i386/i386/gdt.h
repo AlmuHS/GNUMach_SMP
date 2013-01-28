@@ -49,7 +49,7 @@
 					   that holds IO bitmap */
 #ifndef	MACH_PV_DESCRIPTORS
 #define	LINEAR_DS	0x38		/* linear mapping */
-#endif	/* MACH_HYP */
+#endif	/* MACH_PV_DESCRIPTORS */
 /*			0x40		   was USER_FPREGS, now free */
 
 #define	USER_GDT	0x48		/* user-defined GDT entries */

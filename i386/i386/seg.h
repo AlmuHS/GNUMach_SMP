@@ -40,9 +40,9 @@
 /* Note: the value of KERNEL_RING is handled by hand in locore.S */
 #ifdef	MACH_RING1
 #define	KERNEL_RING	1
-#else	/* MACH_HYP */
+#else	/* MACH_RING1 */
 #define	KERNEL_RING	0
-#endif	/* MACH_HYP */
+#endif	/* MACH_RING1 */
 
 #ifndef __ASSEMBLER__
 
