@@ -432,11 +432,11 @@ ENTRY(t_debug)
 ENTRY(t_page_fault)
 	pushl	$(T_PAGE_FAULT)		/* mark a page fault trap */
 	pusha				/* save the general registers */
-#ifdef	MACH_XEN
+#ifdef	MACH_PV_PAGETABLES
 	movl	%ss:hyp_shared_info+CR2,%eax
-#else	/* MACH_XEN */
+#else	/* MACH_PV_PAGETABLES */
 	movl	%cr2,%eax		/* get the faulting address */
-#endif	/* MACH_XEN */
+#endif	/* MACH_PV_PAGETABLES */
 	movl	%eax,R_CR2-R_EDI(%esp)	/* save in esp save slot */
 	jmp	trap_push_segs		/* continue fault */
 

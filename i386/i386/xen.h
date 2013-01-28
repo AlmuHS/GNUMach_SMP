@@ -152,6 +152,7 @@ MACH_INLINE type hyp_##name(type1 arg1, type2 arg2, type3 arg3, type4 arg4, type
 
 _hypcall1(long, set_trap_table, vm_offset_t /* struct trap_info * */, traps);
 
+#ifdef MACH_PV_PAGETABLES
 _hypcall4(int, mmu_update, vm_offset_t /* struct mmu_update * */, req, int, count, vm_offset_t /* int * */, success_count, domid_t, domid)
 MACH_INLINE int hyp_mmu_update_pte(pt_entry_t pte, pt_entry_t val)
 {
@@ -170,6 +171,7 @@ MACH_INLINE int hyp_mmu_update_pte(pt_entry_t pte, pt_entry_t val)
 #define hyp_mmu_update_la(la, val) hyp_mmu_update_pte( \
 	(kernel_pmap->dirbase[lin2pdenum((vm_offset_t)(la))] & INTEL_PTE_PFN) \
 		+ ptenum((vm_offset_t)(la)) * sizeof(pt_entry_t), val)
+#endif
 
 _hypcall2(long, set_gdt, vm_offset_t /* unsigned long * */, frame_list, unsigned int, entries)
 
@@ -216,6 +218,7 @@ MACH_INLINE void hyp_free_page(unsigned long pfn, void *va)
     /* save mfn */
     unsigned long mfn = pfn_to_mfn(pfn);
 
+#ifdef MACH_PV_PAGETABLES
     /* remove from mappings */
     if (hyp_do_update_va_mapping(kvtolin(va), 0, UVMF_INVLPG|UVMF_ALL))
         panic("couldn't clear page %d at %p\n", pfn, va);
@@ -224,11 +227,13 @@ MACH_INLINE void hyp_free_page(unsigned long pfn, void *va)
     /* drop machine page */
     mfn_list[pfn] = ~0;
 #endif  /* MACH_PSEUDO_PHYS */
+#endif
 
     /* and free from Xen  */
     hyp_free_mfn(mfn);
 }
 
+#ifdef MACH_PV_PAGETABLES
 _hypcall4(int, mmuext_op, vm_offset_t /* struct mmuext_op * */, op, int, count, vm_offset_t /* int * */, success_count, domid_t, domid);
 MACH_INLINE int hyp_mmuext_op_void(unsigned int cmd)
 {
@@ -274,6 +279,7 @@ MACH_INLINE void hyp_invlpg(vm_offset_t lin) {
 	if (n < 1)
 		panic("couldn't invlpg\n");
 }
+#endif
 
 _hypcall2(long, set_timer_op, unsigned long, absolute_lo, unsigned long, absolute_hi);
 #define hyp_do_set_timer_op(absolute_nsec) ({ \

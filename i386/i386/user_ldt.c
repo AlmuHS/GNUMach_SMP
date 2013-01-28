@@ -275,8 +275,10 @@ i386_set_ldt(thread, first_selector, desc_list, count, desc_list_inline)
 #ifdef	MACH_PV_DESCRIPTORS
 	{
 	    int i;
+#ifdef	MACH_PV_PAGETABLES
 	    for (i=0; i<(new_ldt->desc.limit_low + 1)/sizeof(struct real_descriptor); i+=PAGE_SIZE/sizeof(struct real_descriptor))
 		pmap_set_page_readwrite(&new_ldt->ldt[i]);
+#endif	/* MACH_PV_PAGETABLES*/
 	    kfree(new_ldt->alloc, new_ldt->desc.limit_low + 1
 		+ PAGE_SIZE + offsetof(struct user_ldt, ldt));
 	}
@@ -419,8 +421,10 @@ user_ldt_free(user_ldt)
 {
 #ifdef	MACH_PV_DESCRIPTORS
 	int i;
+#ifdef	MACH_PV_PAGETABLES
 	for (i=0; i<(user_ldt->desc.limit_low + 1)/sizeof(struct real_descriptor); i+=PAGE_SIZE/sizeof(struct real_descriptor))
 		pmap_set_page_readwrite(&user_ldt->ldt[i]);
+#endif	/* MACH_PV_PAGETABLES */
 	kfree(user_ldt->alloc, user_ldt->desc.limit_low + 1
 		+ PAGE_SIZE + offsetof(struct user_ldt, ldt));
 #else	/* MACH_PV_DESCRIPTORS */

@@ -101,7 +101,7 @@ gdt_init()
 		     "movw	%w1,%%es\n"
 		     "movw	%w1,%%ss\n"
 		     : : "i" (KERNEL_CS), "r" (KERNEL_DS), "r" (0));
-#ifdef	MACH_XEN
+#ifdef	MACH_PV_PAGETABLES
 #if VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
 	/* things now get shifted */
 #ifdef	MACH_PSEUDO_PHYS
@@ -109,6 +109,6 @@ gdt_init()
 #endif	/* MACH_PSEUDO_PHYS */
 	la_shift += LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS;
 #endif
-#endif	/* MACH_XEN */
+#endif	/* MACH_PV_PAGETABLES */
 }
 

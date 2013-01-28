@@ -36,6 +36,9 @@
 #else	/* MACH_PSEUDO_PHYS */
 	.ascii	",FEATURES=!auto_translated_physmap"
 #endif
+#ifndef	MACH_PV_PAGETABLES
+	.ascii	"|writable_page_tables"
+#endif	/* MACH_PV_PAGETABLES */
 #ifndef	MACH_PV_DESCRIPTORS
 	.ascii	"|writable_descriptor_tables"
 #endif	/* MACH_PV_DESCRIPTORS */
@@ -76,6 +79,9 @@
 #else /* MACH_PSEUDO_PHYS */
 						"!auto_translated_physmap"
 #endif
+#ifndef	MACH_PV_PAGETABLES
+						"|writable_page_tables"
+#endif	/* MACH_PV_PAGETABLES */
 #ifndef	MACH_PV_DESCRIPTORS
 						"|writable_descriptor_tables"
 #endif	/* MACH_PV_DESCRIPTORS */

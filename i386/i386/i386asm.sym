@@ -151,5 +151,7 @@ offset	shared_info		si	vcpu_info[0].evtchn_upcall_pending	CPU_PENDING
 offset	shared_info		si	vcpu_info[0].evtchn_pending_sel	CPU_PENDING_SEL
 offset	shared_info		si	evtchn_pending	PENDING
 offset	shared_info		si	evtchn_mask	EVTMASK
+#ifdef	MACH_PV_PAGETABLES
 offset	shared_info		si	vcpu_info[0].arch.cr2	CR2
+#endif	/* MACH_PV_PAGETABLES */
 #endif	/* MACH_XEN */

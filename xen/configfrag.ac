@@ -36,6 +36,15 @@ dnl These are experimental
     AM_CONDITIONAL([enable_pseudo_phys], [true])
   [fi]
 
+  AC_ARG_ENABLE([pv-pagetables],
+    AS_HELP_STRING([--disable-pv-pagetables], [Paravirtualized page tables support]))
+  [if [ x"$enable_pv_pagetables" = xno ]; then]
+    AM_CONDITIONAL([enable_pv_pagetables], [false])
+  [else]
+    AC_DEFINE([MACH_PV_PAGETABLES], [], [Enable paravirtualized page tables support])
+    AM_CONDITIONAL([enable_pv_pagetables], [true])
+  [fi]
+
   AC_ARG_ENABLE([pv-descriptors],
     AS_HELP_STRING([--disable-pv-descriptors], [Paravirtualized segment descriptors support]))
   [if [ x"$enable_pv_descriptors" = xno ]; then]
@@ -57,6 +66,7 @@ dnl These are experimental
 [else]
   AM_CONDITIONAL([PLATFORM_xen], [false])
   AM_CONDITIONAL([enable_pseudo_phys], [false])
+  AM_CONDITIONAL([enable_pv_pagetables], [false])
   AM_CONDITIONAL([enable_pv_descriptors], [false])
   AM_CONDITIONAL([enable_ring1], [false])
 [fi]

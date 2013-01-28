@@ -232,7 +232,9 @@ int hypcninit(struct consdev *cp)
 	simple_lock_init(&outlock);
 	simple_lock_init(&inlock);
 	console = (void*) mfn_to_kv(boot_info.console_mfn);
+#ifdef	MACH_PV_PAGETABLES
 	pmap_set_page_readwrite(console);
+#endif	/* MACH_PV_PAGETABLES */
 	hyp_evt_handler(boot_info.console_evtchn, hypcnintr, 0, SPL6);
 	return 0;
 }

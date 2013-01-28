@@ -49,7 +49,9 @@ void
 ldt_init()
 {
 #ifdef	MACH_PV_DESCRIPTORS
+#ifdef	MACH_PV_PAGETABLES
 	pmap_set_page_readwrite(ldt);
+#endif	/* MACH_PV_PAGETABLES */
 #else	/* MACH_PV_DESCRIPTORS */
 	/* Initialize the master LDT descriptor in the GDT.  */
 	fill_gdt_descriptor(KERNEL_LDT,

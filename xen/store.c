@@ -329,7 +329,9 @@ void hyp_store_init(void)
 		return;
 	simple_lock_init(&lock);
 	store = (void*) mfn_to_kv(boot_info.store_mfn);
+#ifdef	MACH_PV_PAGETABLES
 	pmap_set_page_readwrite(store);
+#endif	/* MACH_PV_PAGETABLES */
 	/* SPL sched */
 	hyp_evt_handler(boot_info.store_evtchn, hyp_store_handler, 0, SPL7);
 }

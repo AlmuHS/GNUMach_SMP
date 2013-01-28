@@ -66,14 +66,14 @@
 #define LINEAR_MIN_KERNEL_ADDRESS	(VM_MAX_ADDRESS)
 #define LINEAR_MAX_KERNEL_ADDRESS	(0xffffffffUL)
 
-#ifdef	MACH_XEN
+#ifdef	MACH_PV_PAGETABLES
 /* need room for mmu updates (2*8bytes) */
 #define KERNEL_STACK_SIZE	(4*I386_PGBYTES)
 #define INTSTACK_SIZE		(4*I386_PGBYTES)
-#else	/* MACH_XEN */
+#else	/* MACH_PV_PAGETABLES */
 #define KERNEL_STACK_SIZE	(1*I386_PGBYTES)
 #define INTSTACK_SIZE		(1*I386_PGBYTES)
-#endif	/* MACH_XEN */
+#endif	/* MACH_PV_PAGETABLES */
 						/* interrupt stack size */
 
 /*

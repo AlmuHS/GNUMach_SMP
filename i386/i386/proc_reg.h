@@ -124,7 +124,7 @@ set_eflags(unsigned long eflags)
 	_temp__; \
     })
 
-#ifdef	MACH_HYP
+#ifdef	MACH_PV_PAGETABLES
 extern unsigned long cr3;
 #define get_cr3() (cr3)
 #define	set_cr3(value) \
@@ -133,7 +133,7 @@ extern unsigned long cr3;
 	if (!hyp_set_cr3(value)) \
 		panic("set_cr3"); \
     })
-#else	/* MACH_HYP */
+#else	/* MACH_PV_PAGETABLES */
 #define	get_cr3() \
     ({ \
 	register unsigned long _temp__; \
@@ -146,11 +146,11 @@ extern unsigned long cr3;
 	register unsigned long _temp__ = (value); \
 	asm volatile("mov %0, %%cr3" : : "r" (_temp__) : "memory"); \
      })
-#endif	/* MACH_HYP */
+#endif	/* MACH_PV_PAGETABLES */
 
 #define flush_tlb() set_cr3(get_cr3())
 
-#ifndef	MACH_HYP
+#ifndef	MACH_PV_PAGETABLES
 #define invlpg(addr) \
     ({ \
 	asm volatile("invlpg (%0)" : : "r" (addr)); \
@@ -178,7 +178,7 @@ extern unsigned long cr3;
 		: "+r" (var) : "r" (end), \
 		  "q" (LINEAR_DS), "q" (KERNEL_DS), "i" (PAGE_SIZE)); \
     })
-#endif	/* MACH_HYP */
+#endif	/* MACH_PV_PAGETABLES */
 
 #define	get_cr4() \
     ({ \

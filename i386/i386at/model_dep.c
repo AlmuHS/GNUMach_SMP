@@ -402,13 +402,13 @@ i386at_init(void)
 #endif
 #endif
 
-#ifdef	MACH_XEN
+#ifdef	MACH_PV_PAGETABLES
 	for (i = 0; i < PDPNUM; i++)
 		pmap_set_page_readonly_init((void*) kernel_page_dir + i * INTEL_PGBYTES);
 #if PAE
 	pmap_set_page_readonly_init(kernel_pmap->pdpbase);
 #endif	/* PAE */
-#endif	/* MACH_XEN */
+#endif	/* MACH_PV_PAGETABLES */
 #if PAE
 	set_cr3((unsigned)_kvtophys(kernel_pmap->pdpbase));
 #ifndef	MACH_HYP
@@ -430,9 +430,9 @@ i386at_init(void)
 		set_cr4(get_cr4() | CR4_PGE);
 #endif	/* MACH_HYP */
 	flush_instr_queue();
-#ifdef	MACH_XEN
+#ifdef	MACH_PV_PAGETABLES
 	pmap_clear_bootstrap_pagetable((void *)boot_info.pt_base);
-#endif	/* MACH_XEN */
+#endif	/* MACH_PV_PAGETABLES */
 
 	/* Interrupt stacks are allocated in physical memory,
 	   while kernel stacks are allocated in kernel virtual memory,

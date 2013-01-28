@@ -132,12 +132,12 @@ typedef unsigned int	pt_entry_t;
 #define INTEL_PTE_NCACHE 	0x00000010
 #define INTEL_PTE_REF		0x00000020
 #define INTEL_PTE_MOD		0x00000040
-#ifdef	MACH_XEN
+#ifdef	MACH_PV_PAGETABLES
 /* Not supported */
 #define INTEL_PTE_GLOBAL	0x00000000
-#else	/* MACH_XEN */
+#else	/* MACH_PV_PAGETABLES */
 #define INTEL_PTE_GLOBAL	0x00000100
-#endif	/* MACH_XEN */
+#endif	/* MACH_PV_PAGETABLES */
 #define INTEL_PTE_WIRED		0x00000200
 #ifdef PAE
 #define INTEL_PTE_PFN		0x00007ffffffff000ULL
@@ -178,13 +178,13 @@ typedef struct pmap	*pmap_t;
 
 #define PMAP_NULL	((pmap_t) 0)
 
-#ifdef	MACH_XEN
+#ifdef	MACH_PV_PAGETABLES
 extern void pmap_set_page_readwrite(void *addr);
 extern void pmap_set_page_readonly(void *addr);
 extern void pmap_set_page_readonly_init(void *addr);
 extern void pmap_map_mfn(void *addr, unsigned long mfn);
 extern void pmap_clear_bootstrap_pagetable(pt_entry_t *addr);
-#endif	/* MACH_XEN */
+#endif	/* MACH_PV_PAGETABLES */
 
 #if PAE
 #define	set_pmap(pmap)	set_cr3(kvtophys((vm_offset_t)(pmap)->pdpbase))
