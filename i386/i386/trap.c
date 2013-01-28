@@ -585,7 +585,7 @@ i386_astintr()
 	int	mycpu = cpu_number();
 
 	(void) splsched();	/* block interrupts to check reasons */
-#ifndef	MACH_XEN
+#ifndef	MACH_RING1
 	if (need_ast[mycpu] & AST_I386_FP) {
 	    /*
 	     * AST was for delayed floating-point exception -
@@ -598,7 +598,7 @@ i386_astintr()
 	    fpastintr();
 	}
 	else
-#endif	/* MACH_XEN */
+#endif	/* MACH_RING1 */
 	{
 	    /*
 	     * Not an FPU trap.  Handle the AST.

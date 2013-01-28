@@ -109,9 +109,9 @@ init_fpu()
 {
 	unsigned short	status, control;
 
-#ifdef	MACH_HYP
+#ifdef	MACH_RING1
 	clear_ts();
-#else	/* MACH_HYP */
+#else	/* MACH_RING1 */
 	unsigned int native = 0;
 
 	if (machine_slot[cpu_number()].cpu_type >= CPU_TYPE_I486)
@@ -123,7 +123,7 @@ init_fpu()
 	 * the control and status registers.
 	 */
 	set_cr0((get_cr0() & ~(CR0_EM|CR0_TS)) | native);	/* allow use of FPU */
-#endif	/* MACH_HYP */
+#endif	/* MACH_RING1 */
 
 	fninit();
 	status = fnstsw();
@@ -157,10 +157,10 @@ init_fpu()
 		    struct i386_xfp_save save;
 		    unsigned long mask;
 		    fp_kind = FP_387X;
-#ifndef MACH_HYP
+#ifndef MACH_RING1
 		    printf("Enabling FXSR\n");
 		    set_cr4(get_cr4() | CR4_OSFXSR);
-#endif /* MACH_HYP */
+#endif /* MACH_RING1 */
 		    fxsave(&save);
 		    mask = save.fp_mxcsr_mask;
 		    if (!mask)
@@ -169,14 +169,14 @@ init_fpu()
 		} else
 		    fp_kind = FP_387;
 	    }
-#ifdef MACH_HYP
+#ifdef MACH_RING1
 	    set_ts();
-#else	/* MACH_HYP */
+#else	/* MACH_RING1 */
 	    /*
 	     * Trap wait instructions.  Turn off FPU for now.
 	     */
 	    set_cr0(get_cr0() | CR0_TS | CR0_MP);
-#endif	/* MACH_HYP */
+#endif	/* MACH_RING1 */
 	}
 	else {
 	    /*
@@ -684,7 +684,7 @@ fpexterrflt()
 	/*NOTREACHED*/
 }
 
-#ifndef MACH_XEN
+#ifndef MACH_RING1
 /*
  * FPU error. Called by AST.
  */
@@ -741,7 +741,7 @@ ASSERT_IPL(SPL0);
 		           thread->pcb->ims.ifps->fp_save_state.fp_status);
 	/*NOTREACHED*/
 }
-#endif /* MACH_XEN */
+#endif /* MACH_RING1 */
 
 /*
  * Save FPU state.

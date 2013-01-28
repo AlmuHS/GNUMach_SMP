@@ -45,12 +45,12 @@ ktss_init()
 	/* XXX temporary exception stack */
 	static int exception_stack[1024];
 
-#ifdef	MACH_XEN
+#ifdef	MACH_RING1
 	/* Xen won't allow us to do any I/O by default anyway, just register
 	 * exception stack */
 	if (hyp_stack_switch(KERNEL_DS, (unsigned long)(exception_stack+1024)))
 		panic("couldn't register exception stack\n");
-#else	/* MACH_XEN */
+#else	/* MACH_RING1 */
 	/* Initialize the master TSS descriptor.  */
 	fill_gdt_descriptor(KERNEL_TSS,
 			    kvtolin(&ktss), sizeof(struct task_tss) - 1,
@@ -65,6 +65,6 @@ ktss_init()
 
 	/* Load the TSS.  */
 	ltr(KERNEL_TSS);
-#endif	/* MACH_XEN */
+#endif	/* MACH_RING1 */
 }
 

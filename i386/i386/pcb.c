@@ -155,13 +155,13 @@ void switch_ktss(pcb)
 			? (long) (&pcb->iss + 1)
 			: (long) (&pcb->iss.v86_segs);
 
-#ifdef	MACH_XEN
+#ifdef	MACH_RING1
 	/* No IO mask here */
 	if (hyp_stack_switch(KERNEL_DS, pcb_stack_top))
 		panic("stack_switch");
-#else	/* MACH_XEN */
+#else	/* MACH_RING1 */
 	curr_ktss(mycpu)->tss.esp0 = pcb_stack_top;
-#endif	/* MACH_XEN */
+#endif	/* MACH_RING1 */
     }
 
     {

@@ -194,18 +194,18 @@ extern unsigned long cr3;
      })
 
 
-#ifdef	MACH_HYP
+#ifdef	MACH_RING1
 #define	set_ts() \
 	hyp_fpu_taskswitch(1)
 #define	clear_ts() \
 	hyp_fpu_taskswitch(0)
-#else	/* MACH_HYP */
+#else	/* MACH_RING1 */
 #define	set_ts() \
 	set_cr0(get_cr0() | CR0_TS)
 
 #define	clear_ts() \
 	asm volatile("clts")
-#endif	/* MACH_HYP */
+#endif	/* MACH_RING1 */
 
 #define	get_tr() \
     ({ \
