@@ -25,7 +25,7 @@
 
 /* XXX use xu/vm_param.h */
 #include <mach/vm_param.h>
-#ifdef MACH_XEN
+#ifdef MACH_PV_PAGETABLES
 #include <xen/public/xen.h>
 #endif
 
