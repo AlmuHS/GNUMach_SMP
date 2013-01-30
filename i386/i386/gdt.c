@@ -69,13 +69,17 @@ gdt_init()
 	pmap_set_page_readonly(gdt);
 	if (hyp_set_gdt(kv_to_la(&frame), GDTSZ))
 		panic("couldn't set gdt\n");
+#endif
+#ifdef	MACH_PV_PAGETABLES
 	if (hyp_vm_assist(VMASST_CMD_enable, VMASST_TYPE_4gb_segments))
 		panic("couldn't set 4gb segments vm assist");
 #if 0
 	if (hyp_vm_assist(VMASST_CMD_enable, VMASST_TYPE_4gb_segments_notify))
 		panic("couldn't set 4gb segments vm assist notify");
 #endif
-#else	/* MACH_PV_DESCRIPTORS */
+#endif	/* MACH_PV_PAGETABLES */
+
+#ifndef	MACH_PV_DESCRIPTORS
 	/* Load the new GDT.  */
 	{
 		struct pseudo_descriptor pdesc;

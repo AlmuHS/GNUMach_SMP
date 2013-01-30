@@ -510,7 +510,7 @@ printf("user trap %d error %d sub %08x\n", type, code, subcode);
 		/*NOTREACHED*/
 		break;
 
-#ifdef MACH_XEN
+#ifdef MACH_PV_PAGETABLES
 	    case 15:
 		{
 			static unsigned count = 0;
