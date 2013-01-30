@@ -1070,6 +1070,7 @@ void pmap_map_mfn(void *_addr, unsigned long mfn) {
 }
 #else	/* MACH_PV_PAGETABLES */
 void pmap_map_mfn(void *_addr, unsigned long mfn) {
+	/* Note: in this case, mfn is actually a pfn.  */
 	panic("TODO %s:%d\n",__FILE__,__LINE__);
 }
 #endif	/* MACH_PV_PAGETABLES */
