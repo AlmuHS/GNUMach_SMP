@@ -1046,34 +1046,44 @@ pmap_page_table_page_alloc()
 }
 
 #ifdef	MACH_XEN
-#ifdef	MACH_PV_PAGETABLES
 void pmap_map_mfn(void *_addr, unsigned long mfn) {
 	vm_offset_t addr = (vm_offset_t) _addr;
 	pt_entry_t	*pte, *pdp;
 	vm_offset_t	ptp;
 	pt_entry_t ma = ((pt_entry_t) mfn) << PAGE_SHIFT;
+
+	/* Add a ptp if none exist yet for this pte */
 	if ((pte = pmap_pte(kernel_pmap, addr)) == PT_ENTRY_NULL) {
 		ptp = phystokv(pmap_page_table_page_alloc());
+#ifdef	MACH_PV_PAGETABLES
 		pmap_set_page_readonly((void*) ptp);
 		if (!hyp_mmuext_op_mfn (MMUEXT_PIN_L1_TABLE, pa_to_mfn(ptp)))
 			panic("couldn't pin page %p(%p)\n",ptp,(vm_offset_t) kv_to_ma(ptp));
+#endif	/* MACH_PV_PAGETABLES */
 		pdp = pmap_pde(kernel_pmap, addr);
+
+#ifdef	MACH_PV_PAGETABLES
 		if (!hyp_mmu_update_pte(kv_to_ma(pdp),
 			pa_to_pte(kv_to_ma(ptp)) | INTEL_PTE_VALID
 					      | INTEL_PTE_USER
 					      | INTEL_PTE_WRITE))
 			panic("%s:%d could not set pde %p(%p) to %p(%p)\n",__FILE__,__LINE__,kvtophys((vm_offset_t)pdp),(vm_offset_t) kv_to_ma(pdp), ptp, (vm_offset_t) pa_to_ma(ptp));
+#else	/* MACH_PV_PAGETABLES */
+		*pdp = pa_to_pte(kvtophys(ptp)) | INTEL_PTE_VALID
+						| INTEL_PTE_USER
+						| INTEL_PTE_WRITE;
+#endif	/* MACH_PV_PAGETABLES */
 		pte = pmap_pte(kernel_pmap, addr);
 	}
+
+#ifdef	MACH_PV_PAGETABLES
 	if (!hyp_mmu_update_pte(kv_to_ma(pte), ma | INTEL_PTE_VALID | INTEL_PTE_WRITE))
 		panic("%s:%d could not set pte %p(%p) to %p(%p)\n",__FILE__,__LINE__,pte,(vm_offset_t) kv_to_ma(pte), ma, ma_to_pa(ma));
-}
 #else	/* MACH_PV_PAGETABLES */
-void pmap_map_mfn(void *_addr, unsigned long mfn) {
 	/* Note: in this case, mfn is actually a pfn.  */
-	panic("TODO %s:%d\n",__FILE__,__LINE__);
-}
+	WRITE_PTE(pte, ma | INTEL_PTE_VALID | INTEL_PTE_WRITE);
 #endif	/* MACH_PV_PAGETABLES */
+}
 #endif	/* MACH_XEN */
 
 /*
