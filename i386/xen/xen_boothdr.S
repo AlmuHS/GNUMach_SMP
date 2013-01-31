@@ -37,13 +37,13 @@
 	.ascii	",FEATURES=!auto_translated_physmap"
 #endif
 #ifndef	MACH_PV_PAGETABLES
-	.ascii	"|writable_page_tables"
+	.ascii	"|!writable_page_tables"
 #endif	/* MACH_PV_PAGETABLES */
 #ifndef	MACH_PV_DESCRIPTORS
-	.ascii	"|writable_descriptor_tables"
+	.ascii	"|!writable_descriptor_tables"
 #endif	/* MACH_PV_DESCRIPTORS */
 #ifndef	MACH_RING1
-	.ascii	"|supervisor_mode_kernel"
+	.ascii	"|!supervisor_mode_kernel"
 #endif	/* MACH_PV_DESCRIPTORS */
 	.byte	0
 
@@ -80,13 +80,13 @@
 						"!auto_translated_physmap"
 #endif
 #ifndef	MACH_PV_PAGETABLES
-						"|writable_page_tables"
+						"|!writable_page_tables"
 #endif	/* MACH_PV_PAGETABLES */
 #ifndef	MACH_PV_DESCRIPTORS
-						"|writable_descriptor_tables"
+						"|!writable_descriptor_tables"
 #endif	/* MACH_PV_DESCRIPTORS */
 #ifndef	MACH_RING1
-						"|supervisor_mode_kernel"
+						"|!supervisor_mode_kernel"
 #endif	/* MACH_RING1 */
 	)
 
