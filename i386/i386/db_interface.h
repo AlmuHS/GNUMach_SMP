@@ -24,6 +24,7 @@
 #include <sys/types.h>
 #include <kern/task.h>
 #include <machine/thread.h>
+#include <ddb/db_watch.h>
 
 extern boolean_t kdb_trap (
 	int 			type,
@@ -73,11 +74,12 @@ extern void db_task_name (task_t task);
 #define I386_DB_LOCAL 1
 #define I386_DB_GLOBAL 2
 
-extern void db_set_hw_watchpoint(
-	int		num,
-	task_t		task,
-	vm_offset_t	addr,
-	vm_size_t	size);
+extern boolean_t db_set_hw_watchpoint(
+	db_watchpoint_t	watch,
+	unsigned	num);
+
+extern boolean_t db_clear_hw_watchpoint(
+	unsigned	num);
 
 extern void db_dr (
 	int		num,

@@ -34,7 +34,6 @@
 #include <mach/machine/vm_types.h>
 #include <mach/machine/vm_param.h>
 #include <mach/machine/eflags.h>
-#include <machine/db_interface.h>
 #include <i386/thread.h>		/* for thread_status */
 #include <i386/trap.h>
 

@@ -53,6 +53,7 @@
 #include <ddb/db_run.h>
 #include <ddb/db_task_thread.h>
 #include <ddb/db_trap.h>
+#include <ddb/db_watch.h>
 #include <machine/db_interface.h>
 #include <machine/machspl.h>
 
@@ -167,29 +168,27 @@ void db_dr (
 	splx(s);
 }
 
-void db_set_hw_watchpoint(
-	int		num,
-	task_t		task,
-	db_addr_t	addr,
-	vm_size_t	size)
+boolean_t
+db_set_hw_watchpoint(
+	db_watchpoint_t	watch,
+	unsigned	num)
 {
+	vm_size_t	size = watch->hiaddr - watch->loaddr;
+	db_addr_t	addr = watch->loaddr;
 	unsigned int kern_addr;
 
+	if (num >= 4)
+	    return FALSE;
 	if (size != 1 && size != 2 && size != 4)
-	    return;
+	    return FALSE;
 
 	if (addr & (size-1))
 	    /* Unaligned */
-	    return;
+	    return FALSE;
 
-	if (!addr) {
-	    db_dr (num, 0, 0, 0, 0);
-	    db_printf("Hardware watchpoint %d deleted\n", num);
-	}
-
-	if (task) {
-	    if (db_user_to_kernel_address(task, addr, &kern_addr, 1) < 0)
-		return;
+	if (watch->task) {
+	    if (db_user_to_kernel_address(watch->task, addr, &kern_addr, 1) < 0)
+		return FALSE;
 	    addr = kern_addr;
 	}
 	addr = kvtolin(addr);
@@ -197,6 +196,18 @@ void db_set_hw_watchpoint(
 	db_dr (num, addr, I386_DB_TYPE_W, size-1, I386_DB_LOCAL|I386_DB_GLOBAL);
 
 	db_printf("Hardware watchpoint %d set for %x\n", num, addr);
+	return TRUE;
+}
+
+boolean_t
+db_clear_hw_watchpoint(
+	unsigned	num)
+{
+	if (num >= 4)
+		return FALSE;
+
+	db_dr (num, 0, 0, 0, 0);
+	return TRUE;
 }
 
 /*
@@ -577,7 +588,7 @@ db_check_access(
 	register int	size,
 	task_t		task)
 {
-	register	n;
+	int	n;
 	vm_offset_t	kern_addr;
 
 	if (addr >= VM_MIN_KERNEL_ADDRESS) {

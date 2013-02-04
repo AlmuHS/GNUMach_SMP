@@ -55,6 +55,9 @@
 
 boolean_t	db_watchpoints_inserted = TRUE;
 
+extern boolean_t db_set_hw_watchpoint(db_watchpoint_t watch, unsigned hw_idx);
+extern boolean_t db_clear_hw_watchpoint(unsigned hw_idx);
+
 #define	NWATCHPOINTS	100
 struct db_watchpoint	db_watch_table[NWATCHPOINTS];
 db_watchpoint_t		db_next_free_watchpoint = &db_watch_table[0];
@@ -264,9 +267,14 @@ db_set_watchpoints(void)
 {
 	register db_watchpoint_t	watch;
 	vm_map_t			map;
+	unsigned hw_idx = 0;
 
 	if (!db_watchpoints_inserted) {
 	    for (watch = db_watchpoint_list; watch != 0; watch = watch->link) {
+		if (db_set_hw_watchpoint(watch, hw_idx)) {
+		    hw_idx++;
+		    continue;
+		}
 		map = (watch->task)? watch->task->map: kernel_map;
 		pmap_protect(map->pmap,
 			     trunc_page(watch->loaddr),
@@ -280,6 +288,11 @@ db_set_watchpoints(void)
 void
 db_clear_watchpoints(void)
 {
+	unsigned hw_idx = 0;
+
+	while (db_clear_hw_watchpoint(hw_idx))
+	    hw_idx++;
+
 	db_watchpoints_inserted = FALSE;
 }
 
