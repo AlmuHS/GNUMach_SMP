@@ -56,6 +56,7 @@
 #define i386_ISA_PORT_MAP_STATE	3
 #define	i386_V86_ASSIST_STATE	4
 #define	i386_REGS_SEGS_STATE	5
+#define	i386_DEBUG_STATE	6
 
 /*
  * This structure is used for both
@@ -143,5 +144,11 @@ struct v86_interrupt_table {
 
 #define	i386_V86_ASSIST_STATE_COUNT \
 	    (sizeof(struct i386_v86_assist_state)/sizeof(unsigned int))
+
+struct i386_debug_state {
+	unsigned int	dr[8];
+};
+#define	i386_DEBUG_STATE_COUNT \
+	    (sizeof(struct i386_debug_state)/sizeof(unsigned int))
 
 #endif	/* _MACH_I386_THREAD_STATUS_H_ */

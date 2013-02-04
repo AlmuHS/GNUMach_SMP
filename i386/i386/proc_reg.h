@@ -234,6 +234,132 @@ extern unsigned long cr3;
 	asm("jmp 0f\n" \
             "0:\n")
 
+#ifdef MACH_RING1
+#define get_dr0() hyp_get_debugreg(0)
+#else
+#define	get_dr0() \
+    ({ \
+	register unsigned long _temp__; \
+	asm volatile("movl %%dr0, %0" : "=r" (_temp__)); \
+	_temp__; \
+    })
+#endif
+
+#ifdef MACH_RING1
+#define set_dr0(value) hyp_set_debugreg(0, value)
+#else
+#define	set_dr0(value) \
+    ({ \
+	register unsigned long _temp__ = (value); \
+	asm volatile("movl %0,%%dr0" : : "r" (_temp__)); \
+    })
+#endif
+
+#ifdef MACH_RING1
+#define get_dr1() hyp_get_debugreg(1)
+#else
+#define	get_dr1() \
+    ({ \
+	register unsigned long _temp__; \
+	asm volatile("movl %%dr1, %0" : "=r" (_temp__)); \
+	_temp__; \
+    })
+#endif
+
+#ifdef MACH_RING1
+#define set_dr1(value) hyp_set_debugreg(1, value)
+#else
+#define	set_dr1(value) \
+    ({ \
+	register unsigned long _temp__ = (value); \
+	asm volatile("movl %0,%%dr1" : : "r" (_temp__)); \
+    })
+#endif
+
+#ifdef MACH_RING1
+#define get_dr2() hyp_get_debugreg(2)
+#else
+#define	get_dr2() \
+    ({ \
+	register unsigned long _temp__; \
+	asm volatile("movl %%dr2, %0" : "=r" (_temp__)); \
+	_temp__; \
+    })
+#endif
+
+#ifdef MACH_RING1
+#define set_dr2(value) hyp_set_debugreg(2, value)
+#else
+#define	set_dr2(value) \
+    ({ \
+	register unsigned long _temp__ = (value); \
+	asm volatile("movl %0,%%dr2" : : "r" (_temp__)); \
+    })
+#endif
+
+#ifdef MACH_RING1
+#define get_dr3() hyp_get_debugreg(3)
+#else
+#define	get_dr3() \
+    ({ \
+	register unsigned long _temp__; \
+	asm volatile("movl %%dr3, %0" : "=r" (_temp__)); \
+	_temp__; \
+    })
+#endif
+
+#ifdef MACH_RING1
+#define set_dr3(value) hyp_set_debugreg(3, value)
+#else
+#define	set_dr3(value) \
+    ({ \
+	register unsigned long _temp__ = (value); \
+	asm volatile("movl %0,%%dr3" : : "r" (_temp__)); \
+    })
+#endif
+
+#ifdef MACH_RING1
+#define get_dr6() hyp_get_debugreg(6)
+#else
+#define	get_dr6() \
+    ({ \
+	register unsigned long _temp__; \
+	asm volatile("movl %%dr6, %0" : "=r" (_temp__)); \
+	_temp__; \
+    })
+#endif
+
+#ifdef MACH_RING1
+#define set_dr6(value) hyp_set_debugreg(6, value)
+#else
+#define	set_dr6(value) \
+    ({ \
+	register unsigned long _temp__ = (value); \
+	asm volatile("movl %0,%%dr6" : : "r" (_temp__)); \
+    })
+#endif
+
+#ifdef MACH_RING1
+#define get_dr7() hyp_get_debugreg(7)
+#else
+#define	get_dr7() \
+    ({ \
+	register unsigned long _temp__; \
+	asm volatile("movl %%dr7, %0" : "=r" (_temp__)); \
+	_temp__; \
+    })
+#endif
+
+#ifdef MACH_RING1
+#define set_dr7(value) hyp_set_debugreg(7, value)
+#else
+#define	set_dr7(value) \
+    ({ \
+	register unsigned long _temp__ = (value); \
+	asm volatile("movl %0,%%dr7" : : "r" (_temp__)); \
+    })
+#endif
+
 #endif	/* __GNUC__ */
 #endif	/* __ASSEMBLER__ */
 

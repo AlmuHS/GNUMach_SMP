@@ -53,6 +53,12 @@ extern boolean_t db_phys_eq (
 	task_t		task2,
 	vm_offset_t	addr2);
 
+extern int db_user_to_kernel_address(
+	task_t		task,
+	vm_offset_t	addr,
+	unsigned int	*kaddr,
+	int		flag);
+
 extern void db_task_name (task_t task);
 
 #define I386_DB_TYPE_X 0
@@ -67,9 +73,26 @@ extern void db_task_name (task_t task);
 #define I386_DB_LOCAL 1
 #define I386_DB_GLOBAL 2
 
-extern unsigned long dr0 (vm_offset_t linear_addr, int type, int len, int persistence);
-extern unsigned long dr1 (vm_offset_t linear_addr, int type, int len, int persistence);
-extern unsigned long dr2 (vm_offset_t linear_addr, int type, int len, int persistence);
-extern unsigned long dr3 (vm_offset_t linear_addr, int type, int len, int persistence);
+extern void db_set_hw_watchpoint(
+	int		num,
+	task_t		task,
+	vm_offset_t	addr,
+	vm_size_t	size);
+
+extern void db_dr (
+	int		num,
+	vm_offset_t	linear_addr,
+	int		type,
+	int		len,
+	int		persistence);
+
+extern void db_get_debug_state(
+	pcb_t pcb,
+	struct i386_debug_state *state);
+extern kern_return_t db_set_debug_state(
+	pcb_t pcb,
+	const struct i386_debug_state *state);
+
+extern void db_load_context(pcb_t pcb);
 
 #endif /* _I386_DB_INTERFACE_H_ */
