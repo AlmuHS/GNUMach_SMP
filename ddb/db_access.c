@@ -32,6 +32,7 @@
 
 #include <mach/boolean.h>
 #include <machine/db_machdep.h>		/* type definitions */
+#include <machine/db_interface.h>	/* function definitions */
 #include <machine/setjmp.h>
 #include <kern/task.h>
 #include <ddb/db_access.h>
@@ -42,9 +43,6 @@
  * Access unaligned data items on aligned (longword)
  * boundaries.
  */
-
-extern void	db_read_bytes();	/* machine-dependent */
-extern void	db_write_bytes();	/* machine-dependent */
 
 int db_access_level = DB_ACCESS_LEVEL;
 
@@ -74,7 +72,7 @@ db_get_task_value(addr, size, is_signed, task)
 	register db_expr_t value;
 	register int	i;
 
-	db_read_bytes((void*)addr, size, data, task);
+	db_read_bytes(addr, size, data, task);
 
 	value = 0;
 #if	BYTE_MSF
@@ -113,7 +111,7 @@ db_put_task_value(addr, size, value, task)
 	    value >>= 8;
 	}
 
-	db_write_bytes((void*)addr, size, data, task);
+	db_write_bytes(addr, size, data, task);
 }
 
 db_expr_t

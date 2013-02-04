@@ -37,6 +37,7 @@
 #include <vm/vm_map.h>
 
 #include <machine/db_machdep.h>
+#include <machine/db_interface.h>
 #include <ddb/db_command.h>
 #include <ddb/db_lex.h>
 #include <ddb/db_watch.h>
@@ -54,9 +55,6 @@
  */
 
 boolean_t	db_watchpoints_inserted = TRUE;
-
-extern boolean_t db_set_hw_watchpoint(db_watchpoint_t watch, unsigned hw_idx);
-extern boolean_t db_clear_hw_watchpoint(unsigned hw_idx);
 
 #define	NWATCHPOINTS	100
 struct db_watchpoint	db_watch_table[NWATCHPOINTS];
