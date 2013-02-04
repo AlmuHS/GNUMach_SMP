@@ -7088,6 +7088,15 @@ rejected with an error message.
 Warning: Attempts to watch wired kernel memory may cause unrecoverable
 error in some systems such as i386.  Watchpoints on user addresses work
 best.
+
+@item dwatch[/T] @var{addr} [ @var{task} ]
+Clears a watchpoint previously set for a region.
+Without @code{T} option, @var{addr} is assumed to be a kernel address.
+If you want to clear a watch point in user space, specify @code{T} and
+@var{task} parameter where the address belongs to.  If the @var{task}
+parameter is omitted, a task of the default target thread or a current
+task is assumed.  If you specify a wrong space address, the request is
+rejected with an error message.
 @end table
 
 
