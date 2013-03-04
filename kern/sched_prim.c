@@ -1020,7 +1020,7 @@ shift_data_t	wait_shift[32] = {
 	(pri) = (th)->priority	/* start with base priority */		\
 	    + ((th)->sched_usage >> (PRI_SHIFT + SCHED_SHIFT))		\
 	    + ((th)->sched_usage >> (PRI_SHIFT_2 + SCHED_SHIFT));	\
-	if ((pri) > 31) (pri) = 31;					\
+	if ((pri) > NRQS - 1) (pri) = NRQS - 1;				\
 	MACRO_END
 #else	/* PRI_SHIFT_2 */
 #define do_priority_computation(th, pri)				\
@@ -1028,7 +1028,7 @@ shift_data_t	wait_shift[32] = {
 	(pri) = (th)->priority	/* start with base priority */		\
 	    + ((th)->sched_usage >> (PRI_SHIFT + SCHED_SHIFT))		\
 	    - ((th)->sched_usage >> (SCHED_SHIFT - PRI_SHIFT_2));	\
-	if ((pri) > 31) (pri) = 31;					\
+	if ((pri) > NRQS - 1) (pri) = NRQS - 1;				\
 	MACRO_END
 #endif	/* PRI_SHIFT_2 */
 #else	/* defined(PRI_SHIFT_2) */
@@ -1036,7 +1036,7 @@ shift_data_t	wait_shift[32] = {
 	MACRO_BEGIN							\
 	(pri) = (th)->priority	/* start with base priority */		\
 	    + ((th)->sched_usage >> (PRI_SHIFT + SCHED_SHIFT));		\
-	if ((pri) > 31) (pri) = 31;					\
+	if ((pri) > NRQS - 1) (pri) = NRQS - 1;				\
 	MACRO_END
 #endif	/* defined(PRI_SHIFT_2) */
 
@@ -1803,8 +1803,8 @@ void idle_thread(void)
 	stack_privilege(self);
 
 	s = splsched();
-	self->priority = 31;
-	self->sched_pri = 31;
+	self->priority = NRQS-1;
+	self->sched_pri = NRQS-1;
 
 	/*
 	 *	Set the idle flag to indicate that this is an idle thread,
