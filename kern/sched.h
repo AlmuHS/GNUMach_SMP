@@ -60,7 +60,7 @@
 #include <machine/sched_param.h>
 
 #endif	/* STAT_TIME */
-#define NRQS	32			/* 32 run queues per cpu */
+#define NRQS	50			/* 50 run queues per cpu */
 
 struct run_queue {
 	queue_head_t		runq[NRQS];	/* one for each priority */
