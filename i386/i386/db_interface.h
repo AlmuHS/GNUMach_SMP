@@ -74,6 +74,7 @@ extern void db_task_name (task_t task);
 #define I386_DB_LOCAL 1
 #define I386_DB_GLOBAL 2
 
+#if MACH_KDB
 extern boolean_t db_set_hw_watchpoint(
 	db_watchpoint_t	watch,
 	unsigned	num);
@@ -87,6 +88,7 @@ extern void db_dr (
 	int		type,
 	int		len,
 	int		persistence);
+#endif
 
 extern void db_get_debug_state(
 	pcb_t pcb,
