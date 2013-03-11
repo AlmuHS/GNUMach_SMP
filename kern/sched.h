@@ -118,7 +118,7 @@ extern int		min_quantum;	/* defines max context switch rate */
  *	Default base priorities for threads.
  */
 #define BASEPRI_SYSTEM	6
-#define BASEPRI_USER	12
+#define BASEPRI_USER	25
 
 /*
  *	Macro to check for invalid priorities.
