@@ -1305,7 +1305,9 @@ fast_free:
 slab_free:
 #endif /* SLAB_USE_CPU_POOLS */
 
+    simple_lock(&cache->lock);
     kmem_cache_free_to_slab(cache, (void *)obj);
+    simple_unlock(&cache->lock);
 }
 
 void slab_collect(void)
