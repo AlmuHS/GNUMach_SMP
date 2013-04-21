@@ -899,31 +899,28 @@ static void kmem_cache_reap(struct kmem_cache *cache)
 {
     struct kmem_slab *slab;
     struct list dead_slabs;
+    unsigned long nr_free_slabs;
 
     if (cache->flags & KMEM_CF_NO_RECLAIM)
         return;
 
-    list_init(&dead_slabs);
-
     simple_lock(&cache->lock);
-
-    while (!list_empty(&cache->free_slabs)) {
-        slab = list_first_entry(&cache->free_slabs, struct kmem_slab,
-                                list_node);
-        list_remove(&slab->list_node);
-        list_insert(&dead_slabs, &slab->list_node);
-        cache->nr_bufs -= cache->bufs_per_slab;
-        cache->nr_slabs--;
-        cache->nr_free_slabs--;
-    }
-
+    list_set_head(&dead_slabs, &cache->free_slabs);
+    list_init(&cache->free_slabs);
+    nr_free_slabs = cache->nr_free_slabs;
+    cache->nr_bufs -= cache->bufs_per_slab * nr_free_slabs;
+    cache->nr_slabs -= nr_free_slabs;
+    cache->nr_free_slabs = 0;
     simple_unlock(&cache->lock);
 
     while (!list_empty(&dead_slabs)) {
         slab = list_first_entry(&dead_slabs, struct kmem_slab, list_node);
         list_remove(&slab->list_node);
         kmem_slab_destroy(slab, cache);
+        nr_free_slabs--;
     }
+
+    assert(nr_free_slabs == 0);
 }
 
 /*
