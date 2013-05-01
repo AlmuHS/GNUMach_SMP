@@ -589,8 +589,8 @@ rdwr_full (int rw, kdev_t dev, loff_t *off, char **buf, int *resid, int bshift)
       set_bit (BH_Lock, &bh->b_state);
       if (rw == WRITE)
 	set_bit (BH_Dirty, &bh->b_state);
-      cc = PAGE_SIZE - (((int) *buf) & PAGE_MASK);
-      if (cc >= BSIZE && ((int) *buf & 511) == 0)
+      cc = PAGE_SIZE - (((int) *buf + (nb << bshift)) & PAGE_MASK);
+      if (cc >= BSIZE && (((int) *buf + (nb << bshift)) & 511) == 0)
 	cc &= ~BMASK;
       else
 	{
