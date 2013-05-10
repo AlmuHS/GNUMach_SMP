@@ -79,7 +79,7 @@ liblinux_a_SOURCES += \
 	linux/src/drivers/block/ide.c \
 	linux/src/drivers/block/ide.h \
 	linux/dev/drivers/block/ahci.c \
-	linux/dev/drivers/block/ahci.h \
+	linux/dev/include/ahci.h \
 	linux/src/drivers/block/ide_modes.h \
 	linux/src/drivers/block/rz1000.c \
 	linux/src/drivers/block/triton.c
