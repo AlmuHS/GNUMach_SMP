@@ -302,6 +302,8 @@
 #include <linux/genhd.h>
 #include <linux/malloc.h>
 
+#include <ahci.h>
+
 #include <asm/byteorder.h>
 #include <asm/irq.h>
 #include <asm/segment.h>
@@ -3682,6 +3684,7 @@ static void probe_for_hwifs (void)
 #ifdef CONFIG_BLK_DEV_PROMISE
 	init_dc4030();
 #endif
+	ahci_probe_pci();
 }
 
 static int hwif_init (int h)

@@ -560,6 +560,12 @@ vfree (void *addr)
   vmalloc_list_remove (p);
 }
 
+unsigned long
+vmtophys (void *addr)
+{
+	return kvtophys((vm_offset_t) addr);
+}
+
 /* XXX: Quick hacking. */
 /* Remap physical address into virtual address. */
 void *

@@ -281,6 +281,7 @@ extern void * vmalloc(unsigned long size);
 extern void * vremap(unsigned long offset, unsigned long size);
 extern void vfree(void * addr);
 extern int vread(char *buf, char *addr, int count);
+extern unsigned long vmtophys (void *);
 
 /* mmap.c */
 extern unsigned long do_mmap(struct file * file, unsigned long addr, unsigned long len,
