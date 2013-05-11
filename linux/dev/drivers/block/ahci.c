@@ -734,7 +734,7 @@ static void ahci_probe_dev(unsigned char bus, unsigned char device)
 	/* Map mmio */
 	ahci_host = vremap(bar, 0x2000);
 	if (!(readl(&ahci_host->cap) & HOST_CAP_ONLY)) {
-		printk("ahci: %02u:%02u.%u: available as IDE too, skipping it\n");
+		printk("ahci: %02u:%02u.%u: available as IDE too, skipping it\n", bus, dev, fun);
 		return;
 	}
 
