@@ -1319,7 +1319,6 @@ void kalloc_init(void)
 {
     char name[KMEM_CACHE_NAME_SIZE];
     size_t i, size;
-    vm_offset_t min, max;
 
     size = 1 << KALLOC_FIRST_SHIFT;
 
