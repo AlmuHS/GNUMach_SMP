@@ -842,7 +842,7 @@ AT-LAN-TEC/RealTek pocket adaptor network card device driver for the
 AMD LANCE and PCnet (AT1500 and NE2100) network card device driver.  On
 @samp{ix86-at} enabled by @samp{default}.
 
-@itemx --enable-tulip
+@item --enable-tulip
 DECchip Tulip (dc21x4x) PCI network card device driver.  On @samp{ix86-at}
 enabled by @samp{default}.
 
@@ -870,7 +870,7 @@ Packet Engines Yellowfin Gigabit-NIC network card device driver.  On
 RealTek 8129/8139 (not 8019/8029!) network card device driver.  On
 @samp{ix86-at} enabled by @samp{default}.
 
-@itemx --enable-epic100
+@item --enable-epic100
 SMC 83c170/175 EPIC/100 (EtherPower II) network card device driver.  On
 @samp{ix86-at} enabled by @samp{default}.
 
