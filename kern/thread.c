@@ -533,7 +533,6 @@ kern_return_t thread_create(
 #endif	/* HW_FOOTPRINT */
 
 #if	MACH_PCSAMPLE
-	new_thread->pc_sample.buffer = 0;
 	new_thread->pc_sample.seqno = 0;
 	new_thread->pc_sample.sampletypes = 0;
 #endif	/* MACH_PCSAMPLE */
