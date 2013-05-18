@@ -861,7 +861,7 @@ void
 thread_force_terminate(
 	register thread_t	thread)
 {
-	boolean_t	deallocate_here = FALSE;
+	boolean_t	deallocate_here;
 	spl_t s;
 
 	ipc_thread_disable(thread);
