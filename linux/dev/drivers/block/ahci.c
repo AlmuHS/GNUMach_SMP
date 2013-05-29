@@ -239,13 +239,14 @@ static struct port {
 	struct ahci_fis *fis;
 	struct ahci_cmd_tbl *prdtl;
 
-	unsigned capacity;		/* Nr of sectors */
+	unsigned long long capacity;	/* Nr of sectors */
 	u32 status;			/* interrupt status */
 	unsigned cls;			/* Command list maximum size.
 					   We currently only use 1. */
 	struct wait_queue *q;		/* IRQ wait queue */
 	struct hd_struct *part;		/* drive partition table */
-	int identify;			/* Whether we are just identifying
+	unsigned lba48;			/* Whether LBA48 is supported */
+	unsigned identify;		/* Whether we are just identifying
 					   at boot */
 } ports[MAX_PORTS];
 
@@ -301,10 +302,16 @@ static void ahci_do_port_request(struct port *port, unsigned sector, struct requ
 	fis_h2d = (void*) &prdtl[slot].cfis;
 	fis_h2d->fis_type = FIS_TYPE_REG_H2D;
 	fis_h2d->flags = 128;
-	if (rq->cmd == READ)
-		fis_h2d->command = WIN_READDMA;
+	if (port->lba48)
+		if (rq->cmd == READ)
+			fis_h2d->command = WIN_READDMA_EXT;
+		else
+			fis_h2d->command = WIN_WRITEDMA_EXT;
 	else
-		fis_h2d->command = WIN_WRITEDMA;
+		if (rq->cmd == READ)
+			fis_h2d->command = WIN_READDMA;
+		else
+			fis_h2d->command = WIN_WRITEDMA;
 
 	fis_h2d->device = 1<<6;	/* LBA */
 
@@ -679,12 +686,35 @@ static void ahci_probe_port(const volatile struct ahci_host *ahci_host, const vo
 	{
 		printk("sd%u: identify error\n", port-ports);
 		port->capacity = 0;
+		port->lba48 = 0;
 	} else {
 		ide_fixstring(id.model,     sizeof(id.model),     1);
 		ide_fixstring(id.fw_rev,    sizeof(id.fw_rev),    1);
 		ide_fixstring(id.serial_no, sizeof(id.serial_no), 1);
-		port->capacity = id.lba_capacity;
-		printk("sd%u: %s, %uMB w/%dkB Cache\n", port - ports, id.model, port->capacity/2048, id.buf_size/2);
+		if (id.command_set_2 & (1U<<10))
+		{
+			port->lba48 = 1;
+			port->capacity = id.lba_capacity_2;
+			if (port->capacity >= (1ULL << 32))
+			{
+				port->capacity = (1ULL << 32) - 1;
+				printk("Warning: truncating disk size to 2TiB\n");
+			}
+		}
+		else
+		{
+			port->lba48 = 0;
+			port->capacity = id.lba_capacity;
+			if (port->capacity > (1ULL << 24))
+			{
+				port->capacity = (1ULL << 24);
+				printk("Warning: truncating disk size to 128GiB\n");
+			}
+		}
+		if (port->capacity/2048 >= 10240)
+			printk("sd%u: %s, %uGB w/%dkB Cache\n", port - ports, id.model, port->capacity/(2048*1024), id.buf_size/2);
+		else
+			printk("sd%u: %s, %uMB w/%dkB Cache\n", port - ports, id.model, port->capacity/2048, id.buf_size/2);
 	}
 	port->identify = 0;
 }

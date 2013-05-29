@@ -62,6 +62,8 @@
 #define WIN_SETFEATURES		0xEF	/* set special drive features */
 #define WIN_READDMA		0xc8	/* read sectors using DMA transfers */
 #define WIN_WRITEDMA		0xca	/* write sectors using DMA transfers */
+#define WIN_READDMA_EXT		0x25	/* read sectors using LBA48 DMA transfers */
+#define WIN_WRITEDMA_EXT	0x35	/* write sectors using LBA48 DMA transfers */
 
 /* Additional drive command codes used by ATAPI devices. */
 #define WIN_PIDENTIFY		0xA1	/* identify ATAPI device	*/
@@ -168,7 +170,7 @@ struct hd_driveid {
 	unsigned short  word80;
 	unsigned short  word81;
 	unsigned short  command_sets;	/* bits 0:Smart 1:Security 2:Removable 3:PM */
-	unsigned short  word83;		/* bits 14:Smart Enabled 13:0 zero */
+	unsigned short  command_set_2;	/* bits 14:Smart Enabled 13:0 zero */
 	unsigned short  word84;
 	unsigned short  word85;
 	unsigned short  word86;
@@ -185,10 +187,7 @@ struct hd_driveid {
 	unsigned short	word97;		/* reserved (word 97) */
 	unsigned short	word98;		/* reserved (word 98) */
 	unsigned short	word99;		/* reserved (word 99) */
-	unsigned short	word100;	/* reserved (word 100) */
-	unsigned short	word101;	/* reserved (word 101) */
-	unsigned short	word102;	/* reserved (word 102) */
-	unsigned short	word103;	/* reserved (word 103) */
+	unsigned long long lba_capacity_2; /* 48-bit total number of sectors */
 	unsigned short	word104;	/* reserved (word 104) */
 	unsigned short	word105;	/* reserved (word 105) */
 	unsigned short	word106;	/* reserved (word 106) */
