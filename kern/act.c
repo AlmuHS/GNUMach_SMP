@@ -97,7 +97,6 @@ kern_return_t act_create(task_t task, vm_offset_t user_stack,
 			 struct Act **new_act)
 {
 	Act *act;
-	int rc;
 
 #ifndef ACT_STATIC_KLUDGE
 	act = (Act*)kmem_cache_alloc(&act_cache);
