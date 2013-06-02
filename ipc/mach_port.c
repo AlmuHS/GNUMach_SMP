@@ -1543,7 +1543,6 @@ mach_port_set_syscall_right(task, name)
 	mach_port_t name;
 {
 	ipc_entry_t entry;
-	ipc_port_t port;
 	kern_return_t kr;
 
 	if (task == IS_NULL)
