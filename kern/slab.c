@@ -1229,6 +1229,7 @@ fast_free:
             simple_unlock(&cpu_pool->lock);
             kmem_cache_free(cache->cpu_pool_type->array_cache,
                             (vm_offset_t)array);
+            simple_lock(&cpu_pool->lock);
             goto fast_free;
         }
 
