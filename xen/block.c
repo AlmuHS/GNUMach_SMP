@@ -214,9 +214,9 @@ void hyp_block_init(void) {
 			continue;
 		}
 		if (partition)
-			sprintf(device_name, "%s%us%u", prefix, disk, partition);
+			sprintf(device_name, "%s%ds%d", prefix, disk, partition);
 		else
-			sprintf(device_name, "%s%u", prefix, disk);
+			sprintf(device_name, "%s%d", prefix, disk);
 		bd->name = (char*) kalloc(strlen(device_name));
 		strcpy(bd->name, device_name);
 
@@ -238,7 +238,7 @@ void hyp_block_init(void) {
 			grant = hyp_grant_give(domid, atop(addr), 0);
 
 			/* and give it to backend.  */
-			i = sprintf(port_name, "%u", grant);
+			i = sprintf(port_name, "%d", grant);
 			c = hyp_store_write(t, port_name, 5, VBD_PATH, "/", vbds[n], "/", "ring-ref");
 			if (!c)
 				panic("%s: couldn't store ring reference (%s)", device_name, hyp_store_error);
@@ -670,7 +670,7 @@ device_write(void *d, ipc_port_t reply_port,
       hyp_grant_takeback(gref[j]);
 
     if (err) {
-      printf("error writing %d bytes at sector %d\n", count, bn);
+      printf("error writing %u bytes at sector %d\n", count, bn);
       break;
     }
   }

@@ -366,7 +366,7 @@ void hyp_net_init(void) {
 			grant = hyp_grant_give(domid, atop(addr), 0);
 
 			/* and give it to backend.  */
-			i = sprintf(port_name, "%u", grant);
+			i = sprintf(port_name, "%d", grant);
 			c = hyp_store_write(t, port_name, 5, VIF_PATH, "/", vifs[n], "/", "tx-ring-ref");
 			if (!c)
 				panic("eth: couldn't store tx_ring reference for VIF %s (%s)", vifs[n], hyp_store_error);
@@ -381,7 +381,7 @@ void hyp_net_init(void) {
 			grant = hyp_grant_give(domid, atop(addr), 0);
 
 			/* and give it to backend.  */
-			i = sprintf(port_name, "%u", grant);
+			i = sprintf(port_name, "%d", grant);
 			c = hyp_store_write(t, port_name, 5, VIF_PATH, "/", vifs[n], "/", "rx-ring-ref");
 			if (!c)
 				panic("eth: couldn't store rx_ring reference for VIF %s (%s)", vifs[n], hyp_store_error);

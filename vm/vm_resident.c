@@ -395,7 +395,7 @@ void pmap_startup(
 	while (pmap_next_page(&paddr))
 		i++;
 	if (i)
-		printf("%d memory page(s) left away\n", i);
+		printf("%u memory page(s) left away\n", i);
 
 	/*
 	 * Release pages in reverse order so that physical pages
