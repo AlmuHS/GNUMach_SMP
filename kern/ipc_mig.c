@@ -928,7 +928,7 @@ syscall_device_write_request(mach_port_t	device_name,
 			     vm_size_t		data_count)
 {
 	device_t	dev;
-	ipc_port_t	reply_port;
+	/*ipc_port_t	reply_port;*/
 	io_return_t	res;
 
 	/*
@@ -949,9 +949,10 @@ syscall_device_write_request(mach_port_t	device_name,
 	/*
 	 * Translate reply port.
 	 */
-	if (reply_name == MACH_PORT_NULL)
+	/*if (reply_name == MACH_PORT_NULL)
 		reply_port = IP_NULL;
-	else {
+	*/
+	if (reply_name != MACH_PORT_NULL) {
 		/* Homey don't play that. */
 		device_deallocate(dev);
 		return KERN_INVALID_RIGHT;
