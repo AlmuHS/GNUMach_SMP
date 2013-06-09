@@ -397,7 +397,7 @@ static void ahci_do_request()	/* invoked with cli() */
 	}
 	if (blockend > port->capacity) {
 		printk("offset for %u was %lu\n", minor, port->part[minor & PARTN_MASK].start_sect);
-		printk("bad access: block %lu, count= %u\n", blockend, port->capacity);
+		printk("bad access: block %lu, count= %llu\n", blockend, port->capacity);
 		goto kill_rq;
 	}
 
@@ -712,9 +712,9 @@ static void ahci_probe_port(const volatile struct ahci_host *ahci_host, const vo
 			}
 		}
 		if (port->capacity/2048 >= 10240)
-			printk("sd%u: %s, %uGB w/%dkB Cache\n", port - ports, id.model, port->capacity/(2048*1024), id.buf_size/2);
+			printk("sd%u: %s, %lluGB w/%dkB Cache\n", port - ports, id.model, port->capacity/(2048*1024), id.buf_size/2);
 		else
-			printk("sd%u: %s, %uMB w/%dkB Cache\n", port - ports, id.model, port->capacity/2048, id.buf_size/2);
+			printk("sd%u: %s, %lluMB w/%dkB Cache\n", port - ports, id.model, port->capacity/2048, id.buf_size/2);
 	}
 	port->identify = 0;
 }
