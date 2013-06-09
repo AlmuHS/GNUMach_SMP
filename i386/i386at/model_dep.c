@@ -756,7 +756,7 @@ init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 				unsigned long long start = map->BaseAddr;
 				unsigned long long end = start + map->Length;;
 
-				if (start <= addr && avail_next < end)
+				if (start <= addr && avail_next <= end)
 				{
 					/* Ok, fits in the current map */
 					current = map;
