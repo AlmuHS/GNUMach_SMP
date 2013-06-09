@@ -514,6 +514,15 @@ static struct file_operations ahci_fops = {
 	.revalidate = NULL,
 };
 
+/* Disk timed out while processing identify, interrupt ahci_probe_port */
+static void identify_timeout(unsigned long data)
+{
+	struct port *port = (void*) data;
+
+	wake_up(&port->q);
+}
+
+static struct timer_list identify_timer = { .function = identify_timeout };
 
 /* Probe one AHCI port */
 static void ahci_probe_port(const volatile struct ahci_host *ahci_host, const volatile struct ahci_port *ahci_port)
@@ -671,15 +680,20 @@ static void ahci_probe_port(const volatile struct ahci_host *ahci_host, const vo
 	writel(1 << slot, &ahci_port->ci);
 
 	timeout = jiffies + WAIT_MAX;
+	identify_timer.expires = timeout;
+	identify_timer.data = (unsigned long) port;
+	add_timer(&identify_timer);
 	while (!port->status) {
-		if (jiffies > timeout) {
+		if (jiffies >= timeout) {
 			printk("sd%u: timeout waiting for ready\n", port-ports);
 			port->ahci_host = NULL;
 			port->ahci_port = NULL;
+			del_timer(&identify_timer);
 			return;
 		}
 		sleep_on(&port->q);
 	}
+	del_timer(&identify_timer);
 	restore_flags(flags);
 
 	if (readl(&ahci_port->is) & PORT_IRQ_TF_ERR)
