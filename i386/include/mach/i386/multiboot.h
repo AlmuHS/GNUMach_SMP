@@ -175,6 +175,16 @@ struct AddrRangeDesc
   /* unspecified optional padding... */
 };
 
+struct multiboot_mmap
+{
+  unsigned long size;
+  unsigned long long BaseAddr;
+  unsigned long long Length;
+  unsigned long Type;
+
+  /* unspecified optional padding... */
+};
+
 /* usable memory "Type", all others are reserved.  */
 #define MB_ARD_MEMORY       1
 

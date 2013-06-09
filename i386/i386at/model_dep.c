@@ -274,14 +274,44 @@ mem_size_init(void)
 	} else
 		phys_last_addr = boot_info.nr_pages * 0x1000;
 #else	/* MACH_HYP */
-	/* TODO: support mmap */
-	vm_size_t phys_last_kb = 0x400 + boot_info.mem_upper;
-	/* Avoid 4GiB overflow.  */
-	if (phys_last_kb < 0x400 || phys_last_kb >= 0x400000) {
-		printf("Truncating memory size to 4GiB\n");
-		phys_last_addr = 0xffffffffU;
-	} else
-		phys_last_addr = phys_last_kb * 0x400;
+	vm_size_t phys_last_kb;
+
+	if (boot_info.flags & MULTIBOOT_MEM_MAP) {
+		struct multiboot_mmap *map, *map_end;
+
+		map = (void*) phystokv(boot_info.mmap_addr);
+		map_end = (void*) map + boot_info.mmap_count;
+
+		while (map + 1 <= map_end) {
+			if (map->Type == MB_ARD_MEMORY) {
+				unsigned long long start = map->BaseAddr, end = map->BaseAddr + map->Length;;
+
+				if (start >= 0x100000000ULL) {
+					printf("Ignoring %luMiB RAM region above 4GiB\n", (unsigned long) (map->Length >> 20));
+				} else {
+					if (end >= 0x100000000ULL) {
+						printf("Truncating memory region to 4GiB\n");
+						end = 0x0ffffffffU;
+					}
+					if (end > phys_last_addr)
+						phys_last_addr = end;
+
+					printf("AT386 boot: physical memory map from 0x%lx to 0x%lx\n",
+						(unsigned long) start,
+						(unsigned long) end);
+				}
+			}
+			map = (void*) map + map->size + sizeof(map->size);
+		}
+	} else {
+		phys_last_kb = 0x400 + boot_info.mem_upper;
+		/* Avoid 4GiB overflow.  */
+		if (phys_last_kb < 0x400 || phys_last_kb >= 0x400000) {
+			printf("Truncating memory size to 4GiB\n");
+			phys_last_addr = 0xffffffffU;
+		} else
+			phys_last_addr = phys_last_kb * 0x400;
+	}
 #endif	/* MACH_HYP */
 
 	printf("AT386 boot: physical memory from 0x%lx to 0x%lx\n",
@@ -292,7 +322,7 @@ mem_size_init(void)
 	max_phys_size = VM_MAX_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS - VM_KERNEL_MAP_SIZE;
 	if (phys_last_addr - phys_first_addr > max_phys_size) {
 		phys_last_addr = phys_first_addr + max_phys_size;
-		printf("Truncating memory size to %luMiB\n", (phys_last_addr - phys_first_addr) / (1024 * 1024));
+		printf("Truncating memory to %luMiB\n", (phys_last_addr - phys_first_addr) / (1024 * 1024));
 		/* TODO Xen: be nice, free lost memory */
 	}
 
@@ -710,7 +740,56 @@ init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 
 #ifndef MACH_HYP
 	/* Skip past the I/O and ROM area.  */
-	if ((avail_next > (boot_info.mem_lower * 0x400)) && (addr < 0x100000))
+	if (boot_info.flags & MULTIBOOT_MEM_MAP)
+	{
+		struct multiboot_mmap *map, *map_end, *current = NULL, *next = NULL;
+		unsigned long long minimum_next = ~0ULL;
+
+		map = (void*) phystokv(boot_info.mmap_addr);
+		map_end = (void*) map + boot_info.mmap_count;
+
+		/* Find both our current map, and the next one */
+		while (map + 1 <= map_end)
+		{
+			if (map->Type == MB_ARD_MEMORY)
+			{
+				unsigned long long start = map->BaseAddr;
+				unsigned long long end = start + map->Length;;
+
+				if (start <= addr && avail_next < end)
+				{
+					/* Ok, fits in the current map */
+					current = map;
+					break;
+				}
+				else if (avail_next <= start && start < minimum_next)
+				{
+					/* This map is not far from avail_next */
+					next = map;
+					minimum_next = start;
+				}
+			}
+			map = (void*) map + map->size + sizeof(map->size);
+		}
+
+		if (!current) {
+			/* Area does not fit in the current map, switch to next
+			 * map if any */
+			if (!next || next->BaseAddr >= phys_last_addr)
+			{
+				/* No further reachable map, we have reached
+				 * the end of memory, but possibly wrap around
+				 * 16MiB. */
+				avail_next = phys_last_addr;
+				goto retry;
+			}
+
+			/* Start from next map */
+			avail_next = next->BaseAddr;
+			goto retry;
+		}
+	}
+	else if ((avail_next > (boot_info.mem_lower * 0x400)) && (addr < 0x100000))
 	{
 		avail_next = 0x100000;
 		goto retry;
