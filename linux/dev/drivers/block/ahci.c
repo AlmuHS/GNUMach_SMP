@@ -745,6 +745,9 @@ static void ahci_probe_dev(unsigned char bus, unsigned char device)
 	unsigned bar;
 	unsigned char irq;
 
+	dev = PCI_SLOT(device);
+	fun = PCI_FUNC(device);
+
 	/* Get configuration */
 	if (pcibios_read_config_byte(bus, device, PCI_HEADER_TYPE, &hdrtype) != PCIBIOS_SUCCESSFUL) {
 		printk("ahci: %02u:%02u.%u: Can not read configuration", bus, dev, fun);
@@ -771,8 +774,6 @@ static void ahci_probe_dev(unsigned char bus, unsigned char device)
 		return;
 	}
 
-	dev = PCI_SLOT(device);
-	fun = PCI_FUNC(device);
 	printk("AHCI SATA %02u:%02u.%u BAR 0x%x IRQ %u\n", bus, dev, fun, bar, irq);
 
 	/* Map mmio */
