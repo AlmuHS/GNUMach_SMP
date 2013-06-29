@@ -1450,7 +1450,7 @@ void slab_info(void)
         mem_usage = (cache->nr_slabs * cache->slab_size) >> 10;
         mem_reclaimable = (cache->nr_free_slabs * cache->slab_size) >> 10;
 
-        printf("%-19s %6lu %3luk  %4lu %6lu %6lu %7luk %10luk\n",
+        printf("%-19s %6lu %3luk  %4lu %6lu %6lu %7uk %10uk\n",
                cache->name, cache->obj_size, cache->slab_size >> 10,
                cache->bufs_per_slab, cache->nr_objs, cache->nr_bufs,
                mem_usage, mem_reclaimable);
