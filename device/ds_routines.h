@@ -58,4 +58,11 @@ boolean_t	ds_write_done(io_req_t);
 
 void		iowait (io_req_t ior);
 
+kern_return_t	device_pager_setup(
+	mach_device_t	device,
+	int		prot,
+	vm_offset_t	offset,
+	vm_size_t	size,
+	mach_port_t	*pager);
+
 #endif	/* DS_ROUTINES_H */
