@@ -83,4 +83,9 @@ extern void net_kmsg_collect (void);
 #define net_kmsg_alloc()	((ipc_kmsg_t) kalloc(net_kmsg_size))
 #define net_kmsg_free(kmsg)	kfree((vm_offset_t) (kmsg), net_kmsg_size)
 
+extern unsigned int		ntohl(unsigned int);
+extern unsigned short int	ntohs(unsigned short int);
+extern unsigned int		htonl(unsigned int);
+extern unsigned short int	htons(unsigned short int);
+
 #endif	/* _DEVICE_NET_IO_H_ */
