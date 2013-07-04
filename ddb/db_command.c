@@ -45,6 +45,7 @@
 #include <ddb/db_macro.h>
 #include <ddb/db_expr.h>
 #include <ddb/db_examine.h>
+#include <ddb/db_print.h>
 
 #include <machine/setjmp.h>
 #include <kern/debug.h>
@@ -301,14 +302,13 @@ db_command_list(last_cmdp, cmd_table)
  */
 extern void	db_listbreak_cmd();
 extern void	db_listwatch_cmd();
-extern void	db_show_regs(), db_show_one_thread(), db_show_one_task();
+extern void	db_show_one_thread();
 extern void	db_show_all_threads();
 extern void	db_show_macro();
 extern void	vm_map_print(), vm_object_print(), vm_page_print();
 extern void	vm_map_copy_print();
 extern void	ipc_port_print(), ipc_pset_print(), db_show_all_slocks();
 extern void	ipc_kmsg_print(), ipc_msg_print();
-extern void	db_show_port_id();
 void		db_show_help();
 
 struct db_command db_show_all_cmds[] = {

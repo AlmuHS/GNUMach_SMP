@@ -51,6 +51,7 @@
 #include <ddb/db_variables.h>
 #include <ddb/db_sym.h>
 #include <ddb/db_task_thread.h>
+#include <ddb/db_print.h>
 
 extern unsigned int	db_maxoff;
 
