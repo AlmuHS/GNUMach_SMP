@@ -32,6 +32,7 @@
 
 #include <mach/boolean.h>
 #include <machine/db_machdep.h>
+#include <device/cons.h>
 #include <ddb/db_command.h>
 #include <ddb/db_input.h>
 #include <ddb/db_output.h>

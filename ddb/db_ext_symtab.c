@@ -33,6 +33,7 @@
 #include <mach/vm_param.h>
 #include <vm/vm_map.h>
 #include <vm/vm_kern.h>
+#include <vm/vm_user.h>
 #include <kern/host.h>
 #include <kern/task.h>
 #include <ddb/db_sym.h>

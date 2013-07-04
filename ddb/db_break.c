@@ -46,6 +46,7 @@
 #include <ddb/db_output.h>
 #include <ddb/db_cond.h>
 #include <ddb/db_expr.h>
+#include <ddb/db_access.h>
 
 #define	NBREAKPOINTS	100
 #define NTHREAD_LIST	(NBREAKPOINTS*3)

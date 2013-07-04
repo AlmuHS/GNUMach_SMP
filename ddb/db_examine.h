@@ -43,4 +43,10 @@ extern void db_print_loc_and_inst (
 	db_addr_t loc,
 	task_t task);
 
+int db_xcdump(
+	db_addr_t addr,
+	int	size,
+	int	count,
+	task_t task);
+
 #endif /* _DDB_DB_EXAMINE_H_ */
