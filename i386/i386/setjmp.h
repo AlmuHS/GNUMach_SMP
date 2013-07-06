@@ -33,4 +33,6 @@ typedef	struct jmp_buf {
 	int	jmp_buf[6];	/* ebx, esi, edi, ebp, esp, eip */
 } jmp_buf_t;
 
+extern int _setjmp(jmp_buf_t*);
+
 #endif	/* _I386_SETJMP_H_ */
