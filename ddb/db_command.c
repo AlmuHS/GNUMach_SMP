@@ -46,6 +46,12 @@
 #include <ddb/db_expr.h>
 #include <ddb/db_examine.h>
 #include <ddb/db_print.h>
+#include <ddb/db_break.h>
+#include <ddb/db_watch.h>
+#include <ddb/db_variables.h>
+#include <ddb/db_write_cmd.h>
+#include <ddb/db_run.h>
+#include <ddb/db_cond.h>
 
 #include <machine/setjmp.h>
 #include <kern/debug.h>
@@ -300,16 +306,10 @@ db_command_list(last_cmdp, cmd_table)
 /*
  * 'show' commands
  */
-extern void	db_listbreak_cmd();
-extern void	db_listwatch_cmd();
-extern void	db_show_one_thread();
-extern void	db_show_all_threads();
-extern void	db_show_macro();
 extern void	vm_map_print(), vm_object_print(), vm_page_print();
 extern void	vm_map_copy_print();
 extern void	ipc_port_print(), ipc_pset_print(), db_show_all_slocks();
 extern void	ipc_kmsg_print(), ipc_msg_print();
-void		db_show_help();
 
 struct db_command db_show_all_cmds[] = {
 	{ "threads",	db_show_all_threads,	0,	0 },
@@ -337,18 +337,7 @@ struct db_command db_show_cmds[] = {
 	{ (char *)0, }
 };
 
-extern void	db_print_cmd(), db_examine_cmd(), db_set_cmd();
-extern void	db_examine_forward(), db_examine_backward();
-extern void	db_search_cmd();
-extern void	db_write_cmd();
-extern void	db_delete_cmd(), db_breakpoint_cmd();
-extern void	db_deletewatch_cmd(), db_watchpoint_cmd();
-extern void	db_single_step_cmd(), db_trace_until_call_cmd(),
-		db_trace_until_matching_cmd(), db_continue_cmd();
-extern void	db_stack_trace_cmd(), db_cond_cmd();
-void		db_help_cmd();
-void		db_def_macro_cmd(), db_del_macro_cmd();
-void		db_fncall();
+extern void	db_stack_trace_cmd();
 extern void	db_reset_cpu();
 
 struct db_command db_command_table[] = {
@@ -403,18 +392,6 @@ struct db_command *ptr;
 
 
 struct db_command	*db_last_command = 0;
-
-void
-db_help_cmd()
-{
-	struct db_command *cmd = db_command_table;
-
-	while (cmd->name != 0) {
-	    db_printf("%-12s", cmd->name);
-	    db_end_line();
-	    cmd++;
-	}
-}
 
 int	(*ddb_display)();
 

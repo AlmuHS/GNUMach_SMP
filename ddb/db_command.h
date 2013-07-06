@@ -68,4 +68,6 @@ struct db_command {
 
 extern boolean_t db_exec_cmd_nest(char *cmd, int size);
 
+void db_fncall();
+
 #endif /* MACH_KDB */

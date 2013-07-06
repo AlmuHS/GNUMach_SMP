@@ -47,4 +47,22 @@ extern void db_single_step_cmd(
 	db_expr_t	count,
 	char		*modif);
 
+void db_trace_until_call_cmd(
+	db_expr_t	addr,
+	int		have_addr,
+	db_expr_t	count,
+	char *		modif);
+
+void db_trace_until_matching_cmd(
+	db_expr_t	addr,
+	int		have_addr,
+	db_expr_t	count,
+	char *		modif);
+
+void db_continue_cmd(
+	db_expr_t	addr,
+	int		have_addr,
+	db_expr_t	count,
+	char *		modif);
+
 extern boolean_t db_in_single_step(void);

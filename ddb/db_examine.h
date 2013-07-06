@@ -39,6 +39,18 @@ extern void db_examine (
 	int count,
 	task_t task);
 
+void db_examine_forward(
+	db_expr_t	addr,
+	int		have_addr,
+	db_expr_t	count,
+	char *		modif);
+
+void db_examine_backward(
+	db_expr_t	addr,
+	int		have_addr,
+	db_expr_t	count,
+	char *		modif);
+
 extern void db_print_loc_and_inst (
 	db_addr_t loc,
 	task_t task);
@@ -48,5 +60,9 @@ int db_xcdump(
 	int	size,
 	int	count,
 	task_t task);
+
+void db_print_cmd();
+
+void db_search_cmd();
 
 #endif /* _DDB_DB_EXAMINE_H_ */

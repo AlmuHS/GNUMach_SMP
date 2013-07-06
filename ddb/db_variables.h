@@ -80,4 +80,6 @@ extern struct db_variable	*db_eregs;
 
 extern int db_get_variable(db_expr_t *valuep);
 
+void db_set_cmd();
+
 #endif	/* _DB_VARIABLES_H_ */
