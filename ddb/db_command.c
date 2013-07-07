@@ -337,6 +337,7 @@ struct db_command db_show_cmds[] = {
 	{ (char *)0, }
 };
 
+void		db_help_cmd();
 extern void	db_stack_trace_cmd();
 extern void	db_reset_cpu();
 
@@ -392,6 +393,18 @@ struct db_command *ptr;
 
 
 struct db_command	*db_last_command = 0;
+
+void
+db_help_cmd()
+{
+	struct db_command *cmd = db_command_table;
+
+	while (cmd->name != 0) {
+	    db_printf("%-12s", cmd->name);
+	    db_end_line();
+	    cmd++;
+	}
+}
 
 int	(*ddb_display)();
 
