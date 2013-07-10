@@ -59,7 +59,9 @@
 #include <ipc/ipc_pset.h> /* 4proto */
 #include <ipc/ipc_port.h> /* 4proto */
 
-
+#include <vm/vm_print.h>
+#include <ipc/ipc_print.h>
+#include <kern/lock.h>
 
 /*
  * Exported global variables
@@ -303,14 +305,6 @@ db_command_list(last_cmdp, cmd_table)
 	} while (db_read_token() == tSEMI_COLON && db_cmd_loop_done == 0);
 }
 
-/*
- * 'show' commands
- */
-extern void	vm_map_print(), vm_object_print(), vm_page_print();
-extern void	vm_map_copy_print();
-extern void	ipc_port_print(), ipc_pset_print(), db_show_all_slocks();
-extern void	ipc_kmsg_print(), ipc_msg_print();
-
 struct db_command db_show_all_cmds[] = {
 	{ "threads",	db_show_all_threads,	0,	0 },
 	{ "slocks",	db_show_all_slocks,	0,	0 },
@@ -462,10 +456,6 @@ db_exec_cmd_nest(cmd, size)
 	    db_restore_lex_context(&lex_context);
 	return(db_cmd_loop_done == 0);
 }
-
-#ifdef __GNUC__
-extern __volatile__ void _longjmp();
-#endif
 
 void db_error(s)
 	char *s;
