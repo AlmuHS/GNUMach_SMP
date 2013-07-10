@@ -2969,6 +2969,7 @@ vm_object_page_map(
 
 
 #if	MACH_KDB
+#include <vm/vm_print.h>
 #define printf	kdbprintf
 
 boolean_t	vm_object_print_pages = FALSE;

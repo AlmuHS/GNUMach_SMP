@@ -233,8 +233,6 @@ extern void vm_object_page_map(
 	vm_offset_t	(*)(void *, vm_offset_t),
 	void *);
 
-extern void		vm_object_print(vm_object_t);
-
 extern vm_object_t	vm_object_request_object(struct ipc_port *);
 
 extern boolean_t vm_object_coalesce(

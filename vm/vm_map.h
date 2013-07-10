@@ -397,9 +397,6 @@ extern kern_return_t	vm_map_protect(vm_map_t, vm_offset_t, vm_offset_t,
 extern kern_return_t	vm_map_inherit(vm_map_t, vm_offset_t, vm_offset_t,
 				       vm_inherit_t);
 
-/* Debugging: print a map */
-extern void		vm_map_print(vm_map_t);
-
 /* Look up an address */
 extern kern_return_t	vm_map_lookup(vm_map_t *, vm_offset_t, vm_prot_t,
 				      vm_map_version_t *, vm_object_t *,

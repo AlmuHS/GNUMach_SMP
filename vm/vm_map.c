@@ -55,6 +55,7 @@
 
 #if	MACH_KDB
 #include <ddb/db_output.h>
+#include <vm/vm_print.h>
 #endif	/* MACH_KDB */
 
 
