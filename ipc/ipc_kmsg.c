@@ -66,6 +66,7 @@
 
 #if MACH_KDB
 #include <ddb/db_output.h>
+#include <ipc/ipc_print.h>
 #endif
 
 extern int copyinmap();

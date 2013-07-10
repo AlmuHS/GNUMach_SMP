@@ -325,7 +325,4 @@ ipc_port_dealloc_special(ipc_port_t, ipc_space_t);
 #define	ipc_port_release(port)		\
 		ipc_object_release(&(port)->ip_object)
 
-extern void
-ipc_port_print(ipc_port_t);
-
 #endif	/* _IPC_IPC_PORT_H_ */

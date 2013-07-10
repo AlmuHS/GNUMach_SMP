@@ -89,7 +89,4 @@ ipc_pset_destroy(ipc_pset_t);
 #define	ipc_pset_release(pset)		\
 		ipc_object_release(&(pset)->ips_object)
 
-extern void
-ipc_pset_print(ipc_pset_t);
-
 #endif	/* _IPC_IPC_PSET_H_ */
