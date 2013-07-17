@@ -171,4 +171,6 @@ extern boolean_t	lock_try_read_to_write(lock_t);
 extern void		lock_set_recursive(lock_t);
 extern void		lock_clear_recursive(lock_t);
 
+void db_show_all_slocks(void);
+
 #endif	/* _KERN_LOCK_H_ */
