@@ -158,7 +158,6 @@ init_fpu()
 		    unsigned long mask;
 		    fp_kind = FP_387X;
 #ifndef MACH_RING1
-		    printf("Enabling FXSR\n");
 		    set_cr4(get_cr4() | CR4_OSFXSR);
 #endif /* MACH_RING1 */
 		    fxsave(&save);
