@@ -42,10 +42,6 @@
 #include <device/cirbuf.h>
 #include <device/io_req.h>
 
-#ifdef	luna88k
-#include <luna88k/jtermio.h>
-#endif
-
 struct tty {
 	decl_simple_lock_data(,t_lock)
 	struct cirbuf	t_inq;		/* input buffer */

@@ -96,7 +96,7 @@ void SoftDebugger(message)
 	asm("ta 0x81");
 #endif	/* sun4 */
 
-#if	defined(mips ) || defined(luna88k) || defined(i860) || defined(alpha)
+#if	defined(mips ) || defined(i860) || defined(alpha)
 	gimmeabreak();
 #endif
 
