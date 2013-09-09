@@ -68,11 +68,9 @@ short	ttlowat[NSPEEDS] =
 void	queue_delayed_reply(
 	queue_t, io_req_t, boolean_t (*)(io_req_t));
 void	tty_output(struct tty *);
-void	tty_flush(struct tty *, int);
 boolean_t char_open_done(io_req_t);
 boolean_t char_read_done(io_req_t);
 boolean_t char_write_done(io_req_t);
-void	ttstart(struct tty *tp);
 
 /*
  * Fake 'line discipline' switch for the benefit of old code
