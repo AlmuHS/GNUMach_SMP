@@ -214,7 +214,7 @@ out:
 boolean_t char_open_done(
 	io_req_t	ior)
 {
-	register struct tty *tp = (struct tty *)ior->io_dev_ptr;
+	struct tty *tp = (struct tty *)ior->io_dev_ptr;
 	spl_t s = spltty();
 
 	simple_lock(&tp->t_lock);
@@ -254,12 +254,12 @@ boolean_t tty_close_open_reply(
  * device needs to run on master.
  */
 io_return_t char_write(
-	register struct tty *	tp,
-	register io_req_t	ior)
+	struct tty *	tp,
+	io_req_t	ior)
 {
 	spl_t		s;
-	register int	count;
-	register char	*data;
+	int	count;
+	char	*data;
 	vm_offset_t	addr;
 	io_return_t	rc = D_SUCCESS;
 
@@ -345,10 +345,10 @@ out:
  * May run on any CPU.
  */
 boolean_t char_write_done(
-	register io_req_t	ior)
+	io_req_t	ior)
 {
-	register struct tty *tp = (struct tty *)ior->io_dev_ptr;
-	register spl_t s = spltty();
+	struct tty *tp = (struct tty *)ior->io_dev_ptr;
+	spl_t s = spltty();
 
 	simple_lock(&tp->t_lock);
 	if (tp->t_outq.c_cc > TTHIWAT(tp) ||
@@ -376,7 +376,7 @@ boolean_t char_write_done(
 }
 
 boolean_t tty_close_write_reply(
-	register io_req_t	ior)
+	io_req_t	ior)
 {
 	ior->io_residual = ior->io_count;
 	ior->io_error = D_DEVICE_DOWN;
@@ -390,8 +390,8 @@ boolean_t tty_close_write_reply(
  * May run on any CPU - does not talk to device driver.
  */
 io_return_t char_read(
-	register struct tty *tp,
-	register io_req_t ior)
+	struct tty *tp,
+	io_req_t ior)
 {
 	spl_t		s;
 	kern_return_t	rc;
@@ -451,10 +451,10 @@ io_return_t char_read(
  * May run on any CPU - does not talk to device driver.
  */
 boolean_t char_read_done(
-	register io_req_t	ior)
+	io_req_t	ior)
 {
-	register struct tty *tp = (struct tty *)ior->io_dev_ptr;
-	register spl_t s = spltty();
+	struct tty *tp = (struct tty *)ior->io_dev_ptr;
+	spl_t s = spltty();
 
 	simple_lock(&tp->t_lock);
 
@@ -483,7 +483,7 @@ boolean_t char_read_done(
 }
 
 boolean_t tty_close_read_reply(
-	register io_req_t	ior)
+	io_req_t	ior)
 {
 	ior->io_residual = ior->io_count;
 	ior->io_error = D_DEVICE_DOWN;
@@ -497,9 +497,9 @@ boolean_t tty_close_read_reply(
  * Iff modem control should run on master.
  */
 void ttyclose(
-	register struct tty *tp)
+	struct tty *tp)
 {
-	register io_req_t	ior;
+	io_req_t	ior;
 
 	/*
 	 * Flush the read and write queues.  Signal
@@ -539,7 +539,7 @@ tty_queue_clean(
 	ipc_port_t	port,
 	boolean_t	(*routine)(io_req_t) )
 {
-	register io_req_t	ior;
+	io_req_t	ior;
 
 	ior = (io_req_t)queue_first(q);
 	while (!queue_end(q, (queue_entry_t)ior)) {
@@ -564,8 +564,8 @@ tty_portdeath(
 	struct tty *	tp,
 	ipc_port_t	port)
 {
-	register spl_t	spl = spltty();
-	register boolean_t	result;
+	spl_t	spl = spltty();
+	boolean_t	result;
 
 	simple_lock(&tp->t_lock);
 
@@ -596,7 +596,7 @@ tty_portdeath(
  * May run on any CPU.
  */
 io_return_t tty_get_status(
-	register struct tty *tp,
+	struct tty *tp,
 	dev_flavor_t	flavor,
 	int *		data,		/* pointer to OUT array */
 	natural_t	*count)		/* out */
@@ -606,7 +606,7 @@ io_return_t tty_get_status(
 	switch (flavor) {
 	    case TTY_STATUS:
 	    {
-		register struct tty_status *tsp =
+		struct tty_status *tsp =
 			(struct tty_status *) data;
 
                if (*count < TTY_STATUS_COUNT)
@@ -642,7 +642,7 @@ io_return_t tty_get_status(
  * device needs to run on master.
  */
 io_return_t tty_set_status(
-	register struct tty *tp,
+	struct tty *tp,
 	dev_flavor_t	flavor,
 	int *		data,
 	natural_t	count)
@@ -652,7 +652,7 @@ io_return_t tty_set_status(
 	switch (flavor) {
 	    case TTY_FLUSH:
 	    {
-		register int	flags;
+		int	flags;
 		if (count < TTY_FLUSH_COUNT)
 		    return D_INVALID_OPERATION;
 
@@ -695,7 +695,7 @@ io_return_t tty_set_status(
 	    case TTY_STATUS:
 		/* set special characters and speed */
 	    {
-		register struct tty_status *tsp;
+		struct tty_status *tsp;
 
 		if (count < TTY_STATUS_COUNT)
 		    return D_INVALID_OPERATION;
@@ -750,9 +750,9 @@ void queue_delayed_reply(
  * TTY containing queue must be locked (at spltty).
  */
 void tty_queue_completion(
-	register queue_t	qh)
+	queue_t	qh)
 {
-	register io_req_t	ior;
+	io_req_t	ior;
 
 	while ((ior = (io_req_t)dequeue_head(qh)) != 0) {
 	    iodone(ior);
@@ -765,7 +765,7 @@ void tty_queue_completion(
  * we can initialize the queues here.
  */
 void ttychars(
-	register struct tty *tp)
+	struct tty *tp)
 {
 	if ((tp->t_flags & TS_INIT) == 0) {
 	    /*
@@ -802,7 +802,7 @@ void ttychars(
  * device needs to run on master.
  */
 void tty_flush(
-	register struct tty *tp,
+	struct tty *tp,
 	int	rw)
 {
 	if (rw & D_READ) {
@@ -825,9 +825,9 @@ void tty_flush(
  *	What if device runs on a different CPU?
  */
 void ttrstrt(
-	register struct tty *tp)
+	struct tty *tp)
 {
-	register spl_t	s;
+	spl_t	s;
 
 	s = spltty();
 	simple_lock(&tp->t_lock);
@@ -849,7 +849,7 @@ void ttrstrt(
  * Must be on master CPU if device runs on master.
  */
 void ttstart(tp)
-	register struct tty *tp;
+	struct tty *tp;
 {
 	if ((tp->t_state & (TS_TIMEOUT|TS_TTSTOP|TS_BUSY)) == 0) {
 	    /*
@@ -873,7 +873,7 @@ void ttstart(tp)
  * Must be on master CPU if device runs on master.
  */
 void tty_output(
-	register struct tty *tp)
+	struct tty *tp)
 {
 	if ((tp->t_state & (TS_TIMEOUT|TS_TTSTOP|TS_BUSY)) == 0) {
 	    /*
@@ -895,9 +895,9 @@ void tty_output(
 void ttypush(
 	void * _tp)
 {
-	register struct tty	*tp = _tp;
+	struct tty	*tp = _tp;
 	spl_t	s = spltty();
-	register int	state;
+	int	state;
 
 	simple_lock(&tp->t_lock);
 
@@ -983,7 +983,7 @@ void ttyinput(
 	 * into the future, but this involves making a timeout/untimeout
 	 * call on every character.
 	 */
-	register int ptime = pdma_timeouts[tp->t_ispeed];
+	int ptime = pdma_timeouts[tp->t_ispeed];
 	if (ptime > 0)
 	  {
 	    if ((tp->t_state & TS_MIN_TO) == 0)
