@@ -54,7 +54,7 @@ void	(*romputc)() = 0;
  */
 static	char consbuf[CONSBUFSIZE] = { 0 };
 static	char *consbp = consbuf;
-static	int consbufused = 0;
+static	boolean_t consbufused = FALSE;
 #endif
 
 void
@@ -106,7 +106,7 @@ cninit()
 				if (++cbp == &consbuf[CONSBUFSIZE])
 					cbp = consbuf;
 			} while (cbp != consbp);
-			consbufused = 0;
+			consbufused = FALSE;
 		}
 #endif
 		cn_inited = 1;
@@ -171,9 +171,9 @@ cnputc(c)
 	}
 #if CONSBUFSIZE > 0
 	else {
-		if (consbufused == 0) {
+		if (consbufused == FALSE) {
 			consbp = consbuf;
-			consbufused = 1;
+			consbufused = TRUE;
 			memset(consbuf, 0, CONSBUFSIZE);
 		}
 		*consbp++ = c;
