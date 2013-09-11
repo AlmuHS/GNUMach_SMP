@@ -32,7 +32,7 @@
 #include <device/kmsg.h>
 #endif
 
-static	int cn_inited = 0;
+static	boolean_t cn_inited = FALSE;
 static	struct consdev *cn_tab = 0;	/* physical console device info */
 
 /*
@@ -109,7 +109,7 @@ cninit()
 			consbufused = FALSE;
 		}
 #endif
-		cn_inited = 1;
+		cn_inited = TRUE;
 		return;
 	}
 	/*
