@@ -41,9 +41,6 @@ struct consdev {
 #define CN_INTERNAL	2	/* "internal" bit-mapped display */
 #define CN_REMOTE	3	/* serial interface with remote bit set */
 
-/* XXX */
-#define	CONSMAJOR	0
-
 #define CONSBUFSIZE	1024
 
 #ifdef KERNEL
