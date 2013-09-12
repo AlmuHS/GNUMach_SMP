@@ -362,8 +362,6 @@ dev_map(routine, port)
 /*
  * Initialization
  */
-#define	NDEVICES	256
-
 void
 dev_lookup_init()
 {
