@@ -70,9 +70,9 @@ struct kmem_cache	dev_hdr_cache;
  */
 void
 dev_number_enter(device)
-	register mach_device_t	device;
+	mach_device_t	device;
 {
-	register queue_t	q;
+	queue_t	q;
 
 	q = &dev_number_hash_table[DEV_NUMBER_HASH(device->dev_number)];
 	queue_enter(q, device, mach_device_t, number_chain);
@@ -84,9 +84,9 @@ dev_number_enter(device)
  */
 void
 dev_number_remove(device)
-	register mach_device_t	device;
+	mach_device_t	device;
 {
-	register queue_t	q;
+	queue_t	q;
 
 	q = &dev_number_hash_table[DEV_NUMBER_HASH(device->dev_number)];
 	queue_remove(q, device, mach_device_t, number_chain);
@@ -101,8 +101,8 @@ dev_number_lookup(ops, devnum)
 	dev_ops_t	ops;
 	int		devnum;
 {
-	register queue_t	q;
-	register mach_device_t	device;
+	queue_t	q;
+	mach_device_t	device;
 
 	q = &dev_number_hash_table[DEV_NUMBER_HASH(devnum)];
 	queue_iterate(q, device, mach_device_t, number_chain) {
@@ -124,8 +124,8 @@ device_lookup(name)
 {
 	dev_ops_t	dev_ops;
 	int		dev_minor;
-	register mach_device_t	device;
-	register mach_device_t	new_device;
+	mach_device_t	device;
+	mach_device_t	new_device;
 
 	/*
 	 * Get the device and unit number from the name.
@@ -198,7 +198,7 @@ device_lookup(name)
  */
 void
 mach_device_reference(device)
-	register mach_device_t	device;
+	mach_device_t	device;
 {
 	simple_lock(&device->ref_lock);
 	device->ref_count++;
@@ -211,7 +211,7 @@ mach_device_reference(device)
  */
 void
 mach_device_deallocate(device)
-	register mach_device_t	device;
+	mach_device_t	device;
 {
 	simple_lock(&device->ref_lock);
 	if (--device->ref_count > 0) {
@@ -250,7 +250,7 @@ decl_simple_lock_data(,
  */
 void
 dev_port_enter(device)
-	register mach_device_t	device;
+	mach_device_t	device;
 {
 	mach_device_reference(device);
 
@@ -269,7 +269,7 @@ dev_port_enter(device)
  */
 void
 dev_port_remove(device)
-	register mach_device_t	device;
+	mach_device_t	device;
 {
 	ipc_kobject_set(device->port, IKO_NULL, IKOT_NONE);
 	mach_device_deallocate(device);
@@ -283,7 +283,7 @@ device_t
 dev_port_lookup(port)
 	ipc_port_t	port;
 {
-	register device_t	device;
+	device_t	device;
 
 	if (!IP_VALID(port))
 	    return (DEVICE_NULL);
@@ -307,7 +307,7 @@ dev_port_lookup(port)
  */
 ipc_port_t
 convert_device_to_port(device)
-	register device_t	device;
+	device_t	device;
 {
 	if (device == DEVICE_NULL)
 	    return IP_NULL;
@@ -326,9 +326,9 @@ dev_map(routine, port)
 	boolean_t	(*routine)();
 	mach_port_t	port;
 {
-	register int		i;
-	register queue_t	q;
-	register mach_device_t	dev, prev_dev;
+	int		i;
+	queue_t		q;
+	mach_device_t	dev, prev_dev;
 
 	for (i = 0, q = &dev_number_hash_table[0];
 	     i < NDEVHASH;
@@ -367,7 +367,7 @@ dev_map(routine, port)
 void
 dev_lookup_init()
 {
-	register int	i;
+	int	i;
 
 	simple_lock_init(&dev_number_lock);
 
