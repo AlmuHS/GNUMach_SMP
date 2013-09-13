@@ -65,9 +65,9 @@ nomap()
  */
 boolean_t
 name_equal(src, len, target)
-	register char *	src;
-	register int	len;
-	register char *	target;
+	char *	src;
+	int	len;
+	char *	target;
 {
 	while (--len >= 0)
 	    if (*src++ != *target++)
@@ -95,12 +95,12 @@ boolean_t dev_name_lookup(name, ops, unit)
 	 * <partition>		is a letter in [a-h] (disks only?)
 	 */
 
-	register char *	cp = name;
+	char *		cp = name;
 	int		len;
-	register int	j = 0;
-	register int	c;
+	int		j = 0;
+	int		c;
 	dev_ops_t	dev;
-	register boolean_t found;
+	boolean_t 	found;
 
 	int slice_num=0;
 
@@ -136,7 +136,7 @@ boolean_t dev_name_lookup(name, ops, unit)
 	}
 	if (!found) {
 	    /* name not found - try indirection list */
-	    register dev_indirect_t	di;
+	    dev_indirect_t	di;
 
 	    dev_indirect_search(di) {
 		if (name_equal(name, len, di->d_name)) {
@@ -202,7 +202,7 @@ dev_set_indirection(name, ops, unit)
 	dev_ops_t	ops;
 	int		unit;
 {
-	register dev_indirect_t di;
+	dev_indirect_t di;
 
 	dev_indirect_search(di) {
 	    if (!strcmp(di->d_name, name)) {
