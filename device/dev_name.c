@@ -65,9 +65,9 @@ nomap()
  */
 boolean_t
 name_equal(src, len, target)
-	char *	src;
+	char 	*src;
 	int	len;
-	char *	target;
+	char 	*target;
 {
 	while (--len >= 0)
 	    if (*src++ != *target++)
@@ -79,7 +79,7 @@ name_equal(src, len, target)
  * device name lookup
  */
 boolean_t dev_name_lookup(name, ops, unit)
-	char *		name;
+	char 		*name;
 	dev_ops_t	*ops;	/* out */
 	int		*unit;	/* out */
 {
@@ -95,14 +95,14 @@ boolean_t dev_name_lookup(name, ops, unit)
 	 * <partition>		is a letter in [a-h] (disks only?)
 	 */
 
-	char *		cp = name;
+	char 		*cp = name;
 	int		len;
 	int		j = 0;
 	int		c;
 	dev_ops_t	dev;
 	boolean_t 	found;
 
-	int slice_num=0;
+	int slice_num = 0;
 
 #if 0
 	printf("lookup on name %s\n",name);
@@ -214,8 +214,9 @@ dev_set_indirection(name, ops, unit)
 }
 
 boolean_t dev_change_indirect(iname, dname, unit)
-char *iname,*dname;
-int unit;
+	char 	*iname;
+	char	*dname;
+	int 	unit;
 {
     struct dev_ops *dp;
     struct dev_indirect *di;
