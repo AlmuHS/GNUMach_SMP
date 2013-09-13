@@ -104,10 +104,6 @@ boolean_t dev_name_lookup(name, ops, unit)
 
 	int slice_num = 0;
 
-#if 0
-	printf("lookup on name %s\n",name);
-#endif /* 0 */
-
 	/*
 	 * Find device type name (characters before digit)
 	 */
@@ -184,9 +180,6 @@ boolean_t dev_name_lookup(name, ops, unit)
 		 * Minor number is <subdev_count>*unit + letter.
 		 * NOW it is slice result + letter
 		 */
-#if 0
-		*unit = *unit * j + (c - 'a' +1);  /* +1 to start 'a' at 1 */
-#endif /* 0 */
 		*unit += (c - 'a' +1);
 	    }
 	}
