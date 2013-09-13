@@ -213,7 +213,7 @@ boolean_t dev_change_indirect(iname, dname, unit)
 {
     struct dev_ops *dp;
     struct dev_indirect *di;
-    int found = FALSE;
+    boolean_t found = FALSE;
 
     dev_search(dp) {
 	if (!strcmp(dp->d_name,dname)) {
