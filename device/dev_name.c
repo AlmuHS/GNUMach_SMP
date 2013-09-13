@@ -216,14 +216,14 @@ boolean_t dev_change_indirect(iname, dname, unit)
     boolean_t found = FALSE;
 
     dev_search(dp) {
-	if (!strcmp(dp->d_name,dname)) {
+	if (!strcmp(dp->d_name, dname)) {
 	    found = TRUE;
 	    break;
 	}
     }
     if (!found) return FALSE;
     dev_indirect_search(di) {
-	if (!strcmp(di->d_name,iname)) {
+	if (!strcmp(di->d_name, iname)) {
 	    di->d_ops = dp;
 	    di->d_unit = unit;
 	    return TRUE;
