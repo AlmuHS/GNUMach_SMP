@@ -167,7 +167,7 @@ boolean_t dev_name_lookup(name, ops, unit)
 	    *unit *= j;
 
 	    /* find slice ? */
-	    if (c=='s') {
+	    if (c == 's') {
 		cp++;
 		while ((c = *cp) != '\0' &&
 			c >= '0' && c <= '9') {
@@ -176,7 +176,7 @@ boolean_t dev_name_lookup(name, ops, unit)
 		}
 	    }
 
-	    *unit += (slice_num <<4);
+	    *unit += (slice_num << 4);
 		/* if slice==0, it is either compatability or whole device */
 
 	    if (c >= 'a' && c < 'a' + j) { /* note: w/o this -> whole slice */
