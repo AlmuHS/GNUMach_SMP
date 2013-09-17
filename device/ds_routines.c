@@ -1080,11 +1080,6 @@ device_read(device, reply_port, reply_port_type, mode, recnum,
 	io_req_t		ior;
 	io_return_t		result;
 
-#ifdef lint
-	*data = *data;
-	*data_count = *data_count;
-#endif /* lint */
-
 	if (device->state != DEV_STATE_OPEN)
 	    return (D_NO_SUCH_DEVICE);
 
@@ -1161,11 +1156,6 @@ device_read_inband(device, reply_port, reply_port_type, mode, recnum,
 {
 	io_req_t		ior;
 	io_return_t		result;
-
-#ifdef lint
-	*data = *data;
-	*data_count = *data_count;
-#endif /* lint */
 
 	if (device->state != DEV_STATE_OPEN)
 	    return (D_NO_SUCH_DEVICE);
@@ -1426,9 +1416,6 @@ device_map(device, protection, offset, size, pager, unmap)
 	ipc_port_t		*pager;	/* out */
 	boolean_t		unmap;	/* ? */
 {
-#ifdef	lint
-	unmap = unmap;
-#endif	/* lint */
 	if (protection & ~VM_PROT_ALL)
 		return (KERN_INVALID_ARGUMENT);
 
