@@ -102,13 +102,13 @@ extern struct device_emulation_ops linux_net_emulation_ops;
 extern void free_skbuffs ();
 #ifdef CONFIG_PCMCIA
 extern struct device_emulation_ops linux_pcmcia_emulation_ops;
-#endif
-#endif
-#endif
+#endif /* CONFIG_PCMCIA */
+#endif /* CONFIG_INET */
+#endif /* LINUX_DEV */
 #ifdef MACH_HYP
 extern struct device_emulation_ops hyp_block_emulation_ops;
 extern struct device_emulation_ops hyp_net_emulation_ops;
-#endif
+#endif /* MACH_HYP */
 extern struct device_emulation_ops mach_device_emulation_ops;
 
 /* List of emulations.  */
@@ -120,13 +120,13 @@ static struct device_emulation_ops *emulation_list[] =
   &linux_net_emulation_ops,
 #ifdef CONFIG_PCMCIA
   &linux_pcmcia_emulation_ops,
-#endif
-#endif
-#endif
+#endif /* CONFIG_PCMCIA */
+#endif /* CONFIG_INET */
+#endif /* LINUX_DEV */
 #ifdef MACH_HYP
   &hyp_block_emulation_ops,
   &hyp_net_emulation_ops,
-#endif
+#endif /* MACH_HYP */
   &mach_device_emulation_ops,
 };
 
