@@ -127,14 +127,14 @@ typedef struct dev_pager *dev_pager_t;
 
 struct kmem_cache	dev_pager_cache;
 
-void dev_pager_reference(register dev_pager_t	ds)
+void dev_pager_reference(dev_pager_t	ds)
 {
 	simple_lock(&ds->lock);
 	ds->ref_count++;
 	simple_unlock(&ds->lock);
 }
 
-void dev_pager_deallocate(register dev_pager_t	ds)
+void dev_pager_deallocate(dev_pager_t	ds)
 {
 	simple_lock(&ds->lock);
 	if (--ds->ref_count > 0) {
@@ -169,8 +169,8 @@ decl_simple_lock_data(,
 
 void dev_pager_hash_init(void)
 {
-	register int	i;
-	register vm_size_t	size;
+	int		i;
+	vm_size_t	size;
 
 	size = sizeof(struct dev_pager_entry);
 	kmem_cache_init(&dev_pager_hash_cache, "dev_pager_entry", size, 0,
@@ -184,7 +184,7 @@ void dev_pager_hash_insert(
 	ipc_port_t	name_port,
 	dev_pager_t	rec)
 {
-	register dev_pager_entry_t new_entry;
+	dev_pager_entry_t new_entry;
 
 	new_entry = (dev_pager_entry_t) kmem_cache_alloc(&dev_pager_hash_cache);
 	new_entry->name = name_port;
@@ -198,8 +198,8 @@ void dev_pager_hash_insert(
 
 void dev_pager_hash_delete(ipc_port_t	name_port)
 {
-	register queue_t	bucket;
-	register dev_pager_entry_t	entry;
+	queue_t			bucket;
+	dev_pager_entry_t	entry;
 
 	bucket = &dev_pager_hashtable[dev_pager_hash(name_port)];
 
@@ -219,9 +219,9 @@ void dev_pager_hash_delete(ipc_port_t	name_port)
 
 dev_pager_t dev_pager_hash_lookup(ipc_port_t	name_port)
 {
-	register queue_t	bucket;
-	register dev_pager_entry_t	entry;
-	register dev_pager_t	pager;
+	queue_t			bucket;
+	dev_pager_entry_t	entry;
+	dev_pager_t		pager;
 
 	bucket = &dev_pager_hashtable[dev_pager_hash(name_port)];
 
@@ -247,7 +247,7 @@ kern_return_t	device_pager_setup(
 	vm_size_t	size,
 	mach_port_t	*pager)
 {
-	register dev_pager_t	d;
+	dev_pager_t	d;
 
 	/*
 	 *	Verify the device is indeed mappable
@@ -329,7 +329,7 @@ kern_return_t	device_pager_data_request(
 	vm_size_t	length,
 	vm_prot_t	protection_required)
 {
-	register dev_pager_t	ds;
+	dev_pager_t	ds;
 
 #ifdef lint
 	protection_required++;
@@ -347,7 +347,7 @@ kern_return_t	device_pager_data_request(
 		panic("(device_pager)data_request: bad pager_request");
 
 	if (ds->type == CHAR_PAGER_TYPE) {
-	    register vm_object_t	object;
+	    vm_object_t			object;
 	    vm_offset_t			device_map_page(void *,vm_offset_t);
 
 	    object = vm_object_lookup(pager_request);
@@ -366,8 +366,8 @@ kern_return_t	device_pager_data_request(
 	    vm_object_deallocate(object);
 	}
 	else {
-	    register io_req_t		ior;
-	    register mach_device_t	device;
+	    io_req_t			ior;
+	    mach_device_t		device;
 	    io_return_t			result;
 
 	    panic("(device_pager)data_request: dev pager");
@@ -415,7 +415,7 @@ kern_return_t	device_pager_data_request(
 /*
  * Always called by io_done thread.
  */
-boolean_t device_pager_data_request_done(register io_req_t	ior)
+boolean_t device_pager_data_request_done(io_req_t	ior)
 {
 	vm_offset_t	start_alloc, end_alloc;
 	vm_size_t	size_read;
@@ -469,13 +469,13 @@ boolean_t device_pager_data_request_done(register io_req_t	ior)
 kern_return_t device_pager_data_write(
 	ipc_port_t		pager,
 	ipc_port_t		pager_request,
-	register vm_offset_t	offset,
-	register pointer_t	addr,
+	vm_offset_t		offset,
+	pointer_t		addr,
 	vm_size_t		data_count)
 {
-	register dev_pager_t	ds;
-	register mach_device_t	device;
-	register io_req_t	ior;
+	dev_pager_t		ds;
+	mach_device_t		device;
+	io_req_t		ior;
 	kern_return_t		result;
 
 	panic("(device_pager)data_write: called");
@@ -524,7 +524,7 @@ kern_return_t device_pager_data_write(
 }
 
 boolean_t device_pager_data_write_done(ior)
-	register io_req_t	ior;
+	io_req_t	ior;
 {
 	device_write_dealloc(ior);
 	mach_device_deallocate(ior->io_device);
@@ -535,8 +535,8 @@ boolean_t device_pager_data_write_done(ior)
 kern_return_t device_pager_copy(
 	ipc_port_t		pager,
 	ipc_port_t		pager_request,
-	register vm_offset_t	offset,
-	register vm_size_t	length,
+	vm_offset_t		offset,
+	vm_size_t		length,
 	ipc_port_t		new_pager)
 {
 	panic("(device_pager)copy: called");
@@ -559,7 +559,7 @@ device_pager_data_return(
 	ipc_port_t		pager,
 	ipc_port_t		pager_request,
 	vm_offset_t		offset,
-	register pointer_t	addr,
+	pointer_t		addr,
 	vm_size_t		data_cnt,
 	boolean_t		dirty,
 	boolean_t		kernel_copy)
@@ -586,7 +586,7 @@ vm_offset_t device_map_page(
 	void		*dsp,
 	vm_offset_t	offset)
 {
-	register dev_pager_t	ds = (dev_pager_t) dsp;
+	dev_pager_t	ds = (dev_pager_t) dsp;
 
 	return pmap_phys_address(
 		   (*(ds->device->dev_ops->d_mmap))
@@ -599,7 +599,7 @@ kern_return_t device_pager_init_pager(
 	ipc_port_t	pager_name,
 	vm_size_t	pager_page_size)
 {
-	register dev_pager_t	ds;
+	dev_pager_t	ds;
 
 	if (device_pager_debug)
 		printf("(device_pager)init: pager=%p, request=%p, name=%p\n",
@@ -649,7 +649,7 @@ kern_return_t device_pager_terminate(
 	ipc_port_t	pager_request,
 	ipc_port_t	pager_name)
 {
-	register dev_pager_t	ds;
+	dev_pager_t	ds;
 
 	assert(IP_VALID(pager_request));
 	assert(IP_VALID(pager_name));
@@ -717,7 +717,7 @@ kern_return_t device_pager_lock_completed(
 
 void device_pager_init(void)
 {
-	register vm_size_t	size;
+	vm_size_t	size;
 
 	/*
 	 * Initialize cache of paging structures.
