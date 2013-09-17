@@ -424,9 +424,9 @@ device_open(reply_port, reply_port_type, mode, name, device_p)
 	char *		name;
 	device_t	*device_p;	/* out */
 {
-	register mach_device_t	device;
-	register kern_return_t	result;
-	register io_req_t	ior;
+	mach_device_t		device;
+	kern_return_t		result;
+	io_req_t		ior;
 	ipc_port_t		notify;
 
 	/*
@@ -538,10 +538,10 @@ device_open(reply_port, reply_port_type, mode, name, device_p)
 
 boolean_t
 ds_open_done(ior)
-	register io_req_t	ior;
+	io_req_t		ior;
 {
 	kern_return_t		result;
-	register mach_device_t	device;
+	mach_device_t		device;
 
 	device = ior->io_device;
 	result = ior->io_error;
@@ -598,7 +598,7 @@ ds_open_done(ior)
 
 static io_return_t
 device_close(device)
-	register mach_device_t	device;
+	mach_device_t		device;
 {
 	device_lock(device);
 
@@ -671,8 +671,8 @@ device_write(device, reply_port, reply_port_type, mode, recnum,
 	unsigned int		data_count;
 	int			*bytes_written;	/* out */
 {
-	register io_req_t	ior;
-	register io_return_t	result;
+	io_req_t		ior;
+	io_return_t		result;
 
 	if (device->state != DEV_STATE_OPEN)
 	    return (D_NO_SUCH_DEVICE);
@@ -762,8 +762,8 @@ device_write_inband(device, reply_port, reply_port_type, mode, recnum,
 	unsigned int		data_count;
 	int			*bytes_written; /* out */
 {
-	register io_req_t	ior;
-	register io_return_t	result;
+	io_req_t		ior;
+	io_return_t		result;
 
 	if (device->state != DEV_STATE_OPEN)
 	    return (D_NO_SUCH_DEVICE);
@@ -825,12 +825,12 @@ device_write_inband(device, reply_port, reply_port_type, mode, recnum,
  */
 kern_return_t
 device_write_get(ior, wait)
-	register io_req_t	ior;
+	io_req_t		ior;
 	boolean_t		*wait;
 {
 	vm_map_copy_t		io_copy;
 	vm_offset_t		new_addr;
-	register kern_return_t	result;
+	kern_return_t		result;
 	int			bsize;
 	vm_size_t		min_size;
 
@@ -920,10 +920,9 @@ device_write_get(ior, wait)
  */
 boolean_t
 device_write_dealloc(ior)
-	register io_req_t	ior;
+	io_req_t	ior;
 {
 	vm_map_copy_t	new_copy = VM_MAP_COPY_NULL;
-	register
 	vm_map_copy_t	io_copy;
 	kern_return_t	result;
 	vm_offset_t	size_to_do;
@@ -971,7 +970,7 @@ device_write_dealloc(ior)
 		}
 
 		if (result == KERN_SUCCESS && new_copy != VM_MAP_COPY_NULL) {
-			register int	res;
+			int		res;
 
 			/*
 			 *	We have a new continuation, reset the ior to
@@ -1022,15 +1021,15 @@ device_write_dealloc(ior)
  */
 boolean_t
 ds_write_done(ior)
-	register io_req_t	ior;
+	io_req_t		ior;
 {
 	/*
 	 *	device_write_dealloc discards the data that has been
 	 *	written, but may decide that there is more to write.
 	 */
 	while (!device_write_dealloc(ior)) {
-		register io_return_t	result;
-		register mach_device_t	device;
+		io_return_t		result;
+		mach_device_t		device;
 
 		/*
 		 *     More IO to do -- invoke it.
@@ -1078,8 +1077,8 @@ device_read(device, reply_port, reply_port_type, mode, recnum,
 	io_buf_ptr_t		*data;		/* out */
 	unsigned int		*data_count;	/* out */
 {
-	register io_req_t	ior;
-	register io_return_t	result;
+	io_req_t		ior;
+	io_return_t		result;
 
 #ifdef lint
 	*data = *data;
@@ -1160,8 +1159,8 @@ device_read_inband(device, reply_port, reply_port_type, mode, recnum,
 	char			*data;		/* pointer to OUT array */
 	unsigned int		*data_count;	/* out */
 {
-	register io_req_t	ior;
-	register io_return_t	result;
+	io_req_t		ior;
+	io_return_t		result;
 
 #ifdef lint
 	*data = *data;
@@ -1233,8 +1232,8 @@ device_read_inband(device, reply_port, reply_port_type, mode, recnum,
  * Allocate wired-down memory for device read.
  */
 kern_return_t device_read_alloc(ior, size)
-	register io_req_t	ior;
-	register vm_size_t	size;
+	io_req_t		ior;
+	vm_size_t		size;
 {
 	vm_offset_t		addr;
 	kern_return_t		kr;
@@ -1266,7 +1265,7 @@ boolean_t ds_read_done(ior)
 {
 	vm_offset_t		start_data, end_data;
 	vm_offset_t		start_sent, end_sent;
-	register vm_size_t	size_read;
+	vm_size_t		size_read;
 
 	if (ior->io_error)
 	    size_read = 0;
@@ -1296,8 +1295,8 @@ boolean_t ds_read_done(ior)
 	 * may think that they are clean.
 	 */
 	{
-	    register vm_offset_t	touch;
-	    register int		c;
+	    vm_offset_t			touch;
+	    int				c;
 
 	    for (touch = start_sent; touch < end_sent; touch += PAGE_SIZE) {
 		c = *(volatile char *)touch;
@@ -1341,7 +1340,7 @@ boolean_t ds_read_done(ior)
 		if (ior->io_alloc_size > 0)
 		    kmem_cache_free(&io_inband_cache, (vm_offset_t)ior->io_data);
 	    } else {
-		register vm_offset_t	end_alloc;
+		vm_offset_t		end_alloc;
 
 		end_alloc = start_sent + round_page(ior->io_alloc_size);
 		if (end_alloc > end_sent)
@@ -1460,9 +1459,9 @@ decl_simple_lock_data(,	io_done_list_lock)
 #define	splio	splsched	/* XXX must block ALL io devices */
 
 void iodone(ior)
-	register io_req_t	ior;
+	io_req_t		ior;
 {
-	register spl_t	s;
+	spl_t			s;
 
 	/*
 	 * If this ior was loaned to us, return it directly.
@@ -1496,8 +1495,8 @@ void iodone(ior)
 void io_done_thread_continue()
 {
 	for (;;) {
-	    register spl_t	s;
-	    register io_req_t	ior;
+	    spl_t		s;
+	    io_req_t		ior;
 
 #if defined (LINUX_DEV) && defined (CONFIG_INET)
 	    free_skbuffs ();
@@ -1642,7 +1641,7 @@ ds_trap_req_alloc(mach_device_t device, vm_size_t data_size)
 boolean_t
 ds_trap_write_done(io_req_t ior)
 {
-	register mach_device_t dev;
+	mach_device_t 	dev;
 
 	dev = ior->io_device;
 
