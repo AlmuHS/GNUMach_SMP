@@ -348,7 +348,7 @@ kern_return_t	device_pager_data_request(
 
 	if (ds->type == CHAR_PAGER_TYPE) {
 	    vm_object_t			object;
-	    vm_offset_t			device_map_page(void *,vm_offset_t);
+	    vm_offset_t			device_map_page(void *, vm_offset_t);
 
 	    object = vm_object_lookup(pager_request);
 	    if (object == VM_OBJECT_NULL) {
@@ -424,7 +424,7 @@ boolean_t device_pager_data_request_done(io_req_t	ior)
 	    size_read = ior->io_count;
 	    if (ior->io_residual) {
 		if (device_pager_debug)
-		    printf("(device_pager)data_request_done: r: 0x%lx\n",ior->io_residual);
+		    printf("(device_pager)data_request_done: r: 0x%lx\n", ior->io_residual);
 		memset((&ior->io_data[ior->io_count - ior->io_residual]), 0, 
 		      (unsigned) ior->io_residual);
 	    }
