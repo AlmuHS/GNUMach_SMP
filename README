@@ -17,14 +17,9 @@ The interface generator `MiG' is no longer part of this distribution.
 
 Generic installation instructions may be found in the file INSTALL.
 
-By default, you get a kernel with no device drivers for disks and
-network devices.  This is not what you want!  Examine the file
-`README-Drivers' in the directory for the machine type your kernel is
-on (e.g., `i386/README-Drivers') for a list of configure --enable
-switches.  Give the appropriate set for your hardware.  It is
-generally safe to specify switches for hardware you don't have; in
-this way you can build kernels that work on different physical machine
-set ups.
+By default, you get a kernel with no device drivers for network devices,
+because the Hurd has its own drivers running in userland.  Drivers for
+IDE and AHCI disks are however included by default.
 
 If you want the in-kernel debugger compiled in, specify --enable-kdb
 to configure.  This is only useful if you actually anticipate
@@ -35,6 +30,17 @@ kernel.
 The specific switches you give to configure are always recorded in the
 file `config.status'.  So you can always tell what options you used to
 build a particular kernel.
+
+The gnumach kernel can be cross-built.  No specific options need
+to be given when building from a 32bit x86 ELF userland such as
+Linux.  When running on a 64bit x86 ELF userland, one has to specify
+cross-compilation variables, typically:
+
+export CPP='gcc -m32 -E -x c -undef -ansi'
+export CC='gcc -m32'
+export LD='ld -melf_i386'
+
+and give the --host=i686-unknown-gnu option to ./configure
 
 Bug reports relating to this distribution should be sent to
 bug-hurd@gnu.org.  Requests for assistance should be made on
