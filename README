@@ -17,9 +17,8 @@ The interface generator `MiG' is no longer part of this distribution.
 
 Generic installation instructions may be found in the file INSTALL.
 
-By default, you get a kernel with no device drivers for network devices,
-because the Hurd has its own drivers running in userland.  Drivers for
-IDE and AHCI disks are however included by default.
+By default, most drivers for network boards are included, as well as
+drivers for IDE, SCSI and AHCI disks.
 
 If you want the in-kernel debugger compiled in, specify --enable-kdb
 to configure.  This is only useful if you actually anticipate
