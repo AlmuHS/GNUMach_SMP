@@ -26,20 +26,12 @@ debugging the kernel, of course.  We don't turn it on be default
 because it adds considerably to the unpageable memory footprint of the
 kernel.
 
-The specific switches you give to configure are always recorded in the
-file `config.status'.  So you can always tell what options you used to
-build a particular kernel.
+GNU Mach can be cross-built.  No specific options need to be given when
+building on a 32-bit x86 ELF userland such as GNU/Linux.  Manually switch the
+compiler to 32-bit mode when using a 64-bit x86 (x86_64) ELF toolchain:
 
-The gnumach kernel can be cross-built.  No specific options need
-to be given when building from a 32bit x86 ELF userland such as
-Linux.  When running on a 64bit x86 ELF userland, one has to specify
-cross-compilation variables, typically:
+    $ [...]/configure --host=i686-gnu CC='gcc -m32' LD='ld -melf_i386'
 
-export CPP='gcc -m32 -E -x c -undef -ansi'
-export CC='gcc -m32'
-export LD='ld -melf_i386'
-
-and give the --host=i686-unknown-gnu option to ./configure
 
 Bug reports relating to this distribution should be sent to
 bug-hurd@gnu.org.  Requests for assistance should be made on
