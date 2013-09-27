@@ -196,7 +196,7 @@ EXTRA_DIST += \
 EXTRA_DIST += \
 	DEVELOPMENT
 
-dist-hook: dist-rm-CVS
+dist-hook: dist-rm-CVS gen-ChangeLog
 
 .PHONY: dist-rm-CVS
 dist-rm-CVS:
@@ -206,6 +206,24 @@ dist-rm-CVS:
 	  rm -f "$$d"/{Entries,Repository,Root,Tag} &&		\
 	  rmdir "$$d";						\
 	done
+
+gen_start_commit = e227045b06d62ee7d2fbab9d5ade9030ff43170b
+ChangeLog_files = ChangeLog ChangeLog.0 ChangeLog.00
+.PHONY: gen-ChangeLog
+gen-ChangeLog:
+	$(AM_V_GEN)if test -d $(top_srcdir)/.git; then			\
+	  (cd $(top_srcdir)/ &&						\
+	  ./gitlog-to-changelog	--strip-tab				\
+	    $(gen_start_commit).. &&					\
+	  echo) >> $(distdir)/cl-t &&					\
+	  for f in $(ChangeLog_files); do				\
+	    (cd $(top_srcdir)/ &&					\
+	    git show $(gen_start_commit):$$f) >> $(distdir)/cl-t &&	\
+	    rm -f $(distdir)/$$f &&					\
+	    mv $(distdir)/cl-t $(distdir)/$$f				\
+	    || exit $$?;						\
+	  done;								\
+	fi
 
 DISTCLEANFILES += \
 	Makefile.orig \
