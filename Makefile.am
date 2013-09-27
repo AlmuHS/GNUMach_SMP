@@ -1,6 +1,6 @@
 # Makefile for GNU Mach.
 
-# Copyright (C) 2006, 2007, 2008, 2009 Free Software Foundation, Inc.
+# Copyright (C) 2006, 2007, 2008, 2009, 2013 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -196,7 +196,10 @@ EXTRA_DIST += \
 EXTRA_DIST += \
 	DEVELOPMENT
 
-dist-hook:
+dist-hook: dist-rm-CVS
+
+.PHONY: dist-rm-CVS
+dist-rm-CVS:
 # Try to be very safe with respect to spuriously removing various directories
 # in case of an error.
 	find $(distdir)/ -type d -name CVS | while read d; do	\
