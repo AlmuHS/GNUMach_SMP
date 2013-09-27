@@ -1,17 +1,14 @@
--*- Text -*-
+2013-09-27
+Version 1.4
 
-Changes between version 1.3 and unreleased
-
-The calculation of the number of blocks for the floppy drives has been
-fixed.
-
-The check for BSD labels in impossible situations has been removed.
-This removes a spurious warning at boot time for extended partitions.
-
-The keyboard LEDs can be set.
-
+Really too many to list them individually.  Highlight include numerous bug and
+stability fixes, a Xen port for 32-bit x86 including basic support for Physical
+Address Extension (PAE), an initial AHCI driver (SATA hard disks), a new SLAB
+memory allocator to replace the previous zone allocator, support for memory
+object proxies, access restrictions for x86 I/O ports, support for some PCMCIA
+devices based on the pcmcia-cs package.
 
-Changes between version 1.2 and version 1.3
+Version 1.3
 
 The kernel now directly supports "boot scripts" in the form of multiboot
 module names with the same syntax as the Hurd's `serverboot' program.
@@ -31,9 +28,8 @@ it perform better on today's machines.
 The console supports ANSI escape sequences for colors and attributes.
 
 Support for the terminal speeds B57600 and B115200 has been added.
-
 
-Changes between version 1.1 and version 1.2
+Version 1.2
 
 Many bug fixes.
 
@@ -57,9 +53,8 @@ former will install only the kernel, and the latter will install only
 the header files.
 
 Print out Mach device names instead of Linux ones.
-
 
-Changes between versions 1.0 and 1.1:
+Version 1.1
 
 Cross-compilation support is much improved.  Any of various popular
 libc's is now sufficient for building clib-routines.o.

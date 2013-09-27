@@ -1,19 +1,25 @@
--*- Text -*-
-This is the GNU Mach 1.2 distribution.
+This is GNU Mach, the GNU distribution of the Mach microkernel,
+<http://www.gnu.org/software/hurd/microkernel/mach/gnumach.html>.  Welcome.
 
-This kernel is derived from the Utah kernel source.  We use it to run
-the Hurd on.  It is being distributed by us so that we can more easily
-modify the source, and so that it will work with the normal GNU coding
-standards and Makefile conventions.
+GNU Mach is the microkernel upon which a GNU Hurd system is based.  It
+provides an Inter Process Communication (IPC) mechanism that the Hurd
+uses to define interfaces for implementing in a distributed multi-server
+fashion the services a traditional operating system kernel provides.
+
+GNU Mach runs on 32-bit x86 machines.  A version running on 64-bit x86
+(x86_64) machines is in progress.  Volunteers interested in ports to
+other architectures are sought; please contact us (see below) if you'd
+like to help.
 
 libmach, bootloaders, default pagers, and the like are not part of
-this distribution.  For libraries, we refer you to the GNU C library,
+this distribution.  For libraries, we refer you to the GNU C Library,
 which has Mach support.  For bootloaders, we refer you to GRUB.  (This
 kernel can be loaded by any bootloader that uses the multiboot
 standard.)  For default pagers, we refer you to your particular system
 that you will run on top of Mach.
 
-The interface generator `MiG' is no longer part of this distribution.
+The Mach Interface Generator (MIG) is no longer part of this distribution, and
+instead is packaged separately: GNU MIG.
 
 Generic installation instructions may be found in the file INSTALL.
 
@@ -33,6 +39,9 @@ compiler to 32-bit mode when using a 64-bit x86 (x86_64) ELF toolchain:
     $ [...]/configure --host=i686-gnu CC='gcc -m32' LD='ld -melf_i386'
 
 
-Bug reports relating to this distribution should be sent to
-bug-hurd@gnu.org.  Requests for assistance should be made on
-help-hurd@gnu.org.
+Please read the FAQ at <http://www.gnu.org/software/hurd/faq.html>.
+Bug reports should be sent to <bug-hurd@gnu.org> or filed on
+<http://savannah.gnu.org/bugs/?group=hurd>.  Requests for assistance
+should be sent to <help-hurd@gnu.org> or filed on
+<http://savannah.gnu.org/support/?group=hurd>.  You can also find us on
+the Freenode IRC network in the #hurd channel.
