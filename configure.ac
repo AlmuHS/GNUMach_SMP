@@ -1,7 +1,7 @@
 dnl Configure script for GNU Mach.
 
-dnl Copyright (C) 1997, 1998, 1999, 2004, 2006, 2007, 2008, 2010 Free Software
-dnl Foundation, Inc.
+dnl Copyright (C) 1997, 1998, 1999, 2004, 2006, 2007, 2008, 2010, 2013 Free
+dnl Software Foundation, Inc.
 
 dnl Permission to use, copy, modify and distribute this software and its
 dnl documentation is hereby granted, provided that both the copyright
@@ -25,6 +25,7 @@ AC_CONFIG_AUX_DIR([build-aux])
 
 AM_INIT_AUTOMAKE(
   [1.10.2]
+  [dist-bzip2]
 dnl Don't define `PACKAGE' and `VERSION'.
   [no-define]
 dnl Do not clutter the main build directory.
