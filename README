@@ -28,7 +28,7 @@ drivers for IDE, SCSI and AHCI disks.
 
 If you want the in-kernel debugger compiled in, specify --enable-kdb
 to configure.  This is only useful if you actually anticipate
-debugging the kernel, of course.  We don't turn it on be default
+debugging the kernel, of course.  We don't turn it on by default
 because it adds considerably to the unpageable memory footprint of the
 kernel.
 
