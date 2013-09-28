@@ -749,6 +749,12 @@ EXTRA_DIST += \
 	linux/dev/README \
 	linux/src/COPYING
 
+# Those get #included...
+EXTRA_DIST += \
+	linux/src/drivers/scsi/FlashPoint.c \
+	linux/src/drivers/scsi/eata_pio_proc.c \
+	linux/src/drivers/scsi/scsiiom.c
+
 # Instead of listing each file individually...
 EXTRA_DIST += \
 	linux/dev/include \

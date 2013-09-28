@@ -59,6 +59,7 @@ libkernel_a_SOURCES += \
 	ddb/db_watch.c \
 	ddb/db_watch.h \
 	ddb/db_write_cmd.c \
+	ddb/db_write_cmd.h \
 	ddb/nlist.h \
 	ddb/stab.h \
 	ddb/tr.h
@@ -93,6 +94,7 @@ libkernel_a_SOURCES += \
 	ipc/ipc_object.h \
 	ipc/ipc_port.c \
 	ipc/ipc_port.h \
+	ipc/ipc_print.h \
 	ipc/ipc_pset.c \
 	ipc/ipc_pset.h \
 	ipc/ipc_right.c \
@@ -250,6 +252,7 @@ libkernel_a_SOURCES += \
 	vm/vm_page.h \
 	vm/vm_pageout.c \
 	vm/vm_pageout.h \
+	vm/vm_print.h \
 	vm/vm_resident.c \
 	vm/vm_resident.h \
 	vm/vm_types.h \
