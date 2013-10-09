@@ -72,7 +72,7 @@ struct vm_object {
 						 */
 
 	int			ref_count;	/* Number of references */
-	int			resident_page_count;
+	unsigned long		resident_page_count;
 						/* number of resident pages */
 
 	struct vm_object	*copy;		/* Object that should receive
@@ -169,6 +169,7 @@ vm_object_t	kernel_object;		/* the single kernel object */
 
 extern void		vm_object_bootstrap(void);
 extern void		vm_object_init(void);
+extern void		vm_object_collect(vm_object_t);
 extern void		vm_object_terminate(vm_object_t);
 extern vm_object_t	vm_object_allocate(vm_size_t);
 extern void		vm_object_reference(vm_object_t);
@@ -279,6 +280,10 @@ extern void vm_object_pager_wakeup(ipc_port_t  pager);
 /*
  *	Routines implemented as macros
  */
+
+#define vm_object_collectable(object)					\
+	(((object)->ref_count == 0)					\
+	&& ((object)->resident_page_count == 0))
 
 #define	vm_object_paging_begin(object) 					\
 	((object)->paging_in_progress++)
