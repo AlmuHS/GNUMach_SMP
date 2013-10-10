@@ -55,7 +55,7 @@
 #include <kern/macro_help.h>
 
 /* TODO: make it dynamic */
-#define KENTRY_DATA_SIZE (64*PAGE_SIZE)
+#define KENTRY_DATA_SIZE (256*PAGE_SIZE)
 
 /*
  *	Types defined:
