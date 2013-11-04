@@ -80,6 +80,8 @@ int exec_load(exec_read_func_t *read, exec_read_exec_func_t *read_exec,
 			result = (*read_exec)(handle,
 					      ph->p_offset, ph->p_filesz,
 					      ph->p_vaddr, ph->p_memsz, type);
+			if (result)
+				return result;
 		}
 	}
 
