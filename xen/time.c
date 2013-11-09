@@ -34,6 +34,7 @@ static unsigned64_t lastnsec;
 static unsigned64_t hyp_get_stime(void) {
 	unsigned32_t version;
 	unsigned64_t cpu_clock, last_cpu_clock, delta, system_time;
+	unsigned64_t delta_high, delta_low;
 	unsigned32_t mul;
 	signed8_t shift;
 	volatile struct vcpu_time_info *time = &hyp_shared_info.vcpu_info[0].time;
@@ -54,7 +55,10 @@ static unsigned64_t hyp_get_stime(void) {
 		delta >>= -shift;
 	else
 		delta <<= shift;
-	return system_time + ((delta * (unsigned64_t) mul) >> 32);
+	delta_high = delta >> 32;
+	delta_low = (unsigned32_t) delta;
+	return system_time + ((delta_low * (unsigned64_t) mul) >> 32)
+	  + (delta_high * (unsigned64_t) mul);
 }
 
 unsigned64_t hyp_get_time(void) {
