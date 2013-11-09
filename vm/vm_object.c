@@ -813,10 +813,6 @@ kern_return_t memory_object_destroy(
 	ipc_port_t	old_object,  old_name;
 	pager_request_t	old_control;
 
-#ifdef	lint
-	reason++;
-#endif	/* lint */
-
 	if (object == VM_OBJECT_NULL)
 		return KERN_SUCCESS;
 
@@ -1256,10 +1252,6 @@ boolean_t vm_object_copy_temporary(
 	boolean_t	*_dst_needs_copy)	/* OUT */
 {
 	vm_object_t	object = *_object;
-
-#ifdef	lint
-	++*_offset;
-#endif	/* lint */
 
 	if (object == VM_OBJECT_NULL) {
 		*_src_needs_copy = FALSE;
@@ -2822,10 +2814,6 @@ boolean_t vm_object_coalesce(
 	vm_size_t	next_size)
 {
 	vm_size_t	newsize;
-
-#ifdef	lint
-	next_offset++;
-#endif	/* lint */
 
 	if (next_object != VM_OBJECT_NULL) {
 		return FALSE;

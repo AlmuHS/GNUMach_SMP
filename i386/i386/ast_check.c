@@ -40,9 +40,6 @@
 init_ast_check(processor)
 	processor_t	processor;
 {
-#ifdef lint
-	processor++;
-#endif /* lint */
 }
 
 /*
@@ -51,9 +48,6 @@ init_ast_check(processor)
 cause_ast_check(processor)
 	processor_t	processor;
 {
-#ifdef lint
-	processor++;
-#endif /* lint */
 }
 
 #endif	/* NCPUS > 1 */

@@ -37,13 +37,8 @@
 
 #include <mach/boolean.h>
 
-#ifdef	lint
-boolean_t	NEVER;
-boolean_t	ALWAYS;
-#else	/* lint */
 #define		NEVER		FALSE
 #define		ALWAYS		TRUE
-#endif	/* lint */
 
 #define		MACRO_BEGIN	({
 #define		MACRO_END	})

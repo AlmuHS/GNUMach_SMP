@@ -320,9 +320,6 @@ processor_t	processor;
 processor_set_t	new_pset;
 boolean_t	wait;
 {
-#ifdef	lint
-	processor++; new_pset++; wait++;
-#endif
 	return KERN_FAILURE;
 }
 
@@ -668,9 +665,6 @@ processor_t	processor;
 processor_set_t	new_pset;
 boolean_t	wait;
 {
-#ifdef	lint
-	processor++; new_pset++; wait++;
-#endif	/* lint */
 	return(KERN_FAILURE);
 }
 

@@ -647,18 +647,12 @@ processor_set_create(
 	processor_set_t *new_set,
 	processor_set_t *new_name)
 {
-#ifdef	lint
-	host++; new_set++; new_name++;
-#endif	/* lint */
 	return KERN_FAILURE;
 }
 
 kern_return_t processor_set_destroy(
 	processor_set_t pset)
 {
-#ifdef	lint
-	pset++;
-#endif	/* lint */
 	return KERN_FAILURE;
 }
 

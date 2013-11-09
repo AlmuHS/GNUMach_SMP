@@ -199,9 +199,6 @@ log(int level, const char *fmt, ...)
 {
 	va_list	listp;
 
-#ifdef lint
-	level++;
-#endif
 	va_start(listp, fmt);
 	_doprnt(fmt, listp, do_cnputc, 0, 0);
 	va_end(listp);

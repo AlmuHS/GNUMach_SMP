@@ -625,10 +625,6 @@ timemmap(dev,off,prot)
 {
 	extern time_value_t *mtime;
 
-#ifdef	lint
-	dev++; off++;
-#endif	/* lint */
-
 	if (prot & VM_PROT_WRITE) return (-1);
 
 	return (i386_btop(pmap_extract(pmap_kernel(), (vm_offset_t) mtime)));

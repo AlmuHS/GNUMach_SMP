@@ -113,10 +113,6 @@ boolean_t  swtch_pri(pri)
 	register thread_t	thread = current_thread();
 	register processor_t	myprocessor;
 
-#ifdef	lint
-	pri++;
-#endif	/* lint */
-
 #if	NCPUS > 1
 	myprocessor = current_processor();
 	if (myprocessor->runq.count == 0 &&

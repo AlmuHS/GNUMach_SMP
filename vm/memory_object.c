@@ -337,11 +337,6 @@ kern_return_t memory_object_data_error(object, offset, size, error_value)
 	if (size != round_page(size))
 		return(KERN_INVALID_ARGUMENT);
 
-#ifdef	lint
-	/* Error value is ignored at this time */
-	error_value++;
-#endif
-
 	vm_object_lock(object);
 	offset -= object->paging_offset;
 

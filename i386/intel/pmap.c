@@ -2150,9 +2150,6 @@ void pmap_copy(dst_pmap, src_pmap, dst_addr, len, src_addr)
 	vm_size_t	len;
 	vm_offset_t	src_addr;
 {
-#ifdef	lint
-	dst_pmap++; src_pmap++; dst_addr++; len++; src_addr++;
-#endif	/* lint */
 }
 #endif	/* 0 */
 
@@ -2303,9 +2300,6 @@ void pmap_deactivate(pmap, th, which_cpu)
 	thread_t	th;
 	int		which_cpu;
 {
-#ifdef	lint
-	pmap++; th++; which_cpu++;
-#endif	/* lint */
 	PMAP_DEACTIVATE(pmap, th, which_cpu);
 }
 #endif	/* 0 */
@@ -2384,9 +2378,6 @@ pmap_pageable(pmap, start, end, pageable)
 	vm_offset_t	end;
 	boolean_t	pageable;
 {
-#ifdef	lint
-	pmap++; start++; end++; pageable++;
-#endif	/* lint */
 }
 
 /*

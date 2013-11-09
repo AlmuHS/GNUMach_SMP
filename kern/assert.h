@@ -44,11 +44,7 @@ MACRO_BEGIN								\
 		Assert(#ex, __FILE__, __LINE__);			\
 MACRO_END
 
-#ifdef	lint
-#define	assert_static(x)
-#else	/* lint */
 #define	assert_static(x)	assert(x)
-#endif	/* lint */
 
 #else	/* MACH_ASSERT */
 #define assert(ex)
