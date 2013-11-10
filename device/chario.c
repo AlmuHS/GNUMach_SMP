@@ -260,7 +260,7 @@ io_return_t char_write(
 	spl_t		s;
 	int	count;
 	char	*data;
-	vm_offset_t	addr;
+	vm_offset_t	addr = 0;
 	io_return_t	rc = D_SUCCESS;
 
 	data  = ior->io_data;
