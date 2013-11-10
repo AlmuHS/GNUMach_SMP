@@ -41,9 +41,9 @@
 io_return_t block_io(strat, max_count, ior)
 	void			(*strat)();
 	void			(*max_count)();
-	register io_req_t	ior;
+	io_req_t		ior;
 {
-	register kern_return_t	rc;
+	kern_return_t		rc;
 	boolean_t		wait = FALSE;
 
 	/*
@@ -89,7 +89,7 @@ io_return_t block_io(strat, max_count, ior)
 #define MAX_PHYS        (256 * 1024)
 
 void minphys(ior)
-	register io_req_t	ior;
+	io_req_t		ior;
 {
 	if ((ior->io_op & (IO_WRITE | IO_READ | IO_OPEN)) == IO_WRITE)
 	    return;
