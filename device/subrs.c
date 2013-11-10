@@ -61,11 +61,11 @@ u_char	etherbroadcastaddr[6] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
  */
 char *
 ether_sprintf(ap)
-	register u_char *ap;
+	u_char *ap;
 {
-	register int i;
+	int i;
 	static char etherbuf[18];
-	register char *cp = etherbuf;
+	char *cp = etherbuf;
 	static char digits[] = "0123456789abcdef";
 
 	for (i = 0; i < 6; i++) {
@@ -81,7 +81,7 @@ ether_sprintf(ap)
  * Initialize send and receive queues on an interface.
  */
 void if_init_queues(ifp)
-	register struct ifnet *ifp;
+	struct ifnet *ifp;
 {
 	IFQ_INIT(&ifp->if_snd);
 	queue_init(&ifp->if_rcv_port_list);
@@ -112,7 +112,7 @@ struct buf *
 geteblk(size)
 	int	size;
 {
-	register io_req_t	ior;
+	io_req_t	ior;
 
 	io_req_alloc(ior, 0);
 	ior->io_device = (mach_device_t)0;
@@ -136,7 +136,7 @@ geteblk(size)
 void brelse(bp)
 	struct buf *bp;
 {
-	register io_req_t	ior = bp;
+	io_req_t	ior = bp;
 
 	(void) vm_deallocate(kernel_map,
 			(vm_offset_t) ior->io_data,
