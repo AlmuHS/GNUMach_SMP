@@ -45,9 +45,6 @@ struct	ether_header {
 	u_short	ether_type;
 };
 
-#define	ETHERMTU	1500
-#define	ETHERMIN	(60-14)
-
 #ifdef	KERNEL
 u_char	etherbroadcastaddr[6];
 
