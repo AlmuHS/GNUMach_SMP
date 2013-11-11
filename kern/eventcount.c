@@ -235,8 +235,8 @@ kern_return_t evc_wait_clear(natural_t ev_id)
 void
 evc_signal(evc_t ev)
 {
-    register volatile thread_t thread;
-    register int state;
+    volatile thread_t thread;
+    int state;
     spl_t    s;
     if (ev->sanity != ev)
       return;
@@ -325,8 +325,8 @@ simpler_thread_setrun(
 	thread_t	th,
 	boolean_t	may_preempt)
 {
-	register struct run_queue	*rq;
-	register int			whichq;
+	struct run_queue	*rq;
+	int			whichq;
 
 	/*
 	 *	XXX should replace queue with a boolean in this case.
