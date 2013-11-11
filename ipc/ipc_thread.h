@@ -75,7 +75,7 @@ MACRO_END
 
 #define	ipc_thread_rmqueue_first_macro(queue, thread)			\
 MACRO_BEGIN								\
-	register ipc_thread_t _next;					\
+	ipc_thread_t _next;						\
 									\
 	assert((queue)->ithq_base == (thread));				\
 									\
@@ -84,7 +84,7 @@ MACRO_BEGIN								\
 		assert((thread)->ith_prev == (thread));			\
 		(queue)->ithq_base = ITH_NULL;				\
 	} else {							\
-		register ipc_thread_t _prev = (thread)->ith_prev;	\
+		ipc_thread_t _prev = (thread)->ith_prev;		\
 									\
 		(queue)->ithq_base = _next;				\
 		_next->ith_prev = _prev;				\
@@ -95,14 +95,14 @@ MACRO_END
 
 #define	ipc_thread_enqueue_macro(queue, thread)				\
 MACRO_BEGIN								\
-	register ipc_thread_t _first = (queue)->ithq_base;		\
+	ipc_thread_t _first = (queue)->ithq_base;			\
 									\
 	if (_first == ITH_NULL) {					\
 		(queue)->ithq_base = (thread);				\
 		assert((thread)->ith_next == (thread));			\
 		assert((thread)->ith_prev == (thread));			\
 	} else {							\
-		register ipc_thread_t _last = _first->ith_prev;		\
+		ipc_thread_t _last = _first->ith_prev;			\
 									\
 		(thread)->ith_next = _first;				\
 		(thread)->ith_prev = _last;				\
