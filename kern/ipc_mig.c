@@ -303,9 +303,9 @@ int len;
 
 #define	fast_send_right_lookup(name, port, abort)			\
 MACRO_BEGIN								\
-	register ipc_space_t space = current_space();			\
-	register ipc_entry_t entry;					\
-	register mach_port_index_t index = MACH_PORT_INDEX(name);	\
+	ipc_space_t space = current_space();				\
+	ipc_entry_t entry;						\
+	mach_port_index_t index = MACH_PORT_INDEX(name);		\
 									\
 	is_read_lock(space);						\
 	assert(space->is_active);					\
@@ -330,8 +330,8 @@ device_t
 port_name_to_device(name)
 	mach_port_t name;
 {
-	register ipc_port_t port;
-	register device_t device;
+	ipc_port_t port;
+	device_t device;
 
 	fast_send_right_lookup(name, port, goto abort);
 	/* port is locked */
@@ -374,14 +374,14 @@ thread_t
 port_name_to_thread(name)
 	mach_port_t name;
 {
-	register ipc_port_t port;
+	ipc_port_t port;
 
 	fast_send_right_lookup(name, port, goto abort);
 	/* port is locked */
 
 	if (ip_active(port) &&
 	    (ip_kotype(port) == IKOT_THREAD)) {
-		register thread_t thread;
+		thread_t thread;
 
 		thread = (thread_t) port->ip_kobject;
 		assert(thread != THREAD_NULL);
@@ -420,14 +420,14 @@ task_t
 port_name_to_task(name)
 	mach_port_t name;
 {
-	register ipc_port_t port;
+	ipc_port_t port;
 
 	fast_send_right_lookup(name, port, goto abort);
 	/* port is locked */
 
 	if (ip_active(port) &&
 	    (ip_kotype(port) == IKOT_TASK)) {
-		register task_t task;
+		task_t task;
 
 		task = (task_t) port->ip_kobject;
 		assert(task != TASK_NULL);
@@ -468,14 +468,14 @@ vm_map_t
 port_name_to_map(
 	mach_port_t	name)
 {
-	register ipc_port_t port;
+	ipc_port_t port;
 
 	fast_send_right_lookup(name, port, goto abort);
 	/* port is locked */
 
 	if (ip_active(port) &&
 	    (ip_kotype(port) == IKOT_TASK)) {
-		register vm_map_t map;
+		vm_map_t map;
 
 		map = ((task_t) port->ip_kobject)->map;
 		assert(map != VM_MAP_NULL);
@@ -516,14 +516,14 @@ ipc_space_t
 port_name_to_space(name)
 	mach_port_t name;
 {
-	register ipc_port_t port;
+	ipc_port_t port;
 
 	fast_send_right_lookup(name, port, goto abort);
 	/* port is locked */
 
 	if (ip_active(port) &&
 	    (ip_kotype(port) == IKOT_TASK)) {
-		register ipc_space_t space;
+		ipc_space_t space;
 
 		space = ((task_t) port->ip_kobject)->itk_space;
 		assert(space != IS_NULL);
