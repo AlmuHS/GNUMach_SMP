@@ -2280,7 +2280,7 @@ ipc_kmsg_copyout_object(space, object, msgt_name, namep)
 		goto slow_copyout;
 
     {
-	register ipc_port_t port = (ipc_port_t) object;
+	ipc_port_t port = (ipc_port_t) object;
 	ipc_entry_t entry;
 
 	is_write_lock(space);
@@ -2313,7 +2313,7 @@ ipc_kmsg_copyout_object(space, object, msgt_name, namep)
 	assert(IE_BITS_UREFS(entry->ie_bits) < MACH_PORT_UREFS_MAX);
 
     {
-	register ipc_entry_bits_t bits = entry->ie_bits + 1;
+	ipc_entry_bits_t bits = entry->ie_bits + 1;
 
 	if (IE_BITS_UREFS(bits) < MACH_PORT_UREFS_MAX)
 		entry->ie_bits = bits;
