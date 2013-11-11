@@ -51,8 +51,8 @@ kern_return_t host_processors(
 	processor_array_t	*processor_list,
 	natural_t		*countp)
 {
-	register int		i;
-	register processor_t	*tp;
+	int			i;
+	processor_t		*tp;
 	vm_offset_t		addr;
 	unsigned int		count;
 
@@ -100,7 +100,7 @@ kern_return_t	host_info(
 	host_info_t	info,
 	natural_t	*count)
 {
-	register integer_t	i, *slot_ptr;
+	integer_t	i, *slot_ptr;
 
 	if (host == HOST_NULL)
 		return KERN_INVALID_ARGUMENT;
@@ -109,7 +109,7 @@ kern_return_t	host_info(
 
 	case HOST_BASIC_INFO:
 	    {
-		register host_basic_info_t	basic_info;
+		host_basic_info_t	basic_info;
 
 		/*
 		 *	Basic information about this host.
@@ -152,7 +152,7 @@ kern_return_t	host_info(
 
 	case HOST_SCHED_INFO:
 	    {
-		register host_sched_info_t	sched_info;
+		host_sched_info_t	sched_info;
 		extern int	min_quantum;
 					/* minimum quantum, in microseconds */
 
@@ -174,7 +174,7 @@ kern_return_t	host_info(
 
 	case HOST_LOAD_INFO:
 	    {
-		register host_load_info_t load_info;
+		host_load_info_t load_info;
 		extern long avenrun[3], mach_factor[3];
 
 		if (*count < HOST_LOAD_INFO_COUNT)
