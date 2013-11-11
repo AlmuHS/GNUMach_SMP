@@ -387,9 +387,9 @@ retrieve_thread_self(thread)
 
 ipc_port_t
 retrieve_task_self_fast(
-	register task_t		task)
+	task_t		task)
 {
-	register ipc_port_t port;
+	ipc_port_t port;
 
 	assert(task == current_task());
 
@@ -425,9 +425,9 @@ retrieve_task_self_fast(
 
 ipc_port_t
 retrieve_thread_self_fast(thread)
-	register thread_t thread;
+	thread_t thread;
 {
-	register ipc_port_t port;
+	ipc_port_t port;
 
 	assert(thread == current_thread());
 
