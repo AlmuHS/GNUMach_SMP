@@ -318,7 +318,7 @@ itoa(
 	vm_size_t	num)
 {
 	char	buf[sizeof(vm_size_t)*2+3];
-	register char *np;
+	char 	*np;
 
 	np = buf + sizeof(buf);
 	*--np = 0;
@@ -338,7 +338,7 @@ itoa(
  */
 static void get_compat_strings(char *flags_str, char *root_str)
 {
-	register char *ip, *cp;
+	char *ip, *cp;
 
 	strcpy (root_str, "UNKNOWN");
 
@@ -528,7 +528,6 @@ build_args_and_stack(struct exec_info *boot_exec_info,
 {
 	vm_offset_t	stack_base;
 	vm_size_t	stack_size;
-	register
 	char *		arg_ptr;
 	int		arg_count, envc;
 	int		arg_len;
