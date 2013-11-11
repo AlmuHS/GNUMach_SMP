@@ -395,12 +395,12 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 	/* first check for common cases */
 
 	if (option == (MACH_SEND_MSG|MACH_RCV_MSG)) {
-		register ipc_thread_t self = current_thread();
+		ipc_thread_t self = current_thread();
 		ipc_space_t space = self->task->itk_space;
-		register ipc_kmsg_t kmsg;
-		register ipc_port_t dest_port;
+		ipc_kmsg_t kmsg;
+		ipc_port_t dest_port;
 		ipc_object_t rcv_object;
-		register ipc_mqueue_t rcv_mqueue;
+		ipc_mqueue_t rcv_mqueue;
 		mach_msg_size_t reply_size;
 
 		/*
@@ -484,18 +484,18 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 		switch (kmsg->ikm_header.msgh_bits) {
 		    case MACH_MSGH_BITS(MACH_MSG_TYPE_COPY_SEND,
 					MACH_MSG_TYPE_MAKE_SEND_ONCE): {
-			register ipc_entry_t table;
-			register ipc_entry_num_t size;
-			register ipc_port_t reply_port;
+			ipc_entry_t table;
+			ipc_entry_num_t size;
+			ipc_port_t reply_port;
 
 			/* sending a request message */
 
 		    {
-			register mach_port_index_t index;
-			register mach_port_gen_t gen;
+			mach_port_index_t index;
+			mach_port_gen_t gen;
 
 		    {
-			register mach_port_t reply_name =
+			mach_port_t reply_name =
 				kmsg->ikm_header.msgh_local_port;
 
 			if (reply_name != rcv_name)
@@ -517,8 +517,8 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 				goto abort_request_copyin;
 
 		    {
-			register ipc_entry_t entry;
-			register ipc_entry_bits_t bits;
+			ipc_entry_t entry;
+			ipc_entry_bits_t bits;
 
 			entry = &table[index];
 			bits = entry->ie_bits;
@@ -538,11 +538,11 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 			/* optimized ipc_entry_lookup of dest_name */
 
 		    {
-			register mach_port_index_t index;
-			register mach_port_gen_t gen;
+			mach_port_index_t index;
+			mach_port_gen_t gen;
 
 		    {
-			register mach_port_t dest_name =
+			mach_port_t dest_name =
 				kmsg->ikm_header.msgh_remote_port;
 
 			index = MACH_PORT_INDEX(dest_name);
@@ -553,8 +553,8 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 				goto abort_request_copyin;
 
 		    {
-			register ipc_entry_t entry;
-			register ipc_entry_bits_t bits;
+			ipc_entry_t entry;
+			ipc_entry_bits_t bits;
 
 			entry = &table[index];
 			bits = entry->ie_bits;
@@ -651,13 +651,13 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 		    }
 
 		    case MACH_MSGH_BITS(MACH_MSG_TYPE_MOVE_SEND_ONCE, 0): {
-			register ipc_entry_num_t size;
-			register ipc_entry_t table;
+			ipc_entry_num_t size;
+			ipc_entry_t table;
 
 			/* sending a reply message */
 
 		    {
-			register mach_port_t reply_name =
+			mach_port_t reply_name =
 				kmsg->ikm_header.msgh_local_port;
 
 			if (reply_name != MACH_PORT_NULL)
@@ -673,12 +673,12 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 			table = space->is_table;
 
 		    {
-			register ipc_entry_t entry;
-			register mach_port_gen_t gen;
-			register mach_port_index_t index;
+			ipc_entry_t entry;
+			mach_port_gen_t gen;
+			mach_port_index_t index;
 
 		    {
-			register mach_port_t dest_name =
+			mach_port_t dest_name =
 				kmsg->ikm_header.msgh_remote_port;
 
 			index = MACH_PORT_INDEX(dest_name);
@@ -740,12 +740,12 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 			/* optimized ipc_entry_lookup/ipc_mqueue_copyin */
 
 		    {
-			register ipc_entry_t entry;
-			register ipc_entry_bits_t bits;
+			ipc_entry_t entry;
+			ipc_entry_bits_t bits;
 
 		    {
-			register mach_port_index_t index;
-			register mach_port_gen_t gen;
+			mach_port_index_t index;
+			mach_port_gen_t gen;
 
 			index = MACH_PORT_INDEX(rcv_name);
 			gen = MACH_PORT_GEN(rcv_name);
@@ -765,7 +765,7 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 			/* check type bits; looking for receive or set */
 
 			if (bits & MACH_PORT_TYPE_PORT_SET) {
-				register ipc_pset_t rcv_pset;
+				ipc_pset_t rcv_pset;
 
 				rcv_pset = (ipc_pset_t) entry->ie_object;
 				assert(rcv_pset != IPS_NULL);
@@ -776,7 +776,7 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 				rcv_object = (ipc_object_t) rcv_pset;
 				rcv_mqueue = &rcv_pset->ips_messages;
 			} else if (bits & MACH_PORT_TYPE_RECEIVE) {
-				register ipc_port_t rcv_port;
+				ipc_port_t rcv_port;
 
 				rcv_port = (ipc_port_t) entry->ie_object;
 				assert(rcv_port != IP_NULL);
@@ -841,11 +841,11 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 						MACH_MSGH_BITS_CIRCULAR) == 0);
 
 	    {
-		register ipc_mqueue_t dest_mqueue;
-		register ipc_thread_t receiver;
+		ipc_mqueue_t dest_mqueue;
+		ipc_thread_t receiver;
 
 	    {
-		register ipc_pset_t dest_pset;
+		ipc_pset_t dest_pset;
 
 		dest_pset = dest_port->ip_pset;
 		if (dest_pset == IPS_NULL)
@@ -1074,9 +1074,9 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 			ip_unlock(reply_port);
 
 		    {
-			register ipc_entry_t table;
-			register ipc_entry_t entry;
-			register mach_port_index_t index;
+			ipc_entry_t table;
+			ipc_entry_t entry;
+			mach_port_index_t index;
 
 			/* optimized ipc_entry_get */
 
@@ -1091,7 +1091,7 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 			entry->ie_request = 0;
 
 		    {
-			register mach_port_gen_t gen;
+			mach_port_gen_t gen;
 
 			assert((entry->ie_bits &~ IE_BITS_GEN_MASK) == 0);
 			gen = entry->ie_bits + IE_BITS_GEN_ONE;
@@ -1148,7 +1148,7 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 		    }
 
 		    case MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND_ONCE, 0): {
-			register mach_port_t dest_name;
+			mach_port_t dest_name;
 
 			/* receiving a reply message */
 
@@ -1182,7 +1182,7 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 
 		    case MACH_MSGH_BITS_COMPLEX|
 			 MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND_ONCE, 0): {
-			register mach_port_t dest_name;
+			mach_port_t dest_name;
 
 			/* receiving a complex reply message */
 
@@ -1322,7 +1322,7 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 		     *	It will work if this is a request message.
 		     */
 
-		    register ipc_port_t reply_port;
+		    ipc_port_t reply_port;
 
 		    reply_port = (ipc_port_t)
 					kmsg->ikm_header.msgh_local_port;
@@ -1357,7 +1357,7 @@ mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
 		 */
 
 	    {
-		register ipc_port_t	reply_port;
+		ipc_port_t	reply_port;
 
 		/*
 		 * Perform the kernel function.
