@@ -182,9 +182,9 @@ thread_will_wait_with_timeout(
 
 boolean_t
 thread_handoff(
-	register thread_t old,
-	register continuation_t continuation,
-	register thread_t new)
+	thread_t old,
+	continuation_t continuation,
+	thread_t new)
 {
 	spl_t	s;
 
