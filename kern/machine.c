@@ -75,9 +75,9 @@ decl_simple_lock_data(,action_lock);
 void cpu_up(cpu)
 	int	cpu;
 {
-	register struct machine_slot	*ms;
-	register processor_t	processor;
-	register spl_t s;
+	struct machine_slot	*ms;
+	processor_t		processor;
+	spl_t 			s;
 
 	processor = cpu_to_processor(cpu);
 	pset_lock(&default_pset);
@@ -105,9 +105,9 @@ void cpu_up(cpu)
 void cpu_down(cpu)
 	int	cpu;
 {
-	register struct machine_slot	*ms;
-	register processor_t	processor;
-	register spl_t	s;
+	struct machine_slot	*ms;
+	processor_t		processor;
+	spl_t			s;
 
 	s = splsched();
 	processor = cpu_to_processor(cpu);
@@ -157,7 +157,7 @@ processor_request_action(processor, new_pset)
 processor_t	processor;
 processor_set_t	new_pset;
 {
-    register processor_set_t pset;
+    processor_set_t pset;
 
     /*
      *	Processor must be in a processor set.  Must lock its idle lock to
@@ -365,8 +365,8 @@ void	processor_doaction();	/* forward */
 
 void action_thread_continue()
 {
-	register processor_t	processor;
-	register spl_t		s;
+	processor_t	processor;
+	spl_t		s;
 
 	while (TRUE) {
 		s = splsched();
@@ -413,11 +413,11 @@ register processor_t	processor;
 {
 	thread_t			this_thread;
 	spl_t				s;
-	register processor_set_t	pset;
+	processor_set_t			pset;
 #if	MACH_HOST
-	register processor_set_t	new_pset;
-	register thread_t		thread;
-	register thread_t		prev_thread = THREAD_NULL;
+	processor_set_t			new_pset;
+	thread_t			thread;
+	thread_t			prev_thread = THREAD_NULL;
 	boolean_t			have_pset_ref = FALSE;
 #endif	/* MACH_HOST */
 
@@ -634,9 +634,9 @@ Restart_pset:
 __volatile__
 #endif
 void processor_doshutdown(processor)
-register processor_t	processor;
+processor_t	processor;
 {
-	register int		cpu = processor->slot_num;
+	int		cpu = processor->slot_num;
 
 	timer_switch(&kernel_timer[cpu]);
 
