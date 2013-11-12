@@ -168,7 +168,7 @@ extern void	time_int_exit(unsigned, timer_t);
 
 #define TIMER_DELTA(timer, save, result)			\
 MACRO_BEGIN							\
-	register unsigned	temp;				\
+	unsigned	temp;					\
 								\
 	temp = (timer).low_bits;				\
 	if ((save).high != (timer).high_bits_check) {		\
