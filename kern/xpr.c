@@ -60,8 +60,8 @@ void xpr(msg, arg1, arg2, arg3, arg4, arg5)
 char *msg;
 int arg1, arg2, arg3, arg4, arg5;
 {
-	register spl_t s;
-	register struct xprbuf *x;
+	spl_t s;
+	struct xprbuf *x;
 
 	/* If we aren't initialized, ignore trace request */
 	if (!xprenable || (xprptr == 0))
@@ -152,7 +152,7 @@ void xpr_dump(base, nbufs)
 	jmp_buf_t db_jmpbuf;
 	jmp_buf_t *prev;
 	struct xprbuf *last, *ptr;
-	register struct xprbuf *x;
+	struct xprbuf *x;
 	int i;
 	spl_t s;
 
