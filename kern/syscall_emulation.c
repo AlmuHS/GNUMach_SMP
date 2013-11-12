@@ -71,7 +71,7 @@ void eml_init()
 void eml_task_reference(task, parent)
 	task_t	task, parent;
 {
-	register eml_dispatch_t	eml;
+	eml_dispatch_t	eml;
 
 	if (parent == TASK_NULL)
 	    eml = EML_DISPATCH_NULL;
@@ -96,7 +96,7 @@ void eml_task_reference(task, parent)
 void eml_task_deallocate(task)
 	task_t task;
 {
-	register eml_dispatch_t	eml;
+	eml_dispatch_t	eml;
 
 	eml = task->eml_dispatch;
 	if (eml != EML_DISPATCH_NULL) {
