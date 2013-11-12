@@ -250,9 +250,9 @@ void lock_sleepable(
  */
 
 void lock_write(
-	register lock_t	l)
+	lock_t	l)
 {
-	register int	i;
+	int	i;
 
 	check_simple_locks();
 	simple_lock(&l->interlock);
@@ -308,7 +308,7 @@ void lock_write(
 }
 
 void lock_done(
-	register lock_t	l)
+	lock_t	l)
 {
 	simple_lock(&l->interlock);
 
@@ -340,9 +340,9 @@ void lock_done(
 }
 
 void lock_read(
-	register lock_t	l)
+	lock_t	l)
 {
-	register int	i;
+	int	i;
 
 	check_simple_locks();
 	simple_lock(&l->interlock);
@@ -387,9 +387,9 @@ void lock_read(
  *		Returns TRUE if the upgrade *failed*.
  */
 boolean_t lock_read_to_write(
-	register lock_t	l)
+	lock_t	l)
 {
-	register int	i;
+	int	i;
 
 	check_simple_locks();
 	simple_lock(&l->interlock);
@@ -443,7 +443,7 @@ boolean_t lock_read_to_write(
 }
 
 void lock_write_to_read(
-	register lock_t	l)
+	lock_t	l)
 {
 	simple_lock(&l->interlock);
 
@@ -474,7 +474,7 @@ void lock_write_to_read(
  */
 
 boolean_t lock_try_write(
-	register lock_t	l)
+	lock_t	l)
 {
 	simple_lock(&l->interlock);
 
@@ -513,7 +513,7 @@ boolean_t lock_try_write(
  */
 
 boolean_t lock_try_read(
-	register lock_t	l)
+	lock_t	l)
 {
 	simple_lock(&l->interlock);
 
@@ -547,7 +547,7 @@ boolean_t lock_try_read(
  *		Returns FALSE if the upgrade *failed*.
  */
 boolean_t lock_try_read_to_write(
-	register lock_t	l)
+	lock_t	l)
 {
 	check_simple_locks();
 	simple_lock(&l->interlock);
