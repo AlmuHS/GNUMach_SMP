@@ -130,13 +130,13 @@
 
 
 void printnum(
-	register unsigned long	u,
-	register int		base,
+	unsigned long		u,
+	int			base,
 	void			(*putc)( char, vm_offset_t ),
 	vm_offset_t		putc_arg)
 {
 	char	buf[MAXBUF];	/* build number here */
-	register char *	p = &buf[MAXBUF-1];
+	char *	p = &buf[MAXBUF-1];
 	static char digs[] = "0123456789abcdef";
 
 	do {
@@ -167,7 +167,7 @@ void printf_init(void)
 }
 
 void _doprnt(
-	register const char *fmt,
+	const char 	*fmt,
 	va_list		argp,
 					/* character output routine */
  	void		(*putc)( char, vm_offset_t),
@@ -184,7 +184,7 @@ void _doprnt(
 	int		sign_char;
 	boolean_t	altfmt, truncate;
 	int		base;
-	register char	c;
+	char		c;
 
 	printf_init();
 
@@ -193,7 +193,7 @@ void _doprnt(
 	simple_lock(&_doprnt_lock);
 #else
 	{
-		register int i = 0;
+		int i = 0;
 		while (i < 1*1024*1024) {
 			if (simple_lock_try(&_doprnt_lock))
 				break;
@@ -283,9 +283,9 @@ void _doprnt(
 		case 'b':
 		case 'B':
 		{
-		    register char *p;
-		    boolean_t	  any;
-		    register int  i;
+		    char 	*p;
+		    boolean_t	any;
+		    int  	i;
 
 		    u = va_arg(argp, unsigned long);
 		    p = va_arg(argp, char *);
@@ -302,7 +302,7 @@ void _doprnt(
 			    /*
 			     * Bit field
 			     */
-			    register int j;
+			    int j;
 			    if (any)
 				(*putc)(',', putc_arg);
 			    else {
@@ -342,8 +342,8 @@ void _doprnt(
 
 		case 's':
 		{
-		    register char *p;
-		    register char *p2;
+		    char *p;
+		    char *p2;
 
 		    if (prec == -1)
 			prec = 0x7fffffff;	/* MAXINT */
@@ -449,7 +449,7 @@ void _doprnt(
 		print_num:
 		{
 		    char	buf[MAXBUF];	/* build number here */
-		    register char *	p = &buf[MAXBUF-1];
+		    char *	p = &buf[MAXBUF-1];
 		    static char digits[] = "0123456789abcdef";
 		    char *prefix = 0;
 
@@ -540,7 +540,7 @@ int	indent = 0;
 void iprintf(const char *fmt, ...)
 {
 	va_list	listp;
-	register int i;
+	int i;
 
 	for (i = indent; i > 0; ){
 	    if (i >= 8) {
@@ -567,8 +567,8 @@ sputc(
 	char		c,
 	vm_offset_t	arg)
 {
-	register char	**bufp = (char **) arg;
-	register char	*p = *bufp;
+	char	**bufp = (char **) arg;
+	char	*p = *bufp;
 	*p++ = c;
 	*bufp = p;
 }
@@ -620,8 +620,8 @@ void safe_gets(str, maxlen)
 	char *str;
 	int  maxlen;
 {
-	register char *lp;
-	register int c;
+	char *lp;
+	int c;
 	char *strmax = str + maxlen - 1; /* allow space for trailing 0 */
 
 	lp = str;
