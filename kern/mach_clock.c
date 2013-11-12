@@ -122,12 +122,12 @@ timer_elt_data_t	timer_head;	/* ordered list of timeouts */
  *
  */
 void clock_interrupt(usec, usermode, basepri)
-	register int	usec;		/* microseconds per tick */
+	int		usec;		/* microseconds per tick */
 	boolean_t	usermode;	/* executing user code */
 	boolean_t	basepri;	/* at base priority */
 {
-	register int		my_cpu = cpu_number();
-	register thread_t	thread = current_thread();
+	int		my_cpu = cpu_number();
+	thread_t	thread = current_thread();
 
 	counter(c_clock_ticks++);
 	counter(c_threads_total += c_threads_current);
@@ -151,7 +151,7 @@ void clock_interrupt(usec, usermode, basepri)
 	 */
 	{
 	    extern void	thread_quantum_update(); /* in priority.c */
-	    register int	state;
+	    int		state;
 
 	    if (usermode)
 		state = CPU_STATE_USER;
@@ -187,8 +187,8 @@ void clock_interrupt(usec, usermode, basepri)
 	 */
 	if (my_cpu == master_cpu) {
 
-	    register spl_t s;
-	    register timer_elt_t	telt;
+	    spl_t s;
+	    timer_elt_t	telt;
 	    boolean_t	needsoft = FALSE;
 
 #if	TS_FORMAT == 1
@@ -221,7 +221,7 @@ void clock_interrupt(usec, usermode, basepri)
 		time_value_add_usec(&time, usec);
 	    }
 	    else {
-		register int	delta;
+		int	delta;
 
 		if (timedelta < 0) {
 		    delta = usec - tickdelta;
@@ -278,9 +278,9 @@ void softclock()
 	 *	Handle timeouts.
 	 */
 	spl_t	s;
-	register timer_elt_t	telt;
-	register void	(*fcn)( void * param );
-	register void	*param;
+	timer_elt_t	telt;
+	void	(*fcn)( void * param );
+	void	*param;
 
 	while (TRUE) {
 	    s = splsched();
@@ -312,11 +312,11 @@ void softclock()
  *		interval time-out interval, in hz.
  */
 void set_timeout(telt, interval)
-	register timer_elt_t	telt;	/* already loaded */
-	register unsigned int	interval;
+	timer_elt_t	telt;	/* already loaded */
+	unsigned int	interval;
 {
 	spl_t			s;
-	register timer_elt_t	next;
+	timer_elt_t		next;
 
 	s = splsched();
 	simple_lock(&timer_lock);
@@ -342,7 +342,7 @@ void set_timeout(telt, interval)
 }
 
 boolean_t reset_timeout(telt)
-	register timer_elt_t	telt;
+	timer_elt_t	telt;
 {
 	spl_t	s;
 
@@ -534,7 +534,7 @@ void timeout(fcn, param, interval)
 	int	interval;
 {
 	spl_t	s;
-	register timer_elt_t elt;
+	timer_elt_t elt;
 
 	s = splsched();
 	simple_lock(&timer_lock);
@@ -557,11 +557,11 @@ void timeout(fcn, param, interval)
  * and removed.
  */
 boolean_t untimeout(fcn, param)
-	register void	(*fcn)( void * param );
-	register void *	param;
+	void	(*fcn)( void * param );
+	void *	param;
 {
 	spl_t	s;
-	register timer_elt_t elt;
+	timer_elt_t elt;
 
 	s = splsched();
 	simple_lock(&timer_lock);
