@@ -55,13 +55,13 @@ static	long	fract[3] = {
 
 void compute_mach_factor(void)
 {
-	register processor_set_t	pset;
-	register processor_t		processor;
-	register int		ncpus;
-	register int		nthreads;
-	register long		factor_now;
-	register long		average_now;
-	register long		load_now;
+	processor_set_t	pset;
+	processor_t	processor;
+	int		ncpus;
+	int		nthreads;
+	long		factor_now;
+	long		average_now;
+	long		load_now;
 
 	simple_lock(&all_psets_lock);
 	pset = (processor_set_t) queue_first(&all_psets);
@@ -123,7 +123,7 @@ void compute_mach_factor(void)
 		 *	And some ugly stuff to keep w happy.
 		 */
 		if (pset == &default_pset) {
-		    register int i;
+		    int i;
 
 		    for (i = 0; i < 3; i++) {
 			mach_factor[i] = ( (mach_factor[i]*fract[i])
