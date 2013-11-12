@@ -210,7 +210,7 @@ void setup_main()
  */
 void start_kernel_threads()
 {
-	register int	i;
+	int	i;
 
 	/*
 	 *	Create the idle threads and the other
@@ -287,9 +287,9 @@ void slave_main()
  *	First thread is specified for the master CPU.
  */
 void cpu_launch_first_thread(th)
-	register thread_t	th;
+	thread_t	th;
 {
-	register int	mycpu;
+	int	mycpu;
 
 	mycpu = cpu_number();
 
