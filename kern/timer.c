@@ -49,8 +49,8 @@ void timer_init(); /* forward */
  */
 void init_timers()
 {
-	register int	i;
-	register timer_t	this_timer;
+	int	i;
+	timer_t	this_timer;
 
 	/*
 	 *	Initialize all the kernel timers and start the one
@@ -69,7 +69,6 @@ void init_timers()
  *	timer_init initializes a single timer.
  */
 void timer_init(this_timer)
-register
 timer_t this_timer;
 {
 	this_timer->low_bits = 0;
@@ -442,7 +441,7 @@ void	thread_read_times(thread, user_time_p, system_time_p)
 	time_value_t	*system_time_p;
 {
 	timer_save_data_t	temp;
-	register timer_t	timer;
+	timer_t			timer;
 
 	timer = &thread->user_timer;
 	timer_grab(timer, &temp);
@@ -476,7 +475,7 @@ void	db_thread_read_times(thread, user_time_p, system_time_p)
 	time_value_t	*system_time_p;
 {
 	timer_save_data_t	temp;
-	register timer_t	timer;
+	timer_t			timer;
 
 	timer = &thread->user_timer;
 	db_timer_grab(timer, &temp);
@@ -511,7 +510,7 @@ timer_t	timer;
 timer_save_t	save;
 {
 	timer_save_data_t	new_save;
-	register unsigned	result;
+	unsigned		result;
 
 	timer_grab(timer,&new_save);
 	result = (new_save.high - save->high) * TIMER_HIGH_UNIT +
