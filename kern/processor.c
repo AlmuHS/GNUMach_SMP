@@ -77,7 +77,7 @@ void processor_init(processor_t, int);
  */
 void pset_sys_bootstrap(void)
 {
-	register int	i;
+	int	i;
 
 	pset_init(&default_pset);
 	default_pset.empty = FALSE;
@@ -109,8 +109,8 @@ void pset_sys_bootstrap(void)
  */
 void pset_sys_init(void)
 {
-	register int	i;
-	register processor_t	processor;
+	int		i;
+	processor_t	processor;
 
 	/*
 	 * Allocate the cache for processor sets.
@@ -138,7 +138,7 @@ void pset_sys_init(void)
  */
 
 void pset_init(
-	register processor_set_t	pset)
+	processor_set_t	pset)
 {
 	int	i;
 
@@ -189,7 +189,7 @@ void pset_init(
  */
 
 void processor_init(
-	register processor_t pr,
+	processor_t 	pr,
 	int		slot_num)
 {
 	int	i;
@@ -414,14 +414,14 @@ void pset_reference(
 
 kern_return_t
 processor_info(
-	register processor_t	processor,
+	processor_t		processor,
 	int			flavor,
 	host_t			*host,
 	processor_info_t	info,
 	natural_t		*count)
 {
-	register int	slot_num, state;
-	register processor_basic_info_t		basic_info;
+	int				slot_num, state;
+	processor_basic_info_t		basic_info;
 
 	if (processor == PROCESSOR_NULL)
 		return KERN_INVALID_ARGUMENT;
@@ -503,7 +503,7 @@ void quantum_set(
 	processor_set_t	pset)
 {
 #if	NCPUS > 1
-	register int	i,ncpus;
+	int	i, ncpus;
 
 	ncpus = pset->processor_count;
 
@@ -567,8 +567,8 @@ processor_set_create(
 kern_return_t processor_set_destroy(
 	processor_set_t pset)
 {
-	register queue_entry_t	elem;
-	register queue_head_t	*list;
+	queue_entry_t	elem;
+	queue_head_t	*list;
 
 	if (pset == PROCESSOR_SET_NULL || pset == &default_pset)
 		return KERN_INVALID_ARGUMENT;
@@ -686,7 +686,7 @@ processor_set_info(
 		return KERN_INVALID_ARGUMENT;
 
 	if (flavor == PROCESSOR_SET_BASIC_INFO) {
-		register processor_set_basic_info_t	basic_info;
+		processor_set_basic_info_t	basic_info;
 
 		if (*count < PROCESSOR_SET_BASIC_INFO_COUNT)
 			return KERN_FAILURE;
@@ -706,7 +706,7 @@ processor_set_info(
 		return KERN_SUCCESS;
 	}
 	else if (flavor == PROCESSOR_SET_SCHED_INFO) {
-		register processor_set_sched_info_t	sched_info;
+		processor_set_sched_info_t	sched_info;
 
 		if (*count < PROCESSOR_SET_SCHED_INFO_COUNT)
 			return KERN_FAILURE;
@@ -751,8 +751,8 @@ processor_set_max_priority(
 	pset->max_priority = max_priority;
 
 	if (change_threads) {
-	    register queue_head_t *list;
-	    register thread_t	thread;
+	    queue_head_t *list;
+	    thread_t	thread;
 
 	    list = &pset->threads;
 	    queue_iterate(list, thread, thread_t, pset_threads) {
@@ -822,8 +822,8 @@ processor_set_policy_disable(
 	    pset->policies &= ~policy;
 
 	    if (change_threads) {
-		register queue_head_t	*list;
-		register thread_t	thread;
+		queue_head_t	*list;
+		thread_t	thread;
 
 		list = &pset->threads;
 		queue_iterate(list, thread, thread_t, pset_threads) {
