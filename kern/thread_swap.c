@@ -125,7 +125,7 @@ void thread_swapin(thread)
  *	likely that this routine will sleep (waiting for stack allocation).
  */
 void thread_doswapin(thread)
-	register thread_t thread;
+	thread_t thread;
 {
 	spl_t	s;
 
@@ -157,7 +157,7 @@ void thread_doswapin(thread)
 void swapin_thread_continue(void)
 {
 	for (;;) {
-		register thread_t thread;
+		thread_t thread;
 		spl_t s;
 
 		s = splsched();
