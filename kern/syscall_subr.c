@@ -68,7 +68,7 @@ void thread_depress_priority(thread_t, mach_msg_timeout_t);
 
 void swtch_continue(void)
 {
-	register processor_t	myprocessor;
+	processor_t	myprocessor;
 
 	myprocessor = current_processor();
 	thread_syscall_return(myprocessor->runq.count > 0 ||
@@ -78,7 +78,7 @@ void swtch_continue(void)
 
 boolean_t swtch(void)
 {
-	register processor_t	myprocessor;
+	processor_t	myprocessor;
 
 #if	NCPUS > 1
 	myprocessor = current_processor();
@@ -96,8 +96,8 @@ boolean_t swtch(void)
 
 void swtch_pri_continue(void)
 {
-	register thread_t	thread = current_thread();
-	register processor_t	myprocessor;
+	thread_t	thread = current_thread();
+	processor_t	myprocessor;
 
 	if (thread->depress_priority >= 0)
 		(void) thread_depress_abort(thread);
@@ -110,8 +110,8 @@ void swtch_pri_continue(void)
 boolean_t  swtch_pri(pri)
 	int pri;
 {
-	register thread_t	thread = current_thread();
-	register processor_t	myprocessor;
+	thread_t	thread = current_thread();
+	processor_t	myprocessor;
 
 #if	NCPUS > 1
 	myprocessor = current_processor();
@@ -138,7 +138,7 @@ boolean_t  swtch_pri(pri)
 
 void thread_switch_continue(void)
 {
-	register thread_t	cur_thread = current_thread();
+	thread_t	cur_thread = current_thread();
 
 	/*
 	 *  Restore depressed priority
@@ -162,8 +162,8 @@ mach_port_t thread_name;
 int option;
 mach_msg_timeout_t option_time;
 {
-    register thread_t		cur_thread = current_thread();
-    register processor_t	myprocessor;
+    thread_t			cur_thread = current_thread();
+    processor_t			myprocessor;
     ipc_port_t			port;
 
     /*
@@ -204,8 +204,8 @@ mach_msg_timeout_t option_time;
 	     *	Get corresponding thread.
 	     */
 	    if (ip_active(port) && (ip_kotype(port) == IKOT_THREAD)) {
-		register thread_t thread;
-		register spl_t s;
+		thread_t thread;
+		spl_t s;
 
 		thread = (thread_t) port->ip_kobject;
 		/*
@@ -286,7 +286,7 @@ mach_msg_timeout_t option_time;
  */
 void
 thread_depress_priority(thread, depress_time)
-register thread_t thread;
+thread_t thread;
 mach_msg_timeout_t depress_time;
 {
     unsigned int ticks;
@@ -324,7 +324,7 @@ mach_msg_timeout_t depress_time;
  */
 void
 thread_depress_timeout(thread)
-register thread_t thread;
+thread_t thread;
 {
     spl_t	s;
 
@@ -353,7 +353,7 @@ register thread_t thread;
  */
 kern_return_t
 thread_depress_abort(thread)
-register thread_t	thread;
+thread_t	thread;
 {
     spl_t	s;
 
