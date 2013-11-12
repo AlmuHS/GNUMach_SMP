@@ -47,8 +47,8 @@ int pc_sampling_enabled = 0;
 decl_simple_lock_data(, pc_sampling_lock)	/* lock for enabling */
 
 void take_pc_sample(
-    register thread_t t,
-    register sample_control_t *cp,
+    thread_t t,
+    sample_control_t *cp,
     sampled_pc_flavor_t flavor)
 {
     vm_offset_t pc;
