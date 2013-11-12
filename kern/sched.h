@@ -153,7 +153,7 @@ extern unsigned	sched_tick;
 
 #define thread_timer_delta(thread)  				\
 MACRO_BEGIN							\
-	register unsigned	delta;				\
+	unsigned	delta;					\
 								\
 	delta = 0;						\
 	TIMER_DELTA((thread)->system_timer,			\
