@@ -55,10 +55,10 @@
 
 int
 strcmp(
-	register const char *s1,
-	register const char *s2)
+	const char *s1,
+	const char *s2)
 {
-	register unsigned int a, b;
+	unsigned int a, b;
 
 	do {
 		a = *s1++;
@@ -82,11 +82,11 @@ strcmp(
 
 int
 strncmp(
-	register const char *s1,
-	register const char *s2,
+	const char *s1,
+	const char *s2,
 	size_t n)
 {
-	register unsigned int a, b;
+	unsigned int a, b;
 
 	while (n != 0) {
 		a = *s1++;
@@ -113,10 +113,10 @@ strncmp(
 
 char *
 strcpy(
-	register char *to,
-	register const char *from)
+	char *to,
+	const char *from)
 {
-	register char *ret = to;
+	char *ret = to;
 
 	while ((*to++ = *from++) != '\0')
 		continue;
@@ -135,11 +135,11 @@ strcpy(
 
 char *
 strncpy(
-	register char *to,
-	register const char *from,
-	register size_t count)
+	char *to,
+	const char *from,
+	size_t count)
 {
-	register char *ret = to;
+	char *ret = to;
 
 	while (count != 0) {
 		count--;
@@ -163,9 +163,9 @@ strncpy(
 
 size_t
 strlen(
-	register const char *string)
+	const char *string)
 {
-	register const char *ret = string;
+	const char *ret = string;
 
 	while (*string++ != '\0')
 		continue;
