@@ -84,9 +84,7 @@ decl_simple_lock_data(,memory_manager_default_lock)
 
 kern_return_t memory_object_data_supply(object, offset, data_copy, data_cnt,
 	lock_value, precious, reply_to, reply_to_type)
-	register
         vm_object_t		object;
-	register
 	vm_offset_t		offset;
 	vm_map_copy_t		data_copy;
 	unsigned int		data_cnt;
@@ -97,9 +95,7 @@ kern_return_t memory_object_data_supply(object, offset, data_copy, data_cnt,
 {
 	kern_return_t	result = KERN_SUCCESS;
 	vm_offset_t	error_offset = 0;
-	register
 	vm_page_t	m;
-	register
 	vm_page_t	data_m;
 	vm_size_t	original_length;
 	vm_offset_t	original_offset;
@@ -341,7 +337,7 @@ kern_return_t memory_object_data_error(object, offset, size, error_value)
 	offset -= object->paging_offset;
 
 	while (size != 0) {
-		register vm_page_t m;
+		vm_page_t m;
 
 		m = vm_page_lookup(object, offset);
 		if ((m != VM_PAGE_NULL) && m->busy && m->absent) {
@@ -401,7 +397,7 @@ kern_return_t memory_object_data_unavailable(object, offset, size)
 	offset -= object->paging_offset;
 
 	while (size != 0) {
-		register vm_page_t m;
+		vm_page_t m;
 
 		/*
 		 *	We're looking for pages that are both busy and
@@ -654,16 +650,16 @@ kern_return_t
 memory_object_lock_request(object, offset, size,
 			should_return, should_flush, prot,
 			reply_to, reply_to_type)
-	register vm_object_t	object;
-	register vm_offset_t	offset;
-	register vm_size_t	size;
+	vm_object_t		object;
+	vm_offset_t		offset;
+	vm_size_t		size;
 	memory_object_return_t	should_return;
 	boolean_t		should_flush;
 	vm_prot_t		prot;
 	ipc_port_t		reply_to;
 	mach_msg_type_name_t	reply_to_type;
 {
-	register vm_page_t	m;
+	vm_page_t		m;
 	vm_offset_t		original_offset = offset;
 	vm_size_t		original_size = size;
 	vm_offset_t		paging_offset = 0;
@@ -715,8 +711,8 @@ memory_object_lock_request(object, offset, size,
 #define	PAGEOUT_PAGES							\
 MACRO_BEGIN								\
 	vm_map_copy_t		copy;					\
-	register int		i;					\
-	register vm_page_t	hp;					\
+	int			i;					\
+	vm_page_t		hp;					\
 									\
 	vm_object_unlock(object);					\
 									\
