@@ -248,7 +248,7 @@ vm_map_t vm_map_create(pmap, min, max, pageable)
 	vm_offset_t	min, max;
 	boolean_t	pageable;
 {
-	register vm_map_t	result;
+	vm_map_t	result;
 
 	result = (vm_map_t) kmem_cache_alloc(&vm_map_cache);
 	if (result == VM_MAP_NULL)
@@ -272,10 +272,10 @@ vm_map_t vm_map_create(pmap, min, max, pageable)
 	    _vm_map_entry_create(&(copy)->cpy_hdr)
 
 vm_map_entry_t _vm_map_entry_create(map_header)
-	register struct vm_map_header *map_header;
+	struct vm_map_header *map_header;
 {
-	register kmem_cache_t cache;
-	register vm_map_entry_t	entry;
+	kmem_cache_t cache;
+	vm_map_entry_t	entry;
 
 	if (map_header->entries_pageable)
 	    cache = &vm_map_entry_cache;
@@ -301,10 +301,10 @@ vm_map_entry_t _vm_map_entry_create(map_header)
 	_vm_map_entry_dispose(&(copy)->cpy_hdr, (entry))
 
 void _vm_map_entry_dispose(map_header, entry)
-	register struct vm_map_header *map_header;
-	register vm_map_entry_t	entry;
+	struct vm_map_header *map_header;
+	vm_map_entry_t	entry;
 {
-	register kmem_cache_t cache;
+	kmem_cache_t cache;
 
 	if (map_header->entries_pageable)
 	    cache = &vm_map_entry_cache;
@@ -387,7 +387,7 @@ static inline int vm_map_entry_cmp_insert(const struct rbtree_node *a,
  *
  */
 void vm_map_reference(map)
-	register vm_map_t	map;
+	vm_map_t	map;
 {
 	if (map == VM_MAP_NULL)
 		return;
@@ -405,9 +405,9 @@ void vm_map_reference(map)
  *	The map should not be locked.
  */
 void vm_map_deallocate(map)
-	register vm_map_t	map;
+	vm_map_t	map;
 {
-	register int		c;
+	int		c;
 
 	if (map == VM_MAP_NULL)
 		return;
@@ -450,12 +450,12 @@ void vm_map_deallocate(map)
  *	actually contained in the map.
  */
 boolean_t vm_map_lookup_entry(map, address, entry)
-	register vm_map_t	map;
-	register vm_offset_t	address;
-	vm_map_entry_t		*entry;		/* OUT */
+	vm_map_t	map;
+	vm_offset_t	address;
+	vm_map_entry_t	*entry;		/* OUT */
 {
-	register struct rbtree_node	*node;
-	register vm_map_entry_t		hint;
+	struct rbtree_node	*node;
+	vm_map_entry_t		hint;
 
 	/*
 	 *	First, make a quick check to see if we are already
@@ -534,16 +534,16 @@ invalid_user_access(map, start, end, prot)
  *		then an existing entry may be extended.
  */
 kern_return_t vm_map_find_entry(map, address, size, mask, object, o_entry)
-	register vm_map_t	map;
+	vm_map_t		map;
 	vm_offset_t		*address;	/* OUT */
 	vm_size_t		size;
 	vm_offset_t		mask;
 	vm_object_t		object;
 	vm_map_entry_t		*o_entry;	/* OUT */
 {
-	register vm_map_entry_t	entry, new_entry;
-	register vm_offset_t	start;
-	register vm_offset_t	end;
+	vm_map_entry_t	entry, new_entry;
+	vm_offset_t	start;
+	vm_offset_t	end;
 
 	/*
 	 *	Look for the first possible address;
@@ -562,7 +562,7 @@ kern_return_t vm_map_find_entry(map, address, size, mask, object, o_entry)
 	 */
 
 	while (TRUE) {
-		register vm_map_entry_t	next;
+		vm_map_entry_t	next;
 
 		/*
 		 *	Find the end of the proposed new region.
@@ -707,17 +707,14 @@ int vm_map_pmap_enter_enable = FALSE;
 void
 vm_map_pmap_enter(map, addr, end_addr, object, offset, protection)
 	vm_map_t	map;
-	register
 	vm_offset_t 	addr;
-	register
 	vm_offset_t	end_addr;
-	register
 	vm_object_t 	object;
 	vm_offset_t	offset;
 	vm_prot_t	protection;
 {
 	while (addr < end_addr) {
-		register vm_page_t	m;
+		vm_page_t	m;
 
 		vm_object_lock(object);
 		vm_object_paging_begin(object);
@@ -770,7 +767,6 @@ kern_return_t vm_map_enter(
 		address, size, mask, anywhere,
 		object, offset, needs_copy,
 		cur_protection, max_protection,	inheritance)
-	register
 	vm_map_t	map;
 	vm_offset_t	*address;	/* IN/OUT */
 	vm_size_t	size;
@@ -783,10 +779,10 @@ kern_return_t vm_map_enter(
 	vm_prot_t	max_protection;
 	vm_inherit_t	inheritance;
 {
-	register vm_map_entry_t	entry;
-	register vm_offset_t	start;
-	register vm_offset_t	end;
-	kern_return_t		result = KERN_SUCCESS;
+	vm_map_entry_t	entry;
+	vm_offset_t	start;
+	vm_offset_t	end;
+	kern_return_t	result = KERN_SUCCESS;
 
 #define	RETURN(value)	{ result = value; goto BailOut; }
 
@@ -832,7 +828,7 @@ kern_return_t vm_map_enter(
 		 */
 
 		while (TRUE) {
-			register vm_map_entry_t	next;
+			vm_map_entry_t	next;
 
 		    	/*
 			 *	Find the end of the proposed new region.
@@ -980,7 +976,7 @@ kern_return_t vm_map_enter(
 	 */
 
 	/**/ {
-	register vm_map_entry_t	new_entry;
+	vm_map_entry_t	new_entry;
 
 	new_entry = vm_map_entry_create(map);
 
@@ -1070,11 +1066,11 @@ void _vm_map_copy_clip_start();
  *	the entry must be split.
  */
 void _vm_map_clip_start(map_header, entry, start)
-	register struct vm_map_header *map_header;
-	register vm_map_entry_t	entry;
-	register vm_offset_t	start;
+	struct vm_map_header 	*map_header;
+	vm_map_entry_t		entry;
+	vm_offset_t		start;
 {
-	register vm_map_entry_t	new_entry;
+	vm_map_entry_t	new_entry;
 
 	/*
 	 *	Split off the front portion --
@@ -1125,11 +1121,11 @@ void _vm_map_copy_clip_end();
  *	the entry must be split.
  */
 void _vm_map_clip_end(map_header, entry, end)
-	register struct vm_map_header *map_header;
-	register vm_map_entry_t	entry;
-	register vm_offset_t	end;
+	struct vm_map_header 	*map_header;
+	vm_map_entry_t		entry;
+	vm_offset_t		end;
 {
-	register vm_map_entry_t	new_entry;
+	vm_map_entry_t	new_entry;
 
 	/*
 	 *	Create a new entry and insert it
@@ -1185,14 +1181,14 @@ void _vm_map_clip_end(map_header, entry, end)
  *	submap (if desired).  [Better yet, don't try it.]
  */
 kern_return_t vm_map_submap(map, start, end, submap)
-	register vm_map_t	map;
-	register vm_offset_t	start;
-	register vm_offset_t	end;
-	vm_map_t		submap;
+	vm_map_t	map;
+	vm_offset_t	start;
+	vm_offset_t	end;
+	vm_map_t	submap;
 {
 	vm_map_entry_t		entry;
-	register kern_return_t	result = KERN_INVALID_ARGUMENT;
-	register vm_object_t	object;
+	kern_return_t		result = KERN_INVALID_ARGUMENT;
+	vm_object_t		object;
 
 	vm_map_lock(map);
 
@@ -1233,14 +1229,14 @@ kern_return_t vm_map_submap(map, start, end, submap)
  *	otherwise, only the current protection is affected.
  */
 kern_return_t vm_map_protect(map, start, end, new_prot, set_max)
-	register vm_map_t	map;
-	register vm_offset_t	start;
-	register vm_offset_t	end;
-	register vm_prot_t	new_prot;
-	register boolean_t	set_max;
+	vm_map_t	map;
+	vm_offset_t	start;
+	vm_offset_t	end;
+	vm_prot_t	new_prot;
+	boolean_t	set_max;
 {
-	register vm_map_entry_t		current;
-	vm_map_entry_t			entry;
+	vm_map_entry_t		current;
+	vm_map_entry_t		entry;
 
 	vm_map_lock(map);
 
@@ -1321,12 +1317,12 @@ kern_return_t vm_map_protect(map, start, end, new_prot, set_max)
  *	child maps at the time of vm_map_fork.
  */
 kern_return_t vm_map_inherit(map, start, end, new_inheritance)
-	register vm_map_t	map;
-	register vm_offset_t	start;
-	register vm_offset_t	end;
-	register vm_inherit_t	new_inheritance;
+	vm_map_t	map;
+	vm_offset_t	start;
+	vm_offset_t	end;
+	vm_inherit_t	new_inheritance;
 {
-	register vm_map_entry_t	entry;
+	vm_map_entry_t	entry;
 	vm_map_entry_t	temp_entry;
 
 	vm_map_lock(map);
@@ -1370,13 +1366,13 @@ kern_return_t vm_map_inherit(map, start, end, new_inheritance)
  *	or vm_map_pageable_user); don't call vm_map_pageable directly.
  */
 kern_return_t vm_map_pageable_common(map, start, end, access_type, user_wire)
-	register vm_map_t	map;
-	register vm_offset_t	start;
-	register vm_offset_t	end;
-	register vm_prot_t	access_type;
-	boolean_t		user_wire;
+	vm_map_t	map;
+	vm_offset_t	start;
+	vm_offset_t	end;
+	vm_prot_t	access_type;
+	boolean_t	user_wire;
 {
-	register vm_map_entry_t	entry;
+	vm_map_entry_t		entry;
 	vm_map_entry_t		start_entry;
 
 	vm_map_lock(map);
@@ -1619,11 +1615,11 @@ kern_return_t vm_map_pageable_common(map, start, end, access_type, user_wire)
  *	Deallocate the given entry from the target map.
  */
 void vm_map_entry_delete(map, entry)
-	register vm_map_t	map;
-	register vm_map_entry_t	entry;
+	vm_map_t	map;
+	vm_map_entry_t	entry;
 {
-	register vm_offset_t	s, e;
-	register vm_object_t	object;
+	vm_offset_t		s, e;
+	vm_object_t		object;
 	extern vm_object_t	kernel_object;
 
 	s = entry->vme_start;
@@ -1703,9 +1699,9 @@ void vm_map_entry_delete(map, entry)
  */
 
 kern_return_t vm_map_delete(map, start, end)
-	register vm_map_t	map;
-	register vm_offset_t	start;
-	register vm_offset_t	end;
+	vm_map_t		map;
+	vm_offset_t		start;
+	vm_offset_t		end;
 {
 	vm_map_entry_t		entry;
 	vm_map_entry_t		first_entry;
@@ -1786,11 +1782,11 @@ kern_return_t vm_map_delete(map, start, end)
  *	This is the exported form of vm_map_delete.
  */
 kern_return_t vm_map_remove(map, start, end)
-	register vm_map_t	map;
-	register vm_offset_t	start;
-	register vm_offset_t	end;
+	vm_map_t	map;
+	vm_offset_t	start;
+	vm_offset_t	end;
 {
-	register kern_return_t	result;
+	kern_return_t	result;
 
 	vm_map_lock(map);
 	VM_MAP_RANGE_CHECK(map, start, end);
@@ -1811,9 +1807,9 @@ void
 vm_map_copy_steal_pages(copy)
 vm_map_copy_t	copy;
 {
-	register vm_page_t	m, new_m;
-	register int		i;
-	vm_object_t		object;
+	vm_page_t	m, new_m;
+	int		i;
+	vm_object_t	object;
 
 	for (i = 0; i < copy->cpy_npages; i++) {
 
@@ -1943,7 +1939,7 @@ free_next_copy:
 			 *	here to avoid tail recursion.
 			 */
 			if (copy->cpy_cont == vm_map_copy_discard_cont) {
-				register vm_map_copy_t	new_copy;
+				vm_map_copy_t	new_copy;
 
 				new_copy = (vm_map_copy_t) copy->cpy_cont_args;
 				kmem_cache_free(&vm_map_copy_cache, (vm_offset_t) copy);
@@ -2460,10 +2456,8 @@ start_pass_1:
  *		Otherwise, the caller is responsible for it.
  */
 kern_return_t vm_map_copyout(dst_map, dst_addr, copy)
-	register
 	vm_map_t	dst_map;
 	vm_offset_t	*dst_addr;	/* OUT */
-	register
 	vm_map_copy_t	copy;
 {
 	vm_size_t	size;
@@ -2471,7 +2465,6 @@ kern_return_t vm_map_copyout(dst_map, dst_addr, copy)
 	vm_offset_t	start;
 	vm_offset_t	vm_copy_start;
 	vm_map_entry_t	last;
-	register
 	vm_map_entry_t	entry;
 
 	/*
@@ -2617,9 +2610,9 @@ kern_return_t vm_map_copyout(dst_map, dst_addr, copy)
 		 * map the pages into the destination map.
 		 */
 		if (entry->wired_count != 0) {
-		    register vm_offset_t va;
-		    vm_offset_t		 offset;
-		    register vm_object_t object;
+		    vm_offset_t 	va;
+		    vm_offset_t		offset;
+		    vm_object_t 	object;
 
 		    object = entry->object.vm_object;
 		    offset = entry->offset;
@@ -2631,7 +2624,7 @@ kern_return_t vm_map_copyout(dst_map, dst_addr, copy)
 				  TRUE);
 
 		    while (va < entry->vme_end) {
-			register vm_page_t	m;
+			vm_page_t	m;
 
 			/*
 			 * Look up the page in the object.
@@ -2717,10 +2710,8 @@ kern_return_t vm_map_copyout(dst_map, dst_addr, copy)
  *
  */
 kern_return_t vm_map_copyout_page_list(dst_map, dst_addr, copy)
-	register
 	vm_map_t	dst_map;
 	vm_offset_t	*dst_addr;	/* OUT */
-	register
 	vm_map_copy_t	copy;
 {
 	vm_size_t	size;
@@ -2728,7 +2719,6 @@ kern_return_t vm_map_copyout_page_list(dst_map, dst_addr, copy)
 	vm_offset_t	end;
 	vm_offset_t	offset;
 	vm_map_entry_t	last;
-	register
 	vm_object_t	object;
 	vm_page_t	*page_list, m;
 	vm_map_entry_t	entry;
@@ -3125,7 +3115,6 @@ kern_return_t vm_map_copyin(src_map, src_addr, len, src_destroy, copy_result)
 	vm_offset_t	src_end;	/* End of entire region to be
 					 * copied */
 
-	register
 	vm_map_copy_t	copy;		/* Resulting copy */
 
 	/*
@@ -3192,14 +3181,12 @@ kern_return_t vm_map_copyin(src_map, src_addr, len, src_destroy, copy_result)
 	 */
 
 	while (TRUE) {
-		register
 		vm_map_entry_t	src_entry = tmp_entry;	/* Top-level entry */
 		vm_size_t	src_size;		/* Size of source
 							 * map entry (in both
 							 * maps)
 							 */
 
-		register
 		vm_object_t	src_object;		/* Object to copy */
 		vm_offset_t	src_offset;
 
@@ -3208,7 +3195,6 @@ kern_return_t vm_map_copyin(src_map, src_addr, len, src_destroy, copy_result)
 							 * for copy-on-write?
 							 */
 
-		register
 		vm_map_entry_t	new_entry;		/* Map entry for copy */
 		boolean_t	new_entry_needs_copy;	/* Will new entry be COW? */
 
@@ -3522,7 +3508,7 @@ vm_map_copyin_args_t	cont_args;
 vm_map_copy_t		*copy_result;	/* OUT */
 {
 	kern_return_t	result = 0; /* '=0' to quiet gcc warnings */
-	register boolean_t	do_abort, src_destroy, src_destroy_only;
+	boolean_t	do_abort, src_destroy, src_destroy_only;
 
 	/*
 	 *	Check for cases that only require memory destruction.
@@ -3588,12 +3574,9 @@ kern_return_t vm_map_copyin_page_list(src_map, src_addr, len, src_destroy,
 	vm_offset_t	src_start;
 	vm_offset_t	src_end;
 	vm_size_t	src_size;
-	register
 	vm_object_t	src_object;
-	register
 	vm_offset_t	src_offset;
 	vm_offset_t	src_last_offset;
-	register
 	vm_map_copy_t	copy;		/* Resulting copy */
 	kern_return_t	result = KERN_SUCCESS;
 	boolean_t	need_map_lookup;
@@ -3927,7 +3910,7 @@ retry:
 	 */
 	src_start = trunc_page(src_addr);
 	if (steal_pages) {
-		register int i;
+		int 		i;
 		vm_offset_t	unwire_end;
 
 		unwire_end = src_start;
@@ -4108,14 +4091,11 @@ vm_map_t vm_map_fork(old_map)
 	vm_map_t	old_map;
 {
 	vm_map_t	new_map;
-	register
 	vm_map_entry_t	old_entry;
-	register
 	vm_map_entry_t	new_entry;
 	pmap_t		new_pmap = pmap_create((vm_size_t) 0);
 	vm_size_t	new_size = 0;
 	vm_size_t	entry_size;
-	register
 	vm_object_t	object;
 
 	vm_map_lock(old_map);
@@ -4381,8 +4361,8 @@ vm_map_t vm_map_fork(old_map)
 kern_return_t vm_map_lookup(var_map, vaddr, fault_type, out_version,
 				object, offset, out_prot, wired)
 	vm_map_t		*var_map;	/* IN/OUT */
-	register vm_offset_t	vaddr;
-	register vm_prot_t	fault_type;
+	vm_offset_t		vaddr;
+	vm_prot_t		fault_type;
 
 	vm_map_version_t	*out_version;	/* OUT */
 	vm_object_t		*object;	/* OUT */
@@ -4390,9 +4370,9 @@ kern_return_t vm_map_lookup(var_map, vaddr, fault_type, out_version,
 	vm_prot_t		*out_prot;	/* OUT */
 	boolean_t		*wired;		/* OUT */
 {
-	register vm_map_entry_t		entry;
-	register vm_map_t		map = *var_map;
-	register vm_prot_t		prot;
+	vm_map_entry_t		entry;
+	vm_map_t		map = *var_map;
+	vm_prot_t		prot;
 
 	RetryLookup: ;
 
@@ -4561,9 +4541,7 @@ kern_return_t vm_map_lookup(var_map, vaddr, fault_type, out_version,
  *	will not change until vm_map_verify_done() is called.
  */
 boolean_t	vm_map_verify(map, version)
-	register
 	vm_map_t	map;
-	register
 	vm_map_version_t *version;	/* REF */
 {
 	boolean_t	result;
@@ -4608,9 +4586,7 @@ kern_return_t	vm_region(map, address, size,
 	vm_offset_t	*offset_in_object;	/* OUT */
 {
 	vm_map_entry_t	tmp_entry;
-	register
 	vm_map_entry_t	entry;
-	register
 	vm_offset_t	tmp_offset;
 	vm_offset_t	start;
 
@@ -4759,9 +4735,9 @@ kern_return_t vm_map_machine_attribute(map, address, size, attribute, value)
  *	vm_map_print:	[ debug ]
  */
 void vm_map_print(map)
-	register vm_map_t	map;
+	vm_map_t	map;
 {
-	register vm_map_entry_t	entry;
+	vm_map_entry_t	entry;
 
 	iprintf("Task map 0x%X: pmap=0x%X,",
  		(vm_offset_t) map, (vm_offset_t) (map->pmap));
