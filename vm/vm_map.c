@@ -4887,6 +4887,6 @@ void vm_map_copy_print(copy)
 		break;
 	}
 
-	indent -=2;
+	indent -= 2;
 }
 #endif	/* MACH_KDB */
