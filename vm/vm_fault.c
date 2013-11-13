@@ -124,8 +124,8 @@ void vm_fault_init(void)
  */
 void
 vm_fault_cleanup(object, top_page)
-	register vm_object_t	object;
-	register vm_page_t	top_page;
+	vm_object_t	object;
+	vm_page_t	top_page;
 {
 	vm_object_paging_end(object);
 	vm_object_unlock(object);
@@ -224,11 +224,8 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 	boolean_t	resume;		/* We are restarting. */
 	void		(*continuation)(); /* Continuation for blocking. */
 {
-	register
 	vm_page_t	m;
-	register
 	vm_object_t	object;
-	register
 	vm_offset_t	offset;
 	vm_page_t	first_m;
 	vm_object_t	next_object;
@@ -237,7 +234,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 	vm_prot_t	access_required;
 
 	if (resume) {
-		register vm_fault_state_t *state =
+		vm_fault_state_t *state =
 			(vm_fault_state_t *) current_thread()->ith_other;
 
 		if (state->vmfp_backoff)
@@ -355,7 +352,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 				PAGE_ASSERT_WAIT(m, interruptible);
 				vm_object_unlock(object);
 				if (continuation != (void (*)()) 0) {
-					register vm_fault_state_t *state =
+					vm_fault_state_t *state =
 						(vm_fault_state_t *) current_thread()->ith_other;
 
 					/*
@@ -1092,7 +1089,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 	vm_fault_cleanup(object, first_m);
 
 	if (continuation != (void (*)()) 0) {
-		register vm_fault_state_t *state =
+		vm_fault_state_t *state =
 			(vm_fault_state_t *) current_thread()->ith_other;
 
 		/*
@@ -1141,7 +1138,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
 void
 vm_fault_continue()
 {
-	register vm_fault_state_t *state =
+	vm_fault_state_t *state =
 		(vm_fault_state_t *) current_thread()->ith_other;
 
 	(void) vm_fault(state->vmf_map,
@@ -1171,11 +1168,10 @@ kern_return_t vm_fault(map, vaddr, fault_type, change_wiring,
 	vm_page_t		top_page;	/* Placeholder page */
 	kern_return_t		kr;
 
-	register
 	vm_page_t		m;	/* Fast access to result_page */
 
 	if (resume) {
-		register vm_fault_state_t *state =
+		vm_fault_state_t *state =
 			(vm_fault_state_t *) current_thread()->ith_other;
 
 		/*
@@ -1251,7 +1247,7 @@ kern_return_t vm_fault(map, vaddr, fault_type, change_wiring,
 	vm_object_paging_begin(object);
 
 	if (continuation != (void (*)()) 0) {
-		register vm_fault_state_t *state =
+		vm_fault_state_t *state =
 			(vm_fault_state_t *) current_thread()->ith_other;
 
 		/*
@@ -1488,7 +1484,7 @@ kern_return_t vm_fault(map, vaddr, fault_type, change_wiring,
 
     done:
 	if (continuation != (void (*)()) 0) {
-		register vm_fault_state_t *state =
+		vm_fault_state_t *state =
 			(vm_fault_state_t *) current_thread()->ith_other;
 
 		kmem_cache_free(&vm_fault_state_cache, (vm_offset_t) state);
@@ -1511,9 +1507,9 @@ void vm_fault_wire(map, entry)
 	vm_map_entry_t	entry;
 {
 
-	register vm_offset_t	va;
-	register pmap_t		pmap;
-	register vm_offset_t	end_addr = entry->vme_end;
+	vm_offset_t	va;
+	pmap_t		pmap;
+	vm_offset_t	end_addr = entry->vme_end;
 
 	pmap = vm_map_pmap(map);
 
@@ -1546,10 +1542,10 @@ void vm_fault_unwire(map, entry)
 	vm_map_t	map;
 	vm_map_entry_t	entry;
 {
-	register vm_offset_t	va;
-	register pmap_t		pmap;
-	register vm_offset_t	end_addr = entry->vme_end;
-	vm_object_t		object;
+	vm_offset_t	va;
+	pmap_t		pmap;
+	vm_offset_t	end_addr = entry->vme_end;
+	vm_object_t	object;
 
 	pmap = vm_map_pmap(map);
 
@@ -1638,7 +1634,7 @@ kern_return_t vm_fault_wire_fast(map, va, entry)
 {
 	vm_object_t		object;
 	vm_offset_t		offset;
-	register vm_page_t	m;
+	vm_page_t		m;
 	vm_prot_t		prot;
 
 	vm_stat.faults++;		/* needs lock XXX */
@@ -2021,12 +2017,10 @@ kern_return_t	vm_fault_copy(
  *		could be used in vm_fault_copy() to advantage.
  */
 vm_fault_return_t vm_fault_page_overwrite(dst_object, dst_offset, result_page)
-	register
 	vm_object_t	dst_object;
 	vm_offset_t	dst_offset;
 	vm_page_t	*result_page;	/* OUT */
 {
-	register
 	vm_page_t	dst_page;
 
 #define	interruptible	FALSE	/* XXX */
