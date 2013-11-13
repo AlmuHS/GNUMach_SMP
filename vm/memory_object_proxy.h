@@ -19,7 +19,7 @@
    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA. */
 
 #ifndef _VM_MEMORY_OBJECT_PROXY_H_
-#define _VM_MEMORY_OBJECT_PROXT_H_
+#define _VM_MEMORY_OBJECT_PROXY_H_
 
 #include <ipc/ipc_types.h>
 #include <mach/boolean.h>
@@ -45,4 +45,4 @@ extern kern_return_t memory_object_proxy_lookup (ipc_port_t port,
                                                  ipc_port_t *object,
                                                  vm_prot_t *max_protection);
 
-#endif /* _VM_MEMORY_OBJECT_PROXT_H_ */
+#endif /* _VM_MEMORY_OBJECT_PROXY_H_ */
