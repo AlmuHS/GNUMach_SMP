@@ -231,15 +231,15 @@ unsigned int vm_pageout_inactive_cleaned_external = 0;
  */
 vm_page_t
 vm_pageout_setup(m, paging_offset, new_object, new_offset, flush)
-	register vm_page_t	m;
+	vm_page_t		m;
 	vm_offset_t		paging_offset;
-	register vm_object_t	new_object;
+	vm_object_t		new_object;
 	vm_offset_t		new_offset;
 	boolean_t		flush;
 {
-	register vm_object_t	old_object = m->object;
-	register vm_page_t	holding_page = 0; /*'=0'to quiet gcc warnings*/
-	register vm_page_t	new_m;
+	vm_object_t	old_object = m->object;
+	vm_page_t	holding_page = 0; /*'=0'to quiet gcc warnings*/
+	vm_page_t	new_m;
 
 	assert(m->busy && !m->absent && !m->fictitious);
 
@@ -418,14 +418,14 @@ vm_pageout_setup(m, paging_offset, new_object, new_offset, flush)
  */
 void
 vm_pageout_page(m, initial, flush)
-	register vm_page_t	m;
+	vm_page_t		m;
 	boolean_t		initial;
 	boolean_t		flush;
 {
 	vm_map_copy_t		copy;
-	register vm_object_t	old_object;
-	register vm_object_t	new_object;
-	register vm_page_t	holding_page;
+	vm_object_t		old_object;
+	vm_object_t		new_object;
+	vm_page_t		holding_page;
 	vm_offset_t		paging_offset;
 	kern_return_t		rc;
 	boolean_t		precious_clean;
@@ -559,8 +559,8 @@ void vm_pageout_scan()
 	slab_collect();
 
 	for (burst_count = 0;;) {
-		register vm_page_t m;
-		register vm_object_t object;
+		vm_page_t m;
+		vm_object_t object;
 		unsigned int free_count;
 
 		/*
@@ -578,7 +578,7 @@ void vm_pageout_scan()
 
 		while ((vm_page_inactive_count < vm_page_inactive_target) &&
 		       !queue_empty(&vm_page_queue_active)) {
-			register vm_object_t obj;
+			vm_object_t obj;
 
 			vm_pageout_active++;
 			m = (vm_page_t) queue_first(&vm_page_queue_active);
