@@ -192,7 +192,7 @@ void vm_page_bootstrap(
 	vm_offset_t *startp,
 	vm_offset_t *endp)
 {
-	register vm_page_t m;
+	vm_page_t m;
 	int i;
 
 	/*
@@ -274,7 +274,7 @@ void vm_page_bootstrap(
 				  sizeof(vm_page_bucket_t));
 
 	for (i = 0; i < vm_page_bucket_count; i++) {
-		register vm_page_bucket_t *bucket = &vm_page_buckets[i];
+		vm_page_bucket_t *bucket = &vm_page_buckets[i];
 
 		bucket->pages = VM_PAGE_NULL;
 		simple_lock_init(&bucket->lock);
@@ -483,11 +483,11 @@ void vm_page_create(
  */
 
 void vm_page_insert(
-	register vm_page_t	mem,
-	register vm_object_t	object,
-	register vm_offset_t	offset)
+	vm_page_t	mem,
+	vm_object_t	object,
+	vm_offset_t	offset)
 {
-	register vm_page_bucket_t *bucket;
+	vm_page_bucket_t *bucket;
 
 	VM_PAGE_CHECK(mem);
 
@@ -555,11 +555,11 @@ void vm_page_insert(
  */
 
 void vm_page_replace(
-	register vm_page_t	mem,
-	register vm_object_t	object,
-	register vm_offset_t	offset)
+	vm_page_t	mem,
+	vm_object_t	object,
+	vm_offset_t	offset)
 {
-	register vm_page_bucket_t *bucket;
+	vm_page_bucket_t *bucket;
 
 	VM_PAGE_CHECK(mem);
 
@@ -582,7 +582,7 @@ void vm_page_replace(
 	simple_lock(&bucket->lock);
 	if (bucket->pages) {
 		vm_page_t *mp = &bucket->pages;
-		register vm_page_t m = *mp;
+		vm_page_t m = *mp;
 		do {
 			if (m->object == object && m->offset == offset) {
 				/*
@@ -646,10 +646,10 @@ void vm_page_replace(
  */
 
 void vm_page_remove(
-	register vm_page_t	mem)
+	vm_page_t		mem)
 {
-	register vm_page_bucket_t	*bucket;
-	register vm_page_t	this;
+	vm_page_bucket_t	*bucket;
+	vm_page_t		this;
 
 	assert(mem->tabled);
 	VM_PAGE_CHECK(mem);
@@ -665,7 +665,7 @@ void vm_page_remove(
 
 		bucket->pages = mem->next;
 	} else {
-		register vm_page_t	*prev;
+		vm_page_t	*prev;
 
 		for (prev = &this->next;
 		     (this = *prev) != mem;
@@ -704,11 +704,11 @@ void vm_page_remove(
  */
 
 vm_page_t vm_page_lookup(
-	register vm_object_t	object,
-	register vm_offset_t	offset)
+	vm_object_t		object,
+	vm_offset_t		offset)
 {
-	register vm_page_t	mem;
-	register vm_page_bucket_t *bucket;
+	vm_page_t		mem;
+	vm_page_bucket_t 	*bucket;
 
 	/*
 	 *	Search the hash table for this object/offset pair
@@ -735,9 +735,9 @@ vm_page_t vm_page_lookup(
  *	The object must be locked.
  */
 void vm_page_rename(
-	register vm_page_t	mem,
-	register vm_object_t	new_object,
-	vm_offset_t		new_offset)
+	vm_page_t	mem,
+	vm_object_t	new_object,
+	vm_offset_t	new_offset)
 {
 	/*
 	 *	Changes to mem->object require the page lock because
@@ -774,7 +774,7 @@ void vm_page_init(
 
 vm_page_t vm_page_grab_fictitious(void)
 {
-	register vm_page_t m;
+	vm_page_t m;
 
 	simple_lock(&vm_page_queue_free_lock);
 	m = vm_page_queue_fictitious;
@@ -795,7 +795,7 @@ vm_page_t vm_page_grab_fictitious(void)
  */
 
 void vm_page_release_fictitious(
-	register vm_page_t m)
+	vm_page_t m)
 {
 	simple_lock(&vm_page_queue_free_lock);
 	if (m->free)
@@ -818,7 +818,7 @@ int vm_page_fictitious_quantum = 5;
 
 void vm_page_more_fictitious(void)
 {
-	register vm_page_t m;
+	vm_page_t m;
 	int i;
 
 	for (i = 0; i < vm_page_fictitious_quantum; i++) {
@@ -839,10 +839,10 @@ void vm_page_more_fictitious(void)
  */
 
 boolean_t vm_page_convert(
-	register vm_page_t m,
+	vm_page_t m,
 	boolean_t external)
 {
-	register vm_page_t real_m;
+	vm_page_t real_m;
 
 	real_m = vm_page_grab(external);
 	if (real_m == VM_PAGE_NULL)
@@ -868,7 +868,7 @@ boolean_t vm_page_convert(
 vm_page_t vm_page_grab(
 	boolean_t external)
 {
-	register vm_page_t	mem;
+	vm_page_t	mem;
 
 	simple_lock(&vm_page_queue_free_lock);
 
@@ -949,7 +949,7 @@ vm_page_grab_contiguous_pages(
 	natural_t	*bits,
 	boolean_t	external)
 {
-	register int	first_set;
+	int		first_set;
 	int		size, alloc_size;
 	kern_return_t	ret;
 	vm_page_t       mem, *prevmemp;
@@ -1006,7 +1006,7 @@ vm_page_grab_contiguous_pages(
 	 */
 	mem = vm_page_queue_free;
 	while (mem) {
-		register int word_index, bit_index;
+		int word_index, bit_index;
 
 		bit_index = (mem->phys_addr >> PAGE_SHIFT);
 		word_index = bit_index / NBPEL;
@@ -1023,14 +1023,14 @@ vm_page_grab_contiguous_pages(
 	 *	the free list.
 	 */
 	{
-	    register int	bits_so_far = 0, i;
+	    int	bits_so_far = 0, i;
 
 		first_set = 0;
 
 		for (i = 0; i < size; i += sizeof(natural_t)) {
 
-		    register natural_t	v = bits[i / sizeof(natural_t)];
-		    register int	bitpos;
+		    natural_t	v = bits[i / sizeof(natural_t)];
+		    int		bitpos;
 
 		    /*
 		     * Bitscan this one word
@@ -1099,7 +1099,7 @@ found_em:
 	if (external)
 		vm_page_external_count += npages;
 	{
-	    register vm_offset_t	first_phys, last_phys;
+	    vm_offset_t	first_phys, last_phys;
 
 	    /* cache values for compare */
 	    first_phys = first_set << PAGE_SHIFT;
@@ -1111,7 +1111,7 @@ found_em:
 
 	    while (mem) {
 
-		register vm_offset_t	addr;
+		vm_offset_t	addr;
 
 		addr = mem->phys_addr;
 
@@ -1165,8 +1165,8 @@ out:
  */
 
 void vm_page_release(
-	register vm_page_t	mem,
-	boolean_t external)
+	vm_page_t	mem,
+	boolean_t 	external)
 {
 	simple_lock(&vm_page_queue_free_lock);
 	if (mem->free)
@@ -1257,7 +1257,7 @@ vm_page_t vm_page_alloc(
 	vm_object_t	object,
 	vm_offset_t	offset)
 {
-	register vm_page_t	mem;
+	vm_page_t	mem;
 
 	mem = vm_page_grab(!object->internal);
 	if (mem == VM_PAGE_NULL)
@@ -1279,7 +1279,7 @@ vm_page_t vm_page_alloc(
  *	Object and page queues must be locked prior to entry.
  */
 void vm_page_free(
-	register vm_page_t	mem)
+	vm_page_t	mem)
 {
 	if (mem->free)
 		panic("vm_page_free");
@@ -1330,7 +1330,7 @@ void vm_page_free(
  *	The page's object and the page queues must be locked.
  */
 void vm_page_wire(
-	register vm_page_t	mem)
+	vm_page_t	mem)
 {
 	VM_PAGE_CHECK(mem);
 
@@ -1351,7 +1351,7 @@ void vm_page_wire(
  *	The page's object and the page queues must be locked.
  */
 void vm_page_unwire(
-	register vm_page_t	mem)
+	vm_page_t	mem)
 {
 	VM_PAGE_CHECK(mem);
 
@@ -1374,7 +1374,7 @@ void vm_page_unwire(
  *	The page queues must be locked.
  */
 void vm_page_deactivate(
-	register vm_page_t	m)
+	vm_page_t	m)
 {
 	VM_PAGE_CHECK(m);
 
@@ -1408,7 +1408,7 @@ void vm_page_deactivate(
  */
 
 void vm_page_activate(
-	register vm_page_t	m)
+	vm_page_t	m)
 {
 	VM_PAGE_CHECK(m);
 
