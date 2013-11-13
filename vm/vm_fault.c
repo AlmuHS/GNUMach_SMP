@@ -88,8 +88,6 @@ struct kmem_cache	vm_fault_state_cache;
 
 int		vm_object_absent_max = 50;
 
-int		vm_fault_debug = 0;
-
 boolean_t	vm_fault_dirty_handling = FALSE;
 boolean_t	vm_fault_interruptible = TRUE;
 
