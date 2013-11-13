@@ -57,10 +57,10 @@ vm_statistics_data_t	vm_stat;
  *	map.
  */
 kern_return_t vm_allocate(map, addr, size, anywhere)
-	register vm_map_t	map;
-	register vm_offset_t	*addr;
-	register vm_size_t	size;
-	boolean_t		anywhere;
+	vm_map_t	map;
+	vm_offset_t	*addr;
+	vm_size_t	size;
+	boolean_t	anywhere;
 {
 	kern_return_t	result;
 
@@ -98,7 +98,7 @@ kern_return_t vm_allocate(map, addr, size, anywhere)
  *	specified address map.
  */
 kern_return_t vm_deallocate(map, start, size)
-	register vm_map_t	map;
+	vm_map_t		map;
 	vm_offset_t		start;
 	vm_size_t		size;
 {
@@ -116,7 +116,7 @@ kern_return_t vm_deallocate(map, start, size)
  *	specified map.
  */
 kern_return_t vm_inherit(map, start, size, new_inheritance)
-	register vm_map_t	map;
+	vm_map_t		map;
 	vm_offset_t		start;
 	vm_size_t		size;
 	vm_inherit_t		new_inheritance;
@@ -150,7 +150,7 @@ kern_return_t vm_inherit(map, start, size, new_inheritance)
  */
 
 kern_return_t vm_protect(map, start, size, set_maximum, new_protection)
-	register vm_map_t	map;
+	vm_map_t		map;
 	vm_offset_t		start;
 	vm_size_t		size;
 	boolean_t		set_maximum;
@@ -323,9 +323,7 @@ kern_return_t vm_map(
 	vm_prot_t	max_protection;
 	vm_inherit_t	inheritance;
 {
-	register
 	vm_object_t	object;
-	register
 	kern_return_t	result;
 
 	if ((target_map == VM_MAP_NULL) ||
@@ -416,7 +414,7 @@ kern_return_t vm_map(
  */
 kern_return_t vm_wire(host, map, start, size, access)
 	host_t			host;
-	register vm_map_t	map;
+	vm_map_t		map;
 	vm_offset_t		start;
 	vm_size_t		size;
 	vm_prot_t		access;
