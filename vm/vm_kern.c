@@ -715,10 +715,10 @@ kmem_free(map, addr, size)
  */
 void
 kmem_alloc_pages(object, offset, start, end, protection)
-	register vm_object_t	object;
-	register vm_offset_t	offset;
-	register vm_offset_t	start, end;
-	vm_prot_t		protection;
+	vm_object_t	object;
+	vm_offset_t	offset;
+	vm_offset_t	start, end;
+	vm_prot_t	protection;
 {
 	/*
 	 *	Mark the pmap region as not pageable.
@@ -726,7 +726,7 @@ kmem_alloc_pages(object, offset, start, end, protection)
 	pmap_pageable(kernel_pmap, start, end, FALSE);
 
 	while (start < end) {
-	    register vm_page_t	mem;
+	    vm_page_t	mem;
 
 	    vm_object_lock(object);
 
@@ -770,10 +770,10 @@ kmem_alloc_pages(object, offset, start, end, protection)
  */
 void
 kmem_remap_pages(object, offset, start, end, protection)
-	register vm_object_t	object;
-	register vm_offset_t	offset;
-	register vm_offset_t	start, end;
-	vm_prot_t		protection;
+	vm_object_t	object;
+	vm_offset_t	offset;
+	vm_offset_t	start, end;
+	vm_prot_t	protection;
 {
 	/*
 	 *	Mark the pmap region as not pageable.
@@ -781,7 +781,7 @@ kmem_remap_pages(object, offset, start, end, protection)
 	pmap_pageable(kernel_pmap, start, end, FALSE);
 
 	while (start < end) {
-	    register vm_page_t	mem;
+	    vm_page_t	mem;
 
 	    vm_object_lock(object);
 
@@ -918,10 +918,8 @@ kmem_io_map_copyout(map, addr, alloc_addr, alloc_size, copy, min_size)
 	vm_offset_t	myaddr, offset;
 	vm_size_t	mysize, copy_size;
 	kern_return_t	ret;
-	register
 	vm_page_t	*page_list;
 	vm_map_copy_t	new_copy;
-	register
 	int		i;
 
 	assert(copy->type == VM_MAP_COPY_PAGE_LIST);
