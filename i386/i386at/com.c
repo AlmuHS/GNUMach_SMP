@@ -499,7 +499,7 @@ void
 comintr(unit)
 int unit;
 {
-	register struct tty	*tp = &com_tty[unit];
+	struct tty		*tp = &com_tty[unit];
 	u_short			addr = cominfo[unit]->address;
 	static char 		comoverrun = 0;
 	char			c, line, intr_id;
@@ -751,14 +751,14 @@ commodem_intr(
  */
 int
 commctl(
-	register struct tty	*tp,
-	int	bits,
-	int	how)
+	struct tty	*tp,
+	int		bits,
+	int		how)
 {
 	spl_t		s;
 	int		unit;
 	vm_offset_t	dev_addr;
-	register int	b = 0;	/* Suppress gcc warning */
+	int		b = 0;	/* Suppress gcc warning */
 
 	unit = minor(tp->t_dev);
 
@@ -818,7 +818,7 @@ commctl(
 
 void
 comstop(tp, flags)
-register struct tty *tp;
+struct tty *tp;
 int	flags;
 {
 	if ((tp->t_state & TS_BUSY) && (tp->t_state & TS_TTSTOP) == 0)
