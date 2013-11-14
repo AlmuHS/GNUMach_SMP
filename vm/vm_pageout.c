@@ -52,7 +52,6 @@
 #include <vm/vm_page.h>
 #include <vm/vm_pageout.h>
 #include <machine/locore.h>
-#include <machine/vm_tuning.h>
 
 
 
