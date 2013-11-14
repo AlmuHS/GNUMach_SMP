@@ -232,7 +232,7 @@ boolean_t
 kdb_trap(
 	int	type,
 	int	code,
-	register struct i386_saved_state *regs)
+	struct i386_saved_state *regs)
 {
 	spl_t	s;
 
@@ -413,7 +413,7 @@ db_user_to_kernel_address(
 	unsigned int	*kaddr,
 	int		flag)
 {
-	register pt_entry_t *ptp;
+	pt_entry_t *ptp;
 	boolean_t	faulted = FALSE;
 
 	retry:
@@ -448,12 +448,12 @@ db_user_to_kernel_address(
 void
 db_read_bytes(
 	vm_offset_t	addr,
-	register int	size,
-	register char	*data,
+	int		size,
+	char		*data,
 	task_t		task)
 {
-	register char	*src;
-	register int	n;
+	char		*src;
+	int		n;
 	unsigned	kern_addr;
 
 	src = (char *)addr;
@@ -491,16 +491,16 @@ db_read_bytes(
 void
 db_write_bytes(
 	vm_offset_t	addr,
-	register int	size,
-	register char	*data,
+	int		size,
+	char		*data,
 	task_t		task)
 {
-	register char	*dst;
+	char		*dst;
 
-	register pt_entry_t *ptep0 = 0;
+	pt_entry_t *ptep0 = 0;
 	pt_entry_t	oldmap0 = 0;
 	vm_offset_t	addr1;
-	register pt_entry_t *ptep1 = 0;
+	pt_entry_t *ptep1 = 0;
 	pt_entry_t	oldmap1 = 0;
 	extern char	etext;
 	void		db_write_bytes_user_space();
@@ -560,12 +560,12 @@ db_write_bytes(
 void
 db_write_bytes_user_space(
 	vm_offset_t	addr,
-	register int	size,
-	register char	*data,
+	int		size,
+	char		*data,
 	task_t		task)
 {
-	register char	*dst;
-	register int	n;
+	char		*dst;
+	int		n;
 	unsigned	kern_addr;
 
 	while (size > 0) {
@@ -585,7 +585,7 @@ db_write_bytes_user_space(
 boolean_t
 db_check_access(
 	vm_offset_t	addr,
-	register int	size,
+	int		size,
 	task_t		task)
 {
 	int	n;
@@ -647,8 +647,8 @@ db_search_null(
 	vm_offset_t	*skaddr,
 	int		flag)
 {
-	register unsigned vaddr;
-	register unsigned *kaddr;
+	unsigned vaddr;
+	unsigned *kaddr;
 
 	kaddr = (unsigned *)*skaddr;
 	for (vaddr = *svaddr; vaddr > evaddr; ) {
@@ -721,8 +721,8 @@ void
 db_task_name(
 	task_t		task)
 {
-	register char *p;
-	register int n;
+	char *p;
+	int n;
 	unsigned vaddr, kaddr;
 	unsigned sp;
 
