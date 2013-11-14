@@ -29,6 +29,6 @@
 
 #ifndef __ASSEMBLER__
 extern void int_init (void);
-#endif
+#endif /* __ASSEMBLER__ */
 
 #endif /* _INT_INIT_H_ */
