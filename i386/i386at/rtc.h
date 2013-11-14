@@ -117,7 +117,7 @@ struct rtc_st {
  */
 #define load_rtc(regs) \
 {\
-	register int i; \
+	int i; \
 	\
 	for (i = 0; i < RTC_NREG; i++) { \
 		outb(RTC_ADDR, i); \
@@ -130,7 +130,7 @@ struct rtc_st {
  */ 
 #define save_rtc(regs) \
 { \
-	register int i; \
+	int i; \
 	for (i = 0; i < RTC_NREGP; i++) { \
 		outb(RTC_ADDR, i); \
 		outb(RTC_DATA, regs[i]);\
