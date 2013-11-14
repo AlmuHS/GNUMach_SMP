@@ -64,6 +64,9 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * /dev/mouse.
  */
 
+#ifndef _KD_QUEUE_H_
+#define _KD_QUEUE_H_
+
 #include <mach/std_types.h>
 #include <i386at/kd.h>
 
@@ -79,3 +82,5 @@ extern void kdq_reset(kd_event_queue *);
 extern boolean_t kdq_empty(kd_event_queue *);
 extern boolean_t kdq_full(kd_event_queue *);
 extern kd_event *kdq_get(kd_event_queue *);
+
+#endif /* _KD_QUEUE_H_ */

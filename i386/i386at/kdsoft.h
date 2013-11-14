@@ -57,6 +57,9 @@ NEGLIGENCE, OR OTHER TORTIOUS ACTION, ARISING OUR OF OR IN CONNECTION
 WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#ifndef _KDSOFT_H
+#define _KDSOFT_H_
+
 /*
  * Globals used for both character-based controllers and bitmap-based
  * controllers.
@@ -203,3 +206,5 @@ extern short	xstart, ystart;
 extern short	char_byte_width;	/* char_width/8 */
 extern short	fb_byte_width;		/* fb_width/8 */
 extern short	font_byte_width;	/* num bytes in 1 scan line of font */
+
+#endif /* _KDSOFT_H_ */

@@ -27,7 +27,12 @@
  *	Parallel port printer driver v1.0
  *	All rights reserved.
  */ 
+
+#ifndef _LPRREG_H_
+#define _LPRREG_H_
   
 #define DATA(addr)	(addr + 0)
 #define STATUS(addr)	(addr + 1)
 #define INTR_ENAB(addr)	(addr + 2)
+
+#endif /* _LPRREG_H_ */

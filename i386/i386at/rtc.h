@@ -45,6 +45,9 @@ NEGLIGENCE, OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#ifndef _RTC_H_
+#define _RTC_H_
+
 #define RTC_ADDR	0x70	/* I/O port address for register select */
 #define RTC_DATA	0x71	/* I/O port address for data read/write */
 
@@ -136,3 +139,5 @@ struct rtc_st {
 
 extern int readtodc(u_int *tp);
 extern int writetodc(void);
+
+#endif /* _RTC_H_ */
