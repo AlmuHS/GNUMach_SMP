@@ -52,7 +52,7 @@ intel_read_fault(map, vaddr)
 	vm_page_t		top_page;	/* Placeholder page */
 	boolean_t		wired;		/* Is map region wired? */
 	kern_return_t		result;
-	register vm_page_t	m;
+	vm_page_t		m;
 
     RetryFault:
 
