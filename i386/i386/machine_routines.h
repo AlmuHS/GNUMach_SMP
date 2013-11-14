@@ -33,5 +33,5 @@
 #define	MACHINE_SERVER		mach_i386_server
 #define	MACHINE_SERVER_ROUTINE	mach_i386_server_routine
 
-#endif
+#endif /* _I386_MACHINE_ROUTINES_H_ */
 
