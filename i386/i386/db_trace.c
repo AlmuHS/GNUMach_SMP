@@ -115,7 +115,7 @@ db_lookup_i386_kreg(
 	char	*name,
 	int	*kregp)
 {
-	register struct i386_kregs *kp;
+	struct i386_kregs *kp;
 
 	for (kp = i386_kregs; kp->name; kp++) {
 	    if (strcmp(name, kp->name) == 0)
@@ -133,7 +133,7 @@ db_i386_reg_value(
 {
 	long			*dp = 0;
 	db_expr_t		null_reg = 0;
-	register thread_t	thread = ap->thread;
+	thread_t		thread = ap->thread;
 	extern unsigned		int_stack_high;
 
 	if (db_option(ap->modif, 'u')) {
@@ -343,8 +343,8 @@ db_stack_trace_cmd(
 	thread_t	th;
 
 	{
-	    register char *cp = modif;
-	    register char c;
+	    char *cp = modif;
+	    char c;
 
 	    while ((c = *cp++) != 0) {
 		if (c == 't')
@@ -381,7 +381,7 @@ db_stack_trace_cmd(
 		    return;
 		}
 		if ((th->state & TH_SWAPPED) || th->kernel_stack == 0) {
-		    register struct i386_saved_state *iss = &th->pcb->iss;
+		    struct i386_saved_state *iss = &th->pcb->iss;
 
 		    db_printf("Continuation ");
 		    db_task_printsym((db_expr_t)th->swap_func,
@@ -392,7 +392,7 @@ db_stack_trace_cmd(
 		    frame = (struct i386_frame *) (iss->ebp);
 		    callpc = (db_addr_t) (iss->eip);
 		} else {
-		    register struct i386_kernel_state *iks;
+		    struct i386_kernel_state *iks;
 		    iks = STACK_IKS(th->kernel_stack);
 		    frame = (struct i386_frame *) (iks->k_ebp);
 		    callpc = (db_addr_t) (iks->k_eip);
@@ -445,7 +445,7 @@ db_i386_stack_trace(
 
 	lastframe = 0;
 	while (count-- && frame != 0) {
-	    register int narg;
+	    int 	narg;
 	    char *	name;
 	    db_expr_t	offset;
 
