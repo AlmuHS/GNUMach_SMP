@@ -30,7 +30,7 @@
 #define MACH_ASSERT 1
 #else
 #define MACH_ASSERT 0
-#endif
+#endif /* NDEBUG */
 
 	/*
 	 * For now we will always go to single user mode, since there is
