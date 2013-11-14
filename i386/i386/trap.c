@@ -75,8 +75,8 @@ extern boolean_t db_watchpoints_inserted;
 void
 thread_kdb_return()
 {
-	register thread_t thread = current_thread();
-	register struct i386_saved_state *regs = USER_REGS(thread);
+	thread_t thread = current_thread();
+	struct i386_saved_state *regs = USER_REGS(thread);
 
 	if (kdb_trap(regs->trapno, regs->err, regs)) {
 		thread_exception_return();
@@ -94,8 +94,8 @@ void
 user_page_fault_continue(kr)
 	kern_return_t kr;
 {
-	register thread_t thread = current_thread();
-	register struct i386_saved_state *regs = USER_REGS(thread);
+	thread_t thread = current_thread();
+	struct i386_saved_state *regs = USER_REGS(thread);
 
 	if (kr == KERN_SUCCESS) {
 #if	MACH_KDB
@@ -159,14 +159,14 @@ boolean_t	brb = TRUE;
  * fatal.
  */
 void kernel_trap(regs)
-	register struct i386_saved_state *regs;
+	struct i386_saved_state *regs;
 {
-	int	code;
-	int	subcode;
-	register int	type;
+	int		code;
+	int		subcode;
+	int		type;
 	vm_map_t	map;
 	kern_return_t	result;
-	register thread_t	thread;
+	thread_t	thread;
 	extern char _start[], etext[];
 
 	type = regs->trapno;
@@ -275,7 +275,7 @@ dump_ss(regs);
 		     * Certain faults require that we back up
 		     * the EIP.
 		     */
-		    register struct recovery *rp;
+		    struct recovery *rp;
 
                     /* Linear searching; but the list is small enough.  */
 		    for (rp = retry_table; rp < retry_table_end; rp++) {
@@ -292,7 +292,7 @@ dump_ss(regs);
 		 * for this fault, go there.
 		 */
 		{
-		    register struct recovery *rp;
+		    struct recovery *rp;
 
                     /* Linear searching; but the list is small enough.  */
 		    for (rp = recover_table;
@@ -352,13 +352,13 @@ dump_ss(regs);
  *	Return TRUE if from emulated system call.
  */
 int user_trap(regs)
-	register struct i386_saved_state *regs;
+	struct i386_saved_state *regs;
 {
 	int	exc = 0;	/* Suppress gcc warning */
 	int	code;
 	int	subcode;
-	register int	type;
-	register thread_t thread = current_thread();
+	int	type;
+	thread_t thread = current_thread();
 
 	if ((vm_offset_t)thread < phys_last_addr) {
 		printf("user_trap: bad thread pointer 0x%p\n", thread);
@@ -645,7 +645,7 @@ unsigned
 interrupted_pc(t)
 	thread_t t;
 {
-	register struct i386_saved_state *iss;
+	struct i386_saved_state *iss;
 
  	iss = USER_REGS(t);
  	return iss->eip;
