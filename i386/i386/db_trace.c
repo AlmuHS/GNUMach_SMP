@@ -205,7 +205,7 @@ db_find_trace_symbols(void)
 /*
  * Figure out how many arguments were passed into the frame at "fp".
  */
-int db_numargs_default = 5;
+const int db_numargs_default = 5;
 
 int
 db_numargs(
@@ -571,18 +571,18 @@ static void db_cproc_state(
 
 /* offsets in a cproc structure */
 /* TODO: longs? */
-int db_cproc_next_offset = 0 * 4;
-int db_cproc_incarnation_offset = 1 * 4;
-int db_cproc_list_offset = 2 * 4;
-int db_cproc_wait_offset = 3 * 4;
-int db_cproc_context_offset = 5 * 4;
-int db_cproc_state_offset = 7 * 4;
-int db_cproc_stack_base_offset = 10 * 4 + sizeof(mach_msg_header_t);
-int db_cproc_stack_size_offset = 11 * 4 + sizeof(mach_msg_header_t);
+const int db_cproc_next_offset = 0 * 4;
+const int db_cproc_incarnation_offset = 1 * 4;
+const int db_cproc_list_offset = 2 * 4;
+const int db_cproc_wait_offset = 3 * 4;
+const int db_cproc_context_offset = 5 * 4;
+const int db_cproc_state_offset = 7 * 4;
+const int db_cproc_stack_base_offset = 10 * 4 + sizeof(mach_msg_header_t);
+const int db_cproc_stack_size_offset = 11 * 4 + sizeof(mach_msg_header_t);
 
 /* offsets in a cproc_switch context structure */
-int db_cprocsw_framep_offset = 3 * 4;
-int db_cprocsw_pc_offset = 4 * 4;
+const int db_cprocsw_framep_offset = 3 * 4;
+const int db_cprocsw_pc_offset = 4 * 4;
 
 #include <machine/setjmp.h>
 
