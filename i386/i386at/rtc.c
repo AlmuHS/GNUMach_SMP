@@ -86,7 +86,7 @@ void
 rtcput(regs)
 unsigned char 	*regs;
 {
-	register unsigned char	x;
+	unsigned char	x;
 
 	if (first_rtcopen_ever) {
 		rtcinit();
