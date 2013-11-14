@@ -36,7 +36,6 @@
 	 * For now we will always go to single user mode, since there is
 	 * no way pass this request through the boot.
 	 */
-int boothowto = 0;
 
 /* Someone with time should write code to set cpuspeed automagically */
 int cpuspeed = 4;
