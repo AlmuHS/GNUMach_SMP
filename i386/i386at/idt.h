@@ -36,6 +36,6 @@
 
 #ifndef __ASSEMBLER__
 extern void idt_init (void);
-#endif
+#endif /* __ASSEMBLER__ */
 
 #endif /* _I386AT_IDT_ */
