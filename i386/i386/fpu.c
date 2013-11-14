@@ -299,9 +299,9 @@ fpu_set_state(thread, state)
 	thread_t	thread;
 	struct i386_float_state *state;
 {
-	register pcb_t	pcb = thread->pcb;
-	register struct i386_fpsave_state *ifps;
-	register struct i386_fpsave_state *new_ifps;
+	pcb_t pcb = thread->pcb;
+	struct i386_fpsave_state *ifps;
+	struct i386_fpsave_state *new_ifps;
 
 ASSERT_IPL(SPL0);
 	if (fp_kind == FP_NO)
@@ -339,8 +339,8 @@ ASSERT_IPL(SPL0);
 	    /*
 	     * Valid state.  Allocate the fp state if there is none.
 	     */
-	    register struct i386_fp_save *user_fp_state;
-	    register struct i386_fp_regs *user_fp_regs;
+	    struct i386_fp_save *user_fp_state;
+	    struct i386_fp_regs *user_fp_regs;
 
 	    user_fp_state = (struct i386_fp_save *) &state->hw_state[0];
 	    user_fp_regs  = (struct i386_fp_regs *)
@@ -408,10 +408,10 @@ ASSERT_IPL(SPL0);
 kern_return_t
 fpu_get_state(thread, state)
 	thread_t	thread;
-	register struct i386_float_state *state;
+	struct i386_float_state *state;
 {
-	register pcb_t	pcb = thread->pcb;
-	register struct i386_fpsave_state *ifps;
+	pcb_t pcb = thread->pcb;
+	struct i386_fpsave_state *ifps;
 
 ASSERT_IPL(SPL0);
 	if (fp_kind == FP_NO)
@@ -445,8 +445,8 @@ ASSERT_IPL(SPL0);
 	state->exc_status = 0;
 
 	{
-	    register struct i386_fp_save *user_fp_state;
-	    register struct i386_fp_regs *user_fp_regs;
+	    struct i386_fp_save *user_fp_state;
+	    struct i386_fp_regs *user_fp_regs;
 
 	    state->initialized = ifps->fp_valid;
 
@@ -569,9 +569,9 @@ ASSERT_IPL(SPL0);
 void
 fpextovrflt()
 {
-	register thread_t	thread = current_thread();
-	register pcb_t		pcb;
-	register struct i386_fpsave_state *ifps;
+	thread_t	thread = current_thread();
+	pcb_t		pcb;
+	struct i386_fpsave_state *ifps;
 
 #if	NCPUS == 1
 
@@ -618,7 +618,7 @@ fpextovrflt()
 static int
 fphandleerr()
 {
-	register thread_t	thread = current_thread();
+	thread_t	thread = current_thread();
 
 	/*
 	 * Save the FPU context to the thread using it.
@@ -665,7 +665,7 @@ fphandleerr()
 void
 fpexterrflt()
 {
-	register thread_t	thread = current_thread();
+	thread_t	thread = current_thread();
 
 	if (fphandleerr())
 		return;
@@ -690,7 +690,7 @@ fpexterrflt()
 void
 fpastintr()
 {
-	register thread_t	thread = current_thread();
+	thread_t	thread = current_thread();
 
 ASSERT_IPL(SPL0);
 #if	NCPUS == 1
@@ -752,10 +752,10 @@ ASSERT_IPL(SPL0);
  */
 void
 fp_save(thread)
-	register thread_t	thread;
+	thread_t	thread;
 {
-	register pcb_t pcb = thread->pcb;
-	register struct i386_fpsave_state *ifps = pcb->ims.ifps;
+	pcb_t pcb = thread->pcb;
+	struct i386_fpsave_state *ifps = pcb->ims.ifps;
 
 	if (ifps != 0 && !ifps->fp_valid) {
 	    /* registers are in FPU */
@@ -774,10 +774,10 @@ fp_save(thread)
  */
 void
 fp_load(thread)
-	register thread_t	thread;
+	thread_t	thread;
 {
-	register pcb_t pcb = thread->pcb;
-	register struct i386_fpsave_state *ifps;
+	pcb_t pcb = thread->pcb;
+	struct i386_fpsave_state *ifps;
 
 ASSERT_IPL(SPL0);
 	ifps = pcb->ims.ifps;
