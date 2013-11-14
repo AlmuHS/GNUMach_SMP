@@ -65,9 +65,9 @@ boolean_t configure_bus_master(
 	int		 adpt_no,
 	char		*bus_name)
 {
-	register struct bus_device *device;
-	register struct bus_ctlr *master;
-	register struct bus_driver *driver;
+	struct bus_device *device;
+	struct bus_ctlr *master;
+	struct bus_driver *driver;
 
 	boolean_t             found = FALSE;
 
@@ -177,8 +177,8 @@ boolean_t configure_bus_device(
 	int 		 adpt_no,
 	char		*bus_name)
 {
-	register struct bus_device *device;
-	register struct bus_driver *driver;
+	struct bus_device *device;
+	struct bus_driver *driver;
 
 	boolean_t             found = FALSE;
 
