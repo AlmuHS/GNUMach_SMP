@@ -179,7 +179,7 @@ typedef struct pcb {
 	decl_simple_lock_data(, lock)
 #ifdef LINUX_DEV
 	void *data;
-#endif
+#endif /* LINUX_DEV */
 } *pcb_t;
 
 /*
