@@ -77,5 +77,5 @@ hardclock(iunit,        old_ipl, irq, ret_addr, regs)
 
 #ifdef LINUX_DEV
 	linux_timer_intr();
-#endif
+#endif /* LINUX_DEV */
 }
