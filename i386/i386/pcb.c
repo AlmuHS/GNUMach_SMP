@@ -77,8 +77,8 @@ vm_offset_t	kernel_stack[NCPUS];	/* top of active_stack */
  */
 
 void stack_attach(thread, stack, continuation)
-	register thread_t thread;
-	register vm_offset_t stack;
+	thread_t thread;
+	vm_offset_t stack;
 	void (*continuation)(thread_t);
 {
 	counter(if (++c_stacks_current > c_stacks_max)
@@ -112,9 +112,9 @@ void stack_attach(thread, stack, continuation)
  */
 
 vm_offset_t stack_detach(thread)
-	register thread_t	thread;
+	thread_t	thread;
 {
-	register vm_offset_t	stack;
+	vm_offset_t	stack;
 
 	counter(if (--c_stacks_current < c_stacks_min)
 			c_stacks_min = c_stacks_current);
@@ -137,7 +137,7 @@ vm_offset_t stack_detach(thread)
 	((struct real_descriptor *)&curr_gdt(mycpu)[sel_idx(sel)])
 
 void switch_ktss(pcb)
-	register pcb_t	pcb;
+	pcb_t	pcb;
 {
 	int			mycpu = cpu_number();
     {
@@ -166,7 +166,7 @@ void switch_ktss(pcb)
     }
 
     {
-	register user_ldt_t	tldt = pcb->ims.ldt;
+	user_ldt_t	tldt = pcb->ims.ldt;
 	/*
 	 * Set the thread`s LDT.
 	 */
@@ -250,11 +250,11 @@ update_ktss_iopb (unsigned char *new_iopb, io_port_t size)
  */
 
 void stack_handoff(old, new)
-	register thread_t	old;
-	register thread_t	new;
+	thread_t	old;
+	thread_t	new;
 {
-	register int		mycpu = cpu_number();
-	register vm_offset_t	stack;
+	int		mycpu = cpu_number();
+	vm_offset_t	stack;
 
 	/*
 	 *	Save FP registers if in use.
@@ -314,7 +314,7 @@ void stack_handoff(old, new)
  * Switch to the first thread on a CPU.
  */
 void load_context(new)
-	register thread_t	new;
+	thread_t	new;
 {
 	switch_ktss(new->pcb);
 	Load_context(new);
@@ -326,9 +326,9 @@ void load_context(new)
  * and return it.
  */
 thread_t switch_context(old, continuation, new)
-	register thread_t	old;
+	thread_t	old;
 	void (*continuation)();
-	register thread_t	new;
+	thread_t	new;
 {
 	/*
 	 *	Save FP registers if in use.
@@ -380,9 +380,9 @@ void pcb_module_init()
 }
 
 void pcb_init(thread)
-	register thread_t	thread;
+	thread_t	thread;
 {
-	register pcb_t		pcb;
+	pcb_t		pcb;
 
 	pcb = (pcb_t) kmem_cache_alloc(&pcb_cache);
 	if (pcb == 0)
@@ -413,9 +413,9 @@ void pcb_init(thread)
 }
 
 void pcb_terminate(thread)
-	register thread_t	thread;
+	thread_t	thread;
 {
-	register pcb_t		pcb = thread->pcb;
+	pcb_t		pcb = thread->pcb;
 
 	counter(if (--c_threads_current < c_threads_min)
 			c_threads_min = c_threads_current);
@@ -456,8 +456,8 @@ kern_return_t thread_setstatus(thread, flavor, tstate, count)
 	    case i386_THREAD_STATE:
 	    case i386_REGS_SEGS_STATE:
 	    {
-		register struct i386_thread_state	*state;
-		register struct i386_saved_state	*saved_state;
+		struct i386_thread_state	*state;
+		struct i386_saved_state	*saved_state;
 
 		if (count < i386_THREAD_STATE_COUNT) {
 		    return(KERN_INVALID_ARGUMENT);
@@ -599,7 +599,7 @@ kern_return_t thread_setstatus(thread, flavor, tstate, count)
 
 	    case i386_V86_ASSIST_STATE:
 	    {
-		register struct i386_v86_assist_state *state;
+		struct i386_v86_assist_state *state;
 		vm_offset_t	int_table;
 		int		int_count;
 
@@ -626,7 +626,7 @@ kern_return_t thread_setstatus(thread, flavor, tstate, count)
 
 	    case i386_DEBUG_STATE:
 	    {
-		register struct i386_debug_state *state;
+		struct i386_debug_state *state;
 		kern_return_t ret;
 
 		if (count < i386_DEBUG_STATE_COUNT)
@@ -653,7 +653,7 @@ kern_return_t thread_setstatus(thread, flavor, tstate, count)
  */
 
 kern_return_t thread_getstatus(thread, flavor, tstate, count)
-	register thread_t	thread;
+	thread_t		thread;
 	int			flavor;
 	thread_state_t		tstate;	/* pointer to OUT array */
 	unsigned int		*count;		/* IN/OUT */
@@ -672,8 +672,8 @@ kern_return_t thread_getstatus(thread, flavor, tstate, count)
 	    case i386_THREAD_STATE:
 	    case i386_REGS_SEGS_STATE:
 	    {
-		register struct i386_thread_state	*state;
-		register struct i386_saved_state	*saved_state;
+		struct i386_thread_state	*state;
+		struct i386_saved_state	*saved_state;
 
 		if (*count < i386_THREAD_STATE_COUNT)
 		    return(KERN_INVALID_ARGUMENT);
@@ -743,7 +743,7 @@ kern_return_t thread_getstatus(thread, flavor, tstate, count)
 	     * Temporary - replace by i386_io_map
 	     */
 	    case i386_ISA_PORT_MAP_STATE: {
-		register struct i386_isa_port_map_state *state;
+		struct i386_isa_port_map_state *state;
 
 		if (*count < i386_ISA_PORT_MAP_STATE_COUNT)
 			return(KERN_INVALID_ARGUMENT);
@@ -780,7 +780,7 @@ kern_return_t thread_getstatus(thread, flavor, tstate, count)
 
 	    case i386_DEBUG_STATE:
 	    {
-		register struct i386_debug_state *state;
+		struct i386_debug_state *state;
 
 		if (*count < i386_DEBUG_STATE_COUNT)
 		    return KERN_INVALID_ARGUMENT;
@@ -837,7 +837,7 @@ set_user_regs(stack_base, stack_size, exec_info, arg_size)
 	vm_size_t	arg_size;
 {
 	vm_offset_t	arg_addr;
-	register struct i386_saved_state *saved_state;
+	struct i386_saved_state *saved_state;
 
 	arg_size = (arg_size + sizeof(int) - 1) & ~(sizeof(int)-1);
 	arg_addr = stack_base + stack_size - arg_size;
