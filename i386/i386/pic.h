@@ -183,6 +183,6 @@ extern int curr_pic_mask;
 extern int pic_mask[];
 extern void prtnull(int unit);
 extern void intnull(int unit);
-#endif
+#endif /* __ASSEMBLER__ */
 
 #endif	/* _I386_PIC_H_ */
