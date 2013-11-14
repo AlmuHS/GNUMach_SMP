@@ -107,9 +107,9 @@ extern struct real_descriptor	ldt[LDTSZ];
 
 struct mp_desc_table *
 mp_desc_init(mycpu)
-	register int	mycpu;
+	int	mycpu;
 {
-	register struct mp_desc_table *mpt;
+	struct mp_desc_table *mpt;
 
 	if (mycpu == master_cpu) {
 		/*
@@ -179,7 +179,7 @@ mp_desc_init(mycpu)
 void
 interrupt_stack_alloc()
 {
-	register int	i;
+	int		i;
 	int		cpu_count;
 	vm_offset_t	stack_start;
 
