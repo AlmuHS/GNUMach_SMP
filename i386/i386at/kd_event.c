@@ -206,11 +206,11 @@ boolean_t	kbd_read_done();	/* forward */
 
 int
 kbdread(dev, ior)
-	dev_t	dev;
-	register io_req_t	ior;
+	dev_t		dev;
+	io_req_t	ior;
 {
-	register int	err, count;
-	register spl_t	s;
+	int		err, count;
+	spl_t		s;
 
 	/* Check if IO_COUNT is a multiple of the record size. */
 	if (ior->io_count % sizeof(kd_event) != 0)
@@ -233,7 +233,7 @@ kbdread(dev, ior)
 	}
 	count = 0;
 	while (!kdq_empty(&kbd_queue) && count < ior->io_count) {
-	    register kd_event *ev;
+	    kd_event *ev;
 
 	    ev = kdq_get(&kbd_queue);
 	    *(kd_event *)(&ior->io_data[count]) = *ev;
@@ -245,10 +245,10 @@ kbdread(dev, ior)
 }
 
 boolean_t kbd_read_done(ior)
-	register io_req_t	ior;
+	io_req_t	ior;
 {
-	register int	count;
-	register spl_t	s;
+	int		count;
+	spl_t		s;
 
 	s = SPLKD();
 	if (kdq_empty(&kbd_queue)) {
@@ -260,7 +260,7 @@ boolean_t kbd_read_done(ior)
 
 	count = 0;
 	while (!kdq_empty(&kbd_queue) && count < ior->io_count) {
-	    register kd_event *ev;
+	    kd_event *ev;
 
 	    ev = kdq_get(&kbd_queue);
 	    *(kd_event *)(&ior->io_data[count]) = *ev;
@@ -308,7 +308,7 @@ kbd_enqueue(ev)
 		kdq_put(&kbd_queue, ev);
 
 	{
-	    register io_req_t	ior;
+	    io_req_t	ior;
 	    while ((ior = (io_req_t)dequeue_head(&kbd_read_queue)) != 0)
 		iodone(ior);
 	}
@@ -321,7 +321,7 @@ void
 kdb_in_out(p)
 u_int *p;
 {
-register int t = p[0];
+	int t = p[0];
 
 	switch (t & K_X_TYPE) {
 		case K_X_IN|K_X_BYTE:
@@ -353,7 +353,7 @@ register int t = p[0];
 void
 X_kdb_enter()
 {
-register u_int *u_ip, *endp;
+	u_int *u_ip, *endp;
 
 	for (u_ip = X_kdb_enter_str, endp = &X_kdb_enter_str[X_kdb_enter_len];
 	     u_ip < endp;
@@ -364,7 +364,7 @@ register u_int *u_ip, *endp;
 void
 X_kdb_exit()
 {
-register u_int *u_ip, *endp;
+	u_int *u_ip, *endp;
 
 	for (u_ip = X_kdb_exit_str, endp = &X_kdb_exit_str[X_kdb_exit_len];
 	     u_ip < endp;
