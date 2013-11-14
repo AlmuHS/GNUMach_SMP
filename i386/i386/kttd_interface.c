@@ -240,7 +240,7 @@ boolean_t kttd_mem_access(vm_offset_t offset, vm_prot_t access)
 			       trunc_page(offset), access);
 		code = vm_fault(kernel_map, trunc_page(offset), access, FALSE,
 				FALSE, (void (*)()) 0);
-	}else{
+	} else {
 		/*
 		 * Check for user thread
 		 */
