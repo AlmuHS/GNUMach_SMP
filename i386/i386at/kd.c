@@ -1133,7 +1133,7 @@ struct	tty	*tp;
 /*ARGSUSED*/
 void
 kdstop(tp, flags)
-	register struct tty *tp;
+	struct tty *tp;
 	int	flags;
 {
 	/*
@@ -2084,9 +2084,9 @@ void
 kd_delch(number)
 int	number;
 {
-	int	count;			/* num words moved/filled */
-	int	delbytes;		/* bytes to delete */
-	register csrpos_t to;
+	int	 count;			/* num words moved/filled */
+	int	 delbytes;		/* bytes to delete */
+	csrpos_t to;
 	csrpos_t from;
 	csrpos_t nextline;		/* start of next line */
 
@@ -2713,8 +2713,8 @@ csrpos_t pos;
 char	ch, chattr;
 {
 	short xbit, ybit;		/* u/l corner of char pos */
-	register u_char *to, *from;
-	register short i, j;
+	u_char *to, *from;
+	short i, j;
 	u_char mask = (chattr == KA_REVERSE ? 0xff : 0);
 
 	if ((u_char)ch >= chars_in_font)
@@ -2741,8 +2741,8 @@ csrpos_t from, to;
 {
 	short from_xbit, from_ybit;
 	short to_xbit, to_ybit;
-	register u_char *tp, *fp;
-	register short i, j;
+	u_char *tp, *fp;
+	short i, j;
 
 	bmpch2bit(from, &from_xbit, &from_ybit);
 	bmpch2bit(to, &to_xbit, &to_ybit);
@@ -2840,7 +2840,7 @@ csrpos_t to;				/* 1st char */
 int	count;				/* num chars */
 char	chattr;				/* reverse or normal */
 {
-	register short i;
+	short i;
 	u_short clearval;
 	u_short clearbyte = (chattr == KA_REVERSE ? char_white : char_black);
 
@@ -2879,8 +2879,8 @@ csrpos_t pos;
 u_char	val;
 {
 	short xbit, ybit;
-	register u_char *cp;
-	register short line, byte;
+	u_char *cp;
+	short line, byte;
 
 	bmpch2bit(pos, &xbit, &ybit);
 	ybit += char_height;		/* position at bottom of line */
@@ -2901,7 +2901,7 @@ bmpch2bit(pos, xb, yb)
 csrpos_t pos;
 short	*xb, *yb;			/* x, y bit positions, u/l corner */
 {
-	register short xch, ych;
+	short xch, ych;
 
 	xch = (pos / ONE_SPACE) % kd_cols;
 	ych = pos / (ONE_SPACE * kd_cols);
