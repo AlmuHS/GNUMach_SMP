@@ -221,7 +221,7 @@ natural_t	count;
 void lprintr(unit)
 int unit;
 {
-	register struct tty *tp = &lpr_tty[unit];
+	struct tty *tp = &lpr_tty[unit];
 
 	if ((tp->t_state & TS_ISOPEN) == 0)
 	  return;
