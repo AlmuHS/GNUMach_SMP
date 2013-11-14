@@ -92,9 +92,9 @@ struct	bus_device	bus_device_init[] = {
  */
 void probeio(void)
 {
-	register struct	bus_device	*device;
-	register struct	bus_ctlr	*master;
-	int				i = 0;
+	struct	bus_device	*device;
+	struct	bus_ctlr	*master;
+	int			i = 0;
 
 	for (master = bus_master_init; master->driver; master++)
 	{
