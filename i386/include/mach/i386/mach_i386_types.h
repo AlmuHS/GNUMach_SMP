@@ -47,9 +47,9 @@ typedef	struct descriptor *descriptor_list_t;
 
 #ifdef MACH_KERNEL
 #include <i386/io_perm.h>
-#else
+#else /* MACH_KERNEL */
 typedef unsigned short io_port_t;
 typedef mach_port_t io_perm_t;
-#endif
+#endif /* MACH_KERNEL */
 
 #endif	/* _MACH_MACH_I386_TYPES_H_ */
