@@ -99,8 +99,8 @@ db_size_option(modif, u_option, t_option)
 	boolean_t *u_option;
 	boolean_t *t_option;
 {
-	register  char *p;
-	int	  size = sizeof(int);
+	char 	*p;
+	int	size = sizeof(int);
 
 	*u_option = FALSE;
 	*t_option = FALSE;
