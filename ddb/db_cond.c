@@ -62,7 +62,7 @@ boolean_t
 db_cond_check(bkpt)
 	db_thread_breakpoint_t bkpt;
 {
-	register  struct db_cond *cp;
+	struct db_cond *cp;
 	db_expr_t value;
 	int	  t;
 	jmp_buf_t db_jmpbuf;
@@ -107,8 +107,8 @@ void
 db_cond_print(bkpt)
 	db_thread_breakpoint_t bkpt;
 {
-	register char *p, *ep;
-	register struct db_cond *cp;
+	char *p, *ep;
+	struct db_cond *cp;
 
 	if (bkpt->tb_cond <= 0)
 	    return;
@@ -125,9 +125,9 @@ db_cond_print(bkpt)
 void
 db_cond_cmd()
 {
-	register  int c;
-	register  struct db_cond *cp;
-	register  char *p;
+	int c;
+	struct db_cond *cp;
+	char *p;
 	db_expr_t value;
 	db_thread_breakpoint_t bkpt;
 
