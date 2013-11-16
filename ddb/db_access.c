@@ -64,13 +64,13 @@ static int db_extend[sizeof(int)+1] = {	/* table for sign-extending */
 db_expr_t
 db_get_task_value(addr, size, is_signed, task)
 	db_addr_t	addr;
-	register int	size;
+	int		size;
 	boolean_t	is_signed;
 	task_t		task;
 {
 	char		data[sizeof(db_expr_t)];
-	register db_expr_t value;
-	register int	i;
+	db_expr_t 	value;
+	int		i;
 
 	db_read_bytes(addr, size, data, task);
 
@@ -94,12 +94,12 @@ db_get_task_value(addr, size, is_signed, task)
 void
 db_put_task_value(addr, size, value, task)
 	db_addr_t	addr;
-	register int	size;
-	register db_expr_t value;
+	int		size;
+	db_expr_t 	value;
 	task_t		task;
 {
 	char		data[sizeof(db_expr_t)];
-	register int	i;
+	int		i;
 
 #if	BYTE_MSF
 	for (i = size - 1; i >= 0; i--)
