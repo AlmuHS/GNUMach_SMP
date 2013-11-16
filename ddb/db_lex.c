@@ -95,7 +95,7 @@ db_switch_input(buffer, size)
 
 void
 db_save_lex_context(lp)
-	register struct db_lex_context *lp;
+	struct db_lex_context *lp;
 {
 	lp->l_ptr = db_lp;
 	lp->l_eptr = db_endlp;
@@ -105,7 +105,7 @@ db_save_lex_context(lp)
 
 void
 db_restore_lex_context(lp)
-	register struct db_lex_context *lp;
+	struct db_lex_context *lp;
 {
 	db_lp = lp->l_ptr;
 	db_last_lp = db_lp;
@@ -179,10 +179,10 @@ db_flush_lex(void)
 void
 db_skip_to_eol(void)
 {
-	register int skip;
-	register int t;
-	register int n;
-	register char *p;
+	int skip;
+	int t;
+	int n;
+	char *p;
 
 	t = db_read_token();
 	p = db_last_lp;
@@ -205,8 +205,8 @@ db_skip_to_eol(void)
 int
 db_lex(void)
 {
-	register char *cp;
-	register int c;
+	char *cp;
+	int c;
 
 	c = db_read_char();
 	while (c <= ' ' || c > '~') {
