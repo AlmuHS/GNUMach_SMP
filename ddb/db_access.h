@@ -30,6 +30,10 @@
 /*
  * Data access functions for debugger.
  */
+
+#ifndef _DDB_DB_ACCESS_H_
+#define _DDB_DB_ACCESS_H_
+
 #include <mach/boolean.h>
 #include <machine/db_machdep.h>
 #include <ddb/db_task_thread.h>
@@ -71,3 +75,5 @@ extern void	 db_put_task_value(	db_addr_t addr,
 					int size,
 					db_expr_t value,
 					task_t task );
+
+#endif /* _DDB_DB_ACCESS_H_ */
