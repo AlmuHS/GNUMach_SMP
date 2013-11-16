@@ -77,10 +77,10 @@ aout_db_sym_init(symtab, esymtab, name, task_addr)
 	char *	name;
 	char *	task_addr;	/* use for this task only */
 {
-	register struct nlist	*sym_start, *sym_end;
-	register struct nlist	*sp;
-	register char *	strtab;
-	register int	strlen;
+	struct nlist	*sym_start, *sym_end;
+	struct nlist	*sp;
+	char *		strtab;
+	int		strlen;
 	char *		estrtab;
 
 	db_get_aout_symtab(symtab, sym_start, sym_end);
@@ -100,7 +100,7 @@ aout_db_sym_init(symtab, esymtab, name, task_addr)
 #undef	round_to_size
 
 	for (sp = sym_start; sp < sym_end; sp++) {
-	    register long strx;
+	    long strx;
 	    strx = sp->n_un.n_strx;
 	    if (strx != 0) {
 		if (strx > strlen) {
@@ -133,7 +133,7 @@ aout_db_sym_init(symtab, esymtab, name, task_addr)
  */
 private boolean_t
 aout_db_is_filename(name)
-	register char *name;
+	char *name;
 {
 	while (*name) {
 	    if (*name == '.') {
@@ -153,7 +153,7 @@ aout_db_eq_name(sp, name)
 	struct nlist *sp;
 	char *name;
 {
-	register char *s1, *s2;
+	char *s1, *s2;
 
 	s1 = sp->n_un.n_name;
 	s2 = name;
@@ -185,7 +185,7 @@ aout_db_eq_name(sp, name)
  */
 private struct nlist *
 aout_db_search_name(sp, ep, name, type, fp)
-	register struct nlist *sp;
+	struct nlist 	*sp;
 	struct nlist	*ep;
 	char		*name;
 	int 		type;
@@ -236,7 +236,7 @@ aout_db_qualified_search(stab, file, sym, line)
 	char		*sym;
 	int 		line;
 {
-	register struct nlist *sp = (struct nlist *)stab->start;
+	struct nlist *sp = (struct nlist *)stab->start;
 	struct nlist	*ep = (struct nlist *)stab->end;
 	struct nlist	*fp = 0;
 	struct nlist	*found_sp;
@@ -324,14 +324,13 @@ aout_db_lookup(stab, symstr)
 db_sym_t
 aout_db_search_symbol(symtab, off, strategy, diffp)
 	db_symtab_t *	symtab;
-	register
 	db_addr_t	off;
 	db_strategy_t	strategy;
 	db_expr_t	*diffp;		/* in/out */
 {
-	register unsigned long	diff = *diffp;
-	register struct nlist	*symp = 0;
-	register struct nlist	*sp, *ep;
+	unsigned long	diff = *diffp;
+	struct nlist	*symp = 0;
+	struct nlist	*sp, *ep;
 
 	sp = (struct nlist *)symtab->start;
 	ep = (struct nlist *)symtab->end;
@@ -382,7 +381,7 @@ aout_db_symbol_values(stab, sym, namep, valuep)
 	char		**namep;
 	db_expr_t	*valuep;
 {
-	register struct nlist *sp;
+	struct nlist *sp;
 
 	sp = (struct nlist *)sym;
 	if (namep)
@@ -399,15 +398,15 @@ aout_db_symbol_values(stab, sym, namep, valuep)
 private boolean_t
 aout_db_search_by_addr(stab, addr, file, func, line, diff)
 	db_symtab_t	*stab;
-	register	vm_offset_t addr;
+	vm_offset_t 	addr;
 	char		**file;
 	char		**func;
 	int 	 	*line;
 	unsigned long	*diff;
 {
-	register	struct nlist *sp;
-	register	struct nlist *line_sp, *func_sp, *file_sp, *line_func;
-	register vm_size_t func_diff, line_diff;
+	struct nlist 	*sp;
+	struct nlist 	*line_sp, *func_sp, *file_sp, *line_func;
+	vm_size_t 	func_diff, line_diff;
 	boolean_t	found_line = FALSE;
 	struct 	  	nlist *ep = (struct nlist *)stab->end;
 
