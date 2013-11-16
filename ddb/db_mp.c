@@ -149,7 +149,7 @@ db_leave()
 void
 remote_db() {
 	int	my_cpu = cpu_number();
-	register int	i;
+	int	i;
 
 	for (i = 0; i < NCPUS; i++) {
 	    if (i != my_cpu &&
