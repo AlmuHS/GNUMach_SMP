@@ -237,4 +237,4 @@ extern boolean_t db_line_at_pc(
 	int *linenum,
 	db_expr_t pc);
 
-#endif
+#endif /* _DDB_DB_SYM_H_ */
