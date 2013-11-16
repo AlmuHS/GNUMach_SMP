@@ -32,9 +32,14 @@
  * Printing routines for kernel debugger.
  */
 
+#ifndef _DDB_DB_OUTPUT_H_
+#define _DDB_DB_OUTPUT_H_
+
 extern void	db_force_whitespace(void);
 extern int	db_print_position(void);
 extern void	db_end_line(void);
 extern void	db_printf(const char *fmt, ...);
 extern void	db_putchar(int c);
 extern void	kdbprintf(const char *fmt, ...);
+
+#endif /* _DDB_DB_OUTPUT_H_ */
