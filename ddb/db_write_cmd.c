@@ -57,10 +57,10 @@ db_write_cmd(address, have_addr, count, modif)
 	db_expr_t	count;
 	char *		modif;
 {
-	register db_addr_t	addr;
-	register db_expr_t	old_value;
+	db_addr_t	addr;
+	db_expr_t	old_value;
 	db_expr_t	new_value;
-	register int	size;
+	int		size;
 	boolean_t	wrote_one = FALSE;
 	boolean_t	t_opt, u_opt;
 	thread_t	thread;
