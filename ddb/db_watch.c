@@ -67,7 +67,7 @@ extern vm_map_t		kernel_map;
 db_watchpoint_t
 db_watchpoint_alloc()
 {
-	register db_watchpoint_t	watch;
+	db_watchpoint_t	watch;
 
 	if ((watch = db_free_watchpoints) != 0) {
 	    db_free_watchpoints = watch->link;
@@ -85,7 +85,7 @@ db_watchpoint_alloc()
 
 void
 db_watchpoint_free(watch)
-	register db_watchpoint_t	watch;
+	db_watchpoint_t	watch;
 {
 	watch->link = db_free_watchpoints;
 	db_free_watchpoints = watch;
@@ -97,7 +97,7 @@ db_set_watchpoint(task, addr, size)
 	db_addr_t	addr;
 	vm_size_t	size;
 {
-	register db_watchpoint_t	watch;
+	db_watchpoint_t	watch;
 
 	/*
 	 *	Should we do anything fancy with overlapping regions?
@@ -133,8 +133,8 @@ db_delete_watchpoint(task, addr)
 	task_t		task;
 	db_addr_t	addr;
 {
-	register db_watchpoint_t	watch;
-	register db_watchpoint_t	*prev;
+	db_watchpoint_t	watch;
+	db_watchpoint_t	*prev;
 
 	for (prev = &db_watchpoint_list; (watch = *prev) != 0;
 	     prev = &watch->link) {
@@ -153,8 +153,8 @@ db_delete_watchpoint(task, addr)
 void
 db_list_watchpoints(void)
 {
-	register db_watchpoint_t watch;
-	int	 task_id;
+	db_watchpoint_t watch;
+	int	 	task_id;
 
 	if (db_watchpoint_list == 0) {
 	    db_printf("No watchpoints set\n");
@@ -263,8 +263,8 @@ db_listwatch_cmd()
 void
 db_set_watchpoints(void)
 {
-	register db_watchpoint_t	watch;
-	vm_map_t			map;
+	db_watchpoint_t		watch;
+	vm_map_t		map;
 	unsigned hw_idx = 0;
 
 	if (!db_watchpoints_inserted) {
@@ -300,9 +300,9 @@ db_find_watchpoint(map, addr, regs)
 	db_addr_t	addr;
 	db_regs_t	*regs;
 {
-	register db_watchpoint_t watch;
+	db_watchpoint_t watch;
 	db_watchpoint_t found = 0;
-	register task_t	task_space;
+	task_t		task_space;
 
 	task_space = (map == kernel_map)? TASK_NULL: db_current_task();
 	for (watch = db_watchpoint_list; watch != 0; watch = watch->link) {
