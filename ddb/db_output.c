@@ -82,7 +82,7 @@ extern void	db_check_interrupt();
 void
 db_force_whitespace(void)
 {
-	register int last_print, next_tab;
+	int last_print, next_tab;
 
 	last_print = db_last_non_space;
 	while (last_print < db_output_position) {
@@ -102,7 +102,7 @@ db_force_whitespace(void)
 static void
 db_more()
 {
-	register  char *p;
+	char *p;
 	boolean_t quit_output = FALSE;
 
 	for (p = "--db_more--"; *p; p++)
