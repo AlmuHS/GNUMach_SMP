@@ -75,8 +75,8 @@ db_stop_at_pc(is_breakpoint, task)
 	boolean_t	*is_breakpoint;
 	task_t		task;
 {
-	register  db_addr_t	pc;
-	register  db_thread_breakpoint_t bkpt;
+	db_addr_t		pc;
+	db_thread_breakpoint_t  bkpt;
 
 	db_clear_task_single_step(DDB_REGS, task);
 	db_clear_breakpoints();
@@ -131,7 +131,7 @@ db_stop_at_pc(is_breakpoint, task)
 		(!inst_return(ins) || --db_call_depth != 0)) {
 		if (db_sstep_print) {
 		    if (inst_call(ins) || inst_return(ins)) {
-			register int i;
+			int i;
 
 			db_printf("[after %6d /%4d] ",
 				  db_inst_count,
@@ -171,7 +171,7 @@ db_restart_at_pc(watchpt, task)
 	boolean_t watchpt;
 	task_t	  task;
 {
-	register db_addr_t pc = PC_REGS(DDB_REGS), brpc;
+	db_addr_t pc = PC_REGS(DDB_REGS), brpc;
 
 	if ((db_run_mode == STEP_COUNT) ||
 	    (db_run_mode == STEP_RETURN) ||
@@ -276,12 +276,12 @@ db_find_temp_breakpoint(task, addr)
 
 void
 db_set_task_single_step(regs, task)
-	register db_regs_t *regs;
+	db_regs_t *regs;
 	task_t		   task;
 {
 	db_addr_t pc = PC_REGS(regs), brpc;
-	register unsigned int	 inst;
-	register boolean_t       unconditional;
+	unsigned int	inst;
+	boolean_t       unconditional;
 
 	/*
 	 *	User was stopped at pc, e.g. the instruction
