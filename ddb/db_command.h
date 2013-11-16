@@ -28,6 +28,9 @@
  *	Date:	7/90
  */
 
+#ifndef _DDB_DB_COMMAND_H_
+#define _DDB_DB_COMMAND_H_
+
 #if MACH_KDB
 
 /*
@@ -71,3 +74,5 @@ extern boolean_t db_exec_cmd_nest(char *cmd, int size);
 void db_fncall();
 
 #endif /* MACH_KDB */
+
+#endif /* _DDB_DB_COMMAND_H_ */
