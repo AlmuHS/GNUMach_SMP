@@ -31,6 +31,9 @@
  * Lexical analyzer.
  */
 
+#ifndef _DDB_DB_LEX_H_
+#define _DDB_DB_LEX_H_
+
 #define	TOK_STRING_SIZE		64 
 #define DB_LEX_LINE_SIZE	256
 
@@ -92,3 +95,5 @@ extern db_expr_t db_radix;
 #define tLOG_OR		31
 #define tSTRING		32
 #define tQUESTION	33
+
+#endif /* _DDB_DB_LEX_H_ */
