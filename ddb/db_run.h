@@ -24,6 +24,9 @@
  * the rights to redistribute these changes.
  */
 
+#ifndef _DDB_DB_RUN_H_
+#define _DDB_DB_RUN_H_
+
 #include <kern/task.h>
 #include <machine/db_machdep.h>
 
@@ -66,3 +69,5 @@ void db_continue_cmd(
 	char *		modif);
 
 extern boolean_t db_in_single_step(void);
+
+#endif /* _DDB_DB_RUN_H_ */
