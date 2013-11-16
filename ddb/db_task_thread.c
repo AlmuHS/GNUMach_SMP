@@ -54,10 +54,10 @@ int
 db_lookup_task(target_task)
 	task_t target_task;
 {
-	register task_t task;
-	register int task_id;
-	register processor_set_t pset;
-	register int npset = 0;
+	task_t task;
+	int task_id;
+	processor_set_t pset;
+	int npset = 0;
 
 	task_id = 0;
 	if (queue_first(&all_psets) == 0)
@@ -85,8 +85,8 @@ db_lookup_task_thread(task, target_thread)
 	task_t	 task;
 	thread_t target_thread;
 {
-	register thread_t thread;
-	register int thread_id;
+	thread_t thread;
+	int thread_id;
 
 	thread_id = 0;
 	if (queue_first(&task->thread_list) == 0)
@@ -108,11 +108,11 @@ int
 db_lookup_thread(target_thread)
 	thread_t target_thread;
 {
-	register int thread_id;
-	register task_t task;
-	register processor_set_t pset;
-	register int ntask = 0;
-	register int npset = 0;
+	int thread_id;
+	task_t task;
+	processor_set_t pset;
+	int ntask = 0;
+	int npset = 0;
 
 	if (queue_first(&all_psets) == 0)
 	    return(-1);
@@ -154,11 +154,11 @@ db_check_thread_address_valid(thread)
  */
 task_t
 db_lookup_task_id(task_id)
-	register int task_id;
+	int task_id;
 {
-	register task_t task;
-	register processor_set_t pset;
-	register int npset = 0;
+	task_t task;
+	processor_set_t pset;
+	int npset = 0;
 
 	if (task_id > DB_MAX_TASKID)
 	    return(TASK_NULL);
@@ -182,10 +182,10 @@ db_lookup_task_id(task_id)
  */
 static thread_t
 db_lookup_thread_id(task, thread_id)
-	task_t	 task;
-	register int thread_id;
+	task_t	task;
+	int 	thread_id;
 {
-	register thread_t thread;
+	thread_t thread;
 
 
 	if (thread_id > DB_MAX_THREADID)
