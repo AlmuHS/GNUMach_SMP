@@ -63,11 +63,11 @@ db_show_regs(addr, have_addr, count, modif)
 	db_expr_t	count;
 	char		*modif;
 {
-	register struct db_variable *regp;
+	struct 		db_variable *regp;
 	db_expr_t	value;
 	db_addr_t	offset;
 	char *		name;
-	register	int i;
+	int 		i;
 	struct db_var_aux_param aux_param;
 	task_t		task = TASK_NULL;
 
@@ -127,10 +127,10 @@ db_show_regs(addr, have_addr, count, modif)
 
 char *
 db_thread_stat(thread, status)
-	register thread_t thread;
+	thread_t thread;
 	char	 *status;
 {
-	register char *p = status;
+	char *p = status;
 
 	*p++ = (thread->state & TH_RUN)  ? 'R' : '.';
 	*p++ = (thread->state & TH_WAIT) ? 'W' : '.';
@@ -435,8 +435,8 @@ db_lookup_port(thread, id)
 	thread_t thread;
 	int id;
 {
-	register ipc_space_t space;
-	register ipc_entry_t entry;
+	ipc_space_t space;
+	ipc_entry_t entry;
 
 	if (thread == THREAD_NULL)
 	    return(0);
