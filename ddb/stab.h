@@ -33,6 +33,8 @@
  *	@(#)stab.h	5.2 (Berkeley) 4/4/91
  */
 
+#ifndef _DDB_STAB_H_
+#define _DDB_STAB_H_
 
 /*
  * The following are symbols used by various debuggers and by the Pascal
@@ -67,3 +69,5 @@
 #define	N_ECOMM		0xe4	/* end common */
 #define	N_ECOML		0xe8	/* end common (local name) */
 #define	N_LENG		0xfe	/* length of preceding entry */
+
+#endif /* _DDB_STAB_H_ */
