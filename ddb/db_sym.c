@@ -64,7 +64,7 @@ db_add_symbol_table(type, start, end, name, ref, map_pointer)
 	char *ref;
 	char *map_pointer;
 {
-	register db_symtab_t *st;
+	db_symtab_t *st;
 	extern vm_map_t kernel_map;
 
 	if (db_nsymtab >= MAXNOSYMTABS)
@@ -92,10 +92,10 @@ db_add_symbol_table(type, start, end, name, ref, map_pointer)
 static char *
 db_qualify(symname, symtabname)
 	char		*symname;
-	register char	*symtabname;
+	char		*symtabname;
 {
 	static char     tmp[256];
-	register char	*s;
+	char		*s;
 
 	s = tmp;
 	while ((*s++ = *symtabname++)) {
@@ -145,10 +145,10 @@ db_lookup(symstr)
 	char *symstr;
 {
 	db_sym_t sp;
-	register int i;
+	int i;
 	int symtab_start = 0;
 	int symtab_end = db_nsymtab;
-	register char *cp;
+	char *cp;
 
 	/*
 	 * Look for, remove, and remember any symbol table specifier.
@@ -198,8 +198,8 @@ db_sym_parse_and_lookup(func, symtab, symstr)
 	db_symtab_t	*symtab;
 	char		*symstr;
 {
-	register 	char *p;
-	register 	int n;
+	char 		*p;
+	int 		n;
 	int	 	n_name;
 	int	 	line_number;
 	char	 	*file_name = 0;
@@ -268,8 +268,7 @@ boolean_t
 db_name_is_ambiguous(sym_name)
 	char		*sym_name;
 {
-	register int	i;
-	register
+	int		i;
 	boolean_t	found_once = FALSE;
 
 	if (!db_qualify_ambiguous_names)
@@ -306,7 +305,7 @@ db_sym_t db_search_in_task_symbol();
  */
 db_sym_t
 db_search_task_symbol(val, strategy, offp, task)
-	register db_addr_t	val;
+	db_addr_t		val;
 	db_strategy_t		strategy;
 	db_addr_t		*offp; /* better be unsigned */
 	task_t			task;
@@ -335,14 +334,14 @@ db_search_task_symbol(val, strategy, offp, task)
 
 db_sym_t
 db_search_in_task_symbol(val, strategy, offp, task)
-	register db_addr_t	val;
+	db_addr_t		val;
 	db_strategy_t		strategy;
 	db_addr_t		*offp;
 	task_t			task;
 {
-  register vm_size_t diff;
+  vm_size_t 	diff;
   vm_size_t	newdiff;
-  register int	i;
+  int		i;
   db_symtab_t	*sp;
   db_sym_t	ret = DB_SYM_NULL, sym;
   vm_map_t	map_for_val;
