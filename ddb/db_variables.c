@@ -72,10 +72,10 @@ struct db_variable *db_evars = db_vars + sizeof(db_vars)/sizeof(db_vars[0]);
 
 char *
 db_get_suffix(suffix, suffix_value)
-	register char	*suffix;
+	char		*suffix;
 	short		*suffix_value;
 {
-	register int value;
+	int value;
 
 	for (value = 0; *suffix && *suffix != '.' && *suffix != ':'; suffix++) {
 	    if (*suffix < '0' || *suffix > '9')
@@ -92,10 +92,10 @@ static boolean_t
 db_cmp_variable_name(vp, name, ap)
 	struct db_variable		*vp;
 	char				*name;
-	register db_var_aux_param_t	ap;
+	db_var_aux_param_t		ap;
 {
-	register char *var_np, *np;
-	register int level;
+	char *var_np, *np;
+	int level;
 
 	for (np = name, var_np = vp->name; *var_np; ) {
 	    if (*np++ != *var_np++)
