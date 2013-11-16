@@ -120,7 +120,6 @@ db_examine_backward(addr, have_addr, count, modif)
 
 void
 db_examine(addr, fmt, count, task)
-	register
 	db_addr_t	addr;
 	char *		fmt;	/* format string */
 	int		count;	/* repeat count */
@@ -337,8 +336,8 @@ db_print_loc_and_inst(loc, task)
 
 void
 db_strcpy(dst, src)
-	register char *dst;
-	register char *src;
+	char *dst;
+	char *src;
 {
 	while ((*dst++ = *src++))
 	    ;
@@ -360,7 +359,7 @@ db_search_cmd()
 	db_addr_t	count;
 	thread_t	thread;
 	boolean_t	thread_flag = FALSE;
-	register char	*p;
+	char		*p;
 
 	t = db_read_token();
 	if (t == tSLASH) {
@@ -432,7 +431,6 @@ db_search_cmd()
 
 void
 db_search(addr, size, value, mask, count, task)
-	register
 	db_addr_t	addr;
 	int		size;
 	db_expr_t	value;
@@ -458,7 +456,7 @@ db_xcdump(addr, size, count, task)
 	int		count;
 	task_t		task;
 {
-	register 	int i, n;
+	int 		i, n;
 	db_expr_t	value;
 	int		bcount;
 	db_addr_t	off;
