@@ -102,9 +102,9 @@ db_cmd_search(name, table, cmdp)
 	int		result = CMD_NONE;
 
 	for (cmd = table; cmd->name != 0; cmd++) {
-	    register char *lp;
-	    register char *rp;
-	    register int  c;
+	    char *lp;
+	    char *rp;
+	    int  c;
 
 	    lp = name;
 	    rp = cmd->name;
@@ -143,7 +143,7 @@ void
 db_cmd_list(table)
 	struct db_command *table;
 {
-	register struct db_command *cmd;
+	struct db_command *cmd;
 
 	for (cmd = table; cmd->name != 0; cmd++) {
 	    db_printf("%-12s", cmd->name);
@@ -538,7 +538,7 @@ db_option(modif, option)
 	char	*modif;
 	int	option;
 {
-	register char *p;
+	char *p;
 
 	for (p = modif; *p; p++)
 	    if (*p == option)
