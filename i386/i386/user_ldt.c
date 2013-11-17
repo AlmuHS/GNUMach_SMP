@@ -55,44 +55,6 @@ char	acc_type[8][3] = {
     {	1,	0,	1	},	/* code, readable, conforming */
 };
 
-boolean_t selector_check(thread, sel, type)
-	thread_t	thread;
-	int		sel;
-	int		type;	/* code, stack, data */
-{
-	struct user_ldt	*ldt;
-	int	access;
-
-	ldt = thread->pcb->ims.ldt;
-	if (ldt == 0) {
-	    switch (type) {
-		case S_CODE:
-		    return sel == USER_CS;
-		case S_STACK:
-		    return sel == USER_DS;
-		case S_DATA:
-		    return sel == 0 ||
-			   sel == USER_CS ||
-			   sel == USER_DS;
-	    }
-	}
-
-	if (type != S_DATA && sel == 0)
-	    return FALSE;
-	if ((sel & (SEL_LDT|SEL_PL)) != (SEL_LDT|SEL_PL_U)
-	  || sel > ldt->desc.limit_low)
-		return FALSE;
-
-	access = ldt->ldt[sel_idx(sel)].access;
-	
-	if ((access & (ACC_P|ACC_PL|ACC_TYPE_USER|SZ_64))
-		!= (ACC_P|ACC_PL_U|ACC_TYPE_USER))
-	    return FALSE;
-		/* present, pl == pl.user, not system, not 64bits */
-
-	return acc_type[(access & 0xe)>>1][type];
-}
-
 /*
  * Add the descriptors to the LDT, starting with
  * the descriptor for 'first_selector'.

@@ -44,15 +44,4 @@ struct user_ldt {
 };
 typedef struct user_ldt *	user_ldt_t;
 
-/*
- * Check code/stack/data selector values against LDT if present.
- */
-#define	S_CODE	0		/* code segment */
-#define	S_STACK	1		/* stack segment */
-#define	S_DATA	2		/* data segment */
-
-extern boolean_t selector_check(thread_t thread,
-				int sel,
-				int type);
-
 #endif	/* _I386_USER_LDT_H_ */
