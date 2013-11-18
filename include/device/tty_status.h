@@ -30,6 +30,9 @@
  * 	Status information for tty.
  */
 
+#ifndef _DEVICE_TTY_STATUS_H_
+#define _DEVICE_TTY_STATUS_H_
+
 struct tty_status {
 	int	tt_ispeed;		/* input speed */
 	int	tt_ospeed;		/* output speed */
@@ -127,3 +130,5 @@ struct tty_status {
 					/* clear break condition */
 #define TTY_SET_TRANSLATION	(dev_flavor_t)(('t'<<16) + 8)
 					/* set translation table */
+
+#endif /* _DEVICE_TTY_STATUS_H_ */

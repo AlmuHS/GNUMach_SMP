@@ -24,6 +24,9 @@
  * the rights to redistribute these changes.
  */
 
+#ifndef _IPC_IPC_MACHDEP_H_
+#define _IPC_IPC_MACHDEP_H_
+
 /*
  * At times, we need to know the size of a port in bits
  */
@@ -38,3 +41,4 @@
 #define	PORT_T_SIZE_IN_BITS	32
 #endif
 
+#endif /* _IPC_IPC_MACHDEP_H_ */

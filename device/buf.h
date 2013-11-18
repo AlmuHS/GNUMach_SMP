@@ -30,6 +30,9 @@
  * 	Definitions to make new IO structures look like old ones
  */
 
+#ifndef _DEVICE_BUF_H_
+#define _DEVICE_BUF_H_
+
 /*
  * io_req and fields
  */
@@ -100,3 +103,5 @@ extern void minphys(io_req_t);
  */
 #define	biodone	iodone
 #define biowait iowait
+
+#endif /* _DEVICE_BUF_H_ */

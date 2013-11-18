@@ -43,6 +43,9 @@
  *		minor 0.
  */
 
+#ifndef _MACH_VERSION_H_
+#define _MACH_VERSION_H_
+
 #define KERNEL_MAJOR_VERSION	4
 #define KERNEL_MINOR_VERSION	0
 
@@ -66,3 +69,5 @@
  * excised from the CSD environment.
  */
 #define	INCLUDE_VERSION	0
+
+#endif /* _MACH_VERSION_H_ */
