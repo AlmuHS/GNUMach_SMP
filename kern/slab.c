@@ -1468,7 +1468,7 @@ kern_return_t host_slab_info(host_t host, cache_info_array_t *infop,
     struct kmem_cache *cache;
     cache_info_t *info;
     unsigned int i, nr_caches;
-    vm_size_t info_size = info_size;
+    vm_size_t info_size = 0;
     kern_return_t kr;
 
     if (host == HOST_NULL)
