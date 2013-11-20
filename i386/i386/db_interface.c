@@ -641,6 +641,9 @@ db_phys_eq(
 #define DB_USER_STACK_ADDR		(VM_MIN_KERNEL_ADDRESS)
 #define DB_NAME_SEARCH_LIMIT		(DB_USER_STACK_ADDR-(INTEL_PGBYTES*3))
 
+#define GNU
+
+#ifndef GNU
 static boolean_t
 db_search_null(
 	task_t		task,
@@ -671,8 +674,7 @@ db_search_null(
 	}
 	return FALSE;
 }
-
-#define GNU
+#endif /* GNU */
 
 #ifdef GNU
 static boolean_t
