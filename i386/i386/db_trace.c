@@ -362,7 +362,7 @@ db_stack_trace_cmd(
 	} else if (trace_thread) {
 	    if (have_addr) {
 		th = (thread_t) addr;
-		if (!db_check_thread_address_valid((db_addr_t)th))
+		if (!db_check_thread_address_valid(th))
 		    return;
 	    } else {
 		th = db_default_thread;
