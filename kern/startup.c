@@ -58,7 +58,9 @@
 #include <machine/model_dep.h>
 #include <mach/version.h>
 
-
+#if MACH_KDB
+#include <device/cons.h>
+#endif /* MACH_KDB */
 
 extern void	vm_mem_init();
 extern void	vm_mem_bootstrap();
