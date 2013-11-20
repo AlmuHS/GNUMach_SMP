@@ -176,14 +176,13 @@ db_restart_at_pc(watchpt, task)
 	if ((db_run_mode == STEP_COUNT) ||
 	    (db_run_mode == STEP_RETURN) ||
 	    (db_run_mode == STEP_CALLT)) {
-	    db_expr_t		ins;
 
 	    /*
 	     * We are about to execute this instruction,
 	     * so count it now.
 	     */
 
-	    ins = db_get_task_value(pc, sizeof(int), FALSE, task);
+	    db_get_task_value(pc, sizeof(int), FALSE, task);
 	    db_inst_count++;
 	    db_load_count += inst_load(ins);
 	    db_store_count += inst_store(ins);
@@ -192,7 +191,7 @@ db_restart_at_pc(watchpt, task)
 	    brpc = next_instr_address(pc,1,task);
 	    if ((brpc != pc) && (inst_branch(ins) || inst_call(ins))) {
 		/* Note: this ~assumes an instruction <= sizeof(int) */
-		ins = db_get_task_value(brpc, sizeof(int), FALSE, task);
+		db_get_task_value(brpc, sizeof(int), FALSE, task);
 		db_inst_count++;
 		db_load_count += inst_load(ins);
 		db_store_count += inst_store(ins);
