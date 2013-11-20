@@ -82,4 +82,6 @@ extern int db_get_variable(db_expr_t *valuep);
 
 void db_set_cmd();
 
+void db_read_write_variable(struct db_variable *, db_expr_t *, int, struct db_var_aux_param *);
+
 #endif	/* _DB_VARIABLES_H_ */

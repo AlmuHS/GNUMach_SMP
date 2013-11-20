@@ -143,9 +143,6 @@ db_find_variable(varp, ap)
 	return (0);
 }
 
-
-void db_read_write_variable(); /* forward */
-
 int
 db_get_variable(valuep)
 	db_expr_t	*valuep;
