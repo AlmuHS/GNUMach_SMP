@@ -171,7 +171,7 @@ db_restart_at_pc(watchpt, task)
 	boolean_t watchpt;
 	task_t	  task;
 {
-	db_addr_t pc = PC_REGS(DDB_REGS), brpc;
+	db_addr_t pc = PC_REGS(DDB_REGS);
 
 	if ((db_run_mode == STEP_COUNT) ||
 	    (db_run_mode == STEP_RETURN) ||
@@ -187,6 +187,7 @@ db_restart_at_pc(watchpt, task)
 	    db_load_count += inst_load(ins);
 	    db_store_count += inst_store(ins);
 #ifdef	SOFTWARE_SSTEP
+	    db_addr_t brpc;
 	    /* Account for instructions in delay slots */
 	    brpc = next_instr_address(pc, 1, task);
 	    if ((brpc != pc) && (inst_branch(ins) || inst_call(ins))) {
