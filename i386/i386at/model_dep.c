@@ -77,11 +77,12 @@
 /* Location of the kernel's symbol table.
    Both of these are 0 if none is available.  */
 #if MACH_KDB
+#include <ddb/db_sym.h>
 static vm_offset_t kern_sym_start, kern_sym_end;
-#else
+#else /* MACH_KDB */
 #define kern_sym_start	0
 #define kern_sym_end	0
-#endif
+#endif /* MACH_KDB */
 
 /* These indicate the total extent of physical memory addresses we're using.
    They are page-aligned.  */
@@ -581,7 +582,7 @@ void c_boot_entry(vm_offset_t bi)
 	 */
 	if (kern_sym_start)
 	{
-		aout_db_sym_init(kern_sym_start, kern_sym_end, "mach", 0);
+		aout_db_sym_init((char *)kern_sym_start, (char *)kern_sym_end, "mach", (char *)0);
 	}
 #endif	/* MACH_KDB */
 

@@ -511,7 +511,7 @@ void db_free_symbol(db_sym_t s)
  * Switch into symbol-table specific routines
  */
 
-extern boolean_t aout_db_sym_init(), aout_db_line_at_pc();
+extern boolean_t aout_db_line_at_pc();
 extern db_sym_t aout_db_lookup(), aout_db_search_symbol();
 extern void aout_db_symbol_values();
 

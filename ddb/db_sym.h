@@ -237,4 +237,10 @@ extern boolean_t db_line_at_pc(
 	int *linenum,
 	db_expr_t pc);
 
+extern boolean_t aout_db_sym_init(
+	char *symtab,
+	char *esymtab,
+	char *name,
+	char *task_addr);
+
 #endif /* _DDB_DB_SYM_H_ */
