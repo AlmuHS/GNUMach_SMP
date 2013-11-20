@@ -383,7 +383,7 @@ struct db_command *ptr;
   return;
 }
 
-#endif
+#endif /* DB_MACHINE_COMMANDS */
 
 
 struct db_command	*db_last_command = 0;
