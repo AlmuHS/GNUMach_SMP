@@ -27,6 +27,7 @@
  * Interface to new debugger.
  */
 
+#include <string.h>
 #include <sys/reboot.h>
 #include <vm/pmap.h>
 
