@@ -35,6 +35,7 @@
 
 #include <machine/db_machdep.h>
 #include <machine/machspl.h>
+#include <machine/db_interface.h>
 
 #include <ddb/db_access.h>
 #include <ddb/db_command.h>
