@@ -154,7 +154,7 @@ void xpr_dump(base, nbufs)
 	struct xprbuf *last, *ptr;
 	struct xprbuf *x;
 	int i;
-	spl_t s;
+	spl_t s = s;
 
 	if (base == 0) {
 		base = xprbase;
