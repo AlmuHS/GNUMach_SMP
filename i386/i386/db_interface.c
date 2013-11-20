@@ -43,6 +43,7 @@
 
 #include "vm_param.h"
 #include <vm/vm_map.h>
+#include <vm/vm_fault.h>
 #include <kern/cpu_number.h>
 #include <kern/printf.h>
 #include <kern/thread.h>
