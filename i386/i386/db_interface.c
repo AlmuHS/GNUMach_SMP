@@ -760,7 +760,7 @@ db_task_name(
 	vaddr = (sp & ~(INTEL_PGBYTES - 1)) + INTEL_PGBYTES;
 	while (1) {
 		if (db_user_to_kernel_address(task, vaddr, &kaddr, 0) < 0)
-			return FALSE;
+			return;
 		if (looks_like_command(task, (char*) kaddr))
 			break;
 		vaddr += INTEL_PGBYTES;
