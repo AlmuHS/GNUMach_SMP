@@ -188,7 +188,7 @@ db_restart_at_pc(watchpt, task)
 	    db_store_count += inst_store(ins);
 #ifdef	SOFTWARE_SSTEP
 	    /* Account for instructions in delay slots */
-	    brpc = next_instr_address(pc,1,task);
+	    brpc = next_instr_address(pc, 1, task);
 	    if ((brpc != pc) && (inst_branch(ins) || inst_call(ins))) {
 		/* Note: this ~assumes an instruction <= sizeof(int) */
 		db_get_task_value(brpc, sizeof(int), FALSE, task);
