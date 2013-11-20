@@ -717,7 +717,7 @@ looks_like_command(
 
 	return TRUE;
 }
-#endif
+#endif /* GNU */
 
 void
 db_task_name(
@@ -765,7 +765,7 @@ db_task_name(
 			break;
 		vaddr += INTEL_PGBYTES;
 	}
-#else
+#else /* GNU */
 	vaddr = DB_USER_STACK_ADDR;
 	kaddr = 0;
 
@@ -783,18 +783,18 @@ db_task_name(
 	    db_printf(DB_NULL_TASK_NAME);
 	    return;
 	}
-#endif
+#endif /* GNU */
 
 ok:
 	n = DB_TASK_NAME_LEN-1;
 #ifdef GNU
 	p = (char *)kaddr;
 	for (; n > 0; vaddr++, p++, n--) {
-#else
+#else /* GNU */
 	p = (char *)kaddr + sizeof(unsigned);
 	for (vaddr += sizeof(int); vaddr < DB_USER_STACK_ADDR && n > 0;
 							vaddr++, p++, n--) {
-#endif
+#endif  /* GNU */
 	    if (vaddr % INTEL_PGBYTES == 0) {
 		(void)db_user_to_kernel_address(task, vaddr, &kaddr, 0);
 		p = (char*)kaddr;
