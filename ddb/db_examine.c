@@ -394,7 +394,7 @@ db_search_cmd()
 	    size = sizeof(int);
 	}
 
-	if (!db_expression(&addr)) {
+	if (!db_expression((db_expr_t *)&addr)) {
 	    db_printf("Address missing\n");
 	    db_flush_lex();
 	    return;
@@ -411,7 +411,7 @@ db_search_cmd()
 
 	t = db_read_token();
 	if (t == tCOMMA) {
-	    if (!db_expression(&count)) {
+	    if (!db_expression((db_expr_t *)&count)) {
 		db_printf("Count missing\n");
 		db_flush_lex();
 		return;
