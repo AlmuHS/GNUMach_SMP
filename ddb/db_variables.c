@@ -46,9 +46,9 @@ extern db_expr_t	db_radix;
 extern db_expr_t	db_max_width;
 extern db_expr_t	db_tab_stop_width;
 extern db_expr_t	db_max_line;
-extern int	db_set_default_thread();
-extern int	db_get_task_thread();
-extern int	db_arg_variable();
+extern long	db_set_default_thread();
+extern long	db_get_task_thread();
+extern long	db_arg_variable();
 
 #define DB_NWORK	32		/* number of work variable */
 
@@ -184,7 +184,7 @@ db_read_write_variable(vp, valuep, rw_flag, ap)
 	int 			rw_flag;
 	db_var_aux_param_t	ap;
 {
-	int	(*func)() = vp->fcn;
+	long	(*func)() = vp->fcn;
 	struct  db_var_aux_param aux_param;
 
 	if (ap == 0) {
