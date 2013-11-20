@@ -24,6 +24,7 @@
 #include <mach/mach_types.h>
 #include <mach/message.h>
 #include <ipc/ipc_types.h>
+#include <ipc/ipc_pset.h>
 
 extern void ipc_port_print(ipc_port_t);
 
