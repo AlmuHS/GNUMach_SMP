@@ -1432,6 +1432,12 @@ ipc_right_copyin(
 
 		port->ip_receiver_name = MACH_PORT_NULL;
 		port->ip_destination = IP_NULL;
+
+		/*
+		 *	Clear the protected payload field to retain
+		 *	the behavior of mach_msg.
+		 */
+		ipc_port_flag_protected_payload_clear(port);
 		ip_unlock(port);
 
 		*objectp = (ipc_object_t) port;
@@ -1931,6 +1937,12 @@ ipc_right_copyout(
 
 		port->ip_receiver_name = name;
 		port->ip_receiver = space;
+
+		/*
+		 *	Clear the protected payload field to retain
+		 *	the behavior of mach_msg.
+		 */
+		ipc_port_flag_protected_payload_clear(port);
 
 		assert((bits & MACH_PORT_TYPE_RECEIVE) == 0);
 

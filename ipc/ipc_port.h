@@ -48,6 +48,7 @@
 #include <ipc/ipc_mqueue.h>
 #include <ipc/ipc_table.h>
 #include <ipc/ipc_thread.h>
+#include <ipc/ipc_object.h>
 #include "ipc_target.h"
 #include <mach/rpc.h>
 
@@ -96,6 +97,7 @@ struct ipc_port {
 	mach_port_msgcount_t ip_msgcount;
 	mach_port_msgcount_t ip_qlimit;
 	struct ipc_thread_queue ip_blocked;
+	unsigned long ip_protected_payload;
 };
 
 #define ip_object		ip_target.ipt_object
@@ -262,6 +264,12 @@ extern void
 ipc_port_set_seqno(ipc_port_t, mach_port_seqno_t);
 
 extern void
+ipc_port_set_protected_payload(ipc_port_t, unsigned long);
+
+extern void
+ipc_port_clear_protected_payload(ipc_port_t);
+
+extern void
 ipc_port_clear_receiver(ipc_port_t);
 
 extern void
@@ -324,5 +332,24 @@ ipc_port_dealloc_special(ipc_port_t, ipc_space_t);
 
 #define	ipc_port_release(port)		\
 		ipc_object_release(&(port)->ip_object)
+
+extern inline boolean_t
+ipc_port_flag_protected_payload(const struct ipc_port *port)
+{
+	return !! (port->ip_target.ipt_object.io_bits
+		   & IO_BITS_PROTECTED_PAYLOAD);
+}
+
+extern inline void
+ipc_port_flag_protected_payload_set(struct ipc_port *port)
+{
+	port->ip_target.ipt_object.io_bits |= IO_BITS_PROTECTED_PAYLOAD;
+}
+
+extern inline void
+ipc_port_flag_protected_payload_clear(struct ipc_port *port)
+{
+	port->ip_target.ipt_object.io_bits &= ~IO_BITS_PROTECTED_PAYLOAD;
+}
 
 #endif	/* _IPC_IPC_PORT_H_ */

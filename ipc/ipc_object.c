@@ -481,6 +481,7 @@ ipc_object_copyin_from_kernel(
 
 		port->ip_receiver_name = MACH_PORT_NULL;
 		port->ip_destination = IP_NULL;
+		ipc_port_flag_protected_payload_clear(port);
 		ip_unlock(port);
 		break;
 	    }
