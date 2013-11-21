@@ -165,7 +165,7 @@ db_exec_macro(name)
 	return(0);
 }
 
-long
+void
 /* ARGSUSED */
 db_arg_variable(vp, valuep, flag, ap)
 	struct db_variable	*vp;
@@ -181,7 +181,7 @@ db_arg_variable(vp, valuep, flag, ap)
 	    *valuep = db_macro_args[db_macro_level][ap->suffix[0]-1];
 	else
 	    db_macro_args[db_macro_level][ap->suffix[0]-1] = *valuep;
-	return(0);
+	return;
 }
 
 #endif /* MACH_KDB */

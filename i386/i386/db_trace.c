@@ -46,7 +46,7 @@
 
 #include "trap.h"
 
-long
+void
 db_i386_reg_value(
 	struct db_variable	*vp,
 	db_expr_t		*valuep,
@@ -125,7 +125,7 @@ db_lookup_i386_kreg(
 	return 0;
 }
 
-long
+void
 db_i386_reg_value(
 	struct	db_variable	*vp,
 	db_expr_t		*valuep,

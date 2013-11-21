@@ -32,7 +32,7 @@ extern void db_show_macro (void);
 
 extern int db_exec_macro (char *name);
 
-extern long db_arg_variable (
+extern void db_arg_variable (
 	struct db_variable *vp,
 	db_expr_t *valuep,
 	int flag,

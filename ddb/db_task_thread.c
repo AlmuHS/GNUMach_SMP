@@ -245,7 +245,7 @@ db_init_default_thread(void)
  * in the command line
  */
 /* ARGSUSED */
-long
+void
 db_set_default_thread(vp, valuep, flag)
 	struct db_variable *vp;
 	db_expr_t	*valuep;
@@ -255,7 +255,7 @@ db_set_default_thread(vp, valuep, flag)
 
 	if (flag != DB_VAR_SET) {
 	    *valuep = (db_expr_t) db_default_thread;
-	    return(0);
+	    return;
 	}
 	thread = (thread_t) *valuep;
 	if (thread != THREAD_NULL && !db_check_thread_address_valid(thread))
@@ -264,13 +264,13 @@ db_set_default_thread(vp, valuep, flag)
 	db_default_thread = thread;
 	if (thread)
 		db_default_task = thread->task;
-	return(0);
+	return;
 }
 
 /*
  * convert $taskXXX[.YYY] type DDB variable to task or thread address
  */
-long
+void
 db_get_task_thread(vp, valuep, flag, ap)
 	struct db_variable	*vp;
 	db_expr_t		*valuep;
@@ -291,7 +291,7 @@ db_get_task_thread(vp, valuep, flag, ap)
 	}
 	if (ap->level <= 1) {
 	    *valuep = (db_expr_t) task;
-	    return(0);
+	    return;
 	}
 	if ((thread = db_lookup_thread_id(task, ap->suffix[1])) == THREAD_NULL){
 	    db_printf("no such thread($task%d.%d)\n",
@@ -300,7 +300,7 @@ db_get_task_thread(vp, valuep, flag, ap)
 	    /* NOTREACHED */
 	}
 	*valuep = (db_expr_t) thread;
-	return(0);
+	return;
 }
 
 #endif /* MACH_KDB */
