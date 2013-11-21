@@ -99,4 +99,6 @@ extern kern_return_t db_set_debug_state(
 
 extern void db_load_context(pcb_t pcb);
 
+extern void cnpollc(boolean_t on);
+
 #endif /* _I386_DB_INTERFACE_H_ */
