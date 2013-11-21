@@ -742,4 +742,8 @@ extern void kd_slmscd (void *from, void *to, int count);
 
 extern void kdintr(int vec);
 
+#if MACH_KDB
+extern void kdb_kintr(void);
+#endif /* MACH_KDB */
+
 #endif	/* _KD_H_ */
