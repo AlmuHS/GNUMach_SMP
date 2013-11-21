@@ -349,3 +349,21 @@ skip; /* mach_port_create_act */
 
 #endif /* MIGRATING_THREADS */
 
+/*
+ *	Only valid for receive rights.
+ *	Set the protected payload for this right to the given value.
+ */
+
+routine mach_port_set_protected_payload(
+		task		: ipc_space_t;
+		name		: mach_port_name_t;
+		payload		: natural_t);
+
+/*
+ *	Only valid for receive rights.
+ *	Clear the protected payload for this right.
+ */
+
+routine mach_port_clear_protected_payload(
+		task		: ipc_space_t;
+		name		: mach_port_name_t);

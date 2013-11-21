@@ -1564,3 +1564,76 @@ mach_port_set_syscall_right(
 }
 #endif
 #endif /* MIGRATING_THREADS */
+
+/*
+ *	Routine:	mach_port_set_protected_payload [kernel call]
+ *	Purpose:
+ *		Changes a receive right's protected payload.
+ *	Conditions:
+ *		Nothing locked.
+ *	Returns:
+ *		KERN_SUCCESS		Set protected payload.
+ *		KERN_INVALID_TASK	The space is null.
+ *		KERN_INVALID_TASK	The space is dead.
+ *		KERN_INVALID_NAME	The name doesn't denote a right.
+ *		KERN_INVALID_RIGHT	Name doesn't denote receive rights.
+ */
+
+kern_return_t
+mach_port_set_protected_payload(
+	ipc_space_t		space,
+	mach_port_t		name,
+	unsigned long		payload)
+{
+	ipc_port_t port;
+	kern_return_t kr;
+
+	if (space == IS_NULL)
+		return KERN_INVALID_TASK;
+
+	kr = ipc_port_translate_receive(space, name, &port);
+	if (kr != KERN_SUCCESS)
+		return kr;
+	/* port is locked and active */
+
+	ipc_port_set_protected_payload(port, payload);
+
+	ip_unlock(port);
+	return KERN_SUCCESS;
+}
+
+/*
+ *	Routine:	mach_port_clear_protected_payload [kernel call]
+ *	Purpose:
+ *		Clears a receive right's protected payload.
+ *	Conditions:
+ *		Nothing locked.
+ *	Returns:
+ *		KERN_SUCCESS		Clear protected payload.
+ *		KERN_INVALID_TASK	The space is null.
+ *		KERN_INVALID_TASK	The space is dead.
+ *		KERN_INVALID_NAME	The name doesn't denote a right.
+ *		KERN_INVALID_RIGHT	Name doesn't denote receive rights.
+ */
+
+kern_return_t
+mach_port_clear_protected_payload(
+	ipc_space_t		space,
+	mach_port_t		name)
+{
+	ipc_port_t port;
+	kern_return_t kr;
+
+	if (space == IS_NULL)
+		return KERN_INVALID_TASK;
+
+	kr = ipc_port_translate_receive(space, name, &port);
+	if (kr != KERN_SUCCESS)
+		return kr;
+	/* port is locked and active */
+
+	ipc_port_clear_protected_payload(port);
+
+	ip_unlock(port);
+	return KERN_SUCCESS;
+}

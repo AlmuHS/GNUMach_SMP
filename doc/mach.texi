@@ -2715,6 +2715,41 @@ In addition to the normal diagnostic return codes from the call's server
 (normally the kernel), the call may return @code{mach_msg} return codes.
 @end deftypefun
 
+@deftypefun kern_return_t mach_port_set_protected_payload (@w{ipc_space_t @var{task}}, @w{mach_port_t @var{name}}, @w{unsigned long @var{payload}})
+The function @code{mach_port_set_protected_payload} sets the protected
+payload associated with the right @var{name} to @var{payload}.
+Section @ref{Message Receive} describes how setting a protected
+payload affects the messages delivered to @var{name}.
+
+The function returns @code{KERN_SUCCESS} if the call succeeded,
+@code{KERN_INVALID_TASK} if @var{task} was invalid,
+@code{KERN_INVALID_NAME} if @var{name} did not denote a right and
+@code{KERN_INVALID_RIGHT} if @var{name} denoted a right, but not a
+receive right.
+
+The @code{mach_port_set_protected_payload} call is actually an RPC to
+@var{task}, normally a send right for a task port, but potentially any
+send right.  In addition to the normal diagnostic return codes from
+the call's server (normally the kernel), the call may return
+@code{mach_msg} return codes.
+@end deftypefun
+
+@deftypefun kern_return_t mach_port_clear_protected_payload (@w{ipc_space_t @var{task}}, @w{mach_port_t @var{name}}, @w{unsigned long @var{payload}})
+The function @code{mach_port_clear_protected_payload} clears the
+protected payload associated with the right @var{name}.
+
+The function returns @code{KERN_SUCCESS} if the call succeeded,
+@code{KERN_INVALID_TASK} if @var{task} was invalid,
+@code{KERN_INVALID_NAME} if @var{name} did not denote a right and
+@code{KERN_INVALID_RIGHT} if @var{name} denoted a right, but not a
+receive right.
+
+The @code{mach_port_clear_protected_payload} call is actually an RPC
+to @var{task}, normally a send right for a task port, but potentially
+any send right.  In addition to the normal diagnostic return codes
+from the call's server (normally the kernel), the call may return
+@code{mach_msg} return codes.
+@end deftypefun
 
 @node Port Sets
 @subsection Port Sets
