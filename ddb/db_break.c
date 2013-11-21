@@ -36,6 +36,7 @@
  */
 #include <mach/boolean.h>
 #include <machine/db_machdep.h>
+#include <machine/db_interface.h>
 #include <ddb/db_lex.h>
 #include <ddb/db_break.h>
 #include <ddb/db_access.h>
