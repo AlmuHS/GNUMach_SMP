@@ -342,5 +342,10 @@ routine mach_port_create_act(
 		user_rbuf_size	: vm_size_t;
 	out	new_act		: thread_t);
 
+#else  /* MIGRATING_THREADS */
+
+skip; /* mach_port_set_rpcinfo */
+skip; /* mach_port_create_act */
+
 #endif /* MIGRATING_THREADS */
 
