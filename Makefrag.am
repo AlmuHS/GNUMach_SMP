@@ -42,6 +42,7 @@ libkernel_a_SOURCES += \
 	ddb/db_macro.c \
 	ddb/db_macro.h \
 	ddb/db_mp.c \
+	ddb/db_mp.h \
 	ddb/db_output.c \
 	ddb/db_output.h \
 	ddb/db_print.c \

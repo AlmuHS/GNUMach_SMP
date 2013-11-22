@@ -38,6 +38,7 @@
 
 #include <ddb/db_command.h>
 #include <ddb/db_run.h>
+#include <ddb/db_mp.h>
 
 /*
  * Routines to interlock access to the kernel debugger on
@@ -53,11 +54,6 @@ int	db_slave[NCPUS] = { 0 };	/* nonzero if cpu interrupted
 					   by another cpu in debugger */
 
 int	db_enter_debug = 0;
-
-void	remote_db();		/* forward */
-void	lock_db();
-void	unlock_db();
-
 
 /*
  * Called when entering kernel debugger.
