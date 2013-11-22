@@ -1132,11 +1132,19 @@ mach_msg_trap(
 			} else
 				ip_unlock(dest_port);
 
-			kmsg->ikm_header.msgh_bits =
-				MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND_ONCE,
-					       MACH_MSG_TYPE_PORT_SEND);
+			if (! ipc_port_flag_protected_payload(dest_port)) {
+				kmsg->ikm_header.msgh_bits = MACH_MSGH_BITS(
+					MACH_MSG_TYPE_PORT_SEND_ONCE,
+					MACH_MSG_TYPE_PORT_SEND);
+				kmsg->ikm_header.msgh_local_port = dest_name;
+			} else {
+				kmsg->ikm_header.msgh_bits = MACH_MSGH_BITS(
+					MACH_MSG_TYPE_PORT_SEND_ONCE,
+					MACH_MSG_TYPE_PROTECTED_PAYLOAD);
+				kmsg->ikm_header.msgh_protected_payload =
+					dest_port->ip_protected_payload;
+			}
 			kmsg->ikm_header.msgh_remote_port = reply_name;
-			kmsg->ikm_header.msgh_local_port = dest_name;
 			goto fast_put;
 
 		    abort_request_copyout:
@@ -1170,11 +1178,19 @@ mach_msg_trap(
 				dest_name = MACH_PORT_NULL;
 			}
 
-			kmsg->ikm_header.msgh_bits =
-				MACH_MSGH_BITS(0,
-					       MACH_MSG_TYPE_PORT_SEND_ONCE);
+			if (! ipc_port_flag_protected_payload(dest_port)) {
+				kmsg->ikm_header.msgh_bits = MACH_MSGH_BITS(
+					0,
+					MACH_MSG_TYPE_PORT_SEND_ONCE);
+				kmsg->ikm_header.msgh_local_port = dest_name;
+			} else {
+				kmsg->ikm_header.msgh_bits = MACH_MSGH_BITS(
+					0,
+					MACH_MSG_TYPE_PROTECTED_PAYLOAD);
+				kmsg->ikm_header.msgh_protected_payload =
+					dest_port->ip_protected_payload;
+			}
 			kmsg->ikm_header.msgh_remote_port = MACH_PORT_NULL;
-			kmsg->ikm_header.msgh_local_port = dest_name;
 			goto fast_put;
 		    }
 
@@ -1204,12 +1220,23 @@ mach_msg_trap(
 				dest_name = MACH_PORT_NULL;
 			}
 
-			kmsg->ikm_header.msgh_bits =
-				MACH_MSGH_BITS_COMPLEX |
-				MACH_MSGH_BITS(0,
-					       MACH_MSG_TYPE_PORT_SEND_ONCE);
+			if (! ipc_port_flag_protected_payload(dest_port)) {
+				kmsg->ikm_header.msgh_bits =
+					MACH_MSGH_BITS_COMPLEX
+					| MACH_MSGH_BITS(
+						0,
+						MACH_MSG_TYPE_PORT_SEND_ONCE);
+				kmsg->ikm_header.msgh_local_port = dest_name;
+			} else {
+				kmsg->ikm_header.msgh_bits =
+					MACH_MSGH_BITS_COMPLEX
+					| MACH_MSGH_BITS(
+					    0,
+					    MACH_MSG_TYPE_PROTECTED_PAYLOAD);
+				kmsg->ikm_header.msgh_protected_payload =
+					dest_port->ip_protected_payload;
+			}
 			kmsg->ikm_header.msgh_remote_port = MACH_PORT_NULL;
-			kmsg->ikm_header.msgh_local_port = dest_name;
 
 			mr = ipc_kmsg_copyout_body(
 				(vm_offset_t) (&kmsg->ikm_header + 1),

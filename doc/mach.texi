@@ -1949,6 +1949,25 @@ loses the receive right after the message was dequeued from it, then
 right still exists, but isn't held by the caller, then
 @code{msgh_local_port} specifies @code{MACH_PORT_NULL}.
 
+Servers usually associate some state with a receive right.  To that
+end, they might use a hash table to look up the state for the port a
+message was sent to.  To optimize this, a task may associate an opaque
+@var{payload} with a receive right using the
+@code{mach_port_set_protected_payload} function.  Once this is done,
+the kernel will set the @code{msgh_protected_payload} field to
+@var{payload} when delivering a message to this right and indicate
+this by setting the local part of @code{msgh_bits} to
+@code{MACH_MSG_TYPE_PROTECTED_PAYLOAD}.
+
+The support for protected payloads was added to GNU Mach.  To preserve
+binary compatibility, the @code{msgh_local_port} and
+@code{msgh_local_port} share the same location.  This makes it
+possible to add the payload information without increasing the size of
+@code{mach_msg_header_t}.  This is an implementation detail.  Which
+field is valid is determined by the local part of the
+@code{msgh_bits}.  Existing software is not affected.  When a receive
+right is transferred to another task, its payload is cleared.
+
 Received messages are stamped with a sequence number, taken from the
 port from which the message was received.  (Messages received from a
 port set are stamped with a sequence number from the appropriate member

@@ -1799,9 +1799,17 @@ ipc_kmsg_copyout_header(
 		} else
 			ip_unlock(dest);
 
-		msg->msgh_bits = (MACH_MSGH_BITS_OTHER(mbits) |
-				  MACH_MSGH_BITS(0, MACH_MSG_TYPE_PORT_SEND));
-		msg->msgh_local_port = dest_name;
+		if (! ipc_port_flag_protected_payload(dest)) {
+			msg->msgh_bits = (MACH_MSGH_BITS_OTHER(mbits) |
+				MACH_MSGH_BITS(0, MACH_MSG_TYPE_PORT_SEND));
+			msg->msgh_local_port = dest_name;
+		} else {
+			msg->msgh_bits = (MACH_MSGH_BITS_OTHER(mbits) |
+				MACH_MSGH_BITS(
+					0, MACH_MSG_TYPE_PROTECTED_PAYLOAD));
+			msg->msgh_protected_payload =
+				dest->ip_protected_payload;
+		}
 		msg->msgh_remote_port = MACH_PORT_NULL;
 		return MACH_MSG_SUCCESS;
 	    }
@@ -1897,10 +1905,18 @@ ipc_kmsg_copyout_header(
 		} else
 			ip_unlock(dest);
 
-		msg->msgh_bits = (MACH_MSGH_BITS_OTHER(mbits) |
-				  MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND_ONCE,
-						 MACH_MSG_TYPE_PORT_SEND));
-		msg->msgh_local_port = dest_name;
+		if (! ipc_port_flag_protected_payload(dest)) {
+			msg->msgh_bits = (MACH_MSGH_BITS_OTHER(mbits) |
+				MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND_ONCE,
+					       MACH_MSG_TYPE_PORT_SEND));
+			msg->msgh_local_port = dest_name;
+		} else {
+			msg->msgh_bits = (MACH_MSGH_BITS_OTHER(mbits) |
+				MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND_ONCE,
+					MACH_MSG_TYPE_PROTECTED_PAYLOAD));
+			msg->msgh_protected_payload =
+				dest->ip_protected_payload;
+		}
 		msg->msgh_remote_port = reply_name;
 		return MACH_MSG_SUCCESS;
 	    }
@@ -1932,9 +1948,18 @@ ipc_kmsg_copyout_header(
 			dest_name = MACH_PORT_NULL;
 		}
 
-		msg->msgh_bits = (MACH_MSGH_BITS_OTHER(mbits) |
-			MACH_MSGH_BITS(0, MACH_MSG_TYPE_PORT_SEND_ONCE));
-		msg->msgh_local_port = dest_name;
+		if (! ipc_port_flag_protected_payload(dest)) {
+			msg->msgh_bits = (MACH_MSGH_BITS_OTHER(mbits) |
+				MACH_MSGH_BITS(0,
+					MACH_MSG_TYPE_PORT_SEND_ONCE));
+			msg->msgh_local_port = dest_name;
+		} else {
+			msg->msgh_bits = (MACH_MSGH_BITS_OTHER(mbits) |
+				MACH_MSGH_BITS(0,
+					MACH_MSG_TYPE_PROTECTED_PAYLOAD));
+			msg->msgh_protected_payload =
+				dest->ip_protected_payload;
+		}
 		msg->msgh_remote_port = MACH_PORT_NULL;
 		return MACH_MSG_SUCCESS;
 	    }
@@ -2224,9 +2249,16 @@ ipc_kmsg_copyout_header(
 	if (IP_VALID(reply))
 		ipc_port_release(reply);
 
-	msg->msgh_bits = (MACH_MSGH_BITS_OTHER(mbits) |
-			  MACH_MSGH_BITS(reply_type, dest_type));
-	msg->msgh_local_port = dest_name;
+	if (! ipc_port_flag_protected_payload(dest)) {
+		msg->msgh_bits = (MACH_MSGH_BITS_OTHER(mbits) |
+				  MACH_MSGH_BITS(reply_type, dest_type));
+		msg->msgh_local_port = dest_name;
+	} else {
+		msg->msgh_bits = (MACH_MSGH_BITS_OTHER(mbits) |
+				  MACH_MSGH_BITS(reply_type,
+					MACH_MSG_TYPE_PROTECTED_PAYLOAD));
+		msg->msgh_protected_payload = dest->ip_protected_payload;
+	}
 	msg->msgh_remote_port = reply_name;
     }
 
