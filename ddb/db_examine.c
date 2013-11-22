@@ -53,9 +53,6 @@ int		db_examine_count = 1;
 db_addr_t	db_examine_prev_addr = 0;
 thread_t	db_examine_thread = THREAD_NULL;
 
-extern	db_addr_t db_disasm(db_addr_t pc, boolean_t altform, task_t task);
-			/* instruction disassembler */
-
 /*
  * Examine (print) data.
  */
@@ -343,7 +340,6 @@ db_strcpy(dst, src)
 	    ;
 }
 
-void db_search(); /*forward*/
 /*
  * Search for a value in memory.
  * Syntax: search [/bhl] addr value [mask] [,count] [thread]
