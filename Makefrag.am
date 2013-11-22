@@ -275,6 +275,7 @@ libkernel_a_SOURCES += \
 	device/blkio.c \
 	device/buf.h \
 	device/chario.c \
+	device/chario.h \
 	device/cirbuf.h \
 	device/conf.h \
 	device/cons.c \

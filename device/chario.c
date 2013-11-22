@@ -49,6 +49,7 @@
 #include <device/io_req.h>
 #include <device/ds_routines.h>
 #include <device/device_reply.user.h>
+#include <device/chario.h>
 
 #include <device/tty.h>
 
@@ -61,16 +62,6 @@ short	tthiwat[NSPEEDS] =
 short	ttlowat[NSPEEDS] =
    {  30, 30, 30, 30, 30, 30, 30, 50, 50,120,120,120,125,125, 125, 125,
      125,125 };
-
-/*
- * forward declarations
- */
-void	queue_delayed_reply(
-	queue_t, io_req_t, boolean_t (*)(io_req_t));
-void	tty_output(struct tty *);
-boolean_t char_open_done(io_req_t);
-boolean_t char_read_done(io_req_t);
-boolean_t char_write_done(io_req_t);
 
 /*
  * Fake 'line discipline' switch for the benefit of old code
