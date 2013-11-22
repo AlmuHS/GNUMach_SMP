@@ -436,7 +436,7 @@ db_search(addr, size, value, mask, count, task)
 {
 	while (count-- != 0) {
 		db_prev = addr;
-		if ((db_get_task_value(addr,size,FALSE,task) & mask) == value)
+		if ((db_get_task_value(addr, size, FALSE, task) & mask) == value)
 			break;
 		addr += size;
 	}
