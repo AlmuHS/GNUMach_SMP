@@ -59,17 +59,6 @@ int		db_last_inst_count;
 int		db_load_count;
 int		db_store_count;
 
-#ifndef db_set_single_step
-void		db_set_task_single_step(/* db_regs_t *, task_t */);/* forward */
-#else
-#define	db_set_task_single_step(regs,task)	db_set_single_step(regs)
-#endif
-#ifndef db_clear_single_step
-void		db_clear_task_single_step(/* db_regs_t *, task_t */);
-#else
-#define db_clear_task_single_step(regs,task)	db_clear_single_step(regs)
-#endif
-
 boolean_t
 db_stop_at_pc(is_breakpoint, task)
 	boolean_t	*is_breakpoint;

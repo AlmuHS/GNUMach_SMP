@@ -68,6 +68,17 @@ void db_continue_cmd(
 	db_expr_t	count,
 	char *		modif);
 
+#ifndef db_set_single_step
+void		db_set_task_single_step(db_regs_t *, task_t);
+#else
+#define	db_set_task_single_step(regs, task)	db_set_single_step(regs)
+#endif
+#ifndef db_clear_single_step
+void		db_clear_task_single_step(db_regs_t *, task_t);
+#else
+#define db_clear_task_single_step(regs, task)	db_clear_single_step(regs)
+#endif
+
 extern boolean_t db_in_single_step(void);
 
 #endif /* _DDB_DB_RUN_H_ */
