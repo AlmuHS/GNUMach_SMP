@@ -1330,6 +1330,15 @@ which is conventionally used as a reply port by the recipient of the
 message.  The field must carry a send right, a send-once right,
 @code{MACH_PORT_NULL}, or @code{MACH_PORT_DEAD}.
 
+@item unsigned long msgh_protected_payload
+The @code{msgh_protected_payload} field carries a payload that is set
+by the kernel during message delivery.  The payload is an opaque
+identifier that can be used by the receiver to lookup the associated
+data structure.
+
+It is only valid in received messages.  See @ref{Message Receive} for
+further information.
+
 @item mach_port_seqno_t msgh_seqno
 The @code{msgh_seqno} field provides a sequence number for the message.
 It is only valid in received messages; its value in sent messages is
