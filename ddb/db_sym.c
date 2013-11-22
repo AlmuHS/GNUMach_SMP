@@ -50,8 +50,6 @@ int db_nsymtab = 0;
 
 db_symtab_t	*db_last_symtab;
 
-db_sym_t	db_lookup();	/* forward */
-
 /*
  * Add symbol table, with given name, to list of symbol tables.
  */

@@ -243,4 +243,6 @@ extern boolean_t aout_db_sym_init(
 	char *name,
 	char *task_addr);
 
+db_sym_t	db_lookup(char *);
+
 #endif /* _DDB_DB_SYM_H_ */
