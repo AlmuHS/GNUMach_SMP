@@ -437,6 +437,23 @@ extern kern_return_t	vm_map_machine_attribute(vm_map_t, vm_offset_t,
 /* Delete entry from map */
 extern void		vm_map_entry_delete(vm_map_t, vm_map_entry_t);
 
+kern_return_t vm_map_delete(
+    vm_map_t   	map,
+    vm_offset_t    	start,
+    vm_offset_t    	end);
+
+kern_return_t vm_map_copyout_page_list(
+    vm_map_t    	dst_map,
+    vm_offset_t 	*dst_addr,  /* OUT */
+    vm_map_copy_t   	copy);
+
+void vm_map_copy_page_discard (vm_map_copy_t copy);
+
+boolean_t vm_map_lookup_entry(
+	vm_map_t	map,
+	vm_offset_t	address,
+	vm_map_entry_t	*entry); /* OUT */
+
 /*
  *	Functions implemented as macros
  */

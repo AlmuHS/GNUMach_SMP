@@ -58,20 +58,6 @@
 #include <vm/vm_print.h>
 #endif	/* MACH_KDB */
 
-
-/* Forward declarations */
-kern_return_t vm_map_delete(
-    vm_map_t   map,
-    vm_offset_t    start,
-    vm_offset_t    end);
-
-kern_return_t vm_map_copyout_page_list(
-    vm_map_t    dst_map,
-    vm_offset_t *dst_addr,  /* OUT */
-    vm_map_copy_t   copy);
-
-void vm_map_copy_page_discard (vm_map_copy_t copy);
-
 /*
  * Macros to copy a vm_map_entry. We must be careful to correctly
  * manage the wired page count. vm_map_entry_copy() creates a new
@@ -142,8 +128,6 @@ struct kmem_cache    vm_map_cache;		/* cache for vm_map structures */
 struct kmem_cache    vm_map_entry_cache;	/* cache for vm_map_entry structures */
 struct kmem_cache    vm_map_kentry_cache;	/* cache for kernel entry structures */
 struct kmem_cache    vm_map_copy_cache; 	/* cache for vm_map_copy structures */
-
-boolean_t	vm_map_lookup_entry();	/* forward declaration */
 
 /*
  *	Placeholder object for submap operations.  This object is dropped
