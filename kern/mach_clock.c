@@ -64,8 +64,6 @@
 #include <kern/pc_sample.h>
 #endif
 
-void softclock();		/* forward */
-
 int		hz = HZ;		/* number of ticks per second */
 int		tick = (1000000 / HZ);	/* number of usec per tick */
 time_value_t	time = { 0, 0 };	/* time since bootup (uncorrected) */
