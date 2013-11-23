@@ -361,8 +361,6 @@ processor_t	processor;
 /*
  *	action_thread() shuts down processors or changes their assignment.
  */
-void	processor_doaction();	/* forward */
-
 void action_thread_continue()
 {
 	processor_t	processor;
@@ -403,11 +401,6 @@ void action_thread()
  *	is to schedule ourselves onto a cpu and then save our
  *	context back into the runqs before taking out the cpu.
  */
-#ifdef __GNUC__
-__volatile__
-#endif
-void	processor_doshutdown();	/* forward */
-
 void processor_doaction(processor)
 processor_t	processor;
 {
