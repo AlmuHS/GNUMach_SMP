@@ -391,4 +391,9 @@ extern void		thread_unfreeze(
 #define	current_space()		(current_task()->itk_space)
 #define	current_map()		(current_task()->map)
 
+#if MACH_DEBUG
+void stack_init(vm_offset_t stack);
+void stack_finalize(vm_offset_t stack);
+#endif /* MACH_DEBUG */
+
 #endif	/* _KERN_THREAD_H_ */

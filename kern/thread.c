@@ -80,9 +80,6 @@ extern void		pcb_module_init(void);
 struct thread	thread_template;
 
 #if	MACH_DEBUG
-void stack_init(vm_offset_t stack);	/* forward */
-void stack_finalize(vm_offset_t stack);	/* forward */
-
 #define	STACK_MARKER	0xdeadbeefU
 boolean_t		stack_check_usage = FALSE;
 decl_simple_lock_data(,	stack_usage_lock)
