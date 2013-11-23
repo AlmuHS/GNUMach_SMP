@@ -53,13 +53,6 @@
 
 #include <kern/eventcount.h>
 
-
-#if  NCPUS <= 1
-void simpler_thread_setrun(
-	thread_t	th,
-	boolean_t	may_preempt); /* forward */
-#endif
-
 #define	MAX_EVCS	10		/* xxx for now */
 evc_t	all_eventcounters[MAX_EVCS];
 
