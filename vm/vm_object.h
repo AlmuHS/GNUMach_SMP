@@ -245,6 +245,16 @@ extern boolean_t vm_object_coalesce(
 
 extern void vm_object_pager_wakeup(ipc_port_t  pager);
 
+void memory_object_release(
+	ipc_port_t	pager,
+	pager_request_t	pager_request,
+	ipc_port_t	pager_name);
+
+void vm_object_deactivate_pages(vm_object_t);
+
+vm_object_t vm_object_copy_delayed(
+	vm_object_t	src_object);
+
 /*
  *	Event waiting handling
  */

@@ -59,14 +59,6 @@
 #include <ddb/db_output.h>
 #endif	/* MACH_KDB */
 
-
-void memory_object_release(
-	ipc_port_t	pager,
-	pager_request_t	pager_request,
-	ipc_port_t	pager_name); /* forward */
-
-void vm_object_deactivate_pages(vm_object_t);
-
 /*
  *	Virtual memory objects maintain the actual data
  *	associated with allocated virtual memory.  A given
@@ -1238,8 +1230,6 @@ kern_return_t vm_object_copy_slowly(
  *	In/out conditions:
  *		The object should be unlocked on entry and exit.
  */
-
-vm_object_t	vm_object_copy_delayed();	/* forward declaration */
 
 boolean_t vm_object_copy_temporary(
 	vm_object_t	*_object,		/* INOUT */
