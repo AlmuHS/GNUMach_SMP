@@ -1608,7 +1608,7 @@ void pmap_page_protect(phys, prot)
 		    /*
 		     * Write-protect.
 		     */
-		    register int i = ptes_per_vm_page;
+		    int i = ptes_per_vm_page;
 
 		    do {
 #ifdef	MACH_PV_PAGETABLES
@@ -2198,7 +2198,7 @@ void pmap_collect(p)
 		 */
 		wired = 0;
 		{
-		    register pt_entry_t *ptep;
+		    pt_entry_t *ptep;
 		    for (ptep = ptp; ptep < eptp; ptep++) {
 			if (*ptep & INTEL_PTE_WIRED) {
 			    wired = 1;
@@ -2247,7 +2247,7 @@ void pmap_collect(p)
 		     * And free the pte page itself.
 		     */
 		    {
-			register vm_page_t m;
+			vm_page_t m;
 
 			vm_object_lock(pmap_object);
 			m = vm_page_lookup(pmap_object, pa);

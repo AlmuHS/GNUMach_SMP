@@ -38,8 +38,8 @@
  *  The object and page must be locked.
  */
 extern void vm_page_replace (
-    register vm_page_t mem,
-    register vm_object_t object,
-    register vm_offset_t offset);
+    vm_page_t mem,
+    vm_object_t object,
+    vm_offset_t offset);
 
 #endif /* _VM_RESIDENT_H_ */

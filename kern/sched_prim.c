@@ -490,8 +490,8 @@ void thread_sleep(
  *	xxx - DO NOT export this to users.
  */
 void thread_bind(
-	register thread_t	thread,
-	processor_t		processor)
+	thread_t	thread,
+	processor_t	processor)
 {
 	spl_t		s;
 

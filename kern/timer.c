@@ -328,7 +328,6 @@ timer_t new_timer;
  *	called only rarely, to make sure low_bits never overflows.
  */
 void timer_normalize(timer)
-register
 timer_t	timer;
 {
 	unsigned int	high_increment;
@@ -410,7 +409,6 @@ timer_save_t	save;
 void
 timer_read(timer, tv)
 timer_t timer;
-register
 time_value_t *tv;
 {
 	timer_save_data_t	temp;
@@ -505,7 +503,6 @@ void	db_thread_read_times(thread, user_time_p, system_time_p)
 
 unsigned
 timer_delta(timer, save)
-register
 timer_t	timer;
 timer_save_t	save;
 {

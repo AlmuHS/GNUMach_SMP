@@ -548,7 +548,7 @@ int unit;
 
 static void
 comparam(unit)
-register int unit;
+int unit;
 {
 	struct tty	*tp = &com_tty[unit];
 	u_short		addr = (int)tp->t_addr;

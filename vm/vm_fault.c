@@ -1301,7 +1301,7 @@ kern_return_t vm_fault(map, vaddr, fault_type, change_wiring,
 			goto done;
 		case VM_FAULT_MEMORY_SHORTAGE:
 			if (continuation != (void (*)()) 0) {
-				register vm_fault_state_t *state =
+				vm_fault_state_t *state =
 					(vm_fault_state_t *) current_thread()->ith_other;
 
 				/*

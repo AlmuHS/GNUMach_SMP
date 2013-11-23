@@ -765,7 +765,7 @@ kern_return_t thread_getstatus(thread, flavor, tstate, count)
 
 	    case i386_V86_ASSIST_STATE:
 	    {
-		register struct i386_v86_assist_state *state;
+		struct i386_v86_assist_state *state;
 
 		if (*count < i386_V86_ASSIST_STATE_COUNT)
 		    return KERN_INVALID_ARGUMENT;

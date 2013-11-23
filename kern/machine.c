@@ -409,7 +409,7 @@ __volatile__
 void	processor_doshutdown();	/* forward */
 
 void processor_doaction(processor)
-register processor_t	processor;
+processor_t	processor;
 {
 	thread_t			this_thread;
 	spl_t				s;

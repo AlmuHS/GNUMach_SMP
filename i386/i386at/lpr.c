@@ -275,7 +275,7 @@ struct tty *tp;
 
 void
 lprstop(tp, flags)
-register struct tty *tp;
+struct tty *tp;
 int	flags;
 {
 	if ((tp->t_state & TS_BUSY) && (tp->t_state & TS_TTSTOP) == 0)

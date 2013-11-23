@@ -179,7 +179,7 @@ void		insque(queue_entry_t, queue_entry_t);
  */
 #define queue_enter(head, elt, type, field)			\
 { 								\
-	register queue_entry_t prev;				\
+	queue_entry_t prev;					\
 								\
 	prev = (head)->prev;					\
 	if ((head) == prev) {					\

@@ -115,7 +115,7 @@ extern void compute_priority(
     thread_t   thread,
     boolean_t       resched);
 extern void thread_timeout_setup(
-    register thread_t   thread);
+    thread_t   thread);
 
 /*
  *	Routines defined as macros

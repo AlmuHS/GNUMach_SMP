@@ -82,7 +82,7 @@ db_breakpoint_alloc()
 
 void
 db_breakpoint_free(bkpt)
-	register db_breakpoint_t	bkpt;
+	db_breakpoint_t	bkpt;
 {
 	bkpt->link = db_free_breakpoints;
 	db_free_breakpoints = bkpt;
