@@ -40,8 +40,6 @@
 timer_t		current_timer[NCPUS];
 timer_data_t	kernel_timer[NCPUS];
 
-void timer_init(); /* forward */
-
 /*
  *	init_timers initializes all non-thread timers and puts the
  *	service routine on the callout queue.  All timers must be
