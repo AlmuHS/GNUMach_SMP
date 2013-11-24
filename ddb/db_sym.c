@@ -275,10 +275,8 @@ db_name_is_ambiguous(sym_name)
 		return FALSE;
 
 	for (i = 0; i < db_nsymtab; i++) {
-	  	db_sym_t sp;
-		boolean_t db_lookup;
-		db_lookup = (int)(sp = X_db_lookup(&db_symtabs[i], sym_name));
-		if (db_lookup) {
+		db_sym_t sp = X_db_lookup(&db_symtabs[i], sym_name);
+		if (sp) {
 			if (found_once)
 			{
 				db_free_symbol(sp);
