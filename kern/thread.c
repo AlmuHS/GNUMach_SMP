@@ -57,9 +57,11 @@
 #include <kern/slab.h>
 #include <kern/mach_clock.h>
 #include <vm/vm_kern.h>
+#include <vm/vm_user.h>
 #include <ipc/ipc_kmsg.h>
 #include <ipc/ipc_port.h>
 #include <ipc/mach_msg.h>
+#include <ipc/mach_port.h>
 #include <machine/machspl.h>		/* for splsched */
 #include <machine/pcb.h>
 #include <machine/thread.h>		/* for MACHINE_STACK */
@@ -848,6 +850,28 @@ kern_return_t thread_terminate(
 	ipc_thread_terminate(thread);
 	thread_deallocate(thread);
 	return KERN_SUCCESS;
+}
+
+kern_return_t thread_terminate_release(
+	thread_t thread,
+	task_t task,
+	mach_port_t thread_name,
+	mach_port_t reply_port,
+	vm_offset_t address,
+	vm_size_t size)
+{
+	if (task == NULL)
+		return KERN_INVALID_ARGUMENT;
+
+	mach_port_deallocate(task->itk_space, thread_name);
+
+	if (reply_port != MACH_PORT_NULL)
+		mach_port_destroy(task->itk_space, reply_port);
+
+	if ((address != 0) || (size != 0))
+		vm_deallocate(task->map, address, size);
+
+	return thread_terminate(thread);
 }
 
 /*

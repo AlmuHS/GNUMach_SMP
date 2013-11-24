@@ -259,6 +259,13 @@ extern kern_return_t	thread_create(
 	thread_t	*child_thread);
 extern kern_return_t	thread_terminate(
 	thread_t	thread);
+extern kern_return_t	thread_terminate_release(
+	thread_t	thread,
+	task_t		task,
+	mach_port_t	thread_name,
+	mach_port_t	reply_port,
+	vm_offset_t	address,
+	vm_size_t	size);
 extern kern_return_t	thread_suspend(
 	thread_t	thread);
 extern kern_return_t	thread_resume(
