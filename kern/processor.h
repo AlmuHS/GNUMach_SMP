@@ -322,9 +322,6 @@ extern kern_return_t processor_set_threads(
 
 void processor_doaction(processor_t processor);
 
-#ifdef __GNUC__
-__volatile__
-#endif
 void processor_doshutdown(processor_t processor);
 
 #endif	/* _KERN_PROCESSOR_H_ */
