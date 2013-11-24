@@ -37,3 +37,29 @@ type vm_cache_statistics_data_t = struct[11] of integer_t;
 routine vm_cache_statistics(
 		target_task	: vm_task_t;
 	out	vm_cache_stats	: vm_cache_statistics_data_t);
+
+/*
+ * Terminate a thread and release rights and memory.
+ *
+ * Intended to be used by threading libraries to provide a clean way for
+ * threads to terminate themselves. The resources a thread wouldn't be able
+ * to release without this call when terminating itself are its
+ * last reference to its kernel port, its reply port, and its stack.
+ *
+ * This call is semantically equivalent to :
+ *  - mach_port_deallocate(task, thread_name);
+ *  - if (reply_port != MACH_PORT_NULL)
+ *      mach_port_destroy(task, reply_port);
+ *  - if ((address != 0) || (size != 0))
+ *      vm_deallocate(task, address, size)
+ *  - thread_terminate(thread)
+ *
+ * Implemented as a simple routine so a reply port isn't required.
+ */
+simpleroutine thread_terminate_release(
+		thread		: thread_t;
+		task		: task_t;
+		thread_name	: mach_port_name_t;
+		reply_port	: mach_port_name_t;
+		address		: vm_address_t;
+		size		: vm_size_t);

@@ -43,6 +43,11 @@ mach_port_allocate (
     mach_port_t *namep);
 
 extern kern_return_t
+mach_port_destroy(
+    ipc_space_t space,
+    mach_port_t name);
+
+extern kern_return_t
 mach_port_deallocate(
     ipc_space_t space,
     mach_port_t name);
