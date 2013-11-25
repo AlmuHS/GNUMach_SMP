@@ -1426,6 +1426,7 @@ types are predefined:
 @item MACH_MSG_TYPE_STRING
 @item MACH_MSG_TYPE_STRING_C
 @item MACH_MSG_TYPE_PORT_NAME
+@item MACH_MSG_TYPE_PROTECTED_PAYLOAD
 @end table
 
 The following predefined types specify port rights, and receive special
@@ -1443,6 +1444,11 @@ should be used in preference to @code{MACH_MSG_TYPE_INTEGER_32}.
 @item MACH_MSG_TYPE_MAKE_SEND
 @item MACH_MSG_TYPE_MAKE_SEND_ONCE
 @end table
+
+The type @code{MACH_MSG_TYPE_PROTECTED_PAYLOAD} is used by the kernel
+to indicate that a delivered message carries a payload in the
+@code{msgh_protected_payload} field.  See @ref{Message Receive} for
+more information.
 
 @item msgt_size : 8
 The @code{msgt_size} field specifies the size of each datum, in bits.  For

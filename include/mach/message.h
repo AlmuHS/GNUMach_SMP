@@ -256,7 +256,9 @@ typedef	struct	{
 #define MACH_MSG_TYPE_PORT_SEND		MACH_MSG_TYPE_MOVE_SEND
 #define MACH_MSG_TYPE_PORT_SEND_ONCE	MACH_MSG_TYPE_MOVE_SEND_ONCE
 
-#define MACH_MSG_TYPE_LAST		22		/* Last assigned */
+#define MACH_MSG_TYPE_PROTECTED_PAYLOAD	23
+
+#define MACH_MSG_TYPE_LAST		23		/* Last assigned */
 
 /*
  *  A dummy value.  Mostly used to indicate that the actual value
