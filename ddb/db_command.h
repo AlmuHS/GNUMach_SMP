@@ -69,7 +69,7 @@ struct db_command {
 
 extern boolean_t db_exec_cmd_nest(char *cmd, int size);
 
-void db_fncall();
+void db_fncall(void);
 
 void db_help_cmd(void);
 

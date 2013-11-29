@@ -426,7 +426,7 @@ db_continue_cmd(addr, have_addr, count, modif)
 }
 
 boolean_t
-db_in_single_step()
+db_in_single_step(void)
 {
 	return(db_run_mode != STEP_NONE && db_run_mode != STEP_CONTINUE);
 }

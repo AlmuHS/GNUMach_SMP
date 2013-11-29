@@ -217,7 +217,7 @@ exception_try_task(_exception, code, subcode)
  */
 
 void
-exception_no_server()
+exception_no_server(void)
 {
 	ipc_thread_t self = current_thread();
 
@@ -828,7 +828,7 @@ exception_parse_reply(kmsg)
  */
 
 void
-exception_raise_continue()
+exception_raise_continue(void)
 {
 	ipc_thread_t self = current_thread();
 	ipc_port_t reply_port = self->ith_port;

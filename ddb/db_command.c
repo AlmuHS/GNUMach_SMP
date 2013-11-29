@@ -383,7 +383,7 @@ struct db_command *ptr;
 struct db_command	*db_last_command = 0;
 
 void
-db_help_cmd()
+db_help_cmd(void)
 {
 	struct db_command *cmd = db_command_table;
 
@@ -471,7 +471,7 @@ void db_error(s)
  * !expr(arg,arg,arg)
  */
 void
-db_fncall()
+db_fncall(void)
 {
 	db_expr_t	fn_addr;
 #define	MAXARGS		11

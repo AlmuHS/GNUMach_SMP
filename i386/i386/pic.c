@@ -102,7 +102,7 @@ u_short PICM_ICW4, PICS_ICW4 ;
 */
 
 void
-picinit()
+picinit(void)
 {
 
 	asm("cli");
@@ -220,7 +220,7 @@ picinit()
 #define SLAVEACTV	0xFF00
 
 void
-form_pic_mask()
+form_pic_mask(void)
 {
 	unsigned int i, j, bit, mask;
 

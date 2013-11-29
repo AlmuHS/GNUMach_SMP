@@ -36,7 +36,7 @@ struct idt_init_entry
 };
 extern struct idt_init_entry idt_inittab[];
 
-void idt_init()
+void idt_init(void)
 {
 #ifdef	MACH_PV_DESCRIPTORS
 	if (hyp_set_trap_table(kvtolin(idt_inittab)))

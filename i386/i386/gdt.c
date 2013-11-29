@@ -46,7 +46,7 @@ extern
 struct real_descriptor gdt[GDTSZ];
 
 void
-gdt_init()
+gdt_init(void)
 {
 	/* Initialize the kernel code and data segment descriptors.  */
 	fill_gdt_descriptor(KERNEL_CS,

@@ -255,7 +255,7 @@ db_watchpoint_cmd(addr, have_addr, count, modif)
 
 /* list watchpoints */
 void
-db_listwatch_cmd()
+db_listwatch_cmd(void)
 {
 	db_list_watchpoints();
 }

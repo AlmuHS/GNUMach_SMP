@@ -255,7 +255,7 @@ char	db_print_format = 'x';
 
 /*ARGSUSED*/
 void
-db_print_cmd()
+db_print_cmd(void)
 {
 	db_expr_t	value;
 	int		t;
@@ -344,7 +344,7 @@ db_strcpy(dst, src)
  * Syntax: search [/bhl] addr value [mask] [,count] [thread]
  */
 void
-db_search_cmd()
+db_search_cmd(void)
 {
 	int		t;
 	db_addr_t	addr;

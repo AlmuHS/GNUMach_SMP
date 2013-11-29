@@ -70,7 +70,7 @@ extern struct db_watchpoint *db_watchpoint_list;
 extern boolean_t db_watchpoints_inserted;
 
 void
-thread_kdb_return()
+thread_kdb_return(void)
 {
 	thread_t thread = current_thread();
 	struct i386_saved_state *regs = USER_REGS(thread);
@@ -563,7 +563,7 @@ printf("user trap %d error %d sub %08x\n", type, code, subcode);
  * AT-bus machines.
  */
 void
-i386_astintr()
+i386_astintr(void)
 {
 	int	mycpu = cpu_number();
 

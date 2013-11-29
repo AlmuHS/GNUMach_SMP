@@ -362,7 +362,7 @@ dev_map(routine, port)
  * Initialization
  */
 void
-dev_lookup_init()
+dev_lookup_init(void)
 {
 	int	i;
 

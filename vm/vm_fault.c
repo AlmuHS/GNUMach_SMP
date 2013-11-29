@@ -1136,7 +1136,7 @@ vm_fault_return_t vm_fault_page(first_object, first_offset,
  */
 
 void
-vm_fault_continue()
+vm_fault_continue(void)
 {
 	vm_fault_state_t *state =
 		(vm_fault_state_t *) current_thread()->ith_other;

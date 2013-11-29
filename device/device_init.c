@@ -46,7 +46,7 @@
 ipc_port_t	master_device_port;
 
 void
-device_service_create()
+device_service_create(void)
 {
 	master_device_port = ipc_port_alloc_kernel();
 	if (master_device_port == IP_NULL)

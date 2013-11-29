@@ -63,7 +63,7 @@ boolean_t	db_enter_debug = FALSE;
  */
 
 boolean_t
-db_enter()
+db_enter(void)
 {
 	int	mycpu = cpu_number();
 
@@ -108,7 +108,7 @@ db_enter()
  * Leave debugger.
  */
 void
-db_leave()
+db_leave(void)
 {
 	int	mycpu = cpu_number();
 
@@ -143,7 +143,7 @@ db_leave()
  */
 
 void
-remote_db() {
+remote_db(void) {
 	int	my_cpu = cpu_number();
 	int	i;
 
@@ -250,7 +250,7 @@ db_on(cpu)
  * in kernel debugger and wants to stop other CPUs
  */
 void
-remote_db_enter()
+remote_db_enter(void)
 {
 	db_slave[cpu_number()]++;
 	kdb_kintr();
@@ -267,7 +267,7 @@ remote_db_enter()
  * is active on another cpu.
  */
 void
-lock_db()
+lock_db(void)
 {
 	int	my_cpu = cpu_number();
 
@@ -298,14 +298,14 @@ lock_db()
 }
 
 void
-unlock_db()
+unlock_db(void)
 {
 	simple_unlock(&db_lock);
 }
 
 #if CONSOLE_ON_MASTER
 void
-db_console()
+db_console(void)
 {
 			if (i_bit(CBUS_PUT_CHAR, my_word)) {
 				volatile u_char c = cbus_ochar;

@@ -40,7 +40,7 @@
 struct task_tss ktss;
 
 void
-ktss_init()
+ktss_init(void)
 {
 	/* XXX temporary exception stack */
 	static int exception_stack[1024];

@@ -64,7 +64,7 @@ static Act free_acts[ACT_STATIC_KLUDGE];
 Act null_act;
 
 void
-global_act_init()
+global_act_init(void)
 {
 #ifndef ACT_STATIC_KLUDGE
 	kmem_cache_init(&act_cache, "Act", sizeof(struct Act), 0,
@@ -257,7 +257,7 @@ void act_detach(Act *cur_act)
    so RPC entry paths need not check it.
 
    Locking: Act */
-void act_execute_returnhandlers()
+void act_execute_returnhandlers(void)
 {
 	Act *act = current_act();
 
@@ -1061,7 +1061,7 @@ act_set_state_immediate(act, flavor, new_state, new_state_count)
 	return act_set_state(act, flavor, new_state, new_state_count);
 }
 
-void act_count()
+void act_count(void)
 {
 	int i;
 	Act *act;

@@ -60,13 +60,13 @@
 
 boolean_t kern_invalid_debug = FALSE;
 
-mach_port_t	null_port()
+mach_port_t	null_port(void)
 {
 	if (kern_invalid_debug) SoftDebugger("null_port mach trap");
 	return(MACH_PORT_NULL);
 }
 
-kern_return_t	kern_invalid()
+kern_return_t	kern_invalid(void)
 {
 	if (kern_invalid_debug) SoftDebugger("kern_invalid mach trap");
 	return(KERN_INVALID_ARGUMENT);

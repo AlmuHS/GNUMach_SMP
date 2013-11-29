@@ -54,7 +54,7 @@ struct	tsval	*tsp;
  *	Initialization procedure.
  */
 
-void timestamp_init()
+void timestamp_init(void)
 {
 	ts_tick_count = 0;
 }

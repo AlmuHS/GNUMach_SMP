@@ -57,7 +57,7 @@ extern void db_set_watchpoint(task_t task, db_addr_t addr, vm_size_t size);
 extern void db_delete_watchpoint(task_t task, db_addr_t addr);
 extern void db_list_watchpoints(void);
 
-void db_listwatch_cmd();
+void db_listwatch_cmd(void);
 
 void db_deletewatch_cmd(
 	db_expr_t	addr,

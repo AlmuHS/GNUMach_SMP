@@ -46,7 +46,7 @@ extern
 struct real_descriptor ldt[LDTSZ];
 
 void
-ldt_init()
+ldt_init(void)
 {
 #ifdef	MACH_PV_DESCRIPTORS
 #ifdef	MACH_PV_PAGETABLES

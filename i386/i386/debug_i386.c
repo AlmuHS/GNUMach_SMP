@@ -59,9 +59,8 @@ struct debug_trace_entry
 struct debug_trace_entry debug_trace_buf[DEBUG_TRACE_LEN];
 int debug_trace_pos;
 
-
 void
-debug_trace_reset()
+debug_trace_reset(void)
 {
 	int s = splhigh();
 	debug_trace_pos = 0;
@@ -89,7 +88,7 @@ print_entry(int i, int *col)
 }
 
 void
-debug_trace_dump()
+debug_trace_dump(void)
 {
 	int s = splhigh();
 	int i;

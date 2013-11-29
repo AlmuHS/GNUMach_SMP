@@ -86,7 +86,7 @@ extern char *kernel_cmdline;
  *
  *	Assumes that master_cpu is set.
  */
-void setup_main()
+void setup_main(void)
 {
 	thread_t		startup_thread;
 
@@ -198,7 +198,7 @@ void setup_main()
  * Now running in a thread.  Create the rest of the kernel threads
  * and the bootstrap task.
  */
-void start_kernel_threads()
+void start_kernel_threads(void)
 {
 	int	i;
 
@@ -266,7 +266,7 @@ void start_kernel_threads()
 }
 
 #if	NCPUS > 1
-void slave_main()
+void slave_main(void)
 {
 	cpu_launch_first_thread(THREAD_NULL);
 }

@@ -107,7 +107,7 @@ task_insert_send_right(
 	return name;
 }
 
-void bootstrap_create()
+void bootstrap_create(void)
 {
   int compat;
   int n = 0;
@@ -642,7 +642,7 @@ build_args_and_stack(struct exec_info *boot_exec_info,
 
 
 static void
-user_bootstrap_compat()
+user_bootstrap_compat(void)
 {
 	exec_info_t boot_exec_info;
 
@@ -744,7 +744,7 @@ boot_script_exec_cmd (void *hook, task_t task, char *path, int argc,
   return 0;
 }
 
-static void user_bootstrap()
+static void user_bootstrap(void)
 {
   struct user_bootstrap_info *info = current_thread()->saved.other;
   exec_info_t boot_exec_info;

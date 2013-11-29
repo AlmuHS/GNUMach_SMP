@@ -227,7 +227,7 @@ db_force_delete_breakpoint(bkpt, task_thd, is_task)
 }
 
 void
-db_check_breakpoint_valid()
+db_check_breakpoint_valid(void)
 {
 	db_thread_breakpoint_t tbp, tbp_next;
 	db_breakpoint_t bkpt, *bkptp;
@@ -524,7 +524,7 @@ db_delete_temp_breakpoint(task, bkpt)
  * List breakpoints.
  */
 void
-db_list_breakpoints()
+db_list_breakpoints(void)
 {
 	db_breakpoint_t	bkpt;
 
@@ -598,7 +598,7 @@ db_list_breakpoints()
 /* Delete breakpoint */
 /*ARGSUSED*/
 void
-db_delete_cmd()
+db_delete_cmd(void)
 {
 	int n;
 	thread_t thread;
@@ -731,7 +731,7 @@ db_breakpoint_cmd(addr, have_addr, count, modif)
 
 /* list breakpoints */
 void
-db_listbreak_cmd()
+db_listbreak_cmd(void)
 {
 	db_list_breakpoints();
 }

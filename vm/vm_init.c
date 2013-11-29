@@ -51,7 +51,7 @@
  *	This is done only by the first cpu up.
  */
 
-void vm_mem_bootstrap()
+void vm_mem_bootstrap(void)
 {
 	vm_offset_t	start, end;
 
@@ -79,7 +79,7 @@ void vm_mem_bootstrap()
 	memory_manager_default_init();
 }
 
-void vm_mem_init()
+void vm_mem_init(void)
 {
 	vm_object_init();
 	memory_object_proxy_init();

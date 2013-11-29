@@ -99,7 +99,7 @@ db_force_whitespace(void)
 }
 
 static void
-db_more()
+db_more(void)
 {
 	char *p;
 	boolean_t quit_output = FALSE;

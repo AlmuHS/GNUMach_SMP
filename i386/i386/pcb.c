@@ -365,7 +365,7 @@ thread_t switch_context(old, continuation, new)
 	return Switch_context(old, continuation, new);
 }
 
-void pcb_module_init()
+void pcb_module_init(void)
 {
 	kmem_cache_init(&pcb_cache, "pcb", sizeof(struct pcb), 0,
 			NULL, NULL, NULL, 0);

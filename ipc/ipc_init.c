@@ -108,7 +108,7 @@ ipc_bootstrap(void)
  */
 
 void
-ipc_init()
+ipc_init(void)
 {
 	vm_offset_t min, max;
 

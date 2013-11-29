@@ -56,7 +56,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 static boolean_t first_rtcopen_ever = TRUE;
 
 void
-rtcinit()
+rtcinit(void)
 {
 	outb(RTC_ADDR, RTC_A);
 	outb(RTC_DATA, RTC_DIV2 | RTC_RATE6);
@@ -171,7 +171,7 @@ readtodc(tp)
 }
 
 int
-writetodc()
+writetodc(void)
 {
 	struct rtc_st rtclk;
 	time_t n;

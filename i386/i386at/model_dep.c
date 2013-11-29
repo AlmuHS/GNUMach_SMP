@@ -196,7 +196,7 @@ void machine_idle (int cpu)
 #endif	/* MACH_HYP */
 }
 
-void machine_relax ()
+void machine_relax (void)
 {
 	asm volatile ("rep; nop" : : : "memory");
 }

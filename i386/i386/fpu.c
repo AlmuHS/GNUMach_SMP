@@ -101,7 +101,7 @@ volatile thread_t	fp_intr_thread = THREAD_NULL;
  * Called on each CPU.
  */
 void
-init_fpu()
+init_fpu(void)
 {
 	unsigned short	status, control;
 
@@ -185,7 +185,7 @@ init_fpu()
  * Initialize FP handling.
  */
 void
-fpu_module_init()
+fpu_module_init(void)
 {
 	kmem_cache_init(&ifps_cache, "i386_fpsave_state",
 			sizeof(struct i386_fpsave_state), 16,
@@ -495,7 +495,7 @@ ASSERT_IPL(SPL0);
  *
  * Use 53-bit precision.
  */
-void fpinit()
+void fpinit(void)
 {
 	unsigned short	control;
 
@@ -519,7 +519,7 @@ ASSERT_IPL(SPL0);
  * Coprocessor not present.
  */
 void
-fpnoextflt()
+fpnoextflt(void)
 {
 	/*
 	 * Enable FPU use.
@@ -563,7 +563,7 @@ ASSERT_IPL(SPL0);
  * Re-initialize FPU.  Floating point state is not valid.
  */
 void
-fpextovrflt()
+fpextovrflt(void)
 {
 	thread_t	thread = current_thread();
 	pcb_t		pcb;
@@ -612,7 +612,7 @@ fpextovrflt()
 }
 
 static int
-fphandleerr()
+fphandleerr(void)
 {
 	thread_t	thread = current_thread();
 
@@ -659,7 +659,7 @@ fphandleerr()
  * FPU error. Called by exception handler.
  */
 void
-fpexterrflt()
+fpexterrflt(void)
 {
 	thread_t	thread = current_thread();
 
@@ -684,7 +684,7 @@ fpexterrflt()
  * FPU error. Called by AST.
  */
 void
-fpastintr()
+fpastintr(void)
 {
 	thread_t	thread = current_thread();
 
@@ -824,7 +824,7 @@ ASSERT_IPL(SPL0);
  * Locking not needed; always called on the current thread.
  */
 void
-fp_state_alloc()
+fp_state_alloc(void)
 {
 	pcb_t	pcb = current_thread()->pcb;
 	struct i386_fpsave_state *ifps;

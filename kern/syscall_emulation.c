@@ -57,7 +57,7 @@
 /*
  *  eml_init:	initialize user space emulation code
  */
-void eml_init()
+void eml_init(void)
 {
 }
 

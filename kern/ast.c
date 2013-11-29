@@ -56,7 +56,7 @@
 volatile ast_t need_ast[NCPUS];
 
 void
-ast_init()
+ast_init(void)
 {
 #ifndef	MACHINE_AST
 	int i;
@@ -114,7 +114,7 @@ ast_taken(void)
 }
 
 void
-ast_check()
+ast_check(void)
 {
 	int			mycpu = cpu_number();
 	processor_t		myprocessor;

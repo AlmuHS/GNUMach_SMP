@@ -27,7 +27,7 @@
 /* defined in locore.S */
 extern vm_offset_t int_entry_table[];
 
-void int_init()
+void int_init(void)
 {
 	int i;
 

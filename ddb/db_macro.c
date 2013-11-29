@@ -73,7 +73,7 @@ db_lookup_macro(name)
 }
 
 void
-db_def_macro_cmd()
+db_def_macro_cmd(void)
 {
 	char *p;
 	int c;
@@ -104,7 +104,7 @@ db_def_macro_cmd()
 }
 
 void
-db_del_macro_cmd()
+db_del_macro_cmd(void)
 {
 	struct db_user_macro *mp;
 
@@ -120,7 +120,7 @@ db_del_macro_cmd()
 }
 
 void
-db_show_macro()
+db_show_macro(void)
 {
 	struct db_user_macro *mp;
 	int  t;

@@ -201,7 +201,7 @@ db_read_write_variable(vp, valuep, rw_flag, ap)
 }
 
 void
-db_set_cmd()
+db_set_cmd(void)
 {
 	db_expr_t	value;
 	int		t;

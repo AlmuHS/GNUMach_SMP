@@ -108,7 +108,7 @@ struct tty       kd_tty;
 extern boolean_t rebootflag;
 
 static void charput(), charmvup(), charmvdown(), charclear(), charsetcursor();
-static void kd_noopreset();
+static void kd_noopreset(void);
 
 /*
  * These routines define the interface to the device-specific layer.
@@ -358,7 +358,7 @@ int	kd_pollc = 0;
  *	Warning: uses outb(). You may prefer to use kd_debug_put.
  */
 void
-feep()
+feep(void)
 {
 	int i;
 
@@ -369,7 +369,7 @@ feep()
 }
 
 void
-pause()
+pause(void)
 {
 	int i;
 
@@ -862,7 +862,7 @@ int	vec;
  *	drop the ack on the floor.
  */
 void
-kd_handle_ack()
+kd_handle_ack(void)
 {
 	switch (kd_ack) {
 	case SET_LEDS:
@@ -887,7 +887,7 @@ kd_handle_ack()
  *	Resend a missed keyboard command or data byte.
  */
 void
-kd_resend()
+kd_resend(void)
 {
 	if (kd_ack == NOT_WAITING)
 		printf("unexpected RESEND from keyboard\n");
@@ -1147,7 +1147,7 @@ kdstop(tp, flags)
  *
  */
 void
-kdinit()
+kdinit(void)
 {
 	unsigned char	k_comm;		/* keyboard command byte */
 
@@ -1235,7 +1235,7 @@ kd_belloff(void * param)
  *
  */
 void
-kd_bellon()
+kd_bellon(void)
 {
 	unsigned char	status;
 
@@ -1346,7 +1346,7 @@ csrpos_t newpos;
  *
  */
 void
-kd_scrollup()
+kd_scrollup(void)
 {
 	csrpos_t to;
 	csrpos_t from;
@@ -1376,7 +1376,7 @@ kd_scrollup()
  *
  */
 void
-kd_scrolldn()
+kd_scrolldn(void)
 {
 	csrpos_t to;
 	csrpos_t from;
@@ -1410,7 +1410,7 @@ kd_scrolldn()
  *
  */
 void
-kd_parseesc()
+kd_parseesc(void)
 {
 	u_char	*escp;
 
@@ -1747,7 +1747,7 @@ u_char	*cp;
 }
 
 void
-kd_tab()
+kd_tab(void)
 {
     int i;
 
@@ -1768,7 +1768,7 @@ kd_tab()
  *
  */
 void
-kd_cls()
+kd_cls(void)
 {
 	(*kd_dclear)(0, ONE_PAGE/ONE_SPACE, kd_attr);
 	return;
@@ -1786,7 +1786,7 @@ kd_cls()
  *
  */
 void
-kd_home()
+kd_home(void)
 {
 	kd_setpos(0);
 	return;
@@ -1803,7 +1803,7 @@ kd_home()
  *
  */
 void
-kd_up()
+kd_up(void)
 {
 	if (kd_curpos < ONE_LINE)
 		kd_scrolldn();
@@ -1823,7 +1823,7 @@ kd_up()
  *
  */
 void
-kd_down()
+kd_down(void)
 {
 	if (kd_curpos >= (ONE_PAGE - ONE_LINE))
 		kd_scrollup();
@@ -1843,7 +1843,7 @@ kd_down()
  *
  */
 void
-kd_right()
+kd_right(void)
 {
 	if (kd_curpos < (ONE_PAGE - ONE_SPACE))
 		kd_setpos(kd_curpos + ONE_SPACE);
@@ -1865,7 +1865,7 @@ kd_right()
  *
  */
 void
-kd_left()
+kd_left(void)
 {
 	if (0 < kd_curpos)
 		kd_setpos(kd_curpos - ONE_SPACE);
@@ -1884,7 +1884,7 @@ kd_left()
  *
  */
 void
-kd_cr()
+kd_cr(void)
 {
 	kd_setpos(BEG_OF_LINE(kd_curpos));
 	return;
@@ -1902,7 +1902,7 @@ kd_cr()
  *
  */
 void
-kd_cltobcur()
+kd_cltobcur(void)
 {
 	csrpos_t start;
 	int	count;
@@ -1925,7 +1925,7 @@ kd_cltobcur()
  *
  */
 void
-kd_cltopcur()
+kd_cltopcur(void)
 {
 	int	count;
 
@@ -1945,7 +1945,7 @@ kd_cltopcur()
  *
  */
 void
-kd_cltoecur()
+kd_cltoecur(void)
 {
 	csrpos_t i;
 	csrpos_t hold;
@@ -1968,7 +1968,7 @@ kd_cltoecur()
  *
  */
 void
-kd_clfrbcur()
+kd_clfrbcur(void)
 {
 	csrpos_t i;
 
@@ -2136,7 +2136,7 @@ int	number;
  *
  */
 void
-kd_eraseln()
+kd_eraseln(void)
 {
 	csrpos_t i;
 	csrpos_t stop;
@@ -2264,14 +2264,14 @@ unsigned char	ch;
  *	read.
  */
 unsigned char
-kd_getdata()
+kd_getdata(void)
 {
 	while ((inb(K_STATUS) & K_OBUF_FUL) == 0);
 	return(inb(K_RDWR));
 }
 
 unsigned char
-kd_cmdreg_read()
+kd_cmdreg_read(void)
 {
 int ch=KC_CMD_READ;
 
@@ -2295,7 +2295,7 @@ int ch=KC_CMD_WRITE;
 }
 
 void
-kd_mouse_drain()
+kd_mouse_drain(void)
 {
 	int i;
 	while(inb(K_STATUS) & K_IBUF_FUL);
@@ -2357,7 +2357,7 @@ u_char val;
 }
 
 void
-kd_setleds2()
+kd_setleds2(void)
 {
 	kd_senddata(kd_nextled);
 }
@@ -2381,7 +2381,7 @@ u_char val;
 }
 
 void
-kdreboot()
+kdreboot(void)
 {
 	(*kd_dreset)();
 
@@ -2494,7 +2494,7 @@ int new_button = 0;
  *	Initialization specific to character-based graphics adapters.
  */
 void
-kd_xga_init()
+kd_xga_init(void)
 {
 	csrpos_t	xga_getpos();
 	unsigned char	screen;
@@ -2567,7 +2567,7 @@ kd_xga_init()
  *
  */
 csrpos_t
-xga_getpos()
+xga_getpos(void)
 
 {
 	unsigned char	low;
@@ -2670,7 +2670,7 @@ char	chattr;
  * 	No-op reset routine for kd_dreset.
  */
 static void
-kd_noopreset()
+kd_noopreset(void)
 {
 }
 

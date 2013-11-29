@@ -507,7 +507,7 @@ vm_pageout_page(m, initial, flush)
  *	vm_page_free_wanted == 0.
  */
 
-void vm_pageout_scan()
+void vm_pageout_scan(void)
 {
 	unsigned int burst_count;
 	unsigned int want_pages;
@@ -853,7 +853,7 @@ void vm_pageout_scan()
 	}
 }
 
-void vm_pageout_scan_continue()
+void vm_pageout_scan_continue(void)
 {
 	/*
 	 *	We just paused to let the pagers catch up.
@@ -884,7 +884,7 @@ void vm_pageout_scan_continue()
  *	vm_pageout is the high level pageout daemon.
  */
 
-void vm_pageout_continue()
+void vm_pageout_continue(void)
 {
 	/*
 	 *	The pageout daemon is never done, so loop forever.
@@ -906,7 +906,7 @@ void vm_pageout_continue()
 	}
 }
 
-void vm_pageout()
+void vm_pageout(void)
 {
 	int		free_after_reserve;
 

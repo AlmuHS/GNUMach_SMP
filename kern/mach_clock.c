@@ -270,7 +270,7 @@ void clock_interrupt(usec, usermode, basepri)
  *	and corrupts it.
  */
 
-void softclock()
+void softclock(void)
 {
 	/*
 	 *	Handle timeouts.
@@ -360,7 +360,7 @@ boolean_t reset_timeout(telt)
 	}
 }
 
-void init_timeout()
+void init_timeout(void)
 {
 	simple_lock_init(&timer_lock);
 	queue_init(&timer_head.chain);
@@ -490,7 +490,7 @@ host_adjust_time(host, new_adjustment, old_adjustment)
 	return (KERN_SUCCESS);
 }
 
-void mapable_time_init()
+void mapable_time_init(void)
 {
 	if (kmem_alloc_wired(kernel_map, (vm_offset_t *) &mtime, PAGE_SIZE)
 						!= KERN_SUCCESS)
@@ -499,11 +499,11 @@ void mapable_time_init()
 	update_mapped_time(&time);
 }
 
-int timeopen()
+int timeopen(void)
 {
 	return(0);
 }
-int timeclose()
+int timeclose(void)
 {
 	return(0);
 }

@@ -65,7 +65,7 @@ int pit0_mode = PIT_C0|PIT_SQUAREMODE|PIT_READMODE ;
 unsigned int clknumb = CLKNUM;		/* interrupt interval for timer 0 */
 
 void
-clkstart()
+clkstart(void)
 {
 	unsigned char	byte;
 	unsigned long s;

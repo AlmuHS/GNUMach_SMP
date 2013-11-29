@@ -58,7 +58,7 @@ static	boolean_t consbufused = FALSE;
 #endif /* CONSBUFSIZE > 0 */
 
 void
-cninit()
+cninit(void)
 {
 	struct consdev *cp;
 	dev_ops_t cn_ops;
@@ -120,7 +120,7 @@ cninit()
 
 
 int
-cngetc()
+cngetc(void)
 {
 	if (cn_tab)
 		return ((*cn_tab->cn_getc)(cn_tab->cn_dev, 1));
@@ -130,7 +130,7 @@ cngetc()
 }
 
 int
-cnmaygetc()
+cnmaygetc(void)
 {
 	if (cn_tab)
 		return((*cn_tab->cn_getc)(cn_tab->cn_dev, 0));

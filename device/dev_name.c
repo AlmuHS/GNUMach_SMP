@@ -39,18 +39,18 @@
 /*
  * Routines placed in empty entries in the device tables
  */
-int nulldev()
+int nulldev(void)
 {
 	return (D_SUCCESS);
 }
 
-int nodev()
+int nodev(void)
 {
 	return (D_INVALID_OPERATION);
 }
 
 vm_offset_t
-nomap()
+nomap(void)
 {
 	return (D_INVALID_OPERATION);
 }

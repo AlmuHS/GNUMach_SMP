@@ -524,7 +524,7 @@ boolean_t net_deliver(nonblocking)
  *	net_kmsg_get will do a wakeup.
  */
 
-void net_ast()
+void net_ast(void)
 {
 	spl_t s;
 
@@ -553,7 +553,7 @@ void net_ast()
 	(void) splx(s);
 }
 
-void net_thread_continue()
+void net_thread_continue(void)
 {
 	for (;;) {
 		spl_t s;
@@ -579,7 +579,7 @@ void net_thread_continue()
 	}
 }
 
-void net_thread()
+void net_thread(void)
 {
 	spl_t s;
 
@@ -1492,7 +1492,7 @@ net_write(ifp, start, ior)
  * Initialize the whole package.
  */
 void
-net_io_init()
+net_io_init(void)
 {
 	vm_size_t		size;
 

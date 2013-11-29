@@ -91,7 +91,7 @@ static boolean_t initialized = FALSE;
  */
 
 void
-kbdinit()
+kbdinit(void)
 {
 	spl_t s = SPLKD();
 
@@ -343,7 +343,7 @@ u_int *p;
 }
 
 void
-X_kdb_enter()
+X_kdb_enter(void)
 {
 	u_int *u_ip, *endp;
 
@@ -354,7 +354,7 @@ X_kdb_enter()
 }
 
 void
-X_kdb_exit()
+X_kdb_exit(void)
 {
 	u_int *u_ip, *endp;
 
