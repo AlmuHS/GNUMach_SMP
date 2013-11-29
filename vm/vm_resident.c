@@ -27,7 +27,7 @@
  * the rights to redistribute these changes.
  */
 /*
- *	File:	vm/vm_page.c
+ *	File:	vm/vm_resident.c
  *	Author:	Avadis Tevanian, Jr., Michael Wayne Young
  *
  *	Resident memory management module.
