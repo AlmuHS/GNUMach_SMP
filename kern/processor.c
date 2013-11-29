@@ -66,13 +66,6 @@ processor_t	master_processor;
 processor_t	processor_ptr[NCPUS];
 
 /*
- * Forward declarations.
- */
-void quantum_set(processor_set_t);
-void pset_init(processor_set_t);
-void processor_init(processor_t, int);
-
-/*
  *	Bootstrap the processor/pset system so the scheduler can run.
  */
 void pset_sys_bootstrap(void)
