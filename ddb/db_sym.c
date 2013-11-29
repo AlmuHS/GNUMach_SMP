@@ -507,10 +507,6 @@ void db_free_symbol(db_sym_t s)
  * Switch into symbol-table specific routines
  */
 
-extern boolean_t coff_db_sym_init(), coff_db_line_at_pc();
-extern db_sym_t coff_db_lookup(), coff_db_search_symbol();
-extern void coff_db_symbol_values();
-
 void dummy_db_free_symbol(sym_t) { }
 
 struct db_sym_switch x_db[] = {
@@ -523,12 +519,7 @@ struct db_sym_switch x_db[] = {
 	  aout_db_line_at_pc, aout_db_symbol_values, dummy_db_free_symbol },
 #endif	/* DB_NO_AOUT */
 
-#ifdef	DB_NO_COFF
 	{ 0,},
-#else	/* DB_NO_COFF */
-	{ coff_db_sym_init, coff_db_lookup, coff_db_search_symbol,
-	  coff_db_line_at_pc, coff_db_symbol_values, dummy_db_free_symbol },
-#endif	/* DB_NO_COFF */
 
 	/* Machdep, not inited here */
 	{ 0,}
