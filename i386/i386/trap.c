@@ -55,6 +55,7 @@
 #include <kern/task.h>
 #include <kern/sched.h>
 #include <kern/sched_prim.h>
+#include <kern/exception.h>
 
 #if MACH_KDB
 #include <ddb/db_run.h>
@@ -62,9 +63,6 @@
 #endif
 
 #include "debug.h"
-
-extern void exception() __attribute__ ((noreturn));
-extern void thread_exception_return() __attribute__ ((noreturn));
 
 #if	MACH_KDB
 boolean_t	debug_all_traps_with_kdb = FALSE;

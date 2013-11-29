@@ -47,19 +47,8 @@
 #include <kern/processor.h>
 #include <kern/sched.h>
 #include <kern/sched_prim.h>
+#include <kern/exception.h>
 #include <mach/machine/vm_types.h>
-
-
-
-extern void exception() __attribute__ ((noreturn));
-extern void exception_try_task() __attribute__ ((noreturn));
-extern void exception_no_server() __attribute__ ((noreturn));
-
-extern void exception_raise() __attribute__ ((noreturn));
-extern kern_return_t exception_parse_reply();
-extern void exception_raise_continue() __attribute__ ((noreturn));
-extern void exception_raise_continue_slow() __attribute__ ((noreturn));
-extern void exception_raise_continue_fast() __attribute__ ((noreturn));
 
 #if	MACH_KDB
 extern void thread_kdb_return();
