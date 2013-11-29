@@ -132,9 +132,8 @@ void xprinit(void)
 
 #if	MACH_KDB
 #include <machine/setjmp.h>
+#include <ddb/db_output.h>
 
-
-extern void db_printf();
 extern jmp_buf_t *db_recover;
 
 /*
