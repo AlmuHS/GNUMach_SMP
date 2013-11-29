@@ -915,10 +915,6 @@ kern_return_t syscall_thread_depress_abort(thread)
 /*
  * Device traps -- these are way experimental.
  */
-
-extern io_return_t ds_device_write_trap();
-extern io_return_t ds_device_writev_trap();
-
 io_return_t
 syscall_device_write_request(mach_port_t	device_name,
 			     mach_port_t	reply_name,

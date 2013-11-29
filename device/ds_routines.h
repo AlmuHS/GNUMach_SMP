@@ -70,5 +70,18 @@ extern void dev_lookup_init(void);
 extern void device_pager_init(void);
 extern void io_done_thread(void);
 
+io_return_t ds_device_write_trap(
+	device_t 	dev,
+	dev_mode_t 	mode,
+	recnum_t 	recnum,
+	vm_offset_t 	data,
+	vm_size_t 	count);
+
+io_return_t ds_device_writev_trap(
+	device_t 	dev,
+	dev_mode_t 	mode,
+	recnum_t 	recnum,
+	io_buf_vec_t 	*iovec,
+	vm_size_t 	count);
 
 #endif	/* DS_ROUTINES_H */
