@@ -69,4 +69,10 @@ extern void		vm_fault_unwire(vm_map_t, vm_map_entry_t);
 extern kern_return_t	vm_fault_copy(vm_object_t, vm_offset_t, vm_size_t *,
 				      vm_object_t, vm_offset_t, vm_map_t,
 				      vm_map_version_t *, boolean_t);
+
+kern_return_t vm_fault_wire_fast(
+	vm_map_t	map,
+	vm_offset_t	va,
+	vm_map_entry_t	entry);
+
 #endif	/* _VM_VM_FAULT_H_ */

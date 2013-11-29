@@ -1495,8 +1495,6 @@ kern_return_t vm_fault(map, vaddr, fault_type, change_wiring,
 	return(kr);
 }
 
-kern_return_t	vm_fault_wire_fast();
-
 /*
  *	vm_fault_wire:
  *
