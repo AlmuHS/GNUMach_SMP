@@ -39,6 +39,7 @@
 #include <ddb/db_output.h>
 #include <ddb/db_variables.h>
 #include <ddb/db_task_thread.h>
+#include <ddb/db_macro.h>
 
 extern unsigned long	db_maxoff;
 
@@ -46,9 +47,6 @@ extern db_expr_t	db_radix;
 extern db_expr_t	db_max_width;
 extern db_expr_t	db_tab_stop_width;
 extern db_expr_t	db_max_line;
-extern void	db_set_default_thread();
-extern void	db_get_task_thread();
-extern void	db_arg_variable();
 
 #define DB_NWORK	32		/* number of work variable */
 
