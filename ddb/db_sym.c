@@ -507,7 +507,7 @@ void db_free_symbol(db_sym_t s)
  * Switch into symbol-table specific routines
  */
 
-void dummy_db_free_symbol(sym_t) { }
+void dummy_db_free_symbol(db_sym_t symbol) { }
 
 struct db_sym_switch x_db[] = {
 
