@@ -47,45 +47,33 @@
 #include <kern/thread_swap.h>
 #include <kern/timer.h>
 #include <kern/xpr.h>
+#include <kern/bootstrap.h>
 #include <kern/time_stamp.h>
+#include <kern/startup.h>
 #include <vm/vm_kern.h>
 #include <vm/vm_map.h>
 #include <vm/vm_object.h>
 #include <vm/vm_page.h>
+#include <vm/vm_init.h>
+#include <vm/vm_pageout.h>
 #include <machine/machspl.h>
 #include <machine/pcb.h>
 #include <machine/pmap.h>
 #include <machine/model_dep.h>
 #include <mach/version.h>
+#include <device/device_init.h>
 
 #if MACH_KDB
 #include <device/cons.h>
 #endif /* MACH_KDB */
-
-extern void	vm_mem_init();
-extern void	vm_mem_bootstrap();
-extern void	init_timeout();
-extern void	machine_init();
-
-extern void	idle_thread();
-extern void	vm_pageout();
-extern void	reaper_thread();
-extern void	swapin_thread();
-extern void	sched_thread();
-
-extern void	bootstrap_create();
-extern void	device_service_create();
-
-void cpu_launch_first_thread();		/* forward */
-void start_kernel_threads();	/* forward */
 
 #if ! MACH_KBD
 boolean_t reboot_on_panic = 1;
 #endif
 
 #if	NCPUS > 1
-extern void	start_other_cpus();
-extern void	action_thread();
+#include <machine/mp_desc.h>
+#include <kern/machine.h>
 #endif	/* NCPUS > 1 */
 
 /* XX */

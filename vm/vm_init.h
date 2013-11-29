@@ -16,13 +16,10 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _KERN_STARTUP_H_
-#define _KERN_STARTUP_H_
+#ifndef _VM_VM_INIT_H_
+#define _VM_VM_INIT_H_
 
-#include <kern/thread.h>
+extern void vm_mem_init(void);
+extern void vm_mem_bootstrap(void);
 
-extern void setup_main(void);
-void cpu_launch_first_thread(thread_t th);
-void start_kernel_threads(void);
-
-#endif /* _KERN_STARTUP_H_ */
+#endif /* _VM_VM_INIT_H_ */

@@ -79,4 +79,6 @@ extern struct mp_desc_table *	mp_desc_init(int);
 
 #endif /* MULTIPROCESSOR */
 
+extern void start_other_cpus(void);
+
 #endif	/* _I386_MP_DESC_H_ */

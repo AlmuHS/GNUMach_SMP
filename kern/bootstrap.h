@@ -16,13 +16,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _KERN_STARTUP_H_
-#define _KERN_STARTUP_H_
+#ifndef _KERN_BOOTSTRAP_H_
+#define _KERN_BOOTSTRAP_H_
 
-#include <kern/thread.h>
+extern void bootstrap_create(void);
 
-extern void setup_main(void);
-void cpu_launch_first_thread(thread_t th);
-void start_kernel_threads(void);
-
-#endif /* _KERN_STARTUP_H_ */
+#endif /* _KERN_BOOTSTRAP_H_ */

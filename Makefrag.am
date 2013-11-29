@@ -135,6 +135,7 @@ libkernel_a_SOURCES += \
 	kern/ast.h \
 	kern/boot_script.h \
 	kern/bootstrap.c \
+	kern/bootstrap.h \
 	kern/counters.c \
 	kern/counters.h \
 	kern/cpu_number.h \
@@ -247,6 +248,7 @@ libkernel_a_SOURCES += \
 	vm/vm_fault.c \
 	vm/vm_fault.h \
 	vm/vm_init.c \
+	vm/vm_init.h \
 	vm/vm_kern.c \
 	vm/vm_kern.h \
 	vm/vm_map.c \
@@ -290,6 +292,7 @@ libkernel_a_SOURCES += \
 	device/dev_name.c \
 	device/dev_pager.c \
 	device/device_init.c \
+	device/device_init.h \
 	device/device_port.h \
 	device/device_types_kernel.h \
 	device/ds_routines.c \

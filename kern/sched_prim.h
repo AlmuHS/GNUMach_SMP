@@ -181,4 +181,7 @@ void checkrq(run_queue_t rq, char *msg);
 void thread_check(thread_t th, run_queue_t rq);
 #endif /* DEBUG */
 
+extern void idle_thread(void);
+extern void sched_thread(void);
+
 #endif	/* _KERN_SCHED_PRIM_H_ */
