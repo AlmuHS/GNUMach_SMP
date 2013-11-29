@@ -101,8 +101,6 @@ u_char lastbuttons;		/* previous state of mouse buttons */
 #define MOUSE_DOWN	0
 #define MOUSE_ALL_UP	0x7
 
-void mouseintr();
-void mouse_enqueue();
 int mouse_baud = BCNT1200;
 
 boolean_t	mouse_char_cmd = FALSE;		/* mouse response is to cmd */
@@ -319,8 +317,6 @@ io_return_t mousegetstat(dev, flavor, data, count)
 /*
  * mouseread - dequeue and return any queued events.
  */
-boolean_t	mouse_read_done();	/* forward */
-
 int
 mouseread(dev, ior)
 	dev_t		dev;
@@ -397,7 +393,7 @@ boolean_t mouse_read_done(ior)
  * mouseintr - Get a byte and pass it up for handling.  Called at SPLKD.
  */
 void
-mouseintr(unit)
+mouseintr(int unit)
 {
 	unsigned short base_addr  = cominfo[unit]->address;
 	unsigned char id, ls;

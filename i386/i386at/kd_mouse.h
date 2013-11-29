@@ -64,4 +64,7 @@ extern io_return_t mousegetstat(
 	int 		  *data,
 	unsigned int	  *count);
 
+void mouseintr(int unit);
+boolean_t mouse_read_done(io_req_t ior);
+
 #endif /* _KD_MOUSE_H_ */
