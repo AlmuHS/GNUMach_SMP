@@ -53,6 +53,7 @@
 #include <i386/pio.h>
 #include <i386/pic.h>
 #include <i386/locore.h>
+#include <i386/trap.h>
 #include "cpu_number.h"
 
 #if 0
@@ -68,14 +69,9 @@
 #define ASSERT_IPL(L)
 #endif
 
-extern void i386_exception();
-
 int		fp_kind = FP_387;	/* 80387 present */
 struct kmem_cache	ifps_cache;	/* cache for FPU save area */
 static unsigned long	mxcsr_feature_mask = 0xffffffff;	/* Always AND user-provided mxcsr with this security mask */
-
-void fp_save(thread_t thread);
-void fp_load(thread_t thread);
 
 #if	NCPUS == 1
 volatile thread_t	fp_thread = THREAD_NULL;
