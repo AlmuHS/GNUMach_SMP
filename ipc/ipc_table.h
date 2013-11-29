@@ -108,6 +108,12 @@ extern void ipc_table_free(
 	vm_size_t	size,
 	vm_offset_t	table);
 
+void ipc_table_fill(
+	ipc_table_size_t	its,
+	unsigned int		num,
+	unsigned int		min,
+	vm_size_t		elemsize);
+
 #define	it_entries_alloc(its)						\
 	((ipc_entry_t)							\
 	 ipc_table_alloc((its)->its_size * sizeof(struct ipc_entry)))
