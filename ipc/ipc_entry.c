@@ -839,11 +839,6 @@ ipc_entry_grow_table(space)
 
 #define	printf	kdbprintf
 
-ipc_entry_t	db_ipc_object_by_name(
-			task_t		task,
-			mach_port_t	name);
-
-
 ipc_entry_t
 db_ipc_object_by_name(
 	task_t		task,

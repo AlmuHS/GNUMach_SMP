@@ -153,4 +153,9 @@ ipc_entry_dealloc(ipc_space_t space, mach_port_t name, ipc_entry_t entry);
 extern kern_return_t
 ipc_entry_grow_table(ipc_space_t space);
 
+ipc_entry_t
+db_ipc_object_by_name(
+	task_t		task,
+	mach_port_t	name);
+
 #endif	/* _IPC_IPC_ENTRY_H_ */
