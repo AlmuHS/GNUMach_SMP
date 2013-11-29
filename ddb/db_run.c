@@ -81,7 +81,7 @@ db_stop_at_pc(is_breakpoint, task)
 	    FIXUP_PC_AFTER_BREAK
 	    pc = PC_REGS(DDB_REGS);
 	}
-#endif
+#endif /* FIXUP_PC_AFTER_BREAK */
 
 	/*
 	 * Now check for a breakpoint at this address.
