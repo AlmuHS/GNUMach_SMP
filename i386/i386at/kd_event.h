@@ -30,4 +30,20 @@ extern void X_kdb_enter (void);
 
 extern void X_kdb_exit (void);
 
+extern int kbdopen(dev_t dev, int flags);
+extern void kbdclose(dev_t dev, int flags);
+extern int kbdread(dev_t dev, io_req_t ior);
+
+extern io_return_t kbdgetstat(
+	dev_t		dev,
+	int		flavor,
+	int 		*data,
+	unsigned int	*count);
+
+extern io_return_t kbdsetstat(
+	dev_t		dev,
+	int		flavor,
+	int 		*data,
+	unsigned int	count);
+
 #endif /* _KD_EVENT_H_ */

@@ -41,14 +41,14 @@ void lprstop(struct tty *tp, int flags);
 void lprstart(struct tty *tp);
 void lprattach(struct bus_device *dev);
 
-io_return_t
+extern io_return_t
 lprgetstat(
 	dev_t		dev,
 	int		flavor,
 	int		*data,
 	natural_t	*count);
 
-io_return_t
+extern io_return_t
 lprsetstat(
 	dev_t		dev,
 	int		flavor,
@@ -56,5 +56,11 @@ lprsetstat(
 	natural_t	count);
 
 void lprpr_addr(unsigned short addr);
+
+extern int lpropen(int dev, int flag, io_req_t ior);
+extern void lprclose(int dev, int flag);
+extern int lprread(int dev, io_req_t ior);
+extern int lprwrite(int	dev, io_req_t ior);
+extern int lprportdeath(dev_t dev, mach_port_t port);
 
 #endif /* _LPRREG_H_ */

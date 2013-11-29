@@ -29,48 +29,42 @@
 
 #include <mach/machine/vm_types.h>
 #include <device/conf.h>
+#include <kern/mach_clock.h>
+#include <i386at/model_dep.h>
 
-extern int	timeopen(), timeclose();
-extern vm_offset_t timemmap();
 #define	timename		"time"
 
 #ifndef	MACH_HYP
-extern int	kdopen(), kdclose(), kdread(), kdwrite();
-extern int	kdgetstat(), kdsetstat(), kdportdeath();
-extern vm_offset_t kdmmap();
+#include <i386at/kd.h>
 #define	kdname			"kd"
 
 #if	NCOM > 0
-extern int	comopen(), comclose(), comread(), comwrite();
-extern int	comgetstat(), comsetstat(), comportdeath();
+#include <i386at/com.h>
 #define	comname			"com"
 #endif	/* NCOM > 0 */
 
 #if	NLPR > 0
-extern int	lpropen(), lprclose(), lprread(), lprwrite();
-extern int	lprgetstat(), lprsetstat(), lprportdeath();
+#include <i386at/lpr.h>
 #define	lprname			"lpr"
 #endif	/* NLPR > 0 */
 #endif	/* MACH_HYP */
 
-extern int	kbdopen(), kbdclose(), kbdread();
-extern int	kbdgetstat(), kbdsetstat();
+#include <i386at/kd_event.h>
 #define	kbdname			"kbd"
 
 #ifndef	MACH_HYP
-extern int	mouseopen(), mouseclose(), mouseread(), mousegetstat();
+#include <i386at/kd_mouse.h>
 #define	mousename		"mouse"
 
-extern vm_offset_t memmmap();
+#include <i386at/mem.h>
 #define	memname			"mem"
 #endif	/* MACH_HYP */
 
-extern int	kmsgopen(), kmsgclose(), kmsgread(), kmsggetstat();
+#include <device/kmsg.h>
 #define kmsgname		"kmsg"
 
 #ifdef	MACH_HYP
-extern int	hypcnopen(), hypcnclose(), hypcnread(), hypcnwrite();
-extern int	hypcngetstat(), hypcnsetstat(), hypcnportdeath();
+#include <xen/console.h>
 #define hypcnname		"hyp"
 #endif	/* MACH_HYP */
 

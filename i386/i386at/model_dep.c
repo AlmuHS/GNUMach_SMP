@@ -620,9 +620,10 @@ void c_boot_entry(vm_offset_t bi)
 #include <mach/vm_prot.h>
 #include <vm/pmap.h>
 #include <mach/time_value.h>
+#include <i386at/model_dep.h>
 
 int
-timemmap(dev,off,prot)
+timemmap(dev, off, prot)
 	vm_prot_t prot;
 {
 	extern time_value_t *mtime;

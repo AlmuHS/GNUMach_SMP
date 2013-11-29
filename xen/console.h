@@ -37,4 +37,12 @@ extern int hypcngetc(dev_t dev, int wait);
 extern int hypcnprobe(struct consdev *cp);
 extern int hypcninit(struct consdev *cp);
 
+extern int hypcnopen(dev_t dev, int flag, io_req_t ior);
+extern int hypcnread(int dev, io_req_t ior);
+extern int hypcnwrite(int dev, io_req_t ior);
+extern int hypcnclose(int dev, int flag);
+extern io_return_t hypcngetstat(dev_t dev, int flavor, int *data, unsigned int *count);
+extern io_return_t hypcnsetstat(dev_t dev, int flavor, int *data, unsigned int count);
+extern int hypcnportdeath(dev_t dev, mach_port_t port);
+
 #endif /* XEN_CONSOLE_H */

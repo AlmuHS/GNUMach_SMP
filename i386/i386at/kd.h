@@ -76,6 +76,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <sys/types.h>
 #include <sys/time.h>
 #include <device/cons.h>
+#include <device/io_req.h>
 
 
 /*
@@ -745,5 +746,25 @@ extern void kdintr(int vec);
 #if MACH_KDB
 extern void kdb_kintr(void);
 #endif /* MACH_KDB */
+
+extern int kdopen(dev_t dev, int flag, io_req_t ior);
+extern void kdclose(int dev, int flag);
+extern int kdread(int dev, struct uio *uio);
+extern int kdwrite(int dev, struct uio *uio);
+
+extern io_return_t kdgetstat(
+	dev_t		dev,
+	int		flavor,
+	int 		*data,
+	natural_t	*count);
+
+extern io_return_t kdsetstat(
+	dev_t		dev,
+	int		flavor,
+	int *		data,
+	natural_t	count);
+
+extern int kdportdeath(dev_t dev, mach_port_t port);
+extern int kdmmap(dev_t dev, off_t off, int prot);
 
 #endif	/* _KD_H_ */

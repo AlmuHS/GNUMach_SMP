@@ -104,4 +104,7 @@ extern void mapable_time_init (void);
 extern void timeout(timer_func_t *fcn, void *param, int interval);
 extern boolean_t untimeout(timer_func_t *fcn, void *param);
 
+extern int timeopen(void);
+extern int timeclose(void);
+
 #endif /* _KERN_MACH_CLOCK_H_ */

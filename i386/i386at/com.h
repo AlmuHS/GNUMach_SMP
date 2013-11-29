@@ -56,18 +56,24 @@ void comstart(struct tty *tp);
 void comstop(struct tty *tp, int flags);
 void comattach(struct bus_device *dev);
 
-io_return_t
+extern io_return_t
 comgetstat(
 	dev_t		dev,
 	int		flavor,
 	int		*data,
 	natural_t	*count);
 
-io_return_t
+extern io_return_t
 comsetstat(
 	dev_t		dev,
 	int		flavor,
 	int 		*data,
 	natural_t	count);
+
+extern io_return_t comopen(int dev, int flag, io_req_t ior);
+extern io_return_t comclose(int dev, int flag);
+extern io_return_t comread(int dev, io_req_t ior);
+extern io_return_t comwrite(int dev, io_req_t ior);
+extern io_return_t comportdeath(dev_t dev, mach_port_t port);
 
 #endif /* _COM_H_ */
