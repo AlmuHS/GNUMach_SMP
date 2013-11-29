@@ -44,4 +44,7 @@ struct user_ldt {
 };
 typedef struct user_ldt *	user_ldt_t;
 
+extern void
+user_ldt_free(user_ldt_t user_ldt);
+
 #endif	/* _I386_USER_LDT_H_ */

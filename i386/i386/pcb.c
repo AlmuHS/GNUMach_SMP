@@ -60,12 +60,6 @@
 #include <i386/mp_desc.h>
 #endif
 
-extern thread_t	Load_context();
-extern thread_t	Switch_context();
-extern void	Thread_continue();
-
-extern void		user_ldt_free();
-
 struct kmem_cache	pcb_cache;
 
 vm_offset_t	kernel_stack[NCPUS];	/* top of active_stack */
