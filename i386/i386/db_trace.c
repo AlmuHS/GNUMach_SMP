@@ -46,13 +46,6 @@
 
 #include "trap.h"
 
-void
-db_i386_reg_value(
-	struct db_variable	*vp,
-	db_expr_t		*valuep,
-	int			flag,
-	struct db_var_aux_param	*ap);		/* forward */
-
 /*
  * Machine register set.
  */

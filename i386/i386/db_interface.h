@@ -25,6 +25,7 @@
 #include <kern/task.h>
 #include <machine/thread.h>
 #include <ddb/db_watch.h>
+#include <ddb/db_variables.h>
 
 extern boolean_t kdb_trap (
 	int 			type,
@@ -98,6 +99,13 @@ db_stack_trace_cmd(
 
 extern void
 db_reset_cpu(void);
+
+void
+db_i386_reg_value(
+	struct db_variable	*vp,
+	db_expr_t		*valuep,
+	int			flag,
+	struct db_var_aux_param	*ap);
 
 #endif
 
