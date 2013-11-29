@@ -78,6 +78,7 @@
    Both of these are 0 if none is available.  */
 #if MACH_KDB
 #include <ddb/db_sym.h>
+#include <i386/db_interface.h>
 static vm_offset_t kern_sym_start, kern_sym_end;
 #else /* MACH_KDB */
 #define kern_sym_start	0

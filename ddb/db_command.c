@@ -332,8 +332,6 @@ struct db_command db_show_cmds[] = {
 	{ (char *)0, }
 };
 
-extern void	db_reset_cpu();
-
 struct db_command db_command_table[] = {
 #ifdef DB_MACHINE_COMMANDS
   /* this must be the first entry, if it exists */

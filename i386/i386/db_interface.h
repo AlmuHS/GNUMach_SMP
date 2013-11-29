@@ -96,6 +96,9 @@ db_stack_trace_cmd(
 	db_expr_t	count,
 	char		*modif);
 
+extern void
+db_reset_cpu(void);
+
 #endif
 
 extern void db_get_debug_state(
