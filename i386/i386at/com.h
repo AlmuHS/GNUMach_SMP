@@ -29,6 +29,7 @@
 #include <mach/std_types.h>
 #include <device/cons.h>
 #include <device/tty.h>
+#include <chips/busses.h>
 
 /*
  * Set receive modem state from modem status register.
