@@ -83,11 +83,6 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 kd_event_queue kbd_queue;		/* queue of keyboard events */
 queue_head_t	kbd_read_queue = { &kbd_read_queue, &kbd_read_queue };
 
-
-void kbd_enqueue();
-io_return_t X_kdb_enter_init();
-io_return_t X_kdb_exit_init();
-
 static boolean_t initialized = FALSE;
 
 
@@ -201,9 +196,6 @@ io_return_t kbdsetstat(dev, flavor, data, count)
 /*
  * kbdread - dequeue and return any queued events.
  */
-
-boolean_t	kbd_read_done();	/* forward */
-
 int
 kbdread(dev, ior)
 	dev_t		dev;

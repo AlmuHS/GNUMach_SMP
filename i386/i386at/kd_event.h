@@ -48,4 +48,11 @@ extern io_return_t kbdsetstat(
 
 extern void kd_enqsc(Scancode sc);
 
+void kbd_enqueue(kd_event *ev);
+
+io_return_t X_kdb_enter_init(u_int *data, u_int count);
+io_return_t X_kdb_exit_init(u_int *data, u_int count);
+
+boolean_t kbd_read_done(io_req_t ior);
+
 #endif /* _KD_EVENT_H_ */
