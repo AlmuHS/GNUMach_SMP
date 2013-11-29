@@ -69,10 +69,6 @@
 #include <ipc/ipc_print.h>
 #endif
 
-extern int copyinmap();
-extern int copyoutmap();
-void ipc_msg_print(); /* forward */
-
 #define is_misaligned(x)	( ((vm_offset_t)(x)) & (sizeof(vm_offset_t)-1) )
 #define ptr_align(x)	\
 	( ( ((vm_offset_t)(x)) + (sizeof(vm_offset_t)-1) ) & ~(sizeof(vm_offset_t)-1) )
