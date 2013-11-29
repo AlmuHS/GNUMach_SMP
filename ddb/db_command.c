@@ -397,8 +397,6 @@ db_help_cmd()
 	}
 }
 
-int	(*ddb_display)();
-
 void
 db_command_loop(void)
 {
@@ -412,9 +410,6 @@ db_command_loop(void)
 	 */
 	db_prev = db_dot;
 	db_next = db_dot;
-
-	if (ddb_display)
-		(*ddb_display)();
 
 	db_cmd_loop_done = 0;
 	while (!db_cmd_loop_done) {
