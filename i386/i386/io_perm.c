@@ -66,6 +66,7 @@
 
 #include "io_perm.h"
 #include "gdt.h"
+#include "pcb.h"
 
 /* Our device emulation ops.  See below, at the bottom of this file.  */
 static struct device_emulation_ops io_perm_device_emulation_ops;
@@ -218,11 +219,6 @@ i386_io_perm_create (ipc_port_t master_port, io_port_t from, io_port_t to,
 
   return KERN_SUCCESS;
 }
-
-
-/* From pcb.c.  */
-extern void update_ktss_iopb (unsigned char *new_iopb, int last);
-
 
 /* Modify the I/O permissions for TARGET_TASK.  If ENABLE is TRUE, the
    permission to acces the I/O ports specified by IO_PERM is granted,

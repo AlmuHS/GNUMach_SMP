@@ -70,4 +70,6 @@ extern vm_offset_t stack_detach (thread_t thread);
 
 extern void switch_ktss (pcb_t pcb);
 
+extern void update_ktss_iopb (unsigned char *new_iopb, io_port_t size);
+
 #endif /* _I386_PCB_H_ */
