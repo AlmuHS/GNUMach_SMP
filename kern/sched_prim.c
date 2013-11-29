@@ -70,17 +70,7 @@ int		sched_usec;
 
 thread_t	sched_thread_id;
 
-void set_pri(thread_t, int, boolean_t);
-void do_thread_scan(void);
-
-thread_t	choose_pset_thread();
-
 timer_elt_data_t recompute_priorities_timer;
-
-#if	DEBUG
-void checkrq(run_queue_t, char *);
-void thread_check(thread_t, run_queue_t);
-#endif
 
 /*
  *	State machine

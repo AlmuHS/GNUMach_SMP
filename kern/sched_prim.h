@@ -172,4 +172,13 @@ extern void	stack_free(
 #define convert_ipc_timeout_to_ticks(millis)	\
 		(((millis) * hz + 999) / 1000)
 
+void set_pri(thread_t th, int pri, boolean_t resched);
+void do_thread_scan(void);
+thread_t choose_pset_thread(processor_t myprocessor, processor_set_t pset);
+
+#if DEBUG
+void checkrq(run_queue_t rq, char *msg);
+void thread_check(thread_t th, run_queue_t rq);
+#endif /* DEBUG */
+
 #endif	/* _KERN_SCHED_PRIM_H_ */
