@@ -35,4 +35,6 @@ extern void halt_all_cpus (boolean_t reboot) __attribute__ ((noreturn));
 
 void inittodr(void);
 
+boolean_t init_alloc_aligned(vm_size_t size, vm_offset_t *addrp);
+
 #endif /* _MODEL_DEP_H_ */

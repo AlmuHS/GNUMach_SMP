@@ -136,8 +136,6 @@ vm_offset_t int_stack_top, int_stack_high;
 extern void linux_init(void);
 #endif
 
-boolean_t init_alloc_aligned(vm_size_t size, vm_offset_t *addrp);
-
 /*
  * Find devices.  The system is alive.
  */
