@@ -42,6 +42,9 @@ i386_exception(
 	int	code,
 	int	subcode) __attribute__ ((noreturn));
 
+extern void
+thread_kdb_return(void);
+
 #endif /* !__ASSEMBLER__ */
 
 #endif	/* _I386_TRAP_H_ */

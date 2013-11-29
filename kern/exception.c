@@ -51,8 +51,8 @@
 #include <mach/machine/vm_types.h>
 
 #if	MACH_KDB
-extern void thread_kdb_return();
-extern void db_printf();
+#include <machine/trap.h>
+#include <ddb/db_output.h>
 
 boolean_t debug_user_with_kdb = FALSE;
 #endif	/* MACH_KDB */
