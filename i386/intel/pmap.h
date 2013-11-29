@@ -451,6 +451,20 @@ extern void pmap_copy_page (vm_offset_t, vm_offset_t);
  */
 extern vm_offset_t kvtophys (vm_offset_t);
 
+void pmap_remove_range(
+	pmap_t			pmap,
+	vm_offset_t		va,
+	pt_entry_t		*spte,
+	pt_entry_t		*epte);
+
+#if NCPUS > 1
+void signal_cpus(
+	cpu_set		use_list,
+	pmap_t		pmap,
+	vm_offset_t	start,
+	vm_offset_t	end);
+#endif	/* NCPUS > 1 */
+
 #endif	/* __ASSEMBLER__ */
 
 #endif	/* _PMAP_MACHINE_ */

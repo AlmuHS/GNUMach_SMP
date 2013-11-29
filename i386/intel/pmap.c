@@ -421,11 +421,6 @@ extern char end;
  */
 pt_entry_t *kernel_page_dir;
 
-void pmap_remove_range();	/* forward */
-#if	NCPUS > 1
-void signal_cpus();		/* forward */
-#endif	/* NCPUS > 1 */
-
 static inline pt_entry_t *
 pmap_pde(pmap_t pmap, vm_offset_t addr)
 {
