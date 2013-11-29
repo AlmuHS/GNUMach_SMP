@@ -47,15 +47,12 @@
 #include <kern/processor.h>
 #include <kern/sched_prim.h>	/* for thread_wakeup */
 #include <kern/ipc_tt.h>
+#include <kern/syscall_emulation.h>
 #include <vm/vm_kern.h>		/* for kernel_map, ipc_kernel_map */
 #include <machine/machspl.h>	/* for splsched */
 
 task_t	kernel_task = TASK_NULL;
 struct kmem_cache task_cache;
-
-extern void eml_init(void);
-extern void eml_task_reference(task_t, task_t);
-extern void eml_task_deallocate(task_t);
 
 void task_init(void)
 {

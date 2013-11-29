@@ -33,6 +33,7 @@
 #ifndef	__ASSEMBLER__
 #include <mach/machine/vm_types.h>
 #include <kern/lock.h>
+#include <kern/task.h>
 
 typedef	vm_offset_t	eml_routine_t;
 
@@ -56,6 +57,11 @@ typedef vm_offset_t	*emulation_vector_t; /* Variable-length array */
 #define	EML_MOD			(err_kern|err_sub(2))
 #define	EML_BAD_TASK		(EML_MOD|0x0001)
 #define	EML_BAD_CNT		(EML_MOD|0x0002)
+
+extern void eml_init(void);
+extern void eml_task_reference(task_t task, task_t parent);
+extern void eml_task_deallocate(task_t task);
+
 #endif	/* __ASSEMBLER__ */
 
 #endif	/* _KERN_SYSCALL_EMULATION_H_ */

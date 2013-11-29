@@ -36,13 +36,12 @@
  *	Declarations for letting a port represent a kernel object.
  */
 
-#include <ipc/ipc_kmsg.h>
-#include <ipc/ipc_types.h>
-
 #ifndef	_KERN_IPC_KOBJECT_H_
 #define _KERN_IPC_KOBJECT_H_
 
 #include <mach/machine/vm_types.h>
+#include <ipc/ipc_types.h>
+#include <ipc/ipc_kmsg.h>
 
 typedef vm_offset_t ipc_kobject_t;
 

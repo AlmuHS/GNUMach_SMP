@@ -38,6 +38,7 @@
 #include <kern/assert.h>
 #include <kern/lock.h>
 #include <kern/macro_help.h>
+#include <ipc/ipc_kmsg_queue.h>
 #include <ipc/ipc_kmsg.h>
 #include <ipc/ipc_thread.h>
 
