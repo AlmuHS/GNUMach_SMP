@@ -190,6 +190,7 @@ libkernel_a_SOURCES += \
 	kern/sched_prim.h \
 	kern/shuttle.h \
 	kern/startup.c \
+	kern/startup.h \
 	kern/strings.c \
 	kern/syscall_emulation.c \
 	kern/syscall_emulation.h \

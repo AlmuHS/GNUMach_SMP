@@ -48,6 +48,7 @@
 #include <kern/debug.h>
 #include <kern/mach_clock.h>
 #include <kern/printf.h>
+#include <kern/startup.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <vm/vm_page.h>
@@ -67,6 +68,7 @@
 #include <i386at/int_init.h>
 #include <i386at/kd.h>
 #include <i386at/rtc.h>
+#include <i386at/model_dep.h>
 #ifdef	MACH_XEN
 #include <xen/console.h>
 #include <xen/store.h>
@@ -124,13 +126,6 @@ static vm_offset_t avail_next
 static vm_size_t avail_remaining;
 
 extern char	version[];
-
-extern void	setup_main();
-
-void		halt_all_cpus (boolean_t reboot) __attribute__ ((noreturn));
-void		halt_cpu (void) __attribute__ ((noreturn));
-
-void		inittodr();	/* forward */
 
 int		rebootflag = 0;	/* exported to kdintr */
 
@@ -620,7 +615,6 @@ void c_boot_entry(vm_offset_t bi)
 #include <mach/vm_prot.h>
 #include <vm/pmap.h>
 #include <mach/time_value.h>
-#include <i386at/model_dep.h>
 
 int
 timemmap(dev, off, prot)

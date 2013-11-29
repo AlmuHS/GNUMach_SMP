@@ -16,16 +16,9 @@
  * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef _MODEL_DEP_H_
-#define _MODEL_DEP_H_
+#ifndef _KERN_STARTUP_H_
+#define _KERN_STARTUP_H_
 
-#include <mach/vm_prot.h>
+extern void setup_main(void);
 
-extern int timemmap(int dev, int off, vm_prot_t prot);
-
-void halt_all_cpus(boolean_t reboot) __attribute__ ((noreturn));
-void halt_cpu(void) __attribute__ ((noreturn));
-
-void inittodr(void);
-
-#endif /* _MODEL_DEP_H_ */
+#endif /* _KERN_STARTUP_H_ */
