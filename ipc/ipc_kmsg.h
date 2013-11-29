@@ -140,8 +140,7 @@ MACRO_BEGIN								\
 MACRO_END
 
 /*
- *	struct ipc_kmsg_queue is defined in kern/thread.h instead of here,
- *	so that kern/thread.h doesn't have to include ipc/ipc_kmsg.h.
+ *	struct ipc_kmsg_queue is defined in ipc/ipc_kmsg_queue.h
  */
 
 #include <ipc/ipc_kmsg_queue.h>
