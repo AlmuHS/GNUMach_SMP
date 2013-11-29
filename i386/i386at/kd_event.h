@@ -46,4 +46,6 @@ extern io_return_t kbdsetstat(
 	int 		*data,
 	unsigned int	count);
 
+extern void kd_enqsc(Scancode sc);
+
 #endif /* _KD_EVENT_H_ */

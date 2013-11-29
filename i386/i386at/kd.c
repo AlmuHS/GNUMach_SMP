@@ -100,20 +100,15 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #define DEBUG	1			/* export feep() */
 
-void kd_enqsc();			/* enqueues a scancode */
-
 #if 0
 #define BROKEN_KEYBOARD_RESET
 #endif
 
 struct tty       kd_tty;
-extern int	rebootflag;
+extern int	 rebootflag;
 
 static void charput(), charmvup(), charmvdown(), charclear(), charsetcursor();
 static void kd_noopreset();
-boolean_t kdcheckmagic();
-
-int do_modifier (int, Scancode, boolean_t);
 
 /*
  * These routines define the interface to the device-specific layer.
@@ -2687,21 +2682,6 @@ kd_noopreset()
 {
 }
 
-
-
-/*
- * Generic routines for bitmap devices (i.e., assume no hardware
- * assist).  Assumes a simple byte ordering (i.e., a byte at a lower
- * address is to the left of the byte at the next higher address).
- * For the 82786, this works anyway if the characters are 2 bytes
- * wide.  (more bubble gum and paper clips.)
- *
- * See the comments above about SLAMBPW.
- */
-
-void	bmpch2bit(), bmppaintcsr();
-u_char	*bit2fbptr();
-
 
 /*
  * bmpput: Copy a character from the font to the frame buffer.

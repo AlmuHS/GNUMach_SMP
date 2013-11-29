@@ -77,7 +77,8 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <sys/time.h>
 #include <device/cons.h>
 #include <device/io_req.h>
-
+#include <device/buf.h>
+#include <i386at/kdsoft.h>
 
 /*
  * Where memory for various graphics adapters starts.
@@ -766,5 +767,22 @@ extern io_return_t kdsetstat(
 
 extern int kdportdeath(dev_t dev, mach_port_t port);
 extern int kdmmap(dev_t dev, off_t off, int prot);
+
+boolean_t kdcheckmagic(Scancode scancode);
+
+int do_modifier(int state, Scancode c, boolean_t up);
+
+/*
+ * Generic routines for bitmap devices (i.e., assume no hardware
+ * assist).  Assumes a simple byte ordering (i.e., a byte at a lower
+ * address is to the left of the byte at the next higher address).
+ * For the 82786, this works anyway if the characters are 2 bytes
+ * wide.  (more bubble gum and paper clips.)
+ *
+ * See the comments above (in i386at/kd.c) about SLAMBPW.
+ */
+void bmpch2bit(csrpos_t pos, short *xb, short *yb);
+void bmppaintcsr(csrpos_t pos, u_char val);
+u_char *bit2fbptr(short	xb, short yb);
 
 #endif	/* _KD_H_ */
