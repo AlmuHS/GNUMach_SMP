@@ -37,6 +37,7 @@
 #include <kern/task.h>
 #include <kern/ipc_kobject.h>
 #include <kern/ipc_tt.h>
+#include <kern/ipc_mig.h>
 #include <vm/vm_map.h>
 #include <vm/vm_user.h>
 #include <ipc/port.h>
