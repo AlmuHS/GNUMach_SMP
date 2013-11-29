@@ -246,10 +246,11 @@ db_init_default_thread(void)
  */
 /* ARGSUSED */
 void
-db_set_default_thread(vp, valuep, flag)
+db_set_default_thread(vp, valuep, flag, ap)
 	struct db_variable *vp;
 	db_expr_t	*valuep;
 	int		flag;
+	db_var_aux_param_t	ap;
 {
 	thread_t	thread;
 

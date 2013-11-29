@@ -54,7 +54,8 @@ extern void
 db_set_default_thread(
 	struct db_variable 	*vp,
 	db_expr_t		*valuep,
-	int			flag);
+	int			flag,
+	db_var_aux_param_t	ap);
 
 extern void
 db_get_task_thread(
