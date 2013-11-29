@@ -65,4 +65,10 @@ kern_return_t	device_pager_setup(
 	vm_size_t	size,
 	mach_port_t	*pager);
 
+extern void mach_device_init(void);
+extern void dev_lookup_init(void);
+extern void device_pager_init(void);
+extern void io_done_thread(void);
+
+
 #endif	/* DS_ROUTINES_H */

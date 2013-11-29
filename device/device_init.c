@@ -38,15 +38,9 @@
 #include <device/device_types.h>
 #include <device/device_port.h>
 #include <device/tty.h>
+#include <device/ds_routines.h>
+#include <device/net_io.h>
 
-
-extern void	mach_device_init();
-extern void	dev_lookup_init();
-extern void	net_io_init();
-extern void	device_pager_init();
-
-extern void	io_done_thread();
-extern void	net_thread();
 
 ipc_port_t	master_device_port;
 

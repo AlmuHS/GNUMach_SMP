@@ -43,6 +43,7 @@
 #include <kern/ipc_kobject.h>
 
 #include <device/device_emul.h>
+#include <device/ds_routines.h>
 
 /*
  * Device structure routines: reference counting, port->device.
