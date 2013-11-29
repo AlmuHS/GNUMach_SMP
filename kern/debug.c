@@ -38,7 +38,7 @@
 #include <machine/loose_ends.h>
 #include <machine/model_dep.h>
 
-extern void cnputc();
+#include <device/cons.h>
 
 #if	MACH_KDB
 extern int db_breakpoints_inserted;
