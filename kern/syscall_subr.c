@@ -63,9 +63,6 @@
  *	returned, the thread should make one more check on the
  *	lock and then be a good citizen and really suspend.
  */
-
-void thread_depress_priority(thread_t, mach_msg_timeout_t);
-
 void swtch_continue(void)
 {
 	processor_t	myprocessor;
