@@ -80,4 +80,6 @@ extern thread_t Switch_context (thread_t old, void (*continuation)(), thread_t n
 
 extern void Thread_continue (void);
 
+extern void pcb_module_init (void);
+
 #endif /* _I386_PCB_H_ */

@@ -74,8 +74,6 @@ struct kmem_cache thread_cache;
 queue_head_t		reaper_queue;
 decl_simple_lock_data(,	reaper_lock)
 
-extern void		pcb_module_init(void);
-
 /* private */
 struct thread	thread_template;
 
