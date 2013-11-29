@@ -37,6 +37,7 @@
 #include <ddb/db_output.h>
 #include <ddb/db_sym.h>
 #include <ddb/db_task_thread.h>
+#include <ddb/db_aout.h>
 
 #include <vm/vm_map.h>	/* vm_map_t */
 
@@ -287,9 +288,6 @@ db_name_is_ambiguous(sym_name)
 	return FALSE;
 }
 
-
-db_sym_t db_search_in_task_symbol();
-
 /*
  * Find the closest symbol to val, and return its name
  * and the difference between val and the symbol found.
@@ -508,10 +506,6 @@ void db_free_symbol(db_sym_t s)
 /*
  * Switch into symbol-table specific routines
  */
-
-extern boolean_t aout_db_line_at_pc();
-extern db_sym_t aout_db_lookup(), aout_db_search_symbol();
-extern void aout_db_symbol_values();
 
 extern boolean_t coff_db_sym_init(), coff_db_line_at_pc();
 extern db_sym_t coff_db_lookup(), coff_db_search_symbol();

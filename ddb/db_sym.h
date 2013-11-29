@@ -245,4 +245,11 @@ extern boolean_t aout_db_sym_init(
 
 db_sym_t	db_lookup(char *);
 
+db_sym_t
+db_search_in_task_symbol(
+	db_addr_t		val,
+	db_strategy_t		strategy,
+	db_addr_t		*offp,
+	task_t			task);
+
 #endif /* _DDB_DB_SYM_H_ */
