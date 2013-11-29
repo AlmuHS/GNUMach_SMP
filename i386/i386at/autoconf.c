@@ -38,12 +38,12 @@
 
 #if NCOM > 0
 extern	struct	bus_driver	comdriver;
-extern void			comintr();
+#include <i386at/com.h>
 #endif /* NCOM */
 
 #if NLPR > 0
 extern	struct	bus_driver	lprdriver;
-extern void			lprintr();
+#include <i386at/lpr.h>
 #endif /* NLPR */
 
 struct	bus_ctlr	bus_master_init[] = {

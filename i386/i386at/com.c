@@ -49,11 +49,7 @@
 
 #include <device/cons.h>
 
-int comprobe(), commctl();
-void comstart(struct tty *);
-void comstop(), comattach(), comintr();
 static void comparam();
-int comgetstat(), comsetstat();
 
 static vm_offset_t com_std[NCOM] = { 0 };
 struct bus_device *cominfo[NCOM];

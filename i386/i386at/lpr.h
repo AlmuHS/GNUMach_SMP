@@ -35,4 +35,26 @@
 #define STATUS(addr)	(addr + 1)
 #define INTR_ENAB(addr)	(addr + 2)
 
+extern void lprintr(int unit);
+int lprprobe(int port, struct bus_device *dev);
+void lprstop(struct tty *tp, int flags);
+void lprstart(struct tty *tp);
+void lprattach(struct bus_device *dev);
+
+io_return_t
+lprgetstat(
+	dev_t		dev,
+	int		flavor,
+	int		*data,
+	natural_t	*count);
+
+io_return_t
+lprsetstat(
+	dev_t		dev,
+	int		flavor,
+	int		*data,
+	natural_t	count);
+
+void lprpr_addr(unsigned short addr);
+
 #endif /* _LPRREG_H_ */

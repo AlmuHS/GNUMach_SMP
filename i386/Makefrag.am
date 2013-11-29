@@ -62,7 +62,7 @@ endif
 if enable_lpr
 libkernel_a_SOURCES += \
 	i386/i386at/lpr.c \
-	i386/i386at/lprreg.h
+	i386/i386at/lpr.h
 endif
 
 

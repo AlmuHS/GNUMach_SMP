@@ -44,19 +44,11 @@
 #include <i386/pio.h>
 #include <chips/busses.h>
 #include <i386at/autoconf.h>
-#include <i386at/lprreg.h>
+#include <i386at/lpr.h>
   
-
 /* 
  * Driver information for auto-configuration stuff.
  */
-
-int	lprprobe();
-void	lprstop();
-void	lprintr(), lprstart();
-void	lprattach(struct bus_device *);
-int lprgetstat(), lprsetstat();
-void lprpr_addr();
 
 struct bus_device *lprinfo[NLPR];	/* ??? */
 
@@ -282,14 +274,14 @@ int	flags;
 		tp->t_state |= TS_FLUSH;
 }
 int
-lprpr(unit)
+lprpr(int unit)
 {
 	lprpr_addr(lprinfo[unit]->address);
 	return 0;
 }
 
 void
-lprpr_addr(addr)
+lprpr_addr(unsigned short addr)
 {
 	printf("DATA(%x) %x, STATUS(%x) %x, INTR_ENAB(%x) %x\n",
 		DATA(addr), inb(DATA(addr)),
