@@ -555,6 +555,9 @@ extern void _vm_map_clip_start(
  *      the specified address; if necessary,
  *      it splits the entry into two.
  */
-void _vm_map_clip_end();
+void _vm_map_clip_end(
+	struct vm_map_header 	*map_header,
+	vm_map_entry_t		entry,
+	vm_offset_t		end);
 
 #endif	/* _VM_VM_MAP_H_ */

@@ -1031,14 +1031,12 @@ kern_return_t vm_map_enter(
  *	the specified address; if necessary,
  *	it splits the entry into two.
  */
-void _vm_map_clip_start();
 #define vm_map_clip_start(map, entry, startaddr) \
 	MACRO_BEGIN \
 	if ((startaddr) > (entry)->vme_start) \
 		_vm_map_clip_start(&(map)->hdr,(entry),(startaddr)); \
 	MACRO_END
 
-void _vm_map_copy_clip_start();
 #define vm_map_copy_clip_start(copy, entry, startaddr) \
 	MACRO_BEGIN \
 	if ((startaddr) > (entry)->vme_start) \
@@ -1086,14 +1084,12 @@ void _vm_map_clip_start(map_header, entry, start)
  *	the specified address; if necessary,
  *	it splits the entry into two.
  */
-void _vm_map_clip_end();
 #define vm_map_clip_end(map, entry, endaddr) \
 	MACRO_BEGIN \
 	if ((endaddr) < (entry)->vme_end) \
 		_vm_map_clip_end(&(map)->hdr,(entry),(endaddr)); \
 	MACRO_END
 
-void _vm_map_copy_clip_end();
 #define vm_map_copy_clip_end(copy, entry, endaddr) \
 	MACRO_BEGIN \
 	if ((endaddr) < (entry)->vme_end) \
