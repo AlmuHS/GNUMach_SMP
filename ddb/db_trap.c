@@ -43,12 +43,10 @@
 #include <ddb/db_output.h>
 #include <ddb/db_task_thread.h>
 #include <ddb/db_trap.h>
+#include <ddb/db_run.h>
 
 
 extern jmp_buf_t *db_recover;
-
-extern void		db_restart_at_pc();
-extern boolean_t	db_stop_at_pc();
 
 extern int		db_inst_count;
 extern int		db_load_count;

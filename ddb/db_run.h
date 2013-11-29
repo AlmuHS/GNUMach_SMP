@@ -81,4 +81,14 @@ void		db_clear_task_single_step(db_regs_t *, task_t);
 
 extern boolean_t db_in_single_step(void);
 
+extern void
+db_restart_at_pc(
+	boolean_t watchpt,
+	task_t	  task);
+
+extern boolean_t
+db_stop_at_pc(
+	boolean_t	*is_breakpoint,
+	task_t		task);
+
 #endif /* _DDB_DB_RUN_H_ */
