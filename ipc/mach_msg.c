@@ -46,6 +46,7 @@
 #include <kern/printf.h>
 #include <kern/sched_prim.h>
 #include <kern/ipc_sched.h>
+#include <kern/exception.h>
 #include <vm/vm_map.h>
 #include <ipc/ipc_kmsg.h>
 #include <ipc/ipc_marequest.h>
@@ -60,9 +61,6 @@
 #include <ipc/mach_msg.h>
 #include <machine/locore.h>
 #include <machine/pcb.h>
-
-extern void exception_raise_continue();
-extern void exception_raise_continue_fast();
 
 /*
  *	Routine:	mach_msg_send

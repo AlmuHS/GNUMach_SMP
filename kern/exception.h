@@ -19,6 +19,9 @@
 #ifndef _KERN_EXCEPTION_H_
 #define _KERN_EXCEPTION_H_
 
+#include <ipc/ipc_types.h>
+#include <ipc/ipc_kmsg.h>
+
 extern void
 exception(
 	integer_t 	_exception,
