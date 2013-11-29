@@ -73,6 +73,8 @@ extern boolean_t db_exec_cmd_nest(char *cmd, int size);
 
 void db_fncall();
 
+void db_help_cmd(void);
+
 #endif /* MACH_KDB */
 
 #endif /* _DDB_DB_COMMAND_H_ */

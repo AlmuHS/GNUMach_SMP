@@ -88,6 +88,14 @@ extern void db_dr (
 	int		type,
 	int		len,
 	int		persistence);
+
+extern void
+db_stack_trace_cmd(
+	db_expr_t	addr,
+	boolean_t	have_addr,
+	db_expr_t	count,
+	char		*modif);
+
 #endif
 
 extern void db_get_debug_state(

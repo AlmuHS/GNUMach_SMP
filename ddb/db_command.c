@@ -54,6 +54,7 @@
 #include <ddb/db_cond.h>
 
 #include <machine/setjmp.h>
+#include <machine/db_interface.h>
 #include <kern/debug.h>
 #include <kern/thread.h>
 #include <ipc/ipc_pset.h> /* 4proto */
@@ -331,8 +332,6 @@ struct db_command db_show_cmds[] = {
 	{ (char *)0, }
 };
 
-void		db_help_cmd();
-extern void	db_stack_trace_cmd();
 extern void	db_reset_cpu();
 
 struct db_command db_command_table[] = {
