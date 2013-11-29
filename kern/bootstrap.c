@@ -37,6 +37,7 @@
 #include <mach/message.h>
 #include <machine/locore.h>
 #include <machine/vm_param.h>
+#include <machine/pcb.h>
 #include <ipc/ipc_port.h>
 #include <ipc/mach_port.h>
 #include <kern/debug.h>
@@ -519,9 +520,6 @@ static void copy_bootstrap(void *e, exec_info_t *boot_exec_info)
 /*
  * Allocate the stack, and build the argument list.
  */
-extern vm_offset_t	user_stack_low();
-extern vm_offset_t	set_user_regs();
-
 static void
 build_args_and_stack(struct exec_info *boot_exec_info,
 		     char **argv, char **envp)

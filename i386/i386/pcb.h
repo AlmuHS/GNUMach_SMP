@@ -28,6 +28,8 @@
 
 #include <sys/types.h>
 #include <mach/exec/exec.h>
+#include <mach/thread_status.h>
+#include <machine/thread.h>
 
 extern void pcb_init (thread_t thread);
 
