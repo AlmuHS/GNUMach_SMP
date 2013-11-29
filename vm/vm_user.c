@@ -224,8 +224,6 @@ kern_return_t vm_machine_attribute(map, address, size, attribute, value)
 	vm_machine_attribute_t	attribute;
 	vm_machine_attribute_val_t* value;		/* IN/OUT */
 {
-	extern kern_return_t	vm_map_machine_attribute();
-
 	if (map == VM_MAP_NULL)
 		return(KERN_INVALID_ARGUMENT);
 
