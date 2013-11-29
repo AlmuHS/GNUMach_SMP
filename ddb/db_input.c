@@ -133,7 +133,7 @@ db_delete_line()
 		 db_history_curr = db_history + \
 		 db_history_size - 1; \
        } while (0)
-#endif
+#endif /* DB_HISTORY_SIZE */
 
 /* returns TRUE at end-of-line */
 boolean_t
@@ -251,7 +251,7 @@ db_inputchar(c)
 			db_putstring(db_lbuf_start, db_le - db_lbuf_start);
 		}
 		break;
-#endif
+#endif /* DB_HISTORY_SIZE */
 	    case CTRL('r'):
 		db_putstring("^R\n", 3);
 		if (db_le > db_lbuf_start) {
@@ -304,7 +304,7 @@ db_inputchar(c)
 			*db_history_last++ = '\0';
 		}
 		db_history_curr = db_history_last;
-#endif
+#endif /* DB_HISTORY_SIZE */
 		*db_le++ = c;
 		return (TRUE);
 	    default:
