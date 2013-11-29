@@ -759,8 +759,6 @@ mach_port_mod_refs(
  */
 
 kern_return_t
-mach_port_get_receive_status(ipc_space_t, mach_port_t, mach_port_status_t *);
-kern_return_t
 old_mach_port_get_receive_status(space, name, statusp)
 	ipc_space_t space;
 	mach_port_t name;

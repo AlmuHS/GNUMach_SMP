@@ -59,4 +59,10 @@ mach_port_insert_right(
     ipc_port_t      poly,
     mach_msg_type_name_t    polyPoly);
 
+kern_return_t
+mach_port_get_receive_status(
+	ipc_space_t 		space,
+	mach_port_t 		name,
+	mach_port_status_t 	*statusp);
+
 #endif /* _IPC_MACH_PORT_H_ */
