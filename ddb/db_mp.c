@@ -276,7 +276,7 @@ lock_db()
 	    if (my_cpu == master_cpu) {
 		db_console();
 	    }
-#endif
+#endif /* CONSOLE_ON_MASTER */
 	    if (db_cpu != -1 && db_cpu != my_cpu)
 		continue;
 
@@ -288,9 +288,9 @@ lock_db()
 	    else {
 		simple_lock(&db_lock);
 	    }
-#else
+#else /* CONSOLE_ON_MASTER */
 	    simple_lock(&db_lock);
-#endif
+#endif /* CONSOLE_ON_MASTER */
 	    if (db_cpu == -1 || db_cpu == my_cpu)
 		break;
 	    simple_unlock(&db_lock);
