@@ -62,9 +62,6 @@ static struct vm_map	kernel_map_store;
 vm_map_t		kernel_map = &kernel_map_store;
 vm_map_t	kernel_pageable_map;
 
-extern void kmem_alloc_pages();
-extern void kmem_remap_pages();
-
 /*
  *	projected_buffer_allocate
  *

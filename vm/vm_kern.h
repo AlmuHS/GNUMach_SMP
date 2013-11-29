@@ -82,4 +82,18 @@ extern boolean_t projected_buffer_in_range(
         vm_offset_t start,
 		vm_offset_t end);
 
+extern void kmem_alloc_pages(
+	vm_object_t	object,
+	vm_offset_t	offset,
+	vm_offset_t	start,
+	vm_offset_t	end,
+	vm_prot_t	protection);
+
+extern void kmem_remap_pages(
+	vm_object_t	object,
+	vm_offset_t	offset,
+	vm_offset_t	start,
+	vm_offset_t	end,
+	vm_prot_t	protection);
+
 #endif	/* _VM_VM_KERN_H_ */
