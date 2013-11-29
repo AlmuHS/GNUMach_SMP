@@ -175,6 +175,7 @@ libkernel_a_SOURCES += \
 	kern/printf.c \
 	kern/printf.h \
 	kern/priority.c \
+	kern/priority.h \
 	kern/processor.c \
 	kern/processor.h \
 	kern/profile.c \

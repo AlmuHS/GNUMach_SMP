@@ -54,6 +54,7 @@
 #include <kern/thread.h>
 #include <kern/time_stamp.h>
 #include <kern/timer.h>
+#include <kern/priority.h>
 #include <vm/vm_kern.h>
 #include <sys/time.h>
 #include <machine/mach_param.h>	/* HZ */
@@ -148,7 +149,6 @@ void clock_interrupt(usec, usermode, basepri)
 	 *	Increment the CPU time statistics.
 	 */
 	{
-	    extern void	thread_quantum_update(); /* in priority.c */
 	    int		state;
 
 	    if (usermode)
