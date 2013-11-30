@@ -49,6 +49,9 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * disk.h
  */
 
+#ifndef _MACH_I386_DISK_H_
+#define _MACH_I386_DISK_H_
+
 #if	defined(__linux__) || defined(__masix__)
 #define PART_DISK	4		/* partition number for entire disk */
 #else
@@ -118,3 +121,4 @@ struct absio {
 	char	*abs_buf;		/* Sector buffer */
 };
 
+#endif /* _MACH_I386_DISK_H_ */

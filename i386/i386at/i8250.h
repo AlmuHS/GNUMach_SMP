@@ -49,6 +49,9 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * Header file for i8250 chip
  */
 
+#ifndef _I8250_H_
+#define _I8250_H_
+
 /* port offsets from the base i/o address */
 
 #define RDAT		0
@@ -127,3 +130,5 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define BCNT2400	0x30
 #define BCNT4800	0x18
 #define BCNT9600	0x0c
+
+#endif /* _I8250_H_ */

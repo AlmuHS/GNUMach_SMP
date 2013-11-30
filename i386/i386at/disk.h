@@ -49,6 +49,9 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * disk.h
  */
 
+#ifndef _DISK_H_
+#define _DISK_H_
+
 /* Grab the public part.  */
 #include <mach/machine/disk.h>
 
@@ -184,3 +187,4 @@ struct  mboot {				     /* master boot block */
 	u_short	signature;
 };
 
+#endif /* _DISK_H_ */
