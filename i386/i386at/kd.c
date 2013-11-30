@@ -1197,7 +1197,7 @@ kdinit()
 	   screen rather than at the cursor position, so that's where
 	   we should start.  */
 	kd_setpos(ONE_PAGE - ONE_LINE); printf("\n");
-#endif
+#endif /* ENABLE_IMMEDIATE_CONSOLE */
 
 	cnsetleds(kd_state = KS_NORMAL);
 					/* clear the LEDs AFTER we

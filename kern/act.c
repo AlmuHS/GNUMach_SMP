@@ -1114,6 +1114,6 @@ get_next_act(sp)
 			return act;
 	}
 }
-#endif
+#endif /* ACTWATCH */
 
 #endif /* MIGRATING_THREADS */

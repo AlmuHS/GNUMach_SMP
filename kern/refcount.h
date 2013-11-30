@@ -65,6 +65,6 @@ typedef struct RefCount RefCount;
 		if (new_value == 0) { func; }		\
 	MACRO_END
 
-#endif
+#endif /* MACHINE_REFCOUNT */
 
 #endif _KERN_REFCOUNT_H_

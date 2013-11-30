@@ -27,5 +27,5 @@
 #define _IPC_KMSG_QUEUE_H_
 struct ipc_kmsg_queue {
 	struct ipc_kmsg *ikmq_base; };
-#endif
+#endif /* _IPC_KMSG_QUEUE_H_ */
 

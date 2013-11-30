@@ -1206,6 +1206,6 @@ task_ras_control(
 	break;
     }
     task_unlock(task);
-#endif
+#endif /* FAST_TAS */
     return ret;
 }

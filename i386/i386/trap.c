@@ -400,7 +400,7 @@ printf("user trap %d error %d sub %08x\n", type, code, subcode);
 		    if (kdb_trap(type, regs->err, regs))
 			return 0;
 		}
-#endif
+#endif /* MACH_KDB */
 		exc = EXC_BREAKPOINT;
 		code = EXC_I386_SGL;
 		break;
@@ -422,7 +422,7 @@ printf("user trap %d error %d sub %08x\n", type, code, subcode);
 			return 0;
 		}
 	    }
-#endif
+#endif /* MACH_KDB */
 		exc = EXC_BREAKPOINT;
 		code = EXC_I386_BPT;
 		break;
@@ -521,7 +521,7 @@ printf("user trap %d error %d sub %08x\n", type, code, subcode);
 			}
 			return 0;
 		}
-#endif
+#endif /* MACH_PV_PAGETABLES */
 
 	    case T_FLOATING_POINT_ERROR:
 		fpexterrflt();
@@ -647,4 +647,4 @@ interrupted_pc(t)
  	iss = USER_REGS(t);
  	return iss->eip;
 }
-#endif	/* MACH_PCSAMPLE > 0*/
+#endif	/* MACH_PCSAMPLE > 0 */
