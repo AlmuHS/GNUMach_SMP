@@ -38,7 +38,6 @@
 #include <mach/port.h>
 #include <device/dev_hdr.h>
 
-extern device_t	dev_port_lookup(ipc_port_t);
 extern ipc_port_t convert_device_to_port(device_t);
 
 #endif	/* _DEVICE_DEVICE_TYPES_KERNEL_H_ */
