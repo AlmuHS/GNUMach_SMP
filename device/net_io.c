@@ -1158,13 +1158,20 @@ net_set_filter(ifp, rcv_port, priority, filter, filter_count)
     net_rcv_port_t		infp, my_infp;
     net_rcv_port_t		nextfp;
     net_hash_header_t		hhp;
-    net_hash_entry_t		entp, hash_entp;
+    net_hash_entry_t		entp;
     net_hash_entry_t		*head, nextentp;
     queue_entry_t		dead_infp, dead_entp;
     int				i;
     int				ret, is_new_infp;
     io_return_t			rval;
     boolean_t			in, out;
+
+    /* Initialize hash_entp to NULL to quiet GCC
+     * warning about uninitialized variable. hash_entp is only
+     * used when match != 0; in that case it is properly initialized
+     * by kmem_cache_alloc().
+     */
+    net_hash_entry_t hash_entp = NULL;
 
     /*
      * Check the filter syntax.
