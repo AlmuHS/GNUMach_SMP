@@ -1240,7 +1240,7 @@ ipc_port_print(port)
 	printf(", sndrs=0x%x", port->ip_blocked.ithq_base);
 	printf(", kobj=0x%x\n", port->ip_kobject);
 
-	indent -=2;
+	indent -= 2;
 }
 
 #endif	/* MACH_KDB */
