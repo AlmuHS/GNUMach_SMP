@@ -32,6 +32,7 @@
 #define	_DB_VARIABLES_H_
 
 #include <kern/thread.h>
+#include <machine/db_machdep.h>
 
 /*
  * Debugger variables.
