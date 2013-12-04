@@ -21,7 +21,6 @@
 
 #include <mach/kern_return.h>
 #include <mach/message.h>
-#include <mach/machine/rpc.h>
 
 /*
  * Description of a port passed up by the leaky-register RPC path
