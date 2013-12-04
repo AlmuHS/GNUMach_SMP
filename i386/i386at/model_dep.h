@@ -23,8 +23,15 @@
 
 extern int timemmap(int dev, int off, vm_prot_t prot);
 
-void halt_all_cpus(boolean_t reboot) __attribute__ ((noreturn));
-void halt_cpu(void) __attribute__ ((noreturn));
+/*
+ * Halt a cpu.
+ */
+extern void halt_cpu (void) __attribute__ ((noreturn));
+
+/*
+ * Halt the system or reboot.
+ */
+extern void halt_all_cpus (boolean_t reboot) __attribute__ ((noreturn));
 
 void inittodr(void);
 

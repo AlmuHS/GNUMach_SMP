@@ -36,16 +36,6 @@ extern void machine_init (void);
 /* Conserve power on processor CPU.  */
 extern void machine_idle (int cpu);
 
-/*
- * Halt a cpu.
- */
-extern void halt_cpu (void) __attribute__ ((noreturn));
-
-/*
- * Halt the system or reboot.
- */
-extern void halt_all_cpus (boolean_t reboot) __attribute__ ((noreturn));
-
 extern void resettodr (void);
 
 extern void startrtclock (void);
