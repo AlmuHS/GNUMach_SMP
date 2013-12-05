@@ -105,10 +105,5 @@ extern int			dev_indirect_count;
 	     di < &dev_indirect_list[dev_indirect_count]; \
 	     di++)
 
-/*
- * Exported routine to set indirection.
- */
-extern void	dev_set_indirect(char *, dev_ops_t, int);
-
 #endif	/* _DEVICE_CONF_H_ */
 

@@ -182,8 +182,6 @@ MACRO_END
 
 extern void init_timers(void);
 
-void softclock(void);
-
 void timer_init(timer_t this_timer);
 
 #endif	/* _KERN_TIMER_H_ */

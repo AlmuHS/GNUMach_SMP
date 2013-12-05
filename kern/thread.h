@@ -345,8 +345,6 @@ extern kern_return_t	thread_halt(
 	boolean_t	must_halt);
 extern void		thread_halt_self(void);
 extern void		thread_force_terminate(thread_t);
-extern void		thread_set_own_priority(
-	int		priority);
 extern thread_t		kernel_thread(
 	task_t		task,
 	void		(*start)(void),

@@ -163,37 +163,15 @@ void pmap_clear_modify(vm_offset_t pa);
 /* Return modify bit */
 boolean_t pmap_is_modified(vm_offset_t pa);
 
-
-/*
- *	Statistics routines
- */
-
-#ifndef	pmap_resident_count
-extern int		pmap_resident_count();
-#endif	/* pmap_resident_count */
-
 /*
  *	Sundry required routines
  */
 /* Return a virtual-to-physical mapping, if possible.  */
 extern vm_offset_t	pmap_extract(pmap_t, vm_offset_t);
-/* Is virtual address valid? */
-extern boolean_t	pmap_access();
 /* Perform garbage collection, if any.  */
 extern void		pmap_collect(pmap_t);
 /* Specify pageability.  */
 extern void		pmap_change_wiring(pmap_t, vm_offset_t, boolean_t);
-
-#ifndef	pmap_phys_address
-/* Transform address returned by device driver mapping function to physical
- * address known to this module.  */
-extern vm_offset_t	pmap_phys_address();
-#endif	/* pmap_phys_address */
-#ifndef	pmap_phys_to_frame
-/* Inverse of pmap_phys_address, for use by device driver mapping function in
- * machine-independent pseudo-devices.  */
-extern int		pmap_phys_to_frame();
-#endif	/* pmap_phys_to_frame */
 
 /*
  *	Optional routines
