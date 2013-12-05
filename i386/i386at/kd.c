@@ -398,8 +398,8 @@ char	c;
 #endif /* DEBUG */
 
 
-extern int	mouse_in_use;
-int		old_kb_mode;
+extern boolean_t	mouse_in_use;
+int			old_kb_mode;
 
 void
 cnpollc(on)
@@ -735,7 +735,7 @@ int	vec;
 	unsigned char	scancode;
 	int		char_idx;
 	boolean_t	up = FALSE;		/* key-up event */
-	extern int	mouse_in_use;
+
 	if (kd_pollc)
 	    return;				/* kdb polling kbd */
 
