@@ -49,6 +49,8 @@ OTHER TORTIOUS ACTION, ARISING OUR OF OR IN CONNECTION
 WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#ifndef _I386_IPL_H_
+#define _I386_IPL_H_
 
 #define SPL0            0
 #define SPL1            1
@@ -76,3 +78,5 @@ extern int	intpri[];
 extern spl_t	curr_ipl;
 #endif	/* __ASSEMBLER__ */
 #endif	/* KERNEL */
+
+#endif /* _I386_IPL_H_ */
