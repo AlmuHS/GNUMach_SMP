@@ -53,7 +53,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <i386/pio.h>
 #include <i386at/rtc.h>
 
-static int first_rtcopen_ever = 1;
+static boolean_t first_rtcopen_ever = TRUE;
 
 void
 rtcinit()
@@ -71,7 +71,7 @@ unsigned char	*regs;
 {
 	if (first_rtcopen_ever) {
 		rtcinit();
-		first_rtcopen_ever = 0;
+		first_rtcopen_ever = FALSE;
 	}
 	outb(RTC_ADDR, RTC_D);
 	if ((inb(RTC_DATA) & RTC_VRT) == 0) return(-1);
@@ -90,7 +90,7 @@ unsigned char 	*regs;
 
 	if (first_rtcopen_ever) {
 		rtcinit();
-		first_rtcopen_ever = 0;
+		first_rtcopen_ever = FALSE;
 	}
 	outb(RTC_ADDR, RTC_B);
 	x = inb(RTC_DATA);
