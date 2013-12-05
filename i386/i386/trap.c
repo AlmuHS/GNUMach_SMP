@@ -555,18 +555,7 @@ printf("user trap %d error %d sub %08x\n", type, code, subcode);
 	/*NOTREACHED*/
 }
 
-/*
- *	V86 mode assist for interrupt handling.
- */
-boolean_t v86_assist_on = TRUE;
-boolean_t v86_unsafe_ok = FALSE;
-boolean_t v86_do_sti_cli = TRUE;
-boolean_t v86_do_sti_immediate = FALSE;
-
 #define	V86_IRET_PENDING 0x4000
-
-int cli_count = 0;
-int sti_count = 0;
 
 /*
  * Handle AST traps for i386.
