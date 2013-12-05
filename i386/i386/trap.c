@@ -147,9 +147,6 @@ char *trap_name(unsigned int trapnum)
 	return trapnum < TRAP_TYPES ? trap_type[trapnum] : "(unknown)";
 }
 
-
-boolean_t	brb = TRUE;
-
 /*
  * Trap from kernel mode.  Only page-fault errors are recoverable,
  * and then only in special circumstances.  All other errors are
