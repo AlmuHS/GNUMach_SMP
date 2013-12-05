@@ -61,7 +61,7 @@
 
 #if MACH_KDB
 /* Whether the kernel uses any debugging register.  */
-static int kernel_dr;
+static boolean_t kernel_dr;
 #endif
 
 void db_load_context(pcb_t pcb)
@@ -137,7 +137,7 @@ void db_dr (
 		splx(s);
 		return;
 	    }
-	    kernel_dr = 1;
+	    kernel_dr = TRUE;
 	    /* Clear user debugging registers */
 	    set_dr7(0);
 	    set_dr0(0);
@@ -163,7 +163,7 @@ void db_dr (
 	if (kernel_dr) {
 	    if (!ids.dr[0] && !ids.dr[1] && !ids.dr[2] && !ids.dr[3]) {
 		/* Not used any more, switch back to user debugging registers */
-		kernel_dr = 0;
+		kernel_dr = FALSE;
 		db_load_context(current_thread()->pcb);
 	    }
 	}
