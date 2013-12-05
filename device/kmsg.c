@@ -42,7 +42,7 @@ static int kmsg_read_offset;
 /* I/O request queue for blocking read */
 static queue_head_t kmsg_read_queue;
 /* Used for exclusive access to the device */
-static int kmsg_in_use;
+static boolean_t kmsg_in_use;
 /* Used for exclusive access to the routines */
 decl_simple_lock_data (static, kmsg_lock);
 /* If already initialized or not  */
@@ -55,7 +55,7 @@ kmsginit (void)
   kmsg_write_offset = 0;
   kmsg_read_offset = 0;
   queue_init (&kmsg_read_queue);
-  kmsg_in_use = 0;
+  kmsg_in_use = FALSE;
   simple_lock_init (&kmsg_lock);
 }
 
@@ -70,7 +70,7 @@ kmsgopen (dev_t dev, int flag, io_req_t ior)
       return D_ALREADY_OPEN;
     }
   
-  kmsg_in_use = 1;
+  kmsg_in_use = TRUE;
 
   simple_unlock (&kmsg_lock);
   return D_SUCCESS;
@@ -81,7 +81,7 @@ io_return_t
 kmsgclose (dev_t dev, int flag)
 {
   simple_lock (&kmsg_lock);
-  kmsg_in_use = 0;
+  kmsg_in_use = FALSE;
   
   simple_unlock (&kmsg_lock);
   return D_SUCCESS;
