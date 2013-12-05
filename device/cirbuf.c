@@ -42,7 +42,7 @@
 /* if c_cl == c_cf - 1, buffer is full */
 
 #if	DEBUG
-int cb_check_enable = 0;
+boolean_t cb_check_enable = FALSE;
 #define	CB_CHECK(cb) if (cb_check_enable) cb_check(cb)
 
 void
