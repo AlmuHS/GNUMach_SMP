@@ -58,7 +58,7 @@
  *		the positive numbers) are reserved for Unix.
  */
 
-int kern_invalid_debug = 0;
+boolean_t kern_invalid_debug = FALSE;
 
 mach_port_t	null_port()
 {
