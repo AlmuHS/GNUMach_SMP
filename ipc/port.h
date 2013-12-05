@@ -29,7 +29,7 @@
 /*
  */
 /*
- *	File:	ipc/ipc_port.h
+ *	File:	ipc/port.h
  *	Author:	Rich Draves
  *	Date:	1989
  *
