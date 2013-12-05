@@ -156,11 +156,6 @@ extern
 queue_head_t	vm_page_queue_inactive;	/* inactive memory queue */
 
 extern
-vm_offset_t	first_phys_addr;	/* physical address for first_page */
-extern
-vm_offset_t	last_phys_addr;		/* physical address for last_page */
-
-extern
 int	vm_page_free_count;	/* How many pages are free? */
 extern
 int	vm_page_fictitious_count;/* How many fictitious pages are free? */
