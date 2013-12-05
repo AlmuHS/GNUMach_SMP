@@ -32,7 +32,6 @@
 #include <stddef.h>
 #include <kern/assert.h>
 #include <kern/macro_help.h>
-#include <kern/rbtree.h>
 #include <sys/types.h>
 
 #define structof(ptr, type, member) \
