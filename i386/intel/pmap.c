@@ -402,7 +402,7 @@ pmap_t		kernel_pmap;
 
 struct kmem_cache	pmap_cache;		/* cache of pmap structures */
 
-int		pmap_debug = 0;		/* flag for debugging prints */
+boolean_t		pmap_debug = FALSE;	/* flag for debugging prints */
 
 #if 0
 int		ptes_per_vm_page;	/* number of hardware ptes needed
