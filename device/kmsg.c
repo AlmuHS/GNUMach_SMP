@@ -46,7 +46,7 @@ static boolean_t kmsg_in_use;
 /* Used for exclusive access to the routines */
 decl_simple_lock_data (static, kmsg_lock);
 /* If already initialized or not  */
-static int kmsg_init_done = 0;
+static boolean_t kmsg_init_done = FALSE;
 
 /* Kernel Message Initializer */
 static void
@@ -225,7 +225,7 @@ kmsg_putchar (int c)
   if (!kmsg_init_done)
     {
       kmsginit ();
-      kmsg_init_done = 1;
+      kmsg_init_done = TRUE;
     }
   
   simple_lock (&kmsg_lock);
