@@ -413,8 +413,6 @@ int		ptes_per_vm_page;	/* number of hardware ptes needed
 
 unsigned int	inuse_ptepages_count = 0;	/* debugging */
 
-extern char end;
-
 /*
  * Pointer to the basic page directory for the kernel.
  * Initialized by pmap_bootstrap().
