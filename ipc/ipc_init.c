@@ -54,7 +54,7 @@
 
 static struct vm_map ipc_kernel_map_store;
 vm_map_t ipc_kernel_map = &ipc_kernel_map_store;
-vm_size_t ipc_kernel_map_size = 8 * 1024 * 1024;
+const vm_size_t ipc_kernel_map_size = 8 * 1024 * 1024;
 
 /*
  *	Routine:	ipc_bootstrap
