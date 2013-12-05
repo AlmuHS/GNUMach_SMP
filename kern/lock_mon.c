@@ -173,9 +173,6 @@ lip() {
 
 #define lock_info_sort lis
 
-unsigned scurval, ssum;
-struct lock_info *sli;
-
 lock_info_sort(arg, abs, count)
 {
 	struct lock_info *li, mean;
@@ -215,9 +212,6 @@ lock_info_sort(arg, abs, count)
 				sum = li->success + li->fail;
 				if(!sum && !abs)
 					continue;
-				scurval = curval;
-				ssum = sum;
-				sli = li;
 				if (!abs) switch(arg) {
 				case 0:
 					break;
