@@ -65,12 +65,6 @@ char		intstack[];	/* bottom */
 char		eintstack[];	/* top */
 
 /*
- * We allocate interrupt stacks from physical memory.
- */
-extern
-vm_offset_t	avail_start;
-
-/*
  * Multiprocessor i386/i486 systems use a separate copy of the
  * GDT, IDT, LDT, and kernel TSS per processor.  The first three
  * are separate to avoid lock contention: the i386 uses locked
