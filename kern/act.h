@@ -40,8 +40,6 @@
 #include <kern/refcount.h>
 #include <kern/queue.h>
 
-#include "act.h"/*XXX*/
-
 struct task;
 struct thread;
 struct Act;
