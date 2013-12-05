@@ -85,7 +85,7 @@ struct lock_info_bucket lock_info[LOCK_INFO_HASH_COUNT];
 struct lock_info default_lock_info;
 unsigned default_lock_stack = 0;
 
-extern int curr_ipl[];
+extern spl_t curr_ipl[];
 
 
 
