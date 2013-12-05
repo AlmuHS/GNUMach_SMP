@@ -215,16 +215,4 @@ db_printf(const char *fmt, ...)
 	va_end(listp);
 }
 
-/* alternate name */
-
-/*VARARGS1*/
-void
-kdbprintf(const char *fmt, ...)
-{
-	va_list	listp;
-	va_start(listp, fmt);
-	_doprnt(fmt, listp, db_id_putc, db_radix, 0);
-	va_end(listp);
-}
-
 #endif /* MACH_KDB */
