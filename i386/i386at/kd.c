@@ -1218,7 +1218,7 @@ kdinit()
  * output	: bell is turned off
  *
  */
-static unsigned int kd_bellstate = 0;
+static boolean_t kd_bellstate = FALSE;
 
 void
 kd_belloff(void * param)
@@ -1227,7 +1227,7 @@ kd_belloff(void * param)
 
 	status = (inb(K_PORTB) & ~(K_SPKRDATA | K_ENABLETMR2));
 	outb(K_PORTB, status);
-	kd_bellstate = 0;
+	kd_bellstate = FALSE;
 	return;
 }
 
@@ -1300,7 +1300,7 @@ u_char	ch;
 		  {
 		    kd_bellon();
 		    timeout(kd_belloff, 0, hz/8 );
-		    kd_bellstate = 1;
+		    kd_bellstate = TRUE;
 		  }
 		break;
 	default:
