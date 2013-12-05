@@ -243,8 +243,6 @@ mach_device_deallocate(device)
 /*
  * port-to-device lookup routines.
  */
-decl_simple_lock_data(,
-	dev_port_lock)
 
 /*
  * Enter a port-to-device mapping.
@@ -372,8 +370,6 @@ dev_lookup_init()
 
 	for (i = 0; i < NDEVHASH; i++)
 	    queue_init(&dev_number_hash_table[i]);
-
-	simple_lock_init(&dev_port_lock);
 
 	kmem_cache_init(&dev_hdr_cache, "mach_device",
 			sizeof(struct mach_device), 0, NULL, NULL, NULL, 0);
