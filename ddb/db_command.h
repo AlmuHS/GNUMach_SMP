@@ -53,8 +53,6 @@ extern db_addr_t	db_next;	/* next address to be examined
 					   or written */
 extern jmp_buf_t *	db_recover;	/* error recovery */
 
-extern jmp_buf_t *	db_recover;	/* error recovery */
-
 /*
  * Command table
  */
