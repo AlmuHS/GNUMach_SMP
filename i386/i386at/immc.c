@@ -33,7 +33,7 @@
    so it can be used to debug things that happen very early
    before any devices are initialized.  */
 
-int immediate_console_enable = 1;
+boolean_t immediate_console_enable = TRUE;
 
 void
 immc_cnputc(unsigned char c)

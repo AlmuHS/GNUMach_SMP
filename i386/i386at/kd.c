@@ -1189,8 +1189,8 @@ kdinit()
 	/* Now that we're set up, we no longer need or want the
            immediate console.  */
 	{
-		extern int immediate_console_enable;
-		immediate_console_enable = 0;
+		extern boolean_t immediate_console_enable;
+		immediate_console_enable = FALSE;
 	}
 
 	/* The immediate console printed stuff at the bottom of the
