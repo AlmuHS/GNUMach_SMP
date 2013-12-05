@@ -176,7 +176,6 @@ kern_return_t	act_terminate_task_locked(struct Act *act);
 
 /* Exported to thread.c */
 extern Act	null_act;
-kern_return_t	act_create_kernel(Act **out_act);
 
 /* Exported to machine-dependent activation code */
 void		act_execute_returnhandlers(void);
