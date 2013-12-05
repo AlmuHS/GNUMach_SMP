@@ -62,9 +62,6 @@ int	curr_pic_mask;
 
 int	iunit[NINTR] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
 
-int 	nintr = NINTR;
-int	npics = NPICS;
-
 unsigned short	master_icw, master_ocw, slaves_icw, slaves_ocw;
 
 u_short PICM_ICW1, PICM_OCW1, PICS_ICW1, PICS_OCW1 ;
