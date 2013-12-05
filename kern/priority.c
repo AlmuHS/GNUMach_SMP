@@ -27,7 +27,7 @@
  * the rights to redistribute these changes.
  */
 /*
- *	File:	clock_prim.c
+ *	File:	priority.c
  *	Author:	Avadis Tevanian, Jr.
  *	Date:	1986
  *
