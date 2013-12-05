@@ -43,9 +43,6 @@
 
 typedef sampled_pc_t sampled_pcs[MAX_PC_SAMPLES];
 
-int pc_sampling_enabled = 0;
-decl_simple_lock_data(, pc_sampling_lock)	/* lock for enabling */
-
 void take_pc_sample(
     thread_t t,
     sample_control_t *cp,
