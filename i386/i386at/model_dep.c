@@ -127,7 +127,7 @@ static vm_size_t avail_remaining;
 
 extern char	version[];
 
-int		rebootflag = 0;	/* exported to kdintr */
+boolean_t	rebootflag = FALSE;	/* exported to kdintr */
 
 /* XX interrupt stack pointer and highwater mark, for locore.S.  */
 vm_offset_t int_stack_top, int_stack_high;
@@ -228,7 +228,7 @@ void halt_all_cpus(reboot)
 	    kdreboot();
 	}
 	else {
-	    rebootflag = 1;
+	    rebootflag = TRUE;
 #ifdef	MACH_HYP
 	    hyp_halt();
 #endif	/* MACH_HYP */

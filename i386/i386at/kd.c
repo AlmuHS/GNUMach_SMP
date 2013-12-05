@@ -105,7 +105,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #endif
 
 struct tty       kd_tty;
-extern int	 rebootflag;
+extern boolean_t rebootflag;
 
 static void charput(), charmvup(), charmvdown(), charclear(), charsetcursor();
 static void kd_noopreset();
@@ -984,7 +984,6 @@ Scancode	scancode;
 {
 	static int magic_state = KS_NORMAL; /* like kd_state */
 	boolean_t up = FALSE;
-	extern	int	rebootflag;
 
 	if (scancode == 0x46)		/* scroll lock */
 /*	if (scancode == 0x52)		** insert key */
