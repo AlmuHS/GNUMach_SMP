@@ -82,7 +82,7 @@ struct ldisc_switch	linesw[] = {
  */
 const int	tty_inq_size = 4096;	/* big nuf */
 const int	tty_outq_size = 2048;	/* Must be bigger that tthiwat */
-int	pdma_default = 1;       /* turn pseudo dma on by default */
+boolean_t	pdma_default = TRUE;       /* turn pseudo dma on by default */
 
 /*
  * compute pseudo-dma tables
