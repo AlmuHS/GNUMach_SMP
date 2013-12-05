@@ -29,8 +29,6 @@
 
 #include <kern/macro_help.h>
 
-#include "refcount.h" /*XXX*/
-
 /* Unless the above include file specified otherwise,
    use the system-independent (unoptimized) atomic reference counter.  */
 #ifndef MACHINE_REFCOUNT
