@@ -103,7 +103,6 @@ unsigned char 	*regs;
 
 
 extern struct timeval time;
-extern struct timezone tz;
 
 static int month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 

@@ -111,7 +111,6 @@ static void hypclock_intr(int unit, int old_ipl, void *ret_addr, struct i386_int
 }
 
 extern struct timeval time;
-extern struct timezone tz;
 
 int
 readtodc(tp)
