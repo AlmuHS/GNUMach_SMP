@@ -298,8 +298,6 @@ db_command_list(last_cmdp, cmd_table)
 	struct db_command	**last_cmdp;	/* IN_OUT */
 	struct db_command	*cmd_table;
 {
-	void db_skip_to_eol();
-
 	do {
 	    db_command(last_cmdp, cmd_table);
 	    db_skip_to_eol();
