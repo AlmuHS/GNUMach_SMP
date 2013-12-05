@@ -52,11 +52,6 @@ void harderr(bp, cp)
 }
 
 /*
- * Ethernet support routines.
- */
-u_char	etherbroadcastaddr[6] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
-
-/*
  * Convert Ethernet address to printable (loggable) representation.
  */
 char *

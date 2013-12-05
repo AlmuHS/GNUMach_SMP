@@ -46,8 +46,6 @@ struct	ether_header {
 };
 
 #ifdef	KERNEL
-u_char	etherbroadcastaddr[6];
-
 extern char *	ether_sprintf(u_char *);
 #endif	/* KERNEL */
 
