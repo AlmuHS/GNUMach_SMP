@@ -40,6 +40,7 @@
 #include <device/tty.h>
 #include <device/ds_routines.h>
 #include <device/net_io.h>
+#include <device/chario.h>
 
 
 ipc_port_t	master_device_port;

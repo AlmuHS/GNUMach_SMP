@@ -234,6 +234,4 @@ struct ldisc_switch {
 
 extern struct ldisc_switch	linesw[];
 
-extern void chario_init(void);
-
 #endif	/* _DEVICE_TTY_H_ */

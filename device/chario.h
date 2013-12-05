@@ -21,6 +21,8 @@
 
 #include <device/tty.h>
 
+extern void chario_init(void);
+
 void queue_delayed_reply(
 	queue_t		qh,
 	io_req_t	ior,
