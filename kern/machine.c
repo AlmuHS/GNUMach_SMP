@@ -623,9 +623,6 @@ Restart_pset:
  *	running on the processor's shutdown stack.
  */
 
-#ifdef __GNUC__
-__volatile__
-#endif
 void processor_doshutdown(processor)
 processor_t	processor;
 {
