@@ -43,18 +43,6 @@
 #include "ldt.h"
 #include "vm_param.h"
 
-char	acc_type[8][3] = {
-    /*	code	stack	data */
-    {	0,	0,	1	},	/* data */
-    {	0,	1,	1	},	/* data, writable */
-    {	0,	0,	1	},	/* data, expand-down */
-    {	0,	1,	1	},	/* data, writable, expand-down */
-    {	1,	0,	0	},	/* code */
-    {	1,	0,	1	},	/* code, readable */
-    {	1,	0,	0	},	/* code, conforming */
-    {	1,	0,	1	},	/* code, readable, conforming */
-};
-
 /*
  * Add the descriptors to the LDT, starting with
  * the descriptor for 'first_selector'.
