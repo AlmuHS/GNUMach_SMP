@@ -57,8 +57,6 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 int pitctl_port  = PITCTL_PORT;		/* For 386/20 Board */
 int pitctr0_port = PITCTR0_PORT;	/* For 386/20 Board */
-int pitctr1_port = PITCTR1_PORT;	/* For 386/20 Board */
-int pitctr2_port = PITCTR2_PORT;	/* For 386/20 Board */
 /* We want PIT 0 in square wave mode */
 
 int pit0_mode = PIT_C0|PIT_SQUAREMODE|PIT_READMODE ;
