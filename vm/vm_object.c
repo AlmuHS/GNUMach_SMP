@@ -522,8 +522,6 @@ void vm_object_deallocate(
 	}
 }
 
-boolean_t	vm_object_terminate_remove_all = FALSE;
-
 /*
  *	Routine:	vm_object_terminate
  *	Purpose:
