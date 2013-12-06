@@ -159,9 +159,6 @@
 #define	VM_PAGEOUT_RESERVED_REALLY(reserve)	((reserve) - 40)
 #endif	/* VM_PAGEOUT_RESERVED_REALLY */
 
-extern void vm_pageout_continue();
-extern void vm_pageout_scan_continue();
-
 unsigned int vm_pageout_reserved_internal = 0;
 unsigned int vm_pageout_reserved_really = 0;
 

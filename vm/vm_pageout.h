@@ -46,4 +46,8 @@ extern void vm_pageout_page(vm_page_t, boolean_t, boolean_t);
 
 extern void vm_pageout(void);
 
+extern void vm_pageout_continue(void);
+
+extern void vm_pageout_scan_continue(void);
+
 #endif	/* _VM_VM_PAGEOUT_H_ */
