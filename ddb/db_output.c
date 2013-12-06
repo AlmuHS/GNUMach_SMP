@@ -42,6 +42,7 @@
 #include <ddb/db_command.h>
 #include <ddb/db_lex.h>
 #include <ddb/db_output.h>
+#include <ddb/db_input.h>
 
 /*
  *	Character output - tracks position in line.
@@ -73,8 +74,6 @@ int	db_tab_stop_width = 8;		/* how wide are tab stops? */
 	((((i) + db_tab_stop_width) / db_tab_stop_width) * db_tab_stop_width)
 int	db_max_line = DB_MAX_LINE;	/* output max lines */
 int	db_max_width = DB_MAX_WIDTH;	/* output line width */
-
-extern void	db_check_interrupt();
 
 /*
  * Force pending whitespace.

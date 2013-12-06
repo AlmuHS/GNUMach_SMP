@@ -25,4 +25,6 @@
 
 extern int db_readline (char *lstart, int lsize);
 
+extern void db_check_interrupt(void);
+
 #endif /* _DDB_DB_INPUT_H_ */
