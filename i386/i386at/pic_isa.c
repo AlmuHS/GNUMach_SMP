@@ -28,10 +28,10 @@
 #include <i386/ipl.h>
 #include <i386/pic.h>
 #include <i386/fpu.h>
+#include <i386/hardclock.h>
 #include <i386at/kd.h>
 
 /* These interrupts are always present */
-extern void hardclock();
 
 void (*ivect[NINTR])() = {
 	/* 00 */	hardclock,	/* always */
