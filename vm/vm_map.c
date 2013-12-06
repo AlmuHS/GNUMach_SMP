@@ -671,8 +671,8 @@ kern_return_t vm_map_find_entry(map, address, size, mask, object, o_entry)
 	return(KERN_SUCCESS);
 }
 
-int vm_map_pmap_enter_print = FALSE;
-int vm_map_pmap_enter_enable = FALSE;
+boolean_t vm_map_pmap_enter_print = FALSE;
+boolean_t vm_map_pmap_enter_enable = FALSE;
 
 /*
  *	Routine:	vm_map_pmap_enter
