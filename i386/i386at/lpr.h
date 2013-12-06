@@ -36,7 +36,7 @@
 #define INTR_ENAB(addr)	(addr + 2)
 
 extern void lprintr(int unit);
-int lprprobe(int port, struct bus_device *dev);
+int lprprobe(vm_offset_t port, struct bus_ctlr *dev);
 void lprstop(struct tty *tp, int flags);
 void lprstart(struct tty *tp);
 void lprattach(struct bus_device *dev);
