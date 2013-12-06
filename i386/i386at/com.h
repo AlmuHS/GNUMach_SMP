@@ -51,7 +51,7 @@ extern int comcngetc(dev_t dev, int wait);
 extern int comcnputc(dev_t dev, int c);
 extern void comintr(int unit);
 
-int comprobe(int port, struct bus_device *dev);
+int comprobe(vm_offset_t port, struct bus_ctlr *dev);
 int commctl(struct tty *tp, int bits, int how);
 void comstart(struct tty *tp);
 void comstop(struct tty *tp, int flags);

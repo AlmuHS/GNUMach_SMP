@@ -169,9 +169,9 @@ comprobe_general(struct bus_device *dev, int noisy)
  * all of bus_device_init
  */
 int
-comprobe(int port, struct bus_device *dev)
+comprobe(vm_offset_t port, struct bus_ctlr *dev)
 {
-	return comprobe_general(dev, /*noisy*/ 0);
+	return comprobe_general((struct bus_device *)dev, /*noisy*/ 0);
 }
 
 /*
