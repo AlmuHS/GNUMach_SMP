@@ -63,6 +63,7 @@ int lpr_alive[NLPR];
 
 int
 lprprobe(port, dev)
+int port;
 struct bus_device *dev;
 {
 	u_short	addr = (u_short) dev->address;
