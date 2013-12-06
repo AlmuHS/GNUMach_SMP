@@ -68,7 +68,7 @@
 #endif /* MACH_KDB */
 
 #if ! MACH_KBD
-boolean_t reboot_on_panic = 1;
+boolean_t reboot_on_panic = TRUE;
 #endif
 
 #if	NCPUS > 1
@@ -103,7 +103,7 @@ void setup_main()
 	}
 #else	/* MACH_KDB */
 	if (strstr (kernel_cmdline, "-H ")) {
-	    reboot_on_panic = 0;
+	    reboot_on_panic = FALSE;
 	}
 #endif	/* MACH_KDB */
 
