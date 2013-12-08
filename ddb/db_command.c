@@ -176,7 +176,6 @@ db_command(last_cmdp, cmd_table)
 		db_unread_token(t);
 	}
 	else if (t == tEXCL) {
-	    void db_fncall();
 	    db_fncall();
 	    return;
 	}
