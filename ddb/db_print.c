@@ -53,7 +53,7 @@
 #include <ddb/db_task_thread.h>
 #include <ddb/db_print.h>
 
-extern unsigned int	db_maxoff;
+extern unsigned long	db_maxoff;
 
 /* ARGSUSED */
 void
