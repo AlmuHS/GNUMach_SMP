@@ -120,4 +120,11 @@ extern void db_load_context(pcb_t pcb);
 
 extern void cnpollc(boolean_t on);
 
+void
+db_write_bytes_user_space(
+	vm_offset_t	addr,
+	int		size,
+	char		*data,
+	task_t		task);
+
 #endif /* _I386_DB_INTERFACE_H_ */

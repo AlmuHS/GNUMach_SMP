@@ -505,7 +505,6 @@ db_write_bytes(
 	pt_entry_t *ptep1 = 0;
 	pt_entry_t	oldmap1 = 0;
 	extern char	etext;
-	void		db_write_bytes_user_space();
 
 	if ((addr < VM_MIN_KERNEL_ADDRESS) ^
 	    ((addr + size) <= VM_MIN_KERNEL_ADDRESS)) {
