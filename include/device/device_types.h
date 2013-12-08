@@ -135,4 +135,6 @@ typedef	int		io_return_t;
 #define D_NO_MEMORY		2508	/* memory allocation failure */
 #define D_READ_ONLY		2509	/* device cannot be written to */
 
+void		device_deallocate(device_t);
+
 #endif	/* DEVICE_TYPES_H */
