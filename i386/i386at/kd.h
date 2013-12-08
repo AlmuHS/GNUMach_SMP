@@ -750,8 +750,8 @@ extern void kdb_kintr(void);
 
 extern int kdopen(dev_t dev, int flag, io_req_t ior);
 extern void kdclose(int dev, int flag);
-extern int kdread(int dev, struct uio *uio);
-extern int kdwrite(int dev, struct uio *uio);
+extern int kdread(int dev, io_req_t uio);
+extern int kdwrite(int dev, io_req_t uio);
 
 extern io_return_t kdgetstat(
 	dev_t		dev,

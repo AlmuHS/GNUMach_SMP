@@ -83,7 +83,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <device/conf.h>
 #include <device/tty.h>
 #include <device/io_req.h>
-#include <device/buf.h>		/* for struct uio (!) */
+#include <device/buf.h>
 #include <vm/vm_kern.h>
 #include <i386/locore.h>
 #include <i386/loose_ends.h>
@@ -526,7 +526,7 @@ int	flag;
 int
 kdread(dev, uio)
 int	dev;
-struct	uio	*uio;
+io_req_t uio;
 {
 	struct	tty	*tp;
 
@@ -551,7 +551,7 @@ struct	uio	*uio;
 int
 kdwrite(dev, uio)
 int	dev;
-struct	uio	*uio;
+io_req_t uio;
 {
 	return((*linesw[kd_tty.t_line].l_write)(&kd_tty, uio));
 }

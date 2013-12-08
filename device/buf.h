@@ -83,11 +83,6 @@
 #define	B_MD1		IO_SPARE_START
 
 /*
- * Redefine uio structure
- */
-#define	uio	io_req
-
-/*
  * Redefine physio routine
  */
 #define	physio(strat, xbuf, dev, ops, minphys, ior) \
