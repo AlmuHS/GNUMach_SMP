@@ -61,8 +61,6 @@ db_task_trap(type, code, user_space)
 	jmp_buf_t *prev;
 	boolean_t	bkpt;
 	boolean_t	watchpt;
-	void		db_init_default_thread();
-	void		db_check_breakpoint_valid();
 	task_t		task_space;
 
 	task_space = db_target_space(current_thread(), user_space);

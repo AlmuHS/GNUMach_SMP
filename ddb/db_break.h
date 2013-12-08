@@ -98,4 +98,6 @@ void db_breakpoint_cmd(
 	db_expr_t	count,
 	char *		modif);
 
+extern void db_check_breakpoint_valid(void);
+
 #endif	/* _DDB_DB_BREAK_H_ */
