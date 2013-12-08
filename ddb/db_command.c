@@ -301,7 +301,7 @@ db_command_list(last_cmdp, cmd_table)
 	do {
 	    db_command(last_cmdp, cmd_table);
 	    db_skip_to_eol();
-	} while (db_read_token() == tSEMI_COLON && db_cmd_loop_done == 0);
+	} while (db_read_token() == tSEMI_COLON && db_cmd_loop_done == FALSE);
 }
 
 struct db_command db_show_all_cmds[] = {
@@ -409,7 +409,7 @@ db_command_loop(void)
 	db_prev = db_dot;
 	db_next = db_dot;
 
-	db_cmd_loop_done = 0;
+	db_cmd_loop_done = FALSE;
 	while (!db_cmd_loop_done) {
 	    (void) _setjmp(db_recover = &db_jmpbuf);
 	    db_macro_level = 0;
@@ -436,7 +436,7 @@ db_exec_cmd_nest(cmd, size)
 {
 	struct db_lex_context lex_context;
 
-	db_cmd_loop_done = 0;
+	db_cmd_loop_done = FALSE;
 	if (cmd) {
 	    db_save_lex_context(&lex_context);
 	    db_switch_input(cmd, size /**OLD, &lex_context OLD**/);
@@ -444,7 +444,7 @@ db_exec_cmd_nest(cmd, size)
 	db_command_list(&db_last_command, db_command_table);
 	if (cmd)
 	    db_restore_lex_context(&lex_context);
-	return(db_cmd_loop_done == 0);
+	return(db_cmd_loop_done == FALSE);
 }
 
 void db_error(s)
