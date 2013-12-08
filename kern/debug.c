@@ -197,6 +197,7 @@ log(int level, const char *fmt, ...)
 	va_end(listp);
 }
 
+/* GCC references this for stack protection.  */
 unsigned char __stack_chk_guard [ sizeof (vm_offset_t) ] =
 {
 	[ sizeof (vm_offset_t) - 3 ] = '\r',
