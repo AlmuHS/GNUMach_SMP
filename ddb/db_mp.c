@@ -53,7 +53,7 @@ int	db_active[NCPUS] = { 0 };	/* count recursive entries
 int	db_slave[NCPUS] = { 0 };	/* nonzero if cpu interrupted
 					   by another cpu in debugger */
 
-int	db_enter_debug = 0;
+boolean_t	db_enter_debug = FALSE;
 
 /*
  * Called when entering kernel debugger.
