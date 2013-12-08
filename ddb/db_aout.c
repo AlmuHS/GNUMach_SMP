@@ -245,19 +245,19 @@ aout_db_qualified_search(stab, file, sym, line)
 	boolean_t	in_file;
 
 	if (file == 0 && sym == 0)
-	    return(0);
+	    return(DB_SYM_NULL);
 	if (file) {
 	    if ((sp = aout_db_search_name(sp, ep, file, N_TEXT, &fp)) == 0)
-		return(0);
+		return(DB_SYM_NULL);
 	}
 	if (sym) {
 	    sp = aout_db_search_name(sp, ep, sym, (line > 0)? N_FUN: 0, &fp);
 	    if (sp == 0)
-		return(0);
+		return(DB_SYM_NULL);
 	}
 	if (line > 0) {
 	    if (file && !aout_db_eq_name(fp, file))
-		return(0);
+		return(DB_SYM_NULL);
 	    found_sp = 0;
 	    if (sp->n_type == N_FUN) {
 		/*
@@ -279,7 +279,7 @@ aout_db_qualified_search(stab, file, sym, line)
 		    }
 		}
 		if (sp->n_type != N_SLINE || sp->n_value < func_top)
-		    return(0);
+		    return(DB_SYM_NULL);
 	    } else {
 		/*
 		 * qualified by only file name
