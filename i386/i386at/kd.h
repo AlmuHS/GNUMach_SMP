@@ -361,10 +361,10 @@ typedef u_char Scancode;
  * Other mappable non-Ascii keys (e.g., "ctrl") are represented by a
  * two-byte sequence: K_SCAN, followed by the key's scan code.
  */
-#define K_DONE		0xff		/* must be same as NC */
-#define NC		0xff		/* No character defined	*/
+#define K_DONE		0xffu		/* must be same as NC */
+#define NC		0xffu		/* No character defined	*/
 
-#define K_SCAN		0xfe		/* followed by scan code */
+#define K_SCAN		0xfeu		/* followed by scan code */
 
 /* ascii char set */
 #define K_NUL		0x00		/* Null character	*/
