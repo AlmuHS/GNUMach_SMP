@@ -444,7 +444,7 @@ unsigned long	db_maxoff = 0x4000;
 
 void
 db_task_printsym(off, strategy, task)
-	db_expr_t	off;
+	db_addr_t	off;
 	db_strategy_t	strategy;
 	task_t		task;
 {
@@ -489,7 +489,7 @@ db_line_at_pc( sym, filename, linenum, pc)
 	db_sym_t	sym;
 	char		**filename;
 	int		*linenum;
-	db_expr_t	pc;
+	db_addr_t	pc;
 {
 	return (db_last_symtab) ?
 		X_db_line_at_pc( db_last_symtab, sym, filename, linenum, pc) :

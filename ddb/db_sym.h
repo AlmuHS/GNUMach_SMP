@@ -164,7 +164,7 @@ extern void	db_symbol_values( db_symtab_t *stab,
 extern boolean_t	db_eqname( char* src, char* dst, char c );
 
 /* print closest symbol to a value */
-extern void	db_task_printsym( db_expr_t off,
+extern void	db_task_printsym( db_addr_t off,
 				  db_strategy_t strategy,
 				  task_t task);
 
@@ -205,7 +205,7 @@ extern struct db_sym_switch {
 				db_sym_t	sym,
 				char		**file,
 				int		*line,
-				db_expr_t	pc
+				db_addr_t	pc
 				);
 
 	void		(*symbol_values)(
@@ -235,7 +235,7 @@ extern boolean_t db_line_at_pc(
 	db_sym_t sym,
 	char **filename,
 	int *linenum,
-	db_expr_t pc);
+	db_addr_t pc);
 
 extern boolean_t aout_db_sym_init(
 	char *symtab,

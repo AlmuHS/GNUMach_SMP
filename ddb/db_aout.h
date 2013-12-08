@@ -28,7 +28,7 @@ aout_db_line_at_pc(
 	db_sym_t	sym,
 	char		**file,
 	int		*line,
-	db_expr_t	pc);
+	db_addr_t	pc);
 
 extern db_sym_t
 aout_db_lookup(

@@ -378,7 +378,7 @@ db_stack_trace_cmd(
 		    struct i386_saved_state *iss = &th->pcb->iss;
 
 		    db_printf("Continuation ");
-		    db_task_printsym((db_expr_t)th->swap_func,
+		    db_task_printsym((db_addr_t)th->swap_func,
 				      DB_STGY_PROC,
 				      th->task);
 		    db_printf("\n");

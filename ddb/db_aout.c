@@ -493,13 +493,13 @@ aout_db_line_at_pc(stab, sym, file, line, pc)
 	db_sym_t	sym;
 	char		**file;
 	int		*line;
-	db_expr_t	pc;
+	db_addr_t	pc;
 {
 	char		*func;
 	unsigned long	diff;
 	boolean_t	found;
 
-	found = aout_db_search_by_addr(stab, (vm_offset_t)pc, file, &func, line, &diff);
+	found = aout_db_search_by_addr(stab, pc, file, &func, line, &diff);
 	return(found && func && *file);
 }
 
