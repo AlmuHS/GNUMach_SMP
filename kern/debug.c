@@ -40,10 +40,6 @@
 
 #include <device/cons.h>
 
-#if	MACH_KDB
-extern int db_breakpoints_inserted;
-#endif
-
 #if NCPUS>1
 simple_lock_data_t Assert_print_lock; /* uninited, we take our chances */
 #endif
@@ -67,9 +63,6 @@ Assert(char *exp, char *file, int line)
 		exp, file, line);
 #endif
 
-#if	MACH_KDB
-	if (db_breakpoints_inserted)
-#endif
 	Debugger("assertion failure");
 }
 
