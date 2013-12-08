@@ -65,7 +65,6 @@ db_examine_cmd(addr, have_addr, count, modif)
 	char *		modif;
 {
 	thread_t	thread;
-	boolean_t	db_option();
 
 	if (modif[0] != '\0')
 	    db_strcpy(db_examine_format, modif);
