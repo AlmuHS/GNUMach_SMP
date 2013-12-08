@@ -92,6 +92,7 @@ static int
 db_add_thread_breakpoint(bkpt, task_thd, count, task_bpt)
 	db_breakpoint_t bkpt;
 	vm_offset_t task_thd;
+	int count;
 	boolean_t task_bpt;
 {
 	db_thread_breakpoint_t tp;
