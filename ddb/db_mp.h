@@ -23,4 +23,8 @@ void	remote_db(void);
 void	lock_db(void);
 void	unlock_db(void);
 
+#if CONSOLE_ON_MASTER
+void db_console(void);
+#endif /* CONSOLE_ON_MASTER */
+
 #endif /* _DDB_DB_MP_H_ */

@@ -303,7 +303,7 @@ unlock_db()
 	simple_unlock(&db_lock);
 }
 
-#ifdef sketch
+#if CONSOLE_ON_MASTER
 void
 db_console()
 {
@@ -326,7 +326,7 @@ db_console()
 				db_cpu = my_cpu;
 			}
 }
-#endif	/* sketch */
+#endif	/* CONSOLE_ON_MASTER */
 
 #endif	/* NCPUS > 1 */
 
