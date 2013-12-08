@@ -181,7 +181,7 @@ db_find_thread_breakpoint_here(task, addr)
 {
 	db_breakpoint_t bkpt;
 
-	bkpt = db_find_breakpoint(task, (db_addr_t)addr);
+	bkpt = db_find_breakpoint(task, addr);
 	if (bkpt == 0)
 	    return(0);
 	return(db_find_thread_breakpoint(bkpt, current_thread()));
