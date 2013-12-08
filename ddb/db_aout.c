@@ -317,8 +317,6 @@ aout_db_lookup(stab, symstr)
 	db_symtab_t	*stab;
 	char *		symstr;
 {
-	db_sym_t db_sym_parse_and_lookup();
-
 	return(db_sym_parse_and_lookup(aout_db_qualified_search, stab, symstr));
 }
 

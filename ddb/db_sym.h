@@ -252,4 +252,10 @@ db_search_in_task_symbol(
 	db_addr_t		*offp,
 	task_t			task);
 
+extern db_sym_t
+db_sym_parse_and_lookup(
+	db_sym_t	(*func)(),
+	db_symtab_t	*symtab,
+	char		*symstr);
+
 #endif /* _DDB_DB_SYM_H_ */
