@@ -78,7 +78,7 @@ db_examine_cmd(addr, have_addr, count, modif)
 	      return;
 	  }
 	else
-	  if (db_option(modif,'u'))
+	  if (db_option(modif, 'u'))
 	    thread = current_thread();
 	  else
 	    thread = THREAD_NULL;
@@ -158,7 +158,7 @@ db_examine(addr, fmt, count, task)
 			db_printf(":\t");
 			break;
 		    case 'm':
-			db_next = db_xcdump(addr, size, count+1, task);
+			db_next = db_xcdump(addr, size, count + 1, task);
 			return;
 		    default:
 			if (db_print_position() == 0) {
@@ -166,7 +166,7 @@ db_examine(addr, fmt, count, task)
 			    char *	name;
 			    db_addr_t	off;
 
-			    db_find_task_sym_and_offset(addr,&name,&off,task);
+			    db_find_task_sym_and_offset(addr, &name, &off, task);
 			    if (off == 0)
 				db_printf("%s:\t", name);
 			    else
