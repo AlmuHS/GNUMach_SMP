@@ -279,6 +279,7 @@ EXTRA_DIST += \
 # TODO.  Functions in device/subrs.c should each be moved elsewhere.
 libkernel_a_SOURCES += \
 	device/blkio.c \
+	device/blkio.h \
 	device/buf.h \
 	device/chario.c \
 	device/chario.h \

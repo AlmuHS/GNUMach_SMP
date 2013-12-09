@@ -56,9 +56,7 @@
 #include <device/io_req.h>
 #include <device/memory_object_reply.user.h>
 #include <device/dev_pager.h>
-
-extern vm_offset_t	block_io_mmap();	/* dummy routine to allow
-						   mmap for block devices */
+#include <device/blkio.h>
 
 /*
  *	The device pager routines are called directly from the message
