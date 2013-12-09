@@ -292,7 +292,7 @@ cb_alloc(
 void
 cb_free(struct cirbuf *cb)
 {
-	int		size;
+	vm_size_t	size;
 
 	size = cb->c_end - cb->c_start;
 	kfree((vm_offset_t)cb->c_start, size);
