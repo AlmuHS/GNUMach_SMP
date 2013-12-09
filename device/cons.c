@@ -42,8 +42,8 @@ static	struct consdev *cn_tab = 0;	/* physical console device info */
  * is enabled.  This can be useful to debug (or catch panics from) code early
  * in the bootstrap procedure.
  */
-int	(*romgetc)() = 0;
-void	(*romputc)() = 0;
+int	(*romgetc)(char c) = 0;
+void	(*romputc)(char c) = 0;
 
 #if CONSBUFSIZE > 0
 /*
