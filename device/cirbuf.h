@@ -55,7 +55,7 @@ extern int	b_to_q(char *, int, struct cirbuf *);
 extern void	ndflush(struct cirbuf *, int);
 extern void	cb_clear(struct cirbuf *);
 
-extern void	cb_alloc(struct cirbuf *, int);
+extern void	cb_alloc(struct cirbuf *, vm_size_t);
 extern void	cb_free(struct cirbuf *);
 
 #endif	/* _DEVICE_CIRBUF_H_ */

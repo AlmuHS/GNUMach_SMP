@@ -80,9 +80,9 @@ struct ldisc_switch	linesw[] = {
 /*
  * Sizes for input and output circular buffers.
  */
-const int	tty_inq_size = 4096;	/* big nuf */
-const int	tty_outq_size = 2048;	/* Must be bigger that tthiwat */
-boolean_t	pdma_default = TRUE;       /* turn pseudo dma on by default */
+const unsigned int	tty_inq_size = 4096;	/* big nuf */
+const unsigned int	tty_outq_size = 2048;	/* Must be bigger that tthiwat */
+boolean_t		pdma_default = TRUE;    /* turn pseudo dma on by default */
 
 /*
  * compute pseudo-dma tables

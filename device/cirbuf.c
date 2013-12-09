@@ -270,7 +270,7 @@ void cb_clear(struct cirbuf *cb)
 void
 cb_alloc(
 	struct cirbuf *cb,
-	int		buf_size)
+	vm_size_t	buf_size)
 {
 	char *buf;
 
