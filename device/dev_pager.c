@@ -55,6 +55,7 @@
 #include <device/dev_hdr.h>
 #include <device/io_req.h>
 #include <device/memory_object_reply.user.h>
+#include <device/dev_pager.h>
 
 extern vm_offset_t	block_io_mmap();	/* dummy routine to allow
 						   mmap for block devices */
@@ -344,7 +345,6 @@ kern_return_t	device_pager_data_request(
 
 	if (ds->type == CHAR_PAGER_TYPE) {
 	    vm_object_t			object;
-	    vm_offset_t			device_map_page(void *, vm_offset_t);
 
 	    object = vm_object_lookup(pager_request);
 	    if (object == VM_OBJECT_NULL) {

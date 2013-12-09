@@ -292,6 +292,7 @@ libkernel_a_SOURCES += \
 	device/dev_master.h \
 	device/dev_name.c \
 	device/dev_pager.c \
+	device/dev_pager.h \
 	device/device_init.c \
 	device/device_init.h \
 	device/device_port.h \
