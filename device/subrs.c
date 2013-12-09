@@ -40,15 +40,15 @@
 /*
  * Print out disk name and block number for hard disk errors.
  */
-void harderr(bp, cp)
-	struct buf *bp;
+void harderr(ior, cp)
+	io_req_t ior;
 	char *	cp;
 {
 	printf("%s%d%c: hard error sn%d ",
 	       cp,
-	       minor(bp->b_dev) >> 3,
-	       'a' + (minor(bp->b_dev) & 0x7),
-	       bp->b_blkno);
+	       minor(ior->io_unit) >> 3,
+	       'a' + (minor(ior->io_unit) & 0x7),
+	       ior->io_recnum);
 }
 
 /*
@@ -103,7 +103,7 @@ void wakeup(channel)
 	thread_wakeup((event_t) channel);
 }
 
-struct buf *
+io_req_t
 geteblk(size)
 	int	size;
 {
@@ -128,11 +128,9 @@ geteblk(size)
 	return (ior);
 }
 
-void brelse(bp)
-	struct buf *bp;
+void brelse(ior)
+	io_req_t ior;
 {
-	io_req_t	ior = bp;
-
 	(void) vm_deallocate(kernel_map,
 			(vm_offset_t) ior->io_data,
 			ior->io_alloc_size);
