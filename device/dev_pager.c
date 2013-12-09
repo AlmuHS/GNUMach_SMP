@@ -428,7 +428,7 @@ boolean_t device_pager_data_request_done(io_req_t	ior)
 	    size_read = ior->io_count - ior->io_residual;
 	}
 
-	start_alloc = trunc_page((vm_offset_t)ior->io_data);
+	start_alloc = trunc_page(ior->io_data);
 	end_alloc   = start_alloc + round_page(ior->io_alloc_size);
 
 	if (ior->io_error == D_SUCCESS) {
