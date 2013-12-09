@@ -305,12 +305,9 @@ typedef struct net_rcv_port *net_rcv_port_t;
 
 struct kmem_cache	net_rcv_cache;	/* cache of net_rcv_port structs */
 
-
 #define NET_HASH_SIZE   256
 #define N_NET_HASH      4
 #define N_NET_HASH_KEYS 4
-
-unsigned int bpf_hash (int, unsigned int *);
 
 /*
  * A single hash entry.
@@ -351,7 +348,6 @@ decl_simple_lock_data(,net_hash_header_lock)
 	(elt) = (net_hash_entry_t) queue_next((queue_entry_t) (elt));	   \
 	} while ((elt) != (head));
 
-
 #define FILTER_ITERATE(if_port_list, fp, nextfp, chain)	\
 	for ((fp) = (net_rcv_port_t) queue_first(if_port_list);	\
 	     !queue_end(if_port_list, (queue_entry_t)(fp));	\
@@ -364,40 +360,6 @@ decl_simple_lock_data(,net_hash_header_lock)
 	queue_next(&(entry_p)->chain) = (queue_entry_t) (dead);	\
 	(dead) = (queue_entry_t)(entry_p);			\
 }
-
-extern boolean_t net_do_filter();	/* CSPF */
-extern int bpf_do_filter();		/* BPF */
-
-int hash_ent_remove (
-   struct ifnet *ifp,
-   net_hash_header_t hp,
-   int used,
-   net_hash_entry_t *head, 
-	net_hash_entry_t entp,
-   queue_entry_t *dead_p);
-
-void net_free_dead_infp (queue_entry_t dead_infp);
-void net_free_dead_entp (queue_entry_t dead_entp);
-
-int bpf_validate(
-    bpf_insn_t f,
-    int bytes,
-    bpf_insn_t *match);
-
-int bpf_eq (
-    bpf_insn_t f1,
-	bpf_insn_t f2,
-    int bytes);
-
-int net_add_q_info (ipc_port_t rcv_port);
-
-int bpf_match (
-   net_hash_header_t hash,
-   int n_keys,
-   unsigned int *keys,
-   net_hash_entry_t **hash_headpp,
-      net_hash_entry_t *entpp);
-
 
 /*
  *	ethernet_priority:
