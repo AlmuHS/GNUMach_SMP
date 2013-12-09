@@ -317,10 +317,6 @@ void	device_pager_release(memory_object_t	object)
 
 boolean_t	device_pager_debug = FALSE;
 
-boolean_t	device_pager_data_request_done();	/* forward */
-boolean_t	device_pager_data_write_done();		/* forward */
-
-
 kern_return_t	device_pager_data_request(
 	ipc_port_t	pager,
 	ipc_port_t	pager_request,
