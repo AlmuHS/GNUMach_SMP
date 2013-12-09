@@ -58,7 +58,7 @@ extern boolean_t db_phys_eq (
 extern int db_user_to_kernel_address(
 	task_t		task,
 	vm_offset_t	addr,
-	unsigned int	*kaddr,
+	vm_offset_t	*kaddr,
 	int		flag);
 
 extern void db_task_name (task_t task);

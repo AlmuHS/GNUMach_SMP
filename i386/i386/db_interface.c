@@ -177,7 +177,7 @@ db_set_hw_watchpoint(
 {
 	vm_size_t	size = watch->hiaddr - watch->loaddr;
 	db_addr_t	addr = watch->loaddr;
-	unsigned int kern_addr;
+	vm_offset_t 	kern_addr;
 
 	if (num >= 4)
 	    return FALSE;
@@ -412,7 +412,7 @@ int
 db_user_to_kernel_address(
 	task_t		task,
 	vm_offset_t	addr,
-	unsigned int	*kaddr,
+	vm_offset_t	*kaddr,
 	int		flag)
 {
 	pt_entry_t *ptp;
@@ -439,7 +439,7 @@ db_user_to_kernel_address(
 	    }
 	    return(-1);
 	}
-	*kaddr = (unsigned)ptetokv(*ptp) + (addr & (INTEL_PGBYTES-1));
+	*kaddr = ptetokv(*ptp) + (addr & (INTEL_PGBYTES-1));
 	return(0);
 }
 
@@ -456,7 +456,7 @@ db_read_bytes(
 {
 	char		*src;
 	int		n;
-	unsigned	kern_addr;
+	vm_offset_t	kern_addr;
 
 	src = (char *)addr;
 	if ((addr >= VM_MIN_KERNEL_ADDRESS && addr < VM_MAX_KERNEL_ADDRESS) || task == TASK_NULL) {
@@ -567,7 +567,7 @@ db_write_bytes_user_space(
 {
 	char		*dst;
 	int		n;
-	unsigned	kern_addr;
+	vm_offset_t	kern_addr;
 
 	while (size > 0) {
 	    if (db_user_to_kernel_address(task, addr, &kern_addr, 1) < 0)
@@ -726,7 +726,7 @@ db_task_name(
 {
 	char *p;
 	int n;
-	unsigned vaddr, kaddr;
+	vm_offset_t vaddr, kaddr;
 	unsigned sp;
 
 	if (task->map->pmap == kernel_pmap) {
