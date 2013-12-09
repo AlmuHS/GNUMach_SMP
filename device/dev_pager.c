@@ -357,7 +357,7 @@ kern_return_t	device_pager_data_request(
 
 	    vm_object_page_map(object,
 			       offset, length,
-			       device_map_page, (char *)ds);
+			       device_map_page, (void *)ds);
 
 	    vm_object_deallocate(object);
 	}
