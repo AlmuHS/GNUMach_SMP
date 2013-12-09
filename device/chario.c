@@ -907,7 +907,7 @@ void ttypush(
 	    if (state & TS_MIN_TO_RCV)
 	      { /* a character was received */
 		tp->t_state = state & ~TS_MIN_TO_RCV;
-		timeout(ttypush,tp,pdma_timeouts[tp->t_ispeed]);
+		timeout(ttypush, tp, pdma_timeouts[tp->t_ispeed]);
 	      }
 	    else
 	      {
@@ -1004,7 +1004,7 @@ void ttyinput_many(
 	 * Do not want to overflow input queue
 	 */
 	if (tp->t_inq.c_cc < tp->t_inq.c_hog)
-		count -= b_to_q( chars, count, &tp->t_inq);
+		count -= b_to_q(chars, count, &tp->t_inq);
 
 	tty_queue_completion(&tp->t_delayed_read);
 }
