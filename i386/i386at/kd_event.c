@@ -182,9 +182,9 @@ io_return_t kbdsetstat(dev, flavor, data, count)
 		kd_setleds1 (*data);
 		break;
 	    case K_X_KDB_ENTER:
-		return X_kdb_enter_init(data, count);
+		return X_kdb_enter_init((unsigned int *)data, count);
 	    case K_X_KDB_EXIT:
-		return X_kdb_exit_init(data, count);
+		return X_kdb_exit_init((unsigned int *)data, count);
 	    default:
 		return (D_INVALID_OPERATION);
 	}
