@@ -41,6 +41,16 @@ extern void resettodr (void);
 extern void startrtclock (void);
 
 /*
+ * Halt a cpu.
+ */
+extern void halt_cpu (void) __attribute__ ((noreturn));
+
+/*
+ * Halt the system or reboot.
+ */
+extern void halt_all_cpus (boolean_t reboot) __attribute__ ((noreturn));
+
+/*
  *	More-specific code provides these;
  *	they indicate the total extent of physical memory
  *	that we know about and might ever have to manage.
