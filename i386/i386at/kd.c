@@ -1149,7 +1149,6 @@ kdstop(tp, flags)
 void
 kdinit()
 {
-	void	kd_xga_init();
 	unsigned char	k_comm;		/* keyboard command byte */
 
 	if (kd_initialized)

@@ -792,4 +792,6 @@ unsigned char state2leds(int state);
 void kdstart(struct tty *tp);
 void kdstop(struct tty *tp, int flags);
 
+void kd_xga_init(void);
+
 #endif	/* _KD_H_ */
