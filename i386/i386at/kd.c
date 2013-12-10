@@ -122,10 +122,6 @@ void	(*kd_dsetcursor)() = charsetcursor;
 				/* set cursor position on displayed page */
 void	(*kd_dreset)() = kd_noopreset;	/* prepare for reboot */
 
-/* forward declarations */
-unsigned char kd_getdata(), state2leds();
-
-
 /*
  * Globals used for both character-based controllers and bitmap-based
  * controllers.  Default is EGA.
@@ -450,9 +446,7 @@ kdopen(dev, flag, ior)
 	io_req_t ior;
 {
 	struct 	tty	*tp;
-	void	kdstart();
 	spl_t	o_pri;
-	void	kdstop();
 
 	tp = &kd_tty;
 	o_pri = spltty();

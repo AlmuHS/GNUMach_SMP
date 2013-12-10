@@ -78,6 +78,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <device/cons.h>
 #include <device/io_req.h>
 #include <device/buf.h>
+#include <device/tty.h>
 #include <i386at/kdsoft.h>
 
 /*
@@ -784,5 +785,11 @@ int do_modifier(int state, Scancode c, boolean_t up);
 void bmpch2bit(csrpos_t pos, short *xb, short *yb);
 void bmppaintcsr(csrpos_t pos, u_char val);
 u_char *bit2fbptr(short	xb, short yb);
+
+unsigned char kd_getdata(void);
+unsigned char state2leds(int state);
+
+void kdstart(struct tty *tp);
+void kdstop(struct tty *tp, int flags);
 
 #endif	/* _KD_H_ */
