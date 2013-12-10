@@ -604,7 +604,7 @@ mach_port_kernel_object(
 	}
 
 	*typep = ip_kotype(port);
-	*addrp = (vm_offset_t) port->ip_kobject;
+	*addrp = port->ip_kobject;
 	ip_unlock(port);
 	return KERN_SUCCESS;
 }
