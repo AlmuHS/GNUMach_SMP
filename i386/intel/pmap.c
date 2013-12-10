@@ -919,7 +919,7 @@ void pmap_init()
 	s = round_page(s);
 	if (kmem_alloc_wired(kernel_map, &addr, s) != KERN_SUCCESS)
 		panic("pmap_init");
-	memset((char *) addr, 0, s);
+	memset((void *) addr, 0, s);
 
 	/*
 	 *	Allocate the structures first to preserve word-alignment.

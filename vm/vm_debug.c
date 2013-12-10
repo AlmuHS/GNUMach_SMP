@@ -404,7 +404,7 @@ mach_vm_object_pages(object, pagesp, countp)
 				  addr + rsize_used, size - rsize_used);
 
 		if (size_used != rsize_used)
-			memset((char *) (addr + size_used), 0, 
+			memset((void *) (addr + size_used), 0,
 			       rsize_used - size_used);
 
 		kr = vm_map_copyin(ipc_kernel_map, addr, rsize_used,

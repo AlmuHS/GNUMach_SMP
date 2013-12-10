@@ -302,7 +302,7 @@ host_processor_sets(
 			return KERN_RESOURCE_SHORTAGE;
 		}
 
-		memcpy((char *) newaddr, (char *) addr, size_needed);
+		memcpy((void *) newaddr, (void *) addr, size_needed);
 		kfree(addr, size);
 		psets = (processor_set_t *) newaddr;
 	}

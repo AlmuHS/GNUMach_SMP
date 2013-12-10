@@ -369,7 +369,7 @@ i386at_init(void)
 		int len = strlen ((char*)phystokv(boot_info.cmdline)) + 1;
 		assert(init_alloc_aligned(round_page(len), &addr));
 		kernel_cmdline = (char*) phystokv(addr);
-		memcpy(kernel_cmdline, (char*)phystokv(boot_info.cmdline), len);
+		memcpy(kernel_cmdline, (void *)phystokv(boot_info.cmdline), len);
 		boot_info.cmdline = addr;
 	}
 

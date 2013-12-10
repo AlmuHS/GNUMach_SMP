@@ -115,7 +115,7 @@ void xprbootstrap(void)
 		 *	the previous buffer contents.
 		 */
 
-		memset((char *) addr, 0, size);
+		memset((void *) addr, 0, size);
 	}
 
 	xprbase = (struct xprbuf *) addr;

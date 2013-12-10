@@ -1274,9 +1274,9 @@ boolean_t ds_read_done(ior)
 	 * Zero memory that the device did not fill.
 	 */
 	if (start_sent < start_data)
-	    memset((char *)start_sent, 0, start_data - start_sent);
+	    memset((void *)start_sent, 0, start_data - start_sent);
 	if (end_sent > end_data)
-	    memset((char *)end_data, 0, end_sent - end_data);
+	    memset((void *)end_data, 0, end_sent - end_data);
 
 
 	/*

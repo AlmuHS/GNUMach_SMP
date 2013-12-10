@@ -748,8 +748,8 @@ kern_return_t thread_getstatus(thread, flavor, tstate, count)
 		if (thread->task->machine.iopb == 0)
 		  memset (state->pm, 0xff, sizeof state->pm);
 		else
-		  memcpy((char *) state->pm,
-			 (char *) thread->task->machine.iopb,
+		  memcpy(state->pm,
+			 thread->task->machine.iopb,
 			 sizeof state->pm);
 		simple_unlock (&thread->task->machine.iopb_lock);
 
