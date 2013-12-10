@@ -222,7 +222,6 @@ kd_mouse_open(dev, mouse_pic)
 	int mouse_pic;
 {
 	spl_t s = splhi();	/* disable interrupts */
-	extern void kdintr();
 
 	oldvect = ivect[mouse_pic];
 	ivect[mouse_pic] = kdintr;
