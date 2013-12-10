@@ -83,6 +83,7 @@ libkernel_a_SOURCES += \
 	i386/i386/db_interface.h \
 	i386/i386/db_machdep.h \
 	i386/i386/db_trace.c \
+	i386/i386/db_trace.h \
 	i386/i386/debug.h \
 	i386/i386/debug_i386.c \
 	i386/i386/debug_trace.S \

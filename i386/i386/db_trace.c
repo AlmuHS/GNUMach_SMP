@@ -36,6 +36,7 @@
 #include <machine/db_machdep.h>
 #include <machine/machspl.h>
 #include <machine/db_interface.h>
+#include <machine/db_trace.h>
 
 #include <ddb/db_access.h>
 #include <ddb/db_command.h>
@@ -311,14 +312,6 @@ db_nextframe(
 	    break;
 	}
 }
-
-void
-db_i386_stack_trace(
-	thread_t	th,
-	struct i386_frame *frame,
-	db_addr_t	callpc,
-	db_expr_t	count,
-	int		flags);		/* forward */
 
 #define	F_USER_TRACE	1
 #define F_TRACE_THREAD	2
