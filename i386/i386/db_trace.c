@@ -425,7 +425,7 @@ db_i386_stack_trace(
 	if (!db_trace_symbols_found)
 	    db_find_trace_symbols();
 
-	if (!INKERNEL((unsigned long)callpc) && !INKERNEL((unsigned long)frame)) {
+	if (!INKERNEL(callpc) && !INKERNEL(frame)) {
 	    db_printf(">>>>> user space <<<<<\n");
 	    user_frame++;
 	}
@@ -436,7 +436,7 @@ db_i386_stack_trace(
 	    char *	name;
 	    db_expr_t	offset;
 
-	    if (INKERNEL((unsigned long)callpc) && user_frame == 0) {
+	    if (INKERNEL(callpc) && user_frame == 0) {
 		db_addr_t call_func = 0;
 
 		db_sym_t sym_tmp;
@@ -461,7 +461,7 @@ db_i386_stack_trace(
 		    frame_type = 0;
 		    narg = db_numargs(frame, task);
 		}
-	    } else if (INKERNEL((unsigned long)callpc) ^ INKERNEL((unsigned long)frame)) {
+	    } else if (INKERNEL(callpc) ^ INKERNEL(frame)) {
 		frame_type = 0;
 		narg = -1;
 	    } else {
@@ -506,7 +506,7 @@ db_i386_stack_trace(
 		break;
 	    }
 	    if (!INKERNEL(lastframe) ||
-		(!INKERNEL((unsigned long)callpc) && !INKERNEL((unsigned long)frame)))
+		(!INKERNEL(callpc) && !INKERNEL(frame)))
 		user_frame++;
 	    if (user_frame == 1) {
 		db_printf(">>>>> user space <<<<<\n");
