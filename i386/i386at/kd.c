@@ -561,7 +561,7 @@ kdmmap(dev, off, prot)
 	off_t off;
 	int prot;
 {
-	if ((u_int) off >= (128*1024))
+	if (off >= (128*1024))
 		return(-1);
 
 	/* Get page frame number for the page to be mapped. */
