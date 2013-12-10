@@ -603,7 +603,7 @@ mach_port_kernel_object(
 		return KERN_INVALID_RIGHT;
 	}
 
-	*typep = (unsigned int) ip_kotype(port);
+	*typep = ip_kotype(port);
 	*addrp = (vm_offset_t) port->ip_kobject;
 	ip_unlock(port);
 	return KERN_SUCCESS;
