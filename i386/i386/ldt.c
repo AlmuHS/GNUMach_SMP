@@ -36,8 +36,7 @@
 #include "seg.h"
 #include "gdt.h"
 #include "ldt.h"
-
-extern int syscall();
+#include "locore.h"
 
 #ifdef	MACH_PV_DESCRIPTORS
 /* It is actually defined in xen_boothdr.S */

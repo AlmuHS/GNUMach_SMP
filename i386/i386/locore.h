@@ -56,6 +56,8 @@ extern int inst_fetch (int eip, int cs);
 
 extern void cpu_shutdown (void);
 
+extern int syscall (void);
+
 extern unsigned int cpu_features[1];
 
 #define CPU_FEATURE_FPU		 0
