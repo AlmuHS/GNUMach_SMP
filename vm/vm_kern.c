@@ -842,7 +842,7 @@ kmem_submap(map, parent, min, max, size, pageable)
 	 */
 	vm_object_reference(vm_submap_object);
 
-	addr = (vm_offset_t) vm_map_min(parent);
+	addr = vm_map_min(parent);
 	kr = vm_map_enter(parent, &addr, size,
 			  (vm_offset_t) 0, TRUE,
 			  vm_submap_object, (vm_offset_t) 0, FALSE,
