@@ -1508,7 +1508,7 @@ void		vm_page_print(p)
 	vm_page_t	p;
 {
 	iprintf("Page 0x%X: object 0x%X,", (vm_offset_t) p, (vm_offset_t) p->object);
-	 printf(" offset 0x%X", (vm_offset_t) p->offset);
+	 printf(" offset 0x%X", p->offset);
 	 printf("wire_count %d,", p->wire_count);
 	 printf(" %s",
 		(p->active ? "active" : (p->inactive ? "inactive" : "loose")));
@@ -1533,7 +1533,7 @@ void		vm_page_print(p)
 	 printf("%s,",
 		(p->tabled ? "" : "not_tabled"));
 	 printf("phys_addr = 0x%X, lock = 0x%X, unlock_request = 0x%X\n",
-	 	(vm_offset_t) p->phys_addr,
+		p->phys_addr,
 		(vm_offset_t) p->page_lock,
 		(vm_offset_t) p->unlock_request);
 }
