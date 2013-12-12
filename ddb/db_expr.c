@@ -180,7 +180,7 @@ boolean_t
 db_mult_expr(valuep)
 	db_expr_t *valuep;
 {
-	db_expr_t	lhs, rhs;
+	db_expr_t	lhs = 0, rhs;
 	int		t;
 	char		c;
 
