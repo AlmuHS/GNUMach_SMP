@@ -627,7 +627,7 @@ db_delete_cmd(void)
 	}
 	if (t == tHASH) {
 	    db_thread_breakpoint_t tbp;
-	    db_breakpoint_t bkpt = bkpt;
+	    db_breakpoint_t bkpt;
 
 	    if (db_read_token() != tNUMBER) {
 		db_printf("Bad break point number #%s\n", db_tok_string);
