@@ -379,7 +379,7 @@ db_find_breakpoint_here(task, addr)
                 && bkpt->address == addr)
 		return(TRUE);
 	    if ((bkpt->flags & BKPT_USR_GLOBAL) == 0 &&
-		  DB_PHYS_EQ(task, (vm_offset_t)addr, bkpt->task, (vm_offset_t)bkpt->address))
+		  DB_PHYS_EQ(task, addr, bkpt->task, bkpt->address))
 		return (TRUE);
 	}
 	return(FALSE);
