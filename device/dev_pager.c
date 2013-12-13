@@ -330,7 +330,7 @@ kern_return_t	device_pager_data_request(
 		printf("(device_pager)data_request: pager=%p, offset=0x%lx, length=0x%x\n",
 			pager, offset, length);
 
-	ds = dev_pager_hash_lookup((ipc_port_t)pager);
+	ds = dev_pager_hash_lookup(pager);
 	if (ds == DEV_PAGER_NULL)
 		panic("(device_pager)data_request: lookup failed");
 
@@ -470,7 +470,7 @@ kern_return_t device_pager_data_write(
 
 	panic("(device_pager)data_write: called");
 
-	ds = dev_pager_hash_lookup((ipc_port_t)pager);
+	ds = dev_pager_hash_lookup(pager);
 	if (ds == DEV_PAGER_NULL)
 		panic("(device_pager)data_write: lookup failed");
 
