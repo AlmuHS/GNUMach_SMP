@@ -416,7 +416,7 @@ boolean_t device_pager_data_request_done(io_req_t	ior)
 		if (device_pager_debug)
 		    printf("(device_pager)data_request_done: r: 0x%lx\n", ior->io_residual);
 		memset((&ior->io_data[ior->io_count - ior->io_residual]), 0, 
-		      (unsigned) ior->io_residual);
+		      (size_t) ior->io_residual);
 	    }
 	} else {
 	    size_read = ior->io_count - ior->io_residual;
