@@ -245,7 +245,7 @@ void assert_wait(
 #endif	/* MACH_SLOCKS */
 		simple_lock(lock);
 		thread_lock(thread);
-		enqueue_tail(q, (queue_entry_t) thread);
+		enqueue_tail(q, &(thread->links));
 		thread->wait_event = event;
 		if (interruptible)
 			thread->state |= TH_WAIT;
@@ -1196,7 +1196,7 @@ void update_priority(
 									\
 	    simple_lock(&(rq)->lock);	/* lock the run queue */	\
 	    checkrq((rq), "thread_setrun: before adding thread");	\
-	    enqueue_tail(&(rq)->runq[whichq], (queue_entry_t) (th));	\
+	    enqueue_tail(&(rq)->runq[whichq], &((th)->links));		\
 									\
 	    if (whichq < (rq)->low || (rq)->count == 0) 		\
 		 (rq)->low = whichq;	/* minimize */			\
@@ -1219,7 +1219,7 @@ void update_priority(
 	    }								\
 									\
 	    simple_lock(&(rq)->lock);	/* lock the run queue */	\
-	    enqueue_tail(&(rq)->runq[whichq], (queue_entry_t) (th));	\
+	    enqueue_tail(&(rq)->runq[whichq], &((th)->links));		\
 									\
 	    if (whichq < (rq)->low || (rq)->count == 0) 		\
 		 (rq)->low = whichq;	/* minimize */			\
