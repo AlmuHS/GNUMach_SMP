@@ -147,7 +147,7 @@ unsigned ts;
  *	user mode.
  */
 void
-time_trap_uexit(ts)
+time_trap_uexit(int ts)
 {
 	int	elapsed;
 	int	mycpu;

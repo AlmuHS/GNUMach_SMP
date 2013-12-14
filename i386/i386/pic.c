@@ -237,7 +237,7 @@ form_pic_mask(void)
 }
 
 void
-intnull(unit_dev)
+intnull(int unit_dev)
 {
 	printf("intnull(%d)\n", unit_dev);
 }
@@ -245,7 +245,7 @@ intnull(unit_dev)
 int prtnull_count = 0;
 
 void
-prtnull(unit)
+prtnull(int unit)
 {
 	++prtnull_count;
 }

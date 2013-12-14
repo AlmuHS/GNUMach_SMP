@@ -826,16 +826,16 @@ int	flags;
  * Code to be called from debugger.
  *
  */
-void compr_addr(addr)
+void compr_addr(vm_offset_t addr)
 {
 	/* The two line_stat prints may show different values, since
 	*  touching some of the registers constitutes changing them.
 	*/
-	printf("LINE_STAT(%x) %x\n",
+	printf("LINE_STAT(%lu) %x\n",
 		LINE_STAT(addr), inb(LINE_STAT(addr)));
 
-	printf("TXRX(%x) %x, INTR_ENAB(%x) %x, INTR_ID(%x) %x, LINE_CTL(%x) %x,\n\
-MODEM_CTL(%x) %x, LINE_STAT(%x) %x, MODEM_STAT(%x) %x\n",
+	printf("TXRX(%lu) %x, INTR_ENAB(%lu) %x, INTR_ID(%lu) %x, LINE_CTL(%lu) %x,\n\
+MODEM_CTL(%lu) %x, LINE_STAT(%lu) %x, MODEM_STAT(%lu) %x\n",
 	TXRX(addr), 	 inb(TXRX(addr)),
 	INTR_ENAB(addr), inb(INTR_ENAB(addr)),
 	INTR_ID(addr), 	 inb(INTR_ID(addr)),
@@ -845,7 +845,7 @@ MODEM_CTL(%x) %x, LINE_STAT(%x) %x, MODEM_STAT(%x) %x\n",
 	MODEM_STAT(addr),inb(MODEM_STAT(addr)));
 }
 
-int compr(unit)
+int compr(int unit)
 {
 	compr_addr(cominfo[unit]->address);
 	return(0);

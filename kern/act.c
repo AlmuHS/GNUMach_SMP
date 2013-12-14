@@ -1076,7 +1076,7 @@ void act_count(void)
 	       ACT_STATIC_KLUDGE-i, ACT_STATIC_KLUDGE, ACT_STATIC_KLUDGE-amin);
 }
 
-dump_act(act)
+void dump_act(act)
 	Act *act;
 {
 	act_count();

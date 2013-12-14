@@ -37,7 +37,7 @@
 /*
  * Initialize for remote invocation of ast_check.
  */
-init_ast_check(processor)
+void init_ast_check(processor)
 	processor_t	processor;
 {
 }
@@ -45,7 +45,7 @@ init_ast_check(processor)
 /*
  * Cause remote invocation of ast_check.  Caller is at splsched().
  */
-cause_ast_check(processor)
+void cause_ast_check(processor)
 	processor_t	processor;
 {
 }

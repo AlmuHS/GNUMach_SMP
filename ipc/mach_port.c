@@ -1457,7 +1457,7 @@ mach_port_set_rpcinfo(space, name, rpc_info, rpc_info_count)
 int sacts, maxsacts;
 #endif
 
-sact_count()
+void sact_count(void)
 {
 	printf("%d server activations in use, %d max\n", sacts, maxsacts);
 }

@@ -112,7 +112,7 @@ int		mouse_char_index;		/* mouse response */
  * init_mouse_hw - initialize the serial port.
  */
 void
-init_mouse_hw(unit, mode)
+init_mouse_hw(dev_t unit, int mode)
 {
 	unsigned short base_addr  = cominfo[unit]->address;
 

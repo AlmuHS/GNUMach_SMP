@@ -2283,7 +2283,7 @@ int ch=KC_CMD_READ;
 }
 
 void
-kd_cmdreg_write(val)
+kd_cmdreg_write(int val)
 {
 int ch=KC_CMD_WRITE;
 
@@ -2400,7 +2400,7 @@ static int which_button[] = {0, MOUSE_LEFT, MOUSE_MIDDLE, MOUSE_RIGHT};
 static struct mouse_motion moved;
 
 int
-kd_kbd_magic(scancode)
+kd_kbd_magic(int scancode)
 {
 int new_button = 0;
 

@@ -112,7 +112,7 @@ decl_simple_lock_data(, **lock)
 }
 
 
-simple_lock(lock)
+void simple_lock(lock)
 decl_simple_lock_data(, *lock)
 {
 	struct lock_info *li = locate_lock_info(&lock);
@@ -131,7 +131,7 @@ decl_simple_lock_data(, *lock)
 	li->time = time_stamp - li->time;
 }
 
-simple_lock_try(lock)
+int simple_lock_try(lock)
 decl_simple_lock_data(, *lock)
 {
 	struct lock_info *li = locate_lock_info(&lock);
@@ -151,7 +151,7 @@ decl_simple_lock_data(, *lock)
 	}
 }
 
-simple_unlock(lock)
+void simple_unlock(lock)
 decl_simple_lock_data(, *lock)
 {
 	time_stamp_t stamp = time_stamp;
@@ -167,13 +167,13 @@ decl_simple_lock_data(, *lock)
 	}
 }
 
-lip() {
+void lip(void) {
 	lis(4, 1, 0);
 }
 
 #define lock_info_sort lis
 
-lock_info_sort(arg, abs, count)
+void lock_info_sort(arg, abs, count)
 {
 	struct lock_info *li, mean;
 	int bucket = 0;
@@ -251,7 +251,7 @@ lock_info_sort(arg, abs, count)
 
 #define lock_info_clear lic
 
-lock_info_clear()
+void lock_info_clear(void)
 {
 	struct lock_info *li;
 	int bucket = 0;
@@ -265,7 +265,7 @@ lock_info_clear()
 	memset(&default_lock_info, 0, sizeof(struct lock_info));
 }
 
-print_lock_info(li)
+void print_lock_info(li)
 struct lock_info *li;
 {
 	int off;
@@ -293,7 +293,7 @@ struct lock_info *li;
  *	Measure lock/unlock operations
  */
 
-time_lock(loops)
+void time_lock(int loops)
 {
 	decl_simple_lock_data(, lock)
 	time_stamp_t stamp;
