@@ -727,7 +727,7 @@ int	vec;
 	struct	tty	*tp;
 	unsigned char	c;
 	unsigned char	scancode;
-	int		char_idx;
+	unsigned int	char_idx;
 	boolean_t	up = FALSE;		/* key-up event */
 
 	if (kd_pollc)
@@ -807,7 +807,7 @@ int	vec;
 			set_kd_state(do_modifier(kd_state, c, up));
 		} else if (!up) {
 			/* regular key-down */
-			int max;	/* max index for char sequence */
+			unsigned int max; /* max index for char sequence */
 
 			max = char_idx + NUMOUTPUT;
 			char_idx++;
@@ -1028,9 +1028,9 @@ Scancode	scancode;
  *	Return the value for the 2nd index into key_map that
  *	corresponds to the given state.
  */
-int
+unsigned int
 kdstate2idx(state, extended)
-int	state;				/* bit vector, not a state index */
+unsigned int	state;			/* bit vector, not a state index */
 boolean_t	extended;
 {
 	int state_idx = NORM_STATE;

@@ -731,7 +731,7 @@ extern int kdsetbell (int, int);
 extern void kd_resend (void);
 extern void kd_handle_ack (void);
 extern int kd_kbd_magic (int);
-extern int kdstate2idx (int, boolean_t);
+extern unsigned int kdstate2idx (unsigned int, boolean_t);
 extern void kd_parserest (u_char *);
 extern int kdcnprobe(struct consdev *cp);
 extern int kdcninit(struct consdev *cp);
