@@ -35,6 +35,6 @@ typedef	struct jmp_buf {
 
 extern int _setjmp(jmp_buf_t*);
 
-extern void _longjmp(jmp_buf_t*, int);
+extern void _longjmp(jmp_buf_t*, int) __attribute__ ((noreturn));
 
 #endif	/* _I386_SETJMP_H_ */

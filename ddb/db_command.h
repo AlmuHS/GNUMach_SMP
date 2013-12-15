@@ -43,7 +43,7 @@
 extern void		db_command_loop(void);
 extern boolean_t	db_option(const char *, int);
 
-extern void		db_error(const char *);	/* report error */
+extern void		db_error(const char *) __attribute__ ((noreturn));	/* report error */
 
 extern db_addr_t	db_dot;		/* current location */
 extern db_addr_t	db_last_addr;	/* last explicit address typed */
