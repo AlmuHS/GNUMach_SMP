@@ -108,7 +108,7 @@ struct i386_kregs {
 long *
 db_lookup_i386_kreg(
 	char	*name,
-	int	*kregp)
+	long	*kregp)
 {
 	struct i386_kregs *kp;
 
