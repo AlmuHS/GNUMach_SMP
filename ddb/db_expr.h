@@ -17,7 +17,7 @@
  */
 
 int db_size_option(
-	char		*modif,
+	const char	*modif,
 	boolean_t	*u_option,
 	boolean_t	*t_option);
 

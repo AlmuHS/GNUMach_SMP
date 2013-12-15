@@ -50,7 +50,7 @@ db_expr_t db_look_token = 0;
 
 int
 db_read_line(repeat_last)
-	char	*repeat_last;
+	const char	*repeat_last;
 {
 	int	i;
 
@@ -105,7 +105,7 @@ db_save_lex_context(lp)
 
 void
 db_restore_lex_context(lp)
-	struct db_lex_context *lp;
+	const struct db_lex_context *lp;
 {
 	db_lp = lp->l_ptr;
 	db_last_lp = db_lp;

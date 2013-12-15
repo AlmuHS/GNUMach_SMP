@@ -420,7 +420,7 @@ unsigned int	inuse_ptepages_count = 0;	/* debugging */
 pt_entry_t *kernel_page_dir;
 
 static inline pt_entry_t *
-pmap_pde(pmap_t pmap, vm_offset_t addr)
+pmap_pde(const pmap_t pmap, vm_offset_t addr)
 {
 	if (pmap == kernel_pmap)
 		addr = kvtolin(addr);
@@ -435,7 +435,7 @@ pmap_pde(pmap_t pmap, vm_offset_t addr)
  *	This is only used internally.
  */
 pt_entry_t *
-pmap_pte(pmap_t pmap, vm_offset_t addr)
+pmap_pte(const pmap_t pmap, vm_offset_t addr)
 {
 	pt_entry_t	*ptp;
 	pt_entry_t	pte;

@@ -62,7 +62,7 @@ db_examine_cmd(addr, have_addr, count, modif)
 	db_expr_t	addr;
 	int		have_addr;
 	db_expr_t	count;
-	char *		modif;
+	const char *	modif;
 {
 	thread_t	thread;
 
@@ -94,7 +94,7 @@ db_examine_forward(addr, have_addr, count, modif)
 	db_expr_t	addr;
 	int		have_addr;
 	db_expr_t	count;
-	char *		modif;
+	const char *	modif;
 {
 	db_examine(db_next, db_examine_format, db_examine_count,
 				db_thread_to_task(db_examine_thread));
@@ -106,7 +106,7 @@ db_examine_backward(addr, have_addr, count, modif)
 	db_expr_t	addr;
 	int		have_addr;
 	db_expr_t	count;
-	char *		modif;
+	const char *	modif;
 {
 
 	db_examine(db_examine_prev_addr - (db_next - db_examine_prev_addr),
@@ -117,7 +117,7 @@ db_examine_backward(addr, have_addr, count, modif)
 void
 db_examine(addr, fmt, count, task)
 	db_addr_t	addr;
-	char *		fmt;	/* format string */
+	const char *	fmt;	/* format string */
 	int		count;	/* repeat count */
 	task_t		task;
 {
@@ -125,7 +125,7 @@ db_examine(addr, fmt, count, task)
 	db_expr_t	value;
 	int		size;	/* in bytes */
 	int		width;
-	char *		fp;
+	const char *	fp;
 
 	db_examine_prev_addr = addr;
 	while (--count >= 0) {
@@ -333,7 +333,7 @@ db_print_loc_and_inst(loc, task)
 void
 db_strcpy(dst, src)
 	char *dst;
-	char *src;
+	const char *src;
 {
 	while ((*dst++ = *src++))
 	    ;

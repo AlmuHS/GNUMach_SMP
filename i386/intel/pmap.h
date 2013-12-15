@@ -227,7 +227,7 @@ extern	pmap_t	kernel_pmap;
  *	Machine dependent routines that are used only for i386/i486.
  */
 
-pt_entry_t *pmap_pte(pmap_t pmap, vm_offset_t addr);
+pt_entry_t *pmap_pte(const pmap_t pmap, vm_offset_t addr);
 
 /*
  *	Macros for speed.

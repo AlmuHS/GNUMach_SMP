@@ -93,7 +93,7 @@ db_watchpoint_free(watch)
 
 void
 db_set_watchpoint(task, addr, size)
-	task_t		task;
+	const task_t	task;
 	db_addr_t	addr;
 	vm_size_t	size;
 {
@@ -130,7 +130,7 @@ db_set_watchpoint(task, addr, size)
 
 void
 db_delete_watchpoint(task, addr)
-	task_t		task;
+	const task_t	task;
 	db_addr_t	addr;
 {
 	db_watchpoint_t	watch;
@@ -179,7 +179,7 @@ db_list_watchpoints(void)
 
 static int
 db_get_task(modif, taskp, addr)
-	char		*modif;
+	const char	*modif;
 	task_t		*taskp;
 	db_addr_t	addr;
 {
@@ -221,7 +221,7 @@ db_deletewatch_cmd(addr, have_addr, count, modif)
 	db_expr_t	addr;
 	int		have_addr;
 	db_expr_t	count;
-	char *		modif;
+	const char *	modif;
 {
 	task_t		task;
 
@@ -237,7 +237,7 @@ db_watchpoint_cmd(addr, have_addr, count, modif)
 	db_expr_t	addr;
 	int		have_addr;
 	db_expr_t	count;
-	char *		modif;
+	const char *	modif;
 {
 	vm_size_t	size;
 	db_expr_t	value;

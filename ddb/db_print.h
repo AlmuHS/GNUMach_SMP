@@ -24,25 +24,25 @@ void db_show_one_task(
 	db_expr_t	addr,
 	boolean_t	have_addr,
 	db_expr_t	count,
-	char *		modif);
+	const char *	modif);
 
 void db_show_port_id(
 	db_expr_t	addr,
 	boolean_t	have_addr,
 	db_expr_t	count,
-	char *		modif);
+	const char *	modif);
 
 void db_show_one_thread(
 	db_expr_t	addr,
 	int		have_addr,
 	db_expr_t	count,
-	char *		modif);
+	const char *	modif);
 
 void db_show_all_threads(
 	db_expr_t	addr,
 	int		have_addr,
 	db_expr_t	count,
-	char *		modif);
+	const char *	modif);
 
 db_addr_t db_task_from_space(
 	ipc_space_t	space,

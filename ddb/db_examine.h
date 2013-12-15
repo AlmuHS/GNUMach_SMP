@@ -29,13 +29,13 @@ extern void db_examine_cmd (
 	db_expr_t addr, 
 	int have_addr, 
 	db_expr_t count,
-	char *modif);
+	const char *modif);
 
-extern void db_strcpy (char *dst, char *src);
+extern void db_strcpy (char *dst, const char *src);
 
 extern void db_examine (
 	db_addr_t addr,
-	char *fmt,
+	const char *fmt,
 	int count,
 	task_t task);
 
@@ -43,13 +43,13 @@ void db_examine_forward(
 	db_expr_t	addr,
 	int		have_addr,
 	db_expr_t	count,
-	char *		modif);
+	const char *	modif);
 
 void db_examine_backward(
 	db_expr_t	addr,
 	int		have_addr,
 	db_expr_t	count,
-	char *		modif);
+	const char *	modif);
 
 extern void db_print_loc_and_inst (
 	db_addr_t loc,

@@ -24,7 +24,7 @@
 #include <sys/types.h>
 #include <machine/db_machdep.h>
 
-extern void db_cond_free (db_thread_breakpoint_t bkpt);
+extern void db_cond_free (const db_thread_breakpoint_t bkpt);
 
 extern boolean_t db_cond_check (db_thread_breakpoint_t bkpt);
 

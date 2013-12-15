@@ -30,7 +30,7 @@ extern void db_del_macro_cmd (void);
 
 extern void db_show_macro (void);
 
-extern int db_exec_macro (char *name);
+extern int db_exec_macro (const char *name);
 
 extern void db_arg_variable (
 	struct db_variable *vp,

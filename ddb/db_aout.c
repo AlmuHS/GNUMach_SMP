@@ -134,7 +134,7 @@ aout_db_sym_init(symtab, esymtab, name, task_addr)
  */
 private boolean_t
 aout_db_is_filename(name)
-	char *name;
+	const char *name;
 {
 	while (*name) {
 	    if (*name == '.') {
@@ -151,10 +151,10 @@ aout_db_is_filename(name)
  */
 private boolean_t
 aout_db_eq_name(sp, name)
-	struct nlist *sp;
-	char *name;
+	const struct nlist *sp;
+	const char *name;
 {
-	char *s1, *s2;
+	const char *s1, *s2;
 
 	s1 = sp->n_un.n_name;
 	s2 = name;
@@ -186,11 +186,11 @@ aout_db_eq_name(sp, name)
  */
 private struct nlist *
 aout_db_search_name(sp, ep, name, type, fp)
-	struct nlist 	*sp;
-	struct nlist	*ep;
-	char		*name;
-	int 		type;
-	struct nlist	**fp;
+	struct nlist 		*sp;
+	const struct nlist	*ep;
+	const char		*name;
+	int 			type;
+	struct nlist		**fp;
 {
 	struct nlist	*file_sp = *fp;
 	struct nlist	*found_sp = 0;
@@ -233,8 +233,8 @@ aout_db_search_name(sp, ep, name, type, fp)
 private db_sym_t
 aout_db_qualified_search(stab, file, sym, line)
 	db_symtab_t	*stab;
-	char		*file;
-	char		*sym;
+	const char	*file;
+	const char	*sym;
 	int 		line;
 {
 	struct nlist *sp = (struct nlist *)stab->start;
@@ -396,12 +396,12 @@ aout_db_symbol_values(stab, sym, namep, valuep)
  */
 private boolean_t
 aout_db_search_by_addr(stab, addr, file, func, line, diff)
-	db_symtab_t	*stab;
-	vm_offset_t 	addr;
-	char		**file;
-	char		**func;
-	int 	 	*line;
-	unsigned long	*diff;
+	const db_symtab_t	*stab;
+	vm_offset_t 		addr;
+	char			**file;
+	char			**func;
+	int 	 		*line;
+	unsigned long		*diff;
 {
 	struct nlist 	*sp;
 	struct nlist 	*line_sp, *func_sp, *file_sp, *line_func;

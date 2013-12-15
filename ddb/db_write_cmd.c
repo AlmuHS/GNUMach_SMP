@@ -55,7 +55,7 @@ db_write_cmd(address, have_addr, count, modif)
 	db_expr_t	address;
 	boolean_t	have_addr;
 	db_expr_t	count;
-	char *		modif;
+	const char *	modif;
 {
 	db_addr_t	addr;
 	db_expr_t	old_value;

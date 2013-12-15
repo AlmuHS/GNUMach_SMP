@@ -251,8 +251,8 @@ db_breakpoint_t	db_taken_bkpt = 0;
 
 db_breakpoint_t
 db_find_temp_breakpoint(task, addr)
-	task_t		   task;
-	db_addr_t	   addr;
+	const task_t	task;
+	db_addr_t	addr;
 {
 	if (db_taken_bkpt && (db_taken_bkpt->address == addr) &&
 	    db_taken_bkpt->task == task)
@@ -265,8 +265,8 @@ db_find_temp_breakpoint(task, addr)
 
 void
 db_set_task_single_step(regs, task)
-	db_regs_t *regs;
-	task_t		   task;
+	db_regs_t 	*regs;
+	task_t		task;
 {
 	db_addr_t pc = PC_REGS(regs), brpc;
 	unsigned int	inst;
@@ -310,8 +310,8 @@ db_set_task_single_step(regs, task)
 
 void
 db_clear_task_single_step(regs, task)
-	db_regs_t *regs;
-	task_t	  task;
+	const db_regs_t *regs;
+	task_t	  	task;
 {
 	if (db_taken_bkpt != 0) {
 	    db_delete_temp_breakpoint(task, db_taken_bkpt);
@@ -335,7 +335,7 @@ db_single_step_cmd(addr, have_addr, count, modif)
 	db_expr_t	addr;
 	int		have_addr;
 	db_expr_t	count;
-	char *		modif;
+	const char *	modif;
 {
 	boolean_t	print = FALSE;
 
@@ -363,7 +363,7 @@ db_trace_until_call_cmd(addr, have_addr, count, modif)
 	db_expr_t	addr;
 	int		have_addr;
 	db_expr_t	count;
-	char *		modif;
+	const char *	modif;
 {
 	boolean_t	print = FALSE;
 
@@ -386,7 +386,7 @@ db_trace_until_matching_cmd(addr, have_addr, count, modif)
 	db_expr_t	addr;
 	int		have_addr;
 	db_expr_t	count;
-	char *		modif;
+	const char *	modif;
 {
 	boolean_t	print = FALSE;
 
@@ -411,7 +411,7 @@ db_continue_cmd(addr, have_addr, count, modif)
 	db_expr_t	addr;
 	int		have_addr;
 	db_expr_t	count;
-	char *		modif;
+	const char *	modif;
 {
 	if (modif[0] == 'c')
 	    db_run_mode = STEP_COUNT;

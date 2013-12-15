@@ -144,10 +144,10 @@ struct bus_driver {
 extern struct bus_ctlr		bus_master_init[];
 extern struct bus_device	bus_device_init[];
 
-extern boolean_t configure_bus_master(char *, vm_offset_t, vm_offset_t,
-				      int, char * );
-extern boolean_t configure_bus_device(char *, vm_offset_t, vm_offset_t,
-				      int, char * );
+extern boolean_t configure_bus_master(const char *, vm_offset_t, vm_offset_t,
+				      int, const char * );
+extern boolean_t configure_bus_device(const char *, vm_offset_t, vm_offset_t,
+				      int, const char * );
 #endif	/* KERNEL */
 
 

@@ -45,7 +45,7 @@ struct db_lex_context {
 };
 
 extern int	db_lex(void);
-extern int	db_read_line(char *rep_str);
+extern int	db_read_line(const char *rep_str);
 extern void	db_flush_line(void);
 extern int	db_read_char(void);
 extern void	db_unread_char(int c);
@@ -54,7 +54,7 @@ extern void	db_unread_token(int t);
 extern void	db_flush_lex(void);
 extern void	db_switch_input(char *, int);
 extern void	db_save_lex_context(struct db_lex_context *);
-extern void	db_restore_lex_context(struct db_lex_context *);
+extern void	db_restore_lex_context(const struct db_lex_context *);
 extern void	db_skip_to_eol(void);
 
 extern db_expr_t db_tok_number;

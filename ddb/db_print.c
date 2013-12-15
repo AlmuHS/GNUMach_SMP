@@ -127,8 +127,8 @@ db_show_regs(addr, have_addr, count, modif)
 
 char *
 db_thread_stat(thread, status)
-	thread_t thread;
-	char	 *status;
+	const thread_t 	thread;
+	char	 	*status;
 {
 	char *p = status;
 
@@ -281,7 +281,7 @@ db_show_all_threads(addr, have_addr, count, modif)
 	db_expr_t	addr;
 	boolean_t	have_addr;
 	db_expr_t	count;
-	char *		modif;
+	const char *	modif;
 {
 	task_t task;
 	int task_id;
@@ -332,7 +332,7 @@ db_show_one_thread(addr, have_addr, count, modif)
 	db_expr_t	addr;
 	boolean_t	have_addr;
 	db_expr_t	count;
-	char *		modif;
+	const char *	modif;
 {
 	int		flag;
 	int		thread_id;
@@ -378,7 +378,7 @@ db_show_one_task(addr, have_addr, count, modif)
 	db_expr_t	addr;
 	boolean_t	have_addr;
 	db_expr_t	count;
-	char *		modif;
+	const char *	modif;
 {
 	int		flag;
 	int		task_id;
@@ -410,7 +410,7 @@ db_show_one_task(addr, have_addr, count, modif)
 
 int
 db_port_iterate(thread, func)
-	thread_t thread;
+	const thread_t thread;
 	void (*func)();
 {
 	ipc_entry_t entry;
@@ -452,7 +452,7 @@ db_lookup_port(thread, id)
 static void
 db_print_port_id(id, port, bits, n)
 	int id;
-	ipc_port_t port;
+	const ipc_port_t port;
 	unsigned bits;
 	int n;
 {
@@ -466,7 +466,7 @@ db_print_port_id(id, port, bits, n)
 static void
 db_print_port_id_long(
 	int id,
-	ipc_port_t port,
+	const ipc_port_t port,
 	unsigned bits,
 	int n)
 {
@@ -484,7 +484,7 @@ db_show_port_id(addr, have_addr, count, modif)
 	db_expr_t	addr;
 	boolean_t	have_addr;
 	db_expr_t	count;
-	char *		modif;
+	const char *	modif;
 {
 	thread_t thread;
 

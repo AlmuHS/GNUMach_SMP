@@ -59,11 +59,11 @@
  *
  */
 boolean_t configure_bus_master(
-	char		*name,
+	const char	*name,
 	vm_offset_t	 virt,
 	vm_offset_t	 phys,
 	int		 adpt_no,
-	char		*bus_name)
+	const char	*bus_name)
 {
 	struct bus_device *device;
 	struct bus_ctlr *master;
@@ -171,11 +171,11 @@ boolean_t configure_bus_master(
  *
  */
 boolean_t configure_bus_device( 
-	char		*name,
+	const char	*name,
 	vm_offset_t	 virt,
 	vm_offset_t	 phys,
 	int 		 adpt_no,
-	char		*bus_name)
+	const char	*bus_name)
 {
 	struct bus_device *device;
 	struct bus_driver *driver;

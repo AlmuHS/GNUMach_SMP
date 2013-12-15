@@ -95,12 +95,12 @@ db_term(valuep)
 
 int
 db_size_option(modif, u_option, t_option)
-	char *modif;
+	const char *modif;
 	boolean_t *u_option;
 	boolean_t *t_option;
 {
-	char 	*p;
-	int	size = sizeof(int);
+	const char 	*p;
+	int		size = sizeof(int);
 
 	*u_option = FALSE;
 	*t_option = FALSE;

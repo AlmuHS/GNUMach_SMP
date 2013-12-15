@@ -29,6 +29,6 @@ void db_write_cmd(
 	db_expr_t	address,
 	boolean_t	have_addr,
 	db_expr_t	count,
-	char *		modif);
+	const char *	modif);
 
 #endif	/* !_DDB_DB_WRITE_CMD_H_ */

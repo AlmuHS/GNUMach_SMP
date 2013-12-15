@@ -52,7 +52,7 @@ thread_t	db_default_thread;	/* default target thread */
  */
 int
 db_lookup_task(target_task)
-	task_t target_task;
+	const task_t target_task;
 {
 	task_t task;
 	int task_id;
@@ -82,8 +82,8 @@ db_lookup_task(target_task)
  */
 int
 db_lookup_task_thread(task, target_thread)
-	task_t	 task;
-	thread_t target_thread;
+	const task_t	 task;
+	const thread_t target_thread;
 {
 	thread_t thread;
 	int thread_id;
@@ -106,7 +106,7 @@ db_lookup_task_thread(task, target_thread)
  */
 int
 db_lookup_thread(target_thread)
-	thread_t target_thread;
+	const thread_t target_thread;
 {
 	int thread_id;
 	task_t task;
@@ -139,7 +139,7 @@ db_lookup_thread(target_thread)
  */
 boolean_t
 db_check_thread_address_valid(thread)
-	thread_t thread;
+	const thread_t thread;
 {
 	if (db_lookup_thread(thread) < 0) {
 	    db_printf("Bad thread address 0x%x\n", thread);
@@ -247,10 +247,10 @@ db_init_default_thread(void)
 /* ARGSUSED */
 void
 db_set_default_thread(vp, valuep, flag, ap)
-	struct db_variable *vp;
-	db_expr_t	*valuep;
-	int		flag;
-	db_var_aux_param_t	ap;
+	struct db_variable 	*vp;
+	db_expr_t		*valuep;
+	int			flag;
+	db_var_aux_param_t 	ap;
 {
 	thread_t	thread;
 

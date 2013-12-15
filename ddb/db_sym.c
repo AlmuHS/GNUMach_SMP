@@ -90,8 +90,8 @@ db_add_symbol_table(type, start, end, name, ref, map_pointer)
  */
 static char *
 db_qualify(symname, symtabname)
-	char		*symname;
-	char		*symtabname;
+	const char	*symname;
+	const char	*symtabname;
 {
 	static char     tmp[256];
 	char		*s;
@@ -108,7 +108,7 @@ db_qualify(symname, symtabname)
 
 
 boolean_t
-db_eqname( char* src, char* dst, char c )
+db_eqname( const char* src, const char* dst, char c )
 {
 	if (!strcmp(src, dst))
 	    return (TRUE);

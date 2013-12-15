@@ -71,12 +71,12 @@ struct db_breakpoint {
 
 typedef struct db_breakpoint *db_breakpoint_t;
 
-extern db_breakpoint_t	db_find_breakpoint( task_t task, db_addr_t addr);
-extern boolean_t	db_find_breakpoint_here( task_t task, db_addr_t addr);
+extern db_breakpoint_t	db_find_breakpoint( const task_t task, db_addr_t addr);
+extern boolean_t	db_find_breakpoint_here( const task_t task, db_addr_t addr);
 extern void		db_set_breakpoints(void);
 extern void		db_clear_breakpoints(void);
 extern db_thread_breakpoint_t	db_find_thread_breakpoint_here
-					( task_t task, db_addr_t addr );
+					( const task_t task, db_addr_t addr );
 extern db_thread_breakpoint_t	db_find_breakpoint_number
 					( int num, db_breakpoint_t *bkptp);
 
@@ -84,8 +84,8 @@ extern db_breakpoint_t	db_set_temp_breakpoint( task_t task, db_addr_t addr);
 extern void		db_delete_temp_breakpoint
 					( task_t task, db_breakpoint_t bkpt);
 
-extern db_breakpoint_t  db_set_breakpoint(task_t task, db_addr_t addr, 
-					  int count, thread_t thread, 
+extern db_breakpoint_t  db_set_breakpoint(const task_t task, db_addr_t addr, 
+					  int count, const thread_t thread, 
 					  boolean_t task_bpt);
 
 void db_listbreak_cmd();
@@ -96,7 +96,7 @@ void db_breakpoint_cmd(
 	db_expr_t	addr,
 	int		have_addr,
 	db_expr_t	count,
-	char *		modif);
+	const char *	modif);
 
 extern void db_check_breakpoint_valid(void);
 

@@ -161,7 +161,7 @@ extern void	db_symbol_values( db_symtab_t *stab,
 	db_search_task_symbol(val,strgy,offp,0)
 
 /* strcmp, modulo leading char */
-extern boolean_t	db_eqname( char* src, char* dst, char c );
+extern boolean_t	db_eqname( const char* src, const char* dst, char c );
 
 /* print closest symbol to a value */
 extern void	db_task_printsym( db_addr_t off,
