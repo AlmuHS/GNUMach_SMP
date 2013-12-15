@@ -94,7 +94,9 @@ extern void		check_simple_locks(void);
 /*
  * Do not allocate storage for locks if not needed.
  */
-#define	decl_simple_lock_data(class,name)
+struct simple_lock_data_empty {};
+#define	decl_simple_lock_data(class,name) \
+class struct simple_lock_data_empty name;
 #define	simple_lock_addr(lock)		((simple_lock_t)0)
 
 /*
@@ -102,7 +104,7 @@ extern void		check_simple_locks(void);
  */
 #define simple_lock_init(l)
 #define simple_lock(l)
-#define simple_unlock(l)
+#define simple_unlock(l) ((void)(l))
 #define simple_lock_try(l)	(TRUE)	/* always succeeds */
 #define simple_lock_taken(l)	(1)	/* always succeeds */
 #define check_simple_locks()

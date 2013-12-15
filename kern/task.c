@@ -761,7 +761,7 @@ kern_return_t task_info(
 
 		event_info = (task_events_info_t) task_info_out;
 
-		task_lock(&task);
+		task_lock(task);
 		event_info->faults = task->faults;
 		event_info->zero_fills = task->zero_fills;
 		event_info->reactivations = task->reactivations;
@@ -769,7 +769,7 @@ kern_return_t task_info(
 		event_info->cow_faults = task->cow_faults;
 		event_info->messages_sent = task->messages_sent;
 		event_info->messages_received = task->messages_received;
-		task_unlock(&task);
+		task_unlock(task);
 
 		*task_info_count = TASK_EVENTS_INFO_COUNT;
 		break;
