@@ -841,7 +841,7 @@ ipc_entry_grow_table(space)
 
 ipc_entry_t
 db_ipc_object_by_name(
-	task_t		task,
+	const task_t	task,
 	mach_port_t	name)
 {
         ipc_space_t space = task->itk_space;

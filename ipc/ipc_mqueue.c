@@ -79,9 +79,9 @@ ipc_mqueue_init(
 
 void
 ipc_mqueue_move(
-	ipc_mqueue_t	dest,
-	ipc_mqueue_t	source,
-	ipc_port_t	port)
+	ipc_mqueue_t		dest,
+	ipc_mqueue_t		source,
+	const ipc_port_t	port)
 {
 	ipc_kmsg_queue_t oldq, newq;
 	ipc_thread_queue_t blockedq;

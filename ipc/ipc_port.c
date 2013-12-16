@@ -275,9 +275,9 @@ ipc_port_dncancel(
 
 void
 ipc_port_pdrequest(
-	ipc_port_t	port,
-	ipc_port_t	notify,
-	ipc_port_t	*previousp)
+	ipc_port_t		port,
+	const ipc_port_t	notify,
+	ipc_port_t		*previousp)
 {
 	ipc_port_t previous;
 
@@ -1212,7 +1212,7 @@ ipc_port_dealloc_special(
 
 void
 ipc_port_print(port)
-	ipc_port_t port;
+	const ipc_port_t port;
 {
 	printf("port 0x%x\n", port);
 

@@ -334,7 +334,7 @@ ipc_pset_destroy(
 
 void
 ipc_pset_print(
-	ipc_pset_t	pset)
+	const ipc_pset_t pset)
 {
 	printf("pset 0x%x\n", pset);
 

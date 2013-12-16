@@ -1007,7 +1007,7 @@ char *ikot_print_array[IKOT_MAX_TYPE] = {
 
 void
 ipc_object_print(
-	ipc_object_t	object)
+	const ipc_object_t object)
 {
 	int kotype;
 

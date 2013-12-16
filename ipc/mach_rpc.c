@@ -141,7 +141,7 @@ mach_port_rpc_copy(portp, sact, dact)
 }
 
 kern_return_t
-mach_port_rpc_sig(ipc_space_t space, char *name, char *buffer, unsigned int buflen)
+mach_port_rpc_sig(const ipc_space_t space, const char *name, const char *buffer, unsigned int buflen)
 {
 	return KERN_FAILURE;
 }
