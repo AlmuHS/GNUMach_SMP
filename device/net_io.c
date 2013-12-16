@@ -196,7 +196,7 @@ net_kmsg_get(void)
 }
 
 void
-net_kmsg_put(ipc_kmsg_t kmsg)
+net_kmsg_put(const ipc_kmsg_t kmsg)
 {
 	spl_t s;
 
@@ -373,7 +373,7 @@ decl_simple_lock_data(,net_hash_header_lock)
  */
 
 boolean_t ethernet_priority(kmsg)
-	ipc_kmsg_t kmsg;
+	const ipc_kmsg_t kmsg;
 {
 	unsigned char *addr =
 		(unsigned char *) net_kmsg(kmsg)->header;
@@ -694,7 +694,7 @@ int net_filter_queue_reorder = 0; /* non-zero to enable reordering */
  */
 void
 net_filter(kmsg, send_list)
-	ipc_kmsg_t		kmsg;
+	const ipc_kmsg_t	kmsg;
 	ipc_kmsg_queue_t	send_list;
 {
 	struct ifnet		*ifp;
@@ -876,9 +876,9 @@ net_filter(kmsg, send_list)
 boolean_t
 net_do_filter(infp, data, data_count, header)
 	net_rcv_port_t	infp;
-	char *		data;
+	const char *	data;
 	unsigned int	data_count;
-	char *		header;
+	const char *	header;
 {
 	int		stack[NET_FILTER_STACK_DEPTH+1];
 	int		*sp;
@@ -1986,7 +1986,7 @@ bpf_eq (f1, f2, bytes)
 unsigned int
 bpf_hash (n, keys)
 	int n;
-	unsigned int *keys;
+	const unsigned int *keys;
 {
 	unsigned int hval = 0;
 	
@@ -2001,7 +2001,7 @@ int
 bpf_match (hash, n_keys, keys, hash_headpp, entpp)
 	net_hash_header_t hash;
 	int n_keys;
-	unsigned int *keys;
+	const unsigned int *keys;
 	net_hash_entry_t **hash_headpp, *entpp;
 {
 	net_hash_entry_t head, entp;

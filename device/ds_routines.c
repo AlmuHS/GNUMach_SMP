@@ -418,7 +418,7 @@ mach_convert_device_to_port (mach_device_t device)
 
 static io_return_t
 device_open(reply_port, reply_port_type, mode, name, device_p)
-	ipc_port_t	reply_port;
+	const ipc_port_t reply_port;
 	mach_msg_type_name_t reply_port_type;
 	dev_mode_t	mode;
 	char *		name;
@@ -538,7 +538,7 @@ device_open(reply_port, reply_port_type, mode, name, device_p)
 
 boolean_t
 ds_open_done(ior)
-	io_req_t		ior;
+	const io_req_t		ior;
 {
 	kern_return_t		result;
 	mach_device_t		device;
@@ -663,11 +663,11 @@ static io_return_t
 device_write(device, reply_port, reply_port_type, mode, recnum,
 	     data, data_count, bytes_written)
 	mach_device_t		device;
-	ipc_port_t		reply_port;
+	const ipc_port_t	reply_port;
 	mach_msg_type_name_t	reply_port_type;
 	dev_mode_t		mode;
 	recnum_t		recnum;
-	io_buf_ptr_t		data;
+	const io_buf_ptr_t	data;
 	unsigned int		data_count;
 	int			*bytes_written;	/* out */
 {
@@ -754,7 +754,7 @@ static io_return_t
 device_write_inband(device, reply_port, reply_port_type, mode, recnum,
 		    data, data_count, bytes_written)
 	mach_device_t		device;
-	ipc_port_t		reply_port;
+	const ipc_port_t	reply_port;
 	mach_msg_type_name_t	reply_port_type;
 	dev_mode_t		mode;
 	recnum_t		recnum;
@@ -1021,7 +1021,7 @@ device_write_dealloc(ior)
  */
 boolean_t
 ds_write_done(ior)
-	io_req_t		ior;
+	const io_req_t		ior;
 {
 	/*
 	 *	device_write_dealloc discards the data that has been
@@ -1069,7 +1069,7 @@ static io_return_t
 device_read(device, reply_port, reply_port_type, mode, recnum,
 	    bytes_wanted, data, data_count)
 	mach_device_t		device;
-	ipc_port_t		reply_port;
+	const ipc_port_t	reply_port;
 	mach_msg_type_name_t	reply_port_type;
 	dev_mode_t		mode;
 	recnum_t		recnum;
@@ -1146,7 +1146,7 @@ static io_return_t
 device_read_inband(device, reply_port, reply_port_type, mode, recnum,
 		   bytes_wanted, data, data_count)
 	mach_device_t		device;
-	ipc_port_t		reply_port;
+	const ipc_port_t	reply_port;
 	mach_msg_type_name_t	reply_port_type;
 	dev_mode_t		mode;
 	recnum_t		recnum;
@@ -1251,7 +1251,7 @@ kern_return_t device_read_alloc(ior, size)
 }
 
 boolean_t ds_read_done(ior)
-	io_req_t	ior;
+	const io_req_t	ior;
 {
 	vm_offset_t		start_data, end_data;
 	vm_offset_t		start_sent, end_sent;
@@ -1384,7 +1384,7 @@ mach_device_get_status(device, flavor, status, status_count)
 static io_return_t
 device_set_filter(device, receive_port, priority, filter, filter_count)
 	mach_device_t		device;
-	ipc_port_t		receive_port;
+	const ipc_port_t	receive_port;
 	int			priority;
 	filter_t		filter[];	/* pointer to IN array */
 	unsigned int		filter_count;
@@ -1433,7 +1433,7 @@ device_map(device, protection, offset, size, pager, unmap)
  */
 static void
 ds_no_senders(notification)
-	mach_no_senders_notification_t *notification;
+	const mach_no_senders_notification_t *notification;
 {
 	printf("ds_no_senders called! device_port=0x%lx count=%d\n",
 	       notification->not_header.msgh_remote_port,
@@ -1617,7 +1617,7 @@ mach_device_trap_init(void)
  * Could call a device-specific routine.
  */
 io_req_t
-ds_trap_req_alloc(mach_device_t device, vm_size_t data_size)
+ds_trap_req_alloc(const mach_device_t device, vm_size_t data_size)
 {
 	return (io_req_t) kmem_cache_alloc(&io_trap_cache);
 }
@@ -1626,7 +1626,7 @@ ds_trap_req_alloc(mach_device_t device, vm_size_t data_size)
  * Called by iodone to release ior.
  */
 boolean_t
-ds_trap_write_done(io_req_t ior)
+ds_trap_write_done(const io_req_t ior)
 {
 	mach_device_t 	dev;
 

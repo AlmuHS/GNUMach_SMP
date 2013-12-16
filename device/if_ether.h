@@ -46,7 +46,7 @@ struct	ether_header {
 };
 
 #ifdef	KERNEL
-extern char *	ether_sprintf(u_char *);
+extern char *	ether_sprintf(const u_char *);
 #endif	/* KERNEL */
 
 #endif	/*_DEVICE_IF_ETHER_H_*/

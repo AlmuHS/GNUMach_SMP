@@ -134,16 +134,16 @@ boolean_t	dev_map(boolean_t (*)(), mach_port_t);
  * device name lookup
  */
 extern boolean_t dev_name_lookup(
-    char *      name,
-    dev_ops_t   *ops,   /* out */
-    int     *unit);  /* out */
+    char *      	name,
+    dev_ops_t   	*ops,   /* out */
+    int     		*unit);  /* out */
 
 /*
  * Change an entry in the indirection list.
  */
 extern void dev_set_indirection(
-    char        *name,
+    const char	*name,
     dev_ops_t   ops,
-    int     unit);
+    int     	unit);
 
 #endif	/* _DEVICE_DEV_HDR_H_ */

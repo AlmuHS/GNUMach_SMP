@@ -41,8 +41,8 @@
  * Print out disk name and block number for hard disk errors.
  */
 void harderr(ior, cp)
-	io_req_t ior;
-	char *	cp;
+	const io_req_t ior;
+	const char *	cp;
 {
 	printf("%s%d%c: hard error sn%d ",
 	       cp,
@@ -56,7 +56,7 @@ void harderr(ior, cp)
  */
 char *
 ether_sprintf(ap)
-	u_char *ap;
+	const u_char *ap;
 {
 	int i;
 	static char etherbuf[18];

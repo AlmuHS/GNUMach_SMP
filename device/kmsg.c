@@ -61,7 +61,7 @@ kmsginit (void)
 
 /* Kernel Message Open Handler */
 io_return_t
-kmsgopen (dev_t dev, int flag, io_req_t ior)
+kmsgopen (dev_t dev, int flag, const io_req_t ior)
 {
   simple_lock (&kmsg_lock);
   if (kmsg_in_use)

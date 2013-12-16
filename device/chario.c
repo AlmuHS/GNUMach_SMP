@@ -526,9 +526,9 @@ void ttyclose(
  */
 boolean_t
 tty_queue_clean(
-	queue_t		q,
-	ipc_port_t	port,
-	boolean_t	(*routine)(io_req_t) )
+	queue_t			q,
+	const ipc_port_t	port,
+	boolean_t		(*routine)(io_req_t) )
 {
 	io_req_t	ior;
 
@@ -552,8 +552,8 @@ tty_queue_clean(
  */
 boolean_t
 tty_portdeath(
-	struct tty *	tp,
-	ipc_port_t	port)
+	struct tty *		tp,
+	const ipc_port_t	port)
 {
 	spl_t	spl = spltty();
 	boolean_t	result;

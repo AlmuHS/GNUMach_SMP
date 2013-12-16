@@ -100,14 +100,14 @@ extern unsigned short int	ntohs(unsigned short int);
 extern unsigned int		htonl(unsigned int);
 extern unsigned short int	htons(unsigned short int);
 
-unsigned int bpf_hash(int n, unsigned int *keys);
+unsigned int bpf_hash(int n, const unsigned int *keys);
 
 extern boolean_t
 net_do_filter(
 	net_rcv_port_t	infp,
-	char *		data,
+	const char *	data,
 	unsigned int	data_count,
-	char *		header); /* CSPF */
+	const char *	header); /* CSPF */
 
 extern int
 bpf_do_filter(
@@ -145,7 +145,7 @@ int net_add_q_info(ipc_port_t rcv_port);
 int bpf_match (
 	net_hash_header_t 	hash,
 	int 			n_keys,
-	unsigned int 		*keys,
+	const unsigned int 	*keys,
 	net_hash_entry_t 	**hash_headpp,
 	net_hash_entry_t 	*entpp);
 

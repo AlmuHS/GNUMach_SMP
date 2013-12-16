@@ -65,9 +65,9 @@ nomap(void)
  */
 boolean_t
 name_equal(src, len, target)
-	char 	*src;
-	int	len;
-	char 	*target;
+	const char 	*src;
+	int		len;
+	const char 	*target;
 {
 	while (--len >= 0)
 	    if (*src++ != *target++)
@@ -191,7 +191,7 @@ boolean_t dev_name_lookup(name, ops, unit)
  */
 void
 dev_set_indirection(name, ops, unit)
-	char		*name;
+	const char	*name;
 	dev_ops_t	ops;
 	int		unit;
 {
@@ -207,9 +207,9 @@ dev_set_indirection(name, ops, unit)
 }
 
 boolean_t dev_change_indirect(iname, dname, unit)
-	char 	*iname;
-	char	*dname;
-	int 	unit;
+	const char 	*iname;
+	const char	*dname;
+	int 		unit;
 {
     struct dev_ops *dp;
     struct dev_indirect *di;

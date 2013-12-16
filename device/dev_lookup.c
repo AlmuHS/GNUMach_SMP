@@ -71,7 +71,7 @@ struct kmem_cache	dev_hdr_cache;
  */
 void
 dev_number_enter(device)
-	mach_device_t	device;
+	const mach_device_t	device;
 {
 	queue_t	q;
 
@@ -85,7 +85,7 @@ dev_number_enter(device)
  */
 void
 dev_number_remove(device)
-	mach_device_t	device;
+	const mach_device_t	device;
 {
 	queue_t	q;
 
@@ -99,7 +99,7 @@ dev_number_remove(device)
  */
 mach_device_t
 dev_number_lookup(ops, devnum)
-	dev_ops_t	ops;
+	const dev_ops_t	ops;
 	int		devnum;
 {
 	queue_t	q;
@@ -121,7 +121,7 @@ dev_number_lookup(ops, devnum)
  */
 mach_device_t
 device_lookup(name)
-	char *		name;
+	char * name;
 {
 	dev_ops_t	dev_ops;
 	int		dev_minor;
@@ -306,7 +306,7 @@ dev_port_lookup(port)
  */
 ipc_port_t
 convert_device_to_port(device)
-	device_t	device;
+	const device_t	device;
 {
 	if (device == DEVICE_NULL)
 	    return IP_NULL;
