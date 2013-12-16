@@ -340,7 +340,7 @@ simpler_thread_setrun(
 
 	whichq = (th)->sched_pri;
 	simple_lock(&(rq)->lock);	/* lock the run queue */
-	enqueue_head(&(rq)->runq[whichq], (queue_entry_t) (th));
+	enqueue_head(&(rq)->runq[whichq], &((th)->links));
 
 	if (whichq < (rq)->low || (rq)->count == 0)
 		 (rq)->low = whichq;	/* minimize */

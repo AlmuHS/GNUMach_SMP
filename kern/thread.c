@@ -1149,7 +1149,7 @@ void	thread_halt_self(void)
 
 		s = splsched();
 		simple_lock(&reaper_lock);
-		enqueue_tail(&reaper_queue, (queue_entry_t) thread);
+		enqueue_tail(&reaper_queue, &(thread->links));
 		simple_unlock(&reaper_lock);
 
 		thread_lock(thread);

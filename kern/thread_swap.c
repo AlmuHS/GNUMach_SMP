@@ -97,7 +97,7 @@ void thread_swapin(thread)
 		thread->state = (thread->state & ~TH_SWAP_STATE)
 				| TH_SW_COMING_IN;
 		swapper_lock();
-		enqueue_tail(&swapin_queue, (queue_entry_t) thread);
+		enqueue_tail(&swapin_queue, &(thread->links));
 		swapper_unlock();
 		thread_wakeup((event_t) &swapin_queue);
 		break;
