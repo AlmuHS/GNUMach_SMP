@@ -30,15 +30,15 @@
 
 extern void memory_object_proxy_init (void);
 extern boolean_t memory_object_proxy_notify (mach_msg_header_t *msg);
-extern kern_return_t memory_object_create_proxy (ipc_space_t space,
+extern kern_return_t memory_object_create_proxy (const ipc_space_t space,
                                                  vm_prot_t max_protection,
                                                  ipc_port_t *object,
                                                  natural_t object_count,
-                                                 vm_offset_t *offset,
+                                                 const vm_offset_t *offset,
                                                  natural_t offset_count,
-                                                 vm_offset_t *start,
+                                                 const vm_offset_t *start,
                                                  natural_t start_count,
-                                                 vm_offset_t *len,
+                                                 const vm_offset_t *len,
                                                  natural_t len_count,
                                                  ipc_port_t *port);
 extern kern_return_t memory_object_proxy_lookup (ipc_port_t port,

@@ -256,7 +256,7 @@ vm_map_t vm_map_create(pmap, min, max, pageable)
 	    _vm_map_entry_create(&(copy)->cpy_hdr)
 
 vm_map_entry_t _vm_map_entry_create(map_header)
-	struct vm_map_header *map_header;
+	const struct vm_map_header *map_header;
 {
 	kmem_cache_t cache;
 	vm_map_entry_t	entry;
@@ -285,7 +285,7 @@ vm_map_entry_t _vm_map_entry_create(map_header)
 	_vm_map_entry_dispose(&(copy)->cpy_hdr, (entry))
 
 void _vm_map_entry_dispose(map_header, entry)
-	struct vm_map_header *map_header;
+	const struct vm_map_header *map_header;
 	vm_map_entry_t	entry;
 {
 	kmem_cache_t cache;
@@ -4715,7 +4715,7 @@ kern_return_t vm_map_machine_attribute(map, address, size, attribute, value)
  *	vm_map_print:	[ debug ]
  */
 void vm_map_print(map)
-	vm_map_t	map;
+	vm_map_t map;
 {
 	vm_map_entry_t	entry;
 
@@ -4783,7 +4783,7 @@ void vm_map_print(map)
  */
 
 void vm_map_copy_print(copy)
-	vm_map_copy_t copy;
+	const vm_map_copy_t copy;
 {
 	int i, npages;
 

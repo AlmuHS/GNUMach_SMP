@@ -411,7 +411,7 @@ kern_return_t vm_map(
  *	[ To unwire the pages, specify VM_PROT_NONE. ]
  */
 kern_return_t vm_wire(host, map, start, size, access)
-	host_t			host;
+	const host_t		host;
 	vm_map_t		map;
 	vm_offset_t		start;
 	vm_size_t		size;

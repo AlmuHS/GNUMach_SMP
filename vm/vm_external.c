@@ -97,8 +97,8 @@ void		vm_external_destroy(e)
 }
 
 vm_external_state_t _vm_external_state_get(e, offset)
-	vm_external_t	e;
-	vm_offset_t	offset;
+	const vm_external_t	e;
+	vm_offset_t		offset;
 {
 	unsigned
 	int		bit, byte;

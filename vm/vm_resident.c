@@ -1505,7 +1505,7 @@ vm_page_info(
  *	Routine:	vm_page_print [exported]
  */
 void		vm_page_print(p)
-	vm_page_t	p;
+	const vm_page_t	p;
 {
 	iprintf("Page 0x%X: object 0x%X,", (vm_offset_t) p, (vm_offset_t) p->object);
 	 printf(" offset 0x%X", p->offset);

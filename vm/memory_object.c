@@ -1032,7 +1032,7 @@ kern_return_t	memory_object_get_attributes(object, object_ready,
  *	If successful, consumes the supplied naked send right.
  */
 kern_return_t	vm_set_default_memory_manager(host, default_manager)
-	host_t		host;
+	const host_t	host;
 	ipc_port_t	*default_manager;
 {
 	ipc_port_t current_manager;
@@ -1114,7 +1114,7 @@ ipc_port_t	memory_manager_default_reference(void)
  */
 
 boolean_t	memory_manager_default_port(port)
-	ipc_port_t port;
+	const ipc_port_t port;
 {
 	ipc_port_t current;
 	boolean_t result;

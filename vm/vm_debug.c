@@ -434,7 +434,7 @@ mach_vm_object_pages(object, pagesp, countp)
 
 kern_return_t
 host_virtual_physical_table_info(host, infop, countp)
-	host_t host;
+	const host_t host;
 	hash_info_bucket_array_t *infop;
 	natural_t *countp;
 {

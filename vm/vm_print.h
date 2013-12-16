@@ -26,7 +26,7 @@
 extern void vm_map_print(vm_map_t);
 
 /* Pretty-print a copy object for ddb. */
-extern void vm_map_copy_print(vm_map_copy_t);
+extern void vm_map_copy_print(const vm_map_copy_t);
 
 #include <vm/vm_object.h>
 
@@ -34,7 +34,7 @@ extern void vm_object_print(vm_object_t);
 
 #include <vm/vm_page.h>
 
-extern void vm_page_print(vm_page_t);
+extern void vm_page_print(const vm_page_t);
 
 #endif	/* VM_PRINT_H */
 
