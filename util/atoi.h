@@ -62,6 +62,6 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <sys/types.h>
 
 #define MACH_ATOI_DEFAULT -1
-extern int mach_atoi (u_char *, int *);
+extern int mach_atoi (const u_char *, int *);
 
 #endif	/* _UTIL_ATOI_H_ */

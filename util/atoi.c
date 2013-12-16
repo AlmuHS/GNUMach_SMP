@@ -91,11 +91,11 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 int
 mach_atoi(cp, nump)
-u_char	*cp;
-int	*nump;
+const u_char	*cp;
+int		*nump;
 {
-	int	number;
-	u_char	*original;
+	int		number;
+	const u_char	*original;
 
 	original = cp;
 	for (number = 0; ('0' <= *cp) && (*cp <= '9'); cp++)
