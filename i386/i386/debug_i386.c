@@ -27,7 +27,7 @@
 #include "trap.h"
 #include "debug.h"
 
-void dump_ss(struct i386_saved_state *st)
+void dump_ss(const struct i386_saved_state *st)
 {
 	printf("Dump of i386_saved_state %p:\n", st);
 	printf("EAX %08lx EBX %08lx ECX %08lx EDX %08lx\n",

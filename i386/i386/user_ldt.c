@@ -255,7 +255,7 @@ i386_set_ldt(thread, first_selector, desc_list, count, desc_list_inline)
 
 kern_return_t
 i386_get_ldt(thread, first_selector, selector_count, desc_list, count)
-	thread_t	thread;
+	const thread_t	thread;
 	int		first_selector;
 	int		selector_count;		/* number wanted */
 	struct real_descriptor **desc_list;	/* in/out */
@@ -431,7 +431,7 @@ i386_set_gdt (thread_t thread, int *selector, struct real_descriptor desc)
 }
 
 kern_return_t
-i386_get_gdt (thread_t thread, int selector, struct real_descriptor *desc)
+i386_get_gdt (const thread_t thread, int selector, struct real_descriptor *desc)
 {
   if (thread == THREAD_NULL)
     return KERN_INVALID_ARGUMENT;

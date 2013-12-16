@@ -429,7 +429,7 @@ void pcb_terminate(thread)
  */
 
 void pcb_collect(thread)
-	thread_t thread;
+	const thread_t thread;
 {
 }
 
@@ -827,7 +827,7 @@ vm_offset_t
 set_user_regs(stack_base, stack_size, exec_info, arg_size)
 	vm_offset_t	stack_base;	/* low address */
 	vm_offset_t	stack_size;
-	struct exec_info *exec_info;
+	const struct exec_info *exec_info;
 	vm_size_t	arg_size;
 {
 	vm_offset_t	arg_addr;

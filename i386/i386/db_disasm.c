@@ -950,10 +950,10 @@ db_read_address(
 
 void
 db_print_address(
-	char *		seg,
-	int		size,
-	struct i_addr	*addrp,
-	task_t		task)
+	const char *		seg,
+	int			size,
+	const struct i_addr	*addrp,
+	task_t			task)
 {
 	if (addrp->is_reg) {
 	    db_printf("%s", db_reg[size][addrp->disp]);
@@ -986,7 +986,7 @@ db_disasm_esc(
 	int		inst,
 	int		short_addr,
 	int		size,
-	char *		seg,
+	const char *	seg,
 	task_t		task)
 {
 	int		regmodrm;

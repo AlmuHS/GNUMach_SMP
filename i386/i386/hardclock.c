@@ -47,10 +47,10 @@ extern char	return_to_iret[];
 
 void
 hardclock(iunit,        old_ipl, irq, ret_addr, regs)
-        int     iunit;          /* 'unit' number */
-	int	old_ipl;	/* old interrupt level */
-	int	irq;		/* irq number */
-	char *	ret_addr;	/* return address in interrupt handler */
+       int     	iunit;          /* 'unit' number */
+	int		old_ipl;	/* old interrupt level */
+	int		irq;		/* irq number */
+	const char *	ret_addr;	/* return address in interrupt handler */
 	struct i386_interrupt_state *regs;
 				/* saved registers */
 {

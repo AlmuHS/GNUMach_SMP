@@ -292,7 +292,7 @@ twd_fxsr_to_i387 (struct i386_xfp_save *fxsave)
  */
 kern_return_t
 fpu_set_state(thread, state)
-	thread_t	thread;
+	const thread_t		thread;
 	struct i386_float_state *state;
 {
 	pcb_t pcb = thread->pcb;
@@ -403,7 +403,7 @@ ASSERT_IPL(SPL0);
  */
 kern_return_t
 fpu_get_state(thread, state)
-	thread_t	thread;
+	const thread_t		thread;
 	struct i386_float_state *state;
 {
 	pcb_t pcb = thread->pcb;

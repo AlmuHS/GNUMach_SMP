@@ -311,7 +311,7 @@ int   X_kdb_enter_len = 0,  X_kdb_exit_len = 0;
 
 void
 kdb_in_out(p)
-u_int *p;
+const u_int *p;
 {
 	int t = p[0];
 

@@ -122,7 +122,7 @@ void probeio(void)
 }
 
 void take_dev_irq(
-	struct bus_device *dev)
+	const struct bus_device *dev)
 {
 	int pic = (int)dev->sysdep1;
 
@@ -144,7 +144,7 @@ void take_dev_irq(
 }
 
 void take_ctlr_irq(
-	struct bus_ctlr *ctlr)
+	const struct bus_ctlr *ctlr)
 {
 	int pic = ctlr->sysdep1;
 	if (intpri[pic] == 0) {

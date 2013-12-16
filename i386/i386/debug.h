@@ -26,7 +26,7 @@
 /* Dump a saved state.
    Probably a good idea to have this around
    even when DEBUG isn't turned on.  */
-void dump_ss(struct i386_saved_state *st);
+void dump_ss(const struct i386_saved_state *st);
 
 #ifdef DEBUG
 

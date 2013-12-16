@@ -175,7 +175,7 @@ io_bitmap_clear (unsigned char *iopb, io_port_t from, io_port_t to)
 
    The function is exported.  */
 kern_return_t
-i386_io_perm_create (ipc_port_t master_port, io_port_t from, io_port_t to,
+i386_io_perm_create (const ipc_port_t master_port, io_port_t from, io_port_t to,
 		     io_perm_t *new)
 {
   if (master_port != master_device_port)

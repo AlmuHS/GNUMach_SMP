@@ -626,7 +626,7 @@ i386_exception(exc, code, subcode)
  */
 unsigned
 interrupted_pc(t)
-	thread_t t;
+	const thread_t t;
 {
 	struct i386_saved_state *iss;
 

@@ -238,7 +238,7 @@ simple_lock_pause(void)
 }
 
 kern_return_t
-cpu_control(int cpu, int *info, unsigned int count)
+cpu_control(int cpu, const int *info, unsigned int count)
 {
 	printf("cpu_control(%d, %p, %d) not implemented\n",
 	       cpu, info, count);

@@ -95,7 +95,7 @@ db_stack_trace_cmd(
 	db_expr_t	addr,
 	boolean_t	have_addr,
 	db_expr_t	count,
-	char		*modif);
+	const char	*modif);
 
 extern void
 db_reset_cpu(void);

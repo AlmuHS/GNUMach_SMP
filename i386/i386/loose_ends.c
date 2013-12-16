@@ -54,8 +54,8 @@ delay(n)
  * levels of return pc information.
  */
 void machine_callstack(
-	unsigned long	*buf,
-	int		callstack_max)
+	const unsigned long	*buf,
+	int			callstack_max)
 {
 }
 

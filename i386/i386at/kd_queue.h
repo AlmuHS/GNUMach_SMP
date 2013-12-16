@@ -79,8 +79,8 @@ typedef struct {
 
 extern void kdq_put(kd_event_queue *, kd_event *);
 extern void kdq_reset(kd_event_queue *);
-extern boolean_t kdq_empty(kd_event_queue *);
-extern boolean_t kdq_full(kd_event_queue *);
+extern boolean_t kdq_empty(const kd_event_queue *);
+extern boolean_t kdq_full(const kd_event_queue *);
 extern kd_event *kdq_get(kd_event_queue *);
 
 #endif /* _KD_QUEUE_H_ */

@@ -107,8 +107,8 @@ struct i386_kregs {
 
 long *
 db_lookup_i386_kreg(
-	char	*name,
-	long	*kregp)
+	const char *name,
+	const long *kregp)
 {
 	struct i386_kregs *kp;
 
@@ -259,7 +259,7 @@ db_nextframe(
 	struct i386_frame **fp,		/* in/out */
 	db_addr_t	  *ip,		/* out */
 	long 		  frame_type,	/* in */
-	thread_t	  thread)	/* in */
+	const thread_t	  thread)	/* in */
 {
 	struct i386_saved_state *saved_regs;
 	struct interrupt_frame *ifp;
@@ -321,7 +321,7 @@ db_stack_trace_cmd(
 	db_expr_t	addr,
 	boolean_t	have_addr,
 	db_expr_t	count,
-	char		*modif)
+	const char	*modif)
 {
 	boolean_t	trace_thread = FALSE;
 	struct i386_frame *frame;
@@ -330,7 +330,7 @@ db_stack_trace_cmd(
 	thread_t	th;
 
 	{
-	    char *cp = modif;
+	    const char *cp = modif;
 	    char c;
 
 	    while ((c = *cp++) != 0) {
@@ -399,7 +399,7 @@ db_stack_trace_cmd(
 
 void
 db_i386_stack_trace(
-	thread_t	th,
+	const thread_t	th,
 	struct i386_frame *frame,
 	db_addr_t	callpc,
 	db_expr_t	count,
@@ -633,7 +633,7 @@ void db_trace_cproc(
 }
 
 void db_all_cprocs(
-	task_t		task,
+	const task_t	task,
 	db_expr_t	cproc_list)
 {
 	jmp_buf_t	db_jmpbuf;

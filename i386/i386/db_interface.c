@@ -172,8 +172,8 @@ void db_dr (
 
 boolean_t
 db_set_hw_watchpoint(
-	db_watchpoint_t	watch,
-	unsigned	num)
+	const db_watchpoint_t	watch,
+	unsigned		num)
 {
 	vm_size_t	size = watch->hiaddr - watch->loaddr;
 	db_addr_t	addr = watch->loaddr;
@@ -410,7 +410,7 @@ boolean_t db_no_vm_fault = TRUE;
 
 int
 db_user_to_kernel_address(
-	task_t		task,
+	const task_t	task,
 	vm_offset_t	addr,
 	vm_offset_t	*kaddr,
 	int		flag)
@@ -617,7 +617,7 @@ boolean_t
 db_phys_eq(
 	task_t		task1,
 	vm_offset_t	addr1,
-	task_t		task2,
+	const task_t	task2,
 	vm_offset_t	addr2)
 {
 	vm_offset_t	kern_addr1, kern_addr2;
@@ -645,7 +645,7 @@ db_phys_eq(
 #ifndef GNU
 static boolean_t
 db_search_null(
-	task_t		task,
+	const task_t	task,
 	vm_offset_t	*svaddr,
 	vm_offset_t	evaddr,
 	vm_offset_t	*skaddr,
@@ -678,7 +678,7 @@ db_search_null(
 #ifdef GNU
 static boolean_t
 looks_like_command(
-	task_t		task,
+	const task_t	task,
 	char*		kaddr)
 {
 	char *c;
@@ -722,7 +722,7 @@ looks_like_command(
 
 void
 db_task_name(
-	task_t		task)
+	const task_t task)
 {
 	char *p;
 	int n;
