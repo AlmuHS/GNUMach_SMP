@@ -132,8 +132,8 @@ extern void thread_timeout_setup(
  *	Machine-dependent code must define these functions.
  */
 
-extern void	thread_bootstrap_return(void);
-extern void	thread_exception_return(void);
+extern void	thread_bootstrap_return(void) __attribute__((noreturn));
+extern void	thread_exception_return(void) __attribute__((noreturn));
 extern void 	__attribute__((__noreturn__)) thread_syscall_return(kern_return_t);
 
 extern thread_t	switch_context(
@@ -178,7 +178,7 @@ void checkrq(run_queue_t rq, char *msg);
 void thread_check(thread_t th, run_queue_t rq);
 #endif /* DEBUG */
 
-extern void idle_thread(void);
+extern void idle_thread(void) __attribute__((noreturn));
 extern void sched_thread(void);
 
 #endif	/* _KERN_SCHED_PRIM_H_ */

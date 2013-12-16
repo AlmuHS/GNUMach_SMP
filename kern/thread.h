@@ -350,7 +350,7 @@ extern thread_t		kernel_thread(
 	void		(*start)(void),
 	void *		arg);
 
-extern void		reaper_thread(void);
+extern void		reaper_thread(void) __attribute__((noreturn));
 
 #if	MACH_HOST
 extern void		thread_freeze(

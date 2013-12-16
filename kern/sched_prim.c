@@ -1618,7 +1618,7 @@ int	no_dispatch_count = 0;
  *	to execute.
  */
 
-void idle_thread_continue(void)
+void __attribute__((noreturn)) idle_thread_continue(void)
 {
 	processor_t myprocessor;
 	volatile thread_t *threadp;

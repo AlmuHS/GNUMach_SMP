@@ -38,6 +38,6 @@
 extern void	swapper_init(void);
 extern void	thread_swapin(thread_t thread);
 extern void	thread_doswapin(thread_t thread);
-extern void	swapin_thread(void);
+extern void	swapin_thread(void) __attribute__((noreturn));
 
 #endif	/* _KERN_THREAD_SWAP_H_ */

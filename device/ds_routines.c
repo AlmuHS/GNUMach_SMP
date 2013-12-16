@@ -1479,7 +1479,7 @@ void iodone(ior)
 	splx(s);
 }
 
-void io_done_thread_continue(void)
+void  __attribute__ ((noreturn)) io_done_thread_continue(void)
 {
 	for (;;) {
 	    spl_t		s;

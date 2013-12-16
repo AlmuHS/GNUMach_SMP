@@ -1123,7 +1123,7 @@ kern_return_t thread_halt(
 	}
 }
 
-void	walking_zombie(void)
+void __attribute__((noreturn)) walking_zombie(void)
 {
 	panic("the zombie walks!");
 }
@@ -1693,7 +1693,7 @@ thread_t kernel_thread(
  *	This kernel thread runs forever looking for threads to destroy
  *	(when they request that they be destroyed, of course).
  */
-void reaper_thread_continue(void)
+void __attribute__((noreturn)) reaper_thread_continue(void)
 {
 	for (;;) {
 		thread_t thread;

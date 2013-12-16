@@ -90,7 +90,7 @@ extern vm_size_t net_kmsg_size;
 extern void net_kmsg_collect (void);
 
 extern void net_io_init(void);
-extern void net_thread(void);
+extern void net_thread(void) __attribute__ ((noreturn));
 
 #define net_kmsg_alloc()	((ipc_kmsg_t) kalloc(net_kmsg_size))
 #define net_kmsg_free(kmsg)	kfree((vm_offset_t) (kmsg), net_kmsg_size)

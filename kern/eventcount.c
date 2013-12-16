@@ -123,7 +123,7 @@ void evc_notify_abort(const thread_t thread)
  * Just so that we return success, and give
  * up the stack while blocked
  */
-static void
+static void  __attribute__((noreturn))
 evc_continue(void)
 {
 	thread_syscall_return(KERN_SUCCESS);

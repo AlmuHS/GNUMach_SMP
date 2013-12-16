@@ -390,7 +390,7 @@ void action_thread_continue()
 	}
 }
 
-void action_thread()
+void __attribute__((noreturn)) action_thread()
 {
 	action_thread_continue();
 	/*NOTREACHED*/

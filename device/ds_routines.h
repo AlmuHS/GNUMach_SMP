@@ -67,7 +67,7 @@ kern_return_t	device_pager_setup(
 extern void mach_device_init(void);
 extern void dev_lookup_init(void);
 extern void device_pager_init(void);
-extern void io_done_thread(void);
+extern void io_done_thread(void) __attribute__ ((noreturn));
 
 io_return_t ds_device_write_trap(
 	device_t 	dev,

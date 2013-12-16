@@ -553,7 +553,7 @@ void net_ast(void)
 	(void) splx(s);
 }
 
-void net_thread_continue(void)
+void __attribute__ ((noreturn)) net_thread_continue(void)
 {
 	for (;;) {
 		spl_t s;
