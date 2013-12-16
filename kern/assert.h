@@ -36,7 +36,7 @@
 #endif
 
 #if	MACH_ASSERT
-extern void Assert(char *exp, char *filename, int line) __attribute__ ((noreturn));
+extern void Assert(const char *exp, const char *filename, int line) __attribute__ ((noreturn));
 
 #define assert(ex)							\
 MACRO_BEGIN								\

@@ -98,7 +98,7 @@ evc_destroy(evc_t	ev)
  * Thread termination.
  * HORRIBLE. This stuff needs to be fixed.
  */
-void evc_notify_abort(thread_t thread)
+void evc_notify_abort(const thread_t thread)
 {
     int i;
     evc_t ev;

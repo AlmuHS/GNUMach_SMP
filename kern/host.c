@@ -47,7 +47,7 @@
 host_data_t	realhost;
 
 kern_return_t host_processors(
-	host_t			host,
+	const host_t		host,
 	processor_array_t	*processor_list,
 	natural_t		*countp)
 {
@@ -95,7 +95,7 @@ kern_return_t host_processors(
 }
 
 kern_return_t	host_info(
-	host_t		host,
+	const host_t	host,
 	int		flavor,
 	host_info_t	info,
 	natural_t	*count)
@@ -204,7 +204,7 @@ kern_return_t	host_info(
  */
 
 kern_return_t host_kernel_version(
-	host_t			host,
+	const host_t		host,
 	kernel_version_t	out_version)
 {
 	extern char	version[];
@@ -225,7 +225,7 @@ kern_return_t host_kernel_version(
 #if	MACH_HOST
 kern_return_t
 host_processor_sets(
-	host_t				host,
+	const host_t			host,
 	processor_set_name_array_t	*pset_list,
 	natural_t			*count)
 {
@@ -324,7 +324,7 @@ host_processor_sets(
  */
 kern_return_t
 host_processor_sets(
-	host_t				host,
+	const host_t			host,
 	processor_set_name_array_t	*pset_list,
 	natural_t			*count)
 {
@@ -362,7 +362,7 @@ host_processor_sets(
  */
 kern_return_t
 host_processor_set_priv(
-	host_t		host,
+	const host_t	host,
 	processor_set_t	pset_name,
 	processor_set_t	*pset)
 {

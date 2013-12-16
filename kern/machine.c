@@ -126,8 +126,8 @@ void cpu_down(cpu)
 
 kern_return_t
 host_reboot(host, options)
-	host_t	host;
-	int	options;
+	const host_t	host;
+	int		options;
 {
 	if (host == HOST_NULL)
 		return (KERN_INVALID_HOST);

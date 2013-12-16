@@ -102,7 +102,7 @@ extern void mapable_time_init (void);
 
 /* For public timer elements.  */
 extern void timeout(timer_func_t *fcn, void *param, int interval);
-extern boolean_t untimeout(timer_func_t *fcn, void *param);
+extern boolean_t untimeout(timer_func_t *fcn, const void *param);
 
 extern int timeopen(void);
 extern int timeclose(void);

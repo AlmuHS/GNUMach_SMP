@@ -92,7 +92,7 @@ mach_msg_send_from_kernel(
 
 mach_msg_return_t
 mach_msg_rpc_from_kernel(msg, send_size, reply_size)
-	mach_msg_header_t *msg;
+	const mach_msg_header_t *msg;
 	mach_msg_size_t send_size;
 	mach_msg_size_t reply_size;
 {
@@ -286,7 +286,8 @@ mig_put_reply_port(
  *     len - Length of destination buffer.
  */
 void mig_strncpy(dest, src, len)
-char *dest, *src;
+char *dest;
+const char *src;
 int len;
 {
     int i;

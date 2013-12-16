@@ -648,9 +648,9 @@ task_get_special_port(
 
 kern_return_t
 task_set_special_port(
-	task_t		task,
-	int		which,
-	ipc_port_t	port)
+	task_t			task,
+	int			which,
+	const ipc_port_t 	port)
 {
 	ipc_port_t *whichp;
 	ipc_port_t old;

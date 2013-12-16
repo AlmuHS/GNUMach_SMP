@@ -51,7 +51,7 @@ do_cnputc(char c, vm_offset_t offset)
 }
 
 void
-Assert(char *exp, char *file, int line)
+Assert(const char *exp, const char *file, int line)
 {
 #if NCPUS > 1
   	simple_lock(&Assert_print_lock);
@@ -67,7 +67,7 @@ Assert(char *exp, char *file, int line)
 }
 
 void SoftDebugger(message)
-	char *	message;
+	const char *message;
 {
 	printf("Debugger invoked: %s\n", message);
 
@@ -99,7 +99,7 @@ void SoftDebugger(message)
 }
 
 void Debugger(message)
-	char *	message;
+	const char *message;
 {
 #if	!MACH_KDB
 	panic("Debugger invoked, but there isn't one!");

@@ -387,7 +387,7 @@ record_time_stamp (time_value_t *stamp)
  */
 kern_return_t
 host_get_time(host, current_time)
-	host_t		host;
+	const host_t	host;
 	time_value_t	*current_time;	/* OUT */
 {
 	if (host == HOST_NULL)
@@ -406,7 +406,7 @@ host_get_time(host, current_time)
  */
 kern_return_t
 host_set_time(host, new_time)
-	host_t		host;
+	const host_t	host;
 	time_value_t	new_time;
 {
 	spl_t	s;
@@ -444,7 +444,7 @@ host_set_time(host, new_time)
  */
 kern_return_t
 host_adjust_time(host, new_adjustment, old_adjustment)
-	host_t		host;
+	const host_t	host;
 	time_value_t	new_adjustment;
 	time_value_t	*old_adjustment;	/* OUT */
 {
@@ -527,9 +527,9 @@ timer_elt_data_t timeout_timers[NTIMERS];
  *	interval:	timeout interval, in hz.
  */
 void timeout(fcn, param, interval)
-	void	(*fcn)( void * param );
-	void *	param;
-	int	interval;
+	void		(*fcn)( void * param );
+	void *		param;
+	int		interval;
 {
 	spl_t	s;
 	timer_elt_t elt;
@@ -555,8 +555,8 @@ void timeout(fcn, param, interval)
  * and removed.
  */
 boolean_t untimeout(fcn, param)
-	void	(*fcn)( void * param );
-	void *	param;
+	void		(*fcn)( void * param );
+	const void *	param;
 {
 	spl_t	s;
 	timer_elt_t elt;

@@ -205,7 +205,7 @@ ipc_pset_terminate(
  */
 kern_return_t
 processor_set_default(
-	host_t		host,
+	const host_t	host,
 	processor_set_t	*pset)
 {
 	if (host == HOST_NULL)

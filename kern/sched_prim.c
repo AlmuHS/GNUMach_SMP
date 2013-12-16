@@ -358,7 +358,7 @@ void clear_wait(
 }
 
 static inline void __attribute__((noreturn))
-state_panic(thread_t thread, const char *caller)
+state_panic(const thread_t thread, const char *caller)
 {
   panic ("%s: thread %x has unexpected state %x",
 	 caller, thread, thread->state);
@@ -1076,7 +1076,7 @@ void compute_my_priority(
  *
  *	Update the priorities of all threads periodically.
  */
-void recompute_priorities(void *param)
+void recompute_priorities(const void *param)
 {
 #if	SIMPLE_CLOCK
 	int	new_usec;
@@ -1990,7 +1990,7 @@ void do_thread_scan(void)
 #if	DEBUG
 void checkrq(
 	run_queue_t	rq,
-	char		*msg)
+	const char	*msg)
 {
 	queue_t		q1;
 	int		i, j;

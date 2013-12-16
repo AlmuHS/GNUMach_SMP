@@ -76,14 +76,14 @@ create_task (struct cmd *cmd, long *val)
 
 /* Resume a task.  */
 static int
-resume_task (struct cmd *cmd, long *val)
+resume_task (struct cmd *cmd, const long *val)
 {
   return boot_script_task_resume (cmd);
 }
 
 /* Resume a task when the user hits return.  */
 static int
-prompt_resume_task (struct cmd *cmd, long *val)
+prompt_resume_task (struct cmd *cmd, const long *val)
 {
   return boot_script_prompt_task_resume (cmd);
 }

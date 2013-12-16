@@ -59,7 +59,7 @@ extern mach_msg_return_t mach_msg_send_from_kernel(
 extern void mach_msg_abort_rpc (ipc_thread_t);
 
 extern mach_msg_return_t mach_msg_rpc_from_kernel(
-    mach_msg_header_t *msg,
+    const mach_msg_header_t *msg,
     mach_msg_size_t send_size,
     mach_msg_size_t reply_size);
 

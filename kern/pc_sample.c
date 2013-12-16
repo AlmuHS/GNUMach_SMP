@@ -44,7 +44,7 @@
 typedef sampled_pc_t sampled_pcs[MAX_PC_SAMPLES];
 
 void take_pc_sample(
-    thread_t t,
+    const thread_t t,
     sample_control_t *cp,
     sampled_pc_flavor_t flavor)
 {
@@ -241,8 +241,8 @@ task_get_sampled_pcs(
 
 kern_return_t
 thread_enable_pc_sampling(
-    thread_t thread,
-    int *tickp,
+    const thread_t thread,
+    const int *tickp,
     sampled_pc_flavor_t flavors)
 {
     return KERN_FAILURE;	/* not implemented */
@@ -250,8 +250,8 @@ thread_enable_pc_sampling(
 
 kern_return_t
 task_enable_pc_sampling(
-    task_t task,
-    int *tickp,
+    const task_t task,
+    const int *tickp,
     sampled_pc_flavor_t flavors)
 {
     return KERN_FAILURE;	/* not implemented */
@@ -259,36 +259,36 @@ task_enable_pc_sampling(
 
 kern_return_t
 thread_disable_pc_sampling(
-    thread_t thread,
-    int *samplecntp)
+    const thread_t thread,
+    const int *samplecntp)
 {
     return KERN_FAILURE;	/* not implemented */
 }
 
 kern_return_t
 task_disable_pc_sampling(
-    task_t task,
-    int *samplecntp)
+    const task_t task,
+    const int *samplecntp)
 {
     return KERN_FAILURE;	/* not implemented */
 }
 
 kern_return_t
 thread_get_sampled_pcs(
-	thread_t thread,
-	sampled_pc_seqno_t *seqnop,
-	sampled_pc_array_t sampled_pcs_out,
-	int *sampled_pcs_cntp)
+	const thread_t thread,
+	const sampled_pc_seqno_t *seqnop,
+	const sampled_pc_array_t sampled_pcs_out,
+	const int *sampled_pcs_cntp)
 {
     return KERN_FAILURE;	/* not implemented */
 }
 
 kern_return_t
 task_get_sampled_pcs(
-	task_t task,
-	sampled_pc_seqno_t *seqnop,
-	sampled_pc_array_t sampled_pcs_out,
-	int *sampled_pcs_cntp)
+	const task_t task,
+	const sampled_pc_seqno_t *seqnop,
+	const sampled_pc_array_t sampled_pcs_out,
+	const int *sampled_pcs_cntp)
 {
     return KERN_FAILURE;	/* not implemented */
 }

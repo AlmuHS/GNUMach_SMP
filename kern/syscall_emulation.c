@@ -94,7 +94,7 @@ void eml_task_reference(task, parent)
  */
  
 void eml_task_deallocate(task)
-	task_t task;
+	const task_t task;
 {
 	eml_dispatch_t	eml;
 
