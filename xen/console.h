@@ -21,7 +21,9 @@
 #include <machine/xen.h>
 #include <string.h>
 
+#include <mach/port.h>
 #include <device/cons.h>
+#include <device/io_req.h>
 
 #define hyp_console_write(str, len)	hyp_console_io (CONSOLEIO_write, (len), kvtolin(str))
 
