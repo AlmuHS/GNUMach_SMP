@@ -134,11 +134,8 @@ extern void thread_timeout_setup(
 
 extern void	thread_bootstrap_return(void);
 extern void	thread_exception_return(void);
-#ifdef	__GNUC__
 extern void 	__attribute__((__noreturn__)) thread_syscall_return(kern_return_t);
-#else
-extern void	thread_syscall_return(kern_return_t);
-#endif
+
 extern thread_t	switch_context(
 	thread_t	old_thread,
 	continuation_t	continuation,
