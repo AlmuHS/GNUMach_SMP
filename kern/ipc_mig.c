@@ -651,12 +651,12 @@ syscall_vm_map(
 	} else
 		port = (ipc_port_t) memory_object;
 
-	copyin((char *)address, (char *)&addr, sizeof(vm_offset_t));
+	copyin(address, &addr, sizeof(vm_offset_t));
 	result = vm_map(map, &addr, size, mask, anywhere,
 			port, offset, copy,
 			cur_protection, max_protection,	inheritance);
 	if (result == KERN_SUCCESS)
-		copyout((char *)&addr, (char *)address, sizeof(vm_offset_t));
+		copyout(&addr, address, sizeof(vm_offset_t));
 	if (IP_VALID(port))
 		ipc_port_release_send(port);
 	vm_map_deallocate(map);
@@ -678,10 +678,10 @@ kern_return_t syscall_vm_allocate(target_map, address, size, anywhere)
 	if (map == VM_MAP_NULL)
 		return MACH_SEND_INTERRUPTED;
 
-	copyin((char *)address, (char *)&addr, sizeof(vm_offset_t));
+	copyin(address, &addr, sizeof(vm_offset_t));
 	result = vm_allocate(map, &addr, size, anywhere);
 	if (result == KERN_SUCCESS)
-		copyout((char *)&addr, (char *)address, sizeof(vm_offset_t));
+		copyout(&addr, address, sizeof(vm_offset_t));
 	vm_map_deallocate(map);
 
 	return result;
@@ -726,7 +726,7 @@ kern_return_t syscall_task_create(parent_task, inherit_memory, child_task)
 		(void) ipc_kmsg_copyout_object(current_space(),
 					       (ipc_object_t) port,
 					       MACH_MSG_TYPE_PORT_SEND, &name);
-		copyout((char *)&name, (char *)child_task,
+		copyout(&name, child_task,
 			sizeof(mach_port_t));
 	}
 	task_deallocate(t);
@@ -814,7 +814,7 @@ syscall_mach_port_allocate(task, right, namep)
 
 	kr = mach_port_allocate(space, right, &name);
 	if (kr == KERN_SUCCESS)
-		copyout((char *)&name, (char *)namep, sizeof(mach_port_t));
+		copyout(&name, namep, sizeof(mach_port_t));
 	is_release(space);
 
 	return kr;

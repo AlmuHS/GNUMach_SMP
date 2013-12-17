@@ -1688,7 +1688,7 @@ device_write_trap (mach_device_t device, dev_mode_t mode,
 	 * Copy the data from user space.
 	 */
 	if (data_count > 0)
-		copyin((char *)data, (char *)ior->io_data, data_count);
+		copyin((void *)data, ior->io_data, data_count);
 
 	/*
 	 * The ior keeps an extra reference for the device.
@@ -1735,8 +1735,8 @@ device_writev_trap (mach_device_t device, dev_mode_t mode,
 	 */
 	if (iocount > 16)
 		return KERN_INVALID_VALUE; /* lame */
-	copyin((char *)iovec,
-	       (char *)stack_iovec,
+	copyin(iovec,
+	       stack_iovec,
 	       iocount * sizeof(io_buf_vec_t));
 	for (data_count = 0, i = 0; i < iocount; i++)
 		data_count += stack_iovec[i].count;
@@ -1774,8 +1774,8 @@ device_writev_trap (mach_device_t device, dev_mode_t mode,
 
 		p = (vm_offset_t) ior->io_data;
 		for (i = 0; i < iocount; i++) {
-			copyin((char *) stack_iovec[i].data,
-			       (char *) p,
+			copyin((void *) stack_iovec[i].data,
+			       (void *) p,
 			       stack_iovec[i].count);
 			p += stack_iovec[i].count;
 		}

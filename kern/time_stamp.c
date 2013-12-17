@@ -43,8 +43,8 @@ struct	tsval	*tsp;
 	time_value_t temp;
 	temp = time;
 
-	if (copyout((char *)&temp,
-		    (char *)tsp,
+	if (copyout(&temp,
+		    tsp,
 		    sizeof(struct tsval)) != KERN_SUCCESS)
 	    return(KERN_INVALID_ADDRESS);
 	return(KERN_SUCCESS);
