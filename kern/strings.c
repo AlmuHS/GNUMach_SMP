@@ -161,7 +161,7 @@ strncpy(
  *	the terminating null character.
  */
 
-size_t
+size_t __attribute__ ((pure))
 strlen(
 	const char *string)
 {
