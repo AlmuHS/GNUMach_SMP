@@ -242,7 +242,6 @@ db_watchpoint_cmd(addr, have_addr, count, modif)
 	vm_size_t	size;
 	db_expr_t	value;
 	task_t		task;
-	boolean_t	db_option();
 
 	if (db_get_task(modif, &task, addr) < 0)
 	    return;
