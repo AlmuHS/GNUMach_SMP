@@ -918,7 +918,7 @@ vm_page_t vm_page_grab(
 	return mem;
 }
 
-vm_offset_t vm_page_grab_phys_addr()
+vm_offset_t vm_page_grab_phys_addr(void)
 {
 	vm_page_t p = vm_page_grab(FALSE);
 	if (p == VM_PAGE_NULL)

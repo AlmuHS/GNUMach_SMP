@@ -361,7 +361,7 @@ processor_t	processor;
 /*
  *	action_thread() shuts down processors or changes their assignment.
  */
-void action_thread_continue()
+void action_thread_continue(void)
 {
 	processor_t	processor;
 	spl_t		s;
@@ -390,7 +390,7 @@ void action_thread_continue()
 	}
 }
 
-void __attribute__((noreturn)) action_thread()
+void __attribute__((noreturn)) action_thread(void)
 {
 	action_thread_continue();
 	/*NOTREACHED*/

@@ -171,7 +171,7 @@ mp_desc_init(mycpu)
  * is running.  The machine array must show which CPUs exist.
  */
 void
-interrupt_stack_alloc()
+interrupt_stack_alloc(void)
 {
 	int		i;
 	int		cpu_count;

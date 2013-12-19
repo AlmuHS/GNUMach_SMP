@@ -155,7 +155,7 @@ void setup_main(void)
 	 *	Kick off the time-out driven routines by calling
 	 *	them the first time.
 	 */
-	recompute_priorities();
+	recompute_priorities(NULL);
 	compute_mach_factor();
 
 	/*

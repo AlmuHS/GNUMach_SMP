@@ -82,8 +82,8 @@ static mach_port_t	boot_host_port;		/* local name */
 
 extern char *kernel_cmdline;
 
-static void user_bootstrap();	/* forward */
-static void user_bootstrap_compat();	/* forward */
+static void user_bootstrap(void);	/* forward */
+static void user_bootstrap_compat(void);	/* forward */
 static void bootstrap_exec_compat(void *exec_data); /* forward */
 static void get_compat_strings(char *flags_str, char *root_str); /* forward */
 

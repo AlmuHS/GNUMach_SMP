@@ -102,7 +102,7 @@ void minphys(ior)
  * Dummy routine placed in device switch entries to indicate that
  * block device may be mapped.
  */
-vm_offset_t block_io_mmap()
+vm_offset_t block_io_mmap(void)
 {
 	return (0);
 }

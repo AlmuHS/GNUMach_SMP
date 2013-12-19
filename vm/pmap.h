@@ -183,7 +183,7 @@ extern void		pmap_copy(pmap_t, pmap_t, vm_offset_t, vm_size_t,
 #endif	/* pmap_copy */
 #ifndef pmap_attribute
 /* Get/Set special memory attributes.  */
-extern kern_return_t	pmap_attribute();
+extern kern_return_t	pmap_attribute(void);
 #endif	/* pmap_attribute */
 
 /*

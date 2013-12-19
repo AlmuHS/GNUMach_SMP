@@ -69,7 +69,7 @@ extern void	thread_sleep(
 	event_t		event,
 	simple_lock_t	lock,
 	boolean_t	interruptible);
-extern void	thread_wakeup();		/* for function pointers */
+extern void	thread_wakeup(void);		/* for function pointers */
 extern void	thread_wakeup_prim(
 	event_t		event,
 	boolean_t	one_thread,
@@ -103,7 +103,7 @@ extern boolean_t thread_handoff(
 	thread_t	old_thread,
 	continuation_t	continuation,
 	thread_t	new_thread);
-extern void	recompute_priorities();
+extern void	recompute_priorities(const void *param);
 extern void	update_priority(
 	thread_t	thread);
 extern void	compute_my_priority(

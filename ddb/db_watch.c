@@ -65,7 +65,7 @@ db_watchpoint_t		db_watchpoint_list = 0;
 extern vm_map_t		kernel_map;
 
 db_watchpoint_t
-db_watchpoint_alloc()
+db_watchpoint_alloc(void)
 {
 	db_watchpoint_t	watch;
 

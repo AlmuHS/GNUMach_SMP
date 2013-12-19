@@ -58,9 +58,9 @@ typedef struct dev_ops *dev_ops_t;
 /*
  * Routines for null entries.
  */
-extern int	nulldev();		/* no operation - OK */
-extern int	nodev();		/* no operation - error */
-extern vm_offset_t nomap();		/* no operation - error */
+extern int	nulldev(void);		/* no operation - OK */
+extern int	nodev(void);		/* no operation - error */
+extern vm_offset_t nomap(void);		/* no operation - error */
 
 /*
  * Flavor constants for d_dev_info routine
