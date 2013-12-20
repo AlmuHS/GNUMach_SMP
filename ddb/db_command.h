@@ -41,7 +41,7 @@
 #include <machine/setjmp.h>
 
 extern void		db_command_loop(void);
-extern boolean_t	db_option(const char *, int);
+extern boolean_t	db_option(const char *, int) __attribute__ ((pure));
 
 extern void		db_error(const char *) __attribute__ ((noreturn));	/* report error */
 

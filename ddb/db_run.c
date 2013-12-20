@@ -249,7 +249,7 @@ db_single_step(regs, task)
 db_breakpoint_t	db_not_taken_bkpt = 0;
 db_breakpoint_t	db_taken_bkpt = 0;
 
-db_breakpoint_t
+db_breakpoint_t __attribute__ ((pure))
 db_find_temp_breakpoint(task, addr)
 	const task_t	task;
 	db_addr_t	addr;

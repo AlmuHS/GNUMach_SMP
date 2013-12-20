@@ -71,7 +71,7 @@ struct db_breakpoint {
 
 typedef struct db_breakpoint *db_breakpoint_t;
 
-extern db_breakpoint_t	db_find_breakpoint( const task_t task, db_addr_t addr);
+extern db_breakpoint_t	db_find_breakpoint( const task_t task, db_addr_t addr) __attribute__ ((pure));
 extern boolean_t	db_find_breakpoint_here( const task_t task, db_addr_t addr);
 extern void		db_set_breakpoints(void);
 extern void		db_clear_breakpoints(void);

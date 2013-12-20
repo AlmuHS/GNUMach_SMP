@@ -36,7 +36,7 @@
 #define _DDB_DB_OUTPUT_H_
 
 extern void	db_force_whitespace(void);
-extern int	db_print_position(void);
+extern int	db_print_position(void) __attribute__ ((pure));
 extern void	db_end_line(void);
 extern void	db_printf(const char *fmt, ...);
 /* alternate name */

@@ -522,7 +522,7 @@ db_fncall(void)
 	db_printf(" %#N\n", retval);
 }
 
-boolean_t
+boolean_t __attribute__ ((pure))
 db_option(modif, option)
 	const char	*modif;
 	int		option;

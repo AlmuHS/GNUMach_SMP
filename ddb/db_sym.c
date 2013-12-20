@@ -88,7 +88,7 @@ db_add_symbol_table(type, start, end, name, ref, map_pointer)
  *  Note: return value points to static data whose content is
  *  overwritten by each call... but in practice this seems okay.
  */
-static char *
+static char * __attribute__ ((pure))
 db_qualify(symname, symtabname)
 	const char	*symname;
 	const char	*symtabname;

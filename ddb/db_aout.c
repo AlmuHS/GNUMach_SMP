@@ -132,7 +132,7 @@ aout_db_sym_init(symtab, esymtab, name, task_addr)
 /*
  * check file name or not (check xxxx.x pattern)
  */
-private boolean_t
+private boolean_t __attribute__ ((pure))
 aout_db_is_filename(name)
 	const char *name;
 {
@@ -149,7 +149,7 @@ aout_db_is_filename(name)
 /*
  * special name comparison routine with a name in the symbol table entry
  */
-private boolean_t
+private boolean_t __attribute__ ((pure))
 aout_db_eq_name(sp, name)
 	const struct nlist *sp;
 	const char *name;

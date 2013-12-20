@@ -154,7 +154,7 @@ db_delete_thread_breakpoint(bkpt, task_thd)
 	}
 }
 
-static db_thread_breakpoint_t
+static db_thread_breakpoint_t __attribute__ ((pure))
 db_find_thread_breakpoint(bkpt, thread)
 	const db_breakpoint_t bkpt;
 	const thread_t thread;
@@ -350,7 +350,7 @@ db_delete_breakpoint(task, addr, task_thd)
 	}
 }
 
-db_breakpoint_t
+db_breakpoint_t __attribute__ ((pure))
 db_find_breakpoint(task, addr)
 	const task_t	task;
 	db_addr_t	addr;

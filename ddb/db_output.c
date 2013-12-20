@@ -188,7 +188,7 @@ db_id_putc(char c, vm_offset_t dummy)
 /*
  * Return output position
  */
-int
+int __attribute__ ((pure))
 db_print_position(void)
 {
 	return (db_output_position);

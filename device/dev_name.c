@@ -63,7 +63,7 @@ nomap(void)
  *   src and target are equal in first 'len' characters
  *   next character of target is 0 (end of string).
  */
-boolean_t
+boolean_t __attribute__ ((pure))
 name_equal(src, len, target)
 	const char 	*src;
 	int		len;
