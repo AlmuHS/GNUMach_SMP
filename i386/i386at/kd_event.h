@@ -26,6 +26,10 @@
 #ifndef _KD_EVENT_H_
 #define _KD_EVENT_H_
 
+#include <sys/types.h>
+#include <device/io_req.h>
+#include <i386at/kd.h>
+
 extern void X_kdb_enter (void);
 
 extern void X_kdb_exit (void);
