@@ -84,7 +84,7 @@ struct vm_page {
 	vm_object_t	object;		/* which object am I in (O,P) */
 	vm_offset_t	offset;		/* offset into that object (O,P) */
 
-	unsigned int	wire_count:16,	/* how many wired down maps use me?
+	unsigned int	wire_count:15,	/* how many wired down maps use me?
 					   (O&P) */
 	/* boolean_t */	inactive:1,	/* page is in inactive list (P) */
 			active:1,	/* page is in active list (P) */
