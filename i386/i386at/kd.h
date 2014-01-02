@@ -113,6 +113,8 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 /*
  * Commands sent to graphics adapter.
  */
+#define C_START 	0x0a		/* return cursor line start */
+#define C_STOP 		0x0b		/* return cursor line stop */
 #define C_LOW 		0x0f		/* return low byte of cursor addr */
 #define C_HIGH 		0x0e		/* high byte */
 

@@ -2498,6 +2498,7 @@ kd_xga_init(void)
 {
 	csrpos_t	xga_getpos();
 	unsigned char	screen;
+	unsigned char	start, stop;
 
 	outb(CMOS_ADDR, CMOS_EB);
 	screen = inb(CMOS_DATA) & CM_SCRMSK;
@@ -2550,6 +2551,24 @@ kd_xga_init(void)
 		break;
 	default:
 		printf("kd: unknown screen type, defaulting to EGA\n");
+	}
+
+	outb(kd_index_reg, C_START);
+	start = inb(kd_io_reg);
+	/* Make sure cursor is enabled */
+	start &= ~0x20;
+	outb(kd_io_reg, start);
+	outb(kd_index_reg, C_STOP);
+	stop = inb(kd_io_reg);
+
+	if (!start && !stop)
+	{
+		/* Some firmware seem not to be initializing the cursor size
+		 * any more...  Try using standard values.  */
+		outb(kd_index_reg, C_START);
+		outb(kd_io_reg, 14);
+		outb(kd_index_reg, C_STOP);
+		outb(kd_io_reg, 15);
 	}
 
 	kd_setpos(xga_getpos());
