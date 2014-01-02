@@ -94,9 +94,6 @@ struct vm_page {
 			external:1,	/* page considered external (P) */
 		        extcounted:1,   /* page counted in ext counts (P) */
 			:0;		/* (force to 'long' boundary) */
-#ifdef	ns32000
-	int		pad;		/* extra space for ns32000 bit ops */
-#endif	/* ns32000 */
 
 	unsigned int
 	/* boolean_t */	busy:1,		/* page is in transit (O) */
