@@ -52,7 +52,11 @@ struct task {
 	/* Synchronization/destruction information */
 	decl_simple_lock_data(,lock)	/* Task's lock */
 	int		ref_count;	/* Number of references to me */
-	boolean_t	active;		/* Task has not been terminated */
+
+	/* Flags */
+	unsigned int	active:1,	/* Task has not been terminated */
+	/* boolean_t */ may_assign:1,	/* can assigned pset be changed? */
+			assign_active:1;	/* waiting for may_assign */
 
 	/* Miscellaneous */
 	vm_map_t	map;		/* Address space description */
@@ -63,8 +67,6 @@ struct task {
 	queue_head_t	thread_list;	/* list of threads */
 	int		thread_count;	/* number of threads */
 	processor_set_t	processor_set;	/* processor set for new threads */
-	boolean_t	may_assign;	/* can assigned pset be changed? */
-	boolean_t	assign_active;	/* waiting for may_assign */
 
 	/* User-visible scheduling information */
 	int		user_stop_count;	/* outstanding stops */
