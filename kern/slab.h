@@ -149,7 +149,7 @@ typedef void (*kmem_slab_free_fn_t)(vm_offset_t, vm_size_t);
 /*
  * Cache name buffer size.
  */
-#define KMEM_CACHE_NAME_SIZE 32
+#define KMEM_CACHE_NAME_SIZE 24
 
 /*
  * Cache of objects.
