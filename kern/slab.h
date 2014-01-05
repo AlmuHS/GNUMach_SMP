@@ -157,6 +157,10 @@ typedef void (*kmem_slab_free_fn_t)(vm_offset_t, vm_size_t);
  * Cache of objects.
  *
  * Locking order : cpu_pool -> cache. CPU pools locking is ordered by CPU ID.
+ *
+ * Currently, SLAB_USE_CPU_POOLS is not defined.  KMEM_CACHE_NAME_SIZE
+ * is chosen so that the struct fits into two cache lines.  The first
+ * cache line contains all hot fields.
  */
 struct kmem_cache {
 #if SLAB_USE_CPU_POOLS
@@ -172,19 +176,21 @@ struct kmem_cache {
     struct list free_slabs;
     struct rbtree active_slabs;
     int flags;
-    size_t obj_size;    /* User-provided size */
-    size_t align;
-    size_t buf_size;    /* Aligned object size  */
     size_t bufctl_dist; /* Distance from buffer to bufctl   */
     size_t slab_size;
-    size_t color;
-    size_t color_max;
     unsigned long bufs_per_slab;
     unsigned long nr_objs;  /* Number of allocated objects */
-    unsigned long nr_bufs;  /* Total number of buffers */
-    unsigned long nr_slabs;
     unsigned long nr_free_slabs;
     kmem_cache_ctor_t ctor;
+    /* All fields below are cold  */
+    size_t obj_size;    /* User-provided size */
+    /* Assuming ! SLAB_USE_CPU_POOLS, here is the cacheline boundary */
+    size_t align;
+    size_t buf_size;    /* Aligned object size  */
+    size_t color;
+    size_t color_max;
+    unsigned long nr_bufs;  /* Total number of buffers */
+    unsigned long nr_slabs;
     kmem_slab_alloc_fn_t slab_alloc_fn;
     kmem_slab_free_fn_t slab_free_fn;
     char name[KMEM_CACHE_NAME_SIZE];
