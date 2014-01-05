@@ -147,7 +147,9 @@ typedef vm_offset_t (*kmem_slab_alloc_fn_t)(vm_size_t);
 typedef void (*kmem_slab_free_fn_t)(vm_offset_t, vm_size_t);
 
 /*
- * Cache name buffer size.
+ * Cache name buffer size.  The size is chosen so that struct
+ * kmem_cache fits into two cache lines.  The size of a cache line on
+ * a typical CPU is 64 bytes.
  */
 #define KMEM_CACHE_NAME_SIZE 24
 
