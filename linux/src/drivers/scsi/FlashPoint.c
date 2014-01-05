@@ -3845,7 +3845,7 @@ int SetDevWideMode(PSCCBcard pCurrCard,PUCB p_ucb)
 	}
 	else
 	{
-		if(!currTar_Info->TarEEValue & EE_WIDE_SCSI)
+		if(!(currTar_Info->TarEEValue & EE_WIDE_SCSI))
 		{
 			return(0);
 		}

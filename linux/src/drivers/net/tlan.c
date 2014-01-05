@@ -1132,7 +1132,7 @@ u32 TLan_HandleTxEOF( struct device *dev, u16 host_int )
 
 	if ( head_list->cStat & TLAN_CSTAT_EOC )
 		eoc = 1;
-	if ( ! head_list->cStat & TLAN_CSTAT_FRM_CMP ) {
+	if (!(head_list->cStat & TLAN_CSTAT_FRM_CMP)) {
 		printk( "TLAN:  Received interrupt for uncompleted TX frame.\n" );
 	}
 
@@ -1244,7 +1244,7 @@ u32 TLan_HandleRxEOF( struct device *dev, u16 host_int )
 		eoc = 1;
 	}
 
-	if ( ! head_list->cStat & TLAN_CSTAT_FRM_CMP ) {
+	if (!(head_list->cStat & TLAN_CSTAT_FRM_CMP)) {
 		printk( "TLAN:  Received interrupt for uncompleted RX frame.\n" );
 	} else if ( bbuf ) {
 		skb = dev_alloc_skb( head_list->frameSize + 7 );
