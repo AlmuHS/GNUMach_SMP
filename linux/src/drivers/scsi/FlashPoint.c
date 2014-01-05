@@ -3756,17 +3756,17 @@ STATIC int SetDevSyncRate(PSCCBcard pCurrCard, PUCB p_ucb)
 	}
 	if(currTar_Info->TarEEValue && EE_SYNC_MASK == syncVal)
 		return(0);
-	currTar_Info->TarEEValue = (currTar_Info->TarEEValue & !EE_SYNC_MASK)
+	currTar_Info->TarEEValue = (!(EE_SYNC_MASK & currTar_Info->TarEEValue))
 											| syncVal;
 	syncOffset = (SYNC_RATE_TBL + scsiID) / 2;
 	temp2.tempw = utilEERead(ioPort, syncOffset);
 	if(scsiID & 0x01)
 	{
-		temp2.tempb[0] = (temp2.tempb[0] & !EE_SYNC_MASK) | syncVal;
+		temp2.tempb[0] = (!(EE_SYNC_MASK & temp2.tempb[0])) | syncVal;
 	}
 	else
 	{
-		temp2.tempb[1] = (temp2.tempb[1] & !EE_SYNC_MASK) | syncVal;
+		temp2.tempb[1] = (!(EE_SYNC_MASK & temp2.tempb[1])) | syncVal;
 	}
 	utilEEWriteOnOff(ioPort, 1);
 	utilEEWrite(ioPort, temp2.tempw, syncOffset);
@@ -3854,18 +3854,18 @@ int SetDevWideMode(PSCCBcard pCurrCard,PUCB p_ucb)
 			scsiWideMode = 0;
 		}
 	}
-	currTar_Info->TarEEValue = (currTar_Info->TarEEValue & !EE_WIDE_SCSI)
+	currTar_Info->TarEEValue = (!(EE_WIDE_SCSI & currTar_Info->TarEEValue))
 											| scsiWideMode;
 
 	syncOffset = (SYNC_RATE_TBL + scsiID) / 2;
 	temp2.tempw = utilEERead(ioPort, syncOffset);
 	if(scsiID & 0x01)
 	{
-		temp2.tempb[0] = (temp2.tempb[0] & !EE_WIDE_SCSI) | scsiWideMode;
+		temp2.tempb[0] = (!(EE_WIDE_SCSI & temp2.tempb[0])) | scsiWideMode;
 	}
 	else
 	{
-		temp2.tempb[1] = (temp2.tempb[1] & !EE_WIDE_SCSI) | scsiWideMode;
+		temp2.tempb[1] = (!(EE_WIDE_SCSI & temp2.tempb[1])) | scsiWideMode;
 	}
 	utilEEWriteOnOff(ioPort, 1);
 	utilEEWrite(ioPort, temp2.tempw, syncOffset);
