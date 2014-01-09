@@ -47,6 +47,7 @@
 #ifndef _KERN_SLAB_H
 #define _KERN_SLAB_H
 
+#include <cache.h>
 #include <kern/lock.h>
 #include <kern/list.h>
 #include <kern/rbtree.h>
@@ -196,7 +197,7 @@ struct kmem_cache {
     char name[KMEM_CACHE_NAME_SIZE];
     size_t buftag_dist; /* Distance from buffer to buftag */
     size_t redzone_pad; /* Bytes from end of object to redzone word */
-};
+} __cacheline_aligned;
 
 /*
  * Mach-style declarations for struct kmem_cache.
