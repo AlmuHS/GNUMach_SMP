@@ -49,6 +49,18 @@
 #include <vm/memory_object_proxy.h>
 #include <device/ds_routines.h>
 
+#include <kern/mach.server.h>
+#include <ipc/mach_port.server.h>
+#include <kern/mach_host.server.h>
+#include <device/device.server.h>
+#include <device/device_pager.server.h>
+#include <kern/mach4.server.h>
+#include <kern/gnumach.server.h>
+
+#if MACH_DEBUG
+#include <kern/mach_debug.server.h>
+#endif
+
 #if	MACH_MACHINE_ROUTINES
 #include <machine/machine_routines.h>
 #endif
@@ -146,17 +158,6 @@ ipc_kobject_server(request)
 	 * to perform the kernel function
 	 */
     {
-	extern mig_routine_t	mach_server_routine(),
-				mach_port_server_routine(),
-				mach_host_server_routine(),
-				device_server_routine(),
-				device_pager_server_routine(),
-				mach4_server_routine(),
-				gnumach_server_routine();
-#if	MACH_DEBUG
-	extern mig_routine_t	mach_debug_server_routine();
-#endif
-
 #if	MACH_MACHINE_ROUTINES
 	extern mig_routine_t	MACHINE_SERVER_ROUTINE();
 #endif
