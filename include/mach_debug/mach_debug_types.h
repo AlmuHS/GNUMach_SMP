@@ -37,4 +37,15 @@
 
 typedef	char	symtab_name_t[32];
 
+/*
+ *	A fixed-length string data type intended for names given to
+ *	kernel objects.
+ *
+ *	Note that it is not guaranteed that the in-kernel data
+ *	structure will hold KERNEL_DEBUG_NAME_MAX bytes.  The given
+ *	name will be truncated to fit into the target data structure.
+ */
+#define KERNEL_DEBUG_NAME_MAX (64)
+typedef char	kernel_debug_name_t[KERNEL_DEBUG_NAME_MAX];
+
 #endif	/* _MACH_DEBUG_MACH_DEBUG_TYPES_H_ */
