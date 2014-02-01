@@ -27,6 +27,7 @@ subsystem
 
 #include <mach/std_types.defs>
 #include <mach/mach_types.defs>
+#include <mach_debug/mach_debug_types.defs>
 
 type vm_cache_statistics_data_t = struct[11] of integer_t;
 
@@ -63,3 +64,11 @@ simpleroutine thread_terminate_release(
 		reply_port	: mach_port_name_t;
 		address		: vm_address_t;
 		size		: vm_size_t);
+
+/*
+ *	Set the name of task TASK to NAME.  This is a debugging aid.
+ *	NAME will be used in error messages printed by the kernel.
+ */
+simpleroutine task_set_name(
+		task	: task_t;
+		name	: kernel_debug_name_t);
