@@ -37,6 +37,7 @@
 #include <mach/vm_param.h>
 #include <mach/task_info.h>
 #include <mach/task_special_ports.h>
+#include <mach_debug/mach_debug_types.h>
 #include <ipc/ipc_space.h>
 #include <ipc/ipc_types.h>
 #include <kern/debug.h>
@@ -1068,6 +1069,22 @@ task_priority(
 
 	task_unlock(task);
 	return ret;
+}
+
+/*
+ *	task_set_name
+ *
+ *	Set the name of task TASK to NAME.  This is a debugging aid.
+ *	NAME will be used in error messages printed by the kernel.
+ */
+kern_return_t
+task_set_name(
+	task_t			task,
+	kernel_debug_name_t	name)
+{
+	strncpy(task->name, name, sizeof task->name - 1);
+	task->name[sizeof task->name - 1] = '\0';
+	return KERN_SUCCESS;
 }
 
 /*

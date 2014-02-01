@@ -39,6 +39,7 @@
 #include <mach/time_value.h>
 #include <mach/mach_param.h>
 #include <mach/task_info.h>
+#include <mach_debug/mach_debug_types.h>
 #include <kern/kern_types.h>
 #include <kern/lock.h>
 #include <kern/queue.h>
@@ -169,6 +170,9 @@ extern kern_return_t	task_assign(
 extern kern_return_t	task_assign_default(
 	task_t		task,
 	boolean_t	assign_threads);
+extern kern_return_t	task_set_name(
+	task_t			task,
+	kernel_debug_name_t	name);
 extern void consider_task_collect(void);
 
 /*
