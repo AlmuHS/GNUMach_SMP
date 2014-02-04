@@ -162,6 +162,7 @@ mouseopen(dev, flags)
 		mousebufsize = 3;
 		serial_mouse_open(dev);
 		init_mouse_hw(dev&7, LC7);
+		breka;
 	case MICROSOFT_MOUSE:
 		mousebufsize = 3;
 		serial_mouse_open(dev);
