@@ -338,6 +338,8 @@ io_return_t comopen(
 	     */
 	    if (!com_reprobe(unit))
 		return D_NO_SUCH_DEVICE;
+	    if ((isai = cominfo[unit]) == 0 || isai->alive == 0)
+		return D_NO_SUCH_DEVICE;
 	}
 	tp = &com_tty[unit];
 
