@@ -738,7 +738,8 @@ int	vec;
 
 	tp = &kd_tty;
 #ifdef	old
-	while ((inb(K_STATUS) & K_OBUF_FUL) == 0);	/* this should never loop */
+	while ((inb(K_STATUS) & K_OBUF_FUL) == 0)
+		;	/* this should never loop */
 #else	/* old */
 	{
 		/*
@@ -2232,7 +2233,8 @@ void
 kd_senddata(ch)
 unsigned char	ch;
 {
-	while (inb(K_STATUS) & K_IBUF_FUL);
+	while (inb(K_STATUS) & K_IBUF_FUL)
+		;
 	outb(K_RDWR, ch);
 	last_sent = ch;
 	return;
@@ -2250,7 +2252,8 @@ void
 kd_sendcmd(ch)
 unsigned char	ch;
 {
-	while (inb(K_STATUS) & K_IBUF_FUL);
+	while (inb(K_STATUS) & K_IBUF_FUL)
+		;
 	outb(K_CMD, ch);
 	return;
 }
@@ -2266,7 +2269,8 @@ unsigned char	ch;
 unsigned char
 kd_getdata(void)
 {
-	while ((inb(K_STATUS) & K_OBUF_FUL) == 0);
+	while ((inb(K_STATUS) & K_OBUF_FUL) == 0)
+		;
 	return(inb(K_RDWR));
 }
 
@@ -2275,10 +2279,12 @@ kd_cmdreg_read(void)
 {
 int ch=KC_CMD_READ;
 
-	while (inb(K_STATUS) & K_IBUF_FUL);
+	while (inb(K_STATUS) & K_IBUF_FUL)
+		;
 	outb(K_CMD, ch);
 
-	while ((inb(K_STATUS) & K_OBUF_FUL) == 0);
+	while ((inb(K_STATUS) & K_OBUF_FUL) == 0)
+		;
 	return(inb(K_RDWR));
 }
 
@@ -2287,10 +2293,12 @@ kd_cmdreg_write(int val)
 {
 int ch=KC_CMD_WRITE;
 
-	while (inb(K_STATUS) & K_IBUF_FUL);
+	while (inb(K_STATUS) & K_IBUF_FUL)
+		;
 	outb(K_CMD, ch);
 
-	while (inb(K_STATUS) & K_IBUF_FUL);
+	while (inb(K_STATUS) & K_IBUF_FUL)
+		;
 	outb(K_RDWR, val);
 }
 
@@ -2298,7 +2306,8 @@ void
 kd_mouse_drain(void)
 {
 	int i;
-	while(inb(K_STATUS) & K_IBUF_FUL);
+	while(inb(K_STATUS) & K_IBUF_FUL)
+		;
 	while((i = inb(K_STATUS)) & K_OBUF_FUL)
 		printf("kbd: S = %x D = %x\n", i, inb(K_RDWR));
 }
