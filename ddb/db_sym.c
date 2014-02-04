@@ -75,7 +75,8 @@ db_add_symbol_table(type, start, end, name, ref, map_pointer)
 	st->end = end;
 	st->private = ref;
 	st->map_pointer = (map_pointer == (char *)kernel_map)? 0: map_pointer;
-	strcpy(st->name, name);
+	strncpy(st->name, name, sizeof st->name - 1);
+	st->name[sizeof st->name - 1] = '\0';
 
 	db_nsymtab++;
 
