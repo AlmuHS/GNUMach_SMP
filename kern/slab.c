@@ -662,7 +662,7 @@ static void kmem_cache_error(struct kmem_cache *cache, void *buf, int error,
 {
     struct kmem_buftag *buftag;
 
-    kmem_error("cache: %s, buffer: %p", cache->name, (void *)buf);
+    kmem_warn("cache: %s, buffer: %p", cache->name, (void *)buf);
 
     switch(error) {
     case KMEM_ERR_INVALID:
