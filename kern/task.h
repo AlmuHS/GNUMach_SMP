@@ -48,6 +48,13 @@
 #include <vm/vm_types.h>
 #include <machine/task.h>
 
+/*
+ * Task name buffer size.  The size is chosen so that struct task fits
+ * into three cache lines.  The size of a cache line on a typical CPU
+ * is 64 bytes.
+ */
+#define TASK_NAME_SIZE 32
+
 struct task {
 	/* Synchronization/destruction information */
 	decl_simple_lock_data(,lock)	/* Task's lock */
@@ -113,6 +120,8 @@ struct task {
 	natural_t	cow_faults;	/* copy-on-write faults counter */
 	natural_t	messages_sent;	/* messages sent counter */
 	natural_t	messages_received; /* messages received counter */
+
+	char	name[TASK_NAME_SIZE];
 };
 
 #define task_lock(task)		simple_lock(&(task)->lock)

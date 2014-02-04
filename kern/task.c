@@ -45,6 +45,7 @@
 #include <kern/slab.h>
 #include <kern/kalloc.h>
 #include <kern/processor.h>
+#include <kern/printf.h>
 #include <kern/sched_prim.h>	/* for thread_wakeup */
 #include <kern/ipc_tt.h>
 #include <kern/syscall_emulation.h>
@@ -163,6 +164,8 @@ kern_return_t task_create(
 	    }
 	}
 #endif	/* FAST_TAS */
+
+	snprintf (new_task->name, sizeof new_task->name, "%p", new_task);
 
 	ipc_task_enable(new_task);
 

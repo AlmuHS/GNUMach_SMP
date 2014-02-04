@@ -615,6 +615,16 @@ vsnprintf(char *buf, size_t size, const char *fmt, va_list args)
   return cookie.index;
 }
 
+int
+snprintf(char *buf, size_t size, const char *fmt, ...)
+{
+	int written;
+	va_list	listp;
+	va_start(listp, fmt);
+	written = vsnprintf(buf, size, fmt, listp);
+	va_end(listp);
+	return written;
+}
 
 void safe_gets(str, maxlen)
 	char *str;
