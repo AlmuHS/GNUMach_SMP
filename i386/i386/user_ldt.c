@@ -262,7 +262,7 @@ i386_get_ldt(thread, first_selector, selector_count, desc_list, count)
 	unsigned int	*count;			/* in/out */
 {
 	struct user_ldt *user_ldt;
-	pcb_t		pcb = thread->pcb;
+	pcb_t		pcb;
 	int		first_desc = sel_idx(first_selector);
 	unsigned int	ldt_count;
 	vm_size_t	ldt_size;
@@ -276,6 +276,7 @@ i386_get_ldt(thread, first_selector, selector_count, desc_list, count)
 	if (first_desc + selector_count >= 8192)
 	    return KERN_INVALID_ARGUMENT;
 
+	pcb = thread->pcb;
 	addr = 0;
 	size = 0;
 
