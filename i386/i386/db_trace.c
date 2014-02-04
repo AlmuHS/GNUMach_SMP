@@ -533,6 +533,8 @@ db_find_kthread(
 	task_t		task)
 {
 	thread_t thread;
+	if (task == TASK_NULL)
+		task = db_current_task();
 
 	queue_iterate(&task->thread_list, thread, thread_t, thread_list) {
 		vm_offset_t	usp = thread->pcb->iss.uesp/*ebp works*/;
