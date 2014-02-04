@@ -289,8 +289,8 @@ vm_map_t kmem_map = &kmem_map_store;
 static unsigned long kmem_gc_last_tick;
 
 #define kmem_error(format, ...)                         \
-    printf("mem: error: %s(): " format "\n", __func__,  \
-           ## __VA_ARGS__)
+    panic("mem: error: %s(): " format "\n", __func__,   \
+          ## __VA_ARGS__)
 
 #define kmem_warn(format, ...)                              \
     printf("mem: warning: %s(): " format "\n", __func__,    \
