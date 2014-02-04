@@ -217,7 +217,7 @@ void hyp_block_init(void) {
 			sprintf(device_name, "%s%ds%d", prefix, disk, partition);
 		else
 			sprintf(device_name, "%s%d", prefix, disk);
-		bd->name = (char*) kalloc(strlen(device_name));
+		bd->name = (char*) kalloc(strlen(device_name) + 1);
 		strcpy(bd->name, device_name);
 
 		/* Get domain id of backend driver.  */
