@@ -374,7 +374,7 @@ ASSERT_IPL(SPL0);
 		ifps->xfp_save_state.fp_dp      = user_fp_state->fp_dp;
 		ifps->xfp_save_state.fp_ds      = user_fp_state->fp_ds;
 		for (i=0; i<8; i++)
-		    memcpy(&ifps->xfp_save_state.fp_reg_word[i], &user_fp_regs[i], sizeof(user_fp_regs[i]));
+		    memcpy(&ifps->xfp_save_state.fp_reg_word[i], &user_fp_regs->fp_reg_word[i], sizeof(user_fp_regs[i]));
 	    } else {
 		ifps->fp_save_state.fp_control = user_fp_state->fp_control;
 		ifps->fp_save_state.fp_status  = user_fp_state->fp_status;
@@ -467,7 +467,7 @@ ASSERT_IPL(SPL0);
 		user_fp_state->fp_dp      = ifps->xfp_save_state.fp_dp;
 		user_fp_state->fp_ds      = ifps->xfp_save_state.fp_ds;
 		for (i=0; i<8; i++)
-		    memcpy(&user_fp_regs[i], &ifps->xfp_save_state.fp_reg_word[i], sizeof(user_fp_regs[i]));
+		    memcpy(&user_fp_regs->fp_reg_word[i], &ifps->xfp_save_state.fp_reg_word[i], sizeof(user_fp_regs[i]));
 	    } else {
 		user_fp_state->fp_control = ifps->fp_save_state.fp_control;
 		user_fp_state->fp_status  = ifps->fp_save_state.fp_status;
