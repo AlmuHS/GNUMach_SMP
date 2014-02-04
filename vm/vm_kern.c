@@ -256,9 +256,11 @@ projected_buffer_deallocate(map, start, end)
 {
 	vm_map_entry_t entry, k_entry;
 
+	if (map == VM_MAP_NULL || map == kernel_map)
+		return KERN_INVALID_ARGUMENT;
+
 	vm_map_lock(map);
-     	if (map == VM_MAP_NULL || map == kernel_map ||
-	    !vm_map_lookup_entry(map, start, &entry) ||
+	if (!vm_map_lookup_entry(map, start, &entry) ||
 	    end > entry->vme_end ||
             /*Check corresponding kernel entry*/
 	    (k_entry = entry->projected_on) == 0) {
