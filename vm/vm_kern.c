@@ -42,6 +42,7 @@
 #include <kern/assert.h>
 #include <kern/debug.h>
 #include <kern/lock.h>
+#include <kern/slab.h>
 #include <kern/thread.h>
 #include <kern/printf.h>
 #include <vm/pmap.h>
@@ -366,6 +367,7 @@ kmem_alloc(map, addrp, size)
 	vm_object_t object;
 	vm_map_entry_t entry;
 	vm_offset_t addr;
+	unsigned int attempts;
 	kern_return_t kr;
 
 	/*
@@ -384,12 +386,22 @@ kmem_alloc(map, addrp, size)
 	size = round_page(size);
 	object = vm_object_allocate(size);
 
+	attempts = 0;
+
+retry:
 	vm_map_lock(map);
 	kr = vm_map_find_entry(map, &addr, size, (vm_offset_t) 0,
 			       VM_OBJECT_NULL, &entry);
 	if (kr != KERN_SUCCESS) {
-		printf_once("no more room for kmem_alloc in %p\n", map);
 		vm_map_unlock(map);
+
+		if (attempts == 0) {
+			attempts++;
+			slab_collect();
+			goto retry;
+		}
+
+		printf_once("no more room for kmem_alloc in %p\n", map);
 		vm_object_deallocate(object);
 		return kr;
 	}
@@ -439,6 +451,7 @@ kern_return_t kmem_realloc(map, oldaddr, oldsize, newaddrp, newsize)
 	vm_offset_t newaddr;
 	vm_object_t object;
 	vm_map_entry_t oldentry, newentry;
+	unsigned int attempts;
 	kern_return_t kr;
 
 	oldmin = trunc_page(oldaddr);
@@ -450,11 +463,21 @@ kern_return_t kmem_realloc(map, oldaddr, oldsize, newaddrp, newsize)
 	 *	Find space for the new region.
 	 */
 
+	attempts = 0;
+
+retry:
 	vm_map_lock(map);
 	kr = vm_map_find_entry(map, &newaddr, newsize, (vm_offset_t) 0,
 			       VM_OBJECT_NULL, &newentry);
 	if (kr != KERN_SUCCESS) {
 		vm_map_unlock(map);
+
+		if (attempts == 0) {
+			attempts++;
+			slab_collect();
+			goto retry;
+		}
+
 		printf_once("no more room for kmem_realloc in %p\n", map);
 		return kr;
 	}
@@ -526,6 +549,7 @@ kmem_alloc_wired(map, addrp, size)
 	vm_map_entry_t entry;
 	vm_offset_t offset;
 	vm_offset_t addr;
+	unsigned int attempts;
 	kern_return_t kr;
 
 	/*
@@ -536,12 +560,22 @@ kmem_alloc_wired(map, addrp, size)
 	 */
 
 	size = round_page(size);
+	attempts = 0;
+
+retry:
 	vm_map_lock(map);
 	kr = vm_map_find_entry(map, &addr, size, (vm_offset_t) 0,
 			       kernel_object, &entry);
 	if (kr != KERN_SUCCESS) {
-		printf_once("no more room for kmem_alloc_wired in %p\n", map);
 		vm_map_unlock(map);
+
+		if (attempts == 0) {
+			attempts++;
+			slab_collect();
+			goto retry;
+		}
+
+		printf_once("no more room for kmem_alloc_wired in %p\n", map);
 		return kr;
 	}
 
@@ -598,6 +632,7 @@ kmem_alloc_aligned(map, addrp, size)
 	vm_map_entry_t entry;
 	vm_offset_t offset;
 	vm_offset_t addr;
+	unsigned int attempts;
 	kern_return_t kr;
 
 	if ((size & (size - 1)) != 0)
@@ -611,12 +646,22 @@ kmem_alloc_aligned(map, addrp, size)
 	 */
 
 	size = round_page(size);
+	attempts = 0;
+
+retry:
 	vm_map_lock(map);
 	kr = vm_map_find_entry(map, &addr, size, size - 1,
 			       kernel_object, &entry);
 	if (kr != KERN_SUCCESS) {
-		printf_once("no more rooom for kmem_alloc_aligned in %p\n", map);
 		vm_map_unlock(map);
+
+		if (attempts == 0) {
+			attempts++;
+			slab_collect();
+			goto retry;
+		}
+
+		printf_once("no more rooom for kmem_alloc_aligned in %p\n", map);
 		return kr;
 	}
 
