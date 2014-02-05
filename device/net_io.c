@@ -301,7 +301,6 @@ struct net_rcv_port {
 	filter_t	filter[NET_MAX_FILTER];
 					/* filter operations */
 };
-typedef struct net_rcv_port *net_rcv_port_t;
 
 struct kmem_cache	net_rcv_cache;	/* cache of net_rcv_port structs */
 
@@ -320,7 +319,6 @@ struct net_hash_entry {
 	int             rcv_qlimit;	/* qlimit for the port */
 	unsigned int	keys[N_NET_HASH_KEYS];
 };
-typedef struct net_hash_entry *net_hash_entry_t;
 
 struct kmem_cache	net_hash_entry_cache;
 
@@ -338,8 +336,6 @@ struct net_hash_header {
         int ref_count;			/* reference count */
         net_hash_entry_t table[NET_HASH_SIZE];
 } filter_hash_header[N_NET_HASH];
-
-typedef struct net_hash_header *net_hash_header_t;
 
 decl_simple_lock_data(,net_hash_header_lock)
 
