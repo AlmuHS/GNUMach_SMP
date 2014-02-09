@@ -1927,6 +1927,7 @@ void ide_init_drive_cmd (struct request *rq)
 	rq->rq_status = RQ_ACTIVE;
 	rq->rq_dev = ????;
 #endif
+	rq->quiet = 0;
 }
 
 /*
