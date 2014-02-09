@@ -2643,6 +2643,10 @@ int ide_cdrom_open (struct inode *ip, struct file *fp, ide_drive_t *drive)
 		if (stat == 0 || my_reqbuf.sense_key == UNIT_ATTENTION) {
 			(void) cdrom_lockdoor (drive, 1, &my_reqbuf);
 			(void) cdrom_read_toc (drive, &my_reqbuf);
+		} else {
+			/* Otherwise return as missing */
+			--drive->usage;
+			return -ENXIO;
 		}
 	}
 
