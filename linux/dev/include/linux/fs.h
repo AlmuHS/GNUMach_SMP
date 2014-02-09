@@ -733,7 +733,7 @@ extern struct file * get_empty_filp(void);
 extern int close_fp(struct file *filp);
 extern struct buffer_head * get_hash_table(kdev_t dev, int block, int size);
 extern struct buffer_head * getblk(kdev_t dev, int block, int size);
-extern void ll_rw_block(int rw, int nr, struct buffer_head * bh[]);
+extern void ll_rw_block(int rw, int nr, struct buffer_head * bh[], int quiet);
 extern void ll_rw_page(int rw, kdev_t dev, unsigned long nr, char * buffer);
 extern void ll_rw_swap_file(int rw, kdev_t dev, unsigned int *b, int nb, char *buffer);
 extern int is_read_only(kdev_t dev);

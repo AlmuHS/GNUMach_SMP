@@ -23,6 +23,7 @@ struct request {
 	kdev_t rq_dev;
 	int cmd;		/* READ or WRITE */
 	int errors;
+	int quiet;
 	unsigned long sector;
 	unsigned long nr_sectors;
 	unsigned long current_nr_sectors;

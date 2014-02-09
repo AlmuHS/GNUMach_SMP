@@ -391,8 +391,9 @@ static void end_request(int uptodate) {
 
 	req->errors = 0;
 	if (!uptodate) {
-		printk("end_request: I/O error, dev %s, sector %lu\n",
-			kdevname(req->rq_dev), req->sector);
+		if (!req->quiet)
+			printk("end_request: I/O error, dev %s, sector %lu\n",
+				kdevname(req->rq_dev), req->sector);
 #ifdef MACH
 		for (bh = req->bh; bh; )
 		  {

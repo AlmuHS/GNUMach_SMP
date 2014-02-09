@@ -384,7 +384,7 @@ bread (kdev_t dev, int block, int size)
   bh = getblk (dev, block, size);
   if (bh)
     {
-      ll_rw_block (READ, 1, &bh);
+      ll_rw_block (READ, 1, &bh, 0);
       wait_on_buffer (bh);
       if (! buffer_uptodate (bh))
 	{
@@ -444,7 +444,7 @@ enqueue_request (struct request *req)
 /* Perform the I/O operation RW on the buffer list BH
    containing NR buffers.  */
 void
-ll_rw_block (int rw, int nr, struct buffer_head **bh)
+ll_rw_block (int rw, int nr, struct buffer_head **bh, int quiet)
 {
   int i, bshift, bsize;
   unsigned major;
@@ -476,6 +476,7 @@ ll_rw_block (int rw, int nr, struct buffer_head **bh)
   r->rq_dev = bh[0]->b_dev;
   r->cmd = rw;
   r->errors = 0;
+  r->quiet = quiet;
   r->sector = bh[0]->b_blocknr << (bshift - 9);
   r->current_nr_sectors = bh[0]->b_size >> 9;
   r->buffer = bh[0]->b_data;
@@ -528,7 +529,7 @@ rdwr_partial (int rw, kdev_t dev, loff_t *off,
   bh->b_data = alloc_buffer (bh->b_size);
   if (! bh->b_data)
     return -ENOMEM;
-  ll_rw_block (READ, 1, &bh);
+  ll_rw_block (READ, 1, &bh, 0);
   wait_on_buffer (bh);
   if (buffer_uptodate (bh))
     {
@@ -542,7 +543,7 @@ rdwr_partial (int rw, kdev_t dev, loff_t *off,
 	{
 	  memcpy (bh->b_data + o, *buf, c);
 	  bh->b_state = (1 << BH_Dirty) | (1 << BH_Lock);
-	  ll_rw_block (WRITE, 1, &bh);
+	  ll_rw_block (WRITE, 1, &bh, 0);
 	  wait_on_buffer (bh);
 	  if (! buffer_uptodate (bh))
 	    {
@@ -623,7 +624,7 @@ rdwr_full (int rw, kdev_t dev, loff_t *off, char **buf, int *resid, int bshift)
     }
   if (! err)
     {
-      ll_rw_block (rw, i, bhp);
+      ll_rw_block (rw, i, bhp, 0);
       wait_on_buffer (bhp[i - 1]);
     }
   for (bh = bhead, cc = 0, j = 0; j < i; cc += bh->b_size, bh++, j++)
