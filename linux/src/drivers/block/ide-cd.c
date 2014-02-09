@@ -649,7 +649,7 @@ static void cdrom_end_request (int uptodate, ide_drive_t *drive)
 {
 	struct request *rq = HWGROUP(drive)->rq;
 
-	if (rq->cmd == REQUEST_SENSE_COMMAND && uptodate) {
+	if (rq->cmd == REQUEST_SENSE_COMMAND && uptodate && !rq->quiet) {
 		struct packet_command *pc = (struct packet_command *)
 			                      rq->buffer;
 		cdrom_analyze_sense_data (drive,
@@ -727,16 +727,18 @@ static int cdrom_decode_status (ide_drive_t *drive, int good_stat,
 				   because workman constantly polls the drive
 				   with this command, and we don't want
 				   to uselessly fill up the syslog. */
-				if (pc->c[0] != SCMD_READ_SUBCHANNEL)
+				if (pc->c[0] != SCMD_READ_SUBCHANNEL && !rq->quiet)
 					printk ("%s : tray open or drive not ready\n",
 						drive->name);
 			} else if (sense_key == UNIT_ATTENTION) {
 				/* Check for media change. */
 				cdrom_saw_media_change (drive);
-				printk ("%s: media changed\n", drive->name);
+				if (!rq->quiet)
+					printk ("%s: media changed\n", drive->name);
 			} else {
 				/* Otherwise, print an error. */
-				ide_dump_status (drive, "packet command error",
+				if (!rq->quiet)
+					ide_dump_status (drive, "packet command error",
 						 stat);
 			}
 			
@@ -768,7 +770,8 @@ static int cdrom_decode_status (ide_drive_t *drive, int good_stat,
 				cdrom_saw_media_change (drive);
 
 				/* Fail the request. */
-				printk ("%s : tray open\n", drive->name);
+				if (!rq->quiet)
+					printk ("%s : tray open\n", drive->name);
 				cdrom_end_request (0, drive);
 			} else if (sense_key == UNIT_ATTENTION) {
 				/* Media change. */
@@ -783,7 +786,8 @@ static int cdrom_decode_status (ide_drive_t *drive, int good_stat,
 				   sense_key == DATA_PROTECT) {
 				/* No point in retrying after an illegal
 				   request or data protect error.*/
-				ide_dump_status (drive, "command error", stat);
+				if (!rq->quiet)
+					ide_dump_status (drive, "command error", stat);
 				cdrom_end_request (0, drive);
 			} else if ((err & ~ABRT_ERR) != 0) {
 				/* Go to the default handler
@@ -1406,7 +1410,7 @@ void cdrom_sleep (int time)
 #endif
 
 static
-int cdrom_queue_packet_command (ide_drive_t *drive, struct packet_command *pc)
+int cdrom_queue_packet_command (ide_drive_t *drive, struct packet_command *pc, int quiet)
 {
 	struct atapi_request_sense my_reqbuf;
 	int retries = 10;
@@ -1423,6 +1427,7 @@ int cdrom_queue_packet_command (ide_drive_t *drive, struct packet_command *pc)
 		ide_init_drive_cmd (&req);
 		req.cmd = PACKET_COMMAND;
 		req.buffer = (char *)pc;
+		req.quiet = quiet;
 		(void) ide_do_drive_cmd (drive, &req, ide_wait);
 
 		if (pc->stat != 0) {
@@ -1563,7 +1568,7 @@ cdrom_check_status (ide_drive_t  *drive,
 
         pc.c[7] = CDROM_STATE_FLAGS (drive)->sanyo_slot % 3;
 
-	return cdrom_queue_packet_command (drive, &pc);
+	return cdrom_queue_packet_command (drive, &pc, 1);
 }
 
 
@@ -1588,7 +1593,7 @@ cdrom_lockdoor (ide_drive_t *drive, int lockflag,
 
 		pc.c[0] = ALLOW_MEDIUM_REMOVAL;
 		pc.c[4] = (lockflag != 0);
-		stat = cdrom_queue_packet_command (drive, &pc);
+		stat = cdrom_queue_packet_command (drive, &pc, 0);
 	}
 
 	if (stat == 0)
@@ -1622,7 +1627,7 @@ cdrom_eject (ide_drive_t *drive, int ejectflag,
 
 	pc.c[0] = START_STOP;
 	pc.c[4] = 2 + (ejectflag != 0);
-	return cdrom_queue_packet_command (drive, &pc);
+	return cdrom_queue_packet_command (drive, &pc, 0);
 }
 
 
@@ -1637,7 +1642,7 @@ cdrom_pause (ide_drive_t *drive, int pauseflag,
 
 	pc.c[0] = SCMD_PAUSE_RESUME;
 	pc.c[8] = !pauseflag;
-	return cdrom_queue_packet_command (drive, &pc);
+	return cdrom_queue_packet_command (drive, &pc, 0);
 }
 
 
@@ -1653,7 +1658,7 @@ cdrom_startstop (ide_drive_t *drive, int startflag,
 	pc.c[0] = START_STOP;
 	pc.c[1] = 1;
 	pc.c[4] = startflag;
-	return cdrom_queue_packet_command (drive, &pc);
+	return cdrom_queue_packet_command (drive, &pc, 0);
 }
 
 
@@ -1676,7 +1681,7 @@ cdrom_read_capacity (ide_drive_t *drive, unsigned *capacity,
 	pc.buffer = (unsigned char *)&capbuf;
 	pc.buflen = sizeof (capbuf);
 
-	stat = cdrom_queue_packet_command (drive, &pc);
+	stat = cdrom_queue_packet_command (drive, &pc, 1);
 	if (stat == 0)
 		*capacity = ntohl (capbuf.lba);
 
@@ -1702,7 +1707,7 @@ cdrom_read_tocentry (ide_drive_t *drive, int trackno, int msf_flag,
 	pc.c[8] = (buflen & 0xff);
 	pc.c[9] = (format << 6);
 	if (msf_flag) pc.c[1] = 2;
-	return cdrom_queue_packet_command (drive, &pc);
+	return cdrom_queue_packet_command (drive, &pc, 1);
 }
 
 
@@ -1834,7 +1839,7 @@ cdrom_read_subchannel (ide_drive_t *drive, int format,
 	pc.c[3] = format,
 	pc.c[7] = (buflen >> 8);
 	pc.c[8] = (buflen & 0xff);
-	return cdrom_queue_packet_command (drive, &pc);
+	return cdrom_queue_packet_command (drive, &pc, 0);
 }
 
 
@@ -1855,7 +1860,7 @@ cdrom_mode_sense (ide_drive_t *drive, int pageno, int modeflag,
 	pc.c[2] = pageno | (modeflag << 6);
 	pc.c[7] = (buflen >> 8);
 	pc.c[8] = (buflen & 0xff);
-	return cdrom_queue_packet_command (drive, &pc);
+	return cdrom_queue_packet_command (drive, &pc, 0);
 }
 
 
@@ -1875,7 +1880,7 @@ cdrom_mode_select (ide_drive_t *drive, int pageno, char *buf, int buflen,
 	pc.c[2] = pageno;
 	pc.c[7] = (buflen >> 8);
 	pc.c[8] = (buflen & 0xff);
-	return cdrom_queue_packet_command (drive, &pc);
+	return cdrom_queue_packet_command (drive, &pc, 0);
 }
 
 
@@ -1903,7 +1908,7 @@ cdrom_play_lba_range_1 (ide_drive_t *drive, int lba_start, int lba_end,
 	}
 #endif /* not STANDARD_ATAPI */
 
-	return cdrom_queue_packet_command (drive, &pc);
+	return cdrom_queue_packet_command (drive, &pc, 0);
 }
 
 
@@ -2004,7 +2009,7 @@ cdrom_read_block (ide_drive_t *drive, int format, int lba, int nblocks,
 	else
 		pc.c[9] = 0x10;
 
-	stat = cdrom_queue_packet_command (drive, &pc);
+	stat = cdrom_queue_packet_command (drive, &pc, 0);
 
 #if ! STANDARD_ATAPI
 	/* If the drive doesn't recognize the READ CD opcode, retry the command
@@ -2059,7 +2064,7 @@ cdrom_load_unload (ide_drive_t *drive, int slot,
 		pc.c[0] = LOAD_UNLOAD;
 		pc.c[4] = 2 + (slot >= 0);
 		pc.c[8] = slot;
-		return cdrom_queue_packet_command (drive, &pc);
+		return cdrom_queue_packet_command (drive, &pc, 0);
 
 	}
 }
@@ -2575,7 +2580,7 @@ int ide_cdrom_ioctl (ide_drive_t *drive, struct inode *inode,
 				pc.buffer = buf;
 			}
 
-			stat = cdrom_queue_packet_command (drive, &pc);
+			stat = cdrom_queue_packet_command (drive, &pc, 0);
 
 			if (len > 0)
 				memcpy_tofs ((void *)arg, buf, len);
