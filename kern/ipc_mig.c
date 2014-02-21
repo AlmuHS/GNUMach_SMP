@@ -272,10 +272,10 @@ mig_put_reply_port(
 /*
  * mig_strncpy.c - by Joshua Block
  *
- * mig_strncp -- Bounded string copy.  Does what the library routine strncpy
- * OUGHT to do:  Copies the (null terminated) string in src into dest, a
- * buffer of length len.  Assures that the copy is still null terminated
- * and doesn't overflow the buffer, truncating the copy if necessary.
+ * mig_strncpy -- Bounded string copy.  Does what the library routine
+ * strncpy does: Copies the (null terminated) string in src into dest,
+ * a buffer of length len.  Returns the length of the destination
+ * string excluding the terminating null.
  *
  * Parameters:
  *
@@ -285,22 +285,26 @@ mig_put_reply_port(
  *
  *     len - Length of destination buffer.
  */
-void mig_strncpy(dest, src, len)
-char *dest;
-const char *src;
-int len;
+vm_size_t
+mig_strncpy(dest, src, len)
+	char *dest;
+	const char *src;
+	int len;
 {
-    int i;
+	char *dest_ = dest;
+	int i;
 
-    if (len <= 0)
-	return;
+	if (len <= 0)
+		return 0;
 
-    for (i=1; i<len; i++)
-	if (! (*dest++ = *src++))
-	    return;
+	for (i = 0; i < len; i++) {
+		if (! (*dest = *src))
+			break;
+		dest++;
+		src++;
+	}
 
-    *dest = '\0';
-    return;
+	return dest - dest_;
 }
 
 #define	fast_send_right_lookup(name, port, abort)			\
