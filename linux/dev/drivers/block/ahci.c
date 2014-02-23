@@ -239,6 +239,8 @@ static struct port {
 	struct ahci_fis *fis;
 	struct ahci_cmd_tbl *prdtl;
 
+	struct hd_driveid id;
+	unsigned is_cd;
 	unsigned long long capacity;	/* Nr of sectors */
 	u32 status;			/* interrupt status */
 	unsigned cls;			/* Command list maximum size.
@@ -264,9 +266,9 @@ static void ahci_end_request(int uptodate)
 
 	rq->errors = 0;
 	if (!uptodate) {
-		printk("end_request: I/O error, dev %s, sector %lu\n",
-				kdevname(rq->rq_dev), rq->sector);
-		assert(0);
+		if (!rq->quiet)
+			printk("end_request: I/O error, dev %s, sector %lu\n",
+					kdevname(rq->rq_dev), rq->sector);
 	}
 
 	for (bh = rq->bh; bh; )
@@ -286,7 +288,7 @@ static void ahci_end_request(int uptodate)
 }
 
 /* Push the request to the controler port */
-static void ahci_do_port_request(struct port *port, unsigned sector, struct request *rq)
+static void ahci_do_port_request(struct port *port, unsigned long long sector, struct request *rq)
 {
 	struct ahci_command *command = port->command;
 	struct ahci_cmd_tbl *prdtl = port->prdtl;
@@ -321,8 +323,8 @@ static void ahci_do_port_request(struct port *port, unsigned sector, struct requ
 	fis_h2d->lba2 = sector >> 16;
 
 	fis_h2d->lba3 = sector >> 24;
-	fis_h2d->lba4 = 0;
-	fis_h2d->lba5 = 0;
+	fis_h2d->lba4 = sector >> 32;
+	fis_h2d->lba5 = sector >> 40;
 
 	fis_h2d->countl = rq->nr_sectors;
 	fis_h2d->counth = rq->nr_sectors >> 8;
@@ -360,7 +362,7 @@ static void ahci_do_request()	/* invoked with cli() */
 {
 	struct request *rq;
 	unsigned minor, unit;
-	unsigned long block, blockend;
+	unsigned long long block, blockend;
 	struct port *port;
 
 	rq = CURRENT;
@@ -393,12 +395,16 @@ static void ahci_do_request()	/* invoked with cli() */
 	/* And check end */
 	blockend = block + rq->nr_sectors;
 	if (blockend < block) {
-		printk("bad blockend %lu vs %lu\n", blockend, block);
+		if (!rq->quiet)
+			printk("bad blockend %lu vs %lu\n", (unsigned long) blockend, (unsigned long) block);
 		goto kill_rq;
 	}
 	if (blockend > port->capacity) {
-		printk("offset for %u was %lu\n", minor, port->part[minor & PARTN_MASK].start_sect);
-		printk("bad access: block %lu, count= %lu\n", blockend, (unsigned long) port->capacity);
+		if (!rq->quiet)
+		{
+			printk("offset for %u was %lu\n", minor, port->part[minor & PARTN_MASK].start_sect);
+			printk("bad access: block %lu, count= %lu\n", (unsigned long) blockend, (unsigned long) port->capacity);
+		}
 		goto kill_rq;
 	}
 
@@ -553,26 +559,172 @@ static void identify_timeout(unsigned long data)
 
 static struct timer_list identify_timer = { .function = identify_timeout };
 
+static int ahci_identify(const volatile struct ahci_host *ahci_host, const volatile struct ahci_port *ahci_port, struct port *port, unsigned cmd)
+{
+	struct hd_driveid id;
+	struct ahci_fis_h2d *fis_h2d;
+	struct ahci_command *command = port->command;
+	struct ahci_cmd_tbl *prdtl = port->prdtl;
+	unsigned long flags;
+	unsigned slot;
+	unsigned long first_part;
+	unsigned long long timeout;
+	int ret = 0;
+
+	/* Identify device */
+	/* TODO: make this a request */
+	slot = 0;
+
+	fis_h2d = (void*) &prdtl[slot].cfis;
+	fis_h2d->fis_type = FIS_TYPE_REG_H2D;
+	fis_h2d->flags = 128;
+	fis_h2d->command = cmd;
+	fis_h2d->device = 0;
+
+	/* Fetch the 512 identify data */
+	memset(&id, 0, sizeof(id));
+
+	command[slot].opts = sizeof(*fis_h2d) / sizeof(u32);
+
+	first_part = PAGE_ALIGN((unsigned long) &id) - (unsigned long) &id;
+
+	if (first_part && first_part < sizeof(id)) {
+		/* split over two pages */
+
+		command[slot].opts |= (2 << 16);
+
+		prdtl[slot].prdtl[0].dbau = 0;
+		prdtl[slot].prdtl[0].dba = vmtophys((void*) &id);
+		prdtl[slot].prdtl[0].dbc = first_part - 1;
+		prdtl[slot].prdtl[1].dbau = 0;
+		prdtl[slot].prdtl[1].dba = vmtophys((void*) &id + first_part);
+		prdtl[slot].prdtl[1].dbc = sizeof(id) - first_part - 1;
+	}
+	else
+	{
+		command[slot].opts |= (1 << 16);
+
+		prdtl[slot].prdtl[0].dbau = 0;
+		prdtl[slot].prdtl[0].dba = vmtophys((void*) &id);
+		prdtl[slot].prdtl[0].dbc = sizeof(id) - 1;
+	}
+
+	timeout = jiffies + WAIT_MAX;
+	while (readl(&ahci_port->tfd) & (BUSY_STAT | DRQ_STAT))
+		if (jiffies > timeout) {
+			printk("sd%u: timeout waiting for ready\n", port-ports);
+			port->ahci_host = NULL;
+			port->ahci_port = NULL;
+			return 3;
+		}
+
+	save_flags(flags);
+	cli();
+
+	port->identify = 1;
+	port->status = 0;
+
+	/* Issue command */
+	mb();
+	writel(1 << slot, &ahci_port->ci);
+
+	timeout = jiffies + WAIT_MAX;
+	identify_timer.expires = timeout;
+	identify_timer.data = (unsigned long) port;
+	add_timer(&identify_timer);
+	while (!port->status) {
+		if (jiffies >= timeout) {
+			printk("sd%u: timeout waiting for ready\n", port-ports);
+			port->ahci_host = NULL;
+			port->ahci_port = NULL;
+			del_timer(&identify_timer);
+			return 3;
+		}
+		sleep_on(&port->q);
+	}
+	del_timer(&identify_timer);
+	restore_flags(flags);
+
+	if ((port->status & PORT_IRQ_TF_ERR) || readl(&ahci_port->is) & PORT_IRQ_TF_ERR)
+	{
+		/* Identify error */
+		port->capacity = 0;
+		port->lba48 = 0;
+		ret = 2;
+	} else {
+		memcpy(&port->id, &id, sizeof(id));
+		port->is_cd = 0;
+
+		ide_fixstring(id.model,     sizeof(id.model),     1);
+		ide_fixstring(id.fw_rev,    sizeof(id.fw_rev),    1);
+		ide_fixstring(id.serial_no, sizeof(id.serial_no), 1);
+		if (cmd == WIN_PIDENTIFY)
+		{
+			unsigned char type = (id.config >> 8) & 0x1f;
+
+			printk("sd%u: %s, ATAPI ", port - ports, id.model);
+			if (type == 5)
+			{
+				printk("unsupported CDROM drive\n");
+				port->is_cd = 1;
+				port->lba48 = 0;
+				port->capacity = 0;
+			}
+			else
+			{
+				printk("unsupported type %d\n", type);
+				port->lba48 = 0;
+				port->capacity = 0;
+				return 2;
+			}
+			return 0;
+		}
+
+		if (id.command_set_2 & (1U<<10))
+		{
+			port->lba48 = 1;
+			port->capacity = id.lba_capacity_2;
+			if (port->capacity >= (1ULL << 32))
+			{
+				port->capacity = (1ULL << 32) - 1;
+				printk("Warning: truncating disk size to 2TiB\n");
+			}
+		}
+		else
+		{
+			port->lba48 = 0;
+			port->capacity = id.lba_capacity;
+			if (port->capacity > (1ULL << 24))
+			{
+				port->capacity = (1ULL << 24);
+				printk("Warning: truncating disk size to 128GiB\n");
+			}
+		}
+		if (port->capacity/2048 >= 10240)
+			printk("sd%u: %s, %uGB w/%dkB Cache\n", port - ports, id.model, (unsigned) (port->capacity/(2048*1024)), id.buf_size/2);
+		else
+			printk("sd%u: %s, %uMB w/%dkB Cache\n", port - ports, id.model, (unsigned) (port->capacity/2048), id.buf_size/2);
+	}
+	port->identify = 0;
+
+	return ret;
+}
+
 /* Probe one AHCI port */
 static void ahci_probe_port(const volatile struct ahci_host *ahci_host, const volatile struct ahci_port *ahci_port)
 {
 	struct port *port;
 	void *mem;
-	struct hd_driveid id;
 	unsigned cls = ((readl(&ahci_host->cap) >> 8) & 0x1f) + 1;
 	struct ahci_command *command;
 	struct ahci_fis *fis;
 	struct ahci_cmd_tbl *prdtl;
-	struct ahci_fis_h2d *fis_h2d;
 	vm_size_t size =
 		  cls * sizeof(*command)
 		+ sizeof(*fis)
 		+ cls * sizeof(*prdtl);
 	unsigned i;
-	unsigned slot;
-	unsigned long first_part;
 	unsigned long long timeout;
-	unsigned long flags;
 
 	for (i = 0; i < MAX_PORTS; i++) {
 		if (!ports[i].ahci_port)
@@ -651,115 +803,9 @@ static void ahci_probe_port(const volatile struct ahci_host *ahci_host, const vo
 
 	writel(readl(&ahci_port->cmd) | PORT_CMD_FIS_RX | PORT_CMD_START, &ahci_port->cmd);
 
-	/* Identify device */
-	/* TODO: make this a request */
-	slot = 0;
-
-	fis_h2d = (void*) &prdtl[slot].cfis;
-	fis_h2d->fis_type = FIS_TYPE_REG_H2D;
-	fis_h2d->flags = 128;
-	fis_h2d->command = WIN_IDENTIFY;
-	fis_h2d->device = 0;
-
-	/* Fetch the 512 identify data */
-	memset(&id, 0, sizeof(id));
-
-	command[slot].opts = sizeof(*fis_h2d) / sizeof(u32);
-
-	first_part = PAGE_ALIGN((unsigned long) &id) - (unsigned long) &id;
-
-	if (first_part && first_part < sizeof(id)) {
-		/* split over two pages */
-
-		command[slot].opts |= (2 << 16);
-
-		prdtl[slot].prdtl[0].dbau = 0;
-		prdtl[slot].prdtl[0].dba = vmtophys((void*) &id);
-		prdtl[slot].prdtl[0].dbc = first_part - 1;
-		prdtl[slot].prdtl[1].dbau = 0;
-		prdtl[slot].prdtl[1].dba = vmtophys((void*) &id + first_part);
-		prdtl[slot].prdtl[1].dbc = sizeof(id) - first_part - 1;
-	}
-	else
-	{
-		command[slot].opts |= (1 << 16);
-
-		prdtl[slot].prdtl[0].dbau = 0;
-		prdtl[slot].prdtl[0].dba = vmtophys((void*) &id);
-		prdtl[slot].prdtl[0].dbc = sizeof(id) - 1;
-	}
-
-	timeout = jiffies + WAIT_MAX;
-	while (readl(&ahci_port->tfd) & (BUSY_STAT | DRQ_STAT))
-		if (jiffies > timeout) {
-			printk("sd%u: timeout waiting for ready\n", port-ports);
-			port->ahci_host = NULL;
-			port->ahci_port = NULL;
-			return;
-		}
-
-	save_flags(flags);
-	cli();
-
-	port->identify = 1;
-	port->status = 0;
-
-	/* Issue command */
-	mb();
-	writel(1 << slot, &ahci_port->ci);
-
-	timeout = jiffies + WAIT_MAX;
-	identify_timer.expires = timeout;
-	identify_timer.data = (unsigned long) port;
-	add_timer(&identify_timer);
-	while (!port->status) {
-		if (jiffies >= timeout) {
-			printk("sd%u: timeout waiting for ready\n", port-ports);
-			port->ahci_host = NULL;
-			port->ahci_port = NULL;
-			del_timer(&identify_timer);
-			return;
-		}
-		sleep_on(&port->q);
-	}
-	del_timer(&identify_timer);
-	restore_flags(flags);
-
-	if (readl(&ahci_port->is) & PORT_IRQ_TF_ERR)
-	{
-		printk("sd%u: identify error\n", port-ports);
-		port->capacity = 0;
-		port->lba48 = 0;
-	} else {
-		ide_fixstring(id.model,     sizeof(id.model),     1);
-		ide_fixstring(id.fw_rev,    sizeof(id.fw_rev),    1);
-		ide_fixstring(id.serial_no, sizeof(id.serial_no), 1);
-		if (id.command_set_2 & (1U<<10))
-		{
-			port->lba48 = 1;
-			port->capacity = id.lba_capacity_2;
-			if (port->capacity >= (1ULL << 32))
-			{
-				port->capacity = (1ULL << 32) - 1;
-				printk("Warning: truncating disk size to 2TiB\n");
-			}
-		}
-		else
-		{
-			port->lba48 = 0;
-			port->capacity = id.lba_capacity;
-			if (port->capacity > (1ULL << 24))
-			{
-				port->capacity = (1ULL << 24);
-				printk("Warning: truncating disk size to 128GiB\n");
-			}
-		}
-		if (port->capacity/2048 >= 10240)
-			printk("sd%u: %s, %uGB w/%dkB Cache\n", port - ports, id.model, (unsigned) (port->capacity/(2048*1024)), id.buf_size/2);
-		else
-			printk("sd%u: %s, %uMB w/%dkB Cache\n", port - ports, id.model, (unsigned) (port->capacity/2048), id.buf_size/2);
-	}
-	port->identify = 0;
+	if (ahci_identify(ahci_host, ahci_port, port, WIN_IDENTIFY) >= 2)
+		/* Try ATAPI */
+		ahci_identify(ahci_host, ahci_port, port, WIN_PIDENTIFY);
 }
 
 /* Probe one AHCI PCI device */
@@ -859,6 +905,8 @@ static void ahci_geninit(struct gendisk *gd)
 	for (unit = 0; unit < gd->nr_real; unit++) {
 		port = &ports[unit];
 		port->part[0].nr_sects = port->capacity;
+		if (!port->part[0].nr_sects)
+			port->part[0].nr_sects = -1;
 	}
 }
 
