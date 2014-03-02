@@ -419,6 +419,12 @@ unsigned int	inuse_ptepages_count = 0;	/* debugging */
  */
 pt_entry_t *kernel_page_dir;
 
+/*
+ * Two slots for temporary physical page mapping, to allow for
+ * physical-to-physical transfers.
+ */
+static pmap_mapwindow_t mapwindows[PMAP_NMAPWINDOWS];
+
 static inline pt_entry_t *
 pmap_pde(const pmap_t pmap, vm_offset_t addr)
 {
@@ -774,6 +780,12 @@ void pmap_bootstrap(void)
 			}
 			for (; pte < ptable+NPTES; pte++)
 			{
+				if (va >= kernel_virtual_end - PMAP_NMAPWINDOWS * PAGE_SIZE);
+				{
+					pmap_mapwindow_t *win = &mapwindows[atop(va - (kernel_virtual_end - PMAP_NMAPWINDOWS * PAGE_SIZE))];
+					win->entry = pte;
+					win->vaddr = va;
+				}
 				WRITE_PTE(pte, 0);
 				va += INTEL_PGBYTES;
 			}
@@ -884,12 +896,41 @@ void pmap_clear_bootstrap_pagetable(pt_entry_t *base) {
 }
 #endif	/* MACH_PV_PAGETABLES */
 
+/*
+ * Create a temporary mapping for a given physical entry
+ *
+ * This can be used to access physical pages which are not mapped 1:1 by
+ * phystokv().
+ */
+pmap_mapwindow_t *pmap_get_mapwindow(pt_entry_t entry)
+{
+	pmap_mapwindow_t *map;
+
+	/* Find an empty one.  */
+	for (map = &mapwindows[0]; map < &mapwindows[sizeof (mapwindows) / sizeof (*mapwindows)]; map++)
+		if (!(*map->entry))
+			break;
+	assert(map < &mapwindows[sizeof (mapwindows) / sizeof (*mapwindows)]);
+
+	WRITE_PTE(map->entry, entry);
+	return map;
+}
+
+/*
+ * Destroy a temporary mapping for a physical entry
+ */
+void pmap_put_mapwindow(pmap_mapwindow_t *map)
+{
+	WRITE_PTE(map->entry, 0);
+	PMAP_UPDATE_TLBS(kernel_pmap, map->vaddr, map->vaddr + PAGE_SIZE);
+}
+
 void pmap_virtual_space(startp, endp)
 	vm_offset_t *startp;
 	vm_offset_t *endp;
 {
 	*startp = kernel_virtual_start;
-	*endp = kernel_virtual_end;
+	*endp = kernel_virtual_end - PMAP_NMAPWINDOWS * PAGE_SIZE;
 }
 
 /*

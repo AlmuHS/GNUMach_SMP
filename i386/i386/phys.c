@@ -37,7 +37,11 @@
 #include <vm/vm_page.h>
 
 #include <i386/pmap.h>
+#include <i386/model_dep.h>
 #include <mach/machine/vm_param.h>
+
+#define INTEL_PTE_W(p) (INTEL_PTE_VALID | INTEL_PTE_WRITE | INTEL_PTE_REF | INTEL_PTE_MOD | pa_to_pte(p))
+#define INTEL_PTE_R(p) (INTEL_PTE_VALID | INTEL_PTE_REF | pa_to_pte(p))
 
 /*
  *	pmap_zero_page zeros the specified (machine independent) page.
@@ -47,7 +51,21 @@ pmap_zero_page(p)
 	vm_offset_t p;
 {
 	assert(p != vm_page_fictitious_addr);
-	memset((void *)phystokv(p), 0, PAGE_SIZE);
+	vm_offset_t v;
+	pmap_mapwindow_t *map;
+
+	if (p >= phys_last_addr)
+	{
+		map = pmap_get_mapwindow(INTEL_PTE_W(p));
+		v = map->vaddr;
+	}
+	else
+		v = phystokv(p);
+
+	memset((void*) v, 0, PAGE_SIZE);
+
+	if (p >= phys_last_addr)
+		pmap_put_mapwindow(map);
 }
 
 /*
@@ -57,10 +75,33 @@ void
 pmap_copy_page(src, dst)
 	vm_offset_t src, dst;
 {
+	vm_offset_t src_addr_v, dst_addr_v;
+	pmap_mapwindow_t *src_map, *dst_map;
 	assert(src != vm_page_fictitious_addr);
 	assert(dst != vm_page_fictitious_addr);
 
-	memcpy((void *)phystokv(dst), (void *)phystokv(src), PAGE_SIZE);
+	if (src >= phys_last_addr)
+	{
+		src_map = pmap_get_mapwindow(INTEL_PTE_R(src));
+		src_addr_v = src_map->vaddr;
+	}
+	else
+		src_addr_v = phystokv(src);
+
+	if (dst >= phys_last_addr)
+	{
+		dst_map = pmap_get_mapwindow(INTEL_PTE_W(dst));
+		dst_addr_v = dst_map->vaddr;
+	}
+	else
+		dst_addr_v = phystokv(dst);
+
+	memcpy((void *) dst_addr_v, (void *) src_addr_v, PAGE_SIZE);
+
+	if (src >= phys_last_addr)
+		pmap_put_mapwindow(src_map);
+	if (dst >= phys_last_addr)
+		pmap_put_mapwindow(dst_map);
 }
 
 /*
@@ -73,8 +114,23 @@ copy_to_phys(src_addr_v, dst_addr_p, count)
 	vm_offset_t src_addr_v, dst_addr_p;
 	int count;
 {
+	vm_offset_t dst_addr_v;
+	pmap_mapwindow_t *dst_map;
 	assert(dst_addr_p != vm_page_fictitious_addr);
-	memcpy((void *)phystokv(dst_addr_p), (void *)src_addr_v, count);
+	assert(pa_to_pte(dst_addr_p + count-1) == pa_to_pte(dst_addr_p));
+
+	if (dst_addr_p >= phys_last_addr)
+	{
+		dst_map = pmap_get_mapwindow(INTEL_PTE_W(dst_addr_p));
+		dst_addr_v = dst_map->vaddr;
+	}
+	else
+		dst_addr_v = phystokv(dst_addr_p);
+
+	memcpy((void *)dst_addr_v, (void *)src_addr_v, count);
+
+	if (dst_addr_p >= phys_last_addr)
+		pmap_put_mapwindow(dst_map);
 }
 
 /*
@@ -88,8 +144,23 @@ copy_from_phys(src_addr_p, dst_addr_v, count)
 	vm_offset_t src_addr_p, dst_addr_v;
 	int count;
 {
+	vm_offset_t src_addr_v;
+	pmap_mapwindow_t *src_map;
 	assert(src_addr_p != vm_page_fictitious_addr);
-	memcpy((void *)dst_addr_v, (void *)phystokv(src_addr_p), count);
+	assert(pa_to_pte(src_addr_p + count-1) == pa_to_pte(src_addr_p));
+
+	if (src_addr_p >= phys_last_addr)
+	{
+		src_map = pmap_get_mapwindow(INTEL_PTE_R(src_addr_p));
+		src_addr_v = src_map->vaddr;
+	}
+	else
+		src_addr_v = phystokv(src_addr_p);
+
+	memcpy((void *)dst_addr_v, (void *)src_addr_v, count);
+
+	if (src_addr_p >= phys_last_addr)
+		pmap_put_mapwindow(src_map);
 }
 
 /*

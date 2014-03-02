@@ -192,6 +192,16 @@ extern void pmap_clear_bootstrap_pagetable(pt_entry_t *addr);
 #define	set_pmap(pmap)	set_cr3(kvtophys((vm_offset_t)(pmap)->dirbase))
 #endif	/* PAE */
 
+typedef struct {
+	pt_entry_t	*entry;
+	vm_offset_t	vaddr;
+} pmap_mapwindow_t;
+
+extern pmap_mapwindow_t *pmap_get_mapwindow(pt_entry_t entry);
+extern void pmap_put_mapwindow(pmap_mapwindow_t *map);
+
+#define PMAP_NMAPWINDOWS 2
+
 #if	NCPUS > 1
 /*
  *	List of cpus that are actively using mapped memory.  Any
