@@ -42,6 +42,10 @@ subsystem
 #include <mach/std_types.defs>
 #include <mach/mach_types.defs>
 
+#ifdef	MEMORY_OBJECT_IMPORTS
+MEMORY_OBJECT_IMPORTS
+#endif
+
 #if	SEQNOS
 serverprefix seqnos_;
 serverdemux seqnos_memory_object_server;
@@ -85,7 +89,11 @@ simpleroutine	memory_object_init(
 simpleroutine	memory_object_terminate(
 		memory_object		: memory_object_t =
 						MACH_MSG_TYPE_MOVE_SEND
-						ctype: mach_port_t;
+						ctype: mach_port_t
+#ifdef	MEMORY_OBJECT_INTRAN
+						intran: MEMORY_OBJECT_INTRAN
+#endif
+						;
 #if	SEQNOS
 	msgseqno seqno			: mach_port_seqno_t;
 #endif	/* SEQNOS */
@@ -221,7 +229,11 @@ simpleroutine	memory_object_data_write(
 simpleroutine	memory_object_lock_completed(
 		memory_object		: memory_object_t =
 			polymorphic|MACH_MSG_TYPE_PORT_SEND_ONCE
-			ctype: mach_port_t;
+			ctype: mach_port_t
+#ifdef	MEMORY_OBJECT_INTRAN
+			intran: MEMORY_OBJECT_INTRAN
+#endif
+			;
 #if	SEQNOS
 	msgseqno seqno			: mach_port_seqno_t;
 #endif	/* SEQNOS */
@@ -252,7 +264,11 @@ simpleroutine	memory_object_lock_completed(
 simpleroutine	memory_object_supply_completed(
 		memory_object		: memory_object_t =
 			polymorphic|MACH_MSG_TYPE_PORT_SEND_ONCE
-			ctype: mach_port_t;
+			ctype: mach_port_t
+#ifdef	MEMORY_OBJECT_INTRAN
+			intran: MEMORY_OBJECT_INTRAN
+#endif
+			;
 #if	SEQNOS
 	msgseqno seqno			: mach_port_seqno_t;
 #endif	/* SEQNOS */
@@ -298,7 +314,11 @@ simpleroutine   memory_object_data_return(
 simpleroutine	memory_object_change_completed(
 		memory_object		: memory_object_t =
 			polymorphic|MACH_MSG_TYPE_PORT_SEND_ONCE
-			ctype: mach_port_t;
+			ctype: mach_port_t
+#ifdef	MEMORY_OBJECT_INTRAN
+			intran: MEMORY_OBJECT_INTRAN
+#endif
+			;
 #if	SEQNOS
 	msgseqno seqno			: mach_port_seqno_t;
 #endif	/* SEQNOS */

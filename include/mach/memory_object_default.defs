@@ -40,6 +40,10 @@ subsystem
 #include <mach/std_types.defs>
 #include <mach/mach_types.defs>
 
+#ifdef	MEMORY_OBJECT_IMPORTS
+MEMORY_OBJECT_IMPORTS
+#endif
+
 #if	SEQNOS
 serverprefix seqnos_;
 serverdemux seqnos_memory_object_default_server;

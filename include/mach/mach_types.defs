@@ -135,6 +135,16 @@ type memory_object_t = mach_port_t
 		ctype: mach_port_t
 #if	KERNEL_SERVER
 		intran: ipc_port_t null_conversion(mach_port_t)
+#else	/* KERNEL_SERVER */
+#ifdef	MEMORY_OBJECT_INTRAN
+		intran: MEMORY_OBJECT_INTRAN
+#endif
+#ifdef	MEMORY_OBJECT_OUTTRAN
+		outtran: MEMORY_OBJECT_OUTTRAN
+#endif
+#ifdef	MEMORY_OBJECT_DESTRUCTOR
+		destructor: MEMORY_OBJECT_DESTRUCTOR
+#endif
 #endif	/* KERNEL_SERVER */
 		;
 
