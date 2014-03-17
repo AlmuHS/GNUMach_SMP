@@ -93,6 +93,10 @@ simpleroutine	memory_object_terminate(
 #ifdef	MEMORY_OBJECT_INTRAN
 						intran: MEMORY_OBJECT_INTRAN
 #endif
+#ifdef	MEMORY_OBJECT_INTRAN_PAYLOAD
+						intranpayload:
+						MEMORY_OBJECT_INTRAN_PAYLOAD
+#endif
 #ifdef	MEMORY_OBJECT_DESTRUCTOR
 					destructor: MEMORY_OBJECT_DESTRUCTOR
 #endif
@@ -236,6 +240,9 @@ simpleroutine	memory_object_lock_completed(
 #ifdef	MEMORY_OBJECT_INTRAN
 			intran: MEMORY_OBJECT_INTRAN
 #endif
+#ifdef	MEMORY_OBJECT_INTRAN_PAYLOAD
+			intranpayload: MEMORY_OBJECT_INTRAN_PAYLOAD
+#endif
 #ifdef	MEMORY_OBJECT_DESTRUCTOR
 			destructor: MEMORY_OBJECT_DESTRUCTOR
 #endif
@@ -273,6 +280,9 @@ simpleroutine	memory_object_supply_completed(
 			ctype: mach_port_t
 #ifdef	MEMORY_OBJECT_INTRAN
 			intran: MEMORY_OBJECT_INTRAN
+#endif
+#ifdef	MEMORY_OBJECT_INTRAN_PAYLOAD
+			intranpayload: MEMORY_OBJECT_INTRAN_PAYLOAD
 #endif
 #ifdef	MEMORY_OBJECT_DESTRUCTOR
 			destructor: MEMORY_OBJECT_DESTRUCTOR
@@ -326,6 +336,9 @@ simpleroutine	memory_object_change_completed(
 			ctype: mach_port_t
 #ifdef	MEMORY_OBJECT_INTRAN
 			intran: MEMORY_OBJECT_INTRAN
+#endif
+#ifdef	MEMORY_OBJECT_INTRAN_PAYLOAD
+			intranpayload: MEMORY_OBJECT_INTRAN_PAYLOAD
 #endif
 #ifdef	MEMORY_OBJECT_DESTRUCTOR
 			destructor: MEMORY_OBJECT_DESTRUCTOR

@@ -139,6 +139,9 @@ type memory_object_t = mach_port_t
 #ifdef	MEMORY_OBJECT_INTRAN
 		intran: MEMORY_OBJECT_INTRAN
 #endif
+#ifdef	MEMORY_OBJECT_INTRAN_PAYLOAD
+		intranpayload: MEMORY_OBJECT_INTRAN_PAYLOAD
+#endif
 #ifdef	MEMORY_OBJECT_OUTTRAN
 		outtran: MEMORY_OBJECT_OUTTRAN
 #endif
