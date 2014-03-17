@@ -36,8 +36,8 @@
 
 /* minor: 2 bits for device number, 6 bits for partition number. */
 
-#define MAX_PORTS 4
-#define PARTN_BITS 6
+#define MAX_PORTS 8
+#define PARTN_BITS 5
 #define PARTN_MASK ((1<<PARTN_BITS)-1)
 
 /* We need to use one DMA scatter element per physical page.
