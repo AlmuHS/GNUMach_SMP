@@ -382,8 +382,8 @@ device_open (ipc_port_t reply_port, mach_msg_type_name_t reply_port_type,
 
 	port = ipc_port_alloc_kernel();
 	if (port == IP_NULL) {
-		err = KERN_RESOURCE_SHORTAGE;
-		goto out;
+		device_close(bd);
+		return KERN_RESOURCE_SHORTAGE;
 	}
 	bd->port = port;
 
@@ -396,7 +396,6 @@ device_open (ipc_port_t reply_port, mach_msg_type_name_t reply_port_type,
 	ipc_port_nsrequest (bd->port, 1, notify, &notify);
 	assert (notify == IP_NULL);
 
-out:
 	if (IP_VALID (reply_port))
 		ds_device_open_reply (reply_port, reply_port_type, D_SUCCESS, port);
 	else
