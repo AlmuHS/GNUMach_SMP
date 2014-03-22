@@ -780,7 +780,7 @@ void pmap_bootstrap(void)
 			}
 			for (; pte < ptable+NPTES; pte++)
 			{
-				if (va >= kernel_virtual_end - PMAP_NMAPWINDOWS * PAGE_SIZE);
+				if (va >= kernel_virtual_end - PMAP_NMAPWINDOWS * PAGE_SIZE && va < kernel_virtual_end)
 				{
 					pmap_mapwindow_t *win = &mapwindows[atop(va - (kernel_virtual_end - PMAP_NMAPWINDOWS * PAGE_SIZE))];
 					win->entry = pte;
