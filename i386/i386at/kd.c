@@ -1162,7 +1162,7 @@ kdinit(void)
 	kd_senddata(k_comm);
 	kd_initialized = TRUE;
 
-#ifdef ENABLE_IMMEDIATE_CONSOLE
+#if	ENABLE_IMMEDIATE_CONSOLE
 	/* Now that we're set up, we no longer need or want the
            immediate console.  */
 	{

@@ -73,6 +73,10 @@ AC_DEFINE_UNQUOTED([NLPR], [$nlpr], [NLPR])
 # Options.
 #
 
+# The immediate console, useful for debugging early system
+# initialization.  Disabled by default.
+AC_DEFINE([ENABLE_IMMEDIATE_CONSOLE], [0], [ENABLE_IMMEDIATE_CONSOLE])
+
 AC_ARG_ENABLE([lpr],
   AS_HELP_STRING([--enable-lpr], [lpr device; on ix86-at enabled by default]))
 [case $host_platform:$host_cpu in

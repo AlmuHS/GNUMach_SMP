@@ -87,6 +87,12 @@ struct dev_ops	dev_name_list[] =
 	  nodev },
 
 #ifndef	MACH_HYP
+#if	ENABLE_IMMEDIATE_CONSOLE
+	{ "immc",	nulldev_open,	nulldev_close,	nulldev_read,
+	  nulldev_write,	nulldev_getstat,	nulldev_setstat,
+	  nomap,	nodev,	nulldev,	nulldev_portdeath,	0,
+	  nodev },
+#endif	/* ENABLE_IMMEDIATE_CONSOLE */
 	{ kdname,	kdopen,		kdclose,	kdread,
 	  kdwrite,	kdgetstat,	kdsetstat,	kdmmap,
 	  nodev,	nulldev,	kdportdeath,	0,

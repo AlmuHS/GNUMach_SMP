@@ -740,6 +740,7 @@ extern int kdcninit(struct consdev *cp);
 extern int kdcngetc(dev_t dev, int wait);
 extern int kdcnmaygetc (void);
 extern int kdcnputc(dev_t dev, int c);
+extern void kd_setpos(csrpos_t newpos);
 
 extern void kd_slmwd (void *start, int count, int value);
 extern void kd_slmscu (void *from, void *to, int count);
