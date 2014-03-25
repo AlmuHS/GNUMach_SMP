@@ -150,7 +150,7 @@ void bootstrap_create(void)
     }
   else
     {
-      int i, losers, maxlen;
+      int i, losers;
 
       /* Initialize boot script variables.  We leak these send rights.  */
       losers = boot_script_set_variable
@@ -241,15 +241,11 @@ void bootstrap_create(void)
       }
 #endif
 
-      maxlen = 0;
       for (i = 0; i < boot_info.mods_count; ++i)
 	{
 	  int err;
 	  char *line = (char*)phystokv(bmods[i].string);
-	  int len = strlen (line) + 1;
-	  if (len > maxlen)
-	    maxlen = len;
-	  printf ("\rmodule %d: %*s", i, -maxlen, line);
+	  printf ("module %d: %s\n", i, line);
 	  err = boot_script_parse_line (&bmods[i], line);
 	  if (err)
 	    {
@@ -257,7 +253,7 @@ void bootstrap_create(void)
 	      ++losers;
 	    }
 	}
-      printf ("\r%d multiboot modules %*s", i, -maxlen, "");
+      printf ("%d multiboot modules\n", i);
       if (losers)
 	panic ("%d of %d boot script commands could not be parsed",
 	       losers, boot_info.mods_count);
