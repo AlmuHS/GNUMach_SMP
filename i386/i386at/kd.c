@@ -2512,6 +2512,9 @@ kd_xga_init(void)
 	outb(CMOS_ADDR, CMOS_EB);
 	screen = inb(CMOS_DATA) & CM_SCRMSK;
 	switch(screen) {
+	default:
+		printf("kd: unknown screen type, defaulting to EGA\n");
+		/* FALLTHROUGH */
 	case CM_EGA_VGA:
 		/*
 		 * Here we'll want to query to bios on the card
@@ -2558,8 +2561,6 @@ kd_xga_init(void)
 		kd_lines = 25;
 		kd_cols = 80;
 		break;
-	default:
-		printf("kd: unknown screen type, defaulting to EGA\n");
 	}
 
 	outb(kd_index_reg, C_START);
