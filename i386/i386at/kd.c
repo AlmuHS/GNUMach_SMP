@@ -2540,6 +2540,8 @@ kd_xga_init(void)
 			addr[i] = 0x00;
 		}
 		break;
+#if 0
+	/* XXX: some buggy BIOSes report these...  */
 	case CM_CGA_40:
 		vid_start = (u_char *)phystokv(CGA_START);
 		kd_index_reg = CGA_IDX_REG;
@@ -2561,6 +2563,7 @@ kd_xga_init(void)
 		kd_lines = 25;
 		kd_cols = 80;
 		break;
+#endif
 	}
 
 	outb(kd_index_reg, C_START);
