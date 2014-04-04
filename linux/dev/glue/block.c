@@ -1704,7 +1704,7 @@ device_get_status (void *d, dev_flavor_t flavor, dev_status_t status,
 
 static io_return_t
 device_set_status (void *d, dev_flavor_t flavor, dev_status_t status,
-		   mach_msg_type_number_t *status_count)
+		   mach_msg_type_number_t status_count)
 {
   struct block_data *bd = d;
 
