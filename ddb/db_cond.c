@@ -48,8 +48,7 @@ struct db_cond {
 } db_cond[DB_MAX_COND];
 
 void
-db_cond_free(bkpt)
-	db_thread_breakpoint_t bkpt;
+db_cond_free(db_thread_breakpoint_t bkpt)
 {
 	if (bkpt->tb_cond > 0) {
 	    db_cond[bkpt->tb_cond-1].c_size = 0;
@@ -59,8 +58,7 @@ db_cond_free(bkpt)
 }
 
 boolean_t
-db_cond_check(bkpt)
-	db_thread_breakpoint_t bkpt;
+db_cond_check(db_thread_breakpoint_t bkpt)
 {
 	struct db_cond *cp;
 	db_expr_t value;

@@ -185,11 +185,11 @@ host_ipc_hash_info(
  */
 
 kern_return_t
-host_ipc_marequest_info(host, maxp, infop, countp)
-	host_t host;
-	unsigned int *maxp;
-	hash_info_bucket_array_t *infop;
-	unsigned int *countp;
+host_ipc_marequest_info(
+	host_t 				host,
+	unsigned int 			*maxp,
+	hash_info_bucket_array_t 	*infop,
+	unsigned int 			*countp)
 {
 	vm_offset_t addr;
 	vm_size_t size = 0; /* '=0' to shut up lint */

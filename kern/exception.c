@@ -82,8 +82,10 @@ boolean_t debug_user_with_kdb = FALSE;
  */
 
 void
-exception(_exception, code, subcode)
-	integer_t _exception, code, subcode;
+exception(
+	integer_t _exception, 
+	integer_t code, 
+	integer_t subcode)
 {
 	ipc_thread_t self = current_thread();
 	ipc_port_t exc_port;
@@ -152,8 +154,10 @@ exception(_exception, code, subcode)
  */
 
 void
-exception_try_task(_exception, code, subcode)
-	integer_t _exception, code, subcode;
+exception_try_task(
+	integer_t _exception, 
+	integer_t code, 
+	integer_t subcode)
 {
 	ipc_thread_t self = current_thread();
 	task_t task = self->task;
@@ -319,12 +323,13 @@ mach_msg_type_t exc_code_proto = {
 int exception_raise_misses = 0;
 
 void
-exception_raise(dest_port, thread_port, task_port,
-		_exception, code, subcode)
-	ipc_port_t dest_port;
-	ipc_port_t thread_port;
-	ipc_port_t task_port;
-	integer_t _exception, code, subcode;
+exception_raise(
+	ipc_port_t 	dest_port,
+	ipc_port_t 	thread_port,
+	ipc_port_t 	task_port,
+	integer_t 	_exception, 
+	integer_t 	code, 
+	integer_t 	subcode)
 {
 	ipc_thread_t self = current_thread();
 	ipc_thread_t receiver;
@@ -783,8 +788,7 @@ mach_msg_type_t exc_RetCode_proto = {
  */
 
 kern_return_t
-exception_parse_reply(kmsg)
-	ipc_kmsg_t kmsg;
+exception_parse_reply(ipc_kmsg_t kmsg)
 {
 	mig_reply_header_t *msg =
 			(mig_reply_header_t *) &kmsg->ikm_header;
@@ -860,10 +864,10 @@ exception_raise_continue(void)
  */
 
 void
-exception_raise_continue_slow(mr, kmsg, seqno)
-	mach_msg_return_t mr;
-	ipc_kmsg_t kmsg;
-	mach_port_seqno_t seqno;
+exception_raise_continue_slow(
+	mach_msg_return_t mr,
+	ipc_kmsg_t 	  kmsg,
+	mach_port_seqno_t seqno)
 {
 	ipc_thread_t self = current_thread();
 	ipc_port_t reply_port = self->ith_port;
@@ -943,9 +947,9 @@ exception_raise_continue_slow(mr, kmsg, seqno)
  */
 
 void
-exception_raise_continue_fast(reply_port, kmsg)
-	ipc_port_t reply_port;
-	ipc_kmsg_t kmsg;
+exception_raise_continue_fast(
+	ipc_port_t reply_port,
+	ipc_kmsg_t kmsg)
 {
 	ipc_thread_t self = current_thread();
 	kern_return_t kr;

@@ -82,9 +82,9 @@ db_flush_line(void)
 }
 
 void
-db_switch_input(buffer, size)
-	char *buffer;
-	int  size;
+db_switch_input(
+	char *buffer,
+	int  size)
 {
 	db_lp = buffer;
 	db_last_lp = db_lp;
@@ -94,8 +94,7 @@ db_switch_input(buffer, size)
 }
 
 void
-db_save_lex_context(lp)
-	struct db_lex_context *lp;
+db_save_lex_context(struct db_lex_context *lp)
 {
 	lp->l_ptr = db_lp;
 	lp->l_eptr = db_endlp;
@@ -131,15 +130,13 @@ db_read_char(void)
 }
 
 void
-db_unread_char(c)
-	int c;
+db_unread_char(int c)
 {
 	db_look_char = c;
 }
 
 void
-db_unread_token(t)
-	int	t;
+db_unread_token(int t)
 {
 	db_look_token = t;
 }

@@ -68,8 +68,9 @@ void eml_init(void)
  *	vector.
  */
 
-void eml_task_reference(task, parent)
-	task_t	task, parent;
+void eml_task_reference(
+	task_t	task, 
+	task_t	parent)
 {
 	eml_dispatch_t	eml;
 
@@ -116,12 +117,11 @@ void eml_task_deallocate(task)
  *   set a list of emulated system calls for this task.
  */
 kern_return_t
-task_set_emulation_vector_internal(task, vector_start, emulation_vector,
-			  emulation_vector_count)
-	task_t 			task;
-	int			vector_start;
-	emulation_vector_t	emulation_vector;
-	unsigned int		emulation_vector_count;
+task_set_emulation_vector_internal(
+	task_t 			task,
+	int			vector_start,
+	emulation_vector_t	emulation_vector,
+	unsigned int		emulation_vector_count)
 {
 	eml_dispatch_t	cur_eml, new_eml, old_eml;
 	vm_size_t	new_size;
@@ -295,12 +295,11 @@ task_set_emulation_vector_internal(task, vector_start, emulation_vector,
  *	The list is out-of-line.
  */
 kern_return_t
-task_set_emulation_vector(task, vector_start, emulation_vector,
-			  emulation_vector_count)
-	task_t 			task;
-	int			vector_start;
-	emulation_vector_t	emulation_vector;
-	unsigned int		emulation_vector_count;
+task_set_emulation_vector(
+	task_t 			task,
+	int			vector_start,
+	emulation_vector_t	emulation_vector,
+	unsigned int		emulation_vector_count)
 {
 	kern_return_t		kr;
 	vm_offset_t		emul_vector_addr;
@@ -342,12 +341,11 @@ task_set_emulation_vector(task, vector_start, emulation_vector,
  *	List is returned out-of-line.
  */
 kern_return_t
-task_get_emulation_vector(task, vector_start, emulation_vector,
-			emulation_vector_count)
-	task_t			task;
-	int			*vector_start;			/* out */
-	emulation_vector_t	*emulation_vector;		/* out */
-	unsigned int		*emulation_vector_count;	/* out */
+task_get_emulation_vector(
+	task_t			task,
+	int			*vector_start,			/* out */
+	emulation_vector_t	*emulation_vector,		/* out */
+	unsigned int		*emulation_vector_count)	/* out */
 {
 	eml_dispatch_t		eml;
 	vm_size_t		vector_size, size;
@@ -445,10 +443,10 @@ task_get_emulation_vector(task, vector_start, emulation_vector,
  *   task_set_emulation:  [Server Entry]
  *   set up for user space emulation of syscalls within this task.
  */
-kern_return_t task_set_emulation(task, routine_entry_pt, routine_number)
-	task_t		task;
-	vm_offset_t 	routine_entry_pt;
-	int		routine_number;
+kern_return_t task_set_emulation(
+	task_t		task,
+	vm_offset_t 	routine_entry_pt,
+	int		routine_number)
 {
 	return task_set_emulation_vector_internal(task, routine_number,
 					 &routine_entry_pt, 1);

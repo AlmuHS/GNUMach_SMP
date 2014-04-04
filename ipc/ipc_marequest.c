@@ -160,11 +160,11 @@ ipc_marequest_init(void)
  */
 
 mach_msg_return_t
-ipc_marequest_create(space, port, notify, marequestp)
-	ipc_space_t space;
-	ipc_port_t port;
-	mach_port_t notify;
-	ipc_marequest_t *marequestp;
+ipc_marequest_create(
+	ipc_space_t 	space,
+	ipc_port_t 	port,
+	mach_port_t 	notify,
+	ipc_marequest_t *marequestp)
 {
 	mach_port_t name;
 	ipc_entry_t entry;
@@ -256,9 +256,9 @@ ipc_marequest_create(space, port, notify, marequestp)
  */
 
 void
-ipc_marequest_cancel(space, name)
-	ipc_space_t space;
-	mach_port_t name;
+ipc_marequest_cancel(
+	ipc_space_t space,
+	mach_port_t name)
 {
 	ipc_marequest_bucket_t bucket;
 	ipc_marequest_t marequest, *last;
@@ -292,9 +292,10 @@ ipc_marequest_cancel(space, name)
  */
 
 void
-ipc_marequest_rename(space, old, new)
-	ipc_space_t space;
-	mach_port_t old, new;
+ipc_marequest_rename(
+	ipc_space_t space,
+	mach_port_t old, 
+	mach_port_t new)
 {
 	ipc_marequest_bucket_t bucket;
 	ipc_marequest_t marequest, *last;
@@ -336,8 +337,7 @@ ipc_marequest_rename(space, old, new)
  */
 
 void
-ipc_marequest_destroy(marequest)
-	ipc_marequest_t marequest;
+ipc_marequest_destroy(ipc_marequest_t marequest)
 {
 	ipc_space_t space = marequest->imar_space;
 	mach_port_t name;
@@ -404,10 +404,10 @@ ipc_marequest_destroy(marequest)
  */
 
 unsigned int
-ipc_marequest_info(maxp, info, count)
-	unsigned int *maxp;
-	hash_info_bucket_t *info;
-	unsigned int count;
+ipc_marequest_info(
+	unsigned int 		*maxp,
+	hash_info_bucket_t 	*info,
+	unsigned int 		count)
 {
 	ipc_marequest_index_t i;
 

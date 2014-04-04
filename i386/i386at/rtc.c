@@ -66,8 +66,7 @@ rtcinit(void)
 
 
 int
-rtcget(regs)
-unsigned char	*regs;
+rtcget(unsigned char *regs)
 {
 	if (first_rtcopen_ever) {
 		rtcinit();
@@ -83,8 +82,7 @@ unsigned char	*regs;
 }
 
 void
-rtcput(regs)
-unsigned char 	*regs;
+rtcput(unsigned char *regs)
 {
 	unsigned char	x;
 
@@ -107,29 +105,25 @@ extern struct timeval time;
 static int month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
 int
-yeartoday(year)
-int year;
+yeartoday(int year)
 {
 	return((year%4) ? 365 : 366);
 }
 
 int
-hexdectodec(n)
-char n;
+hexdectodec(char n)
 {
 	return(((n>>4)&0x0F)*10 + (n&0x0F));
 }
 
 char
-dectohexdec(n)
-int n;
+dectohexdec(int n)
 {
 	return((char)(((n/10)<<4)&0xF0) | ((n%10)&0x0F));
 }
 
 int
-readtodc(tp)
-	u_int	*tp;
+readtodc(u_int *tp)
 {
 	struct rtc_st rtclk;
 	time_t n;

@@ -434,10 +434,10 @@ mach_port_rename(
  */
 
 kern_return_t
-mach_port_allocate_name(space, right, name)
-	ipc_space_t space;
-	mach_port_right_t right;
-	mach_port_t name;
+mach_port_allocate_name(
+	ipc_space_t 		space,
+	mach_port_right_t 	right,
+	mach_port_t 		name)
 {
 	kern_return_t kr;
 
@@ -497,10 +497,10 @@ mach_port_allocate_name(space, right, name)
  */
 
 kern_return_t
-mach_port_allocate(space, right, namep)
-	ipc_space_t space;
-	mach_port_right_t right;
-	mach_port_t *namep;
+mach_port_allocate(
+	ipc_space_t 		space,
+	mach_port_right_t 	right,
+	mach_port_t 		*namep)
 {
 	kern_return_t kr;
 
@@ -759,10 +759,10 @@ mach_port_mod_refs(
  */
 
 kern_return_t
-old_mach_port_get_receive_status(space, name, statusp)
-	ipc_space_t space;
-	mach_port_t name;
-	old_mach_port_status_t *statusp;
+old_mach_port_get_receive_status(
+	ipc_space_t 		space,
+	mach_port_t 		name,
+	old_mach_port_status_t 	*statusp)
 {
 	mach_port_status_t status;
 	kern_return_t kr;
@@ -801,10 +801,10 @@ old_mach_port_get_receive_status(space, name, statusp)
  */
 
 kern_return_t
-mach_port_set_qlimit(space, name, qlimit)
-	ipc_space_t space;
-	mach_port_t name;
-	mach_port_msgcount_t qlimit;
+mach_port_set_qlimit(
+	ipc_space_t 		space,
+	mach_port_t 		name,
+	mach_port_msgcount_t 	qlimit)
 {
 	ipc_port_t port;
 	kern_return_t kr;
@@ -1365,10 +1365,10 @@ mach_port_extract_right(
  */
 
 kern_return_t
-mach_port_get_receive_status(space, name, statusp)
-	ipc_space_t space;
-	mach_port_t name;
-	mach_port_status_t *statusp;
+mach_port_get_receive_status(
+	ipc_space_t 		space,
+	mach_port_t 		name,
+	mach_port_status_t 	*statusp)
 {
 	ipc_port_t port;
 	kern_return_t kr;
@@ -1419,11 +1419,11 @@ mach_port_get_receive_status(space, name, statusp)
 
 #ifdef MIGRATING_THREADS
 kern_return_t
-mach_port_set_rpcinfo(space, name, rpc_info, rpc_info_count)
-	ipc_space_t space;
-	mach_port_t name;
-	void *rpc_info;
-	unsigned int rpc_info_count;
+mach_port_set_rpcinfo(
+	ipc_space_t 	space,
+	mach_port_t 	name,
+	void 		*rpc_info,
+	unsigned int 	rpc_info_count)
 {
 	ipc_target_t target;
 	ipc_object_t object;
@@ -1463,13 +1463,13 @@ void sact_count(void)
 }
 
 kern_return_t
-mach_port_create_act(task, name, user_stack, user_rbuf, user_rbuf_size, out_act)
-	task_t task;
-	mach_port_t name;
-	vm_offset_t user_stack;
-	vm_offset_t user_rbuf;
-	vm_size_t user_rbuf_size;
-	Act **out_act;
+mach_port_create_act(
+	task_t 		task,
+	mach_port_t 	name,
+	vm_offset_t 	user_stack,
+	vm_offset_t 	user_rbuf,
+	vm_size_t 	user_rbuf_size,
+	Act 		**out_act)
 {
 	ipc_target_t target;
 	ipc_space_t space;
@@ -1536,9 +1536,9 @@ mach_port_create_act(task, name, user_stack, user_rbuf, user_rbuf_size, out_act)
 
 #ifdef RPCKERNELSIG
 kern_return_t
-mach_port_set_syscall_right(task, name)
-	task_t task;
-	mach_port_t name;
+mach_port_set_syscall_right(
+	task_t 		task,
+	mach_port_t 	name)
 {
 	ipc_entry_t entry;
 	kern_return_t kr;

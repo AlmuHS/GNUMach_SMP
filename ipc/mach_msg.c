@@ -88,12 +88,12 @@
  */
 
 mach_msg_return_t
-mach_msg_send(msg, option, send_size, time_out, notify)
-	mach_msg_header_t *msg;
-	mach_msg_option_t option;
-	mach_msg_size_t send_size;
-	mach_msg_timeout_t time_out;
-	mach_port_t notify;
+mach_msg_send(
+	mach_msg_header_t 	*msg,
+	mach_msg_option_t 	option,
+	mach_msg_size_t 	send_size,
+	mach_msg_timeout_t 	time_out,
+	mach_port_t 		notify)
 {
 	ipc_space_t space = current_space();
 	vm_map_t map = current_map();
@@ -170,13 +170,13 @@ mach_msg_send(msg, option, send_size, time_out, notify)
  */
 
 mach_msg_return_t
-mach_msg_receive(msg, option, rcv_size, rcv_name, time_out, notify)
-	mach_msg_header_t *msg;
-	mach_msg_option_t option;
-	mach_msg_size_t rcv_size;
-	mach_port_t rcv_name;
-	mach_msg_timeout_t time_out;
-	mach_port_t notify;
+mach_msg_receive(
+	mach_msg_header_t 	*msg,
+	mach_msg_option_t 	option,
+	mach_msg_size_t 	rcv_size,
+	mach_port_t 		rcv_name,
+	mach_msg_timeout_t 	time_out,
+	mach_port_t 		notify)
 {
 	ipc_thread_t self = current_thread();
 	ipc_space_t space = current_space();
@@ -379,14 +379,14 @@ mach_msg_receive_continue(void)
  */
 
 mach_msg_return_t
-mach_msg_trap(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
-	mach_msg_header_t *msg;
-	mach_msg_option_t option;
-	mach_msg_size_t send_size;
-	mach_msg_size_t rcv_size;
-	mach_port_t rcv_name;
-	mach_msg_timeout_t time_out;
-	mach_port_t notify;
+mach_msg_trap(
+	mach_msg_header_t 	*msg,
+	mach_msg_option_t 	option,
+	mach_msg_size_t 	send_size,
+	mach_msg_size_t 	rcv_size,
+	mach_port_t 		rcv_name,
+	mach_msg_timeout_t 	time_out,
+	mach_port_t 		notify)
 {
 	mach_msg_return_t mr;
 
@@ -1733,8 +1733,7 @@ mach_msg_continue(void)
  */
 
 boolean_t
-mach_msg_interrupt(thread)
-	thread_t thread;
+mach_msg_interrupt(thread_t thread)
 {
 	ipc_mqueue_t mqueue;
 

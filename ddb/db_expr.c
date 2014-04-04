@@ -41,10 +41,8 @@
 #include <ddb/db_variables.h>
 #include <kern/task.h>
 
-
 boolean_t
-db_term(valuep)
-	db_expr_t *valuep;
+db_term(db_expr_t *valuep)
 {
 	int	t;
 
@@ -127,8 +125,7 @@ db_size_option(modif, u_option, t_option)
 }
 
 boolean_t
-db_unary(valuep)
-	db_expr_t *valuep;
+db_unary(db_expr_t *valuep)
 {
 	int	  t;
 	int	  size;
@@ -177,8 +174,7 @@ db_unary(valuep)
 }
 
 boolean_t
-db_mult_expr(valuep)
-	db_expr_t *valuep;
+db_mult_expr(db_expr_t *valuep)
 {
 	db_expr_t	lhs = 0, rhs;
 	int		t;
@@ -223,8 +219,7 @@ db_mult_expr(valuep)
 }
 
 boolean_t
-db_add_expr(valuep)
-	db_expr_t *valuep;
+db_add_expr(db_expr_t *valuep)
 {
 	db_expr_t	lhs, rhs;
 	int		t;
@@ -255,8 +250,7 @@ db_add_expr(valuep)
 }
 
 boolean_t
-db_shift_expr(valuep)
-	db_expr_t *valuep;
+db_shift_expr(db_expr_t *valuep)
 {
 	db_expr_t	lhs, rhs;
 	int		t;
@@ -290,8 +284,7 @@ db_shift_expr(valuep)
 }
 
 boolean_t
-db_logical_relation_expr(valuep)
-	db_expr_t *valuep;
+db_logical_relation_expr(db_expr_t *valuep)
 {
 	db_expr_t	lhs, rhs;
 	int		t;
@@ -340,8 +333,7 @@ db_logical_relation_expr(valuep)
 }
 
 boolean_t
-db_logical_and_expr(valuep)
-	db_expr_t *valuep;
+db_logical_and_expr(db_expr_t *valuep)
 {
 	db_expr_t	lhs, rhs;
 	int		t;
@@ -363,8 +355,7 @@ db_logical_and_expr(valuep)
 }
 
 boolean_t
-db_logical_or_expr(valuep)
-	db_expr_t *valuep;
+db_logical_or_expr(db_expr_t *valuep)
 {
 	db_expr_t	lhs, rhs;
 	int		t;
@@ -386,8 +377,7 @@ db_logical_or_expr(valuep)
 }
 
 int
-db_expression(valuep)
-	db_expr_t *valuep;
+db_expression(db_expr_t *valuep)
 {
 	return (db_logical_or_expr(valuep));
 }

@@ -121,9 +121,9 @@ db_add_thread_breakpoint(bkpt, task_thd, count, task_bpt)
 }
 
 static int
-db_delete_thread_breakpoint(bkpt, task_thd)
-	db_breakpoint_t bkpt;
-	vm_offset_t task_thd;
+db_delete_thread_breakpoint(
+	db_breakpoint_t bkpt,
+	vm_offset_t 	task_thd)
 {
 	db_thread_breakpoint_t tp;
 	db_thread_breakpoint_t *tpp;
@@ -188,9 +188,9 @@ db_find_thread_breakpoint_here(task, addr)
 }
 
 db_thread_breakpoint_t
-db_find_breakpoint_number(num, bkptp)
-	int num;
-	db_breakpoint_t *bkptp;
+db_find_breakpoint_number(
+	int 		num,
+	db_breakpoint_t *bkptp)
 {
 	db_thread_breakpoint_t tp;
 	db_breakpoint_t bkpt;
@@ -208,10 +208,10 @@ db_find_breakpoint_number(num, bkptp)
 }
 
 static void
-db_force_delete_breakpoint(bkpt, task_thd, is_task)
-	db_breakpoint_t	bkpt;
-	vm_offset_t  task_thd;
-	boolean_t is_task;
+db_force_delete_breakpoint(
+	db_breakpoint_t	bkpt,
+	vm_offset_t  	task_thd,
+	boolean_t 	is_task)
 {
 	db_printf("deleted a stale breakpoint at ");
 	if (bkpt->task == TASK_NULL || db_lookup_task(bkpt->task) >= 0)
@@ -482,9 +482,9 @@ db_clear_breakpoints(void)
  * so the breakpoint does not have to be on the breakpoint list.
  */
 db_breakpoint_t
-db_set_temp_breakpoint(task, addr)
-	task_t		task;
-	db_addr_t	addr;
+db_set_temp_breakpoint(
+	task_t		task,
+	db_addr_t	addr)
 {
 	db_breakpoint_t	bkpt;
 
@@ -511,9 +511,9 @@ db_set_temp_breakpoint(task, addr)
 }
 
 void
-db_delete_temp_breakpoint(task, bkpt)
-	task_t		task;
-	db_breakpoint_t	bkpt;
+db_delete_temp_breakpoint(
+	task_t		task,
+	db_breakpoint_t	bkpt)
 {
 	db_put_task_value(bkpt->address, BKPT_SIZE, bkpt->bkpt_inst, task);
 	db_delete_thread_breakpoint(bkpt, 0);

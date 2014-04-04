@@ -218,8 +218,7 @@ void halt_cpu(void)
 /*
  * Halt the system or reboot.
  */
-void halt_all_cpus(reboot)
-	boolean_t	reboot;
+void halt_all_cpus(boolean_t reboot)
 {
 	if (reboot) {
 #ifdef	MACH_HYP
@@ -834,8 +833,7 @@ init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 	return TRUE;
 }
 
-boolean_t pmap_next_page(addrp)
-	vm_offset_t *addrp;
+boolean_t pmap_next_page(vm_offset_t *addrp)
 {
 	return init_alloc_aligned(PAGE_SIZE, addrp);
 }
@@ -852,8 +850,7 @@ pmap_grab_page(void)
 	return addr;
 }
 
-boolean_t pmap_valid_page(x)
-	vm_offset_t x;
+boolean_t pmap_valid_page(vm_offset_t x)
 {
 	/* XXX is this OK?  What does it matter for?  */
 	return (((phys_first_addr <= x) && (x < phys_last_addr))

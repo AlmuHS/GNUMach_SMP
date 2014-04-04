@@ -100,8 +100,7 @@ extern struct real_descriptor	ldt[LDTSZ];
  */
 
 struct mp_desc_table *
-mp_desc_init(mycpu)
-	int	mycpu;
+mp_desc_init(int mycpu)
 {
 	struct mp_desc_table *mpt;
 

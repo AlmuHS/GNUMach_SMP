@@ -41,8 +41,7 @@
 int cpuspeed = 4;
 #define	DELAY(n)	{ volatile int N = cpuspeed * (n); while (--N > 0); }
 void
-delay(n)
-	int n;
+delay(int n)
 {
 	DELAY(n);
 }

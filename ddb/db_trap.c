@@ -53,9 +53,10 @@ extern int		db_load_count;
 extern int		db_store_count;
 
 void
-db_task_trap(type, code, user_space)
-	int	  type, code;
-	boolean_t user_space;
+db_task_trap(
+	int	  type, 
+	int	  code,
+	boolean_t user_space)
 {
 	jmp_buf_t db_jmpbuf;
 	jmp_buf_t *prev;
@@ -96,8 +97,9 @@ db_task_trap(type, code, user_space)
 }
 
 void
-db_trap(type, code)
-	int	type, code;
+db_trap(
+	int	type, 
+	int	code)
 {
 	db_task_trap(type, code, !DB_VALID_KERN_ADDR(PC_REGS(DDB_REGS)));
 }

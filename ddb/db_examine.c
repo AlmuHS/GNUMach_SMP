@@ -321,9 +321,9 @@ db_print_cmd(void)
 }
 
 void
-db_print_loc_and_inst(loc, task)
-	db_addr_t	loc;
-	task_t		task;
+db_print_loc_and_inst(
+	db_addr_t	loc,
+	task_t		task)
 {
 	db_task_printsym(loc, DB_STGY_PROC, task);
 	db_printf(":\t");
@@ -425,13 +425,13 @@ db_search_cmd(void)
 }
 
 void
-db_search(addr, size, value, mask, count, task)
-	db_addr_t	addr;
-	int		size;
-	db_expr_t	value;
-	db_expr_t	mask;
-	unsigned int	count;
-	task_t		task;
+db_search(
+	db_addr_t	addr,
+	int		size,
+	db_expr_t	value,
+	db_expr_t	mask,
+	unsigned int	count,
+	task_t		task)
 {
 	while (count-- != 0) {
 		db_prev = addr;
@@ -445,11 +445,11 @@ db_search(addr, size, value, mask, count, task)
 #define DB_XCDUMP_NC	16
 
 int
-db_xcdump(addr, size, count, task)
-	db_addr_t	addr;
-	int		size;
-	int		count;
-	task_t		task;
+db_xcdump(
+	db_addr_t	addr,
+	int		size,
+	int		count,
+	task_t		task)
 {
 	int 		i, n;
 	db_expr_t	value;

@@ -276,8 +276,7 @@ void slave_main(void)
  *	Start up the first thread on a CPU.
  *	First thread is specified for the master CPU.
  */
-void cpu_launch_first_thread(th)
-	thread_t	th;
+void cpu_launch_first_thread(thread_t th)
 {
 	int	mycpu;
 

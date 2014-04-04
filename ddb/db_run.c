@@ -60,9 +60,9 @@ int		db_load_count;
 int		db_store_count;
 
 boolean_t
-db_stop_at_pc(is_breakpoint, task)
-	boolean_t	*is_breakpoint;
-	task_t		task;
+db_stop_at_pc(
+	boolean_t	*is_breakpoint,
+	task_t		task)
 {
 	db_addr_t		pc;
 	db_thread_breakpoint_t  bkpt;
@@ -156,9 +156,9 @@ db_stop_at_pc(is_breakpoint, task)
 }
 
 void
-db_restart_at_pc(watchpt, task)
-	boolean_t watchpt;
-	task_t	  task;
+db_restart_at_pc(
+	boolean_t watchpt,
+	task_t	  task)
 {
 	db_addr_t pc = PC_REGS(DDB_REGS);
 
@@ -206,9 +206,9 @@ db_restart_at_pc(watchpt, task)
 }
 
 void
-db_single_step(regs, task)
-	db_regs_t *regs;
-	task_t	  task;
+db_single_step(
+	db_regs_t *regs,
+	task_t	  task)
 {
 	if (db_run_mode == STEP_CONTINUE) {
 	    db_run_mode = STEP_INVISIBLE;
@@ -264,9 +264,9 @@ db_find_temp_breakpoint(task, addr)
 }
 
 void
-db_set_task_single_step(regs, task)
-	db_regs_t 	*regs;
-	task_t		task;
+db_set_task_single_step(
+	db_regs_t 	*regs,
+	task_t		task)
 {
 	db_addr_t pc = PC_REGS(regs), brpc;
 	unsigned int	inst;

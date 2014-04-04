@@ -91,9 +91,9 @@ db_putnchars(c, count)
 #define	DEL_FWD		0
 #define	DEL_BWD		1
 void
-db_delete(n, bwd)
-	int	n;
-	int	bwd;
+db_delete(
+	int	n,
+	int	bwd)
 {
 	char *p;
 
@@ -137,8 +137,7 @@ db_delete_line(void)
 
 /* returns TRUE at end-of-line */
 boolean_t
-db_inputchar(c)
-	int	c;
+db_inputchar(int c)
 {
 	switch (c) {
 	    case CTRL('b'):
@@ -328,9 +327,9 @@ db_inputchar(c)
 }
 
 int
-db_readline(lstart, lsize)
-	char *	lstart;
-	int	lsize;
+db_readline(
+	char *	lstart,
+	int	lsize)
 {
 	db_force_whitespace();	/* synch output position */
 

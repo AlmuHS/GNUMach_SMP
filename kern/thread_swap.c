@@ -86,8 +86,7 @@ void swapper_init(void)
  *	our callers have already tried that route.
  */
 
-void thread_swapin(thread)
-	thread_t	thread;
+void thread_swapin(thread_t thread)
 {
 	switch (thread->state & TH_SWAP_STATE) {
 	    case TH_SWAPPED:
@@ -124,8 +123,7 @@ void thread_swapin(thread)
  *	it on a run queue.  No locks should be held on entry, as it is
  *	likely that this routine will sleep (waiting for stack allocation).
  */
-void thread_doswapin(thread)
-	thread_t thread;
+void thread_doswapin(thread_t thread)
 {
 	spl_t	s;
 

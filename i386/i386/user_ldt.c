@@ -48,12 +48,12 @@
  * the descriptor for 'first_selector'.
  */
 kern_return_t
-i386_set_ldt(thread, first_selector, desc_list, count, desc_list_inline)
-	thread_t	thread;
-	int		first_selector;
-	struct real_descriptor *desc_list;
-	unsigned int	count;
-	boolean_t	desc_list_inline;
+i386_set_ldt(
+	thread_t		thread,
+	int			first_selector,
+	struct real_descriptor  *desc_list,
+	unsigned int		count,
+	boolean_t		desc_list_inline)
 {
 	user_ldt_t	new_ldt, old_ldt, temp;
 	struct real_descriptor *dp;
@@ -367,8 +367,7 @@ i386_get_ldt(thread, first_selector, selector_count, desc_list, count)
 }
 
 void
-user_ldt_free(user_ldt)
-	user_ldt_t	user_ldt;
+user_ldt_free(user_ldt_t user_ldt)
 {
 #ifdef	MACH_PV_DESCRIPTORS
 	int i;

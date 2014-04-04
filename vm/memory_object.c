@@ -82,16 +82,15 @@ decl_simple_lock_data(,memory_manager_default_lock)
  *		argument conversion. Explicit deallocation is necessary.
  */
 
-kern_return_t memory_object_data_supply(object, offset, data_copy, data_cnt,
-	lock_value, precious, reply_to, reply_to_type)
-        vm_object_t		object;
-	vm_offset_t		offset;
-	vm_map_copy_t		data_copy;
-	unsigned int		data_cnt;
-	vm_prot_t		lock_value;
-	boolean_t		precious;
-	ipc_port_t		reply_to;
-	mach_msg_type_name_t	reply_to_type;
+kern_return_t memory_object_data_supply(
+       vm_object_t		object,
+	vm_offset_t		offset,
+	vm_map_copy_t		data_copy,
+	unsigned int		data_cnt,
+	vm_prot_t		lock_value,
+	boolean_t		precious,
+	ipc_port_t		reply_to,
+	mach_msg_type_name_t	reply_to_type)
 {
 	kern_return_t	result = KERN_SUCCESS;
 	vm_offset_t	error_offset = 0;
@@ -303,29 +302,26 @@ retry_lookup:
 	return(result);
 }
 
-
 /*
  *	If successful, destroys the map copy object.
  */
-kern_return_t memory_object_data_provided(object, offset, data, data_cnt,
-					  lock_value)
-	vm_object_t	object;
-	vm_offset_t	offset;
-	pointer_t	data;
-	unsigned int	data_cnt;
-	vm_prot_t	lock_value;
+kern_return_t memory_object_data_provided(
+	vm_object_t	object,
+	vm_offset_t	offset,
+	pointer_t	data,
+	unsigned int	data_cnt,
+	vm_prot_t	lock_value)
 {
         return memory_object_data_supply(object, offset, (vm_map_copy_t) data,
 					 data_cnt, lock_value, FALSE, IP_NULL,
 					 0);
 }
 
-
-kern_return_t memory_object_data_error(object, offset, size, error_value)
-	vm_object_t	object;
-	vm_offset_t	offset;
-	vm_size_t	size;
-	kern_return_t	error_value;
+kern_return_t memory_object_data_error(
+	vm_object_t	object,
+	vm_offset_t	offset,
+	vm_size_t	size,
+	kern_return_t	error_value)
 {
 	if (object == VM_OBJECT_NULL)
 		return(KERN_INVALID_ARGUMENT);
@@ -361,10 +357,10 @@ kern_return_t memory_object_data_error(object, offset, size, error_value)
 	return(KERN_SUCCESS);
 }
 
-kern_return_t memory_object_data_unavailable(object, offset, size)
-	vm_object_t	object;
-	vm_offset_t	offset;
-	vm_size_t	size;
+kern_return_t memory_object_data_unavailable(
+	vm_object_t	object,
+	vm_offset_t	offset,
+	vm_size_t	size)
 {
 #if	MACH_PAGEMAP
 	vm_external_t	existence_info = VM_EXTERNAL_NULL;
@@ -444,12 +440,11 @@ kern_return_t memory_object_data_unavailable(object, offset, size)
 #define	MEMORY_OBJECT_LOCK_RESULT_MUST_CLEAN	2
 #define	MEMORY_OBJECT_LOCK_RESULT_MUST_RETURN	3
 
-memory_object_lock_result_t memory_object_lock_page(m, should_return,
-				should_flush, prot)
-	vm_page_t		m;
-	memory_object_return_t	should_return;
-	boolean_t		should_flush;
-	vm_prot_t		prot;
+memory_object_lock_result_t memory_object_lock_page(
+	vm_page_t		m,
+	memory_object_return_t	should_return,
+	boolean_t		should_flush,
+	vm_prot_t		prot)
 {
 	/*
 	 *	Don't worry about pages for which the kernel
@@ -647,17 +642,15 @@ memory_object_lock_result_t memory_object_lock_page(m, should_return,
  */
 
 kern_return_t
-memory_object_lock_request(object, offset, size,
-			should_return, should_flush, prot,
-			reply_to, reply_to_type)
-	vm_object_t		object;
-	vm_offset_t		offset;
-	vm_size_t		size;
-	memory_object_return_t	should_return;
-	boolean_t		should_flush;
-	vm_prot_t		prot;
-	ipc_port_t		reply_to;
-	mach_msg_type_name_t	reply_to_type;
+memory_object_lock_request(
+	vm_object_t		object,
+	vm_offset_t		offset,
+	vm_size_t		size,
+	memory_object_return_t	should_return,
+	boolean_t		should_flush,
+	vm_prot_t		prot,
+	ipc_port_t		reply_to,
+	mach_msg_type_name_t	reply_to_type)
 {
 	vm_page_t		m;
 	vm_offset_t		original_offset = offset;
@@ -883,13 +876,12 @@ MACRO_END
 }
 
 kern_return_t
-memory_object_set_attributes_common(object, object_ready, may_cache,
-				    copy_strategy, use_old_pageout)
-	vm_object_t	object;
-	boolean_t	object_ready;
-	boolean_t	may_cache;
-	memory_object_copy_strategy_t copy_strategy;
-	boolean_t use_old_pageout;
+memory_object_set_attributes_common(
+	vm_object_t	object,
+	boolean_t	object_ready,
+	boolean_t	may_cache,
+	memory_object_copy_strategy_t copy_strategy,
+	boolean_t use_old_pageout)
 {
 	if (object == VM_OBJECT_NULL)
 		return(KERN_INVALID_ARGUMENT);
@@ -950,13 +942,12 @@ memory_object_set_attributes_common(object, object_ready, may_cache,
  * XXX	stub that made change_attributes an RPC.  Need investigation.
  */
 
-kern_return_t	memory_object_change_attributes(object, may_cache,
-			copy_strategy, reply_to, reply_to_type)
-	vm_object_t	object;
-	boolean_t	may_cache;
-	memory_object_copy_strategy_t copy_strategy;
-	ipc_port_t		reply_to;
-	mach_msg_type_name_t	reply_to_type;
+kern_return_t	memory_object_change_attributes(
+	vm_object_t		object,
+	boolean_t		may_cache,
+	memory_object_copy_strategy_t copy_strategy,
+	ipc_port_t		reply_to,
+	mach_msg_type_name_t	reply_to_type)
 {
 	kern_return_t	result;
 
@@ -986,33 +977,32 @@ kern_return_t	memory_object_change_attributes(object, may_cache,
 }
 
 kern_return_t
-memory_object_set_attributes(object, object_ready, may_cache, copy_strategy)
-	vm_object_t	object;
-	boolean_t	object_ready;
-	boolean_t	may_cache;
-	memory_object_copy_strategy_t copy_strategy;
+memory_object_set_attributes(
+	vm_object_t	object,
+	boolean_t	object_ready,
+	boolean_t	may_cache,
+	memory_object_copy_strategy_t copy_strategy)
 {
 	return memory_object_set_attributes_common(object, object_ready,
 						   may_cache, copy_strategy,
 						   TRUE);
 }
 
-kern_return_t	memory_object_ready(object, may_cache, copy_strategy)
-	vm_object_t	object;
-	boolean_t	may_cache;
-	memory_object_copy_strategy_t copy_strategy;
+kern_return_t	memory_object_ready(
+	vm_object_t	object,
+	boolean_t	may_cache,
+	memory_object_copy_strategy_t copy_strategy)
 {
 	return memory_object_set_attributes_common(object, TRUE,
 						   may_cache, copy_strategy,
 						   FALSE);
 }
 
-kern_return_t	memory_object_get_attributes(object, object_ready,
-						may_cache, copy_strategy)
-	vm_object_t	object;
-	boolean_t	*object_ready;
-	boolean_t	*may_cache;
-	memory_object_copy_strategy_t *copy_strategy;
+kern_return_t	memory_object_get_attributes(
+	vm_object_t	object,
+	boolean_t	*object_ready,
+	boolean_t	*may_cache,
+	memory_object_copy_strategy_t *copy_strategy)
 {
 	if (object == VM_OBJECT_NULL)
 		return(KERN_INVALID_ARGUMENT);

@@ -226,12 +226,12 @@ unsigned int vm_pageout_inactive_cleaned_external = 0;
  *		not busy on exit.
  */
 vm_page_t
-vm_pageout_setup(m, paging_offset, new_object, new_offset, flush)
-	vm_page_t		m;
-	vm_offset_t		paging_offset;
-	vm_object_t		new_object;
-	vm_offset_t		new_offset;
-	boolean_t		flush;
+vm_pageout_setup(
+	vm_page_t		m,
+	vm_offset_t		paging_offset,
+	vm_object_t		new_object,
+	vm_offset_t		new_offset,
+	boolean_t		flush)
 {
 	vm_object_t	old_object = m->object;
 	vm_page_t	holding_page = 0; /*'=0'to quiet gcc warnings*/
@@ -413,10 +413,10 @@ vm_pageout_setup(m, paging_offset, new_object, new_offset, flush)
  *		copy to a new page in a new object, if not.
  */
 void
-vm_pageout_page(m, initial, flush)
-	vm_page_t		m;
-	boolean_t		initial;
-	boolean_t		flush;
+vm_pageout_page(
+	vm_page_t		m,
+	boolean_t		initial,
+	boolean_t		flush)
 {
 	vm_map_copy_t		copy;
 	vm_object_t		old_object;

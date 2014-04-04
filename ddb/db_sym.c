@@ -55,13 +55,13 @@ db_symtab_t	*db_last_symtab;
  * Add symbol table, with given name, to list of symbol tables.
  */
 boolean_t
-db_add_symbol_table(type, start, end, name, ref, map_pointer)
-	int type;
-	char *start;
-	char *end;
-	char *name;
-	char *ref;
-	char *map_pointer;
+db_add_symbol_table(
+	int  type,
+	char *start,
+	char *end,
+	char *name,
+	char *ref,
+	char *map_pointer)
 {
 	db_symtab_t *st;
 	extern vm_map_t kernel_map;
@@ -119,9 +119,9 @@ db_eqname( const char* src, const char* dst, char c )
 }
 
 boolean_t
-db_value_of_name(name, valuep)
-	char		*name;
-	db_expr_t	*valuep;
+db_value_of_name(
+	char		*name,
+	db_expr_t	*valuep)
 {
 	db_sym_t	sym;
 
@@ -141,8 +141,7 @@ db_value_of_name(name, valuep)
  * otherwise, all symbol tables will be searched.
  */
 db_sym_t
-db_lookup(symstr)
-	char *symstr;
+db_lookup(char *symstr)
 {
 	db_sym_t sp;
 	int i;
@@ -193,10 +192,10 @@ db_lookup(symstr)
  * with parsed file name, symbol name and line number.
  */
 db_sym_t
-db_sym_parse_and_lookup(func, symtab, symstr)
-	db_sym_t	(*func)();
-	db_symtab_t	*symtab;
-	char		*symstr;
+db_sym_parse_and_lookup(
+	db_sym_t	(*func)(),
+	db_symtab_t	*symtab,
+	char		*symstr)
 {
 	char 		*p;
 	int 		n;
@@ -265,8 +264,7 @@ out:
 boolean_t db_qualify_ambiguous_names = FALSE;
 
 boolean_t
-db_name_is_ambiguous(sym_name)
-	char		*sym_name;
+db_name_is_ambiguous(char *sym_name)
 {
 	int		i;
 	boolean_t	found_once = FALSE;
@@ -301,11 +299,11 @@ db_name_is_ambiguous(sym_name)
  *
  */
 db_sym_t
-db_search_task_symbol(val, strategy, offp, task)
-	db_addr_t		val;
-	db_strategy_t		strategy;
-	db_addr_t		*offp; /* better be unsigned */
-	task_t			task;
+db_search_task_symbol(
+	db_addr_t		val,
+	db_strategy_t		strategy,
+	db_addr_t		*offp, /* better be unsigned */
+	task_t			task)
 {
   db_sym_t ret;
 
@@ -330,11 +328,11 @@ db_search_task_symbol(val, strategy, offp, task)
 }
 
 db_sym_t
-db_search_in_task_symbol(val, strategy, offp, task)
-	db_addr_t		val;
-	db_strategy_t		strategy;
-	db_addr_t		*offp;
-	task_t			task;
+db_search_in_task_symbol(
+	db_addr_t		val,
+	db_strategy_t		strategy,
+	db_addr_t		*offp,
+	task_t			task)
 {
   vm_size_t 	diff;
   vm_size_t	newdiff;
@@ -398,11 +396,11 @@ db_search_in_task_symbol(val, strategy, offp, task)
  * Return name and value of a symbol
  */
 void
-db_symbol_values(stab, sym, namep, valuep)
-	db_symtab_t	*stab;
-	db_sym_t	sym;
-	char		**namep;
-	db_expr_t	*valuep;
+db_symbol_values(
+	db_symtab_t	*stab,
+	db_sym_t	sym,
+	char		**namep,
+	db_expr_t	*valuep)
 {
 	db_expr_t	value;
 	char		*name;

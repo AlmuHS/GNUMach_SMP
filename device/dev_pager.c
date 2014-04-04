@@ -513,8 +513,7 @@ kern_return_t device_pager_data_write(
 	return (KERN_SUCCESS);
 }
 
-boolean_t device_pager_data_write_done(ior)
-	io_req_t	ior;
+boolean_t device_pager_data_write_done(io_req_t ior)
 {
 	device_write_dealloc(ior);
 	mach_device_deallocate(ior->io_device);

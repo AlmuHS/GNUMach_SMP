@@ -171,10 +171,10 @@ ipc_mqueue_changed(
  */
 
 mach_msg_return_t
-ipc_mqueue_send(kmsg, option, time_out)
-	ipc_kmsg_t kmsg;
-	mach_msg_option_t option;
-	mach_msg_timeout_t time_out;
+ipc_mqueue_send(
+	ipc_kmsg_t 		kmsg,
+	mach_msg_option_t 	option,
+	mach_msg_timeout_t 	time_out)
 {
 	ipc_port_t port;
 

@@ -294,10 +294,10 @@ db_clear_watchpoints(void)
 }
 
 boolean_t
-db_find_watchpoint(map, addr, regs)
-	vm_map_t	map;
-	db_addr_t	addr;
-	db_regs_t	*regs;
+db_find_watchpoint(
+	vm_map_t	map,
+	db_addr_t	addr,
+	db_regs_t	*regs)
 {
 	db_watchpoint_t watch;
 	db_watchpoint_t found = 0;

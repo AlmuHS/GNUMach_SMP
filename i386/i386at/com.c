@@ -464,11 +464,11 @@ natural_t	*count;		/* out */
 }
 
 io_return_t
-comsetstat(dev, flavor, data, count)
-dev_t		dev;
-int		flavor;
-int *		data;
-natural_t	count;
+comsetstat(
+	dev_t		dev,
+	int		flavor,
+	int *		data,
+	natural_t	count)
 {
 	io_return_t	result = D_SUCCESS;
 	int 		unit = minor(dev);
@@ -494,8 +494,7 @@ natural_t	count;
 }
 
 void
-comintr(unit)
-int unit;
+comintr(int unit)
 {
 	struct tty		*tp = &com_tty[unit];
 	u_short			addr = cominfo[unit]->address;
@@ -545,8 +544,7 @@ int unit;
 }
 
 static void
-comparam(unit)
-int unit;
+comparam(int unit)
 {
 	struct tty	*tp = &com_tty[unit];
 	u_short		addr = (int)tp->t_addr;
@@ -615,8 +613,7 @@ comparm(int unit, int baud, int intr, int mode, int modem)
 int comst_1, comst_2, comst_3, comst_4, comst_5 = 14;
 
 void
-comstart(tp)
-struct tty *tp;
+comstart(struct tty *tp)
 {
 	int nch;
 #if 0
@@ -698,8 +695,9 @@ printf("Tty %p was stuck\n", tp);
  * Set receive modem state from modem status register.
  */
 void
-fix_modem_state(unit, modem_stat)
-int	unit, modem_stat;
+fix_modem_state(
+	int	unit, 
+	int	modem_stat)
 {
 	int	stat = 0;
 
@@ -817,9 +815,9 @@ commctl(
 }
 
 void
-comstop(tp, flags)
-struct tty *tp;
-int	flags;
+comstop(
+	struct tty 	*tp,
+	int		flags)
 {
 	if ((tp->t_state & TS_BUSY) && (tp->t_state & TS_TTSTOP) == 0)
 	    tp->t_state |= TS_FLUSH;

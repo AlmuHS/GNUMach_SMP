@@ -96,9 +96,9 @@ ipc_entry_tree_collision(
  */
 
 ipc_entry_t
-ipc_entry_lookup(space, name)
-	ipc_space_t space;
-	mach_port_t name;
+ipc_entry_lookup(
+	ipc_space_t space,
+	mach_port_t name)
 {
 	mach_port_index_t index;
 	ipc_entry_t entry;
@@ -140,10 +140,10 @@ ipc_entry_lookup(space, name)
  */
 
 kern_return_t
-ipc_entry_get(space, namep, entryp)
-	ipc_space_t space;
-	mach_port_t *namep;
-	ipc_entry_t *entryp;
+ipc_entry_get(
+	ipc_space_t space,
+	mach_port_t *namep,
+	ipc_entry_t *entryp)
 {
 	ipc_entry_t table;
 	mach_port_index_t first_free;
@@ -542,8 +542,7 @@ ipc_entry_dealloc(
  */
 
 kern_return_t
-ipc_entry_grow_table(space)
-	ipc_space_t space;
+ipc_entry_grow_table(ipc_space_t space)
 {
 	ipc_entry_num_t osize, size, nsize;
 

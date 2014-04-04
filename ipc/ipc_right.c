@@ -331,10 +331,10 @@ ipc_right_dncancel(
  */
 
 boolean_t
-ipc_right_inuse(space, name, entry)
-	ipc_space_t space;
-	mach_port_t name;
-	ipc_entry_t entry;
+ipc_right_inuse(
+	ipc_space_t space,
+	mach_port_t name,
+	ipc_entry_t entry)
 {
 	ipc_entry_bits_t bits = entry->ie_bits;
 
@@ -359,11 +359,11 @@ ipc_right_inuse(space, name, entry)
  */
 
 boolean_t
-ipc_right_check(space, port, name, entry)
-	ipc_space_t space;
-	ipc_port_t port;
-	mach_port_t name;
-	ipc_entry_t entry;
+ipc_right_check(
+	ipc_space_t 	space,
+	ipc_port_t 	port,
+	mach_port_t 	name,
+	ipc_entry_t 	entry)
 {
 	ipc_entry_bits_t bits;
 
@@ -697,10 +697,10 @@ ipc_right_destroy(
  */
 
 kern_return_t
-ipc_right_dealloc(space, name, entry)
-	ipc_space_t space;
-	mach_port_t name;
-	ipc_entry_t entry;
+ipc_right_dealloc(
+	ipc_space_t space,
+	mach_port_t name,
+	ipc_entry_t entry)
 {
 	ipc_entry_bits_t bits = entry->ie_bits;
 	mach_port_type_t type = IE_BITS_TYPE(bits);
@@ -874,12 +874,12 @@ ipc_right_dealloc(space, name, entry)
  */
 
 kern_return_t
-ipc_right_delta(space, name, entry, right, delta)
-	ipc_space_t space;
-	mach_port_t name;
-	ipc_entry_t entry;
-	mach_port_right_t right;
-	mach_port_delta_t delta;
+ipc_right_delta(
+	ipc_space_t 		space,
+	mach_port_t 		name,
+	ipc_entry_t 		entry,
+	mach_port_right_t 	right,
+	mach_port_delta_t 	delta)
 {
 	ipc_entry_bits_t bits = entry->ie_bits;
 

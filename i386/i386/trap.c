@@ -88,8 +88,7 @@ boolean_t debug_all_traps_with_kttd = TRUE;
 #endif	/* MACH_TTD */
 
 void
-user_page_fault_continue(kr)
-	kern_return_t kr;
+user_page_fault_continue(kern_return_t kr)
 {
 	thread_t thread = current_thread();
 	struct i386_saved_state *regs = USER_REGS(thread);
@@ -152,8 +151,7 @@ char *trap_name(unsigned int trapnum)
  * and then only in special circumstances.  All other errors are
  * fatal.
  */
-void kernel_trap(regs)
-	struct i386_saved_state *regs;
+void kernel_trap(struct i386_saved_state *regs)
 {
 	int		code;
 	int		subcode;
@@ -345,8 +343,7 @@ dump_ss(regs);
  *	Trap from user mode.
  *	Return TRUE if from emulated system call.
  */
-int user_trap(regs)
-	struct i386_saved_state *regs;
+int user_trap(struct i386_saved_state *regs)
 {
 	int	exc = 0;	/* Suppress gcc warning */
 	int	code;
@@ -602,10 +599,10 @@ i386_astintr(void)
  * emulator.
  */
 void
-i386_exception(exc, code, subcode)
-	int	exc;
-	int	code;
-	int	subcode;
+i386_exception(
+	int	exc,
+	int	code,
+	int	subcode)
 {
 	spl_t	s;
 

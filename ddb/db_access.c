@@ -62,11 +62,11 @@ static int db_extend[sizeof(int)+1] = {	/* table for sign-extending */
 };
 
 db_expr_t
-db_get_task_value(addr, size, is_signed, task)
-	db_addr_t	addr;
-	int		size;
-	boolean_t	is_signed;
-	task_t		task;
+db_get_task_value(
+	db_addr_t	addr,
+	int		size,
+	boolean_t	is_signed,
+	task_t		task)
 {
 	char		data[sizeof(db_expr_t)];
 	db_expr_t 	value;
@@ -92,11 +92,11 @@ db_get_task_value(addr, size, is_signed, task)
 }
 
 void
-db_put_task_value(addr, size, value, task)
-	db_addr_t	addr;
-	int		size;
-	db_expr_t 	value;
-	task_t		task;
+db_put_task_value(
+	db_addr_t	addr,
+	int		size,
+	db_expr_t 	value,
+	task_t		task)
 {
 	char		data[sizeof(db_expr_t)];
 	int		i;
@@ -115,19 +115,19 @@ db_put_task_value(addr, size, value, task)
 }
 
 db_expr_t
-db_get_value(addr, size, is_signed)
-	db_addr_t	addr;
-	int		size;
-	boolean_t	is_signed;
+db_get_value(
+	db_addr_t	addr,
+	int		size,
+	boolean_t	is_signed)
 {
 	return(db_get_task_value(addr, size, is_signed, TASK_NULL));
 }
 
 void
-db_put_value(addr, size, value)
-	db_addr_t	addr;
-	int		size;
-	db_expr_t	value;
+db_put_value(
+	db_addr_t	addr,
+	int		size,
+	db_expr_t	value)
 {
 	db_put_task_value(addr, size, value, TASK_NULL);
 }

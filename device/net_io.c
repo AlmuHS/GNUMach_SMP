@@ -412,8 +412,7 @@ mach_msg_type_t packet_type = {
  *	Dequeues a message and delivers it at spl0.
  *	Returns FALSE if no messages.
  */
-boolean_t net_deliver(nonblocking)
-	boolean_t nonblocking;
+boolean_t net_deliver(boolean_t nonblocking)
 {
 	ipc_kmsg_t kmsg;
 	boolean_t high_priority;
@@ -603,8 +602,9 @@ void net_thread(void)
 }
 
 void
-reorder_queue(first, last)
-	queue_t		first, last;
+reorder_queue(
+	queue_t		first, 
+	queue_t		last)
 {
 	queue_entry_t	prev, next;
 
@@ -626,11 +626,11 @@ reorder_queue(first, last)
  * We are already at splimp.
  */
 void
-net_packet(ifp, kmsg, count, priority)
-	struct ifnet		*ifp;
-	ipc_kmsg_t		kmsg;
-	unsigned int		count;
-	boolean_t		priority;
+net_packet(
+	struct ifnet		*ifp,
+	ipc_kmsg_t		kmsg,
+	unsigned int		count,
+	boolean_t		priority)
 {
 	boolean_t awake;
 
@@ -1010,9 +1010,9 @@ net_do_filter(infp, data, data_count, header)
  * Check filter for invalid operations or stack over/under-flow.
  */
 boolean_t
-parse_net_filter(filter, count)
-	filter_t		*filter;
-	unsigned int		count;
+parse_net_filter(
+	filter_t		*filter,
+	unsigned int		count)
 {
 	int			sp;
 	filter_t		*fpe = &filter[count];
@@ -1104,12 +1104,12 @@ parse_net_filter(filter, count)
  * If we are successful, we must consume that right.
  */
 io_return_t
-net_set_filter(ifp, rcv_port, priority, filter, filter_count)
-	struct ifnet	*ifp;
-	ipc_port_t	rcv_port;
-	int		priority;
-	filter_t	*filter;
-	unsigned int	filter_count;
+net_set_filter(
+	struct ifnet	*ifp,
+	ipc_port_t	rcv_port,
+	int		priority,
+	filter_t	*filter,
+	unsigned int	filter_count)
 {
     int				filter_bytes;
     bpf_insn_t			match;
@@ -1369,11 +1369,11 @@ clean_and_return:
  * Other network operations
  */
 io_return_t
-net_getstat(ifp, flavor, status, count)
-	struct ifnet	*ifp;
-	dev_flavor_t	flavor;
-	dev_status_t	status;		/* pointer to OUT array */
-	natural_t	*count;		/* OUT */
+net_getstat(
+	struct ifnet	*ifp,
+	dev_flavor_t	flavor,
+	dev_status_t	status,		/* pointer to OUT array */
+	natural_t	*count)		/* OUT */
 {
 	switch (flavor) {
 	    case NET_STATUS:
@@ -1434,10 +1434,10 @@ printf ("net_getstat: count: %d, addr_int_count: %d\n",
 }
 
 io_return_t
-net_write(ifp, start, ior)
-	struct 		ifnet *ifp;
-	int		(*start)();
-	io_req_t	ior;
+net_write(
+	struct 		ifnet *ifp,
+	int		(*start)(),
+	io_req_t	ior)
 {
 	spl_t	s;
 	kern_return_t	rc;
@@ -1590,13 +1590,14 @@ net_io_init(void)
  */
 
 int
-bpf_do_filter(infp, p, wirelen, header, hlen, hash_headpp, entpp)
-	net_rcv_port_t	infp;
-	char *		p;		/* packet data */
-	unsigned int	wirelen;	/* data_count (in bytes) */
-	char *		header;
-	unsigned int    hlen;           /* header len (in bytes) */
-	net_hash_entry_t	**hash_headpp, *entpp;	/* out */
+bpf_do_filter(
+	net_rcv_port_t		infp,
+	char *			p,		/* packet data */
+	unsigned int		wirelen,	/* data_count (in bytes) */
+	char *			header,
+	unsigned int    	hlen,           /* header len (in bytes) */
+	net_hash_entry_t	**hash_headpp, 
+	net_hash_entry_t	*entpp)	/* out */
 {
 	bpf_insn_t pc, pc_end;
 	unsigned int buflen;
@@ -1889,10 +1890,10 @@ bpf_do_filter(infp, p, wirelen, header, hlen, hash_headpp, entpp)
  * Otherwise, a bogus program could easily crash the system.
  */
 int
-bpf_validate(f, bytes, match)
-	bpf_insn_t f;
-	int bytes;
-	bpf_insn_t *match;
+bpf_validate(
+	bpf_insn_t 	f,
+	int 		bytes,
+	bpf_insn_t 	*match)
 {
 	int i, j, len;
 	bpf_insn_t p;
@@ -1961,9 +1962,10 @@ bpf_validate(f, bytes, match)
 }
 
 int
-bpf_eq (f1, f2, bytes)
-	bpf_insn_t f1, f2;
-	int bytes;
+bpf_eq(
+	bpf_insn_t 	f1, 
+	bpf_insn_t 	f2,
+	int 		bytes)
 {
 	int count;
 
@@ -2035,12 +2037,13 @@ bpf_match (hash, n_keys, keys, hash_headpp, entpp)
  */
 
 int
-hash_ent_remove (ifp, hp, used, head, entp, dead_p)
-    struct ifnet	*ifp;
-    net_hash_header_t 	hp;
-    int			used;
-    net_hash_entry_t	*head, entp;
-    queue_entry_t	*dead_p;
+hash_ent_remove(
+    struct ifnet	*ifp,
+    net_hash_header_t 	hp,
+    int			used,
+    net_hash_entry_t	*head,
+    net_hash_entry_t	entp,
+    queue_entry_t	*dead_p)
 {    
 	hp->ref_count--;
 
@@ -2072,8 +2075,7 @@ hash_ent_remove (ifp, hp, used, head, entp, dead_p)
 }    
 
 int
-net_add_q_info (rcv_port)
-	ipc_port_t	rcv_port;
+net_add_q_info(ipc_port_t rcv_port)
 {
 	mach_port_msgcount_t qlimit = 0;
 	    
@@ -2098,8 +2100,7 @@ net_add_q_info (rcv_port)
 }
 
 void
-net_del_q_info (qlimit)
-	int qlimit;
+net_del_q_info(int qlimit)
 {
 	simple_lock(&net_kmsg_total_lock);
 	net_queue_free_min--;
@@ -2116,8 +2117,7 @@ net_del_q_info (qlimit)
  * No locks should be held when called.
  */
 void
-net_free_dead_infp (dead_infp)
-	queue_entry_t dead_infp;
+net_free_dead_infp(queue_entry_t dead_infp)
 {
 	net_rcv_port_t infp, nextfp;
 
@@ -2138,8 +2138,7 @@ net_free_dead_infp (dead_infp)
  * No locks should be held when called.
  */
 void
-net_free_dead_entp (dead_entp)
-	queue_entry_t dead_entp;
+net_free_dead_entp(queue_entry_t dead_entp)
 {
 	net_hash_entry_t entp, nextentp;
 

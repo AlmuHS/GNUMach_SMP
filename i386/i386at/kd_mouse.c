@@ -198,8 +198,7 @@ mouseopen(dev, flags, ior)
 }
 
 void
-serial_mouse_open(dev)
-	dev_t dev;
+serial_mouse_open(dev_t dev)
 {
 	int unit = minor(dev) & 0x7;
 	int mouse_pic = cominfo[unit]->sysdep1;
@@ -219,9 +218,9 @@ serial_mouse_open(dev)
 int mouse_packets = 0;
 
 void
-kd_mouse_open(dev, mouse_pic)
-	dev_t dev;
-	int mouse_pic;
+kd_mouse_open(
+	dev_t 	dev,
+	int 	mouse_pic)
 {
 	spl_t s = splhi();	/* disable interrupts */
 
@@ -238,9 +237,9 @@ kd_mouse_open(dev, mouse_pic)
  * and restore the serial port interrupt vector.
  */
 void
-mouseclose(dev, flags)
-	dev_t dev;
-	int flags;
+mouseclose(
+	dev_t 	dev,
+	int 	flags)
 {
 	switch (mouse_type) {
 	case MICROSOFT_MOUSE:
@@ -265,9 +264,9 @@ mouseclose(dev, flags)
 
 /*ARGSUSED*/
 void
-serial_mouse_close(dev, flags)
-	dev_t dev;
-	int flags;
+serial_mouse_close(
+	dev_t 	dev,
+	int 	flags)
 {
 	spl_t o_pri = splhi();		/* mutex with open() */
 	int unit = minor(dev) & 0x7;
@@ -284,9 +283,9 @@ serial_mouse_close(dev, flags)
 }
 
 void
-kd_mouse_close(dev, mouse_pic)
-	dev_t dev;
-	int mouse_pic;
+kd_mouse_close(
+	dev_t 	dev,
+	int 	mouse_pic)
 {
 	spl_t s = splhi();
 
@@ -296,11 +295,11 @@ kd_mouse_close(dev, mouse_pic)
 	splx(s);
 }
 
-io_return_t mousegetstat(dev, flavor, data, count)
-	dev_t		  dev;
-	int		  flavor;
-	int *		  data;		/* pointer to OUT array */
-	unsigned int	  *count;	/* OUT */
+io_return_t mousegetstat(
+	dev_t		  dev,
+	int		  flavor,
+	int *		  data,		/* pointer to OUT array */
+	unsigned int	  *count)	/* OUT */
 {
 	switch (flavor) {
 	    case DEV_GET_SIZE:
@@ -319,9 +318,9 @@ io_return_t mousegetstat(dev, flavor, data, count)
  * mouseread - dequeue and return any queued events.
  */
 int
-mouseread(dev, ior)
-	dev_t		dev;
-	io_req_t	ior;
+mouseread(
+	dev_t		dev,
+	io_req_t	ior)
 {
 	int		err, count;
 	spl_t		s;
@@ -358,8 +357,7 @@ mouseread(dev, ior)
 	return (D_SUCCESS);
 }
 
-boolean_t mouse_read_done(ior)
-	io_req_t	ior;
+boolean_t mouse_read_done(io_req_t ior)
 {
 	int	count;
 	spl_t	s;
@@ -442,8 +440,7 @@ int middlegitech = 0;		/* what should the middle button be */
 static u_char mousebuf[MOUSEBUFSIZE];	/* 5-byte packet from mouse */
 
 void
-mouse_handle_byte(ch)
-	u_char ch;
+mouse_handle_byte(u_char ch)
 {
 	if (show_mouse_byte) {
 		printf("%x(%c) ", ch, ch);
@@ -524,8 +521,7 @@ mouse_handle_byte(ch)
 }
 
 void
-mouse_packet_mouse_system_mouse(mousebuf)
-u_char mousebuf[MOUSEBUFSIZE];
+mouse_packet_mouse_system_mouse(u_char mousebuf[MOUSEBUFSIZE])
 {
 	u_char buttons, buttonchanges;
 	struct mouse_motion moved;
@@ -560,8 +556,7 @@ u_char mousebuf[MOUSEBUFSIZE];
  *
  */
 void
-mouse_packet_microsoft_mouse(mousebuf)
-u_char mousebuf[MOUSEBUFSIZE];
+mouse_packet_microsoft_mouse(u_char mousebuf[MOUSEBUFSIZE])
 {
 	u_char buttons, buttonchanges;
 	struct mouse_motion moved;
@@ -653,8 +648,7 @@ void kd_mouse_read_reset(void)
 }
 
 void
-ibm_ps2_mouse_open(dev)
-	dev_t dev;
+ibm_ps2_mouse_open(dev_t dev)
 {
 	spl_t	s = spltty();
 
@@ -697,8 +691,7 @@ ibm_ps2_mouse_open(dev)
 }
 
 void
-ibm_ps2_mouse_close(dev)
-	dev_t dev;
+ibm_ps2_mouse_close(dev_t dev)
 {
 	spl_t	s = spltty();
 
@@ -729,8 +722,7 @@ ibm_ps2_mouse_close(dev)
  *
  */
 void
-mouse_packet_ibm_ps2_mouse(mousebuf)
-u_char mousebuf[MOUSEBUFSIZE];
+mouse_packet_ibm_ps2_mouse(u_char mousebuf[MOUSEBUFSIZE])
 {
 	u_char buttons, buttonchanges;
 	struct mouse_motion moved;
@@ -762,8 +754,7 @@ u_char mousebuf[MOUSEBUFSIZE];
  * Enqueue a mouse-motion event.  Called at SPLKD.
  */
 void
-mouse_moved(where)
-	struct mouse_motion where;
+mouse_moved(struct mouse_motion where)
 {
 	kd_event ev;
 
@@ -773,14 +764,13 @@ mouse_moved(where)
 	mouse_enqueue(&ev);
 }
 
-
 /*
  * Enqueue an event for mouse button press or release.  Called at SPLKD.
  */
 void
-mouse_button(which, direction)
-	kev_type which;
-	u_char direction;
+mouse_button(
+	kev_type 	which,
+	u_char 		direction)
 {
 	kd_event ev;
 
@@ -790,15 +780,13 @@ mouse_button(which, direction)
 	mouse_enqueue(&ev);
 }
 
-
 /*
  * mouse_enqueue - enqueue an event and wake up selecting processes, if
  * any.  Called at SPLKD.
  */
 
 void
-mouse_enqueue(ev)
-	kd_event *ev;
+mouse_enqueue(kd_event *ev)
 {
 	if (kdq_full(&mouse_queue))
 		printf("mouse: queue full\n");

@@ -115,9 +115,9 @@ db_cmp_variable_name(vp, name, ap)
 }
 
 int
-db_find_variable(varp, ap)
-	struct db_variable	**varp;
-	db_var_aux_param_t	ap;
+db_find_variable(
+	struct db_variable	**varp,
+	db_var_aux_param_t	ap)
 {
 	int	t;
 	struct db_variable *vp;
@@ -143,8 +143,7 @@ db_find_variable(varp, ap)
 }
 
 int
-db_get_variable(valuep)
-	db_expr_t	*valuep;
+db_get_variable(db_expr_t *valuep)
 {
 	struct db_variable *vp;
 	struct db_var_aux_param aux_param;
@@ -160,8 +159,7 @@ db_get_variable(valuep)
 }
 
 int
-db_set_variable(value)
-	db_expr_t	value;
+db_set_variable(db_expr_t value)
 {
 	struct db_variable *vp;
 	struct db_var_aux_param aux_param;
@@ -177,11 +175,11 @@ db_set_variable(value)
 }
 
 void
-db_read_write_variable(vp, valuep, rw_flag, ap)
-	struct db_variable	*vp;
-	db_expr_t		*valuep;
-	int 			rw_flag;
-	db_var_aux_param_t	ap;
+db_read_write_variable(
+	struct db_variable	*vp,
+	db_expr_t		*valuep,
+	int 			rw_flag,
+	db_var_aux_param_t	ap)
 {
 	void	(*func)() = vp->fcn;
 	struct  db_var_aux_param aux_param;

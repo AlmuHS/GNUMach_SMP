@@ -57,11 +57,11 @@ extern unsigned long	db_maxoff;
 
 /* ARGSUSED */
 void
-db_show_regs(addr, have_addr, count, modif)
-	db_expr_t	addr;
-	boolean_t	have_addr;
-	db_expr_t	count;
-	char		*modif;
+db_show_regs(
+	db_expr_t	addr,
+	boolean_t	have_addr,
+	db_expr_t	count,
+	char		*modif)
 {
 	struct 		db_variable *regp;
 	db_expr_t	value;
@@ -144,10 +144,10 @@ db_thread_stat(thread, status)
 }
 
 void
-db_print_thread(thread, thread_id, flag)
-	thread_t thread;
-	int	 thread_id;
-	int	 flag;
+db_print_thread(
+	thread_t thread,
+	int	 thread_id,
+	int	 flag)
 {
 	if (flag & OPTION_USER) {
 	    char status[8];
@@ -220,10 +220,10 @@ db_print_thread(thread, thread_id, flag)
 }
 
 void
-db_print_task(task, task_id, flag)
-	task_t	task;
-	int	task_id;
-	int	flag;
+db_print_task(
+	task_t	task,
+	int	task_id,
+	int	flag)
 {
 	thread_t thread;
 	int thread_id;
@@ -431,9 +431,9 @@ db_port_iterate(thread, func)
 }
 
 ipc_port_t
-db_lookup_port(thread, id)
-	thread_t thread;
-	int id;
+db_lookup_port(
+	thread_t 	thread,
+	int 		id)
 {
 	ipc_space_t space;
 	ipc_entry_t entry;

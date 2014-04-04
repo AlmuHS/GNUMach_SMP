@@ -626,9 +626,9 @@ snprintf(char *buf, size_t size, const char *fmt, ...)
 	return written;
 }
 
-void safe_gets(str, maxlen)
-	char *str;
-	int  maxlen;
+void safe_gets(
+	char *str,
+	int  maxlen)
 {
 	char *lp;
 	int c;

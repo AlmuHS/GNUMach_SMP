@@ -65,8 +65,7 @@
  */
 
 ipc_port_t
-vm_object_real_name(object)
-	vm_object_t object;
+vm_object_real_name(vm_object_t object)
 {
 	ipc_port_t port = IP_NULL;
 
@@ -94,11 +93,11 @@ vm_object_real_name(object)
  */
 
 kern_return_t
-mach_vm_region_info(map, address, regionp, portp)
-	vm_map_t map;
-	vm_offset_t address;
-	vm_region_info_t *regionp;
-	ipc_port_t *portp;
+mach_vm_region_info(
+	vm_map_t 		map,
+	vm_offset_t 		address,
+	vm_region_info_t 	*regionp,
+	ipc_port_t 		*portp)
 {
 	vm_map_t cmap;		/* current map in traversal */
 	vm_map_t nmap;		/* next map to look at */
@@ -184,11 +183,11 @@ mach_vm_region_info(map, address, regionp, portp)
  */
 
 kern_return_t
-mach_vm_object_info(object, infop, shadowp, copyp)
-	vm_object_t object;
-	vm_object_info_t *infop;
-	ipc_port_t *shadowp;
-	ipc_port_t *copyp;
+mach_vm_object_info(
+	vm_object_t 		object,
+	vm_object_info_t 	*infop,
+	ipc_port_t 		*shadowp,
+	ipc_port_t 		*copyp)
 {
 	vm_object_info_t info;
 	vm_object_info_state_t state;
@@ -278,10 +277,10 @@ mach_vm_object_info(object, infop, shadowp, copyp)
  */
 
 kern_return_t
-mach_vm_object_pages(object, pagesp, countp)
-	vm_object_t object;
-	vm_page_info_array_t *pagesp;
-	natural_t *countp;
+mach_vm_object_pages(
+	vm_object_t 		object,
+	vm_page_info_array_t 	*pagesp,
+	natural_t 		*countp)
 {
 	vm_size_t size;
 	vm_offset_t addr;

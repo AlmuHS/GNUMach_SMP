@@ -70,13 +70,13 @@
 	 ep = (struct nlist *)((char *)sp + *((int*)symtab)))
 
 boolean_t
-aout_db_sym_init(symtab, esymtab, name, task_addr)
-	char *	symtab;		/* pointer to start of symbol table */
-	char *	esymtab;	/* pointer to end of string table,
+aout_db_sym_init(
+	char *	symtab,		/* pointer to start of symbol table */
+	char *	esymtab,	/* pointer to end of string table,
 				   for checking - may be rounded up to
 				   integer boundary */
-	char *	name;
-	char *	task_addr;	/* use for this task only */
+	char *	name,
+	char *	task_addr)	/* use for this task only */
 {
 	struct nlist	*sym_start, *sym_end;
 	struct nlist	*sp;
@@ -313,19 +313,19 @@ aout_db_qualified_search(stab, file, sym, line)
  * lookup symbol by name
  */
 db_sym_t
-aout_db_lookup(stab, symstr)
-	db_symtab_t	*stab;
-	char *		symstr;
+aout_db_lookup(
+	db_symtab_t	*stab,
+	char *		symstr)
 {
 	return(db_sym_parse_and_lookup(aout_db_qualified_search, stab, symstr));
 }
 
 db_sym_t
-aout_db_search_symbol(symtab, off, strategy, diffp)
-	db_symtab_t *	symtab;
-	db_addr_t	off;
-	db_strategy_t	strategy;
-	db_expr_t	*diffp;		/* in/out */
+aout_db_search_symbol(
+	db_symtab_t *	symtab,
+	db_addr_t	off,
+	db_strategy_t	strategy,
+	db_expr_t	*diffp)	/* in/out */
 {
 	unsigned long	diff = *diffp;
 	struct nlist	*symp = 0;
@@ -374,11 +374,11 @@ aout_db_search_symbol(symtab, off, strategy, diffp)
  * Return the name and value for a symbol.
  */
 void
-aout_db_symbol_values(stab, sym, namep, valuep)
-	db_symtab_t	*stab;
-	db_sym_t	sym;
-	char		**namep;
-	db_expr_t	*valuep;
+aout_db_symbol_values(
+	db_symtab_t	*stab,
+	db_sym_t	sym,
+	char		**namep,
+	db_expr_t	*valuep)
 {
 	struct nlist *sp;
 

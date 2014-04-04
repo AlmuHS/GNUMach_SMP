@@ -153,9 +153,9 @@ db_cmd_list(table)
 }
 
 void
-db_command(last_cmdp, cmd_table)
-	struct db_command	**last_cmdp;	/* IN_OUT */
-	struct db_command	*cmd_table;
+db_command(
+	struct db_command	**last_cmdp,	/* IN_OUT */
+	struct db_command	*cmd_table)
 {
 	struct db_command	*cmd;
 	int		t;
@@ -293,9 +293,9 @@ db_command(last_cmdp, cmd_table)
 }
 
 void
-db_command_list(last_cmdp, cmd_table)
-	struct db_command	**last_cmdp;	/* IN_OUT */
-	struct db_command	*cmd_table;
+db_command_list(
+	struct db_command	**last_cmdp,	/* IN_OUT */
+	struct db_command	*cmd_table)
 {
 	do {
 	    db_command(last_cmdp, cmd_table);
@@ -370,8 +370,7 @@ struct db_command db_command_table[] = {
 
 /* this function should be called to install the machine dependent
    commands. It should be called before the debugger is enabled  */
-void db_machine_commands_install(ptr)
-struct db_command *ptr;
+void db_machine_commands_install(struct db_command *ptr)
 {
   db_command_table[0].more = ptr;
   return;
@@ -429,9 +428,9 @@ db_command_loop(void)
 }
 
 boolean_t
-db_exec_cmd_nest(cmd, size)
-	char *cmd;
-	int  size;
+db_exec_cmd_nest(
+	char *cmd,
+	int  size)
 {
 	struct db_lex_context lex_context;
 

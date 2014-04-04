@@ -48,8 +48,6 @@
 #include <mach/policy.h>
 #endif	/* MACH_FIXPRI */
 
-
-
 /*
  *	swtch and swtch_pri both attempt to context switch (logic in
  *	thread_block no-ops the context switch if nothing would happen).
@@ -104,8 +102,7 @@ void swtch_pri_continue(void)
 	/*NOTREACHED*/
 }
 
-boolean_t  swtch_pri(pri)
-	int pri;
+boolean_t  swtch_pri(int pri)
 {
 	thread_t	thread = current_thread();
 	processor_t	myprocessor;
@@ -154,10 +151,10 @@ void thread_switch_continue(void)
  *	Fixed priority threads that call this get what they asked for
  *	even if that violates priority order.
  */
-kern_return_t thread_switch(thread_name, option, option_time)
-mach_port_t thread_name;
-int option;
-mach_msg_timeout_t option_time;
+kern_return_t thread_switch(
+	mach_port_t 		thread_name,
+	int 			option,
+	mach_msg_timeout_t 	option_time)
 {
     thread_t			cur_thread = current_thread();
     processor_t			myprocessor;
@@ -282,9 +279,9 @@ mach_msg_timeout_t option_time;
  *      of zero will result in no timeout being scheduled.
  */
 void
-thread_depress_priority(thread, depress_time)
-thread_t thread;
-mach_msg_timeout_t depress_time;
+thread_depress_priority(
+	thread_t 		thread,
+	mach_msg_timeout_t 	depress_time)
 {
     unsigned int ticks;
     spl_t	s;
@@ -320,8 +317,7 @@ mach_msg_timeout_t depress_time;
  *	Timeout routine for priority depression.
  */
 void
-thread_depress_timeout(thread)
-thread_t thread;
+thread_depress_timeout(thread_t thread)
 {
     spl_t	s;
 
@@ -349,8 +345,7 @@ thread_t thread;
  *	Prematurely abort priority depression if there is one.
  */
 kern_return_t
-thread_depress_abort(thread)
-thread_t	thread;
+thread_depress_abort(thread_t thread)
 {
     spl_t	s;
 

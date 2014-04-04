@@ -59,8 +59,7 @@ mach_dead_name_notification_t		ipc_notify_dead_name_template;
  */
 
 void
-ipc_notify_init_port_deleted(n)
-	mach_port_deleted_notification_t *n;
+ipc_notify_init_port_deleted(mach_port_deleted_notification_t *n)
 {
 	mach_msg_header_t *m = &n->not_header;
 	mach_msg_type_t *t = &n->not_type;
@@ -90,8 +89,7 @@ ipc_notify_init_port_deleted(n)
  */
 
 void
-ipc_notify_init_msg_accepted(n)
-	mach_msg_accepted_notification_t *n;
+ipc_notify_init_msg_accepted(mach_msg_accepted_notification_t *n)
 {
 	mach_msg_header_t *m = &n->not_header;
 	mach_msg_type_t *t = &n->not_type;
@@ -121,8 +119,7 @@ ipc_notify_init_msg_accepted(n)
  */
 
 void
-ipc_notify_init_port_destroyed(
-	mach_port_destroyed_notification_t	*n)
+ipc_notify_init_port_destroyed(mach_port_destroyed_notification_t *n)
 {
 	mach_msg_header_t *m = &n->not_header;
 	mach_msg_type_t *t = &n->not_type;
@@ -255,9 +252,9 @@ ipc_notify_init(void)
  */
 
 void
-ipc_notify_port_deleted(port, name)
-	ipc_port_t port;
-	mach_port_t name;
+ipc_notify_port_deleted(
+	ipc_port_t 	port,
+	mach_port_t 	name)
 {
 	ipc_kmsg_t kmsg;
 	mach_port_deleted_notification_t *n;
@@ -289,9 +286,9 @@ ipc_notify_port_deleted(port, name)
  */
 
 void
-ipc_notify_msg_accepted(port, name)
-	ipc_port_t port;
-	mach_port_t name;
+ipc_notify_msg_accepted(
+	ipc_port_t 	port,
+	mach_port_t 	name)
 {
 	ipc_kmsg_t kmsg;
 	mach_msg_accepted_notification_t *n;
@@ -326,9 +323,9 @@ ipc_notify_msg_accepted(port, name)
  */
 
 void
-ipc_notify_port_destroyed(port, right)
-	ipc_port_t port;
-	ipc_port_t right;
+ipc_notify_port_destroyed(
+	ipc_port_t 	port,
+	ipc_port_t 	right)
 {
 	ipc_kmsg_t kmsg;
 	mach_port_destroyed_notification_t *n;
@@ -362,9 +359,9 @@ ipc_notify_port_destroyed(port, right)
  */
 
 void
-ipc_notify_no_senders(port, mscount)
-	ipc_port_t port;
-	mach_port_mscount_t mscount;
+ipc_notify_no_senders(
+	ipc_port_t 		port,
+	mach_port_mscount_t 	mscount)
 {
 	ipc_kmsg_t kmsg;
 	mach_no_senders_notification_t *n;
@@ -396,8 +393,7 @@ ipc_notify_no_senders(port, mscount)
  */
 
 void
-ipc_notify_send_once(port)
-	ipc_port_t port;
+ipc_notify_send_once(ipc_port_t port)
 {
 	ipc_kmsg_t kmsg;
 	mach_send_once_notification_t *n;
@@ -428,9 +424,9 @@ ipc_notify_send_once(port)
  */
 
 void
-ipc_notify_dead_name(port, name)
-	ipc_port_t port;
-	mach_port_t name;
+ipc_notify_dead_name(
+	ipc_port_t 	port,
+	mach_port_t 	name)
 {
 	ipc_kmsg_t kmsg;
 	mach_dead_name_notification_t *n;

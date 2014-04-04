@@ -597,8 +597,7 @@ ds_open_done(ior)
 }
 
 static io_return_t
-device_close(device)
-	mach_device_t		device;
+device_close(mach_device_t device)
 {
 	device_lock(device);
 
@@ -824,9 +823,9 @@ device_write_inband(device, reply_port, reply_port_type, mode, recnum,
  * Wire down incoming memory to give to device.
  */
 kern_return_t
-device_write_get(ior, wait)
-	io_req_t		ior;
-	boolean_t		*wait;
+device_write_get(
+	io_req_t		ior,
+	boolean_t		*wait)
 {
 	vm_map_copy_t		io_copy;
 	vm_offset_t		new_addr;
@@ -919,8 +918,7 @@ device_write_get(ior, wait)
  * Clean up memory allocated for IO.
  */
 boolean_t
-device_write_dealloc(ior)
-	io_req_t	ior;
+device_write_dealloc(io_req_t ior)
 {
 	vm_map_copy_t	new_copy = VM_MAP_COPY_NULL;
 	vm_map_copy_t	io_copy;
@@ -1221,9 +1219,9 @@ device_read_inband(device, reply_port, reply_port_type, mode, recnum,
 /*
  * Allocate wired-down memory for device read.
  */
-kern_return_t device_read_alloc(ior, size)
-	io_req_t		ior;
-	vm_size_t		size;
+kern_return_t device_read_alloc(
+	io_req_t		ior,
+	vm_size_t		size)
 {
 	vm_offset_t		addr;
 	kern_return_t		kr;
@@ -1346,11 +1344,11 @@ boolean_t ds_read_done(ior)
 }
 
 static io_return_t
-device_set_status(device, flavor, status, status_count)
-	mach_device_t		device;
-	dev_flavor_t		flavor;
-	dev_status_t		status;
-	mach_msg_type_number_t	status_count;
+device_set_status(
+	mach_device_t		device,
+	dev_flavor_t		flavor,
+	dev_status_t		status,
+	mach_msg_type_number_t	status_count)
 {
 	if (device->state != DEV_STATE_OPEN)
 	    return (D_NO_SUCH_DEVICE);
@@ -1364,11 +1362,11 @@ device_set_status(device, flavor, status, status_count)
 }
 
 io_return_t
-mach_device_get_status(device, flavor, status, status_count)
-	mach_device_t		device;
-	dev_flavor_t		flavor;
-	dev_status_t		status;		/* pointer to OUT array */
-	mach_msg_type_number_t	*status_count;	/* out */
+mach_device_get_status(
+	mach_device_t		device,
+	dev_flavor_t		flavor,
+	dev_status_t		status,		/* pointer to OUT array */
+	mach_msg_type_number_t	*status_count)	/* out */
 {
 	if (device->state != DEV_STATE_OPEN)
 	    return (D_NO_SUCH_DEVICE);
@@ -1408,13 +1406,13 @@ device_set_filter(device, receive_port, priority, filter, filter_count)
 }
 
 static io_return_t
-device_map(device, protection, offset, size, pager, unmap)
-	mach_device_t		device;
-	vm_prot_t		protection;
-	vm_offset_t		offset;
-	vm_size_t		size;
-	ipc_port_t		*pager;	/* out */
-	boolean_t		unmap;	/* ? */
+device_map(
+	mach_device_t		device,
+	vm_prot_t		protection,
+	vm_offset_t		offset,
+	vm_size_t		size,
+	ipc_port_t		*pager,	/* out */
+	boolean_t		unmap)	/* ? */
 {
 	if (protection & ~VM_PROT_ALL)
 		return (KERN_INVALID_ARGUMENT);
@@ -1445,8 +1443,7 @@ decl_simple_lock_data(,	io_done_list_lock)
 
 #define	splio	splsched	/* XXX must block ALL io devices */
 
-void iodone(ior)
-	io_req_t		ior;
+void iodone(io_req_t ior)
 {
 	spl_t			s;
 
@@ -1566,8 +1563,7 @@ void mach_device_init(void)
 	mach_device_trap_init();
 }
 
-void iowait(ior)
-    io_req_t ior;
+void iowait(io_req_t ior)
 {
     spl_t s;
 

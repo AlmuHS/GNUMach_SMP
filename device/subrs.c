@@ -75,8 +75,7 @@ ether_sprintf(ap)
 /*
  * Initialize send and receive queues on an interface.
  */
-void if_init_queues(ifp)
-	struct ifnet *ifp;
+void if_init_queues(struct ifnet *ifp)
 {
 	IFQ_INIT(&ifp->if_snd);
 	queue_init(&ifp->if_rcv_port_list);

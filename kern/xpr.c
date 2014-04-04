@@ -56,9 +56,13 @@ struct xprbuf *xprptr;	/* Currently allocated xprbuf */
 struct xprbuf *xprlast;	/* Pointer to end of circular buffer */
 
 /*VARARGS1*/
-void xpr(msg, arg1, arg2, arg3, arg4, arg5)
-char *msg;
-int arg1, arg2, arg3, arg4, arg5;
+void xpr(
+	char 	*msg,
+	int 	arg1, 
+	int 	arg2, 
+	int 	arg3, 
+	int 	arg4, 
+	int 	arg5)
 {
 	spl_t s;
 	struct xprbuf *x;
@@ -144,9 +148,9 @@ extern jmp_buf_t *db_recover;
  *	Called with arguments, it can dump xpr buffers in user tasks,
  *	assuming they use the same format as the kernel.
  */
-void xpr_dump(base, nbufs)
-	struct xprbuf *base;
-	int nbufs;
+void xpr_dump(
+	struct xprbuf 	*base,
+	int 		nbufs)
 {
 	jmp_buf_t db_jmpbuf;
 	jmp_buf_t *prev;

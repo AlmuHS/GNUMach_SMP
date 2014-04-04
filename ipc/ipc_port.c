@@ -94,11 +94,11 @@ ipc_port_timestamp(void)
  */
 
 kern_return_t
-ipc_port_dnrequest(port, name, soright, indexp)
-	ipc_port_t port;
-	mach_port_t name;
-	ipc_port_t soright;
-	ipc_port_request_index_t *indexp;
+ipc_port_dnrequest(
+	ipc_port_t 			port,
+	mach_port_t 			name,
+	ipc_port_t 			soright,
+	ipc_port_request_index_t 	*indexp)
 {
 	ipc_port_request_t ipr, table;
 	ipc_port_request_index_t index;
@@ -142,8 +142,7 @@ ipc_port_dnrequest(port, name, soright, indexp)
  */
 
 kern_return_t
-ipc_port_dngrow(port)
-	ipc_port_t port;
+ipc_port_dngrow(ipc_port_t port)
 {
 	ipc_table_size_t its;
 	ipc_port_request_t otable, ntable;
@@ -382,8 +381,7 @@ ipc_port_set_qlimit(
  */
 
 ipc_mqueue_t
-ipc_port_lock_mqueue(port)
-	ipc_port_t port;
+ipc_port_lock_mqueue(ipc_port_t port)
 {
 	if (port->ip_pset != IPS_NULL) {
 		ipc_pset_t pset = port->ip_pset;
@@ -413,9 +411,9 @@ ipc_port_lock_mqueue(port)
  */
 
 void
-ipc_port_set_seqno(port, seqno)
-	ipc_port_t port;
-	mach_port_seqno_t seqno;
+ipc_port_set_seqno(
+	ipc_port_t 		port,
+	mach_port_seqno_t 	seqno)
 {
 	ipc_mqueue_t mqueue;
 
@@ -1135,8 +1133,7 @@ ipc_port_release_receive(
  */
 
 ipc_port_t
-ipc_port_alloc_special(space)
-	ipc_space_t space;
+ipc_port_alloc_special(ipc_space_t space)
 {
 	ipc_port_t port;
 

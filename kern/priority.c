@@ -74,11 +74,11 @@
  *	Called only from clock_interrupt().
  */
 
-void thread_quantum_update(mycpu, thread, nticks, state)
-	int			mycpu;
-	thread_t		thread;
-	int			nticks;
-	int			state;
+void thread_quantum_update(
+	int			mycpu,
+	thread_t		thread,
+	int			nticks,
+	int			state)
 {
 	int				quantum;
 	processor_t			myprocessor;

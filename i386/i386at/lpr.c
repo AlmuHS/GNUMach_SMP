@@ -192,11 +192,11 @@ natural_t	*count;		/* out */
 }
 
 io_return_t
-lprsetstat(dev, flavor, data, count)
-dev_t		dev;
-int		flavor;
-int *		data;
-natural_t	count;
+lprsetstat(
+	dev_t		dev,
+	int		flavor,
+	int *		data,
+	natural_t	count)
 {
 	io_return_t	result = D_SUCCESS;
 	int 		unit = minor(dev);
@@ -211,8 +211,7 @@ natural_t	count;
 	return (D_SUCCESS);
 }
 
-void lprintr(unit)
-int unit;
+void lprintr(int unit)
 {
 	struct tty *tp = &lpr_tty[unit];
 
@@ -226,8 +225,7 @@ int unit;
 	lprstart(tp);
 }   
 
-void lprstart(tp)
-struct tty *tp;
+void lprstart(struct tty *tp)
 {
 	spl_t s = spltty();
 	u_short addr = (natural_t) tp->t_addr;
@@ -267,9 +265,9 @@ struct tty *tp;
 }
 
 void
-lprstop(tp, flags)
-struct tty *tp;
-int	flags;
+lprstop(
+	struct tty 	*tp,
+	int		flags)
 {
 	if ((tp->t_state & TS_BUSY) && (tp->t_state & TS_TTSTOP) == 0)
 		tp->t_state |= TS_FLUSH;

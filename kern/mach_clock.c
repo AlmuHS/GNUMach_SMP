@@ -120,10 +120,10 @@ timer_elt_data_t	timer_head;	/* ordered list of timeouts */
  *	the accuracy of the hardware clock.
  *
  */
-void clock_interrupt(usec, usermode, basepri)
-	int		usec;		/* microseconds per tick */
-	boolean_t	usermode;	/* executing user code */
-	boolean_t	basepri;	/* at base priority */
+void clock_interrupt(
+	int		usec,		/* microseconds per tick */
+	boolean_t	usermode,	/* executing user code */
+	boolean_t	basepri)	/* at base priority */
 {
 	int		my_cpu = cpu_number();
 	thread_t	thread = current_thread();
@@ -309,9 +309,9 @@ void softclock(void)
  *		telt	 timer element.  Function and param are already set.
  *		interval time-out interval, in hz.
  */
-void set_timeout(telt, interval)
-	timer_elt_t	telt;	/* already loaded */
-	unsigned int	interval;
+void set_timeout(
+	timer_elt_t	telt,	/* already loaded */
+	unsigned int	interval)
 {
 	spl_t			s;
 	timer_elt_t		next;
@@ -339,8 +339,7 @@ void set_timeout(telt, interval)
 	splx(s);
 }
 
-boolean_t reset_timeout(telt)
-	timer_elt_t	telt;
+boolean_t reset_timeout(timer_elt_t telt)
 {
 	spl_t	s;
 
@@ -526,10 +525,10 @@ timer_elt_data_t timeout_timers[NTIMERS];
  *	param:		parameter to pass to function
  *	interval:	timeout interval, in hz.
  */
-void timeout(fcn, param, interval)
-	void		(*fcn)( void * param );
-	void *		param;
-	int		interval;
+void timeout(
+	void	(*fcn)(void *param),
+	void *	param,
+	int	interval)
 {
 	spl_t	s;
 	timer_elt_t elt;

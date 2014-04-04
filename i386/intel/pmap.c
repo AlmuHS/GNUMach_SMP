@@ -458,8 +458,7 @@ pmap_pte(const pmap_t pmap, vm_offset_t addr)
 #define DEBUG_PTE_PAGE	0
 
 #if	DEBUG_PTE_PAGE
-void ptep_check(ptep)
-	ptep_t	ptep;
+void ptep_check(ptep_t ptep)
 {
 	pt_entry_t		*pte, *epte;
 	int			ctu, ctw;
@@ -495,11 +494,11 @@ void ptep_check(ptep)
  *	For now, VM is already on, we only need to map the
  *	specified memory.
  */
-vm_offset_t pmap_map(virt, start, end, prot)
-	vm_offset_t	virt;
-	vm_offset_t	start;
-	vm_offset_t	end;
-	int		prot;
+vm_offset_t pmap_map(
+	vm_offset_t	virt,
+	vm_offset_t	start,
+	vm_offset_t	end,
+	int		prot)
 {
 	int		ps;
 
@@ -518,11 +517,11 @@ vm_offset_t pmap_map(virt, start, end, prot)
  *	[phys_first_addr, phys_last_addr) (i.e., devices).
  *	Otherwise like pmap_map.
  */
-vm_offset_t pmap_map_bd(virt, start, end, prot)
-	vm_offset_t	virt;
-	vm_offset_t	start;
-	vm_offset_t	end;
-	vm_prot_t	prot;
+vm_offset_t pmap_map_bd(
+	vm_offset_t	virt,
+	vm_offset_t	start,
+	vm_offset_t	end,
+	vm_prot_t	prot)
 {
 	pt_entry_t	template;
 	pt_entry_t	*pte;
@@ -925,9 +924,9 @@ void pmap_put_mapwindow(pmap_mapwindow_t *map)
 	PMAP_UPDATE_TLBS(kernel_pmap, map->vaddr, map->vaddr + PAGE_SIZE);
 }
 
-void pmap_virtual_space(startp, endp)
-	vm_offset_t *startp;
-	vm_offset_t *endp;
+void pmap_virtual_space(
+	vm_offset_t *startp,
+	vm_offset_t *endp)
 {
 	*startp = kernel_virtual_start;
 	*endp = kernel_virtual_end - PMAP_NMAPWINDOWS * PAGE_SIZE;
@@ -1002,8 +1001,7 @@ void pmap_init(void)
 
 #define valid_page(x) (pmap_initialized && pmap_valid_page(x))
 
-boolean_t pmap_verify_free(phys)
-	vm_offset_t	phys;
+boolean_t pmap_verify_free(vm_offset_t phys)
 {
 	pv_entry_t	pv_h;
 	int		pai;
@@ -1126,8 +1124,7 @@ void pmap_map_mfn(void *_addr, unsigned long mfn) {
  *	and be removed from its page directory.
  */
 void
-pmap_page_table_page_dealloc(pa)
-	vm_offset_t	pa;
+pmap_page_table_page_dealloc(vm_offset_t pa)
 {
 	vm_page_t	m;
 
@@ -1152,8 +1149,7 @@ pmap_page_table_page_dealloc(pa)
  *	the map will be used in software only, and
  *	is bounded by that size.
  */
-pmap_t pmap_create(size)
-	vm_size_t	size;
+pmap_t pmap_create(vm_size_t size)
 {
 	pmap_t			p;
 	pmap_statistics_t	stats;
@@ -1232,8 +1228,7 @@ pmap_t pmap_create(size)
  *	no valid mappings.
  */
 
-void pmap_destroy(p)
-	pmap_t	p;
+void pmap_destroy(pmap_t p)
 {
 	pt_entry_t	*pdep;
 	vm_offset_t	pa;
@@ -1299,8 +1294,7 @@ void pmap_destroy(p)
  *	Add a reference to the specified pmap.
  */
 
-void pmap_reference(p)
-	pmap_t	p;
+void pmap_reference(pmap_t p)
 {
 	int	s;
 	if (p != PMAP_NULL) {
@@ -1325,11 +1319,11 @@ void pmap_reference(p)
  */
 
 /* static */
-void pmap_remove_range(pmap, va, spte, epte)
-	pmap_t			pmap;
-	vm_offset_t		va;
-	pt_entry_t		*spte;
-	pt_entry_t		*epte;
+void pmap_remove_range(
+	pmap_t			pmap,
+	vm_offset_t		va,
+	pt_entry_t		*spte,
+	pt_entry_t		*epte)
 {
 	pt_entry_t		*cpte;
 	int			num_removed, num_unwired;
@@ -1481,9 +1475,10 @@ void pmap_remove_range(pmap, va, spte, epte)
  *	rounded to the hardware page size.
  */
 
-void pmap_remove(map, s, e)
-	pmap_t		map;
-	vm_offset_t	s, e;
+void pmap_remove(
+	pmap_t		map,
+	vm_offset_t	s, 
+	vm_offset_t	e)
 {
 	int			spl;
 	pt_entry_t		*pde;
@@ -1522,9 +1517,9 @@ void pmap_remove(map, s, e)
  *		Lower the permission for all mappings to a given
  *		page.
  */
-void pmap_page_protect(phys, prot)
-	vm_offset_t	phys;
-	vm_prot_t	prot;
+void pmap_page_protect(
+	vm_offset_t	phys,
+	vm_prot_t	prot)
 {
 	pv_entry_t		pv_h, prev;
 	pv_entry_t		pv_e;
@@ -1685,10 +1680,11 @@ void pmap_page_protect(phys, prot)
  *	specified range of this map as requested.
  *	Will not increase permissions.
  */
-void pmap_protect(map, s, e, prot)
-	pmap_t		map;
-	vm_offset_t	s, e;
-	vm_prot_t	prot;
+void pmap_protect(
+	pmap_t		map,
+	vm_offset_t	s, 
+	vm_offset_t	e,
+	vm_prot_t	prot)
 {
 	pt_entry_t	*pde;
 	pt_entry_t	*spte, *epte;
@@ -1791,12 +1787,12 @@ void pmap_protect(map, s, e, prot)
  *	or lose information.  That is, this routine must actually
  *	insert this page into the given map NOW.
  */
-void pmap_enter(pmap, v, pa, prot, wired)
-	pmap_t			pmap;
-	vm_offset_t		v;
-	vm_offset_t		pa;
-	vm_prot_t		prot;
-	boolean_t		wired;
+void pmap_enter(
+	pmap_t			pmap,
+	vm_offset_t		v,
+	vm_offset_t		pa,
+	vm_prot_t		prot,
+	boolean_t		wired)
 {
 	pt_entry_t		*pte;
 	pv_entry_t		pv_h;
@@ -2093,10 +2089,10 @@ Retry:
  *	In/out conditions:
  *			The mapping must already exist in the pmap.
  */
-void pmap_change_wiring(map, v, wired)
-	pmap_t	map;
-	vm_offset_t	v;
-	boolean_t	wired;
+void pmap_change_wiring(
+	pmap_t		map,
+	vm_offset_t	v,
+	boolean_t	wired)
 {
 	pt_entry_t	*pte;
 	int		i;
@@ -2148,9 +2144,9 @@ void pmap_change_wiring(map, v, wired)
  *		with the given map/virtual_address pair.
  */
 
-vm_offset_t pmap_extract(pmap, va)
-	pmap_t		pmap;
-	vm_offset_t	va;
+vm_offset_t pmap_extract(
+	pmap_t		pmap,
+	vm_offset_t	va)
 {
 	pt_entry_t	*pte;
 	vm_offset_t	pa;
@@ -2198,8 +2194,7 @@ void pmap_copy(dst_pmap, src_pmap, dst_addr, len, src_addr)
  *	Usage:
  *		Called by the pageout daemon when pages are scarce.
  */
-void pmap_collect(p)
-	pmap_t 		p;
+void pmap_collect(pmap_t p)
 {
 	pt_entry_t		*pdp, *ptp;
 	pt_entry_t		*eptp;
@@ -2406,11 +2401,11 @@ pmap_copy_page(src, dst)
  *		down (or not) as appropriate.
  */
 void
-pmap_pageable(pmap, start, end, pageable)
-	pmap_t		pmap;
-	vm_offset_t	start;
-	vm_offset_t	end;
-	boolean_t	pageable;
+pmap_pageable(
+	pmap_t		pmap,
+	vm_offset_t	start,
+	vm_offset_t	end,
+	boolean_t	pageable)
 {
 }
 
@@ -2418,9 +2413,9 @@ pmap_pageable(pmap, start, end, pageable)
  *	Clear specified attribute bits.
  */
 void
-phys_attribute_clear(phys, bits)
-	vm_offset_t	phys;
-	int		bits;
+phys_attribute_clear(
+	vm_offset_t	phys,
+	int		bits)
 {
 	pv_entry_t		pv_h;
 	pv_entry_t		pv_e;
@@ -2504,9 +2499,9 @@ phys_attribute_clear(phys, bits)
  *	Check specified attribute bits.
  */
 boolean_t
-phys_attribute_test(phys, bits)
-	vm_offset_t	phys;
-	int		bits;
+phys_attribute_test(
+	vm_offset_t	phys,
+	int		bits)
 {
 	pv_entry_t		pv_h;
 	pv_entry_t		pv_e;
@@ -2595,8 +2590,7 @@ phys_attribute_test(phys, bits)
  *	Clear the modify bits on the specified physical page.
  */
 
-void pmap_clear_modify(phys)
-	vm_offset_t	phys;
+void pmap_clear_modify(vm_offset_t phys)
 {
 	phys_attribute_clear(phys, PHYS_MODIFIED);
 }
@@ -2608,8 +2602,7 @@ void pmap_clear_modify(phys)
  *	by any physical maps.
  */
 
-boolean_t pmap_is_modified(phys)
-	vm_offset_t	phys;
+boolean_t pmap_is_modified(vm_offset_t phys)
 {
 	return (phys_attribute_test(phys, PHYS_MODIFIED));
 }
@@ -2620,8 +2613,7 @@ boolean_t pmap_is_modified(phys)
  *	Clear the reference bit on the specified physical page.
  */
 
-void pmap_clear_reference(phys)
-	vm_offset_t	phys;
+void pmap_clear_reference(vm_offset_t phys)
 {
 	phys_attribute_clear(phys, PHYS_REFERENCED);
 }
@@ -2633,8 +2625,7 @@ void pmap_clear_reference(phys)
  *	by any physical maps.
  */
 
-boolean_t pmap_is_referenced(phys)
-	vm_offset_t	phys;
+boolean_t pmap_is_referenced(vm_offset_t phys)
 {
 	return (phys_attribute_test(phys, PHYS_REFERENCED));
 }
@@ -2703,10 +2694,11 @@ boolean_t pmap_is_referenced(phys)
 /*
  *	Signal another CPU that it must flush its TLB
  */
-void    signal_cpus(use_list, pmap, start, end)
-	cpu_set		use_list;
-	pmap_t		pmap;
-	vm_offset_t	start, end;
+void    signal_cpus(
+	cpu_set		use_list,
+	pmap_t		pmap,
+	vm_offset_t	start, 
+	vm_offset_t	end)
 {
 	int			which_cpu, j;
 	pmap_update_list_t	update_list_p;
@@ -2742,8 +2734,7 @@ void    signal_cpus(use_list, pmap, start, end)
 	}
 }
 
-void process_pmap_updates(my_pmap)
-	pmap_t			my_pmap;
+void process_pmap_updates(pmap_t my_pmap)
 {
 	int			my_cpu = cpu_number();
 	pmap_update_list_t	update_list_p;

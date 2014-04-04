@@ -167,11 +167,11 @@ db_exec_macro(name)
 
 void
 /* ARGSUSED */
-db_arg_variable(vp, valuep, flag, ap)
-	struct db_variable	*vp;
-	db_expr_t		*valuep;
-	int			flag;
-	db_var_aux_param_t	ap;
+db_arg_variable(
+	struct db_variable	*vp,
+	db_expr_t		*valuep,
+	int			flag,
+	db_var_aux_param_t	ap)
 {
 	if (ap->level != 1 || ap->suffix[0] < 1 || ap->suffix[0] > DB_NARGS) {
 	    db_error("Bad $arg variable\n");

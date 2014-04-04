@@ -1013,11 +1013,11 @@ act_set_special_port(Act *act, int which, ipc_port_t port)
  *	Return thread's machine-dependent state.
  */
 kern_return_t
-act_get_state_immediate(act, flavor, old_state, old_state_count)
-	Act			*act;
-	int			flavor;
-	void			*old_state;	/* pointer to OUT array */
-	unsigned int		*old_state_count;	/*IN/OUT*/
+act_get_state_immediate(
+	Act			*act,
+	int			flavor,
+	void			*old_state,	/* pointer to OUT array */
+	unsigned int		*old_state_count)	/*IN/OUT*/
 {
 	kern_return_t		ret;
 
@@ -1039,11 +1039,11 @@ act_get_state_immediate(act, flavor, old_state, old_state_count)
  *	Change thread's machine-dependent state.
  */
 kern_return_t
-act_set_state_immediate(act, flavor, new_state, new_state_count)
-	Act			*act;
-	int			flavor;
-	void			*new_state;
-	unsigned int		new_state_count;
+act_set_state_immediate(
+	Act			*act,
+	int			flavor,
+	void			*new_state,
+	unsigned int		new_state_count)
 {
 	kern_return_t		ret;
 
@@ -1097,8 +1097,7 @@ void dump_act(act)
 
 #ifdef ACTWATCH
 Act *
-get_next_act(sp)
-	int sp;
+get_next_act(int sp)
 {
 	static int i;
 	Act *act;

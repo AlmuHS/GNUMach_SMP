@@ -132,8 +132,7 @@ db_more(void)
  * Output character.  Buffer whitespace.
  */
 void
-db_putchar(c)
-	int	c;		/* character to output */
+db_putchar(int c)		/* character to output */
 {
 	if (db_max_line >= DB_MIN_MAX_LINE && db_output_line >= db_max_line-1)
 	    db_more();

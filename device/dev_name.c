@@ -112,10 +112,10 @@ name_equal(src, len, target)
 /*
  * device name lookup
  */
-boolean_t dev_name_lookup(name, ops, unit)
-	char 		*name;
-	dev_ops_t	*ops;	/* out */
-	int		*unit;	/* out */
+boolean_t dev_name_lookup(
+	char 		*name,
+	dev_ops_t	*ops,	/* out */
+	int		*unit)	/* out */
 {
 	/*
 	 * Assume that block device names are of the form

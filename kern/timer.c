@@ -66,8 +66,7 @@ void init_timers(void)
 /*
  *	timer_init initializes a single timer.
  */
-void timer_init(this_timer)
-timer_t this_timer;
+void timer_init(timer_t this_timer)
 {
 	this_timer->low_bits = 0;
 	this_timer->high_bits = 0;
@@ -91,8 +90,7 @@ timer_t this_timer;
  *	exactly once for each cpu during the boot sequence.
  */
 void
-start_timer(timer)
-timer_t timer;
+start_timer(timer_t timer)
 {
 	timer->tstamp = get_timestamp();
 	current_timer[cpu_number()] = timer;
@@ -105,8 +103,7 @@ timer_t timer;
  *	from user mode.
  */
 void
-time_trap_uentry(ts)
-unsigned ts;
+time_trap_uentry(unsigned ts)
 {
 	int	elapsed;
 	int	mycpu;
@@ -191,9 +188,9 @@ time_trap_uexit(int ts)
  *	saved for time_int_exit.
  */
 timer_t
-time_int_entry(ts,new_timer)
-unsigned	ts;
-timer_t	new_timer;
+time_int_entry(
+	unsigned	ts,
+	timer_t		new_timer)
 {
 	int	elapsed;
 	int	mycpu;
@@ -232,9 +229,9 @@ timer_t	new_timer;
  *	it.
  */
 void
-time_int_exit(ts, old_timer)
-unsigned	ts;
-timer_t	old_timer;
+time_int_exit(
+	unsigned	ts,
+	timer_t		old_timer)
 {
 	int	elapsed;
 	int	mycpu;
@@ -279,8 +276,7 @@ timer_t	old_timer;
  *	Caller must lock out interrupts.
  */
 void
-timer_switch(new_timer)
-timer_t new_timer;
+timer_switch(timer_t new_timer)
 {
 	int		elapsed;
 	int		mycpu;
@@ -325,8 +321,7 @@ timer_t new_timer;
  *	timer_normalize normalizes the value of a timer.  It is
  *	called only rarely, to make sure low_bits never overflows.
  */
-void timer_normalize(timer)
-timer_t	timer;
+void timer_normalize(timer_t timer)
 {
 	unsigned int	high_increment;
 
@@ -352,9 +347,9 @@ timer_t	timer;
  *      Keep coherent with db_time_grab below.
  */
 
-static void timer_grab(timer, save)
-timer_t		timer;
-timer_save_t	save;
+static void timer_grab(
+	timer_t		timer,
+	timer_save_t	save)
 {
 #if MACH_ASSERT
   unsigned int passes=0;
@@ -386,9 +381,9 @@ timer_save_t	save;
  *      above.
  *
  */
-void db_timer_grab(timer, save)
-timer_t		timer;
-timer_save_t	save;
+void db_timer_grab(
+	timer_t		timer,
+	timer_save_t	save)
 {
   /* Don't worry about coherency */
 
@@ -405,9 +400,9 @@ timer_save_t	save;
  */
 
 void
-timer_read(timer, tv)
-timer_t timer;
-time_value_t *tv;
+timer_read(
+	timer_t 	timer,
+	time_value_t 	*tv)
 {
 	timer_save_data_t	temp;
 
@@ -431,10 +426,10 @@ time_value_t *tv;
  *
  *      Needs to be kept coherent with thread_read_times ahead.
  */
-void	thread_read_times(thread, user_time_p, system_time_p)
-	thread_t 	thread;
-	time_value_t	*user_time_p;
-	time_value_t	*system_time_p;
+void	thread_read_times(
+	thread_t 	thread,
+	time_value_t	*user_time_p,
+	time_value_t	*system_time_p)
 {
 	timer_save_data_t	temp;
 	timer_t			timer;
@@ -465,10 +460,10 @@ void	thread_read_times(thread, user_time_p, system_time_p)
  *      thread_read_times above.
  *
  */
-void	db_thread_read_times(thread, user_time_p, system_time_p)
-	thread_t 	thread;
-	time_value_t	*user_time_p;
-	time_value_t	*system_time_p;
+void	db_thread_read_times(
+	thread_t 	thread,
+	time_value_t	*user_time_p,
+	time_value_t	*system_time_p)
 {
 	timer_save_data_t	temp;
 	timer_t			timer;
@@ -500,9 +495,9 @@ void	db_thread_read_times(thread, user_time_p, system_time_p)
  */
 
 unsigned
-timer_delta(timer, save)
-timer_t	timer;
-timer_save_t	save;
+timer_delta(
+	timer_t		timer,
+	timer_save_t	save)
 {
 	timer_save_data_t	new_save;
 	unsigned		result;

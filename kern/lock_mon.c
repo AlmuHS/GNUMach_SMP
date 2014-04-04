@@ -64,7 +64,6 @@ typedef unsigned int time_stamp_t;
 #define LOCK_INFO_HASH_COUNT 1024
 #define LOCK_INFO_PER_BUCKET	(LOCK_INFO_MAX/LOCK_INFO_HASH_COUNT)
 
-
 #define HASH_LOCK(lock)	((long)lock>>5 & (LOCK_INFO_HASH_COUNT-1))
 
 struct lock_info {

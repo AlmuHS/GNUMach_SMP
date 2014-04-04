@@ -216,8 +216,9 @@ db_clear_hw_watchpoint(
  * Print trap reason.
  */
 void
-kdbprinttrap(type, code)
-	int	type, code;
+kdbprinttrap(
+	int	type, 
+	int	code)
 {
 	printf("kernel: %s (%d), code=%x\n",
 		trap_name(type), type, code);

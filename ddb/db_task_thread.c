@@ -153,8 +153,7 @@ db_check_thread_address_valid(thread)
  * convert task_id(queue postion) to task address
  */
 task_t
-db_lookup_task_id(task_id)
-	int task_id;
+db_lookup_task_id(int task_id)
 {
 	task_t task;
 	processor_set_t pset;
@@ -181,9 +180,9 @@ db_lookup_task_id(task_id)
  * convert (task_id, thread_id) pair to thread address
  */
 static thread_t
-db_lookup_thread_id(task, thread_id)
-	task_t	task;
-	int 	thread_id;
+db_lookup_thread_id(
+	task_t	task,
+	int 	thread_id)
 {
 	thread_t thread;
 
@@ -204,9 +203,9 @@ db_lookup_thread_id(task, thread_id)
  * thread address
  */
 boolean_t
-db_get_next_thread(threadp, position)
-	thread_t	*threadp;
-	int		position;
+db_get_next_thread(
+	thread_t	*threadp,
+	int		position)
 {
 	db_expr_t	value;
 	thread_t	thread;
@@ -272,11 +271,11 @@ db_set_default_thread(vp, valuep, flag, ap)
  * convert $taskXXX[.YYY] type DDB variable to task or thread address
  */
 void
-db_get_task_thread(vp, valuep, flag, ap)
-	struct db_variable	*vp;
-	db_expr_t		*valuep;
-	int			flag;
-	db_var_aux_param_t	ap;
+db_get_task_thread(
+	struct db_variable	*vp,
+	db_expr_t		*valuep,
+	int			flag,
+	db_var_aux_param_t	ap)
 {
 	task_t	 task;
 	thread_t thread;

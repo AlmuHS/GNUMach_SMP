@@ -56,8 +56,7 @@ struct kmem_cache	vm_object_small_existence_map_cache;
 struct kmem_cache	vm_object_large_existence_map_cache;
 
 
-vm_external_t	vm_external_create(size)
-	vm_offset_t	size;
+vm_external_t	vm_external_create(vm_offset_t size)
 {
 	vm_external_t	result;
 	vm_size_t	bytes;
@@ -78,8 +77,7 @@ vm_external_t	vm_external_create(size)
 	return(result);
 }
 
-void		vm_external_destroy(e)
-	vm_external_t	e;
+void		vm_external_destroy(vm_external_t e)
 {
 	if (e == VM_EXTERNAL_NULL)
 		return;
@@ -115,10 +113,10 @@ vm_external_state_t _vm_external_state_get(e, offset)
 		VM_EXTERNAL_STATE_EXISTS : VM_EXTERNAL_STATE_ABSENT );
 }
 
-void		vm_external_state_set(e, offset, state)
-	vm_external_t	e;
-	vm_offset_t	offset;
-	vm_external_state_t state;
+void		vm_external_state_set(
+	vm_external_t		e,
+	vm_offset_t		offset,
+	vm_external_state_t 	state)
 {
 	unsigned
 	int		bit, byte;

@@ -120,8 +120,7 @@ dev_number_lookup(ops, devnum)
  * table.
  */
 mach_device_t
-device_lookup(name)
-	char * name;
+device_lookup(char *name)
 {
 	dev_ops_t	dev_ops;
 	int		dev_minor;
@@ -198,8 +197,7 @@ device_lookup(name)
  * Add a reference to the device.
  */
 void
-mach_device_reference(device)
-	mach_device_t	device;
+mach_device_reference(mach_device_t device)
 {
 	simple_lock(&device->ref_lock);
 	device->ref_count++;
@@ -211,8 +209,7 @@ mach_device_reference(device)
  * structure if no references are left.
  */
 void
-mach_device_deallocate(device)
-	mach_device_t	device;
+mach_device_deallocate(mach_device_t device)
 {
 	simple_lock(&device->ref_lock);
 	if (--device->ref_count > 0) {
@@ -248,8 +245,7 @@ mach_device_deallocate(device)
  * Enter a port-to-device mapping.
  */
 void
-dev_port_enter(device)
-	mach_device_t	device;
+dev_port_enter(mach_device_t device)
 {
 	mach_device_reference(device);
 
@@ -267,8 +263,7 @@ dev_port_enter(device)
  * Remove a port-to-device mapping.
  */
 void
-dev_port_remove(device)
-	mach_device_t	device;
+dev_port_remove(mach_device_t device)
 {
 	ipc_kobject_set(device->port, IKO_NULL, IKOT_NONE);
 	mach_device_deallocate(device);
@@ -279,8 +274,7 @@ dev_port_remove(device)
  * Doesn't consume the naked send right; produces a device reference.
  */
 device_t
-dev_port_lookup(port)
-	ipc_port_t	port;
+dev_port_lookup(ipc_port_t port)
 {
 	device_t	device;
 
@@ -321,9 +315,9 @@ convert_device_to_port(device)
  * return FALSE.
  */
 boolean_t
-dev_map(routine, port)
-	boolean_t	(*routine)();
-	mach_port_t	port;
+dev_map(
+	boolean_t	(*routine)(),
+	mach_port_t	port)
 {
 	int		i;
 	queue_t		q;

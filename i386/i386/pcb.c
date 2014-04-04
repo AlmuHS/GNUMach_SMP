@@ -70,10 +70,10 @@ vm_offset_t	kernel_stack[NCPUS];	/* top of active_stack */
  *	Attach a kernel stack to a thread.
  */
 
-void stack_attach(thread, stack, continuation)
-	thread_t thread;
-	vm_offset_t stack;
-	void (*continuation)(thread_t);
+void stack_attach(
+	thread_t 	thread,
+	vm_offset_t 	stack,
+	void 		(*continuation)(thread_t))
 {
 	counter(if (++c_stacks_current > c_stacks_max)
 			c_stacks_max = c_stacks_current);
@@ -105,8 +105,7 @@ void stack_attach(thread, stack, continuation)
  *	Detaches a kernel stack from a thread, returning the old stack.
  */
 
-vm_offset_t stack_detach(thread)
-	thread_t	thread;
+vm_offset_t stack_detach(thread_t thread)
 {
 	vm_offset_t	stack;
 
@@ -130,8 +129,7 @@ vm_offset_t stack_detach(thread)
 #define	gdt_desc_p(mycpu,sel) \
 	((struct real_descriptor *)&curr_gdt(mycpu)[sel_idx(sel)])
 
-void switch_ktss(pcb)
-	pcb_t	pcb;
+void switch_ktss(pcb_t pcb)
 {
 	int			mycpu = cpu_number();
     {
@@ -243,9 +241,9 @@ update_ktss_iopb (unsigned char *new_iopb, io_port_t size)
  *	Move the current thread's kernel stack to the new thread.
  */
 
-void stack_handoff(old, new)
-	thread_t	old;
-	thread_t	new;
+void stack_handoff(
+	thread_t	old,
+	thread_t	new)
 {
 	int		mycpu = cpu_number();
 	vm_offset_t	stack;
@@ -307,8 +305,7 @@ void stack_handoff(old, new)
 /*
  * Switch to the first thread on a CPU.
  */
-void load_context(new)
-	thread_t	new;
+void load_context(thread_t new)
 {
 	switch_ktss(new->pcb);
 	Load_context(new);
@@ -319,10 +316,10 @@ void load_context(new)
  * Save the old thread`s kernel state or continuation,
  * and return it.
  */
-thread_t switch_context(old, continuation, new)
-	thread_t	old;
-	void (*continuation)();
-	thread_t	new;
+thread_t switch_context(
+	thread_t	old,
+	void 		(*continuation)(),
+	thread_t	new)
 {
 	/*
 	 *	Save FP registers if in use.
@@ -373,8 +370,7 @@ void pcb_module_init(void)
 	fpu_module_init();
 }
 
-void pcb_init(thread)
-	thread_t	thread;
+void pcb_init(thread_t thread)
 {
 	pcb_t		pcb;
 
@@ -406,8 +402,7 @@ void pcb_init(thread)
 	thread->pcb = pcb;
 }
 
-void pcb_terminate(thread)
-	thread_t	thread;
+void pcb_terminate(thread_t thread)
 {
 	pcb_t		pcb = thread->pcb;
 
@@ -440,11 +435,11 @@ void pcb_collect(thread)
  *	Set the status of the specified thread.
  */
 
-kern_return_t thread_setstatus(thread, flavor, tstate, count)
-	thread_t		thread;
-	int			flavor;
-	thread_state_t		tstate;
-	unsigned int		count;
+kern_return_t thread_setstatus(
+	thread_t		thread,
+	int			flavor,
+	thread_state_t		tstate,
+	unsigned int		count)
 {
 	switch (flavor) {
 	    case i386_THREAD_STATE:
@@ -646,11 +641,11 @@ kern_return_t thread_setstatus(thread, flavor, tstate, count)
  *	Get the status of the specified thread.
  */
 
-kern_return_t thread_getstatus(thread, flavor, tstate, count)
-	thread_t		thread;
-	int			flavor;
-	thread_state_t		tstate;	/* pointer to OUT array */
-	unsigned int		*count;		/* IN/OUT */
+kern_return_t thread_getstatus(
+	thread_t		thread,
+	int			flavor,
+	thread_state_t		tstate,	/* pointer to OUT array */
+	unsigned int		*count)		/* IN/OUT */
 {
 	switch (flavor)  {
 	    case THREAD_STATE_FLAVOR_LIST:
@@ -798,13 +793,12 @@ kern_return_t thread_getstatus(thread, flavor, tstate, count)
  * will make the thread return 'retval' from a syscall.
  */
 void
-thread_set_syscall_return(thread, retval)
-	thread_t	thread;
-	kern_return_t	retval;
+thread_set_syscall_return(
+	thread_t	thread,
+	kern_return_t	retval)
 {
 	thread->pcb->iss.eax = retval;
 }
-
 
 /*
  * Return prefered address of user stack.
@@ -814,8 +808,7 @@ thread_set_syscall_return(thread, retval)
  * address.
  */
 vm_offset_t
-user_stack_low(stack_size)
-	vm_size_t	stack_size;
+user_stack_low(vm_size_t stack_size)
 {
 	return (VM_MAX_ADDRESS - stack_size);
 }

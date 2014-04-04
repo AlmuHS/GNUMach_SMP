@@ -110,8 +110,7 @@ mach_msg_rpc_from_kernel(msg, send_size, reply_size)
  */
 
 void
-mach_msg_abort_rpc(thread)
-	ipc_thread_t thread;
+mach_msg_abort_rpc(ipc_thread_t thread)
 {
 	ipc_port_t reply = IP_NULL;
 
@@ -141,14 +140,14 @@ mach_msg_abort_rpc(thread)
  */
 
 mach_msg_return_t
-mach_msg(msg, option, send_size, rcv_size, rcv_name, time_out, notify)
-	mach_msg_header_t *msg;
-	mach_msg_option_t option;
-	mach_msg_size_t send_size;
-	mach_msg_size_t rcv_size;
-	mach_port_t rcv_name;
-	mach_msg_timeout_t time_out;
-	mach_port_t notify;
+mach_msg(
+	mach_msg_header_t 	*msg,
+	mach_msg_option_t 	option,
+	mach_msg_size_t 	send_size,
+	mach_msg_size_t 	rcv_size,
+	mach_port_t 		rcv_name,
+	mach_msg_timeout_t 	time_out,
+	mach_port_t 		notify)
 {
 	ipc_space_t space = current_space();
 	vm_map_t map = current_map();
@@ -333,8 +332,7 @@ MACRO_BEGIN								\
 MACRO_END
 
 device_t
-port_name_to_device(name)
-	mach_port_t name;
+port_name_to_device(mach_port_t name)
 {
 	ipc_port_t port;
 	device_t device;
@@ -377,8 +375,7 @@ port_name_to_device(name)
 }
 
 thread_t
-port_name_to_thread(name)
-	mach_port_t name;
+port_name_to_thread(mach_port_t name)
 {
 	ipc_port_t port;
 
@@ -423,8 +420,7 @@ port_name_to_thread(name)
 }
 
 task_t
-port_name_to_task(name)
-	mach_port_t name;
+port_name_to_task(mach_port_t name)
 {
 	ipc_port_t port;
 
@@ -519,8 +515,7 @@ port_name_to_map(
 }
 
 ipc_space_t
-port_name_to_space(name)
-	mach_port_t name;
+port_name_to_space(mach_port_t name)
 {
 	ipc_port_t port;
 
@@ -575,12 +570,11 @@ port_name_to_space(name)
  * AARGH!
  */
 
-kern_return_t thread_get_state_KERNEL(thread_port, flavor,
-			old_state, old_state_count)
-	mach_port_t	thread_port;	/* port right for thread */
-	int		flavor;
-	thread_state_t	old_state;	/* pointer to OUT array */
-	natural_t	*old_state_count;	/* IN/OUT */
+kern_return_t thread_get_state_KERNEL(
+	mach_port_t	thread_port,	/* port right for thread */
+	int		flavor,
+	thread_state_t	old_state,	/* pointer to OUT array */
+	natural_t	*old_state_count)	/* IN/OUT */
 {
 	thread_t	thread;
 	kern_return_t	result;
@@ -592,12 +586,11 @@ kern_return_t thread_get_state_KERNEL(thread_port, flavor,
 	return result;
 }
 
-kern_return_t thread_set_state_KERNEL(thread_port, flavor,
-			new_state, new_state_count)
-	mach_port_t	thread_port;	/* port right for thread */
-	int		flavor;
-	thread_state_t	new_state;
-	natural_t	new_state_count;
+kern_return_t thread_set_state_KERNEL(
+	mach_port_t	thread_port,	/* port right for thread */
+	int		flavor,
+	thread_state_t	new_state,
+	natural_t	new_state_count)
 {
 	thread_t	thread;
 	kern_return_t	result;
@@ -669,11 +662,11 @@ syscall_vm_map(
 	return result;
 }
 
-kern_return_t syscall_vm_allocate(target_map, address, size, anywhere)
-	mach_port_t		target_map;
-	vm_offset_t		*address;
-	vm_size_t		size;
-	boolean_t		anywhere;
+kern_return_t syscall_vm_allocate(
+	mach_port_t		target_map,
+	vm_offset_t		*address,
+	vm_size_t		size,
+	boolean_t		anywhere)
 {
 	vm_map_t		map;
 	vm_offset_t		addr;
@@ -692,10 +685,10 @@ kern_return_t syscall_vm_allocate(target_map, address, size, anywhere)
 	return result;
 }
 
-kern_return_t syscall_vm_deallocate(target_map, start, size)
-	mach_port_t		target_map;
-	vm_offset_t		start;
-	vm_size_t		size;
+kern_return_t syscall_vm_deallocate(
+	mach_port_t		target_map,
+	vm_offset_t		start,
+	vm_size_t		size)
 {
 	vm_map_t		map;
 	kern_return_t		result;
@@ -710,10 +703,10 @@ kern_return_t syscall_vm_deallocate(target_map, start, size)
 	return result;
 }
 
-kern_return_t syscall_task_create(parent_task, inherit_memory, child_task)
-	mach_port_t	parent_task;
-	boolean_t	inherit_memory;
-	mach_port_t	*child_task;		/* OUT */
+kern_return_t syscall_task_create(
+	mach_port_t	parent_task,
+	boolean_t	inherit_memory,
+	mach_port_t	*child_task)		/* OUT */
 {
 	task_t		t, c;
 	ipc_port_t	port;
@@ -739,8 +732,7 @@ kern_return_t syscall_task_create(parent_task, inherit_memory, child_task)
 	return result;
 }
 
-kern_return_t syscall_task_terminate(task)
-	mach_port_t	task;
+kern_return_t syscall_task_terminate(mach_port_t task)
 {
 	task_t		t;
 	kern_return_t	result;
@@ -755,8 +747,7 @@ kern_return_t syscall_task_terminate(task)
 	return result;
 }
 
-kern_return_t syscall_task_suspend(task)
-	mach_port_t	task;
+kern_return_t syscall_task_suspend(mach_port_t task)
 {
 	task_t		t;
 	kern_return_t	result;
@@ -771,10 +762,10 @@ kern_return_t syscall_task_suspend(task)
 	return result;
 }
 
-kern_return_t syscall_task_set_special_port(task, which_port, port_name)
-	mach_port_t	task;
-	int		which_port;
-	mach_port_t	port_name;
+kern_return_t syscall_task_set_special_port(
+	mach_port_t	task,
+	int		which_port,
+	mach_port_t	port_name)
 {
 	task_t		t;
 	ipc_port_t	port;
@@ -804,10 +795,10 @@ kern_return_t syscall_task_set_special_port(task, which_port, port_name)
 }
 
 kern_return_t
-syscall_mach_port_allocate(task, right, namep)
-	mach_port_t task;
-	mach_port_right_t right;
-	mach_port_t *namep;
+syscall_mach_port_allocate(
+	mach_port_t 		task,
+	mach_port_right_t 	right,
+	mach_port_t 		*namep)
 {
 	ipc_space_t space;
 	mach_port_t name;
@@ -826,10 +817,10 @@ syscall_mach_port_allocate(task, right, namep)
 }
 
 kern_return_t
-syscall_mach_port_allocate_name(task, right, name)
-	mach_port_t task;
-	mach_port_right_t right;
-	mach_port_t name;
+syscall_mach_port_allocate_name(
+	mach_port_t 		task,
+	mach_port_right_t 	right,
+	mach_port_t 		name)
 {
 	ipc_space_t space;
 	kern_return_t kr;
@@ -845,9 +836,9 @@ syscall_mach_port_allocate_name(task, right, name)
 }
 
 kern_return_t
-syscall_mach_port_deallocate(task, name)
-	mach_port_t task;
-	mach_port_t name;
+syscall_mach_port_deallocate(
+	mach_port_t task,
+	mach_port_t name)
 {
 	ipc_space_t space;
 	kern_return_t kr;
@@ -863,11 +854,11 @@ syscall_mach_port_deallocate(task, name)
 }
 
 kern_return_t
-syscall_mach_port_insert_right(task, name, right, rightType)
-	mach_port_t task;
-	mach_port_t name;
-	mach_port_t right;
-	mach_msg_type_name_t rightType;
+syscall_mach_port_insert_right(
+	mach_port_t 		task,
+	mach_port_t 		name,
+	mach_port_t 		right,
+	mach_msg_type_name_t 	rightType)
 {
 	ipc_space_t space;
 	ipc_object_t object;
@@ -902,8 +893,7 @@ syscall_mach_port_insert_right(task, name, right, rightType)
 	return kr;
 }
 
-kern_return_t syscall_thread_depress_abort(thread)
-	mach_port_t	thread;
+kern_return_t syscall_thread_depress_abort(mach_port_t thread)
 {
 	thread_t	t;
 	kern_return_t	result;

@@ -839,8 +839,7 @@ void ttrstrt(
  * Called at spltty, tty already locked.
  * Must be on master CPU if device runs on master.
  */
-void ttstart(tp)
-	struct tty *tp;
+void ttstart(struct tty *tp)
 {
 	if ((tp->t_state & (TS_TIMEOUT|TS_TTSTOP|TS_BUSY)) == 0) {
 	    /*

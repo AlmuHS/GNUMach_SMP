@@ -131,9 +131,9 @@ kbdopen(dev, flags, ior)
 
 /*ARGSUSED*/
 void
-kbdclose(dev, flags)
-	dev_t dev;
-	int flags;
+kbdclose(
+	dev_t 	dev,
+	int 	flags)
 {
 	spl_t s = SPLKD();
 
@@ -143,11 +143,11 @@ kbdclose(dev, flags)
 }
 
 
-io_return_t kbdgetstat(dev, flavor, data, count)
-	dev_t		dev;
-	int		flavor;
-	int *		data;		/* pointer to OUT array */
-	unsigned int	*count;		/* OUT */
+io_return_t kbdgetstat(
+	dev_t		dev,
+	int		flavor,
+	int *		data,		/* pointer to OUT array */
+	unsigned int	*count)		/* OUT */
 {
 	switch (flavor) {
 	    case KDGKBDTYPE:
@@ -165,11 +165,11 @@ io_return_t kbdgetstat(dev, flavor, data, count)
 	return (D_SUCCESS);
 }
 
-io_return_t kbdsetstat(dev, flavor, data, count)
-	dev_t		dev;
-	int		flavor;
-	int *		data;
-	unsigned int	count;
+io_return_t kbdsetstat(
+	dev_t		dev,
+	int		flavor,
+	int *		data,
+	unsigned int	count)
 {
 	switch (flavor) {
 	    case KDSKBDMODE:
@@ -198,9 +198,9 @@ io_return_t kbdsetstat(dev, flavor, data, count)
  * kbdread - dequeue and return any queued events.
  */
 int
-kbdread(dev, ior)
-	dev_t		dev;
-	io_req_t	ior;
+kbdread(
+	dev_t		dev,
+	io_req_t	ior)
 {
 	int		err, count;
 	spl_t		s;
@@ -237,8 +237,7 @@ kbdread(dev, ior)
 	return (D_SUCCESS);
 }
 
-boolean_t kbd_read_done(ior)
-	io_req_t	ior;
+boolean_t kbd_read_done(io_req_t ior)
 {
 	int		count;
 	spl_t		s;
@@ -274,8 +273,7 @@ boolean_t kbd_read_done(ior)
  */
 
 void
-kd_enqsc(sc)
-	Scancode sc;
+kd_enqsc(Scancode sc)
 {
 	kd_event ev;
 
@@ -292,8 +290,7 @@ kd_enqsc(sc)
  */
 
 void
-kbd_enqueue(ev)
-	kd_event *ev;
+kbd_enqueue(kd_event *ev)
 {
 	if (kdq_full(&kbd_queue))
 		printf("kbd: queue full\n");
@@ -366,9 +363,9 @@ X_kdb_exit(void)
 }
 
 io_return_t
-X_kdb_enter_init(data, count)
-    u_int *data;
-    u_int count;
+X_kdb_enter_init(
+    u_int *data,
+    u_int count)
 {
     if (count * sizeof X_kdb_enter_str[0] > sizeof X_kdb_enter_str)
 	return D_INVALID_OPERATION;
@@ -379,9 +376,9 @@ X_kdb_enter_init(data, count)
 }
 
 io_return_t
-X_kdb_exit_init(data, count)
-    u_int *data;
-    u_int count;
+X_kdb_exit_init(
+    u_int *data,
+    u_int count)
 {
     if (count * sizeof X_kdb_exit_str[0] > sizeof X_kdb_exit_str)
 	return D_INVALID_OPERATION;

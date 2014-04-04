@@ -197,8 +197,7 @@ fpu_module_init(void)
  * Called only when thread terminating - no locking necessary.
  */
 void
-fp_free(fps)
-	struct i386_fpsave_state *fps;
+fp_free(struct i386_fpsave_state *fps)
 {
 ASSERT_IPL(SPL0);
 #if	NCPUS == 1
@@ -747,8 +746,7 @@ ASSERT_IPL(SPL0);
  * .	otherwise, thread is running.
  */
 void
-fp_save(thread)
-	thread_t	thread;
+fp_save(thread_t thread)
 {
 	pcb_t pcb = thread->pcb;
 	struct i386_fpsave_state *ifps = pcb->ims.ifps;
@@ -769,8 +767,7 @@ fp_save(thread)
  * Locking not needed; always called on the current thread.
  */
 void
-fp_load(thread)
-	thread_t	thread;
+fp_load(thread_t thread)
 {
 	pcb_t pcb = thread->pcb;
 	struct i386_fpsave_state *ifps;

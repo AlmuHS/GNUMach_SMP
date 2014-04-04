@@ -33,8 +33,7 @@
  *	ts.c - kern_timestamp system call.
  */
 kern_return_t
-kern_timestamp(tsp)
-struct	tsval	*tsp;
+kern_timestamp(struct tsval *tsp)
 {
 /*
 	temp.low_val = 0;

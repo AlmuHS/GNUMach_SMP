@@ -58,9 +58,10 @@
  * info to the other side.
  */
 kern_return_t
-mach_port_rpc_copy(portp, sact, dact)
-	struct rpc_port_desc *portp;
-	struct Act *sact, *dact;
+mach_port_rpc_copy(
+	struct rpc_port_desc 	*portp,
+	struct Act 		*sact, 
+	struct Act 		*dact)
 {
 	ipc_space_t sspace, dspace;
 	mach_msg_type_name_t tname;

@@ -210,8 +210,7 @@ remote_db(void) {
  * switch to another cpu
  */
 void
-db_on(cpu)
-	int	cpu;
+db_on(int cpu)
 {
 	/*
 	 * Save ddb global variables
