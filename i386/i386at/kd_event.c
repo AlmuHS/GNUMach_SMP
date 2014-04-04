@@ -110,9 +110,10 @@ kbdinit(void)
 
 /*ARGSUSED*/
 int
-kbdopen(dev, flags)
+kbdopen(dev, flags, ior)
 	dev_t dev;
 	int flags;
+	io_req_t ior;
 {
 	spl_t o_pri = spltty();
 	kdinit();

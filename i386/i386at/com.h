@@ -71,10 +71,10 @@ comsetstat(
 	int 		*data,
 	natural_t	count);
 
-extern io_return_t comopen(int dev, int flag, io_req_t ior);
-extern io_return_t comclose(int dev, int flag);
-extern io_return_t comread(int dev, io_req_t ior);
-extern io_return_t comwrite(int dev, io_req_t ior);
+extern io_return_t comopen(dev_t dev, int flag, io_req_t ior);
+extern void comclose(dev_t dev, int flag);
+extern io_return_t comread(dev_t dev, io_req_t ior);
+extern io_return_t comwrite(dev_t dev, io_req_t ior);
 extern io_return_t comportdeath(dev_t dev, mach_port_t port);
 
 #endif /* _COM_H_ */

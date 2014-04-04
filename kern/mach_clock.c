@@ -499,13 +499,13 @@ void mapable_time_init(void)
 	update_mapped_time(&time);
 }
 
-int timeopen(void)
+int timeopen(dev_t dev, int flag, io_req_t ior)
 {
 	return(0);
 }
-int timeclose(void)
+void timeclose(dev_t dev, int flag)
 {
-	return(0);
+	return;
 }
 
 /*

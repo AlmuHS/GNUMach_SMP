@@ -752,9 +752,9 @@ extern void kdb_kintr(void);
 #endif /* MACH_KDB */
 
 extern int kdopen(dev_t dev, int flag, io_req_t ior);
-extern void kdclose(int dev, int flag);
-extern int kdread(int dev, io_req_t uio);
-extern int kdwrite(int dev, io_req_t uio);
+extern void kdclose(dev_t dev, int flag);
+extern int kdread(dev_t dev, io_req_t uio);
+extern int kdwrite(dev_t dev, io_req_t uio);
 
 extern io_return_t kdgetstat(
 	dev_t		dev,
@@ -769,7 +769,7 @@ extern io_return_t kdsetstat(
 	natural_t	count);
 
 extern int kdportdeath(dev_t dev, mach_port_t port);
-extern int kdmmap(dev_t dev, off_t off, int prot);
+extern int kdmmap(dev_t dev, vm_offset_t off, vm_prot_t prot);
 
 boolean_t kdcheckmagic(Scancode scancode);
 

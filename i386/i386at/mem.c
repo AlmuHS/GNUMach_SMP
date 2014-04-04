@@ -32,7 +32,7 @@
 /*ARGSUSED*/
 int
 memmmap(dev, off, prot)
-int		dev;
+dev_t		dev;
 vm_offset_t	off;
 vm_prot_t	prot;
 {

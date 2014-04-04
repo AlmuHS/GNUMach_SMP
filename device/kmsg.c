@@ -77,14 +77,13 @@ kmsgopen (dev_t dev, int flag, const io_req_t ior)
 }
 
 /* Kernel Message Close Handler */
-io_return_t
+void
 kmsgclose (dev_t dev, int flag)
 {
   simple_lock (&kmsg_lock);
   kmsg_in_use = FALSE;
   
   simple_unlock (&kmsg_lock);
-  return D_SUCCESS;
 }
 
 static boolean_t kmsg_read_done (io_req_t ior);

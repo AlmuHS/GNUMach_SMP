@@ -21,7 +21,7 @@
 
 #include <mach/vm_prot.h>
 
-extern int timemmap(int dev, int off, vm_prot_t prot);
+extern int timemmap(dev_t dev, vm_offset_t off, vm_prot_t prot);
 
 void inittodr(void);
 

@@ -44,13 +44,47 @@ int nulldev(void)
 	return (D_SUCCESS);
 }
 
+int nulldev_open(dev_t dev, int flags, io_req_t ior)
+{
+	return (D_SUCCESS);
+}
+
+void nulldev_close(dev_t dev, int flags)
+{
+}
+
+int nulldev_read(dev_t dev, io_req_t ior)
+{
+	return (D_SUCCESS);
+}
+
+int nulldev_write(dev_t dev, io_req_t ior)
+{
+	return (D_SUCCESS);
+}
+
+io_return_t nulldev_getstat(dev_t dev, int flavor, int *data, natural_t *count)
+{
+	return (D_SUCCESS);
+}
+
+io_return_t nulldev_setstat(dev_t dev, int flavor, int *data, natural_t count)
+{
+	return (D_SUCCESS);
+}
+
+int nulldev_portdeath(dev_t dev, mach_port_t port)
+{
+	return (D_SUCCESS);
+}
+
 int nodev(void)
 {
 	return (D_INVALID_OPERATION);
 }
 
-vm_offset_t
-nomap(void)
+int
+nomap(dev_t dev, vm_offset_t off, int prot)
 {
 	return (D_INVALID_OPERATION);
 }

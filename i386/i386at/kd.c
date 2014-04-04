@@ -487,7 +487,7 @@ kdopen(dev, flag, ior)
 /*ARGSUSED*/
 void
 kdclose(dev, flag)
-int	dev;
+dev_t	dev;
 int	flag;
 {
 	struct	tty	*tp;
@@ -519,7 +519,7 @@ int	flag;
 /*ARGSUSED*/
 int
 kdread(dev, uio)
-int	dev;
+dev_t	dev;
 io_req_t uio;
 {
 	struct	tty	*tp;
@@ -544,7 +544,7 @@ io_req_t uio;
 /*ARGSUSED*/
 int
 kdwrite(dev, uio)
-int	dev;
+dev_t	dev;
 io_req_t uio;
 {
 	return((*linesw[kd_tty.t_line].l_write)(&kd_tty, uio));
@@ -558,8 +558,8 @@ io_req_t uio;
 int
 kdmmap(dev, off, prot)
 	dev_t dev;
-	off_t off;
-	int prot;
+	vm_offset_t off;
+	vm_prot_t prot;
 {
 	if (off >= (128*1024))
 		return(-1);

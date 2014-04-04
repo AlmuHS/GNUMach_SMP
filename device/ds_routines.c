@@ -639,7 +639,7 @@ device_close(device)
 	/*
 	 * Close the device
 	 */
-	(*device->dev_ops->d_close)(device->dev_number);
+	(*device->dev_ops->d_close)(device->dev_number, 0);
 
 	/*
 	 * Finally mark it closed.  If someone else is trying

@@ -29,6 +29,10 @@
 #include <mach/time_value.h>
 #include <kern/host.h>
 #include <kern/queue.h>
+#include <sys/types.h>
+
+struct io_req;
+typedef struct io_req *io_req_t;
 
 
 /* Timers in kernel.  */
@@ -104,7 +108,7 @@ extern void mapable_time_init (void);
 extern void timeout(timer_func_t *fcn, void *param, int interval);
 extern boolean_t untimeout(timer_func_t *fcn, const void *param);
 
-extern int timeopen(void);
-extern int timeclose(void);
+extern int timeopen(dev_t dev, int flag, io_req_t ior);
+extern void timeclose(dev_t dev, int flag);
 
 #endif /* _KERN_MACH_CLOCK_H_ */

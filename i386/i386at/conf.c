@@ -81,9 +81,9 @@ struct dev_ops	dev_name_list[] =
 	/* We don't assign a console here, when we find one via
 	   cninit() we stick something appropriate here through the
 	   indirect list */
-	{ "cn",		nulldev,	nulldev,	nulldev,
-	  nulldev,	nulldev,	nulldev,	nomap,
-	  nodev,	nulldev,	nulldev,	0,
+	{ "cn",		nulldev_open,	nulldev_close,	nulldev_read,
+	  nulldev_write,	nulldev_getstat,	nulldev_setstat,	nomap,
+	  nodev,	nulldev,	nulldev_portdeath,	0,
 	  nodev },
 
 #ifndef	MACH_HYP
@@ -93,9 +93,9 @@ struct dev_ops	dev_name_list[] =
 	  nodev },
 #endif	/* MACH_HYP */
 
-	{ timename,	timeopen,	timeclose,	nulldev,
-	  nulldev,	nulldev,	nulldev,	timemmap,
-	  nodev,	nulldev,	nulldev,	0,
+	{ timename,	timeopen,	timeclose,	nulldev_read,
+	  nulldev_write,	nulldev_getstat,	nulldev_setstat,	timemmap,
+	  nodev,	nulldev,	nulldev_portdeath,	0,
 	  nodev },
 
 #ifndef	MACH_HYP
@@ -114,25 +114,25 @@ struct dev_ops	dev_name_list[] =
 #endif
 
 	{ mousename,	mouseopen,	mouseclose,	mouseread,
-	  nodev,	mousegetstat,	nulldev,	nomap,
-	  nodev,	nulldev,	nulldev,	0,
+	  nulldev_write,	mousegetstat,	nulldev_setstat,	nomap,
+	  nodev,	nulldev,	nulldev_portdeath,	0,
 	  nodev },
 
 	{ kbdname,	kbdopen,	kbdclose,	kbdread,
-	  nodev,	kbdgetstat,	kbdsetstat,	nomap,
-	  nodev,	nulldev,	nulldev,	0,
+	  nulldev_write,	kbdgetstat,	kbdsetstat,	nomap,
+	  nodev,	nulldev,	nulldev_portdeath,	0,
 	  nodev },
 
-	{ memname,	nulldev,	nulldev,	nodev,
-	  nodev,	nodev,		nodev,		memmmap,
-	  nodev,	nulldev,	nulldev,	0,
+	{ memname,	nulldev_open,	nulldev_close,	nulldev_read,
+	  nulldev_write,	nulldev_getstat,	nulldev_setstat,		memmmap,
+	  nodev,	nulldev,	nulldev_portdeath,	0,
 	  nodev },
 #endif	/* MACH_HYP */
 
 #ifdef	MACH_KMSG
         { kmsgname,     kmsgopen,       kmsgclose,       kmsgread,
-          nodev,        kmsggetstat,    nodev,           nomap,
-          nodev,        nulldev,        nulldev,         0,
+          nulldev_write,        kmsggetstat,    nulldev_setstat,           nomap,
+          nodev,        nulldev,        nulldev_portdeath,         0,
           nodev },
 #endif
 

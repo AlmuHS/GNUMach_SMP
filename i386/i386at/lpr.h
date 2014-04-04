@@ -57,10 +57,10 @@ lprsetstat(
 
 void lprpr_addr(unsigned short addr);
 
-extern int lpropen(int dev, int flag, io_req_t ior);
-extern void lprclose(int dev, int flag);
-extern int lprread(int dev, io_req_t ior);
-extern int lprwrite(int	dev, io_req_t ior);
+extern int lpropen(dev_t dev, int flag, io_req_t ior);
+extern void lprclose(dev_t dev, int flag);
+extern int lprread(dev_t dev, io_req_t ior);
+extern int lprwrite(dev_t	dev, io_req_t ior);
 extern int lprportdeath(dev_t dev, mach_port_t port);
 
 #endif /* _LPRREG_H_ */

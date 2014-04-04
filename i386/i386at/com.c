@@ -319,7 +319,7 @@ boolean_t com_reprobe(
 }
 
 io_return_t comopen(
-	int dev,
+	dev_t dev,
 	int flag,
 	io_req_t ior)
 {
@@ -400,8 +400,8 @@ io_return_t comopen(
 	return result;
 }
 
-io_return_t comclose(dev, flag)
-int dev;
+void comclose(dev, flag)
+dev_t dev;
 int flag;
 {
 	struct tty	*tp = &com_tty[minor(dev)];
@@ -416,18 +416,18 @@ int flag;
 		if (comfifo[minor(dev)] != 0)
 			outb(INTR_ID(addr), 0x00); /* Disable fifos */
 	}
-	return 0;
+	return;
 }
 
 io_return_t comread(dev, ior)
-int	dev;
+dev_t	dev;
 io_req_t ior;
 {
 	return char_read(&com_tty[minor(dev)], ior);
 }
 
 io_return_t comwrite(dev, ior)
-int	dev;
+dev_t	dev;
 io_req_t ior;
 {
 	return char_write(&com_tty[minor(dev)], ior);

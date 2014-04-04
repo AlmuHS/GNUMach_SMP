@@ -34,7 +34,7 @@ extern void X_kdb_enter (void);
 
 extern void X_kdb_exit (void);
 
-extern int kbdopen(dev_t dev, int flags);
+extern int kbdopen(dev_t dev, int flags, io_req_t ior);
 extern void kbdclose(dev_t dev, int flags);
 extern int kbdread(dev_t dev, io_req_t ior);
 

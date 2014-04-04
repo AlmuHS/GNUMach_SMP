@@ -147,9 +147,10 @@ int track_man[10];
 
 /*ARGSUSED*/
 int
-mouseopen(dev, flags)
+mouseopen(dev, flags, ior)
 	dev_t dev;
 	int flags;
+	io_req_t ior;
 {
 	if (mouse_in_use)
 		return (D_ALREADY_OPEN);

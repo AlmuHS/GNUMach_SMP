@@ -616,8 +616,8 @@ void c_boot_entry(vm_offset_t bi)
 
 int
 timemmap(dev, off, prot)
-	int dev;
-	int off;
+	dev_t dev;
+	vm_offset_t off;
 	vm_prot_t prot;
 {
 	extern time_value_t *mtime;

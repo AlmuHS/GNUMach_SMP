@@ -32,22 +32,30 @@
 #define	_DEVICE_CONF_H_
 
 #include <mach/machine/vm_types.h>
+#include <sys/types.h>
+#include <mach/port.h>
+#include <mach/vm_prot.h>
+
+struct io_req;
+typedef struct io_req *io_req_t;
+
+typedef int io_return_t;
 
 /*
  * Operations list for major device types.
  */
 struct dev_ops {
-	char *    	d_name;		/* name for major device */
-	int		(*d_open)();	/* open device */
-	int		(*d_close)();	/* close device */
-	int		(*d_read)();	/* read */
-	int		(*d_write)();	/* write */
-	int		(*d_getstat)();	/* get status/control */
-	int		(*d_setstat)();	/* set status/control */
-	vm_offset_t	(*d_mmap)();	/* map memory */
-	int		(*d_async_in)();/* asynchronous input setup */
-	int		(*d_reset)();	/* reset device */
-	int		(*d_port_death)();
+	char *    	d_name;				/* name for major device */
+	int		(*d_open)(dev_t, int, io_req_t);/* open device */
+	void		(*d_close)(dev_t, int);		/* close device */
+	int		(*d_read)(dev_t, io_req_t);	/* read */
+	int		(*d_write)(dev_t, io_req_t);	/* write */
+	int		(*d_getstat)(dev_t, int, int *, natural_t *);	/* get status/control */
+	int		(*d_setstat)(dev_t, int, int *, natural_t);	/* set status/control */
+	int		(*d_mmap)(dev_t, vm_offset_t, vm_prot_t);	/* map memory */
+	int		(*d_async_in)();		/* asynchronous input setup */
+	int		(*d_reset)();			/* reset device */
+	int		(*d_port_death)(dev_t, mach_port_t);
 					/* clean up reply ports */
 	int		d_subdev;	/* number of sub-devices per
 					   unit */
@@ -59,8 +67,15 @@ typedef struct dev_ops *dev_ops_t;
  * Routines for null entries.
  */
 extern int	nulldev(void);		/* no operation - OK */
+extern int	nulldev_open(dev_t dev, int flag, io_req_t ior);
+extern void	nulldev_close(dev_t dev, int flags);
+extern int	nulldev_read(dev_t dev, io_req_t ior);
+extern int	nulldev_write(dev_t dev, io_req_t ior);
+extern io_return_t	nulldev_getstat(dev_t dev, int flavor, int *data, natural_t *count);
+extern io_return_t	nulldev_setstat(dev_t dev, int flavor, int *data, natural_t count);
+extern io_return_t	nulldev_portdeath(dev_t dev, mach_port_t port);
 extern int	nodev(void);		/* no operation - error */
-extern vm_offset_t nomap(void);		/* no operation - error */
+extern int	nomap(dev_t dev, vm_offset_t off, int prot);		/* no operation - error */
 
 /*
  * Flavor constants for d_dev_info routine

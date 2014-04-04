@@ -106,7 +106,7 @@ void lprattach(struct bus_device *dev)
 
 int
 lpropen(dev, flag, ior)
-int dev;
+dev_t dev;
 int flag;
 io_req_t ior;
 {
@@ -135,7 +135,7 @@ u_short addr;
 
 void
 lprclose(dev, flag)
-int dev;
+dev_t dev;
 int flag;
 {
 int 		unit = minor(dev);
@@ -151,7 +151,7 @@ u_short		addr = 	(u_short) lprinfo[unit]->address;
 
 int
 lprread(dev, ior)
-int	dev;
+dev_t	dev;
 io_req_t ior;
 {
 	return char_read(&lpr_tty[minor(dev)], ior);
@@ -159,7 +159,7 @@ io_req_t ior;
 
 int
 lprwrite(dev, ior)
-int	dev;
+dev_t	dev;
 io_req_t ior;
 {
 	return char_write(&lpr_tty[minor(dev)], ior);
