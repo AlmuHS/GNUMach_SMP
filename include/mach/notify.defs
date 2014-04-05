@@ -45,6 +45,9 @@ type notify_port_t = MACH_MSG_TYPE_MOVE_SEND_ONCE
 #ifdef	NOTIFY_INTRAN
 	intran: NOTIFY_INTRAN
 #endif
+#ifdef	NOTIFY_INTRAN_PAYLOAD
+	intranpayload: NOTIFY_INTRAN_PAYLOAD
+#endif
 #ifdef	NOTIFY_OUTTRAN
 	outtran: NOTIFY_OUTTRAN
 #endif
