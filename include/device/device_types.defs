@@ -39,6 +39,10 @@
 
 #include <mach/std_types.defs>
 
+#ifdef DEVICE_IMPORTS
+DEVICE_IMPORTS
+#endif
+
 type recnum_t		= unsigned32;
 type dev_mode_t		= unsigned32;
 type dev_flavor_t	= unsigned32;
@@ -55,6 +59,16 @@ type device_t = mach_port_t
 		intran: device_t dev_port_lookup(mach_port_t)
 		outtran: mach_port_t convert_device_to_port(device_t)
 		destructor: device_deallocate(device_t)
+#else	/* KERNEL_SERVER */
+#ifdef	DEVICE_INTRAN
+		intran: DEVICE_INTRAN
+#endif
+#ifdef	DEVICE_OUTTRAN
+		outtran: DEVICE_OUTTRAN
+#endif
+#ifdef	DEVICE_DESTRUCTOR
+		destructor: DEVICE_DESTRUCTOR
+#endif
 #endif	/* KERNEL_SERVER */
 		;
 
