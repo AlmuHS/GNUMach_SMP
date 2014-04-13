@@ -800,6 +800,7 @@ boot_script_task_create (struct cmd *cmd)
       printf("boot_script_task_create failed with %x\n", rc);
       return BOOT_SCRIPT_MACH_ERROR;
     }
+  task_set_name(cmd->task, cmd->path);
   return 0;
 }
 
