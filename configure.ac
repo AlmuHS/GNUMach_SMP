@@ -86,7 +86,12 @@ AC_CHECK_TOOL([AR], [ar])
 AC_CHECK_TOOL([LD], [ld])
 AC_CHECK_TOOL([NM], [nm])
 
-AC_CHECK_TOOL([MIG], [mig], [mig])
+AC_CHECK_TOOL([MIG], [mig], [:])
+
+if test "$MIG" = :
+then
+    AC_MSG_ERROR([The MiG generator is required to build GNU Mach])
+fi
 
 dnl Needed for the Automake option `subdir-objects'.
 AM_PROG_CC_C_O
