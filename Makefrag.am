@@ -419,9 +419,18 @@ include_mach_eXec_HEADERS = \
 	include/mach/exec/elf.h \
 	include/mach/exec/exec.h
 
-# mach-debug-headers:= $(addprefix mach_debug/, hash_info.h ipc_info.h \
-# 		mach_debug.defs mach_debug_types.defs mach_debug_types.h \
-# 		pc_info.h vm_info.h slab_info.h)
+include_mach_debugdir = $(includedir)/mach_debug
+include_mach_debug_HEADERS = \
+	$(addprefix include/mach_debug/, \
+		hash_info.h \
+		ipc_info.h \
+		mach_debug.defs	\
+		mach_debug_types.defs \
+		mach_debug_types.h \
+		pc_info.h \
+		vm_info.h \
+		slab_info.h \
+	)
 
 # Other headers for the distribution.  We don't install these, because the
 # GNU C library has correct versions for users to use.
