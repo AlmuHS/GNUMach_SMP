@@ -4557,7 +4557,7 @@ their priority from their task and their max priority from the thread.
 
 @deftypefun kern_return_t thread_priority (@w{thread_t @var{thread}}, @w{int @var{prority}}, @w{boolean_t @var{set_max}})
 The function @code{thread_priority} changes the priority and optionally
-the maximum priority of @var{thread}.  Priorities range from 0 to 31,
+the maximum priority of @var{thread}.  Priorities range from 0 to 49,
 where lower numbers denote higher priorities.  If the new priority is
 higher than the priority of the current thread, preemption may occur as
 a result of this call.  The maximum priority of the thread is also set
@@ -4568,7 +4568,7 @@ priority.
 
 The functions returns @code{KERN_SUCCESS} if the operation completed
 successfully, @code{KERN_INVALID_ARGUMENT} if @var{thread} is not a
-thread or @var{priority} is out of range (not in 0..31), and
+thread or @var{priority} is out of range (not in 0..49), and
 @code{KERN_FAILURE} if the requested operation would violate the
 thread's maximum priority (thread_priority).
 @end deftypefun
@@ -4582,7 +4582,7 @@ legal value.
 The functions returns @code{KERN_SUCCESS} if the operation completed
 successfully, @code{KERN_INVALID_ARGUMENT} if @var{thread} is not a
 thread or @var{processor_set} is not a control port for a processor set
-or @var{priority} is out of range (not in 0..31), and
+or @var{priority} is out of range (not in 0..49), and
 @code{KERN_FAILURE} if the thread is not assigned to the processor set
 whose control port was presented.
 @end deftypefun
