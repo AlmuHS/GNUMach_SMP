@@ -63,6 +63,7 @@
 
 #if	MACH_MACHINE_ROUTINES
 #include <machine/machine_routines.h>
+#include MACHINE_SERVER_HEADER
 #endif
 
 
@@ -158,10 +159,6 @@ ipc_kobject_server(request)
 	 * to perform the kernel function
 	 */
     {
-#if	MACH_MACHINE_ROUTINES
-	extern mig_routine_t	MACHINE_SERVER_ROUTINE();
-#endif
-
 	check_simple_locks();
 	if ((routine = mach_server_routine(&request->ikm_header)) != 0
 	 || (routine = mach_port_server_routine(&request->ikm_header)) != 0
