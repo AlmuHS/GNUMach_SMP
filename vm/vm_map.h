@@ -175,9 +175,12 @@ struct vm_map {
 	vm_map_entry_t		hint;		/* hint for quick lookups */
 	decl_simple_lock_data(,	hint_lock)	/* lock for hint storage */
 	vm_map_entry_t		first_free;	/* First free space hint */
-	boolean_t		wait_for_space;	/* Should callers wait
+
+	/* Flags */
+	unsigned int	wait_for_space:1,	/* Should callers wait
 						   for space? */
-	boolean_t		wiring_required;/* All memory wired? */
+	/* boolean_t */ wiring_required:1;	/* All memory wired? */
+
 	unsigned int		timestamp;	/* Version number */
 };
 
