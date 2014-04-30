@@ -218,6 +218,12 @@ routine mach_vm_object_pages(
 	out	pages		: vm_page_info_array_t,
 					CountInOut, Dealloc);
 
+#else	/* !defined(MACH_VM_DEBUG) || MACH_VM_DEBUG */
+skip;	/* mach_vm_region_info */
+skip;	/* mach_vm_object_info */
+skip;	/* mach_vm_object_pages */
+#endif	/* !defined(MACH_VM_DEBUG) || MACH_VM_DEBUG */
+
 /*
  *	Returns information about the memory allocation caches.
  */
@@ -225,9 +231,3 @@ routine host_slab_info(
 		host		: host_t;
 	out	info		: cache_info_array_t,
 					CountInOut, Dealloc);
-
-#else	/* !defined(MACH_VM_DEBUG) || MACH_VM_DEBUG */
-skip;	/* mach_vm_region_info */
-skip;	/* mach_vm_object_info */
-skip;	/* mach_vm_object_pages */
-#endif	/* !defined(MACH_VM_DEBUG) || MACH_VM_DEBUG */
