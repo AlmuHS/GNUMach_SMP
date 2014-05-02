@@ -69,6 +69,7 @@
 #include <i386at/kd.h>
 #include <i386at/rtc.h>
 #include <i386at/model_dep.h>
+#include <i386at/acpihalt.h>
 #ifdef	MACH_XEN
 #include <xen/console.h>
 #include <xen/store.h>
@@ -231,6 +232,7 @@ void halt_all_cpus(boolean_t reboot)
 #ifdef	MACH_HYP
 	    hyp_halt();
 #endif	/* MACH_HYP */
+	    grub_acpi_halt();
 	    printf("In tight loop: hit ctl-alt-del to reboot\n");
 	    (void) spl0();
 	}
