@@ -98,6 +98,8 @@ db_stack_trace_cmd(
 	const char	*modif);
 
 extern void
+db_halt_cpu(void);
+extern void
 db_reset_cpu(void);
 
 void

@@ -363,6 +363,7 @@ struct db_command db_command_table[] = {
 	{ "show",	0,			0,	db_show_cmds },
 	{ "reset",	db_reset_cpu,		0,		0 },
 	{ "reboot",	db_reset_cpu,		0,		0 },
+	{ "halt",	db_halt_cpu,		0,		0 },
 	{ (char *)0, }
 };
 

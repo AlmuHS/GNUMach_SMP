@@ -243,6 +243,11 @@ void exit(int rc)
 	halt_all_cpus(0);
 }
 
+void db_halt_cpu(void)
+{
+	halt_all_cpus(0);
+}
+
 void db_reset_cpu(void)
 {
 	halt_all_cpus(1);
