@@ -68,4 +68,4 @@ typedef struct Shuttle Shuttle;
 
 
 
-#endif	_KERN_SHUTTLE_H_
+#endif	/* _KERN_SHUTTLE_H_ */

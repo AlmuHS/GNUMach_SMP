@@ -65,7 +65,7 @@ struct boot_rendezvous
 	int code;
 };
 
-#endif !__ASSEMBLER__
+#endif	/* !__ASSEMBLER__ */
 
 
 /* This is the magic value that must appear in boot_module.magic.  */
@@ -90,4 +90,4 @@ struct boot_rendezvous
 #define BRZV_DATA	'D'
 
 
-#endif _MACH_BOOT_
+#endif	/* _MACH_BOOT_ */

@@ -137,4 +137,4 @@ struct mtget {
 #define MTIOCEEOT	_IO('m', 4)			/* enable EOT error */
 
 
-#endif	_TAPE_STATUS_H_
+#endif	/* _TAPE_STATUS_H_ */

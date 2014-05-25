@@ -189,4 +189,4 @@ kern_return_t	act_machine_get_state(Act *inc, int flavor, int *tstate, unsigned 
 
 
 #endif /* MIGRATING_THREADS */
-#endif _KERN_ACT_H_
+#endif	/* _KERN_ACT_H_ */

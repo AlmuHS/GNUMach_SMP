@@ -40,4 +40,4 @@ typedef struct sampled_pc {
 typedef sampled_pc_t *sampled_pc_array_t;
 typedef unsigned int sampled_pc_seqno_t;
 
-#endif	_MACH_DEBUG_PC_INFO_H_
+#endif	/* _MACH_DEBUG_PC_INFO_H_ */

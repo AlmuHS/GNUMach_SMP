@@ -55,4 +55,4 @@ typedef default_pager_page_t *default_pager_page_array_t;
 
 typedef char default_pager_filename_t[256];
 
-#endif	_MACH_DEFAULT_PAGER_TYPES_H_
+#endif	/* _MACH_DEFAULT_PAGER_TYPES_H_ */

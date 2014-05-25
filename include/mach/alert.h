@@ -34,4 +34,4 @@
 
 #define ALERT_USER		0xffff0000	/* User-defined alert bits */
 
-#endif	_MACH_ALERT_H_
+#endif	/* _MACH_ALERT_H_ */

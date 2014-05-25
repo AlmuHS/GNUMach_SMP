@@ -65,4 +65,4 @@ typedef struct RefCount RefCount;
 
 #endif /* MACHINE_REFCOUNT */
 
-#endif _KERN_REFCOUNT_H_
+#endif	/* _KERN_REFCOUNT_H_ */

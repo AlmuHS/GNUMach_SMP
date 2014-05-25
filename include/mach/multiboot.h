@@ -79,4 +79,4 @@ struct multiboot_info
 	natural_t		pad[4];
 };
 
-#endif _MACH_MULTIBOOT_H_
+#endif	/* _MACH_MULTIBOOT_H_ */

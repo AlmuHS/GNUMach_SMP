@@ -35,10 +35,10 @@ NOTIFY_IMPORTS
 #if	SEQNOS
 serverprefix do_seqnos_;
 serverdemux seqnos_notify_server;
-#else	SEQNOS
+#else
 serverprefix do_;
 serverdemux notify_server;
-#endif	SEQNOS
+#endif
 
 type notify_port_t = MACH_MSG_TYPE_MOVE_SEND_ONCE
 	ctype: mach_port_t
@@ -61,7 +61,7 @@ simpleroutine mach_notify_port_deleted(
 		notify	: notify_port_t;
 #if	SEQNOS
 	msgseqno seqno	: mach_port_seqno_t;
-#endif	SEQNOS
+#endif
 		name	: mach_port_name_t);
 
 /* MACH_NOTIFY_MSG_ACCEPTED: 0102 */
@@ -69,7 +69,7 @@ simpleroutine mach_notify_msg_accepted(
 		notify	: notify_port_t;
 #if	SEQNOS
 	msgseqno seqno	: mach_port_seqno_t;
-#endif	SEQNOS
+#endif
 		name	: mach_port_name_t);
 
 skip;	/* was NOTIFY_OWNERSHIP_RIGHTS: 0103 */
@@ -81,7 +81,7 @@ simpleroutine mach_notify_port_destroyed(
 		notify	: notify_port_t;
 #if	SEQNOS
 	msgseqno seqno	: mach_port_seqno_t;
-#endif	SEQNOS
+#endif
 		rights	: mach_port_receive_t);
 
 /* MACH_NOTIFY_NO_SENDERS: 0106 */
@@ -89,7 +89,7 @@ simpleroutine mach_notify_no_senders(
 		notify	: notify_port_t;
 #if	SEQNOS
 	msgseqno seqno	: mach_port_seqno_t;
-#endif	SEQNOS
+#endif
 		mscount	: mach_port_mscount_t);
 
 /* MACH_NOTIFY_SEND_ONCE: 0107 */
@@ -97,7 +97,7 @@ simpleroutine mach_notify_send_once(
 		notify	: notify_port_t
 #if	SEQNOS
 ;	msgseqno seqno	: mach_port_seqno_t
-#endif	SEQNOS
+#endif
 		);
 
 /* MACH_NOTIFY_DEAD_NAME: 0110 */
@@ -105,5 +105,5 @@ simpleroutine mach_notify_dead_name(
 		notify	: notify_port_t;
 #if	SEQNOS
 	msgseqno seqno	: mach_port_seqno_t;
-#endif	SEQNOS
+#endif
 		name	: mach_port_name_t);

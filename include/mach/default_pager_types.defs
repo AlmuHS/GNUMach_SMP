@@ -41,4 +41,4 @@ type default_pager_filename_t = (MACH_MSG_TYPE_STRING_C, 8*256);
 
 import <mach/default_pager_types.h>;
 
-#endif	_MACH_DEFAULT_PAGER_TYPES_DEFS_
+#endif	/* _MACH_DEFAULT_PAGER_TYPES_DEFS_ */

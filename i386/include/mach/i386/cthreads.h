@@ -53,4 +53,4 @@ typedef volatile int spin_lock_t;
 
 #endif	/* __GNUC__ */
 
-#endif _MACHINE_CTHREADS_H_
+#endif	/* _MACHINE_CTHREADS_H_ */
