@@ -193,7 +193,7 @@ Port Manipulation Interface
 * Receive Rights::                How to work with receive rights.
 * Port Sets::                     How to work with port sets.
 * Request Notifications::         How to request notifications for events.
-@c  * Inherited Ports::               How to work with the inherited system ports.
+* Inherited Ports::               How to work with the inherited system ports.
 
 Virtual Memory Interface
 
@@ -2198,7 +2198,7 @@ the kernel.
 * Receive Rights::                How to work with receive rights.
 * Port Sets::                     How to work with port sets.
 * Request Notifications::         How to request notifications for events.
-@c  * Inherited Ports::               How to work with the inherited system ports.
+* Inherited Ports::               How to work with the inherited system ports.
 @end menu
 
 
@@ -2917,66 +2917,69 @@ call's server (normally the kernel), the call may return @code{mach_msg}
 return codes.
 @end deftypefun
 
-@c The inherited ports concept is not used in the Hurd,
-@c and so the _SLOT macros are not defined in GNU Mach.
+@node Inherited Ports
+@subsection Inherited Ports
 
-@c  @node Inherited Ports
-@c  @subsection Inherited Ports
+The inherited ports concept is not used in the Hurd, and so the _SLOT
+macros are not defined in GNU Mach.
 
-@c  @deftypefun kern_return_t mach_ports_register (@w{task_t @var{target_task}, @w{port_array_t @var{init_port_set}}, @w{int @var{init_port_array_count}})
-@c  @deftypefunx kern_return_t mach_ports_lookup (@w{task_t @var{target_task}, @w{port_array_t *@var{init_port_set}}, @w{int *@var{init_port_array_count}})
-@c  @code{mach_ports_register} manipulates the inherited ports array,
-@c  @code{mach_ports_lookup} is used to acquire specific parent ports.
-@c  @var{target_task} is the task to be affected.  @var{init_port_set} is an
-@c  array of system ports to be registered, or returned.  Although the array
-@c  size is given as variable, the kernel will only accept a limited number
-@c  of ports.  @var{init_port_array_count} is the number of ports returned
-@c  in @var{init_port_set}.
+The following section documents how @code{mach_ports_register} and
+@code{mach_ports_lookup} were originally intended to be used.
 
-@c  @code{mach_ports_register} registers an array of well-known system ports
-@c  with the kernel on behalf of a specific task.  Currently the ports to be
-@c  registered are: the port to the Network Name Server, the port to the
-@c  Environment Manager, and a port to the Service server.  These port
-@c  values must be placed in specific slots in the init_port_set.  The slot
-@c  numbers are given by the global constants defined in @file{mach_init.h}:
-@c  @code{NAME_SERVER_SLOT}, @code{ENVIRONMENT_SLOT}, and
-@c  @code{SERVICE_SLOT}.  These ports may later be retrieved with
-@c  @code{mach_ports_lookup}.
+@deftypefun kern_return_t mach_ports_register (@w{task_t @var{target_task}}, @w{port_array_t @var{init_port_set}}, @w{int @var{init_port_array_count}})
+@deftypefunx kern_return_t mach_ports_lookup (@w{task_t @var{target_task}}, @w{port_array_t *@var{init_port_set}}, @w{int *@var{init_port_array_count}})
+@code{mach_ports_register} manipulates the inherited ports array,
+@code{mach_ports_lookup} is used to acquire specific parent ports.
+@var{target_task} is the task to be affected.  @var{init_port_set} is an
+array of system ports to be registered, or returned.  Although the array
+size is given as variable, the kernel will only accept a limited number
+of ports.  @var{init_port_array_count} is the number of ports returned
+in @var{init_port_set}.
 
-@c  When a new task is created (see @code{task_create}), the child task will
-@c  be given access to these ports.  Only port send rights may be
-@c  registered.  Furthermore, the number of ports which may be registered is
-@c  fixed and given by the global constant @code{MACH_PORT_SLOTS_USED}
-@c  Attempts to register too many ports will fail.
+@code{mach_ports_register} registers an array of well-known system ports
+with the kernel on behalf of a specific task.  Currently the ports to be
+registered are: the port to the Network Name Server, the port to the
+Environment Manager, and a port to the Service server.  These port
+values must be placed in specific slots in the init_port_set.  The slot
+numbers are given by the global constants defined in @file{mach_init.h}:
+@code{NAME_SERVER_SLOT}, @code{ENVIRONMENT_SLOT}, and
+@code{SERVICE_SLOT}.  These ports may later be retrieved with
+@code{mach_ports_lookup}.
 
-@c  It is intended that this mechanism be used only for task initialization,
-@c  and then only by runtime support modules.  A parent task has three
-@c  choices in passing these system ports to a child task. Most commonly it
-@c  can do nothing and its child will inherit access to the same
-@c  @var{init_port_set} that the parent has; or a parent task may register a
-@c  set of ports it wishes to have passed to all of its children by calling
-@c  @code{mach_ports_register} using its task port; or it may make necessary
-@c  modifications to the set of ports it wishes its child to see, and then
-@c  register those ports using the child's task port prior to starting the
-@c  child's thread(s).  The @code{mach_ports_lookup} call which is done by
-@c  @code{mach_init} in the child task will acquire these initial ports for
-@c  the child.
+When a new task is created (see @code{task_create}), the child task will
+be given access to these ports.  Only port send rights may be
+registered.  Furthermore, the number of ports which may be registered is
+fixed and given by the global constant @code{MACH_PORT_SLOTS_USED}
+Attempts to register too many ports will fail.
 
-@c  Tasks other than the Network Name Server and the Environment Manager
-@c  should not need access to the Service port. The Network Name Server port
-@c  is the same for all tasks on a given machine. The Environment port is
-@c  the only port likely to have different values for different tasks.
+It is intended that this mechanism be used only for task initialization,
+and then only by runtime support modules.  A parent task has three
+choices in passing these system ports to a child task. Most commonly it
+can do nothing and its child will inherit access to the same
+@var{init_port_set} that the parent has; or a parent task may register a
+set of ports it wishes to have passed to all of its children by calling
+@code{mach_ports_register} using its task port; or it may make necessary
+modifications to the set of ports it wishes its child to see, and then
+register those ports using the child's task port prior to starting the
+child's thread(s).  The @code{mach_ports_lookup} call which is done by
+@code{mach_init} in the child task will acquire these initial ports for
+the child.
 
-@c  Since the number of ports which may be registered is limited, ports
-@c  other than those used by the runtime system to initialize a task should
-@c  be passed to children either through an initial message, or through the
-@c  Network Name Server for public ports, or the Environment Manager for
-@c  private ports.
+Tasks other than the Network Name Server and the Environment Manager
+should not need access to the Service port. The Network Name Server port
+is the same for all tasks on a given machine. The Environment port is
+the only port likely to have different values for different tasks.
 
-@c  The function returns @code{KERN_SUCCESS} if the memory was allocated,
-@c  and @code{KERN_INVALID_ARGUMENT} if an attempt was made to register more
-@c  ports than the current kernel implementation allows.
-@c  @end deftypefun
+Since the number of ports which may be registered is limited, ports
+other than those used by the runtime system to initialize a task should
+be passed to children either through an initial message, or through the
+Network Name Server for public ports, or the Environment Manager for
+private ports.
+
+The function returns @code{KERN_SUCCESS} if the memory was allocated,
+and @code{KERN_INVALID_ARGUMENT} if an attempt was made to register more
+ports than the current kernel implementation allows.
+@end deftypefun
 
 
 @node Virtual Memory Interface
