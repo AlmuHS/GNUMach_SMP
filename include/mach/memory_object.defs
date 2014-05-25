@@ -93,6 +93,9 @@ simpleroutine	memory_object_terminate(
 #ifdef	MEMORY_OBJECT_INTRAN
 						intran: MEMORY_OBJECT_INTRAN
 #endif
+#ifdef	MEMORY_OBJECT_DESTRUCTOR
+					destructor: MEMORY_OBJECT_DESTRUCTOR
+#endif
 						;
 #if	SEQNOS
 	msgseqno seqno			: mach_port_seqno_t;
@@ -233,6 +236,9 @@ simpleroutine	memory_object_lock_completed(
 #ifdef	MEMORY_OBJECT_INTRAN
 			intran: MEMORY_OBJECT_INTRAN
 #endif
+#ifdef	MEMORY_OBJECT_DESTRUCTOR
+			destructor: MEMORY_OBJECT_DESTRUCTOR
+#endif
 			;
 #if	SEQNOS
 	msgseqno seqno			: mach_port_seqno_t;
@@ -267,6 +273,9 @@ simpleroutine	memory_object_supply_completed(
 			ctype: mach_port_t
 #ifdef	MEMORY_OBJECT_INTRAN
 			intran: MEMORY_OBJECT_INTRAN
+#endif
+#ifdef	MEMORY_OBJECT_DESTRUCTOR
+			destructor: MEMORY_OBJECT_DESTRUCTOR
 #endif
 			;
 #if	SEQNOS
@@ -317,6 +326,9 @@ simpleroutine	memory_object_change_completed(
 			ctype: mach_port_t
 #ifdef	MEMORY_OBJECT_INTRAN
 			intran: MEMORY_OBJECT_INTRAN
+#endif
+#ifdef	MEMORY_OBJECT_DESTRUCTOR
+			destructor: MEMORY_OBJECT_DESTRUCTOR
 #endif
 			;
 #if	SEQNOS
