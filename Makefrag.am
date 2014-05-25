@@ -547,7 +547,8 @@ nodist_libkernel_a_SOURCES += \
 # rpctrace can make use of that.
 MOSTLYCLEANFILES += \
 	gnumach.msgids
-gnumach.msgids: $(filter %.msgids,$(nodist_libkernel_a_SOURCES))
+gnumach.msgids: $(filter %.msgids,$(nodist_libkernel_a_SOURCES)) \
+		ipc/notify.msgids
 	$(AM_V_at) cat $^ > $@.new
 	$(AM_V_GEN) mv $@.new $@
 # `exec_' prefix, so that we don't try to build that file during when running

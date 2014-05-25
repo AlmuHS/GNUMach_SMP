@@ -88,6 +88,16 @@ lib_dep_tr_for_defs_a_CPPFLAGS = $(AM_CPPFLAGS) \
 	  -list $*.user.msgids					\
 	  < $<
 
+vpath %.defs $(top_srcdir)
+
+# Stand-alone rule to generate the list of message ids when neither
+# the client nor the server stubs are required.
+%.msgids: %.defs
+	$(MIGCOM_V) $(CPP) $(AM_CPPFLAGS) $(CPPFLAGS) -E $<	\
+	| $(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMSFLAGS)		\
+	  -sheader /dev/null -server /dev/null			\
+	  -list "$*.msgids"
+
 # This is how it should be done, but this is not integrated into GNU Automake
 # and is missing automatic inter-file dependency management because of that.
 
