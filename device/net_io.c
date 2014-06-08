@@ -467,6 +467,7 @@ boolean_t net_deliver(boolean_t nonblocking)
 	    /* remember message sizes must be rounded up */
 	    kmsg->ikm_header.msgh_size =
 		    (((mach_msg_size_t) (sizeof(struct net_rcv_msg)
+					- sizeof net_kmsg(kmsg)->sent
 					- NET_RCV_MAX + count)) + 3) &~ 3;
 	    kmsg->ikm_header.msgh_local_port = MACH_PORT_NULL;
 	    kmsg->ikm_header.msgh_kind = MACH_MSGH_KIND_NORMAL;
