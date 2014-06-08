@@ -63,6 +63,9 @@ type device_t = mach_port_t
 #ifdef	DEVICE_INTRAN
 		intran: DEVICE_INTRAN
 #endif
+#ifdef	DEVICE_INTRAN_PAYLOAD
+		intranpayload: DEVICE_INTRAN_PAYLOAD
+#endif
 #ifdef	DEVICE_OUTTRAN
 		outtran: DEVICE_OUTTRAN
 #endif
