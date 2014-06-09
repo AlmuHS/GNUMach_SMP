@@ -730,8 +730,8 @@ db_task_name(
 	vm_offset_t vaddr, kaddr;
 	unsigned sp;
 
-	if (task->map->pmap == kernel_pmap) {
-		db_printf(DB_GNUMACH_TASK_NAME);
+	if (task->name[0]) {
+		db_printf("%s", task->name);
 		return;
 	}
 

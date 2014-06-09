@@ -258,7 +258,12 @@ db_print_task(
 	} else {
 	    if (flag & OPTION_TASK_TITLE)
 		db_printf("    TASK        THREADS\n");
-	    db_printf("%3d (%0*X): ", task_id, 2*sizeof(vm_offset_t), task);
+	    if (task->name[0])
+		db_printf("%3d %s (%0*X): ", task_id, task->name,
+			  2*sizeof(vm_offset_t), task);
+	    else
+		db_printf("%3d (%0*X): ", task_id,
+			  2*sizeof(vm_offset_t), task);
 	    if (task->thread_count == 0) {
 		db_printf("no threads\n");
 	    } else {
