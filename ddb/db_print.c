@@ -194,12 +194,8 @@ db_print_thread(
 			  2*sizeof(vm_offset_t), thread);
 	    else
 		db_printf("(%0*X) ", 2*sizeof(vm_offset_t), thread);
-	    db_printf("%c%c%c%c%c",
-		      (thread->state & TH_RUN)  ? 'R' : ' ',
-		      (thread->state & TH_WAIT) ? 'W' : ' ',
-		      (thread->state & TH_SUSP) ? 'S' : ' ',
-		      (thread->state & TH_UNINT)? 'N' : ' ',
-		      db_thread_fp_used(thread) ? 'F' : ' ');
+	    char status[8];
+	    db_printf("%s", db_thread_stat(thread, status));
 	    if (thread->state & TH_SWAPPED) {
 		if (thread->swap_func) {
 		    db_printf("(");
