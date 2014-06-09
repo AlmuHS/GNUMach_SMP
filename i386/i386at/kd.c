@@ -3029,6 +3029,39 @@ kdcnmaygetc(void)
 #ifdef notdef
 				cnsetleds(state2leds(kd_state));
 #endif
+			} else if (! up
+				   && c == K_ESC
+				   && key_map[scancode][char_idx+1] == 0x5b) {
+				/* As a convenience for the nice
+				   people using our debugger, remap
+				   some keys to the readline-like
+				   shortcuts supported by dde.
+
+				   XXX This is a workaround for the
+				   limited kernel getchar interface.
+				   It is only used by the debugger.  */
+				c = key_map[scancode][char_idx+2];
+				switch (c) {
+#define _MAP(A,B,C)	(C)
+#define MAP(T)		_MAP(T)
+#define	CTRL(c)		((c) & 0x1f)
+				case MAP(K_HOME):	c = CTRL('a'); break;
+				case MAP(K_UA):		c = CTRL('p'); break;
+				case MAP(K_LA):		c = CTRL('b'); break;
+				case MAP(K_RA):		c = CTRL('f'); break;
+				case MAP(K_DA):		c = CTRL('n'); break;
+				case MAP(K_END):	c = CTRL('e'); break;
+				/* delete */
+				case 0x39:		c = CTRL('d'); break;
+#undef CTRL
+#undef MAP
+#undef _MAP
+				default:
+					/* Retain the old behavior.  */
+					c = K_ESC;
+				}
+
+				return(c);
 			} else if (!up) {
 				/* regular key-down */
 				if (c == K_CR)
