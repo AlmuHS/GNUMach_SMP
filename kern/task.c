@@ -70,6 +70,7 @@ void task_init(void)
 	 * for other initialization. (:-()
 	 */
 	(void) task_create(TASK_NULL, FALSE, &kernel_task);
+	(void) task_set_name(kernel_task, "gnumach");
 }
 
 kern_return_t task_create(
