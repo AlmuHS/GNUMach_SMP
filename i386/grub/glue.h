@@ -26,6 +26,8 @@
 #include <mach/mach_types.h>
 #include <i386/vm_param.h>
 
+/* Warning: this leaks memory maps for now, do not use it yet for something
+ * else than Mach shutdown. */
 vm_offset_t io_map_cached(vm_offset_t phys_addr, vm_size_t size);
 
 #endif /* _GRUB_GLUE_H */

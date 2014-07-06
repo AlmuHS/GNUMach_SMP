@@ -66,6 +66,9 @@ io_map(
  * This maps the all pages containing [PHYS_ADDR:PHYS_ADDR + SIZE].
  * For contiguous requests to those pages will reuse the previously
  * established mapping.
+ *
+ * Warning: this leaks memory maps for now, do not use it yet for something
+ * else than Mach shutdown.
  */
 vm_offset_t
 io_map_cached(
