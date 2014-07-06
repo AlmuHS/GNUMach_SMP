@@ -2835,6 +2835,7 @@ pmap_unmap_page_zero (void)
 {
   int *pte;
 
+  printf("Unmapping the zero page.  Some BIOS functions may not be working any more.\n");
   pte = (int *) pmap_pte (kernel_pmap, 0);
   if (!pte)
     return;

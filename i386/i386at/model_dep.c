@@ -180,10 +180,14 @@ void machine_init(void)
 	*(unsigned short *)phystokv(0x472) = 0x1234;
 #endif	/* MACH_HYP */
 
+#if VM_MIN_KERNEL_ADDRESS == 0
 	/*
 	 * Unmap page 0 to trap NULL references.
+	 *
+	 * Note that this breaks accessing some BIOS areas stored there.
 	 */
 	pmap_unmap_page_zero();
+#endif
 }
 
 /* Conserve power on processor CPU.  */
