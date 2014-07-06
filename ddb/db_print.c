@@ -194,12 +194,8 @@ db_print_thread(
 			  2*sizeof(vm_offset_t), thread);
 	    else
 		db_printf("(%0*X) ", 2*sizeof(vm_offset_t), thread);
-	    db_printf("%c%c%c%c%c",
-		      (thread->state & TH_RUN)  ? 'R' : ' ',
-		      (thread->state & TH_WAIT) ? 'W' : ' ',
-		      (thread->state & TH_SUSP) ? 'S' : ' ',
-		      (thread->state & TH_UNINT)? 'N' : ' ',
-		      db_thread_fp_used(thread) ? 'F' : ' ');
+	    char status[8];
+	    db_printf("%s", db_thread_stat(thread, status));
 	    if (thread->state & TH_SWAPPED) {
 		if (thread->swap_func) {
 		    db_printf("(");
@@ -258,7 +254,12 @@ db_print_task(
 	} else {
 	    if (flag & OPTION_TASK_TITLE)
 		db_printf("    TASK        THREADS\n");
-	    db_printf("%3d (%0*X): ", task_id, 2*sizeof(vm_offset_t), task);
+	    if (task->name[0])
+		db_printf("%3d %s (%0*X): ", task_id, task->name,
+			  2*sizeof(vm_offset_t), task);
+	    else
+		db_printf("%3d (%0*X): ", task_id,
+			  2*sizeof(vm_offset_t), task);
 	    if (task->thread_count == 0) {
 		db_printf("no threads\n");
 	    } else {
