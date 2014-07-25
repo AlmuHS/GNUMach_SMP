@@ -55,11 +55,8 @@ grub_machine_acpi_get_rsdpv2 (void)
   grub_uint8_t *ebda, *ptr;
 
   grub_dprintf ("acpi", "Looking for RSDP. Scanning EBDA\n");
-  printf("ptr is %p\n", (* ((grub_uint16_t *) phystokv (0x40e))) << 4);
-  printf("len is %u\n", *( (grub_uint16_t *) phystokv ((* ((grub_uint16_t *) phystokv (0x40e))) << 4)));
   ebda = (grub_uint8_t *) phystokv ((* ((grub_uint16_t *) phystokv (0x40e))) << 4);
   ebda_len = * (grub_uint16_t *) ebda;
-  printf("EBDA len %d\n", ebda_len);
   if (! ebda_len)
     return 0;
   for (ptr = ebda; ptr < ebda + 0x400; ptr += 16)
