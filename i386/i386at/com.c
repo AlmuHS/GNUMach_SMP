@@ -518,10 +518,35 @@ comintr(int unit)
 		case RECi:
 		case CTIi:         /* Character timeout indication */
 			if (tp->t_state&TS_ISOPEN) {
+				int escape = 0;
 				while ((line = inb(LINE_STAT(addr))) & iDR) {
 					c = inb(TXRX(addr));
-					ttyinput(c, tp);
+
+					if (c == 0x1b) {
+						escape = 1;
+						continue;
+					}
+
+#if MACH_KDB
+					if (escape && c == 'D'-'@')
+						/* ctrl-alt-d pressed,
+						   invoke debugger */
+						kdb_kintr();
+					else
+#endif /* MACH_KDB */
+					if (escape) {
+						ttyinput(0x1b, tp);
+						ttyinput(c, tp);
+					}
+					else
+						ttyinput(c, tp);
+
+					escape = 0;
 				}
+
+				if (escape)
+					/* just escape */
+					ttyinput(0x1b, tp);
 			} else
 				tt_open_wakeup(tp);
 			break;

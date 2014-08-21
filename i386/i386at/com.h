@@ -71,6 +71,10 @@ comsetstat(
 	int 		*data,
 	natural_t	count);
 
+#if MACH_KDB
+extern void kdb_kintr(void);
+#endif /* MACH_KDB */
+
 extern io_return_t comopen(dev_t dev, int flag, io_req_t ior);
 extern void comclose(dev_t dev, int flag);
 extern io_return_t comread(dev_t dev, io_req_t ior);
