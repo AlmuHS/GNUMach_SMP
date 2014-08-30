@@ -25,7 +25,7 @@
 #include "grant.h"
 
 #define NR_RESERVED_ENTRIES 8
-#define NR_GRANT_PAGES 4
+#define NR_GRANT_PAGES 8
 
 decl_simple_lock_data(static,lock);
 static struct grant_entry *grants;
