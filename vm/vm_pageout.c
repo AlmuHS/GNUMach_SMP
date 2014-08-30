@@ -912,6 +912,7 @@ void vm_pageout(void)
 
 	current_thread()->vm_privilege = TRUE;
 	stack_privilege(current_thread());
+	thread_set_own_priority(0);
 
 	/*
 	 *	Initialize some paging parameters.
