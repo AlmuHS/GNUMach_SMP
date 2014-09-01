@@ -986,7 +986,7 @@ static int start_tx(struct sk_buff *skb, struct net_device *dev)
 	dev->trans_start = jiffies;
 
 	if (np->msg_level & NETIF_MSG_TX_QUEUED) {
-		printk(KERN_DEBUG "%s: Transmit frame #%d len %ld queued in slot %ld.\n",
+		printk(KERN_DEBUG "%s: Transmit frame #%d len %ld queued in slot %u.\n",
 			   dev->name, np->cur_tx, skb->len, entry);
 	}
 	return 0;
