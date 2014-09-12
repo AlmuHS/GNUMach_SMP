@@ -276,6 +276,30 @@ db_print_task(
 	}
 }
 
+void
+db_show_all_tasks(db_expr_t addr,
+		  boolean_t have_addr,
+		  db_expr_t count,
+		  const char *modif)
+{
+	task_t task;
+	int task_id = 0;
+	processor_set_t pset;
+
+	db_printf(" ID %-*s NAME [THREADS]\n", 2*sizeof(vm_offset_t), "TASK");
+
+	queue_iterate(&all_psets, pset, processor_set_t, all_psets)
+	    queue_iterate(&pset->tasks, task, task_t, pset_tasks) {
+		db_printf("%3d %0*X %s [%d]\n",
+			  task_id,
+			  2*sizeof(vm_offset_t),
+			  task,
+			  task->name,
+			  task->thread_count);
+		task_id++;
+	    }
+}
+
 /*ARGSUSED*/
 void
 db_show_all_threads(addr, have_addr, count, modif)

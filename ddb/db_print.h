@@ -38,6 +38,12 @@ void db_show_one_thread(
 	db_expr_t	count,
 	const char *	modif);
 
+void db_show_all_tasks(
+	db_expr_t	addr,
+	int		have_addr,
+	db_expr_t	count,
+	const char *	modif);
+
 void db_show_all_threads(
 	db_expr_t	addr,
 	int		have_addr,

@@ -304,6 +304,7 @@ db_command_list(
 }
 
 struct db_command db_show_all_cmds[] = {
+	{ "tasks",	db_show_all_tasks,	0,	0 },
 	{ "threads",	db_show_all_threads,	0,	0 },
 	{ "slocks",	db_show_all_slocks,	0,	0 },
 	{ (char *)0 }
