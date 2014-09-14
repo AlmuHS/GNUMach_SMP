@@ -82,7 +82,16 @@
 #if MACH_KDB
 #include <ddb/db_sym.h>
 #include <i386/db_interface.h>
+
+/* a.out symbol table */
 static vm_offset_t kern_sym_start, kern_sym_end;
+
+/* ELF section header */
+static unsigned elf_shdr_num;
+static vm_size_t elf_shdr_size;
+static vm_offset_t elf_shdr_addr;
+static unsigned elf_shdr_shndx;
+
 #else /* MACH_KDB */
 #define kern_sym_start	0
 #define kern_sym_end	0
@@ -570,6 +579,17 @@ void c_boot_entry(vm_offset_t bi)
 		       kern_sym_start, kern_sym_end,
 		       symtab_size, strtab_size);
 	}
+
+	if ((boot_info.flags & MULTIBOOT_ELF_SHDR)
+	    && boot_info.syms.e.num)
+	{
+		elf_shdr_num = boot_info.syms.e.num;
+		elf_shdr_size = boot_info.syms.e.size;
+		elf_shdr_addr = (vm_offset_t)phystokv(boot_info.syms.e.addr);
+		elf_shdr_shndx = boot_info.syms.e.shndx;
+
+		printf("ELF section header table at %08lx\n", elf_shdr_addr);
+	}
 #endif	/* MACH_KDB */
 #endif	/* MACH_XEN */
 
@@ -587,6 +607,13 @@ void c_boot_entry(vm_offset_t bi)
 	if (kern_sym_start)
 	{
 		aout_db_sym_init((char *)kern_sym_start, (char *)kern_sym_end, "mach", (char *)0);
+	}
+
+	if (elf_shdr_num)
+	{
+		elf_db_sym_init(elf_shdr_num,elf_shdr_size,
+				elf_shdr_addr, elf_shdr_shndx,
+				"mach", NULL);
 	}
 #endif	/* MACH_KDB */
 

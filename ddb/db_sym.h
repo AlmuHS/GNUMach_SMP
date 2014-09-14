@@ -46,6 +46,7 @@ typedef struct {
 #define	SYMTAB_AOUT	0
 #define	SYMTAB_COFF	1
 #define	SYMTAB_MACHDEP	2
+#define	SYMTAB_ELF	3
 	char		*start;		/* symtab location */
 	char		*end;
 	char		*private;	/* optional machdep pointer */
@@ -240,6 +241,14 @@ extern boolean_t db_line_at_pc(
 extern boolean_t aout_db_sym_init(
 	char *symtab,
 	char *esymtab,
+	char *name,
+	char *task_addr);
+
+extern boolean_t elf_db_sym_init (
+	unsigned shdr_num,
+	vm_size_t shdr_size,
+	vm_offset_t shdr_addr,
+	unsigned shdr_shndx,
 	char *name,
 	char *task_addr);
 

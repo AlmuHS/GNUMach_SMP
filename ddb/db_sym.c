@@ -38,6 +38,7 @@
 #include <ddb/db_sym.h>
 #include <ddb/db_task_thread.h>
 #include <ddb/db_aout.h>
+#include <ddb/db_elf.h>
 
 #include <vm/vm_map.h>	/* vm_map_t */
 
@@ -507,6 +508,10 @@ void db_free_symbol(db_sym_t s)
  */
 
 void dummy_db_free_symbol(db_sym_t symbol) { }
+boolean_t dummy_db_sym_init(char *a, char *b, char *c, char *d) {
+  return FALSE;
+}
+
 
 struct db_sym_switch x_db[] = {
 
@@ -521,7 +526,14 @@ struct db_sym_switch x_db[] = {
 	{ 0,},
 
 	/* Machdep, not inited here */
-	{ 0,}
+	{ 0,},
+
+#ifdef	DB_NO_ELF
+	{ 0,},
+#else	/* DB_NO_ELF */
+	{ dummy_db_sym_init, elf_db_lookup, elf_db_search_symbol,
+	  elf_db_line_at_pc, elf_db_symbol_values, dummy_db_free_symbol },
+#endif	/* DB_NO_ELF */
 
 };
 

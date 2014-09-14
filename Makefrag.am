@@ -25,6 +25,8 @@ libkernel_a_SOURCES += \
 	ddb/db_access.h \
 	ddb/db_aout.c \
 	ddb/db_aout.h \
+	ddb/db_elf.c \
+	ddb/db_elf.h \
 	ddb/db_break.c \
 	ddb/db_break.h \
 	ddb/db_command.c \
