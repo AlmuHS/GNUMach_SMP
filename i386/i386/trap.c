@@ -395,6 +395,11 @@ printf("user trap %d error %d sub %08x\n", type, code, subcode);
 			return 0;
 		}
 #endif /* MACH_KDB */
+		/* Make the content of the debug status register (DR6)
+		   available to user space.  */
+		if (thread->pcb)
+		    thread->pcb->ims.ids.dr[6] = get_dr6() & 0x600F;
+		set_dr6(0);
 		exc = EXC_BREAKPOINT;
 		code = EXC_I386_SGL;
 		break;
