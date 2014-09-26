@@ -155,13 +155,13 @@ void bootstrap_create(void)
       /* Initialize boot script variables.  We leak these send rights.  */
       losers = boot_script_set_variable
 	("host-port", VAL_PORT,
-	 (long)ipc_port_make_send(realhost.host_priv_self));
+	 (long) realhost.host_priv_self);
       if (losers)
 	panic ("cannot set boot-script variable host-port: %s",
 	       boot_script_error_string (losers));
       losers = boot_script_set_variable
 	("device-port", VAL_PORT,
-	 (long) ipc_port_make_send(master_device_port));
+	 (long) master_device_port);
       if (losers)
 	panic ("cannot set boot-script variable device-port: %s",
 	       boot_script_error_string (losers));
@@ -838,7 +838,8 @@ boot_script_free_task (task_t task, int aborting)
 int
 boot_script_insert_right (struct cmd *cmd, mach_port_t port, mach_port_t *name)
 {
-  *name = task_insert_send_right (cmd->task, (ipc_port_t)port);
+  *name = task_insert_send_right (cmd->task,
+				  ipc_port_make_send((ipc_port_t) port));
   return 0;
 }
 
