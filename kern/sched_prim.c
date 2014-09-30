@@ -1076,7 +1076,7 @@ void compute_my_priority(
  *
  *	Update the priorities of all threads periodically.
  */
-void recompute_priorities(const void *param)
+void recompute_priorities(void *param)
 {
 #if	SIMPLE_CLOCK
 	int	new_usec;

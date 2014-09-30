@@ -103,7 +103,7 @@ extern boolean_t thread_handoff(
 	thread_t	old_thread,
 	continuation_t	continuation,
 	thread_t	new_thread);
-extern void	recompute_priorities(const void *param);
+extern void	recompute_priorities(void *param);
 extern void	update_priority(
 	thread_t	thread);
 extern void	compute_my_priority(
