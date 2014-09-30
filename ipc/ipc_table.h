@@ -45,6 +45,8 @@
  *	an ipc_table_size structure.  These structures must
  *	be elements of an array, ipc_table_entries.
  *
+ *	Every its_size value must must be a power of two.
+ *
  *	The array must end with two elements with the same its_size value.
  *	Except for the terminating element, the its_size values must
  *	be strictly increasing.  The largest (last) its_size value
