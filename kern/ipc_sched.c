@@ -268,7 +268,7 @@ thread_handoff(
 			 */
 			old->wake_active = FALSE;
 			thread_unlock(old);
-			thread_wakeup((event_t)&old->wake_active);
+			thread_wakeup(TH_EV_WAKE_ACTIVE(old));
 			goto after_old_thread;
 		}
 	} else

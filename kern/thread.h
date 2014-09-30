@@ -70,6 +70,22 @@ struct thread {
 	task_t		task;		/* Task to which I belong */
 	queue_chain_t	thread_list;	/* list of threads in task */
 
+	/* Flags */
+	/* The flags are grouped here, but documented at the original
+	   position.  */
+	union {
+		struct {
+			unsigned	state:16;
+			unsigned	wake_active:1;
+			unsigned	vm_privilege:1;
+			unsigned	active:1;
+		};
+		event_t	event_key;
+/* These keys can be used with thread_wakeup and friends.  */
+#define TH_EV_WAKE_ACTIVE(t)	((event_t) (&(t)->event_key + 0))
+#define TH_EV_STATE(t)		((event_t) (&(t)->event_key + 1))
+	};
+
 	/* Thread bookkeeping */
 	queue_chain_t	pset_threads;	/* list of all threads in proc set*/
 
@@ -92,9 +108,10 @@ struct thread {
 	kern_return_t	wait_result;	/* outcome of wait -
 					   may be examined by this thread
 					   WITHOUT locking */
-	boolean_t	wake_active;	/* someone is waiting for this
+	/* Defined above */
+	/* boolean_t	wake_active;	   someone is waiting for this
 					   thread to become suspended */
-	int		state;		/* Thread state: */
+	/* int		state;		   Thread state: */
 /*
  *	Thread states [bits or'ed]
  */
@@ -129,7 +146,8 @@ struct thread {
 	/* VM global variables */
 
 	vm_offset_t	recover;	/* page fault recovery (copyin/out) */
-	boolean_t	vm_privilege;	/* Can use reserved memory? */
+	/* Defined above */
+	/* boolean_t	vm_privilege;	   Can use reserved memory? */
 
 	/* User-visible scheduling state */
 	int		user_stop_count;	/* outstanding stops */
@@ -194,7 +212,8 @@ struct thread {
 	timer_elt_data_t depress_timer;	/* timer for priority depression */
 
 	/* Ast/Halt data structures */
-	boolean_t	active;		/* how alive is the thread */
+	/* Defined above */
+	/* boolean_t	active;		   how alive is the thread */
 	int		ast;    	/* ast's needed.  See ast.h */
 
 	/* Processor data structures */

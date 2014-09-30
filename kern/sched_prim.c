@@ -615,7 +615,7 @@ boolean_t thread_invoke(
 	    thread_lock(new_thread);
 	    new_thread->state &= ~TH_UNINT;
 	    thread_unlock(new_thread);
-	    thread_wakeup(&new_thread->state);
+	    thread_wakeup(TH_EV_STATE(new_thread));
 
 	    if (continuation != (void (*)()) 0) {
 		(void) spl0();
@@ -637,7 +637,7 @@ boolean_t thread_invoke(
 
 		    new_thread->state &= ~(TH_SWAPPED | TH_UNINT);
 		    thread_unlock(new_thread);
-		    thread_wakeup(&new_thread->state);
+		    thread_wakeup(TH_EV_STATE(new_thread));
 
 #if	NCPUS > 1
 		    new_thread->last_processor = current_processor();
@@ -676,7 +676,7 @@ boolean_t thread_invoke(
 			    if (old_thread->wake_active) {
 				old_thread->wake_active = FALSE;
 				thread_unlock(old_thread);
-				thread_wakeup((event_t)&old_thread->wake_active);
+				thread_wakeup(TH_EV_WAKE_ACTIVE(old_thread));
 
 				goto after_old_thread;
 			    }
@@ -767,7 +767,7 @@ boolean_t thread_invoke(
 
 	new_thread->state &= ~(TH_SWAPPED | TH_UNINT);
 	thread_unlock(new_thread);
-	thread_wakeup(&new_thread->state);
+	thread_wakeup(TH_EV_STATE(new_thread));
 
 	/*
 	 *	Thread is now interruptible.
@@ -932,7 +932,7 @@ void thread_dispatch(
 		if (thread->wake_active) {
 		    thread->wake_active = FALSE;
 		    thread_unlock(thread);
-		    thread_wakeup((event_t)&thread->wake_active);
+		    thread_wakeup(TH_EV_WAKE_ACTIVE(thread));
 		    return;
 		}
 		break;

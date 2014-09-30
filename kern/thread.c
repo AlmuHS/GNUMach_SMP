@@ -968,7 +968,7 @@ kern_return_t thread_halt(
 		 *	operation can never cause a deadlock.)
 		 */
 		if (cur_thread->ast & AST_HALT) {
-			thread_wakeup_with_result((event_t)&cur_thread->wake_active,
+			thread_wakeup_with_result(TH_EV_WAKE_ACTIVE(cur_thread),
 				THREAD_INTERRUPTED);
 			thread_unlock(thread);
 			thread_unlock(cur_thread);
@@ -1006,7 +1006,7 @@ kern_return_t thread_halt(
 	 */
 	while ((thread->ast & AST_HALT) && (!(thread->state & TH_HALTED))) {
 		thread->wake_active = TRUE;
-		thread_sleep((event_t) &thread->wake_active,
+		thread_sleep(TH_EV_WAKE_ACTIVE(thread),
 			simple_lock_addr(thread->lock), TRUE);
 
 		if (thread->state & TH_HALTED) {
@@ -1045,7 +1045,7 @@ kern_return_t thread_halt(
 			s = splsched();
 			thread_lock(thread);
 			thread_ast_clear(thread, AST_HALT);
-			thread_wakeup_with_result((event_t)&thread->wake_active,
+			thread_wakeup_with_result(TH_EV_WAKE_ACTIVE(thread),
 				THREAD_INTERRUPTED);
 			thread_unlock(thread);
 			(void) splx(s);
@@ -1284,7 +1284,7 @@ thread_dowait(
 		     *	Check for failure if interrupted.
 		     */
 		    thread->wake_active = TRUE;
-		    thread_sleep((event_t) &thread->wake_active,
+		    thread_sleep(TH_EV_WAKE_ACTIVE(thread),
 				simple_lock_addr(thread->lock), TRUE);
 		    thread_lock(thread);
 		    if ((current_thread()->wait_result != THREAD_AWAKENED) &&
@@ -1308,7 +1308,7 @@ thread_dowait(
 	(void) splx(s);
 
 	if (need_wakeup)
-	    thread_wakeup((event_t) &thread->wake_active);
+	    thread_wakeup(TH_EV_WAKE_ACTIVE(thread));
 
 	return ret;
 }
@@ -1346,7 +1346,7 @@ kern_return_t thread_suspend(
 	thread_lock(thread);
 	/* Wait for thread to get interruptible */
 	while (thread->state & TH_UNINT) {
-		assert_wait(&thread->state, TRUE);
+		assert_wait(TH_EV_STATE(thread), TRUE);
 		thread_unlock(thread);
 		thread_block(NULL);
 		thread_lock(thread);
