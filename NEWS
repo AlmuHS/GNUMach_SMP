@@ -5,6 +5,10 @@ Numerous cleanups and stylistic fixes of the code base.  Several
 problems have been identified using static analysis tools and
 subsequently been fixed.
 
+A protected payload can now be associated with capabilities.  This
+payload is attached by the kernel to delivered messages and can be
+used to speed up the object lookup in the receiving task.
+
 The kernel debugger can now parse ELF symbol tables, can be invoked
 over serial lines, gained two new commands and has received usability
 improvements.
