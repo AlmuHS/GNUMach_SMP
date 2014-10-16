@@ -171,7 +171,12 @@ kern_return_t task_create(
 	}
 #endif	/* FAST_TAS */
 
-	snprintf (new_task->name, sizeof new_task->name, "%p", new_task);
+	if (parent_task == TASK_NULL)
+		snprintf (new_task->name, sizeof new_task->name, "%p",
+			  new_task);
+	else
+		snprintf (new_task->name, sizeof new_task->name, "(%.*s)",
+			  sizeof new_task->name - 3, parent_task->name);
 
 	if (new_task_notification != NULL) {
 		task_reference (new_task);
