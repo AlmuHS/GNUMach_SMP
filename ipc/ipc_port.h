@@ -333,20 +333,20 @@ ipc_port_dealloc_special(ipc_port_t, ipc_space_t);
 #define	ipc_port_release(port)		\
 		ipc_object_release(&(port)->ip_object)
 
-extern inline boolean_t
+static inline boolean_t
 ipc_port_flag_protected_payload(const struct ipc_port *port)
 {
 	return !! (port->ip_target.ipt_object.io_bits
 		   & IO_BITS_PROTECTED_PAYLOAD);
 }
 
-extern inline void
+static inline void
 ipc_port_flag_protected_payload_set(struct ipc_port *port)
 {
 	port->ip_target.ipt_object.io_bits |= IO_BITS_PROTECTED_PAYLOAD;
 }
 
-extern inline void
+static inline void
 ipc_port_flag_protected_payload_clear(struct ipc_port *port)
 {
 	port->ip_target.ipt_object.io_bits &= ~IO_BITS_PROTECTED_PAYLOAD;
