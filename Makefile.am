@@ -175,7 +175,7 @@ clib-routines.o: gnumach-undef gnumach-undef-bad
 	  -o $@ `sed 's/^/-Wl,-u,/' < $<` -x c /dev/null -lc -lgcc
 	$(AM_V_at) if nm $@ | grep __init_cpu_features; \
 	then echo Please install a 32bit libc without multiarch support. ; \
-	fi ; false
+	false ; fi
 
 gnumach_LINK = $(LD) $(LINKFLAGS) $(gnumach_LINKFLAGS) -o $@
 gnumach_LDADD = gnumach.o clib-routines.o
