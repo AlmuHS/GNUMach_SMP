@@ -1,0 +1,36 @@
+/*
+ * Copyright (C) 2014 Free Software Foundation
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+subsystem
+#if	KERNEL_SERVER
+	  KernelServer
+#endif	/* KERNEL_SERVER */
+#if	KERNEL_USER
+	  KernelUser
+#endif	/* KERNEL_USER */
+		       task_notify 4400;
+
+#include <mach/std_types.defs>
+#include <mach/mach_types.defs>
+
+/* These notifications are sent to the port registered via
+   `register_new_task_notification' and provide a robust parental
+   relation between tasks.  */
+simpleroutine mach_notify_new_task(
+		notify	: mach_port_t;
+		task	: task_t;
+		parent	: task_t);

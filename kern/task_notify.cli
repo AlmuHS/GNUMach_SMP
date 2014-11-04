@@ -1,0 +1,7 @@
+/* XXX */
+
+/* This is a client presentation file.  */
+
+#define KERNEL_USER 1
+
+#include <mach/task_notify.defs>

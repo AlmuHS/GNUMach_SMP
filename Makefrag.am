@@ -364,6 +364,7 @@ include_mach_HEADERS = \
 	include/mach/mach.defs \
 	include/mach/mach4.defs \
 	include/mach/gnumach.defs \
+	include/mach/task_notify.defs \
 	include/mach/mach_host.defs \
 	include/mach/mach_port.defs \
 	include/mach/mach_types.defs \
@@ -487,6 +488,13 @@ nodist_libkernel_a_SOURCES += \
 	device/memory_object_reply.user.msgids
 #	device/device_reply.user.defs
 #	device/memory_object_reply.user.defs
+
+nodist_lib_dep_tr_for_defs_a_SOURCES += \
+	kern/task_notify.user.defs.c
+nodist_libkernel_a_SOURCES += \
+	kern/task_notify.user.h \
+	kern/task_notify.user.c \
+	kern/task_notify.user.msgids
 
 # Server stubs.
 nodist_lib_dep_tr_for_defs_a_SOURCES += \

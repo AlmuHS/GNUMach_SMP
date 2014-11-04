@@ -50,11 +50,15 @@
 #include <kern/sched_prim.h>	/* for thread_wakeup */
 #include <kern/ipc_tt.h>
 #include <kern/syscall_emulation.h>
+#include <kern/task_notify.user.h>
 #include <vm/vm_kern.h>		/* for kernel_map, ipc_kernel_map */
 #include <machine/machspl.h>	/* for splsched */
 
 task_t	kernel_task = TASK_NULL;
 struct kmem_cache task_cache;
+
+/* Where to send notifications about newly created tasks.  */
+ipc_port_t new_task_notification = NULL;
 
 void task_init(void)
 {
@@ -168,6 +172,14 @@ kern_return_t task_create(
 #endif	/* FAST_TAS */
 
 	snprintf (new_task->name, sizeof new_task->name, "%p", new_task);
+
+	if (new_task_notification != NULL) {
+		task_reference (new_task);
+		task_reference (parent_task);
+		mach_notify_new_task (new_task_notification,
+				      convert_task_to_port (new_task),
+				      convert_task_to_port (parent_task));
+	}
 
 	ipc_task_enable(new_task);
 
@@ -1248,4 +1260,25 @@ task_ras_control(
     task_unlock(task);
 #endif /* FAST_TAS */
     return ret;
+}
+
+/*
+ *	register_new_task_notification
+ *
+ *	Register a port to which a notification about newly created
+ *	tasks are sent.
+ */
+kern_return_t
+register_new_task_notification(
+	const host_t host,
+	ipc_port_t notification)
+{
+	if (host == HOST_NULL)
+		return KERN_INVALID_HOST;
+
+	if (new_task_notification != NULL)
+		return KERN_NO_ACCESS;
+
+	new_task_notification = notification;
+	return KERN_SUCCESS;
 }

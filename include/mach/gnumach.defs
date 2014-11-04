@@ -72,3 +72,11 @@ simpleroutine thread_terminate_release(
 simpleroutine task_set_name(
 		task	: task_t;
 		name	: kernel_debug_name_t);
+
+/*
+ * Register a port to which a notification about newly created tasks
+ * are sent.
+ */
+routine register_new_task_notification(
+		host_priv	: host_priv_t;
+		notification	: mach_port_send_t);
