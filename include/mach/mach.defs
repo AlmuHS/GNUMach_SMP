@@ -46,6 +46,10 @@ userprefix r_;
 #include <mach/std_types.defs>
 #include <mach/mach_types.defs>
 
+#ifdef	MACH_IMPORTS
+MACH_IMPORTS
+#endif
+
 skip;	/* old port_allocate */
 skip;	/* old port_deallocate */
 skip;	/* old port_enable */

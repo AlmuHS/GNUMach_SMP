@@ -29,6 +29,10 @@ subsystem
 #include <mach/mach_types.defs>
 #include <mach_debug/mach_debug_types.defs>
 
+#ifdef	GNUMACH_IMPORTS
+GNUMACH_IMPORTS
+#endif
+
 type vm_cache_statistics_data_t = struct[11] of integer_t;
 
 /*

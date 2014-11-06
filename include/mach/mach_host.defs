@@ -47,6 +47,10 @@ subsystem
 #include <mach/std_types.defs>
 #include <mach/mach_types.defs>
 
+#ifdef	MACH_HOST_IMPORTS
+MACH_HOST_IMPORTS
+#endif
+
 /*
  *	Get list of processors on this host.
  */
