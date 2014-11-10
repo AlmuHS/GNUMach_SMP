@@ -336,10 +336,7 @@ kern_return_t vm_map(
 	if (size == 0)
 		return KERN_INVALID_ARGUMENT;
 
-	if (anywhere)
-		*address = vm_map_min(target_map);
-	else
-		*address = trunc_page(*address);
+	*address = trunc_page(*address);
 	size = round_page(size);
 
 	if (!IP_VALID(memory_object)) {
