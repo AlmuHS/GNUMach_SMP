@@ -27,6 +27,8 @@
 #ifdef CONFIG_BLK_DEV_INITRD
 #include <linux/blk.h>
 #endif
+#include <linux/hdreg.h>
+#include <alloca.h>
 
 #include <asm/system.h>
 
@@ -768,12 +770,36 @@ static void setup_dev(struct gendisk *dev)
 void device_setup(void)
 {
 	extern void console_map_init(void);
+	extern char *kernel_cmdline;
+	char *c, *param, *white;
 	struct gendisk *p;
 	int nr=0;
 #ifdef MACH
 	linux_intr_pri = SPL6;
 #endif
 
+	for (c = kernel_cmdline; c; )
+	{
+		param = strstr(c, " ide");
+		if (!param)
+			param = strstr(c, " hd");
+		if (!param)
+			break;
+		if (param) {
+			param++;
+			white = strchr(param, ' ');
+			if (!white) {
+				ide_setup(param);
+				c = NULL;
+			} else {
+				char *word = alloca(white - param + 1);
+				strncpy(word, param, white - param);
+				word[white-param] = '\0';
+				ide_setup(word);
+				c = white + 1;
+			}
+		}
+	}
 #ifndef MACH
 	chr_dev_init();
 #endif
