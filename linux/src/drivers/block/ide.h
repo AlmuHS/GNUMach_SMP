@@ -344,6 +344,7 @@ typedef struct ide_drive_s {
 	unsigned nobios		: 1;	/* flag: do not probe bios for drive */
 	unsigned slow		: 1;	/* flag: slow data port */
 	unsigned autotune	: 2;	/* 1=autotune, 2=noautotune, 0=default */
+	unsigned nodma		: 1;	/* disk should not use dma for read/write */
 #if FAKE_FDISK_FOR_EZDRIVE
 	unsigned remap_0_to_1	: 1;	/* flag: partitioned with ezdrive */
 #endif /* FAKE_FDISK_FOR_EZDRIVE */
