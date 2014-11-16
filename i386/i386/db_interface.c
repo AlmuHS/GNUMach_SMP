@@ -63,6 +63,8 @@
 /* Whether the kernel uses any debugging register.  */
 static boolean_t kernel_dr;
 #endif
+/* Whether the current debug registers are zero.  */
+static boolean_t zero_dr;
 
 void db_load_context(pcb_t pcb)
 {
@@ -74,13 +76,20 @@ void db_load_context(pcb_t pcb)
 		return;
 	}
 #endif
+	/* Else set user debug registers, if any */
+	unsigned int *dr = pcb->ims.ids.dr;
+	boolean_t will_zero_dr = !dr[0] && !dr[1] && !dr[2] && !dr[3] && !dr[7];
 
-	/* Else set user debug registers */
-	set_dr0(pcb->ims.ids.dr[0]);
-	set_dr1(pcb->ims.ids.dr[1]);
-	set_dr2(pcb->ims.ids.dr[2]);
-	set_dr3(pcb->ims.ids.dr[3]);
-	set_dr7(pcb->ims.ids.dr[7]);
+	if (!(zero_dr && will_zero_dr))
+	{
+		set_dr0(dr[0]);
+		set_dr1(dr[1]);
+		set_dr2(dr[2]);
+		set_dr3(dr[3]);
+		set_dr7(dr[7]);
+		zero_dr = will_zero_dr;
+	}
+
 #if MACH_KDB
 	splx(s);
 #endif
@@ -163,7 +172,9 @@ void db_dr (
 	if (kernel_dr) {
 	    if (!ids.dr[0] && !ids.dr[1] && !ids.dr[2] && !ids.dr[3]) {
 		/* Not used any more, switch back to user debugging registers */
+		set_dr7 (0);
 		kernel_dr = FALSE;
+		zero_dr = TRUE;
 		db_load_context(current_thread()->pcb);
 	    }
 	}
