@@ -208,7 +208,7 @@ static int ac_probe1(int ioaddr, struct device *dev)
 		   dev->mem_start, dev->mem_end-1);
 
 	if (ei_debug > 0)
-		printk(version);
+		printk("%s", version);
 
 	ei_status.reset_8390 = &ac_reset_8390;
 	ei_status.block_input = &ac_block_input;

@@ -404,7 +404,7 @@ init_module(void)
 	if (debug >= 0)
 		vortex_debug = debug;
 	if (vortex_debug)
-		printk(version);
+		printk("%s", version);
 
 	root_vortex_dev = NULL;
 	cards_found = vortex_scan(0);
@@ -419,7 +419,7 @@ int tc515_probe(struct device *dev)
 	cards_found = vortex_scan(dev);
 
 	if (vortex_debug > 0  &&  cards_found)
-		printk(version);
+		printk("%s", version);
 
 	return cards_found ? 0 : -ENODEV;
 }

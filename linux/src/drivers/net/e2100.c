@@ -162,7 +162,7 @@ int e21_probe1(struct device *dev, int ioaddr)
 	outb(0, ioaddr + E21_ASIC); 	/* and disable the secondary interface. */
 
 	if (ei_debug  &&  version_printed++ == 0)
-		printk(version);
+		printk("%s", version);
 
 	/* We should have a "dev" from Space.c or the static module table. */
 	if (dev == NULL) {

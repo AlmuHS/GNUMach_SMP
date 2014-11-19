@@ -720,7 +720,7 @@ int apricot_probe(struct device *dev)
     dev->irq = 10;
     printk(" IRQ %d.\n", dev->irq);
 
-    if (i596_debug > 0) printk(version);
+    if (i596_debug > 0) printk("%s", version);
 
     /* The APRICOT-specific entries in the device structure. */
     dev->open = &i596_open;

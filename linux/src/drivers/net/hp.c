@@ -136,7 +136,7 @@ int hp_probe1(struct device *dev, int ioaddr)
 	}
 
 	if (ei_debug  &&  version_printed++ == 0)
-		printk(version);
+		printk("%s", version);
  
 	printk("%s: %s (ID %02x) at %#3x,", dev->name, name, board_id, ioaddr);
 

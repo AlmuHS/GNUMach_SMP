@@ -589,7 +589,7 @@ ewrk3_hw_init(struct device *dev, u_long iobase)
 
     if (!status) {
       if (ewrk3_debug > 1) {
-	printk(version);
+	printk("%s", version);
       }
       
       /* The EWRK3-specific entries in the device structure. */

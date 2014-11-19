@@ -291,7 +291,7 @@ static int ne_probe1(struct device *dev, int ioaddr)
     }
 
     if (ei_debug  &&  version_printed++ == 0)
-	printk(version);
+	printk("%s", version);
 
     printk("NE*000 ethercard probe at %#3x:", ioaddr);
 

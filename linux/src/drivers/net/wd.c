@@ -137,7 +137,7 @@ int wd_probe1(struct device *dev, int ioaddr)
 	}
 
 	if (ei_debug  &&  version_printed++ == 0)
-		printk(version);
+		printk("%s", version);
 
 	printk("%s: WD80x3 at %#3x, ", dev->name, ioaddr);
 	for (i = 0; i < 6; i++)

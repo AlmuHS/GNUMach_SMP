@@ -674,7 +674,7 @@ int lance_probe1(struct device *dev, int ioaddr, int irq, int options)
 	}
 
 	if (lance_debug > 0  &&  did_version++ == 0)
-		printk(version);
+		printk("%s", version);
 
 	/* The LANCE-specific entries in the device structure. */
 	dev->open = lance_open;

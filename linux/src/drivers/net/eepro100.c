@@ -726,7 +726,7 @@ static void *speedo_found1(struct pci_dev *pdev, void *init_dev,
 			   eeprom[8], eeprom[9]>>8, eeprom[9] & 0xff);
 		for (i = 0; i < 4; i++)
 			if (eeprom[5] & (1<<i))
-				printk(connectors[i]);
+				printk("%s", connectors[i]);
 		printk("\n"KERN_INFO"  Primary interface chip %s PHY #%d.\n",
 			   phys[(eeprom[6]>>8)&15], eeprom[6] & 0x1f);
 		if (eeprom[7] & 0x0700)

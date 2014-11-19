@@ -649,7 +649,7 @@ depca_hw_init(struct device *dev, u_long ioaddr)
     }
     if (!status) {
       if (depca_debug > 1) {
-	printk(version);
+	printk("%s", version);
       }
 
       /* The DEPCA-specific entries in the device structure. */

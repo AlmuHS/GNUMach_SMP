@@ -249,7 +249,7 @@ int fmv18x_probe1(struct device *dev, short ioaddr)
 	outb(dev->if_port, ioaddr + MODE13);
 
 	if (net_debug)
-		printk(version);
+		printk("%s", version);
 
 	/* Initialize the device structure. */
 	dev->priv = kmalloc(sizeof(struct net_local), GFP_KERNEL);

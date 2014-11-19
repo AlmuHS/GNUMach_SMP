@@ -344,7 +344,7 @@ static int pcnet32_probe1(struct device *dev, unsigned int ioaddr, unsigned char
     dev->irq = irq_line;
 
     if (pcnet32_debug > 0)
-      printk(version);
+      printk("%s", version);
 
     /* The PCNET32-specific entries in the device structure. */
     dev->open = &pcnet32_open;

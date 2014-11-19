@@ -1308,7 +1308,7 @@ de4x5_hw_init(struct device *dev, u_long iobase))
     }
     
     if (de4x5_debug & DEBUG_VERSION) {
-	printk(version);
+	printk("%s", version);
     }
     
     /* The DE4X5-specific entries in the device structure. */

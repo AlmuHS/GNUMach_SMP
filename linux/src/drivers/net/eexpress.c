@@ -794,7 +794,7 @@ static int eexp_hw_probe(struct device *dev, unsigned short ioaddr)
 	}
   
 	if (net_debug) 
-		printk(version);
+		printk("%s", version);
 	dev->open = eexp_open;
 	dev->stop = eexp_close;
 	dev->hard_start_xmit = eexp_xmit;

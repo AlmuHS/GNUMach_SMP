@@ -153,7 +153,7 @@ int ultra32_probe1(struct device *dev, int ioaddr)
 	}
 
 	if (ei_debug  &&  version_printed++ == 0)
-		printk(version);
+		printk("%s", version);
 
 	model_name = "SMC Ultra32";
 

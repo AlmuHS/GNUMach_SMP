@@ -164,7 +164,7 @@ int hpp_probe1(struct device *dev, int ioaddr)
 	}
 
 	if (ei_debug  &&  version_printed++ == 0)
-		printk(version);
+		printk("%s", version);
 
 	printk("%s: %s at %#3x,", dev->name, name, ioaddr);
 

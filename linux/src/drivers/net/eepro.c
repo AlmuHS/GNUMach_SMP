@@ -498,7 +498,7 @@ eepro_probe1(struct device *dev, short ioaddr)
 			}
 
 			if (net_debug) 
-				printk(version);
+				printk("%s", version);
 
 			/* Grab the region so we can find another board if autoIRQ fails. */
 			request_region(ioaddr, EEPRO_IO_EXTENT, "eepro");

@@ -274,7 +274,7 @@ static int seeq8005_probe1(struct device *dev, int ioaddr)
 		dev = init_etherdev(0, sizeof(struct net_local));
 
 	if (net_debug  &&  version_printed++ == 0)
-		printk(version);
+		printk("%s", version);
 
 	printk("%s: %s found at %#3x, ", dev->name, "seeq8005", ioaddr);
 

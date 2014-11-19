@@ -258,7 +258,7 @@ int at1700_probe1(struct device *dev, int ioaddr)
 	outb(0x00, ioaddr + CONFIG_1);
 
 	if (net_debug)
-		printk(version);
+		printk("%s", version);
 
 	/* Initialize the device structure. */
 	dev->priv = kmalloc(sizeof(struct net_local), GFP_KERNEL);

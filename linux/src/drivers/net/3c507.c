@@ -354,7 +354,7 @@ int el16_probe1(struct device *dev, int ioaddr)
 		dev = init_etherdev(0, sizeof(struct net_local));
 
 	if (net_debug  &&  version_printed++ == 0)
-		printk(version);
+		printk("%s", version);
 
 	printk("%s: 3c507 at %#x,", dev->name, ioaddr);
 
@@ -410,7 +410,7 @@ int el16_probe1(struct device *dev, int ioaddr)
 		   dev->if_port ? "ex" : "in", dev->mem_start, dev->mem_end-1);
 
 	if (net_debug)
-		printk(version);
+		printk("%s", version);
 
 	/* Initialize the device structure. */
 	dev->priv = kmalloc(sizeof(struct net_local), GFP_KERNEL);

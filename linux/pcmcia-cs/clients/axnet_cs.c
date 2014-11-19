@@ -1814,7 +1814,7 @@ static void set_multicast_list(struct net_device *dev)
 static int axdev_init(struct net_device *dev)
 {
 	if (ei_debug > 1)
-		printk(version_8390);
+		printk("%s", version_8390);
     
 	if (dev->priv == NULL) 
 	{

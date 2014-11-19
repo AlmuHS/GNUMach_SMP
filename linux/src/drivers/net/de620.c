@@ -843,7 +843,7 @@ de620_probe(struct device *dev)
 	dev->irq       = irq;
 
 	if (de620_debug)
-		printk(version);
+		printk("%s", version);
 
 	printk("D-Link DE-620 pocket adapter");
 

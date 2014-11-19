@@ -644,7 +644,7 @@ de600_probe(struct device *dev)
 	printk("%s: D-Link DE-600 pocket adapter", dev->name);
 	/* Alpha testers must have the version number to report bugs. */
 	if (de600_debug > 1)
-		printk(version);
+		printk("%s", version);
 
 	/* probe for adapter */
 	rx_page = 0;

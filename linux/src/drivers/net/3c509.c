@@ -314,7 +314,7 @@ int el3_probe(struct device *dev)
 	el3_root_dev = dev;
 
 	if (el3_debug > 0)
-		printk(version);
+		printk("%s", version);
 
 	/* The EL3-specific entries in the device structure. */
 	dev->open = &el3_open;

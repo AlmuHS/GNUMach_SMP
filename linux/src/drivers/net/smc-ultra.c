@@ -156,7 +156,7 @@ int ultra_probe1(struct device *dev, int ioaddr)
 		dev = init_etherdev(0, 0);
 
 	if (ei_debug  &&  version_printed++ == 0)
-		printk(version);
+		printk("%s", version);
 
 	model_name = (idreg & 0xF0) == 0x20 ? "SMC Ultra" : "SMC EtherEZ";
 
