@@ -54,7 +54,13 @@ serverdemux seqnos_device_reply_server;
 #endif	/* SEQNOS */
 
 type reply_port_t = polymorphic|MACH_MSG_TYPE_PORT_SEND_ONCE
-	ctype: mach_port_t;
+	ctype: mach_port_t
+#ifndef	KERNEL_SERVER
+#ifdef	MACH_PAYLOAD_TO_PORT
+	intranpayload: mach_port_t MACH_PAYLOAD_TO_PORT
+#endif	/* MACH_PAYLOAD_TO_PORT */
+#endif	/* KERNEL_SERVER */
+;
 
 simpleroutine	device_open_reply(
 	    reply_port		: reply_port_t;

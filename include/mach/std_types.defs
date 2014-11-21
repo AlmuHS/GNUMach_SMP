@@ -49,7 +49,13 @@ type pointer_t = ^array[] of MACH_MSG_TYPE_BYTE
 	ctype: vm_offset_t;
 
 
-type mach_port_t = MACH_MSG_TYPE_COPY_SEND;
+type mach_port_t = MACH_MSG_TYPE_COPY_SEND
+#ifndef	KERNEL_SERVER
+#ifdef	MACH_PAYLOAD_TO_PORT
+		intranpayload: mach_port_t MACH_PAYLOAD_TO_PORT
+#endif	/* MACH_PAYLOAD_TO_PORT */
+#endif	/* KERNEL_SERVER */
+;
 type mach_port_array_t = array[] of mach_port_t;
 
 type mach_port_name_t = MACH_MSG_TYPE_PORT_NAME

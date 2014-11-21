@@ -37,7 +37,13 @@ subsystem device_request 2800;	/* to match device.defs */
 serverprefix	ds_;
 
 type reply_port_t = MACH_MSG_TYPE_MAKE_SEND_ONCE
-	ctype: mach_port_t;
+	ctype: mach_port_t
+#ifndef	KERNEL_SERVER
+#ifdef	MACH_PAYLOAD_TO_PORT
+	intranpayload: mach_port_t MACH_PAYLOAD_TO_PORT
+#endif	/* MACH_PAYLOAD_TO_PORT */
+#endif	/* KERNEL_SERVER */
+;
 
 simpleroutine device_open_request(
 	    device_server_port	: mach_port_t;

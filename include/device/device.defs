@@ -45,7 +45,13 @@ subsystem
 serverprefix	ds_;
 
 type reply_port_t = MACH_MSG_TYPE_MAKE_SEND_ONCE | polymorphic
-	ctype: mach_port_t;
+	ctype: mach_port_t
+#ifndef	KERNEL_SERVER
+#ifdef	MACH_PAYLOAD_TO_PORT
+		intranpayload: mach_port_t MACH_PAYLOAD_TO_PORT
+#endif	/* MACH_PAYLOAD_TO_PORT */
+#endif	/* KERNEL_SERVER */
+;
 
 routine device_open(
 		master_port	: mach_port_t;
