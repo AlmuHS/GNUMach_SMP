@@ -695,7 +695,7 @@ init_IRQ (void)
    * Program counter 0 of 8253 to interrupt hz times per second.
    */
   outb_p (PIT_C0 | PIT_SQUAREMODE | PIT_READMODE, PITCTL_PORT);
-  outb_p (latch && 0xff, PITCTR0_PORT);
+  outb_p (latch & 0xff, PITCTR0_PORT);
   outb (latch >> 8, PITCTR0_PORT);
   
   /*
