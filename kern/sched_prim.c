@@ -726,7 +726,7 @@ boolean_t thread_invoke(
 		     *	running out of stack.
 		     */
 
-		    counter_always(c_thread_invoke_hits++);
+		    counter(c_thread_invoke_hits++);
 		    (void) spl0();
 		    call_continuation(new_thread->swap_func);
 		    /*NOTREACHED*/
@@ -738,7 +738,7 @@ boolean_t thread_invoke(
 		     */
 		    thread_swapin(new_thread);
 		    thread_unlock(new_thread);
-		    counter_always(c_thread_invoke_misses++);
+		    counter(c_thread_invoke_misses++);
 		    return FALSE;
 
 		case 0:
@@ -759,7 +759,7 @@ boolean_t thread_invoke(
 		{
 		    thread_swapin(new_thread);
 		    thread_unlock(new_thread);
-		    counter_always(c_thread_invoke_misses++);
+		    counter(c_thread_invoke_misses++);
 		    return FALSE;
 		}
 	    }
@@ -788,7 +788,7 @@ boolean_t thread_invoke(
 	 *	changing address spaces.  It updates active_threads.
 	 *	It returns only if a continuation is not supplied.
 	 */
-	counter_always(c_thread_invoke_csw++);
+	counter(c_thread_invoke_csw++);
 	old_thread = switch_context(old_thread, continuation, new_thread);
 
 	/*

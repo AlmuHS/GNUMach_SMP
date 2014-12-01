@@ -32,13 +32,12 @@
  *	This makes them easier to examine with ddb.
  */
 
+#if	MACH_COUNTERS
 mach_counter_t c_thread_invoke_hits = 0;
 mach_counter_t c_thread_invoke_misses = 0;
 mach_counter_t c_thread_invoke_csw = 0;
 mach_counter_t c_thread_handoff_hits = 0;
 mach_counter_t c_thread_handoff_misses = 0;
-
-#if	MACH_COUNTERS
 mach_counter_t c_threads_current = 0;
 mach_counter_t c_threads_max = 0;
 mach_counter_t c_threads_min = 0;

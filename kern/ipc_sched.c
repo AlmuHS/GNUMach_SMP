@@ -214,7 +214,7 @@ thread_handoff(
 		thread_unlock(new);
 		(void) splx(s);
 
-		counter_always(c_thread_handoff_misses++);
+		counter(c_thread_handoff_misses++);
 		return FALSE;
 	}
 
@@ -278,6 +278,6 @@ thread_handoff(
     after_old_thread:
 	(void) splx(s);
 
-	counter_always(c_thread_handoff_hits++);
+	counter(c_thread_handoff_hits++);
 	return TRUE;
 }

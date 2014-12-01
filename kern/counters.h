@@ -55,13 +55,12 @@
 
 typedef unsigned int mach_counter_t;
 
+#if	MACH_COUNTERS
 extern mach_counter_t c_thread_invoke_hits;
 extern mach_counter_t c_thread_invoke_misses;
 extern mach_counter_t c_thread_invoke_csw;
 extern mach_counter_t c_thread_handoff_hits;
 extern mach_counter_t c_thread_handoff_misses;
-
-#if	MACH_COUNTERS
 extern mach_counter_t c_threads_current;
 extern mach_counter_t c_threads_max;
 extern mach_counter_t c_threads_min;
