@@ -60,8 +60,6 @@ serverprefix SERVERPREFIX;
 
 type mach_port_status_t = struct[9] of integer_t;
 
-type old_mach_port_status_t = struct[8] of integer_t;	/* compatibility */
-
 type task_t = mach_port_t
 		ctype: mach_port_t
 #if	KERNEL_SERVER

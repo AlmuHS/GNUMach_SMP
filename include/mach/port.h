@@ -137,6 +137,8 @@ typedef struct mach_port_status {
 /*
  *  Compatibility definitions, for code written
  *  before there was an mps_seqno field.
+ *
+ *  XXX: Remove this before releasing Gnumach 1.6.
  */
 
 typedef struct old_mach_port_status {

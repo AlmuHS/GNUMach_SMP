@@ -176,14 +176,7 @@ routine mach_port_mod_refs(
 		right		: mach_port_right_t;
 		delta		: mach_port_delta_t);
 
-/*
- *	Temporary compatibility call.
- */
-
-routine old_mach_port_get_receive_status(
-		task		: ipc_space_t;
-		name		: mach_port_name_t;
-	out	status		: old_mach_port_status_t);
+skip;	/* old old_mach_port_get_receive_status */
 
 /*
  *	Only valid for receive rights.

@@ -744,46 +744,6 @@ mach_port_mod_refs(
 }
 
 /*
- *	Routine:	old_mach_port_get_receive_status [kernel call]
- *	Purpose:
- *		Compatibility for code written before sequence numbers.
- *		Retrieves mucho info about a receive right.
- *	Conditions:
- *		Nothing locked.
- *	Returns:
- *		KERN_SUCCESS		Retrieved status.
- *		KERN_INVALID_TASK	The space is null.
- *		KERN_INVALID_TASK	The space is dead.
- *		KERN_INVALID_NAME	The name doesn't denote a right.
- *		KERN_INVALID_RIGHT	Name doesn't denote receive rights.
- */
-
-kern_return_t
-old_mach_port_get_receive_status(
-	ipc_space_t 		space,
-	mach_port_t 		name,
-	old_mach_port_status_t 	*statusp)
-{
-	mach_port_status_t status;
-	kern_return_t kr;
-
-	kr = mach_port_get_receive_status(space, name, &status);
-	if (kr != KERN_SUCCESS)
-		return kr;
-
-	statusp->mps_pset = status.mps_pset;
-	statusp->mps_mscount = status.mps_mscount;
-	statusp->mps_qlimit = status.mps_qlimit;
-	statusp->mps_msgcount = status.mps_msgcount;
-	statusp->mps_sorights = status.mps_sorights;
-	statusp->mps_srights = status.mps_srights;
-	statusp->mps_pdrequest = status.mps_pdrequest;
-	statusp->mps_nsrequest = status.mps_nsrequest;
-
-	return KERN_SUCCESS;
-}
-
-/*
  *	Routine:	mach_port_set_qlimit [kernel call]
  *	Purpose:
  *		Changes a receive right's queue limit.
