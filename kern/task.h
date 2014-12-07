@@ -182,6 +182,7 @@ extern void consider_task_collect(void);
 extern void		task_init(void);
 extern void		task_reference(task_t);
 extern void		task_deallocate(task_t);
+extern void		task_hold_locked(task_t);
 extern kern_return_t	task_hold(task_t);
 extern kern_return_t	task_dowait(task_t, boolean_t);
 extern kern_return_t	task_release(task_t);

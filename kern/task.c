@@ -272,6 +272,7 @@ kern_return_t task_terminate(
 			thread_terminate(cur_thread);
 			return KERN_FAILURE;
 		}
+		task_hold_locked(task);
 		task->active = FALSE;
 		queue_remove(list, cur_thread, thread_t, thread_list);
 		thread_unlock(cur_thread);
@@ -325,6 +326,7 @@ kern_return_t task_terminate(
 			task_unlock(task);
 			return KERN_FAILURE;
 		}
+		task_hold_locked(task);
 		task->active = FALSE;
 		task_unlock(task);
 	}
@@ -335,9 +337,8 @@ kern_return_t task_terminate(
 	 *	If this is the current task, the current thread will
 	 *	be left running.
 	 */
-	ipc_task_disable(task);
-	(void) task_hold(task);
 	(void) task_dowait(task,TRUE);			/* may block */
+	ipc_task_disable(task);
 
 	/*
 	 *	Terminate each thread in the task.
@@ -402,20 +403,18 @@ kern_return_t task_terminate(
  *	Suspend execution of the specified task.
  *	This is a recursive-style suspension of the task, a count of
  *	suspends is maintained.
+ *
+ *	CONDITIONS: the task is locked and active.
  */
-kern_return_t task_hold(
+void task_hold_locked(
 	task_t	task)
 {
 	queue_head_t	*list;
 	thread_t	thread, cur_thread;
 
-	cur_thread = current_thread();
+	assert(task->active);
 
-	task_lock(task);
-	if (!task->active) {
-		task_unlock(task);
-		return KERN_FAILURE;
-	}
+	cur_thread = current_thread();
 
 	task->suspend_count++;
 
@@ -429,6 +428,26 @@ kern_return_t task_hold(
 		if (thread != cur_thread)
 			thread_hold(thread);
 	}
+}
+
+/*
+ *	task_hold:
+ *
+ *	Suspend execution of the specified task.
+ *	This is a recursive-style suspension of the task, a count of
+ *	suspends is maintained.
+ */
+kern_return_t task_hold(
+	task_t	task)
+{
+	task_lock(task);
+	if (!task->active) {
+		task_unlock(task);
+		return KERN_FAILURE;
+	}
+
+	task_hold_locked(task);
+
 	task_unlock(task);
 	return KERN_SUCCESS;
 }
