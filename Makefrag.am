@@ -221,7 +221,8 @@ EXTRA_DIST += \
 	kern/mach4.srv \
 	kern/gnumach.srv \
 	kern/mach_debug.srv \
-	kern/mach_host.srv
+	kern/mach_host.srv \
+	kern/task_notify.cli
 
 
 #
