@@ -140,15 +140,35 @@ Entry(splsched)
 Entry(splhigh)
 Entry(splhi)
 ENTRY(spl7)
-	SETIPL(SPL7)
+	/* ipl7 just clears IF */
+	movl	$SPL7,%eax
+	xchgl	EXT(curr_ipl),%eax
+	cli
+	ret
 
 ENTRY(splx)
 	movl	S_ARG0,%edx		/* get ipl */
+
+#if MACH_KDB || MACH_TTD
+	/* First make sure that if we're exitting from ipl7, IF is still cleared */
+	cmpl	$SPL7,EXT(curr_ipl)	/* from ipl7? */
+	jne	0f
+	pushfl
+	popl	%eax
+	testl	$0x200,%eax		/* IF? */
+	jz	0f
+	int3				/* Oops, interrupts got enabled?! */
+
+0:
+#endif	/* MACH_KDB || MACH_TTD */
 	testl	%edx,%edx		/* spl0? */
 	jz	EXT(spl0)		/* yes, handle specially */
 	cmpl	EXT(curr_ipl),%edx	/* same ipl as current? */
 	jne	spl			/* no */
+	cmpl	$SPL7,%edx		/* spl7? */
+	je	1f			/* to ipl7, don't enable interrupts */
 	sti				/* ensure interrupts are enabled */
+1:
 	movl	%edx,%eax		/* return previous ipl */
 	ret
 
@@ -207,6 +227,20 @@ splx_cli:
 	.align	TEXT_ALIGN
 	.globl	spl
 spl:
+#if MACH_KDB || MACH_TTD
+	/* First make sure that if we're exitting from ipl7, IF is still cleared */
+	cmpl	$SPL7,EXT(curr_ipl)	/* from ipl7? */
+	jne	0f
+	pushfl
+	popl	%eax
+	testl	$0x200,%eax		/* IF? */
+	jz	0f
+	int3				/* Oops, interrupts got enabled?! */
+
+0:
+#endif	/* MACH_KDB || MACH_TTD */
+	cmpl	$SPL7,%edx		/* spl7? */
+	je	EXT(spl7)		/* yes, handle specially */
 	movl	EXT(pic_mask)(,%edx,4),%eax
 					/* get PIC mask */
 	cli				/* disable interrupts */
