@@ -72,10 +72,23 @@ typedef struct ipc_kmsg {
 #define	ikm_plus_overhead(size)	((vm_size_t)((size) + IKM_OVERHEAD))
 #define	ikm_less_overhead(size)	((mach_msg_size_t)((size) - IKM_OVERHEAD))
 
+#if	MACH_IPC_TEST
 /*
- * XXX	For debugging.
+ *	For debugging.
  */
 #define IKM_BOGUS		((ipc_kmsg_t) 0xffffff10)
+
+#define	ikm_mark_bogus(kmsg)						\
+MACRO_BEGIN								\
+	(kmsg)->ikm_next = IKM_BOGUS;					\
+	(kmsg)->ikm_prev = IKM_BOGUS;					\
+MACRO_END
+
+#else	/* MACH_IPC_TEST */
+
+#define	ikm_mark_bogus(kmsg)	;
+
+#endif	/* MACH_IPC_TEST */
 
 /*
  *	We keep a per-processor cache of kernel message buffers.
@@ -198,9 +211,7 @@ MACRO_BEGIN								\
 		_next->ikm_prev = _prev;				\
 		_prev->ikm_next = _next;				\
 	}								\
-  	/* XXX Debug paranoia */					\
-  	kmsg->ikm_next = IKM_BOGUS;					\
-  	kmsg->ikm_prev = IKM_BOGUS;					\
+	ikm_mark_bogus (kmsg);						\
 MACRO_END
 
 #define	ipc_kmsg_enqueue_macro(queue, kmsg)				\

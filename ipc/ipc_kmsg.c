@@ -139,9 +139,7 @@ ipc_kmsg_rmqueue(
 		next->ikm_prev = prev;
 		prev->ikm_next = next;
 	}
-	/* XXX Temporary debug logic */
-	kmsg->ikm_next = IKM_BOGUS;
-	kmsg->ikm_prev = IKM_BOGUS;
+	ikm_mark_bogus (kmsg);
 }
 
 /*
