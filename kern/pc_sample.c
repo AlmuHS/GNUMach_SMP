@@ -189,6 +189,9 @@ get_sampled_pcs(
 		   (sampled_pc_array_t)cp->buffer,
 		   (seqidx2 + 1) * sizeof(sampled_pc_t));
 	}
+    } else if (nsamples < 0) {
+	/* Bogus SEQNO supplied.  */
+	nsamples = 0;
     } else {
 	/*  could either be zero because of overflow, or because
 	 *  we are being lied to.  In either case, return nothing.
