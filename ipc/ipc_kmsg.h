@@ -92,9 +92,12 @@ extern ipc_kmsg_t	ipc_kmsg_cache[NCPUS];
 /*
  *	The size of the kernel message buffers that will be cached.
  *	IKM_SAVED_KMSG_SIZE includes overhead; IKM_SAVED_MSG_SIZE doesn't.
+ *
+ *	We use the page size for IKM_SAVED_KMSG_SIZE to make sure the
+ *	page is pinned to a single processor.
  */
 
-#define	IKM_SAVED_KMSG_SIZE	((vm_size_t) 256)
+#define	IKM_SAVED_KMSG_SIZE	PAGE_SIZE
 #define	IKM_SAVED_MSG_SIZE	ikm_less_overhead(IKM_SAVED_KMSG_SIZE)
 
 #define	ikm_alloc(size)							\
