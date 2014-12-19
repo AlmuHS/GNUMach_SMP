@@ -39,10 +39,9 @@
 extern void Assert(const char *exp, const char *filename, int line) __attribute__ ((noreturn));
 
 #define assert(ex)							\
-MACRO_BEGIN								\
-	if (!(ex))							\
-		Assert(#ex, __FILE__, __LINE__);			\
-MACRO_END
+	((ex)								\
+	 ? (void) (0)							\
+	 : Assert (#ex, __FILE__, __LINE__))
 
 #define	assert_static(x)	assert(x)
 
