@@ -1232,13 +1232,12 @@ ENTRY(discover_x86_cpu_type)
  */
 
 /*
- * Copy from user address space.
+ * Copy from user address space - generic version.
  * arg0:	user address
  * arg1:	kernel address
  * arg2:	byte count
  */
 ENTRY(copyin)
-Entry(copyinmsg)
 	pushl	%esi
 	pushl	%edi			/* save registers */
 
@@ -1275,13 +1274,48 @@ copyin_fail:
 	jmp	copyin_ret		/* pop frame and return */
 
 /*
- * Copy to user address space.
+ * Copy from user address space - version for copying messages.
+ * arg0:	user address
+ * arg1:	kernel address
+ * arg2:	byte count - must be a multiple of four
+ */
+ENTRY(copyinmsg)
+	pushl	%esi
+	pushl	%edi			/* save registers */
+
+	movl	8+S_ARG0,%esi		/* get user start address */
+	movl	8+S_ARG1,%edi		/* get kernel destination address */
+	movl	8+S_ARG2,%ecx		/* get count */
+
+	movl	$USER_DS,%eax		/* use user data segment for accesses */
+	mov	%ax,%ds
+
+	/*cld*/				/* count up: default mode in all GCC code */
+	shrl	$2,%ecx
+	RECOVER(copyinmsg_fail)
+	rep
+	movsl				/* move longwords */
+	xorl	%eax,%eax		/* return 0 for success */
+
+copyinmsg_ret:
+	mov	%ss,%di			/* restore DS to kernel segment */
+	mov	%di,%ds
+
+	popl	%edi			/* restore registers */
+	popl	%esi
+	ret				/* and return */
+
+copyinmsg_fail:
+	movl	$1,%eax			/* return 1 for failure */
+	jmp	copyinmsg_ret		/* pop frame and return */
+
+/*
+ * Copy to user address space - generic version.
  * arg0:	kernel address
  * arg1:	user address
  * arg2:	byte count
  */
 ENTRY(copyout)
-Entry(copyoutmsg)
 	pushl	%esi
 	pushl	%edi			/* save registers */
 
@@ -1321,6 +1355,47 @@ copyout_ret:
 copyout_fail:
 	movl	$1,%eax			/* return 1 for failure */
 	jmp	copyout_ret		/* pop frame and return */
+
+/*
+ * Copy to user address space - version for copying messages.
+ * arg0:	kernel address
+ * arg1:	user address
+ * arg2:	byte count - must be a multiple of four
+ */
+ENTRY(copyoutmsg)
+	pushl	%esi
+	pushl	%edi			/* save registers */
+
+	movl	8+S_ARG0,%esi		/* get kernel start address */
+	movl	8+S_ARG1,%edi		/* get user start address */
+	movl	8+S_ARG2,%ecx		/* get count */
+
+	movl	$USER_DS,%eax		/* use user data segment for accesses */
+	mov	%ax,%es
+
+#if !defined(MACH_HYP) && !PAE
+	movl	8+S_ARG2,%edx		/* copyout_retry expects count here */
+	cmpl	$3,machine_slot+SUB_TYPE_CPU_TYPE
+	jbe	copyout_retry		/* Use slow version on i386 */
+#endif /* !defined(MACH_HYP) && !PAE */
+
+	shrl	$2,%ecx			/* move by longwords */
+	RECOVER(copyoutmsg_fail)
+	rep
+	movsl
+	xorl	%eax,%eax		/* return 0 for success */
+
+copyoutmsg_ret:
+	mov	%ss,%di			/* restore ES to kernel segment */
+	mov	%di,%es
+
+	popl	%edi			/* restore registers */
+	popl	%esi
+	ret				/* and return */
+
+copyoutmsg_fail:
+	movl	$1,%eax			/* return 1 for failure */
+	jmp	copyoutmsg_ret		/* pop frame and return */
 
 #if !defined(MACH_HYP) && !PAE
 /*
