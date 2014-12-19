@@ -624,6 +624,7 @@ rdwr_full (int rw, kdev_t dev, loff_t *off, char **buf, int *resid, int bshift)
     }
   if (! err)
     {
+      assert (i > 0);
       ll_rw_block (rw, i, bhp, 0);
       wait_on_buffer (bhp[i - 1]);
     }
