@@ -184,7 +184,7 @@ extern boolean_t tty_portdeath(
 #define TS_TRANSLATE	0x00100000	/* translation device enabled */
 #define TS_KDB		0x00200000	/* should enter kdb on ALT */
 
-#define	TS_MIN_TO_RCV	0x00400000	/* character recived during 
+#define	TS_MIN_TO_RCV	0x00400000	/* character received during
 					   receive timeout interval */
 
 /* flags - old names defined in terms of new ones */

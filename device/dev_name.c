@@ -207,7 +207,7 @@ boolean_t dev_name_lookup(
 	    }
 
 	    *unit += (slice_num << 4);
-		/* if slice==0, it is either compatability or whole device */
+		/* if slice==0, it is either compatibility or whole device */
 
 	    if (c >= 'a' && c < 'a' + j) { /* note: w/o this -> whole slice */
 		/*

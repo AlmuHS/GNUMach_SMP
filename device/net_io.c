@@ -640,7 +640,7 @@ net_packet(
 	 * Do a quick check to see if it is a kernel TTD packet.
 	 *
 	 * Only check if KernelTTD is enabled, ie. the current
-	 * device driver supports TTD, and the bootp succeded.
+	 * device driver supports TTD, and the bootp succeeded.
 	 */
 	if (kttd_enabled && kttd_handle_async(kmsg)) {
 		/* 
