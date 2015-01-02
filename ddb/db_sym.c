@@ -293,7 +293,7 @@ db_name_is_ambiguous(char *sym_name)
  * and the difference between val and the symbol found.
  *
  * Logic change. If the task argument is non NULL and a
- * matching symbol is found in a symbol table which explictly
+ * matching symbol is found in a symbol table which explicitly
  * specifies its map to be task->map, that symbol will have
  * precedence over any symbol from a symbol table will a null
  * map. This allows overlapping kernel/user maps to work correctly.

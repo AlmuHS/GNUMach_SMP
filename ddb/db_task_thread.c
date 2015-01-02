@@ -150,7 +150,7 @@ db_check_thread_address_valid(thread)
 }
 
 /*
- * convert task_id(queue postion) to task address
+ * convert task_id(queue position) to task address
  */
 task_t
 db_lookup_task_id(int task_id)
