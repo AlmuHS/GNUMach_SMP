@@ -194,7 +194,7 @@ thread_t th;
 	 * Make a request to the profile_thread by inserting
 	 * the buffer in the send queue, and wake it up.
 	 * The last buffer must be inserted at the head of the
-	 * send queue, so the profile_thread handles it immediatly.
+	 * send queue, so the profile_thread handles it immediately.
 	 */
 	if (kmem_alloc( kernel_map, &vm_buf_entry,
 		   sizeof(struct buf_to_send)) != KERN_SUCCESS)

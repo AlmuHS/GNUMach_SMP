@@ -50,7 +50,7 @@
  *	the contents are identical up to the length of s2.
  *	It returns < 0 if the first differing character is smaller 
  *	in s1 than in s2 or if s1 is shorter than s2 and the
- *	contents are identical upto the length of s1.
+ *	contents are identical up to the length of s1.
  */
 
 int __attribute__ ((pure))
@@ -157,7 +157,7 @@ strncpy(
 
 /*
  * Abstract:
- *	strlen returns the number of characters in "string" preceeding 
+ *	strlen returns the number of characters in "string" preceding
  *	the terminating null character.
  */
 

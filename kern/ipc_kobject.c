@@ -244,7 +244,7 @@ ipc_kobject_server(request)
 	} else {
 		/*
 		 *	The message contents of the request are intact.
-		 *	Destroy everthing except the reply port right,
+		 *	Destroy everything except the reply port right,
 		 *	which is needed in the reply message.
 		 */
 

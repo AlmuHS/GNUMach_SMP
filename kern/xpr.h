@@ -34,7 +34,7 @@
  * which will expand into the following code:
  *	if (xprflags & XPR_SYSCALLS)
  *		xpr("syscall: %d, 0x%x\n", syscallno, arg1);
- * Xpr will log the pointer to the printf string and up to 6 arguements,
+ * Xpr will log the pointer to the printf string and up to 6 arguments,
  * along with a timestamp and cpuinfo (for multi-processor systems), into
  * a circular buffer.  The actual printf processing is delayed until after
  * the buffer has been collected.  It is assumed that the text/data segments

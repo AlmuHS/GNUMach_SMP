@@ -155,7 +155,7 @@ void sched_init(void)
 
 	min_quantum = hz / 10;		/* context switch 10 times/second */
 	wait_queue_init();
-	pset_sys_bootstrap();		/* initialize processer mgmt. */
+	pset_sys_bootstrap();		/* initialize processor mgmt. */
 	queue_init(&action_queue);
 	simple_lock_init(&action_lock);
 	sched_tick = 0;

@@ -234,7 +234,7 @@ void clock_interrupt(
 	    update_mapped_time(&time);
 
 	    /*
-	     *	Schedule soft-interupt for timeout if needed
+	     *	Schedule soft-interrupt for timeout if needed
 	     */
 	    if (needsoft) {
 		if (basepri) {

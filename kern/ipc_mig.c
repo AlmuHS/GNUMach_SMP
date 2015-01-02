@@ -612,7 +612,7 @@ kern_return_t thread_set_state_KERNEL(
  *	knows to fall back on an RPC.  For other return values, it won't
  *	retry with an RPC.  The retry might get a different (incorrect) rc.
  *	Return values are only set (and should only be set, with copyout)
- *	on successfull calls.
+ *	on successful calls.
  */
 
 kern_return_t
