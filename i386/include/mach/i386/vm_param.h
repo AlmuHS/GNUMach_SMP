@@ -29,7 +29,7 @@
  *	Date:	1985
  *
  *	I386 machine dependent virtual memory parameters.
- *	Most of the declarations are preceeded by I386_ (or i386_)
+ *	Most of the declarations are preceded by I386_ (or i386_)
  *	which is OK because only I386 specific code will be using
  *	them.
  */

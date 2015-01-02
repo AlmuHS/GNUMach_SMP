@@ -204,7 +204,7 @@ u_char	*esc_spt	= (u_char *)0;
    - Delete returns `ESC [ 9' instead of 0x7f.
    - Alt + function keys return key sequences that are different
      from the key sequences returned by the function keys alone.
-     This is done with the idea of alowing a terminal server to
+     This is done with the idea of allowing a terminal server to
      implement multiple virtual consoles mapped on Alt+F1, Alt+F2,
      etc, as in Linux.
 
@@ -1880,7 +1880,7 @@ kd_cr(void)
  *	of the screen.
  *
  * input	: None
- * output	: Screen is cleared from current cursor postion to bottom
+ * output	: Screen is cleared from current cursor position to bottom
  *
  */
 void
@@ -1903,7 +1903,7 @@ kd_cltobcur(void)
  *	of the screen.
  *
  * input	: None
- * output	: Screen is cleared from current cursor postion to top
+ * output	: Screen is cleared from current cursor position to top
  *
  */
 void

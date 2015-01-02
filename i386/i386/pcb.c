@@ -801,7 +801,7 @@ thread_set_syscall_return(
 }
 
 /*
- * Return prefered address of user stack.
+ * Return preferred address of user stack.
  * Always returns low address.  If stack grows up,
  * the stack grows away from this address;
  * if stack grows down, the stack grows towards this

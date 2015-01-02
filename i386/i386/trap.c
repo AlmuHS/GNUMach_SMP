@@ -574,7 +574,7 @@ i386_astintr(void)
 	if (need_ast[mycpu] & AST_I386_FP) {
 	    /*
 	     * AST was for delayed floating-point exception -
-	     * FP interrupt occured while in kernel.
+	     * FP interrupt occurred while in kernel.
 	     * Turn off this AST reason and handle the FPU error.
 	     */
 	    ast_off(mycpu, AST_I386_FP);

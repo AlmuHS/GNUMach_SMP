@@ -221,7 +221,7 @@ i386_io_perm_create (const ipc_port_t master_port, io_port_t from, io_port_t to,
 }
 
 /* Modify the I/O permissions for TARGET_TASK.  If ENABLE is TRUE, the
-   permission to acces the I/O ports specified by IO_PERM is granted,
+   permission to access the I/O ports specified by IO_PERM is granted,
    otherwise it is withdrawn.
 
    The function returns KERN_INVALID_ARGUMENT if TARGET_TASK is not a valid

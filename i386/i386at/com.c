@@ -145,7 +145,7 @@ comprobe_general(struct bus_device *dev, int noisy)
 	    type = "82450 or 16450";
 	    outb(FIFO_CTL(addr), iFIFOENA | iFIFO14CH);	 /* Enable fifo */
 	    if ((inb(FIFO_CTL(addr)) & iFIFO14CH) != 0)
-	      {				 /* Was it successfull */
+	      {				 /* Was it successful */
 		/* if both bits are not set then broken xx550 */
 		if ((inb(FIFO_CTL(addr)) & iFIFO14CH) == iFIFO14CH)
 		  {
