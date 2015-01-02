@@ -1466,7 +1466,7 @@ vm_object_t vm_object_copy_delayed(
 	 *		 synchronization required in the "push"
 	 *		 operation described above.
 	 *
-	 *	The copy-on-write is said to be assymetric because
+	 *	The copy-on-write is said to be asymmetric because
 	 *	the original object is *not* marked copy-on-write.
 	 *	A copied page is pushed to the copy object, regardless
 	 *	which party attempted to modify the page.
