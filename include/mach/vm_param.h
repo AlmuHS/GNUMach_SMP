@@ -39,7 +39,7 @@
 #include <mach/machine/vm_types.h>
 
 /*
- *	The machine independent pages are refered to as PAGES.  A page
+ *	The machine independent pages are referred to as PAGES.  A page
  *	is some number of hardware pages, depending on the target machine.
  *
  *	All references to the size of a page should be done

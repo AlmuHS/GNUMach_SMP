@@ -137,7 +137,7 @@ extern vm_map_t kernel_map;
 /* MACRO set_pbuf_value 
 ** 
 ** enters the value 'val' in the buffer 'pbuf' and returns the following
-** indications:     0: means that a fatal error occured: the buffer was full
+** indications:     0: means that a fatal error occurred: the buffer was full
 **                       (it hasn't been sent yet)
 **                  1: means that a value has been inserted successfully
 **		    2: means that we'v just entered the last value causing 
