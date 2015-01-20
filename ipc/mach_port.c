@@ -570,8 +570,8 @@ mach_port_destroy(
 
 	kr = ipc_right_lookup_write(space, name, &entry);
 	if (kr != KERN_SUCCESS) {
-		if (name != MACH_PORT_NULL && name != MACH_PORT_DEAD && space == current_space()) {
-			printf("task %.*s destroying an invalid port %lu, most probably a bug.\n", sizeof current_task()->name, current_task()->name, name);
+		if (MACH_PORT_VALID (name) && space == current_space()) {
+			printf("task %.*s destroying a bogus port %lu, most probably a bug.\n", sizeof current_task()->name, current_task()->name, name);
 			if (mach_port_deallocate_debug)
 				SoftDebugger("mach_port_deallocate");
 		}
@@ -614,8 +614,8 @@ mach_port_deallocate(
 
 	kr = ipc_right_lookup_write(space, name, &entry);
 	if (kr != KERN_SUCCESS) {
-		if (name != MACH_PORT_NULL && name != MACH_PORT_DEAD && space == current_space()) {
-			printf("task %.*s deallocating an invalid port %lu, most probably a bug.\n", sizeof current_task()->name, current_task()->name, name);
+		if (MACH_PORT_VALID (name) && space == current_space()) {
+			printf("task %.*s deallocating a bogus port %lu, most probably a bug.\n", sizeof current_task()->name, current_task()->name, name);
 			if (mach_port_deallocate_debug)
 				SoftDebugger("mach_port_deallocate");
 		}
@@ -735,8 +735,19 @@ mach_port_mod_refs(
 		return KERN_INVALID_VALUE;
 
 	kr = ipc_right_lookup_write(space, name, &entry);
-	if (kr != KERN_SUCCESS)
+	if (kr != KERN_SUCCESS) {
+		if (MACH_PORT_VALID (name) && space == current_space()) {
+			printf("task %.*s %screasing a bogus port "
+			       "%lu by %d, most probably a bug.\n",
+			       sizeof current_task()->name,
+			       current_task()->name,
+			       delta < 0 ? "de" : "in", name,
+			       delta < 0 ? -delta : delta);
+			if (mach_port_deallocate_debug)
+				SoftDebugger("mach_port_mod_refs");
+		}
 		return kr;
+	}
 	/* space is write-locked and active */
 
 	kr = ipc_right_delta(space, name, entry, right, delta);	/* unlocks */
