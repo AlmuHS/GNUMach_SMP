@@ -65,7 +65,7 @@
 
 
 /*
- *	Associated with eacn page of user-allocatable memory is a
+ *	Associated with each page of user-allocatable memory is a
  *	page structure.
  */
 
