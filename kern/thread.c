@@ -2236,7 +2236,6 @@ thread_wire(
 
 void thread_collect_scan(void)
 {
-#if	0
 	register thread_t	thread, prev_thread;
 	processor_set_t		pset, prev_pset;
 
@@ -2289,7 +2288,6 @@ void thread_collect_scan(void)
 		thread_deallocate(prev_thread);
 	if (prev_pset != PROCESSOR_SET_NULL)
 		pset_deallocate(prev_pset);
-#endif	/* 0 */
 }
 
 boolean_t thread_collect_allowed = TRUE;

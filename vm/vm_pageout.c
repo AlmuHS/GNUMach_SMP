@@ -551,6 +551,8 @@ void vm_pageout_scan(void)
 	stack_collect();
 	net_kmsg_collect();
 	consider_task_collect();
+	if (0)	/* XXX: pcb_collect doesn't do anything yet, so it is
+		   pointless to call consider_thread_collect.  */
 	consider_thread_collect();
 	slab_collect();
 
