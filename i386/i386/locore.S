@@ -1297,14 +1297,13 @@ Entry(copyoutmsg)
 	jbe	copyout_retry		/* Use slow version on i386 */
 #endif /* !defined(MACH_HYP) && !PAE */
 
-	movl	%edx,%eax		/* use count */
 	/*cld*/				/* count up: always this way in GCC code */
-	movl	%eax,%ecx		/* move by longwords first */
+	movl	%edx,%ecx		/* move by longwords first */
 	shrl	$2,%ecx
 	RECOVER(copyout_fail)
 	rep
 	movsl
-	movl	%eax,%ecx		/* now move remaining bytes */
+	movl	%edx,%ecx		/* now move remaining bytes */
 	andl	$3,%ecx
 	RECOVER(copyout_fail)
 	rep
