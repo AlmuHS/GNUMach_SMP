@@ -293,14 +293,7 @@ void
 kbd_enqueue(kd_event *ev)
 {
 	if (kdq_full(&kbd_queue))
-	{
-		static int warned;
-		if (!warned)
-		{
-			printf("kbd: queue full\n");
-			warned = 1;
-		}
-	}
+		printf_once("kbd: queue full\n");
 	else
 		kdq_put(&kbd_queue, ev);
 

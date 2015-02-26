@@ -789,14 +789,7 @@ void
 mouse_enqueue(kd_event *ev)
 {
 	if (kdq_full(&mouse_queue))
-	{
-		static int warned;
-		if (!warned)
-		{
-			printf("mouse: queue full\n");
-			warned = 1;
-		}
-	}
+		printf_once("mouse: queue full\n");
 	else
 		kdq_put(&mouse_queue, ev);
 
