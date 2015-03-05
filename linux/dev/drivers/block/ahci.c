@@ -868,7 +868,7 @@ static void ahci_probe_dev(unsigned char bus, unsigned char device)
 			n++;
 
 	if (nports != n) {
-		printk("ahci: %02u:%02u.%u: Odd number of ports, assuming %d is correct\n", bus, dev, fun, nports);
+		printk("ahci: %02u:%02u.%u: Odd number of ports %u, assuming %u is correct\n", bus, dev, fun, n, nports);
 		port_map = 0;
 	}
 	if (!port_map) {
