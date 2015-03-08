@@ -149,7 +149,7 @@ ENTRY(spl7)
 ENTRY(splx)
 	movl	S_ARG0,%edx		/* get ipl */
 
-#if MACH_KDB || MACH_TTD
+#if (MACH_KDB || MACH_TTD) && !defined(MACH_XEN)
 	/* First make sure that if we're exitting from ipl7, IF is still cleared */
 	cmpl	$SPL7,EXT(curr_ipl)	/* from ipl7? */
 	jne	0f
@@ -160,7 +160,7 @@ ENTRY(splx)
 	int3				/* Oops, interrupts got enabled?! */
 
 0:
-#endif	/* MACH_KDB || MACH_TTD */
+#endif	/* (MACH_KDB || MACH_TTD) && !MACH_XEN */
 	testl	%edx,%edx		/* spl0? */
 	jz	EXT(spl0)		/* yes, handle specially */
 	cmpl	EXT(curr_ipl),%edx	/* same ipl as current? */
@@ -227,7 +227,7 @@ splx_cli:
 	.align	TEXT_ALIGN
 	.globl	spl
 spl:
-#if MACH_KDB || MACH_TTD
+#if (MACH_KDB || MACH_TTD) && !defined(MACH_XEN)
 	/* First make sure that if we're exitting from ipl7, IF is still cleared */
 	cmpl	$SPL7,EXT(curr_ipl)	/* from ipl7? */
 	jne	0f
@@ -238,7 +238,7 @@ spl:
 	int3				/* Oops, interrupts got enabled?! */
 
 0:
-#endif	/* MACH_KDB || MACH_TTD */
+#endif	/* (MACH_KDB || MACH_TTD) && !MACH_XEN */
 	cmpl	$SPL7,%edx		/* spl7? */
 	je	EXT(spl7)		/* yes, handle specially */
 	movl	EXT(pic_mask)(,%edx,4),%eax
