@@ -482,16 +482,7 @@ mach_msg_trap(
 		switch (kmsg->ikm_header.msgh_bits) {
 		    case MACH_MSGH_BITS(MACH_MSG_TYPE_COPY_SEND,
 					MACH_MSG_TYPE_MAKE_SEND_ONCE): {
-			ipc_entry_t table;
-			ipc_entry_num_t size;
 			ipc_port_t reply_port;
-
-			/* sending a request message */
-
-		    {
-			mach_port_index_t index;
-			mach_port_gen_t gen;
-
 		    {
 			mach_port_t reply_name =
 				kmsg->ikm_header.msgh_local_port;
@@ -499,75 +490,36 @@ mach_msg_trap(
 			if (reply_name != rcv_name)
 				goto slow_copyin;
 
-			/* optimized ipc_entry_lookup of reply_name */
-
-			index = MACH_PORT_INDEX(reply_name);
-			gen = MACH_PORT_GEN(reply_name);
-		    }
-
 			is_read_lock(space);
 			assert(space->is_active);
 
-			size = space->is_table_size;
-			table = space->is_table;
-
-			if (index >= size)
-				goto abort_request_copyin;
-
-		    {
 			ipc_entry_t entry;
-			ipc_entry_bits_t bits;
-
-			entry = &table[index];
-			bits = entry->ie_bits;
-
-			/* check generation number and type bit */
-
-			if ((bits & (IE_BITS_GEN_MASK|
-				     MACH_PORT_TYPE_RECEIVE)) !=
-			    (gen | MACH_PORT_TYPE_RECEIVE))
+			entry = ipc_entry_lookup (space, reply_name);
+			if (entry == IE_NULL)
 				goto abort_request_copyin;
-
 			reply_port = (ipc_port_t) entry->ie_object;
 			assert(reply_port != IP_NULL);
 		    }
-		    }
-
-			/* optimized ipc_entry_lookup of dest_name */
-
-		    {
-			mach_port_index_t index;
-			mach_port_gen_t gen;
 
 		    {
 			mach_port_t dest_name =
 				kmsg->ikm_header.msgh_remote_port;
 
-			index = MACH_PORT_INDEX(dest_name);
-			gen = MACH_PORT_GEN(dest_name);
-		    }
-
-			if (index >= size)
-				goto abort_request_copyin;
-
-		    {
 			ipc_entry_t entry;
 			ipc_entry_bits_t bits;
-
-			entry = &table[index];
+			entry = ipc_entry_lookup (space, dest_name);
+			if (entry == IE_NULL)
+				goto abort_request_copyin;
 			bits = entry->ie_bits;
 
-			/* check generation number and type bit */
-
-			if ((bits & (IE_BITS_GEN_MASK|MACH_PORT_TYPE_SEND)) !=
-			    (gen | MACH_PORT_TYPE_SEND))
+			/* check type bits */
+			if (IE_BITS_TYPE (bits) != MACH_PORT_TYPE_SEND)
 				goto abort_request_copyin;
 
 			assert(IE_BITS_UREFS(bits) > 0);
 
 			dest_port = (ipc_port_t) entry->ie_object;
 			assert(dest_port != IP_NULL);
-		    }
 		    }
 
 			/*
@@ -649,9 +601,6 @@ mach_msg_trap(
 		    }
 
 		    case MACH_MSGH_BITS(MACH_MSG_TYPE_MOVE_SEND_ONCE, 0): {
-			ipc_entry_num_t size;
-			ipc_entry_t table;
-
 			/* sending a reply message */
 
 		    {
@@ -665,35 +614,18 @@ mach_msg_trap(
 			is_write_lock(space);
 			assert(space->is_active);
 
-			/* optimized ipc_entry_lookup */
-
-			size = space->is_table_size;
-			table = space->is_table;
-
 		    {
 			ipc_entry_t entry;
-			mach_port_gen_t gen;
-			mach_port_index_t index;
-
-		    {
 			mach_port_t dest_name =
 				kmsg->ikm_header.msgh_remote_port;
 
-			index = MACH_PORT_INDEX(dest_name);
-			gen = MACH_PORT_GEN(dest_name);
-		    }
-
-			if (index >= size)
+			entry = ipc_entry_lookup (space, dest_name);
+			if (entry == IE_NULL)
 				goto abort_reply_dest_copyin;
 
-			entry = &table[index];
-
-			/* check generation, collision bit, and type bit */
-
-			if ((entry->ie_bits & (IE_BITS_GEN_MASK|
-					       IE_BITS_COLLISION|
-					       MACH_PORT_TYPE_SEND_ONCE)) !=
-			    (gen | MACH_PORT_TYPE_SEND_ONCE))
+			/* check type bits */
+			if (IE_BITS_TYPE (entry->ie_bits) !=
+			    MACH_PORT_TYPE_SEND_ONCE)
 				goto abort_reply_dest_copyin;
 
 			/* optimized ipc_right_copyin */
@@ -716,13 +648,8 @@ mach_msg_trap(
 			}
 
 			assert(dest_port->ip_sorights > 0);
-
-			/* optimized ipc_entry_dealloc */
-
-			entry->ie_next = table->ie_next;
-			table->ie_next = index;
-			entry->ie_bits = gen;
 			entry->ie_object = IO_NULL;
+			ipc_entry_dealloc (space, dest_name, entry);
 		    }
 
 			kmsg->ikm_header.msgh_bits =
@@ -735,30 +662,15 @@ mach_msg_trap(
 
 			assert(dest_port->ip_receiver != ipc_space_kernel);
 
-			/* optimized ipc_entry_lookup/ipc_mqueue_copyin */
+			/* optimized ipc_mqueue_copyin */
 
 		    {
 			ipc_entry_t entry;
 			ipc_entry_bits_t bits;
-
-		    {
-			mach_port_index_t index;
-			mach_port_gen_t gen;
-
-			index = MACH_PORT_INDEX(rcv_name);
-			gen = MACH_PORT_GEN(rcv_name);
-
-			if (index >= size)
+			entry = ipc_entry_lookup (space, rcv_name);
+			if (entry == IE_NULL)
 				goto abort_reply_rcv_copyin;
-
-			entry = &table[index];
 			bits = entry->ie_bits;
-
-			/* check generation number */
-
-			if ((bits & IE_BITS_GEN_MASK) != gen)
-				goto abort_reply_rcv_copyin;
-		    }
 
 			/* check type bits; looking for receive or set */
 
@@ -1073,29 +985,18 @@ mach_msg_trap(
 			ip_unlock(reply_port);
 
 		    {
-			ipc_entry_t table;
 			ipc_entry_t entry;
-			mach_port_index_t index;
-
-			/* optimized ipc_entry_get */
-
-			table = space->is_table;
-			index = table->ie_next;
-
-			if (index == 0)
+			kern_return_t kr;
+			kr = ipc_entry_get (space, &reply_name, &entry);
+			if (kr)
 				goto abort_request_copyout;
-
-			entry = &table[index];
-			table->ie_next = entry->ie_next;
-			entry->ie_request = 0;
+			assert (entry != NULL);
 
 		    {
 			mach_port_gen_t gen;
 
 			assert((entry->ie_bits &~ IE_BITS_GEN_MASK) == 0);
 			gen = entry->ie_bits + IE_BITS_GEN_ONE;
-
-			reply_name = MACH_PORT_MAKE(index, gen);
 
 			/* optimized ipc_right_copyout */
 

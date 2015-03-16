@@ -603,29 +603,17 @@ exception_raise(
 	ip_unlock(reply_port);
 
     {
-	ipc_entry_t table;
+	kern_return_t kr;
 	ipc_entry_t entry;
-	mach_port_index_t index;
 
-	/* optimized ipc_entry_get */
-
-	table = space->is_table;
-	index = table->ie_next;
-
-	if (index == 0)
+	kr = ipc_entry_get (space, &exc->Head.msgh_remote_port, &entry);
+	if (kr)
 		goto abort_copyout;
-
-	entry = &table[index];
-	table->ie_next = entry->ie_next;
-	entry->ie_request = 0;
-
     {
 	mach_port_gen_t gen;
 
 	assert((entry->ie_bits &~ IE_BITS_GEN_MASK) == 0);
 	gen = entry->ie_bits + IE_BITS_GEN_ONE;
-
-	exc->Head.msgh_remote_port = MACH_PORT_MAKE(index, gen);
 
 	/* optimized ipc_right_copyout */
 

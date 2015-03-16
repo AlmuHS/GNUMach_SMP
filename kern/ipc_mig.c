@@ -310,16 +310,18 @@ mig_strncpy(dest, src, len)
 MACRO_BEGIN								\
 	ipc_space_t space = current_space();				\
 	ipc_entry_t entry;						\
-	mach_port_index_t index = MACH_PORT_INDEX(name);		\
 									\
 	is_read_lock(space);						\
 	assert(space->is_active);					\
 									\
-	if ((index >= space->is_table_size) ||				\
-	    (((entry = &space->is_table[index])->ie_bits &		\
-	      (IE_BITS_GEN_MASK|MACH_PORT_TYPE_SEND)) !=		\
-	     (MACH_PORT_GEN(name) | MACH_PORT_TYPE_SEND))) {		\
-		is_read_unlock(space);					\
+	entry = ipc_entry_lookup (space, name);				\
+	if (entry == IE_NULL) {						\
+		is_read_unlock (space);					\
+		abort;							\
+	}								\
+									\
+	if (IE_BITS_TYPE (entry->ie_bits) != MACH_PORT_TYPE_SEND) {	\
+		is_read_unlock (space);					\
 		abort;							\
 	}								\
 									\
