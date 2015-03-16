@@ -165,6 +165,7 @@ clib_routines := memcmp memcpy memmove				\
 		 htonl htons ntohl ntohs			\
 		 udivdi3 __udivdi3				\
 		 __rel_iplt_start __rel_iplt_end		\
+		 __ffsdi2					\
 		 _START _start etext _edata end _end # actually ld magic, not libc.
 gnumach-undef: gnumach.$(OBJEXT)
 	$(NM_V) $(NM) -u $< | sed 's/  *U  *//' | sort -u > $@

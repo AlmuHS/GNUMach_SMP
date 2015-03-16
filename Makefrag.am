@@ -186,6 +186,9 @@ libkernel_a_SOURCES += \
 	kern/rbtree.c \
 	kern/rbtree.h \
 	kern/rbtree_i.h \
+	kern/rdxtree.c \
+	kern/rdxtree.h \
+	kern/rdxtree_i.h \
 	kern/refcount.h \
 	kern/slab.c \
 	kern/slab.h \
