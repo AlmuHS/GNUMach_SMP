@@ -148,6 +148,7 @@ ipc_space_create(
 	space->is_tree_total = 0;
 	space->is_tree_small = 0;
 	space->is_tree_hash = 0;
+	rdxtree_init(&space->is_reverse_map);
 
 	*spacep = space;
 	return KERN_SUCCESS;
@@ -270,6 +271,8 @@ ipc_space_destroy(
 		ipc_right_clean(space, name, &tentry->ite_entry);
 	}
 	ipc_splay_traverse_finish(&space->is_tree);
+
+	rdxtree_remove_all(&space->is_reverse_map);
 
 	/*
 	 *	Because the space is now dead,

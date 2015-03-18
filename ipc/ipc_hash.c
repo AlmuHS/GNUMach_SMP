@@ -296,37 +296,19 @@ ipc_hash_global_delete(
 }
 
 /*
- *	Each space has a local reverse hash table, which holds
- *	entries from the space's table.  In fact, the hash table
- *	just uses a field (ie_index) in the table itself.
- *
- *	The local hash table is an open-addressing hash table,
- *	which means that when a collision occurs, instead of
- *	throwing the entry into a bucket, the entry is rehashed
- *	to another position in the table.  In this case the rehash
- *	is very simple: linear probing (ie, just increment the position).
- *	This simple rehash makes deletions tractable (they're still a pain),
- *	but it means that collisions tend to build up into clumps.
- *
- *	Because at least one entry in the table (index 0) is always unused,
- *	there will always be room in the reverse hash table.  If a table
- *	with n slots gets completely full, the reverse hash table will
- *	have one giant clump of n-1 slots and one free slot somewhere.
- *	Because entries are only entered into the reverse table if they
- *	are pure send rights (not receive, send-once, port-set,
- *	or dead-name rights), and free entries of course aren't entered,
- *	I expect the reverse hash table won't get unreasonably full.
- *
- *	Ordered hash tables (Amble & Knuth, Computer Journal, v. 17, no. 2,
- *	pp. 135-142.) may be desirable here.  They can dramatically help
- *	unsuccessful lookups.  But unsuccessful lookups are almost always
- *	followed by insertions, and those slow down somewhat.  They
- *	also can help deletions somewhat.  Successful lookups aren't affected.
- *	So possibly a small win; probably nothing significant.
+ *	Each space has a local reverse mapping from objects to entries
+ *	from the space's table.  This used to be a hash table.
  */
 
-#define	IH_LOCAL_HASH(obj, size)				\
-	((((mach_port_index_t) (vm_offset_t) (obj)) >> 6) & (size - 1))
+#define IPC_LOCAL_HASH_INVARIANT(S, O, N, E)				\
+	MACRO_BEGIN							\
+	assert(IE_BITS_TYPE((E)->ie_bits) == MACH_PORT_TYPE_SEND ||	\
+	       IE_BITS_TYPE((E)->ie_bits) == MACH_PORT_TYPE_SEND_RECEIVE || \
+	       IE_BITS_TYPE((E)->ie_bits) == MACH_PORT_TYPE_NONE);	\
+	assert((E)->ie_object == (O));					\
+	assert((E)->ie_index == (N));					\
+	assert(&(S)->is_table[N] == (E));				\
+	MACRO_END
 
 /*
  *	Routine:	ipc_hash_local_lookup
@@ -345,37 +327,15 @@ ipc_hash_local_lookup(
 	mach_port_t	*namep,
 	ipc_entry_t	*entryp)
 {
-	ipc_entry_t table;
-	ipc_entry_num_t size;
-	mach_port_index_t hindex, index;
-
 	assert(space != IS_NULL);
 	assert(obj != IO_NULL);
 
-	table = space->is_table;
-	size = space->is_table_size;
-	hindex = IH_LOCAL_HASH(obj, size);
-
-	/*
-	 *	Ideally, table[hindex].ie_index is the name we want.
-	 *	However, must check ie_object to verify this,
-	 *	because collisions can happen.  In case of a collision,
-	 *	search farther along in the clump.
-	 */
-
-	while ((index = table[hindex].ie_index) != 0) {
-		ipc_entry_t entry = &table[index];
-
-		if (entry->ie_object == obj) {
-			*namep = MACH_PORT_MAKEB(index, entry->ie_bits);
-			*entryp = entry;
-			return TRUE;
-		}
-
-		if (++hindex == size)
-			hindex = 0;
+	*entryp = ipc_reverse_lookup(space, obj);
+	if (*entryp != IE_NULL) {
+		*namep = (*entryp)->ie_index;
+		IPC_LOCAL_HASH_INVARIANT(space, obj, *namep, *entryp);
+		return TRUE;
 	}
-
 	return FALSE;
 }
 
@@ -394,33 +354,15 @@ ipc_hash_local_insert(
 	mach_port_index_t	index,
 	ipc_entry_t		entry)
 {
-	ipc_entry_t table;
-	ipc_entry_num_t size;
-	mach_port_index_t hindex;
-
+	kern_return_t kr;
 	assert(index != 0);
 	assert(space != IS_NULL);
 	assert(obj != IO_NULL);
 
-	table = space->is_table;
-	size = space->is_table_size;
-	hindex = IH_LOCAL_HASH(obj, size);
-
-	assert(entry == &table[index]);
-	assert(entry->ie_object == obj);
-
-	/*
-	 *	We want to insert at hindex, but there may be collisions.
-	 *	If a collision occurs, search for the end of the clump
-	 *	and insert there.
-	 */
-
-	while (table[hindex].ie_index != 0) {
-		if (++hindex == size)
-			hindex = 0;
-	}
-
-	table[hindex].ie_index = index;
+	entry->ie_index = index;
+	IPC_LOCAL_HASH_INVARIANT(space, obj, index, entry);
+	kr = ipc_reverse_insert(space, obj, entry);
+	assert(kr == 0);
 }
 
 /*
@@ -438,90 +380,14 @@ ipc_hash_local_delete(
 	mach_port_index_t	index,
 	ipc_entry_t		entry)
 {
-	ipc_entry_t table;
-	ipc_entry_num_t size;
-	mach_port_index_t hindex, dindex;
-
+	ipc_entry_t removed;
 	assert(index != MACH_PORT_NULL);
 	assert(space != IS_NULL);
 	assert(obj != IO_NULL);
 
-	table = space->is_table;
-	size = space->is_table_size;
-	hindex = IH_LOCAL_HASH(obj, size);
-
-	assert(entry == &table[index]);
-	assert(entry->ie_object == obj);
-
-	/*
-	 *	First check we have the right hindex for this index.
-	 *	In case of collision, we have to search farther
-	 *	along in this clump.
-	 */
-
-	while (table[hindex].ie_index != index) {
-		if (table[hindex].ie_index == 0)
-		{
-			static int gak = 0;
-			if (gak == 0)
-			{
-				printf("gak! entry wasn't in hash table!\n");
-				gak = 1;
-			}
-			return;
-		}
-		if (++hindex == size)
-			hindex = 0;
-	}
-
-	/*
-	 *	Now we want to set table[hindex].ie_index = 0.
-	 *	But if we aren't the last index in a clump,
-	 *	this might cause problems for lookups of objects
-	 *	farther along in the clump that are displaced
-	 *	due to collisions.  Searches for them would fail
-	 *	at hindex instead of succeeding.
-	 *
-	 *	So we must check the clump after hindex for objects
-	 *	that are so displaced, and move one up to the new hole.
-	 *
-	 *		hindex - index of new hole in the clump
-	 *		dindex - index we are checking for a displaced object
-	 *
-	 *	When we move a displaced object up into the hole,
-	 *	it creates a new hole, and we have to repeat the process
-	 *	until we get to the end of the clump.
-	 */
-
-	for (dindex = hindex; index != 0; hindex = dindex) {
-		for (;;) {
-			mach_port_index_t tindex;
-			ipc_object_t tobj;
-
-			if (++dindex == size)
-				dindex = 0;
-			assert(dindex != hindex);
-
-			/* are we at the end of the clump? */
-
-			index = table[dindex].ie_index;
-			if (index == 0)
-				break;
-
-			/* is this a displaced object? */
-
-			tobj = table[index].ie_object;
-			assert(tobj != IO_NULL);
-			tindex = IH_LOCAL_HASH(tobj, size);
-
-			if ((dindex < hindex) ?
-			    ((dindex < tindex) && (tindex <= hindex)) :
-			    ((dindex < tindex) || (tindex <= hindex)))
-				break;
-		}
-
-		table[hindex].ie_index = index;
-	}
+	IPC_LOCAL_HASH_INVARIANT(space, obj, index, entry);
+	removed = ipc_reverse_remove(space, obj);
+	assert(removed == entry);
 }
 
 /*

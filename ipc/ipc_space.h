@@ -42,8 +42,10 @@
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
 #include <mach/mach_types.h>
+#include <machine/vm_param.h>
 #include <kern/macros.h>
 #include <kern/lock.h>
+#include <kern/rdxtree.h>
 #include <kern/slab.h>
 #include <ipc/ipc_splay.h>
 #include <ipc/ipc_types.h>
@@ -79,6 +81,8 @@ struct ipc_space {
 	ipc_entry_num_t is_tree_total;	/* number of entries in the tree */
 	ipc_entry_num_t is_tree_small;	/* # of small entries in the tree */
 	ipc_entry_num_t is_tree_hash;	/* # of hashed entries in the tree */
+	struct rdxtree is_reverse_map;	/* maps objects to entries */
+
 };
 
 #define	IS_NULL			((ipc_space_t) 0)
@@ -134,5 +138,64 @@ extern void ipc_space_release(struct ipc_space *space);
 kern_return_t	ipc_space_create(ipc_table_size_t, ipc_space_t *);
 kern_return_t	ipc_space_create_special(struct ipc_space **);
 void		ipc_space_destroy(struct ipc_space *);
+
+/* Reverse lookups.  */
+
+/* Cast a pointer to a suitable key.  */
+#define KEY(X)								\
+	({								\
+		assert((((unsigned long) (X)) & 0x07) == 0);		\
+		((unsigned long long)					\
+		 (((unsigned long) (X) - VM_MIN_KERNEL_ADDRESS) >> 3));	\
+	})
+
+/* Insert (OBJ, ENTRY) pair into the reverse mapping.  SPACE must
+   be write-locked.  */
+static inline kern_return_t
+ipc_reverse_insert(ipc_space_t space,
+		   ipc_object_t obj,
+		   ipc_entry_t entry)
+{
+	assert(space != IS_NULL);
+	assert(obj != IO_NULL);
+	return (kern_return_t) rdxtree_insert(&space->is_reverse_map,
+					      KEY(obj), entry);
+}
+
+/* Remove OBJ from the reverse mapping.  SPACE must be
+   write-locked.  */
+static inline ipc_entry_t
+ipc_reverse_remove(ipc_space_t space,
+		   ipc_object_t obj)
+{
+	assert(space != IS_NULL);
+	assert(obj != IO_NULL);
+	return rdxtree_remove(&space->is_reverse_map, KEY(obj));
+}
+
+/* Remove all entries from the reverse mapping.  SPACE must be
+   write-locked.  */
+static inline void
+ipc_reverse_remove_all(ipc_space_t space)
+{
+	assert(space != IS_NULL);
+	rdxtree_remove_all(&space->is_reverse_map);
+	assert(space->is_reverse_map.height == 0);
+	assert(space->is_reverse_map.root == NULL);
+}
+
+/* Return ENTRY related to OBJ, or NULL if no such entry is found in
+   the reverse mapping.  SPACE must be read-locked or
+   write-locked.  */
+static inline ipc_entry_t
+ipc_reverse_lookup(ipc_space_t space,
+		   ipc_object_t obj)
+{
+	assert(space != IS_NULL);
+	assert(obj != IO_NULL);
+	return rdxtree_lookup(&space->is_reverse_map, KEY(obj));
+}
+
+#undef KEY
 
 #endif	/* _IPC_IPC_SPACE_H_ */

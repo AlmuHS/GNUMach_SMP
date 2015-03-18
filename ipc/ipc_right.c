@@ -423,7 +423,7 @@ ipc_right_check(
  *	Purpose:
  *		Cleans up an entry in a dead space.
  *		The entry isn't deallocated or removed
- *		from reverse hash tables.
+ *		from the reverse mappings.
  *	Conditions:
  *		The space is dead and unlocked.
  */

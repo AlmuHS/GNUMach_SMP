@@ -54,11 +54,6 @@
  *	those entries.  The cutoff point between the table and the tree
  *	is adjusted dynamically to minimize memory consumption.
  *
- *	The ie_index field of entries in the table implements
- *	a ordered hash table with open addressing and linear probing.
- *	This hash table converts (space, object) -> name.
- *	It is used independently of the other fields.
- *
  *	Free (unallocated) entries in the table have null ie_object
  *	fields.  The ie_bits field is zero except for IE_BITS_GEN.
  *	The ie_next (ie_request) field links free entries into a free list.

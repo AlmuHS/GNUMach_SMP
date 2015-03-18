@@ -618,6 +618,7 @@ ipc_entry_grow_table(ipc_space_t space)
 			is_write_unlock(space);
 			thread_wakeup((event_t) space);
 			it_entries_free(its, table);
+			ipc_reverse_remove_all(space);
 			is_write_lock(space);
 			return KERN_SUCCESS;
 		}
@@ -641,9 +642,6 @@ ipc_entry_grow_table(ipc_space_t space)
 			memcpy(table, otable,
 			      osize * sizeof(struct ipc_entry));
 
-		for (i = 0; i < osize; i++)
-			table[i].ie_index = 0;
-
 		(void) memset((void *) (table + osize), 0,
 		      (size - osize) * sizeof(struct ipc_entry));
 
@@ -651,6 +649,7 @@ ipc_entry_grow_table(ipc_space_t space)
 		 *	Put old entries into the reverse hash table.
 		 */
 
+		ipc_reverse_remove_all(space);
 		for (i = 0; i < osize; i++) {
 			ipc_entry_t entry = &table[i];
 
