@@ -48,42 +48,27 @@
 
 /*
  *	Spaces hold capabilities for ipc_object_t's (ports and port sets).
- *	Each ipc_entry_t records a capability.  Most capabilities have
- *	small names, and the entries are elements of a table.
- *	Capabilities can have large names, and a splay tree holds
- *	those entries.  The cutoff point between the table and the tree
- *	is adjusted dynamically to minimize memory consumption.
- *
- *	Free (unallocated) entries in the table have null ie_object
- *	fields.  The ie_bits field is zero except for IE_BITS_GEN.
- *	The ie_next (ie_request) field links free entries into a free list.
- *
- *	The first entry in the table (index 0) is always free.
- *	It is used as the head of the free list.
+ *	Each ipc_entry_t records a capability.
  */
 
 typedef unsigned int ipc_entry_bits_t;
 typedef ipc_table_elems_t ipc_entry_num_t;	/* number of entries */
 
 typedef struct ipc_entry {
+	mach_port_t ie_name;
 	ipc_entry_bits_t ie_bits;
 	struct ipc_object *ie_object;
 	union {
-		mach_port_index_t next;
+		struct ipc_entry *next_free;
 		/*XXX ipc_port_request_index_t request;*/
 		unsigned int request;
 	} index;
-	union {
-		mach_port_index_t table;
-		struct ipc_tree_entry *tree;
-	} hash;
 } *ipc_entry_t;
 
 #define	IE_NULL		((ipc_entry_t) 0)
 
 #define	ie_request	index.request
-#define	ie_next		index.next
-#define	ie_index	hash.table
+#define	ie_next_free	index.next_free
 
 #define	IE_BITS_UREFS_MASK	0x0000ffff	/* 16 bits of user-reference */
 #define	IE_BITS_UREFS(bits)	((bits) & IE_BITS_UREFS_MASK)
@@ -93,12 +78,10 @@ typedef struct ipc_entry {
 
 #define	IE_BITS_MAREQUEST	0x00200000	/* 1 bit for msg-accepted */
 
-#define	IE_BITS_COMPAT		0x00400000	/* 1 bit for compatibility */
-
-#define	IE_BITS_COLLISION	0x00800000	/* 1 bit for collisions */
-#define	IE_BITS_RIGHT_MASK	0x007fffff	/* relevant to the right */
+#define	IE_BITS_RIGHT_MASK	0x003fffff	/* relevant to the right */
 
 #if PORT_GENERATIONS
+#error "not supported"
 #define	IE_BITS_GEN_MASK	0xff000000U	/* 8 bits for generation */
 #define	IE_BITS_GEN(bits)	((bits) & IE_BITS_GEN_MASK)
 #define	IE_BITS_GEN_ONE		0x01000000	/* low bit of generation */
@@ -109,26 +92,9 @@ typedef struct ipc_entry {
 #endif
 
 
-typedef struct ipc_tree_entry {
-	struct ipc_entry ite_entry;
-	mach_port_t ite_name;
-	struct ipc_space *ite_space;
-	struct ipc_tree_entry *ite_lchild;
-	struct ipc_tree_entry *ite_rchild;
-} *ipc_tree_entry_t;
-
-#define	ITE_NULL	((ipc_tree_entry_t) 0)
-
-#define	ite_bits	ite_entry.ie_bits
-#define	ite_object	ite_entry.ie_object
-#define	ite_request	ite_entry.ie_request
-#define	ite_next	ite_entry.hash.tree
-
-extern struct kmem_cache ipc_tree_entry_cache;
-
-#define ite_alloc()	((ipc_tree_entry_t) kmem_cache_alloc(&ipc_tree_entry_cache))
-#define	ite_free(ite)	kmem_cache_free(&ipc_tree_entry_cache, (vm_offset_t) (ite))
-
+extern struct kmem_cache ipc_entry_cache;
+#define ie_alloc()	((ipc_entry_t) kmem_cache_alloc(&ipc_entry_cache))
+#define	ie_free(e)	kmem_cache_free(&ipc_entry_cache, (vm_offset_t) (e))
 
 extern ipc_entry_t
 ipc_entry_lookup(ipc_space_t space, mach_port_t name);
@@ -144,9 +110,6 @@ ipc_entry_alloc_name(ipc_space_t space, mach_port_t name, ipc_entry_t *entryp);
 
 extern void
 ipc_entry_dealloc(ipc_space_t space, mach_port_t name, ipc_entry_t entry);
-
-extern kern_return_t
-ipc_entry_grow_table(ipc_space_t space);
 
 ipc_entry_t
 db_ipc_object_by_name(

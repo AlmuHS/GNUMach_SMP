@@ -57,14 +57,7 @@ routine	mach_port_get_srights(
 		name		: mach_port_name_t;
 	out	srights		: mach_port_rights_t);
 
-/*
- *	Returns information about the global reverse hash table.
- */
-
-routine host_ipc_hash_info(
-		host		: host_t;
-	out	info		: hash_info_bucket_array_t,
-					CountInOut, Dealloc);
+skip;	/* host_ipc_hash_info */
 
 /*
  *	Returns information about the marequest hash table.
@@ -76,17 +69,7 @@ routine host_ipc_marequest_info(
 	out	info		: hash_info_bucket_array_t,
 					CountInOut, Dealloc);
 
-/*
- *	Returns information about an IPC space.
- */
-
-routine mach_port_space_info(
-		task		: ipc_space_t;
-	out	info		: ipc_info_space_t;
-	out	table_info	: ipc_info_name_array_t,
-					CountInOut, Dealloc;
-	out	tree_info	: ipc_info_tree_name_array_t,
-					CountInOut, Dealloc);
+skip;	/* mach_port_space_info */
 
 /*
  *	Returns information about the dead-name requests

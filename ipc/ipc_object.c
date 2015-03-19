@@ -41,7 +41,6 @@
 #include <ipc/ipc_space.h>
 #include <ipc/ipc_entry.h>
 #include <ipc/ipc_object.h>
-#include <ipc/ipc_hash.h>
 #include <ipc/ipc_right.h>
 #include <ipc/ipc_notify.h>
 #include <ipc/ipc_pset.h>
@@ -630,15 +629,10 @@ ipc_object_copyout(
 			break;
 		}
 
-		kr = ipc_entry_get(space, &name, &entry);
+		kr = ipc_entry_alloc(space, &name, &entry);
 		if (kr != KERN_SUCCESS) {
-			/* unlocks/locks space, so must start again */
-
-			kr = ipc_entry_grow_table(space);
-			if (kr != KERN_SUCCESS)
-				return kr; /* space is unlocked */
-
-			continue;
+			is_write_unlock(space);
+			return kr;
 		}
 
 		assert(IE_BITS_TYPE(entry->ie_bits) == MACH_PORT_TYPE_NONE);
@@ -691,15 +685,10 @@ ipc_object_copyout_multiname(space, object, namep)
 			return KERN_INVALID_TASK;
 		}
 
-		kr = ipc_entry_get(space, &name, &entry);
+		kr = ipc_entry_alloc(space, &name, &entry);
 		if (kr != KERN_SUCCESS) {
-			/* unlocks/locks space, so must start again */
-
-			kr = ipc_entry_grow_table(space);
-			if (kr != KERN_SUCCESS)
-				return kr; /* space is unlocked */
-
-			continue;
+			is_write_unlock(space);
+			return kr; /* space is unlocked */
 		}
 
 		assert(IE_BITS_TYPE(entry->ie_bits) == MACH_PORT_TYPE_NONE);

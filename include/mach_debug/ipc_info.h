@@ -43,39 +43,16 @@
  *	in mach_debug_types.defs when adding/removing fields.
  */
 
-
-typedef struct ipc_info_space {
-	natural_t iis_genno_mask;	/* generation number mask */
-	natural_t iis_table_size;	/* size of table */
-	natural_t iis_table_next;	/* next possible size of table */
-	natural_t iis_tree_size;	/* size of tree */
-	natural_t iis_tree_small;	/* # of small entries in tree */
-	natural_t iis_tree_hash;	/* # of hashed entries in tree */
-} ipc_info_space_t;
-
-
 typedef struct ipc_info_name {
 	mach_port_t iin_name;		/* port name, including gen number */
-/*boolean_t*/integer_t iin_collision;	/* collision at this entry? */
-/*boolean_t*/integer_t iin_compat;	/* is this a compat-mode entry? */
 /*boolean_t*/integer_t iin_marequest;	/* extant msg-accepted request? */
 	mach_port_type_t iin_type;	/* straight port type */
 	mach_port_urefs_t iin_urefs;	/* user-references */
 	vm_offset_t iin_object;		/* object pointer */
 	natural_t iin_next;		/* marequest/next in free list */
-	natural_t iin_hash;		/* hash index */
 } ipc_info_name_t;
 
 typedef ipc_info_name_t *ipc_info_name_array_t;
-
-
-typedef struct ipc_info_tree_name {
-	ipc_info_name_t iitn_name;
-	mach_port_t iitn_lchild;	/* name of left child */
-	mach_port_t iitn_rchild;	/* name of right child */
-} ipc_info_tree_name_t;
-
-typedef ipc_info_tree_name_t *ipc_info_tree_name_array_t;
 
 /*
  *	Type definitions for mach_port_kernel_object.

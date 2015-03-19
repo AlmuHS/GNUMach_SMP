@@ -80,8 +80,6 @@ endif
 libkernel_a_SOURCES += \
 	ipc/ipc_entry.c \
 	ipc/ipc_entry.h \
-	ipc/ipc_hash.c \
-	ipc/ipc_hash.h \
 	ipc/ipc_init.c \
 	ipc/ipc_init.h \
 	ipc/ipc_kmsg.c \
@@ -105,8 +103,6 @@ libkernel_a_SOURCES += \
 	ipc/ipc_right.h \
 	ipc/ipc_space.c \
 	ipc/ipc_space.h \
-	ipc/ipc_splay.c \
-	ipc/ipc_splay.h \
 	ipc/ipc_table.c \
 	ipc/ipc_table.h \
 	ipc/ipc_target.c \

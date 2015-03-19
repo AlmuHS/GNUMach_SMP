@@ -38,13 +38,8 @@ type cache_info_array_t = array[] of cache_info_t;
 type hash_info_bucket_t = struct[1] of natural_t;
 type hash_info_bucket_array_t = array[] of hash_info_bucket_t;
 
-type ipc_info_space_t = struct[6] of natural_t;
-
-type ipc_info_name_t = struct[9] of natural_t;
+type ipc_info_name_t = struct[6] of natural_t;
 type ipc_info_name_array_t = array[] of ipc_info_name_t;
-
-type ipc_info_tree_name_t = struct[11] of natural_t;
-type ipc_info_tree_name_array_t = array[] of ipc_info_tree_name_t;
 
 type vm_region_info_t = struct[11] of natural_t;
 type vm_region_info_array_t = array[] of vm_region_info_t;

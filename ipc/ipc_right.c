@@ -43,7 +43,6 @@
 #include <ipc/ipc_entry.h>
 #include <ipc/ipc_space.h>
 #include <ipc/ipc_object.h>
-#include <ipc/ipc_hash.h>
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_pset.h>
 #include <ipc/ipc_marequest.h>
@@ -142,7 +141,8 @@ ipc_right_reverse(
 		return TRUE;
 	}
 
-	if (ipc_hash_lookup(space, (ipc_object_t) port, namep, entryp)) {
+	if ((*entryp = ipc_reverse_lookup(space, (ipc_object_t) port))) {
+		*namep = (*entryp)->ie_name;
 		assert((entry = *entryp) != IE_NULL);
 		assert(IE_BITS_TYPE(entry->ie_bits) == MACH_PORT_TYPE_SEND);
 		assert(port == (ipc_port_t) entry->ie_object);
@@ -392,7 +392,7 @@ ipc_right_check(
 			ipc_marequest_cancel(space, name);
 		}
 
-		ipc_hash_delete(space, (ipc_object_t) port, name, entry);
+		ipc_reverse_remove(space, (ipc_object_t) port);
 	} else {
 		assert(IE_BITS_TYPE(bits) == MACH_PORT_TYPE_SEND_ONCE);
 		assert(IE_BITS_UREFS(bits) == 1);
@@ -609,8 +609,7 @@ ipc_right_destroy(
 		}
 
 		if (type == MACH_PORT_TYPE_SEND)
-			ipc_hash_delete(space, (ipc_object_t) port,
-					name, entry);
+			ipc_reverse_remove(space, (ipc_object_t) port);
 
 		ip_lock(port);
 
@@ -789,8 +788,7 @@ ipc_right_dealloc(
 			dnrequest = ipc_right_dncancel_macro(space, port,
 							     name, entry);
 
-			ipc_hash_delete(space, (ipc_object_t) port,
-					name, entry);
+			ipc_reverse_remove(space, (ipc_object_t) port);
 
 			if (bits & IE_BITS_MAREQUEST)
 				ipc_marequest_cancel(space, name);
@@ -1134,8 +1132,7 @@ ipc_right_delta(
 				dnrequest = ipc_right_dncancel_macro(
 						space, port, name, entry);
 
-				ipc_hash_delete(space, (ipc_object_t) port,
-						name, entry);
+				ipc_reverse_remove(space, (ipc_object_t) port);
 
 				if (bits & IE_BITS_MAREQUEST)
 					ipc_marequest_cancel(space, name);
@@ -1410,8 +1407,8 @@ ipc_right_copyin(
 			assert(IE_BITS_UREFS(bits) > 0);
 			assert(port->ip_srights > 0);
 
-			ipc_hash_insert(space, (ipc_object_t) port,
-					name, entry);
+			entry->ie_name = name;
+			ipc_reverse_insert(space, (ipc_object_t) port, entry);
 
 			ip_reference(port);
 		} else {
@@ -1534,8 +1531,7 @@ ipc_right_copyin(
 				dnrequest = ipc_right_dncancel_macro(
 						space, port, name, entry);
 
-				ipc_hash_delete(space, (ipc_object_t) port,
-						name, entry);
+				ipc_reverse_remove(space, (ipc_object_t) port);
 
 				if (bits & IE_BITS_MAREQUEST)
 					ipc_marequest_cancel(space, name);
@@ -1796,8 +1792,7 @@ ipc_right_copyin_two(
 			dnrequest = ipc_right_dncancel_macro(space, port,
 							     name, entry);
 
-			ipc_hash_delete(space, (ipc_object_t) port,
-					name, entry);
+			ipc_reverse_remove(space, (ipc_object_t) port);
 
 			if (bits & IE_BITS_MAREQUEST)
 				ipc_marequest_cancel(space, name);
@@ -1921,8 +1916,8 @@ ipc_right_copyout(
 
 			/* entry is locked holding ref, so can use port */
 
-			ipc_hash_insert(space, (ipc_object_t) port,
-					name, entry);
+			entry->ie_name = name;
+			ipc_reverse_insert(space, (ipc_object_t) port, entry);
 		}
 
 		entry->ie_bits = (bits | MACH_PORT_TYPE_SEND) + 1;
@@ -1956,8 +1951,7 @@ ipc_right_copyout(
 
 			/* entry is locked holding ref, so can use port */
 
-			ipc_hash_delete(space, (ipc_object_t) port,
-					name, entry);
+			ipc_reverse_remove(space, (ipc_object_t) port);
 		} else {
 			assert(IE_BITS_TYPE(bits) == MACH_PORT_TYPE_NONE);
 			assert(IE_BITS_UREFS(bits) == 0);
@@ -2083,7 +2077,7 @@ ipc_right_rename(
 		ipc_marequest_rename(space, oname, nname);
 	}
 
-	/* initialize nentry before letting ipc_hash_insert see it */
+	/* initialize nentry before letting ipc_reverse_insert see it */
 
 	assert((nentry->ie_bits & IE_BITS_RIGHT_MASK) == 0);
 	nentry->ie_bits |= bits & IE_BITS_RIGHT_MASK;
@@ -2097,8 +2091,9 @@ ipc_right_rename(
 		port = (ipc_port_t) object;
 		assert(port != IP_NULL);
 
-		ipc_hash_delete(space, (ipc_object_t) port, oname, oentry);
-		ipc_hash_insert(space, (ipc_object_t) port, nname, nentry);
+		ipc_reverse_remove(space, (ipc_object_t) port);
+		nentry->ie_name = nname;
+		ipc_reverse_insert(space, (ipc_object_t) port, nentry);
 		break;
 	    }
 

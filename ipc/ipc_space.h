@@ -47,7 +47,7 @@
 #include <kern/lock.h>
 #include <kern/rdxtree.h>
 #include <kern/slab.h>
-#include <ipc/ipc_splay.h>
+#include <ipc/ipc_entry.h>
 #include <ipc/ipc_types.h>
 
 /*
@@ -73,17 +73,15 @@ struct ipc_space {
 
 	decl_simple_lock_data(,is_lock_data)
 	boolean_t is_active;		/* is the space alive? */
-	boolean_t is_growing;		/* is the space growing? */
-	ipc_entry_t is_table;		/* an array of entries */
-	ipc_entry_num_t is_table_size;	/* current size of table */
-	struct ipc_table_size *is_table_next; /* info for larger table */
-	struct ipc_splay_tree is_tree;	/* a splay tree of entries */
-	ipc_entry_num_t is_tree_total;	/* number of entries in the tree */
-	ipc_entry_num_t is_tree_small;	/* # of small entries in the tree */
-	ipc_entry_num_t is_tree_hash;	/* # of hashed entries in the tree */
+	struct rdxtree is_map;		/* a map of entries */
+	size_t is_size;			/* number of entries */
 	struct rdxtree is_reverse_map;	/* maps objects to entries */
-
+	ipc_entry_t is_free_list;	/* a linked list of free entries */
+	size_t is_free_list_size;	/* number of free entries */
+#define IS_FREE_LIST_SIZE_LIMIT	64	/* maximum number of entries
+					   in the free list */
 };
+
 
 #define	IS_NULL			((ipc_space_t) 0)
 

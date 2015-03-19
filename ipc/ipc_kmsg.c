@@ -50,7 +50,6 @@
 #include <vm/vm_user.h>
 #include <ipc/port.h>
 #include <ipc/ipc_entry.h>
-#include <ipc/ipc_hash.h>
 #include <ipc/ipc_kmsg.h>
 #include <ipc/ipc_thread.h>
 #include <ipc/ipc_marequest.h>
@@ -1774,7 +1773,7 @@ ipc_kmsg_copyout_header(
 			break;
 
 		is_write_lock(space);
-		if (!space->is_active || space->is_table->ie_next == 0) {
+		if (!space->is_active || space->is_free_list == NULL) {
 			is_write_unlock(space);
 			break;
 		}
@@ -2003,28 +2002,20 @@ ipc_kmsg_copyout_header(
 				goto copyout_dest;
 			}
 
-			kr = ipc_entry_get(space, &reply_name, &entry);
+			kr = ipc_entry_alloc(space, &reply_name, &entry);
 			if (kr != KERN_SUCCESS) {
 				ip_unlock(reply);
 
 				if (notify_port != IP_NULL)
 					ipc_port_release_sonce(notify_port);
 
-				/* space is locked */
-				kr = ipc_entry_grow_table(space);
-				if (kr != KERN_SUCCESS) {
-					/* space is unlocked */
-
-					if (kr == KERN_RESOURCE_SHORTAGE)
-						return (MACH_RCV_HEADER_ERROR|
-							MACH_MSG_IPC_KERNEL);
-					else
-						return (MACH_RCV_HEADER_ERROR|
-							MACH_MSG_IPC_SPACE);
-				}
-				/* space is locked again; start over */
-
-				continue;
+				is_write_unlock(space);
+				if (kr == KERN_RESOURCE_SHORTAGE)
+					return (MACH_RCV_HEADER_ERROR|
+					        MACH_MSG_IPC_KERNEL);
+				else
+					return (MACH_RCV_HEADER_ERROR|
+					        MACH_MSG_IPC_SPACE);
 			}
 
 			assert(IE_BITS_TYPE(entry->ie_bits)
@@ -2266,12 +2257,13 @@ ipc_kmsg_copyout_object(
 
 	ip_lock(port);
 	if (!ip_active(port) ||
-	    !ipc_hash_local_lookup(space, (ipc_object_t) port,
-				   namep, &entry)) {
+	    (entry = ipc_reverse_lookup(space,
+	                                (ipc_object_t) port)) == NULL) {
 		ip_unlock(port);
 		is_write_unlock(space);
 		goto slow_copyout;
 	}
+	*namep = entry->ie_name;
 
 	/*
 	 *	Copyout the send right, incrementing urefs

@@ -150,10 +150,6 @@ mach_port_names(
 	mach_port_type_t	**typesp,
 	mach_msg_type_number_t	*typesCnt)
 {
-	ipc_tree_entry_t tentry;
-	ipc_entry_t table;
-	ipc_entry_num_t tsize;
-	mach_port_index_t index;
 	ipc_entry_num_t actual;	/* this many names */
 	ipc_port_timestamp_t timestamp;	/* logical time of this operation */
 	mach_port_t *names;
@@ -190,7 +186,7 @@ mach_port_names(
 
 		/* upper bound on number of names in the space */
 
-		bound = space->is_table_size + space->is_tree_total;
+		bound = space->is_size;
 		size_needed = round_page(bound * sizeof(mach_port_t));
 
 		if (size_needed <= size)
@@ -235,33 +231,16 @@ mach_port_names(
 
 	timestamp = ipc_port_timestamp();
 
-	table = space->is_table;
-	tsize = space->is_table_size;
-
-	for (index = 0; index < tsize; index++) {
-		ipc_entry_t entry = &table[index];
+	ipc_entry_t entry;
+	struct rdxtree_iter iter;
+	rdxtree_for_each(&space->is_map, &iter, entry) {
 		ipc_entry_bits_t bits = entry->ie_bits;
 
 		if (IE_BITS_TYPE(bits) != MACH_PORT_TYPE_NONE) {
-			mach_port_t name = MACH_PORT_MAKEB(index, bits);
-
-			mach_port_names_helper(timestamp, entry, name,
+			mach_port_names_helper(timestamp, entry, entry->ie_name,
 					       names, types, &actual);
 		}
 	}
-
-	for (tentry = ipc_splay_traverse_start(&space->is_tree);
-	     tentry != ITE_NULL;
-	     tentry = ipc_splay_traverse_next(&space->is_tree, FALSE)) {
-		ipc_entry_t entry = &tentry->ite_entry;
-		mach_port_t name = tentry->ite_name;
-
-		assert(IE_BITS_TYPE(tentry->ite_bits) != MACH_PORT_TYPE_NONE);
-
-		mach_port_names_helper(timestamp, entry, name,
-				       names, types, &actual);
-	}
-	ipc_splay_traverse_finish(&space->is_tree);
 	is_read_unlock(space);
 
 	if (actual == 0) {
@@ -946,10 +925,7 @@ mach_port_get_set_status(
 	size = PAGE_SIZE;	/* initial guess */
 
 	for (;;) {
-		ipc_tree_entry_t tentry;
-		ipc_entry_t entry, table;
-		ipc_entry_num_t tsize;
-		mach_port_index_t index;
+		ipc_entry_t entry;
 		mach_port_t *names;
 		ipc_pset_t pset;
 
@@ -986,11 +962,9 @@ mach_port_get_set_status(
 		maxnames = size / sizeof(mach_port_t);
 		actual = 0;
 
-		table = space->is_table;
-		tsize = space->is_table_size;
-
-		for (index = 0; index < tsize; index++) {
-			ipc_entry_t ientry = &table[index];
+		ipc_entry_t ientry;
+		struct rdxtree_iter iter;
+		rdxtree_for_each(&space->is_map, &iter, ientry) {
 			ipc_entry_bits_t bits = ientry->ie_bits;
 
 			if (bits & MACH_PORT_TYPE_RECEIVE) {
@@ -1002,22 +976,6 @@ mach_port_get_set_status(
 			}
 		}
 
-		for (tentry = ipc_splay_traverse_start(&space->is_tree);
-		     tentry != ITE_NULL;
-		     tentry = ipc_splay_traverse_next(&space->is_tree,FALSE)) {
-			ipc_entry_bits_t bits = tentry->ite_bits;
-
-			assert(IE_BITS_TYPE(bits) != MACH_PORT_TYPE_NONE);
-
-			if (bits & MACH_PORT_TYPE_RECEIVE) {
-				ipc_port_t port =
-					(ipc_port_t) tentry->ite_object;
-
-				mach_port_gst_helper(pset, port, maxnames,
-						     names, &actual);
-			}
-		}
-		ipc_splay_traverse_finish(&space->is_tree);
 		is_read_unlock(space);
 
 		if (actual <= maxnames)

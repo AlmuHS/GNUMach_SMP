@@ -439,17 +439,11 @@ db_port_iterate(thread, func)
 	void (*func)();
 {
 	ipc_entry_t entry;
-	int index;
 	int n = 0;
-	int size;
-	ipc_space_t space;
-
-	space = thread->task->itk_space;
-	entry = space->is_table;
-	size = space->is_table_size;
-	for (index = 0; index < size; index++, entry++) {
+	struct rdxtree_iter iter;
+	rdxtree_for_each(&thread->task->itk_space->is_map, &iter, entry) {
 	    if (entry->ie_bits & MACH_PORT_TYPE_PORT_RIGHTS)
-		(*func)(index, (ipc_port_t) entry->ie_object,
+		(*func)(entry->ie_name, (ipc_port_t) entry->ie_object,
 			entry->ie_bits, n++);
 	}
 	return(n);
@@ -460,16 +454,14 @@ db_lookup_port(
 	thread_t 	thread,
 	int 		id)
 {
-	ipc_space_t space;
 	ipc_entry_t entry;
 
 	if (thread == THREAD_NULL)
 	    return(0);
-	space = thread->task->itk_space;
-	if (id < 0 || id >= space->is_table_size)
+	if (id < 0)
 	    return(0);
-	entry = &space->is_table[id];
-	if (entry->ie_bits & MACH_PORT_TYPE_PORT_RIGHTS)
+	entry = ipc_entry_lookup(thread->task->itk_space, (mach_port_t) id);
+	if (entry && entry->ie_bits & MACH_PORT_TYPE_PORT_RIGHTS)
 	    return((ipc_port_t)entry->ie_object);
 	return(0);
 }

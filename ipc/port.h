@@ -45,10 +45,7 @@
  *	mach_port_t must be an unsigned type.  Port values
  *	have two parts, a generation number and an index.
  *	These macros encapsulate all knowledge of how
- *	a mach_port_t is laid out.  However, ipc/ipc_entry.c
- *	implicitly assumes when it uses the splay tree functions
- *	that the generation number is in the low bits, so that
- *	names are ordered first by index and then by generation.
+ *	a mach_port_t is laid out.
  *
  *	If the size of generation numbers changes,
  *	be sure to update IE_BITS_GEN_MASK and friends
