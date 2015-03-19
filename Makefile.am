@@ -173,8 +173,8 @@ clib-routines.o: gnumach-undef gnumach-undef-bad
 	then cat gnumach-undef-bad; exit 2; else true; fi
 	$(AM_V_CCLD) $(CCLD) -nostdlib -nostartfiles -r -static \
 	  -o $@ `sed 's/^/-Wl,-u,/' < $<` -x c /dev/null -lc -lgcc
-	$(AM_V_at) if nm $@ | grep __init_cpu_features; \
-	then echo Please install a 32bit libc without multiarch support. ; \
+	@if nm $@ | grep __init_cpu_features; \
+	then echo "Please install a 32bit libc without multiarch support (on Debian systems, the libc6-dev:i386 package containing /usr/lib/i386-linux-gnu/libc.a)". ; \
 	false ; fi
 
 gnumach_LINK = $(LD) $(LINKFLAGS) $(gnumach_LINKFLAGS) -o $@
