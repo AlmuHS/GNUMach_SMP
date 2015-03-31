@@ -31,9 +31,7 @@
 
 #include <stddef.h>
 #include <sys/types.h>
-
-#define structof(ptr, type, member) \
-    ((type *)((char *)ptr - offsetof(type, member)))
+#include <kern/macros.h>
 
 /*
  * Structure used as both head and node.

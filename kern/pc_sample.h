@@ -49,7 +49,7 @@
 #include <mach/pc_sample.h>
 #include <mach/machine/vm_types.h>
 #include <kern/kern_types.h>
-#include <kern/macro_help.h>
+#include <kern/macros.h>
 
 /*
  *	Control structure for sampling, included in

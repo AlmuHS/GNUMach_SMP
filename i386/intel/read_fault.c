@@ -31,7 +31,7 @@
 #include <vm/vm_page.h>
 #include <vm/pmap.h>
 
-#include <kern/macro_help.h>
+#include <kern/macros.h>
 
 /*
  *	Expansion of vm_fault for read fault in kernel mode.

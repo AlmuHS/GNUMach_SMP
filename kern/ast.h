@@ -41,7 +41,7 @@
  */
 
 #include "cpu_number.h"
-#include <kern/macro_help.h>
+#include <kern/macros.h>
 #include <machine/ast.h>
 
 /*

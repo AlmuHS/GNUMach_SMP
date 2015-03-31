@@ -42,7 +42,7 @@
 #include <device/device_types.h>
 #include <device/dev_hdr.h>
 
-#include <kern/macro_help.h>
+#include <kern/macros.h>
 
 /*
  * IO request element, queued on device for delayed replies.

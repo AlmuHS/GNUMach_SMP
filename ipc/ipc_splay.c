@@ -35,7 +35,7 @@
 
 #include <mach/port.h>
 #include <kern/assert.h>
-#include <kern/macro_help.h>
+#include <kern/macros.h>
 #include <ipc/ipc_entry.h>
 #include <ipc/ipc_splay.h>
 

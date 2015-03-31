@@ -21,6 +21,7 @@
 #define GRUB_MISC_HEADER	1
 
 #include <stdarg.h>
+#include <kern/macros.h>
 #include <grub/types.h>
 #include <grub/symbol.h>
 #include <grub/err.h>
@@ -32,7 +33,6 @@
 #define ALIGN_UP_OVERHEAD(addr, align) ((-(addr)) & ((typeof (addr)) (align) - 1))
 #define ALIGN_DOWN(addr, align) \
 	((addr) & ~((typeof (addr)) align - 1))
-#define ARRAY_SIZE(array) (sizeof (array) / sizeof (array[0]))
 #define COMPILE_TIME_ASSERT(cond) switch (0) { case 1: case !(cond): ; }
 
 #define grub_dprintf(condition, ...) grub_real_dprintf(GRUB_FILE, __LINE__, condition, __VA_ARGS__)

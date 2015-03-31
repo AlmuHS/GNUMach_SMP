@@ -38,7 +38,7 @@
 #include <kern/queue.h>
 #include <kern/lock.h>
 #include <kern/kern_types.h>
-#include <kern/macro_help.h>
+#include <kern/macros.h>
 
 #if	MACH_FIXPRI
 #include <mach/policy.h>

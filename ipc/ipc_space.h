@@ -42,7 +42,7 @@
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
 #include <mach/mach_types.h>
-#include <kern/macro_help.h>
+#include <kern/macros.h>
 #include <kern/lock.h>
 #include <kern/slab.h>
 #include <ipc/ipc_splay.h>

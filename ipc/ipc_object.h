@@ -38,7 +38,7 @@
 #include <mach/message.h>
 #include <ipc/ipc_types.h>
 #include <kern/lock.h>
-#include <kern/macro_help.h>
+#include <kern/macros.h>
 #include <kern/slab.h>
 
 typedef unsigned int ipc_object_refs_t;

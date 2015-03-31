@@ -37,7 +37,7 @@
 
 #if	NCPUS > 1
 
-#include <kern/macro_help.h>
+#include <kern/macros.h>
 #include <kern/cpu_number.h>
 #include <kern/sched_prim.h>
 #include <kern/thread.h>

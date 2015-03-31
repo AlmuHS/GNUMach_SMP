@@ -52,7 +52,7 @@
 #include <vm/vm_types.h>
 #include <kern/lock.h>
 #include <kern/rbtree.h>
-#include <kern/macro_help.h>
+#include <kern/macros.h>
 
 /* TODO: make it dynamic */
 #define KENTRY_DATA_SIZE (256*PAGE_SIZE)

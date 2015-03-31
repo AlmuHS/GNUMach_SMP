@@ -38,7 +38,7 @@
 #include <mach/message.h>
 #include <kern/assert.h>
 #include <kern/cpu_number.h>
-#include <kern/macro_help.h>
+#include <kern/macros.h>
 #include <kern/kalloc.h>
 #include <ipc/ipc_marequest.h>
 #include <ipc/ipc_object.h>

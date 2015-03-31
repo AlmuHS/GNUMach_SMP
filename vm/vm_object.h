@@ -45,7 +45,7 @@
 #include <kern/lock.h>
 #include <kern/assert.h>
 #include <kern/debug.h>
-#include <kern/macro_help.h>
+#include <kern/macros.h>
 #include <vm/pmap.h>
 #include <ipc/ipc_types.h>
 

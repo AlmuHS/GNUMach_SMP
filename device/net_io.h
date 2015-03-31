@@ -38,7 +38,7 @@
 #include <mach/machine/vm_types.h>
 #include <ipc/ipc_kmsg.h>
 
-#include <kern/macro_help.h>
+#include <kern/macros.h>
 #include <kern/lock.h>
 #include <kern/kalloc.h>
 

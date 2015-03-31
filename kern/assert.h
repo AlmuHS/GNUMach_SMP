@@ -29,7 +29,7 @@
 
 /*	assert.h	4.2	85/01/21	*/
 
-#include <kern/macro_help.h>
+#include <kern/macros.h>
 
 #ifndef NDEBUG
 #define MACH_ASSERT 1

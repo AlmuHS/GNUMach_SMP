@@ -79,6 +79,7 @@
 #include <string.h>
 #include <kern/assert.h>
 #include <kern/mach_clock.h>
+#include <kern/macros.h>
 #include <kern/printf.h>
 #include <kern/slab.h>
 #include <kern/kalloc.h>
@@ -96,7 +97,6 @@
 /*
  * Utility macros.
  */
-#define ARRAY_SIZE(x)   (sizeof(x) / sizeof((x)[0]))
 #define P2ALIGNED(x, a) (((x) & ((a) - 1)) == 0)
 #define ISP2(x)         P2ALIGNED(x, x)
 #define P2ALIGN(x, a)   ((x) & -(a))

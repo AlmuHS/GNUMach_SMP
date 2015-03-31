@@ -27,7 +27,7 @@
 #ifndef	_KERN_REFCOUNT_H_
 #define _KERN_REFCOUNT_H_
 
-#include <kern/macro_help.h>
+#include <kern/macros.h>
 
 /* Unless the above include file specified otherwise,
    use the system-independent (unoptimized) atomic reference counter.  */

@@ -31,11 +31,8 @@
 
 #include <stddef.h>
 #include <kern/assert.h>
-#include <kern/macro_help.h>
+#include <kern/macros.h>
 #include <sys/types.h>
-
-#define structof(ptr, type, member) \
-    ((type *)((char *)ptr - offsetof(type, member)))
 
 /*
  * Indexes of the left and right nodes in the children array of a node.
