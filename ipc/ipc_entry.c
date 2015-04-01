@@ -52,93 +52,6 @@
 struct kmem_cache ipc_entry_cache;
 
 /*
- *	Routine:	ipc_entry_lookup
- *	Purpose:
- *		Searches for an entry, given its name.
- *	Conditions:
- *		The space must be read or write locked throughout.
- *		The space must be active.
- */
-
-ipc_entry_t
-ipc_entry_lookup(
-	ipc_space_t space,
-	mach_port_t name)
-{
-	ipc_entry_t entry;
-
-	assert(space->is_active);
-	entry = rdxtree_lookup(&space->is_map, (rdxtree_key_t) name);
-	if (entry != IE_NULL
-	    && IE_BITS_TYPE(entry->ie_bits) == MACH_PORT_TYPE_NONE)
-		entry = NULL;
-	assert((entry == IE_NULL) || IE_BITS_TYPE(entry->ie_bits));
-	return entry;
-}
-
-/*
- *	Routine:	ipc_entry_get
- *	Purpose:
- *		Tries to allocate an entry out of the space.
- *	Conditions:
- *		The space is write-locked and active throughout.
- *		An object may be locked.  Will not allocate memory.
- *	Returns:
- *		KERN_SUCCESS		A free entry was found.
- *		KERN_NO_SPACE		No entry allocated.
- */
-
-kern_return_t
-ipc_entry_get(
-	ipc_space_t space,
-	mach_port_t *namep,
-	ipc_entry_t *entryp)
-{
-	mach_port_t new_name;
-	ipc_entry_t free_entry;
-
-	assert(space->is_active);
-
-	/* Get entry from the free list.  */
-	free_entry = space->is_free_list;
-	if (free_entry == IE_NULL)
-		return KERN_NO_SPACE;
-
-	space->is_free_list = free_entry->ie_next_free;
-	space->is_free_list_size -= 1;
-
-	/*
-	 *	Initialize the new entry.  We need only
-	 *	increment the generation number and clear ie_request.
-	 */
-
-    {
-	mach_port_gen_t gen;
-
-	assert((free_entry->ie_bits &~ IE_BITS_GEN_MASK) == 0);
-	gen = free_entry->ie_bits + IE_BITS_GEN_ONE;
-	free_entry->ie_bits = gen;
-	free_entry->ie_request = 0;
-	new_name = MACH_PORT_MAKE(free_entry->ie_name, gen);
-    }
-
-	/*
-	 *	The new name can't be MACH_PORT_NULL because index
-	 *	is non-zero.  It can't be MACH_PORT_DEAD because
-	 *	the table isn't allowed to grow big enough.
-	 *	(See comment in ipc/ipc_table.h.)
-	 */
-
-	assert(MACH_PORT_VALID(new_name));
-	assert(free_entry->ie_object == IO_NULL);
-
-	space->is_size += 1;
-	*namep = new_name;
-	*entryp = free_entry;
-	return KERN_SUCCESS;
-}
-
-/*
  *	Routine:	ipc_entry_alloc
  *	Purpose:
  *		Allocate an entry out of the space.
@@ -292,38 +205,6 @@ ipc_entry_alloc_name(
 	/* Success.  Space is write-locked.  */
 	return KERN_SUCCESS;
 }
-
-/*
- *	Routine:	ipc_entry_dealloc
- *	Purpose:
- *		Deallocates an entry from a space.
- *	Conditions:
- *		The space must be write-locked throughout.
- *		The space must be active.
- */
-
-void
-ipc_entry_dealloc(
-	ipc_space_t	space,
-	mach_port_t	name,
-	ipc_entry_t	entry)
-{
-	assert(space->is_active);
-	assert(entry->ie_object == IO_NULL);
-	assert(entry->ie_request == 0);
-
-	if (space->is_free_list_size < IS_FREE_LIST_SIZE_LIMIT) {
-		space->is_free_list_size += 1;
-		entry->ie_bits &= IE_BITS_GEN_MASK;
-		entry->ie_next_free = space->is_free_list;
-		space->is_free_list = entry;
-	} else {
-		rdxtree_remove(&space->is_map, (rdxtree_key_t) name);
-		ie_free(entry);
-	}
-	space->is_size -= 1;
-}
-
 
 #if	MACH_KDB
 #include <ddb/db_output.h>
