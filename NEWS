@@ -1,5 +1,4 @@
-2014-XX-XX
-Version 1.5
+Version 1.5 (2015-04-10)
 
 Numerous cleanups and stylistic fixes of the code base.  Several
 problems have been identified using static analysis tools and
@@ -18,8 +17,7 @@ The vm pageout policy has been tuned to accommodate modern hardware.
 The kernel gained partial ACPI support on x86, enough to power down
 the system.
 
-2013-09-27
-Version 1.4
+Version 1.4 (2013-09-27)
 
 Really too many to list them individually.  Highlight include numerous bug and
 stability fixes, a Xen port for 32-bit x86 including basic support for Physical
