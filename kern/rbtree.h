@@ -177,8 +177,8 @@ MACRO_END
  * This macro performs a standard lookup to obtain the insertion point of
  * the given node in the tree (it is assumed that the inserted node never
  * compares equal to any other entry in the tree) and links the node. It
- * then It then checks red-black rules violations, and rebalances the tree
- * if necessary.
+ * then checks red-black rules violations, and rebalances the tree if
+ * necessary.
  *
  * Unlike rbtree_lookup(), the cmp_fn parameter must compare two complete
  * entries, so it is suggested to use two different comparison inline
