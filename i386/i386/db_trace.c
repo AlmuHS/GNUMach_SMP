@@ -488,7 +488,7 @@ db_i386_stack_trace(
 		db_printf("...");
 	    db_printf(")");
 	    if (offset) {
-		db_printf("+%x", offset);
+		db_printf("+0x%x", offset);
             }
 	    if (db_line_at_pc(0, &filename, &linenum, callpc)) {
 		db_printf(" [%s", filename);
