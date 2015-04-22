@@ -1041,6 +1041,7 @@ mach_msg_trap(
 			ipc_port_t reply_port =
 				(ipc_port_t) kmsg->ikm_header.msgh_local_port;
 			mach_port_t dest_name, reply_name;
+			unsigned long payload;
 
 			/* receiving a request message */
 
@@ -1115,6 +1116,7 @@ mach_msg_trap(
 				dest_name = dest_port->ip_receiver_name;
 			else
 				dest_name = MACH_PORT_NULL;
+			payload = dest_port->ip_protected_payload;
 
 			if ((--dest_port->ip_srights == 0) &&
 			    (dest_port->ip_nsrequest != IP_NULL)) {
@@ -1142,7 +1144,7 @@ mach_msg_trap(
 					MACH_MSG_TYPE_PORT_SEND_ONCE,
 					MACH_MSG_TYPE_PROTECTED_PAYLOAD);
 				kmsg->ikm_header.msgh_protected_payload =
-					dest_port->ip_protected_payload;
+					payload;
 			}
 			kmsg->ikm_header.msgh_remote_port = reply_name;
 			goto fast_put;
@@ -1155,6 +1157,7 @@ mach_msg_trap(
 
 		    case MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND_ONCE, 0): {
 			mach_port_t dest_name;
+			unsigned long payload;
 
 			/* receiving a reply message */
 
@@ -1165,6 +1168,8 @@ mach_msg_trap(
 			/* optimized ipc_object_copyout_dest */
 
 			assert(dest_port->ip_sorights > 0);
+
+			payload = dest_port->ip_protected_payload;
 
 			if (dest_port->ip_receiver == space) {
 				ip_release(dest_port);
@@ -1188,7 +1193,7 @@ mach_msg_trap(
 					0,
 					MACH_MSG_TYPE_PROTECTED_PAYLOAD);
 				kmsg->ikm_header.msgh_protected_payload =
-					dest_port->ip_protected_payload;
+					payload;
 			}
 			kmsg->ikm_header.msgh_remote_port = MACH_PORT_NULL;
 			goto fast_put;
@@ -1197,6 +1202,7 @@ mach_msg_trap(
 		    case MACH_MSGH_BITS_COMPLEX|
 			 MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND_ONCE, 0): {
 			mach_port_t dest_name;
+			unsigned long payload;
 
 			/* receiving a complex reply message */
 
@@ -1207,6 +1213,8 @@ mach_msg_trap(
 			/* optimized ipc_object_copyout_dest */
 
 			assert(dest_port->ip_sorights > 0);
+
+			payload = dest_port->ip_protected_payload;
 
 			if (dest_port->ip_receiver == space) {
 				ip_release(dest_port);
@@ -1234,7 +1242,7 @@ mach_msg_trap(
 					    0,
 					    MACH_MSG_TYPE_PROTECTED_PAYLOAD);
 				kmsg->ikm_header.msgh_protected_payload =
-					dest_port->ip_protected_payload;
+					payload;
 			}
 			kmsg->ikm_header.msgh_remote_port = MACH_PORT_NULL;
 

@@ -1766,6 +1766,7 @@ ipc_kmsg_copyout_header(
 	    case MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND, 0): {
 		mach_port_t dest_name;
 		ipc_port_t nsrequest;
+		unsigned long payload;
 
 		/* receiving an asynchronous message */
 
@@ -1784,6 +1785,7 @@ ipc_kmsg_copyout_header(
 			dest_name = dest->ip_receiver_name;
 		else
 			dest_name = MACH_PORT_NULL;
+		payload = dest->ip_protected_payload;
 
 		if ((--dest->ip_srights == 0) &&
 		    ((nsrequest = dest->ip_nsrequest) != IP_NULL)) {
@@ -1805,8 +1807,7 @@ ipc_kmsg_copyout_header(
 			msg->msgh_bits = (MACH_MSGH_BITS_OTHER(mbits) |
 				MACH_MSGH_BITS(
 					0, MACH_MSG_TYPE_PROTECTED_PAYLOAD));
-			msg->msgh_protected_payload =
-				dest->ip_protected_payload;
+			msg->msgh_protected_payload = payload;
 		}
 		msg->msgh_remote_port = MACH_PORT_NULL;
 		return MACH_MSG_SUCCESS;
@@ -1820,6 +1821,7 @@ ipc_kmsg_copyout_header(
 		ipc_port_t reply = (ipc_port_t) msg->msgh_local_port;
 		mach_port_t dest_name, reply_name;
 		ipc_port_t nsrequest;
+		unsigned long payload;
 
 		/* receiving a request message */
 
@@ -1890,6 +1892,7 @@ ipc_kmsg_copyout_header(
 			dest_name = dest->ip_receiver_name;
 		else
 			dest_name = MACH_PORT_NULL;
+		payload = dest->ip_protected_payload;
 
 		if ((--dest->ip_srights == 0) &&
 		    ((nsrequest = dest->ip_nsrequest) != IP_NULL)) {
@@ -1912,8 +1915,7 @@ ipc_kmsg_copyout_header(
 			msg->msgh_bits = (MACH_MSGH_BITS_OTHER(mbits) |
 				MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND_ONCE,
 					MACH_MSG_TYPE_PROTECTED_PAYLOAD));
-			msg->msgh_protected_payload =
-				dest->ip_protected_payload;
+			msg->msgh_protected_payload = payload;
 		}
 		msg->msgh_remote_port = reply_name;
 		return MACH_MSG_SUCCESS;
@@ -1921,6 +1923,7 @@ ipc_kmsg_copyout_header(
 
 	    case MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND_ONCE, 0): {
 		mach_port_t dest_name;
+		unsigned long payload;
 
 		/* receiving a reply message */
 
@@ -1933,6 +1936,8 @@ ipc_kmsg_copyout_header(
 		/* optimized ipc_object_copyout_dest */
 
 		assert(dest->ip_sorights > 0);
+
+		payload = dest->ip_protected_payload;
 
 		if (dest->ip_receiver == space) {
 			ip_release(dest);
@@ -1955,8 +1960,7 @@ ipc_kmsg_copyout_header(
 			msg->msgh_bits = (MACH_MSGH_BITS_OTHER(mbits) |
 				MACH_MSGH_BITS(0,
 					MACH_MSG_TYPE_PROTECTED_PAYLOAD));
-			msg->msgh_protected_payload =
-				dest->ip_protected_payload;
+			msg->msgh_protected_payload = payload;
 		}
 		msg->msgh_remote_port = MACH_PORT_NULL;
 		return MACH_MSG_SUCCESS;
@@ -1973,6 +1977,7 @@ ipc_kmsg_copyout_header(
 	mach_msg_type_name_t reply_type = MACH_MSGH_BITS_LOCAL(mbits);
 	ipc_port_t reply = (ipc_port_t) msg->msgh_local_port;
 	mach_port_t dest_name, reply_name;
+	unsigned long payload;
 
 	if (IP_VALID(reply)) {
 		ipc_port_t notify_port;
@@ -2219,6 +2224,7 @@ ipc_kmsg_copyout_header(
 	 */
 
     copyout_dest:
+	payload = dest->ip_protected_payload;
 
 	if (ip_active(dest)) {
 		ipc_object_copyout_dest(space, (ipc_object_t) dest,
@@ -2255,8 +2261,9 @@ ipc_kmsg_copyout_header(
 		msg->msgh_bits = (MACH_MSGH_BITS_OTHER(mbits) |
 				  MACH_MSGH_BITS(reply_type,
 					MACH_MSG_TYPE_PROTECTED_PAYLOAD));
-		msg->msgh_protected_payload = dest->ip_protected_payload;
+		msg->msgh_protected_payload = payload;
 	}
+
 	msg->msgh_remote_port = reply_name;
     }
 
