@@ -302,8 +302,8 @@ thread_depress_priority(
      *	sched_pri to their lowest possible values.
      */
     thread->depress_priority = thread->priority;
-    thread->priority = 31;
-    thread->sched_pri = 31;
+    thread->priority = NRQS-1;
+    thread->sched_pri = NRQS-1;
     if (ticks != 0)
 	set_timeout(&thread->depress_timer, ticks);
 
