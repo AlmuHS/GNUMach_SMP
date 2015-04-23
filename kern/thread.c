@@ -124,10 +124,6 @@ vm_offset_t stack_free_list;		/* splsched only */
 unsigned int stack_free_count = 0;	/* splsched only */
 unsigned int stack_free_limit = 1;	/* patchable */
 
-unsigned int stack_alloc_hits = 0;	/* debugging */
-unsigned int stack_alloc_misses = 0;	/* debugging */
-unsigned int stack_alloc_max = 0;	/* debugging */
-
 /*
  *	The next field is at the base of the stack,
  *	so the low end is left unsullied.
@@ -160,10 +156,10 @@ boolean_t stack_alloc_try(
 
 	if (stack != 0) {
 		stack_attach(thread, stack, resume);
-		stack_alloc_hits++;
+		counter(c_stack_alloc_hits++);
 		return TRUE;
 	} else {
-		stack_alloc_misses++;
+		counter(c_stack_alloc_misses++);
 		return FALSE;
 	}
 }
@@ -235,8 +231,11 @@ void stack_free(
 		stack_lock();
 		stack_next(stack) = stack_free_list;
 		stack_free_list = stack;
-		if (++stack_free_count > stack_alloc_max)
-			stack_alloc_max = stack_free_count;
+		stack_free_count += 1;
+#if	MACH_COUNTERS
+		if (stack_free_count > c_stack_alloc_max)
+			c_stack_alloc_max = stack_free_count;
+#endif	/* MACH_COUNTERS */
 		stack_unlock();
 	}
 }
