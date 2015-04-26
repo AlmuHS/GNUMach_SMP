@@ -89,9 +89,8 @@ kern_return_t task_create(
 #endif
 
 	new_task = (task_t) kmem_cache_alloc(&task_cache);
-	if (new_task == TASK_NULL) {
-		panic("task_create: no memory for task structure");
-	}
+	if (new_task == TASK_NULL)
+		return KERN_RESOURCE_SHORTAGE;
 
 	/* one ref for just being alive; one for our caller */
 	new_task->ref_count = 2;
