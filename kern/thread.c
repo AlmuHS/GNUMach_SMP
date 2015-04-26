@@ -171,7 +171,7 @@ boolean_t stack_alloc_try(
  *	May block.
  */
 
-void stack_alloc(
+kern_return_t stack_alloc(
 	thread_t	thread,
 	void		(*resume)(thread_t))
 {
@@ -195,15 +195,15 @@ void stack_alloc(
 	(void) splx(s);
 
 	if (stack == 0) {
+		kern_return_t kr;
 		/*
 		 *	Kernel stacks should be naturally aligned,
 		 *	so that it is easy to find the starting/ending
 		 *	addresses of a stack given an address in the middle.
 		 */
-
-		if (kmem_alloc_aligned(kmem_map, &stack, KERNEL_STACK_SIZE)
-							!= KERN_SUCCESS)
-			panic("stack_alloc");
+		kr = kmem_alloc_aligned(kmem_map, &stack, KERNEL_STACK_SIZE);
+		if (kr != KERN_SUCCESS)
+			return kr;
 
 #if	MACH_DEBUG
 		stack_init(stack);
@@ -211,6 +211,7 @@ void stack_alloc(
 	}
 
 	stack_attach(thread, stack, resume);
+	return KERN_SUCCESS;
 }
 
 /*

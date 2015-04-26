@@ -150,7 +150,7 @@ extern void	stack_handoff(
  *	or are defined directly by machine-dependent code.
  */
 
-extern void	stack_alloc(
+extern kern_return_t	stack_alloc(
 	thread_t	thread,
 	void		(*resume)(thread_t));
 extern boolean_t stack_alloc_try(

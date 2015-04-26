@@ -123,15 +123,18 @@ void thread_swapin(thread_t thread)
  *	it on a run queue.  No locks should be held on entry, as it is
  *	likely that this routine will sleep (waiting for stack allocation).
  */
-void thread_doswapin(thread_t thread)
+kern_return_t thread_doswapin(thread_t thread)
 {
+	kern_return_t kr;
 	spl_t	s;
 
 	/*
 	 *	Allocate the kernel stack.
 	 */
 
-	stack_alloc(thread, thread_continue);
+	kr = stack_alloc(thread, thread_continue);
+	if (kr != KERN_SUCCESS)
+		return kr;
 
 	/*
 	 *	Place on run queue.  
@@ -144,6 +147,7 @@ void thread_doswapin(thread_t thread)
 		thread_setrun(thread, TRUE);
 	thread_unlock(thread);
 	(void) splx(s);
+	return KERN_SUCCESS;
 }
 
 /*
@@ -163,13 +167,20 @@ void __attribute__((noreturn)) swapin_thread_continue(void)
 
 		while ((thread = (thread_t) dequeue_head(&swapin_queue))
 							!= THREAD_NULL) {
+			kern_return_t kr;
 			swapper_unlock();
 			(void) splx(s);
 
-			thread_doswapin(thread);		/* may block */
+			kr = thread_doswapin(thread);		/* may block */
 
 			s = splsched();
 			swapper_lock();
+
+			if (kr != KERN_SUCCESS) {
+				enqueue_head(&swapin_queue,
+					     (queue_entry_t) thread);
+				break;
+			}
 		}
 
 		assert_wait((event_t) &swapin_queue, FALSE);
