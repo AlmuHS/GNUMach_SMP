@@ -1336,16 +1336,6 @@ kern_return_t vm_object_copy_call(
 	vm_page_t	p;
 
 	/*
-	 *	Set the backing object for the new
-	 *	temporary object.
-	 */
-
-	assert(src_object->ref_count > 0);
-	src_object->ref_count++;
-	vm_object_paging_begin(src_object);
-	vm_object_unlock(src_object);
-
-	/*
 	 *	Create a memory object port to be associated
 	 *	with this new vm_object.
 	 *
@@ -1358,10 +1348,18 @@ kern_return_t vm_object_copy_call(
 	 */
 
 	new_memory_object = ipc_port_alloc_kernel();
-	if (new_memory_object == IP_NULL) {
-		panic("vm_object_copy_call: allocate memory object port");
-		/* XXX Shouldn't panic here. */
-	}
+	if (new_memory_object == IP_NULL)
+		return KERN_RESOURCE_SHORTAGE;
+
+	/*
+	 *	Set the backing object for the new
+	 *	temporary object.
+	 */
+
+	assert(src_object->ref_count > 0);
+	src_object->ref_count++;
+	vm_object_paging_begin(src_object);
+	vm_object_unlock(src_object);
 
 	/* we hold a naked receive right for new_memory_object */
 	(void) ipc_port_make_send(new_memory_object);
