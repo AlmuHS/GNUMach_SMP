@@ -63,6 +63,10 @@ AM_CFLAGS += \
 AM_CFLAGS += \
 	-fno-strict-aliasing
 
+# We need the GNU-style inline
+AM_CFLAGS += \
+	-fgnu89-inline
+
 # The smashing stack protector might be enabled by default, but might emit
 # unsuitable code.
 if disable_smashing_stack_protector
