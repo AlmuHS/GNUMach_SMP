@@ -417,12 +417,11 @@ mach_convert_device_to_port (mach_device_t device)
 }
 
 static io_return_t
-device_open(reply_port, reply_port_type, mode, name, device_p)
-	const ipc_port_t reply_port;
-	mach_msg_type_name_t reply_port_type;
-	dev_mode_t	mode;
-	char *		name;
-	device_t	*device_p;	/* out */
+device_open(const ipc_port_t	reply_port,
+	    mach_msg_type_name_t reply_port_type,
+	    dev_mode_t		mode,
+	    char *		name,
+	    device_t		*device_p)
 {
 	mach_device_t		device;
 	kern_return_t		result;
@@ -537,8 +536,7 @@ device_open(reply_port, reply_port_type, mode, name, device_p)
 }
 
 boolean_t
-ds_open_done(ior)
-	const io_req_t		ior;
+ds_open_done(const io_req_t ior)
 {
 	kern_return_t		result;
 	mach_device_t		device;
@@ -597,8 +595,10 @@ ds_open_done(ior)
 }
 
 static io_return_t
-device_close(mach_device_t device)
+device_close(void *dev)
 {
+	mach_device_t device = dev;
+
 	device_lock(device);
 
 	/*
@@ -659,17 +659,16 @@ device_close(mach_device_t device)
  * Write to a device.
  */
 static io_return_t
-device_write(device, reply_port, reply_port_type, mode, recnum,
-	     data, data_count, bytes_written)
-	mach_device_t		device;
-	const ipc_port_t	reply_port;
-	mach_msg_type_name_t	reply_port_type;
-	dev_mode_t		mode;
-	recnum_t		recnum;
-	const io_buf_ptr_t	data;
-	unsigned int		data_count;
-	int			*bytes_written;	/* out */
+device_write(void *dev,
+	     const ipc_port_t	reply_port,
+	     mach_msg_type_name_t	reply_port_type,
+	     dev_mode_t		mode,
+	     recnum_t		recnum,
+	     const io_buf_ptr_t	data,
+	     unsigned int	data_count,
+	     int		*bytes_written)
 {
+	mach_device_t		device = dev;
 	io_req_t		ior;
 	io_return_t		result;
 
@@ -750,17 +749,16 @@ device_write(device, reply_port, reply_port_type, mode, recnum,
  * Write to a device, but memory is in message.
  */
 static io_return_t
-device_write_inband(device, reply_port, reply_port_type, mode, recnum,
-		    data, data_count, bytes_written)
-	mach_device_t		device;
-	const ipc_port_t	reply_port;
-	mach_msg_type_name_t	reply_port_type;
-	dev_mode_t		mode;
-	recnum_t		recnum;
-	io_buf_ptr_inband_t	data;
-	unsigned int		data_count;
-	int			*bytes_written; /* out */
+device_write_inband(void		*dev,
+		    const ipc_port_t	reply_port,
+		    mach_msg_type_name_t	reply_port_type,
+		    dev_mode_t		mode,
+		    recnum_t		recnum,
+		    io_buf_ptr_inband_t	data,
+		    unsigned int	data_count,
+		    int			*bytes_written)
 {
+	mach_device_t		device = dev;
 	io_req_t		ior;
 	io_return_t		result;
 
@@ -1018,8 +1016,7 @@ device_write_dealloc(io_req_t ior)
  * Send write completion message to client, and discard the data.
  */
 boolean_t
-ds_write_done(ior)
-	const io_req_t		ior;
+ds_write_done(const io_req_t ior)
 {
 	/*
 	 *	device_write_dealloc discards the data that has been
@@ -1064,17 +1061,16 @@ ds_write_done(ior)
  * Read from a device.
  */
 static io_return_t
-device_read(device, reply_port, reply_port_type, mode, recnum,
-	    bytes_wanted, data, data_count)
-	mach_device_t		device;
-	const ipc_port_t	reply_port;
-	mach_msg_type_name_t	reply_port_type;
-	dev_mode_t		mode;
-	recnum_t		recnum;
-	int			bytes_wanted;
-	io_buf_ptr_t		*data;		/* out */
-	unsigned int		*data_count;	/* out */
+device_read(void *dev,
+	    const ipc_port_t	reply_port,
+	    mach_msg_type_name_t	reply_port_type,
+	    dev_mode_t		mode,
+	    recnum_t		recnum,
+	    int			bytes_wanted,
+	    io_buf_ptr_t	*data,
+	    unsigned int	*data_count)
 {
+	mach_device_t 		device = dev;
 	io_req_t		ior;
 	io_return_t		result;
 
@@ -1141,17 +1137,16 @@ device_read(device, reply_port, reply_port_type, mode, recnum,
  * Read from a device, but return the data 'inband.'
  */
 static io_return_t
-device_read_inband(device, reply_port, reply_port_type, mode, recnum,
-		   bytes_wanted, data, data_count)
-	mach_device_t		device;
-	const ipc_port_t	reply_port;
-	mach_msg_type_name_t	reply_port_type;
-	dev_mode_t		mode;
-	recnum_t		recnum;
-	int			bytes_wanted;
-	char			*data;		/* pointer to OUT array */
-	unsigned int		*data_count;	/* out */
+device_read_inband(void			*dev,
+		   const ipc_port_t	reply_port,
+		   mach_msg_type_name_t	reply_port_type,
+		   dev_mode_t		mode,
+		   recnum_t		recnum,
+		   int			bytes_wanted,
+		   char			*data,
+		   unsigned int		*data_count)
 {
+	mach_device_t		device = dev;
 	io_req_t		ior;
 	io_return_t		result;
 
@@ -1248,8 +1243,7 @@ kern_return_t device_read_alloc(
 	return (KERN_SUCCESS);
 }
 
-boolean_t ds_read_done(ior)
-	const io_req_t	ior;
+boolean_t ds_read_done(const io_req_t ior)
 {
 	vm_offset_t		start_data, end_data;
 	vm_offset_t		start_sent, end_sent;
@@ -1345,11 +1339,12 @@ boolean_t ds_read_done(ior)
 
 static io_return_t
 device_set_status(
-	mach_device_t		device,
+	void 			*dev,
 	dev_flavor_t		flavor,
 	dev_status_t		status,
 	mach_msg_type_number_t	status_count)
 {
+	mach_device_t		device = dev;
 	if (device->state != DEV_STATE_OPEN)
 	    return (D_NO_SUCH_DEVICE);
 
@@ -1363,11 +1358,12 @@ device_set_status(
 
 io_return_t
 mach_device_get_status(
-	mach_device_t		device,
+	void			*dev,
 	dev_flavor_t		flavor,
 	dev_status_t		status,		/* pointer to OUT array */
 	mach_msg_type_number_t	*status_count)	/* out */
 {
+	mach_device_t		device = dev;
 	if (device->state != DEV_STATE_OPEN)
 	    return (D_NO_SUCH_DEVICE);
 
@@ -1380,13 +1376,13 @@ mach_device_get_status(
 }
 
 static io_return_t
-device_set_filter(device, receive_port, priority, filter, filter_count)
-	mach_device_t		device;
-	const ipc_port_t	receive_port;
-	int			priority;
-	filter_t		filter[];	/* pointer to IN array */
-	unsigned int		filter_count;
+device_set_filter(void			*dev,
+		  const ipc_port_t	receive_port,
+		  int			priority,
+		  filter_t		filter[],
+		  unsigned int		filter_count)
 {
+	mach_device_t		device = dev;
 	if (device->state != DEV_STATE_OPEN)
 	    return (D_NO_SUCH_DEVICE);
 
@@ -1407,13 +1403,14 @@ device_set_filter(device, receive_port, priority, filter, filter_count)
 
 static io_return_t
 device_map(
-	mach_device_t		device,
+	void 			*dev,
 	vm_prot_t		protection,
 	vm_offset_t		offset,
 	vm_size_t		size,
 	ipc_port_t		*pager,	/* out */
 	boolean_t		unmap)	/* ? */
 {
+	mach_device_t		device = dev;
 	if (protection & ~VM_PROT_ALL)
 		return (KERN_INVALID_ARGUMENT);
 
@@ -1430,8 +1427,7 @@ device_map(
  * Doesn't do anything (yet).
  */
 static void
-ds_no_senders(notification)
-	const mach_no_senders_notification_t *notification;
+ds_no_senders(mach_no_senders_notification_t *notification)
 {
 	printf("ds_no_senders called! device_port=0x%lx count=%d\n",
 	       notification->not_header.msgh_remote_port,
