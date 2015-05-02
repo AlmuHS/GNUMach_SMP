@@ -30,6 +30,10 @@ struct semaphore {
 #define MUTEX ((struct semaphore) { 1, 0, 0, NULL })
 #define MUTEX_LOCKED ((struct semaphore) { 0, 0, 0, NULL })
 
+/* Special register calling convention:
+ * eax contains return address
+ * ecx contains semaphore address
+ */
 asmlinkage void down_failed(void /* special register calling convention */);
 asmlinkage void up_wakeup(void /* special register calling convention */);
 
@@ -54,7 +58,7 @@ extern inline void down(struct semaphore * sem)
 		"js " SYMBOL_NAME_STR(down_failed) "\n"
 		"1:\n"
 		:"=&a" (d0), "=m" (sem->count)
-		:
+		:"c" (sem)
 		:"memory");
 }
 
@@ -97,7 +101,7 @@ extern inline int down_interruptible(struct semaphore * sem)
                 "xorl %%eax,%%eax\n"
                 "2:\n"
                 :"=&a" (ret), "=m" (sem->count)
-                :
+                :"c" (sem)
                 :"memory");
 
 	return(ret) ;
@@ -122,7 +126,7 @@ extern inline void up(struct semaphore * sem)
 		"jle " SYMBOL_NAME_STR(up_wakeup)
 		"\n1:"
 		:"=&a" (d0), "=m" (sem->count)
-		:
+		:"c" (sem)
 		:"memory");
 }
 
