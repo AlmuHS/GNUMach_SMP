@@ -66,8 +66,9 @@ rtcinit(void)
 
 
 int
-rtcget(unsigned char *regs)
+rtcget(struct rtc_st *st)
 {
+	unsigned char *regs = (unsigned char *)st;
 	if (first_rtcopen_ever) {
 		rtcinit();
 		first_rtcopen_ever = FALSE;
@@ -82,8 +83,9 @@ rtcget(unsigned char *regs)
 }
 
 void
-rtcput(unsigned char *regs)
+rtcput(struct rtc_st *st)
 {
+	unsigned char *regs = (unsigned char *)st;
 	unsigned char	x;
 
 	if (first_rtcopen_ever) {
