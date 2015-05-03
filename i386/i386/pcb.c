@@ -96,7 +96,7 @@ void stack_attach(
 	/*
 	 *	Point top of kernel stack to user`s registers.
 	 */
-	STACK_IEL(stack)->saved_state = &thread->pcb->iss;
+	STACK_IEL(stack)->saved_state = USER_REGS(thread);
 }
 
 /*
@@ -298,7 +298,7 @@ void stack_handoff(
 	 *	user registers.
 	 */
 
-	STACK_IEL(stack)->saved_state = &new->pcb->iss;
+	STACK_IEL(stack)->saved_state = USER_REGS(new);
 
 }
 
