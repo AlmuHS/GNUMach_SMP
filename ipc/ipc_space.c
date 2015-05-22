@@ -99,7 +99,6 @@ struct ipc_entry zero_entry;
 
 kern_return_t
 ipc_space_create(
-	ipc_table_size_t	initial,
 	ipc_space_t		*spacep)
 {
 	ipc_space_t space;

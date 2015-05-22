@@ -54,15 +54,6 @@
  *	Every task has a space of IPC capabilities.
  *	IPC operations like send and receive use this space.
  *	IPC kernel calls manipulate the space of the target task.
- *
- *	Every space has a non-NULL is_table with is_table_size entries.
- *	A space may have a NULL is_tree.  is_tree_small records the
- *	number of entries in the tree that, if the table were to grow
- *	to the next larger size, would move from the tree to the table.
- *
- *	is_growing marks when the table is in the process of growing.
- *	When the table is growing, it can't be freed or grown by another
- *	thread, because of krealloc/kmem_realloc's requirements.
  */
 
 typedef unsigned int ipc_space_refs_t;
@@ -133,7 +124,7 @@ extern void ipc_space_release(struct ipc_space *space);
 #define	is_reference(is)	ipc_space_reference(is)
 #define	is_release(is)		ipc_space_release(is)
 
-kern_return_t	ipc_space_create(ipc_table_size_t, ipc_space_t *);
+kern_return_t	ipc_space_create(ipc_space_t *);
 kern_return_t	ipc_space_create_special(struct ipc_space **);
 void		ipc_space_destroy(struct ipc_space *);
 

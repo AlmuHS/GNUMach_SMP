@@ -72,7 +72,7 @@ ipc_task_init(
 	int i;
 
 
-	kr = ipc_space_create(&ipc_table_entries[0], &space);
+	kr = ipc_space_create(&space);
 	if (kr != KERN_SUCCESS)
 		panic("ipc_task_init");
 
