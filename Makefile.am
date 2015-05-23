@@ -59,10 +59,6 @@ AM_CFLAGS += \
 AM_CFLAGS += \
 	-Wall
 
-# See <http://lists.gnu.org/archive/html/bug-hurd/2006-01/msg00148.html>.
-AM_CFLAGS += \
-	-fno-strict-aliasing
-
 # We need the GNU-style inline
 AM_CFLAGS += \
 	-fgnu89-inline

@@ -36,6 +36,11 @@ liblinux_a_CPPFLAGS = $(AM_CPPFLAGS) \
 # Because of the use of `extern inline' in some Linux header files without
 # corresponding text segment definitions, we must always optimize.
 liblinux_a_CFLAGS = -O2 $(AM_CFLAGS)
+
+# See <http://lists.gnu.org/archive/html/bug-hurd/2006-01/msg00148.html>.
+liblinux_a_CFLAGS += \
+	-fno-strict-aliasing
+
 # TODO.  Do we really need `-traditional'?
 liblinux_a_CCASFLAGS = $(AM_CCASFLAGS) \
 	-D__ASSEMBLY__ -traditional \
