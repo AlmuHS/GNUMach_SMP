@@ -109,6 +109,15 @@ struct ustat {
 	char			f_fpack[6];
 };
 
+/* stdint.h */
+typedef s8 int8_t;
+typedef u8 uint8_t;
+typedef s16 int16_t;
+typedef u16 uint16_t;
+typedef s32 int32_t;
+typedef u32 uint32_t;
+typedef s64 int64_t;
+typedef u64 uint64_t;
 
 /* Yes, this is ugly.  But that's why it is called glue code.  */
 
