@@ -48,6 +48,7 @@
 #include <kern/sched.h>
 #include <kern/sched_prim.h>
 #include <kern/exception.h>
+#include <kern/macros.h>
 #include <mach/machine/vm_types.h>
 
 #if	MACH_KDB
@@ -754,6 +755,12 @@ exception_raise(
     }
 }
 
+/* Macro used by MIG to cleanly check the type.  */
+#define BAD_TYPECHECK(type, check) unlikely (({\
+  union { mach_msg_type_t t; unsigned32_t w; } _t, _c;\
+  _t.t = *(type); _c.t = *(check);_t.w != _c.w; }))
+
+/* Type descriptor for the return code.  */
 mach_msg_type_t exc_RetCode_proto = {
 	/* msgt_name = */		MACH_MSG_TYPE_INTEGER_32,
 	/* msgt_size = */		32,
@@ -786,7 +793,7 @@ exception_parse_reply(ipc_kmsg_t kmsg)
 			MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND_ONCE, 0)) ||
 	    (msg->Head.msgh_size != sizeof *msg) ||
 	    (msg->Head.msgh_id != MACH_EXCEPTION_REPLY_ID) ||
-	    (* (int *) &msg->RetCodeType != * (int *) &exc_RetCode_proto)) {
+	    (BAD_TYPECHECK(&msg->RetCodeType, &exc_RetCode_proto))) {
 		/*
 		 *	Bozo user sent us a misformatted reply.
 		 */
