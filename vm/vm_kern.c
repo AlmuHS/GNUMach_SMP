@@ -431,113 +431,13 @@ retry:
 }
 
 /*
- *	kmem_realloc:
- *
- *	Reallocate wired-down memory in the kernel's address map
- *	or a submap.  Newly allocated pages are not zeroed.
- *	This can only be used on regions allocated with kmem_alloc.
- *
- *	If successful, the pages in the old region are mapped twice.
- *	The old region is unchanged.  Use kmem_free to get rid of it.
- */
-kern_return_t kmem_realloc(
-	vm_map_t 	map,
-	vm_offset_t 	oldaddr,
-	vm_size_t 	oldsize,
-	vm_offset_t 	*newaddrp,
-	vm_size_t 	newsize)
-{
-	vm_offset_t oldmin, oldmax;
-	vm_offset_t newaddr;
-	vm_object_t object;
-	vm_map_entry_t oldentry, newentry;
-	unsigned int attempts;
-	kern_return_t kr;
-
-	oldmin = trunc_page(oldaddr);
-	oldmax = round_page(oldaddr + oldsize);
-	oldsize = oldmax - oldmin;
-	newsize = round_page(newsize);
-
-	/*
-	 *	Find space for the new region.
-	 */
-
-	attempts = 0;
-
-retry:
-	vm_map_lock(map);
-	kr = vm_map_find_entry(map, &newaddr, newsize, (vm_offset_t) 0,
-			       VM_OBJECT_NULL, &newentry);
-	if (kr != KERN_SUCCESS) {
-		vm_map_unlock(map);
-
-		if (attempts == 0) {
-			attempts++;
-			slab_collect();
-			goto retry;
-		}
-
-		printf_once("no more room for kmem_realloc in %p\n", map);
-		return kr;
-	}
-
-	/*
-	 *	Find the VM object backing the old region.
-	 */
-
-	if (!vm_map_lookup_entry(map, oldmin, &oldentry))
-		panic("kmem_realloc");
-	object = oldentry->object.vm_object;
-
-	/*
-	 *	Increase the size of the object and
-	 *	fill in the new region.
-	 */
-
-	vm_object_reference(object);
-	vm_object_lock(object);
-	if (object->size != oldsize)
-		panic("kmem_realloc");
-	object->size = newsize;
-	vm_object_unlock(object);
-
-	newentry->object.vm_object = object;
-	newentry->offset = 0;
-
-	/*
-	 *	Since we have not given out this address yet,
-	 *	it is safe to unlock the map.  We are trusting
-	 *	that nobody will play with either region.
-	 */
-
-	vm_map_unlock(map);
-
-	/*
-	 *	Remap the pages in the old region and
-	 *	allocate more pages for the new region.
-	 */
-
-	kmem_remap_pages(object, 0,
-			 newaddr, newaddr + oldsize,
-			 VM_PROT_DEFAULT);
-	kmem_alloc_pages(object, oldsize,
-			 newaddr + oldsize, newaddr + newsize,
-			 VM_PROT_DEFAULT);
-
-	*newaddrp = newaddr;
-	return KERN_SUCCESS;
-}
-
-/*
  *	kmem_alloc_wired:
  *
  *	Allocate wired-down memory in the kernel's address map
  *	or a submap.  The memory is not zero-filled.
  *
  *	The memory is allocated in the kernel_object.
- *	It may not be copied with vm_map_copy, and
- *	it may not be reallocated with kmem_realloc.
+ *	It may not be copied with vm_map_copy.
  */
 
 kern_return_t
