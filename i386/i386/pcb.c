@@ -193,8 +193,14 @@ void switch_ktss(pcb_t pcb)
 	for (i=0; i < USER_GDT_SLOTS; i++) {
 	    if (memcmp(gdt_desc_p (mycpu, USER_GDT + (i << 3)),
 		&pcb->ims.user_gdt[i], sizeof pcb->ims.user_gdt[i])) {
+		union {
+			struct real_descriptor real_descriptor;
+			uint64_t descriptor;
+		} user_gdt;
+		user_gdt.real_descriptor = pcb->ims.user_gdt[i];
+
 		if (hyp_do_update_descriptor(kv_to_ma(gdt_desc_p (mycpu, USER_GDT + (i << 3))),
-			*(uint64_t *) &pcb->ims.user_gdt[i]))
+			user_gdt.descriptor))
 		    panic("couldn't set user gdt %d\n",i);
 	    }
 	}
