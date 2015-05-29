@@ -657,6 +657,8 @@ processor_get_assignment(
 	processor_set_t	*pset)
 {
     	int state;
+	if (processor == PROCESSOR_NULL)
+		return KERN_INVALID_ARGUMENT;
 
 	state = processor->state;
 	if (state == PROCESSOR_SHUTDOWN || state == PROCESSOR_OFF_LINE)

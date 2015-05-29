@@ -1063,6 +1063,9 @@ kern_return_t task_get_assignment(
 	task_t		task,
 	processor_set_t	*pset)
 {
+	if (task == TASK_NULL)
+		return KERN_INVALID_ARGUMENT;
+
 	if (!task->active)
 		return KERN_FAILURE;
 

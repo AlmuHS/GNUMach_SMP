@@ -1974,6 +1974,9 @@ kern_return_t thread_get_assignment(
 	thread_t	thread,
 	processor_set_t	*pset)
 {
+	if (thread == THREAD_NULL)
+		return KERN_INVALID_ARGUMENT;
+
 	*pset = thread->processor_set;
 	pset_reference(*pset);
 	return KERN_SUCCESS;
