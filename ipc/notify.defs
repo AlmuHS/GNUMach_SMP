@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* We use custom functions to send notifications.  This functions can
+/* We use custom functions to send notifications.  These functions can
    be found in `ipc_notify.c'.  We use this file merely to produce the
    list of message ids.  */
 
