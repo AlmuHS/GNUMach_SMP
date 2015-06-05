@@ -1178,11 +1178,11 @@ ipc_port_alloc_special(ipc_space_t space)
 {
 	ipc_port_t port;
 
-	port = (ipc_port_t) io_alloc(IOT_PORT);
+	port = ip_alloc();
 	if (port == IP_NULL)
 		return IP_NULL;
 
-	io_lock_init(&port->ip_object);
+	ip_lock_init(port);
 	port->ip_references = 1;
 	port->ip_object.io_bits = io_makebits(TRUE, IOT_PORT, 0);
 
