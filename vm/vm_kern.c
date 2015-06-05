@@ -561,7 +561,7 @@ retry:
 			goto retry;
 		}
 
-		printf_once("no more rooom for kmem_alloc_aligned in %p\n", map);
+		printf_once("no more room for kmem_alloc_aligned in %p\n", map);
 		return kr;
 	}
 
