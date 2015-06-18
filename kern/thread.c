@@ -1667,9 +1667,13 @@ thread_t kernel_thread(
 	continuation_t	start,
 	void *		arg)
 {
+	kern_return_t	kr;
 	thread_t	thread;
 
-	(void) thread_create(task, &thread);
+	kr = thread_create(task, &thread);
+	if (kr != KERN_SUCCESS)
+		return THREAD_NULL;
+
 	/* release "extra" ref that thread_create gave us */
 	thread_deallocate(thread);
 	thread_start(thread, start);
