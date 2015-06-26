@@ -137,6 +137,7 @@ static vm_size_t avail_remaining;
 
 extern char	version[];
 
+/* If set, reboot the system on ctrl-alt-delete.  */
 boolean_t	rebootflag = FALSE;	/* exported to kdintr */
 
 /* XX interrupt stack pointer and highwater mark, for locore.S.  */
