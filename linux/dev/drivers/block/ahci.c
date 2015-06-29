@@ -638,6 +638,7 @@ static int ahci_identify(const volatile struct ahci_host *ahci_host, const volat
 			port->ahci_host = NULL;
 			port->ahci_port = NULL;
 			del_timer(&identify_timer);
+			restore_flags(flags);
 			return 3;
 		}
 		sleep_on(&port->q);
