@@ -114,15 +114,7 @@ vm_offset_t
 ipc_table_alloc(
 	vm_size_t	size)
 {
-	vm_offset_t table;
-
-	if (size < PAGE_SIZE)
-		table = kalloc(size);
-	else
-		if (kmem_alloc(kmem_map, &table, size) != KERN_SUCCESS)
-			table = 0;
-
-	return table;
+	return kalloc(size);
 }
 
 /*
@@ -139,8 +131,5 @@ ipc_table_free(
 	vm_size_t	size,
 	vm_offset_t	table)
 {
-	if (size < PAGE_SIZE)
-		kfree(table, size);
-	else
-		kmem_free(kmem_map, table, size);
+	kfree(table, size);
 }
