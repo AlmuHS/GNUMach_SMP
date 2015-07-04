@@ -725,7 +725,8 @@ boot_script_exec_cmd (void *hook, task_t task, char *path, int argc,
       assert(err == 0);
       thread->saved.other = &info;
       thread_start (thread, user_bootstrap);
-      thread_resume (thread);
+      err = thread_resume (thread);
+      assert(err == 0);
 
       /* We need to synchronize with the new thread and block this
 	 main thread until it has finished referring to our local state.  */
