@@ -118,7 +118,8 @@ libkernel_a_SOURCES += \
 	ipc/mach_debug.c \
 	ipc/port.h
 EXTRA_DIST += \
-	ipc/mach_port.srv
+	ipc/mach_port.srv \
+	ipc/notify.defs
 
 
 #
