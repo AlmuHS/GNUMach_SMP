@@ -35,7 +35,7 @@ extern void _doprnt (const char *fmt,
 		     int radix, 
 		     vm_offset_t putc_arg);
 
-extern void printnum (unsigned long u, int base,
+extern void printnum (unsigned long long u, int base,
                       void (*putc)(char, vm_offset_t),
                       vm_offset_t putc_arg);
 

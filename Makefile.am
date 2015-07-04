@@ -159,7 +159,7 @@ noinst_PROGRAMS += \
 clib_routines := memcmp memcpy memmove				\
 		 strchr strstr strsep strtok			\
 		 htonl htons ntohl ntohs			\
-		 udivdi3 __udivdi3				\
+		 udivdi3 __udivdi3 __umoddi3			\
 		 __rel_iplt_start __rel_iplt_end		\
 		 __ffsdi2					\
 		 _START _start etext _edata end _end # actually ld magic, not libc.
