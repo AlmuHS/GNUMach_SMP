@@ -827,7 +827,6 @@ void kmem_init(
 	/*
 	 *	Reserve virtual memory allocated up to this time.
 	 */
-
 	if (start != VM_MIN_KERNEL_ADDRESS) {
 		kern_return_t rc;
 		vm_offset_t addr = VM_MIN_KERNEL_ADDRESS;
@@ -838,7 +837,7 @@ void kmem_init(
 				  VM_PROT_DEFAULT, VM_PROT_ALL,
 				  VM_INHERIT_DEFAULT);
 		if (rc)
-			panic("%s:%d: vm_map_enter failed (%d)\n", rc);
+			panic("vm_map_enter failed (%d)\n", rc);
 	}
 }
 
