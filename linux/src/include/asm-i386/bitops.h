@@ -28,7 +28,7 @@ struct __dummy { unsigned long a[100]; };
 #define ADDR (*(struct __dummy *) addr)
 #define CONST_ADDR (*(const struct __dummy *) addr)
 
-extern __inline__ int set_bit(int nr, SMPVOL void * addr)
+static __inline__ int set_bit(int nr, SMPVOL void * addr)
 {
 	int oldbit;
 
@@ -39,7 +39,7 @@ extern __inline__ int set_bit(int nr, SMPVOL void * addr)
 	return oldbit;
 }
 
-extern __inline__ int clear_bit(int nr, SMPVOL void * addr)
+static __inline__ int clear_bit(int nr, SMPVOL void * addr)
 {
 	int oldbit;
 
@@ -50,7 +50,7 @@ extern __inline__ int clear_bit(int nr, SMPVOL void * addr)
 	return oldbit;
 }
 
-extern __inline__ int change_bit(int nr, SMPVOL void * addr)
+static __inline__ int change_bit(int nr, SMPVOL void * addr)
 {
 	int oldbit;
 
@@ -61,7 +61,7 @@ extern __inline__ int change_bit(int nr, SMPVOL void * addr)
 	return oldbit;
 }
 
-extern __inline__ int test_and_set_bit(int nr, volatile void * addr)
+static __inline__ int test_and_set_bit(int nr, volatile void * addr)
 {
 	int oldbit;
 
@@ -72,7 +72,7 @@ extern __inline__ int test_and_set_bit(int nr, volatile void * addr)
 	return oldbit;
 }
 
-extern __inline__ int test_and_clear_bit(int nr, volatile void * addr)
+static __inline__ int test_and_clear_bit(int nr, volatile void * addr)
 {
 	int oldbit;
 
@@ -83,7 +83,7 @@ extern __inline__ int test_and_clear_bit(int nr, volatile void * addr)
 	return oldbit;
 }
 
-extern __inline__ int test_and_change_bit(int nr, volatile void * addr)
+static __inline__ int test_and_change_bit(int nr, volatile void * addr)
 {
 	int oldbit;
 
@@ -98,7 +98,7 @@ extern __inline__ int test_and_change_bit(int nr, volatile void * addr)
 /*
  * This routine doesn't need to be atomic.
  */
-extern __inline__ int test_bit(int nr, const SMPVOL void * addr)
+static __inline__ int test_bit(int nr, const SMPVOL void * addr)
 {
 	return ((1UL << (nr & 31)) & (((const unsigned int *) addr)[nr >> 5])) != 0;
 }
@@ -106,7 +106,7 @@ extern __inline__ int test_bit(int nr, const SMPVOL void * addr)
 /*
  * Find-bit routines..
  */
-extern __inline__ int find_first_zero_bit(void * addr, unsigned size)
+static __inline__ int find_first_zero_bit(void * addr, unsigned size)
 {
 	int d0, d1, d2;
 	int res;
@@ -129,7 +129,7 @@ extern __inline__ int find_first_zero_bit(void * addr, unsigned size)
 	return res;
 }
 
-extern __inline__ int find_next_zero_bit (void * addr, int size, int offset)
+static __inline__ int find_next_zero_bit (void * addr, int size, int offset)
 {
 	unsigned long * p = ((unsigned long *) addr) + (offset >> 5);
 	int set = 0, bit = offset & 31, res;
@@ -160,7 +160,7 @@ extern __inline__ int find_next_zero_bit (void * addr, int size, int offset)
  * ffz = Find First Zero in word. Undefined if no zero exists,
  * so code should check against ~0UL first..
  */
-extern __inline__ unsigned long ffz(unsigned long word)
+static __inline__ unsigned long ffz(unsigned long word)
 {
 	__asm__("bsfl %1,%0"
 		:"=r" (word)
@@ -176,7 +176,7 @@ extern __inline__ unsigned long ffz(unsigned long word)
  * differs in spirit from the above ffz (man ffs).
  */
 
-extern __inline__ int ffs(int x)
+static __inline__ int ffs(int x)
 {
 	int r;
 

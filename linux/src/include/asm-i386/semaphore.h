@@ -45,7 +45,7 @@ extern void __up(struct semaphore * sem);
  * "down_failed" is a special asm handler that calls the C
  * routine that actually waits. See arch/i386/lib/semaphore.S
  */
-extern inline void down(struct semaphore * sem)
+static inline void down(struct semaphore * sem)
 {
 	int d0;
 	__asm__ __volatile__(
@@ -86,7 +86,7 @@ asmlinkage int down_failed_interruptible(void);  /* params in registers */
  * process can be killed.  The down_failed_interruptible routine
  * returns negative for signalled and zero for semaphore acquired.
  */
-extern inline int down_interruptible(struct semaphore * sem)
+static inline int down_interruptible(struct semaphore * sem)
 {
 	int	ret ;
 
@@ -113,7 +113,7 @@ extern inline int down_interruptible(struct semaphore * sem)
  * The default case (no contention) will result in NO
  * jumps for both down() and up().
  */
-extern inline void up(struct semaphore * sem)
+static inline void up(struct semaphore * sem)
 {
 	int d0;
 	__asm__ __volatile__(

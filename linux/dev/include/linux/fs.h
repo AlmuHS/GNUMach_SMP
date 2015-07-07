@@ -638,7 +638,7 @@ extern int nr_buffer_heads;
 #define NR_LIST		4
 
 #ifdef MACH
-extern inline void
+static inline void
 mark_buffer_uptodate (struct buffer_head *bh, int on)
 {
     if (on)

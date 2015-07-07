@@ -60,7 +60,11 @@ static inline void __attribute__((always_inline)) __put_user(unsigned long x, vo
 				:"ir" (x), "m" (*__sd(y)));
 			break;
 		default:
+#ifdef __OPTIMIZE__
 			bad_user_access_length();
+#else
+			asm volatile("ud2");
+#endif
 	}
 }
 
@@ -85,7 +89,11 @@ static inline unsigned long __attribute__((always_inline)) __get_user(const void
 				:"m" (*__const_sd(y)));
 			return result;
 		default:
+#ifdef __OPTIMIZE__
 			return bad_user_access_length();
+#else
+			asm volatile("ud2");
+#endif
 	}
 }
 
