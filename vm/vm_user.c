@@ -405,15 +405,32 @@ kern_return_t vm_map(
  *
  *	[ To unwire the pages, specify VM_PROT_NONE. ]
  */
-kern_return_t vm_wire(host, map, start, size, access)
-	const host_t		host;
+kern_return_t vm_wire(port, map, start, size, access)
+	const ipc_port_t	port;
 	vm_map_t		map;
 	vm_offset_t		start;
 	vm_size_t		size;
 	vm_prot_t		access;
 {
-	if (host == HOST_NULL)
+	host_t host;
+	boolean_t priv;
+
+	if (!IP_VALID(port))
 		return KERN_INVALID_HOST;
+
+	ip_lock(port);
+	if (!ip_active(port) ||
+		  (ip_kotype(port) != IKOT_HOST_PRIV
+		&& ip_kotype(port) != IKOT_HOST))
+	{
+		ip_unlock(port);
+		return KERN_INVALID_HOST;
+	}
+
+	priv = ip_kotype(port) == IKOT_HOST_PRIV;
+	ip_unlock(port);
+
+	host = (host_t) port->ip_kobject;
 
 	if (map == VM_MAP_NULL)
 		return KERN_INVALID_TASK;
@@ -425,6 +442,10 @@ kern_return_t vm_wire(host, map, start, size, access)
 	  user is not allowed direct manipulation in that case*/
 	if (projected_buffer_in_range(map, start, start+size))
 		return(KERN_INVALID_ARGUMENT);
+
+	/* TODO: make it tunable */
+	if (!priv && access != VM_PROT_NONE && map->user_wired + size > 65536)
+		return KERN_NO_ACCESS;
 
 	return vm_map_pageable_user(map,
 				    trunc_page(start),

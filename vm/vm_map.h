@@ -170,6 +170,7 @@ struct vm_map {
 #define max_offset		hdr.links.end	/* end of range */
 	pmap_t			pmap;		/* Physical map */
 	vm_size_t		size;		/* virtual size */
+	vm_size_t		user_wired;	/* wired by user size */
 	int			ref_count;	/* Reference count */
 	decl_simple_lock_data(,	ref_lock)	/* Lock for ref_count field */
 	vm_map_entry_t		hint;		/* hint for quick lookups */

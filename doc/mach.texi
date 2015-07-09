@@ -3241,14 +3241,15 @@ successfully set and @code{KERN_INVALID_ADDRESS} if an invalid or
 non-allocated address was specified.
 @end deftypefun
 
-@deftypefun kern_return_t vm_wire (@w{host_priv_t @var{host_priv}}, @w{vm_task_t @var{target_task}}, @w{vm_address_t @var{address}}, @w{vm_size_t @var{size}}, @w{vm_prot_t @var{access}})
-The function @code{vm_wire} allows privileged applications to control
-memory pageability.  @var{host_priv} is the privileged host port for the
+@deftypefun kern_return_t vm_wire (@w{host_t @var{host}}, @w{vm_task_t @var{target_task}}, @w{vm_address_t @var{address}}, @w{vm_size_t @var{size}}, @w{vm_prot_t @var{access}})
+The function @code{vm_wire} allows applications to control
+memory pageability.  @var{host} is the host port for the
 host on which @var{target_task} resides.  @var{address} is the starting
 address, which will be rounded down to a page boundary.  @var{size} is
 the size in bytes of the region for which protection is to change, and
 will be rounded up to give a page boundary.  @var{access} specifies the
-types of accesses that must not cause page faults.
+types of accesses that must not cause page faults.  If the host port is
+not privileged, the amount of memory is limited per task.
 
 The semantics of a successful @code{vm_wire} operation are that memory
 in the specified range will not cause page faults for any accesses
@@ -3257,7 +3258,7 @@ access argument of @code{VM_PROT_READ | VM_PROT_WRITE}.  A special case
 is that @code{VM_PROT_NONE} makes the memory pageable.
 
 The function returns @code{KERN_SUCCESS} if the call succeeded,
-@code{KERN_INVALID_HOST} if @var{host_priv} was not the privileged host
+@code{KERN_INVALID_HOST} if @var{host} was not a valid host
 port, @code{KERN_INVALID_TASK} if @var{task} was not a valid task,
 @code{KERN_INVALID_VALUE} if @var{access} specified an invalid access
 mode, @code{KERN_FAILURE} if some memory in the specified range is not
@@ -3265,7 +3266,7 @@ present or has an inappropriate protection value, and
 @code{KERN_INVALID_ARGUMENT} if unwiring (@var{access} is
 @code{VM_PROT_NONE}) and the memory is not already wired.
 
-The @code{vm_wire} call is actually an RPC to @var{host_priv}, normally
+The @code{vm_wire} call is actually an RPC to @var{host}, normally
 a send right for a privileged host port, but potentially any send right.
 In addition to the normal diagnostic return codes from the call's server
 (normally the kernel), the call may return @code{mach_msg} return codes.

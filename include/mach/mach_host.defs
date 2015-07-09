@@ -296,7 +296,7 @@ routine host_reboot(
  *	[ To unwire the pages, specify VM_PROT_NONE. ]
  */
 routine	vm_wire(
-		host_priv	: host_priv_t;
+		host		: mach_port_t;
 		task		: vm_task_t;
 		address		: vm_address_t;
 		size		: vm_size_t;

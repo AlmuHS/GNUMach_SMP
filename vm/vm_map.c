@@ -208,6 +208,7 @@ void vm_map_setup(
 	rbtree_init(&map->hdr.tree);
 
 	map->size = 0;
+	map->user_wired = 0;
 	map->ref_count = 1;
 	map->pmap = pmap;
 	map->min_offset = min;
@@ -1409,7 +1410,10 @@ kern_return_t vm_map_pageable_common(
 
 		    if (user_wire) {
 			if (--(entry->user_wired_count) == 0)
+			{
+			    map->user_wired -= entry->vme_end - entry->vme_start;
 			    entry->wired_count--;
+			}
 		    }
 		    else {
 			entry->wired_count--;
@@ -1486,7 +1490,10 @@ kern_return_t vm_map_pageable_common(
 
 		    if (user_wire) {
 			if ((entry->user_wired_count)++ == 0)
+			{
+			    map->user_wired += entry->vme_end - entry->vme_start;
 			    entry->wired_count++;
+			}
 		    }
 		    else {
 			entry->wired_count++;
@@ -1512,6 +1519,7 @@ kern_return_t vm_map_pageable_common(
 				(entry->vme_end > start)) {
 				    if (user_wire) {
 					if (--(entry->user_wired_count) == 0)
+					    map->user_wired -= entry->vme_end - entry->vme_start;
 					    entry->wired_count--;
 				    }
 				    else {
@@ -1627,6 +1635,8 @@ void vm_map_entry_delete(
 	    if (entry->wired_count != 0) {
 		vm_fault_unwire(map, entry);
 		entry->wired_count = 0;
+		if (entry->user_wired_count)
+		    map->user_wired -= entry->vme_end - entry->vme_start;
 		entry->user_wired_count = 0;
 	    }
 
@@ -2274,6 +2284,8 @@ start_pass_1:
 			entry->offset = copy_entry->offset;
 			entry->needs_copy = copy_entry->needs_copy;
 			entry->wired_count = 0;
+			if (entry->user_wired_count)
+			    dst_map->user_wired -= entry->vme_end - entry->vme_start;
 			entry->user_wired_count = 0;
 
 			vm_map_copy_entry_unlink(copy, copy_entry);
@@ -2869,6 +2881,7 @@ create_object:
 
 	if (must_wire) {
 		entry->wired_count = 1;
+		dst_map->user_wired += entry->vme_end - entry->vme_start;
 		entry->user_wired_count = 1;
 	} else {
 		entry->wired_count = 0;
@@ -3954,6 +3967,8 @@ retry:
 
 					assert(src_entry->wired_count > 0);
 				        src_entry->wired_count = 0;
+					if (src_entry->user_wired_count)
+					    src_map->user_wired -= src_entry->vme_end - src_entry->vme_start;
 				        src_entry->user_wired_count = 0;
 					unwire_end = src_entry->vme_end;
 				        pmap_pageable(vm_map_pmap(src_map),
