@@ -86,7 +86,7 @@ immc_cnputc(dev_t dev, int c)
 
 	if (!immediate_console_enable)
 		return -1;
-	if (ofs < 0)
+	if (ofs < 0 || ofs >= 80)
 	{
 		ofs = 0;
 		immc_cnputc(dev, '\n');
