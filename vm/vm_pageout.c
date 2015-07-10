@@ -693,7 +693,7 @@ void vm_pageout_scan(void)
 		    if (want_pages || m->external)
 		      break;
 		    
-		    m = (vm_page_t) queue_next (m);
+		    m = (vm_page_t) queue_next (&m->listq);
 		    if (!m)
 		      goto pause;
 		  }
