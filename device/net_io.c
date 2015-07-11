@@ -353,7 +353,7 @@ decl_simple_lock_data(,net_hash_header_lock)
 
 /* entry_p must be net_rcv_port_t or net_hash_entry_t */
 #define ENQUEUE_DEAD(dead, entry_p, chain) {			\
-	queue_next(&(entry_p)->chain) = (queue_entry_t) (dead);	\
+	(entry_p)->chain.next = (queue_entry_t) (dead);		\
 	(dead) = (queue_entry_t)(entry_p);			\
 }
 
