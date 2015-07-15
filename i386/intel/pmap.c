@@ -166,7 +166,7 @@ vm_offset_t kernel_virtual_end;
 #define unlock_pvh_pai(pai)	(bit_unlock(pai, pv_lock_table))
 
 /*
- *	Array of physical page attribites for managed pages.
+ *	Array of physical page attributes for managed pages.
  *	One byte per physical page.
  */
 char	*pmap_phys_attributes;
