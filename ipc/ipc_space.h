@@ -62,7 +62,7 @@ struct ipc_space {
 	decl_simple_lock_data(,is_ref_lock_data)
 	ipc_space_refs_t is_references;
 
-	decl_simple_lock_data(,is_lock_data)
+	struct lock is_lock_data;
 	boolean_t is_active;		/* is the space alive? */
 	struct rdxtree is_map;		/* a map of entries */
 	size_t is_size;			/* number of entries */
@@ -107,16 +107,16 @@ MACRO_BEGIN								\
 		is_free(is);						\
 MACRO_END
 
-#define	is_lock_init(is)	simple_lock_init(&(is)->is_lock_data)
+#define	is_lock_init(is)	lock_init(&(is)->is_lock_data, TRUE)
 
-#define	is_read_lock(is)	simple_lock(&(is)->is_lock_data)
-#define is_read_unlock(is)	simple_unlock(&(is)->is_lock_data)
+#define	is_read_lock(is)	lock_read(&(is)->is_lock_data)
+#define is_read_unlock(is)	lock_done(&(is)->is_lock_data)
 
-#define	is_write_lock(is)	simple_lock(&(is)->is_lock_data)
-#define	is_write_lock_try(is)	simple_lock_try(&(is)->is_lock_data)
-#define is_write_unlock(is)	simple_unlock(&(is)->is_lock_data)
+#define	is_write_lock(is)	lock_write(&(is)->is_lock_data)
+#define	is_write_lock_try(is)	lock_try_write(&(is)->is_lock_data)
+#define is_write_unlock(is)	lock_done(&(is)->is_lock_data)
 
-#define	is_write_to_read_lock(is)
+#define	is_write_to_read_lock(is) lock_write_to_read(&(is)->is_lock_data)
 
 extern void ipc_space_reference(struct ipc_space *space);
 extern void ipc_space_release(struct ipc_space *space);
