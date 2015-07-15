@@ -56,8 +56,7 @@ struct kmem_cache ipc_entry_cache;
  *	Purpose:
  *		Allocate an entry out of the space.
  *	Conditions:
- *		The space is not locked before, but it is write-locked after
- *		if the call is successful.  May allocate memory.
+ *		The space must be write-locked.  May allocate memory.
  *	Returns:
  *		KERN_SUCCESS		An entry was allocated.
  *		KERN_INVALID_TASK	The space is dead.
@@ -75,27 +74,21 @@ ipc_entry_alloc(
 	ipc_entry_t entry;
 	rdxtree_key_t key;
 
-	is_write_lock(space);
-
 	if (!space->is_active) {
-		is_write_unlock(space);
 		return KERN_INVALID_TASK;
 	}
 
 	kr = ipc_entry_get(space, namep, entryp);
 	if (kr == KERN_SUCCESS)
-		/* Success.  Space is write-locked.  */
 		return kr;
 
 	entry = ie_alloc();
 	if (entry == IE_NULL) {
-		is_write_unlock(space);
 		return KERN_RESOURCE_SHORTAGE;
 	}
 
 	kr = rdxtree_insert_alloc(&space->is_map, entry, &key);
 	if (kr) {
-		is_write_unlock(space);
 		ie_free(entry);
 		return kr;
 	}
@@ -108,7 +101,6 @@ ipc_entry_alloc(
 
 	*entryp = entry;
 	*namep = (mach_port_t) key;
-	/* Success.  Space is write-locked.  */
 	return KERN_SUCCESS;
 }
 
@@ -118,8 +110,7 @@ ipc_entry_alloc(
  *		Allocates/finds an entry with a specific name.
  *		If an existing entry is returned, its type will be nonzero.
  *	Conditions:
- *		The space is not locked before, but it is write-locked after
- *		if the call is successful.  May allocate memory.
+ *		The space must be write-locked.  May allocate memory.
  *	Returns:
  *		KERN_SUCCESS		Found existing entry with same name.
  *		KERN_SUCCESS		Allocated a new entry.
@@ -138,10 +129,7 @@ ipc_entry_alloc_name(
 	void **slot;
 	assert(MACH_PORT_VALID(name));
 
-	is_write_lock(space);
-
 	if (!space->is_active) {
-		is_write_unlock(space);
 		return KERN_INVALID_TASK;
 	}
 
@@ -152,7 +140,6 @@ ipc_entry_alloc_name(
 	if (slot == NULL || entry == IE_NULL) {
 		entry = ie_alloc();
 		if (entry == IE_NULL) {
-			is_write_unlock(space);
 			return KERN_RESOURCE_SHORTAGE;
 		}
 
@@ -167,7 +154,6 @@ ipc_entry_alloc_name(
 			kr = rdxtree_insert(&space->is_map,
 					    (rdxtree_key_t) name, entry);
 			if (kr != KERN_SUCCESS) {
-				is_write_unlock(space);
 				ie_free(entry);
 				return kr;
 			}
@@ -175,14 +161,12 @@ ipc_entry_alloc_name(
 		space->is_size += 1;
 
 		*entryp = entry;
-		/* Success.  Space is write-locked.  */
 		return KERN_SUCCESS;
 	}
 
 	if (IE_BITS_TYPE(entry->ie_bits)) {
 		/* Used entry.  */
 		*entryp = entry;
-		/* Success.  Space is write-locked.  */
 		return KERN_SUCCESS;
 	}
 
@@ -202,7 +186,6 @@ ipc_entry_alloc_name(
 
 	space->is_size += 1;
 	*entryp = entry;
-	/* Success.  Space is write-locked.  */
 	return KERN_SUCCESS;
 }
 

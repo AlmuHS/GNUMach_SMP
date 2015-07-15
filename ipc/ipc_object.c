@@ -155,11 +155,12 @@ ipc_object_alloc_dead(
 	ipc_entry_t entry;
 	kern_return_t kr;
 
-
+	is_write_lock(space);
 	kr = ipc_entry_alloc(space, namep, &entry);
-	if (kr != KERN_SUCCESS)
+	if (kr != KERN_SUCCESS) {
+		is_write_unlock(space);
 		return kr;
-	/* space is write-locked */
+	}
 
 	/* null object, MACH_PORT_TYPE_DEAD_NAME, 1 uref */
 
@@ -191,11 +192,12 @@ ipc_object_alloc_dead_name(
 	ipc_entry_t entry;
 	kern_return_t kr;
 
-
+	is_write_lock(space);
 	kr = ipc_entry_alloc_name(space, name, &entry);
-	if (kr != KERN_SUCCESS)
+	if (kr != KERN_SUCCESS) {
+		is_write_unlock(space);
 		return kr;
-	/* space is write-locked */
+	}
 
 	if (ipc_right_inuse(space, name, entry))
 		return KERN_NAME_EXISTS;
@@ -254,12 +256,13 @@ ipc_object_alloc(
 
 		memset(pset, 0, sizeof(*pset));
 	}
+	is_write_lock(space);
 	kr = ipc_entry_alloc(space, namep, &entry);
 	if (kr != KERN_SUCCESS) {
+		is_write_unlock(space);
 		io_free(otype, object);
 		return kr;
 	}
-	/* space is write-locked */
 
 	entry->ie_bits |= type | urefs;
 	entry->ie_object = object;
@@ -321,12 +324,13 @@ ipc_object_alloc_name(
 		memset(pset, 0, sizeof(*pset));
 	}
 
+	is_write_lock(space);
 	kr = ipc_entry_alloc_name(space, name, &entry);
 	if (kr != KERN_SUCCESS) {
+		is_write_unlock(space);
 		io_free(otype, object);
 		return kr;
 	}
-	/* space is write-locked */
 
 	if (ipc_right_inuse(space, name, entry)) {
 		io_free(otype, object);
@@ -753,10 +757,12 @@ ipc_object_copyout_name(
 	assert(IO_VALID(object));
 	assert(io_otype(object) == IOT_PORT);
 
+	is_write_lock(space);
 	kr = ipc_entry_alloc_name(space, name, &entry);
-	if (kr != KERN_SUCCESS)
+	if (kr != KERN_SUCCESS) {
+		is_write_unlock(space);
 		return kr;
-	/* space is write-locked and active */
+	}
 
 	if ((msgt_name != MACH_MSG_TYPE_PORT_SEND_ONCE) &&
 	    ipc_right_reverse(space, object, &oname, &oentry)) {
@@ -930,10 +936,12 @@ ipc_object_rename(
 	ipc_entry_t oentry, nentry;
 	kern_return_t kr;
 
+	is_write_lock(space);
 	kr = ipc_entry_alloc_name(space, nname, &nentry);
-	if (kr != KERN_SUCCESS)
+	if (kr != KERN_SUCCESS) {
+		is_write_unlock(space);
 		return kr;
-	/* space is write-locked and active */
+	}
 
 	if (ipc_right_inuse(space, nname, nentry)) {
 		/* space is unlocked */
