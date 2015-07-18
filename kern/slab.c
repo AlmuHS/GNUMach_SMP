@@ -1503,7 +1503,7 @@ kern_return_t host_slab_info(host_t host, cache_info_array_t *infop,
     i = 0;
 
     list_for_each_entry(&kmem_cache_list, cache, node) {
-        simple_lock(&cache_lock);
+        simple_lock(&cache->lock);
         info[i].flags = ((cache->flags & KMEM_CF_NO_CPU_POOL)
                          ? CACHE_FLAGS_NO_CPU_POOL : 0)
                         | ((cache->flags & KMEM_CF_SLAB_EXTERNAL)
