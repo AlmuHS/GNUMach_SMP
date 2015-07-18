@@ -27,8 +27,6 @@
 #include <sys/types.h>
 #include <stdarg.h>
 
-extern void printf_init (void);
-
 extern void _doprnt (const char *fmt,
 		     va_list argp, 
 		     void (*putc)(char, vm_offset_t), 

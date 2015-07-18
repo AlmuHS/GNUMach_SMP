@@ -39,7 +39,6 @@
 #include <kern/machine.h>
 #include <kern/mach_factor.h>
 #include <kern/mach_clock.h>
-#include <kern/printf.h>
 #include <kern/processor.h>
 #include <kern/rdxtree.h>
 #include <kern/sched_prim.h>
@@ -109,7 +108,6 @@ void setup_main(void)
 #endif	/* MACH_KDB */
 
 	panic_init();
-	printf_init();
 
 	sched_init();
 	vm_mem_bootstrap();

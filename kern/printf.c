@@ -151,21 +151,6 @@ void printnum(
 
 boolean_t	_doprnt_truncates = FALSE;
 
-/* printf could be called at _any_ point during system initialization,
-   including before printf_init() gets called from the "normal" place
-   in kern/startup.c.  */
-boolean_t	_doprnt_lock_initialized = FALSE;
-decl_simple_lock_data(,_doprnt_lock)
-
-void printf_init(void)
-{
-	if (!_doprnt_lock_initialized)
-	{
-		_doprnt_lock_initialized = TRUE;
-		simple_lock_init(&_doprnt_lock);
-	}
-}
-
 void _doprnt(
 	const char 	*fmt,
 	va_list		argp,
@@ -186,22 +171,6 @@ void _doprnt(
 	boolean_t	altfmt, truncate;
 	int		base;
 	char		c;
-
-	printf_init();
-
-#if 0
-	/* Make sure that we get *some* printout, no matter what */
-	simple_lock(&_doprnt_lock);
-#else
-	{
-		int i = 0;
-		while (i < 1*1024*1024) {
-			if (simple_lock_try(&_doprnt_lock))
-				break;
-			i++;
-		}
-	}
-#endif
 
 	while ((c = *fmt) != '\0') {
 	    if (c != '%') {
@@ -522,8 +491,6 @@ void _doprnt(
 	    }
 	fmt++;
 	}
-
-	simple_unlock(&_doprnt_lock);
 }
 
 /*
