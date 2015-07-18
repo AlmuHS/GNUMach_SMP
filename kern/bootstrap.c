@@ -735,6 +735,7 @@ boot_script_exec_cmd (void *hook, task_t task, char *path, int argc,
 	  thread_sleep ((event_t) &info, simple_lock_addr(info.lock), FALSE);
 	  simple_lock (&info.lock);
 	}
+      simple_unlock (&info.lock);
       printf ("\n");
     }
 
@@ -769,6 +770,7 @@ static void user_bootstrap(void)
   simple_lock (&info->lock);
   assert (!info->done);
   info->done = 1;
+  simple_unlock (&info->lock);
   thread_wakeup ((event_t) info);
 
   /*
