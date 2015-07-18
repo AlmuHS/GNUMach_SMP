@@ -31,7 +31,7 @@ static int min_pci_latency = 32;
 #if ! defined(__KERNEL__)
 #define __KERNEL__ 1
 #endif
-#if !defined(__OPTIMIZE__)
+#if !defined(__OPTIMIZE__) && /* Mach glue, we think this is ok now: */ 0
 #warning  You must compile this file with the correct options!
 #warning  See the last lines of the source file.
 #error You must compile this driver with the proper options, including "-O".
