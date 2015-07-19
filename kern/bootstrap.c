@@ -836,6 +836,7 @@ boot_script_free_task (task_t task, int aborting)
 {
   if (aborting)
     task_terminate (task);
+  task_deallocate (task);
 }
 
 int
