@@ -121,8 +121,8 @@ MACRO_END
 extern void ipc_space_reference(struct ipc_space *space);
 extern void ipc_space_release(struct ipc_space *space);
 
-#define	is_reference(is)	ipc_space_reference(is)
-#define	is_release(is)		ipc_space_release(is)
+#define	is_reference(is)	ipc_space_reference_macro(is)
+#define	is_release(is)		ipc_space_release_macro(is)
 
 kern_return_t	ipc_space_create(ipc_space_t *);
 kern_return_t	ipc_space_create_special(struct ipc_space **);
