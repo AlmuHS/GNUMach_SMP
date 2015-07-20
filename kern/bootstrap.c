@@ -736,6 +736,7 @@ boot_script_exec_cmd (void *hook, task_t task, char *path, int argc,
 	  simple_lock (&info.lock);
 	}
       simple_unlock (&info.lock);
+      thread_deallocate (thread);
       printf ("\n");
     }
 
