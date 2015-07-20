@@ -21,7 +21,7 @@ EXTRA_DIST += \
 	gensym.awk
 %.symc: %.sym gensym.awk
 	$(AWK_V) $(AWK) -f $(word 2,$^) $< > $@
-%.symc.o: %.symc
+%.symc.o: %.symc config.h
 	$(AM_V_CC) $(COMPILE) -S -x c -o $@ $<
 %.h: %.symc.o
 	$(AM_V_GEN) sed < $< > $@		\
