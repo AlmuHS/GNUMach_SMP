@@ -101,7 +101,7 @@ AC_DEFINE([SIMPLE_CLOCK], [0], [SIMPLE_CLOCK])
 AC_DEFINE([STAT_TIME], [1], [STAT_TIME])
 
 # Kernel tracing.
-AC_DEFINE([XPR_DEBUG], [1], [XPR_DEBUG])
+AC_DEFINE([XPR_DEBUG], [0], [XPR_DEBUG])
 
 # Slab allocator debugging facilities.
 AC_DEFINE([SLAB_VERIFY], [0], [SLAB_VERIFY])
