@@ -49,7 +49,14 @@
 
 struct slock {
 	volatile natural_t lock_data;	/* in general 1 bit is sufficient */
+	struct {} is_a_simple_lock;
 };
+
+/*
+ *	Used by macros to assert that the given argument is a simple
+ *	lock.
+ */
+#define simple_lock_assert(l)	(void) &(l)->is_a_simple_lock
 
 typedef struct slock	simple_lock_data_t;
 typedef struct slock	*simple_lock_t;
@@ -62,7 +69,8 @@ typedef struct slock	*simple_lock_t;
 #define	decl_simple_lock_data(class,name) \
 class	simple_lock_data_t	name;
 
-#define	simple_lock_addr(lock)	(&(lock))
+#define	simple_lock_addr(lock)	(simple_lock_assert(&(lock)),	\
+				 &(lock))
 
 #if	(NCPUS > 1)
 
@@ -70,7 +78,8 @@ class	simple_lock_data_t	name;
  *	The single-CPU debugging routines are not valid
  *	on a multiprocessor.
  */
-#define	simple_lock_taken(lock)		(1)	/* always succeeds */
+#define	simple_lock_taken(lock)		(simple_lock_assert(lock),	\
+					 1)	/* always succeeds */
 #define check_simple_locks()
 
 #else	/* NCPUS > 1 */
@@ -84,7 +93,8 @@ extern void		simple_unlock(simple_lock_t);
 extern boolean_t	simple_lock_try(simple_lock_t);
 
 #define simple_lock_pause()
-#define simple_lock_taken(lock)		((lock)->lock_data)
+#define simple_lock_taken(lock)		(simple_lock_assert(lock),	\
+					 (lock)->lock_data)
 
 extern void		check_simple_locks(void);
 
@@ -94,19 +104,22 @@ extern void		check_simple_locks(void);
 /*
  * Do not allocate storage for locks if not needed.
  */
-struct simple_lock_data_empty {};
-#define	decl_simple_lock_data(class,name) \
+struct simple_lock_data_empty { struct {} is_a_simple_lock; };
+#define	decl_simple_lock_data(class,name)	\
 class struct simple_lock_data_empty name;
-#define	simple_lock_addr(lock)		((simple_lock_t)0)
+#define	simple_lock_addr(lock)		(simple_lock_assert(&(lock)),	\
+					 (simple_lock_t)0)
 
 /*
  *	No multiprocessor locking is necessary.
  */
-#define simple_lock_init(l)
-#define simple_lock(l)
-#define simple_unlock(l) ((void)(l))
-#define simple_lock_try(l)	(TRUE)	/* always succeeds */
-#define simple_lock_taken(l)	(1)	/* always succeeds */
+#define simple_lock_init(l)	simple_lock_assert(l)
+#define simple_lock(l)		simple_lock_assert(l)
+#define simple_unlock(l)	simple_lock_assert(l)
+#define simple_lock_try(l)	(simple_lock_assert(l),		\
+				 TRUE)	/* always succeeds */
+#define simple_lock_taken(l)	(simple_lock_assert(l),		\
+				 1)	/* always succeeds */
 #define check_simple_locks()
 #define simple_lock_pause()
 
