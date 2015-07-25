@@ -719,10 +719,10 @@ boot_script_exec_cmd (void *hook, task_t task, char *path, int argc,
       thread_t thread;
       struct user_bootstrap_info info = { mod, argv, 0, };
       simple_lock_init (&info.lock);
-      simple_lock (&info.lock);
 
       err = thread_create ((task_t)task, &thread);
       assert(err == 0);
+      simple_lock (&info.lock);
       thread->saved.other = &info;
       thread_start (thread, user_bootstrap);
       err = thread_resume (thread);
