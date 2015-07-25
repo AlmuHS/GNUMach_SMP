@@ -1503,7 +1503,8 @@ kern_return_t thread_info(
 			&basic_info->system_time);
 	    basic_info->base_priority	= thread->priority;
 	    basic_info->cur_priority	= thread->sched_pri;
-	    basic_info->creation_time  = thread->creation_time;
+	    read_time_stamp(&thread->creation_time,
+			    &basic_info->creation_time);
 
 	    /*
 	     *	To calculate cpu_usage, first correct for timer rate,

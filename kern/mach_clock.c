@@ -367,9 +367,30 @@ void init_timeout(void)
 
 	elapsed_ticks = 0;
 }
+
+/*
+ * We record timestamps using the boot-time clock.  We keep track of
+ * the boot-time clock by storing the difference to the real-time
+ * clock.
+ */
+struct time_value clock_boottime_offset;
 
 /*
- * Record a timestamp in STAMP. 
+ * Update the offset of the boot-time clock from the real-time clock.
+ * This function must be called when the real-time clock is updated.
+ * This function must be called at SPLHIGH.
+ */
+void
+clock_boottime_update(struct time_value *new_time)
+{
+	struct time_value delta = time;
+	time_value_sub(&delta, new_time);
+	time_value_add(&clock_boottime_offset, &delta);
+}
+
+/*
+ * Record a timestamp in STAMP.  Records values in the boot-time clock
+ * frame.
  */
 void
 record_time_stamp (time_value_t *stamp)
@@ -378,6 +399,18 @@ record_time_stamp (time_value_t *stamp)
 		stamp->seconds = mtime->seconds;
 		stamp->microseconds = mtime->microseconds;
 	} while (stamp->seconds != mtime->check_seconds);
+	time_value_add(stamp, &clock_boottime_offset);
+}
+
+/*
+ * Read a timestamp in STAMP into RESULT.  Returns values in the
+ * real-time clock frame.
+ */
+void
+read_time_stamp (time_value_t *stamp, time_value_t *result)
+{
+	*result = *stamp;
+	time_value_sub(result, &clock_boottime_offset);
 }
 
 
@@ -423,6 +456,7 @@ host_set_time(host, new_time)
 #endif	/* NCPUS > 1 */
 
 	s = splhigh();
+	clock_boottime_update(&new_time);
 	time = new_time;
 	update_mapped_time(&time);
 	resettodr();

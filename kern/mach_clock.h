@@ -86,8 +86,17 @@ extern boolean_t reset_timeout(timer_elt_t telt);
 
 extern void init_timeout (void);
 
-/* Read the current time into STAMP.  */
+/*
+ * Record a timestamp in STAMP.  Records values in the boot-time clock
+ * frame.
+ */
 extern void record_time_stamp (time_value_t *stamp);
+
+/*
+ * Read a timestamp in STAMP into RESULT.  Returns values in the
+ * real-time clock frame.
+ */
+extern void read_time_stamp (time_value_t *stamp, time_value_t *result);
 
 extern kern_return_t host_get_time(
    host_t host,

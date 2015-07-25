@@ -783,7 +783,8 @@ kern_return_t task_info(
 				= task->total_system_time.seconds;
 		basic_info->system_time.microseconds
 				= task->total_system_time.microseconds;
-		basic_info->creation_time = task->creation_time;
+		read_time_stamp(&task->creation_time,
+				&basic_info->creation_time);
 		task_unlock(task);
 
 		if (*task_info_count > TASK_BASIC_INFO_COUNT)
