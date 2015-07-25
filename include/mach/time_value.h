@@ -45,22 +45,39 @@ typedef	struct time_value	time_value_t;
  */
 #define	TIME_MICROS_MAX	(1000000)
 
+#define time_value_assert(val)			\
+  assert(0 <= (val)->microseconds && (val)->microseconds < TIME_MICROS_MAX);
+
 #define	time_value_add_usec(val, micros)	{	\
+	time_value_assert(val);				\
 	if (((val)->microseconds += (micros))		\
 		>= TIME_MICROS_MAX) {			\
 	    (val)->microseconds -= TIME_MICROS_MAX;	\
 	    (val)->seconds++;				\
 	}						\
+	time_value_assert(val);				\
 }
 
-#define	time_value_add(result, addend)		{		\
-	(result)->microseconds += (addend)->microseconds;	\
-	(result)->seconds += (addend)->seconds;			\
-	if ((result)->microseconds >= TIME_MICROS_MAX) {	\
-	    (result)->microseconds -= TIME_MICROS_MAX;		\
-	    (result)->seconds++;				\
-	}							\
+#define	time_value_sub_usec(val, micros)	{	\
+	time_value_assert(val);				\
+	if (((val)->microseconds -= (micros)) < 0) {	\
+	    (val)->microseconds += TIME_MICROS_MAX;	\
+	    (val)->seconds--;				\
+	}						\
+	time_value_assert(val);				\
 }
+
+#define	time_value_add(result, addend) {			\
+    time_value_assert(addend);					\
+    (result)->seconds += (addend)->seconds;			\
+    time_value_add_usec(result, (addend)->microseconds);	\
+  }
+
+#define	time_value_sub(result, subtrahend) {			\
+    time_value_assert(subtrahend);				\
+    (result)->seconds -= (subtrahend)->seconds;			\
+    time_value_sub_usec(result, (subtrahend)->microseconds);	\
+  }
 
 /*
  *	Time value available through the mapped-time interface.
