@@ -412,7 +412,6 @@ kern_return_t vm_wire(port, map, start, size, access)
 	vm_size_t		size;
 	vm_prot_t		access;
 {
-	host_t host;
 	boolean_t priv;
 
 	if (!IP_VALID(port))
@@ -429,8 +428,6 @@ kern_return_t vm_wire(port, map, start, size, access)
 
 	priv = ip_kotype(port) == IKOT_HOST_PRIV;
 	ip_unlock(port);
-
-	host = (host_t) port->ip_kobject;
 
 	if (map == VM_MAP_NULL)
 		return KERN_INVALID_TASK;
