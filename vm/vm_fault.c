@@ -768,12 +768,10 @@ vm_fault_return_t vm_fault_page(
 	 *	objects.
 	 */
 
-#if	EXTRA_ASSERTIONS
 	assert(m->busy && !m->absent);
 	assert((first_m == VM_PAGE_NULL) ||
 		(first_m->busy && !first_m->absent &&
 		 !first_m->active && !first_m->inactive));
-#endif	/* EXTRA_ASSERTIONS */
 
 	/*
 	 *	If the page is being written, but isn't
