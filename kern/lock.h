@@ -174,6 +174,9 @@ struct lock {
 	/* boolean_t */	can_sleep:1,	/* Can attempts to lock go to sleep? */
 			recursion_depth:12, /* Depth of recursion */
 			:0; 
+#if MACH_LDEBUG
+	struct thread	*writer;
+#endif	/* MACH_LDEBUG */
 	decl_simple_lock_data(,interlock)
 					/* Hardware interlock field.
 					   Last in the structure so that
@@ -202,6 +205,17 @@ extern boolean_t	lock_try_read_to_write(lock_t);
 
 extern void		lock_set_recursive(lock_t);
 extern void		lock_clear_recursive(lock_t);
+
+/* Lock debugging support.  */
+#if	! MACH_LDEBUG
+#define have_read_lock(l)	1
+#define have_write_lock(l)	1
+#else	/* MACH_LDEBUG */
+/* XXX: We don't keep track of readers, so this is an approximation.  */
+#define have_read_lock(l)	((l)->read_count > 0)
+#define have_write_lock(l)	((l)->writer == current_thread())
+#endif	/* MACH_LDEBUG */
+#define have_lock(l)		(have_read_lock(l) || have_write_lock(l))
 
 void db_show_all_slocks(void);
 

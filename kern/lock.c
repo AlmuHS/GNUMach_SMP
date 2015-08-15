@@ -318,6 +318,9 @@ void lock_write(
 			simple_lock(&l->interlock);
 		}
 	}
+#if MACH_LDEBUG
+	l->writer = current_thread();
+#endif	/* MACH_LDEBUG */
 	simple_unlock(&l->interlock);
 }
 
@@ -334,8 +337,12 @@ void lock_done(
 	else
 	if (l->want_upgrade)
 	 	l->want_upgrade = FALSE;
-	else
+	else {
 	 	l->want_write = FALSE;
+#if MACH_LDEBUG
+		l->writer = THREAD_NULL;
+#endif	/* MACH_LDEBUG */
+	}
 
 	/*
 	 *	There is no reason to wakeup a waiting thread
@@ -452,6 +459,9 @@ boolean_t lock_read_to_write(
 		}
 	}
 
+#if MACH_LDEBUG
+	l->writer = current_thread();
+#endif	/* MACH_LDEBUG */
 	simple_unlock(&l->interlock);
 	return FALSE;
 }
@@ -460,6 +470,9 @@ void lock_write_to_read(
 	lock_t	l)
 {
 	simple_lock(&l->interlock);
+#if MACH_LDEBUG
+	assert(l->writer == current_thread());
+#endif	/* MACH_LDEBUG */
 
 	l->read_count++;
 	if (l->recursion_depth != 0)
@@ -475,6 +488,9 @@ void lock_write_to_read(
 		thread_wakeup(l);
 	}
 
+#if MACH_LDEBUG
+	l->writer = THREAD_NULL;
+#endif	/* MACH_LDEBUG */
 	simple_unlock(&l->interlock);
 }
 
@@ -514,6 +530,9 @@ boolean_t lock_try_write(
 	 */
 
 	l->want_write = TRUE;
+#if MACH_LDEBUG
+	l->writer = current_thread();
+#endif	/* MACH_LDEBUG */
 	simple_unlock(&l->interlock);
 	return TRUE;
 }
@@ -590,6 +609,9 @@ boolean_t lock_try_read_to_write(
 		simple_lock(&l->interlock);
 	}
 
+#if MACH_LDEBUG
+	l->writer = current_thread();
+#endif	/* MACH_LDEBUG */
 	simple_unlock(&l->interlock);
 	return TRUE;
 }
@@ -602,6 +624,10 @@ void lock_set_recursive(
 	lock_t		l)
 {
 	simple_lock(&l->interlock);
+#if MACH_LDEBUG
+	assert(l->writer == current_thread());
+#endif	/* MACH_LDEBUG */
+
 	if (!l->want_write) {
 		panic("lock_set_recursive: don't have write lock");
 	}
