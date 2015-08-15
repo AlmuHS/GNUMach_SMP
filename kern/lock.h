@@ -90,9 +90,20 @@ class	simple_lock_data_t	name;
  */
 
 extern void		simple_lock_init(simple_lock_t);
-extern void		simple_lock(simple_lock_t);
+extern void		_simple_lock(simple_lock_t,
+				     const char *, const char *);
 extern void		simple_unlock(simple_lock_t);
-extern boolean_t	simple_lock_try(simple_lock_t);
+extern boolean_t	_simple_lock_try(simple_lock_t,
+					 const char *, const char *);
+
+/* We provide simple_lock and simple_lock_try so that we can save the
+   location.  */
+#define XSTR(x)		#x
+#define STR(x)		XSTR(x)
+#define LOCATION	__FILE__ ":" STR(__LINE__)
+
+#define simple_lock(lock)	_simple_lock((lock), #lock, LOCATION)
+#define simple_lock_try(lock)	_simple_lock_try((lock), #lock, LOCATION)
 
 #define simple_lock_pause()
 #define simple_lock_taken(lock)		(simple_lock_assert(lock),	\

@@ -133,7 +133,8 @@ unsigned int simple_locks_taken = 0;
 
 struct simple_locks_info {
 	simple_lock_t l;
-	void *ra;
+	const char *expr;
+	const char *loc;
 } simple_locks_info[NSLINFO];
 
 int do_check_simple_locks = 1;
@@ -162,8 +163,10 @@ void simple_lock_init(
 	l->lock_data = 0;
 }
 
-void simple_lock(
-	simple_lock_t l)
+void _simple_lock(
+	simple_lock_t l,
+	const char *expression,
+	const char *location)
 {
 	struct simple_locks_info *info;
 
@@ -173,12 +176,14 @@ void simple_lock(
 
 	info = &simple_locks_info[simple_locks_taken++];
 	info->l = l;
-	info->ra =
-		__builtin_extract_return_addr (__builtin_return_address (0));
+	info->expr = expression;
+	info->loc = location;
 }
 
-boolean_t simple_lock_try(
-	simple_lock_t l)
+boolean_t _simple_lock_try(
+	simple_lock_t l,
+	const char *expression,
+	const char *location)
 {
 	struct simple_locks_info *info;
 
@@ -189,8 +194,8 @@ boolean_t simple_lock_try(
 
 	info = &simple_locks_info[simple_locks_taken++];
 	info->l = l;
-	info->ra =
-		__builtin_extract_return_addr (__builtin_return_address (0));
+	info->expr = expression;
+	info->loc = location;
 
 	return TRUE;
 }
@@ -214,6 +219,7 @@ void simple_unlock(
 
 		simple_locks_info[i] = simple_locks_info[simple_locks_taken-1];
 	}
+	simple_locks_info[simple_locks_taken] = (struct simple_locks_info) {0};
 	simple_locks_taken--;
 }
 
@@ -628,13 +634,9 @@ void db_show_all_slocks(void)
 
 	for (i = 0; i < simple_locks_taken; i++) {
 		info = &simple_locks_info[i];
-		db_printf("%d: ", i);
+		db_printf("%d: %s (", i, info->expr);
 		db_printsym(info->l, DB_STGY_ANY);
-#if defined(__i386__)
-		db_printf(" locked by ");
-		db_printsym(info->ra, DB_STGY_PROC);
-#endif
-		db_printf("\n");
+		db_printf(") locked by %s\n", info->loc);
 	}
 }
 #else	/* MACH_SLOCKS && NCPUS == 1 */
