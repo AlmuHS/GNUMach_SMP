@@ -136,9 +136,21 @@ struct simple_locks_info {
 	void *ra;
 } simple_locks_info[NSLINFO];
 
+int do_check_simple_locks = 1;
+
 void check_simple_locks(void)
 {
-	assert(simple_locks_taken == 0);
+	assert(! do_check_simple_locks || simple_locks_taken == 0);
+}
+
+void check_simple_locks_enable(void)
+{
+	do_check_simple_locks = 1;
+}
+
+void check_simple_locks_disable(void)
+{
+	do_check_simple_locks = 0;
 }
 
 /* Need simple lock sanity checking code if simple locks are being

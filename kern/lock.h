@@ -81,6 +81,8 @@ class	simple_lock_data_t	name;
 #define	simple_lock_taken(lock)		(simple_lock_assert(lock),	\
 					 1)	/* always succeeds */
 #define check_simple_locks()
+#define check_simple_locks_enable()
+#define check_simple_locks_disable()
 
 #else	/* NCPUS > 1 */
 /*
@@ -97,6 +99,8 @@ extern boolean_t	simple_lock_try(simple_lock_t);
 					 (lock)->lock_data)
 
 extern void		check_simple_locks(void);
+extern void		check_simple_locks_enable(void);
+extern void		check_simple_locks_disable(void);
 
 #endif	/* NCPUS > 1 */
 
@@ -121,6 +125,8 @@ class struct simple_lock_data_empty name;
 #define simple_lock_taken(l)	(simple_lock_assert(l),		\
 				 1)	/* always succeeds */
 #define check_simple_locks()
+#define check_simple_locks_enable()
+#define check_simple_locks_disable()
 #define simple_lock_pause()
 
 #endif	/* MACH_SLOCKS */
