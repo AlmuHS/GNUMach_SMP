@@ -54,15 +54,23 @@
 
 #define alignof(x)          __alignof__(x)
 
+#ifndef likely
 #define likely(expr)        __builtin_expect(!!(expr), 1)
+#endif /* likely */
+#ifndef unlikely
 #define unlikely(expr)      __builtin_expect(!!(expr), 0)
+#endif /* unlikely */
 
+#ifndef barrier
 #define barrier()           asm volatile("" : : : "memory")
+#endif /* barrier */
 
 #define __noreturn          __attribute__((noreturn))
 #define __aligned(x)        __attribute__((aligned(x)))
 #define __always_inline     inline __attribute__((always_inline))
+#ifndef __section
 #define __section(x)        __attribute__((section(x)))
+#endif /* __section */
 #define __packed            __attribute__((packed))
 #define __alias(x)          __attribute__((alias(x)))
 
