@@ -1597,7 +1597,7 @@ void pmap_page_protect(
 		     * Remove the mapping, collecting any modify bits.
 		     */
 		    if (*pte & INTEL_PTE_WIRED)
-			panic("pmap_remove_all removing a wired page");
+			panic("pmap_page_protect removing a wired page");
 
 		    {
 			int	i = ptes_per_vm_page;
