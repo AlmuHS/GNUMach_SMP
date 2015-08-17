@@ -2465,34 +2465,9 @@ void vm_object_collapse(
 					VM_PAGE_FREE(p);
 				    }
 				    else {
-					if (pp != VM_PAGE_NULL) {
-					    /*
-					     *	Parent has an absent page...
-					     *	it's not being paged in, so
-					     *	it must really be missing from
-					     *	the parent.
-					     *
-					     *	Throw out the absent page...
-					     *	any faults looking for that
-					     *	page will restart with the new
-					     *	one.
-					     */
+					assert(pp == VM_PAGE_NULL || !
+					       "vm_object_collapse: bad case");
 
-					    /*
-					     *	This should never happen -- the
-					     *	parent cannot have ever had an
-					     *	external memory object, and thus
-					     *	cannot have absent pages.
-					     */
-					    panic("vm_object_collapse: bad case");
-
-					    VM_PAGE_FREE(pp);
-
-					    /*
-					     *	Fall through to move the backing
-					     *	object's page up.
-					     */
-					}
 					/*
 					 *	Parent now has no page.
 					 *	Move the backing object's page up.
