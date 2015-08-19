@@ -219,8 +219,8 @@ void simple_unlock(
 
 		simple_locks_info[i] = simple_locks_info[simple_locks_taken-1];
 	}
-	simple_locks_info[simple_locks_taken] = (struct simple_locks_info) {0};
 	simple_locks_taken--;
+	simple_locks_info[simple_locks_taken] = (struct simple_locks_info) {0};
 }
 
 #endif	/* MACH_SLOCKS && NCPUS == 1 */
