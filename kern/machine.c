@@ -270,7 +270,7 @@ Retry:
 	assert_wait((event_t) processor, TRUE);
 	processor_unlock(processor);
 	splx(s);
-	thread_block((void(*)()) 0);
+	thread_block(thread_no_continuation);
 	goto Retry;
     }
 	 
@@ -299,7 +299,7 @@ Retry:
 		assert_wait((event_t)processor, TRUE);
 		processor_unlock(processor);
 		splx(s);
-		thread_block((void (*)()) 0);
+		thread_block(thread_no_continuation);
 		s = splsched();
 		processor_lock(processor);
 	}
@@ -415,7 +415,7 @@ void processor_doaction(processor_t processor)
 	 */
 	this_thread = current_thread();
 	thread_bind(this_thread, processor);
-	thread_block((void (*)()) 0);
+	thread_block(thread_no_continuation);
 
 	pset = processor->processor_set;
 #if	MACH_HOST
@@ -572,7 +572,7 @@ Restart_pset:
 		thread_deallocate(prev_thread);
 	    thread_bind(this_thread, PROCESSOR_NULL);
 
-	    thread_block((void (*)()) 0);
+	    thread_block(thread_no_continuation);
 	    return;
 	}
 

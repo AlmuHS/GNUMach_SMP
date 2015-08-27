@@ -100,7 +100,7 @@ struct thread {
 	vm_offset_t	stack_privilege;/* reserved kernel stack */
 
 	/* Swapping information */
-	void		(*swap_func)();	/* start here after swapin */
+	continuation_t	swap_func;	/* start here after swapin */
 
 	/* Blocking information */
 	event_t		wait_event;	/* event we are waiting on */

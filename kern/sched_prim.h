@@ -52,6 +52,8 @@ typedef	void	*event_t;			/* wait event */
 
 typedef	void	(*continuation_t)(void);	/* continuation */
 
+#define thread_no_continuation ((continuation_t) 0) /* no continuation */
+
 /*
  *	Exported interface to sched_prim.c.
  */

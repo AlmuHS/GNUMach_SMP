@@ -454,7 +454,7 @@ void thread_sleep(
 {
 	assert_wait(event, interruptible);	/* assert event */
 	simple_unlock(lock);			/* release the lock */
-	thread_block((void (*)()) 0);		/* block ourselves */
+	thread_block(thread_no_continuation);	/* block ourselves */
 }
 
 /*
@@ -617,7 +617,7 @@ boolean_t thread_invoke(
 	    thread_unlock(new_thread);
 	    thread_wakeup(TH_EV_STATE(new_thread));
 
-	    if (continuation != (void (*)()) 0) {
+	    if (continuation != thread_no_continuation) {
 		(void) spl0();
 		call_continuation(continuation);
 		/*NOTREACHED*/
@@ -630,7 +630,7 @@ boolean_t thread_invoke(
 	 */
 	thread_lock(new_thread);
 	if ((old_thread->stack_privilege != current_stack()) &&
-	    (continuation != (void (*)()) 0))
+	    (continuation != thread_no_continuation))
 	{
 	    switch (new_thread->state & TH_SWAP_STATE) {
 		case TH_SWAPPED:
@@ -915,7 +915,7 @@ void thread_dispatch(
 
 	thread_lock(thread);
 
-	if (thread->swap_func != (void (*)()) 0) {
+	if (thread->swap_func != thread_no_continuation) {
 		assert((thread->state & TH_SWAP_STATE) == 0);
 		thread->state |= TH_SWAPPED;
 		stack_free(thread);

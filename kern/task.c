@@ -377,7 +377,7 @@ kern_return_t task_terminate(
                 task_unlock(task);
                 thread_force_terminate(thread);
                 thread_deallocate(thread);
-                thread_block((void (*)()) 0);
+                thread_block(thread_no_continuation);
                 task_lock(task);
         }
         task_unlock(task);
@@ -893,7 +893,7 @@ task_assign(
 		task->assign_active = TRUE;
 		assert_wait((event_t)&task->assign_active, TRUE);
 		task_unlock(task);
-		thread_block((void (*)()) 0);
+		thread_block(thread_no_continuation);
 		task_lock(task);
 	}
 

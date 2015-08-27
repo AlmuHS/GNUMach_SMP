@@ -1348,7 +1348,7 @@ kern_return_t thread_suspend(
 	while (thread->state & TH_UNINT) {
 		assert_wait(TH_EV_STATE(thread), TRUE);
 		thread_unlock(thread);
-		thread_block(NULL);
+		thread_block(thread_no_continuation);
 		thread_lock(thread);
 	}
 	if (thread->user_stop_count++ == 0) {
