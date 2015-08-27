@@ -362,7 +362,7 @@ extern void		thread_release(thread_t);
 extern kern_return_t	thread_halt(
 	thread_t	thread,
 	boolean_t	must_halt);
-extern void		thread_halt_self(void);
+extern void		thread_halt_self(continuation_t);
 extern void		thread_force_terminate(thread_t);
 extern thread_t		kernel_thread(
 	task_t		task,

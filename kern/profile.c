@@ -172,7 +172,7 @@ printf("profile_thread: mach_msg failed returned %x\n",(int)mr);
 					sizeof(struct buf_to_send));
 	}
 
-	thread_halt_self();
+	thread_halt_self(thread_exception_return);
 }
 
 

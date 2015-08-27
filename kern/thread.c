@@ -1132,7 +1132,7 @@ void __attribute__((noreturn)) walking_zombie(void)
  *	Thread calls this routine on exit from the kernel when it
  *	notices a halt request.
  */
-void	thread_halt_self(void)
+void	thread_halt_self(continuation_t continuation)
 {
 	thread_t	thread = current_thread();
 	spl_t	s;
@@ -1173,7 +1173,7 @@ void	thread_halt_self(void)
 		thread_unlock(thread);
 		splx(s);
 		counter(c_thread_halt_self_block++);
-		thread_block(thread_exception_return);
+		thread_block(continuation);
 		/*
 		 *	thread_release resets TH_HALTED.
 		 */

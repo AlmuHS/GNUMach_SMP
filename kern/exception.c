@@ -231,7 +231,7 @@ exception_no_server(void)
 	 */
 
 	while (thread_should_halt(self))
-		thread_halt_self();
+		thread_halt_self(thread_exception_return);
 
 
 #if 0
@@ -257,7 +257,7 @@ exception_no_server(void)
 	 */
 
 	(void) task_terminate(self->task);
-	thread_halt_self();
+	thread_halt_self(thread_exception_return);
 	panic("terminating the task didn't kill us");
 	/*NOTREACHED*/
 }
@@ -848,6 +848,26 @@ exception_raise_continue(void)
 }
 
 /*
+ *	Routine:	thread_release_and_exception_return
+ *	Purpose:
+ *		Continue after thread was halted.
+ *	Conditions:
+ *		Nothing locked.  We are running on a new kernel stack and
+ *		control goes back to thread_exception_return.
+ *	Returns:
+ *		Doesn't return.
+ */
+static void
+thread_release_and_exception_return(void)
+{
+	ipc_thread_t self = current_thread();
+	/* reply port must be released */
+	ipc_port_release(self->ith_port);
+	thread_exception_return();
+	/*NOTREACHED*/
+}
+
+/*
  *	Routine:	exception_raise_continue_slow
  *	Purpose:
  *		Continue after finishing an ipc_mqueue_receive
@@ -876,10 +896,14 @@ exception_raise_continue_slow(
 		 */
 
 		while (thread_should_halt(self)) {
-			/* don't terminate while holding a reference */
+			/* if thread is about to terminate, release the port */
 			if (self->ast & AST_TERMINATE)
 				ipc_port_release(reply_port);
-			thread_halt_self();
+			/*
+			 *	Use the continuation to release the port in
+			 *	case the thread is about to halt.
+			 */
+			thread_halt_self(thread_release_and_exception_return);
 		}
 
 		ip_lock(reply_port);
