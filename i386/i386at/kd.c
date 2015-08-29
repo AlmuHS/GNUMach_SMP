@@ -1059,7 +1059,6 @@ kdstart(struct tty *tp)
 {
 	spl_t	o_pri;
 	int	ch;
-	unsigned char	c;
 
 	if (tp->t_state & TS_TTSTOP)
 		return;
@@ -1069,33 +1068,12 @@ kdstart(struct tty *tp)
 			break;
 		if ((tp->t_outq.c_cc <= 0) || (ch = getc(&tp->t_outq)) == -1)
 			break;
-		c = ch;
 		/*
 		 * Drop priority for long screen updates. ttstart() calls us at
 		 * spltty.
 		 */
 		o_pri = splsoftclock();		/* block timeout */
-		if (c == (K_ESC)) {
-			if (esc_spt == esc_seq) {
-				*(esc_spt++)=(K_ESC);
-				*(esc_spt) = '\0';
-			} else {
-				kd_putc((K_ESC));
-				esc_spt = esc_seq;
-			}
-		} else {
-			if (esc_spt - esc_seq) {
-			        if (esc_spt - esc_seq > K_MAXESC - 1)
-					esc_spt = esc_seq;
-				else {
-					*(esc_spt++) = c;
-					*(esc_spt) = '\0';
-					kd_parseesc();
-				      }
-			} else {
-			        kd_putc(c);
-			}
-		}
+		kd_putc_esc(ch);
 		splx(o_pri);
 	}
 	if (tp->t_outq.c_cc <= TTLOWAT(tp)) {
@@ -1233,6 +1211,43 @@ kd_bellon(void)
 	status = (inb(K_PORTB)| K_ENABLETMR2 | K_SPKRDATA);
 	outb(K_PORTB, status);
 	return;
+}
+
+/*
+ *
+ * Function kd_putc_esc():
+ *
+ * 	This function puts a character on the screen, handling escape
+ * 	sequences.
+ *
+ * input	: character to be displayed (or part of an escape code)
+ * output	: character is displayed, or some action is taken
+ *
+ */
+void
+kd_putc_esc(u_char c)
+{
+	if (c == (K_ESC)) {
+		if (esc_spt == esc_seq) {
+			*(esc_spt++)=(K_ESC);
+			*(esc_spt) = '\0';
+		} else {
+			kd_putc((K_ESC));
+			esc_spt = esc_seq;
+		}
+	} else {
+		if (esc_spt - esc_seq) {
+			if (esc_spt - esc_seq > K_MAXESC - 1)
+				esc_spt = esc_seq;
+			else {
+				*(esc_spt++) = c;
+				*(esc_spt) = '\0';
+				kd_parseesc();
+			}
+		} else {
+			kd_putc(c);
+		}
+	}
 }
 
 /*
@@ -2950,7 +2965,7 @@ kdcnputc(dev_t dev, int c)
 	/* Note that tab is handled in kd_putc */
 	if (c == '\n')
 		kd_putc('\r');
-	kd_putc(c);
+	kd_putc_esc(c);
 
 	return 0;
 }

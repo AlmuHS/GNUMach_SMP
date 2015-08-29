@@ -702,6 +702,7 @@ extern void kd_setleds1 (u_char);
 extern void kd_setleds2 (void);
 extern void cnsetleds (u_char);
 extern void kdreboot (void);
+extern void kd_putc_esc (u_char);
 extern void kd_putc (u_char);
 extern void kd_parseesc (void);
 extern void kd_down (void);
