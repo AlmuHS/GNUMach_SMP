@@ -101,6 +101,8 @@ static unsigned elf_shdr_shndx;
 #define kern_sym_end	0
 #endif /* MACH_KDB */
 
+#define RESERVED_BIOS 0x10000
+
 /* These indicate the total extent of physical memory addresses we're using.
    They are page-aligned.  */
 vm_offset_t phys_first_addr = 0;
@@ -131,7 +133,7 @@ char *kernel_cmdline = "";
    It is not necessarily page-aligned.  */
 static vm_offset_t avail_next
 #ifndef MACH_HYP
-	= 0x1000 /* XX end of BIOS data area */
+	= RESERVED_BIOS /* XX end of BIOS data area */
 #endif	/* MACH_HYP */
 	;
 
@@ -354,7 +356,7 @@ mem_size_init(void)
 #else	/* MACH_HYP */
 	avail_remaining
 	  = phys_last_addr - (0x100000 - (boot_info.mem_lower * 0x400)
-			      - 0x1000);
+			      - RESERVED_BIOS);
 #endif	/* MACH_HYP */
 }
 
@@ -755,7 +757,7 @@ init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 		   of free pages, so it should not have been allocated to any
 		   other use in early initialization before the Linux driver
 		   glue initialization needs to allocate low memory.  */
-		avail_next = 0x1000;
+		avail_next = RESERVED_BIOS;
 		wrapped = 1;
 	      }
 	  }
