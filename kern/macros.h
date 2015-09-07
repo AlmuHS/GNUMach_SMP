@@ -52,6 +52,8 @@
 #define structof(ptr, type, member) \
     ((type *)((char *)(ptr) - offsetof(type, member)))
 
+#define access_once(x)      (*(volatile typeof(x) *)&(x))
+
 #define alignof(x)          __alignof__(x)
 
 #ifndef likely

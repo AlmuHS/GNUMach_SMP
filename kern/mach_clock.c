@@ -426,9 +426,9 @@ host_get_time(host, current_time)
 		return(KERN_INVALID_HOST);
 
 	do {
-		current_time->seconds = mtime->seconds;
-		current_time->microseconds = mtime->microseconds;
-	} while (current_time->seconds != mtime->check_seconds);
+		current_time->seconds = access_once(mtime->seconds);
+		current_time->microseconds = access_once(mtime->microseconds);
+	} while (current_time->seconds != access_once(mtime->check_seconds));
 
 	return (KERN_SUCCESS);
 }
