@@ -84,7 +84,9 @@ typedef	struct time_value	time_value_t;
  *	Read this mapped value with
  *		do {
  *			secs = mtime->seconds;
+ *			__sync_synchronize();
  *			usecs = mtime->microseconds;
+ *			__sync_synchronize();
  *		} while (secs != mtime->check_seconds);
  */
 

@@ -85,24 +85,34 @@ int		bigadj = 1000000;	/* adjust 10*tickadj if adjustment
  *	This update protocol, with a check value, allows
  *		do {
  *			secs = mtime->seconds;
+ *			__sync_synchronize();
  *			usecs = mtime->microseconds;
+ *			__sync_synchronize();
  *		} while (secs != mtime->check_seconds);
- *	to read the time correctly.  (On a multiprocessor this assumes
- *	that processors see each other's writes in the correct order.
- *	We have to insert write fence operations.) FIXME
+ *	to read the time correctly.
  */
 
-mapped_time_value_t *mtime = 0;
+volatile mapped_time_value_t *mtime = 0;
 
 #define update_mapped_time(time)				\
 MACRO_BEGIN							\
 	if (mtime != 0) {					\
 		mtime->check_seconds = (time)->seconds;		\
-		asm volatile("":::"memory");			\
+		__sync_synchronize();				\
 		mtime->microseconds = (time)->microseconds;	\
-		asm volatile("":::"memory");			\
+		__sync_synchronize();				\
 		mtime->seconds = (time)->seconds;		\
 	}							\
+MACRO_END
+
+#define read_mapped_time(time)					\
+MACRO_BEGIN							\
+	do {							\
+		time->seconds = mtime->seconds;			\
+		__sync_synchronize();				\
+		time->microseconds = mtime->microseconds;	\
+		__sync_synchronize();				\
+	} while (time->seconds != mtime->check_seconds);	\
 MACRO_END
 
 decl_simple_lock_data(,	timer_lock)	/* lock for ... */
@@ -395,10 +405,7 @@ clock_boottime_update(struct time_value *new_time)
 void
 record_time_stamp (time_value_t *stamp)
 {
-	do {
-		stamp->seconds = mtime->seconds;
-		stamp->microseconds = mtime->microseconds;
-	} while (stamp->seconds != mtime->check_seconds);
+	read_mapped_time(stamp);
 	time_value_add(stamp, &clock_boottime_offset);
 }
 
@@ -425,11 +432,7 @@ host_get_time(host, current_time)
 	if (host == HOST_NULL)
 		return(KERN_INVALID_HOST);
 
-	do {
-		current_time->seconds = access_once(mtime->seconds);
-		current_time->microseconds = access_once(mtime->microseconds);
-	} while (current_time->seconds != access_once(mtime->check_seconds));
-
+	read_mapped_time(current_time);
 	return (KERN_SUCCESS);
 }
 
