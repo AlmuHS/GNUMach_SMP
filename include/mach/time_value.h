@@ -96,4 +96,16 @@ typedef struct mapped_time_value {
 	integer_t check_seconds;
 } mapped_time_value_t;
 
+/* Macros for converting between struct timespec and time_value_t. */
+
+#define TIME_VALUE_TO_TIMESPEC(tv, ts) do {                             \
+        (ts)->tv_sec = (tv)->seconds;                                   \
+        (ts)->tv_nsec = (tv)->microseconds * 1000;                      \
+} while(0)
+
+#define TIMESPEC_TO_TIME_VALUE(tv, ts) do {                             \
+        (tv)->seconds = (ts)->tv_sec;                                   \
+        (tv)->microseconds = (ts)->tv_nsec / 1000;                      \
+} while(0)
+
 #endif	/* _MACH_TIME_VALUE_H_ */
