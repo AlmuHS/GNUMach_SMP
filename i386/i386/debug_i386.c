@@ -131,6 +131,7 @@ debug_trace_dump(void)
 #include <kern/syscall_sw.h>
 
 int syscall_trace = 0;
+task_t syscall_trace_task;
 
 int
 syscall_trace_print(int syscallvec, ...)
@@ -138,6 +139,9 @@ syscall_trace_print(int syscallvec, ...)
 	int syscallnum = syscallvec >> 4;
 	int i;
 	const mach_trap_t *trap = &mach_trap_table[syscallnum];
+
+	if (syscall_trace_task && syscall_trace_task != current_task())
+		goto out;
 
 	printf("0x%08x:0x%08x:%s(",
 	       current_task(), current_thread(), trap->mach_trap_name);
@@ -154,6 +158,7 @@ syscall_trace_print(int syscallvec, ...)
 	}
 	printf(")\n");
 
+ out:
 	return syscallvec;
 }
 
