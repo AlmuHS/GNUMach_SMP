@@ -176,7 +176,9 @@ void do_thread_scan(void);
 thread_t choose_pset_thread(processor_t myprocessor, processor_set_t pset);
 
 #if DEBUG
-void checkrq(run_queue_t rq, char *msg);
+#include <kern/sched.h>	/* for run_queue_t */
+
+void checkrq(run_queue_t rq, const char *msg);
 void thread_check(thread_t th, run_queue_t rq);
 #endif /* DEBUG */
 

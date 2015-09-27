@@ -128,7 +128,7 @@ debug_trace_dump(void)
 	splx(s);
 }
 
-#include "syscall_sw.h"
+#include <kern/syscall_sw.h>
 
 int syscall_trace = 0;
 

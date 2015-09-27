@@ -23,10 +23,12 @@
 #ifndef _I386_DEBUG_
 #define _I386_DEBUG_
 
+#ifndef __ASSEMBLER__
 /* Dump a saved state.
    Probably a good idea to have this around
    even when DEBUG isn't turned on.  */
 void dump_ss(const struct i386_saved_state *st);
+#endif	/* __ASSEMBLER__ */
 
 #ifdef DEBUG
 
