@@ -37,15 +37,15 @@ typedef struct {
 	int		mach_trap_arg_count;
 	int		(*mach_trap_function)();
 	boolean_t	mach_trap_stack;
-	int		mach_trap_unused;
+	const char	*mach_trap_name;
 } mach_trap_t;
 
 extern mach_trap_t	mach_trap_table[];
 extern int		mach_trap_count;
 
 #define	MACH_TRAP(name, arg_count)		\
-		{ (arg_count), (int (*)()) (name), FALSE, 0 }
+		{ (arg_count), (int (*)()) (name), FALSE, #name }
 #define	MACH_TRAP_STACK(name, arg_count)	\
-		{ (arg_count), (int (*)()) (name), TRUE, 0 }
+		{ (arg_count), (int (*)()) (name), TRUE, #name }
 
 #endif	/* _KERN_SYSCALL_SW_H_ */

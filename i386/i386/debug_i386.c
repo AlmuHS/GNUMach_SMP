@@ -137,11 +137,22 @@ syscall_trace_print(int syscallvec, ...)
 {
 	int syscallnum = syscallvec >> 4;
 	int i;
+	const mach_trap_t *trap = &mach_trap_table[syscallnum];
 
-	printf("syscall -%d:", syscallnum);
-	for (i = 0; i < mach_trap_table[syscallnum].mach_trap_arg_count; i++)
-		printf(" %08x", (&syscallvec)[1+i]);
-	printf("\n");
+	printf("0x%08x:0x%08x:%s(",
+	       current_task(), current_thread(), trap->mach_trap_name);
+	for (i = 0; i < trap->mach_trap_arg_count; i++) {
+		unsigned long value = (&syscallvec)[1+i];
+		/* Use a crude heuristic to format pointers.  */
+		if (value > 1024)
+			printf("0x%08x", value);
+		else
+			printf("%d", value);
+
+		if (i + 1 < trap->mach_trap_arg_count)
+			printf(", ");
+	}
+	printf(")\n");
 
 	return syscallvec;
 }
