@@ -824,10 +824,18 @@ boot_script_task_resume (struct cmd *cmd)
 int
 boot_script_prompt_task_resume (struct cmd *cmd)
 {
+#if ! MACH_KDB
   char xx[5];
+#endif
 
-  printf ("Hit return to resume %s...", cmd->path);
+  printf ("Pausing for %s...\n", cmd->path);
+
+#if ! MACH_KDB
+  printf ("Hit <return> to resume bootstrap.");
   safe_gets (xx, sizeof xx);
+#else
+  SoftDebugger("Hit `c<return>' to resume bootstrap.");
+#endif
 
   return boot_script_task_resume (cmd);
 }
