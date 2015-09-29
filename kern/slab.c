@@ -1433,12 +1433,12 @@ void kfree(vm_offset_t data, vm_size_t size)
     }
 }
 
-void slab_info(void)
+static void _slab_info(int (printx)(const char *fmt, ...))
 {
     struct kmem_cache *cache;
     vm_size_t mem_usage, mem_reclaimable;
 
-    printf("cache                  obj slab  bufs   objs   bufs "
+    printx("cache                  obj slab  bufs   objs   bufs "
            "   total reclaimable\n"
            "name                  size size /slab  usage  count "
            "  memory      memory\n");
@@ -1451,7 +1451,7 @@ void slab_info(void)
         mem_usage = (cache->nr_slabs * cache->slab_size) >> 10;
         mem_reclaimable = (cache->nr_free_slabs * cache->slab_size) >> 10;
 
-        printf("%-19s %6lu %3luk  %4lu %6lu %6lu %7uk %10uk\n",
+        printx("%-19s %6lu %3luk  %4lu %6lu %6lu %7uk %10uk\n",
                cache->name, cache->obj_size, cache->slab_size >> 10,
                cache->bufs_per_slab, cache->nr_objs, cache->nr_bufs,
                mem_usage, mem_reclaimable);
@@ -1461,6 +1461,21 @@ void slab_info(void)
 
     simple_unlock(&kmem_cache_list_lock);
 }
+
+void slab_info(void)
+{
+    _slab_info(printf);
+}
+
+#if MACH_KDB
+#include <ddb/db_output.h>
+
+ void db_show_slab_info(void)
+{
+    _slab_info(db_printf);
+}
+
+#endif /* MACH_KDB */
 
 #if MACH_DEBUG
 kern_return_t host_slab_info(host_t host, cache_info_array_t *infop,

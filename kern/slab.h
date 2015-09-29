@@ -253,4 +253,8 @@ void slab_collect(void);
  */
 void slab_info(void);
 
+#if MACH_KDB
+void db_show_slab_info(void);
+#endif /* MACH_KDB */
+
 #endif /* _KERN_SLAB_H */

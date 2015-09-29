@@ -57,6 +57,7 @@
 #include <machine/db_interface.h>
 #include <kern/debug.h>
 #include <kern/thread.h>
+#include <kern/slab.h>
 #include <ipc/ipc_pset.h> /* 4proto */
 #include <ipc/ipc_port.h> /* 4proto */
 
@@ -327,6 +328,7 @@ struct db_command db_show_cmds[] = {
 	{ "kmsg",	ipc_kmsg_print,		0,	0 },
 	{ "msg",	ipc_msg_print,		0,	0 },
 	{ "ipc_port",	db_show_port_id,	0,	0 },
+	{ "slabinfo",	db_show_slab_info,	0,	0 },
 	{ (char *)0, }
 };
 
