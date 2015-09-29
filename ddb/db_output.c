@@ -146,7 +146,7 @@ db_putchar(int c)		/* character to output */
 	    cnputc(c);
 	    db_output_position++;
 	    if (db_max_width >= DB_MIN_MAX_WIDTH
-		&& db_output_position >= db_max_width-1) {
+		&& db_output_position >= db_max_width) {
 		/* auto new line */
 		cnputc('\n');
 		db_output_position = 0;
