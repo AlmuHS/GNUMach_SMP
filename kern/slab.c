@@ -1436,7 +1436,10 @@ void kfree(vm_offset_t data, vm_size_t size)
 static void _slab_info(int (printx)(const char *fmt, ...))
 {
     struct kmem_cache *cache;
-    vm_size_t mem_usage, mem_reclaimable;
+    vm_size_t mem_usage, mem_reclaimable, mem_total, mem_total_reclaimable;
+
+    mem_total = 0;
+    mem_total_reclaimable = 0;
 
     printx("cache                         obj slab  bufs   objs   bufs"
            "    total reclaimable\n"
@@ -1458,9 +1461,15 @@ static void _slab_info(int (printx)(const char *fmt, ...))
                mem_usage, mem_reclaimable);
 
         simple_unlock(&cache->lock);
+
+        mem_total += mem_usage;
+        mem_total_reclaimable += mem_reclaimable;
     }
 
     simple_unlock(&kmem_cache_list_lock);
+
+    printx("total: %uk, reclaimable: %uk\n",
+           mem_total, mem_total_reclaimable);
 }
 
 void slab_info(void)
