@@ -1438,10 +1438,10 @@ static void _slab_info(int (printx)(const char *fmt, ...))
     struct kmem_cache *cache;
     vm_size_t mem_usage, mem_reclaimable;
 
-    printx("cache                  obj slab  bufs   objs   bufs "
-           "   total reclaimable\n"
-           "name                  size size /slab  usage  count "
-           "  memory      memory\n");
+    printx("cache                         obj slab  bufs   objs   bufs"
+           "    total reclaimable\n"
+           "name                 flags   size size /slab  usage  count"
+           "   memory      memory\n");
 
     simple_lock(&kmem_cache_list_lock);
 
@@ -1451,8 +1451,9 @@ static void _slab_info(int (printx)(const char *fmt, ...))
         mem_usage = (cache->nr_slabs * cache->slab_size) >> 10;
         mem_reclaimable = (cache->nr_free_slabs * cache->slab_size) >> 10;
 
-        printx("%-19s %6lu %3luk  %4lu %6lu %6lu %7uk %10uk\n",
-               cache->name, cache->obj_size, cache->slab_size >> 10,
+        printx("%-20s %04x %7lu %3luk  %4lu %6lu %6lu %7uk %10uk\n",
+               cache->name, cache->flags, cache->obj_size,
+               cache->slab_size >> 10,
                cache->bufs_per_slab, cache->nr_objs, cache->nr_bufs,
                mem_usage, mem_reclaimable);
 
