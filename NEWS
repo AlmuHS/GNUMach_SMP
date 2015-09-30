@@ -1,3 +1,31 @@
+Version 1.6 (2015-10-XX)
+
+The code has been updated to work with newer versions of the compiler,
+and numerous bugs have been fixed throughout the code.
+
+The lock debugging infrastructure has been revived and improved, and
+many locking issues have been fixed.
+
+The IPC tables and the hash table mapping objects to IPC entries have
+been replaced by radix trees.  This addresses a scalability issue, as
+IPC tables required huge amounts of continuous virtual kernel memory.
+
+The kernel now allows non-privileged users to wire a small amount of
+memory.
+
+A bug hindering the eviction of inactive pages by the pageout daemon
+has been identified and fixed.
+
+The kernel now keeps timestamps relative to the system boot time.
+Among other things this fixes bogus uptime readings if the system time
+is altered.
+
+A reference leak in the exception handling mechanism has been
+identified and fixed.
+
+ANSI escape sequences are now handled when using `printf'.  This fixes
+the formatting of messages printed by various Linux drivers.
+
 Version 1.5 (2015-04-10)
 
 Numerous cleanups and stylistic fixes of the code base.  Several
