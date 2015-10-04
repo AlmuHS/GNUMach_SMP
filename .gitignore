@@ -37,3 +37,16 @@ build-aux/
 /mach/machine
 /linux/src/include/asm
 /linux/dev/include/asm
+
+/doc/mach.aux
+/doc/mach.cp
+/doc/mach.cps
+/doc/mach.fn
+/doc/mach.fns
+/doc/mach.ky
+/doc/mach.log
+/doc/mach.pdf
+/doc/mach.pg
+/doc/mach.toc
+/doc/mach.tp
+/doc/mach.vr
