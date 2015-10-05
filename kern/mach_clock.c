@@ -232,8 +232,16 @@ void clock_interrupt(
 		int	delta;
 
 		if (timedelta < 0) {
-		    delta = usec - tickdelta;
-		    timedelta += tickdelta;
+		    if (usec > tickdelta) {
+			delta = usec - tickdelta;
+			timedelta += tickdelta;
+		    } else {
+			/* Not enough time has passed, defer overflowing
+			 * correction for later, keep only one microsecond
+			 * delta */
+			delta = 1;
+			timedelta += usec - 1;
+		    }
 		}
 		else {
 		    delta = usec + tickdelta;
