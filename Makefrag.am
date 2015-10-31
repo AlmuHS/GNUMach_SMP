@@ -545,11 +545,18 @@ nodist_libkernel_a_SOURCES += \
 #	kern/mach_debug.server.defs
 #	kern/mach_host.server.defs
 
+# Stand-alone rule to generate the list of message ids when neither
+# the client nor the server stubs are required.
+nodist_lib_dep_tr_for_defs_a_SOURCES += \
+	ipc/notify.none.defs.c
+nodist_libkernel_a_SOURCES += \
+	ipc/notify.none.msgids
+#	ipc/notify.none.defs
+
 # rpctrace can make use of that.
 MOSTLYCLEANFILES += \
 	gnumach.msgids
-gnumach.msgids: $(filter %.msgids,$(nodist_libkernel_a_SOURCES)) \
-		ipc/notify.msgids
+gnumach.msgids: $(filter %.msgids,$(nodist_libkernel_a_SOURCES))
 	$(AM_V_at) cat $^ > $@.new
 	$(AM_V_GEN) mv $@.new $@
 # `exec_' prefix, so that we don't try to build that file during when running

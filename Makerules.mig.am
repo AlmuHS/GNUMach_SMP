@@ -74,29 +74,28 @@ lib_dep_tr_for_defs_a_CPPFLAGS = $(AM_CPPFLAGS) \
 %.server.defs.c: %.srv
 	$(AM_V_at) rm -f $@
 	$(AM_V_GEN) cp -p $< $@
-%.user.defs.c: %.cli
-	$(AM_V_at) rm -f $@
-	$(AM_V_GEN) cp -p $< $@
 %.server.h %.server.c %.server.msgids: lib_dep_tr_for_defs_a-%.server.defs.$(OBJEXT)
 	$(MIGCOM_V) $(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMSFLAGS)	\
 	  -sheader $*.server.h -server $*.server.c		\
 	  -list $*.server.msgids				\
 	  < $<
+%.user.defs.c: %.cli
+	$(AM_V_at) rm -f $@
+	$(AM_V_GEN) cp -p $< $@
 %.user.h %.user.c %.user.msgids: lib_dep_tr_for_defs_a-%.user.defs.$(OBJEXT)
 	$(MIGCOM_V) $(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMUFLAGS)	\
 	  -user $*.user.c -header $*.user.h			\
 	  -list $*.user.msgids					\
 	  < $<
-
-vpath %.defs $(top_srcdir)
-
 # Stand-alone rule to generate the list of message ids when neither
 # the client nor the server stubs are required.
-%.msgids: %.defs
-	$(MIGCOM_V) $(CPP) $(AM_CPPFLAGS) $(CPPFLAGS) -E $<	\
-	| $(MIGCOM) $(MIGCOMFLAGS) $(MIGCOMSFLAGS)		\
-	  -sheader /dev/null -server /dev/null			\
-	  -list "$*.msgids"
+%.none.defs.c: %.defs
+	$(AM_V_at) rm -f $@
+	$(AM_V_GEN) cp -p $< $@
+%.none.msgids: lib_dep_tr_for_defs_a-%.none.defs.$(OBJEXT)
+	$(MIGCOM_V) $(MIGCOM) $(MIGCOMFLAGS)			\
+	  -list $*.none.msgids					\
+	  < $<
 
 # This is how it should be done, but this is not integrated into GNU Automake
 # and is missing automatic inter-file dependency management because of that.
