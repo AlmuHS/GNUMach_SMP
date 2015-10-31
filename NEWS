@@ -1,4 +1,4 @@
-Version 1.6 (2015-10-XX)
+Version 1.6 (2015-10-31)
 
 The code has been updated to work with newer versions of the compiler,
 and numerous bugs have been fixed throughout the code.
@@ -25,7 +25,7 @@ identified and fixed.
 
 ANSI escape sequences are now handled when using `printf'.  This fixes
 the formatting of messages printed by various Linux drivers.
-
+
 Version 1.5 (2015-04-10)
 
 Numerous cleanups and stylistic fixes of the code base.  Several
