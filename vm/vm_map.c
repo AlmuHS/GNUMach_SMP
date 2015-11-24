@@ -2556,6 +2556,7 @@ kern_return_t vm_map_copyout(
 	     */
 	    copy->cpy_hdr.nentries = 0;
 	    copy->cpy_hdr.entries_pageable = dst_map->hdr.entries_pageable;
+	    rbtree_init(&copy->cpy_hdr.tree);
 	    vm_map_copy_first_entry(copy) =
 	     vm_map_copy_last_entry(copy) =
 		vm_map_copy_to_entry(copy);
