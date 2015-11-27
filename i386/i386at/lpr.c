@@ -70,7 +70,7 @@ struct bus_ctlr *dev;
 	int	unit = dev->unit;
 	int ret;
 
-	if ((unit < 0) || (unit > NLPR)) {
+	if ((unit < 0) || (unit >= NLPR)) {
 		printf("com %d out of range\n", unit);
 		return(0);
 	}
