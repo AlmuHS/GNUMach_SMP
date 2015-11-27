@@ -1519,8 +1519,10 @@ kern_return_t vm_map_pageable_common(
 				(entry->vme_end > start)) {
 				    if (user_wire) {
 					if (--(entry->user_wired_count) == 0)
+					{
 					    map->user_wired -= entry->vme_end - entry->vme_start;
 					    entry->wired_count--;
+					}
 				    }
 				    else {
 				       entry->wired_count--;
