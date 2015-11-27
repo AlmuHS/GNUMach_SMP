@@ -899,7 +899,7 @@ static void ahci_probe_dev(unsigned char bus, unsigned char device)
 				/* Present and communication established */
 				break;
 			case 0x4:
-				printk("ahci: %02u:%02u.%u: Phy offline?!\n", bus, dev, fun, i);
+				printk("ahci: %02u:%02u.%u: Port %u phy offline?!\n", bus, dev, fun, i);
 				continue;
 			default:
 				printk("ahci: %02u:%02u.%u: Unknown port %u SPD %x\n", bus, dev, fun, i, spd);
