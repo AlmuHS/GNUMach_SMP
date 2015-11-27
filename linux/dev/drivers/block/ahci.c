@@ -381,7 +381,7 @@ static void ahci_do_request()	/* invoked with cli() */
 
 	minor = MINOR(rq->rq_dev);
 	unit = minor >> PARTN_BITS;
-	if (unit > MAX_PORTS) {
+	if (unit >= MAX_PORTS) {
 		printk("bad ahci unit %u\n", unit);
 		goto kill_rq;
 	}
