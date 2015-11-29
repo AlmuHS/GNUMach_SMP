@@ -228,6 +228,8 @@ vm_object_t _vm_object_allocate(
 	vm_object_t object;
 
 	object = (vm_object_t) kmem_cache_alloc(&vm_object_cache);
+	if (!object)
+		return 0;
 
 	_vm_object_setup(object, size);
 
@@ -241,6 +243,8 @@ vm_object_t vm_object_allocate(
 	ipc_port_t port;
 
 	object = _vm_object_allocate(size);
+	if (object == 0)
+		panic("vm_object_allocate");
 	port = ipc_port_alloc_kernel();
 	if (port == IP_NULL)
 		panic("vm_object_allocate");
