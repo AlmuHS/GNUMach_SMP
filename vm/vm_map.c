@@ -4719,9 +4719,15 @@ kern_return_t vm_map_machine_attribute(
 /*
  *	vm_map_print:	[ debug ]
  */
-void vm_map_print(vm_map_t map)
+void vm_map_print(db_expr_t addr, boolean_t have_addr, db_expr_t count, const char *modif)
 {
+	vm_map_t	map;
 	vm_map_entry_t	entry;
+
+	if (!have_addr)
+		map = current_thread()->task->map;
+	else
+		map = (vm_map_t)addr;
 
 	iprintf("Task map 0x%X: pmap=0x%X,",
  		(vm_offset_t) map, (vm_offset_t) (map->pmap));
