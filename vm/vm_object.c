@@ -2923,13 +2923,13 @@ void vm_object_print(
 	if (object == VM_OBJECT_NULL)
 		return;
 
-	iprintf("Object 0x%X: size=0x%X",
-		(vm_offset_t) object, (vm_offset_t) object->size);
-	 printf(", %d references, %d resident pages,", object->ref_count,
-		object->resident_page_count);
+	iprintf("Object 0x%X: size=0x%X, %d references\n",
+		(vm_offset_t) object, (vm_offset_t) object->size,
+		object->ref_count);
+	iprintf("%d resident pages,", object->resident_page_count);
 	 printf(" %d absent pages,", object->absent_count);
 	 printf(" %d paging ops\n", object->paging_in_progress);
-	indent += 2;
+	indent += 1;
 	iprintf("memory object=0x%X (offset=0x%X),",
 		 (vm_offset_t) object->pager, (vm_offset_t) object->paging_offset);
 	 printf("control=0x%X, name=0x%X\n",
@@ -2948,7 +2948,7 @@ void vm_object_print(
 		(vm_offset_t) object->shadow, (vm_offset_t) object->shadow_offset);
 	 printf("copy=0x%X\n", (vm_offset_t) object->copy);
 
-	indent += 2;
+	indent += 1;
 
 	if (vm_object_print_pages) {
 		count = 0;
@@ -2965,7 +2965,7 @@ void vm_object_print(
 		if (count != 0)
 			printf("\n");
 	}
-	indent -= 4;
+	indent -= 2;
 }
 
 #endif	/* MACH_KDB */

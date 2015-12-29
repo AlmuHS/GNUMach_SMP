@@ -4729,20 +4729,20 @@ void vm_map_print(db_expr_t addr, boolean_t have_addr, db_expr_t count, const ch
 	else
 		map = (vm_map_t)addr;
 
-	iprintf("Task map 0x%X: pmap=0x%X,",
+	iprintf("Map 0x%X: pmap=0x%X,",
  		(vm_offset_t) map, (vm_offset_t) (map->pmap));
 	 printf("ref=%d,nentries=%d,", map->ref_count, map->hdr.nentries);
 	 printf("version=%d\n",	map->timestamp);
-	indent += 2;
+	indent += 1;
 	for (entry = vm_map_first_entry(map);
 	     entry != vm_map_to_entry(map);
 	     entry = entry->vme_next) {
 		static char *inheritance_name[3] = { "share", "copy", "none"};
 
 		iprintf("map entry 0x%X: ", (vm_offset_t) entry);
-		 printf("start=0x%X, end=0x%X, ",
+		 printf("start=0x%X, end=0x%X\n",
 			(vm_offset_t) entry->vme_start, (vm_offset_t) entry->vme_end);
-		printf("prot=%X/%X/%s, ",
+		iprintf("prot=%X/%X/%s, ",
 			entry->protection,
 			entry->max_protection,
 			inheritance_name[entry->inheritance]);
@@ -4777,13 +4777,13 @@ void vm_map_print(db_expr_t addr, boolean_t have_addr, db_expr_t count, const ch
 
 			if ((entry->vme_prev == vm_map_to_entry(map)) ||
 			    (entry->vme_prev->object.vm_object != entry->object.vm_object)) {
-				indent += 2;
+				indent += 1;
 				vm_object_print(entry->object.vm_object);
-				indent -= 2;
+				indent -= 1;
 			}
 		}
 	}
-	indent -= 2;
+	indent -= 1;
 }
 
 /*
@@ -4799,7 +4799,7 @@ void vm_map_copy_print(copy)
 
 	printf("copy object 0x%x\n", copy);
 
-	indent += 2;
+	indent += 1;
 
 	iprintf("type=%d", copy->type);
 	switch (copy->type) {
@@ -4853,6 +4853,6 @@ void vm_map_copy_print(copy)
 		break;
 	}
 
-	indent -= 2;
+	indent -= 1;
 }
 #endif	/* MACH_KDB */
