@@ -77,7 +77,8 @@ pmap_copy_page(
 	vm_offset_t dst)
 {
 	vm_offset_t src_addr_v, dst_addr_v;
-	pmap_mapwindow_t *src_map, *dst_map;
+	pmap_mapwindow_t *src_map = NULL;
+	pmap_mapwindow_t *dst_map;
 	boolean_t src_mapped = src >= phys_last_addr;
 	boolean_t dst_mapped = dst >= phys_last_addr;
 	assert(src != vm_page_fictitious_addr);

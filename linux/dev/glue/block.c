@@ -1157,7 +1157,7 @@ out:
 	    {
 	      ipc_kobject_set (bd->port, IKO_NULL, IKOT_NONE);
 	      ipc_port_dealloc_kernel (bd->port);
-	      *devp = IP_NULL;
+	      *devp = (device_t) IP_NULL;
 	    }
 	  kfree ((vm_offset_t) bd, sizeof (struct block_data));
 	  bd = NULL;

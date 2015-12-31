@@ -539,7 +539,7 @@ void mapable_time_init(void)
 	if (kmem_alloc_wired(kernel_map, (vm_offset_t *) &mtime, PAGE_SIZE)
 						!= KERN_SUCCESS)
 		panic("mapable_time_init");
-	memset(mtime, 0, PAGE_SIZE);
+	memset((void *) mtime, 0, PAGE_SIZE);
 	update_mapped_time(&time);
 }
 

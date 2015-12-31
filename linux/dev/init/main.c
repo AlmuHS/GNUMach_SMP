@@ -193,7 +193,7 @@ alloc_contig_mem (unsigned size, unsigned limit,
   unsigned *bits, len;
   void *m;
   vm_page_t p, page_list, tail, prev;
-  vm_offset_t addr, max_addr;
+  vm_offset_t addr = 0, max_addr;
 
   if (size == 0)
     return (NULL);
@@ -296,7 +296,7 @@ alloc_contig_mem (unsigned size, unsigned limit,
   kfree ((vm_offset_t) bits, bits_len);
   if (pages)
     *pages = page_list;
-  return phystokv(m);
+  return (void *) phystokv(m);
 }
 
 /*

@@ -83,6 +83,7 @@
 #include <i386/proc_reg.h>
 #include <i386/locore.h>
 #include <i386/model_dep.h>
+#include <i386at/model_dep.h>
 
 #ifdef	MACH_PSEUDO_PHYS
 #define	WRITE_PTE(pte_p, pte_entry)		*(pte_p) = pte_entry?pa_to_ma(pte_entry):0;
