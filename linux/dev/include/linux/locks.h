@@ -20,13 +20,13 @@ extern struct buffer_head *reuse_list;
  */
 extern void __wait_on_buffer(struct buffer_head *);
 
-extern inline void wait_on_buffer(struct buffer_head * bh)
+static inline void wait_on_buffer(struct buffer_head * bh)
 {
 	if (test_bit(BH_Lock, &bh->b_state))
 		__wait_on_buffer(bh);
 }
 
-extern inline void lock_buffer(struct buffer_head * bh)
+static inline void lock_buffer(struct buffer_head * bh)
 {
 	while (set_bit(BH_Lock, &bh->b_state))
 		__wait_on_buffer(bh);
@@ -42,20 +42,20 @@ void unlock_buffer(struct buffer_head *);
  */
 extern void __wait_on_super(struct super_block *);
 
-extern inline void wait_on_super(struct super_block * sb)
+static inline void wait_on_super(struct super_block * sb)
 {
 	if (sb->s_lock)
 		__wait_on_super(sb);
 }
 
-extern inline void lock_super(struct super_block * sb)
+static inline void lock_super(struct super_block * sb)
 {
 	if (sb->s_lock)
 		__wait_on_super(sb);
 	sb->s_lock = 1;
 }
 
-extern inline void unlock_super(struct super_block * sb)
+static inline void unlock_super(struct super_block * sb)
 {
 	sb->s_lock = 0;
 	wake_up(&sb->s_wait);

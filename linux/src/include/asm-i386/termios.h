@@ -61,7 +61,7 @@ struct termio {
 /*
  * Translate a "termio" structure into a "termios". Ugh.
  */
-extern inline void trans_from_termio(struct termio * termio,
+static inline void trans_from_termio(struct termio * termio,
 	struct termios * termios)
 {
 #define SET_LOW_BITS(x,y)	(*(unsigned short *)(&x) = (y))
@@ -76,7 +76,7 @@ extern inline void trans_from_termio(struct termio * termio,
 /*
  * Translate a "termios" structure into a "termio". Ugh.
  */
-extern inline void trans_to_termio(struct termios * termios,
+static inline void trans_to_termio(struct termios * termios,
 	struct termio * termio)
 {
 	termio->c_iflag = termios->c_iflag;

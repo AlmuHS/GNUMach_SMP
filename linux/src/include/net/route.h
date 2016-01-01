@@ -105,30 +105,30 @@ extern unsigned		ip_rt_bh_mask;
 extern struct rtable 	*ip_rt_hash_table[RT_HASH_DIVISOR];
 extern void	 	rt_free(struct rtable * rt);
 
-extern __inline__ void ip_rt_fast_lock(void)
+static __inline__ void ip_rt_fast_lock(void)
 {
 	atomic_inc(&ip_rt_lock);
 }
 
-extern __inline__ void ip_rt_fast_unlock(void)
+static __inline__ void ip_rt_fast_unlock(void)
 {
 	atomic_dec(&ip_rt_lock);
 }
 
-extern __inline__ void ip_rt_unlock(void)
+static __inline__ void ip_rt_unlock(void)
 {
 	if (atomic_dec_and_test(&ip_rt_lock) && ip_rt_bh_mask)
 		ip_rt_run_bh();
 }
 
-extern __inline__ unsigned ip_rt_hash_code(__u32 addr)
+static __inline__ unsigned ip_rt_hash_code(__u32 addr)
 {
 	unsigned tmp = addr + (addr>>16);
 	return (tmp + (tmp>>8)) & 0xFF;
 }
 
 
-extern __inline__ void ip_rt_put(struct rtable * rt)
+static __inline__ void ip_rt_put(struct rtable * rt)
 #ifndef MODULE
 {
 	/* If this rtable entry is not in the cache, we'd better free
@@ -142,9 +142,9 @@ extern __inline__ void ip_rt_put(struct rtable * rt)
 #endif
 
 #ifdef CONFIG_KERNELD
-extern struct rtable * ip_rt_route(__u32 daddr, int local, struct device *dev);
+static struct rtable * ip_rt_route(__u32 daddr, int local, struct device *dev);
 #else
-extern __inline__ struct rtable * ip_rt_route(__u32 daddr, int local, struct device *dev)
+static __inline__ struct rtable * ip_rt_route(__u32 daddr, int local, struct device *dev)
 #ifndef MODULE
 {
 	struct rtable * rth;
@@ -170,7 +170,7 @@ extern __inline__ struct rtable * ip_rt_route(__u32 daddr, int local, struct dev
 #endif
 #endif
 
-extern __inline__ struct rtable * ip_check_route(struct rtable ** rp, __u32 daddr, 
+static __inline__ struct rtable * ip_check_route(struct rtable ** rp, __u32 daddr, 
 						 int local, struct device *dev)
 {
 	struct rtable * rt = *rp;

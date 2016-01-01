@@ -650,7 +650,7 @@ mark_buffer_uptodate (struct buffer_head *bh, int on)
 void mark_buffer_uptodate(struct buffer_head * bh, int on);
 #endif
 
-extern inline void mark_buffer_clean(struct buffer_head * bh)
+static inline void mark_buffer_clean(struct buffer_head * bh)
 {
 #ifdef MACH
     clear_bit (BH_Dirty, &bh->b_state);
@@ -662,7 +662,7 @@ extern inline void mark_buffer_clean(struct buffer_head * bh)
 #endif
 }
 
-extern inline void mark_buffer_dirty(struct buffer_head * bh, int flag)
+static inline void mark_buffer_dirty(struct buffer_head * bh, int flag)
 {
 #ifdef MACH
     set_bit (BH_Dirty, &bh->b_state);

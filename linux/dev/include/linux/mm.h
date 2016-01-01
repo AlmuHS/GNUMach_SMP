@@ -234,7 +234,7 @@ extern mem_map_t * mem_map;
 #define __get_dma_pages(priority, order) __get_free_pages((priority),(order),1)
 extern unsigned long __get_free_pages(int priority, unsigned long gfporder, int dma);
 
-extern inline unsigned long get_free_page(int priority)
+static inline unsigned long get_free_page(int priority)
 {
 	unsigned long page;
 

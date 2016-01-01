@@ -559,7 +559,7 @@ extern struct sk_buff 		*sock_alloc_send_skb(struct sock *skb,
  *	packet ever received.
  */
 
-extern __inline__ int sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+static __inline__ int sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
 {
 	if (sk->rmem_alloc + skb->truesize >= sk->rcvbuf)
 		return -ENOMEM;
@@ -571,7 +571,7 @@ extern __inline__ int sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
 	return 0;
 }
 
-extern __inline__ int __sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
+static __inline__ int __sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
 {
 	if (sk->rmem_alloc + skb->truesize >= sk->rcvbuf)
 		return -ENOMEM;
@@ -587,7 +587,7 @@ extern __inline__ int __sock_queue_rcv_skb(struct sock *sk, struct sk_buff *skb)
  *	Recover an error report and clear atomically
  */
  
-extern __inline__ int sock_error(struct sock *sk)
+static __inline__ int sock_error(struct sock *sk)
 {
 	int err=xchg(&sk->err,0);
 	return -err;
