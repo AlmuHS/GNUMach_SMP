@@ -52,52 +52,12 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef _DISK_H_
 #define _DISK_H_
 
-/* Grab the public part.  */
-#include <mach/machine/disk.h>
-
-
-
-#define MAX_ALTENTS     253		/* Maximum # of slots for alts */
-					/* allowed for in the table. */
-
-#define ALT_SANITY      0xdeadbeef      /* magic # to validate alt table */
-
-struct  alt_table {
-	u_short	alt_used;		/* # of alternates already assigned */
-	u_short	alt_reserved;		/* # of alternates reserved on disk */
-	long	alt_base;		/* 1st sector (abs) of the alt area */
-	long	alt_bad[MAX_ALTENTS];	/* list of bad sectors/tracks	*/
-};
-
-struct alt_info {			/* table length should be multiple of 512 */
-	long	alt_sanity;		/* to validate correctness */
-	u_short	alt_version;		/* to corroborate vintage */
-	u_short	alt_pad;		/* padding for alignment */
-	struct alt_table alt_trk;	/* bad track table */
-	struct alt_table alt_sec;	/* bad sector table */
-};
-typedef struct alt_info altinfo_t;
-
 #define V_NUMPAR        16              /* maximum number of partitions */
 
 #define VTOC_SANE       0x600DDEEE      /* Indicates a sane VTOC */
 #define PDLOCATION	29		/* location of VTOC */
 
-#define BAD_BLK         0x80                    /* needed for V_VERIFY */
-/* BAD_BLK moved from old hdreg.h */
-
-
-#define	HDPDLOC		29		/* location of pdinfo/vtoc */
 #define	LBLLOC		1		/* label block for xxxbsd */
-
-/* Partition permission flags */
-#define V_OPEN          0x100           /* Partition open (for driver use) */
-#define V_VALID         0x200           /* Partition is valid to use */
-
-
-
-/* Sanity word for the physical description area */
-#define VALID_PD		0xCA5E600D
 
 struct localpartition	{
 	u_int 	p_flag;			/*permision flags*/
@@ -124,67 +84,6 @@ struct evtoc {
 	char	label[40];
 	struct localpartition part[V_NUMPAR];/*partition headers*/
 	char	fill[512-352];
-};
-
-union   io_arg {
-	struct  {
-		u_short	ncyl;		/* number of cylinders on drive */
-		u_char	nhead;		/* number of heads/cyl */
-		u_char	nsec;		/* number of sectors/track */
-		u_short	secsiz;		/* number of bytes/sector */
-		} ia_cd;		/* used for Configure Drive cmd */
-	struct  {
-		u_short	flags;		/* flags (see below) */
-		long	bad_sector;	/* absolute sector number */
-		long	new_sector;	/* RETURNED alternate sect assigned */
-		} ia_abs;		/* used for Add Bad Sector cmd */
-	struct  {
-		u_short	start_trk;	/* first track # */
-		u_short	num_trks;	/* number of tracks to format */
-		u_short	intlv;		/* interleave factor */
-		} ia_fmt;		/* used for Format Tracks cmd */
-	struct	{
-		u_short	start_trk;	/* first track	*/
-		char	*intlv_tbl;	/* interleave table */
-		} ia_xfmt;		/* used for the V_XFORMAT ioctl */
-};
-
-
-#define BOOTSZ		446		/* size of boot code in master boot block */
-#define FD_NUMPART	4		/* number of 'partitions' in fdisk table */
-#define ACTIVE		128		/* indicator of active partition */
-#define	BOOT_MAGIC	0xAA55		/* signature of the boot record */
-#define	UNIXOS		99		/* UNIX partition */
-#define BSDOS		165
-#define LINUXSWAP	130
-#define LINUXOS		131
-extern	int		OS;		/* what partition we came from */
-
-/*
- * structure to hold the fdisk partition table
- */
-struct ipart {
-	u_char	bootid;			/* bootable or not */
-	u_char	beghead;		/* beginning head, sector, cylinder */
-	u_char	begsect;		/* begcyl is a 10-bit number. High 2 bits */
-	u_char	begcyl;			/*     are in begsect. */
-	u_char	systid;			/* OS type */
-	u_char	endhead;		/* ending head, sector, cylinder */
-	u_char	endsect;		/* endcyl is a 10-bit number.  High 2 bits */
-	u_char	endcyl;			/*     are in endsect. */
-	long	relsect;		/* first sector relative to start of disk */
-	long	numsect;		/* number of sectors in partition */
-};
-
-/*
- * structure to hold master boot block in physical sector 0 of the disk.
- * Note that partitions stuff can't be directly included in the structure
- * because of lameo '386 compiler alignment design.
- */
-struct  mboot {				     /* master boot block */
-	char	bootinst[BOOTSZ];
-	char	parts[FD_NUMPART * sizeof(struct ipart)];
-	u_short	signature;
 };
 
 #endif /* _DISK_H_ */

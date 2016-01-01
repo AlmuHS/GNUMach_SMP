@@ -1661,41 +1661,6 @@ device_get_status (void *d, dev_flavor_t flavor, dev_status_t status,
       *status_count = DEV_GET_RECORDS_COUNT;
       break;
 
-    case V_GETPARMS:
-      if (*status_count < (sizeof (struct disk_parms) / sizeof (int)))
-	return D_INVALID_OPERATION;
-      else
-	{
-	  struct disk_parms *dp = status;
-	  struct hd_geometry hg;
-	  DECL_DATA;
-
-	  INIT_DATA();
-
-	  if ((*bd->ds->fops->ioctl) (&td.inode, &td.file,
-				      HDIO_GETGEO, (unsigned long)&hg))
-	    return D_INVALID_OPERATION;
-
-	  dp->dp_type = DPT_WINI;  /* XXX: It may be a floppy...  */
-	  dp->dp_heads = hg.heads;
-	  dp->dp_cyls = hg.cylinders;
-	  dp->dp_sectors = hg.sectors;
-	  dp->dp_dosheads = hg.heads;
-	  dp->dp_doscyls = hg.cylinders;
-	  dp->dp_dossectors = hg.sectors;
-	  dp->dp_secsiz = 512;  /* XXX */
-	  dp->dp_ptag = 0;
-	  dp->dp_pflag = 0;
-
-	  /* XXX */
-	  dp->dp_pstartsec = -1;
-	  dp->dp_pnumsec = -1;
-
-	  *status_count = sizeof (struct disk_parms) / sizeof (int);
-	}
-
-      break;
-
     default:
       return D_INVALID_OPERATION;
     }

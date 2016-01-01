@@ -240,7 +240,6 @@ include_mach_i386dir = $(includedir)/mach/i386
 include_mach_i386_HEADERS = \
 	i386/include/mach/i386/asm.h \
 	i386/include/mach/i386/boolean.h \
-	i386/include/mach/i386/disk.h \
 	i386/include/mach/i386/eflags.h \
 	i386/include/mach/i386/exception.h \
 	i386/include/mach/i386/fp_reg.h \
