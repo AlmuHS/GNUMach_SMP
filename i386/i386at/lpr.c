@@ -105,22 +105,24 @@ void lprattach(struct bus_device *dev)
 }
 
 int
-lpropen(dev, flag, ior)
-dev_t dev;
-int flag;
-io_req_t ior;
+lpropen(dev_t dev, int flag, io_req_t ior)
 {
-int unit = minor(dev);
-struct bus_device *isai;
-struct tty *tp;
-u_short addr;
-  
-	if (unit >= NLPR || (isai = lprinfo[unit]) == 0 || isai->alive == 0)
-		return (D_NO_SUCH_DEVICE);
+	int unit = minor(dev);
+	struct bus_device *isai;
+	struct tty *tp;
+	u_short addr;
+
+	if (unit >= NLPR)
+		return D_NO_SUCH_DEVICE;
+
+	isai = lprinfo[unit];
+	if (isai == NULL || !isai->alive)
+		return D_NO_SUCH_DEVICE;
+
 	tp = &lpr_tty[unit];
 	addr = (u_short) isai->address;
 	tp->t_dev = dev;
-	tp->t_addr = *(caddr_t *)&addr;
+	tp->t_addr = addr;
 	tp->t_oproc = lprstart;
 	tp->t_state |= TS_WOPEN;
 	tp->t_stop = lprstop;
