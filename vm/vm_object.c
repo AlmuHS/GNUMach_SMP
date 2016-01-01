@@ -2923,9 +2923,10 @@ void vm_object_print(
 	if (object == VM_OBJECT_NULL)
 		return;
 
-	iprintf("Object 0x%X: size=0x%X, %d references\n",
+	iprintf("Object 0x%X: size=0x%X, %d references",
 		(vm_offset_t) object, (vm_offset_t) object->size,
 		object->ref_count);
+	printf("\n");
 	iprintf("%d resident pages,", object->resident_page_count);
 	 printf(" %d absent pages,", object->absent_count);
 	 printf(" %d paging ops\n", object->paging_in_progress);
