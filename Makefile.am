@@ -63,6 +63,11 @@ AM_CFLAGS += \
 AM_CFLAGS += \
 	-fgnu89-inline
 
+# Much of the Mach code predates C99 and makes invalid assumptions about
+# type punning.
+AM_CFLAGS += \
+	-fno-strict-aliasing
+
 # The smashing stack protector might be enabled by default, but might emit
 # unsuitable code.
 if disable_smashing_stack_protector
