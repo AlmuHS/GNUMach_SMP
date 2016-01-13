@@ -165,7 +165,7 @@
 /*
  * Size of the VM submap from which default backend functions allocate.
  */
-#define KMEM_MAP_SIZE (96 * 1024 * 1024)
+#define KMEM_MAP_SIZE (128 * 1024 * 1024)
 
 /*
  * Shift for the first kalloc cache size.
