@@ -136,7 +136,7 @@ void setup_main(void)
 	mapable_time_init();
 
 	machine_info.max_cpus = NCPUS;
-	machine_info.memory_size = phys_last_addr - phys_first_addr; /* XXX mem_size */
+	machine_info.memory_size = vm_page_mem_size(); /* XXX phys_addr_t -> vm_size_t */
 	machine_info.avail_cpus = 0;
 	machine_info.major_version = KERNEL_MAJOR_VERSION;
 	machine_info.minor_version = KERNEL_MINOR_VERSION;

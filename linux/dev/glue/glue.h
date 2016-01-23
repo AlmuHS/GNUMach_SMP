@@ -25,8 +25,8 @@
 extern int linux_auto_config;
 extern int linux_intr_pri;
 
-extern void *alloc_contig_mem (unsigned, unsigned, unsigned, vm_page_t *);
-extern void free_contig_mem (vm_page_t);
+extern unsigned long alloc_contig_mem (unsigned, unsigned, unsigned, vm_page_t *);
+extern void free_contig_mem (vm_page_t, unsigned);
 extern void init_IRQ (void);
 extern void restore_IRQ (void);
 extern void linux_kmem_init (void);

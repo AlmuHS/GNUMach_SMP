@@ -23,6 +23,8 @@
 #ifndef _I386_KERNEL_I386_VM_PARAM_
 #define _I386_KERNEL_I386_VM_PARAM_
 
+#include <kern/macros.h>
+
 /* XXX use xu/vm_param.h */
 #include <mach/vm_param.h>
 #ifdef MACH_PV_PAGETABLES
@@ -100,5 +102,43 @@
  */
 #define kvtolin(a)	((vm_offset_t)(a) - VM_MIN_KERNEL_ADDRESS + LINEAR_MIN_KERNEL_ADDRESS)
 #define lintokv(a)	((vm_offset_t)(a) - LINEAR_MIN_KERNEL_ADDRESS + VM_MIN_KERNEL_ADDRESS)
+
+/*
+ * Physical memory properties.
+ */
+#define VM_PAGE_DMA_LIMIT       DECL_CONST(0x1000000, UL)
+
+#ifdef __LP64__
+#define VM_PAGE_MAX_SEGS 4
+#define VM_PAGE_DMA32_LIMIT     DECL_CONST(0x100000000, UL)
+#define VM_PAGE_DIRECTMAP_LIMIT DECL_CONST(0x400000000000, UL)
+#define VM_PAGE_HIGHMEM_LIMIT   DECL_CONST(0x10000000000000, UL)
+#else /* __LP64__ */
+#define VM_PAGE_DIRECTMAP_LIMIT (VM_MAX_KERNEL_ADDRESS \
+				 - VM_MIN_KERNEL_ADDRESS \
+				 - VM_KERNEL_MAP_SIZE + 1)
+#ifdef PAE
+#define VM_PAGE_MAX_SEGS 3
+#define VM_PAGE_HIGHMEM_LIMIT   DECL_CONST(0x10000000000000, ULL)
+#else /* PAE */
+#define VM_PAGE_MAX_SEGS 3
+#define VM_PAGE_HIGHMEM_LIMIT   DECL_CONST(0xfffff000, UL)
+#endif /* PAE */
+#endif /* __LP64__ */
+
+/*
+ * Physical segment indexes.
+ */
+#define VM_PAGE_SEG_DMA         0
+
+#ifdef __LP64__
+#define VM_PAGE_SEG_DMA32       1
+#define VM_PAGE_SEG_DIRECTMAP   2
+#define VM_PAGE_SEG_HIGHMEM     3
+#else /* __LP64__ */
+#define VM_PAGE_SEG_DMA32       1   /* Alias for the DIRECTMAP segment */
+#define VM_PAGE_SEG_DIRECTMAP   1
+#define VM_PAGE_SEG_HIGHMEM     2
+#endif /* __LP64__ */
 
 #endif /* _I386_KERNEL_I386_VM_PARAM_ */

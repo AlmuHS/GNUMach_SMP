@@ -72,7 +72,7 @@
 /*
  *	These variables record the values returned by vm_page_bootstrap,
  *	for debugging purposes.  The implementation of pmap_steal_memory
- *	and pmap_startup here also uses them internally.
+ *	here also uses them internally.
  */
 
 vm_offset_t virtual_space_start;
@@ -95,21 +95,6 @@ vm_page_bucket_t *vm_page_buckets;		/* Array of buckets */
 unsigned int	vm_page_bucket_count = 0;	/* How big is array? */
 unsigned int	vm_page_hash_mask;		/* Mask for hash function */
 
-/*
- *	Resident page structures are initialized from
- *	a template (see vm_page_alloc).
- *
- *	When adding a new field to the virtual memory
- *	object structure, be sure to add initialization
- *	(see vm_page_bootstrap).
- */
-struct vm_page	vm_page_template;
-
-/*
- *	Resident pages that represent real memory
- *	are allocated from a free list.
- */
-vm_page_t	vm_page_queue_free;
 vm_page_t	vm_page_queue_fictitious;
 decl_simple_lock_data(,vm_page_queue_free_lock)
 unsigned int	vm_page_free_wanted;
@@ -192,39 +177,7 @@ void vm_page_bootstrap(
 	vm_offset_t *startp,
 	vm_offset_t *endp)
 {
-	vm_page_t m;
 	int i;
-
-	/*
-	 *	Initialize the vm_page template.
-	 */
-
-	m = &vm_page_template;
-	m->object = VM_OBJECT_NULL;	/* reset later */
-	m->offset = 0;			/* reset later */
-	m->wire_count = 0;
-
-	m->inactive = FALSE;
-	m->active = FALSE;
-	m->laundry = FALSE;
-	m->free = FALSE;
-	m->external = FALSE;
-
-	m->busy = TRUE;
-	m->wanted = FALSE;
-	m->tabled = FALSE;
-	m->fictitious = FALSE;
-	m->private = FALSE;
-	m->absent = FALSE;
-	m->error = FALSE;
-	m->dirty = FALSE;
-	m->precious = FALSE;
-	m->reference = FALSE;
-
-	m->phys_addr = 0;		/* reset later */
-
-	m->page_lock = VM_PROT_NONE;
-	m->unlock_request = VM_PROT_NONE;
 
 	/*
 	 *	Initialize the page queues.
@@ -233,7 +186,6 @@ void vm_page_bootstrap(
 	simple_lock_init(&vm_page_queue_free_lock);
 	simple_lock_init(&vm_page_queue_lock);
 
-	vm_page_queue_free = VM_PAGE_NULL;
 	vm_page_queue_fictitious = VM_PAGE_NULL;
 	queue_init(&vm_page_queue_active);
 	queue_init(&vm_page_queue_inactive);
@@ -280,15 +232,8 @@ void vm_page_bootstrap(
 		simple_lock_init(&bucket->lock);
 	}
 
-	/*
-	 *	Machine-dependent code allocates the resident page table.
-	 *	It uses vm_page_init to initialize the page frames.
-	 *	The code also returns to us the virtual space available
-	 *	to the kernel.  We don't trust the pmap module
-	 *	to get the alignment right.
-	 */
+	vm_page_setup();
 
-	pmap_startup(&virtual_space_start, &virtual_space_end);
 	virtual_space_start = round_page(virtual_space_start);
 	virtual_space_end = trunc_page(virtual_space_end);
 
@@ -301,8 +246,8 @@ void vm_page_bootstrap(
 
 #ifndef	MACHINE_PAGES
 /*
- *	We implement pmap_steal_memory and pmap_startup with the help
- *	of two simpler functions, pmap_virtual_space and pmap_next_page.
+ *	We implement pmap_steal_memory with the help
+ *	of two simpler functions, pmap_virtual_space and vm_page_bootalloc.
  */
 
 vm_offset_t pmap_steal_memory(
@@ -310,11 +255,7 @@ vm_offset_t pmap_steal_memory(
 {
 	vm_offset_t addr, vaddr, paddr;
 
-	/*
-	 *	We round the size to an integer multiple.
-	 */
-
-	size = (size + 3) &~ 3;
+	size = round_page(size);
 
 	/*
 	 *	If this is the first call to pmap_steal_memory,
@@ -347,8 +288,7 @@ vm_offset_t pmap_steal_memory(
 	for (vaddr = round_page(addr);
 	     vaddr < addr + size;
 	     vaddr += PAGE_SIZE) {
-		if (!pmap_next_page(&paddr))
-			panic("pmap_steal_memory");
+		paddr = vm_page_bootalloc(PAGE_SIZE);
 
 		/*
 		 *	XXX Logically, these mappings should be wired,
@@ -360,64 +300,6 @@ vm_offset_t pmap_steal_memory(
 	}
 
 	return addr;
-}
-
-void pmap_startup(
-	vm_offset_t *startp,
-	vm_offset_t *endp)
-{
-	unsigned int i, npages, pages_initialized;
-	vm_page_t pages;
-	vm_offset_t paddr;
-
-	/*
-	 *	We calculate how many page frames we will have
-	 *	and then allocate the page structures in one chunk.
-	 */
-
-	npages = ((PAGE_SIZE * pmap_free_pages() +
-		   (round_page(virtual_space_start) - virtual_space_start)) /
-		  (PAGE_SIZE + sizeof *pages));
-
-	pages = (vm_page_t) pmap_steal_memory(npages * sizeof *pages);
-
-	/*
-	 *	Initialize the page frames.
-	 */
-
-	for (i = 0, pages_initialized = 0; i < npages; i++) {
-		if (!pmap_next_page(&paddr))
-			break;
-
-		vm_page_init(&pages[i], paddr);
-		pages_initialized++;
-	}
-	i = 0;
-	while (pmap_next_page(&paddr))
-		i++;
-	if (i)
-		printf("%u memory page(s) left away\n", i);
-
-	/*
-	 * Release pages in reverse order so that physical pages
-	 * initially get allocated in ascending addresses. This keeps
-	 * the devices (which must address physical memory) happy if
-	 * they require several consecutive pages.
-	 */
-
-	for (i = pages_initialized; i > 0; i--) {
-		vm_page_release(&pages[i - 1], FALSE);
-	}
-
-	/*
-	 *	We have to re-align virtual_space_start,
-	 *	because pmap_steal_memory has been using it.
-	 */
-
-	virtual_space_start = round_page(virtual_space_start);
-
-	*startp = virtual_space_start;
-	*endp = virtual_space_end;
 }
 #endif	/* MACHINE_PAGES */
 
@@ -431,34 +313,6 @@ void		vm_page_module_init(void)
 {
 	kmem_cache_init(&vm_page_cache, "vm_page", sizeof(struct vm_page), 0,
 			NULL, NULL, NULL, 0);
-}
-
-/*
- *	Routine:	vm_page_create
- *	Purpose:
- *		After the VM system is up, machine-dependent code
- *		may stumble across more physical memory.  For example,
- *		memory that it was reserving for a frame buffer.
- *		vm_page_create turns this memory into available pages.
- */
-
-void vm_page_create(
-	vm_offset_t	start,
-	vm_offset_t	end)
-{
-	vm_offset_t paddr;
-	vm_page_t m;
-
-	for (paddr = round_page(start);
-	     paddr < trunc_page(end);
-	     paddr += PAGE_SIZE) {
-		m = (vm_page_t) kmem_cache_alloc(&vm_page_cache);
-		if (m == VM_PAGE_NULL)
-			panic("vm_page_create");
-
-		vm_page_init(m, paddr);
-		vm_page_release(m, FALSE);
-	}
 }
 
 /*
@@ -750,6 +604,33 @@ void vm_page_rename(
 	vm_page_unlock_queues();
 }
 
+static void vm_page_init_template(vm_page_t m)
+{
+	m->object = VM_OBJECT_NULL;	/* reset later */
+	m->offset = 0;			/* reset later */
+	m->wire_count = 0;
+
+	m->inactive = FALSE;
+	m->active = FALSE;
+	m->laundry = FALSE;
+	m->free = FALSE;
+	m->external = FALSE;
+
+	m->busy = TRUE;
+	m->wanted = FALSE;
+	m->tabled = FALSE;
+	m->fictitious = FALSE;
+	m->private = FALSE;
+	m->absent = FALSE;
+	m->error = FALSE;
+	m->dirty = FALSE;
+	m->precious = FALSE;
+	m->reference = FALSE;
+
+	m->page_lock = VM_PROT_NONE;
+	m->unlock_request = VM_PROT_NONE;
+}
+
 /*
  *	vm_page_init:
  *
@@ -758,11 +639,9 @@ void vm_page_rename(
  *	so that it can be given to vm_page_release or vm_page_insert.
  */
 void vm_page_init(
-	vm_page_t	mem,
-	vm_offset_t	phys_addr)
+	vm_page_t	mem)
 {
-	*mem = vm_page_template;
-	mem->phys_addr = phys_addr;
+	vm_page_init_template(mem);
 }
 
 /*
@@ -794,7 +673,7 @@ vm_page_t vm_page_grab_fictitious(void)
  *	Release a fictitious page to the free list.
  */
 
-void vm_page_release_fictitious(
+static void vm_page_release_fictitious(
 	vm_page_t m)
 {
 	simple_lock(&vm_page_queue_free_lock);
@@ -826,7 +705,8 @@ void vm_page_more_fictitious(void)
 		if (m == VM_PAGE_NULL)
 			panic("vm_page_more_fictitious");
 
-		vm_page_init(m, vm_page_fictitious_addr);
+		vm_page_init(m);
+		m->phys_addr = vm_page_fictitious_addr;
 		m->fictitious = TRUE;
 		vm_page_release_fictitious(m);
 	}
@@ -836,25 +716,46 @@ void vm_page_more_fictitious(void)
  *	vm_page_convert:
  *
  *	Attempt to convert a fictitious page into a real page.
+ *
+ *	The object referenced by *MP must be locked.
  */
 
 boolean_t vm_page_convert(
-	vm_page_t m,
+	struct vm_page **mp,
 	boolean_t external)
 {
-	vm_page_t real_m;
+	struct vm_page *real_m, *fict_m;
+	vm_object_t object;
+	vm_offset_t offset;
+
+	fict_m = *mp;
+
+	assert(fict_m->fictitious);
+	assert(fict_m->phys_addr == vm_page_fictitious_addr);
+	assert(!fict_m->active);
+	assert(!fict_m->inactive);
 
 	real_m = vm_page_grab(external);
 	if (real_m == VM_PAGE_NULL)
 		return FALSE;
 
-	m->phys_addr = real_m->phys_addr;
-	m->fictitious = FALSE;
+	object = fict_m->object;
+	offset = fict_m->offset;
+	vm_page_remove(fict_m);
 
-	real_m->phys_addr = vm_page_fictitious_addr;
-	real_m->fictitious = TRUE;
+	memcpy(&real_m->vm_page_header,
+	       &fict_m->vm_page_header,
+	       sizeof(*fict_m) - VM_PAGE_HEADER_SIZE);
+	real_m->fictitious = FALSE;
 
-	vm_page_release_fictitious(real_m);
+	vm_page_insert(real_m, object, offset);
+
+	assert(real_m->phys_addr != vm_page_fictitious_addr);
+	assert(fict_m->fictitious);
+	assert(fict_m->phys_addr == vm_page_fictitious_addr);
+
+	vm_page_release_fictitious(fict_m);
+	*mp = real_m;
 	return TRUE;
 }
 
@@ -886,15 +787,16 @@ vm_page_t vm_page_grab(
 		return VM_PAGE_NULL;
 	}
 
-	if (vm_page_queue_free == VM_PAGE_NULL)
+	mem = vm_page_alloc_pa(0, VM_PAGE_SEL_DIRECTMAP, VM_PT_KERNEL);
+
+	if (mem == NULL)
 		panic("vm_page_grab");
 
 	if (--vm_page_free_count < vm_page_free_count_minimum)
 		vm_page_free_count_minimum = vm_page_free_count;
 	if (external)
 		vm_page_external_count++;
-	mem = vm_page_queue_free;
-	vm_page_queue_free = (vm_page_t) mem->pageq.next;
+
 	mem->free = FALSE;
 	mem->extcounted = mem->external = external;
 	simple_unlock(&vm_page_queue_free_lock);
@@ -928,243 +830,12 @@ vm_offset_t vm_page_grab_phys_addr(void)
 }
 
 /*
- *	vm_page_grab_contiguous_pages:
- *
- *	Take N pages off the free list, the pages should
- *	cover a contiguous range of physical addresses.
- *	[Used by device drivers to cope with DMA limitations]
- *
- *	Returns the page descriptors in ascending order, or
- *	Returns KERN_RESOURCE_SHORTAGE if it could not.
- */
-
-/* Biggest phys page number for the pages we handle in VM */
-
-vm_size_t	vm_page_big_pagenum = 0;	/* Set this before call! */
-
-kern_return_t
-vm_page_grab_contiguous_pages(
-	int		npages,
-	vm_page_t	pages[],
-	natural_t	*bits,
-	boolean_t	external)
-{
-	int		first_set;
-	int		size, alloc_size;
-	kern_return_t	ret;
-	vm_page_t       mem, *prevmemp;
-
-#ifndef	NBBY
-#define	NBBY	8	/* size in bits of sizeof()`s unity */
-#endif
-
-#define	NBPEL	(sizeof(natural_t)*NBBY)
-
-	size = (vm_page_big_pagenum + NBPEL - 1)
-		& ~(NBPEL - 1);				/* in bits */
-
-	size = size / NBBY;				/* in bytes */
-
-	/*
-	 * If we are called before the VM system is fully functional
-	 * the invoker must provide us with the work space. [one bit
-	 * per page starting at phys 0 and up to vm_page_big_pagenum]
-	 */
-	if (bits == 0) {
-		alloc_size = round_page(size);
-		if (kmem_alloc_wired(kernel_map,
-				     (vm_offset_t *)&bits,
-				     alloc_size)
-			!= KERN_SUCCESS)
-		    return KERN_RESOURCE_SHORTAGE;
-	} else
-		alloc_size = 0;
-
-	memset(bits, 0, size);
-
-	/*
-	 * A very large granularity call, its rare so that is ok
-	 */
-	simple_lock(&vm_page_queue_free_lock);
-
-	/*
-	 *	Do not dip into the reserved pool.
-	 */
-
-	if ((vm_page_free_count < vm_page_free_reserved)
-	    || (vm_page_external_count >= vm_page_external_limit)) {
-		printf_once("no more room for vm_page_grab_contiguous_pages");
-		simple_unlock(&vm_page_queue_free_lock);
-		return KERN_RESOURCE_SHORTAGE;
-	}
-
-	/*
-	 *	First pass through, build a big bit-array of
-	 *	the pages that are free.  It is not going to
-	 *	be too large anyways, in 4k we can fit info
-	 *	for 32k pages.
-	 */
-	mem = vm_page_queue_free;
-	while (mem) {
-		int word_index, bit_index;
-
-		bit_index = (mem->phys_addr >> PAGE_SHIFT);
-		word_index = bit_index / NBPEL;
-		bit_index = bit_index - (word_index * NBPEL);
-		bits[word_index] |= 1 << bit_index;
-
-		mem = (vm_page_t) mem->pageq.next;
-	}
-
-	/*
-	 *	Second loop. Scan the bit array for NPAGES
-	 *	contiguous bits.  That gives us, if any,
-	 *	the range of pages we will be grabbing off
-	 *	the free list.
-	 */
-	{
-	    int	bits_so_far = 0, i;
-
-		first_set = 0;
-
-		for (i = 0; i < size; i += sizeof(natural_t)) {
-
-		    natural_t	v = bits[i / sizeof(natural_t)];
-		    int		bitpos;
-
-		    /*
-		     * Bitscan this one word
-		     */
-		    if (v) {
-			/*
-			 * keep counting them beans ?
-			 */
-			bitpos = 0;
-
-			if (bits_so_far) {
-count_ones:
-			    while (v & 1) {
-				bitpos++;
-				/*
-				 * got enough beans ?
-				 */
-				if (++bits_so_far == npages)
-				    goto found_em;
-				v >>= 1;
-			    }
-			    /* if we are being lucky, roll again */
-			    if (bitpos == NBPEL)
-			    	continue;
-			}
-
-			/*
-			 * search for beans here
-			 */
-			bits_so_far = 0;
-			while ((bitpos < NBPEL) && ((v & 1) == 0)) {
-			    bitpos++;
-			    v >>= 1;
-			}
-			if (v & 1) {
-			    first_set = (i * NBBY) + bitpos;
-			    goto count_ones;
-			}
-		    }
-		    /*
-		     * No luck
-		     */
-		    bits_so_far = 0;
-		}
-	}
-
-	/*
-	 *	We could not find enough contiguous pages.
-	 */
-	simple_unlock(&vm_page_queue_free_lock);
-
-	printf_once("no contiguous room for vm_page_grab_contiguous_pages");
-	ret = KERN_RESOURCE_SHORTAGE;
-	goto out;
-
-	/*
-	 *	Final pass. Now we know which pages we want.
-	 *	Scan the list until we find them all, grab
-	 *	pages as we go.  FIRST_SET tells us where
-	 *	in the bit-array our pages start.
-	 */
-found_em:
-	vm_page_free_count -= npages;
-	if (vm_page_free_count < vm_page_free_count_minimum)
-		vm_page_free_count_minimum = vm_page_free_count;
-	if (external)
-		vm_page_external_count += npages;
-	{
-	    vm_offset_t	first_phys, last_phys;
-
-	    /* cache values for compare */
-	    first_phys = first_set << PAGE_SHIFT;
-	    last_phys = first_phys + (npages << PAGE_SHIFT);/* not included */
-
-	    /* running pointers */
-	    mem = vm_page_queue_free;
-	    prevmemp = &vm_page_queue_free;
-
-	    while (mem) {
-
-		vm_offset_t	addr;
-
-		addr = mem->phys_addr;
-
-		if ((addr >= first_phys) &&
-		    (addr <  last_phys)) {
-		    *prevmemp = (vm_page_t) mem->pageq.next;
-		    pages[(addr - first_phys) >> PAGE_SHIFT] = mem;
-		    mem->free = FALSE;
-		    mem->extcounted = mem->external = external;
-		    /*
-		     * Got them all ?
-		     */
-		    if (--npages == 0) break;
-		} else
-		    prevmemp = (vm_page_t *) &mem->pageq.next;
-
-		mem = (vm_page_t) mem->pageq.next;
-	    }
-	}
-
-	simple_unlock(&vm_page_queue_free_lock);
-
-	/*
-	 *	Decide if we should poke the pageout daemon.
-	 *	We do this if the free count is less than the low
-	 *	water mark, or if the free count is less than the high
-	 *	water mark (but above the low water mark) and the inactive
-	 *	count is less than its target.
-	 *
-	 *	We don't have the counts locked ... if they change a little,
-	 *	it doesn't really matter.
-	 */
-
-	if ((vm_page_free_count < vm_page_free_min) ||
-	    ((vm_page_free_count < vm_page_free_target) &&
-	     (vm_page_inactive_count < vm_page_inactive_target)))
-		thread_wakeup(&vm_page_free_wanted);
-
-	ret = KERN_SUCCESS;
-out:
-	if (alloc_size)
-		kmem_free(kernel_map, (vm_offset_t) bits, alloc_size);
-
-	return ret;
-}
-
-/*
  *	vm_page_release:
  *
  *	Return a page to the free list.
  */
 
-void vm_page_release(
+static void vm_page_release(
 	vm_page_t	mem,
 	boolean_t 	external)
 {
@@ -1172,8 +843,7 @@ void vm_page_release(
 	if (mem->free)
 		panic("vm_page_release");
 	mem->free = TRUE;
-	mem->pageq.next = (queue_entry_t) vm_page_queue_free;
-	vm_page_queue_free = mem;
+	vm_page_free_pa(mem, 0);
 	vm_page_free_count++;
 	if (external)
 		vm_page_external_count--;
@@ -1197,6 +867,107 @@ void vm_page_release(
 	 *	the pageout daemon will keep making free pages
 	 *	as long as vm_page_free_wanted is non-zero.
 	 */
+
+	if ((vm_page_free_wanted > 0) &&
+	    (vm_page_free_count >= vm_page_free_reserved)) {
+		vm_page_free_wanted--;
+		thread_wakeup_one((event_t) &vm_page_free_count);
+	}
+
+	simple_unlock(&vm_page_queue_free_lock);
+}
+
+/*
+ *	vm_page_grab_contig:
+ *
+ *	Remove a block of contiguous pages from the free list.
+ *	Returns VM_PAGE_NULL if the request fails.
+ */
+
+vm_page_t vm_page_grab_contig(
+	vm_size_t size,
+	unsigned int selector)
+{
+	unsigned int i, order, nr_pages;
+	vm_page_t mem;
+
+	order = vm_page_order(size);
+	nr_pages = 1 << order;
+
+	simple_lock(&vm_page_queue_free_lock);
+
+	/*
+	 *	Only let privileged threads (involved in pageout)
+	 *	dip into the reserved pool or exceed the limit
+	 *	for externally-managed pages.
+	 */
+
+	if (((vm_page_free_count - nr_pages) <= vm_page_free_reserved)
+	    && !current_thread()->vm_privilege) {
+		simple_unlock(&vm_page_queue_free_lock);
+		return VM_PAGE_NULL;
+	}
+
+	mem = vm_page_alloc_pa(order, selector, VM_PT_KERNEL);
+
+	if (mem == NULL)
+		panic("vm_page_grab_contig");
+
+	vm_page_free_count -= nr_pages;
+
+	if (vm_page_free_count < vm_page_free_count_minimum)
+		vm_page_free_count_minimum = vm_page_free_count;
+
+	for (i = 0; i < nr_pages; i++) {
+		mem[i].free = FALSE;
+		mem[i].extcounted = mem[i].external = 0;
+	}
+
+	simple_unlock(&vm_page_queue_free_lock);
+
+	/*
+	 *	Decide if we should poke the pageout daemon.
+	 *	We do this if the free count is less than the low
+	 *	water mark, or if the free count is less than the high
+	 *	water mark (but above the low water mark) and the inactive
+	 *	count is less than its target.
+	 *
+	 *	We don't have the counts locked ... if they change a little,
+	 *	it doesn't really matter.
+	 */
+
+	if ((vm_page_free_count < vm_page_free_min) ||
+	    ((vm_page_free_count < vm_page_free_target) &&
+	     (vm_page_inactive_count < vm_page_inactive_target)))
+		thread_wakeup((event_t) &vm_page_free_wanted);
+
+	return mem;
+}
+
+/*
+ *	vm_page_free_contig:
+ *
+ *	Return a block of contiguous pages to the free list.
+ */
+
+void vm_page_free_contig(vm_page_t mem, vm_size_t size)
+{
+	unsigned int i, order, nr_pages;
+
+	order = vm_page_order(size);
+	nr_pages = 1 << order;
+
+	simple_lock(&vm_page_queue_free_lock);
+
+	for (i = 0; i < nr_pages; i++) {
+		if (mem[i].free)
+			panic("vm_page_free_contig");
+
+		mem[i].free = TRUE;
+	}
+
+	vm_page_free_pa(mem, order);
+	vm_page_free_count += nr_pages;
 
 	if ((vm_page_free_wanted > 0) &&
 	    (vm_page_free_count >= vm_page_free_reserved)) {
@@ -1310,12 +1081,13 @@ void vm_page_free(
 	 */
 
 	if (mem->private || mem->fictitious) {
-		vm_page_init(mem, vm_page_fictitious_addr);
+		vm_page_init(mem);
+		mem->phys_addr = vm_page_fictitious_addr;
 		mem->fictitious = TRUE;
 		vm_page_release_fictitious(mem);
 	} else {
 		int external = mem->external && mem->extcounted;
-		vm_page_init(mem, mem->phys_addr);
+		vm_page_init(mem);
 		vm_page_release(mem, external);
 	}
 }

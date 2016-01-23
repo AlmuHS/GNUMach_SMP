@@ -107,6 +107,20 @@ task_insert_send_right(
 	return name;
 }
 
+static void
+free_bootstrap_pages(phys_addr_t start, phys_addr_t end)
+{
+  struct vm_page *page;
+
+  while (start < end)
+    {
+      page = vm_page_lookup_pa(start);
+      assert(page != NULL);
+      vm_page_manage(page);
+      start += PAGE_SIZE;
+    }
+}
+
 void bootstrap_create(void)
 {
   int compat;
@@ -265,7 +279,7 @@ void bootstrap_create(void)
   /* XXX we could free the memory used
      by the boot loader's descriptors and such.  */
   for (n = 0; n < boot_info.mods_count; n++)
-    vm_page_create(bmods[n].mod_start, bmods[n].mod_end);
+    free_bootstrap_pages(bmods[n].mod_start, bmods[n].mod_end);
 }
 
 static void

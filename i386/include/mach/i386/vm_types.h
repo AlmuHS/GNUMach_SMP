@@ -77,6 +77,11 @@ typedef	unsigned long	vm_offset_t;
 typedef	vm_offset_t *	vm_offset_array_t;
 
 /*
+ * A type for physical addresses.
+ */
+typedef unsigned long phys_addr_t;
+
+/*
  * A vm_size_t is the proper type for e.g.
  * expressing the difference between two
  * vm_offset_t entities.

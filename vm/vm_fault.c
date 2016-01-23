@@ -607,7 +607,7 @@ vm_fault_return_t vm_fault_page(
 				 *	won't block for pages.
 				 */
 
-				if (m->fictitious && !vm_page_convert(m, FALSE)) {
+				if (m->fictitious && !vm_page_convert(&m, FALSE)) {
 					VM_PAGE_FREE(m);
 					vm_fault_cleanup(object, first_m);
 					return(VM_FAULT_MEMORY_SHORTAGE);
@@ -725,7 +725,7 @@ vm_fault_return_t vm_fault_page(
 			assert(m->object == object);
 			first_m = VM_PAGE_NULL;
 
-			if (m->fictitious && !vm_page_convert(m, !object->internal)) {
+			if (m->fictitious && !vm_page_convert(&m, !object->internal)) {
 				VM_PAGE_FREE(m);
 				vm_fault_cleanup(object, VM_PAGE_NULL);
 				return(VM_FAULT_MEMORY_SHORTAGE);

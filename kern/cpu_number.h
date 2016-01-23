@@ -37,5 +37,7 @@ int	master_cpu;	/* 'master' processor - keeps time */
 	/* cpu number is always 0 on a single processor system */
 #define	cpu_number()	(0)
 
+#define CPU_L1_SIZE (1 << CPU_L1_SHIFT)
+
 #endif	/* NCPUS == 1 */
 #endif /* _KERN_CPU_NUMBER_H_ */

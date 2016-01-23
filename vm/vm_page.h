@@ -36,11 +36,12 @@
 
 #include <mach/boolean.h>
 #include <mach/vm_prot.h>
-#include <mach/vm_param.h>
+#include <machine/vm_param.h>
 #include <vm/vm_object.h>
 #include <vm/vm_types.h>
 #include <kern/queue.h>
 #include <kern/lock.h>
+#include <kern/log2.h>
 
 #include <kern/macros.h>
 #include <kern/sched_prim.h>	/* definitions of wait/wakeup */
@@ -76,6 +77,22 @@
  */
 
 struct vm_page {
+	/* Members used in the vm_page module only */
+	struct list node;
+	unsigned short type;
+	unsigned short seg_index;
+	unsigned short order;
+
+	/*
+	 * This member is used throughout the code and may only change for
+	 * fictitious pages.
+	 */
+	phys_addr_t phys_addr;
+
+	/* We use an empty struct as the delimiter.  */
+	struct {} vm_page_header;
+#define VM_PAGE_HEADER_SIZE	offsetof(struct vm_page, vm_page_header)
+
 	queue_chain_t	pageq;		/* queue info for FIFO
 					 * queue or free list (P) */
 	queue_chain_t	listq;		/* all pages in same object (O) */
@@ -110,8 +127,6 @@ struct vm_page {
 					 * without having data. (O)
 					 * [See vm_object_overwrite] */
 
-	vm_offset_t	phys_addr;	/* Physical address of page, passed
-					 *  to pmap_enter (read-only) */
 	vm_prot_t	page_lock;	/* Uses prohibited by data manager (O) */
 	vm_prot_t	unlock_request;	/* Outstanding unlock request (O) */
 };
@@ -139,8 +154,6 @@ struct vm_page {
  *		ordered, in LRU-like fashion.
  */
 
-extern
-vm_page_t	vm_page_queue_free;	/* memory free queue */
 extern
 vm_page_t	vm_page_queue_fictitious;	/* fictitious free queue */
 extern
@@ -196,25 +209,21 @@ extern void		vm_page_bootstrap(
 	vm_offset_t	*endp);
 extern void		vm_page_module_init(void);
 
-extern void		vm_page_create(
-	vm_offset_t	start,
-	vm_offset_t	end);
 extern vm_page_t	vm_page_lookup(
 	vm_object_t	object,
 	vm_offset_t	offset);
 extern vm_page_t	vm_page_grab_fictitious(void);
-extern void		vm_page_release_fictitious(vm_page_t);
-extern boolean_t	vm_page_convert(vm_page_t, boolean_t);
+extern boolean_t	vm_page_convert(vm_page_t *, boolean_t);
 extern void		vm_page_more_fictitious(void);
 extern vm_page_t	vm_page_grab(boolean_t);
-extern void		vm_page_release(vm_page_t, boolean_t);
+extern vm_page_t	vm_page_grab_contig(vm_size_t, unsigned int);
+extern void		vm_page_free_contig(vm_page_t, vm_size_t);
 extern void		vm_page_wait(void (*)(void));
 extern vm_page_t	vm_page_alloc(
 	vm_object_t	object,
 	vm_offset_t	offset);
 extern void		vm_page_init(
-	vm_page_t	mem,
-	vm_offset_t	phys_addr);
+	vm_page_t	mem);
 extern void		vm_page_free(vm_page_t);
 extern void		vm_page_activate(vm_page_t);
 extern void		vm_page_deactivate(vm_page_t);
@@ -311,5 +320,190 @@ extern unsigned int	vm_page_info(
 		vm_page_inactive_count--;			\
 	}							\
 	MACRO_END
+
+/*
+ * Copyright (c) 2010-2014 Richard Braun.
+ *
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ *
+ *
+ * Physical page management.
+ */
+
+/*
+ * Address/page conversion and rounding macros (not inline functions to
+ * be easily usable on both virtual and physical addresses, which may not
+ * have the same type size).
+ */
+#define vm_page_atop(addr)      ((addr) >> PAGE_SHIFT)
+#define vm_page_ptoa(page)      ((page) << PAGE_SHIFT)
+#define vm_page_trunc(addr)     P2ALIGN(addr, PAGE_SIZE)
+#define vm_page_round(addr)     P2ROUND(addr, PAGE_SIZE)
+#define vm_page_aligned(addr)   P2ALIGNED(addr, PAGE_SIZE)
+
+/*
+ * Segment selectors.
+ *
+ * Selector-to-segment-list translation table :
+ * DMA          DMA
+ * DMA32        DMA32 DMA
+ * DIRECTMAP    DIRECTMAP DMA32 DMA
+ * HIGHMEM      HIGHMEM DIRECTMAP DMA32 DMA
+ */
+#define VM_PAGE_SEL_DMA         0
+#define VM_PAGE_SEL_DMA32       1
+#define VM_PAGE_SEL_DIRECTMAP   2
+#define VM_PAGE_SEL_HIGHMEM     3
+
+/*
+ * Page usage types.
+ *
+ * Failing to allocate pmap pages will cause a kernel panic.
+ * TODO Obviously, this needs to be addressed, e.g. with a reserved pool of
+ * pages.
+ */
+#define VM_PT_FREE          0   /* Page unused */
+#define VM_PT_RESERVED      1   /* Page reserved at boot time */
+#define VM_PT_TABLE         2   /* Page is part of the page table */
+#define VM_PT_PMAP          3   /* Page stores pmap-specific data */
+#define VM_PT_KMEM          4   /* Page is part of a kmem slab */
+#define VM_PT_KERNEL        5   /* Type for generic kernel allocations */
+
+static inline unsigned short
+vm_page_type(const struct vm_page *page)
+{
+    return page->type;
+}
+
+void vm_page_set_type(struct vm_page *page, unsigned int order,
+                      unsigned short type);
+
+static inline unsigned int
+vm_page_order(size_t size)
+{
+    return iorder2(vm_page_atop(vm_page_round(size)));
+}
+
+static inline phys_addr_t
+vm_page_to_pa(const struct vm_page *page)
+{
+    return page->phys_addr;
+}
+
+#if 0
+static inline unsigned long
+vm_page_direct_va(phys_addr_t pa)
+{
+    assert(pa < VM_PAGE_DIRECTMAP_LIMIT);
+    return ((unsigned long)pa + VM_MIN_DIRECTMAP_ADDRESS);
+}
+
+static inline phys_addr_t
+vm_page_direct_pa(unsigned long va)
+{
+    assert(va >= VM_MIN_DIRECTMAP_ADDRESS);
+    assert(va < VM_MAX_DIRECTMAP_ADDRESS);
+    return (va - VM_MIN_DIRECTMAP_ADDRESS);
+}
+
+static inline void *
+vm_page_direct_ptr(const struct vm_page *page)
+{
+    return (void *)vm_page_direct_va(vm_page_to_pa(page));
+}
+#endif
+
+/*
+ * Load physical memory into the vm_page module at boot time.
+ *
+ * The avail_start and avail_end parameters are used to maintain a simple
+ * heap for bootstrap allocations.
+ *
+ * All addresses must be page-aligned. Segments can be loaded in any order.
+ */
+void vm_page_load(unsigned int seg_index, phys_addr_t start, phys_addr_t end,
+                  phys_addr_t avail_start, phys_addr_t avail_end);
+
+/*
+ * Return true if the vm_page module is completely initialized, false
+ * otherwise, in which case only vm_page_bootalloc() can be used for
+ * allocations.
+ */
+int vm_page_ready(void);
+
+/*
+ * Early allocation function.
+ *
+ * This function is used by the vm_resident module to implement
+ * pmap_steal_memory. It can be used after physical segments have been loaded
+ * and before the vm_page module is initialized.
+ */
+unsigned long vm_page_bootalloc(size_t size);
+
+/*
+ * Set up the vm_page module.
+ *
+ * Architecture-specific code must have loaded segments before calling this
+ * function. Segments must comply with the selector-to-segment-list table,
+ * e.g. HIGHMEM is loaded if and only if DIRECTMAP, DMA32 and DMA are loaded,
+ * notwithstanding segment aliasing.
+ *
+ * Once this function returns, the vm_page module is ready, and normal
+ * allocation functions can be used.
+ */
+void vm_page_setup(void);
+
+/*
+ * Make the given page managed by the vm_page module.
+ *
+ * If additional memory can be made usable after the VM system is initialized,
+ * it should be reported through this function.
+ */
+void vm_page_manage(struct vm_page *page);
+
+/*
+ * Return the page descriptor for the given physical address.
+ */
+struct vm_page * vm_page_lookup_pa(phys_addr_t pa);
+
+/*
+ * Allocate a block of 2^order physical pages.
+ *
+ * The selector is used to determine the segments from which allocation can
+ * be attempted.
+ */
+struct vm_page * vm_page_alloc_pa(unsigned int order, unsigned int selector,
+                                  unsigned short type);
+
+/*
+ * Release a block of 2^order physical pages.
+ */
+void vm_page_free_pa(struct vm_page *page, unsigned int order);
+
+/*
+ * Return the name of the given segment.
+ */
+const char * vm_page_seg_name(unsigned int seg_index);
+
+/*
+ * Display internal information about the module.
+ */
+void vm_page_info_all(void);
+
+/*
+ * Return the total amount of physical memory.
+ */
+phys_addr_t vm_page_mem_size(void);
 
 #endif	/* _VM_VM_PAGE_H_ */
