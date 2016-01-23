@@ -2891,7 +2891,8 @@ vm_object_page_map(
 		VM_PAGE_FREE(old_page);
 	    }
 
-	    vm_page_init(m, addr);
+	    vm_page_init(m);
+	    m->phys_addr = addr;
 	    m->private = TRUE;		/* don`t free page */
 	    m->wire_count = 1;
 	    vm_page_lock_queues();

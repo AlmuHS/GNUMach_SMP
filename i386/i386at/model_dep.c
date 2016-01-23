@@ -64,6 +64,7 @@
 #include <i386/locore.h>
 #include <i386/model_dep.h>
 #include <i386at/autoconf.h>
+#include <i386at/biosmem.h>
 #include <i386at/idt.h>
 #include <i386at/int_init.h>
 #include <i386at/kd.h>
@@ -126,20 +127,6 @@ struct multiboot_info boot_info;
 
 /* Command line supplied to kernel.  */
 char *kernel_cmdline = "";
-
-/* This is used for memory initialization:
-   it gets bumped up through physical memory
-   that exists and is not occupied by boot gunk.
-   It is not necessarily page-aligned.  */
-static vm_offset_t avail_next
-#ifndef MACH_HYP
-	= RESERVED_BIOS /* XX end of BIOS data area */
-#endif	/* MACH_HYP */
-	;
-
-/* Possibly overestimated amount of available memory
-   still remaining to be handed to the VM system.  */
-static vm_size_t avail_remaining;
 
 extern char	version[];
 
@@ -275,91 +262,6 @@ void db_reset_cpu(void)
 	halt_all_cpus(1);
 }
 
-
-/*
- * Compute physical memory size and other parameters.
- */
-void
-mem_size_init(void)
-{
-	vm_offset_t max_phys_size;
-
-	/* Physical memory on all PCs starts at physical address 0.
-	   XX make it a constant.  */
-	phys_first_addr = 0;
-
-#ifdef MACH_HYP
-	if (boot_info.nr_pages >= 0x100000) {
-		printf("Truncating memory size to 4GiB\n");
-		phys_last_addr = 0xffffffffU;
-	} else
-		phys_last_addr = boot_info.nr_pages * 0x1000;
-#else	/* MACH_HYP */
-	vm_size_t phys_last_kb;
-
-	if (boot_info.flags & MULTIBOOT_MEM_MAP) {
-		struct multiboot_mmap *map, *map_end;
-
-		map = (void*) phystokv(boot_info.mmap_addr);
-		map_end = (void*) map + boot_info.mmap_count;
-
-		while (map + 1 <= map_end) {
-			if (map->Type == MB_ARD_MEMORY) {
-				unsigned long long start = map->BaseAddr, end = map->BaseAddr + map->Length;;
-
-				if (start >= 0x100000000ULL) {
-					printf("Ignoring %luMiB RAM region above 4GiB\n", (unsigned long) (map->Length >> 20));
-				} else {
-					if (end >= 0x100000000ULL) {
-						printf("Truncating memory region to 4GiB\n");
-						end = 0x0ffffffffU;
-					}
-					if (end > phys_last_addr)
-						phys_last_addr = end;
-
-					printf("AT386 boot: physical memory map from 0x%lx to 0x%lx\n",
-						(unsigned long) start,
-						(unsigned long) end);
-				}
-			}
-			map = (void*) map + map->size + sizeof(map->size);
-		}
-	} else {
-		phys_last_kb = 0x400 + boot_info.mem_upper;
-		/* Avoid 4GiB overflow.  */
-		if (phys_last_kb < 0x400 || phys_last_kb >= 0x400000) {
-			printf("Truncating memory size to 4GiB\n");
-			phys_last_addr = 0xffffffffU;
-		} else
-			phys_last_addr = phys_last_kb * 0x400;
-	}
-#endif	/* MACH_HYP */
-
-	printf("AT386 boot: physical memory from 0x%lx to 0x%lx\n",
-	       phys_first_addr, phys_last_addr);
-
-	/* Reserve room for virtual mappings.
-	 * Yes, this loses memory.  Blame i386.  */
-	max_phys_size = VM_MAX_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS - VM_KERNEL_MAP_SIZE;
-	if (phys_last_addr - phys_first_addr > max_phys_size) {
-		phys_last_addr = phys_first_addr + max_phys_size;
-		printf("Truncating memory to %luMiB\n", (phys_last_addr - phys_first_addr) / (1024 * 1024));
-		/* TODO Xen: be nice, free lost memory */
-	}
-
-	phys_first_addr = round_page(phys_first_addr);
-	phys_last_addr = trunc_page(phys_last_addr);
-
-#ifdef MACH_HYP
-	/* Memory is just contiguous */
-	avail_remaining = phys_last_addr;
-#else	/* MACH_HYP */
-	avail_remaining
-	  = phys_last_addr - (0x100000 - (boot_info.mem_lower * 0x400)
-			      - RESERVED_BIOS);
-#endif	/* MACH_HYP */
-}
-
 /*
  * Basic PC VM initialization.
  * Turns on paging and changes the kernel segments to use high linear addresses.
@@ -382,9 +284,9 @@ i386at_init(void)
 #endif	/* MACH_HYP */
 
 	/*
-	 * Find memory size parameters.
+	 * Read memory map and load it into the physical page allocator.
 	 */
-	mem_size_init();
+	biosmem_bootstrap((struct multiboot_raw_info *) &boot_info);
 
 #ifdef MACH_XEN
 	kernel_cmdline = (char*) boot_info.cmd_line;
@@ -430,6 +332,13 @@ i386at_init(void)
 	 *	XXX make the BIOS page (page 0) read-only.
 	 */
 	pmap_bootstrap();
+
+	/*
+	 *	Load physical segments into the VM system.
+	 *	The early allocation functions become unusable after
+	 *	this point.
+	 */
+	biosmem_setup();
 
 	/*
 	 * We'll have to temporarily install a direct mapping
@@ -706,185 +615,18 @@ resettodr(void)
 
 unsigned int pmap_free_pages(void)
 {
-	return atop(avail_remaining);
+	return vm_page_atop(phys_last_addr); /* XXX */
 }
 
-/* Always returns page-aligned regions.  */
 boolean_t
 init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 {
-	vm_offset_t addr;
+	*addrp = biosmem_bootalloc(vm_page_atop(vm_page_round(size)));
 
-#ifdef MACH_HYP
-	/* There is none */
-	if (!avail_next)
-		avail_next = _kvtophys(boot_info.pt_base) + (boot_info.nr_pt_frames + 3) * 0x1000;
-#else	/* MACH_HYP */
-	extern char start[], end[];
-	int i;
-	static int wrapped = 0;
-
-	/* Memory regions to skip.  */
-	vm_offset_t cmdline_start_pa = boot_info.flags & MULTIBOOT_CMDLINE
-		? boot_info.cmdline : 0;
-	vm_offset_t cmdline_end_pa = cmdline_start_pa
-		? cmdline_start_pa+strlen((char*)phystokv(cmdline_start_pa))+1
-		: 0;
-	vm_offset_t mods_start_pa = boot_info.flags & MULTIBOOT_MODS
-		? boot_info.mods_addr : 0;
-	vm_offset_t mods_end_pa = mods_start_pa
-		? mods_start_pa
-		  + boot_info.mods_count * sizeof(struct multiboot_module)
-		: 0;
-
-	retry:
-#endif	/* MACH_HYP */
-
-	/* Page-align the start address.  */
-	avail_next = round_page(avail_next);
-
-#ifndef MACH_HYP
-	/* Start with memory above 16MB, reserving the low memory for later. */
-	/* Don't care on Xen */
-	if (!wrapped && phys_last_addr > 16 * 1024*1024)
-	  {
-	    if (avail_next < 16 * 1024*1024)
-	      avail_next = 16 * 1024*1024;
-	    else if (avail_next == phys_last_addr)
-	      {
-		/* We have used all the memory above 16MB, so now start on
-		   the low memory.  This will wind up at the end of the list
-		   of free pages, so it should not have been allocated to any
-		   other use in early initialization before the Linux driver
-		   glue initialization needs to allocate low memory.  */
-		avail_next = RESERVED_BIOS;
-		wrapped = 1;
-	      }
-	  }
-#endif	/* MACH_HYP */
-
-	/* Check if we have reached the end of memory.  */
-        if (avail_next == 
-		(
-#ifndef MACH_HYP
-		wrapped ? 16 * 1024*1024 : 
-#endif	/* MACH_HYP */
-		phys_last_addr))
+	if (*addrp == 0)
 		return FALSE;
 
-	/* Tentatively assign the current location to the caller.  */
-	addr = avail_next;
-
-	/* Bump the pointer past the newly allocated region
-	   and see where that puts us.  */
-	avail_next += size;
-
-#ifndef MACH_HYP
-	/* Skip past the I/O and ROM area.  */
-	if (boot_info.flags & MULTIBOOT_MEM_MAP)
-	{
-		struct multiboot_mmap *map, *map_end, *current = NULL, *next = NULL;
-		unsigned long long minimum_next = ~0ULL;
-
-		map = (void*) phystokv(boot_info.mmap_addr);
-		map_end = (void*) map + boot_info.mmap_count;
-
-		/* Find both our current map, and the next one */
-		while (map + 1 <= map_end)
-		{
-			if (map->Type == MB_ARD_MEMORY)
-			{
-				unsigned long long start = map->BaseAddr;
-				unsigned long long end = start + map->Length;;
-
-				if (start <= addr && avail_next <= end)
-				{
-					/* Ok, fits in the current map */
-					current = map;
-					break;
-				}
-				else if (avail_next <= start && start < minimum_next)
-				{
-					/* This map is not far from avail_next */
-					next = map;
-					minimum_next = start;
-				}
-			}
-			map = (void*) map + map->size + sizeof(map->size);
-		}
-
-		if (!current) {
-			/* Area does not fit in the current map, switch to next
-			 * map if any */
-			if (!next || next->BaseAddr >= phys_last_addr)
-			{
-				/* No further reachable map, we have reached
-				 * the end of memory, but possibly wrap around
-				 * 16MiB. */
-				avail_next = phys_last_addr;
-				goto retry;
-			}
-
-			/* Start from next map */
-			avail_next = next->BaseAddr;
-			goto retry;
-		}
-	}
-	else if ((avail_next > (boot_info.mem_lower * 0x400)) && (addr < 0x100000))
-	{
-		avail_next = 0x100000;
-		goto retry;
-	}
-
-	/* Skip our own kernel code, data, and bss.  */
-	if ((phystokv(avail_next) > (vm_offset_t)start) && (phystokv(addr) < (vm_offset_t)end))
-	{
-		avail_next = _kvtophys(end);
-		goto retry;
-	}
-
-	/* Skip any areas occupied by valuable boot_info data.  */
-	if ((avail_next > cmdline_start_pa) && (addr < cmdline_end_pa))
-	{
-		avail_next = cmdline_end_pa;
-		goto retry;
-	}
-	if ((avail_next > mods_start_pa) && (addr < mods_end_pa))
-	{
-		avail_next = mods_end_pa;
-		goto retry;
-	}
-	if ((phystokv(avail_next) > kern_sym_start) && (phystokv(addr) < kern_sym_end))
-	{
-		avail_next = _kvtophys(kern_sym_end);
-		goto retry;
-	}
-	if (boot_info.flags & MULTIBOOT_MODS)
-	{
-		struct multiboot_module *m = (struct multiboot_module *)
-			phystokv(boot_info.mods_addr);
-		for (i = 0; i < boot_info.mods_count; i++)
-		{
-			if ((avail_next > m[i].mod_start)
-			    && (addr < m[i].mod_end))
-			{
-				avail_next = m[i].mod_end;
-				goto retry;
-			}
-			/* XXX string */
-		}
-	}
-#endif	/* MACH_HYP */
-
-	avail_remaining -= size;
-
-	*addrp = addr;
 	return TRUE;
-}
-
-boolean_t pmap_next_page(vm_offset_t *addrp)
-{
-	return init_alloc_aligned(PAGE_SIZE, addrp);
 }
 
 /* Grab a physical page:
@@ -894,7 +636,7 @@ vm_offset_t
 pmap_grab_page(void)
 {
 	vm_offset_t addr;
-	if (!pmap_next_page(&addr))
+	if (!init_alloc_aligned(PAGE_SIZE, &addr))
 		panic("Not enough memory to initialize Mach");
 	return addr;
 }

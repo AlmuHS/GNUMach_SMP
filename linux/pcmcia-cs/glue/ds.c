@@ -24,12 +24,6 @@
 /* This file is included from linux/pcmcia-cs/modules/ds.c.  */
 
 /*
- * Prepare the namespace for inclusion of Mach header files.
- */
-
-#undef PAGE_SHIFT
-
-/*
  * This is really ugly.  But this is glue code, so...  It's about the `kfree'
  * symbols in <linux/malloc.h> and <kern/kalloc.h>.
  */

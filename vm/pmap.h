@@ -67,9 +67,6 @@
 extern vm_offset_t	pmap_steal_memory(vm_size_t);
 /* During VM initialization, report remaining unused physical pages.  */
 extern unsigned int	pmap_free_pages(void);
-/* During VM initialization, use remaining physical pages to allocate page
- * frames.  */
-extern void		pmap_startup(vm_offset_t *, vm_offset_t *);
 /* Initialization, after kernel runs in virtual memory.  */
 extern void		pmap_init(void);
 
@@ -80,18 +77,14 @@ extern void		pmap_init(void);
  *	Otherwise, it must implement
  *		pmap_free_pages
  *		pmap_virtual_space
- *		pmap_next_page
  *		pmap_init
- *	and vm/vm_resident.c implements pmap_steal_memory and pmap_startup
- *	using pmap_free_pages, pmap_next_page, pmap_virtual_space,
- *	and pmap_enter.  pmap_free_pages may over-estimate the number
- *	of unused physical pages, and pmap_next_page may return FALSE
- *	to indicate that there are no more unused pages to return.
+ *	and vm/vm_resident.c implements pmap_steal_memory using
+ *	pmap_free_pages, pmap_virtual_space, and pmap_enter.
+ *
+ *	pmap_free_pages may over-estimate the number of unused physical pages.
  *	However, for best performance pmap_free_pages should be accurate.
  */
 
-/* During VM initialization, return the next unused physical page.  */
-extern boolean_t	pmap_next_page(vm_offset_t *);
 /* During VM initialization, report virtual space available for the kernel.  */
 extern void		pmap_virtual_space(vm_offset_t *, vm_offset_t *);
 #endif	/* MACHINE_PAGES */

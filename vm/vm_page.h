@@ -155,8 +155,6 @@ struct vm_page {
  */
 
 extern
-vm_page_t	vm_page_queue_free;	/* memory free queue */
-extern
 vm_page_t	vm_page_queue_fictitious;	/* fictitious free queue */
 extern
 queue_head_t	vm_page_queue_active;	/* active memory queue */
@@ -211,25 +209,21 @@ extern void		vm_page_bootstrap(
 	vm_offset_t	*endp);
 extern void		vm_page_module_init(void);
 
-extern void		vm_page_create(
-	vm_offset_t	start,
-	vm_offset_t	end);
 extern vm_page_t	vm_page_lookup(
 	vm_object_t	object,
 	vm_offset_t	offset);
 extern vm_page_t	vm_page_grab_fictitious(void);
-extern void		vm_page_release_fictitious(vm_page_t);
-extern boolean_t	vm_page_convert(vm_page_t, boolean_t);
+extern boolean_t	vm_page_convert(vm_page_t *, boolean_t);
 extern void		vm_page_more_fictitious(void);
 extern vm_page_t	vm_page_grab(boolean_t);
-extern void		vm_page_release(vm_page_t, boolean_t);
+extern vm_page_t	vm_page_grab_contig(vm_size_t, unsigned int);
+extern void		vm_page_free_contig(vm_page_t, vm_size_t);
 extern void		vm_page_wait(void (*)(void));
 extern vm_page_t	vm_page_alloc(
 	vm_object_t	object,
 	vm_offset_t	offset);
 extern void		vm_page_init(
-	vm_page_t	mem,
-	vm_offset_t	phys_addr);
+	vm_page_t	mem);
 extern void		vm_page_free(vm_page_t);
 extern void		vm_page_activate(vm_page_t);
 extern void		vm_page_deactivate(vm_page_t);

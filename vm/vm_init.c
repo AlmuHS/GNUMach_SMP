@@ -83,4 +83,5 @@ void vm_mem_init(void)
 {
 	vm_object_init();
 	memory_object_proxy_init();
+	vm_page_info_all();
 }

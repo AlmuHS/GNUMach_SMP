@@ -48,6 +48,7 @@
 #define _KERN_SLAB_H
 
 #include <cache.h>
+#include <kern/cpu_number.h>
 #include <kern/lock.h>
 #include <kern/list.h>
 #include <kern/rbtree.h>
@@ -56,10 +57,6 @@
 #include <vm/vm_types.h>
 
 #if SLAB_USE_CPU_POOLS
-/*
- * L1 cache line size.
- */
-#define CPU_L1_SIZE (1 << CPU_L1_SHIFT)
 
 /*
  * Per-processor cache of pre-constructed objects.

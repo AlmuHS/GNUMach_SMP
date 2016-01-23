@@ -98,7 +98,7 @@ void
 linux_init (void)
 {
   int addr;
-  unsigned memory_start, memory_end;
+  unsigned long memory_start, memory_end;
   vm_page_t pages;
 
   /*
@@ -131,9 +131,7 @@ linux_init (void)
   /*
    * Allocate contiguous memory below 16 MB.
    */
-  memory_start = (unsigned long) alloc_contig_mem (CONTIG_ALLOC,
-						   16 * 1024 * 1024,
-						   0, &pages);
+  memory_start = alloc_contig_mem (CONTIG_ALLOC, 16 * 1024 * 1024, 0, &pages);
   if (memory_start == 0)
     panic ("linux_init: alloc_contig_mem failed");
   memory_end = memory_start + CONTIG_ALLOC;
@@ -145,14 +143,6 @@ linux_init (void)
 
   if (memory_start > memory_end)
     panic ("linux_init: ran out memory");
-
-  /*
-   * Free unused memory.
-   */
-  while (pages && phystokv(pages->phys_addr) < round_page (memory_start))
-    pages = (vm_page_t) pages->pageq.next;
-  if (pages)
-    free_contig_mem (pages);
 
   /*
    * Initialize devices.
@@ -182,140 +172,31 @@ linux_init (void)
 
 /*
  * Allocate contiguous memory with the given constraints.
- * This routine is horribly inefficient but it is presently
- * only used during initialization so it's not that bad.
  */
-void *
+unsigned long
 alloc_contig_mem (unsigned size, unsigned limit,
 		  unsigned mask, vm_page_t * pages)
 {
-  int i, j, bits_len;
-  unsigned *bits, len;
-  void *m;
-  vm_page_t p, page_list, tail, prev;
-  vm_offset_t addr = 0, max_addr;
+  vm_page_t p;
 
-  if (size == 0)
-    return (NULL);
-  size = round_page (size);
-  if ((size >> PAGE_SHIFT) > vm_page_free_count)
-    return (NULL);
+  p = vm_page_grab_contig(size, VM_PAGE_SEL_DMA);
 
-  /* Allocate bit array.  */
-  max_addr = phys_last_addr;
-  if (max_addr > limit)
-    max_addr = limit;
-  bits_len = ((((max_addr >> PAGE_SHIFT) + NBPW - 1) / NBPW)
-	      * sizeof (unsigned));
-  bits = (unsigned *) kalloc (bits_len);
-  if (!bits)
-    return (NULL);
-  memset (bits, 0, bits_len);
+  if (p == NULL)
+    return 0;
 
-  /*
-   * Walk the page free list and set a bit for every usable page.
-   */
-  simple_lock (&vm_page_queue_free_lock);
-  p = vm_page_queue_free;
-  while (p)
-    {
-      if (p->phys_addr < limit)
-	(bits[(p->phys_addr >> PAGE_SHIFT) / NBPW]
-	 |= 1 << ((p->phys_addr >> PAGE_SHIFT) % NBPW));
-      p = (vm_page_t) p->pageq.next;
-    }
-
-  /*
-   * Scan bit array for contiguous pages.
-   */
-  len = 0;
-  m = NULL;
-  for (i = 0; len < size && i < bits_len / sizeof (unsigned); i++)
-    for (j = 0; len < size && j < NBPW; j++)
-      if (!(bits[i] & (1 << j)))
-	{
-	  len = 0;
-	  m = NULL;
-	}
-      else
-	{
-	  if (len == 0)
-	    {
-	      addr = ((vm_offset_t) (i * NBPW + j)
-		      << PAGE_SHIFT);
-	      if ((addr & mask) == 0)
-		{
-		  len += PAGE_SIZE;
-		  m = (void *) addr;
-		}
-	    }
-	  else
-	    len += PAGE_SIZE;
-	}
-
-  if (len != size)
-    {
-      simple_unlock (&vm_page_queue_free_lock);
-      kfree ((vm_offset_t) bits, bits_len);
-      return (NULL);
-    }
-
-  /*
-   * Remove pages from free list
-   * and construct list to return to caller.
-   */
-  page_list = NULL;
-  for (len = 0; len < size; len += PAGE_SIZE, addr += PAGE_SIZE)
-    {
-      prev = NULL;
-      for (p = vm_page_queue_free; p; p = (vm_page_t) p->pageq.next)
-	{
-	  if (p->phys_addr == addr)
-	    break;
-	  prev = p;
-	}
-      if (!p)
-	panic ("alloc_contig_mem: page not on free list");
-      if (prev)
-	prev->pageq.next = p->pageq.next;
-      else
-	vm_page_queue_free = (vm_page_t) p->pageq.next;
-      p->free = FALSE;
-      p->pageq.next = NULL;
-      if (!page_list)
-	page_list = tail = p;
-      else
-	{
-	  tail->pageq.next = (queue_entry_t) p;
-	  tail = p;
-	}
-      vm_page_free_count--;
-    }
-
-  simple_unlock (&vm_page_queue_free_lock);
-  kfree ((vm_offset_t) bits, bits_len);
   if (pages)
-    *pages = page_list;
-  return (void *) phystokv(m);
+    *pages = p;
+
+  return phystokv(vm_page_to_pa(p));
 }
 
 /*
  * Free memory allocated by alloc_contig_mem.
  */
 void
-free_contig_mem (vm_page_t pages)
+free_contig_mem (vm_page_t pages, unsigned size)
 {
-  int i;
-  vm_page_t p;
-
-  for (p = pages, i = 0; p->pageq.next; p = (vm_page_t) p->pageq.next, i++)
-    p->free = TRUE;
-  p->free = TRUE;
-  simple_lock (&vm_page_queue_free_lock);
-  vm_page_free_count += i + 1;
-  p->pageq.next = (queue_entry_t) vm_page_queue_free;
-  vm_page_queue_free = pages;
-  simple_unlock (&vm_page_queue_free_lock);
+  vm_page_free_contig(pages, size);
 }
 
 /* This is the number of bits of precision for the loops_per_second.  Each
