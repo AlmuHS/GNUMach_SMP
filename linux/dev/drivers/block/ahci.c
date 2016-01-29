@@ -839,11 +839,11 @@ static void ahci_probe_dev(unsigned char bus, unsigned char device)
 		printk("ahci: %02x:%02x.%x: Can not read BAR 5", bus, dev, fun);
 		return;
 	}
-	if (bar & 0x01) {
+	if (bar & PCI_BASE_ADDRESS_SPACE_IO) {
 		printk("ahci: %02x:%02x.%x: BAR 5 is I/O?!", bus, dev, fun);
 		return;
 	}
-	bar &= ~0x0f;
+	bar &= PCI_BASE_ADDRESS_MEM_MASK;
 
 	if (pcibios_read_config_byte(bus, device, PCI_INTERRUPT_LINE, &irq) != PCIBIOS_SUCCESSFUL) {
 		printk("ahci: %02x:%02x.%x: Can not read IRQ", bus, dev, fun);
