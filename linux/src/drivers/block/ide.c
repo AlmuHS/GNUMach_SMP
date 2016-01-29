@@ -325,7 +325,7 @@
 #endif /* CONFIG_BLK_DEV_PROMISE */
 
 static const byte	ide_hwif_to_major[MAX_HWIFS] = {IDE0_MAJOR, IDE1_MAJOR, IDE2_MAJOR, IDE3_MAJOR};
-static const unsigned short default_io_base[MAX_HWIFS] = {0x1f0, 0x170, 0x1e8, 0x168};
+static unsigned short default_io_base[MAX_HWIFS] = {0x1f0, 0x170, 0x1e8, 0x168};
 static const byte	default_irqs[MAX_HWIFS]     = {14, 15, 11, 10};
 static int	idebus_parameter; /* holds the "idebus=" parameter */
 static int	system_bus_speed; /* holds what we think is VESA/PCI bus speed */
@@ -366,6 +366,15 @@ static void set_recovery_timer (ide_hwif_t *hwif)
 #define SET_RECOVERY_TIMER(drive)
 
 #endif /* DISK_RECOVERY_TIME */
+
+/* Called by other drivers to disable the legacy IDE driver on a given IDE base.  */
+void ide_disable_base(unsigned base)
+{
+	unsigned i;
+	for (i = 0; i < MAX_HWIFS; i++)
+		if (default_io_base[i] == base)
+			default_io_base[i] = 0;
+}
 
 
 /*

@@ -861,6 +861,21 @@ static void ahci_probe_dev(unsigned char bus, unsigned char device)
 		return;
 	}
 
+#ifdef CONFIG_BLK_DEV_IDE
+	/* OK, we will handle it. Disable probing on legacy IDE ports it may have.  */
+	for (i = 0; i < 6; i++)
+	{
+		unsigned mybar;
+		if (pcibios_read_config_dword(bus, device, PCI_BASE_ADDRESS_0 + i*4, &mybar) == PCIBIOS_SUCCESSFUL) {
+			if (!(bar & PCI_BASE_ADDRESS_SPACE_IO))
+				/* Memory, don't care */
+				continue;
+			/* printk("ahci: %02x:%02x.%x: BAR %d is %x\n", bus, dev, fun, i, mybar); */
+			ide_disable_base(bar & PCI_BASE_ADDRESS_IO_MASK);
+		}
+	}
+#endif
+
 	nports = (readl(&ahci_host->cap) & 0x1f) + 1;
 	port_map = readl(&ahci_host->pi);
 
