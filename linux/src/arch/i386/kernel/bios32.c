@@ -909,6 +909,8 @@ unsigned long pcibios_init(unsigned long memory_start, unsigned long memory_end)
 	}
 	if (bios32_entry && check_pcibios())
  		access_pci = &pci_bios_access;
+	else
+		access_pci = check_direct_pci();
 #endif
 	return memory_start;
 }
