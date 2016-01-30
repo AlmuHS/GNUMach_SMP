@@ -286,7 +286,11 @@ i386at_init(void)
 	/*
 	 * Read memory map and load it into the physical page allocator.
 	 */
+#ifdef MACH_HYP
+	biosmem_xen_bootstrap();
+#else /* MACH_HYP */
 	biosmem_bootstrap((struct multiboot_raw_info *) &boot_info);
+#endif /* MACH_HYP */
 
 #ifdef MACH_XEN
 	kernel_cmdline = (char*) boot_info.cmd_line;

@@ -20,6 +20,8 @@
 libkernel_a_SOURCES += \
 	i386/i386at/autoconf.c \
 	i386/i386at/autoconf.h \
+	i386/i386at/biosmem.c \
+	i386/i386at/biosmem.h \
 	i386/i386at/conf.c \
 	i386/i386at/cons_conf.c \
 	i386/i386at/idt.h \
@@ -29,8 +31,6 @@ libkernel_a_SOURCES += \
 
 if PLATFORM_at
 libkernel_a_SOURCES += \
-	i386/i386at/biosmem.c \
-	i386/i386at/biosmem.h \
 	i386/i386at/boothdr.S \
 	i386/i386at/com.c \
 	i386/i386at/com.h \

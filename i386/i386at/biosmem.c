@@ -24,6 +24,7 @@
 #include <kern/macros.h>
 #include <kern/printf.h>
 #include <mach/vm_param.h>
+#include <mach/xen.h>
 #include <mach/machine/multiboot.h>
 #include <sys/types.h>
 #include <vm/vm_page.h>
@@ -108,14 +109,18 @@ static uint32_t biosmem_heap_end __bootdata;
 
 static char biosmem_panic_toobig_msg[] __bootdata
     = "biosmem: too many memory map entries";
+#ifndef MACH_HYP
 static char biosmem_panic_setup_msg[] __bootdata
     = "biosmem: unable to set up the early memory allocator";
+#endif /* MACH_HYP */
 static char biosmem_panic_noseg_msg[] __bootdata
     = "biosmem: unable to find any memory segment";
 static char biosmem_panic_inval_msg[] __bootdata
     = "biosmem: attempt to allocate 0 page";
 static char biosmem_panic_nomem_msg[] __bootdata
     = "biosmem: unable to allocate memory";
+
+#ifndef MACH_HYP
 
 static void __boot
 biosmem_map_build(const struct multiboot_raw_info *mbi)
@@ -160,6 +165,8 @@ biosmem_map_build_simple(const struct multiboot_raw_info *mbi)
 
     biosmem_map_size = 2;
 }
+
+#endif /* MACH_HYP */
 
 static int __boot
 biosmem_map_entry_is_invalid(const struct biosmem_map_entry *entry)
@@ -375,6 +382,8 @@ biosmem_segment_size(unsigned int seg_index)
     return biosmem_segments[seg_index].end - biosmem_segments[seg_index].start;
 }
 
+#ifndef MACH_HYP
+
 static void __boot
 biosmem_save_cmdline_sizes(struct multiboot_raw_info *mbi)
 {
@@ -530,16 +539,13 @@ biosmem_setup_allocator(struct multiboot_raw_info *mbi)
     biosmem_heap_cur = biosmem_heap_end;
 }
 
-void __boot
-biosmem_bootstrap(struct multiboot_raw_info *mbi)
+#endif /* MACH_HYP */
+
+static void __boot
+biosmem_bootstrap_common(void)
 {
     phys_addr_t phys_start, phys_end, last_addr;
     int error;
-
-    if (mbi->flags & MULTIBOOT_LOADER_MMAP)
-        biosmem_map_build(mbi);
-    else
-        biosmem_map_build_simple(mbi);
 
     biosmem_map_adjust();
 
@@ -585,6 +591,61 @@ biosmem_bootstrap(struct multiboot_raw_info *mbi)
     biosmem_set_segment(VM_PAGE_SEG_HIGHMEM, phys_start, phys_end);
 
 out:
+    /* XXX phys_last_addr must be part of the direct physical mapping */
+    phys_last_addr = last_addr;
+}
+
+#ifdef MACH_HYP
+
+void
+biosmem_xen_bootstrap(void)
+{
+    struct biosmem_map_entry *entry;
+
+    entry = biosmem_map;
+    entry->base_addr = 0;
+    entry->length = boot_info.nr_pages << PAGE_SHIFT;
+    entry->type = BIOSMEM_TYPE_AVAILABLE;
+
+    biosmem_map_size = 1;
+
+    biosmem_bootstrap_common();
+
+    biosmem_heap_start = _kvtophys(boot_info.pt_base)
+                         + (boot_info.nr_pt_frames + 3) * 0x1000;
+    biosmem_heap_end = boot_info.nr_pages << PAGE_SHIFT;
+
+#ifndef __LP64__
+    /* TODO Check that this actually makes sense */
+    if (biosmem_heap_end > VM_PAGE_DIRECTMAP_LIMIT)
+        biosmem_heap_end = VM_PAGE_DIRECTMAP_LIMIT;
+#endif /* __LP64__ */
+
+    /*
+     * XXX Allocation on Xen must be bottom-up :
+     * At the "start of day", only 512k are available after the boot
+     * data. The pmap module then creates a 4g mapping so all physical
+     * memory is available, but it uses this allocator to do so.
+     * Therefore, it must return pages from this small 512k regions
+     * first.
+     */
+    biosmem_heap_cur = biosmem_heap_start;
+}
+
+#else /* MACH_HYP */
+
+void __boot
+biosmem_bootstrap(struct multiboot_raw_info *mbi)
+{
+    phys_addr_t phys_start, phys_end, last_addr;
+    int error;
+
+    if (mbi->flags & MULTIBOOT_LOADER_MMAP)
+        biosmem_map_build(mbi);
+    else
+        biosmem_map_build_simple(mbi);
+
+    biosmem_bootstrap_common();
 
     /*
      * The kernel and modules command lines will be memory mapped later
@@ -592,10 +653,9 @@ out:
      */
     biosmem_save_cmdline_sizes(mbi);
     biosmem_setup_allocator(mbi);
-
-    /* XXX phys_last_addr must be part of the direct physical mapping */
-    phys_last_addr = last_addr;
 }
+
+#endif /* MACH_HYP */
 
 unsigned long __boot
 biosmem_bootalloc(unsigned int nr_pages)
@@ -609,13 +669,22 @@ biosmem_bootalloc(unsigned int nr_pages)
     if (size == 0)
         boot_panic(biosmem_panic_inval_msg);
 
+#ifdef MACH_HYP
+    addr = biosmem_heap_cur;
+#else /* MACH_HYP */
     /* Top-down allocation to avoid unnecessarily filling DMA segments */
     addr = biosmem_heap_cur - size;
+#endif /* MACH_HYP */
 
     if ((addr < biosmem_heap_start) || (addr > biosmem_heap_cur))
         boot_panic(biosmem_panic_nomem_msg);
 
+#ifdef MACH_HYP
+    biosmem_heap_cur += size;
+#else /* MACH_HYP */
     biosmem_heap_cur = addr;
+#endif /* MACH_HYP */
+
     return addr;
 }
 

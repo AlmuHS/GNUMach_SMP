@@ -108,6 +108,14 @@
  */
 #define VM_PAGE_DMA_LIMIT       DECL_CONST(0x1000000, UL)
 
+#ifdef MACH_XEN
+/* TODO Completely check Xen physical/virtual layout */
+#define VM_PAGE_MAX_SEGS 3
+#define VM_PAGE_DIRECTMAP_LIMIT (VM_MAX_KERNEL_ADDRESS \
+				 - VM_MIN_KERNEL_ADDRESS \
+				 - VM_KERNEL_MAP_SIZE)
+#define VM_PAGE_HIGHMEM_LIMIT   DECL_CONST(0x10000000000000, ULL)
+#else /* MACH_XEN */
 #ifdef __LP64__
 #define VM_PAGE_MAX_SEGS 4
 #define VM_PAGE_DMA32_LIMIT     DECL_CONST(0x100000000, UL)
@@ -125,6 +133,7 @@
 #define VM_PAGE_HIGHMEM_LIMIT   DECL_CONST(0xfffff000, UL)
 #endif /* PAE */
 #endif /* __LP64__ */
+#endif /* MACH_XEN */
 
 /*
  * Physical segment indexes.

@@ -47,7 +47,11 @@
  *
  * It is called before paging is enabled.
  */
+#ifdef MACH_HYP
+void biosmem_xen_bootstrap(void);
+#else /* MACH_HYP */
 void biosmem_bootstrap(struct multiboot_raw_info *mbi);
+#endif /* MACH_HYP */
 
 /*
  * Allocate contiguous physical pages during bootstrap.
