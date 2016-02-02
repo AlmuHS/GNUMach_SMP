@@ -637,9 +637,6 @@ biosmem_xen_bootstrap(void)
 void __boot
 biosmem_bootstrap(struct multiboot_raw_info *mbi)
 {
-    phys_addr_t phys_start, phys_end, last_addr;
-    int error;
-
     if (mbi->flags & MULTIBOOT_LOADER_MMAP)
         biosmem_map_build(mbi);
     else
