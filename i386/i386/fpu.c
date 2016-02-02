@@ -189,7 +189,7 @@ fpu_module_init(void)
 {
 	kmem_cache_init(&ifps_cache, "i386_fpsave_state",
 			sizeof(struct i386_fpsave_state), 16,
-			NULL, NULL, NULL, 0);
+			NULL, 0);
 }
 
 /*

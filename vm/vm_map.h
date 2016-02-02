@@ -363,9 +363,6 @@ MACRO_END
  *	Exported procedures that operate on vm_map_t.
  */
 
-extern vm_offset_t	kentry_data;
-extern vm_size_t	kentry_data_size;
-extern int		kentry_count;
 /* Initialize the module */
 extern void		vm_map_init(void);
 

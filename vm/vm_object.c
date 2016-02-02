@@ -262,7 +262,7 @@ vm_object_t vm_object_allocate(
 void vm_object_bootstrap(void)
 {
 	kmem_cache_init(&vm_object_cache, "vm_object",
-			sizeof(struct vm_object), 0, NULL, NULL, NULL, 0);
+			sizeof(struct vm_object), 0, NULL, 0);
 
 	queue_init(&vm_object_cached_list);
 	simple_lock_init(&vm_object_cached_lock_data);

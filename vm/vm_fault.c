@@ -105,7 +105,7 @@ extern struct db_watchpoint *db_watchpoint_list;
 void vm_fault_init(void)
 {
 	kmem_cache_init(&vm_fault_state_cache, "vm_fault_state",
-			sizeof(vm_fault_state_t), 0, NULL, NULL, NULL, 0);
+			sizeof(vm_fault_state_t), 0, NULL, 0);
 }
 
 /*

@@ -371,7 +371,7 @@ thread_t switch_context(
 void pcb_module_init(void)
 {
 	kmem_cache_init(&pcb_cache, "pcb", sizeof(struct pcb), 0,
-			NULL, NULL, NULL, 0);
+			NULL, 0);
 
 	fpu_module_init();
 }

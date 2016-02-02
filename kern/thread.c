@@ -195,16 +195,20 @@ kern_return_t stack_alloc(
 	(void) splx(s);
 
 	if (stack == 0) {
-		kern_return_t kr;
+		struct vm_page *page;
+
 		/*
 		 *	Kernel stacks should be naturally aligned,
 		 *	so that it is easy to find the starting/ending
 		 *	addresses of a stack given an address in the middle.
 		 */
-		kr = kmem_alloc_aligned(kmem_map, &stack, KERNEL_STACK_SIZE);
-		if (kr != KERN_SUCCESS)
-			return kr;
+		page = vm_page_alloc_pa(vm_page_order(KERNEL_STACK_SIZE),
+					VM_PAGE_SEL_DIRECTMAP,
+					VM_PT_STACK);
+		if (page == NULL)
+			return KERN_RESOURCE_SHORTAGE;
 
+		stack = phystokv(vm_page_to_pa(page));
 #if	MACH_DEBUG
 		stack_init(stack);
 #endif	/* MACH_DEBUG */
@@ -298,7 +302,7 @@ void stack_privilege(
 void thread_init(void)
 {
 	kmem_cache_init(&thread_cache, "thread", sizeof(struct thread), 0,
-			NULL, NULL, NULL, 0);
+			NULL, 0);
 
 	/*
 	 *	Fill in a template thread for fast initialization.

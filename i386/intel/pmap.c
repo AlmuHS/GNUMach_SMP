@@ -978,9 +978,9 @@ void pmap_init(void)
 	 *	and of the physical-to-virtual entries.
 	 */
 	s = (vm_size_t) sizeof(struct pmap);
-	kmem_cache_init(&pmap_cache, "pmap", s, 0, NULL, NULL, NULL, 0);
+	kmem_cache_init(&pmap_cache, "pmap", s, 0, NULL, 0);
 	s = (vm_size_t) sizeof(struct pv_entry);
-	kmem_cache_init(&pv_list_cache, "pv_entry", s, 0, NULL, NULL, NULL, 0);
+	kmem_cache_init(&pv_list_cache, "pv_entry", s, 0, NULL, 0);
 
 #if	NCPUS > 1
 	/*

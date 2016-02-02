@@ -63,7 +63,7 @@ ipc_port_t new_task_notification = NULL;
 void task_init(void)
 {
 	kmem_cache_init(&task_cache, "task", sizeof(struct task), 0,
-			NULL, NULL, NULL, 0);
+			NULL, 0);
 
 	eml_init();
 	machine_task_module_init ();

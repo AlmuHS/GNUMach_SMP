@@ -1554,7 +1554,7 @@ void mach_device_init(void)
 	device_io_map->wait_for_space = TRUE;
 
 	kmem_cache_init(&io_inband_cache, "io_buf_ptr_inband",
-			sizeof(io_buf_ptr_inband_t), 0, NULL, NULL, NULL, 0);
+			sizeof(io_buf_ptr_inband_t), 0, NULL, 0);
 
 	mach_device_trap_init();
 }
@@ -1598,7 +1598,7 @@ static void
 mach_device_trap_init(void)
 {
 	kmem_cache_init(&io_trap_cache, "io_req", IOTRAP_REQSIZE, 0,
-			NULL, NULL, NULL, 0);
+			NULL, 0);
 }
 
 /*

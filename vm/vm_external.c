@@ -138,13 +138,13 @@ void		vm_external_module_initialize(void)
 	vm_size_t	size = (vm_size_t) sizeof(struct vm_external);
 
 	kmem_cache_init(&vm_external_cache, "vm_external", size, 0,
-			NULL, NULL, NULL, 0);
+			NULL, 0);
 
 	kmem_cache_init(&vm_object_small_existence_map_cache,
 			"small_existence_map", SMALL_SIZE, 0,
-			NULL, NULL, NULL, 0);
+			NULL, 0);
 
 	kmem_cache_init(&vm_object_large_existence_map_cache,
 			"large_existence_map", LARGE_SIZE, 0,
-			NULL, NULL, NULL, 0);
+			NULL, 0);
 }

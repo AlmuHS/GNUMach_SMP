@@ -137,7 +137,7 @@ ipc_marequest_init(void)
 	}
 
 	kmem_cache_init(&ipc_marequest_cache, "ipc_marequest",
-			sizeof(struct ipc_marequest), 0, NULL, NULL, NULL, 0);
+			sizeof(struct ipc_marequest), 0, NULL, 0);
 }
 
 /*

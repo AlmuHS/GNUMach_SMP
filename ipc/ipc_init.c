@@ -73,16 +73,16 @@ ipc_bootstrap(void)
 	ipc_port_timestamp_data = 0;
 
 	kmem_cache_init(&ipc_space_cache, "ipc_space",
-			sizeof(struct ipc_space), 0, NULL, NULL, NULL, 0);
+			sizeof(struct ipc_space), 0, NULL, 0);
 
 	kmem_cache_init(&ipc_entry_cache, "ipc_entry",
-			sizeof(struct ipc_entry), 0, NULL, NULL, NULL, 0);
+			sizeof(struct ipc_entry), 0, NULL, 0);
 
 	kmem_cache_init(&ipc_object_caches[IOT_PORT], "ipc_port",
-			sizeof(struct ipc_port), 0, NULL, NULL, NULL, 0);
+			sizeof(struct ipc_port), 0, NULL, 0);
 
 	kmem_cache_init(&ipc_object_caches[IOT_PORT_SET], "ipc_pset",
-			sizeof(struct ipc_pset), 0, NULL, NULL, NULL, 0);
+			sizeof(struct ipc_pset), 0, NULL, 0);
 
 	/* create special spaces */
 

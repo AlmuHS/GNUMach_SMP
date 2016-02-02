@@ -68,7 +68,7 @@ global_act_init(void)
 {
 #ifndef ACT_STATIC_KLUDGE
 	kmem_cache_init(&act_cache, "Act", sizeof(struct Act), 0,
-			NULL, NULL, NULL, 0);
+			NULL, 0);
 #else
 	int i;
 

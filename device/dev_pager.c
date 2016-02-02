@@ -173,7 +173,7 @@ void dev_pager_hash_init(void)
 
 	size = sizeof(struct dev_pager_entry);
 	kmem_cache_init(&dev_pager_hash_cache, "dev_pager_entry", size, 0,
-			NULL, NULL, NULL, 0);
+			NULL, 0);
 	for (i = 0; i < DEV_PAGER_HASH_COUNT; i++)
 	    queue_init(&dev_pager_hashtable[i]);
 	simple_lock_init(&dev_pager_hash_lock);
@@ -705,7 +705,7 @@ void device_pager_init(void)
 	 */
 	size = sizeof(struct dev_pager);
 	kmem_cache_init(&dev_pager_cache, "dev_pager", size, 0,
-			NULL, NULL, NULL, 0);
+			NULL, 0);
 
 	/*
 	 *	Initialize the name port hashing stuff.

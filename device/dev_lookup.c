@@ -366,5 +366,5 @@ dev_lookup_init(void)
 	    queue_init(&dev_number_hash_table[i]);
 
 	kmem_cache_init(&dev_hdr_cache, "mach_device",
-			sizeof(struct mach_device), 0, NULL, NULL, NULL, 0);
+			sizeof(struct mach_device), 0, NULL, 0);
 }

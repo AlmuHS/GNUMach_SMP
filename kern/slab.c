@@ -87,6 +87,7 @@
 #include <mach/vm_param.h>
 #include <mach/machine/vm_types.h>
 #include <vm/vm_kern.h>
+#include <vm/vm_page.h>
 #include <vm/vm_types.h>
 #include <sys/types.h>
 
@@ -217,9 +218,7 @@
  *
  * The flags don't change once set and can be tested without locking.
  */
-#define KMEM_CF_NO_CPU_POOL     0x01    /* CPU pool layer disabled */
 #define KMEM_CF_SLAB_EXTERNAL   0x02    /* Slab data is off slab */
-#define KMEM_CF_NO_RECLAIM      0x04    /* Slabs are not reclaimable */
 #define KMEM_CF_VERIFY          0x08    /* Debugging facilities enabled */
 #define KMEM_CF_DIRECT          0x10    /* No buf-to-slab tree lookup */
 
@@ -384,24 +383,6 @@ static inline void * kmem_bufctl_to_buf(union kmem_bufctl *bufctl,
     return (void *)bufctl - cache->bufctl_dist;
 }
 
-static vm_offset_t kmem_pagealloc(vm_size_t size)
-{
-    vm_offset_t addr;
-    kern_return_t kr;
-
-    kr = kmem_alloc_wired(kmem_map, &addr, size);
-
-    if (kr != KERN_SUCCESS)
-        return 0;
-
-    return addr;
-}
-
-static void kmem_pagefree(vm_offset_t ptr, vm_size_t size)
-{
-    kmem_free(kmem_map, ptr, size);
-}
-
 static void kmem_slab_create_verify(struct kmem_slab *slab,
                                     struct kmem_cache *cache)
 {
@@ -430,30 +411,27 @@ static void kmem_slab_create_verify(struct kmem_slab *slab,
 static struct kmem_slab * kmem_slab_create(struct kmem_cache *cache,
                                            size_t color)
 {
+    struct vm_page *page;
     struct kmem_slab *slab;
     union kmem_bufctl *bufctl;
     size_t buf_size;
     unsigned long buffers;
     void *slab_buf;
 
-    if (cache->slab_alloc_fn == NULL)
-        slab_buf = (void *)kmem_pagealloc(cache->slab_size);
-    else
-        slab_buf = (void *)cache->slab_alloc_fn(cache->slab_size);
+    page = vm_page_alloc_pa(cache->slab_order,
+                            VM_PAGE_SEL_DIRECTMAP,
+                            VM_PT_KMEM);
 
-    if (slab_buf == NULL)
+    if (page == NULL)
         return NULL;
 
+    slab_buf = (void *)phystokv(vm_page_to_pa(page));
+
     if (cache->flags & KMEM_CF_SLAB_EXTERNAL) {
-        assert(!(cache->flags & KMEM_CF_NO_RECLAIM));
         slab = (struct kmem_slab *)kmem_cache_alloc(&kmem_slab_cache);
 
         if (slab == NULL) {
-            if (cache->slab_free_fn == NULL)
-                kmem_pagefree((vm_offset_t)slab_buf, cache->slab_size);
-            else
-                cache->slab_free_fn((vm_offset_t)slab_buf, cache->slab_size);
-
+            vm_page_free_pa(page, cache->slab_order);
             return NULL;
         }
     } else {
@@ -514,21 +492,19 @@ static void kmem_slab_destroy_verify(struct kmem_slab *slab,
  */
 static void kmem_slab_destroy(struct kmem_slab *slab, struct kmem_cache *cache)
 {
+    struct vm_page *page;
     vm_offset_t slab_buf;
 
     assert(slab->nr_refs == 0);
     assert(slab->first_free != NULL);
-    assert(!(cache->flags & KMEM_CF_NO_RECLAIM));
 
     if (cache->flags & KMEM_CF_VERIFY)
         kmem_slab_destroy_verify(slab, cache);
 
     slab_buf = (vm_offset_t)P2ALIGN((unsigned long)slab->addr, PAGE_SIZE);
-
-    if (cache->slab_free_fn == NULL)
-        kmem_pagefree(slab_buf, cache->slab_size);
-    else
-        cache->slab_free_fn(slab_buf, cache->slab_size);
+    page = vm_page_lookup_pa(kvtophys(slab_buf));
+    assert(page != NULL);
+    vm_page_free_pa(page, cache->slab_order);
 
     if (cache->flags & KMEM_CF_SLAB_EXTERNAL)
         kmem_cache_free(&kmem_slab_cache, (vm_offset_t)slab);
@@ -702,9 +678,10 @@ static void kmem_cache_error(struct kmem_cache *cache, void *buf, int error,
  */
 static void kmem_cache_compute_sizes(struct kmem_cache *cache, int flags)
 {
-    size_t i, buffers, buf_size, slab_size, free_slab_size, optimal_size = 0;
-    size_t waste, waste_min;
-    int embed, optimal_embed = 0;
+    size_t i, buffers, buf_size, slab_size, free_slab_size;
+    size_t waste, waste_min, optimal_size = optimal_size;
+    int embed, optimal_embed = optimal_embed;
+    unsigned int slab_order, optimal_order = optimal_order;
 
     buf_size = cache->buf_size;
 
@@ -716,7 +693,9 @@ static void kmem_cache_compute_sizes(struct kmem_cache *cache, int flags)
 
     do {
         i++;
-        slab_size = P2ROUND(i * buf_size, PAGE_SIZE);
+
+        slab_order = vm_page_order(i * buf_size);
+        slab_size = PAGE_SIZE << slab_order;
         free_slab_size = slab_size;
 
         if (flags & KMEM_CACHE_NOOFFSLAB)
@@ -739,19 +718,19 @@ static void kmem_cache_compute_sizes(struct kmem_cache *cache, int flags)
 
         if (waste <= waste_min) {
             waste_min = waste;
+            optimal_order = slab_order;
             optimal_size = slab_size;
             optimal_embed = embed;
         }
     } while ((buffers < KMEM_MIN_BUFS_PER_SLAB)
              && (slab_size < KMEM_SLAB_SIZE_THRESHOLD));
 
-    assert(optimal_size > 0);
     assert(!(flags & KMEM_CACHE_NOOFFSLAB) || optimal_embed);
 
+    cache->slab_order = optimal_order;
     cache->slab_size = optimal_size;
-    slab_size = cache->slab_size - (optimal_embed
-                ? sizeof(struct kmem_slab)
-                : 0);
+    slab_size = cache->slab_size
+                - (optimal_embed ? sizeof(struct kmem_slab) : 0);
     cache->bufs_per_slab = slab_size / buf_size;
     cache->color_max = slab_size % buf_size;
 
@@ -767,9 +746,8 @@ static void kmem_cache_compute_sizes(struct kmem_cache *cache, int flags)
 }
 
 void kmem_cache_init(struct kmem_cache *cache, const char *name,
-                     size_t obj_size, size_t align, kmem_cache_ctor_t ctor,
-                     kmem_slab_alloc_fn_t slab_alloc_fn,
-                     kmem_slab_free_fn_t slab_free_fn, int flags)
+                     size_t obj_size, size_t align,
+                     kmem_cache_ctor_t ctor, int flags)
 {
 #if SLAB_USE_CPU_POOLS
     struct kmem_cpu_pool_type *cpu_pool_type;
@@ -782,15 +760,6 @@ void kmem_cache_init(struct kmem_cache *cache, const char *name,
 #else /* SLAB_VERIFY */
     cache->flags = 0;
 #endif /* SLAB_VERIFY */
-
-    if (flags & KMEM_CACHE_NOCPUPOOL)
-        cache->flags |= KMEM_CF_NO_CPU_POOL;
-
-    if (flags & KMEM_CACHE_NORECLAIM) {
-        assert(slab_free_fn == NULL);
-        flags |= KMEM_CACHE_NOOFFSLAB;
-        cache->flags |= KMEM_CF_NO_RECLAIM;
-    }
 
     if (flags & KMEM_CACHE_VERIFY)
         cache->flags |= KMEM_CF_VERIFY;
@@ -819,8 +788,6 @@ void kmem_cache_init(struct kmem_cache *cache, const char *name,
     cache->nr_slabs = 0;
     cache->nr_free_slabs = 0;
     cache->ctor = ctor;
-    cache->slab_alloc_fn = slab_alloc_fn;
-    cache->slab_free_fn = slab_free_fn;
     strncpy(cache->name, name, sizeof(cache->name));
     cache->name[sizeof(cache->name) - 1] = '\0';
     cache->buftag_dist = 0;
@@ -907,9 +874,6 @@ static void kmem_cache_reap(struct kmem_cache *cache)
     struct kmem_slab *slab;
     struct list dead_slabs;
     unsigned long nr_free_slabs;
-
-    if (cache->flags & KMEM_CF_NO_RECLAIM)
-        return;
 
     simple_lock(&cache->lock);
     list_set_head(&dead_slabs, &cache->free_slabs);
@@ -1297,7 +1261,7 @@ void slab_init(void)
         sprintf(name, "kmem_cpu_array_%d", cpu_pool_type->array_size);
         size = sizeof(void *) * cpu_pool_type->array_size;
         kmem_cache_init(cpu_pool_type->array_cache, name, size,
-                        cpu_pool_type->array_align, NULL, NULL, NULL, 0);
+                        cpu_pool_type->array_align, NULL, 0);
     }
 #endif /* SLAB_USE_CPU_POOLS */
 
@@ -1305,25 +1269,7 @@ void slab_init(void)
      * Prevent off slab data for the slab cache to avoid infinite recursion.
      */
     kmem_cache_init(&kmem_slab_cache, "kmem_slab", sizeof(struct kmem_slab),
-                    0, NULL, NULL, NULL, KMEM_CACHE_NOOFFSLAB);
-}
-
-static vm_offset_t kalloc_pagealloc(vm_size_t size)
-{
-    vm_offset_t addr;
-    kern_return_t kr;
-
-    kr = kmem_alloc_wired(kmem_map, &addr, size);
-
-    if (kr != KERN_SUCCESS)
-        return 0;
-
-    return addr;
-}
-
-static void kalloc_pagefree(vm_offset_t ptr, vm_size_t size)
-{
-    kmem_free(kmem_map, ptr, size);
+                    0, NULL, KMEM_CACHE_NOOFFSLAB);
 }
 
 void kalloc_init(void)
@@ -1335,8 +1281,7 @@ void kalloc_init(void)
 
     for (i = 0; i < ARRAY_SIZE(kalloc_caches); i++) {
         sprintf(name, "kalloc_%lu", size);
-        kmem_cache_init(&kalloc_caches[i], name, size, 0, NULL,
-                        kalloc_pagealloc, kalloc_pagefree, 0);
+        kmem_cache_init(&kalloc_caches[i], name, size, 0, NULL, 0);
         size <<= 1;
     }
 }
@@ -1387,8 +1332,18 @@ vm_offset_t kalloc(vm_size_t size)
 
         if ((buf != 0) && (cache->flags & KMEM_CF_VERIFY))
             kalloc_verify(cache, buf, size);
-    } else
-        buf = (void *)kalloc_pagealloc(size);
+    } else {
+        struct vm_page *page;
+
+        page = vm_page_alloc_pa(vm_page_order(size),
+                                VM_PAGE_SEL_DIRECTMAP,
+                                VM_PT_KERNEL);
+
+        if (page == NULL)
+            return 0;
+
+        buf = (void *)phystokv(vm_page_to_pa(page));
+    }
 
     return (vm_offset_t)buf;
 }
@@ -1429,7 +1384,10 @@ void kfree(vm_offset_t data, vm_size_t size)
 
         kmem_cache_free(cache, data);
     } else {
-        kalloc_pagefree(data, size);
+        struct vm_page *page;
+
+        page = vm_page_lookup_pa(kvtophys(data));
+        vm_page_free_pa(page, vm_page_order(size));
     }
 }
 
@@ -1529,12 +1487,8 @@ kern_return_t host_slab_info(host_t host, cache_info_array_t *infop,
 
     list_for_each_entry(&kmem_cache_list, cache, node) {
         simple_lock(&cache->lock);
-        info[i].flags = ((cache->flags & KMEM_CF_NO_CPU_POOL)
-                         ? CACHE_FLAGS_NO_CPU_POOL : 0)
-                        | ((cache->flags & KMEM_CF_SLAB_EXTERNAL)
-                           ? CACHE_FLAGS_SLAB_EXTERNAL : 0)
-                        | ((cache->flags & KMEM_CF_NO_RECLAIM)
-                           ? CACHE_FLAGS_NO_RECLAIM : 0)
+        info[i].flags = ((cache->flags & KMEM_CF_SLAB_EXTERNAL)
+                         ? CACHE_FLAGS_SLAB_EXTERNAL : 0)
                         | ((cache->flags & KMEM_CF_VERIFY)
                            ? CACHE_FLAGS_VERIFY : 0)
                         | ((cache->flags & KMEM_CF_DIRECT)

@@ -37,6 +37,7 @@
 #include <machine/machspl.h>
 #include <machine/db_interface.h>
 #include <machine/db_trace.h>
+#include <i386at/model_dep.h>
 
 #include <ddb/db_access.h>
 #include <ddb/db_command.h>
@@ -129,7 +130,6 @@ db_i386_reg_value(
 	long			*dp = 0;
 	db_expr_t		null_reg = 0;
 	thread_t		thread = ap->thread;
-	extern unsigned		int_stack_high;
 
 	if (db_option(ap->modif, 'u')) {
 	    if (thread == THREAD_NULL) {
@@ -139,7 +139,7 @@ db_i386_reg_value(
 	    if (thread == current_thread()) {
 		if (ddb_regs.cs & 0x3)
 		    dp = vp->valuep;
-		else if (ddb_regs.ebp < int_stack_high)
+		else if (ON_INT_STACK(ddb_regs.ebp))
 		    db_error("cannot get/set user registers in nested interrupt\n");
 	    }
 	} else {

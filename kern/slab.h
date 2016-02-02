@@ -137,14 +137,6 @@ struct kmem_slab {
 typedef void (*kmem_cache_ctor_t)(void *obj);
 
 /*
- * Types for slab allocation/free functions.
- *
- * All addresses and sizes must be page-aligned.
- */
-typedef vm_offset_t (*kmem_slab_alloc_fn_t)(vm_size_t);
-typedef void (*kmem_slab_free_fn_t)(vm_offset_t, vm_size_t);
-
-/*
  * Cache name buffer size.  The size is chosen so that struct
  * kmem_cache fits into two cache lines.  The size of a cache line on
  * a typical CPU is 64 bytes.
@@ -175,6 +167,7 @@ struct kmem_cache {
     struct rbtree active_slabs;
     int flags;
     size_t bufctl_dist; /* Distance from buffer to bufctl   */
+    unsigned int slab_order;
     size_t slab_size;
     unsigned long bufs_per_slab;
     unsigned long nr_objs;  /* Number of allocated objects */
@@ -189,8 +182,6 @@ struct kmem_cache {
     size_t color_max;
     unsigned long nr_bufs;  /* Total number of buffers */
     unsigned long nr_slabs;
-    kmem_slab_alloc_fn_t slab_alloc_fn;
-    kmem_slab_free_fn_t slab_free_fn;
     char name[KMEM_CACHE_NAME_SIZE];
     size_t buftag_dist; /* Distance from buffer to buftag */
     size_t redzone_pad; /* Bytes from end of object to redzone word */
@@ -210,19 +201,15 @@ extern vm_map_t kmem_map;
 /*
  * Cache initialization flags.
  */
-#define KMEM_CACHE_NOCPUPOOL    0x1 /* Don't use the per-cpu pools */
-#define KMEM_CACHE_NOOFFSLAB    0x2 /* Don't allocate external slab data */
-#define KMEM_CACHE_NORECLAIM    0x4 /* Never give slabs back to their source,
-                                       implies KMEM_CACHE_NOOFFSLAB */
-#define KMEM_CACHE_VERIFY       0x8 /* Use debugging facilities */
+#define KMEM_CACHE_NOOFFSLAB    0x1 /* Don't allocate external slab data */
+#define KMEM_CACHE_VERIFY       0x2 /* Use debugging facilities */
 
 /*
  * Initialize a cache.
  */
 void kmem_cache_init(struct kmem_cache *cache, const char *name,
-                     size_t obj_size, size_t align, kmem_cache_ctor_t ctor,
-                     kmem_slab_alloc_fn_t slab_alloc_fn,
-                     kmem_slab_free_fn_t slab_free_fn, int flags);
+                     size_t obj_size, size_t align,
+                     kmem_cache_ctor_t ctor, int flags);
 
 /*
  * Allocate an object from a cache.

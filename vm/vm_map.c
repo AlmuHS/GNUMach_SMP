@@ -126,7 +126,6 @@ MACRO_END
 
 struct kmem_cache    vm_map_cache;		/* cache for vm_map structures */
 struct kmem_cache    vm_map_entry_cache;	/* cache for vm_map_entry structures */
-struct kmem_cache    vm_map_kentry_cache;	/* cache for kernel entry structures */
 struct kmem_cache    vm_map_copy_cache; 	/* cache for vm_map_copy structures */
 
 /*
@@ -151,43 +150,16 @@ vm_object_t		vm_submap_object = &vm_submap_object_store;
  *
  *	vm_map_cache:		used to allocate maps.
  *	vm_map_entry_cache:	used to allocate map entries.
- *	vm_map_kentry_cache:	used to allocate map entries for the kernel.
- *
- *	Kernel map entries are allocated from a special cache, using a custom
- *	page allocation function to avoid recursion. It would be difficult
- *	(perhaps impossible) for the kernel to allocate more memory to an entry
- *	cache when it became empty since the very act of allocating memory
- *	implies the creation of a new entry.
  */
-
-vm_offset_t	kentry_data;
-vm_size_t	kentry_data_size = KENTRY_DATA_SIZE;
-
-static vm_offset_t kentry_pagealloc(vm_size_t size)
-{
-	vm_offset_t result;
-
-	if (size > kentry_data_size)
-		panic("vm_map: kentry memory exhausted");
-
-	result = kentry_data;
-	kentry_data += size;
-	kentry_data_size -= size;
-	return result;
-}
 
 void vm_map_init(void)
 {
 	kmem_cache_init(&vm_map_cache, "vm_map", sizeof(struct vm_map), 0,
-			NULL, NULL, NULL, 0);
+			NULL, 0);
 	kmem_cache_init(&vm_map_entry_cache, "vm_map_entry",
-			sizeof(struct vm_map_entry), 0, NULL, NULL, NULL, 0);
-	kmem_cache_init(&vm_map_kentry_cache, "vm_map_kentry",
-			sizeof(struct vm_map_entry), 0, NULL, kentry_pagealloc,
-			NULL, KMEM_CACHE_NOCPUPOOL | KMEM_CACHE_NOOFFSLAB
-			      | KMEM_CACHE_NORECLAIM);
+			sizeof(struct vm_map_entry), 0, NULL, 0);
 	kmem_cache_init(&vm_map_copy_cache, "vm_map_copy",
-			sizeof(struct vm_map_copy), 0, NULL, NULL, NULL, 0);
+			sizeof(struct vm_map_copy), 0, NULL, 0);
 
 	/*
 	 *	Submap object is initialized by vm_object_init.
@@ -261,15 +233,9 @@ vm_map_t vm_map_create(
 vm_map_entry_t _vm_map_entry_create(map_header)
 	const struct vm_map_header *map_header;
 {
-	kmem_cache_t cache;
 	vm_map_entry_t	entry;
 
-	if (map_header->entries_pageable)
-	    cache = &vm_map_entry_cache;
-	else
-	    cache = &vm_map_kentry_cache;
-
-	entry = (vm_map_entry_t) kmem_cache_alloc(cache);
+	entry = (vm_map_entry_t) kmem_cache_alloc(&vm_map_entry_cache);
 	if (entry == VM_MAP_ENTRY_NULL)
 		panic("vm_map_entry_create");
 
@@ -291,14 +257,9 @@ void _vm_map_entry_dispose(map_header, entry)
 	const struct vm_map_header *map_header;
 	vm_map_entry_t	entry;
 {
-	kmem_cache_t cache;
+	(void)map_header;
 
-	if (map_header->entries_pageable)
-	    cache = &vm_map_entry_cache;
-	else
-	    cache = &vm_map_kentry_cache;
-
-	kmem_cache_free(cache, (vm_offset_t) entry);
+	kmem_cache_free(&vm_map_entry_cache, (vm_offset_t) entry);
 }
 
 /*
@@ -2539,15 +2500,8 @@ kern_return_t vm_map_copyout(
 	     * Mismatches occur when dealing with the default
 	     * pager.
 	     */
-	    kmem_cache_t	old_cache;
 	    vm_map_entry_t	next, new;
 
-	    /*
-	     * Find the cache that the copies were allocated from
-	     */
-	    old_cache = (copy->cpy_hdr.entries_pageable)
-			? &vm_map_entry_cache
-			: &vm_map_kentry_cache;
 	    entry = vm_map_copy_first_entry(copy);
 
 	    /*
@@ -2571,7 +2525,7 @@ kern_return_t vm_map_copyout(
 				vm_map_copy_last_entry(copy),
 				new);
 		next = entry->vme_next;
-		kmem_cache_free(old_cache, (vm_offset_t) entry);
+		kmem_cache_free(&vm_map_entry_cache, (vm_offset_t) entry);
 		entry = next;
 	    }
 	}

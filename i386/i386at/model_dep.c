@@ -47,6 +47,7 @@
 #include <kern/cpu_number.h>
 #include <kern/debug.h>
 #include <kern/mach_clock.h>
+#include <kern/macros.h>
 #include <kern/printf.h>
 #include <kern/startup.h>
 #include <sys/time.h>
@@ -133,8 +134,9 @@ extern char	version[];
 /* If set, reboot the system on ctrl-alt-delete.  */
 boolean_t	rebootflag = FALSE;	/* exported to kdintr */
 
-/* XX interrupt stack pointer and highwater mark, for locore.S.  */
-vm_offset_t int_stack_top, int_stack_high;
+/* Interrupt stack.  */
+static char int_stack[KERNEL_STACK_SIZE] __aligned(KERNEL_STACK_SIZE);
+vm_offset_t int_stack_top, int_stack_base;
 
 #ifdef LINUX_DEV
 extern void linux_init(void);
@@ -398,11 +400,6 @@ i386at_init(void)
 	pmap_clear_bootstrap_pagetable((void *)boot_info.pt_base);
 #endif	/* MACH_PV_PAGETABLES */
 
-	/* Interrupt stacks are allocated in physical memory,
-	   while kernel stacks are allocated in kernel virtual memory,
-	   so phys_last_addr serves as a convenient dividing point.  */
-	int_stack_high = phystokv(phys_last_addr);
-
 	/*
 	 * Initialize and activate the real i386 protected-mode structures.
 	 */
@@ -448,10 +445,8 @@ i386at_init(void)
 	hyp_p2m_init();
 #endif	/* MACH_XEN */
 
-	/* XXX We'll just use the initialization stack we're already running on
-	   as the interrupt stack for now.  Later this will have to change,
-	   because the init stack will get freed after bootup.  */
-	asm("movl %%esp,%0" : "=m" (int_stack_top));
+	int_stack_base = (vm_offset_t)&int_stack;
+	int_stack_top = int_stack_base + KERNEL_STACK_SIZE - 4;
 }
 
 /*

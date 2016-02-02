@@ -193,12 +193,6 @@ void vm_page_bootstrap(
 	vm_page_free_wanted = 0;
 
 	/*
-	 *	Steal memory for the kernel map entries.
-	 */
-
-	kentry_data = pmap_steal_memory(kentry_data_size);
-
-	/*
 	 *	Allocate (and initialize) the virtual-to-physical
 	 *	table hash buckets.
 	 *
@@ -312,7 +306,7 @@ vm_offset_t pmap_steal_memory(
 void		vm_page_module_init(void)
 {
 	kmem_cache_init(&vm_page_cache, "vm_page", sizeof(struct vm_page), 0,
-			NULL, NULL, NULL, 0);
+			NULL, 0);
 }
 
 /*

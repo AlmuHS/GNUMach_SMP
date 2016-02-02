@@ -542,8 +542,10 @@ trap_from_kernel:
 #if	MACH_KDB || MACH_TTD
 	movl	%esp,%ebx		/* save current stack */
 
-	cmpl	EXT(int_stack_high),%esp	/* on an interrupt stack? */
-	jb	1f			/* OK if so */
+	movl	%esp,%edx		/* on an interrupt stack? */
+	and	$(~(KERNEL_STACK_SIZE-1)),%edx
+	cmpl	EXT(int_stack_base),%edx
+	je	1f			/* OK if so */
 
 	CPU_NUMBER(%edx)		/* get CPU number */
 	cmpl	CX(EXT(kernel_stack),%edx),%esp
@@ -647,8 +649,10 @@ ENTRY(all_intrs)
 	pushl	%edx
 	cld				/* clear direction flag */
 
-	cmpl	%ss:EXT(int_stack_high),%esp /* on an interrupt stack? */
-	jb	int_from_intstack	/* if not: */
+	movl	%esp,%edx		/* on an interrupt stack? */
+	and	$(~(KERNEL_STACK_SIZE-1)),%edx
+	cmpl	%ss:EXT(int_stack_base),%edx
+	je	int_from_intstack	/* if not: */
 
 	pushl	%ds			/* save segment registers */
 	pushl	%es
@@ -707,7 +711,7 @@ LEXT(return_to_iret)			/* ( label for kdb_kintr and hardclock) */
 	iret				/* return to caller */
 
 int_from_intstack:
-	cmpl	$EXT(_intstack),%esp	/* seemingly looping? */
+	cmpl	EXT(int_stack_base),%esp	/* seemingly looping? */
 	jb	stack_overflowed	/* if not: */
 	call	EXT(interrupt)		/* call interrupt routine */
 _return_to_iret_i:			/* ( label for kdb_kintr) */

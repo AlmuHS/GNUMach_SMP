@@ -64,7 +64,7 @@ void
 memory_object_proxy_init (void)
 {
   kmem_cache_init (&memory_object_proxy_cache, "memory_object_proxy",
-		   sizeof (struct memory_object_proxy), 0, NULL, NULL, NULL, 0);
+		   sizeof (struct memory_object_proxy), 0, NULL, 0);
 }
   
 /* Lookup a proxy memory object by its port.  */

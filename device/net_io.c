@@ -1495,11 +1495,11 @@ net_io_init(void)
 
 	size = sizeof(struct net_rcv_port);
 	kmem_cache_init(&net_rcv_cache, "net_rcv_port", size, 0,
-			NULL, NULL, NULL, 0);
+			NULL, 0);
 
  	size = sizeof(struct net_hash_entry);
 	kmem_cache_init(&net_hash_entry_cache, "net_hash_entry", size, 0,
-			NULL, NULL, NULL, 0);
+			NULL, 0);
 
 	size = ikm_plus_overhead(sizeof(struct net_rcv_msg));
 	net_kmsg_size = round_page(size);

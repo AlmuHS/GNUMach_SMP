@@ -378,7 +378,8 @@ extern unsigned int	vm_page_info(
 #define VM_PT_TABLE         2   /* Page is part of the page table */
 #define VM_PT_PMAP          3   /* Page stores pmap-specific data */
 #define VM_PT_KMEM          4   /* Page is part of a kmem slab */
-#define VM_PT_KERNEL        5   /* Type for generic kernel allocations */
+#define VM_PT_STACK         5   /* Type for generic kernel allocations */
+#define VM_PT_KERNEL        6   /* Type for generic kernel allocations */
 
 static inline unsigned short
 vm_page_type(const struct vm_page *page)

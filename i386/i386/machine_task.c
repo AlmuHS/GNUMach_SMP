@@ -38,7 +38,7 @@ void
 machine_task_module_init (void)
 {
   kmem_cache_init (&machine_task_iopb_cache, "i386_task_iopb", IOPB_BYTES, 0,
-		   NULL, NULL, NULL, 0);
+		   NULL, 0);
 }
 
 

@@ -124,7 +124,7 @@ void
 rdxtree_cache_init(void)
 {
     kmem_cache_init(&rdxtree_node_cache, "rdxtree_node",
-		    sizeof(struct rdxtree_node), 0, NULL, NULL, NULL, 0);
+		    sizeof(struct rdxtree_node), 0, NULL, 0);
 }
 
 #ifdef RDXTREE_ENABLE_NODE_CREATION_FAILURES

@@ -109,7 +109,7 @@ void pset_sys_init(void)
 	 * Allocate the cache for processor sets.
 	 */
 	kmem_cache_init(&pset_cache, "processor_set",
-			sizeof(struct processor_set), 0, NULL, NULL, NULL, 0);
+			sizeof(struct processor_set), 0, NULL, 0);
 
 	/*
 	 * Give each processor a control port.
