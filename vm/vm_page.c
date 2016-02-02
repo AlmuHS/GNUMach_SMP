@@ -442,6 +442,9 @@ vm_page_seg_alloc(struct vm_page_seg *seg, unsigned int order,
         simple_lock(&seg->lock);
         page = vm_page_seg_alloc_from_buddy(seg, order);
         simple_unlock(&seg->lock);
+
+        if (page == NULL)
+            return NULL;
     }
 
     assert(page->type == VM_PT_FREE);
@@ -637,10 +640,6 @@ vm_page_setup(void)
             page->type = VM_PT_FREE;
             vm_page_seg_free_to_buddy(seg, page, 0);
             page++;
-
-            /* XXX */
-            if (i <= VM_PAGE_SEG_DIRECTMAP)
-                vm_page_free_count++;
         }
 
         table += vm_page_atop(vm_page_seg_size(seg));
@@ -705,6 +704,7 @@ vm_page_alloc_pa(unsigned int order, unsigned int selector, unsigned short type)
 void
 vm_page_free_pa(struct vm_page *page, unsigned int order)
 {
+    assert(page != NULL);
     assert(page->seg_index < ARRAY_SIZE(vm_page_segs));
 
     vm_page_seg_free(&vm_page_segs[page->seg_index], page, order);
@@ -756,6 +756,25 @@ vm_page_mem_size(void)
             continue;
 
         total += vm_page_seg_size(&vm_page_segs[i]);
+    }
+
+    return total;
+}
+
+unsigned long
+vm_page_mem_free(void)
+{
+    unsigned long total;
+    unsigned int i;
+
+    total = 0;
+
+    for (i = 0; i < vm_page_segs_size; i++) {
+        /* XXX */
+        if (i >  VM_PAGE_SEG_DIRECTMAP)
+            continue;
+
+        total += vm_page_segs[i].nr_free_pages;
     }
 
     return total;

@@ -162,8 +162,6 @@ extern
 queue_head_t	vm_page_queue_inactive;	/* inactive memory queue */
 
 extern
-int	vm_page_free_count;	/* How many pages are free? */
-extern
 int	vm_page_fictitious_count;/* How many fictitious pages are free? */
 extern
 int	vm_page_active_count;	/* How many pages are active? */
@@ -483,12 +481,16 @@ struct vm_page * vm_page_lookup_pa(phys_addr_t pa);
  *
  * The selector is used to determine the segments from which allocation can
  * be attempted.
+ *
+ * This function should only be used by the vm_resident module.
  */
 struct vm_page * vm_page_alloc_pa(unsigned int order, unsigned int selector,
                                   unsigned short type);
 
 /*
  * Release a block of 2^order physical pages.
+ *
+ * This function should only be used by the vm_resident module.
  */
 void vm_page_free_pa(struct vm_page *page, unsigned int order);
 
@@ -506,5 +508,13 @@ void vm_page_info_all(void);
  * Return the total amount of physical memory.
  */
 phys_addr_t vm_page_mem_size(void);
+
+/*
+ * Return the amount of free (unused) pages.
+ *
+ * XXX This currently relies on the kernel being non preemptible and
+ * uniprocessor.
+ */
+unsigned long vm_page_mem_free(void);
 
 #endif	/* _VM_VM_PAGE_H_ */

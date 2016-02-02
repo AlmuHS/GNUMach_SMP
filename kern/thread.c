@@ -197,16 +197,19 @@ kern_return_t stack_alloc(
 	if (stack == 0) {
 		struct vm_page *page;
 
-		/*
-		 *	Kernel stacks should be naturally aligned,
-		 *	so that it is easy to find the starting/ending
-		 *	addresses of a stack given an address in the middle.
-		 */
-		page = vm_page_alloc_pa(vm_page_order(KERNEL_STACK_SIZE),
-					VM_PAGE_SEL_DIRECTMAP,
-					VM_PT_STACK);
-		if (page == NULL)
-			return KERN_RESOURCE_SHORTAGE;
+		for (;;) {
+			/*
+			 *	Kernel stacks should be naturally aligned,
+			 *	so that it is easy to find the starting/ending
+			 *	addresses of a stack given an address in the middle.
+			 */
+			page = vm_page_grab_contig(KERNEL_STACK_SIZE,
+						   VM_PAGE_SEL_DIRECTMAP);
+			if (page != NULL)
+				break;
+
+			VM_PAGE_WAIT(NULL);
+		}
 
 		stack = phystokv(vm_page_to_pa(page));
 #if	MACH_DEBUG
@@ -254,6 +257,7 @@ void stack_free(
 
 void stack_collect(void)
 {
+	struct vm_page *page;
 	vm_offset_t stack;
 	spl_t s;
 
@@ -269,7 +273,9 @@ void stack_collect(void)
 #if	MACH_DEBUG
 		stack_finalize(stack);
 #endif	/* MACH_DEBUG */
-		kmem_free(kmem_map, stack, KERNEL_STACK_SIZE);
+		page = vm_page_lookup_pa(kvtophys(stack));
+		assert(page != NULL);
+		vm_page_free_contig(page, KERNEL_STACK_SIZE);
 
 		s = splsched();
 		stack_lock();

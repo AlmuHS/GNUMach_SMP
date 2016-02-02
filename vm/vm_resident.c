@@ -98,11 +98,15 @@ unsigned int	vm_page_hash_mask;		/* Mask for hash function */
 vm_page_t	vm_page_queue_fictitious;
 decl_simple_lock_data(,vm_page_queue_free_lock)
 unsigned int	vm_page_free_wanted;
-int		vm_page_free_count;
 int		vm_page_fictitious_count;
 int		vm_page_external_count;
 
-unsigned int	vm_page_free_count_minimum;	/* debugging */
+/*
+ * This variable isn't directly used. It's merely a placeholder for the
+ * address used to synchronize threads waiting for pages to become
+ * available. The real value is returned by vm_page_free_mem().
+ */
+unsigned int	vm_page_free_avail;
 
 /*
  *	Occasionally, the virtual memory system uses
@@ -233,9 +237,6 @@ void vm_page_bootstrap(
 
 	*startp = virtual_space_start;
 	*endp = virtual_space_end;
-
-	/*	printf("vm_page_bootstrap: %d free pages\n", vm_page_free_count);*/
-	vm_page_free_count_minimum = vm_page_free_count;
 }
 
 #ifndef	MACHINE_PAGES
@@ -773,7 +774,7 @@ vm_page_t vm_page_grab(
 	 *	for externally-managed pages.
 	 */
 
-	if (((vm_page_free_count < vm_page_free_reserved)
+	if (((vm_page_mem_free() < vm_page_free_reserved)
 	     || (external
 		 && (vm_page_external_count > vm_page_external_limit)))
 	    && !current_thread()->vm_privilege) {
@@ -786,8 +787,6 @@ vm_page_t vm_page_grab(
 	if (mem == NULL)
 		panic("vm_page_grab");
 
-	if (--vm_page_free_count < vm_page_free_count_minimum)
-		vm_page_free_count_minimum = vm_page_free_count;
 	if (external)
 		vm_page_external_count++;
 
@@ -806,8 +805,8 @@ vm_page_t vm_page_grab(
 	 *	it doesn't really matter.
 	 */
 
-	if ((vm_page_free_count < vm_page_free_min) ||
-	    ((vm_page_free_count < vm_page_free_target) &&
+	if ((vm_page_mem_free() < vm_page_free_min) ||
+	    ((vm_page_mem_free() < vm_page_free_target) &&
 	     (vm_page_inactive_count < vm_page_inactive_target)))
 		thread_wakeup((event_t) &vm_page_free_wanted);
 
@@ -838,7 +837,6 @@ static void vm_page_release(
 		panic("vm_page_release");
 	mem->free = TRUE;
 	vm_page_free_pa(mem, 0);
-	vm_page_free_count++;
 	if (external)
 		vm_page_external_count--;
 
@@ -863,9 +861,9 @@ static void vm_page_release(
 	 */
 
 	if ((vm_page_free_wanted > 0) &&
-	    (vm_page_free_count >= vm_page_free_reserved)) {
+	    (vm_page_mem_free() >= vm_page_free_reserved)) {
 		vm_page_free_wanted--;
-		thread_wakeup_one((event_t) &vm_page_free_count);
+		thread_wakeup_one((event_t) &vm_page_free_avail);
 	}
 
 	simple_unlock(&vm_page_queue_free_lock);
@@ -896,21 +894,17 @@ vm_page_t vm_page_grab_contig(
 	 *	for externally-managed pages.
 	 */
 
-	if (((vm_page_free_count - nr_pages) <= vm_page_free_reserved)
+	if (((vm_page_mem_free() - nr_pages) <= vm_page_free_reserved)
 	    && !current_thread()->vm_privilege) {
 		simple_unlock(&vm_page_queue_free_lock);
 		return VM_PAGE_NULL;
 	}
 
+	/* TODO Allow caller to pass type */
 	mem = vm_page_alloc_pa(order, selector, VM_PT_KERNEL);
 
 	if (mem == NULL)
 		panic("vm_page_grab_contig");
-
-	vm_page_free_count -= nr_pages;
-
-	if (vm_page_free_count < vm_page_free_count_minimum)
-		vm_page_free_count_minimum = vm_page_free_count;
 
 	for (i = 0; i < nr_pages; i++) {
 		mem[i].free = FALSE;
@@ -930,8 +924,8 @@ vm_page_t vm_page_grab_contig(
 	 *	it doesn't really matter.
 	 */
 
-	if ((vm_page_free_count < vm_page_free_min) ||
-	    ((vm_page_free_count < vm_page_free_target) &&
+	if ((vm_page_mem_free() < vm_page_free_min) ||
+	    ((vm_page_mem_free() < vm_page_free_target) &&
 	     (vm_page_inactive_count < vm_page_inactive_target)))
 		thread_wakeup((event_t) &vm_page_free_wanted);
 
@@ -961,12 +955,11 @@ void vm_page_free_contig(vm_page_t mem, vm_size_t size)
 	}
 
 	vm_page_free_pa(mem, order);
-	vm_page_free_count += nr_pages;
 
 	if ((vm_page_free_wanted > 0) &&
-	    (vm_page_free_count >= vm_page_free_reserved)) {
+	    (vm_page_mem_free() >= vm_page_free_reserved)) {
 		vm_page_free_wanted--;
-		thread_wakeup_one((event_t) &vm_page_free_count);
+		thread_wakeup_one((event_t) &vm_page_free_avail);
 	}
 
 	simple_unlock(&vm_page_queue_free_lock);
@@ -992,11 +985,11 @@ void vm_page_wait(
 	 */
 
 	simple_lock(&vm_page_queue_free_lock);
-	if ((vm_page_free_count < vm_page_free_target)
+	if ((vm_page_mem_free() < vm_page_free_target)
 	    || (vm_page_external_count > vm_page_external_limit)) {
 		if (vm_page_free_wanted++ == 0)
 			thread_wakeup((event_t)&vm_page_free_wanted);
-		assert_wait((event_t)&vm_page_free_count, FALSE);
+		assert_wait((event_t)&vm_page_free_avail, FALSE);
 		simple_unlock(&vm_page_queue_free_lock);
 		if (continuation != 0) {
 			counter(c_vm_page_wait_block_user++);

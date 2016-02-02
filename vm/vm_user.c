@@ -182,7 +182,7 @@ kern_return_t vm_statistics(
 	*stat = vm_stat;
 
 	stat->pagesize = PAGE_SIZE;
-	stat->free_count = vm_page_free_count;
+	stat->free_count = vm_page_mem_free();
 	stat->active_count = vm_page_active_count;
 	stat->inactive_count = vm_page_inactive_count;
 	stat->wire_count = vm_page_wire_count;

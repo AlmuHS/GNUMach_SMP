@@ -82,7 +82,7 @@
  *	of active+inactive pages that should be inactive.
  *	The pageout daemon uses it to update vm_page_inactive_target.
  *
- *	If vm_page_free_count falls below vm_page_free_target and
+ *	If the number of free pages falls below vm_page_free_target and
  *	vm_page_inactive_count is below vm_page_inactive_target,
  *	then the pageout daemon starts running.
  */
@@ -93,7 +93,7 @@
 
 /*
  *	Once the pageout daemon starts running, it keeps going
- *	until vm_page_free_count meets or exceeds vm_page_free_target.
+ *	until the number of free pages meets or exceeds vm_page_free_target.
  */
 
 #ifndef	VM_PAGE_FREE_TARGET
@@ -101,7 +101,7 @@
 #endif	/* VM_PAGE_FREE_TARGET */
 
 /*
- *	The pageout daemon always starts running once vm_page_free_count
+ *	The pageout daemon always starts running once the number of free pages
  *	falls below vm_page_free_min.
  */
 
@@ -125,7 +125,7 @@
 #endif  /* VM_PAGE_EXTERNAL_TARGET */
 
 /*
- *	When vm_page_free_count falls below vm_page_free_reserved,
+ *	When the number of free pages falls below vm_page_free_reserved,
  *	only vm-privileged threads can allocate pages.  vm-privilege
  *	allows the pageout daemon and default pager (and any other
  *	associated threads needed for default pageout) to continue
@@ -136,7 +136,7 @@
 #endif	/* VM_PAGE_FREE_RESERVED */
 
 /*
- *	When vm_page_free_count falls below vm_pageout_reserved_internal,
+ *	When the number of free pages falls below vm_pageout_reserved_internal,
  *	the pageout daemon no longer trusts external pagers to clean pages.
  *	External pagers are probably all wedged waiting for a free page.
  *	It forcibly double-pages dirty pages belonging to external objects,
@@ -148,7 +148,7 @@
 #endif	/* VM_PAGEOUT_RESERVED_INTERNAL */
 
 /*
- *	When vm_page_free_count falls below vm_pageout_reserved_really,
+ *	When the number of free pages falls below vm_pageout_reserved_really,
  *	the pageout daemon stops work entirely to let the default pager
  *	catch up (assuming the default pager has pages to clean).
  *	Beyond this point, it is too dangerous to consume memory
@@ -559,7 +559,7 @@ void vm_pageout_scan(void)
 	for (burst_count = 0;;) {
 		vm_page_t m;
 		vm_object_t object;
-		unsigned int free_count;
+		unsigned long free_count;
 
 		/*
 		 *	Recalculate vm_page_inactivate_target.
@@ -630,7 +630,7 @@ void vm_pageout_scan(void)
 		 */
 
 		simple_lock(&vm_page_queue_free_lock);
-		free_count = vm_page_free_count;
+		free_count = vm_page_mem_free();
 		if ((free_count >= vm_page_free_target) &&
 		    (vm_page_external_count <= vm_page_external_target) &&
 		    (vm_page_free_wanted == 0)) {
@@ -910,7 +910,7 @@ void vm_pageout_continue(void)
 
 void vm_pageout(void)
 {
-	int		free_after_reserve;
+	unsigned long free_after_reserve;
 
 	current_thread()->vm_privilege = TRUE;
 	stack_privilege(current_thread());
@@ -946,7 +946,7 @@ void vm_pageout(void)
 		vm_pageout_reserved_really =
 			VM_PAGEOUT_RESERVED_REALLY(vm_page_free_reserved);
 
-	free_after_reserve = vm_page_free_count - vm_page_free_reserved;
+	free_after_reserve = vm_page_mem_free() - vm_page_free_reserved;
 
 	if (vm_page_external_limit == 0)
 	        vm_page_external_limit = 

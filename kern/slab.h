@@ -167,7 +167,6 @@ struct kmem_cache {
     struct rbtree active_slabs;
     int flags;
     size_t bufctl_dist; /* Distance from buffer to bufctl   */
-    unsigned int slab_order;
     size_t slab_size;
     unsigned long bufs_per_slab;
     unsigned long nr_objs;  /* Number of allocated objects */

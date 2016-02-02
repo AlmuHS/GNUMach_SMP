@@ -383,6 +383,27 @@ static inline void * kmem_bufctl_to_buf(union kmem_bufctl *bufctl,
     return (void *)bufctl - cache->bufctl_dist;
 }
 
+static struct vm_page *
+kmem_pagealloc(vm_size_t size)
+{
+    struct vm_page *page;
+
+    for (;;) {
+        page = vm_page_grab_contig(size, VM_PAGE_SEL_DIRECTMAP);
+
+        if (page != NULL)
+            return page;
+
+        VM_PAGE_WAIT(NULL);
+    }
+}
+
+static void
+kmem_pagefree(struct vm_page *page, vm_size_t size)
+{
+    vm_page_free_contig(page, size);
+}
+
 static void kmem_slab_create_verify(struct kmem_slab *slab,
                                     struct kmem_cache *cache)
 {
@@ -418,9 +439,7 @@ static struct kmem_slab * kmem_slab_create(struct kmem_cache *cache,
     unsigned long buffers;
     void *slab_buf;
 
-    page = vm_page_alloc_pa(cache->slab_order,
-                            VM_PAGE_SEL_DIRECTMAP,
-                            VM_PT_KMEM);
+    page = kmem_pagealloc(cache->slab_size);
 
     if (page == NULL)
         return NULL;
@@ -431,7 +450,7 @@ static struct kmem_slab * kmem_slab_create(struct kmem_cache *cache,
         slab = (struct kmem_slab *)kmem_cache_alloc(&kmem_slab_cache);
 
         if (slab == NULL) {
-            vm_page_free_pa(page, cache->slab_order);
+            kmem_pagefree(page, cache->slab_size);
             return NULL;
         }
     } else {
@@ -504,7 +523,7 @@ static void kmem_slab_destroy(struct kmem_slab *slab, struct kmem_cache *cache)
     slab_buf = (vm_offset_t)P2ALIGN((unsigned long)slab->addr, PAGE_SIZE);
     page = vm_page_lookup_pa(kvtophys(slab_buf));
     assert(page != NULL);
-    vm_page_free_pa(page, cache->slab_order);
+    kmem_pagefree(page, cache->slab_size);
 
     if (cache->flags & KMEM_CF_SLAB_EXTERNAL)
         kmem_cache_free(&kmem_slab_cache, (vm_offset_t)slab);
@@ -681,7 +700,7 @@ static void kmem_cache_compute_sizes(struct kmem_cache *cache, int flags)
     size_t i, buffers, buf_size, slab_size, free_slab_size;
     size_t waste, waste_min, optimal_size = optimal_size;
     int embed, optimal_embed = optimal_embed;
-    unsigned int slab_order, optimal_order = optimal_order;
+    unsigned int slab_order;
 
     buf_size = cache->buf_size;
 
@@ -718,7 +737,6 @@ static void kmem_cache_compute_sizes(struct kmem_cache *cache, int flags)
 
         if (waste <= waste_min) {
             waste_min = waste;
-            optimal_order = slab_order;
             optimal_size = slab_size;
             optimal_embed = embed;
         }
@@ -727,7 +745,6 @@ static void kmem_cache_compute_sizes(struct kmem_cache *cache, int flags)
 
     assert(!(flags & KMEM_CACHE_NOOFFSLAB) || optimal_embed);
 
-    cache->slab_order = optimal_order;
     cache->slab_size = optimal_size;
     slab_size = cache->slab_size
                 - (optimal_embed ? sizeof(struct kmem_slab) : 0);
@@ -1335,9 +1352,7 @@ vm_offset_t kalloc(vm_size_t size)
     } else {
         struct vm_page *page;
 
-        page = vm_page_alloc_pa(vm_page_order(size),
-                                VM_PAGE_SEL_DIRECTMAP,
-                                VM_PT_KERNEL);
+        page = kmem_pagealloc(size);
 
         if (page == NULL)
             return 0;
@@ -1387,7 +1402,7 @@ void kfree(vm_offset_t data, vm_size_t size)
         struct vm_page *page;
 
         page = vm_page_lookup_pa(kvtophys(data));
-        vm_page_free_pa(page, vm_page_order(size));
+        kmem_pagefree(page, size);
     }
 }
 
