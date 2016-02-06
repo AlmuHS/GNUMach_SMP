@@ -112,19 +112,6 @@
 #define KMEM_ALIGN_MIN 8
 
 /*
- * Minimum number of buffers per slab.
- *
- * This value is ignored when the slab size exceeds a threshold.
- */
-#define KMEM_MIN_BUFS_PER_SLAB 8
-
-/*
- * Special slab size beyond which the minimum number of buffers per slab is
- * ignored when computing the slab size of a cache.
- */
-#define KMEM_SLAB_SIZE_THRESHOLD (8 * PAGE_SIZE)
-
-/*
  * Special buffer size under which slab data is unconditionnally allocated
  * from its associated slab.
  */
@@ -697,64 +684,47 @@ static void kmem_cache_error(struct kmem_cache *cache, void *buf, int error,
  */
 static void kmem_cache_compute_sizes(struct kmem_cache *cache, int flags)
 {
-    size_t i, buffers, buf_size, slab_size, free_slab_size;
-    size_t waste, waste_min, optimal_size = optimal_size;
-    int embed, optimal_embed = optimal_embed;
-    unsigned int slab_order;
+    size_t size, waste;
+    unsigned int order;
+    int embed;
 
-    buf_size = cache->buf_size;
-
-    if (buf_size < KMEM_BUF_SIZE_THRESHOLD)
+    if (cache->buf_size < KMEM_BUF_SIZE_THRESHOLD)
         flags |= KMEM_CACHE_NOOFFSLAB;
 
-    i = 0;
-    waste_min = (size_t)-1;
+    /*
+     * In order to cope with physical memory fragmentation, the slab size is
+     * chosen as the lowest possible allocation order.
+     */
+    order = vm_page_order(cache->buf_size);
 
-    do {
-        i++;
-
-        slab_order = vm_page_order(i * buf_size);
-        slab_size = PAGE_SIZE << slab_order;
-        free_slab_size = slab_size;
-
-        if (flags & KMEM_CACHE_NOOFFSLAB)
-            free_slab_size -= sizeof(struct kmem_slab);
-
-        buffers = free_slab_size / buf_size;
-        waste = free_slab_size % buf_size;
-
-        if (buffers > i)
-            i = buffers;
+    for (;;) {
+        cache->slab_size = PAGE_SIZE << order;
 
         if (flags & KMEM_CACHE_NOOFFSLAB)
             embed = 1;
-        else if (sizeof(struct kmem_slab) <= waste) {
-            embed = 1;
-            waste -= sizeof(struct kmem_slab);
-        } else {
-            embed = 0;
+        else {
+            waste = cache->slab_size % cache->buf_size;
+            embed = (sizeof(struct kmem_slab) <= waste);
         }
 
-        if (waste <= waste_min) {
-            waste_min = waste;
-            optimal_size = slab_size;
-            optimal_embed = embed;
-        }
-    } while ((buffers < KMEM_MIN_BUFS_PER_SLAB)
-             && (slab_size < KMEM_SLAB_SIZE_THRESHOLD));
+        size = cache->slab_size;
 
-    assert(!(flags & KMEM_CACHE_NOOFFSLAB) || optimal_embed);
+        if (embed)
+            size -= sizeof(struct kmem_slab);
 
-    cache->slab_size = optimal_size;
-    slab_size = cache->slab_size
-                - (optimal_embed ? sizeof(struct kmem_slab) : 0);
-    cache->bufs_per_slab = slab_size / buf_size;
-    cache->color_max = slab_size % buf_size;
+        if (size >= cache->buf_size)
+            break;
+
+        order++;
+    }
+
+    cache->bufs_per_slab = size / cache->buf_size;
+    cache->color_max = size % cache->buf_size;
 
     if (cache->color_max >= PAGE_SIZE)
         cache->color_max = PAGE_SIZE - 1;
 
-    if (optimal_embed) {
+    if (embed) {
         if (cache->slab_size == PAGE_SIZE)
             cache->flags |= KMEM_CF_DIRECT;
     } else {
