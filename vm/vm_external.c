@@ -69,7 +69,7 @@ vm_external_t	vm_external_create(vm_offset_t size)
 		result->existence_map =
 		 (char *) kmem_cache_alloc(&vm_object_small_existence_map_cache);
 		result->existence_size = SMALL_SIZE;
-	} else if (bytes <= LARGE_SIZE) {
+	} else {
 		result->existence_map =
 		 (char *) kmem_cache_alloc(&vm_object_large_existence_map_cache);
 		result->existence_size = LARGE_SIZE;
