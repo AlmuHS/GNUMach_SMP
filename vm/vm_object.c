@@ -300,6 +300,7 @@ void vm_object_bootstrap(void)
 
 	vm_object_template.paging_in_progress = 0;
 	vm_object_template.can_persist = FALSE;
+	vm_object_template.cached = FALSE;
 	vm_object_template.internal = TRUE;
 	vm_object_template.temporary = TRUE;
 	vm_object_template.alive = TRUE;
@@ -345,6 +346,33 @@ void vm_object_init(void)
 			IKOT_PAGING_NAME);
 }
 
+/*
+ *	Object cache management functions.
+ *
+ *	Both the cache and the object must be locked
+ *	before calling these functions.
+ */
+
+static void vm_object_cache_add(
+	vm_object_t	object)
+{
+	assert(!object->cached);
+	queue_enter(&vm_object_cached_list, object, vm_object_t, cached_list);
+	vm_object_cached_count++;
+	vm_object_cached_pages_update(object->resident_page_count);
+	object->cached = TRUE;
+}
+
+static void vm_object_cache_remove(
+	vm_object_t	object)
+{
+	assert(object->cached);
+	queue_remove(&vm_object_cached_list, object, vm_object_t, cached_list);
+	vm_object_cached_count--;
+	vm_object_cached_pages_update(-object->resident_page_count);
+	object->cached = FALSE;
+}
+
 void vm_object_collect(
 	register vm_object_t	object)
 {
@@ -368,7 +396,7 @@ void vm_object_collect(
 		return;
 	}
 
-	queue_remove(&vm_object_cached_list, object, vm_object_t, cached_list);
+	vm_object_cache_remove(object);
 	vm_object_terminate(object);
 }
 
@@ -435,12 +463,8 @@ void vm_object_deallocate(
 		 *	it in the cache.
 		 */
 		if (object->can_persist && (object->resident_page_count > 0)) {
-			queue_enter(&vm_object_cached_list, object,
-				vm_object_t, cached_list);
-			vm_object_cached_count++;
-			vm_object_cached_pages_update(object->resident_page_count);
+			vm_object_cache_add(object);
 			vm_object_cache_unlock();
-
 			vm_object_unlock(object);
 			return;
 		}
@@ -601,6 +625,7 @@ void vm_object_terminate(
 
 	assert(object->ref_count == 0);
 	assert(object->paging_in_progress == 0);
+	assert(!object->cached);
 
 	/*
 	 *	Throw away port rights... note that they may
@@ -1803,12 +1828,8 @@ vm_object_t vm_object_lookup(
 
 			assert(object->alive);
 
-			if (object->ref_count == 0) {
-				queue_remove(&vm_object_cached_list, object,
-					     vm_object_t, cached_list);
-				vm_object_cached_count--;
-				vm_object_cached_pages_update(-object->resident_page_count);
-			}
+			if (object->ref_count == 0)
+				vm_object_cache_remove(object);
 
 			object->ref_count++;
 			vm_object_unlock(object);
@@ -1835,12 +1856,8 @@ vm_object_t vm_object_lookup_name(
 
 			assert(object->alive);
 
-			if (object->ref_count == 0) {
-				queue_remove(&vm_object_cached_list, object,
-					     vm_object_t, cached_list);
-				vm_object_cached_count--;
-				vm_object_cached_pages_update(-object->resident_page_count);
-			}
+			if (object->ref_count == 0)
+				vm_object_cache_remove(object);
 
 			object->ref_count++;
 			vm_object_unlock(object);
@@ -1872,12 +1889,8 @@ void vm_object_destroy(
 
 	object = (vm_object_t) pager->ip_kobject;
 	vm_object_lock(object);
-	if (object->ref_count == 0) {
-		queue_remove(&vm_object_cached_list, object,
-				vm_object_t, cached_list);
-		vm_object_cached_count--;
-		vm_object_cached_pages_update(-object->resident_page_count);
-	}
+	if (object->ref_count == 0)
+		vm_object_cache_remove(object);
 	object->ref_count++;
 
 	object->can_persist = FALSE;
@@ -2026,12 +2039,8 @@ restart:
 
 	if ((object != VM_OBJECT_NULL) && !must_init) {
 		vm_object_lock(object);
-		if (object->ref_count == 0) {
-			queue_remove(&vm_object_cached_list, object,
-					vm_object_t, cached_list);
-			vm_object_cached_count--;
-			vm_object_cached_pages_update(-object->resident_page_count);
-		}
+		if (object->ref_count == 0)
+			vm_object_cache_remove(object);
 		object->ref_count++;
 		vm_object_unlock(object);
 
@@ -2566,6 +2575,7 @@ void vm_object_collapse(
 			);
 
 			assert(backing_object->alive);
+			assert(!backing_object->cached);
 			backing_object->alive = FALSE;
 			vm_object_unlock(backing_object);
 
