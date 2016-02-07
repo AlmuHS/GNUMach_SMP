@@ -151,11 +151,6 @@
 #define KMEM_REDZONE_BYTE 0xbb
 
 /*
- * Size of the VM submap from which default backend functions allocate.
- */
-#define KMEM_MAP_SIZE (128 * 1024 * 1024)
-
-/*
  * Shift for the first kalloc cache size.
  */
 #define KALLOC_FIRST_SHIFT 5
@@ -262,12 +257,6 @@ static struct kmem_cache kalloc_caches[KALLOC_NR_CACHES];
 static struct list kmem_cache_list;
 static unsigned int kmem_nr_caches;
 static simple_lock_data_t __attribute__((used)) kmem_cache_list_lock;
-
-/*
- * VM submap for slab caches.
- */
-static struct vm_map kmem_map_store;
-vm_map_t kmem_map = &kmem_map_store;
 
 /*
  * Time of the last memory reclaim, in clock ticks.
@@ -1238,8 +1227,6 @@ void slab_init(void)
     char name[KMEM_CACHE_NAME_SIZE];
     size_t i, size;
 #endif /* SLAB_USE_CPU_POOLS */
-
-    kmem_submap(kmem_map, kernel_map, &min, &max, KMEM_MAP_SIZE, FALSE);
 
 #if SLAB_USE_CPU_POOLS
     for (i = 0; i < ARRAY_SIZE(kmem_cpu_pool_types); i++) {

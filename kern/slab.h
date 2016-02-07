@@ -193,11 +193,6 @@ typedef struct kmem_cache *kmem_cache_t;
 #define KMEM_CACHE_NULL ((kmem_cache_t) 0)
 
 /*
- * VM submap for slab allocations.
- */
-extern vm_map_t kmem_map;
-
-/*
  * Cache initialization flags.
  */
 #define KMEM_CACHE_NOOFFSLAB    0x1 /* Don't allocate external slab data */
