@@ -46,9 +46,14 @@ typedef struct vm_external {
 					 * been written to backing
 					 * storage.
 					 */
+#if 0
+	/* XXX: Currently, existence_count is not used.  I guess it
+	   could be useful to get rid of the map if the count drops to
+	   zero.  */
 	int		existence_count;/* Number of bits turned on in
 					 * existence_map.
 					 */
+#endif
 } *vm_external_t;
 
 #define	VM_EXTERNAL_NULL	((vm_external_t) 0)
