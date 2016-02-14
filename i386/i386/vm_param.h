@@ -58,9 +58,9 @@
 
 /* Reserve mapping room for kmem. */
 #ifdef	MACH_XEN
-#define VM_KERNEL_MAP_SIZE (256 * 1024 * 1024)
+#define VM_KERNEL_MAP_SIZE (128 * 1024 * 1024)
 #else
-#define VM_KERNEL_MAP_SIZE (224 * 1024 * 1024)
+#define VM_KERNEL_MAP_SIZE (96 * 1024 * 1024)
 #endif
 
 /* The kernel virtual address space is actually located
