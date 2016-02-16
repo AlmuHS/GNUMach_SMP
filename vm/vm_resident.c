@@ -784,8 +784,10 @@ vm_page_t vm_page_grab(
 
 	mem = vm_page_alloc_pa(0, VM_PAGE_SEL_DIRECTMAP, VM_PT_KERNEL);
 
-	if (mem == NULL)
-		panic("vm_page_grab");
+	if (mem == NULL) {
+		simple_unlock(&vm_page_queue_free_lock);
+		return NULL;
+	}
 
 	if (external)
 		vm_page_external_count++;
