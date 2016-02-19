@@ -146,10 +146,13 @@ vm_object_t		vm_submap_object = &vm_submap_object_store;
  *	Map and entry structures are allocated from caches -- we must
  *	initialize those caches.
  *
- *	There are three caches of interest:
+ *	There are two caches of interest:
  *
  *	vm_map_cache:		used to allocate maps.
  *	vm_map_entry_cache:	used to allocate map entries.
+ *
+ *	We make sure the map entry cache allocates memory directly from the
+ *	physical allocator to avoid recursion with this module.
  */
 
 void vm_map_init(void)
@@ -157,7 +160,8 @@ void vm_map_init(void)
 	kmem_cache_init(&vm_map_cache, "vm_map", sizeof(struct vm_map), 0,
 			NULL, 0);
 	kmem_cache_init(&vm_map_entry_cache, "vm_map_entry",
-			sizeof(struct vm_map_entry), 0, NULL, 0);
+			sizeof(struct vm_map_entry), 0, NULL,
+			KMEM_CACHE_DIRECTMAP);
 	kmem_cache_init(&vm_map_copy_cache, "vm_map_copy",
 			sizeof(struct vm_map_copy), 0, NULL, 0);
 
