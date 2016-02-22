@@ -36,12 +36,6 @@
 
 #define CACHE_NAME_MAX_LEN 32
 
-#define CACHE_FLAGS_NO_CPU_POOL		0x01
-#define CACHE_FLAGS_SLAB_EXTERNAL	0x02
-#define CACHE_FLAGS_NO_RECLAIM		0x04
-#define CACHE_FLAGS_VERIFY		0x08
-#define CACHE_FLAGS_DIRECT		0x10
-
 typedef struct cache_info {
 	int flags;
 	size_t cpu_pool_size;

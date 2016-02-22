@@ -1534,12 +1534,7 @@ kern_return_t host_slab_info(host_t host, cache_info_array_t *infop,
 
     list_for_each_entry(&kmem_cache_list, cache, node) {
         simple_lock(&cache->lock);
-        info[i].flags = ((cache->flags & KMEM_CF_SLAB_EXTERNAL)
-                         ? CACHE_FLAGS_SLAB_EXTERNAL : 0)
-                        | ((cache->flags & KMEM_CF_VERIFY)
-                           ? CACHE_FLAGS_VERIFY : 0)
-                        | ((cache->flags & KMEM_CF_DIRECTMAP)
-                           ? CACHE_FLAGS_DIRECT : 0);
+        info[i].flags = cache->flags;
 #if SLAB_USE_CPU_POOLS
         info[i].cpu_pool_size = cache->cpu_pool_type->array_size;
 #else /* SLAB_USE_CPU_POOLS */
