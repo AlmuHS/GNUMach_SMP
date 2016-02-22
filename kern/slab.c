@@ -1259,8 +1259,6 @@ void slab_bootstrap(void)
 
 void slab_init(void)
 {
-    vm_offset_t min, max;
-
 #if SLAB_USE_CPU_POOLS
     struct kmem_cpu_pool_type *cpu_pool_type;
     char name[KMEM_CACHE_NAME_SIZE];
