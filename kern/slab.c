@@ -195,9 +195,17 @@
  *
  * The flags don't change once set and can be tested without locking.
  */
-#define KMEM_CF_SLAB_EXTERNAL   0x1 /* Slab data is off slab */
-#define KMEM_CF_DIRECTMAP       0x2 /* Allocate from physical memory */
-#define KMEM_CF_VERIFY          0x4 /* Debugging facilities enabled */
+#define KMEM_CF_SLAB_EXTERNAL   0x01    /* Slab data is off slab */
+#define KMEM_CF_PHYSMEM         0x02    /* Allocate from physical memory */
+#define KMEM_CF_DIRECT          0x04    /* Direct buf-to-slab translation
+                                           (implies !KMEM_CF_SLAB_EXTERNAL) */
+#define KMEM_CF_USE_TREE        0x08    /* Use red-black tree to track slab
+                                           data */
+#define KMEM_CF_USE_PAGE        0x10    /* Use page private data to track slab
+                                           data (implies KMEM_CF_SLAB_EXTERNAL
+                                           and KMEM_CF_PHYSMEM) */
+#define KMEM_CF_VERIFY          0x20    /* Debugging facilities enabled
+                                           (implies KMEM_CF_USE_TREE) */
 
 /*
  * Options for kmem_cache_alloc_verify().
@@ -355,7 +363,7 @@ static inline void * kmem_bufctl_to_buf(union kmem_bufctl *bufctl,
 }
 
 static vm_offset_t
-kmem_pagealloc_directmap(vm_size_t size)
+kmem_pagealloc_physmem(vm_size_t size)
 {
     struct vm_page *page;
 
@@ -374,7 +382,7 @@ kmem_pagealloc_directmap(vm_size_t size)
 }
 
 static void
-kmem_pagefree_directmap(vm_offset_t addr, vm_size_t size)
+kmem_pagefree_physmem(vm_offset_t addr, vm_size_t size)
 {
     struct vm_page *page;
 
@@ -411,26 +419,17 @@ kmem_pagefree_virtual(vm_offset_t addr, vm_size_t size)
 static vm_offset_t
 kmem_pagealloc(vm_size_t size, int flags)
 {
-    return (flags & KMEM_CF_DIRECTMAP)
-           ? kmem_pagealloc_directmap(size)
+    return (flags & KMEM_CF_PHYSMEM)
+           ? kmem_pagealloc_physmem(size)
            : kmem_pagealloc_virtual(size);
 }
 
 static void
 kmem_pagefree(vm_offset_t addr, vm_size_t size, int flags)
 {
-    return (flags & KMEM_CF_DIRECTMAP)
-           ? kmem_pagefree_directmap(addr, size)
+    return (flags & KMEM_CF_PHYSMEM)
+           ? kmem_pagefree_physmem(addr, size)
            : kmem_pagefree_virtual(addr, size);
-}
-
-static inline int kmem_slab_use_tree(int flags)
-{
-    if (flags & KMEM_CF_VERIFY)
-        return 1;
-
-    return ((flags & (KMEM_CF_SLAB_EXTERNAL | KMEM_CF_DIRECTMAP))
-            == KMEM_CF_SLAB_EXTERNAL);
 }
 
 static void kmem_slab_create_verify(struct kmem_slab *slab,
@@ -480,7 +479,7 @@ static struct kmem_slab * kmem_slab_create(struct kmem_cache *cache,
             return NULL;
         }
 
-        if (cache->flags & KMEM_CF_DIRECTMAP) {
+        if (cache->flags & KMEM_CF_USE_PAGE) {
             struct vm_page *page;
 
             page = vm_page_lookup_pa(kvtophys(slab_buf));
@@ -556,7 +555,7 @@ static void kmem_slab_destroy(struct kmem_slab *slab, struct kmem_cache *cache)
     slab_buf = (vm_offset_t)P2ALIGN((unsigned long)slab->addr, PAGE_SIZE);
 
     if (cache->flags & KMEM_CF_SLAB_EXTERNAL) {
-        if (cache->flags & KMEM_CF_DIRECTMAP) {
+        if (cache->flags & KMEM_CF_USE_PAGE) {
             struct vm_page *page;
 
             /* Not strictly needed, but let's increase safety */
@@ -726,13 +725,13 @@ static void kmem_cache_error(struct kmem_cache *cache, void *buf, int error,
 }
 
 /*
- * Compute an appropriate slab size for the given cache.
+ * Compute properties such as slab size for the given cache.
  *
  * Once the slab size is known, this function sets the related properties
- * (buffers per slab and maximum color). It can also set the KMEM_CF_DIRECTMAP
- * and/or KMEM_CF_SLAB_EXTERNAL flags depending on the resulting layout.
+ * (buffers per slab and maximum color). It can also set some KMEM_CF_xxx
+ * flags depending on the resulting layout.
  */
-static void kmem_cache_compute_sizes(struct kmem_cache *cache, int flags)
+static void kmem_cache_compute_properties(struct kmem_cache *cache, int flags)
 {
     size_t size, waste;
     int embed;
@@ -770,8 +769,8 @@ static void kmem_cache_compute_sizes(struct kmem_cache *cache, int flags)
     if (!embed)
         cache->flags |= KMEM_CF_SLAB_EXTERNAL;
 
-    if ((flags & KMEM_CACHE_DIRECTMAP) || (cache->slab_size == PAGE_SIZE)) {
-        cache->flags |= KMEM_CF_DIRECTMAP;
+    if ((flags & KMEM_CACHE_PHYSMEM) || (cache->slab_size == PAGE_SIZE)) {
+        cache->flags |= KMEM_CF_PHYSMEM;
 
         /*
          * Avoid using larger-than-page slabs backed by the direct physical
@@ -780,6 +779,21 @@ static void kmem_cache_compute_sizes(struct kmem_cache *cache, int flags)
          */
         if (cache->slab_size != PAGE_SIZE)
             panic("slab: invalid cache parameters");
+    }
+
+    if (cache->flags & KMEM_CF_VERIFY)
+        cache->flags |= KMEM_CF_USE_TREE;
+
+    if (cache->flags & KMEM_CF_SLAB_EXTERNAL) {
+        if (cache->flags & KMEM_CF_PHYSMEM)
+            cache->flags |= KMEM_CF_USE_PAGE;
+        else
+            cache->flags |= KMEM_CF_USE_TREE;
+    } else {
+        if (cache->slab_size == PAGE_SIZE)
+            cache->flags |= KMEM_CF_DIRECT;
+        else
+            cache->flags |= KMEM_CF_USE_TREE;
     }
 }
 
@@ -840,7 +854,7 @@ void kmem_cache_init(struct kmem_cache *cache, const char *name,
         cache->buf_size = buf_size;
     }
 
-    kmem_cache_compute_sizes(cache, flags);
+    kmem_cache_compute_properties(cache, flags);
 
 #if SLAB_USE_CPU_POOLS
     for (cpu_pool_type = kmem_cpu_pool_types;
@@ -973,7 +987,7 @@ static void * kmem_cache_alloc_from_slab(struct kmem_cache *cache)
         cache->nr_free_slabs--;
     }
 
-    if ((slab->nr_refs == 1) && kmem_slab_use_tree(cache->flags))
+    if ((slab->nr_refs == 1) && (cache->flags & KMEM_CF_USE_TREE))
         rbtree_insert(&cache->active_slabs, &slab->tree_node,
                       kmem_slab_cmp_insert);
 
@@ -990,29 +1004,29 @@ static void kmem_cache_free_to_slab(struct kmem_cache *cache, void *buf)
     struct kmem_slab *slab;
     union kmem_bufctl *bufctl;
 
-    if (cache->flags & KMEM_CF_SLAB_EXTERNAL) {
-        if (cache->flags & KMEM_CF_DIRECTMAP) {
-            struct vm_page *page;
-
-            page = vm_page_lookup_pa(kvtophys((vm_offset_t)buf));
-            assert(page != NULL);
-            slab = vm_page_get_priv(page);
-        } else {
-            struct rbtree_node *node;
-
-            node = rbtree_lookup_nearest(&cache->active_slabs, buf,
-                                         kmem_slab_cmp_lookup, RBTREE_LEFT);
-            assert(node != NULL);
-            slab = rbtree_entry(node, struct kmem_slab, tree_node);
-        }
-
-        assert((unsigned long)buf < (P2ALIGN((unsigned long)slab->addr
-                                             + cache->slab_size, PAGE_SIZE)));
-    } else {
+    if (cache->flags & KMEM_CF_DIRECT) {
         assert(cache->slab_size == PAGE_SIZE);
         slab = (struct kmem_slab *)P2END((unsigned long)buf, cache->slab_size)
                - 1;
+    } else if (cache->flags & KMEM_CF_USE_PAGE) {
+        struct vm_page *page;
+
+        page = vm_page_lookup_pa(kvtophys((vm_offset_t)buf));
+        assert(page != NULL);
+        slab = vm_page_get_priv(page);
+    } else {
+        struct rbtree_node *node;
+
+        assert(cache->flags & KMEM_CF_USE_TREE);
+        node = rbtree_lookup_nearest(&cache->active_slabs, buf,
+                                     kmem_slab_cmp_lookup, RBTREE_LEFT);
+        assert(node != NULL);
+        slab = rbtree_entry(node, struct kmem_slab, tree_node);
     }
+
+    assert((unsigned long)buf >= (unsigned long)slab->addr);
+    assert(((unsigned long)buf + cache->buf_size)
+           <= vm_page_trunc((unsigned long)slab->addr + cache->slab_size));
 
     assert(slab->nr_refs >= 1);
     assert(slab->nr_refs <= cache->bufs_per_slab);
@@ -1025,7 +1039,7 @@ static void kmem_cache_free_to_slab(struct kmem_cache *cache, void *buf)
     if (slab->nr_refs == 0) {
         /* The slab has become free */
 
-        if (kmem_slab_use_tree(cache->flags))
+        if (cache->flags & KMEM_CF_USE_TREE)
             rbtree_remove(&cache->active_slabs, &slab->tree_node);
 
         if (cache->bufs_per_slab > 1)
@@ -1145,6 +1159,8 @@ static void kmem_cache_free_verify(struct kmem_cache *cache, void *buf)
     union kmem_bufctl *bufctl;
     unsigned char *redzone_byte;
     unsigned long slabend;
+
+    assert(cache->flags & KMEM_CF_USE_TREE);
 
     simple_lock(&cache->lock);
     node = rbtree_lookup_nearest(&cache->active_slabs, buf,
@@ -1312,7 +1328,7 @@ void slab_init(void)
      * Prevent off slab data for the slab cache to avoid infinite recursion.
      */
     kmem_cache_init(&kmem_slab_cache, "kmem_slab", sizeof(struct kmem_slab),
-                    0, NULL, KMEM_CACHE_NOOFFSLAB | KMEM_CACHE_DIRECTMAP);
+                    0, NULL, KMEM_CACHE_NOOFFSLAB);
 }
 
 void kalloc_init(void)

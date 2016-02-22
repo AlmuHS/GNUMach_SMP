@@ -161,7 +161,7 @@ void vm_map_init(void)
 			NULL, 0);
 	kmem_cache_init(&vm_map_entry_cache, "vm_map_entry",
 			sizeof(struct vm_map_entry), 0, NULL,
-			KMEM_CACHE_DIRECTMAP);
+			KMEM_CACHE_NOOFFSLAB | KMEM_CACHE_PHYSMEM);
 	kmem_cache_init(&vm_map_copy_cache, "vm_map_copy",
 			sizeof(struct vm_map_copy), 0, NULL, 0);
 

@@ -196,7 +196,7 @@ typedef struct kmem_cache *kmem_cache_t;
  * Cache initialization flags.
  */
 #define KMEM_CACHE_NOOFFSLAB    0x1 /* Don't allocate external slab data */
-#define KMEM_CACHE_DIRECTMAP    0x2 /* Allocate from physical memory */
+#define KMEM_CACHE_PHYSMEM      0x2 /* Allocate from physical memory */
 #define KMEM_CACHE_VERIFY       0x4 /* Use debugging facilities */
 
 /*
