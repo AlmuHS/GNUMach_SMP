@@ -165,6 +165,7 @@ vm_page_init_pa(struct vm_page *page, unsigned short seg_index, phys_addr_t pa)
     page->type = VM_PT_RESERVED;
     page->seg_index = seg_index;
     page->order = VM_PAGE_ORDER_UNLISTED;
+    page->priv = NULL;
     page->phys_addr = pa;
 }
 

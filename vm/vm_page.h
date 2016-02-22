@@ -82,6 +82,7 @@ struct vm_page {
 	unsigned short type;
 	unsigned short seg_index;
 	unsigned short order;
+	void *priv;
 
 	/*
 	 * This member is used throughout the code and may only change for
@@ -422,6 +423,21 @@ vm_page_direct_ptr(const struct vm_page *page)
     return (void *)vm_page_direct_va(vm_page_to_pa(page));
 }
 #endif
+
+/*
+ * Associate private data with a page.
+ */
+static inline void
+vm_page_set_priv(struct vm_page *page, void *priv)
+{
+    page->priv = priv;
+}
+
+static inline void *
+vm_page_get_priv(const struct vm_page *page)
+{
+    return page->priv;
+}
 
 /*
  * Load physical memory into the vm_page module at boot time.
