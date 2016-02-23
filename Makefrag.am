@@ -549,9 +549,11 @@ nodist_libkernel_a_SOURCES += \
 # Stand-alone rule to generate the list of message ids when neither
 # the client nor the server stubs are required.
 nodist_lib_dep_tr_for_defs_a_SOURCES += \
-	ipc/notify.none.defs.c
+	ipc/notify.none.defs.c \
+	kern/exc.none.defs.c
 nodist_libkernel_a_SOURCES += \
-	ipc/notify.none.msgids
+	ipc/notify.none.msgids \
+	kern/exc.none.msgids
 #	ipc/notify.none.defs
 
 # rpctrace can make use of that.
