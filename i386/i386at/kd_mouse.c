@@ -630,6 +630,8 @@ int kd_mouse_read(void)
 	while (mousebufindex <= mouse_char_index) {
 	    mouse_char_wanted = TRUE;
 	    assert_wait((event_t) &mousebuf, FALSE);
+	    /* We are at tty SPL level, interrupts can not happen between
+	     * assert_wait and thread_block.  */
 	    thread_block((void (*)()) 0);
 	}
 
