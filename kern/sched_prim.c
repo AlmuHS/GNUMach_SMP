@@ -446,6 +446,9 @@ void thread_wakeup_prim(
  *	occurs.  The specified lock is unlocked before releasing
  *	the cpu.  (This is a convenient way to sleep without manually
  *	calling assert_wait).
+ *
+ *	Note: if the event may be woken from an interrupt handler, this must be
+ *	called at an spl level that prevents such interrupts.
  */
 void thread_sleep(
 	event_t		event,
