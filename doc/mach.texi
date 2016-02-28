@@ -3526,8 +3526,9 @@ each will perform a @code{memory_object_init} call with new request and
 name ports.  The virtual page size that is used by the calling kernel is
 included for planning purposes.
 
-When the memory manager is prepared to accept requests for data for this
-object, it must call @code{memory_object_ready} with the attribute.
+When the memory manager is prepared to accept requests for data for
+this object, it must call @code{memory_object_ready}, or set the ready
+flag using @code{memory_object_set_attributes}.
 Otherwise the kernel will not process requests on this object.  To
 reject all mappings of this object, the memory manager may use
 @code{memory_object_destroy}.
