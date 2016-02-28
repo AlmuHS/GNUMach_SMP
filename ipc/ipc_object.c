@@ -998,7 +998,8 @@ char *ikot_print_array[IKOT_MAX_TYPE] = {
 	"(SEMAPHORE)        ",
 	"(LOCK_SET)         ",
 	"(CLOCK)            ",
-	"(CLOCK_CTRL)       ",	/* 26 */
+	"(CLOCK_CTRL)       ",
+	"(PAGER_PROXY)      ",	/* 27 */
 				/* << new entries here	*/
 	"(UNKNOWN)     "	/* magic catchall	*/
 };	/* Please keep in sync with kern/ipc_kobject.h	*/
