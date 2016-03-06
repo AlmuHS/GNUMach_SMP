@@ -440,7 +440,7 @@ kern_return_t thread_create(
 	 *	Create a pcb.  The kernel stack is created later,
 	 *	when the thread is swapped-in.
 	 */
-	pcb_init(new_thread);
+	pcb_init(parent_task, new_thread);
 
 	ipc_thread_init(new_thread);
 
