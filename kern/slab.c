@@ -393,14 +393,18 @@ kmem_pagefree_physmem(vm_offset_t addr, vm_size_t size)
 }
 
 static vm_offset_t
-kmem_pagealloc_virtual(vm_size_t size)
+kmem_pagealloc_virtual(vm_size_t size, vm_size_t align)
 {
     vm_offset_t addr;
     kern_return_t kr;
 
     assert(size > PAGE_SIZE);
     size = vm_page_round(size);
-    kr = kmem_alloc_wired(kernel_map, &addr, size);
+
+    if (align <= PAGE_SIZE)
+        kr = kmem_alloc_wired(kernel_map, &addr, size);
+    else
+        kr = kmem_alloc_aligned(kernel_map, &addr, size);
 
     if (kr != KERN_SUCCESS)
         return 0;
@@ -417,11 +421,12 @@ kmem_pagefree_virtual(vm_offset_t addr, vm_size_t size)
 }
 
 static vm_offset_t
-kmem_pagealloc(vm_size_t size, int flags)
+kmem_pagealloc(vm_size_t size, vm_size_t align, int flags)
 {
+    assert(align <= size);
     return (flags & KMEM_CF_PHYSMEM)
            ? kmem_pagealloc_physmem(size)
-           : kmem_pagealloc_virtual(size);
+           : kmem_pagealloc_virtual(size, align);
 }
 
 static void
@@ -466,7 +471,7 @@ static struct kmem_slab * kmem_slab_create(struct kmem_cache *cache,
     unsigned long buffers;
     vm_offset_t slab_buf;
 
-    slab_buf = kmem_pagealloc(cache->slab_size, cache->flags);
+    slab_buf = kmem_pagealloc(cache->slab_size, cache->align, cache->flags);
 
     if (slab_buf == 0)
         return NULL;
@@ -764,7 +769,7 @@ static void kmem_cache_compute_properties(struct kmem_cache *cache, int flags)
     cache->color_max = size % cache->buf_size;
 
     if (cache->color_max >= PAGE_SIZE)
-        cache->color_max = PAGE_SIZE - 1;
+        cache->color_max = 0;
 
     if (!embed)
         cache->flags |= KMEM_CF_SLAB_EXTERNAL;
@@ -821,7 +826,6 @@ void kmem_cache_init(struct kmem_cache *cache, const char *name,
 
     assert(obj_size > 0);
     assert(ISP2(align));
-    assert(align < PAGE_SIZE);
 
     buf_size = P2ROUND(obj_size, align);
 
@@ -1392,7 +1396,7 @@ vm_offset_t kalloc(vm_size_t size)
         if ((buf != 0) && (cache->flags & KMEM_CF_VERIFY))
             kalloc_verify(cache, buf, size);
     } else {
-        buf = (void *)kmem_pagealloc_virtual(size);
+        buf = (void *)kmem_pagealloc_virtual(size, 0);
     }
 
     return (vm_offset_t)buf;
