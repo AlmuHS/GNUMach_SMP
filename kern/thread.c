@@ -70,6 +70,7 @@ thread_t active_threads[NCPUS];
 vm_offset_t active_stacks[NCPUS];
 
 struct kmem_cache thread_cache;
+struct kmem_cache thread_stack_cache;
 
 queue_head_t		reaper_queue;
 decl_simple_lock_data(,	reaper_lock)
@@ -195,23 +196,8 @@ kern_return_t stack_alloc(
 	(void) splx(s);
 
 	if (stack == 0) {
-		struct vm_page *page;
-
-		for (;;) {
-			/*
-			 *	Kernel stacks should be naturally aligned,
-			 *	so that it is easy to find the starting/ending
-			 *	addresses of a stack given an address in the middle.
-			 */
-			page = vm_page_grab_contig(KERNEL_STACK_SIZE,
-						   VM_PAGE_SEL_DIRECTMAP);
-			if (page != NULL)
-				break;
-
-			VM_PAGE_WAIT(NULL);
-		}
-
-		stack = phystokv(vm_page_to_pa(page));
+		stack = kmem_cache_alloc(&thread_stack_cache);
+		assert(stack != 0);
 #if	MACH_DEBUG
 		stack_init(stack);
 #endif	/* MACH_DEBUG */
@@ -257,7 +243,6 @@ void stack_free(
 
 void stack_collect(void)
 {
-	struct vm_page *page;
 	vm_offset_t stack;
 	spl_t s;
 
@@ -273,9 +258,7 @@ void stack_collect(void)
 #if	MACH_DEBUG
 		stack_finalize(stack);
 #endif	/* MACH_DEBUG */
-		page = vm_page_lookup_pa(kvtophys(stack));
-		assert(page != NULL);
-		vm_page_free_contig(page, KERNEL_STACK_SIZE);
+		kmem_cache_free(&thread_stack_cache, stack);
 
 		s = splsched();
 		stack_lock();
@@ -308,6 +291,14 @@ void stack_privilege(
 void thread_init(void)
 {
 	kmem_cache_init(&thread_cache, "thread", sizeof(struct thread), 0,
+			NULL, 0);
+	/*
+	 *	Kernel stacks should be naturally aligned,
+	 *	so that it is easy to find the starting/ending
+	 *	addresses of a stack given an address in the middle.
+	 */
+	kmem_cache_init(&thread_stack_cache, "thread_stack",
+			KERNEL_STACK_SIZE, KERNEL_STACK_SIZE,
 			NULL, 0);
 
 	/*
