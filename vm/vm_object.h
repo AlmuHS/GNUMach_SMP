@@ -72,7 +72,7 @@ struct vm_object {
 						 */
 
 	int			ref_count;	/* Number of references */
-	int			resident_page_count;
+	unsigned long		resident_page_count;
 						/* number of resident pages */
 
 	struct vm_object	*copy;		/* Object that should receive
@@ -148,8 +148,9 @@ struct vm_object {
 						 */
 	/* boolean_t */		use_shared_copy : 1,/* Use shared (i.e.,
 						 * delayed) copy on write */
-	/* boolean_t */		shadowed: 1;	/* Shadow may exist */
+	/* boolean_t */		shadowed: 1,	/* Shadow may exist */
 
+	/* boolean_t */		cached: 1;	/* Object is cached */
 	queue_chain_t		cached_list;	/* Attachment point for the list
 						 * of objects cached as a result
 						 * of their can_persist value
@@ -169,6 +170,7 @@ vm_object_t	kernel_object;		/* the single kernel object */
 
 extern void		vm_object_bootstrap(void);
 extern void		vm_object_init(void);
+extern void		vm_object_collect(vm_object_t);
 extern void		vm_object_terminate(vm_object_t);
 extern vm_object_t	vm_object_allocate(vm_size_t);
 extern void		vm_object_reference(vm_object_t);
@@ -289,6 +291,10 @@ vm_object_t vm_object_copy_delayed(
 /*
  *	Routines implemented as macros
  */
+
+#define vm_object_collectable(object)					\
+	(((object)->ref_count == 0)					\
+	&& ((object)->resident_page_count == 0))
 
 #define	vm_object_paging_begin(object) 					\
 	((object)->paging_in_progress++)

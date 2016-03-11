@@ -748,7 +748,12 @@ void vm_pageout_scan(void)
 		    reclaim_page:
 			vm_page_free(m);
 			vm_page_unlock_queues();
-			vm_object_unlock(object);
+
+			if (vm_object_collectable(object))
+				vm_object_collect(object);
+			else
+				vm_object_unlock(object);
+
 			continue;
 		}
 

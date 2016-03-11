@@ -372,7 +372,7 @@ void vm_page_insert(
 	 */
 
 	object->resident_page_count++;
-	assert(object->resident_page_count >= 0);
+	assert(object->resident_page_count != 0);
 
 	if (object->can_persist && (object->ref_count == 0))
 		vm_object_cached_pages_update(1);
@@ -479,7 +479,7 @@ void vm_page_replace(
 	 */
 
 	object->resident_page_count++;
-	assert(object->resident_page_count >= 0);
+	assert(object->resident_page_count != 0);
 
 	if (object->can_persist && (object->ref_count == 0))
 		vm_object_cached_pages_update(1);
