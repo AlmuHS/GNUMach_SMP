@@ -162,6 +162,7 @@ libkernel_a_SOURCES += \
 	kern/lock.c \
 	kern/lock.h \
 	kern/lock_mon.c \
+	kern/log2.h \
 	kern/mach_clock.c \
 	kern/mach_clock.h \
 	kern/mach_factor.c \
@@ -217,6 +218,7 @@ libkernel_a_SOURCES += \
 	kern/elf-load.c \
 	kern/boot_script.c
 EXTRA_DIST += \
+	kern/exc.defs \
 	kern/mach.srv \
 	kern/mach4.srv \
 	kern/gnumach.srv \
