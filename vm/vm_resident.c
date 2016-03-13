@@ -905,8 +905,10 @@ vm_page_t vm_page_grab_contig(
 	/* TODO Allow caller to pass type */
 	mem = vm_page_alloc_pa(order, selector, VM_PT_KERNEL);
 
-	if (mem == NULL)
-		panic("vm_page_grab_contig");
+	if (mem == NULL) {
+		simple_unlock(&vm_page_queue_free_lock);
+		return NULL;
+	}
 
 	for (i = 0; i < nr_pages; i++) {
 		mem[i].free = FALSE;
