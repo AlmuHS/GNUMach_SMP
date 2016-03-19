@@ -165,23 +165,23 @@ elf_db_search_symbol (db_symtab_t *stab,
     if (s->st_name == 0)
       continue;
 
-    if (strategy == DB_STGY_XTRN && (s->st_info & STB_GLOBAL) == 0)
+    if (strategy == DB_STGY_XTRN && (ELF32_ST_BIND(s->st_info) != STB_GLOBAL))
       continue;
 
     if (off >= s->st_value) {
-      if (s->st_info == STT_FUNC)
+      if (ELF32_ST_TYPE(s->st_info) == STT_FUNC)
 	continue;
 
       if (off - s->st_value < diff) {
 	diff = off - s->st_value;
 	symp = s;
-	if (diff == 0 && (s->st_info & STB_GLOBAL))
+	if (diff == 0 && (ELF32_ST_BIND(s->st_info) == STB_GLOBAL))
 	  break;
       } else if (off - s->st_value == diff) {
 	if (symp == NULL)
 	  symp = s;
-	else if ((symp->st_info & STB_GLOBAL) == 0
-		 && (s->st_info & STB_GLOBAL) != 0)
+	else if ((ELF32_ST_BIND(symp->st_info) != STB_GLOBAL)
+		 && (ELF32_ST_BIND(s->st_info) == STB_GLOBAL))
 	  symp = s;	/* pick the external symbol */
       }
     }
