@@ -1307,7 +1307,7 @@ ipc_kmsg_copyin_body(
 		mach_msg_type_number_t number;
 		boolean_t is_inline, longform, dealloc, is_port;
 		vm_offset_t data;
-		unsigned64_t length;
+		uint64_t length;
 		kern_return_t kr;
 
 		type = (mach_msg_type_long_t *) saddr;
@@ -1358,7 +1358,7 @@ ipc_kmsg_copyin_body(
 
 		/* calculate length of data in bytes, rounding up */
 
-		length = (((unsigned64_t) number * size) + 7) >> 3;
+		length = (((uint64_t) number * size) + 7) >> 3;
 
 		if (is_inline) {
 			vm_size_t amount;
@@ -2351,7 +2351,7 @@ ipc_kmsg_copyout_body(
 		mach_msg_type_size_t size;
 		mach_msg_type_number_t number;
 		boolean_t is_inline, longform, is_port;
-		unsigned64_t length;
+		uint64_t length;
 		vm_offset_t addr;
 
 		type = (mach_msg_type_long_t *) saddr;
@@ -2382,7 +2382,7 @@ ipc_kmsg_copyout_body(
 
 		/* calculate length of data in bytes, rounding up */
 
-		length = (((unsigned64_t) number * size) + 7) >> 3;
+		length = (((uint64_t) number * size) + 7) >> 3;
 
 		is_port = MACH_MSG_TYPE_PORT_ANY(name);
 

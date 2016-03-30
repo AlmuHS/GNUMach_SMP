@@ -21,7 +21,7 @@
 #include <machine/xen.h>
 #include <xen/public/io/xenbus.h>
 
-typedef unsigned32_t hyp_store_transaction_t;
+typedef uint32_t hyp_store_transaction_t;
 
 #define hyp_store_state_unknown		"0"
 #define hyp_store_state_initializing	"1"

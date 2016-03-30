@@ -43,9 +43,9 @@
 DEVICE_IMPORTS
 #endif
 
-type recnum_t		= unsigned32;
-type dev_mode_t		= unsigned32;
-type dev_flavor_t	= unsigned32;
+type recnum_t		= uint32_t;
+type dev_mode_t		= uint32_t;
+type dev_flavor_t	= uint32_t;
 type dev_name_t		= (MACH_MSG_TYPE_STRING_C, 8*128);
 type dev_status_t	= array[*:1024] of int;
 type io_buf_ptr_t	= ^array[] of MACH_MSG_TYPE_INTEGER_8;

@@ -20,6 +20,6 @@
 #define XEN_TIME_H
 
 #include <mach/mach_types.h>
-unsigned64_t hyp_get_time(void);
+uint64_t hyp_get_time(void);
 
 #endif /* XEN_TIME_H */

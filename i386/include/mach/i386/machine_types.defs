@@ -47,7 +47,7 @@
  * a port in user space as an integer and
  * in kernel space as a pointer.
  */
-type natural_t = unsigned32;
+type natural_t = uint32_t;
 
 /*
  * An integer_t is the signed counterpart
@@ -56,6 +56,6 @@ type natural_t = unsigned32;
  * other types in a machine-independent
  * way.
  */
-type integer_t = int32;
+type integer_t = int32_t;
 
 #endif	/* _MACHINE_MACHINE_TYPES_DEFS_ */

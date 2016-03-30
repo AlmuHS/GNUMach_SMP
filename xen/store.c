@@ -46,7 +46,7 @@ struct store_req {
 };
 
 /* Send a request */
-static void store_put(hyp_store_transaction_t t, unsigned32_t type, struct store_req *req, unsigned nr_reqs) {
+static void store_put(hyp_store_transaction_t t, uint32_t type, struct store_req *req, unsigned nr_reqs) {
 	struct xsd_sockmsg head = {
 		.type = type,
 		.req_id = 0,
@@ -105,7 +105,7 @@ static const char *errors[] = {
 static struct xsd_sockmsg head;
 const char *hyp_store_error;
 
-static void *store_put_wait(hyp_store_transaction_t t, unsigned32_t type, struct store_req *req, unsigned nr_reqs) {
+static void *store_put_wait(hyp_store_transaction_t t, uint32_t type, struct store_req *req, unsigned nr_reqs) {
 	unsigned len;
 	const char **error;
 	void *data;

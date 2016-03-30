@@ -489,7 +489,7 @@ device_read (void *d, ipc_port_t reply_port,
       req->operation = BLKIF_OP_READ;
       req->nr_segments = nbpages;
       req->handle = bd->handle;
-      req->id = (unsigned64_t) (unsigned long) &err; /* pointer on the stack */
+      req->id = (uint64_t) (unsigned long) &err; /* pointer on the stack */
       req->sector_number = bn + offset / 512;
       for (i = 0; i < nbpages; i++) {
 	req->seg[i].gref = gref[i] = hyp_grant_give(bd->domid, atop(pages[i]->phys_addr), 0);
@@ -641,7 +641,7 @@ device_write(void *d, ipc_port_t reply_port,
     req->operation = BLKIF_OP_WRITE;
     req->nr_segments = nbpages;
     req->handle = bd->handle;
-    req->id = (unsigned64_t) (unsigned long) &err; /* pointer on the stack */
+    req->id = (uint64_t) (unsigned long) &err; /* pointer on the stack */
     req->sector_number = bn + i*PAGE_SIZE / 512;
 
     for (j = 0; j < nbpages; j++) {

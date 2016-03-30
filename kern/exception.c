@@ -757,7 +757,7 @@ exception_raise(
 
 /* Macro used by MIG to cleanly check the type.  */
 #define BAD_TYPECHECK(type, check) unlikely (({\
-  union { mach_msg_type_t t; unsigned32_t w; } _t, _c;\
+  union { mach_msg_type_t t; uint32_t w; } _t, _c;\
   _t.t = *(type); _c.t = *(check);_t.w != _c.w; }))
 
 /* Type descriptor for the return code.  */

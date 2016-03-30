@@ -356,8 +356,8 @@ _hypcall2(int, set_debugreg, int, reg, unsigned long, value);
 _hypcall1(unsigned long, get_debugreg, int, reg);
 
 /* x86-specific */
-MACH_INLINE unsigned64_t hyp_cpu_clock(void) {
-	unsigned64_t tsc;
+MACH_INLINE uint64_t hyp_cpu_clock(void) {
+	uint64_t tsc;
 	asm volatile("rdtsc":"=A"(tsc));
 	return tsc;
 }

@@ -46,7 +46,7 @@ void hyp_failsafe_c_callback(struct failsafe_callback_regs *regs) {
 
 extern void return_to_iret;
 
-void hypclock_machine_intr(int old_ipl, void *ret_addr, struct i386_interrupt_state *regs, unsigned64_t delta) {
+void hypclock_machine_intr(int old_ipl, void *ret_addr, struct i386_interrupt_state *regs, uint64_t delta) {
 	if (ret_addr == &return_to_iret) {
 		clock_interrupt(delta/1000,		/* usec per tick */
 			(regs->efl & EFL_VM) ||		/* user mode */ 

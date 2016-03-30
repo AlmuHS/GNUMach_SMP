@@ -42,7 +42,7 @@ AM_LDFLAGS =
 #
 
 AM_CPPFLAGS += \
-	-nostdinc -imacros config.h
+	-ffreestanding -nostdinc -imacros config.h
 
 AM_CPPFLAGS += \
 	-I$(systype) \

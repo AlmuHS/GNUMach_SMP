@@ -19,7 +19,7 @@
 #ifndef	XEN_RING_H
 #define	XEN_RING_H
 
-typedef unsigned32_t hyp_ring_pos_t;
+typedef uint32_t hyp_ring_pos_t;
 
 #define hyp_ring_idx(ring, pos) (((unsigned)(pos)) & (sizeof(ring)-1))
 #define hyp_ring_cell(ring, pos) (ring)[hyp_ring_idx((ring), (pos))]
