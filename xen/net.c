@@ -145,8 +145,8 @@ static int recompute_checksum(void *data, int len) {
 
 	if (header8[9] == 6) {
 		/* Need to fix TCP checksum as well */
-		unsigned16_t *tcp_header16 = header16 + length/2;
-		unsigned8_t *tcp_header8 = header8 + length;
+		uint16_t *tcp_header16 = header16 + length/2;
+		uint8_t *tcp_header8 = header8 + length;
 		unsigned tcp_length = ntohs(header16[1]) - length;
 
 		/* Pseudo IP header */
@@ -166,7 +166,7 @@ static int recompute_checksum(void *data, int len) {
 		tcp_header16[8] = htons(~checksum);
 	} else if (header8[9] == 17) {
 		/* Drop any bogus checksum */
-		unsigned16_t *udp_header16 = header16 + length/2;
+		uint16_t *udp_header16 = header16 + length/2;
 		udp_header16[3] = 0;
 	}
 

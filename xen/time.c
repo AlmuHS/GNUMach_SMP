@@ -36,7 +36,7 @@ static uint64_t hyp_get_stime(void) {
 	uint64_t cpu_clock, last_cpu_clock, delta, system_time;
 	uint64_t delta_high, delta_low;
 	uint32_t mul;
-	signed8_t shift;
+	int8_t shift;
 	volatile struct vcpu_time_info *time = &hyp_shared_info.vcpu_info[0].time;
 
 	do {
