@@ -36,7 +36,7 @@
 #define _RDXTREE_H
 
 #include <stddef.h>
-#include <sys/types.h>
+#include <stdint.h>
 
 /*
  * Initialize the node cache.

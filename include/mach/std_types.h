@@ -37,7 +37,6 @@
 #include <mach/kern_return.h>
 #include <mach/port.h>
 #include <mach/machine/vm_types.h>
-#include <stdint.h>
 
 typedef	vm_offset_t	pointer_t;
 typedef	vm_offset_t	vm_address_t;
