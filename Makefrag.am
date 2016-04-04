@@ -144,6 +144,8 @@ libkernel_a_SOURCES += \
 	kern/eventcount.h \
 	kern/exception.c \
 	kern/exception.h \
+	kern/gsync.c \
+	kern/gsync.h \
 	kern/host.c \
 	kern/host.h \
 	kern/ipc_host.c \

@@ -36,6 +36,7 @@
 #include <ipc/ipc_init.h>
 #include <kern/cpu_number.h>
 #include <kern/debug.h>
+#include <kern/gsync.h>
 #include <kern/machine.h>
 #include <kern/mach_factor.h>
 #include <kern/mach_clock.h>
@@ -157,6 +158,8 @@ void setup_main(void)
 	 */
 	recompute_priorities(NULL);
 	compute_mach_factor();
+
+	gsync_setup ();
 
 	/*
 	 *	Create a kernel thread to start the other kernel

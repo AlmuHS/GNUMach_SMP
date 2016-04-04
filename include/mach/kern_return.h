@@ -157,4 +157,10 @@
 		/* Object has been terminated and is no longer available.
 		 */
 
+#define KERN_TIMEDOUT           27
+        /* Kernel operation timed out. */
+
+#define KERN_INTERRUPTED        28
+        /* Kernel operation was interrupted. */
+
 #endif	/* _MACH_KERN_RETURN_H_ */
