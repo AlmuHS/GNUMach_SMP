@@ -11,6 +11,9 @@ limit.
 The physical page allocator of the X15 kernel has been integrated, and
 is now used directly by the slab allocator.  This increases the kernel
 heap addressing important scalability issues.
+
+A synchronization mechanism was added, similar to the Linux futexes, to
+allow efficient and powerful userland synchronization.
 
 Version 1.6 (2015-10-31)
 
