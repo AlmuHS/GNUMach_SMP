@@ -301,7 +301,8 @@ i386at_init(void)
 	 * is too far in physical memory.  */
 	if (boot_info.flags & MULTIBOOT_CMDLINE) {
 		int len = strlen ((char*)phystokv(boot_info.cmdline)) + 1;
-		assert(init_alloc_aligned(round_page(len), &addr));
+		if (! init_alloc_aligned(round_page(len), &addr))
+		  panic("could not allocate memory for multiboot command line");
 		kernel_cmdline = (char*) phystokv(addr);
 		memcpy(kernel_cmdline, (void *)phystokv(boot_info.cmdline), len);
 		boot_info.cmdline = addr;
@@ -311,20 +312,26 @@ i386at_init(void)
 		struct multiboot_module *m;
 		int i;
 
-		assert(init_alloc_aligned(round_page(boot_info.mods_count * sizeof(*m)), &addr));
+		if (! init_alloc_aligned(
+			round_page(boot_info.mods_count * sizeof(*m)), &addr))
+		  panic("could not allocate memory for multiboot modules");
 		m = (void*) phystokv(addr);
 		memcpy(m, (void*) phystokv(boot_info.mods_addr), boot_info.mods_count * sizeof(*m));
 		boot_info.mods_addr = addr;
 
 		for (i = 0; i < boot_info.mods_count; i++) {
 			vm_size_t size = m[i].mod_end - m[i].mod_start;
-			assert(init_alloc_aligned(round_page(size), &addr));
+			if (! init_alloc_aligned(round_page(size), &addr))
+			  panic("could not allocate memory for multiboot "
+				"module %d", i);
 			memcpy((void*) phystokv(addr), (void*) phystokv(m[i].mod_start), size);
 			m[i].mod_start = addr;
 			m[i].mod_end = addr + size;
 
 			size = strlen((char*) phystokv(m[i].string)) + 1;
-			assert(init_alloc_aligned(round_page(size), &addr));
+			if (! init_alloc_aligned(round_page(size), &addr))
+			  panic("could not allocate memory for multiboot "
+				"module command line %d", i);
 			memcpy((void*) phystokv(addr), (void*) phystokv(m[i].string), size);
 			m[i].string = addr;
 		}
