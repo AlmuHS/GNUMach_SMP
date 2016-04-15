@@ -113,6 +113,8 @@ AC_DEFINE([SLAB_USE_CPU_POOLS], [0], [SLAB_USE_CPU_POOLS])
 # Options.
 #
 
+AC_HEADER_ASSERT()
+
 AC_ARG_ENABLE([kdb],
   AS_HELP_STRING([--enable-kdb], [enable use of in-kernel debugger]))
 [if [ x"$enable_kdb" = xyes ]; then]
