@@ -1,3 +1,17 @@
+Version 1.7 (2016-04-XX)
+
+The code has been updated to work with newer versions of the compiler,
+and numerous bugs have been fixed throughout the code.  The code uses
+integer types from 'stdint.h' now instead of the old Mach types.
+
+The VM cache policy change has been merged.  The kernel now caches
+unreferenced VM objects unconditionally instead of using a fixed
+limit.
+
+The physical page allocator of the X15 kernel has been integrated, and
+is now used directly by the slab allocator.  This increases the kernel
+heap addressing important scalability issues.
+
 Version 1.6 (2015-10-31)
 
 The code has been updated to work with newer versions of the compiler,
