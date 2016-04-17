@@ -23,6 +23,12 @@
 #include <i386/i386asm.h>
 #include <i386/xen.h>
 
+#if NCPUS > 1
+#define mb lock; addl $0,(%esp)
+#else
+#define mb
+#endif
+
 /*
  * Set IPL to the specified value.
  *
@@ -34,6 +40,7 @@
  * potentially, return with interrupts disabled.
  */
 #define SETIPL(level)			\
+	mb;				\
 	movl	$(level),%edx;		\
 	cmpl	EXT(curr_ipl),%edx;	\
 	jne	spl;			\
@@ -70,6 +77,7 @@ lock	orl	$1,hyp_shared_info+CPU_PENDING_SEL; /* Yes, activate it */ \
 #endif	/* MACH_XEN */
 
 ENTRY(spl0)
+	mb;
 	movl	EXT(curr_ipl),%eax	/* save current ipl */
 	pushl	%eax
 	cli				/* disable interrupts */
@@ -140,6 +148,7 @@ Entry(splsched)
 Entry(splhigh)
 Entry(splhi)
 ENTRY(spl7)
+	mb;
 	/* ipl7 just clears IF */
 	movl	$SPL7,%eax
 	xchgl	EXT(curr_ipl),%eax
