@@ -52,7 +52,8 @@ static struct gsync_hbucket gsync_buckets[GSYNC_NBUCKETS];
 
 void gsync_setup (void)
 {
-  for (int i = 0; i < GSYNC_NBUCKETS; ++i)
+  int i;
+  for (i = 0; i < GSYNC_NBUCKETS; ++i)
     {
       list_init (&gsync_buckets[i].entries);
       simple_lock_init (&gsync_buckets[i].lock);
