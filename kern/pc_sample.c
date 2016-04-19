@@ -46,12 +46,18 @@ typedef sampled_pc_t sampled_pcs[MAX_PC_SAMPLES];
 void take_pc_sample(
     const thread_t t,
     sample_control_t *cp,
-    sampled_pc_flavor_t flavor)
+    sampled_pc_flavor_t flavor,
+    boolean_t usermode,
+    vm_offset_t kern_pc)
 {
     vm_offset_t pc;
     struct sampled_pc *sample;
     
-    pc = interrupted_pc(t);
+    if (usermode)
+	pc = interrupted_pc(t);
+    else
+	pc = kern_pc;
+
     cp->seqno++;
     sample = &((sampled_pc_t *)cp->buffer)[cp->seqno % MAX_PC_SAMPLES];
     sample->id = (vm_offset_t)t;

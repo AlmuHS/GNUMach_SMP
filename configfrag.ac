@@ -85,6 +85,15 @@ AC_DEFINE([MACH_PAGEMAP], [1], [MACH_PAGEMAP])
 # Do pc sample histogram.
 AC_DEFINE([MACH_PCSAMPLE], [1], [MACH_PCSAMPLE])
 
+# Sample kernel too.
+AC_ARG_ENABLE([kernsample],
+  AS_HELP_STRING([--enable-kernsample], [enable sampling kernel]))
+[if [ x"$enable_kernsample" = xyes ]; then]
+  AC_DEFINE([MACH_KERNSAMPLE], [1], [MACH_KERNSAMPLE])
+[else]
+  AC_DEFINE([MACH_KERNSAMPLE], [0], [MACH_KERNSAMPLE])
+[fi]
+
 # TTD Remote Kernel Debugging.
 AC_DEFINE([MACH_TTD], [0], [MACH_TTD])
 

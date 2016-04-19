@@ -133,7 +133,8 @@ timer_elt_data_t	timer_head;	/* ordered list of timeouts */
 void clock_interrupt(
 	int		usec,		/* microseconds per tick */
 	boolean_t	usermode,	/* executing user code */
-	boolean_t	basepri)	/* at base priority */
+	boolean_t	basepri,	/* at base priority */
+	vm_offset_t	pc)		/* address of interrupted instruction */
 {
 	int		my_cpu = cpu_number();
 	thread_t	thread = current_thread();
@@ -184,8 +185,11 @@ void clock_interrupt(
 	 * This had better be MP safe.  It might be interesting
 	 * to keep track of cpu in the sample.
 	 */
-	if (usermode) {
-		take_pc_sample_macro(thread, SAMPLED_PC_PERIODIC);
+#ifndef MACH_KERNSAMPLE
+	if (usermode)
+#endif
+	{
+		take_pc_sample_macro(thread, SAMPLED_PC_PERIODIC, usermode, pc);
 	}
 #endif /* MACH_PCSAMPLE */
 

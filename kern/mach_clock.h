@@ -62,7 +62,8 @@ typedef	struct timer_elt	*timer_elt_t;
 extern void clock_interrupt(
    int usec,
    boolean_t usermode,
-   boolean_t basepri);
+   boolean_t basepri,
+   vm_offset_t pc);
 
 extern void softclock (void);
 

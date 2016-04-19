@@ -154,7 +154,7 @@ vm_fault_cleanup(
       thread_t _thread_ = current_thread(); \
  \
       if (_thread_ != THREAD_NULL) \
-	  take_pc_sample_macro(_thread_, (flavor)); \
+	  take_pc_sample_macro(_thread_, (flavor), 1, NULL); \
     MACRO_END
 
 #else
