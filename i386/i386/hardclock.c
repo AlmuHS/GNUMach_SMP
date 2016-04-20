@@ -74,7 +74,7 @@ hardclock(iunit,        old_ipl, irq, ret_addr, regs)
 	    clock_interrupt(tick,			/* usec per tick */
 			    FALSE,			/* kernel mode */
 			    FALSE,			/* not SPL0 */
-			    NULL);			/* interrupted eip */
+			    0);				/* interrupted eip */
 
 #ifdef LINUX_DEV
 	linux_timer_intr();
