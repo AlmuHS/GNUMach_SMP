@@ -138,7 +138,7 @@ clkstart()
 	hyp_evt_handler(port, hypclock_intr, 0, SPLHI);
 
 	/* first clock tick */
-	clock_interrupt(0, 0, 0);
+	clock_interrupt(0, 0, 0, 0);
 	lastnsec = hyp_get_stime();
 
 	/* 10ms tick rest */
