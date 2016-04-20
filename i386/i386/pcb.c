@@ -409,7 +409,7 @@ void pcb_init(task_t parent_task, thread_t thread)
 
 	/* This is a new thread for the current task, make it inherit our FPU
 	   state.  */
-	if (parent_task == current_task())
+	if (current_thread() && parent_task == current_task())
 		fpinherit(current_thread(), thread);
 }
 
