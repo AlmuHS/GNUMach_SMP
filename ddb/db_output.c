@@ -203,7 +203,7 @@ void db_end_line(void)
 }
 
 /*VARARGS1*/
-void
+int
 db_printf(const char *fmt, ...)
 {
 	va_list	listp;
@@ -211,6 +211,7 @@ db_printf(const char *fmt, ...)
 	va_start(listp, fmt);
 	_doprnt(fmt, listp, db_id_putc, db_radix, 0);
 	va_end(listp);
+	return 0;
 }
 
 #endif /* MACH_KDB */

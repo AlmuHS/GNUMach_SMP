@@ -38,7 +38,7 @@
 extern void	db_force_whitespace(void);
 extern int	db_print_position(void) __attribute__ ((pure));
 extern void	db_end_line(void);
-extern void	db_printf(const char *fmt, ...);
+extern int	db_printf(const char *fmt, ...);
 /* alternate name */
 #define kdbprintf db_printf
 extern void	db_putchar(int c);
