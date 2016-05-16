@@ -461,6 +461,7 @@ vm_pageout_page(
 	 *	Allocate a new object into which we can put the page.
 	 */
 	new_object = vm_object_allocate(PAGE_SIZE);
+	new_object->used_for_pageout = TRUE;
 
 	/*
 	 *	Move the page into the new object.

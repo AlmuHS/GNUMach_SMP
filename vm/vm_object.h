@@ -113,6 +113,13 @@ struct vm_object {
 						 * of these fields (i.e., don't
 						 * collapse, destroy or terminate)
 						 */
+	/* boolean_t */		used_for_pageout:1,/* The object carries data sent to
+						 * a memory manager, which signals
+						 * it's done by releasing memory.
+						 * This flag prevents coalescing so
+						 * that unmapping memory immediately
+						 * results in object termination.
+						 */
 	/* boolean_t */		pager_created:1,/* Has pager ever been created? */
 	/* boolean_t */		pager_initialized:1,/* Are fields ready to use? */
 	/* boolean_t */		pager_ready:1,	/* Will manager take requests? */

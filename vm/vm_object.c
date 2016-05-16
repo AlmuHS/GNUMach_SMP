@@ -302,6 +302,7 @@ void vm_object_bootstrap(void)
 	vm_object_template.all_wanted = 0; /* all bits FALSE */
 
 	vm_object_template.paging_in_progress = 0;
+	vm_object_template.used_for_pageout = FALSE;
 	vm_object_template.can_persist = FALSE;
 	vm_object_template.cached = FALSE;
 	vm_object_template.internal = TRUE;
@@ -2742,6 +2743,7 @@ boolean_t vm_object_coalesce(
 
 	if ((prev_object->ref_count > 1) ||
 	    prev_object->pager_created ||
+	    prev_object->used_for_pageout ||
 	    (prev_object->shadow != VM_OBJECT_NULL) ||
 	    (prev_object->copy != VM_OBJECT_NULL) ||
 	    (prev_object->paging_in_progress != 0)) {
