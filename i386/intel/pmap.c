@@ -643,7 +643,7 @@ void pmap_bootstrap(void)
 	kernel_pmap->dirbase = kernel_page_dir = (pt_entry_t*)phystokv(pmap_grab_page());
 #endif	/* PAE */
 	{
-		int i;
+		unsigned i;
 		for (i = 0; i < NPDES; i++)
 			kernel_pmap->dirbase[i] = 0;
 	}
@@ -678,7 +678,7 @@ void pmap_bootstrap(void)
 			l2_map += (la >> PDESHIFT) & PDEMASK;
 			if (!(*l2_map & INTEL_PTE_VALID)) {
 				struct mmu_update update;
-				int j, n;
+				unsigned j, n;
 
 				l1_map[n_l1map] = (pt_entry_t*) phystokv(pmap_grab_page());
 				for (j = 0; j < NPTES; j++)
@@ -857,11 +857,11 @@ void pmap_set_page_readonly_init(void *_vaddr) {
 }
 
 void pmap_clear_bootstrap_pagetable(pt_entry_t *base) {
-	int i;
+	unsigned i;
 	pt_entry_t *dir;
 	vm_offset_t va = 0;
 #if PAE
-	int j;
+	unsigned j;
 #endif	/* PAE */
 	if (!hyp_mmuext_op_mfn (MMUEXT_UNPIN_TABLE, kv_to_mfn(base)))
 		panic("pmap_clear_bootstrap_pagetable: couldn't unpin page %p(%p)\n", base, (vm_offset_t) kv_to_ma(base));

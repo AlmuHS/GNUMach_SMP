@@ -124,7 +124,7 @@ free_bootstrap_pages(phys_addr_t start, phys_addr_t end)
 void bootstrap_create(void)
 {
   int compat;
-  int n = 0;
+  unsigned n = 0;
 #ifdef	MACH_XEN
   struct multiboot_module *bmods = ((struct multiboot_module *)
                                    boot_info.mod_start);
@@ -164,7 +164,8 @@ void bootstrap_create(void)
     }
   else
     {
-      int i, losers;
+      unsigned i;
+      int losers;
 
       /* Initialize boot script variables.  We leak these send rights.  */
       losers = boot_script_set_variable

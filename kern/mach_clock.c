@@ -74,11 +74,11 @@ int		timedelta = 0;
 int		tickdelta = 0;
 
 #if	HZ > 500
-int		tickadj = 1;		/* can adjust HZ usecs per second */
+unsigned	tickadj = 1;		/* can adjust HZ usecs per second */
 #else
-int		tickadj = 500 / HZ;	/* can adjust 100 usecs per second */
+unsigned	tickadj = 500 / HZ;	/* can adjust 100 usecs per second */
 #endif
-int		bigadj = 1000000;	/* adjust 10*tickadj if adjustment
+unsigned	bigadj = 1000000;	/* adjust 10*tickadj if adjustment
 					   > bigadj */
 
 /*

@@ -247,7 +247,7 @@ void hyp_block_init(void) {
 			/* Allocate an event channel and give it to backend.  */
 			bd->evt = evt = hyp_event_channel_alloc(domid);
 			hyp_evt_handler(evt, hyp_block_intr, n, SPL7);
-			i = sprintf(port_name, "%lu", evt);
+			i = sprintf(port_name, "%u", evt);
 			c = hyp_store_write(t, port_name, 5, VBD_PATH, "/", vbds[n], "/", "event-channel");
 			if (!c)
 				panic("%s: couldn't store event channel (%s)", device_name, hyp_store_error);
@@ -351,7 +351,7 @@ static io_return_t
 device_open (ipc_port_t reply_port, mach_msg_type_name_t reply_port_type,
 	    dev_mode_t mode, char *name, device_t *devp /* out */)
 {
-	int i, err = 0;
+	int i;
 	ipc_port_t port, notify;
 	struct block_data *bd;
 
@@ -569,13 +569,13 @@ device_write(void *d, ipc_port_t reply_port,
   io_return_t err = 0;
   vm_map_copy_t copy = (vm_map_copy_t) data;
   vm_offset_t aligned_buffer = 0;
-  int copy_npages = atop(round_page(count));
+  unsigned copy_npages = atop(round_page(count));
   vm_offset_t phys_addrs[copy_npages];
   struct block_data *bd = d;
   blkif_request_t *req;
   grant_ref_t gref[BLKIF_MAX_SEGMENTS_PER_REQUEST];
   unsigned reqn, size;
-  int i, nbpages, j;
+  unsigned i, nbpages, j;
 
   if (!(bd->mode & D_WRITE))
     return D_READ_ONLY;

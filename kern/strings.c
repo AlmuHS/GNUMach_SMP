@@ -184,7 +184,7 @@ memset(
 	void *_s, int c, size_t n)
 {
 	char *s = _s;
-	int i;
+	size_t i;
 
 	for (i = 0; i < n ; i++)
 		s[i] = c;

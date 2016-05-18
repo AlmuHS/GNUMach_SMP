@@ -565,7 +565,7 @@ kern_return_t task_threads(
 	unsigned int actual;	/* this many threads */
 	thread_t thread;
 	thread_t *threads;
-	int i;
+	unsigned i;
 
 	vm_size_t size, size_needed;
 	vm_offset_t addr;

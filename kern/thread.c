@@ -2332,7 +2332,7 @@ void consider_thread_collect(void)
 vm_size_t stack_usage(
 	vm_offset_t stack)
 {
-	int i;
+	unsigned i;
 
 	for (i = 0; i < KERNEL_STACK_SIZE/sizeof(unsigned int); i++)
 	    if (((unsigned int *)stack)[i] != STACK_MARKER)
@@ -2350,7 +2350,7 @@ void stack_init(
 	vm_offset_t stack)
 {
 	if (stack_check_usage) {
-	    int i;
+	    unsigned i;
 
 	    for (i = 0; i < KERNEL_STACK_SIZE/sizeof(unsigned int); i++)
 		((unsigned int *)stack)[i] = STACK_MARKER;

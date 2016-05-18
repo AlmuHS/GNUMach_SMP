@@ -129,14 +129,14 @@ static void hypcnintr(int unit, spl_t spl, void *ret_addr, void *regs) {
 	simple_unlock(&inlock);
 }
 
-int hypcnread(int dev, io_req_t ior)
+int hypcnread(dev_t dev, io_req_t ior)
 {
 	struct tty *tp = &hypcn_tty;
 	tp->t_state |= TS_CARR_ON;
 	return char_read(tp, ior);
 }
 
-int hypcnwrite(int dev, io_req_t ior)
+int hypcnwrite(dev_t dev, io_req_t ior)
 {
 	return char_write(&hypcn_tty, ior);
 }
@@ -207,7 +207,7 @@ int hypcnopen(dev_t dev, int flag, io_req_t ior)
 	return (char_open(dev, tp, flag, ior));
 }
 
-int hypcnclose(int dev, int flag)
+void hypcnclose(dev_t dev, int flag)
 {
 	struct tty	*tp = &hypcn_tty;
 	spl_t s = spltty();
@@ -215,7 +215,6 @@ int hypcnclose(int dev, int flag)
 	ttyclose(tp);
 	simple_unlock(&tp->t_lock);
 	splx(s);
-	return 0;
 }
 
 int hypcnprobe(struct consdev *cp)

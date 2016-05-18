@@ -849,7 +849,7 @@ processor_set_things(
 	int		type)
 {
 	unsigned int actual;	/* this many things */
-	int i;
+	unsigned i;
 
 	vm_size_t size, size_needed;
 	vm_offset_t addr;

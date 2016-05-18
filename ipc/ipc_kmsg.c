@@ -2857,7 +2857,7 @@ ipc_msg_print(mach_msg_header_t *msgh)
 
 		if (is_inline) {
 			vm_size_t amount;
-			int i, numwords;
+			unsigned i, numwords;
 
 			/* inline data sizes round up to int boundaries */
 			amount = (length + 3) &~ 3;

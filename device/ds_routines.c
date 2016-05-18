@@ -140,7 +140,7 @@ ds_device_open (ipc_port_t open_port, ipc_port_t reply_port,
 		mach_msg_type_name_t reply_port_type, dev_mode_t mode,
 		char *name, device_t *devp)
 {
-  int i;
+  unsigned i;
   io_return_t err;
 
   /* Open must be called on the master device port.  */
@@ -1715,7 +1715,7 @@ device_writev_trap (mach_device_t device, dev_mode_t mode,
 	io_return_t result;
 	io_buf_vec_t	stack_iovec[16]; /* XXX */
 	vm_size_t data_count;
-	int i;
+	unsigned i;
 
 	if (device->state != DEV_STATE_OPEN)
 		return (D_NO_SUCH_DEVICE);

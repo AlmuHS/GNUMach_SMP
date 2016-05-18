@@ -77,7 +77,8 @@ void hyp_c_callback(void *ret_addr, void *regs)
 
 void form_int_mask(void)
 {
-	unsigned int i, j, bit, mask;
+	unsigned int j, bit, mask;
+	int i;
 
 	for (i=SPL0; i < NSPL; i++) {
 		for (j=0x00, bit=0x01, mask = 0; j < NEVNT; j++, bit<<=1)

@@ -51,7 +51,7 @@ kern_return_t host_processors(
 	processor_array_t	*processor_list,
 	natural_t		*countp)
 {
-	int			i;
+	unsigned		i;
 	processor_t		*tp;
 	vm_offset_t		addr;
 	unsigned int		count;

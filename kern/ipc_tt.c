@@ -818,7 +818,7 @@ mach_ports_register(
 	mach_msg_type_number_t	portsCnt)
 {
 	ipc_port_t ports[TASK_PORT_REGISTER_MAX];
-	int i;
+	unsigned i;
 
 	if ((task == TASK_NULL) ||
 	    (portsCnt > TASK_PORT_REGISTER_MAX))

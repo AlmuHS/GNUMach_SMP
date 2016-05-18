@@ -57,11 +57,11 @@ i386_set_ldt(
 {
 	user_ldt_t	new_ldt, old_ldt, temp;
 	struct real_descriptor *dp;
-	int		i;
-	int             min_selector = 0;
+	unsigned	i;
+	unsigned	min_selector = 0;
 	pcb_t		pcb;
 	vm_size_t	ldt_size_needed;
-	int		first_desc = sel_idx(first_selector);
+	unsigned	first_desc = sel_idx(first_selector);
 	vm_map_copy_t	old_copy_object = NULL;	/* Suppress gcc warning */
 
 	if (thread == THREAD_NULL)
@@ -224,7 +224,6 @@ i386_set_ldt(
 	if (new_ldt)
 #ifdef	MACH_PV_DESCRIPTORS
 	{
-	    int i;
 #ifdef	MACH_PV_PAGETABLES
 	    for (i=0; i<(new_ldt->desc.limit_low + 1)/sizeof(struct real_descriptor); i+=PAGE_SIZE/sizeof(struct real_descriptor))
 		pmap_set_page_readwrite(&new_ldt->ldt[i]);
@@ -264,7 +263,7 @@ i386_get_ldt(thread, first_selector, selector_count, desc_list, count)
 	struct user_ldt *user_ldt;
 	pcb_t		pcb;
 	int		first_desc = sel_idx(first_selector);
-	unsigned int	ldt_count;
+	unsigned	ldt_count;
 	vm_size_t	ldt_size;
 	vm_size_t	size, size_needed;
 	vm_offset_t	addr;
@@ -370,7 +369,7 @@ void
 user_ldt_free(user_ldt_t user_ldt)
 {
 #ifdef	MACH_PV_DESCRIPTORS
-	int i;
+	unsigned i;
 #ifdef	MACH_PV_PAGETABLES
 	for (i=0; i<(user_ldt->desc.limit_low + 1)/sizeof(struct real_descriptor); i+=PAGE_SIZE/sizeof(struct real_descriptor))
 		pmap_set_page_readwrite(&user_ldt->ldt[i]);

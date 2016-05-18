@@ -704,7 +704,7 @@ memory_object_lock_request(
 #define	PAGEOUT_PAGES							\
 MACRO_BEGIN								\
 	vm_map_copy_t		copy;					\
-	int			i;					\
+	unsigned		i;					\
 	vm_page_t		hp;					\
 									\
 	vm_object_unlock(object);					\

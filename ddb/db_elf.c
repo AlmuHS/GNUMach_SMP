@@ -82,7 +82,7 @@ elf_db_sym_init (unsigned shdr_num,
 {
   Elf32_Shdr *shdr, *symtab, *strtab;
   const char *shstrtab;
-  int i;
+  unsigned i;
 
   if (shdr_num == 0)
     return FALSE;

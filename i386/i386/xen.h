@@ -260,7 +260,7 @@ MACH_INLINE void hyp_set_ldt(void *ldt, unsigned long nbentries) {
 		.arg1.linear_addr = kvtolin(ldt),
 		.arg2.nr_ents = nbentries,
 	};
-	int count;
+	unsigned long count;
 	if (((unsigned long)ldt) & PAGE_MASK)
 		panic("ldt %p is not aligned on a page\n", ldt);
 	for (count=0; count<nbentries; count+= PAGE_SIZE/8)
