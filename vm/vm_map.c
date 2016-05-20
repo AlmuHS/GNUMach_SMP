@@ -42,6 +42,7 @@
 #include <kern/assert.h>
 #include <kern/debug.h>
 #include <kern/kalloc.h>
+#include <kern/list.h>
 #include <kern/rbtree.h>
 #include <kern/slab.h>
 #include <vm/pmap.h>
@@ -182,6 +183,7 @@ void vm_map_setup(
 	map->hdr.nentries = 0;
 	map->hdr.entries_pageable = pageable;
 	rbtree_init(&map->hdr.tree);
+	rbtree_init(&map->hdr.gap_tree);
 
 	map->size = 0;
 	map->user_wired = 0;
@@ -294,6 +296,141 @@ static inline int vm_map_entry_cmp_insert(const struct rbtree_node *a,
 }
 
 /*
+ *	Gap management functions
+ */
+static inline int vm_map_entry_gap_cmp_lookup(vm_size_t gap_size,
+					      const struct rbtree_node *node)
+{
+	struct vm_map_entry *entry;
+
+	entry = rbtree_entry(node, struct vm_map_entry, gap_node);
+
+	if (gap_size < entry->gap_size)
+		return -1;
+	else if (gap_size == entry->gap_size)
+		return 0;
+	else
+		return 1;
+}
+
+static inline int vm_map_entry_gap_cmp_insert(const struct rbtree_node *a,
+					      const struct rbtree_node *b)
+{
+	struct vm_map_entry *entry;
+
+	entry = rbtree_entry(a, struct vm_map_entry, gap_node);
+	return vm_map_entry_gap_cmp_lookup(entry->gap_size, b);
+}
+
+static int
+vm_map_gap_valid(struct vm_map_header *hdr, struct vm_map_entry *entry)
+{
+	return entry != (struct vm_map_entry *)&hdr->links;
+}
+
+static void
+vm_map_gap_compute(struct vm_map_header *hdr, struct vm_map_entry *entry)
+{
+	struct vm_map_entry *next;
+
+	next = entry->vme_next;
+
+	if (vm_map_gap_valid(hdr, next)) {
+		entry->gap_size = next->vme_start - entry->vme_end;
+	} else {
+		entry->gap_size = hdr->vme_end - entry->vme_end;
+	}
+}
+
+static void
+vm_map_gap_insert_single(struct vm_map_header *hdr, struct vm_map_entry *entry)
+{
+	struct vm_map_entry *tmp;
+	struct rbtree_node *node;
+	unsigned long slot;
+
+	if (!vm_map_gap_valid(hdr, entry)) {
+		return;
+	}
+
+	vm_map_gap_compute(hdr, entry);
+
+	if (entry->gap_size == 0) {
+		return;
+	}
+
+	node = rbtree_lookup_slot(&hdr->gap_tree, entry->gap_size,
+				  vm_map_entry_gap_cmp_lookup, slot);
+
+	if (node == NULL) {
+		rbtree_insert_slot(&hdr->gap_tree, slot, &entry->gap_node);
+		list_init(&entry->gap_list);
+		entry->in_gap_tree = 1;
+	} else {
+		tmp = rbtree_entry(node, struct vm_map_entry, gap_node);
+		list_insert_tail(&tmp->gap_list, &entry->gap_list);
+		entry->in_gap_tree = 0;
+	}
+}
+
+static void
+vm_map_gap_remove_single(struct vm_map_header *hdr, struct vm_map_entry *entry)
+{
+	struct vm_map_entry *tmp;
+
+	if (!vm_map_gap_valid(hdr, entry)) {
+		return;
+	}
+
+	if (entry->gap_size == 0) {
+		return;
+	}
+
+	if (!entry->in_gap_tree) {
+		list_remove(&entry->gap_list);
+		return;
+	}
+
+	rbtree_remove(&hdr->gap_tree, &entry->gap_node);
+
+	if (list_empty(&entry->gap_list)) {
+		return;
+	}
+
+	tmp = list_first_entry(&entry->gap_list, struct vm_map_entry, gap_list);
+	assert(tmp->gap_size == entry->gap_size);
+	list_remove(&tmp->gap_list);
+	list_set_head(&tmp->gap_list, &entry->gap_list);
+	assert(!tmp->in_gap_tree);
+	rbtree_insert(&hdr->gap_tree, &tmp->gap_node,
+		      vm_map_entry_gap_cmp_insert);
+	tmp->in_gap_tree = 1;
+}
+
+static void
+vm_map_gap_update(struct vm_map_header *hdr, struct vm_map_entry *entry)
+{
+	vm_map_gap_remove_single(hdr, entry);
+	vm_map_gap_insert_single(hdr, entry);
+}
+
+static void
+vm_map_gap_insert(struct vm_map_header *hdr, struct vm_map_entry *entry)
+{
+	vm_map_gap_remove_single(hdr, entry->vme_prev);
+	vm_map_gap_insert_single(hdr, entry->vme_prev);
+	vm_map_gap_insert_single(hdr, entry);
+}
+
+static void
+vm_map_gap_remove(struct vm_map_header *hdr, struct vm_map_entry *entry)
+{
+	vm_map_gap_remove_single(hdr, entry);
+	vm_map_gap_remove_single(hdr, entry->vme_prev);
+	vm_map_gap_insert_single(hdr, entry->vme_prev);
+}
+
+/*
  *	vm_map_entry_{un,}link:
  *
  *	Insert/remove entries from maps (or map copies).
@@ -316,6 +453,7 @@ static inline int vm_map_entry_cmp_insert(const struct rbtree_node *a,
 	 (entry)->vme_next->vme_prev = (entry);		\
 	rbtree_insert(&(hdr)->tree, &(entry)->tree_node,	\
 		      vm_map_entry_cmp_insert);		\
+	vm_map_gap_insert((hdr), (entry));		\
 	MACRO_END
 
 #define vm_map_entry_unlink(map, entry)			\
@@ -330,6 +468,7 @@ static inline int vm_map_entry_cmp_insert(const struct rbtree_node *a,
 	(entry)->vme_next->vme_prev = (entry)->vme_prev; \
 	(entry)->vme_prev->vme_next = (entry)->vme_next; \
 	rbtree_remove(&(hdr)->tree, &(entry)->tree_node);	\
+	vm_map_gap_remove((hdr), (entry));		\
 	MACRO_END
 
 /*
@@ -470,6 +609,104 @@ invalid_user_access(
 		(prot & ~(entry->protection)));
 }
 
+/*
+ * Find a range of available space from the specified map.
+ *
+ * If successful, this function returns the map entry immediately preceding
+ * the range, and writes the range address in startp. If the map contains
+ * no entry, the entry returned points to the map header.
+ * Otherwise, NULL is returned.
+ *
+ * If map_locked is true, this function will not wait for more space in case
+ * of failure. Otherwise, the map is locked.
+ */
+static struct vm_map_entry *
+vm_map_find_entry_anywhere(struct vm_map *map,
+			   vm_size_t size,
+			   vm_offset_t mask,
+			   boolean_t map_locked,
+			   vm_offset_t *startp)
+{
+	struct vm_map_entry *entry;
+	struct rbtree_node *node;
+	vm_size_t max_size;
+	vm_offset_t start, end;
+
+	assert(size != 0);
+
+	if (!map_locked) {
+		vm_map_lock(map);
+	}
+
+restart:
+	if (map->hdr.nentries == 0) {
+		entry = vm_map_to_entry(map);
+		start = (map->min_offset + mask) & ~mask;
+		end = start + size;
+
+		if ((end <= start) || (end > map->max_offset)) {
+			goto error;
+		}
+
+		*startp = start;
+		return entry;
+	}
+
+	entry = map->first_free;
+
+	if (entry != vm_map_to_entry(map)) {
+		start = (entry->vme_end + mask) & ~mask;
+		end = start + size;
+
+		if ((end > start)
+		    && (end <= map->max_offset)
+		    && (end <= (entry->vme_end + entry->gap_size))) {
+			*startp = start;
+			return entry;
+		}
+	}
+
+	max_size = size + mask;
+
+	if (max_size < size) {
+		goto error;
+	}
+
+	node = rbtree_lookup_nearest(&map->hdr.gap_tree, max_size,
+				     vm_map_entry_gap_cmp_lookup, RBTREE_RIGHT);
+
+	if (node == NULL) {
+		if (map_locked || !map->wait_for_space) {
+			goto error;
+		}
+
+		assert_wait((event_t)map, TRUE);
+		vm_map_unlock(map);
+		thread_block(NULL);
+		vm_map_lock(map);
+		goto restart;
+	}
+
+	entry = rbtree_entry(node, struct vm_map_entry, gap_node);
+	assert(entry->in_gap_tree);
+
+	if (!list_empty(&entry->gap_list)) {
+		entry = list_last_entry(&entry->gap_list,
+					struct vm_map_entry, gap_list);
+	}
+
+	assert(entry->gap_size >= max_size);
+	start = (entry->vme_end + mask) & ~mask;
+	end = start + size;
+	assert(end > start);
+	assert(end <= (entry->vme_end + entry->gap_size));
+	*startp = start;
+	return entry;
+
+error:
+	printf("no more room in %p\n", map);
+	return NULL;
+}
 
 /*
  *	Routine:	vm_map_find_entry
@@ -496,66 +733,13 @@ kern_return_t vm_map_find_entry(
 	vm_offset_t	start;
 	vm_offset_t	end;
 
-	/*
-	 *	Look for the first possible address;
-	 *	if there's already something at this
-	 *	address, we have to start after it.
-	 */
+	entry = vm_map_find_entry_anywhere(map, size, mask, TRUE, &start);
 
-	if ((entry = map->first_free) == vm_map_to_entry(map))
-		start = map->min_offset;
-	else
-		start = entry->vme_end;
-
-	/*
-	 *	In any case, the "entry" always precedes
-	 *	the proposed new region throughout the loop:
-	 */
-
-	while (TRUE) {
-		vm_map_entry_t	next;
-
-		/*
-		 *	Find the end of the proposed new region.
-		 *	Be sure we didn't go beyond the end, or
-		 *	wrap around the address.
-		 */
-
-		if (((start + mask) & ~mask) < start) {
-			printf_once("no more room for vm_map_find_entry in %p\n", map);
-			return(KERN_NO_SPACE);
-		}
-		start = ((start + mask) & ~mask);
-		end = start + size;
-
-		if ((end > map->max_offset) || (end < start)) {
-			printf_once("no more room for vm_map_find_entry in %p\n", map);
-			return(KERN_NO_SPACE);
-		}
-
-		/*
-		 *	If there are no more entries, we must win.
-		 */
-
-		next = entry->vme_next;
-		if (next == vm_map_to_entry(map))
-			break;
-
-		/*
-		 *	If there is another entry, it must be
-		 *	after the end of the potential new region.
-		 */
-
-		if (next->vme_start >= end)
-			break;
-
-		/*
-		 *	Didn't fit -- move to the next entry.
-		 */
-
-		entry = next;
-		start = entry->vme_end;
+	if (entry == NULL) {
+		return KERN_NO_SPACE;
 	}
+
+	end = start + size;
 
 	/*
 	 *	At this point,
@@ -594,6 +778,7 @@ kern_return_t vm_map_find_entry(
 		 */
 
 		entry->vme_end = end;
+		vm_map_gap_update(&map->hdr, entry);
 		new_entry = entry;
 	} else {
 		new_entry = vm_map_entry_create(map);
@@ -736,98 +921,16 @@ kern_return_t vm_map_enter(
 	if (size == 0)
 		return KERN_INVALID_ARGUMENT;
 
- StartAgain: ;
-
 	start = *address;
 
 	if (anywhere) {
-		vm_map_lock(map);
+		entry = vm_map_find_entry_anywhere(map, size, mask, FALSE, &start);
 
-		/*
-		 *	Calculate the first possible address.
-		 */
-
-		if (start < map->min_offset)
-			start = map->min_offset;
-		if (start > map->max_offset)
+		if (entry == NULL) {
 			RETURN(KERN_NO_SPACE);
-
-		/*
-		 *	Look for the first possible address;
-		 *	if there's already something at this
-		 *	address, we have to start after it.
-		 */
-
-		if (start == map->min_offset) {
-			if ((entry = map->first_free) != vm_map_to_entry(map))
-				start = entry->vme_end;
-		} else {
-			vm_map_entry_t	tmp_entry;
-			if (vm_map_lookup_entry(map, start, &tmp_entry))
-				start = tmp_entry->vme_end;
-			entry = tmp_entry;
 		}
 
-		/*
-		 *	In any case, the "entry" always precedes
-		 *	the proposed new region throughout the
-		 *	loop:
-		 */
-
-		while (TRUE) {
-			vm_map_entry_t	next;
-
-		    	/*
-			 *	Find the end of the proposed new region.
-			 *	Be sure we didn't go beyond the end, or
-			 *	wrap around the address.
-			 */
-
-			if (((start + mask) & ~mask) < start) {
-				printf_once("no more room for vm_map_enter in %p\n", map);
-				RETURN(KERN_NO_SPACE);
-			}
-			start = ((start + mask) & ~mask);
-			end = start + size;
-
-			if ((end > map->max_offset) || (end < start)) {
-				if (map->wait_for_space) {
-					if (size <= (map->max_offset -
-						     map->min_offset)) {
-						assert_wait((event_t) map, TRUE);
-						vm_map_unlock(map);
-						thread_block((void (*)()) 0);
-						goto StartAgain;
-					}
-				}
-
-				printf_once("no more room for vm_map_enter in %p\n", map);
-				RETURN(KERN_NO_SPACE);
-			}
-
-			/*
-			 *	If there are no more entries, we must win.
-			 */
-
-			next = entry->vme_next;
-			if (next == vm_map_to_entry(map))
-				break;
-
-			/*
-			 *	If there is another entry, it must be
-			 *	after the end of the potential new region.
-			 */
-
-			if (next->vme_start >= end)
-				break;
-
-			/*
-			 *	Didn't fit -- move to the next entry.
-			 */
-
-			entry = next;
-			start = entry->vme_end;
-		}
+		end = start + size;
 		*address = start;
 	} else {
 		vm_map_entry_t		temp_entry;
@@ -914,6 +1017,7 @@ kern_return_t vm_map_enter(
 			 */
 			map->size += (end - entry->vme_end);
 			entry->vme_end = end;
+			vm_map_gap_update(&map->hdr, entry);
 			RETURN(KERN_SUCCESS);
 		}
 	}
@@ -2373,29 +2477,40 @@ start_pass_1:
 }
 
 /*
- *	Macro:		vm_map_copy_insert
+ *	Routine:	vm_map_copy_insert
  *
  *	Description:
  *		Link a copy chain ("copy") into a map at the
  *		specified location (after "where").
  *	Side effects:
  *		The copy chain is destroyed.
- *	Warning:
- *		The arguments are evaluated multiple times.
  */
-#define	vm_map_copy_insert(map, where, copy)				\
-	MACRO_BEGIN							\
-	struct rbtree_node *node, *tmp;					\
-	rbtree_for_each_remove(&(copy)->cpy_hdr.tree, node, tmp)	\
-		rbtree_insert(&(map)->hdr.tree, node,			\
-			      vm_map_entry_cmp_insert);			\
-	(((where)->vme_next)->vme_prev = vm_map_copy_last_entry(copy))	\
-		->vme_next = ((where)->vme_next);			\
-	((where)->vme_next = vm_map_copy_first_entry(copy))		\
-		->vme_prev = (where);					\
-	(map)->hdr.nentries += (copy)->cpy_hdr.nentries;		\
-	kmem_cache_free(&vm_map_copy_cache, (vm_offset_t) copy);	\
-	MACRO_END
+static void
+vm_map_copy_insert(struct vm_map *map, struct vm_map_entry *where,
+		   struct vm_map_copy *copy)
+{
+	struct vm_map_entry *entry;
+
+	assert(copy->type == VM_MAP_COPY_ENTRY_LIST);
+
+	for (;;) {
+		entry = vm_map_copy_first_entry(copy);
+
+		if (entry == vm_map_copy_to_entry(copy)) {
+			break;
+		}
+
+		/*
+		 * TODO Turn copy maps into their own type so they don't
+		 * use any of the tree operations.
+		 */
+		vm_map_copy_entry_unlink(copy, entry);
+		vm_map_entry_link(map, where, entry);
+		where = entry;
+	}
+
+	kmem_cache_free(&vm_map_copy_cache, (vm_offset_t)copy);
+}
 
 /*
  *	Routine:	vm_map_copyout
@@ -2460,37 +2575,11 @@ kern_return_t vm_map_copyout(
 
 	vm_copy_start = trunc_page(copy->offset);
 	size =	round_page(copy->offset + copy->size) - vm_copy_start;
+	last = vm_map_find_entry_anywhere(dst_map, size, 0, FALSE, &start);
 
- StartAgain: ;
-
-	vm_map_lock(dst_map);
-	start = ((last = dst_map->first_free) == vm_map_to_entry(dst_map)) ?
-		vm_map_min(dst_map) : last->vme_end;
-
-	while (TRUE) {
-		vm_map_entry_t	next = last->vme_next;
-		vm_offset_t	end = start + size;
-
-		if ((end > dst_map->max_offset) || (end < start)) {
-			if (dst_map->wait_for_space) {
-				if (size <= (dst_map->max_offset - dst_map->min_offset)) {
-					assert_wait((event_t) dst_map, TRUE);
-					vm_map_unlock(dst_map);
-					thread_block((void (*)()) 0);
-					goto StartAgain;
-				}
-			}
-			vm_map_unlock(dst_map);
-			printf_once("no more room for vm_map_copyout in %p\n", dst_map);
-			return(KERN_NO_SPACE);
-		}
-
-		if ((next == vm_map_to_entry(dst_map)) ||
-		    (next->vme_start >= end))
-			break;
-
-		last = next;
-		start = last->vme_end;
+	if (last == NULL) {
+		vm_map_unlock(dst_map);
+		return KERN_NO_SPACE;
 	}
 
 	/*
@@ -2515,6 +2604,7 @@ kern_return_t vm_map_copyout(
 	    copy->cpy_hdr.nentries = 0;
 	    copy->cpy_hdr.entries_pageable = dst_map->hdr.entries_pageable;
 	    rbtree_init(&copy->cpy_hdr.tree);
+	    rbtree_init(&copy->cpy_hdr.gap_tree);
 	    vm_map_copy_first_entry(copy) =
 	     vm_map_copy_last_entry(copy) =
 		vm_map_copy_to_entry(copy);
@@ -2545,6 +2635,11 @@ kern_return_t vm_map_copyout(
 	     entry = entry->vme_next) {
 		entry->vme_start += adjustment;
 		entry->vme_end += adjustment;
+
+		/*
+		 * XXX There is no need to update the gap tree here.
+		 * See vm_map_copy_insert.
+		 */
 
 		entry->inheritance = VM_INHERIT_DEFAULT;
 		entry->protection = VM_PROT_DEFAULT;
@@ -2691,44 +2786,19 @@ kern_return_t vm_map_copyout_page_list(
 
 	size =	round_page(copy->offset + copy->size) -
 		trunc_page(copy->offset);
-StartAgain:
+
 	vm_map_lock(dst_map);
+
+	last = vm_map_find_entry_anywhere(dst_map, size, 0, FALSE, &start);
+
+	if (last == NULL) {
+		vm_map_unlock(dst_map);
+		return KERN_NO_SPACE;
+	}
+
+	end = start + size;
+
 	must_wire = dst_map->wiring_required;
-
-	last = dst_map->first_free;
-	if (last == vm_map_to_entry(dst_map)) {
-		start = vm_map_min(dst_map);
-	} else {
-		start = last->vme_end;
-	}
-
-	while (TRUE) {
-		vm_map_entry_t next = last->vme_next;
-		end = start + size;
-
-		if ((end > dst_map->max_offset) || (end < start)) {
-			if (dst_map->wait_for_space) {
-				if (size <= (dst_map->max_offset -
-					     dst_map->min_offset)) {
-					assert_wait((event_t) dst_map, TRUE);
-					vm_map_unlock(dst_map);
-					thread_block((void (*)()) 0);
-					goto StartAgain;
-				}
-			}
-			vm_map_unlock(dst_map);
-			printf_once("no more room for vm_map_copyout_page_list in %p\n", dst_map);
-			return(KERN_NO_SPACE);
-		}
-
-		if ((next == vm_map_to_entry(dst_map)) ||
-		    (next->vme_start >= end)) {
-			break;
-		}
-
-		last = next;
-		start = last->vme_end;
-	}
 
 	/*
 	 *	See whether we can avoid creating a new entry (and object) by
@@ -2815,6 +2885,7 @@ StartAgain:
 	 */
 	dst_map->size += size;
 	last->vme_end = end;
+	vm_map_gap_update(&dst_map->hdr, last);
 
 	SAVE_HINT(dst_map, last);
 
@@ -3102,6 +3173,7 @@ kern_return_t vm_map_copyin(
 	copy->cpy_hdr.nentries = 0;
 	copy->cpy_hdr.entries_pageable = TRUE;
 	rbtree_init(&copy->cpy_hdr.tree);
+	rbtree_init(&copy->cpy_hdr.gap_tree);
 
 	copy->offset = src_addr;
 	copy->size = len;
@@ -4624,8 +4696,8 @@ void vm_map_simplify(
 			map->first_free = prev_entry;
 
 		SAVE_HINT(map, prev_entry);
-		vm_map_entry_unlink(map, this_entry);
 		prev_entry->vme_end = this_entry->vme_end;
+		vm_map_entry_unlink(map, this_entry);
 	 	vm_object_deallocate(this_entry->object.vm_object);
 		vm_map_entry_dispose(map, this_entry);
 	}

@@ -50,6 +50,7 @@
 #include <vm/vm_object.h>
 #include <vm/vm_page.h>
 #include <vm/vm_types.h>
+#include <kern/list.h>
 #include <kern/lock.h>
 #include <kern/rbtree.h>
 #include <kern/macros.h>
@@ -105,9 +106,17 @@ struct vm_map_entry {
 #define vme_start		links.start
 #define vme_end			links.end
 	struct rbtree_node	tree_node;	/* links to other entries in tree */
+	struct rbtree_node	gap_node;	/* links to other entries in gap tree */
+	struct list		gap_list;	/* links to other entries with
+						   the same gap size */
+	vm_size_t		gap_size;	/* size of available memory
+						   following this entry */
 	union vm_map_object	object;		/* object I point to */
 	vm_offset_t		offset;		/* offset into object */
 	unsigned int
+	/* boolean_t */		in_gap_tree:1,	/* entry is in the gap tree if true,
+						   or linked to other entries with
+						   the same gap size if false */
 	/* boolean_t */		is_shared:1,	/* region is shared */
 	/* boolean_t */		is_sub_map:1,	/* Is "object" a submap? */
 	/* boolean_t */		in_transition:1, /* Entry being changed */
@@ -141,6 +150,8 @@ typedef struct vm_map_entry	*vm_map_entry_t;
 struct vm_map_header {
 	struct vm_map_links	links;		/* first, last, min, max */
 	struct rbtree		tree;		/* Sorted tree of entries */
+	struct rbtree		gap_tree;	/* Sorted tree of gap lists
+						   for allocations */
 	int			nentries;	/* Number of entries */
 	boolean_t		entries_pageable;
 						/* are map entries pageable? */
