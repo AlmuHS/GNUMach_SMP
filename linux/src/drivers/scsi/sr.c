@@ -719,7 +719,7 @@ static void do_sr_request (void)
 void requeue_sr_request (Scsi_Cmnd * SCpnt)
 {
 	unsigned int dev, block, realcount;
-	unsigned char cmd[10], *buffer, tries;
+	unsigned char cmd[12], *buffer, tries;
 	int this_count, start, end_rec;
     
 	tries = 2;
@@ -1056,7 +1056,7 @@ static void sr_init_done (Scsi_Cmnd * SCpnt)
 }
 
 void get_sectorsize(int i){
-    unsigned char cmd[10];
+    unsigned char cmd[12];
     unsigned char *buffer;
     int the_result, retries;
     Scsi_Cmnd * SCpnt;

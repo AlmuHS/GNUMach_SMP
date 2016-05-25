@@ -92,7 +92,7 @@ static int do_ioctl(int target, unsigned char * sr_cmd, void * buffer, unsigned 
 
 int sr_ioctl(struct inode * inode, struct file * file, unsigned int cmd, unsigned long arg)
 {
-    u_char  sr_cmd[10];
+    u_char  sr_cmd[12];
     
     kdev_t dev = inode->i_rdev;
     int result, target, err;

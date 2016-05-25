@@ -577,7 +577,7 @@ static void do_sd_request (void)
 static void requeue_sd_request (Scsi_Cmnd * SCpnt)
 {
     int dev, devm, block, this_count;
-    unsigned char cmd[10];
+    unsigned char cmd[12];
     int bounce_size, contiguous;
     int max_sg;
     struct buffer_head * bh, *bhp;
@@ -1028,7 +1028,7 @@ static void sd_init_done (Scsi_Cmnd * SCpnt)
 
 static int sd_init_onedisk(int i)
 {
-    unsigned char cmd[10];
+    unsigned char cmd[12];
     unsigned char *buffer;
     unsigned long spintime;
     int the_result, retries;

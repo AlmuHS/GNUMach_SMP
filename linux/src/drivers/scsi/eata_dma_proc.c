@@ -71,7 +71,7 @@ int eata_proc_info(char *buffer, char **start, off_t offset, int length,
     Scsi_Device *scd, SDev;
     struct Scsi_Host *HBA_ptr;
     Scsi_Cmnd scmd;
-    char cmnd[10];
+    char cmnd[12];
     static u8 buff[512];
     static u8 buff2[512];
     hst_cmd_stat *rhcs, *whcs;
