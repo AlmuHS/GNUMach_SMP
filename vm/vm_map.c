@@ -2789,7 +2789,7 @@ kern_return_t vm_map_copyout_page_list(
 
 	vm_map_lock(dst_map);
 
-	last = vm_map_find_entry_anywhere(dst_map, size, 0, FALSE, &start);
+	last = vm_map_find_entry_anywhere(dst_map, size, 0, TRUE, &start);
 
 	if (last == NULL) {
 		vm_map_unlock(dst_map);
