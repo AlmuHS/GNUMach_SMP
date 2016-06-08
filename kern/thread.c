@@ -1425,6 +1425,12 @@ kern_return_t thread_get_state(
 {
 	kern_return_t		ret;
 
+#if defined(__i386__) || defined(__x86_64__)
+	if (flavor == i386_DEBUG_STATE && thread == current_thread())
+		/* This state can be obtained directly for the curren thread.  */
+		return thread_getstatus(thread, flavor, old_state, old_state_count);
+#endif
+
 	if (thread == THREAD_NULL || thread == current_thread()) {
 		return KERN_INVALID_ARGUMENT;
 	}
@@ -1448,6 +1454,12 @@ kern_return_t thread_set_state(
 	natural_t		new_state_count)
 {
 	kern_return_t		ret;
+
+#if defined(__i386__) || defined(__x86_64__)
+	if (flavor == i386_DEBUG_STATE && thread == current_thread())
+		/* This state can be set directly for the curren thread.  */
+		return thread_setstatus(thread, flavor, new_state, new_state_count);
+#endif
 
 	if (thread == THREAD_NULL || thread == current_thread()) {
 		return KERN_INVALID_ARGUMENT;
