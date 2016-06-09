@@ -3145,6 +3145,14 @@ kern_return_t vm_map_copyin(
 	}
 
 	/*
+	 *	Check that the end address doesn't overflow
+	 */
+
+	if ((src_addr + len) <= src_addr) {
+		return KERN_INVALID_ADDRESS;
+	}
+
+	/*
 	 *	Compute start and end of region
 	 */
 
@@ -3152,12 +3160,12 @@ kern_return_t vm_map_copyin(
 	src_end = round_page(src_addr + len);
 
 	/*
-	 *	Check that the end address doesn't overflow
+	 *	XXX VM maps shouldn't end at maximum address
 	 */
 
-	if (src_end <= src_start)
-		if ((src_end < src_start) || (src_start != 0))
-			return(KERN_INVALID_ADDRESS);
+	if (src_end == 0) {
+		return KERN_INVALID_ADDRESS;
+	}
 
 	/*
 	 *	Allocate a header element for the list.
@@ -3622,6 +3630,14 @@ kern_return_t vm_map_copyin_page_list(
 	}
 
 	/*
+	 *	Check that the end address doesn't overflow
+	 */
+
+	if ((src_addr + len) <= src_addr) {
+		return KERN_INVALID_ADDRESS;
+	}
+
+	/*
 	 *	Compute start and end of region
 	 */
 
@@ -3629,10 +3645,10 @@ kern_return_t vm_map_copyin_page_list(
 	src_end = round_page(src_addr + len);
 
 	/*
-	 *	Check that the end address doesn't overflow
+	 *	XXX VM maps shouldn't end at maximum address
 	 */
 
-	if (src_end <= src_start && (src_end < src_start || src_start != 0)) {
+	if (src_end == 0) {
 		return KERN_INVALID_ADDRESS;
 	}
 
