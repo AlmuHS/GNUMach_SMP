@@ -181,7 +181,6 @@ vm_object_t		kernel_object = &kernel_object_store;
  *	not be held to make simple references.
  */
 queue_head_t	vm_object_cached_list;
-int		vm_object_cached_count;
 
 decl_simple_lock_data(,vm_object_cached_lock_data)
 
@@ -362,8 +361,6 @@ static void vm_object_cache_add(
 {
 	assert(!object->cached);
 	queue_enter(&vm_object_cached_list, object, vm_object_t, cached_list);
-	vm_object_cached_count++;
-	vm_object_cached_pages_update(object->resident_page_count);
 	object->cached = TRUE;
 }
 
@@ -372,8 +369,6 @@ static void vm_object_cache_remove(
 {
 	assert(object->cached);
 	queue_remove(&vm_object_cached_list, object, vm_object_t, cached_list);
-	vm_object_cached_count--;
-	vm_object_cached_pages_update(-object->resident_page_count);
 	object->cached = FALSE;
 }
 
@@ -620,6 +615,14 @@ void vm_object_terminate(
 	assert(object->ref_count == 0);
 	assert(object->paging_in_progress == 0);
 	assert(!object->cached);
+
+	if (!object->internal) {
+		assert(object->resident_page_count == 0);
+
+		vm_page_lock_queues();
+		vm_object_external_count--;
+		vm_page_unlock_queues();
+	}
 
 	/*
 	 *	Throw away port rights... note that they may
@@ -2090,6 +2093,9 @@ restart:
 			/* the object is external and not temporary */
 			object->internal = FALSE;
 			object->temporary = FALSE;
+
+			assert(object->resident_page_count == 0);
+			vm_object_external_count++;
 
 			/* user pager objects are not ready until marked so */
 			object->pager_ready = FALSE;

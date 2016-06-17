@@ -394,20 +394,9 @@ MACRO_END
 /*
  *	Page cache accounting.
  *
- *	The number of cached objects and pages can be read
- *	without holding any lock.
+ *	The page queues must be locked when changing these counters.
  */
-
-extern int	vm_object_cached_count;
-
-extern int	vm_object_cached_pages;
-decl_simple_lock_data(extern,vm_object_cached_pages_lock_data)
-
-#define vm_object_cached_pages_update(page_count)			\
-	MACRO_BEGIN							\
-	simple_lock(&vm_object_cached_pages_lock_data);			\
-	vm_object_cached_pages += (page_count);				\
-	simple_unlock(&vm_object_cached_pages_lock_data);		\
-	MACRO_END
+extern int	vm_object_external_count;
+extern int	vm_object_external_pages;
 
 #endif	/* _VM_VM_OBJECT_H_ */

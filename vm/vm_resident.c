@@ -100,6 +100,8 @@ decl_simple_lock_data(,vm_page_queue_free_lock)
 unsigned int	vm_page_free_wanted;
 int		vm_page_fictitious_count;
 int		vm_page_external_count;
+int		vm_object_external_count;
+int		vm_object_external_pages;
 
 /*
  * This variable isn't directly used. It's merely a placeholder for the
@@ -374,9 +376,6 @@ void vm_page_insert(
 	object->resident_page_count++;
 	assert(object->resident_page_count != 0);
 
-	if (object->can_persist && (object->ref_count == 0))
-		vm_object_cached_pages_update(1);
-
 	/*
 	 *	Detect sequential access and inactivate previous page.
 	 *	We ignore busy pages.
@@ -391,6 +390,10 @@ void vm_page_insert(
 			vm_page_deactivate(last_mem);
 	}
 	object->last_alloc = offset;
+
+	if (!object->internal) {
+		vm_object_external_pages++;
+	}
 }
 
 /*
@@ -444,9 +447,9 @@ void vm_page_replace(
 				m->tabled = FALSE;
 				object->resident_page_count--;
 
-				if (object->can_persist
-				    && (object->ref_count == 0))
-					vm_object_cached_pages_update(-1);
+				if (!object->internal) {
+					vm_object_external_pages--;
+				}
 
 				/*
 				 * Return page to the free list.
@@ -481,8 +484,9 @@ void vm_page_replace(
 	object->resident_page_count++;
 	assert(object->resident_page_count != 0);
 
-	if (object->can_persist && (object->ref_count == 0))
-		vm_object_cached_pages_update(1);
+	if (!object->internal) {
+		vm_object_external_pages++;
+	}
 }
 
 /*
@@ -539,8 +543,9 @@ void vm_page_remove(
 
 	mem->tabled = FALSE;
 
-	if (mem->object->can_persist && (mem->object->ref_count == 0))
-		vm_object_cached_pages_update(-1);
+	if (!mem->object->internal) {
+		vm_object_external_pages--;
+	}
 }
 
 /*

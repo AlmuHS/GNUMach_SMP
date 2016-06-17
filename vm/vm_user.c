@@ -197,8 +197,8 @@ kern_return_t vm_cache_statistics(
 	if (map == VM_MAP_NULL)
 		return KERN_INVALID_ARGUMENT;
 
-	stats->cache_object_count = vm_object_cached_count;
-	stats->cache_count = vm_object_cached_pages;
+	stats->cache_object_count = vm_object_external_count;
+	stats->cache_count = vm_object_external_pages;
 
 	/* XXX Not implemented yet */
 	stats->active_tmp_count = 0;
