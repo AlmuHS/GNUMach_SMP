@@ -131,7 +131,6 @@ no_senders (mach_no_senders_notification_t *notification)
 
   assert (io_perm != IO_PERM_NULL);
 
-  ip_lock (io_perm->port);  /* TODO.  Actually needed?  */
   ipc_kobject_set (io_perm->port, IKO_NULL, IKOT_NONE);
   ipc_port_dealloc_kernel (io_perm->port);
 
