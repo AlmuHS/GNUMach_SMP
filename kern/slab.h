@@ -56,6 +56,8 @@
 #include <sys/types.h>
 #include <vm/vm_types.h>
 
+struct kmem_cache;
+
 #if SLAB_USE_CPU_POOLS
 
 /*
@@ -117,6 +119,7 @@ struct kmem_buftag {
  * Page-aligned collection of unconstructed buffers.
  */
 struct kmem_slab {
+    struct kmem_cache *cache;
     struct list list_node;
     struct rbtree_node tree_node;
     unsigned long nr_refs;

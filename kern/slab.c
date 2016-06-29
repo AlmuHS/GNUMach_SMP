@@ -495,6 +495,7 @@ static struct kmem_slab * kmem_slab_create(struct kmem_cache *cache,
         slab = (struct kmem_slab *)(slab_buf + cache->slab_size) - 1;
     }
 
+    slab->cache = cache;
     list_node_init(&slab->list_node);
     rbtree_node_init(&slab->tree_node);
     slab->nr_refs = 0;
@@ -925,29 +926,17 @@ static int kmem_cache_grow(struct kmem_cache *cache)
     return !empty;
 }
 
-static void kmem_cache_reap(struct kmem_cache *cache)
+static void kmem_cache_reap(struct kmem_cache *cache, struct list *dead_slabs)
 {
-    struct kmem_slab *slab;
-    struct list dead_slabs;
-    unsigned long nr_free_slabs;
-
     simple_lock(&cache->lock);
-    list_set_head(&dead_slabs, &cache->free_slabs);
+
+    list_concat(dead_slabs, &cache->free_slabs);
     list_init(&cache->free_slabs);
-    nr_free_slabs = cache->nr_free_slabs;
-    cache->nr_bufs -= cache->bufs_per_slab * nr_free_slabs;
-    cache->nr_slabs -= nr_free_slabs;
+    cache->nr_bufs -= cache->bufs_per_slab * cache->nr_free_slabs;
+    cache->nr_slabs -= cache->nr_free_slabs;
     cache->nr_free_slabs = 0;
+
     simple_unlock(&cache->lock);
-
-    while (!list_empty(&dead_slabs)) {
-        slab = list_first_entry(&dead_slabs, struct kmem_slab, list_node);
-        list_remove(&slab->list_node);
-        kmem_slab_destroy(slab, cache);
-        nr_free_slabs--;
-    }
-
-    assert(nr_free_slabs == 0);
 }
 
 /*
@@ -1286,18 +1275,28 @@ slab_free:
 void slab_collect(void)
 {
     struct kmem_cache *cache;
+    struct kmem_slab *slab;
+    struct list dead_slabs;
 
     if (elapsed_ticks <= (kmem_gc_last_tick + KMEM_GC_INTERVAL))
         return;
 
     kmem_gc_last_tick = elapsed_ticks;
 
+    list_init(&dead_slabs);
+
     simple_lock(&kmem_cache_list_lock);
 
     list_for_each_entry(&kmem_cache_list, cache, node)
-        kmem_cache_reap(cache);
+        kmem_cache_reap(cache, &dead_slabs);
 
     simple_unlock(&kmem_cache_list_lock);
+
+    while (!list_empty(&dead_slabs)) {
+        slab = list_first_entry(&dead_slabs, struct kmem_slab, list_node);
+        list_remove(&slab->list_node);
+        kmem_slab_destroy(slab, slab->cache);
+    }
 }
 
 void slab_bootstrap(void)
