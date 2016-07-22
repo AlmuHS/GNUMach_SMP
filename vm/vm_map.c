@@ -241,8 +241,26 @@ vm_map_entry_t _vm_map_entry_create(map_header)
 	const struct vm_map_header *map_header;
 {
 	vm_map_entry_t	entry;
+	boolean_t vm_privilege;
 
+	/*
+	 *	XXX Map entry creation may occur while a map is locked,
+	 *	for example when clipping entries. If the system is running
+	 *	low on memory, allocating an entry may block until pages
+	 *	are available. But if a map used by the default pager is
+	 *	kept locked, a deadlock occurs.
+	 *
+	 *	This workaround temporarily elevates the current thread
+	 *	VM privileges to avoid that particular deadlock, and does
+	 *	so regardless of the map for convenience, and because it's
+	 *	currently impossible to predict which map the default pager
+	 *	may depend on.
+	 */
+	vm_privilege = current_thread()->vm_privilege;
+	current_thread()->vm_privilege = TRUE;
 	entry = (vm_map_entry_t) kmem_cache_alloc(&vm_map_entry_cache);
+	current_thread()->vm_privilege = vm_privilege;
+
 	if (entry == VM_MAP_ENTRY_NULL)
 		panic("vm_map_entry_create");
 
