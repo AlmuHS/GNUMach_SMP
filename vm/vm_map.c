@@ -195,6 +195,7 @@ void vm_map_setup(
 	map->wait_for_space = FALSE;
 	map->first_free = vm_map_to_entry(map);
 	map->hint = vm_map_to_entry(map);
+	map->name = NULL;
 	vm_map_lock_init(map);
 	simple_lock_init(&map->ref_lock);
 	simple_lock_init(&map->hint_lock);
@@ -704,7 +705,7 @@ restart:
 	return entry;
 
 error:
-	printf("no more room in %p\n", map);
+	printf("no more room in %p (%s)\n", map, map->name);
 	return NULL;
 }
 

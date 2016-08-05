@@ -194,6 +194,8 @@ struct vm_map {
 	/* boolean_t */ wiring_required:1;	/* All memory wired? */
 
 	unsigned int		timestamp;	/* Version number */
+
+	const char		*name;		/* Associated name */
 };
 
 #define vm_map_to_entry(map)	((struct vm_map_entry *) &(map)->hdr.links)
@@ -465,6 +467,12 @@ boolean_t vm_map_lookup_entry(
 	vm_map_t	map,
 	vm_offset_t	address,
 	vm_map_entry_t	*entry); /* OUT */
+
+static inline void vm_map_set_name(vm_map_t map, const char *name)
+{
+	map->name = name;
+}
+
 
 /*
  *	Functions implemented as macros

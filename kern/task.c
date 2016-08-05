@@ -75,6 +75,7 @@ void task_init(void)
 	 */
 	(void) task_create(TASK_NULL, FALSE, &kernel_task);
 	(void) task_set_name(kernel_task, "gnumach");
+	vm_map_set_name(kernel_map, kernel_task->name);
 }
 
 kern_return_t task_create(
@@ -99,10 +100,12 @@ kern_return_t task_create(
 		new_task->map = kernel_map;
 	} else if (inherit_memory) {
 		new_task->map = vm_map_fork(parent_task->map);
+		vm_map_set_name(new_task->map, new_task->name);
 	} else {
 		new_task->map = vm_map_create(pmap_create(0),
 					round_page(VM_MIN_ADDRESS),
 					trunc_page(VM_MAX_ADDRESS), TRUE);
+		vm_map_set_name(new_task->map, new_task->name);
 	}
 
 	simple_lock_init(&new_task->lock);
