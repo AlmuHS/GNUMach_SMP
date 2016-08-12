@@ -17,9 +17,9 @@ _start:
 	/* MultiBoot header - see multiboot.h.  */
 #define	MULTIBOOT_MAGIC		0x1BADB002
 #ifdef __ELF__
-#define MULTIBOOT_FLAGS		0x00000002
+#define MULTIBOOT_FLAGS		0x00000003
 #else  /* __ELF__ */
-#define MULTIBOOT_FLAGS		0x00010002
+#define MULTIBOOT_FLAGS		0x00010003
 #endif /* __ELF__ */
 	P2ALIGN(2)
 boot_hdr:
