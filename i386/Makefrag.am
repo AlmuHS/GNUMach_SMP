@@ -151,6 +151,7 @@ libkernel_a_SOURCES += \
 	i386/i386/setjmp.h \
 	i386/i386/spl.S \
 	i386/i386/spl.h \
+	i386/i386/strings.c \
 	i386/i386/task.h \
 	i386/i386/thread.h \
 	i386/i386/time_stamp.h \
