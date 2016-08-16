@@ -179,6 +179,7 @@ strlen(
  *	The return value is a pointer to the "s" string.
  */
 
+#if 0
 void *
 memset(
 	void *_s, int c, size_t n)
@@ -190,4 +191,106 @@ memset(
 		s[i] = c;
 
 	return _s;
+}
+#endif
+
+/*
+ * Abstract:
+ *	strchr returns a pointer to the first occurrence of the character
+ *	"c" in the string "s". If "c" is not found, return NULL.
+ */
+char *
+strchr(
+	const char *s,
+	int c)
+{
+	while (*s != c) {
+		if (*s == '\0') {
+			return NULL;
+		}
+
+		s++;
+	}
+
+	return (char *)s;
+}
+
+/*
+ * Abstract:
+ *	strsep extracts tokens from strings. If "*sp" is NULL, return NULL
+ *	and do nothing. Otherwise, find the first token in string "*sp".
+ *	Tokens are delimited by characters in the string "delim". If no
+ *	delimiter is found, the token is the entire string "*sp", and "*sp"
+ *	is made NULL. Otherwise, overwrite the delimiter with a null byte,
+ *	and make "*sp" point past it.
+ */
+char *
+strsep(
+	char **sp,
+	const char *delim)
+{
+	const char *d;
+	char *s, *t;
+
+	s = t = *sp;
+
+	if (s == NULL) {
+		return NULL;
+	}
+
+	for (;;) {
+		if (*s == '\0') {
+			*sp = NULL;
+			return t;
+		}
+
+		d = delim;
+
+		for (;;) {
+			if (*d == '\0') {
+				break;
+			}
+
+			if (*d == *s) {
+				*s = '\0';
+				*sp = s + 1;
+				return t;
+			}
+
+			d++;
+		}
+
+		s++;
+	}
+}
+
+/*
+ * Abstract:
+ *	strstr returns a pointer to the first occurrence of the substring
+ *	"find" in the string "s". If no substring was found, return NULL.
+ */
+char *
+strstr(
+	const char *s,
+	const char *find)
+{
+	size_t len;
+
+	len = strlen(find);
+
+	if (len == 0) {
+		return (char *)s;
+	}
+
+	for (;;) {
+		if (*s == '\0') {
+			return NULL;
+		}
+
+		if (strncmp(s, find, len) == 0) {
+			return (char *)s;
+		}
+
+		s++;
+	}
 }
