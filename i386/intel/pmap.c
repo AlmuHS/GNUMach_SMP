@@ -326,8 +326,6 @@ lock_data_t	pmap_system_lock;
 
 #endif	/* NCPUS > 1 */
 
-#define MAX_TBIS_SIZE	32		/* > this -> TBIA */ /* XXX */
-
 #ifdef	MACH_PV_PAGETABLES
 #if 1
 #define INVALIDATE_TLB(pmap, s, e) hyp_mmuext_op_void(MMUEXT_TLB_FLUSH_LOCAL)
