@@ -327,9 +327,6 @@ lock_data_t	pmap_system_lock;
 #endif	/* NCPUS > 1 */
 
 #ifdef	MACH_PV_PAGETABLES
-#if 1
-#define INVALIDATE_TLB(pmap, s, e) hyp_mmuext_op_void(MMUEXT_TLB_FLUSH_LOCAL)
-#else
 #define INVALIDATE_TLB(pmap, s, e) do { \
 	if (__builtin_constant_p((e) - (s)) \
 		&& (e) - (s) == PAGE_SIZE) \
@@ -337,26 +334,16 @@ lock_data_t	pmap_system_lock;
 	else \
 		hyp_mmuext_op_void(MMUEXT_TLB_FLUSH_LOCAL); \
 } while(0)
-#endif
 #else	/* MACH_PV_PAGETABLES */
-#if 0
 /* It is hard to know when a TLB flush becomes less expensive than a bunch of
  * invlpgs.  But it surely is more expensive than just one invlpg.  */
-#define INVALIDATE_TLB(pmap, s, e) { \
+#define INVALIDATE_TLB(pmap, s, e) do { \
 	if (__builtin_constant_p((e) - (s)) \
 		&& (e) - (s) == PAGE_SIZE) \
-		invlpg_linear(s); \
+		invlpg_linear((pmap) == kernel_pmap ? kvtolin(s) : (s)); \
 	else \
 		flush_tlb(); \
-}
-#else
-#define INVALIDATE_TLB(pmap, s, e) { \
-	(void) (pmap); \
-	(void) (s); \
-	(void) (e); \
-	flush_tlb(); \
-}
-#endif
+} while (0)
 #endif	/* MACH_PV_PAGETABLES */
 
 
