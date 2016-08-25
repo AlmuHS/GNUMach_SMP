@@ -175,6 +175,7 @@ void _simple_lock(
 	l->lock_data = 1;
 
 	info = &simple_locks_info[simple_locks_taken++];
+	barrier();
 	info->l = l;
 	info->expr = expression;
 	info->loc = location;
@@ -193,6 +194,7 @@ boolean_t _simple_lock_try(
 	l->lock_data = 1;
 
 	info = &simple_locks_info[simple_locks_taken++];
+	barrier();
 	info->l = l;
 	info->expr = expression;
 	info->loc = location;
@@ -219,6 +221,7 @@ void simple_unlock(
 
 		simple_locks_info[i] = simple_locks_info[simple_locks_taken-1];
 	}
+	barrier();
 	simple_locks_taken--;
 	simple_locks_info[simple_locks_taken] = (struct simple_locks_info) {0};
 }
