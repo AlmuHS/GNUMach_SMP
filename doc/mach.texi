@@ -3367,7 +3367,7 @@ exception.
 
 @var{target_task} is the task to be affected.  The starting address is
 @var{address}.  If the @var{anywhere} option is used, this address is
-used as a starting hint.  The address actually allocated will be returned in
+ignored.  The address actually allocated will be returned in
 @var{address}. @var{size} is the number of bytes to allocate (rounded by
 the system in a machine dependent way).  The alignment restriction is
 specified by @var{mask}.  Bits asserted in this mask must not be
