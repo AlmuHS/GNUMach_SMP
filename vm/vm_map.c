@@ -256,10 +256,17 @@ vm_map_entry_t _vm_map_entry_create(map_header)
 	 *	currently impossible to predict which map the default pager
 	 *	may depend on.
 	 */
-	vm_privilege = current_thread()->vm_privilege;
-	current_thread()->vm_privilege = TRUE;
+
+	if (current_thread()) {
+		vm_privilege = current_thread()->vm_privilege;
+		current_thread()->vm_privilege = TRUE;
+	}
+
 	entry = (vm_map_entry_t) kmem_cache_alloc(&vm_map_entry_cache);
-	current_thread()->vm_privilege = vm_privilege;
+
+	if (current_thread()) {
+		current_thread()->vm_privilege = vm_privilege;
+	}
 
 	if (entry == VM_MAP_ENTRY_NULL)
 		panic("vm_map_entry_create");
