@@ -116,8 +116,8 @@ static void hypcnintr(int unit, spl_t spl, void *ret_addr, void *regs) {
 		mb();
 		console->in_cons++;
 #if	MACH_KDB
-		if (c == (char)'£') {
-			printf("£ pressed\n");
+		if (c == (char)0xA3) {
+			printf("pound pressed\n");
 			kdb_kintr();
 			continue;
 		}
