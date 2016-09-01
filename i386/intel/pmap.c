@@ -891,13 +891,20 @@ pmap_mapwindow_t *pmap_get_mapwindow(pt_entry_t entry)
 {
 	pmap_mapwindow_t *map;
 
+	assert(entry != 0);
+
 	/* Find an empty one.  */
 	for (map = &mapwindows[0]; map < &mapwindows[sizeof (mapwindows) / sizeof (*mapwindows)]; map++)
 		if (!(*map->entry))
 			break;
 	assert(map < &mapwindows[sizeof (mapwindows) / sizeof (*mapwindows)]);
 
+#ifdef MACH_PV_PAGETABLES
+	if (!hyp_mmu_update_pte(kv_to_ma(map->entry), pa_to_ma(entry)))
+		panic("pmap_get_mapwindow");
+#else /* MACH_PV_PAGETABLES */
 	WRITE_PTE(map->entry, entry);
+#endif /* MACH_PV_PAGETABLES */
 	return map;
 }
 
@@ -906,7 +913,12 @@ pmap_mapwindow_t *pmap_get_mapwindow(pt_entry_t entry)
  */
 void pmap_put_mapwindow(pmap_mapwindow_t *map)
 {
+#ifdef MACH_PV_PAGETABLES
+	if (!hyp_mmu_update_pte(kv_to_ma(map->entry), 0))
+		panic("pmap_put_mapwindow");
+#else /* MACH_PV_PAGETABLES */
 	WRITE_PTE(map->entry, 0);
+#endif /* MACH_PV_PAGETABLES */
 	PMAP_UPDATE_TLBS(kernel_pmap, map->vaddr, map->vaddr + PAGE_SIZE);
 }
 
