@@ -29,6 +29,8 @@
 #include <sys/types.h>
 #include <vm/vm_page.h>
 
+#define DEBUG 0
+
 #define __boot
 #define __bootdata
 #define __init
@@ -72,15 +74,10 @@ struct biosmem_map_entry {
 
 /*
  * Contiguous block of physical memory.
- *
- * Tha "available" range records what has been passed to the VM system as
- * available inside the segment.
  */
 struct biosmem_segment {
     phys_addr_t start;
     phys_addr_t end;
-    phys_addr_t avail_start;
-    phys_addr_t avail_end;
 };
 
 /*
@@ -104,8 +101,17 @@ static struct biosmem_segment biosmem_segments[VM_PAGE_MAX_SEGS] __bootdata;
  * This heap is located above BIOS memory.
  */
 static uint32_t biosmem_heap_start __bootdata;
-static uint32_t biosmem_heap_cur __bootdata;
+static uint32_t biosmem_heap_bottom __bootdata;
+static uint32_t biosmem_heap_top __bootdata;
 static uint32_t biosmem_heap_end __bootdata;
+
+/*
+ * Boot allocation policy.
+ *
+ * Top-down allocations are normally preferred to avoid unnecessarily
+ * filling the DMA segment.
+ */
+static boolean_t biosmem_heap_topdown __bootdata;
 
 static char biosmem_panic_toobig_msg[] __bootdata
     = "biosmem: too many memory map entries";
@@ -408,20 +414,37 @@ biosmem_save_cmdline_sizes(struct multiboot_raw_info *mbi)
     }
 }
 
-static void __boot
-biosmem_find_boot_data_update(uint32_t min, uint32_t *start, uint32_t *end,
-                              uint32_t data_start, uint32_t data_end)
+static int __boot
+biosmem_find_heap_clip(phys_addr_t *heap_start, phys_addr_t *heap_end,
+                       phys_addr_t data_start, phys_addr_t data_end)
 {
-    if ((min <= data_start) && (data_start < *start)) {
-        *start = data_start;
-        *end = data_end;
+    assert(data_start < data_end);
+
+    if ((data_end <= *heap_start) || (data_start >= *heap_end)) {
+        return 0;
     }
+
+    if (data_start > *heap_start) {
+        *heap_end = data_start;
+    } else {
+        if (data_end >= *heap_end) {
+            return -1;
+        }
+
+        *heap_start = data_end;
+    }
+
+    return 0;
 }
 
 /*
- * Find the first boot data in the given range, and return their containing
- * area (start address is returned directly, end address is returned in end).
- * The following are considered boot data :
+ * Find available memory for an allocation heap.
+ *
+ * The search starts at the given start address, up to the given end address.
+ * If a range is found, it is stored through the heap_startp and heap_endp
+ * pointers.
+ *
+ * The search skips boot data, that is :
  *  - the kernel
  *  - the kernel command line
  *  - the module table
@@ -429,48 +452,83 @@ biosmem_find_boot_data_update(uint32_t min, uint32_t *start, uint32_t *end,
  *  - the modules command lines
  *  - the ELF section header table
  *  - the ELF .shstrtab, .symtab and .strtab sections
- *
- * If no boot data was found, 0 is returned, and the end address isn't set.
  */
-static uint32_t __boot
-biosmem_find_boot_data(const struct multiboot_raw_info *mbi, uint32_t min,
-                       uint32_t max, uint32_t *endp)
+static int __boot
+biosmem_find_heap(const struct multiboot_raw_info *mbi,
+                  phys_addr_t start, phys_addr_t end,
+                  phys_addr_t *heap_start, phys_addr_t *heap_end)
 {
     struct multiboot_raw_module *mod;
     struct elf_shdr *shdr;
-    uint32_t i, start, end = end;
     unsigned long tmp;
+    unsigned int i;
+    int error;
 
-    start = max;
+    if (start >= end) {
+        return -1;
+    }
 
-    biosmem_find_boot_data_update(min, &start, &end, _kvtophys(&_start),
-                                  _kvtophys(&_end));
+    *heap_start = start;
+    *heap_end = end;
 
-    if ((mbi->flags & MULTIBOOT_LOADER_CMDLINE) && (mbi->cmdline != 0))
-        biosmem_find_boot_data_update(min, &start, &end, mbi->cmdline,
-                                      mbi->cmdline + mbi->unused0);
+    error = biosmem_find_heap_clip(heap_start, heap_end,
+                                   _kvtophys(&_start), _kvtophys(&_end));
+
+    if (error) {
+        return error;
+    }
+
+    if ((mbi->flags & MULTIBOOT_LOADER_CMDLINE) && (mbi->cmdline != 0)) {
+        error = biosmem_find_heap_clip(heap_start, heap_end,
+                                       mbi->cmdline,
+                                       mbi->cmdline + mbi->unused0);
+
+        if (error) {
+            return error;
+        }
+    }
 
     if (mbi->flags & MULTIBOOT_LOADER_MODULES) {
         i = mbi->mods_count * sizeof(struct multiboot_raw_module);
-        biosmem_find_boot_data_update(min, &start, &end, mbi->mods_addr,
-                                      mbi->mods_addr + i);
+        error = biosmem_find_heap_clip(heap_start, heap_end,
+                                       mbi->mods_addr, mbi->mods_addr + i);
+
+        if (error) {
+            return error;
+        }
+
         tmp = phystokv(mbi->mods_addr);
 
         for (i = 0; i < mbi->mods_count; i++) {
             mod = (struct multiboot_raw_module *)tmp + i;
-            biosmem_find_boot_data_update(min, &start, &end, mod->mod_start,
-                                          mod->mod_end);
+            error = biosmem_find_heap_clip(heap_start, heap_end,
+                                           mod->mod_start, mod->mod_end);
 
-            if (mod->string != 0)
-                biosmem_find_boot_data_update(min, &start, &end, mod->string,
-                                              mod->string + mod->reserved);
+            if (error) {
+                return error;
+            }
+
+            if (mod->string != 0) {
+                error = biosmem_find_heap_clip(heap_start, heap_end,
+                                               mod->string,
+                                               mod->string + mod->reserved);
+
+                if (error) {
+                    return error;
+                }
+            }
         }
     }
 
     if (mbi->flags & MULTIBOOT_LOADER_SHDR) {
         tmp = mbi->shdr_num * mbi->shdr_size;
-        biosmem_find_boot_data_update(min, &start, &end, mbi->shdr_addr,
-                                      mbi->shdr_addr + tmp);
+        error = biosmem_find_heap_clip(heap_start, heap_end,
+                                       mbi->shdr_addr, mbi->shdr_addr + tmp);
+
+        if (error) {
+            return error;
+        }
+
         tmp = phystokv(mbi->shdr_addr);
 
         for (i = 0; i < mbi->shdr_num; i++) {
@@ -480,53 +538,53 @@ biosmem_find_boot_data(const struct multiboot_raw_info *mbi, uint32_t min,
                 && (shdr->type != ELF_SHT_STRTAB))
                 continue;
 
-            biosmem_find_boot_data_update(min, &start, &end, shdr->addr,
-                                          shdr->addr + shdr->size);
+            error = biosmem_find_heap_clip(heap_start, heap_end,
+                                           shdr->addr, shdr->addr + shdr->size);
         }
     }
 
-    if (start == max)
-        return 0;
-
-    *endp = end;
-    return start;
+    return 0;
 }
 
 static void __boot
 biosmem_setup_allocator(struct multiboot_raw_info *mbi)
 {
-    uint32_t heap_start, heap_end, max_heap_start, max_heap_end;
-    uint32_t mem_end, next;
+    phys_addr_t heap_start, heap_end, max_heap_start, max_heap_end;
+    phys_addr_t start, end;
+    int error;
 
     /*
      * Find some memory for the heap. Look for the largest unused area in
      * upper memory, carefully avoiding all boot data.
      */
-    mem_end = vm_page_trunc((mbi->mem_upper + 1024) << 10);
+    end = vm_page_trunc((mbi->mem_upper + 1024) << 10);
 
 #ifndef __LP64__
-    if (mem_end > VM_PAGE_DIRECTMAP_LIMIT)
-        mem_end = VM_PAGE_DIRECTMAP_LIMIT;
+    if (end > VM_PAGE_DIRECTMAP_LIMIT)
+        end = VM_PAGE_DIRECTMAP_LIMIT;
 #endif /* __LP64__ */
 
     max_heap_start = 0;
     max_heap_end = 0;
-    next = BIOSMEM_END;
+    start = BIOSMEM_END;
 
-    do {
-        heap_start = next;
-        heap_end = biosmem_find_boot_data(mbi, heap_start, mem_end, &next);
+    for (;;) {
+        error = biosmem_find_heap(mbi, start, end, &heap_start, &heap_end);
 
-        if (heap_end == 0) {
-            heap_end = mem_end;
-            next = 0;
+        if (error) {
+            break;
         }
 
         if ((heap_end - heap_start) > (max_heap_end - max_heap_start)) {
             max_heap_start = heap_start;
             max_heap_end = heap_end;
         }
-    } while (next != 0);
+
+        start = heap_end;
+    }
+
+    if (max_heap_start >= max_heap_end)
+        boot_panic(biosmem_panic_setup_msg);
 
     max_heap_start = vm_page_round(max_heap_start);
     max_heap_end = vm_page_trunc(max_heap_end);
@@ -536,7 +594,9 @@ biosmem_setup_allocator(struct multiboot_raw_info *mbi)
 
     biosmem_heap_start = max_heap_start;
     biosmem_heap_end = max_heap_end;
-    biosmem_heap_cur = biosmem_heap_end;
+    biosmem_heap_bottom = biosmem_heap_start;
+    biosmem_heap_top = biosmem_heap_end;
+    biosmem_heap_topdown = TRUE;
 }
 
 #endif /* MACH_HYP */
@@ -621,15 +681,18 @@ biosmem_xen_bootstrap(void)
         biosmem_heap_end = VM_PAGE_DIRECTMAP_LIMIT;
 #endif /* __LP64__ */
 
+    biosmem_heap_bottom = biosmem_heap_start;
+    biosmem_heap_top = biosmem_heap_end;
+
     /*
-     * XXX Allocation on Xen must be bottom-up :
+     * XXX Allocation on Xen are initially bottom-up :
      * At the "start of day", only 512k are available after the boot
      * data. The pmap module then creates a 4g mapping so all physical
      * memory is available, but it uses this allocator to do so.
      * Therefore, it must return pages from this small 512k regions
      * first.
      */
-    biosmem_heap_cur = biosmem_heap_start;
+    biosmem_heap_topdown = FALSE;
 }
 
 #else /* MACH_HYP */
@@ -666,27 +729,32 @@ biosmem_bootalloc(unsigned int nr_pages)
     if (size == 0)
         boot_panic(biosmem_panic_inval_msg);
 
-#ifdef MACH_HYP
-    addr = biosmem_heap_cur;
-#else /* MACH_HYP */
-    /* Top-down allocation to avoid unnecessarily filling DMA segments */
-    addr = biosmem_heap_cur - size;
-#endif /* MACH_HYP */
+    if (biosmem_heap_topdown) {
+        addr = biosmem_heap_top - size;
 
-    if ((addr < biosmem_heap_start) || (addr > biosmem_heap_cur))
-        boot_panic(biosmem_panic_nomem_msg);
+        if ((addr < biosmem_heap_start) || (addr > biosmem_heap_top)) {
+            boot_panic(biosmem_panic_nomem_msg);
+        }
 
-#ifdef MACH_HYP
-    biosmem_heap_cur += size;
-#else /* MACH_HYP */
-    biosmem_heap_cur = addr;
-#endif /* MACH_HYP */
+        biosmem_heap_top = addr;
+    } else {
+        unsigned long end;
+
+        addr = biosmem_heap_bottom;
+        end = addr + size;
+
+        if ((end > biosmem_heap_end) || (end < biosmem_heap_bottom)) {
+            boot_panic(biosmem_panic_nomem_msg);
+        }
+
+        biosmem_heap_bottom = end;
+    }
 
     return addr;
 }
 
 phys_addr_t __boot
-biosmem_directmap_size(void)
+biosmem_directmap_end(void)
 {
     if (biosmem_segment_size(VM_PAGE_SEG_DIRECTMAP) != 0)
         return biosmem_segment_end(VM_PAGE_SEG_DIRECTMAP);
@@ -733,12 +801,13 @@ biosmem_map_show(void)
 }
 
 static void __init
-biosmem_load_segment(struct biosmem_segment *seg, uint64_t max_phys_end,
-                     phys_addr_t phys_start, phys_addr_t phys_end,
-                     phys_addr_t avail_start, phys_addr_t avail_end)
+biosmem_load_segment(struct biosmem_segment *seg, uint64_t max_phys_end)
 {
+    phys_addr_t phys_start, phys_end, avail_start, avail_end;
     unsigned int seg_index;
 
+    phys_start = seg->start;
+    phys_end = seg->end;
     seg_index = seg - biosmem_segments;
 
     if (phys_end > max_phys_end) {
@@ -753,15 +822,28 @@ biosmem_load_segment(struct biosmem_segment *seg, uint64_t max_phys_end,
         phys_end = max_phys_end;
     }
 
-    if ((avail_start < phys_start) || (avail_start >= phys_end))
-        avail_start = phys_start;
+    vm_page_load(seg_index, phys_start, phys_end);
 
-    if ((avail_end <= phys_start) || (avail_end > phys_end))
-        avail_end = phys_end;
+    /*
+     * Clip the remaining available heap to fit it into the loaded
+     * segment if possible.
+     */
 
-    seg->avail_start = avail_start;
-    seg->avail_end = avail_end;
-    vm_page_load(seg_index, phys_start, phys_end, avail_start, avail_end);
+    if ((biosmem_heap_top > phys_start) && (biosmem_heap_bottom < phys_end)) {
+        if (biosmem_heap_bottom >= phys_start) {
+            avail_start = biosmem_heap_bottom;
+        } else {
+            avail_start = phys_start;
+        }
+
+        if (biosmem_heap_top <= phys_end) {
+            avail_end = biosmem_heap_top;
+        } else {
+            avail_end = phys_end;
+        }
+
+        vm_page_load_heap(seg_index, avail_start, avail_end);
+    }
 }
 
 void __init
@@ -777,19 +859,33 @@ biosmem_setup(void)
             break;
 
         seg = &biosmem_segments[i];
-        biosmem_load_segment(seg, VM_PAGE_HIGHMEM_LIMIT, seg->start, seg->end,
-                             biosmem_heap_start, biosmem_heap_cur);
+
+        /* XXX Limit to directmap until highmem is supported */
+        biosmem_load_segment(seg, VM_PAGE_DIRECTMAP_LIMIT);
     }
 }
+
+#ifndef MACH_HYP
 
 static void __init
 biosmem_free_usable_range(phys_addr_t start, phys_addr_t end)
 {
     struct vm_page *page;
 
+    assert(start < end);
+
+    start = vm_page_round(start);
+    end = vm_page_round(end);
+
+    if (start >= end) {
+        return;
+    }
+
+#if DEBUG
     printf("biosmem: release to vm_page: %llx-%llx (%lluk)\n",
            (unsigned long long)start, (unsigned long long)end,
            (unsigned long long)((end - start) >> 10));
+#endif
 
     while (start < end) {
         page = vm_page_lookup_pa(start);
@@ -800,90 +896,35 @@ biosmem_free_usable_range(phys_addr_t start, phys_addr_t end)
 }
 
 static void __init
-biosmem_free_usable_update_start(phys_addr_t *start, phys_addr_t res_start,
-                                 phys_addr_t res_end)
+biosmem_free_usable_entry(struct multiboot_raw_info *mbi, phys_addr_t start,
+                          phys_addr_t end)
 {
-    if ((*start >= res_start) && (*start < res_end))
-        *start = res_end;
-}
+    phys_addr_t heap_start, heap_end;
+    int error;
 
-static phys_addr_t __init
-biosmem_free_usable_start(phys_addr_t start)
-{
-    const struct biosmem_segment *seg;
-    unsigned int i;
-
-    biosmem_free_usable_update_start(&start, _kvtophys(&_start),
-                                     _kvtophys(&_end));
-    biosmem_free_usable_update_start(&start, biosmem_heap_start,
-                                     biosmem_heap_end);
-
-    for (i = 0; i < ARRAY_SIZE(biosmem_segments); i++) {
-        seg = &biosmem_segments[i];
-        biosmem_free_usable_update_start(&start, seg->avail_start,
-                                         seg->avail_end);
-    }
-
-    return start;
-}
-
-static int __init
-biosmem_free_usable_reserved(phys_addr_t addr)
-{
-    const struct biosmem_segment *seg;
-    unsigned int i;
-
-    if ((addr >= _kvtophys(&_start))
-        && (addr < _kvtophys(&_end)))
-        return 1;
-
-    if ((addr >= biosmem_heap_start) && (addr < biosmem_heap_end))
-        return 1;
-
-    for (i = 0; i < ARRAY_SIZE(biosmem_segments); i++) {
-        seg = &biosmem_segments[i];
-
-        if ((addr >= seg->avail_start) && (addr < seg->avail_end))
-            return 1;
-    }
-
-    return 0;
-}
-
-static phys_addr_t __init
-biosmem_free_usable_end(phys_addr_t start, phys_addr_t entry_end)
-{
-    while (start < entry_end) {
-        if (biosmem_free_usable_reserved(start))
-            break;
-
-        start += PAGE_SIZE;
-    }
-
-    return start;
-}
-
-static void __init
-biosmem_free_usable_entry(phys_addr_t start, phys_addr_t end)
-{
-    phys_addr_t entry_end;
-
-    entry_end = end;
+    /* XXX Abuse biosmem_find_heap to locate usable areas */
 
     for (;;) {
-        start = biosmem_free_usable_start(start);
+        error = biosmem_find_heap(mbi, start, end, &heap_start, &heap_end);
 
-        if (start >= entry_end)
-            return;
+        if (error) {
+            break;
+        }
 
-        end = biosmem_free_usable_end(start, entry_end);
-        biosmem_free_usable_range(start, end);
-        start = end;
+        error = biosmem_find_heap_clip(&heap_start, &heap_end,
+                                       biosmem_heap_start, biosmem_heap_end);
+
+        if (error) {
+            break;
+        }
+
+        biosmem_free_usable_range(heap_start, heap_end);
+        start = heap_end;
     }
 }
 
 void __init
-biosmem_free_usable(void)
+biosmem_free_usable(struct multiboot_raw_info *mbi)
 {
     struct biosmem_map_entry *entry;
     uint64_t start, end;
@@ -902,9 +943,20 @@ biosmem_free_usable(void)
 
         end = vm_page_trunc(entry->base_addr + entry->length);
 
+        /* XXX Limit to directmap until highmem is supported */
+        if (end > VM_PAGE_DIRECTMAP_LIMIT) {
+            end = VM_PAGE_DIRECTMAP_LIMIT;
+        }
+
         if (start < BIOSMEM_BASE)
             start = BIOSMEM_BASE;
 
-        biosmem_free_usable_entry(start, end);
+        if (start >= end) {
+            continue;
+        }
+
+        biosmem_free_usable_entry(mbi, start, end);
     }
 }
+
+#endif /* MACH_HYP */

@@ -43,6 +43,8 @@
 #include <sys/types.h>
 #include <vm/vm_page.h>
 
+#define DEBUG 0
+
 #define __init
 #define __initdata
 #define __read_mostly
@@ -123,6 +125,7 @@ struct vm_page_seg {
 struct vm_page_boot_seg {
     phys_addr_t start;
     phys_addr_t end;
+    boolean_t heap_present;
     phys_addr_t avail_start;
     phys_addr_t avail_end;
 };
@@ -483,27 +486,53 @@ vm_page_seg_free(struct vm_page_seg *seg, struct vm_page *page,
 }
 
 void __init
-vm_page_load(unsigned int seg_index, phys_addr_t start, phys_addr_t end,
-             phys_addr_t avail_start, phys_addr_t avail_end)
+vm_page_load(unsigned int seg_index, phys_addr_t start, phys_addr_t end)
 {
     struct vm_page_boot_seg *seg;
 
     assert(seg_index < ARRAY_SIZE(vm_page_boot_segs));
     assert(vm_page_aligned(start));
     assert(vm_page_aligned(end));
-    assert(vm_page_aligned(avail_start));
-    assert(vm_page_aligned(avail_end));
     assert(start < end);
-    assert(start <= avail_start);
-    assert(avail_end <= end);
     assert(vm_page_segs_size < ARRAY_SIZE(vm_page_boot_segs));
 
     seg = &vm_page_boot_segs[seg_index];
     seg->start = start;
     seg->end = end;
-    seg->avail_start = avail_start;
-    seg->avail_end = avail_end;
+    seg->heap_present = FALSE;
+
+#if DEBUG
+    printf("vm_page: load: %s: %llx:%llx\n",
+           vm_page_seg_name(seg_index),
+           (unsigned long long)start, (unsigned long long)end);
+#endif
+
     vm_page_segs_size++;
+}
+
+void
+vm_page_load_heap(unsigned int seg_index, phys_addr_t start, phys_addr_t end)
+{
+    struct vm_page_boot_seg *seg;
+
+    assert(seg_index < ARRAY_SIZE(vm_page_boot_segs));
+    assert(vm_page_aligned(start));
+    assert(vm_page_aligned(end));
+
+    seg = &vm_page_boot_segs[seg_index];
+
+    assert(seg->start <= start);
+    assert(end <= seg-> end);
+
+    seg->avail_start = start;
+    seg->avail_end = end;
+    seg->heap_present = TRUE;
+
+#if DEBUG
+    printf("vm_page: heap: %s: %llx:%llx\n",
+           vm_page_seg_name(seg_index),
+           (unsigned long long)start, (unsigned long long)end);
+#endif
 }
 
 int

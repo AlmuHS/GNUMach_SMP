@@ -56,20 +56,21 @@ void biosmem_bootstrap(struct multiboot_raw_info *mbi);
 /*
  * Allocate contiguous physical pages during bootstrap.
  *
- * This function is called before paging is enabled. It should only be used
- * to allocate initial page table pages. Those pages are later loaded into
- * the VM system (as reserved pages) which means they can be freed like other
- * regular pages. Users should fix up the type of those pages once the VM
- * system is initialized.
+ * This function is called before paging is enabled. The pages returned
+ * are guaranteed to be part of the direct physical mapping when paging
+ * is enabled.
+ *
+ * This function should only be used to allocate initial page table pages.
+ * Those pages are later loaded into the VM system (as reserved pages)
+ * which means they can be freed like other regular pages. Users should
+ * fix up the type of those pages once the VM system is initialized.
  */
 unsigned long biosmem_bootalloc(unsigned int nr_pages);
 
 /*
- * Return the amount of physical memory that can be directly mapped.
- *
- * This includes the size of both the DMA/DMA32 and DIRECTMAP segments.
+ * Return the limit of physical memory that can be directly mapped.
  */
-phys_addr_t biosmem_directmap_size(void);
+phys_addr_t biosmem_directmap_end(void);
 
 /*
  * Set up physical memory based on the information obtained during bootstrap
@@ -79,10 +80,9 @@ void biosmem_setup(void);
 
 /*
  * Free all usable memory.
- *
- * This includes ranges that weren't part of the bootstrap allocator initial
- * heap, e.g. because they contained boot data.
  */
-void biosmem_free_usable(void);
+#ifndef MACH_HYP
+void biosmem_free_usable(struct multiboot_raw_info *mbi);
+#endif /* MACH_HYP */
 
 #endif /* _X86_BIOSMEM_H */

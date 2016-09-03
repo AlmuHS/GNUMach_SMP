@@ -153,6 +153,16 @@ void machine_init(void)
 	cninit();
 
 	/*
+	 * Make more free memory.
+	 *
+	 * This is particularly important for the Linux drivers which
+	 * require available DMA memory.
+	 */
+#ifndef MACH_HYP
+	biosmem_free_usable((struct multiboot_raw_info *) &boot_info);
+#endif /* MACH_HYP */
+
+	/*
 	 * Set up to use floating point.
 	 */
 	init_fpu();
