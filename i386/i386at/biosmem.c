@@ -18,7 +18,6 @@
 #include <string.h>
 #include <i386/model_dep.h>
 #include <i386at/biosmem.h>
-#include <i386at/elf.h>
 #include <kern/assert.h>
 #include <kern/debug.h>
 #include <kern/macros.h>
@@ -43,7 +42,26 @@
 #define BOOT_CGACHARS   (80 * 25)
 #define BOOT_CGACOLOR   0x7
 
-extern char _start, _end;
+#define BIOSMEM_MAX_BOOT_DATA 64
+
+/*
+ * Boot data descriptor.
+ *
+ * The start and end addresses must not be page-aligned, since there
+ * could be more than one range inside a single page.
+ */
+struct biosmem_boot_data {
+    phys_addr_t start;
+    phys_addr_t end;
+    boolean_t temporary;
+};
+
+/*
+ * Sorted array of boot data descriptors.
+ */
+static struct biosmem_boot_data biosmem_boot_data_array[BIOSMEM_MAX_BOOT_DATA]
+    __bootdata;
+static unsigned int biosmem_nr_boot_data __bootdata;
 
 /*
  * Maximum number of entries in the BIOS memory map.
@@ -73,14 +91,6 @@ struct biosmem_map_entry {
 };
 
 /*
- * Contiguous block of physical memory.
- */
-struct biosmem_segment {
-    phys_addr_t start;
-    phys_addr_t end;
-};
-
-/*
  * Memory map built from the information passed by the boot loader.
  *
  * If the boot loader didn't pass a valid memory map, a simple map is built
@@ -89,6 +99,14 @@ struct biosmem_segment {
 static struct biosmem_map_entry biosmem_map[BIOSMEM_MAX_MAP_SIZE * 2]
     __bootdata;
 static unsigned int biosmem_map_size __bootdata;
+
+/*
+ * Contiguous block of physical memory.
+ */
+struct biosmem_segment {
+    phys_addr_t start;
+    phys_addr_t end;
+};
 
 /*
  * Physical segment boundaries.
@@ -100,10 +118,10 @@ static struct biosmem_segment biosmem_segments[VM_PAGE_MAX_SEGS] __bootdata;
  *
  * This heap is located above BIOS memory.
  */
-static uint32_t biosmem_heap_start __bootdata;
-static uint32_t biosmem_heap_bottom __bootdata;
-static uint32_t biosmem_heap_top __bootdata;
-static uint32_t biosmem_heap_end __bootdata;
+static phys_addr_t biosmem_heap_start __bootdata;
+static phys_addr_t biosmem_heap_bottom __bootdata;
+static phys_addr_t biosmem_heap_top __bootdata;
+static phys_addr_t biosmem_heap_end __bootdata;
 
 /*
  * Boot allocation policy.
@@ -113,7 +131,11 @@ static uint32_t biosmem_heap_end __bootdata;
  */
 static boolean_t biosmem_heap_topdown __bootdata;
 
-static char biosmem_panic_toobig_msg[] __bootdata
+static char biosmem_panic_inval_boot_data[] __bootdata
+    = "biosmem: invalid boot data";
+static char biosmem_panic_too_many_boot_data[] __bootdata
+    = "biosmem: too many boot data ranges";
+static char biosmem_panic_too_big_msg[] __bootdata
     = "biosmem: too many memory map entries";
 #ifndef MACH_HYP
 static char biosmem_panic_setup_msg[] __bootdata
@@ -125,6 +147,103 @@ static char biosmem_panic_inval_msg[] __bootdata
     = "biosmem: attempt to allocate 0 page";
 static char biosmem_panic_nomem_msg[] __bootdata
     = "biosmem: unable to allocate memory";
+
+void __boot
+biosmem_register_boot_data(phys_addr_t start, phys_addr_t end,
+                           boolean_t temporary)
+{
+    unsigned int i;
+
+    if (start >= end) {
+        boot_panic(biosmem_panic_inval_boot_data);
+    }
+
+    if (biosmem_nr_boot_data == ARRAY_SIZE(biosmem_boot_data_array)) {
+        boot_panic(biosmem_panic_too_many_boot_data);
+    }
+
+    for (i = 0; i < biosmem_nr_boot_data; i++) {
+        /* Check if the new range overlaps */
+        if ((end > biosmem_boot_data_array[i].start)
+             && (start < biosmem_boot_data_array[i].end)) {
+
+            /*
+             * If it does, check whether it's part of another range.
+             * For example, this applies to debugging symbols directly
+             * taken from the kernel image.
+             */
+            if ((start >= biosmem_boot_data_array[i].start)
+                && (end <= biosmem_boot_data_array[i].end)) {
+
+                /*
+                 * If it's completely included, make sure that a permanent
+                 * range remains permanent.
+                 *
+                 * XXX This means that if one big range is first registered
+                 * as temporary, and a smaller range inside of it is
+                 * registered as permanent, the bigger range becomes
+                 * permanent. It's not easy nor useful in practice to do
+                 * better than that.
+                 */
+                if (biosmem_boot_data_array[i].temporary != temporary) {
+                    biosmem_boot_data_array[i].temporary = FALSE;
+                }
+
+                return;
+            }
+
+            boot_panic(biosmem_panic_inval_boot_data);
+        }
+
+        if (end <= biosmem_boot_data_array[i].start) {
+            break;
+        }
+    }
+
+    boot_memmove(&biosmem_boot_data_array[i + 1],
+                 &biosmem_boot_data_array[i],
+                 (biosmem_nr_boot_data - i) * sizeof(*biosmem_boot_data_array));
+
+    biosmem_boot_data_array[i].start = start;
+    biosmem_boot_data_array[i].end = end;
+    biosmem_boot_data_array[i].temporary = temporary;
+    biosmem_nr_boot_data++;
+}
+
+static void __init
+biosmem_unregister_boot_data(phys_addr_t start, phys_addr_t end)
+{
+    unsigned int i;
+
+    if (start >= end) {
+        panic(biosmem_panic_inval_boot_data);
+    }
+
+    assert(biosmem_nr_boot_data != 0);
+
+    for (i = 0; biosmem_nr_boot_data; i++) {
+        if ((start == biosmem_boot_data_array[i].start)
+            && (end == biosmem_boot_data_array[i].end)) {
+            break;
+        }
+    }
+
+    if (i == biosmem_nr_boot_data) {
+        return;
+    }
+
+#if DEBUG
+    printf("biosmem: unregister boot data: %llx:%llx\n",
+           (unsigned long long)biosmem_boot_data_array[i].start,
+           (unsigned long long)biosmem_boot_data_array[i].end);
+#endif /* DEBUG */
+
+    biosmem_nr_boot_data--;
+
+    boot_memmove(&biosmem_boot_data_array[i],
+                 &biosmem_boot_data_array[i + 1],
+                 (biosmem_nr_boot_data - i) * sizeof(*biosmem_boot_data_array));
+}
 
 #ifndef MACH_HYP
 
@@ -308,7 +427,7 @@ biosmem_map_adjust(void)
                  */
 
                 if (biosmem_map_size >= ARRAY_SIZE(biosmem_map))
-                    boot_panic(biosmem_panic_toobig_msg);
+                    boot_panic(biosmem_panic_too_big_msg);
 
                 biosmem_map[biosmem_map_size] = tmp;
                 biosmem_map_size++;
@@ -327,6 +446,16 @@ biosmem_map_adjust(void)
     biosmem_map_sort();
 }
 
+/*
+ * Find addresses of physical memory within a given range.
+ *
+ * This function considers the memory map with the [*phys_start, *phys_end]
+ * range on entry, and returns the lowest address of physical memory
+ * in *phys_start, and the highest address of unusable memory immediately
+ * following physical memory in *phys_end.
+ *
+ * These addresses are normally used to establish the range of a segment.
+ */
 static int __boot
 biosmem_map_find_avail(phys_addr_t *phys_start, phys_addr_t *phys_end)
 {
@@ -388,166 +517,86 @@ biosmem_segment_size(unsigned int seg_index)
     return biosmem_segments[seg_index].end - biosmem_segments[seg_index].start;
 }
 
-#ifndef MACH_HYP
-
-static void __boot
-biosmem_save_cmdline_sizes(struct multiboot_raw_info *mbi)
-{
-    struct multiboot_raw_module *mod;
-    uint32_t i, va;
-
-    if (mbi->flags & MULTIBOOT_LOADER_CMDLINE) {
-        va = phystokv(mbi->cmdline);
-        mbi->unused0 = boot_strlen((char *)va) + 1;
-    }
-
-    if (mbi->flags & MULTIBOOT_LOADER_MODULES) {
-        unsigned long addr;
-
-        addr = phystokv(mbi->mods_addr);
-
-        for (i = 0; i < mbi->mods_count; i++) {
-            mod = (struct multiboot_raw_module *)addr + i;
-            va = phystokv(mod->string);
-            mod->reserved = boot_strlen((char *)va) + 1;
-        }
-    }
-}
-
 static int __boot
-biosmem_find_heap_clip(phys_addr_t *heap_start, phys_addr_t *heap_end,
-                       phys_addr_t data_start, phys_addr_t data_end)
+biosmem_find_avail_clip(phys_addr_t *avail_start, phys_addr_t *avail_end,
+                        phys_addr_t data_start, phys_addr_t data_end)
 {
+    phys_addr_t orig_end;
+
     assert(data_start < data_end);
 
-    if ((data_end <= *heap_start) || (data_start >= *heap_end)) {
+    orig_end = data_end;
+    data_start = vm_page_trunc(data_start);
+    data_end = vm_page_round(data_end);
+
+    if (data_end < orig_end) {
+        boot_panic(biosmem_panic_inval_boot_data);
+    }
+
+    if ((data_end <= *avail_start) || (data_start >= *avail_end)) {
         return 0;
     }
 
-    if (data_start > *heap_start) {
-        *heap_end = data_start;
+    if (data_start > *avail_start) {
+        *avail_end = data_start;
     } else {
-        if (data_end >= *heap_end) {
+        if (data_end >= *avail_end) {
             return -1;
         }
 
-        *heap_start = data_end;
+        *avail_start = data_end;
     }
 
     return 0;
 }
 
 /*
- * Find available memory for an allocation heap.
+ * Find available memory in the given range.
  *
  * The search starts at the given start address, up to the given end address.
- * If a range is found, it is stored through the heap_startp and heap_endp
+ * If a range is found, it is stored through the avail_startp and avail_endp
  * pointers.
  *
- * The search skips boot data, that is :
- *  - the kernel
- *  - the kernel command line
- *  - the module table
- *  - the modules
- *  - the modules command lines
- *  - the ELF section header table
- *  - the ELF .shstrtab, .symtab and .strtab sections
+ * The range boundaries are page-aligned on return.
  */
 static int __boot
-biosmem_find_heap(const struct multiboot_raw_info *mbi,
-                  phys_addr_t start, phys_addr_t end,
-                  phys_addr_t *heap_start, phys_addr_t *heap_end)
+biosmem_find_avail(phys_addr_t start, phys_addr_t end,
+                   phys_addr_t *avail_start, phys_addr_t *avail_end)
 {
-    struct multiboot_raw_module *mod;
-    struct elf_shdr *shdr;
-    unsigned long tmp;
+    phys_addr_t orig_start;
     unsigned int i;
     int error;
 
-    if (start >= end) {
+    assert(start <= end);
+
+    orig_start = start;
+    start = vm_page_round(start);
+    end = vm_page_trunc(end);
+
+    if ((start < orig_start) || (start >= end)) {
         return -1;
     }
 
-    *heap_start = start;
-    *heap_end = end;
+    *avail_start = start;
+    *avail_end = end;
 
-    error = biosmem_find_heap_clip(heap_start, heap_end,
-                                   _kvtophys(&_start), _kvtophys(&_end));
-
-    if (error) {
-        return error;
-    }
-
-    if ((mbi->flags & MULTIBOOT_LOADER_CMDLINE) && (mbi->cmdline != 0)) {
-        error = biosmem_find_heap_clip(heap_start, heap_end,
-                                       mbi->cmdline,
-                                       mbi->cmdline + mbi->unused0);
+    for (i = 0; i < biosmem_nr_boot_data; i++) {
+        error = biosmem_find_avail_clip(avail_start, avail_end,
+                                        biosmem_boot_data_array[i].start,
+                                        biosmem_boot_data_array[i].end);
 
         if (error) {
-            return error;
-        }
-    }
-
-    if (mbi->flags & MULTIBOOT_LOADER_MODULES) {
-        i = mbi->mods_count * sizeof(struct multiboot_raw_module);
-        error = biosmem_find_heap_clip(heap_start, heap_end,
-                                       mbi->mods_addr, mbi->mods_addr + i);
-
-        if (error) {
-            return error;
-        }
-
-        tmp = phystokv(mbi->mods_addr);
-
-        for (i = 0; i < mbi->mods_count; i++) {
-            mod = (struct multiboot_raw_module *)tmp + i;
-            error = biosmem_find_heap_clip(heap_start, heap_end,
-                                           mod->mod_start, mod->mod_end);
-
-            if (error) {
-                return error;
-            }
-
-            if (mod->string != 0) {
-                error = biosmem_find_heap_clip(heap_start, heap_end,
-                                               mod->string,
-                                               mod->string + mod->reserved);
-
-                if (error) {
-                    return error;
-                }
-            }
-        }
-    }
-
-    if (mbi->flags & MULTIBOOT_LOADER_SHDR) {
-        tmp = mbi->shdr_num * mbi->shdr_size;
-        error = biosmem_find_heap_clip(heap_start, heap_end,
-                                       mbi->shdr_addr, mbi->shdr_addr + tmp);
-
-        if (error) {
-            return error;
-        }
-
-        tmp = phystokv(mbi->shdr_addr);
-
-        for (i = 0; i < mbi->shdr_num; i++) {
-            shdr = (struct elf_shdr *)(tmp + (i * mbi->shdr_size));
-
-            if ((shdr->type != ELF_SHT_SYMTAB)
-                && (shdr->type != ELF_SHT_STRTAB))
-                continue;
-
-            error = biosmem_find_heap_clip(heap_start, heap_end,
-                                           shdr->addr, shdr->addr + shdr->size);
+            return -1;
         }
     }
 
     return 0;
 }
 
+#ifndef MACH_HYP
+
 static void __boot
-biosmem_setup_allocator(struct multiboot_raw_info *mbi)
+biosmem_setup_allocator(const struct multiboot_raw_info *mbi)
 {
     phys_addr_t heap_start, heap_end, max_heap_start, max_heap_end;
     phys_addr_t start, end;
@@ -569,7 +618,7 @@ biosmem_setup_allocator(struct multiboot_raw_info *mbi)
     start = BIOSMEM_END;
 
     for (;;) {
-        error = biosmem_find_heap(mbi, start, end, &heap_start, &heap_end);
+        error = biosmem_find_avail(start, end, &heap_start, &heap_end);
 
         if (error) {
             break;
@@ -586,17 +635,14 @@ biosmem_setup_allocator(struct multiboot_raw_info *mbi)
     if (max_heap_start >= max_heap_end)
         boot_panic(biosmem_panic_setup_msg);
 
-    max_heap_start = vm_page_round(max_heap_start);
-    max_heap_end = vm_page_trunc(max_heap_end);
-
-    if (max_heap_start >= max_heap_end)
-        boot_panic(biosmem_panic_setup_msg);
-
     biosmem_heap_start = max_heap_start;
     biosmem_heap_end = max_heap_end;
     biosmem_heap_bottom = biosmem_heap_start;
     biosmem_heap_top = biosmem_heap_end;
     biosmem_heap_topdown = TRUE;
+
+    /* Prevent biosmem_free_usable() from releasing the heap */
+    biosmem_register_boot_data(biosmem_heap_start, biosmem_heap_end, FALSE);
 }
 
 #endif /* MACH_HYP */
@@ -676,7 +722,6 @@ biosmem_xen_bootstrap(void)
     biosmem_heap_end = boot_info.nr_pages << PAGE_SHIFT;
 
 #ifndef __LP64__
-    /* TODO Check that this actually makes sense */
     if (biosmem_heap_end > VM_PAGE_DIRECTMAP_LIMIT)
         biosmem_heap_end = VM_PAGE_DIRECTMAP_LIMIT;
 #endif /* __LP64__ */
@@ -693,12 +738,18 @@ biosmem_xen_bootstrap(void)
      * first.
      */
     biosmem_heap_topdown = FALSE;
+
+    /*
+     * Prevent biosmem_free_usable() from releasing the Xen boot information
+     * and the heap.
+     */
+    biosmem_register_boot_data(0, biosmem_heap_end, FALSE);
 }
 
 #else /* MACH_HYP */
 
 void __boot
-biosmem_bootstrap(struct multiboot_raw_info *mbi)
+biosmem_bootstrap(const struct multiboot_raw_info *mbi)
 {
     if (mbi->flags & MULTIBOOT_LOADER_MMAP)
         biosmem_map_build(mbi);
@@ -706,12 +757,6 @@ biosmem_bootstrap(struct multiboot_raw_info *mbi)
         biosmem_map_build_simple(mbi);
 
     biosmem_bootstrap_common();
-
-    /*
-     * The kernel and modules command lines will be memory mapped later
-     * during initialization. Their respective sizes must be saved.
-     */
-    biosmem_save_cmdline_sizes(mbi);
     biosmem_setup_allocator(mbi);
 }
 
@@ -721,8 +766,6 @@ unsigned long __boot
 biosmem_bootalloc(unsigned int nr_pages)
 {
     unsigned long addr, size;
-
-    assert(!vm_page_ready());
 
     size = vm_page_ptoa(nr_pages);
 
@@ -764,6 +807,8 @@ biosmem_directmap_end(void)
         return biosmem_segment_end(VM_PAGE_SEG_DMA);
 }
 
+#if DEBUG
+
 static const char * __init
 biosmem_type_desc(unsigned int type)
 {
@@ -797,8 +842,14 @@ biosmem_map_show(void)
                entry->base_addr + entry->length,
                biosmem_type_desc(entry->type));
 
-    printf("biosmem: heap: %x-%x\n", biosmem_heap_start, biosmem_heap_end);
+    printf("biosmem: heap: %llx:%llx\n",
+           (unsigned long long)biosmem_heap_start,
+           (unsigned long long)biosmem_heap_end);
 }
+
+#else /* DEBUG */
+#define biosmem_map_show()
+#endif /* DEBUG */
 
 static void __init
 biosmem_load_segment(struct biosmem_segment *seg, uint64_t max_phys_end)
@@ -865,24 +916,31 @@ biosmem_setup(void)
     }
 }
 
-#ifndef MACH_HYP
+static void __init
+biosmem_unregister_temporary_boot_data(void)
+{
+    struct biosmem_boot_data *data;
+    unsigned int i;
+
+    for (i = 0; i < biosmem_nr_boot_data; i++) {
+        data = &biosmem_boot_data_array[i];
+
+        if (!data->temporary) {
+            continue;
+        }
+
+        biosmem_unregister_boot_data(data->start, data->end);
+        i = (unsigned int)-1;
+    }
+}
 
 static void __init
 biosmem_free_usable_range(phys_addr_t start, phys_addr_t end)
 {
     struct vm_page *page;
 
-    assert(start < end);
-
-    start = vm_page_round(start);
-    end = vm_page_round(end);
-
-    if (start >= end) {
-        return;
-    }
-
 #if DEBUG
-    printf("biosmem: release to vm_page: %llx-%llx (%lluk)\n",
+    printf("biosmem: release to vm_page: %llx:%llx (%lluk)\n",
            (unsigned long long)start, (unsigned long long)end,
            (unsigned long long)((end - start) >> 10));
 #endif
@@ -896,39 +954,31 @@ biosmem_free_usable_range(phys_addr_t start, phys_addr_t end)
 }
 
 static void __init
-biosmem_free_usable_entry(struct multiboot_raw_info *mbi, phys_addr_t start,
-                          phys_addr_t end)
+biosmem_free_usable_entry(phys_addr_t start, phys_addr_t end)
 {
-    phys_addr_t heap_start, heap_end;
+    phys_addr_t avail_start, avail_end;
     int error;
 
-    /* XXX Abuse biosmem_find_heap to locate usable areas */
-
     for (;;) {
-        error = biosmem_find_heap(mbi, start, end, &heap_start, &heap_end);
+        error = biosmem_find_avail(start, end, &avail_start, &avail_end);
 
         if (error) {
             break;
         }
 
-        error = biosmem_find_heap_clip(&heap_start, &heap_end,
-                                       biosmem_heap_start, biosmem_heap_end);
-
-        if (error) {
-            break;
-        }
-
-        biosmem_free_usable_range(heap_start, heap_end);
-        start = heap_end;
+        biosmem_free_usable_range(avail_start, avail_end);
+        start = avail_end;
     }
 }
 
 void __init
-biosmem_free_usable(struct multiboot_raw_info *mbi)
+biosmem_free_usable(void)
 {
     struct biosmem_map_entry *entry;
     uint64_t start, end;
     unsigned int i;
+
+    biosmem_unregister_temporary_boot_data();
 
     for (i = 0; i < biosmem_map_size; i++) {
         entry = &biosmem_map[i];
@@ -955,8 +1005,6 @@ biosmem_free_usable(struct multiboot_raw_info *mbi)
             continue;
         }
 
-        biosmem_free_usable_entry(mbi, start, end);
+        biosmem_free_usable_entry(start, end);
     }
 }
-
-#endif /* MACH_HYP */
