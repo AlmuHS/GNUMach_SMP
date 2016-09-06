@@ -291,7 +291,8 @@ register_boot_data(const struct multiboot_raw_info *mbi)
 
 	if ((mbi->flags & MULTIBOOT_LOADER_CMDLINE) && (mbi->cmdline != 0)) {
 		biosmem_register_boot_data(mbi->cmdline,
-					   mbi->cmdline + strlen((void *)mbi->cmdline) + 1, FALSE);
+					   mbi->cmdline
+					   + strlen((void *)phystokv(mbi->cmdline)) + 1, FALSE);
 	}
 
 	if (mbi->flags & MULTIBOOT_LOADER_MODULES) {
@@ -306,7 +307,8 @@ register_boot_data(const struct multiboot_raw_info *mbi)
 
 			if (mod->string != 0) {
 				biosmem_register_boot_data(mod->string,
-							   mod->string + strlen((void *)mod->string) + 1,
+							   mod->string
+							   + strlen((void *)phystokv(mod->string)) + 1,
 							   FALSE);
 			}
 		}
