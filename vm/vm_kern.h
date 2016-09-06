@@ -57,7 +57,7 @@ extern kern_return_t	kmem_alloc_aligned(vm_map_t, vm_offset_t *, vm_size_t);
 extern void		kmem_free(vm_map_t, vm_offset_t, vm_size_t);
 
 extern void		kmem_submap(vm_map_t, vm_map_t, vm_offset_t *,
-				    vm_offset_t *, vm_size_t, boolean_t);
+				    vm_offset_t *, vm_size_t);
 
 extern kern_return_t	kmem_io_map_copyout(vm_map_t, vm_offset_t *,
 					    vm_offset_t *, vm_size_t *,

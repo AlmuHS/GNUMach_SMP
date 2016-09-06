@@ -111,7 +111,7 @@ ipc_init(void)
 	vm_offset_t min, max;
 
 	kmem_submap(ipc_kernel_map, kernel_map, &min, &max,
-		    ipc_kernel_map_size, TRUE);
+		    ipc_kernel_map_size);
 
 	ipc_host_init();
 }

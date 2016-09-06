@@ -1532,7 +1532,7 @@ void mach_device_init(void)
 	simple_lock_init(&io_done_list_lock);
 
 	kmem_submap(device_io_map, kernel_map, &device_io_min, &device_io_max,
-		    DEVICE_IO_MAP_SIZE, FALSE);
+		    DEVICE_IO_MAP_SIZE);
 
 	/*
 	 *	If the kernel receives many device_write requests, the

@@ -175,13 +175,11 @@ void vm_map_setup(
 	vm_map_t	map,
 	pmap_t		pmap,
 	vm_offset_t	min, 
-	vm_offset_t	max,
-	boolean_t	pageable)
+	vm_offset_t	max)
 {
 	vm_map_first_entry(map) = vm_map_to_entry(map);
 	vm_map_last_entry(map)  = vm_map_to_entry(map);
 	map->hdr.nentries = 0;
-	map->hdr.entries_pageable = pageable;
 	rbtree_init(&map->hdr.tree);
 	rbtree_init(&map->hdr.gap_tree);
 
@@ -211,8 +209,7 @@ void vm_map_setup(
 vm_map_t vm_map_create(
 	pmap_t		pmap,
 	vm_offset_t	min, 
-	vm_offset_t	max,
-	boolean_t	pageable)
+	vm_offset_t	max)
 {
 	vm_map_t	result;
 
@@ -220,7 +217,7 @@ vm_map_t vm_map_create(
 	if (result == VM_MAP_NULL)
 		panic("vm_map_create");
 
-	vm_map_setup(result, pmap, min, max, pageable);
+	vm_map_setup(result, pmap, min, max);
 
 	return(result);
 }
@@ -2275,7 +2272,6 @@ start_pass_1:
 
 	/*
 	 * XXXO	If there are no permanent objects in the destination,
-	 * XXXO	and the source and destination map entry caches match,
 	 * XXXO and the destination map entry is not shared,
 	 * XXXO	then the map entries can be deleted and replaced
 	 * XXXO	with those from the copy.  The following code is the
@@ -2285,8 +2281,7 @@ start_pass_1:
 	 * XXXO	to the above pass and make sure that no wiring is involved.
 	 */
 /*
- *	if (!contains_permanent_objects &&
- *	    copy->cpy_hdr.entries_pageable == dst_map->hdr.entries_pageable) {
+ *	if (!contains_permanent_objects) {
  *
  *		 *
  *		 *	Run over copy and adjust entries.  Steal code
@@ -2606,48 +2601,6 @@ kern_return_t vm_map_copyout(
 	if (last == NULL) {
 		vm_map_unlock(dst_map);
 		return KERN_NO_SPACE;
-	}
-
-	/*
-	 *	Since we're going to just drop the map
-	 *	entries from the copy into the destination
-	 *	map, they must come from the same pool.
-	 */
-
-	if (copy->cpy_hdr.entries_pageable != dst_map->hdr.entries_pageable) {
-	    /*
-	     * Mismatches occur when dealing with the default
-	     * pager.
-	     */
-	    vm_map_entry_t	next, new;
-
-	    entry = vm_map_copy_first_entry(copy);
-
-	    /*
-	     * Reinitialize the copy so that vm_map_copy_entry_link
-	     * will work.
-	     */
-	    copy->cpy_hdr.nentries = 0;
-	    copy->cpy_hdr.entries_pageable = dst_map->hdr.entries_pageable;
-	    rbtree_init(&copy->cpy_hdr.tree);
-	    rbtree_init(&copy->cpy_hdr.gap_tree);
-	    vm_map_copy_first_entry(copy) =
-	     vm_map_copy_last_entry(copy) =
-		vm_map_copy_to_entry(copy);
-
-	    /*
-	     * Copy each entry.
-	     */
-	    while (entry != vm_map_copy_to_entry(copy)) {
-		new = vm_map_copy_entry_create(copy);
-		vm_map_entry_copy_full(new, entry);
-		vm_map_copy_entry_link(copy,
-				vm_map_copy_last_entry(copy),
-				new);
-		next = entry->vme_next;
-		kmem_cache_free(&vm_map_entry_cache, (vm_offset_t) entry);
-		entry = next;
-	    }
 	}
 
 	/*
@@ -3205,7 +3158,6 @@ kern_return_t vm_map_copyin(
 	 vm_map_copy_last_entry(copy) = vm_map_copy_to_entry(copy);
 	copy->type = VM_MAP_COPY_ENTRY_LIST;
 	copy->cpy_hdr.nentries = 0;
-	copy->cpy_hdr.entries_pageable = TRUE;
 	rbtree_init(&copy->cpy_hdr.tree);
 	rbtree_init(&copy->cpy_hdr.gap_tree);
 
@@ -3522,8 +3474,7 @@ kern_return_t vm_map_copyin_object(
 	/*
 	 *	We drop the object into a special copy object
 	 *	that contains the object directly.  These copy objects
-	 *	are distinguished by entries_pageable == FALSE
-	 *	and null links.
+	 *	are distinguished by links.
 	 */
 
 	copy = (vm_map_copy_t) kmem_cache_alloc(&vm_map_copy_cache);
@@ -4163,8 +4114,7 @@ vm_map_t vm_map_fork(vm_map_t old_map)
 
 	new_map = vm_map_create(new_pmap,
 			old_map->min_offset,
-			old_map->max_offset,
-			old_map->hdr.entries_pageable);
+			old_map->max_offset);
 
 	for (
 	    old_entry = vm_map_first_entry(old_map);

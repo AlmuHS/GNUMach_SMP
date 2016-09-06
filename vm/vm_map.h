@@ -153,8 +153,6 @@ struct vm_map_header {
 	struct rbtree		gap_tree;	/* Sorted tree of gap lists
 						   for allocations */
 	int			nentries;	/* Number of entries */
-	boolean_t		entries_pageable;
-						/* are map entries pageable? */
 };
 
 /*
@@ -380,11 +378,9 @@ MACRO_END
 extern void		vm_map_init(void);
 
 /* Initialize an empty map */
-extern void		vm_map_setup(vm_map_t, pmap_t, vm_offset_t, vm_offset_t,
-				     boolean_t);
+extern void		vm_map_setup(vm_map_t, pmap_t, vm_offset_t, vm_offset_t);
 /* Create an empty map */
-extern vm_map_t		vm_map_create(pmap_t, vm_offset_t, vm_offset_t,
-				      boolean_t);
+extern vm_map_t		vm_map_create(pmap_t, vm_offset_t, vm_offset_t);
 /* Create a map in the image of an existing map */
 extern vm_map_t		vm_map_fork(vm_map_t);
 

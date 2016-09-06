@@ -778,8 +778,7 @@ kmem_submap(
 	vm_map_t 	parent,
 	vm_offset_t 	*min, 
 	vm_offset_t 	*max,
-	vm_size_t 	size,
-	boolean_t 	pageable)
+	vm_size_t 	size)
 {
 	vm_offset_t addr;
 	kern_return_t kr;
@@ -802,7 +801,7 @@ kmem_submap(
 		panic("kmem_submap");
 
 	pmap_reference(vm_map_pmap(parent));
-	vm_map_setup(map, vm_map_pmap(parent), addr, addr + size, pageable);
+	vm_map_setup(map, vm_map_pmap(parent), addr, addr + size);
 	kr = vm_map_submap(parent, addr, addr + size, map);
 	if (kr != KERN_SUCCESS)
 		panic("kmem_submap");
@@ -821,8 +820,7 @@ void kmem_init(
 	vm_offset_t	start,
 	vm_offset_t	end)
 {
-	vm_map_setup(kernel_map, pmap_kernel(), VM_MIN_KERNEL_ADDRESS, end,
-		     FALSE);
+	vm_map_setup(kernel_map, pmap_kernel(), VM_MIN_KERNEL_ADDRESS, end);
 
 	/*
 	 *	Reserve virtual memory allocated up to this time.

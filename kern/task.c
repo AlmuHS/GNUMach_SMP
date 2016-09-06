@@ -104,7 +104,7 @@ kern_return_t task_create(
 	} else {
 		new_task->map = vm_map_create(pmap_create(0),
 					round_page(VM_MIN_ADDRESS),
-					trunc_page(VM_MAX_ADDRESS), TRUE);
+					trunc_page(VM_MAX_ADDRESS));
 		vm_map_set_name(new_task->map, new_task->name);
 	}
 
