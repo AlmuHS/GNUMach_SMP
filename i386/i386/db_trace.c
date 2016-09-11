@@ -516,7 +516,7 @@ db_i386_stack_trace(
 		if (kernel_only)
 		    break;
 	    }
-	    if (frame <= lastframe) {
+	    if (frame && frame <= lastframe) {
 		if (INKERNEL(lastframe) && !INKERNEL(frame))
 		    continue;
 		db_printf("Bad frame pointer: 0x%x\n", frame);
