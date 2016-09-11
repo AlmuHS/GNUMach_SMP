@@ -257,6 +257,9 @@ mach_port_kernel_object(
 	ipc_port_t port;
 	kern_return_t kr;
 
+	if (space == IS_NULL)
+		return KERN_INVALID_TASK;
+
 	kr = ipc_right_lookup_read(space, name, &entry);
 	if (kr != KERN_SUCCESS)
 		return kr;
