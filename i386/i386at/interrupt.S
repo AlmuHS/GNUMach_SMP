@@ -49,3 +49,4 @@ ENTRY(interrupt)
 	outb	%al,$(PIC_SLAVE_ICW)
 1:
 	ret				/* return */
+END(interrupt)

@@ -1180,6 +1180,8 @@ DATA(cpu_features)
 	.long	0
 	.text
 
+END(syscall)
+
 /* Discover what kind of cpu we have; return the family number
    (3, 4, 5, 6, for 386, 486, 586, 686 respectively).  */
 ENTRY(discover_x86_cpu_type)
