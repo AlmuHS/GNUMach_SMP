@@ -431,7 +431,7 @@ db_i386_stack_trace(
 	}
 
 	lastframe = 0;
-	while (count-- && frame != 0) {
+	while (count--) {
 	    int 	narg;
 	    char *	name;
 	    db_expr_t	offset;
@@ -459,9 +459,12 @@ db_i386_stack_trace(
 		    goto next_frame;
 		} else {
 		    frame_type = 0;
-		    narg = db_numargs(frame, task);
+		    if (frame)
+			narg = db_numargs(frame, task);
+		    else
+			narg = -1;
 		}
-	    } else if (INKERNEL(callpc) ^ INKERNEL(frame)) {
+	    } else if (!frame || INKERNEL(callpc) ^ INKERNEL(frame)) {
 		frame_type = 0;
 		narg = -1;
 	    } else {
@@ -477,6 +480,8 @@ db_i386_stack_trace(
 	    } else
 	        db_printf("%s(", name);
 
+	    if (!frame)
+		break;
 	    argp = &frame->f_arg0;
 	    while (narg > 0) {
 		db_printf("%x", db_get_task_value((long)argp,sizeof(long),FALSE,task));
@@ -501,10 +506,6 @@ db_i386_stack_trace(
 	next_frame:
 	    db_nextframe(&lastframe, &frame, &callpc, frame_type, th);
 
-	    if (frame == 0) {
-		/* end of chain */
-		break;
-	    }
 	    if (!INKERNEL(lastframe) ||
 		(!INKERNEL(callpc) && !INKERNEL(frame)))
 		user_frame++;
