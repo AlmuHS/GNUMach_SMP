@@ -480,8 +480,10 @@ db_i386_stack_trace(
 	    } else
 	        db_printf("%s(", name);
 
-	    if (!frame)
+	    if (!frame) {
+	        db_printf(")\n");
 		break;
+	    }
 	    argp = &frame->f_arg0;
 	    while (narg > 0) {
 		db_printf("%x", db_get_task_value((long)argp,sizeof(long),FALSE,task));
