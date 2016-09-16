@@ -918,7 +918,7 @@ void vm_pageout(void)
 {
 	unsigned long free_after_reserve;
 
-	current_thread()->vm_privilege = TRUE;
+	current_thread()->vm_privilege = 1;
 	stack_privilege(current_thread());
 	thread_set_own_priority(0);
 

@@ -1512,7 +1512,7 @@ void io_done_thread(void)
 	/*
 	 * Set thread privileges and highest priority.
 	 */
-	current_thread()->vm_privilege = TRUE;
+	current_thread()->vm_privilege = 1;
 	stack_privilege(current_thread());
 	thread_set_own_priority(0);
 

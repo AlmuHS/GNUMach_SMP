@@ -222,6 +222,48 @@ vm_map_t vm_map_create(
 	return(result);
 }
 
+void vm_map_lock(struct vm_map *map)
+{
+	lock_write(&map->lock);
+
+	/*
+	 *	XXX Memory allocation may occur while a map is locked,
+	 *	for example when clipping entries. If the system is running
+	 *	low on memory, allocating may block until pages are
+	 *	available. But if a map used by the default pager is
+	 *	kept locked, a deadlock occurs.
+	 *
+	 *	This workaround temporarily elevates the current thread
+	 *	VM privileges to avoid that particular deadlock, and does
+	 *	so regardless of the map for convenience, and because it's
+	 *	currently impossible to predict which map the default pager
+	 *	may depend on.
+	 *
+	 *	This workaround isn't reliable, and only makes exhaustion
+	 *	less likely. In particular pageout may cause lots of data
+	 *	to be passed between the kernel and the pagers, often
+	 *	in the form of large copy maps. Making the minimum
+	 *	number of pages depend on the total number of pages
+	 *	should make exhaustion even less likely.
+	 */
+
+	if (current_thread()) {
+		current_thread()->vm_privilege++;
+		assert(current_thread()->vm_privilege != 0);
+	}
+
+	map->timestamp++;
+}
+
+void vm_map_unlock(struct vm_map *map)
+{
+	if (current_thread()) {
+		current_thread()->vm_privilege--;
+	}
+
+	lock_write_done(&map->lock);
+}
+
 /*
  *	vm_map_entry_create:	[ internal use only ]
  *
@@ -238,33 +280,8 @@ vm_map_entry_t _vm_map_entry_create(map_header)
 	const struct vm_map_header *map_header;
 {
 	vm_map_entry_t	entry;
-	boolean_t vm_privilege;
-
-	/*
-	 *	XXX Map entry creation may occur while a map is locked,
-	 *	for example when clipping entries. If the system is running
-	 *	low on memory, allocating an entry may block until pages
-	 *	are available. But if a map used by the default pager is
-	 *	kept locked, a deadlock occurs.
-	 *
-	 *	This workaround temporarily elevates the current thread
-	 *	VM privileges to avoid that particular deadlock, and does
-	 *	so regardless of the map for convenience, and because it's
-	 *	currently impossible to predict which map the default pager
-	 *	may depend on.
-	 */
-
-	if (current_thread()) {
-		vm_privilege = current_thread()->vm_privilege;
-		current_thread()->vm_privilege = TRUE;
-	}
 
 	entry = (vm_map_entry_t) kmem_cache_alloc(&vm_map_entry_cache);
-
-	if (current_thread()) {
-		current_thread()->vm_privilege = vm_privilege;
-	}
-
 	if (entry == VM_MAP_ENTRY_NULL)
 		panic("vm_map_entry_create");
 

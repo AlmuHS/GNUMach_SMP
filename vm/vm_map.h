@@ -352,13 +352,9 @@ MACRO_BEGIN					\
 	(map)->timestamp = 0;			\
 MACRO_END
 
-#define vm_map_lock(map)			\
-MACRO_BEGIN					\
-	lock_write(&(map)->lock);		\
-	(map)->timestamp++;			\
-MACRO_END
+void vm_map_lock(struct vm_map *map);
+void vm_map_unlock(struct vm_map *map);
 
-#define vm_map_unlock(map)	lock_write_done(&(map)->lock)
 #define vm_map_lock_read(map)	lock_read(&(map)->lock)
 #define vm_map_unlock_read(map)	lock_read_done(&(map)->lock)
 #define vm_map_lock_write_to_read(map) \

@@ -77,7 +77,6 @@ struct thread {
 		struct {
 			unsigned	state:16;
 			unsigned	wake_active:1;
-			unsigned	vm_privilege:1;
 			unsigned	active:1;
 		};
 		event_t	event_key;
@@ -146,8 +145,8 @@ struct thread {
 	/* VM global variables */
 
 	vm_offset_t	recover;	/* page fault recovery (copyin/out) */
-	/* Defined above */
-	/* boolean_t	vm_privilege;	   Can use reserved memory? */
+	unsigned int vm_privilege;	/* Can use reserved memory?
+					   Implemented as a counter */
 
 	/* User-visible scheduling state */
 	int		user_stop_count;	/* outstanding stops */

@@ -342,7 +342,7 @@ void thread_init(void)
 	/* thread_template.sched_stamp (later) */
 
 	thread_template.recover = (vm_offset_t) 0;
-	thread_template.vm_privilege = FALSE;
+	thread_template.vm_privilege = 0;
 
 	thread_template.user_stop_count = 1;
 
@@ -2233,11 +2233,11 @@ thread_wire(
 	thread_lock(thread);
 
 	if (wired) {
-	    thread->vm_privilege = TRUE;
+	    thread->vm_privilege = 1;
 	    stack_privilege(thread);
 	}
 	else {
-	    thread->vm_privilege = FALSE;
+	    thread->vm_privilege = 0;
 /*XXX	    stack_unprivilege(thread); */
 	    thread->stack_privilege = 0;
 	}
