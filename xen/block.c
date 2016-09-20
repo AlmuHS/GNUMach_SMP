@@ -568,7 +568,10 @@ device_write(void *d, ipc_port_t reply_port,
 {
   io_return_t err = 0;
   vm_map_copy_t copy = (vm_map_copy_t) data;
-  vm_offset_t aligned_buffer = 0;
+  vm_offset_t buffer = 0;
+  char *map_data;
+  vm_offset_t map_addr;
+  vm_size_t map_size;
   unsigned copy_npages = atop(round_page(count));
   vm_offset_t phys_addrs[copy_npages];
   struct block_data *bd = d;
@@ -576,6 +579,7 @@ device_write(void *d, ipc_port_t reply_port,
   grant_ref_t gref[BLKIF_MAX_SEGMENTS_PER_REQUEST];
   unsigned reqn, size;
   unsigned i, nbpages, j;
+  kern_return_t kr;
 
   if (!(bd->mode & D_WRITE))
     return D_READ_ONLY;
@@ -591,31 +595,24 @@ device_write(void *d, ipc_port_t reply_port,
   if (count > copy->size)
     return D_INVALID_SIZE;
 
-  if (copy->type != VM_MAP_COPY_PAGE_LIST || copy->offset & PAGE_MASK) {
-    /* Unaligned write.  Has to copy data before passing it to the backend.  */
-    kern_return_t kr;
-    vm_offset_t buffer;
+  /* XXX The underlying physical pages of the mapping could be highmem,
+     for which drivers require the use of a bounce buffer.  */
+  kr = kmem_alloc(device_io_map, &buffer, count);
+  if (kr != KERN_SUCCESS)
+    return kr;
 
-    kr = kmem_alloc(device_io_map, &aligned_buffer, count);
-    if (kr != KERN_SUCCESS)
-      return kr;
-
-    kr = vm_map_copyout(device_io_map, &buffer, vm_map_copy_copy(copy));
-    if (kr != KERN_SUCCESS) {
-      kmem_free(device_io_map, aligned_buffer, count);
-      return kr;
-    }
-
-    memcpy((void*) aligned_buffer, (void*) buffer, count);
-
-    vm_deallocate (device_io_map, buffer, count);
-
-    for (i = 0; i < copy_npages; i++)
-      phys_addrs[i] = kvtophys(aligned_buffer + ptoa(i));
-  } else {
-    for (i = 0; i < copy_npages; i++)
-      phys_addrs[i] = copy->cpy_page_list[i]->phys_addr;
+  kr = kmem_io_map_copyout(device_io_map, (vm_offset_t *)&map_data,
+			   &map_addr, &map_size, copy, count);
+  if (kr != KERN_SUCCESS) {
+    kmem_free(device_io_map, buffer, count);
+    return kr;
   }
+
+  memcpy((void *)buffer, map_data, count);
+  kmem_io_map_deallocate(device_io_map, map_addr, map_size);
+
+  for (i = 0; i < copy_npages; i++)
+    phys_addrs[i] = kvtophys(buffer + ptoa(i));
 
   for (i=0; i<copy_npages; i+=nbpages) {
 
@@ -674,8 +671,8 @@ device_write(void *d, ipc_port_t reply_port,
     }
   }
 
-  if (aligned_buffer)
-    kmem_free(device_io_map, aligned_buffer, count);
+  if (buffer)
+    kmem_free(device_io_map, buffer, count);
 
   vm_map_copy_discard (copy);
 

@@ -428,62 +428,43 @@ device_write (void *d, ipc_port_t reply_port,
 	      int *bytes_written)
 {
   unsigned char *p;
-  int i, amt, skblen, s;
+  int i, s;
   vm_map_copy_t copy = (vm_map_copy_t) data;
+  char *map_data;
+  vm_offset_t map_addr;
+  vm_size_t map_size;
   struct net_data *nd = d;
   struct linux_device *dev = nd->dev;
   struct sk_buff *skb;
+  kern_return_t kr;
 
   if (count == 0 || count > dev->mtu + dev->hard_header_len)
     return D_INVALID_SIZE;
 
   /* Allocate a sk_buff.  */
-  amt = PAGE_SIZE - (copy->offset & PAGE_MASK);
-  skblen = (amt >= count) ? 0 : count;
-  skb = dev_alloc_skb (skblen);
+  skb = dev_alloc_skb (count);
   if (!skb)
     return D_NO_MEMORY;
 
-  /* Copy user data.  This is only required if it spans multiple pages.  */
-  if (skblen == 0)
-    {
-      assert (copy->cpy_npages == 1);
+  /* Map user data.  */
+  kr = kmem_io_map_copyout(device_io_map, (vm_offset_t *)&map_data,
+			   &map_addr, &map_size, copy, count);
 
-      skb->copy = copy;
-      skb->data = ((void *) phystokv(copy->cpy_page_list[0]->phys_addr)
-		   + (copy->offset & PAGE_MASK));
-      skb->len = count;
-      skb->head = skb->data;
-      skb->tail = skb->data + skb->len;
-      skb->end = skb->tail;
-    }
-  else
-    {
-      skb->len = skblen;
-      skb->tail = skb->data + skblen;
-      skb->end = skb->tail;
-      
-      memcpy (skb->data,
-	      ((void *) phystokv(copy->cpy_page_list[0]->phys_addr)
-	       + (copy->offset & PAGE_MASK)),
-	      amt);
-      count -= amt;
-      p = skb->data + amt;
-      for (i = 1; count > 0 && i < copy->cpy_npages; i++)
-	{
-	  amt = PAGE_SIZE;
-	  if (amt > count)
-	    amt = count;
-	  memcpy (p, (void *) phystokv(copy->cpy_page_list[i]->phys_addr), amt);
-	  count -= amt;
-	  p += amt;
-	}
+  if (kr) {
+    dev_kfree_skb (skb, FREE_WRITE);
+    return D_NO_MEMORY;
+  }
 
-      assert (count == 0);
+  /* XXX The underlying physical pages of the mapping could be highmem,
+     for which drivers require the use of a bounce buffer.  */
+  memcpy (skb->data, map_data, count);
+  kmem_io_map_deallocate (device_io_map, map_addr, map_size);
+  vm_map_copy_discard (copy);
 
-      vm_map_copy_discard (copy);
-    }
-
+  skb->len = count;
+  skb->head = skb->data;
+  skb->tail = skb->data + skb->len;
+  skb->end = skb->tail;
   skb->dev = dev;
   skb->reply = reply_port;
   skb->reply_type = reply_port_type;

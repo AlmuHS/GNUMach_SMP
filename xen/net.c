@@ -29,6 +29,7 @@
 #include <device/net_io.h>
 #include <device/device_reply.user.h>
 #include <device/device_emul.h>
+#include <device/ds_routines.h>
 #include <intel/pmap.h>
 #include <xen/public/io/netif.h>
 #include <xen/public/memory.h>
@@ -601,9 +602,11 @@ device_write(void *d, ipc_port_t reply_port,
 	struct ifnet *ifp = &nd->ifnet;
 	netif_tx_request_t *req;
 	unsigned reqn;
-	vm_offset_t offset;
-	vm_page_t m;
-	vm_size_t size;
+	vm_offset_t buffer;
+	char *map_data;
+	vm_offset_t map_addr;
+	vm_size_t map_size;
+	kern_return_t kr;
 
 	/* The maximum that we can handle.  */
 	assert(ifp->if_header_size + ifp->if_mtu <= PAGE_SIZE);
@@ -617,26 +620,21 @@ device_write(void *d, ipc_port_t reply_port,
 	assert(copy->cpy_npages <= 2);
 	assert(copy->cpy_npages >= 1);
 
-	offset = copy->offset & PAGE_MASK;
-	if (paranoia || copy->cpy_npages == 2) {
-		/* have to copy :/ */
-		while ((m = vm_page_grab()) == 0)
-			VM_PAGE_WAIT (0);
-		assert (! m->active && ! m->inactive);
-		m->busy = TRUE;
+	kr = kmem_alloc(device_io_map, &buffer, count);
 
-		if (copy->cpy_npages == 1)
-			size = count;
-		else
-			size = PAGE_SIZE - offset;
+	if (kr != KERN_SUCCESS)
+		return kr;
 
-		memcpy((void*)phystokv(m->phys_addr), (void*)phystokv(copy->cpy_page_list[0]->phys_addr + offset), size);
-		if (copy->cpy_npages == 2)
-			memcpy((void*)phystokv(m->phys_addr + size), (void*)phystokv(copy->cpy_page_list[1]->phys_addr), count - size);
+	kr = kmem_io_map_copyout(device_io_map, (vm_offset_t *)&map_data,
+				 &map_addr, &map_size, copy, count);
 
-		offset = 0;
-	} else
-		m = copy->cpy_page_list[0];
+	if (kr != KERN_SUCCESS) {
+		kmem_free(device_io_map, buffer, count);
+		return kr;
+	}
+
+	memcpy((void *)buffer, map_data, count);
+	kmem_io_map_deallocate(device_io_map, map_addr, map_size);
 
 	/* allocate a request */
 	spl_t spl = splimp();
@@ -653,8 +651,8 @@ device_write(void *d, ipc_port_t reply_port,
 	(void) splx(spl);
 
 	req = RING_GET_REQUEST(&nd->tx, reqn);
-	req->gref = gref = hyp_grant_give(nd->domid, atop(m->phys_addr), 1);
-	req->offset = offset;
+	req->gref = gref = hyp_grant_give(nd->domid, atop(kvtophys(buffer)), 1);
+	req->offset = 0;
 	req->flags = 0;
 	req->id = gref;
 	req->size = count;
@@ -685,11 +683,11 @@ device_write(void *d, ipc_port_t reply_port,
 	      /* Suitable for Ethernet only.  */
 	      header = (struct ether_header *) (net_kmsg (kmsg)->header);
 	      packet = (struct packet_header *) (net_kmsg (kmsg)->packet);
-	      memcpy (header, (void*)phystokv(m->phys_addr + offset), sizeof (struct ether_header));
+	      memcpy (header, (void*)buffer, sizeof (struct ether_header));
 	
 	      /* packet is prefixed with a struct packet_header,
 	         see include/device/net_status.h.  */
-	      memcpy (packet + 1, (void*)phystokv(m->phys_addr + offset + sizeof (struct ether_header)),
+	      memcpy (packet + 1, (void*)buffer + sizeof (struct ether_header),
 	              count - sizeof (struct ether_header));
 	      packet->length = count - sizeof (struct ether_header)
 	                       + sizeof (struct packet_header);
@@ -702,8 +700,7 @@ device_write(void *d, ipc_port_t reply_port,
 	    }
 	}
 
-	if (paranoia || copy->cpy_npages == 2)
-		VM_PAGE_FREE(m);
+	kmem_free(device_io_map, buffer, count);
 
 	vm_map_copy_discard (copy);
 
