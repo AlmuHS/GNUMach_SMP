@@ -109,8 +109,7 @@ struct vm_page {
 			laundry:1,	/* page is being cleaned now (P)*/
 			free:1,		/* page is on free list (P) */
 			reference:1,	/* page has been used (P) */
-			external:1,	/* page considered external (P) */
-			extcounted:1,   /* page counted in ext counts (P) */
+			external:1,	/* page in external object (P) */
 			busy:1,		/* page is in transit (O) */
 			wanted:1,	/* someone is waiting for page (O) */
 			tabled:1,	/* page is in VP table (O) */
@@ -180,16 +179,6 @@ extern
 int	vm_page_free_reserved;	/* How many pages reserved to do pageout */
 extern
 int	vm_page_laundry_count;	/* How many pages being laundered? */
-extern
-int	vm_page_external_limit;	/* Max number of pages for external objects  */
-
-/* Only objects marked with the extcounted bit are included in this total.
-   Pages which we scan for possible pageout, but which are not actually
-   dirty, don't get considered against the external page limits any more
-   in this way.  */
-extern
-int	vm_page_external_count;	/* How many pages for external objects? */
-
 
 
 decl_simple_lock_data(extern,vm_page_queue_lock)/* lock on active and inactive
@@ -212,9 +201,11 @@ extern vm_page_t	vm_page_lookup(
 	vm_object_t	object,
 	vm_offset_t	offset);
 extern vm_page_t	vm_page_grab_fictitious(void);
-extern boolean_t	vm_page_convert(vm_page_t *, boolean_t);
+extern boolean_t	vm_page_convert(vm_page_t *);
 extern void		vm_page_more_fictitious(void);
-extern vm_page_t	vm_page_grab(boolean_t);
+extern vm_page_t	vm_page_grab(void);
+extern void		vm_page_release(vm_page_t);
+extern phys_addr_t	vm_page_grab_phys_addr(void);
 extern vm_page_t	vm_page_grab_contig(vm_size_t, unsigned int);
 extern void		vm_page_free_contig(vm_page_t, vm_size_t);
 extern void		vm_page_wait(void (*)(void));

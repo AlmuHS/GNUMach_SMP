@@ -620,7 +620,7 @@ device_write(void *d, ipc_port_t reply_port,
 	offset = copy->offset & PAGE_MASK;
 	if (paranoia || copy->cpy_npages == 2) {
 		/* have to copy :/ */
-		while ((m = vm_page_grab(FALSE)) == 0)
+		while ((m = vm_page_grab()) == 0)
 			VM_PAGE_WAIT (0);
 		assert (! m->active && ! m->inactive);
 		m->busy = TRUE;

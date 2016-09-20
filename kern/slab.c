@@ -370,7 +370,7 @@ kmem_pagealloc_physmem(vm_size_t size)
     assert(size == PAGE_SIZE);
 
     for (;;) {
-        page = vm_page_grab_contig(size, VM_PAGE_SEL_DIRECTMAP);
+        page = vm_page_grab();
 
         if (page != NULL)
             break;
@@ -389,7 +389,7 @@ kmem_pagefree_physmem(vm_offset_t addr, vm_size_t size)
     assert(size == PAGE_SIZE);
     page = vm_page_lookup_pa(kvtophys(addr));
     assert(page != NULL);
-    vm_page_free_contig(page, size);
+    vm_page_release(page);
 }
 
 static vm_offset_t

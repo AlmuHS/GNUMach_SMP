@@ -109,21 +109,6 @@
 #define	VM_PAGE_FREE_MIN(free)	(100 + (free) * 8 / 100)
 #endif	/* VM_PAGE_FREE_MIN */
 
-/*      When vm_page_external_count exceeds vm_page_external_limit, 
- *	allocations of externally paged pages stops.
- */
-
-#ifndef VM_PAGE_EXTERNAL_LIMIT
-#define VM_PAGE_EXTERNAL_LIMIT(free)		((free) / 2)
-#endif  /* VM_PAGE_EXTERNAL_LIMIT */
-
-/*	Attempt to keep the number of externally paged pages less
- *	than vm_pages_external_target.
- */
-#ifndef VM_PAGE_EXTERNAL_TARGET
-#define VM_PAGE_EXTERNAL_TARGET(free)		((free) / 4)
-#endif  /* VM_PAGE_EXTERNAL_TARGET */
-
 /*
  *	When the number of free pages falls below vm_page_free_reserved,
  *	only vm-privileged threads can allocate pages.  vm-privilege
@@ -161,8 +146,6 @@
 
 unsigned int vm_pageout_reserved_internal = 0;
 unsigned int vm_pageout_reserved_really = 0;
-
-unsigned int vm_page_external_target = 0;
 
 unsigned int vm_pageout_burst_max = 0;
 unsigned int vm_pageout_burst_min = 0;
@@ -633,7 +616,6 @@ void vm_pageout_scan(void)
 		simple_lock(&vm_page_queue_free_lock);
 		free_count = vm_page_mem_free();
 		if ((free_count >= vm_page_free_target) &&
-		    (vm_page_external_count <= vm_page_external_target) &&
 		    (vm_page_free_wanted == 0)) {
 			vm_page_unlock_queues();
 			break;
@@ -783,21 +765,6 @@ void vm_pageout_scan(void)
 		if (!m->dirty)
 			m->dirty = pmap_is_modified(m->phys_addr);
 
-		if (m->external) {
-			/* Figure out if we still care about this
-			page in the limit of externally managed pages.
-			Clean pages don't actually cause system hosage,
-			so it's ok to stop considering them as
-			"consumers" of memory. */
-			if (m->dirty && !m->extcounted) {
-				m->extcounted = TRUE;
-				vm_page_external_count++;
-			} else if (!m->dirty && m->extcounted) {
-				m->extcounted = FALSE;
-				vm_page_external_count--;
-			}
-		}
-		
 		/* If we don't actually need more memory, and the page
 		   is not dirty, put it on the tail of the inactive queue
 		   and move on to the next page. */
@@ -953,14 +920,6 @@ void vm_pageout(void)
 			VM_PAGEOUT_RESERVED_REALLY(vm_page_free_reserved);
 
 	free_after_reserve = vm_page_mem_free() - vm_page_free_reserved;
-
-	if (vm_page_external_limit == 0)
-	        vm_page_external_limit = 
-			VM_PAGE_EXTERNAL_LIMIT (free_after_reserve);
-
-	if (vm_page_external_target == 0)
-	        vm_page_external_target = 
-			VM_PAGE_EXTERNAL_TARGET (free_after_reserve);
 
 	if (vm_page_free_min == 0)
 		vm_page_free_min = vm_page_free_reserved +

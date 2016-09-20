@@ -154,7 +154,6 @@ int	vm_page_free_min = 0;
 int	vm_page_inactive_target = 0;
 int	vm_page_free_reserved = 0;
 int	vm_page_laundry_count = 0;
-int	vm_page_external_limit = 0;
 
 
 /*
@@ -342,6 +341,14 @@ void vm_page_insert(
 
 	VM_PAGE_CHECK(mem);
 
+	assert(!mem->active && !mem->inactive);
+	assert(!mem->external);
+
+	if (!object->internal) {
+		mem->external = TRUE;
+		vm_object_external_pages++;
+	}
+
 	if (mem->tabled)
 		panic("vm_page_insert");
 
@@ -390,10 +397,6 @@ void vm_page_insert(
 			vm_page_deactivate(last_mem);
 	}
 	object->last_alloc = offset;
-
-	if (!object->internal) {
-		vm_object_external_pages++;
-	}
 }
 
 /*
@@ -414,6 +417,14 @@ void vm_page_replace(
 	vm_page_bucket_t *bucket;
 
 	VM_PAGE_CHECK(mem);
+
+	assert(!mem->active && !mem->inactive);
+	assert(!mem->external);
+
+	if (!object->internal) {
+		mem->external = TRUE;
+		vm_object_external_pages++;
+	}
 
 	if (mem->tabled)
 		panic("vm_page_replace");
@@ -447,7 +458,8 @@ void vm_page_replace(
 				m->tabled = FALSE;
 				object->resident_page_count--;
 
-				if (!object->internal) {
+				if (m->external) {
+					m->external = FALSE;
 					vm_object_external_pages--;
 				}
 
@@ -483,10 +495,6 @@ void vm_page_replace(
 
 	object->resident_page_count++;
 	assert(object->resident_page_count != 0);
-
-	if (!object->internal) {
-		vm_object_external_pages++;
-	}
 }
 
 /*
@@ -543,7 +551,8 @@ void vm_page_remove(
 
 	mem->tabled = FALSE;
 
-	if (!mem->object->internal) {
+	if (mem->external) {
+		mem->external = FALSE;
 		vm_object_external_pages--;
 	}
 }
@@ -720,9 +729,7 @@ void vm_page_more_fictitious(void)
  *	The object referenced by *MP must be locked.
  */
 
-boolean_t vm_page_convert(
-	struct vm_page **mp,
-	boolean_t external)
+boolean_t vm_page_convert(struct vm_page **mp)
 {
 	struct vm_page *real_m, *fict_m;
 	vm_object_t object;
@@ -735,7 +742,7 @@ boolean_t vm_page_convert(
 	assert(!fict_m->active);
 	assert(!fict_m->inactive);
 
-	real_m = vm_page_grab(external);
+	real_m = vm_page_grab();
 	if (real_m == VM_PAGE_NULL)
 		return FALSE;
 
@@ -766,8 +773,7 @@ boolean_t vm_page_convert(
  *	Returns VM_PAGE_NULL if the free list is too small.
  */
 
-vm_page_t vm_page_grab(
-	boolean_t external)
+vm_page_t vm_page_grab(void)
 {
 	vm_page_t	mem;
 
@@ -779,9 +785,7 @@ vm_page_t vm_page_grab(
 	 *	for externally-managed pages.
 	 */
 
-	if (((vm_page_mem_free() < vm_page_free_reserved)
-	     || (external
-		 && (vm_page_external_count > vm_page_external_limit)))
+	if ((vm_page_mem_free() < vm_page_free_reserved)
 	    && !current_thread()->vm_privilege) {
 		simple_unlock(&vm_page_queue_free_lock);
 		return VM_PAGE_NULL;
@@ -794,11 +798,7 @@ vm_page_t vm_page_grab(
 		return NULL;
 	}
 
-	if (external)
-		vm_page_external_count++;
-
 	mem->free = FALSE;
-	mem->extcounted = mem->external = external;
 	simple_unlock(&vm_page_queue_free_lock);
 
 	/*
@@ -822,7 +822,7 @@ vm_page_t vm_page_grab(
 
 phys_addr_t vm_page_grab_phys_addr(void)
 {
-	vm_page_t p = vm_page_grab(FALSE);
+	vm_page_t p = vm_page_grab();
 	if (p == VM_PAGE_NULL)
 		return -1;
 	else
@@ -835,17 +835,14 @@ phys_addr_t vm_page_grab_phys_addr(void)
  *	Return a page to the free list.
  */
 
-static void vm_page_release(
-	vm_page_t	mem,
-	boolean_t 	external)
+void vm_page_release(
+	vm_page_t	mem)
 {
 	simple_lock(&vm_page_queue_free_lock);
 	if (mem->free)
 		panic("vm_page_release");
 	mem->free = TRUE;
 	vm_page_free_pa(mem, 0);
-	if (external)
-		vm_page_external_count--;
 
 	/*
 	 *	Check if we should wake up someone waiting for page.
@@ -917,7 +914,6 @@ vm_page_t vm_page_grab_contig(
 
 	for (i = 0; i < nr_pages; i++) {
 		mem[i].free = FALSE;
-		mem[i].extcounted = mem[i].external = 0;
 	}
 
 	simple_unlock(&vm_page_queue_free_lock);
@@ -994,8 +990,7 @@ void vm_page_wait(
 	 */
 
 	simple_lock(&vm_page_queue_free_lock);
-	if ((vm_page_mem_free() < vm_page_free_target)
-	    || (vm_page_external_count > vm_page_external_limit)) {
+	if ((vm_page_mem_free() < vm_page_free_target)) {
 		if (vm_page_free_wanted++ == 0)
 			thread_wakeup((event_t)&vm_page_free_wanted);
 		assert_wait((event_t)&vm_page_free_avail, FALSE);
@@ -1026,7 +1021,7 @@ vm_page_t vm_page_alloc(
 {
 	vm_page_t	mem;
 
-	mem = vm_page_grab(!object->internal);
+	mem = vm_page_grab();
 	if (mem == VM_PAGE_NULL)
 		return VM_PAGE_NULL;
 
@@ -1082,9 +1077,8 @@ void vm_page_free(
 		mem->fictitious = TRUE;
 		vm_page_release_fictitious(mem);
 	} else {
-		int external = mem->external && mem->extcounted;
 		vm_page_init(mem);
-		vm_page_release(mem, external);
+		vm_page_release(mem);
 	}
 }
 
