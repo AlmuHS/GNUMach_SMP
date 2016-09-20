@@ -64,11 +64,7 @@
  *	i386/i486 Page Table Entry
  */
 
-#if PAE
-typedef unsigned long long	pt_entry_t;
-#else	/* PAE */
-typedef unsigned int	pt_entry_t;
-#endif	/* PAE */
+typedef phys_addr_t pt_entry_t;
 #define PT_ENTRY_NULL	((pt_entry_t *) 0)
 
 #endif	/* __ASSEMBLER__ */
@@ -447,19 +443,19 @@ extern void pmap_unmap_page_zero (void);
 /*
  *  pmap_zero_page zeros the specified (machine independent) page.
  */
-extern void pmap_zero_page (vm_offset_t);
+extern void pmap_zero_page (phys_addr_t);
 
 /*
  *  pmap_copy_page copies the specified (machine independent) pages.
  */
-extern void pmap_copy_page (vm_offset_t, vm_offset_t);
+extern void pmap_copy_page (phys_addr_t, phys_addr_t);
 
 /*
  *  kvtophys(addr)
  *
  *  Convert a kernel virtual address to a physical address
  */
-extern vm_offset_t kvtophys (vm_offset_t);
+extern phys_addr_t kvtophys (vm_offset_t);
 
 void pmap_remove_range(
 	pmap_t			pmap,

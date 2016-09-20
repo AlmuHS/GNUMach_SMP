@@ -200,7 +200,7 @@ decl_simple_lock_data(extern,vm_page_queue_free_lock)
 extern unsigned int	vm_page_free_wanted;
 				/* how many threads are waiting for memory */
 
-extern vm_offset_t	vm_page_fictitious_addr;
+extern phys_addr_t	vm_page_fictitious_addr;
 				/* (fake) phys_addr of fictitious pages */
 
 extern void		vm_page_bootstrap(

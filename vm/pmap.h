@@ -100,7 +100,7 @@ extern void pmap_reference(pmap_t pmap);
 extern void pmap_destroy(pmap_t pmap);
 
 /* Enter a mapping */
-extern void pmap_enter(pmap_t pmap, vm_offset_t va, vm_offset_t pa,
+extern void pmap_enter(pmap_t pmap, vm_offset_t va, phys_addr_t pa,
 		       vm_prot_t prot, boolean_t wired);
 
 
@@ -128,7 +128,7 @@ extern void		pmap_deactivate(pmap_t, thread_t, int);
  */
 
 /* Restrict access to page. */
-void pmap_page_protect(vm_offset_t pa, vm_prot_t prot);
+void pmap_page_protect(phys_addr_t pa, vm_prot_t prot);
 
 /*
  *	Routines to manage reference/modify bits based on
@@ -137,24 +137,24 @@ void pmap_page_protect(vm_offset_t pa, vm_prot_t prot);
  */
 
 /* Clear reference bit */
-void pmap_clear_reference(vm_offset_t pa);
+void pmap_clear_reference(phys_addr_t pa);
 
 /* Return reference bit */
 #ifndef pmap_is_referenced
-boolean_t pmap_is_referenced(vm_offset_t pa);
+boolean_t pmap_is_referenced(phys_addr_t pa);
 #endif /* pmap_is_referenced */
 
 /* Clear modify bit */
-void pmap_clear_modify(vm_offset_t pa);
+void pmap_clear_modify(phys_addr_t pa);
 
 /* Return modify bit */
-boolean_t pmap_is_modified(vm_offset_t pa);
+boolean_t pmap_is_modified(phys_addr_t pa);
 
 /*
  *	Sundry required routines
  */
 /* Return a virtual-to-physical mapping, if possible.  */
-extern vm_offset_t	pmap_extract(pmap_t, vm_offset_t);
+extern phys_addr_t	pmap_extract(pmap_t, vm_offset_t);
 /* Perform garbage collection, if any.  */
 extern void		pmap_collect(pmap_t);
 /* Specify pageability.  */
@@ -198,8 +198,8 @@ extern void pmap_pageable(
  */
 extern vm_offset_t pmap_map_bd(
         vm_offset_t virt,
-        vm_offset_t start,
-        vm_offset_t end,
+        phys_addr_t start,
+        phys_addr_t end,
         vm_prot_t prot);
 
 /*

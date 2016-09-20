@@ -483,8 +483,8 @@ void ptep_check(ptep_t ptep)
  */
 vm_offset_t pmap_map(
 	vm_offset_t	virt,
-	vm_offset_t	start,
-	vm_offset_t	end,
+	phys_addr_t	start,
+	phys_addr_t	end,
 	int		prot)
 {
 	int		ps;
@@ -506,8 +506,8 @@ vm_offset_t pmap_map(
  */
 vm_offset_t pmap_map_bd(
 	vm_offset_t	virt,
-	vm_offset_t	start,
-	vm_offset_t	end,
+	phys_addr_t	start,
+	phys_addr_t	end,
 	vm_prot_t	prot)
 {
 	pt_entry_t	template;
@@ -1214,7 +1214,7 @@ pmap_t pmap_create(vm_size_t size)
 void pmap_destroy(pmap_t p)
 {
 	pt_entry_t	*pdep;
-	vm_offset_t	pa;
+	phys_addr_t	pa;
 	int		c, s;
 	vm_page_t	m;
 
@@ -1311,7 +1311,7 @@ void pmap_remove_range(
 	pt_entry_t		*cpte;
 	unsigned long		num_removed, num_unwired;
 	unsigned long		pai;
-	vm_offset_t		pa;
+	phys_addr_t		pa;
 #ifdef	MACH_PV_PAGETABLES
 	int n, ii = 0;
 	struct mmu_update update[HYP_BATCH_MMU_UPDATES];
@@ -1501,7 +1501,7 @@ void pmap_remove(
  *		page.
  */
 void pmap_page_protect(
-	vm_offset_t	phys,
+	phys_addr_t	phys,
 	vm_prot_t	prot)
 {
 	pv_entry_t		pv_h, prev;
@@ -1773,7 +1773,7 @@ void pmap_protect(
 void pmap_enter(
 	pmap_t			pmap,
 	vm_offset_t		v,
-	vm_offset_t		pa,
+	phys_addr_t		pa,
 	vm_prot_t		prot,
 	boolean_t		wired)
 {
@@ -1784,7 +1784,7 @@ void pmap_enter(
 	pv_entry_t		pv_e;
 	pt_entry_t		template;
 	int			spl;
-	vm_offset_t		old_pa;
+	phys_addr_t		old_pa;
 
 	assert(pa != vm_page_fictitious_addr);
 if (pmap_debug) printf("pmap(%lx, %lx)\n", v, pa);
@@ -2133,20 +2133,20 @@ void pmap_change_wiring(
  *		with the given map/virtual_address pair.
  */
 
-vm_offset_t pmap_extract(
+phys_addr_t pmap_extract(
 	pmap_t		pmap,
 	vm_offset_t	va)
 {
 	pt_entry_t	*pte;
-	vm_offset_t	pa;
+	phys_addr_t	pa;
 	int		spl;
 
 	SPLVM(spl);
 	simple_lock(&pmap->lock);
 	if ((pte = pmap_pte(pmap, va)) == PT_ENTRY_NULL)
-	    pa = (vm_offset_t) 0;
+	    pa = 0;
 	else if (!(*pte & INTEL_PTE_VALID))
-	    pa = (vm_offset_t) 0;
+	    pa = 0;
 	else
 	    pa = pte_to_pa(*pte) + (va & INTEL_OFFMASK);
 	simple_unlock(&pmap->lock);
@@ -2187,7 +2187,7 @@ void pmap_collect(pmap_t p)
 {
 	pt_entry_t		*pdp, *ptp;
 	pt_entry_t		*eptp;
-	vm_offset_t		pa;
+	phys_addr_t		pa;
 	int			spl, wired;
 
 	if (p == PMAP_NULL)
@@ -2403,7 +2403,7 @@ pmap_pageable(
  */
 void
 phys_attribute_clear(
-	vm_offset_t	phys,
+	phys_addr_t	phys,
 	int		bits)
 {
 	pv_entry_t		pv_h;
@@ -2487,7 +2487,7 @@ phys_attribute_clear(
  */
 boolean_t
 phys_attribute_test(
-	vm_offset_t	phys,
+	phys_addr_t	phys,
 	int		bits)
 {
 	pv_entry_t		pv_h;
@@ -2575,7 +2575,7 @@ phys_attribute_test(
  *	Clear the modify bits on the specified physical page.
  */
 
-void pmap_clear_modify(vm_offset_t phys)
+void pmap_clear_modify(phys_addr_t phys)
 {
 	phys_attribute_clear(phys, PHYS_MODIFIED);
 }
@@ -2587,7 +2587,7 @@ void pmap_clear_modify(vm_offset_t phys)
  *	by any physical maps.
  */
 
-boolean_t pmap_is_modified(vm_offset_t phys)
+boolean_t pmap_is_modified(phys_addr_t phys)
 {
 	return (phys_attribute_test(phys, PHYS_MODIFIED));
 }
@@ -2598,7 +2598,7 @@ boolean_t pmap_is_modified(vm_offset_t phys)
  *	Clear the reference bit on the specified physical page.
  */
 
-void pmap_clear_reference(vm_offset_t phys)
+void pmap_clear_reference(phys_addr_t phys)
 {
 	phys_attribute_clear(phys, PHYS_REFERENCED);
 }
@@ -2610,7 +2610,7 @@ void pmap_clear_reference(vm_offset_t phys)
  *	by any physical maps.
  */
 
-boolean_t pmap_is_referenced(vm_offset_t phys)
+boolean_t pmap_is_referenced(phys_addr_t phys)
 {
 	return (phys_attribute_test(phys, PHYS_REFERENCED));
 }

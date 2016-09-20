@@ -127,7 +127,7 @@ struct kmem_cache	vm_page_cache;
  *	For debugging, this should be a strange value
  *	that the pmap module can recognize in assertions.
  */
-vm_offset_t vm_page_fictitious_addr = (vm_offset_t) -1;
+phys_addr_t vm_page_fictitious_addr = (phys_addr_t) -1;
 
 /*
  *	Resident page structures are also chained on
@@ -820,7 +820,7 @@ vm_page_t vm_page_grab(
 	return mem;
 }
 
-vm_offset_t vm_page_grab_phys_addr(void)
+phys_addr_t vm_page_grab_phys_addr(void)
 {
 	vm_page_t p = vm_page_grab(FALSE);
 	if (p == VM_PAGE_NULL)
