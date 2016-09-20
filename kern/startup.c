@@ -78,7 +78,6 @@ boolean_t reboot_on_panic = TRUE;
 #endif	/* NCPUS > 1 */
 
 /* XX */
-extern vm_offset_t phys_first_addr, phys_last_addr;
 extern char *kernel_cmdline;
 
 /*

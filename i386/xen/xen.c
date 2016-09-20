@@ -58,7 +58,7 @@ void hypclock_machine_intr(int old_ipl, void *ret_addr, struct i386_interrupt_st
 }
 
 void hyp_p2m_init(void) {
-	unsigned long nb_pfns = atop(phys_last_addr);
+	unsigned long nb_pfns = vm_page_table_size();
 #ifdef MACH_PSEUDO_PHYS
 #define P2M_PAGE_ENTRIES (PAGE_SIZE / sizeof(unsigned long))
 	unsigned long *l3 = (unsigned long *)phystokv(pmap_grab_page()), *l2 = NULL;

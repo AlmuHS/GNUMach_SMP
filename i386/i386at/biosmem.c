@@ -650,7 +650,7 @@ biosmem_setup_allocator(const struct multiboot_raw_info *mbi)
 static void __boot
 biosmem_bootstrap_common(void)
 {
-    phys_addr_t phys_start, phys_end, last_addr;
+    phys_addr_t phys_start, phys_end;
     int error;
 
     biosmem_map_adjust();
@@ -663,7 +663,6 @@ biosmem_bootstrap_common(void)
         boot_panic(biosmem_panic_noseg_msg);
 
     biosmem_set_segment(VM_PAGE_SEG_DMA, phys_start, phys_end);
-    last_addr = phys_end;
 
     phys_start = VM_PAGE_DMA_LIMIT;
 #ifdef VM_PAGE_DMA32_LIMIT
@@ -671,10 +670,9 @@ biosmem_bootstrap_common(void)
     error = biosmem_map_find_avail(&phys_start, &phys_end);
 
     if (error)
-        goto out;
+        return;
 
     biosmem_set_segment(VM_PAGE_SEG_DMA32, phys_start, phys_end);
-    last_addr = phys_end;
 
     phys_start = VM_PAGE_DMA32_LIMIT;
 #endif /* VM_PAGE_DMA32_LIMIT */
@@ -682,23 +680,18 @@ biosmem_bootstrap_common(void)
     error = biosmem_map_find_avail(&phys_start, &phys_end);
 
     if (error)
-        goto out;
+        return;
 
     biosmem_set_segment(VM_PAGE_SEG_DIRECTMAP, phys_start, phys_end);
-    last_addr = phys_end;
 
     phys_start = VM_PAGE_DIRECTMAP_LIMIT;
     phys_end = VM_PAGE_HIGHMEM_LIMIT;
     error = biosmem_map_find_avail(&phys_start, &phys_end);
 
     if (error)
-        goto out;
+        return;
 
     biosmem_set_segment(VM_PAGE_SEG_HIGHMEM, phys_start, phys_end);
-
-out:
-    /* XXX phys_last_addr must be part of the direct physical mapping */
-    phys_last_addr = last_addr;
 }
 
 #ifdef MACH_HYP

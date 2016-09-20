@@ -65,8 +65,6 @@
 
 /* During VM initialization, steal a chunk of memory.  */
 extern vm_offset_t	pmap_steal_memory(vm_size_t);
-/* During VM initialization, report remaining unused physical pages.  */
-extern unsigned int	pmap_free_pages(void);
 /* Initialization, after kernel runs in virtual memory.  */
 extern void		pmap_init(void);
 
@@ -75,14 +73,10 @@ extern void		pmap_init(void);
  *	If machine/pmap.h defines MACHINE_PAGES, it must implement
  *	the above functions.  The pmap module has complete control.
  *	Otherwise, it must implement
- *		pmap_free_pages
  *		pmap_virtual_space
  *		pmap_init
  *	and vm/vm_resident.c implements pmap_steal_memory using
- *	pmap_free_pages, pmap_virtual_space, and pmap_enter.
- *
- *	pmap_free_pages may over-estimate the number of unused physical pages.
- *	However, for best performance pmap_free_pages should be accurate.
+ *	pmap_virtual_space and pmap_enter.
  */
 
 /* During VM initialization, report virtual space available for the kernel.  */
@@ -186,8 +180,6 @@ extern kern_return_t	pmap_attribute(void);
  */
 extern vm_offset_t pmap_grab_page (void);
 
-extern boolean_t pmap_valid_page(vm_offset_t x);
-
 /*
  *      Make the specified pages (by pmap, offset)
  *      pageable (or not) as requested.
@@ -200,8 +192,8 @@ extern void pmap_pageable(
 
 /*
  *      Back-door routine for mapping kernel VM at initialization.
- *      Useful for mapping memory outside the range
- *      [phys_first_addr, phys_last_addr) (i.e., devices).
+ *      Useful for mapping memory outside the range of direct mapped
+ *      physical memory (i.e., devices).
  *      Otherwise like pmap_map.
  */
 extern vm_offset_t pmap_map_bd(

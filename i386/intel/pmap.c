@@ -83,6 +83,7 @@
 #include <i386/proc_reg.h>
 #include <i386/locore.h>
 #include <i386/model_dep.h>
+#include <i386at/biosmem.h>
 #include <i386at/model_dep.h>
 
 #ifdef	MACH_PSEUDO_PHYS
@@ -158,9 +159,9 @@ vm_offset_t kernel_virtual_end;
 
 /*
  *	Index into pv_head table, its lock bits, and the modify/reference
- *	bits starting at phys_first_addr.
+ *	bits.
  */
-#define pa_index(pa)	(atop(pa - phys_first_addr))
+#define pa_index(pa)	vm_page_table_index(pa)
 
 #define pai_to_pvh(pai)		(&pv_head_table[pai])
 #define lock_pvh_pai(pai)	(bit_lock(pai, pv_lock_table))
@@ -499,8 +500,8 @@ vm_offset_t pmap_map(
 
 /*
  *	Back-door routine for mapping kernel VM at initialization.
- * 	Useful for mapping memory outside the range
- *	[phys_first_addr, phys_last_addr) (i.e., devices).
+ * 	Useful for mapping memory outside the range of direct mapped
+ *	physical memory (i.e., devices).
  *	Otherwise like pmap_map.
  */
 vm_offset_t pmap_map_bd(
@@ -600,8 +601,8 @@ void pmap_bootstrap(void)
 	 * mapped into the kernel address space,
 	 * and extends to a stupid arbitrary limit beyond that.
 	 */
-	kernel_virtual_start = phystokv(phys_last_addr);
-	kernel_virtual_end = phystokv(phys_last_addr) + VM_KERNEL_MAP_SIZE;
+	kernel_virtual_start = phystokv(biosmem_directmap_end());
+	kernel_virtual_end = kernel_virtual_start + VM_KERNEL_MAP_SIZE;
 
 	if (kernel_virtual_end < kernel_virtual_start
 			|| kernel_virtual_end > VM_MAX_KERNEL_ADDRESS)
@@ -692,8 +693,7 @@ void pmap_bootstrap(void)
 		pt_entry_t global = CPU_HAS_FEATURE(CPU_FEATURE_PGE) ? INTEL_PTE_GLOBAL : 0;
 
 		/*
-		 * Map virtual memory for all known physical memory, 1-1,
-		 * from phys_first_addr to phys_last_addr.
+		 * Map virtual memory for all directly mappable physical memory, 1-1,
 		 * Make any mappings completely in the kernel's text segment read-only.
 		 *
 		 * Also allocate some additional all-null page tables afterwards
@@ -702,7 +702,7 @@ void pmap_bootstrap(void)
 		 * to allocate new kernel page tables later.
 		 * XX fix this
 		 */
-		for (va = phystokv(phys_first_addr); va >= phystokv(phys_first_addr) && va < kernel_virtual_end; )
+		for (va = phystokv(0); va >= phystokv(0) && va < kernel_virtual_end; )
 		{
 			pt_entry_t *pde = kernel_page_dir + lin2pdenum(kvtolin(va));
 			pt_entry_t *ptable = (pt_entry_t*)phystokv(pmap_grab_page());
@@ -713,7 +713,7 @@ void pmap_bootstrap(void)
 				| INTEL_PTE_VALID | INTEL_PTE_WRITE);
 
 			/* Initialize the page table.  */
-			for (pte = ptable; (va < phystokv(phys_last_addr)) && (pte < ptable+NPTES); pte++)
+			for (pte = ptable; (va < phystokv(biosmem_directmap_end())) && (pte < ptable+NPTES); pte++)
 			{
 				if ((pte - ptable) < ptenum(va))
 				{
@@ -937,7 +937,7 @@ void pmap_virtual_space(
  */
 void pmap_init(void)
 {
-	long			npages;
+	unsigned long		npages;
 	vm_offset_t		addr;
 	vm_size_t		s;
 #if	NCPUS > 1
@@ -949,7 +949,7 @@ void pmap_init(void)
 	 *	the modify bit array, and the pte_page table.
 	 */
 
-	npages = atop(phys_last_addr - phys_first_addr);
+	npages = vm_page_table_size();
 	s = (vm_size_t) (sizeof(struct pv_entry) * npages
 				+ pv_lock_table_size(npages)
 				+ npages);
@@ -997,31 +997,16 @@ void pmap_init(void)
 	pmap_initialized = TRUE;
 }
 
-#define valid_page(x) (pmap_initialized && pmap_valid_page(x))
-
-boolean_t pmap_verify_free(vm_offset_t phys)
+static inline boolean_t
+valid_page(phys_addr_t addr)
 {
-	pv_entry_t	pv_h;
-	int		pai;
-	int		spl;
-	boolean_t	result;
+	struct vm_page *p;
 
-	assert(phys != vm_page_fictitious_addr);
 	if (!pmap_initialized)
-		return(TRUE);
+		return FALSE;
 
-	if (!pmap_valid_page(phys))
-		return(FALSE);
-
-	PMAP_WRITE_LOCK(spl);
-
-	pai = pa_index(phys);
-	pv_h = pai_to_pvh(pai);
-
-	result = (pv_h->pmap == PMAP_NULL);
-	PMAP_WRITE_UNLOCK(spl);
-
-	return(result);
+	p = vm_page_lookup_pa(addr);
+	return (p != NULL);
 }
 
 /*
@@ -1046,7 +1031,7 @@ pmap_page_table_page_alloc(void)
 	 *	Allocate it now if it is missing.
 	 */
 	if (pmap_object == VM_OBJECT_NULL)
-	    pmap_object = vm_object_allocate(phys_last_addr - phys_first_addr);
+	    pmap_object = vm_object_allocate(vm_page_table_size() * PAGE_SIZE);
 
 	/*
 	 *	Allocate a VM page for the level 2 page table entries.
@@ -1324,8 +1309,8 @@ void pmap_remove_range(
 	pt_entry_t		*epte)
 {
 	pt_entry_t		*cpte;
-	int			num_removed, num_unwired;
-	int			pai;
+	unsigned long		num_removed, num_unwired;
+	unsigned long		pai;
 	vm_offset_t		pa;
 #ifdef	MACH_PV_PAGETABLES
 	int n, ii = 0;
@@ -1522,7 +1507,7 @@ void pmap_page_protect(
 	pv_entry_t		pv_h, prev;
 	pv_entry_t		pv_e;
 	pt_entry_t		*pte;
-	int			pai;
+	unsigned long		pai;
 	pmap_t			pmap;
 	int			spl;
 	boolean_t		remove;
@@ -1792,9 +1777,10 @@ void pmap_enter(
 	vm_prot_t		prot,
 	boolean_t		wired)
 {
+	boolean_t		is_physmem;
 	pt_entry_t		*pte;
 	pv_entry_t		pv_h;
-	int			i, pai;
+	unsigned long		i, pai;
 	pv_entry_t		pv_e;
 	pt_entry_t		template;
 	int			spl;
@@ -1923,6 +1909,11 @@ Retry:
 	    continue;
 	}
 
+	if (vm_page_ready())
+		is_physmem = (vm_page_lookup_pa(pa) != NULL);
+	else
+		is_physmem = (pa < biosmem_directmap_end());
+
 	/*
 	 *	Special case if the physical page is already mapped
 	 *	at this address.
@@ -1944,7 +1935,7 @@ Retry:
 	    if (prot & VM_PROT_WRITE)
 		template |= INTEL_PTE_WRITE;
 	    if (machine_slot[cpu_number()].cpu_type >= CPU_TYPE_I486
-		&& pa >= phys_last_addr)
+		&& !is_physmem)
 		template |= INTEL_PTE_NCACHE|INTEL_PTE_WTHRU;
 	    if (wired)
 		template |= INTEL_PTE_WIRED;
@@ -2056,7 +2047,7 @@ Retry:
 	    if (prot & VM_PROT_WRITE)
 		template |= INTEL_PTE_WRITE;
 	    if (machine_slot[cpu_number()].cpu_type >= CPU_TYPE_I486
-		&& pa >= phys_last_addr)
+		&& !is_physmem)
 		template |= INTEL_PTE_NCACHE|INTEL_PTE_WTHRU;
 	    if (wired)
 		template |= INTEL_PTE_WIRED;
@@ -2418,7 +2409,7 @@ phys_attribute_clear(
 	pv_entry_t		pv_h;
 	pv_entry_t		pv_e;
 	pt_entry_t		*pte;
-	int			pai;
+	unsigned long		pai;
 	pmap_t			pmap;
 	int			spl;
 
@@ -2502,7 +2493,7 @@ phys_attribute_test(
 	pv_entry_t		pv_h;
 	pv_entry_t		pv_e;
 	pt_entry_t		*pte;
-	int			pai;
+	unsigned long		pai;
 	pmap_t			pmap;
 	int			spl;
 

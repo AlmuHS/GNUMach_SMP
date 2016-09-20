@@ -351,16 +351,6 @@ int user_trap(struct i386_saved_state *regs)
 	int	type;
 	thread_t thread = current_thread();
 
-	if ((vm_offset_t)thread < phys_last_addr) {
-		printf("user_trap: bad thread pointer 0x%p\n", thread);
-		printf("trap type %ld, code 0x%lx, va 0x%lx, eip 0x%lx\n",
-		       regs->trapno, regs->err, regs->cr2, regs->eip);
-		asm volatile ("1: hlt; jmp 1b");
-	}
-#if 0
-printf("user trap %d error %d sub %08x\n", type, code, subcode);
-#endif
-
 	type = regs->trapno;
 	code = 0;
 	subcode = 0;

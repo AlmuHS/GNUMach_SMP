@@ -106,11 +106,6 @@ static unsigned elf_shdr_shndx;
 
 #define RESERVED_BIOS 0x10000
 
-/* These indicate the total extent of physical memory addresses we're using.
-   They are page-aligned.  */
-vm_offset_t phys_first_addr = 0;
-vm_offset_t phys_last_addr;
-
 /* A copy of the multiboot info structure passed by the boot loader.  */
 #ifdef MACH_XEN
 struct start_info boot_info;
@@ -690,11 +685,6 @@ resettodr(void)
 	writetodc();
 }
 
-unsigned int pmap_free_pages(void)
-{
-	return vm_page_atop(phys_last_addr); /* XXX */
-}
-
 boolean_t
 init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 {
@@ -716,16 +706,4 @@ pmap_grab_page(void)
 	if (!init_alloc_aligned(PAGE_SIZE, &addr))
 		panic("Not enough memory to initialize Mach");
 	return addr;
-}
-
-boolean_t pmap_valid_page(vm_offset_t x)
-{
-	/* XXX is this OK?  What does it matter for?  */
-	return (((phys_first_addr <= x) && (x < phys_last_addr))
-#ifndef MACH_HYP
-		&& !(
-		((boot_info.mem_lower * 1024) <= x) && 
-		(x < 1024*1024))
-#endif	/* MACH_HYP */
-		);
 }

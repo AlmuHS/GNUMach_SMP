@@ -104,7 +104,7 @@ linux_init (void)
   /*
    * Initialize memory size.
    */
-  high_memory = phys_last_addr;
+  high_memory = vm_page_seg_end(VM_PAGE_SEL_DIRECTMAP);
   init_IRQ ();
   linux_sched_init ();
 

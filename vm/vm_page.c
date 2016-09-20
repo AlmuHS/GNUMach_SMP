@@ -773,6 +773,76 @@ vm_page_info_all(void)
 }
 
 phys_addr_t
+vm_page_seg_end(unsigned int selector)
+{
+    return vm_page_segs[vm_page_select_alloc_seg(selector)].end;
+}
+
+static unsigned long
+vm_page_boot_table_size(void)
+{
+    unsigned long nr_pages;
+    unsigned int i;
+
+    nr_pages = 0;
+
+    for (i = 0; i < vm_page_segs_size; i++) {
+        /* XXX */
+        if (i > VM_PAGE_SEG_DIRECTMAP)
+            continue;
+
+        nr_pages += vm_page_atop(vm_page_boot_seg_size(&vm_page_boot_segs[i]));
+    }
+
+    return nr_pages;
+}
+
+unsigned long
+vm_page_table_size(void)
+{
+    unsigned long nr_pages;
+    unsigned int i;
+
+    if (!vm_page_is_ready) {
+        return vm_page_boot_table_size();
+    }
+
+    nr_pages = 0;
+
+    for (i = 0; i < vm_page_segs_size; i++) {
+        /* XXX */
+        if (i > VM_PAGE_SEG_DIRECTMAP)
+            continue;
+
+        nr_pages += vm_page_atop(vm_page_seg_size(&vm_page_segs[i]));
+    }
+
+    return nr_pages;
+}
+
+unsigned long
+vm_page_table_index(phys_addr_t pa)
+{
+    struct vm_page_seg *seg;
+    unsigned long index;
+    unsigned int i;
+
+    index = 0;
+
+    for (i = 0; i < vm_page_segs_size; i++) {
+        seg = &vm_page_segs[i];
+
+        if ((pa >= seg->start) && (pa < seg->end)) {
+            return index + vm_page_atop(pa - seg->start);
+        }
+
+        index += vm_page_atop(vm_page_seg_size(seg));
+    }
+
+    panic("vm_page: invalid physical address");
+}
+
+phys_addr_t
 vm_page_mem_size(void)
 {
     phys_addr_t total;

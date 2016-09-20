@@ -92,8 +92,8 @@ typedef struct {
 } vm_page_bucket_t;
 
 vm_page_bucket_t *vm_page_buckets;		/* Array of buckets */
-unsigned int	vm_page_bucket_count = 0;	/* How big is array? */
-unsigned int	vm_page_hash_mask;		/* Mask for hash function */
+unsigned long	vm_page_bucket_count = 0;	/* How big is array? */
+unsigned long	vm_page_hash_mask;		/* Mask for hash function */
 
 vm_page_t	vm_page_queue_fictitious;
 decl_simple_lock_data(,vm_page_queue_free_lock)
@@ -209,7 +209,7 @@ void vm_page_bootstrap(
 	 */
 
 	if (vm_page_bucket_count == 0) {
-		unsigned int npages = pmap_free_pages();
+		unsigned long npages = vm_page_table_size();
 
 		vm_page_bucket_count = 1;
 		while (vm_page_bucket_count < npages)
