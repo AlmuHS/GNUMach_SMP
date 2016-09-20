@@ -903,9 +903,7 @@ biosmem_setup(void)
             break;
 
         seg = &biosmem_segments[i];
-
-        /* XXX Limit to directmap until highmem is supported */
-        biosmem_load_segment(seg, VM_PAGE_DIRECTMAP_LIMIT);
+        biosmem_load_segment(seg, VM_PAGE_HIGHMEM_LIMIT);
     }
 }
 
@@ -986,9 +984,8 @@ biosmem_free_usable(void)
 
         end = vm_page_trunc(entry->base_addr + entry->length);
 
-        /* XXX Limit to directmap until highmem is supported */
-        if (end > VM_PAGE_DIRECTMAP_LIMIT) {
-            end = VM_PAGE_DIRECTMAP_LIMIT;
+        if (end > VM_PAGE_HIGHMEM_LIMIT) {
+            end = VM_PAGE_HIGHMEM_LIMIT;
         }
 
         if (start < BIOSMEM_BASE)

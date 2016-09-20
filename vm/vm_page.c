@@ -1620,10 +1620,6 @@ vm_page_boot_table_size(void)
     nr_pages = 0;
 
     for (i = 0; i < vm_page_segs_size; i++) {
-        /* XXX */
-        if (i > VM_PAGE_SEG_DIRECTMAP)
-            continue;
-
         nr_pages += vm_page_atop(vm_page_boot_seg_size(&vm_page_boot_segs[i]));
     }
 
@@ -1643,10 +1639,6 @@ vm_page_table_size(void)
     nr_pages = 0;
 
     for (i = 0; i < vm_page_segs_size; i++) {
-        /* XXX */
-        if (i > VM_PAGE_SEG_DIRECTMAP)
-            continue;
-
         nr_pages += vm_page_atop(vm_page_seg_size(&vm_page_segs[i]));
     }
 
@@ -1684,10 +1676,6 @@ vm_page_mem_size(void)
     total = 0;
 
     for (i = 0; i < vm_page_segs_size; i++) {
-        /* XXX */
-        if (i > VM_PAGE_SEG_DIRECTMAP)
-            continue;
-
         total += vm_page_seg_size(&vm_page_segs[i]);
     }
 
@@ -1703,10 +1691,6 @@ vm_page_mem_free(void)
     total = 0;
 
     for (i = 0; i < vm_page_segs_size; i++) {
-        /* XXX */
-        if (i >  VM_PAGE_SEG_DIRECTMAP)
-            continue;
-
         total += vm_page_segs[i].nr_free_pages;
     }
 

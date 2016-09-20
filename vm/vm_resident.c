@@ -771,6 +771,15 @@ vm_page_t vm_page_grab(void)
 
 	simple_lock(&vm_page_queue_free_lock);
 
+	/*
+	 * XXX Mach has many modules that merely assume memory is
+	 * directly mapped in kernel space. Instead of updating all
+	 * users, we assume those which need specific physical memory
+	 * properties will wire down their pages, either because
+	 * they can't be paged (not part of an object), or with
+	 * explicit VM calls. The strategy is then to let memory
+	 * pressure balance the physical segments with pageable pages.
+	 */
 	mem = vm_page_alloc_pa(0, VM_PAGE_SEL_DIRECTMAP, VM_PT_KERNEL);
 
 	if (mem == NULL) {
