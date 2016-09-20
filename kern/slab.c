@@ -389,7 +389,7 @@ kmem_pagefree_physmem(vm_offset_t addr, vm_size_t size)
     assert(size == PAGE_SIZE);
     page = vm_page_lookup_pa(kvtophys(addr));
     assert(page != NULL);
-    vm_page_release(page);
+    vm_page_release(page, FALSE, FALSE);
 }
 
 static vm_offset_t

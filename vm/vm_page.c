@@ -27,10 +27,13 @@
  * multiprocessor systems. When a pool is empty and cannot provide a page,
  * it is filled by transferring multiple pages from the backend buddy system.
  * The symmetric case is handled likewise.
+ *
+ * TODO Limit number of dirty pages, block allocations above a top limit.
  */
 
 #include <string.h>
 #include <kern/assert.h>
+#include <kern/counters.h>
 #include <kern/cpu_number.h>
 #include <kern/debug.h>
 #include <kern/list.h>
@@ -42,6 +45,7 @@
 #include <machine/pmap.h>
 #include <sys/types.h>
 #include <vm/vm_page.h>
+#include <vm/vm_pageout.h>
 
 #define DEBUG 0
 
@@ -100,12 +104,96 @@ struct vm_page_free_list {
 };
 
 /*
+ * XXX Because of a potential deadlock involving the default pager (see
+ * vm_map_lock()), it's currently impossible to reliably determine the
+ * minimum number of free pages required for successful pageout. Since
+ * that process is dependent on the amount of physical memory, we scale
+ * the minimum number of free pages from it, in the hope that memory
+ * exhaustion happens as rarely as possible...
+ */
+
+/*
+ * Ratio used to compute the minimum number of pages in a segment.
+ */
+#define VM_PAGE_SEG_THRESHOLD_MIN_NUM   5
+#define VM_PAGE_SEG_THRESHOLD_MIN_DENOM 100
+
+/*
+ * Number of pages reserved for privileged allocations in a segment.
+ */
+#define VM_PAGE_SEG_THRESHOLD_MIN 500
+
+/*
+ * Ratio used to compute the threshold below which pageout is started.
+ */
+#define VM_PAGE_SEG_THRESHOLD_LOW_NUM   6
+#define VM_PAGE_SEG_THRESHOLD_LOW_DENOM 100
+
+/*
+ * Minimum value the low threshold can have for a segment.
+ */
+#define VM_PAGE_SEG_THRESHOLD_LOW 600
+
+#if VM_PAGE_SEG_THRESHOLD_LOW <= VM_PAGE_SEG_THRESHOLD_MIN
+#error VM_PAGE_SEG_THRESHOLD_LOW invalid
+#endif /* VM_PAGE_SEG_THRESHOLD_LOW >= VM_PAGE_SEG_THRESHOLD_MIN */
+
+/*
+ * Ratio used to compute the threshold above which pageout is stopped.
+ */
+#define VM_PAGE_SEG_THRESHOLD_HIGH_NUM      10
+#define VM_PAGE_SEG_THRESHOLD_HIGH_DENOM    100
+
+/*
+ * Minimum value the high threshold can have for a segment.
+ */
+#define VM_PAGE_SEG_THRESHOLD_HIGH 1000
+
+#if VM_PAGE_SEG_THRESHOLD_HIGH <= VM_PAGE_SEG_THRESHOLD_LOW
+#error VM_PAGE_SEG_THRESHOLD_HIGH invalid
+#endif /* VM_PAGE_SEG_THRESHOLD_HIGH <= VM_PAGE_SEG_THRESHOLD_LOW */
+
+/*
+ * Minimum number of pages allowed for a segment.
+ */
+#define VM_PAGE_SEG_MIN_PAGES 2000
+
+#if VM_PAGE_SEG_MIN_PAGES <= VM_PAGE_SEG_THRESHOLD_HIGH
+#error VM_PAGE_SEG_MIN_PAGES invalid
+#endif /* VM_PAGE_SEG_MIN_PAGES <= VM_PAGE_SEG_THRESHOLD_HIGH */
+
+/*
+ * Ratio used to compute the threshold of active pages beyond which
+ * to refill the inactive queue.
+ */
+#define VM_PAGE_HIGH_ACTIVE_PAGE_NUM    1
+#define VM_PAGE_HIGH_ACTIVE_PAGE_DENOM  3
+
+/*
+ * Page cache queue.
+ *
+ * XXX The current implementation hardcodes a preference to evict external
+ * pages first and keep internal ones as much as possible. This is because
+ * the Hurd default pager implementation suffers from bugs that can easily
+ * cause the system to freeze.
+ */
+struct vm_page_queue {
+    struct list internal_pages;
+    struct list external_pages;
+};
+
+/*
  * Segment name buffer size.
  */
 #define VM_PAGE_NAME_SIZE 16
 
 /*
  * Segment of contiguous memory.
+ *
+ * XXX Per-segment locking is probably useless, since one or both of the
+ * page queues lock and the free page queue lock is held on any access.
+ * However it should first be made clear which lock protects access to
+ * which members of a segment.
  */
 struct vm_page_seg {
     struct vm_page_cpu_pool cpu_pools[NCPUS];
@@ -117,6 +205,19 @@ struct vm_page_seg {
     simple_lock_data_t lock;
     struct vm_page_free_list free_lists[VM_PAGE_NR_FREE_LISTS];
     unsigned long nr_free_pages;
+
+    /* Free memory thresholds */
+    unsigned long min_free_pages; /* Privileged allocations only */
+    unsigned long low_free_pages; /* Pageout daemon starts scanning */
+    unsigned long high_free_pages; /* Pageout daemon stops scanning,
+                                      unprivileged allocations resume */
+
+    /* Page cache related data */
+    struct vm_page_queue active_pages;
+    unsigned long nr_active_pages;
+    unsigned long high_active_pages;
+    struct vm_page_queue inactive_pages;
+    unsigned long nr_inactive_pages;
 };
 
 /*
@@ -160,6 +261,16 @@ static struct vm_page_boot_seg vm_page_boot_segs[VM_PAGE_MAX_SEGS] __initdata;
  */
 static unsigned int vm_page_segs_size __read_mostly;
 
+/*
+ * If true, unprivileged allocations are blocked, disregarding any other
+ * condition.
+ *
+ * This variable is also used to resume clients once pages are available.
+ *
+ * The free page queue lock must be held when accessing this variable.
+ */
+static boolean_t vm_page_alloc_paused;
+
 static void __init
 vm_page_init_pa(struct vm_page *page, unsigned short seg_index, phys_addr_t pa)
 {
@@ -181,6 +292,40 @@ vm_page_set_type(struct vm_page *page, unsigned int order, unsigned short type)
 
     for (i = 0; i < nr_pages; i++)
         page[i].type = type;
+}
+
+static boolean_t
+vm_page_pageable(const struct vm_page *page)
+{
+    return (page->object != NULL)
+           && (page->wire_count == 0)
+           && (page->active || page->inactive);
+}
+
+static boolean_t
+vm_page_can_move(const struct vm_page *page)
+{
+    /*
+     * This function is called on pages pulled from the page queues,
+     * implying they're pageable, which is why the wire count isn't
+     * checked here.
+     */
+
+    return !page->busy
+           && !page->wanted
+           && !page->absent
+           && page->object->alive;
+}
+
+static void
+vm_page_remove_mappings(struct vm_page *page)
+{
+    page->busy = TRUE;
+    pmap_page_protect(page->phys_addr, VM_PROT_NONE);
+
+    if (!page->dirty) {
+        page->dirty = pmap_is_modified(page->phys_addr);
+    }
 }
 
 static void __init
@@ -219,6 +364,19 @@ vm_page_seg_alloc_from_buddy(struct vm_page_seg *seg, unsigned int order)
 
     assert(order < VM_PAGE_NR_FREE_LISTS);
 
+    if (vm_page_alloc_paused && current_thread()
+        && !current_thread()->vm_privilege) {
+        return NULL;
+    } else if (seg->nr_free_pages <= seg->low_free_pages) {
+        vm_pageout_start();
+
+        if ((seg->nr_free_pages <= seg->min_free_pages)
+            && current_thread() && !current_thread()->vm_privilege) {
+            vm_page_alloc_paused = TRUE;
+            return NULL;
+        }
+    }
+
     for (i = order; i < VM_PAGE_NR_FREE_LISTS; i++) {
         free_list = &seg->free_lists[i];
 
@@ -241,6 +399,11 @@ vm_page_seg_alloc_from_buddy(struct vm_page_seg *seg, unsigned int order)
     }
 
     seg->nr_free_pages -= (1 << order);
+
+    if (seg->nr_free_pages < seg->min_free_pages) {
+        vm_page_alloc_paused = TRUE;
+    }
+
     return page;
 }
 
@@ -364,6 +527,65 @@ vm_page_cpu_pool_drain(struct vm_page_cpu_pool *cpu_pool,
     simple_unlock(&seg->lock);
 }
 
+static void
+vm_page_queue_init(struct vm_page_queue *queue)
+{
+    list_init(&queue->internal_pages);
+    list_init(&queue->external_pages);
+}
+
+static void
+vm_page_queue_push(struct vm_page_queue *queue, struct vm_page *page)
+{
+    if (page->external) {
+        list_insert_tail(&queue->external_pages, &page->node);
+    } else {
+        list_insert_tail(&queue->internal_pages, &page->node);
+    }
+}
+
+static void
+vm_page_queue_remove(struct vm_page_queue *queue, struct vm_page *page)
+{
+    (void)queue;
+    list_remove(&page->node);
+}
+
+static struct vm_page *
+vm_page_queue_first(struct vm_page_queue *queue, boolean_t external_only)
+{
+    struct vm_page *page;
+
+    if (!list_empty(&queue->external_pages)) {
+        page = list_first_entry(&queue->external_pages, struct vm_page, node);
+        return page;
+    }
+
+    if (!external_only && !list_empty(&queue->internal_pages)) {
+        page = list_first_entry(&queue->internal_pages, struct vm_page, node);
+        return page;
+    }
+
+    return NULL;
+}
+
+static struct vm_page_seg *
+vm_page_seg_get(unsigned short index)
+{
+    assert(index < vm_page_segs_size);
+    return &vm_page_segs[index];
+}
+
+static unsigned int
+vm_page_seg_index(const struct vm_page_seg *seg)
+{
+    unsigned int index;
+
+    index = seg - vm_page_segs;
+    assert(index < vm_page_segs_size);
+    return index;
+}
+
 static phys_addr_t __init
 vm_page_seg_size(struct vm_page_seg *seg)
 {
@@ -383,6 +605,39 @@ vm_page_seg_compute_pool_size(struct vm_page_seg *seg)
         size = VM_PAGE_CPU_POOL_MAX_SIZE;
 
     return size;
+}
+
+static void __init
+vm_page_seg_compute_pageout_thresholds(struct vm_page_seg *seg)
+{
+    unsigned long nr_pages;
+
+    nr_pages = vm_page_atop(vm_page_seg_size(seg));
+
+    if (nr_pages < VM_PAGE_SEG_MIN_PAGES) {
+        panic("vm_page: segment too small");
+    }
+
+    seg->min_free_pages = nr_pages * VM_PAGE_SEG_THRESHOLD_MIN_NUM
+                          / VM_PAGE_SEG_THRESHOLD_MIN_DENOM;
+
+    if (seg->min_free_pages < VM_PAGE_SEG_THRESHOLD_MIN) {
+        seg->min_free_pages = VM_PAGE_SEG_THRESHOLD_MIN;
+    }
+
+    seg->low_free_pages = nr_pages * VM_PAGE_SEG_THRESHOLD_LOW_NUM
+                          / VM_PAGE_SEG_THRESHOLD_LOW_DENOM;
+
+    if (seg->low_free_pages < VM_PAGE_SEG_THRESHOLD_LOW) {
+        seg->low_free_pages = VM_PAGE_SEG_THRESHOLD_LOW;
+    }
+
+    seg->high_free_pages = nr_pages * VM_PAGE_SEG_THRESHOLD_HIGH_NUM
+                           / VM_PAGE_SEG_THRESHOLD_HIGH_DENOM;
+
+    if (seg->high_free_pages < VM_PAGE_SEG_THRESHOLD_HIGH) {
+        seg->high_free_pages = VM_PAGE_SEG_THRESHOLD_HIGH;
+    }
 }
 
 static void __init
@@ -408,7 +663,15 @@ vm_page_seg_init(struct vm_page_seg *seg, phys_addr_t start, phys_addr_t end,
         vm_page_free_list_init(&seg->free_lists[i]);
 
     seg->nr_free_pages = 0;
-    i = seg - vm_page_segs;
+
+    vm_page_seg_compute_pageout_thresholds(seg);
+
+    vm_page_queue_init(&seg->active_pages);
+    seg->nr_active_pages = 0;
+    vm_page_queue_init(&seg->inactive_pages);
+    seg->nr_inactive_pages = 0;
+
+    i = vm_page_seg_index(seg);
 
     for (pa = seg->start; pa < seg->end; pa += PAGE_SIZE)
         vm_page_init_pa(&pages[vm_page_atop(pa - seg->start)], i, pa);
@@ -483,6 +746,502 @@ vm_page_seg_free(struct vm_page_seg *seg, struct vm_page *page,
         vm_page_seg_free_to_buddy(seg, page, order);
         simple_unlock(&seg->lock);
     }
+}
+
+static void
+vm_page_seg_add_active_page(struct vm_page_seg *seg, struct vm_page *page)
+{
+    assert(page->object != NULL);
+    assert(page->seg_index == vm_page_seg_index(seg));
+    assert(page->type != VM_PT_FREE);
+    assert(page->order == VM_PAGE_ORDER_UNLISTED);
+    assert(!page->free && !page->active && !page->inactive);
+    page->active = TRUE;
+    page->reference = TRUE;
+    vm_page_queue_push(&seg->active_pages, page);
+    seg->nr_active_pages++;
+    vm_page_active_count++;
+}
+
+static void
+vm_page_seg_remove_active_page(struct vm_page_seg *seg, struct vm_page *page)
+{
+    assert(page->object != NULL);
+    assert(page->seg_index == vm_page_seg_index(seg));
+    assert(page->type != VM_PT_FREE);
+    assert(page->order == VM_PAGE_ORDER_UNLISTED);
+    assert(!page->free && page->active && !page->inactive);
+    page->active = FALSE;
+    vm_page_queue_remove(&seg->active_pages, page);
+    seg->nr_active_pages--;
+    vm_page_active_count--;
+}
+
+static void
+vm_page_seg_add_inactive_page(struct vm_page_seg *seg, struct vm_page *page)
+{
+    assert(page->object != NULL);
+    assert(page->seg_index == vm_page_seg_index(seg));
+    assert(page->type != VM_PT_FREE);
+    assert(page->order == VM_PAGE_ORDER_UNLISTED);
+    assert(!page->free && !page->active && !page->inactive);
+    page->inactive = TRUE;
+    vm_page_queue_push(&seg->inactive_pages, page);
+    seg->nr_inactive_pages++;
+    vm_page_inactive_count++;
+}
+
+static void
+vm_page_seg_remove_inactive_page(struct vm_page_seg *seg, struct vm_page *page)
+{
+    assert(page->object != NULL);
+    assert(page->seg_index == vm_page_seg_index(seg));
+    assert(page->type != VM_PT_FREE);
+    assert(page->order == VM_PAGE_ORDER_UNLISTED);
+    assert(!page->free && !page->active && page->inactive);
+    page->inactive = FALSE;
+    vm_page_queue_remove(&seg->inactive_pages, page);
+    seg->nr_inactive_pages--;
+    vm_page_inactive_count--;
+}
+
+/*
+ * Attempt to pull an active page.
+ *
+ * If successful, the object containing the page is locked.
+ */
+static struct vm_page *
+vm_page_seg_pull_active_page(struct vm_page_seg *seg, boolean_t external_only)
+{
+    struct vm_page *page, *first;
+    boolean_t locked;
+
+    first = NULL;
+
+    for (;;) {
+        page = vm_page_queue_first(&seg->active_pages, external_only);
+
+        if (page == NULL) {
+            break;
+        } else if (first == NULL) {
+            first = page;
+        } else if (first == page) {
+            break;
+        }
+
+        vm_page_seg_remove_active_page(seg, page);
+        locked = vm_object_lock_try(page->object);
+
+        if (!locked) {
+            vm_page_seg_add_active_page(seg, page);
+            continue;
+        }
+
+        if (!vm_page_can_move(page)) {
+            vm_page_seg_add_active_page(seg, page);
+            vm_object_unlock(page->object);
+            continue;
+        }
+
+        return page;
+    }
+
+    return NULL;
+}
+
+/*
+ * Attempt to pull an inactive page.
+ *
+ * If successful, the object containing the page is locked.
+ *
+ * XXX See vm_page_seg_pull_active_page (duplicated code).
+ */
+static struct vm_page *
+vm_page_seg_pull_inactive_page(struct vm_page_seg *seg, boolean_t external_only)
+{
+    struct vm_page *page, *first;
+    boolean_t locked;
+
+    first = NULL;
+
+    for (;;) {
+        page = vm_page_queue_first(&seg->inactive_pages, external_only);
+
+        if (page == NULL) {
+            break;
+        } else if (first == NULL) {
+            first = page;
+        } else if (first == page) {
+            break;
+        }
+
+        vm_page_seg_remove_inactive_page(seg, page);
+        locked = vm_object_lock_try(page->object);
+
+        if (!locked) {
+            vm_page_seg_add_inactive_page(seg, page);
+            continue;
+        }
+
+        if (!vm_page_can_move(page)) {
+            vm_page_seg_add_inactive_page(seg, page);
+            vm_object_unlock(page->object);
+            continue;
+        }
+
+        return page;
+    }
+
+    return NULL;
+}
+
+/*
+ * Attempt to pull a page cache page.
+ *
+ * If successful, the object containing the page is locked.
+ */
+static struct vm_page *
+vm_page_seg_pull_cache_page(struct vm_page_seg *seg,
+                            boolean_t external_only,
+                            boolean_t *was_active)
+{
+    struct vm_page *page;
+
+    page = vm_page_seg_pull_inactive_page(seg, external_only);
+
+    if (page != NULL) {
+        *was_active = FALSE;
+        return page;
+    }
+
+    page = vm_page_seg_pull_active_page(seg, external_only);
+
+    if (page != NULL) {
+        *was_active = TRUE;
+        return page;
+    }
+
+    return NULL;
+}
+
+static boolean_t
+vm_page_seg_min_page_available(const struct vm_page_seg *seg)
+{
+    return (seg->nr_free_pages > seg->min_free_pages);
+}
+
+static boolean_t
+vm_page_seg_page_available(const struct vm_page_seg *seg)
+{
+    return (seg->nr_free_pages > seg->high_free_pages);
+}
+
+static boolean_t
+vm_page_seg_usable(const struct vm_page_seg *seg)
+{
+    return (seg->nr_free_pages >= seg->high_free_pages);
+}
+
+static void
+vm_page_seg_double_lock(struct vm_page_seg *seg1, struct vm_page_seg *seg2)
+{
+    assert(seg1 != seg2);
+
+    if (seg1 < seg2) {
+        simple_lock(&seg1->lock);
+        simple_lock(&seg2->lock);
+    } else {
+        simple_lock(&seg2->lock);
+        simple_lock(&seg1->lock);
+    }
+}
+
+static void
+vm_page_seg_double_unlock(struct vm_page_seg *seg1, struct vm_page_seg *seg2)
+{
+    simple_unlock(&seg1->lock);
+    simple_unlock(&seg2->lock);
+}
+
+/*
+ * Attempt to balance a segment by moving one page to another segment.
+ *
+ * Return TRUE if a page was actually moved.
+ */
+static boolean_t
+vm_page_seg_balance_page(struct vm_page_seg *seg,
+                         struct vm_page_seg *remote_seg)
+{
+    struct vm_page *src, *dest;
+    vm_object_t object;
+    vm_offset_t offset;
+    boolean_t was_active;
+
+    vm_page_lock_queues();
+    simple_lock(&vm_page_queue_free_lock);
+    vm_page_seg_double_lock(seg, remote_seg);
+
+    if (vm_page_seg_usable(seg)
+        || !vm_page_seg_page_available(remote_seg)) {
+        goto error;
+    }
+
+    src = vm_page_seg_pull_cache_page(seg, FALSE, &was_active);
+
+    if (src == NULL) {
+        goto error;
+    }
+
+    assert(src->object != NULL);
+    assert(!src->fictitious && !src->private);
+    assert(src->wire_count == 0);
+    assert(src->type != VM_PT_FREE);
+    assert(src->order == VM_PAGE_ORDER_UNLISTED);
+
+    dest = vm_page_seg_alloc_from_buddy(remote_seg, 0);
+    assert(dest != NULL);
+
+    vm_page_seg_double_unlock(seg, remote_seg);
+    simple_unlock(&vm_page_queue_free_lock);
+
+    if (!was_active && !src->reference && pmap_is_referenced(src->phys_addr)) {
+        src->reference = TRUE;
+    }
+
+    object = src->object;
+    offset = src->offset;
+    vm_page_remove(src);
+
+    vm_page_remove_mappings(src);
+
+    vm_page_set_type(dest, 0, src->type);
+    memcpy(&dest->vm_page_header, &src->vm_page_header,
+           sizeof(*dest) - VM_PAGE_HEADER_SIZE);
+    vm_page_copy(src, dest);
+
+    if (!src->dirty) {
+        pmap_clear_modify(dest->phys_addr);
+    }
+
+    dest->busy = FALSE;
+
+    simple_lock(&vm_page_queue_free_lock);
+    vm_page_init(src);
+    src->free = TRUE;
+    simple_lock(&seg->lock);
+    vm_page_set_type(src, 0, VM_PT_FREE);
+    vm_page_seg_free_to_buddy(seg, src, 0);
+    simple_unlock(&seg->lock);
+    simple_unlock(&vm_page_queue_free_lock);
+
+    vm_page_insert(dest, object, offset);
+    vm_object_unlock(object);
+
+    if (was_active) {
+        vm_page_activate(dest);
+    } else {
+        vm_page_deactivate(dest);
+    }
+
+    vm_page_unlock_queues();
+
+    return TRUE;
+
+error:
+    vm_page_seg_double_unlock(seg, remote_seg);
+    simple_unlock(&vm_page_queue_free_lock);
+    vm_page_unlock_queues();
+    return FALSE;
+}
+
+static boolean_t
+vm_page_seg_balance(struct vm_page_seg *seg)
+{
+    struct vm_page_seg *remote_seg;
+    unsigned int i;
+    boolean_t balanced;
+
+    /*
+     * It's important here that pages are moved to lower priority
+     * segments first.
+     */
+
+    for (i = vm_page_segs_size - 1; i < vm_page_segs_size; i--) {
+        remote_seg = vm_page_seg_get(i);
+
+        if (remote_seg == seg) {
+            continue;
+        }
+
+        balanced = vm_page_seg_balance_page(seg, remote_seg);
+
+        if (balanced) {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
+static boolean_t
+vm_page_seg_evict(struct vm_page_seg *seg,
+                  boolean_t external_only, boolean_t low_memory)
+{
+    struct vm_page *page;
+    boolean_t reclaim, laundry;
+    vm_object_t object;
+    boolean_t was_active;
+
+    page = NULL;
+    object = NULL;
+
+restart:
+    vm_page_lock_queues();
+    simple_lock(&seg->lock);
+
+    if (page != NULL) {
+        vm_object_lock(page->object);
+    } else {
+        page = vm_page_seg_pull_cache_page(seg, external_only, &was_active);
+
+        if (page == NULL) {
+            goto out;
+        }
+    }
+
+    assert(page->object != NULL);
+    assert(!page->fictitious && !page->private);
+    assert(page->wire_count == 0);
+    assert(page->type != VM_PT_FREE);
+    assert(page->order == VM_PAGE_ORDER_UNLISTED);
+
+    object = page->object;
+
+    if (!was_active
+        && (page->reference || pmap_is_referenced(page->phys_addr))) {
+        vm_page_seg_add_active_page(seg, page);
+        simple_unlock(&seg->lock);
+        vm_object_unlock(object);
+        vm_stat.reactivations++;
+        current_task()->reactivations++;
+        vm_page_unlock_queues();
+        page = NULL;
+        goto restart;
+    }
+
+    vm_page_remove_mappings(page);
+
+    if (!page->dirty && !page->precious) {
+        reclaim = TRUE;
+        goto out;
+    }
+
+    reclaim = FALSE;
+
+    /*
+     * If we are very low on memory, then we can't rely on an external
+     * pager to clean a dirty page, because external pagers are not
+     * vm-privileged.
+     *
+     * The laundry bit tells vm_pageout_setup not to do any special
+     * processing of this page since it's immediately going to be
+     * double paged out to the default pager. The laundry bit is
+     * reset and the page is inserted into an internal object by
+     * vm_pageout_setup before the double paging pass.
+     */
+
+    assert(!page->laundry);
+
+    if (object->internal || !low_memory) {
+        laundry = FALSE;
+    } else {
+        laundry = page->laundry = TRUE;
+    }
+
+out:
+    simple_unlock(&seg->lock);
+
+    if (object == NULL) {
+        vm_page_unlock_queues();
+        return FALSE;
+    }
+
+    if (reclaim) {
+        vm_page_free(page);
+        vm_page_unlock_queues();
+
+        if (vm_object_collectable(object)) {
+            vm_object_collect(object);
+        } else {
+            vm_object_unlock(object);
+        }
+
+        return TRUE;
+    }
+
+    vm_page_unlock_queues();
+
+    /*
+     * If there is no memory object for the page, create one and hand it
+     * to the default pager. First try to collapse, so we don't create
+     * one unnecessarily.
+     */
+
+    if (!object->pager_initialized) {
+        vm_object_collapse(object);
+    }
+
+    if (!object->pager_initialized) {
+        vm_object_pager_create(object);
+    }
+
+    if (!object->pager_initialized) {
+        panic("vm_page_seg_evict");
+    }
+
+    vm_pageout_page(page, FALSE, TRUE); /* flush it */
+    vm_object_unlock(object);
+
+    if (laundry) {
+        goto restart;
+    }
+
+    return TRUE;
+}
+
+static void
+vm_page_seg_compute_high_active_page(struct vm_page_seg *seg)
+{
+    unsigned long nr_pages;
+
+    nr_pages = seg->nr_active_pages + seg->nr_inactive_pages;
+    seg->high_active_pages = nr_pages * VM_PAGE_HIGH_ACTIVE_PAGE_NUM
+                             / VM_PAGE_HIGH_ACTIVE_PAGE_DENOM;
+}
+
+static void
+vm_page_seg_refill_inactive(struct vm_page_seg *seg)
+{
+    struct vm_page *page;
+
+    simple_lock(&seg->lock);
+
+    vm_page_seg_compute_high_active_page(seg);
+
+    while (seg->nr_active_pages > seg->high_active_pages) {
+        page = vm_page_seg_pull_active_page(seg, FALSE);
+
+        if (page == NULL) {
+            break;
+        }
+
+        page->reference = FALSE;
+        pmap_clear_reference(page->phys_addr);
+        vm_page_seg_add_inactive_page(seg, page);
+        vm_object_unlock(page->object);
+    }
+
+    simple_unlock(&seg->lock);
 }
 
 void __init
@@ -712,6 +1471,77 @@ vm_page_lookup_pa(phys_addr_t pa)
     return NULL;
 }
 
+static struct vm_page_seg *
+vm_page_lookup_seg(const struct vm_page *page)
+{
+    struct vm_page_seg *seg;
+    unsigned int i;
+
+    for (i = 0; i < vm_page_segs_size; i++) {
+        seg = &vm_page_segs[i];
+
+        if ((page->phys_addr >= seg->start) && (page->phys_addr < seg->end)) {
+            return seg;
+        }
+    }
+
+    return NULL;
+}
+
+void vm_page_check(const struct vm_page *page)
+{
+    if (page->fictitious) {
+        if (page->private) {
+            panic("vm_page: page both fictitious and private");
+        }
+
+        if (page->phys_addr != vm_page_fictitious_addr) {
+            panic("vm_page: invalid fictitious page");
+        }
+    } else {
+        struct vm_page_seg *seg;
+
+        if (page->phys_addr == vm_page_fictitious_addr) {
+            panic("vm_page: real page has fictitious address");
+        }
+
+        seg = vm_page_lookup_seg(page);
+
+        if (seg == NULL) {
+            if (!page->private) {
+                panic("vm_page: page claims it's managed but not in any segment");
+            }
+        } else {
+            if (page->private) {
+                struct vm_page *real_page;
+
+                if (vm_page_pageable(page)) {
+                    panic("vm_page: private page is pageable");
+                }
+
+                real_page = vm_page_lookup_pa(page->phys_addr);
+
+                if (vm_page_pageable(real_page)) {
+                    panic("vm_page: page underlying private page is pageable");
+                }
+
+                if ((real_page->type == VM_PT_FREE)
+                    || (real_page->order != VM_PAGE_ORDER_UNLISTED)) {
+                    panic("vm_page: page underlying private pagei is free");
+                }
+            } else {
+                unsigned int index;
+
+                index = vm_page_seg_index(seg);
+
+                if (index != page->seg_index) {
+                    panic("vm_page: page segment mismatch");
+                }
+            }
+        }
+    }
+}
+
 struct vm_page *
 vm_page_alloc_pa(unsigned int order, unsigned int selector, unsigned short type)
 {
@@ -725,8 +1555,8 @@ vm_page_alloc_pa(unsigned int order, unsigned int selector, unsigned short type)
             return page;
     }
 
-    if (type == VM_PT_PMAP)
-        panic("vm_page: unable to allocate pmap page");
+    if (!current_thread() || current_thread()->vm_privilege)
+        panic("vm_page: privileged thread unable to allocate page");
 
     return NULL;
 }
@@ -769,6 +1599,9 @@ vm_page_info_all(void)
         printf("vm_page: %s: pages: %lu (%luM), free: %lu (%luM)\n",
                vm_page_seg_name(i), pages, pages >> (20 - PAGE_SHIFT),
                seg->nr_free_pages, seg->nr_free_pages >> (20 - PAGE_SHIFT));
+        printf("vm_page: %s: min:%lu low:%lu high:%lu\n",
+               vm_page_seg_name(vm_page_seg_index(seg)),
+               seg->min_free_pages, seg->low_free_pages, seg->high_free_pages);
     }
 }
 
@@ -878,4 +1711,409 @@ vm_page_mem_free(void)
     }
 
     return total;
+}
+
+/*
+ * Mark this page as wired down by yet another map, removing it
+ * from paging queues as necessary.
+ *
+ * The page's object and the page queues must be locked.
+ */
+void
+vm_page_wire(struct vm_page *page)
+{
+    VM_PAGE_CHECK(page);
+
+    if (page->wire_count == 0) {
+        vm_page_queues_remove(page);
+
+        if (!page->private && !page->fictitious) {
+            vm_page_wire_count++;
+        }
+    }
+
+    page->wire_count++;
+}
+
+/*
+ * Release one wiring of this page, potentially enabling it to be paged again.
+ *
+ * The page's object and the page queues must be locked.
+ */
+void
+vm_page_unwire(struct vm_page *page)
+{
+    struct vm_page_seg *seg;
+
+    VM_PAGE_CHECK(page);
+
+    assert(page->wire_count != 0);
+    page->wire_count--;
+
+    if ((page->wire_count != 0)
+        || page->fictitious
+        || page->private) {
+        return;
+    }
+
+    seg = vm_page_seg_get(page->seg_index);
+
+    simple_lock(&seg->lock);
+    vm_page_seg_add_active_page(seg, page);
+    simple_unlock(&seg->lock);
+
+    vm_page_wire_count--;
+}
+
+/*
+ * Returns the given page to the inactive list, indicating that
+ * no physical maps have access to this page.
+ * [Used by the physical mapping system.]
+ *
+ * The page queues must be locked.
+ */
+void
+vm_page_deactivate(struct vm_page *page)
+{
+    struct vm_page_seg *seg;
+
+    VM_PAGE_CHECK(page);
+
+    /*
+     * This page is no longer very interesting.  If it was
+     * interesting (active or inactive/referenced), then we
+     * clear the reference bit and (re)enter it in the
+     * inactive queue.  Note wired pages should not have
+     * their reference bit cleared.
+     */
+
+    if (page->active || (page->inactive && page->reference)) {
+        if (!page->fictitious && !page->private && !page->absent) {
+            pmap_clear_reference(page->phys_addr);
+        }
+
+        page->reference = FALSE;
+        vm_page_queues_remove(page);
+    }
+
+    if ((page->wire_count == 0) && !page->fictitious
+        && !page->private && !page->inactive) {
+        seg = vm_page_seg_get(page->seg_index);
+
+        simple_lock(&seg->lock);
+        vm_page_seg_add_inactive_page(seg, page);
+        simple_unlock(&seg->lock);
+    }
+}
+
+/*
+ * Put the specified page on the active list (if appropriate).
+ *
+ * The page queues must be locked.
+ */
+void
+vm_page_activate(struct vm_page *page)
+{
+    struct vm_page_seg *seg;
+
+    VM_PAGE_CHECK(page);
+
+    /*
+     * Unconditionally remove so that, even if the page was already
+     * active, it gets back to the end of the active queue.
+     */
+    vm_page_queues_remove(page);
+
+    if ((page->wire_count == 0) && !page->fictitious && !page->private) {
+        seg = vm_page_seg_get(page->seg_index);
+
+        if (page->active)
+            panic("vm_page_activate: already active");
+
+        simple_lock(&seg->lock);
+        vm_page_seg_add_active_page(seg, page);
+        simple_unlock(&seg->lock);
+    }
+}
+
+void
+vm_page_queues_remove(struct vm_page *page)
+{
+    struct vm_page_seg *seg;
+
+    assert(!page->active || !page->inactive);
+
+    if (!page->active && !page->inactive) {
+        return;
+    }
+
+    seg = vm_page_seg_get(page->seg_index);
+
+    simple_lock(&seg->lock);
+
+    if (page->active) {
+        vm_page_seg_remove_active_page(seg, page);
+    } else {
+        vm_page_seg_remove_inactive_page(seg, page);
+    }
+
+    simple_unlock(&seg->lock);
+}
+
+/*
+ * Check whether segments are all usable for unprivileged allocations.
+ *
+ * If all segments are usable, resume pending unprivileged allocations
+ * and return TRUE.
+ *
+ * This function acquires vm_page_queue_free_lock, which is held on return.
+ */
+static boolean_t
+vm_page_check_usable(void)
+{
+    struct vm_page_seg *seg;
+    boolean_t usable;
+    unsigned int i;
+
+    simple_lock(&vm_page_queue_free_lock);
+
+    for (i = 0; i < vm_page_segs_size; i++) {
+        seg = vm_page_seg_get(i);
+
+        simple_lock(&seg->lock);
+        usable = vm_page_seg_usable(seg);
+        simple_unlock(&seg->lock);
+
+        if (!usable) {
+            return FALSE;
+        }
+    }
+
+    vm_page_external_pagedout = -1;
+    vm_page_alloc_paused = FALSE;
+    thread_wakeup(&vm_page_alloc_paused);
+    return TRUE;
+}
+
+static boolean_t
+vm_page_may_balance(void)
+{
+    struct vm_page_seg *seg;
+    boolean_t page_available;
+    unsigned int i;
+
+    for (i = 0; i < vm_page_segs_size; i++) {
+        seg = vm_page_seg_get(i);
+
+        simple_lock(&seg->lock);
+        page_available = vm_page_seg_page_available(seg);
+        simple_unlock(&seg->lock);
+
+        if (page_available) {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
+static boolean_t
+vm_page_balance_once(void)
+{
+    boolean_t balanced;
+    unsigned int i;
+
+    /*
+     * It's important here that pages are moved from higher priority
+     * segments first.
+     */
+
+    for (i = 0; i < vm_page_segs_size; i++) {
+        balanced = vm_page_seg_balance(vm_page_seg_get(i));
+
+        if (balanced) {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
+boolean_t
+vm_page_balance(void)
+{
+    boolean_t balanced;
+
+    while (vm_page_may_balance()) {
+        balanced = vm_page_balance_once();
+
+        if (!balanced) {
+            break;
+        }
+    }
+
+    return vm_page_check_usable();
+}
+
+static boolean_t
+vm_page_evict_once(boolean_t external_only)
+{
+    struct vm_page_seg *seg;
+    boolean_t low_memory, min_page_available, evicted;
+    unsigned int i;
+
+    /*
+     * XXX Page allocation currently only uses the DIRECTMAP selector,
+     * allowing us to know which segments to look at when determining
+     * whether we're very low on memory.
+     */
+    low_memory = TRUE;
+
+    simple_lock(&vm_page_queue_free_lock);
+
+    for (i = 0; i < vm_page_segs_size; i++) {
+        if (i > VM_PAGE_SEG_DIRECTMAP) {
+            break;
+        }
+
+        seg = vm_page_seg_get(i);
+
+        simple_lock(&seg->lock);
+        min_page_available = vm_page_seg_min_page_available(seg);
+        simple_unlock(&seg->lock);
+
+        if (min_page_available) {
+            low_memory = FALSE;
+            break;
+        }
+    }
+
+    simple_unlock(&vm_page_queue_free_lock);
+
+    /*
+     * It's important here that pages are evicted from lower priority
+     * segments first.
+     */
+
+    for (i = vm_page_segs_size - 1; i < vm_page_segs_size; i--) {
+        evicted = vm_page_seg_evict(vm_page_seg_get(i),
+                                    external_only, low_memory);
+
+        if (evicted) {
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
+#define VM_PAGE_MAX_LAUNDRY   5
+#define VM_PAGE_MAX_EVICTIONS 5
+
+boolean_t
+vm_page_evict(boolean_t *should_wait)
+{
+    boolean_t pause, evicted, external_only;
+    unsigned int i;
+
+    *should_wait = TRUE;
+    external_only = TRUE;
+
+    simple_lock(&vm_page_queue_free_lock);
+    vm_page_external_pagedout = 0;
+    simple_unlock(&vm_page_queue_free_lock);
+
+again:
+    vm_page_lock_queues();
+    pause = (vm_page_laundry_count >= VM_PAGE_MAX_LAUNDRY);
+    vm_page_unlock_queues();
+
+    if (pause) {
+        simple_lock(&vm_page_queue_free_lock);
+        return FALSE;
+    }
+
+    for (i = 0; i < VM_PAGE_MAX_EVICTIONS; i++) {
+        evicted = vm_page_evict_once(external_only);
+
+        if (!evicted) {
+            break;
+        }
+    }
+
+    simple_lock(&vm_page_queue_free_lock);
+
+    /*
+     * Keep in mind eviction may not cause pageouts, since non-precious
+     * clean pages are simply released.
+     */
+    if ((vm_page_external_pagedout == 0) || (vm_page_laundry_count == 0)) {
+        /*
+         * No pageout, but some clean pages were freed. Start a complete
+         * scan again without waiting.
+         */
+        if (evicted) {
+            *should_wait = FALSE;
+            return FALSE;
+        }
+
+        /*
+         * Eviction failed, consider pages from internal objects on the
+         * next attempt.
+         */
+        if (external_only) {
+            simple_unlock(&vm_page_queue_free_lock);
+            external_only = FALSE;
+            goto again;
+        }
+
+        /*
+         * TODO Find out what could cause this and how to deal with it.
+         * This will likely require an out-of-memory killer.
+         */
+        panic("vm_page: unable to recycle any page");
+    }
+
+    simple_unlock(&vm_page_queue_free_lock);
+
+    return vm_page_check_usable();
+}
+
+void
+vm_page_refill_inactive(void)
+{
+    unsigned int i;
+
+    vm_page_lock_queues();
+
+    for (i = 0; i < vm_page_segs_size; i++) {
+        vm_page_seg_refill_inactive(vm_page_seg_get(i));
+    }
+
+    vm_page_unlock_queues();
+}
+
+void
+vm_page_wait(void (*continuation)(void))
+{
+    assert(!current_thread()->vm_privilege);
+
+    simple_lock(&vm_page_queue_free_lock);
+
+    if (!vm_page_alloc_paused) {
+        simple_unlock(&vm_page_queue_free_lock);
+        return;
+    }
+
+    assert_wait(&vm_page_alloc_paused, FALSE);
+
+    simple_unlock(&vm_page_queue_free_lock);
+
+    if (continuation != 0) {
+        counter(c_vm_page_wait_block_user++);
+        thread_block(continuation);
+    } else {
+        counter(c_vm_page_wait_block_kernel++);
+        thread_block((void (*)(void)) 0);
+    }
 }
