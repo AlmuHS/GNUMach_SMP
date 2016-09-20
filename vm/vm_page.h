@@ -401,29 +401,6 @@ vm_page_to_pa(const struct vm_page *page)
     return page->phys_addr;
 }
 
-#if 0
-static inline unsigned long
-vm_page_direct_va(phys_addr_t pa)
-{
-    assert(pa < VM_PAGE_DIRECTMAP_LIMIT);
-    return ((unsigned long)pa + VM_MIN_DIRECTMAP_ADDRESS);
-}
-
-static inline phys_addr_t
-vm_page_direct_pa(unsigned long va)
-{
-    assert(va >= VM_MIN_DIRECTMAP_ADDRESS);
-    assert(va < VM_MAX_DIRECTMAP_ADDRESS);
-    return (va - VM_MIN_DIRECTMAP_ADDRESS);
-}
-
-static inline void *
-vm_page_direct_ptr(const struct vm_page *page)
-{
-    return (void *)vm_page_direct_va(vm_page_to_pa(page));
-}
-#endif
-
 /*
  * Associate private data with a page.
  */
