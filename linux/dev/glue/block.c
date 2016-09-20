@@ -50,6 +50,7 @@
 #include <mach/notify.h>
 
 #include <kern/kalloc.h>
+#include <kern/list.h>
 
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_space.h>
@@ -97,7 +98,7 @@ struct temp_data
   struct inode inode;
   struct file file;
   struct request req;
-  queue_head_t pages;
+  struct list pages;
 };
 
 /* One of these exists for each
@@ -306,7 +307,7 @@ alloc_buffer (int size)
 	VM_PAGE_WAIT (0);
       d = current_thread ()->pcb->data;
       assert (d);
-      queue_enter (&d->pages, m, vm_page_t, pageq);
+      list_insert_tail (&d->pages, &m->node);
       return (void *) phystokv(m->phys_addr);
     }
   return (void *) __get_free_pages (GFP_KERNEL, 0, ~0UL);
@@ -317,7 +318,7 @@ static void
 free_buffer (void *p, int size)
 {
   struct temp_data *d;
-  vm_page_t m;
+  vm_page_t m, tmp;
 
   assert (size <= PAGE_SIZE);
 
@@ -325,11 +326,11 @@ free_buffer (void *p, int size)
     {
       d = current_thread ()->pcb->data;
       assert (d);
-      queue_iterate (&d->pages, m, vm_page_t, pageq)
+      list_for_each_entry_safe (&d->pages, m, tmp, node)
 	{
 	  if (phystokv(m->phys_addr) == (vm_offset_t) p)
 	    {
-	      queue_remove (&d->pages, m, vm_page_t, pageq);
+	      list_remove (&m->node);
 	      VM_PAGE_FREE (m);
 	      return;
 	    }
@@ -992,7 +993,7 @@ check:
 #define DECL_DATA	struct temp_data td
 #define INIT_DATA()			\
 {					\
-  queue_init (&td.pages);		\
+  list_init (&td.pages);		\
   td.inode.i_rdev = bd->dev;		\
   td.file.f_mode = bd->mode;		\
   td.file.f_flags = bd->flags;		\
@@ -1046,7 +1047,7 @@ device_open (ipc_port_t reply_port, mach_msg_type_name_t reply_port_type,
     minor <<= gd->minor_shift;
   dev = MKDEV (major, minor);
 
-  queue_init (&td.pages);
+  list_init (&td.pages);
   current_thread ()->pcb->data = &td;
 
   /* Check partition.  */
@@ -1417,7 +1418,7 @@ device_read (void *d, ipc_port_t reply_port,
   boolean_t dirty;
   int resid, amt;
   io_return_t err = 0;
-  queue_head_t pages;
+  struct list pages;
   vm_map_copy_t copy;
   vm_offset_t addr, offset, alloc_offset, o;
   vm_object_t object;
@@ -1460,7 +1461,7 @@ device_read (void *d, ipc_port_t reply_port,
   if (err)
     goto out;
 
-  queue_init (&pages);
+  list_init (&pages);
 
   while (resid)
     {
@@ -1471,7 +1472,7 @@ device_read (void *d, ipc_port_t reply_port,
 
       /* Map any pages left from previous operation.  */
       o = trunc_page (offset);
-      queue_iterate (&pages, m, vm_page_t, pageq)
+      list_for_each_entry (&pages, m, node)
 	{
 	  pmap_enter (vm_map_pmap (device_io_map),
 		      addr + o - trunc_page (offset),
@@ -1487,7 +1488,7 @@ device_read (void *d, ipc_port_t reply_port,
 	    VM_PAGE_WAIT (0);
 	  assert (! m->active && ! m->inactive);
 	  m->busy = TRUE;
-	  queue_enter (&pages, m, vm_page_t, pageq);
+	  list_insert_tail (&pages, &m->node);
 	  pmap_enter (vm_map_pmap (device_io_map),
 		      addr + alloc_offset - trunc_page (offset),
 		      m->phys_addr, VM_PROT_READ|VM_PROT_WRITE, TRUE);
@@ -1529,9 +1530,9 @@ device_read (void *d, ipc_port_t reply_port,
       vm_object_lock (object);
       while (o < trunc_page (offset))
 	{
-	  m = (vm_page_t) queue_first (&pages);
-	  assert (! queue_end (&pages, (queue_entry_t) m));
-	  queue_remove (&pages, m, vm_page_t, pageq);
+	  m = list_first_entry (&pages, struct vm_page, node);
+	  assert (! list_end (&pages, &m->node));
+	  list_remove (&m->node);
 	  assert (m->busy);
 	  vm_page_lock_queues ();
 	  if (dirty)
@@ -1557,7 +1558,7 @@ device_read (void *d, ipc_port_t reply_port,
   /* Delete kernel buffer.  */
   vm_map_remove (device_io_map, addr, addr + size);
 
-  assert (queue_empty (&pages));
+  assert (list_empty (&pages));
 
 out:
   if (! err)
