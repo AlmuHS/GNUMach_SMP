@@ -357,12 +357,17 @@ void clear_wait(
 	splx(s);
 }
 
-static inline void __attribute__((noreturn))
-state_panic(const thread_t thread, const char *caller)
-{
-  panic ("%s: thread %x has unexpected state %x",
-	 caller, thread, thread->state);
-}
+#define state_panic(thread)						\
+  panic ("thread %p has unexpected state %x (%s%s%s%s%s%s%s%s)",	\
+	 thread, thread->state,						\
+	 thread->state & TH_WAIT ? "TH_WAIT|" : "",			\
+	 thread->state & TH_SUSP ? "TH_SUSP|" : "",			\
+	 thread->state & TH_RUN ? "TH_RUN|" : "",			\
+	 thread->state & TH_UNINT ? "TH_UNINT|" : "",			\
+	 thread->state & TH_HALTED ? "TH_HALTED|" : "",			\
+	 thread->state & TH_IDLE ? "TH_IDLE|" : "",			\
+	 thread->state & TH_SWAPPED ? "TH_SWAPPED|" : "",		\
+	 thread->state & TH_SW_COMING_IN ? "TH_SW_COMING_IN|" : "")
 
 /*
  *	thread_wakeup_prim:
@@ -426,7 +431,7 @@ void thread_wakeup_prim(
 				break;
 
 			    default:
-				state_panic(thread, "thread_wakeup");
+				state_panic(thread);
 				break;
 			}
 			thread_unlock(thread);
@@ -716,7 +721,7 @@ boolean_t thread_invoke(
 			    break;
 
 			default:
-			    state_panic(old_thread, "thread_invoke");
+			    state_panic(old_thread);
 		    }
 		    thread_unlock(old_thread);
 		after_old_thread:
@@ -966,7 +971,7 @@ void thread_dispatch(
 		break;
 
 	    default:
-		state_panic(thread, "thread_dispatch");
+		state_panic(thread);
 	}
 	thread_unlock(thread);
 }
