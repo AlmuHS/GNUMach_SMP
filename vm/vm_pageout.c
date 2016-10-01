@@ -72,7 +72,7 @@ static int vm_pageout_continue;
  *
  *		Move or copy the page to a new object, as part
  *		of which it will be sent to its memory manager
- *		in a memory_object_data_write or memory_object_initialize
+ *		in a memory_object_data_return or memory_object_initialize
  *		message.
  *
  *		The "paging_offset" argument specifies the offset
@@ -95,7 +95,7 @@ static int vm_pageout_continue;
  *		this routine returns a pointer to a place-holder page,
  *		inserted at the same offset, to block out-of-order
  *		requests for the page.  The place-holder page must
- *		be freed after the data_write or initialize message
+ *		be freed after the data_return or initialize message
  *		has been sent.  If the page is copied,
  *		the holding page is VM_PAGE_NULL.
  *
@@ -288,7 +288,7 @@ vm_pageout_setup(
  *		The "initial" argument specifies whether this
  *		data is an initialization only, and should use
  *		memory_object_data_initialize instead of
- *		memory_object_data_write.
+ *		memory_object_data_return.
  *
  *		The "flush" argument specifies whether the page
  *		should be flushed from the object.  If not, a
@@ -364,10 +364,9 @@ vm_pageout_page(
 	rc = vm_map_copyin_object(new_object, 0, PAGE_SIZE, &copy);
 	assert(rc == KERN_SUCCESS);
 
-	if (initial || old_object->use_old_pageout) {
-		rc = (*(initial ? memory_object_data_initialize
-			     : memory_object_data_write))
-			(old_object->pager,
+	if (initial) {
+		rc = memory_object_data_initialize(
+			 old_object->pager,
 			 old_object->pager_request,
 			 paging_offset, (pointer_t) copy, PAGE_SIZE);
 	}

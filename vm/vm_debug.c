@@ -250,8 +250,6 @@ mach_vm_object_info(
 		state |= VOI_STATE_LOCK_IN_PROGRESS;
 	if (object->lock_restart)
 		state |= VOI_STATE_LOCK_RESTART;
-	if (object->use_old_pageout)
-		state |= VOI_STATE_USE_OLD_PAGEOUT;
 	info.voi_state = state;
 	vm_object_unlock(object);
 

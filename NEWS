@@ -1,3 +1,7 @@
+Version 1.8 (2016-10-XX)
+
+The deprecated external memory management interface has been removed.
+
 Version 1.7 (2016-05-18)
 
 The code has been updated to work with newer versions of GCC, and numerous bugs

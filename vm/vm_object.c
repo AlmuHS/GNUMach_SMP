@@ -309,7 +309,6 @@ void vm_object_bootstrap(void)
 	vm_object_template.alive = TRUE;
 	vm_object_template.lock_in_progress = FALSE;
 	vm_object_template.lock_restart = FALSE;
-	vm_object_template.use_old_pageout = TRUE; /* XXX change later */
 	vm_object_template.last_alloc = (vm_offset_t) 0;
 
 #if	MACH_PAGEMAP

@@ -150,9 +150,6 @@ struct vm_object {
 						/* Should lock request in
 						 * progress restart search?
 						 */
-	/* boolean_t */		use_old_pageout : 1,
-						/* Use old pageout primitives?
-						 */
 	/* boolean_t */		use_shared_copy : 1,/* Use shared (i.e.,
 						 * delayed) copy on write */
 	/* boolean_t */		shadowed: 1,	/* Shadow may exist */

@@ -325,23 +325,7 @@ skip;
 
 #endif	/* ! KERNEL_USER */
 
-/*
- *	Provide the data contents of a range of the given memory
- *	object, with the access restriction specified.  [Only
- *	whole virtual pages of data can be accepted; partial pages
- *	will be discarded.  Data should be provided on request, but
- *	may be provided in advance as desired.  When data already
- *	held by this kernel is provided again, the new data is ignored.
- *	The access restriction is the subset of {read, write, execute}
- *	which are prohibited.  The kernel may not provide any data (or
- *	protection) consistency among pages with different virtual page
- *	alignments within the same object.]
- */
-simpleroutine memory_object_data_provided(
-		memory_control	: memory_object_control_t;
-		offset		: vm_offset_t;
-		data		: pointer_t;
-		lock_value	: vm_prot_t);
+skip;	/* was: memory_object_data_provided */
 
 /*
  *	Indicate that a range of the given temporary memory object does
@@ -662,15 +646,7 @@ simpleroutine memory_object_data_error(
 		size		: vm_size_t;
 		error_value	: kern_return_t);
 
-/*
- *	Make decisions regarding the use of the specified
- *	memory object.
- */
-simpleroutine memory_object_set_attributes(
-		memory_control	: memory_object_control_t;
-		object_ready	: boolean_t;
-		may_cache	: boolean_t;
-		copy_strategy	: memory_object_copy_strategy_t);
+skip;	/* was: memory_object_set_attributes */
 
 /*
  */

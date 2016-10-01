@@ -3479,7 +3479,7 @@ formatting, the remote procedure call generator produces a procedure,
 @code{memory_object_server}, to handle a received message.  This
 function does all necessary argument handling, and actually calls one of
 the following functions: @code{memory_object_init},
-@code{memory_object_data_write}, @code{memory_object_data_return},
+@code{memory_object_data_return},
 @code{memory_object_data_request}, @code{memory_object_data_unlock},
 @code{memory_object_lock_completed}, @code{memory_object_copy},
 @code{memory_object_terminate}.  The @strong{default memory manager} may
@@ -3527,8 +3527,7 @@ name ports.  The virtual page size that is used by the calling kernel is
 included for planning purposes.
 
 When the memory manager is prepared to accept requests for data for
-this object, it must call @code{memory_object_ready}, or set the ready
-flag using @code{memory_object_set_attributes}.
+this object, it must call @code{memory_object_ready}.
 Otherwise the kernel will not process requests on this object.  To
 reject all mappings of this object, the memory manager may use
 @code{memory_object_destroy}.
@@ -3785,7 +3784,7 @@ use this call in three different situations.
 @item
 The object was created by @code{memory_object_create} and the kernel has
 not yet provided data for this range (either via a
-@code{memory_object_data_initialize}, @code{memory_object_data_write} or
+@code{memory_object_data_initialize}, or
 a @code{memory_object_data_return} for the object.
 
 @item
@@ -3851,57 +3850,6 @@ is called by the kernel, which does not wait for a reply message, this
 value is ignored.
 @end deftypefun
 
-The remaining interfaces in this section are obsolete.
-
-@deftypefun kern_return_t memory_object_data_write (@w{memory_object_t @var{memory_object}}, @w{memory_object_control_t @var{memory_control}}, @w{vm_offset_t @var{offset}}, @w{vm_offset_t @var{data}}, @w{vm_size_t @var{data_count}})
-@deftypefunx kern_return_t seqnos_memory_object_data_write (@w{memory_object_t @var{memory_object}}, @w{mach_port_seqno_t @var{seqno}}, @w{memory_object_control_t @var{memory_control}}, @w{vm_offset_t @var{offset}}, @w{vm_offset_t @var{data}}, @w{vm_size_t @var{data_count}})
-The function @code{memory_object_data_write} provides the memory manager
-with data that has been modified while cached in physical memory.  It is the old form of @code{memory_object_data_return}.  Once
-the memory manager no longer needs this data (e.g., it has been written
-to another storage medium), it should be deallocated using
-@code{vm_deallocate}.
-
-The argument @var{memory_object} is the port that represents the memory
-object data, as supplied to the kernel in a @code{vm_map} call.
-@var{memory_control} is the request port to which a response is
-requested.  (In the event that a memory object has been supplied to more
-than one the kernel that has made the request.)  @var{offset} is the
-offset within a memory object to which this call refers.  This will be
-page aligned.  @var{data} is the data which has been modified while
-cached in physical memory.  @var{data_count} is the amount of data to be
-written, in bytes.  This will be an integral number of memory object
-pages.
-
-The function should return @code{KERN_SUCCESS}, but since this routine
-is called by the kernel, which does not wait for a reply message, this
-value is ignored.
-@end deftypefun
-
-@deftypefun kern_return_t memory_object_data_provided (@w{memory_object_control_t @var{memory_control}}, @w{vm_offset_t @var{offset}}, @w{vm_offset_t @var{data}}, @w{vm_size_t @var{data_count}}, @w{vm_prot_t @var{lock_value}})
-The function @code{memory_object_data_provided} supplies the kernel with
-data for the specified memory object.  It is the old form of
-@code{memory_object_data_supply}.  Ordinarily, memory managers should
-only provide data in response to @code{memory_object_data_request} calls
-from the kernel.  The @var{lock_value} specifies what type of access
-will not be allowed to the data range.  The lock values must be one or
-more of the set: @code{VM_PROT_NONE}, @code{VM_PROT_READ},
-@code{VM_PROT_WRITE}, @code{VM_PROT_EXECUTE} and @code{VM_PROT_ALL} as
-defined in @file{mach/vm_prot.h}.
-
-The argument @var{memory_control} is the port, provided by the kernel in
-a @code{memory_object_init} call, to which cache management requests may
-be issued.  @var{offset} is an offset within a memory object in bytes.
-This must be page aligned.  @var{data} is the data that is being
-provided to the kernel.  This is a pointer to the data.
-@var{data_count} is the amount of data to be provided.  This must be an
-integral number of memory object pages.  @var{lock_value} is a
-protection value indicating those forms of access that should
-@strong{not} be permitted to the specified cached data.
-
-This routine does not receive a reply message (and consequently has no
-return value), so only message transmission errors apply.
-@end deftypefun
-
 
 @node Memory Object Locking
 @section Memory Object Locking
@@ -3912,8 +3860,7 @@ to make cache management requests.  As specified in arguments to the
 call, the kernel will:
 @itemize
 @item
-clean (i.e., write back using @code{memory_object_data_supply} or
-@code{memory_object_data_write}) any cached data which has been modified
+clean (i.e., write back using @code{memory_object_data_supply} any cached data which has been modified
 since the last time it was written
 
 @item
@@ -4026,11 +3973,12 @@ return value), so only message transmission errors apply.
 @end deftypefun
 
 @deftypefun kern_return_t memory_object_change_attributes (@w{memory_object_control_t @var{memory_control}}, @w{boolean_t @var{may_cache_object}}, @w{memory_object_copy_strategy_t @var{copy_strategy}}, @w{mach_port_t @var{reply_to}})
-The function @code{memory_object_change_attribute} sets
-performance-related attributes for the specified memory object.  If the
-caching attribute is asserted, the kernel is permitted (and encouraged)
-to maintain cached data for this memory object even after no virtual
-address space contains this data.
+The function @code{memory_object_change_attribute} informs the kernel
+that the memory manager is ready to receive data or unlock requests on
+behalf of the clients and sets performance-related attributes for the
+specified memory object.  If the caching attribute is asserted, the
+kernel is permitted (and encouraged) to maintain cached data for this
+memory object even after no virtual address space contains this data.
 
 There are three possible caching strategies:
 @code{MEMORY_OBJECT_COPY_NONE} which specifies that nothing special
@@ -4065,44 +4013,6 @@ completion of an attribute change call.
 @c  the memory_object_change_attributes call may cause memory object
 @c  termination (by uncaching the object).  This would yield an invalid
 @c  port.
-@end deftypefun
-
-The following interface is obsoleted by @code{memory_object_ready} and
-@code{memory_object_change_attributes}.  If the old form
-@code{memory_object_set_attributes} is used to make a memory object
-ready, the kernel will write back data using the old
-@code{memory_object_data_write} interface rather than
-@code{memory_object_data_return}..
-
-@deftypefun kern_return_t memory_object_set_attributes (@w{memory_object_control_t @var{memory_control}}, @w{boolean @var{object_ready}}, @w{boolean_t @var{may_cache_object}}, @w{memory_object_copy_strategy_t @var{copy_strategy}})
-The function @code{memory_object_set_attribute} controls how the
-memory object.  The kernel will only make data or unlock requests when
-the ready attribute is asserted.  If the caching attribute is asserted,
-the kernel is permitted (and encouraged) to maintain cached data for
-this memory object even after no virtual address space contains this
-data.
-
-There are three possible caching strategies:
-@code{MEMORY_OBJECT_COPY_NONE} which specifies that nothing special
-should be done when data in the object is copied;
-@code{MEMORY_OBJECT_COPY_CALL} which specifies that the memory manager
-should be notified via a @code{memory_object_copy} call before any part
-of the object is copied; and @code{MEMORY_OBJECT_COPY_DELAY} which
-guarantees that the memory manager does not externally modify the data
-so that the kernel can use its normal copy-on-write algorithms.
-@code{MEMORY_OBJECT_COPY_DELAY} is the strategy most commonly used.
-
-The argument @var{memory_control} is the port, provided by the kernel in
-a @code{memory_object_init} call, to which cache management requests may
-be issued.  If @var{object_ready} is set, the kernel may issue new data
-and unlock requests on the associated memory object.  If
-@var{may_cache_object} is set, the kernel may keep data associated with
-this memory object, even after virtual memory references to it are gone.
-@var{copy_strategy} tells how the kernel should copy regions of the
-associated memory object.
-
-This routine does not receive a reply message (and consequently has no
-return value), so only message transmission errors apply.
 @end deftypefun
 
 
@@ -4143,7 +4053,7 @@ previously been written.
 No reply is expected after this call.  Since this call is directed to
 the default memory manager, the kernel assumes that it will be ready to
 handle data requests to this object and does not need the confirmation
-of a @code{memory_object_set_attributes} call.
+of a @code{memory_object_ready} call.
 
 The argument @var{old_memory_object} is a memory object provided by the
 default memory manager on which the kernel can make
@@ -4170,7 +4080,7 @@ value is ignored.
 The function @code{memory_object_data_initialize} provides the memory
 manager with initial data for a kernel-created memory object.  If the
 memory manager already has been supplied data (by a previous
-@code{memory_object_data_initialize}, @code{memory_object_data_write} or
+@code{memory_object_data_initialize}, or
 @code{memory_object_data_return}), then this data should be ignored.
 Otherwise, this call behaves exactly as does
 @code{memory_object_data_return} on memory objects created by the kernel

@@ -84,7 +84,7 @@ simpleroutine	memory_object_create(
  *	Provide initial data contents for this region of
  *	the memory object.  If data has already been written
  *	to the object, this value must be discarded; otherwise,
- *	this call acts identically to memory_object_data_write.
+ *	this call acts identically to memory_object_data_return.
  */
 simpleroutine	memory_object_data_initialize(
 		memory_object		: memory_object_t;
@@ -101,7 +101,7 @@ simpleroutine	memory_object_data_initialize(
 /*
  *	Indicate that the specified range of data in this memory object
  *	will not be requested again until it is reinitialized with
- *	memory_object_data_write or memory_object_data_initialize.
+ *	memory_object_data_return or memory_object_data_initialize.
  */
 simpleroutine	memory_object_data_terminate(
 		memory_object		: memory_object_t;

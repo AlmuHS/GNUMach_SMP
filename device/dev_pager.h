@@ -23,6 +23,4 @@ vm_offset_t device_map_page(void *dsp, vm_offset_t offset);
 
 boolean_t device_pager_data_request_done(io_req_t ior);
 
-boolean_t device_pager_data_write_done(io_req_t ior);
-
 #endif /* _DEVICE_DEV_PAGER_H_ */

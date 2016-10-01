@@ -75,7 +75,6 @@ typedef natural_t vm_object_info_state_t;
 #define VOI_STATE_ALIVE			0x00000040
 #define VOI_STATE_LOCK_IN_PROGRESS	0x00000080
 #define VOI_STATE_LOCK_RESTART		0x00000100
-#define VOI_STATE_USE_OLD_PAGEOUT	0x00000200
 
 typedef struct vm_object_info {
 	vm_offset_t voi_object;		/* this object */

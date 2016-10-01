@@ -35,7 +35,6 @@
 #define	memory_object_copy		device_pager_copy
 #define	memory_object_data_request	device_pager_data_request
 #define	memory_object_data_unlock	device_pager_data_unlock
-#define	memory_object_data_write	device_pager_data_write
 #define	memory_object_lock_completed	device_pager_lock_completed
 #define	memory_object_supply_completed	device_pager_supply_completed
 #define	memory_object_data_return	device_pager_data_return

@@ -356,169 +356,12 @@ kern_return_t	device_pager_data_request(
 	    vm_object_deallocate(object);
 	}
 	else {
-	    io_req_t			ior;
-	    mach_device_t		device;
-	    io_return_t			result;
-
 	    panic("(device_pager)data_request: dev pager");
-
-	    device = ds->device;
-	    mach_device_reference(device);
-	    dev_pager_deallocate(ds);
-
-	    /*
-	     * Package the read for the device driver.
-	     */
-	    io_req_alloc(ior, 0);
-
-	    ior->io_device	= device;
-	    ior->io_unit	= device->dev_number;
-	    ior->io_op		= IO_READ | IO_CALL;
-	    ior->io_mode	= 0;
-	    ior->io_recnum	= offset / device->bsize;
-	    ior->io_data	= 0;		/* driver must allocate */
-	    ior->io_count	= length;
-	    ior->io_alloc_size	= 0;		/* no data allocated yet */
-	    ior->io_residual	= 0;
-	    ior->io_error	= 0;
-	    ior->io_done	= device_pager_data_request_done;
-	    ior->io_reply_port	= pager_request;
-	    ior->io_reply_port_type = MACH_MSG_TYPE_PORT_SEND;
-
-	    result = (*device->dev_ops->d_read)(device->dev_number, ior);
-	    if (result == D_IO_QUEUED)
-		return (KERN_SUCCESS);
-
-	    /*
-	     * Return by queuing IOR for io_done thread, to reply in
-	     * correct environment (kernel).
-	     */
-	    ior->io_error = result;
-	    iodone(ior);
 	}
 
 	dev_pager_deallocate(ds);
 
 	return (KERN_SUCCESS);
-}
-
-/*
- * Always called by io_done thread.
- */
-boolean_t device_pager_data_request_done(io_req_t	ior)
-{
-	vm_offset_t	start_alloc, end_alloc;
-	vm_size_t	size_read;
-
-	if (ior->io_error == D_SUCCESS) {
-	    size_read = ior->io_count;
-	    if (ior->io_residual) {
-		if (device_pager_debug)
-		    printf("(device_pager)data_request_done: r: 0x%lx\n", ior->io_residual);
-		memset((&ior->io_data[ior->io_count - ior->io_residual]), 0, 
-		      (size_t) ior->io_residual);
-	    }
-	} else {
-	    size_read = ior->io_count - ior->io_residual;
-	}
-
-	start_alloc = trunc_page(ior->io_data);
-	end_alloc   = start_alloc + round_page(ior->io_alloc_size);
-
-	if (ior->io_error == D_SUCCESS) {
-	    vm_map_copy_t copy;
-	    kern_return_t kr;
-
-	    kr = vm_map_copyin(kernel_map, (vm_offset_t)ior->io_data,
-				size_read, TRUE, &copy);
-	    if (kr != KERN_SUCCESS)
-		panic("device_pager_data_request_done");
-
-	    (void) r_memory_object_data_provided(
-					ior->io_reply_port,
-					ior->io_recnum * ior->io_device->bsize,
-					(vm_offset_t)copy,
-					size_read,
-					VM_PROT_NONE);
-	}
-	else {
-	    (void) r_memory_object_data_error(
-					ior->io_reply_port,
-					ior->io_recnum * ior->io_device->bsize,
-					(vm_size_t)ior->io_count,
-					ior->io_error);
-	}
-
-	(void)vm_deallocate(kernel_map,
-			    start_alloc,
-			    end_alloc - start_alloc);
-	mach_device_deallocate(ior->io_device);
-	return (TRUE);
-}
-
-kern_return_t device_pager_data_write(
-	const ipc_port_t	pager,
-	const ipc_port_t	pager_request,
-	vm_offset_t		offset,
-	pointer_t		addr,
-	vm_size_t		data_count)
-{
-	dev_pager_t		ds;
-	mach_device_t		device;
-	io_req_t		ior;
-	kern_return_t		result;
-
-	panic("(device_pager)data_write: called");
-
-	ds = dev_pager_hash_lookup(pager);
-	if (ds == DEV_PAGER_NULL)
-		panic("(device_pager)data_write: lookup failed");
-
-	if (ds->pager_request != pager_request)
-		panic("(device_pager)data_write: bad pager_request");
-
-	if (ds->type == CHAR_PAGER_TYPE)
-		panic("(device_pager)data_write: char pager");
-
-	device = ds->device;
-	mach_device_reference(device);
-	dev_pager_deallocate(ds);
-
-	/*
-	 * Package the write request for the device driver.
-	 */
-	io_req_alloc(ior, data_count);
-
-	ior->io_device		= device;
-	ior->io_unit		= device->dev_number;
-	ior->io_op		= IO_WRITE | IO_CALL;
-	ior->io_mode		= 0;
-	ior->io_recnum		= offset / device->bsize;
-	ior->io_data		= (io_buf_ptr_t)addr;
-	ior->io_count		= data_count;
-	ior->io_alloc_size	= data_count;	/* amount to deallocate */
-	ior->io_residual	= 0;
-	ior->io_error		= 0;
-	ior->io_done		= device_pager_data_write_done;
-	ior->io_reply_port	= IP_NULL;
-
-	result = (*device->dev_ops->d_write)(device->dev_number, ior);
-
-	if (result != D_IO_QUEUED) {
-	    device_write_dealloc(ior);
-	    io_req_free((vm_offset_t)ior);
-	    mach_device_deallocate(device);
-	}
-
-	return (KERN_SUCCESS);
-}
-
-boolean_t device_pager_data_write_done(io_req_t ior)
-{
-	device_write_dealloc(ior);
-	mach_device_deallocate(ior->io_device);
-
-	return (TRUE);
 }
 
 kern_return_t device_pager_copy(
@@ -618,15 +461,13 @@ kern_return_t device_pager_init_pager(
 	    /*
 	     * Reply that the object is ready
 	     */
-	    (void) r_memory_object_set_attributes(pager_request,
-						TRUE,	/* ready */
-						FALSE,	/* do not cache */
-						MEMORY_OBJECT_COPY_NONE);
+	    (void) r_memory_object_ready(pager_request,
+					 FALSE,	/* do not cache */
+					 MEMORY_OBJECT_COPY_NONE);
 	} else {
-	    (void) r_memory_object_set_attributes(pager_request,
-						TRUE,	/* ready */
-						TRUE,	/* cache */
-						MEMORY_OBJECT_COPY_DELAY);
+	    (void) r_memory_object_ready(pager_request,
+					 TRUE,	/* cache */
+					 MEMORY_OBJECT_COPY_DELAY);
 	}
 
 	dev_pager_deallocate(ds);

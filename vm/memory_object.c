@@ -302,21 +302,6 @@ retry_lookup:
 	return(result);
 }
 
-/*
- *	If successful, destroys the map copy object.
- */
-kern_return_t memory_object_data_provided(
-	vm_object_t	object,
-	vm_offset_t	offset,
-	pointer_t	data,
-	unsigned int	data_cnt,
-	vm_prot_t	lock_value)
-{
-        return memory_object_data_supply(object, offset, (vm_map_copy_t) data,
-					 data_cnt, lock_value, FALSE, IP_NULL,
-					 0);
-}
-
 kern_return_t memory_object_data_error(
 	vm_object_t	object,
 	vm_offset_t	offset,
@@ -711,25 +696,14 @@ MACRO_BEGIN								\
 									\
 	(void) vm_map_copyin_object(new_object, 0, new_offset, &copy);	\
 									\
-	if (object->use_old_pageout) {					\
-	    assert(pageout_action == MEMORY_OBJECT_LOCK_RESULT_MUST_CLEAN);  \
-		(void) memory_object_data_write(			\
-			object->pager,					\
-			object->pager_request,				\
-			paging_offset,					\
-			(pointer_t) copy,				\
-			new_offset);					\
-	}								\
-	else {								\
-		(void) memory_object_data_return(			\
-			object->pager,					\
-			object->pager_request,				\
-			paging_offset,					\
-			(pointer_t) copy,				\
-			new_offset,					\
+	(void) memory_object_data_return(				\
+		object->pager,						\
+		object->pager_request,					\
+		paging_offset,						\
+		(pointer_t) copy,					\
+		new_offset,						\
 	     (pageout_action == MEMORY_OBJECT_LOCK_RESULT_MUST_CLEAN),	\
-			!should_flush);					\
-	}								\
+		!should_flush);						\
 									\
 	vm_object_lock(object);						\
 									\
@@ -875,13 +849,11 @@ MACRO_END
 	return (KERN_SUCCESS);
 }
 
-kern_return_t
+static kern_return_t
 memory_object_set_attributes_common(
 	vm_object_t	object,
-	boolean_t	object_ready,
 	boolean_t	may_cache,
-	memory_object_copy_strategy_t copy_strategy,
-	boolean_t use_old_pageout)
+	memory_object_copy_strategy_t copy_strategy)
 {
 	if (object == VM_OBJECT_NULL)
 		return(KERN_INVALID_ARGUMENT);
@@ -901,8 +873,6 @@ memory_object_set_attributes_common(
 			return(KERN_INVALID_ARGUMENT);
 	}
 
-	if (object_ready)
-		object_ready = TRUE;
 	if (may_cache)
 		may_cache = TRUE;
 
@@ -913,8 +883,7 @@ memory_object_set_attributes_common(
 	 *	to become asserted.
 	 */
 
-	if (object_ready && !object->pager_ready) {
-		object->use_old_pageout = use_old_pageout;
+	if (!object->pager_ready) {
 		vm_object_wakeup(object, VM_OBJECT_EVENT_PAGER_READY);
 	}
 
@@ -923,7 +892,7 @@ memory_object_set_attributes_common(
 	 */
 
 	object->can_persist = may_cache;
-	object->pager_ready = object_ready;
+	object->pager_ready = TRUE;
 	if (copy_strategy == MEMORY_OBJECT_COPY_TEMPORARY) {
 		object->temporary = TRUE;
 	} else {
@@ -961,9 +930,8 @@ kern_return_t	memory_object_change_attributes(
 	 * XXX	may_cache may become a tri-valued variable to handle
 	 * XXX	uncache if not in use.
 	 */
-	result = memory_object_set_attributes_common(object, TRUE,
-						     may_cache, copy_strategy,
-						     FALSE);
+	result = memory_object_set_attributes_common(object, may_cache,
+						     copy_strategy);
 
 	if (IP_VALID(reply_to)) {
 
@@ -976,26 +944,13 @@ kern_return_t	memory_object_change_attributes(
 	return(result);
 }
 
-kern_return_t
-memory_object_set_attributes(
-	vm_object_t	object,
-	boolean_t	object_ready,
-	boolean_t	may_cache,
-	memory_object_copy_strategy_t copy_strategy)
-{
-	return memory_object_set_attributes_common(object, object_ready,
-						   may_cache, copy_strategy,
-						   TRUE);
-}
-
 kern_return_t	memory_object_ready(
 	vm_object_t	object,
 	boolean_t	may_cache,
 	memory_object_copy_strategy_t copy_strategy)
 {
-	return memory_object_set_attributes_common(object, TRUE,
-						   may_cache, copy_strategy,
-						   FALSE);
+	return memory_object_set_attributes_common(object, may_cache,
+						   copy_strategy);
 }
 
 kern_return_t	memory_object_get_attributes(
