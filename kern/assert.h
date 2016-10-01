@@ -36,12 +36,13 @@
 #endif
 
 #if	MACH_ASSERT
-extern void Assert(const char *exp, const char *filename, int line) __attribute__ ((noreturn));
+extern void Assert(const char *exp, const char *filename, int line,
+		   const char *fun) __attribute__ ((noreturn));
 
 #define assert(ex)							\
 	((ex)								\
 	 ? (void) (0)							\
-	 : Assert (#ex, __FILE__, __LINE__))
+	 : Assert (#ex, __FILE__, __LINE__, __FUNCTION__))
 
 #define	assert_static(x)	assert(x)
 

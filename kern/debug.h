@@ -60,7 +60,11 @@
 extern void log (int level, const char *fmt, ...);
 
 extern void panic_init(void);
-extern void panic (const char *s, ...) __attribute__ ((noreturn));
+extern void Panic (const char *file, int line, const char *fun,
+		   const char *s, ...)
+	__attribute__ ((noreturn, format (printf, 4, 5)));
+#define panic(s, ...)							\
+	Panic (__FILE__, __LINE__, __FUNCTION__, s, ##__VA_ARGS__)
 
 extern void SoftDebugger (const char *message);
 extern void Debugger (const char *message) __attribute__ ((noreturn));

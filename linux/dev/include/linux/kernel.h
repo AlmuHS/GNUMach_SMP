@@ -32,8 +32,10 @@
 # define NORET_AND     noreturn,
 
 extern void math_error(void);
-NORET_TYPE void panic(const char * fmt, ...)
-	__attribute__ ((NORET_AND format (printf, 1, 2)));
+
+/* Use Mach's panic.  */
+#include <kern/debug.h>
+
 NORET_TYPE void do_exit(long error_code)
 	ATTRIB_NORET;
 extern unsigned long simple_strtoul(const char *,char **,unsigned int);

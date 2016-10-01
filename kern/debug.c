@@ -51,16 +51,16 @@ do_cnputc(char c, vm_offset_t offset)
 }
 
 void
-Assert(const char *exp, const char *file, int line)
+Assert(const char *exp, const char *file, int line, const char *fun)
 {
 #if NCPUS > 1
   	simple_lock(&Assert_print_lock);
-	printf("{%d} Assertion failed: file \"%s\", line %d\n", 
-	       cpu_number(), file, line);
+	printf("{cpu%d} %s:%d: %s: Assertion `%s' failed.",
+	       cpu_number(), file, line, fun, exp);
 	simple_unlock(&Assert_print_lock);
 #else
-	printf("Assertion `%s' failed in file \"%s\", line %d\n",
-		exp, file, line);
+	printf("%s:%d: %s: Assertion `%s' failed.",
+	       file, line, fun, exp);
 #endif
 
 	Debugger("assertion failure");
@@ -136,7 +136,7 @@ extern boolean_t reboot_on_panic;
 
 /*VARARGS1*/
 void
-panic(const char *s, ...)
+Panic(const char *file, int line, const char *fun, const char *s, ...)
 {
 	va_list	listp;
 
@@ -155,11 +155,11 @@ panic(const char *s, ...)
 	    paniccpu = cpu_number();
 	}
 	simple_unlock(&panic_lock);
-	printf("panic");
+	printf("panic ");
 #if	NCPUS > 1
-	printf("(cpu %U)", paniccpu);
+	printf("{cpu%d} ", paniccpu);
 #endif
-	printf(": ");
+	printf("%s:%d: %s: ",file, line, fun);
 	va_start(listp, s);
 	_doprnt(s, listp, do_cnputc, 16, 0);
 	va_end(listp);
