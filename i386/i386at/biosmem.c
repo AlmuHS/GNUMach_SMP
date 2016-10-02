@@ -35,7 +35,7 @@
 #define __init
 
 #define boot_memmove    memmove
-#define boot_panic      panic
+#define boot_panic(s)   panic("%s", s)
 #define boot_strlen     strlen
 
 #define BOOT_CGAMEM     phystokv(0xb8000)
@@ -216,7 +216,7 @@ biosmem_unregister_boot_data(phys_addr_t start, phys_addr_t end)
     unsigned int i;
 
     if (start >= end) {
-        panic(biosmem_panic_inval_boot_data);
+        panic("%s", biosmem_panic_inval_boot_data);
     }
 
     assert(biosmem_nr_boot_data != 0);
