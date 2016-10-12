@@ -566,13 +566,12 @@ vmtophys (void *addr)
 
 /* XXX: Quick hacking. */
 /* Remap physical address into virtual address. */
+
+#include <vm/pmap.h>
+
 void *
 vremap (unsigned long offset, unsigned long size)
 {
-  extern vm_offset_t pmap_map_bd (register vm_offset_t virt,
-				  register vm_offset_t start,
-				  register vm_offset_t end,
-				  vm_prot_t prot);
   vm_offset_t addr;
   kern_return_t ret;
   
