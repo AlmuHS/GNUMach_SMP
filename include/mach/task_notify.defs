@@ -27,10 +27,30 @@ subsystem
 #include <mach/std_types.defs>
 #include <mach/mach_types.defs>
 
+type task_notify_port_t = mach_port_t
+	ctype: mach_port_t
+#ifdef	TASK_NOTIFY_INTRAN
+	intran: TASK_NOTIFY_INTRAN
+#endif
+#ifdef	TASK_NOTIFY_INTRAN_PAYLOAD
+	intranpayload: TASK_NOTIFY_INTRAN_PAYLOAD
+#endif
+#ifdef	TASK_NOTIFY_OUTTRAN
+	outtran: TASK_NOTIFY_OUTTRAN
+#endif
+#ifdef	TASK_NOTIFY_DESTRUCTOR
+	destructor: TASK_NOTIFY_DESTRUCTOR
+#endif
+;
+
+#ifdef	TASK_NOTIFY_IMPORTS
+TASK_NOTIFY_IMPORTS
+#endif
+
 /* These notifications are sent to the port registered via
    `register_new_task_notification' and provide a robust parental
    relation between tasks.  */
 simpleroutine mach_notify_new_task(
-		notify	: mach_port_t;
+		notify	: task_notify_port_t;
 		task	: task_t;
 		parent	: task_t);
