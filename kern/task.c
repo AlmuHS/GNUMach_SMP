@@ -100,13 +100,24 @@ kern_return_t task_create(
 		new_task->map = kernel_map;
 	} else if (inherit_memory) {
 		new_task->map = vm_map_fork(parent_task->map);
-		vm_map_set_name(new_task->map, new_task->name);
 	} else {
-		new_task->map = vm_map_create(pmap_create(0),
+		pmap_t new_pmap = pmap_create((vm_size_t) 0);
+		if (new_pmap == PMAP_NULL)
+			new_task->map = VM_MAP_NULL;
+		else {
+			new_task->map = vm_map_create(new_pmap,
 					round_page(VM_MIN_ADDRESS),
 					trunc_page(VM_MAX_ADDRESS));
-		vm_map_set_name(new_task->map, new_task->name);
+			if (new_task->map == VM_MAP_NULL)
+				pmap_destroy(new_pmap);
+		}
 	}
+	if (new_task->map == VM_MAP_NULL) {
+		kmem_cache_free(&task_cache, (vm_address_t) new_task);
+		return KERN_RESOURCE_SHORTAGE;
+	}
+	if (child_task != &kernel_task)
+		vm_map_set_name(new_task->map, new_task->name);
 
 	simple_lock_init(&new_task->lock);
 	queue_init(&new_task->thread_list);

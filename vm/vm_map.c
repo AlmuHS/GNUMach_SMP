@@ -4127,6 +4127,9 @@ vm_map_t vm_map_fork(vm_map_t old_map)
 	vm_size_t	entry_size;
 	vm_object_t	object;
 
+	if (new_pmap == PMAP_NULL)
+		return VM_MAP_NULL;
+
 	vm_map_lock(old_map);
 
 	new_map = vm_map_create(new_pmap,
