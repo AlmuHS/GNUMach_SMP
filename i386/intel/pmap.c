@@ -388,6 +388,12 @@ struct pmap	kernel_pmap_store;
 pmap_t		kernel_pmap;
 
 struct kmem_cache	pmap_cache;		/* cache of pmap structures */
+struct kmem_cache	pd_cache;		/* cache of page directories */
+#if PAE
+struct kmem_cache	pdpt_cache;		/* cache of page
+						   directory pointer
+						   tables */
+#endif
 
 boolean_t		pmap_debug = FALSE;	/* flag for debugging prints */
 
@@ -976,6 +982,13 @@ void pmap_init(void)
 	 */
 	s = (vm_size_t) sizeof(struct pmap);
 	kmem_cache_init(&pmap_cache, "pmap", s, 0, NULL, 0);
+	kmem_cache_init(&pd_cache, "pd",
+			PDPNUM * INTEL_PGBYTES, INTEL_PGBYTES, NULL, 0);
+#if PAE
+	kmem_cache_init(&pdpt_cache, "pdpt",
+			PDPNUM * sizeof(pt_entry_t),
+			PDPNUM * sizeof(pt_entry_t), NULL, 0);
+#endif
 	s = (vm_size_t) sizeof(struct pv_entry);
 	kmem_cache_init(&pv_list_cache, "pv_entry", s, 0, NULL, 0);
 
@@ -1152,12 +1165,13 @@ pmap_t pmap_create(vm_size_t size)
 
 	p = (pmap_t) kmem_cache_alloc(&pmap_cache);
 	if (p == PMAP_NULL)
-		panic("pmap_create");
+		return PMAP_NULL;
 
-	if (kmem_alloc_wired(kernel_map,
-			     (vm_offset_t *)&p->dirbase, PDPNUM * INTEL_PGBYTES)
-							!= KERN_SUCCESS)
-		panic("pmap_create");
+	p->dirbase = (pt_entry_t *) kmem_cache_alloc(&pd_cache);
+	if (p->dirbase == NULL) {
+		kmem_cache_free(&pmap_cache, (vm_address_t) p);
+		return PMAP_NULL;
+	}
 
 	memcpy(p->dirbase, kernel_page_dir, PDPNUM * INTEL_PGBYTES);
 #ifdef LINUX_DEV
@@ -1175,10 +1189,13 @@ pmap_t pmap_create(vm_size_t size)
 #endif	/* MACH_PV_PAGETABLES */
 
 #if PAE
-	if (kmem_alloc_wired(kernel_map,
-			     (vm_offset_t *)&p->pdpbase, INTEL_PGBYTES)
-							!= KERN_SUCCESS)
-		panic("pmap_create");
+	p->pdpbase = (pt_entry_t *) kmem_cache_alloc(&pdpt_cache);
+	if (p->pdpbase == NULL) {
+		kmem_cache_free(&pd_cache, (vm_address_t) p->dirbase);
+		kmem_cache_free(&pmap_cache, (vm_address_t) p);
+		return PMAP_NULL;
+	}
+
 	{
 		int i;
 		for (i = 0; i < PDPNUM; i++)
@@ -1263,12 +1280,12 @@ void pmap_destroy(pmap_t p)
 			pmap_set_page_readwrite((void*) p->dirbase + i * INTEL_PGBYTES);
 	}
 #endif	/* MACH_PV_PAGETABLES */
-	kmem_free(kernel_map, (vm_offset_t)p->dirbase, PDPNUM * INTEL_PGBYTES);
+	kmem_cache_free(&pd_cache, (vm_offset_t) p->dirbase);
 #if PAE
 #ifdef	MACH_PV_PAGETABLES
 	pmap_set_page_readwrite(p->pdpbase);
 #endif	/* MACH_PV_PAGETABLES */
-	kmem_free(kernel_map, (vm_offset_t)p->pdpbase, INTEL_PGBYTES);
+	kmem_cache_free(&pdpt_cache, (vm_offset_t) p->pdpbase);
 #endif	/* PAE */
 	kmem_cache_free(&pmap_cache, (vm_offset_t) p);
 }
