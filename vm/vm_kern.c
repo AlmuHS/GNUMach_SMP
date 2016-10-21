@@ -401,7 +401,8 @@ retry:
 			goto retry;
 		}
 
-		printf_once("no more room for kmem_alloc in %p\n", map);
+		printf_once("no more room for kmem_alloc in %p (%s)\n",
+			    map, map->name);
 		vm_object_deallocate(object);
 		return kr;
 	}
@@ -475,7 +476,8 @@ retry:
 			goto retry;
 		}
 
-		printf_once("no more room for kmem_alloc_wired in %p\n", map);
+		printf_once("no more room for kmem_alloc_wired in %p (%s)\n",
+			    map, map->name);
 		return kr;
 	}
 
@@ -561,7 +563,8 @@ retry:
 			goto retry;
 		}
 
-		printf_once("no more room for kmem_alloc_aligned in %p\n", map);
+		printf_once("no more room for kmem_alloc_aligned in %p (%s)\n",
+			    map, map->name);
 		return kr;
 	}
 
@@ -623,7 +626,8 @@ kmem_alloc_pageable(
 			  VM_OBJECT_NULL, (vm_offset_t) 0, FALSE,
 			  VM_PROT_DEFAULT, VM_PROT_ALL, VM_INHERIT_DEFAULT);
 	if (kr != KERN_SUCCESS) {
-		printf_once("no more room for kmem_alloc_pageable in %p\n", map);
+		printf_once("no more room for kmem_alloc_pageable in %p (%s)\n",
+			    map, map->name);
 		return kr;
 	}
 
