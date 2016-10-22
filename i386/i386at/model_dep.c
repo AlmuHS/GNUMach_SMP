@@ -431,14 +431,14 @@ i386at_init(void)
 		delta = (vm_offset_t)(-delta);
 	nb_direct = delta >> PDESHIFT;
 	for (i = 0; i < nb_direct; i++)
-		kernel_page_dir[lin2pdenum(INIT_VM_MIN_KERNEL_ADDRESS) + i] =
-			kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS) + i];
+		kernel_page_dir[lin2pdenum_cont(INIT_VM_MIN_KERNEL_ADDRESS) + i] =
+			kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS) + i];
 #endif
 	/* We need BIOS memory mapped at 0xc0000 & co for Linux drivers */
 #ifdef LINUX_DEV
 #if VM_MIN_KERNEL_ADDRESS != 0
-	kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS)] =
-		kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS)];
+	kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS)] =
+		kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS)];
 #endif
 #endif
 
@@ -490,21 +490,21 @@ i386at_init(void)
 	for (i = 0 ; i < nb_direct; i++) {
 #ifdef	MACH_XEN
 #ifdef	MACH_PSEUDO_PHYS
-		if (!hyp_mmu_update_pte(kv_to_ma(&kernel_page_dir[lin2pdenum(VM_MIN_KERNEL_ADDRESS) + i]), 0))
+		if (!hyp_mmu_update_pte(kv_to_ma(&kernel_page_dir[lin2pdenum_cont(VM_MIN_KERNEL_ADDRESS) + i]), 0))
 #else	/* MACH_PSEUDO_PHYS */
 		if (hyp_do_update_va_mapping(VM_MIN_KERNEL_ADDRESS + i * INTEL_PGBYTES, 0, UVMF_INVLPG | UVMF_ALL))
 #endif	/* MACH_PSEUDO_PHYS */
 			printf("couldn't unmap frame %d\n", i);
 #else	/* MACH_XEN */
-		kernel_page_dir[lin2pdenum(INIT_VM_MIN_KERNEL_ADDRESS) + i] = 0;
+		kernel_page_dir[lin2pdenum_cont(INIT_VM_MIN_KERNEL_ADDRESS) + i] = 0;
 #endif	/* MACH_XEN */
 	}
 #endif
 	/* Keep BIOS memory mapped */
 #ifdef LINUX_DEV
 #if VM_MIN_KERNEL_ADDRESS != 0
-	kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS)] =
-		kernel_page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS)];
+	kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS)] =
+		kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS)];
 #endif
 #endif
 

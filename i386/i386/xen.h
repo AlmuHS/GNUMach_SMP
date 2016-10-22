@@ -169,7 +169,7 @@ MACH_INLINE int hyp_mmu_update_pte(pt_entry_t pte, pt_entry_t val)
 #define HYP_BATCH_MMU_UPDATES 256
 
 #define hyp_mmu_update_la(la, val) hyp_mmu_update_pte( \
-	(kernel_pmap->dirbase[lin2pdenum((vm_offset_t)(la))] & INTEL_PTE_PFN) \
+	(kernel_page_dir[lin2pdenum_cont((vm_offset_t)(la))] & INTEL_PTE_PFN) \
 		+ ptenum((vm_offset_t)(la)) * sizeof(pt_entry_t), val)
 #endif
 

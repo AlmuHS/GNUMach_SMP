@@ -89,11 +89,14 @@ typedef phys_addr_t pt_entry_t;
 /*
  *	Convert linear offset to page descriptor index
  */
-#if PAE
-/* Making it include the page directory pointer table index too */
-#define lin2pdenum(a)	(((a) >> PDESHIFT) & 0x7ff)
-#else
 #define lin2pdenum(a)	(((a) >> PDESHIFT) & PDEMASK)
+
+#if PAE
+/* Special version assuming contiguous page directories.  Making it
+   include the page directory pointer table index too.  */
+#define lin2pdenum_cont(a)	(((a) >> PDESHIFT) & 0x7ff)
+#else
+#define lin2pdenum_cont(a)	lin2pdenum(a)
 #endif
 
 /*
@@ -159,10 +162,11 @@ typedef	volatile long	cpu_set;	/* set of CPUs - must be <= 32 */
 					/* changed by other processors */
 
 struct pmap {
+#if ! PAE
 	pt_entry_t	*dirbase;	/* page directory table */
-#if PAE
+#else
 	pt_entry_t	*pdpbase;	/* page directory pointer table */
-#endif	/* PAE */
+#endif	/* ! PAE */
 	int		ref_count;	/* reference count */
 	decl_simple_lock_data(,lock)
 					/* lock on map */
