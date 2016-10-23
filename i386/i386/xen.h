@@ -204,7 +204,7 @@ MACH_INLINE void hyp_free_mfn(unsigned long mfn)
 	reservation.address_bits = 0;
 	reservation.domid = DOMID_SELF;
 	if (hyp_memory_op(XENMEM_decrease_reservation, kvtolin(&reservation)) != 1)
-		panic("couldn't free page %d\n", mfn);
+		panic("couldn't free page %lu\n", mfn);
 }
 
 _hypcall4(int, update_va_mapping, unsigned long, va, unsigned long, val_lo, unsigned long, val_hi, unsigned long, flags);
@@ -221,7 +221,7 @@ MACH_INLINE void hyp_free_page(unsigned long pfn, void *va)
 #ifdef MACH_PV_PAGETABLES
     /* remove from mappings */
     if (hyp_do_update_va_mapping(kvtolin(va), 0, UVMF_INVLPG|UVMF_ALL))
-        panic("couldn't clear page %d at %p\n", pfn, va);
+	    panic("couldn't clear page %lu at %p\n", pfn, va);
 
 #ifdef  MACH_PSEUDO_PHYS
     /* drop machine page */

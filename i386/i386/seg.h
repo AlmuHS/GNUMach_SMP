@@ -181,7 +181,7 @@ fill_descriptor(struct real_descriptor *_desc, unsigned base, unsigned limit,
 	desc->base_high = base >> 24;
 #ifdef	MACH_PV_DESCRIPTORS
 	if (hyp_do_update_descriptor(kv_to_ma(_desc), *(uint64_t*)desc))
-		panic("couldn't update descriptor(%p to %08lx%08lx)\n", (vm_offset_t) kv_to_ma(_desc), *(((unsigned long*)desc)+1), *(unsigned long *)desc);
+		panic("couldn't update descriptor(%lu to %08lx%08lx)\n", (vm_offset_t) kv_to_ma(_desc), *(((unsigned long*)desc)+1), *(unsigned long *)desc);
 #endif	/* MACH_PV_DESCRIPTORS */
 }
 
