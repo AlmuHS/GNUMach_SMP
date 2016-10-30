@@ -280,31 +280,31 @@ register_boot_data(const struct multiboot_raw_info *mbi)
 
 	extern char _start[], _end[];
 
-	/* XXX For now, register all boot data as permanent */
-
 	biosmem_register_boot_data(_kvtophys(&_start), _kvtophys(&_end), FALSE);
+
+	/* cmdline and modules are moved to a safe place by i386at_init.  */
 
 	if ((mbi->flags & MULTIBOOT_LOADER_CMDLINE) && (mbi->cmdline != 0)) {
 		biosmem_register_boot_data(mbi->cmdline,
 					   mbi->cmdline
-					   + strlen((void *)phystokv(mbi->cmdline)) + 1, FALSE);
+					   + strlen((void *)phystokv(mbi->cmdline)) + 1, TRUE);
 	}
 
 	if (mbi->flags & MULTIBOOT_LOADER_MODULES) {
 		i = mbi->mods_count * sizeof(struct multiboot_raw_module);
-		biosmem_register_boot_data(mbi->mods_addr, mbi->mods_addr + i, FALSE);
+		biosmem_register_boot_data(mbi->mods_addr, mbi->mods_addr + i, TRUE);
 
 		tmp = phystokv(mbi->mods_addr);
 
 		for (i = 0; i < mbi->mods_count; i++) {
 			mod = (struct multiboot_raw_module *)tmp + i;
-			biosmem_register_boot_data(mod->mod_start, mod->mod_end, FALSE);
+			biosmem_register_boot_data(mod->mod_start, mod->mod_end, TRUE);
 
 			if (mod->string != 0) {
 				biosmem_register_boot_data(mod->string,
 							   mod->string
 							   + strlen((void *)phystokv(mod->string)) + 1,
-							   FALSE);
+							   TRUE);
 			}
 		}
 	}
@@ -364,7 +364,8 @@ i386at_init(void)
 	kernel_cmdline = (char*) boot_info.cmd_line;
 #else	/* MACH_XEN */
 	/* Copy content pointed by boot_info before losing access to it when it
-	 * is too far in physical memory.  */
+	 * is too far in physical memory.
+	 * Also avoids leaving them in precious areas such as DMA memory.  */
 	if (boot_info.flags & MULTIBOOT_CMDLINE) {
 		int len = strlen ((char*)phystokv(boot_info.cmdline)) + 1;
 		if (! init_alloc_aligned(round_page(len), &addr))
