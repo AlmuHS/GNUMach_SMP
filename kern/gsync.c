@@ -188,6 +188,9 @@ kern_return_t gsync_wait (task_t task, vm_offset_t addr,
   struct gsync_waiter w;
   int bucket = gsync_fill_key (task, addr, flags, &w.key);
 
+  if (unlikely (task != current_task()))
+    /* Not implemented yet.  */
+    return (KERN_FAILURE);
   if (unlikely (bucket < 0))
     return (KERN_INVALID_ADDRESS);
 
@@ -280,6 +283,9 @@ kern_return_t gsync_wake (task_t task,
   struct gsync_key key;
   int bucket = gsync_fill_key (task, addr, flags, &key);
 
+  if (unlikely (task != current_task()))
+    /* Not implemented yet.  */
+    return (KERN_FAILURE);
   if (unlikely (bucket < 0))
     return (KERN_INVALID_ADDRESS);
 
@@ -328,6 +334,9 @@ kern_return_t gsync_requeue (task_t task, vm_offset_t src,
   int src_bkt = gsync_fill_key (task, src, flags, &src_k);
   int dst_bkt = gsync_fill_key (task, dst, flags, &dst_k);
 
+  if (unlikely (task != current_task()))
+    /* Not implemented yet.  */
+    return (KERN_FAILURE);
   if ((src_bkt | dst_bkt) < 0)
     return (KERN_INVALID_ADDRESS);
 
