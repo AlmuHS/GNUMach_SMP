@@ -191,13 +191,13 @@ kern_return_t gsync_wait (task_t task, vm_offset_t addr,
   if (unlikely (bucket < 0))
     return (KERN_INVALID_ADDRESS);
 
-  struct gsync_hbucket *hbp = gsync_buckets + bucket;
-  simple_lock (&hbp->lock);
-
-  /* Now test that the address is actually valid for the
+  /* Test that the address is actually valid for the
    * given task. Do so with the read-lock held in order
    * to prevent memory deallocations. */
   vm_map_lock_read (task->map);
+
+  struct gsync_hbucket *hbp = gsync_buckets + bucket;
+  simple_lock (&hbp->lock);
 
   if (unlikely (!valid_access_p (task->map, addr, flags)))
     {
@@ -285,9 +285,9 @@ kern_return_t gsync_wake (task_t task,
 
   kern_return_t ret = KERN_INVALID_ARGUMENT;
 
+  vm_map_lock_read (task->map);
   struct gsync_hbucket *hbp = gsync_buckets + bucket;
   simple_lock (&hbp->lock);
-  vm_map_lock_read (task->map);
 
   if (unlikely (!valid_access_p (task->map, addr, flags)))
     {
