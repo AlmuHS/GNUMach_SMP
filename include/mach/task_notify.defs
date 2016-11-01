@@ -47,10 +47,13 @@ type task_notify_port_t = mach_port_t
 TASK_NOTIFY_IMPORTS
 #endif
 
+type task_move_t = MACH_MSG_TYPE_MOVE_SEND
+		ctype: mach_port_t;
+
 /* These notifications are sent to the port registered via
    `register_new_task_notification' and provide a robust parental
    relation between tasks.  */
 simpleroutine mach_notify_new_task(
 		notify	: task_notify_port_t;
-		task	: task_t;
-		parent	: task_t);
+		task	: task_move_t;
+		parent	: task_move_t);
