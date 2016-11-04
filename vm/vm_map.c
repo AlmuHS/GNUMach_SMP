@@ -4771,8 +4771,8 @@ void vm_map_print(db_expr_t addr, boolean_t have_addr, db_expr_t count, const ch
 	else
 		map = (vm_map_t)addr;
 
-	iprintf("Map 0x%X: pmap=0x%X,",
- 		(vm_offset_t) map, (vm_offset_t) (map->pmap));
+	iprintf("Map 0x%X: name=\"%s\", pmap=0x%X,",
+		(vm_offset_t) map, map->name, (vm_offset_t) (map->pmap));
 	 printf("ref=%d,nentries=%d,", map->ref_count, map->hdr.nentries);
 	 printf("version=%d\n",	map->timestamp);
 	indent += 1;
