@@ -58,25 +58,6 @@ libkernel_a_SOURCES += \
 	i386/i386at/pic_isa.c \
 	i386/i386at/rtc.c \
 	i386/i386at/rtc.h
-
-libkernel_a_SOURCES += \
-	i386/i386at/acpihalt.c \
-	i386/i386at/acpihalt.h \
-	i386/i386at/acpi.c \
-	i386/i386at/grub_glue.c \
-	i386/grub/err.h \
-	i386/grub/cpu/io.h \
-	i386/grub/cpu/types.h \
-	i386/grub/cpu/time.h \
-	i386/grub/mm.h \
-	i386/grub/acpi.h \
-	i386/grub/symbol.h \
-	i386/grub/misc.h \
-	i386/grub/types.h \
-	i386/grub/time.h \
-	i386/grub/i18n.h \
-	i386/grub/compiler.h \
-	i386/grub/glue.h
 endif
 
 #
