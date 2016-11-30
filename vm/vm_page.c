@@ -2036,7 +2036,7 @@ again:
      * Keep in mind eviction may not cause pageouts, since non-precious
      * clean pages are simply released.
      */
-    if ((vm_page_external_pagedout == 0) || (vm_page_laundry_count == 0)) {
+    if ((vm_page_external_pagedout == 0) && (vm_page_laundry_count == 0)) {
         /*
          * No pageout, but some clean pages were freed. Start a complete
          * scan again without waiting.
