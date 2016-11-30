@@ -939,6 +939,11 @@ vm_page_seg_page_available(const struct vm_page_seg *seg)
 static boolean_t
 vm_page_seg_usable(const struct vm_page_seg *seg)
 {
+    if ((seg->nr_active_pages + seg->nr_inactive_pages) == 0) {
+        /* Nothing to page out, assume segment is usable */
+        return TRUE;
+    }
+
     return (seg->nr_free_pages >= seg->high_free_pages);
 }
 
