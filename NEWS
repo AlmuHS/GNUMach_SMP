@@ -1,6 +1,29 @@
-Version 1.8 (2016-10-XX)
+Version 1.8 (2016-12-XX)
+
+The memory management system was extensively reworked.  A new type for
+physical addresses is now used where appropriate, and the system can
+make use of the high memory segment.  Many paging issues have been
+addressed, and as a result the system handles low memory situations
+more gracefully now.
+
+The virtual memory system now uses a red-black tree for allocations,
+and as a result it now supports tasks with tens of thousands of
+mappings.
+
+Debugging and error reporting has been improved.  Among other things
+the vm maps are now augmented with names that are used in error
+messages, panics and assertions point to their locations, the lock
+debugging mechanism has been fixed, and the kernel debugger can now
+inspect stack traces reaching into the machine-dependent bits
+implemented in assembler.
+
+Countless bugs throughout the code have been fixed, notably minor
+issues with the gsync synchronization mechanism which is now used for
+the internal locks in the GNU C library.
 
 The deprecated external memory management interface has been removed.
+
+The partial ACPI support has been removed.
 
 Version 1.7 (2016-05-18)
 
