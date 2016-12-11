@@ -1477,7 +1477,7 @@ kern_return_t vm_map_pageable_common(
 		 *	Start address is not in map; this is fatal.
 		 */
 		vm_map_unlock(map);
-		return(KERN_FAILURE);
+		return(KERN_NO_SPACE);
 	}
 
 	/*
@@ -1490,19 +1490,17 @@ kern_return_t vm_map_pageable_common(
 		vm_map_clip_start(map, entry, start);
 
 		/*
-		 *	Unwiring.  First ensure that the range to be
-		 *	unwired is really wired down.
+		 *	Unwiring.  First ensure that there are no holes
+		 *	in the specified range.
 		 */
 		while ((entry != vm_map_to_entry(map)) &&
 		       (entry->vme_start < end)) {
 
-		    if ((entry->wired_count == 0) ||
-		    	((entry->vme_end < end) &&
-			 ((entry->vme_next == vm_map_to_entry(map)) ||
-			  (entry->vme_next->vme_start > entry->vme_end))) ||
-			(user_wire && (entry->user_wired_count == 0))) {
+		    if ((entry->vme_end < end) &&
+			((entry->vme_next == vm_map_to_entry(map)) ||
+			 (entry->vme_next->vme_start > entry->vme_end))) {
 			    vm_map_unlock(map);
-			    return(KERN_INVALID_ARGUMENT);
+			    return(KERN_NO_SPACE);
 		    }
 		    entry = entry->vme_next;
 		}
@@ -1516,6 +1514,13 @@ kern_return_t vm_map_pageable_common(
 		while ((entry != vm_map_to_entry(map)) &&
 		       (entry->vme_start < end)) {
 		    vm_map_clip_end(map, entry, end);
+
+		    /* Skip unwired entries */
+		    if (entry->wired_count == 0) {
+			assert(entry->user_wired_count == 0);
+			entry = entry->vme_next;
+			continue;
+		    }
 
 		    if (user_wire) {
 			if (--(entry->user_wired_count) == 0)
@@ -1641,7 +1646,7 @@ kern_return_t vm_map_pageable_common(
 			    }
 
 			    vm_map_unlock(map);
-			    return(KERN_FAILURE);
+			    return(KERN_NO_SPACE);
 		    }
 		    entry = entry->vme_next;
 		}

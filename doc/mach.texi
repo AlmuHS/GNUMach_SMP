@@ -3261,10 +3261,8 @@ The function returns @code{KERN_SUCCESS} if the call succeeded,
 @code{KERN_INVALID_HOST} if @var{host} was not a valid host
 port, @code{KERN_INVALID_TASK} if @var{task} was not a valid task,
 @code{KERN_INVALID_VALUE} if @var{access} specified an invalid access
-mode, @code{KERN_FAILURE} if some memory in the specified range is not
-present or has an inappropriate protection value, and
-@code{KERN_INVALID_ARGUMENT} if unwiring (@var{access} is
-@code{VM_PROT_NONE}) and the memory is not already wired.
+mode, and @code{KERN_NO_SPACE} if some memory in the specified range
+is not present or has an inappropriate protection value.
 
 The @code{vm_wire} call is actually an RPC to @var{host}, normally
 a send right for a privileged host port, but potentially any send right.
