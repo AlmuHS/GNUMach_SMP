@@ -1,4 +1,4 @@
-Version 1.8 (2016-12-XX)
+Version 1.8 (2016-12-18)
 
 The memory management system was extensively reworked.  A new type for
 physical addresses is now used where appropriate, and the system can
@@ -11,15 +11,15 @@ and as a result it now supports tasks with tens of thousands of
 mappings.
 
 Debugging and error reporting has been improved.  Among other things
-the vm maps are now augmented with names that are used in error
+the VM maps are now augmented with names that are used in error
 messages, panics and assertions point to their locations, the lock
 debugging mechanism has been fixed, and the kernel debugger can now
 inspect stack traces reaching into the machine-dependent bits
 implemented in assembler.
 
-Countless bugs throughout the code have been fixed, notably minor
+As usual, bugs have been fixed throughout the code, including minor
 issues with the gsync synchronization mechanism which is now used for
-the internal locks in the GNU C library.
+the internal locks in the GNU C Library (glibc).
 
 The deprecated external memory management interface has been removed.
 
@@ -86,7 +86,7 @@ The kernel debugger can now parse ELF symbol tables, can be invoked
 over serial lines, gained two new commands and has received usability
 improvements.
 
-The vm pageout policy has been tuned to accommodate modern hardware.
+The VM pageout policy has been tuned to accommodate modern hardware.
 
 The kernel gained partial ACPI support on x86, enough to power down
 the system.
