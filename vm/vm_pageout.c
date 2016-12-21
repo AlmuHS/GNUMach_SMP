@@ -470,7 +470,7 @@ void vm_pageout(void)
 				     FALSE);
 		} else if (should_wait) {
 			assert_wait(&vm_pageout_continue, FALSE);
-			thread_set_timeout(VM_PAGEOUT_TIMEOUT);
+			thread_set_timeout(VM_PAGEOUT_TIMEOUT * hz / 1000);
 			simple_unlock(&vm_page_queue_free_lock);
 			thread_block(NULL);
 
