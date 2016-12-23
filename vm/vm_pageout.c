@@ -259,6 +259,15 @@ vm_pageout_setup(
 
 		vm_page_wire(m);
 	} else {
+		/*
+		 *	The caller is telling us that this page belongs
+		 *	to an external object managed by the default pager.
+		 *	Wire it to avoid a deadlock on the default pager map.
+		 */
+		if (m->external_laundry) {
+			vm_page_wire(m);
+		}
+
 		m->external_laundry = TRUE;
 
 		/*

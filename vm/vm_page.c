@@ -44,6 +44,7 @@
 #include <mach/vm_param.h>
 #include <machine/pmap.h>
 #include <sys/types.h>
+#include <vm/memory_object.h>
 #include <vm/vm_page.h>
 #include <vm/vm_pageout.h>
 
@@ -1088,13 +1089,13 @@ vm_page_seg_evict(struct vm_page_seg *seg, boolean_t external_only,
                   boolean_t alloc_paused)
 {
     struct vm_page *page;
-    boolean_t reclaim, laundry;
+    boolean_t reclaim, double_paging;
     vm_object_t object;
     boolean_t was_active;
 
     page = NULL;
     object = NULL;
-    laundry = FALSE;
+    double_paging = FALSE;
 
 restart:
     vm_page_lock_queues();
@@ -1148,16 +1149,34 @@ restart:
      * processing of this page since it's immediately going to be
      * double paged out to the default pager. The laundry bit is
      * reset and the page is inserted into an internal object by
-     * vm_pageout_setup before the double paging pass.
+     * vm_pageout_setup before the second double paging pass.
+     *
+     * There is one important special case: the default pager can
+     * back external memory objects. When receiving the first
+     * pageout request, where the page is no longer present, a
+     * fault could occur, during which the map would be locked.
+     * This fault would cause a new paging request to the default
+     * pager. Receiving that request would deadlock when trying to
+     * lock the map again. Instead, the page isn't double paged.
+     * The external_laundry bit is set to indicate this situation
+     * to vm_pageout_setup.
      */
 
-    assert(!page->laundry);
-    assert(!(laundry && page->external));
+    assert(!page->laundry && !page->external_laundry);
+    assert(!(double_paging && page->external));
 
-    if (object->internal || !alloc_paused) {
-        laundry = FALSE;
+    if (object->internal) {
+        double_paging = FALSE;
     } else {
-        laundry = page->laundry = TRUE;
+        if (memory_manager_default_port(object->pager)) {
+            double_paging = FALSE;
+            page->external_laundry = TRUE;
+        } else if (!alloc_paused) {
+            double_paging = FALSE;
+        } else {
+            double_paging = TRUE;
+            page->laundry = TRUE;
+        }
     }
 
 out:
@@ -1204,7 +1223,7 @@ out:
     vm_pageout_page(page, FALSE, TRUE); /* flush it */
     vm_object_unlock(object);
 
-    if (laundry) {
+    if (double_paging) {
         goto restart;
     }
 
