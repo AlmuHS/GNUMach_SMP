@@ -312,6 +312,7 @@ vm_page_can_move(const struct vm_page *page)
      */
 
     return !page->busy
+           && !page->external_laundry
            && !page->wanted
            && !page->absent
            && page->object->alive;
