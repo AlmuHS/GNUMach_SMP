@@ -3204,6 +3204,9 @@ interface allows write access to require @code{VM_PROT_READ} and
 @code{VM_PROT_WRITE} permission and execute access to require
 @code{VM_PROT_READ} permission.
 
+If a region is wired, changing its protection also updates the
+access types for which no page faults must occur.
+
 The function returns @code{KERN_SUCCESS} if the memory was successfully
 protected, @code{KERN_INVALID_ADDRESS} if an invalid or non-allocated
 address was specified and @code{KERN_PROTECTION_FAILURE} if an attempt
@@ -3257,6 +3260,13 @@ included in access.  Data memory can be made non-pageable (wired) with a
 access argument of @code{VM_PROT_READ | VM_PROT_WRITE}.  A special case
 is that @code{VM_PROT_NONE} makes the memory pageable.
 
+Wiring doesn't stack, i.e. a single call to @code{vm_wire} with
+@var{access} @code{VM_PROT_NONE} unwires the specified range,
+regardless of how many times it was previously wired. Conversely,
+a single call to @code{vm_wire} with @var{access}
+@code{VM_PROT_READ | VM_PROT_WRITE} wires the specified range,
+regardless of how many times it was previously unwired.
+
 The function returns @code{KERN_SUCCESS} if the call succeeded,
 @code{KERN_INVALID_HOST} if @var{host} was not a valid host
 port, @code{KERN_INVALID_TASK} if @var{task} was not a valid task,
@@ -3265,6 +3275,37 @@ mode, and @code{KERN_NO_SPACE} if some memory in the specified range
 is not present or has an inappropriate protection value.
 
 The @code{vm_wire} call is actually an RPC to @var{host}, normally
+a send right for a privileged host port, but potentially any send right.
+In addition to the normal diagnostic return codes from the call's server
+(normally the kernel), the call may return @code{mach_msg} return codes.
+@end deftypefun
+
+@deftypefun kern_return_t vm_wire_all (@w{host_t @var{host}}, @w{vm_task_t @var{target_task}}, @w{vm_wire_t @var{flags}})
+The function @code{vm_wire_all} allows applications to control
+memory pageability, as with @code{vm_wire}, but applies to all
+current and/or future mappings.
+
+The argument @var{flags} are bit values, combined with bitwise-or.
+
+@table @code
+@item VM_WIRE_CURRENT
+All currently existing entries are wired, with access types matching
+their protection.
+
+@item VM_WIRE_FUTURE
+All future entries are automatically wired, with access types matching
+their protection.
+@end table
+
+If flags specifies no bits (@code{VM_WIRE_NONE}), all current entries
+are unwired, and future entries are no longer automatically wired.
+
+The function returns @code{KERN_SUCCESS} if the call succeeded,
+@code{KERN_INVALID_HOST} if @var{host} was not a valid host port,
+@code{KERN_INVALID_TASK} if @var{task} was not a valid task,
+and @code{KERN_INVALID_VALUE} if @var{flags} specifies invalid bits.
+
+The @code{vm_wire_all} call is actually an RPC to @var{host}, normally
 a send right for a privileged host port, but potentially any send right.
 In addition to the normal diagnostic return codes from the call's server
 (normally the kernel), the call may return @code{mach_msg} return codes.
