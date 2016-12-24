@@ -96,7 +96,7 @@ i386_set_ldt(
 	    (void) vm_map_pageable(ipc_kernel_map,
 			dst_addr,
 			dst_addr + count * sizeof(struct real_descriptor),
-			VM_PROT_READ|VM_PROT_WRITE);
+			VM_PROT_READ|VM_PROT_WRITE, TRUE, TRUE);
 	    desc_list = (struct real_descriptor *)dst_addr;
 	}
 

@@ -106,7 +106,8 @@ host_load_symbol_table(
 	(void) vm_map_pageable(kernel_map,
 		symtab_start,
 		round_page(symtab_end),
-		VM_PROT_READ|VM_PROT_WRITE);
+		VM_PROT_READ|VM_PROT_WRITE,
+		TRUE, TRUE);
 
 	/*
 	 * Discard the original copy object

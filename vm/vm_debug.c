@@ -156,8 +156,8 @@ mach_vm_region_info(
 	regionp->vri_protection = entry->protection;
 	regionp->vri_max_protection = entry->max_protection;
 	regionp->vri_inheritance = entry->inheritance;
-	regionp->vri_wired_count = entry->wired_count;
-	regionp->vri_user_wired_count = entry->user_wired_count;
+	regionp->vri_wired_count = !!entry->wired_count; /* Doesn't stack */
+	regionp->vri_user_wired_count = regionp->vri_wired_count; /* Obsolete */
 
 	object = entry->object.vm_object;
 	*portp = vm_object_real_name(object);

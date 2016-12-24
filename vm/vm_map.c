@@ -68,14 +68,14 @@
  * wire count; it's used for map splitting and cache changing in
  * vm_map_copyout.
  */
-#define vm_map_entry_copy(NEW,OLD) \
-MACRO_BEGIN                                     \
-                *(NEW) = *(OLD);                \
-                (NEW)->is_shared = FALSE;	\
-                (NEW)->needs_wakeup = FALSE;    \
-                (NEW)->in_transition = FALSE;   \
-                (NEW)->wired_count = 0;         \
-                (NEW)->user_wired_count = 0;    \
+#define vm_map_entry_copy(NEW,OLD)			\
+MACRO_BEGIN						\
+                *(NEW) = *(OLD);			\
+                (NEW)->is_shared = FALSE;		\
+                (NEW)->needs_wakeup = FALSE;		\
+                (NEW)->in_transition = FALSE;		\
+                (NEW)->wired_count = 0;			\
+                (NEW)->wired_access = VM_PROT_NONE;	\
 MACRO_END
 
 #define vm_map_entry_copy_full(NEW,OLD)        (*(NEW) = *(OLD))
@@ -184,7 +184,7 @@ void vm_map_setup(
 	rbtree_init(&map->hdr.gap_tree);
 
 	map->size = 0;
-	map->user_wired = 0;
+	map->size_wired = 0;
 	map->ref_count = 1;
 	map->pmap = pmap;
 	map->min_offset = min;
@@ -809,8 +809,7 @@ kern_return_t vm_map_find_entry(
 	    (entry->inheritance == VM_INHERIT_DEFAULT) &&
 	    (entry->protection == VM_PROT_DEFAULT) &&
 	    (entry->max_protection == VM_PROT_ALL) &&
-	    (entry->wired_count == 1) &&
-	    (entry->user_wired_count == 0) &&
+	    (entry->wired_count != 0) &&
 	    (entry->projected_on == 0)) {
 		/*
 		 *	Because this is a special case,
@@ -837,7 +836,7 @@ kern_return_t vm_map_find_entry(
 		new_entry->protection = VM_PROT_DEFAULT;
 		new_entry->max_protection = VM_PROT_ALL;
 		new_entry->wired_count = 1;
-		new_entry->user_wired_count = 0;
+		new_entry->wired_access = VM_PROT_DEFAULT;
 
 		new_entry->in_transition = FALSE;
 		new_entry->needs_wakeup = FALSE;
@@ -1041,7 +1040,7 @@ kern_return_t vm_map_enter(
 	    (entry->inheritance == inheritance) &&
 	    (entry->protection == cur_protection) &&
 	    (entry->max_protection == max_protection) &&
-	    (entry->wired_count == 0) &&  /* implies user_wired_count == 0 */
+	    (entry->wired_count == 0) &&
 	    (entry->projected_on == 0)) {
 		if (vm_object_coalesce(entry->object.vm_object,
 				VM_OBJECT_NULL,
@@ -1085,7 +1084,7 @@ kern_return_t vm_map_enter(
 	new_entry->protection = cur_protection;
 	new_entry->max_protection = max_protection;
 	new_entry->wired_count = 0;
-	new_entry->user_wired_count = 0;
+	new_entry->wired_access = VM_PROT_NONE;
 
 	new_entry->in_transition = FALSE;
 	new_entry->needs_wakeup = FALSE;
@@ -1307,6 +1306,207 @@ kern_return_t vm_map_submap(
 	return(result);
 }
 
+static void
+vm_map_entry_inc_wired(vm_map_t map, vm_map_entry_t entry)
+{
+	/*
+	 * This member is a counter to indicate whether an entry
+	 * should be faulted in (first time it is wired, wired_count
+	 * goes from 0 to 1) or not (other times, wired_count goes
+	 * from 1 to 2 or remains 2).
+	 */
+	if (entry->wired_count > 1) {
+		return;
+	}
+
+	if (entry->wired_count == 0) {
+		map->size_wired += entry->vme_end - entry->vme_start;
+	}
+
+	entry->wired_count++;
+}
+
+static void
+vm_map_entry_reset_wired(vm_map_t map, vm_map_entry_t entry)
+{
+	if (entry->wired_count != 0) {
+		map->size_wired -= entry->vme_end - entry->vme_start;
+		entry->wired_count = 0;
+	}
+}
+
+/*
+ *	vm_map_pageable_scan: scan entries and update wiring as appropriate
+ *
+ *	This function is used by the VM system after either the wiring
+ *	access or protection of a mapping changes. It scans part or
+ *	all the entries of a map, and either wires, unwires, or skips
+ *	entries depending on their state.
+ *
+ *	The map must be locked. If wiring faults are performed, the lock
+ *	is downgraded to a read lock. The caller should always consider
+ *	the map read locked on return.
+ */
+static void
+vm_map_pageable_scan(struct vm_map *map,
+		     struct vm_map_entry *start,
+		     struct vm_map_entry *end)
+{
+	struct vm_map_entry *entry;
+	boolean_t do_wire_faults;
+
+	/*
+	 * Pass 1. Update counters and prepare wiring faults.
+	 */
+
+	do_wire_faults = FALSE;
+
+	for (entry = start; entry != end; entry = entry->vme_next) {
+
+		/*
+		 * Unwiring.
+		 *
+		 * Note that unwiring faults can be performed while
+		 * holding a write lock on the map. A wiring fault
+		 * can only be done with a read lock.
+		 */
+
+		if (entry->wired_access == VM_PROT_NONE) {
+			if (entry->wired_count != 0) {
+				vm_map_entry_reset_wired(map, entry);
+				vm_fault_unwire(map, entry);
+			}
+
+			continue;
+		}
+
+		/*
+		 * Wiring.
+		 */
+
+		if (entry->protection == VM_PROT_NONE) {
+
+			/*
+			 * Make sure entries that cannot be accessed
+			 * because of their protection aren't wired.
+			 */
+
+			if (entry->wired_count == 0) {
+				continue;
+			}
+
+			/*
+			 * This normally occurs after changing the protection of
+			 * a wired region to VM_PROT_NONE.
+			 */
+			vm_map_entry_reset_wired(map, entry);
+			vm_fault_unwire(map, entry);
+			continue;
+		}
+
+		/*
+		 *	We must do this in two passes:
+		 *
+		 *	1.  Holding the write lock, we create any shadow
+		 *	    or zero-fill objects that need to be created.
+		 *	    Then we increment the wiring count.
+		 *
+		 *	2.  We downgrade to a read lock, and call
+		 *	    vm_fault_wire to fault in the pages for any
+		 *	    newly wired area (wired_count is 1).
+		 *
+		 *	Downgrading to a read lock for vm_fault_wire avoids
+		 *	a possible deadlock with another thread that may have
+		 *	faulted on one of the pages to be wired (it would mark
+		 *	the page busy, blocking us, then in turn block on the
+		 *	map lock that we hold).  Because of problems in the
+		 *	recursive lock package, we cannot upgrade to a write
+		 *	lock in vm_map_lookup.  Thus, any actions that require
+		 *	the write lock must be done beforehand.  Because we
+		 *	keep the read lock on the map, the copy-on-write
+		 *	status of the entries we modify here cannot change.
+		 */
+
+		if (entry->wired_count == 0) {
+			/*
+			 *	Perform actions of vm_map_lookup that need
+			 *	the write lock on the map: create a shadow
+			 *	object for a copy-on-write region, or an
+			 *	object for a zero-fill region.
+			 */
+			if (entry->needs_copy &&
+			    ((entry->protection & VM_PROT_WRITE) != 0)) {
+				vm_object_shadow(&entry->object.vm_object,
+						 &entry->offset,
+						 (vm_size_t)(entry->vme_end
+							     - entry->vme_start));
+				entry->needs_copy = FALSE;
+			}
+
+			if (entry->object.vm_object == VM_OBJECT_NULL) {
+				entry->object.vm_object =
+					vm_object_allocate(
+						(vm_size_t)(entry->vme_end
+							    - entry->vme_start));
+				entry->offset = (vm_offset_t)0;
+			}
+		}
+
+		vm_map_entry_inc_wired(map, entry);
+
+		if (entry->wired_count == 1) {
+			do_wire_faults = TRUE;
+		}
+	}
+
+	/*
+	 * Pass 2. Trigger wiring faults.
+	 */
+
+	if (!do_wire_faults) {
+		return;
+	}
+
+	/*
+	 * HACK HACK HACK HACK
+	 *
+	 * If we are wiring in the kernel map or a submap of it,
+	 * unlock the map to avoid deadlocks.  We trust that the
+	 * kernel threads are well-behaved, and therefore will
+	 * not do anything destructive to this region of the map
+	 * while we have it unlocked.  We cannot trust user threads
+	 * to do the same.
+	 *
+	 * HACK HACK HACK HACK
+	 */
+	if (vm_map_pmap(map) == kernel_pmap) {
+		vm_map_unlock(map); /* trust me ... */
+	} else {
+		vm_map_lock_set_recursive(map);
+		vm_map_lock_write_to_read(map);
+	}
+
+	for (entry = start; entry != end; entry = entry->vme_next) {
+		/*
+		 * The wiring count can only be 1 if it was
+		 * incremented by this function right before
+		 * downgrading the lock.
+		 */
+		if (entry->wired_count == 1) {
+			/*
+			 * XXX This assumes that the faults always succeed.
+			 */
+			vm_fault_wire(map, entry);
+		}
+	}
+
+	if (vm_map_pmap(map) == kernel_pmap) {
+		vm_map_lock(map);
+	} else {
+		vm_map_lock_clear_recursive(map);
+	}
+}
+
 /*
  *	vm_map_protect:
  *
@@ -1380,6 +1580,16 @@ kern_return_t vm_map_protect(
 			current->protection = new_prot;
 
 		/*
+		 *	Make sure the new protection doesn't conflict
+		 *	with the desired wired access if any.
+		 */
+
+		if ((current->protection != VM_PROT_NONE) &&
+		    (current->wired_access != VM_PROT_NONE)) {
+			current->wired_access = current->protection;
+		}
+
+		/*
 		 *	Update physical map if necessary.
 		 */
 
@@ -1390,6 +1600,9 @@ kern_return_t vm_map_protect(
 		}
 		current = current->vme_next;
 	}
+
+	/* Returns with the map read-locked if successful */
+	vm_map_pageable_scan(map, entry, current);
 
 	vm_map_unlock(map);
 	return(KERN_SUCCESS);
@@ -1436,7 +1649,7 @@ kern_return_t vm_map_inherit(
 }
 
 /*
- *	vm_map_pageable_common:
+ *	vm_map_pageable:
  *
  *	Sets the pageability of the specified address
  *	range in the target map.  Regions specified
@@ -1446,266 +1659,88 @@ kern_return_t vm_map_inherit(
  *	This is checked against protection of memory being locked-down.
  *	access_type of VM_PROT_NONE makes memory pageable.
  *
- *	The map must not be locked, but a reference
- *	must remain to the map throughout the call.
+ *	If lock_map is TRUE, the map is locked and unlocked
+ *	by this function. Otherwise, it is assumed the caller
+ *	already holds the lock, in which case the function
+ *	returns with the lock downgraded to a read lock if successful.
  *
- *	Callers should use macros in vm/vm_map.h (i.e. vm_map_pageable,
- *	or vm_map_pageable_user); don't call vm_map_pageable directly.
+ *	If check_range is TRUE, this function fails if it finds
+ *	holes or protection mismatches in the specified range.
+ *
+ *	A reference must remain to the map throughout the call.
  */
-kern_return_t vm_map_pageable_common(
+
+kern_return_t vm_map_pageable(
 	vm_map_t	map,
 	vm_offset_t	start,
 	vm_offset_t	end,
 	vm_prot_t	access_type,
-	boolean_t	user_wire)
+	boolean_t	lock_map,
+	boolean_t	check_range)
 {
 	vm_map_entry_t		entry;
 	vm_map_entry_t		start_entry;
+	vm_map_entry_t		end_entry;
 
-	vm_map_lock(map);
+	if (lock_map) {
+		vm_map_lock(map);
+	}
 
 	VM_MAP_RANGE_CHECK(map, start, end);
 
-	if (vm_map_lookup_entry(map, start, &start_entry)) {
-		entry = start_entry;
-		/*
-		 *	vm_map_clip_start will be done later.
-		 */
-	}
-	else {
+	if (!vm_map_lookup_entry(map, start, &start_entry)) {
 		/*
 		 *	Start address is not in map; this is fatal.
 		 */
-		vm_map_unlock(map);
-		return(KERN_NO_SPACE);
+		if (lock_map) {
+			vm_map_unlock(map);
+		}
+
+		return KERN_NO_SPACE;
 	}
 
 	/*
-	 *	Actions are rather different for wiring and unwiring,
-	 *	so we have two separate cases.
+	 * Pass 1. Clip entries, check for holes and protection mismatches
+	 * if requested.
 	 */
 
-	if (access_type == VM_PROT_NONE) {
+	vm_map_clip_start(map, start_entry, start);
 
-		vm_map_clip_start(map, entry, start);
+	for (entry = start_entry;
+	     (entry != vm_map_to_entry(map)) &&
+	     (entry->vme_start < end);
+	     entry = entry->vme_next) {
+		vm_map_clip_end(map, entry, end);
 
-		/*
-		 *	Unwiring.  First ensure that there are no holes
-		 *	in the specified range.
-		 */
-		while ((entry != vm_map_to_entry(map)) &&
-		       (entry->vme_start < end)) {
-
-		    if ((entry->vme_end < end) &&
-			((entry->vme_next == vm_map_to_entry(map)) ||
-			 (entry->vme_next->vme_start > entry->vme_end))) {
-			    vm_map_unlock(map);
-			    return(KERN_NO_SPACE);
-		    }
-		    entry = entry->vme_next;
-		}
-
-		/*
-		 *	Now decrement the wiring count for each region.
-		 *	If a region becomes completely unwired,
-		 *	unwire its physical pages and mappings.
-		 */
-		entry = start_entry;
-		while ((entry != vm_map_to_entry(map)) &&
-		       (entry->vme_start < end)) {
-		    vm_map_clip_end(map, entry, end);
-
-		    /* Skip unwired entries */
-		    if (entry->wired_count == 0) {
-			assert(entry->user_wired_count == 0);
-			entry = entry->vme_next;
-			continue;
-		    }
-
-		    if (user_wire) {
-			if (--(entry->user_wired_count) == 0)
-			{
-			    map->user_wired -= entry->vme_end - entry->vme_start;
-			    entry->wired_count--;
+		if (check_range &&
+		    (((entry->vme_end < end) &&
+		      ((entry->vme_next == vm_map_to_entry(map)) ||
+		       (entry->vme_next->vme_start > entry->vme_end))) ||
+		     ((entry->protection & access_type) != access_type))) {
+			if (lock_map) {
+				vm_map_unlock(map);
 			}
-		    }
-		    else {
-			entry->wired_count--;
-		    }
 
-		    if (entry->wired_count == 0)
-			vm_fault_unwire(map, entry);
-
-		    entry = entry->vme_next;
+			return KERN_NO_SPACE;
 		}
 	}
 
-	else {
-		/*
-		 *	Wiring.  We must do this in two passes:
-		 *
-		 *	1.  Holding the write lock, we create any shadow
-		 *	    or zero-fill objects that need to be created.
-		 *	    Then we clip each map entry to the region to be
-		 *	    wired and increment its wiring count.  We
-		 *	    create objects before clipping the map entries
-		 *	    to avoid object proliferation.
-		 *
-		 *	2.  We downgrade to a read lock, and call
-		 *	    vm_fault_wire to fault in the pages for any
-		 *	    newly wired area (wired_count is 1).
-		 *
-		 *	Downgrading to a read lock for vm_fault_wire avoids
-		 *	a possible deadlock with another thread that may have
-		 *	faulted on one of the pages to be wired (it would mark
-		 *	the page busy, blocking us, then in turn block on the
-		 *	map lock that we hold).  Because of problems in the
-		 *	recursive lock package, we cannot upgrade to a write
-		 *	lock in vm_map_lookup.  Thus, any actions that require
-		 *	the write lock must be done beforehand.  Because we
-		 *	keep the read lock on the map, the copy-on-write
-		 *	status of the entries we modify here cannot change.
-		 */
+	end_entry = entry;
 
-		/*
-		 *	Pass 1.
-		 */
-		while ((entry != vm_map_to_entry(map)) &&
-		       (entry->vme_start < end)) {
-		    vm_map_clip_end(map, entry, end);
+	/*
+	 * Pass 2. Set the desired wired access.
+	 */
 
-		    if (entry->wired_count == 0) {
-
-			/*
-			 *	Perform actions of vm_map_lookup that need
-			 *	the write lock on the map: create a shadow
-			 *	object for a copy-on-write region, or an
-			 *	object for a zero-fill region.
-			 */
-			if (entry->needs_copy &&
-			    ((entry->protection & VM_PROT_WRITE) != 0)) {
-
-				vm_object_shadow(&entry->object.vm_object,
-						&entry->offset,
-						(vm_size_t)(entry->vme_end
-							- entry->vme_start));
-				entry->needs_copy = FALSE;
-			}
-			if (entry->object.vm_object == VM_OBJECT_NULL) {
-				entry->object.vm_object =
-				        vm_object_allocate(
-					    (vm_size_t)(entry->vme_end
-				    			- entry->vme_start));
-				entry->offset = (vm_offset_t)0;
-			}
-		    }
-		    vm_map_clip_start(map, entry, start);
-		    vm_map_clip_end(map, entry, end);
-
-		    if (user_wire) {
-			if ((entry->user_wired_count)++ == 0)
-			{
-			    map->user_wired += entry->vme_end - entry->vme_start;
-			    entry->wired_count++;
-			}
-		    }
-		    else {
-			entry->wired_count++;
-		    }
-
-		    /*
-		     *	Check for holes and protection mismatch.
-		     *  Holes: Next entry should be contiguous unless
-		     *		this is the end of the region.
-		     *	Protection: Access requested must be allowed.
-		     */
-		    if (((entry->vme_end < end) &&
-			 ((entry->vme_next == vm_map_to_entry(map)) ||
-			  (entry->vme_next->vme_start > entry->vme_end))) ||
-			((entry->protection & access_type) != access_type)) {
-			    /*
-			     *	Found a hole or protection problem.
-			     *	Object creation actions
-			     *	do not need to be undone, but the
-			     *	wired counts need to be restored.
-			     */
-			    while ((entry != vm_map_to_entry(map)) &&
-				(entry->vme_end > start)) {
-				    if (user_wire) {
-					if (--(entry->user_wired_count) == 0)
-					{
-					    map->user_wired -= entry->vme_end - entry->vme_start;
-					    entry->wired_count--;
-					}
-				    }
-				    else {
-				       entry->wired_count--;
-				    }
-
-				    entry = entry->vme_prev;
-			    }
-
-			    vm_map_unlock(map);
-			    return(KERN_NO_SPACE);
-		    }
-		    entry = entry->vme_next;
-		}
-
-		/*
-		 *	Pass 2.
-		 */
-
-		/*
-		 * HACK HACK HACK HACK
-		 *
-		 * If we are wiring in the kernel map or a submap of it,
-		 * unlock the map to avoid deadlocks.  We trust that the
-		 * kernel threads are well-behaved, and therefore will
-		 * not do anything destructive to this region of the map
-		 * while we have it unlocked.  We cannot trust user threads
-		 * to do the same.
-		 *
-		 * HACK HACK HACK HACK
-		 */
-		if (vm_map_pmap(map) == kernel_pmap) {
-		    vm_map_unlock(map);		/* trust me ... */
-		}
-		else {
-		    vm_map_lock_set_recursive(map);
-		    vm_map_lock_write_to_read(map);
-		}
-
-		entry = start_entry;
-		while (entry != vm_map_to_entry(map) &&
-			entry->vme_start < end) {
-		    /*
-		     *	Wiring cases:
-		     *	    Kernel: wired == 1 && user_wired == 0
-		     *	    User:   wired == 1 && user_wired == 1
-		     *
-		     *  Don't need to wire if either is > 1.  wired = 0 &&
-		     *	user_wired == 1 can't happen.
-		     */
-
-		    /*
-		     *	XXX This assumes that the faults always succeed.
-		     */
-		    if ((entry->wired_count == 1) &&
-			(entry->user_wired_count <= 1)) {
-			    vm_fault_wire(map, entry);
-		    }
-		    entry = entry->vme_next;
-		}
-
-		if (vm_map_pmap(map) == kernel_pmap) {
-		    vm_map_lock(map);
-		}
-		else {
-		    vm_map_lock_clear_recursive(map);
-		}
+	for (entry = start_entry; entry != end_entry; entry = entry->vme_next) {
+		entry->wired_access = access_type;
 	}
 
-	vm_map_unlock(map);
+	/* Returns with the map read-locked */
+	vm_map_pageable_scan(map, start_entry, end_entry);
+
+	if (lock_map) {
+		vm_map_unlock(map);
+	}
 
 	return(KERN_SUCCESS);
 }
@@ -1749,11 +1784,8 @@ void vm_map_entry_delete(
 	     */
 
 	    if (entry->wired_count != 0) {
+		vm_map_entry_reset_wired(map, entry);
 		vm_fault_unwire(map, entry);
-		entry->wired_count = 0;
-		if (entry->user_wired_count)
-		    map->user_wired -= entry->vme_end - entry->vme_start;
-		entry->user_wired_count = 0;
 	    }
 
 	    /*
@@ -2397,10 +2429,7 @@ start_pass_1:
 			entry->object = copy_entry->object;
 			entry->offset = copy_entry->offset;
 			entry->needs_copy = copy_entry->needs_copy;
-			entry->wired_count = 0;
-			if (entry->user_wired_count)
-			    dst_map->user_wired -= entry->vme_end - entry->vme_start;
-			entry->user_wired_count = 0;
+			vm_map_entry_reset_wired(dst_map, entry);
 
 			vm_map_copy_entry_unlink(copy, copy_entry);
 			vm_map_copy_entry_dispose(copy, copy_entry);
@@ -2817,9 +2846,8 @@ kern_return_t vm_map_copyout_page_list(
 	    last->inheritance != VM_INHERIT_DEFAULT ||
 	    last->protection != VM_PROT_DEFAULT ||
 	    last->max_protection != VM_PROT_ALL ||
-	    (must_wire ? (last->wired_count != 1 ||
-		    last->user_wired_count != 1) :
-		(last->wired_count != 0))) {
+	    (must_wire ? (last->wired_count == 0)
+		       : (last->wired_count != 0))) {
 		    goto create_object;
 	}
 
@@ -2911,14 +2939,13 @@ create_object:
 	entry->is_shared = FALSE;
 	entry->is_sub_map = FALSE;
 	entry->needs_copy = FALSE;
+	entry->wired_count = 0;
 
 	if (must_wire) {
-		entry->wired_count = 1;
-		dst_map->user_wired += entry->vme_end - entry->vme_start;
-		entry->user_wired_count = 1;
+		vm_map_entry_inc_wired(dst_map, entry);
+		entry->wired_access = VM_PROT_DEFAULT;
 	} else {
-		entry->wired_count = 0;
-		entry->user_wired_count = 0;
+		entry->wired_access = VM_PROT_NONE;
 	}
 
 	entry->in_transition = TRUE;
@@ -4014,10 +4041,7 @@ retry:
 						src_start + src_size);
 
 					assert(src_entry->wired_count > 0);
-				        src_entry->wired_count = 0;
-					if (src_entry->user_wired_count)
-					    src_map->user_wired -= src_entry->vme_end - src_entry->vme_start;
-				        src_entry->user_wired_count = 0;
+					vm_map_entry_reset_wired(src_map, src_entry);
 					unwire_end = src_entry->vme_end;
 				        pmap_pageable(vm_map_pmap(src_map),
 					    page_vaddr, unwire_end, TRUE);
@@ -4699,7 +4723,6 @@ void vm_map_simplify(
 		(prev_entry->protection == this_entry->protection) &&
 		(prev_entry->max_protection == this_entry->max_protection) &&
 		(prev_entry->wired_count == this_entry->wired_count) &&
-		(prev_entry->user_wired_count == this_entry->user_wired_count) &&
 
 		(prev_entry->needs_copy == this_entry->needs_copy) &&
 
@@ -4778,7 +4801,9 @@ void vm_map_print(db_expr_t addr, boolean_t have_addr, db_expr_t count, const ch
 
 	iprintf("Map 0x%X: name=\"%s\", pmap=0x%X,",
 		(vm_offset_t) map, map->name, (vm_offset_t) (map->pmap));
-	 printf("ref=%d,nentries=%d,", map->ref_count, map->hdr.nentries);
+	 printf("ref=%d,nentries=%d\n", map->ref_count, map->hdr.nentries);
+	 printf("size=%lu,resident:%lu,wired=%lu\n", map->size,
+	        pmap_resident_count(map->pmap) * PAGE_SIZE, map->size_wired);
 	 printf("version=%d\n",	map->timestamp);
 	indent += 1;
 	for (entry = vm_map_first_entry(map);
@@ -4794,13 +4819,7 @@ void vm_map_print(db_expr_t addr, boolean_t have_addr, db_expr_t count, const ch
 			entry->max_protection,
 			inheritance_name[entry->inheritance]);
 		if (entry->wired_count != 0) {
-			printf("wired(");
-			if (entry->user_wired_count != 0)
-				printf("u");
-			if (entry->wired_count >
-			    ((entry->user_wired_count == 0) ? 0 : 1))
-				printf("k");
-			printf(") ");
+			printf("wired, ");
 		}
 		if (entry->in_transition) {
 			printf("in transition");

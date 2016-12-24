@@ -441,11 +441,9 @@ kern_return_t vm_wire(port, map, start, size, access)
 		return(KERN_INVALID_ARGUMENT);
 
 	/* TODO: make it tunable */
-	if (!priv && access != VM_PROT_NONE && map->user_wired + size > 65536)
+	if (!priv && access != VM_PROT_NONE && map->size_wired + size > 65536)
 		return KERN_NO_ACCESS;
 
-	return vm_map_pageable_user(map,
-				    trunc_page(start),
-				    round_page(start+size),
-				    access);
+	return vm_map_pageable(map, trunc_page(start), round_page(start+size),
+			       access, TRUE, TRUE);
 }

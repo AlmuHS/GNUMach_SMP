@@ -216,11 +216,11 @@ mach_port_names(
 		/* can't fault while we hold locks */
 
 		kr = vm_map_pageable(ipc_kernel_map, addr1, addr1 + size,
-				     VM_PROT_READ|VM_PROT_WRITE);
+				     VM_PROT_READ|VM_PROT_WRITE, TRUE, TRUE);
 		assert(kr == KERN_SUCCESS);
 
 		kr = vm_map_pageable(ipc_kernel_map, addr2, addr2 + size,
-				     VM_PROT_READ|VM_PROT_WRITE);
+				     VM_PROT_READ|VM_PROT_WRITE, TRUE, TRUE);
 		assert(kr == KERN_SUCCESS);
 	}
 	/* space is read-locked and active */
@@ -263,12 +263,12 @@ mach_port_names(
 
 		kr = vm_map_pageable(ipc_kernel_map,
 				     addr1, addr1 + size_used,
-				     VM_PROT_NONE);
+				     VM_PROT_NONE, TRUE, TRUE);
 		assert(kr == KERN_SUCCESS);
 
 		kr = vm_map_pageable(ipc_kernel_map,
 				     addr2, addr2 + size_used,
-				     VM_PROT_NONE);
+				     VM_PROT_NONE, TRUE, TRUE);
 		assert(kr == KERN_SUCCESS);
 
 		kr = vm_map_copyin(ipc_kernel_map, addr1, size_used,
@@ -938,7 +938,7 @@ mach_port_get_set_status(
 		/* can't fault while we hold locks */
 
 		kr = vm_map_pageable(ipc_kernel_map, addr, addr + size,
-				     VM_PROT_READ|VM_PROT_WRITE);
+				     VM_PROT_READ|VM_PROT_WRITE, TRUE, TRUE);
 		assert(kr == KERN_SUCCESS);
 
 		kr = ipc_right_lookup_read(space, name, &entry);
@@ -1003,7 +1003,7 @@ mach_port_get_set_status(
 
 		kr = vm_map_pageable(ipc_kernel_map,
 				     addr, addr + size_used,
-				     VM_PROT_NONE);
+				     VM_PROT_NONE, TRUE, TRUE);
 		assert(kr == KERN_SUCCESS);
 
 		kr = vm_map_copyin(ipc_kernel_map, addr, size_used,

@@ -129,7 +129,9 @@ struct vm_map_entry {
 	vm_prot_t		max_protection;	/* maximum protection */
 	vm_inherit_t		inheritance;	/* inheritance */
 	unsigned short		wired_count;	/* can be paged if = 0 */
-	unsigned short		user_wired_count; /* for vm_wire */
+	vm_prot_t		wired_access;	/* wiring access types, as accepted
+						   by vm_map_pageable; used on wiring
+						   scans when protection != VM_PROT_NONE */
 	struct vm_map_entry     *projected_on;  /* 0 for normal map entry
            or persistent kernel map projected buffer entry;
            -1 for non-persistent kernel map projected buffer entry;
@@ -179,7 +181,7 @@ struct vm_map {
 #define max_offset		hdr.links.end	/* end of range */
 	pmap_t			pmap;		/* Physical map */
 	vm_size_t		size;		/* virtual size */
-	vm_size_t		user_wired;	/* wired by user size */
+	vm_size_t		size_wired;	/* wired size */
 	int			ref_count;	/* Reference count */
 	decl_simple_lock_data(,	ref_lock)	/* Lock for ref_count field */
 	vm_map_entry_t		hint;		/* hint for quick lookups */
@@ -485,17 +487,10 @@ static inline void vm_map_set_name(vm_map_t map, const char *name)
 						 * a verified lookup is
 						 * now complete */
 /*
- *	Pageability functions.  Includes macro to preserve old interface.
+ *	Pageability functions.
  */
-extern kern_return_t	vm_map_pageable_common(vm_map_t, vm_offset_t,
-					       vm_offset_t, vm_prot_t,
-					       boolean_t);
-
-#define vm_map_pageable(map, s, e, access)	\
-		vm_map_pageable_common(map, s, e, access, FALSE)
-
-#define vm_map_pageable_user(map, s, e, access)	\
-		vm_map_pageable_common(map, s, e, access, TRUE)
+extern kern_return_t	vm_map_pageable(vm_map_t, vm_offset_t, vm_offset_t,
+					vm_prot_t, boolean_t, boolean_t);
 
 /*
  *	Submap object.  Must be used to create memory to be put
