@@ -39,6 +39,7 @@
 #include <mach/port.h>
 #include <mach/vm_attributes.h>
 #include <mach/vm_param.h>
+#include <mach/vm_wire.h>
 #include <kern/assert.h>
 #include <kern/debug.h>
 #include <kern/kalloc.h>
@@ -1108,6 +1109,15 @@ kern_return_t vm_map_enter(
 
 	SAVE_HINT(map, new_entry);
 
+	if (map->wiring_required) {
+		/* Returns with the map read-locked if successful */
+		result = vm_map_pageable(map, start, end, cur_protection, FALSE, FALSE);
+
+		if (result != KERN_SUCCESS) {
+			RETURN(KERN_SUCCESS);
+		}
+	}
+
 	vm_map_unlock(map);
 
 	if ((object != VM_OBJECT_NULL) &&
@@ -1743,6 +1753,69 @@ kern_return_t vm_map_pageable(
 	}
 
 	return(KERN_SUCCESS);
+}
+
+/*
+ *	vm_map_pageable_all:
+ *
+ *	Sets the pageability of an entire map. If the VM_WIRE_CURRENT
+ *	flag is set, then all current mappings are locked down. If the
+ *	VM_WIRE_FUTURE flag is set, then all mappings created after the
+ *	call returns are locked down. If no flags are passed
+ *	(i.e. VM_WIRE_NONE), all mappings become pageable again, and
+ *	future mappings aren't automatically locked down any more.
+ *
+ *	The access type of the mappings match their current protection.
+ *	Null mappings (with protection PROT_NONE) are updated to track
+ *	that they should be wired in case they become accessible.
+ */
+kern_return_t
+vm_map_pageable_all(struct vm_map *map, vm_wire_t flags)
+{
+	boolean_t wiring_required;
+	kern_return_t kr;
+
+	if ((flags & ~VM_WIRE_ALL) != 0) {
+		return KERN_INVALID_ARGUMENT;
+	}
+
+	vm_map_lock(map);
+
+	if (flags == VM_WIRE_NONE) {
+		map->wiring_required = FALSE;
+
+		/* Returns with the map read-locked if successful */
+		kr = vm_map_pageable(map, map->min_offset, map->max_offset,
+				     VM_PROT_NONE, FALSE, FALSE);
+		vm_map_unlock(map);
+		return kr;
+	}
+
+	wiring_required = map->wiring_required;
+
+	if (flags & VM_WIRE_FUTURE) {
+		map->wiring_required = TRUE;
+	}
+
+	if (flags & VM_WIRE_CURRENT) {
+		/* Returns with the map read-locked if successful */
+		kr = vm_map_pageable(map, map->min_offset, map->max_offset,
+				     VM_PROT_READ | VM_PROT_WRITE,
+				     FALSE, FALSE);
+
+		if (kr != KERN_SUCCESS) {
+			if (flags & VM_WIRE_FUTURE) {
+				map->wiring_required = wiring_required;
+			}
+
+			vm_map_unlock(map);
+			return kr;
+		}
+	}
+
+	vm_map_unlock(map);
+
+	return KERN_SUCCESS;
 }
 
 /*
@@ -2605,6 +2678,7 @@ kern_return_t vm_map_copyout(
 	vm_offset_t	vm_copy_start;
 	vm_map_entry_t	last;
 	vm_map_entry_t	entry;
+	kern_return_t	kr;
 
 	/*
 	 *	Check for null copy object.
@@ -2624,7 +2698,6 @@ kern_return_t vm_map_copyout(
 		vm_object_t object = copy->cpy_object;
 		vm_size_t offset = copy->offset;
 		vm_size_t tmp_size = copy->size;
-		kern_return_t kr;
 
 		*dst_addr = 0;
 		kr = vm_map_enter(dst_map, dst_addr, tmp_size,
@@ -2764,11 +2837,19 @@ kern_return_t vm_map_copyout(
 
 	vm_map_copy_insert(dst_map, last, copy);
 
-	vm_map_unlock(dst_map);
+	if (dst_map->wiring_required) {
+		/* Returns with the map read-locked if successful */
+		kr = vm_map_pageable(dst_map, start, start + size,
+				     VM_PROT_READ | VM_PROT_WRITE,
+				     FALSE, FALSE);
 
-	/*
-	 * XXX	If wiring_required, call vm_map_pageable
-	 */
+		if (kr != KERN_SUCCESS) {
+			vm_map_unlock(dst_map);
+			return kr;
+		}
+	}
+
+	vm_map_unlock(dst_map);
 
 	return(KERN_SUCCESS);
 }

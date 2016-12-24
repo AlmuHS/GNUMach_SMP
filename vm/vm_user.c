@@ -447,3 +447,35 @@ kern_return_t vm_wire(port, map, start, size, access)
 	return vm_map_pageable(map, trunc_page(start), round_page(start+size),
 			       access, TRUE, TRUE);
 }
+
+kern_return_t vm_wire_all(const ipc_port_t port, vm_map_t map, vm_wire_t flags)
+{
+	if (!IP_VALID(port))
+		return KERN_INVALID_HOST;
+
+	ip_lock(port);
+
+	if (!ip_active(port)
+	    || (ip_kotype(port) != IKOT_HOST_PRIV)) {
+		ip_unlock(port);
+		return KERN_INVALID_HOST;
+	}
+
+	ip_unlock(port);
+
+	if (map == VM_MAP_NULL) {
+		return KERN_INVALID_TASK;
+	}
+
+	if (flags & ~VM_WIRE_ALL) {
+		return KERN_INVALID_ARGUMENT;
+	}
+
+	/*Check if range includes projected buffer;
+	  user is not allowed direct manipulation in that case*/
+	if (projected_buffer_in_range(map, map->min_offset, map->max_offset)) {
+		return KERN_INVALID_ARGUMENT;
+	}
+
+	return vm_map_pageable_all(map, flags);
+}

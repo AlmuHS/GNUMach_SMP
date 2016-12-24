@@ -46,6 +46,7 @@
 #include <mach/vm_attributes.h>
 #include <mach/vm_prot.h>
 #include <mach/vm_inherit.h>
+#include <mach/vm_wire.h>
 #include <vm/pmap.h>
 #include <vm/vm_object.h>
 #include <vm/vm_page.h>
@@ -191,7 +192,7 @@ struct vm_map {
 	/* Flags */
 	unsigned int	wait_for_space:1,	/* Should callers wait
 						   for space? */
-	/* boolean_t */ wiring_required:1;	/* All memory wired? */
+	/* boolean_t */ wiring_required:1;	/* New mappings are wired? */
 
 	unsigned int		timestamp;	/* Version number */
 
@@ -491,6 +492,8 @@ static inline void vm_map_set_name(vm_map_t map, const char *name)
  */
 extern kern_return_t	vm_map_pageable(vm_map_t, vm_offset_t, vm_offset_t,
 					vm_prot_t, boolean_t, boolean_t);
+
+extern kern_return_t	vm_map_pageable_all(vm_map_t, vm_wire_t);
 
 /*
  *	Submap object.  Must be used to create memory to be put
