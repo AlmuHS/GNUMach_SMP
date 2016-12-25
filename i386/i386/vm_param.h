@@ -56,12 +56,11 @@
 #define VM_MAX_KERNEL_ADDRESS	(LINEAR_MAX_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS + VM_MIN_KERNEL_ADDRESS)
 #endif	/* MACH_PV_PAGETABLES */
 
-/* Reserve mapping room for kmem. */
-#ifdef	MACH_XEN
-#define VM_KERNEL_MAP_SIZE (128 * 1024 * 1024)
-#else
-#define VM_KERNEL_MAP_SIZE (96 * 1024 * 1024)
-#endif
+/*
+ * Reserve mapping room for the kernel map, which includes
+ * the device I/O map and the IPC map.
+ */
+#define VM_KERNEL_MAP_SIZE (152 * 1024 * 1024)
 
 /* The kernel virtual address space is actually located
    at high linear addresses.
