@@ -313,7 +313,6 @@ vm_page_can_move(const struct vm_page *page)
      */
 
     return !page->busy
-           && !page->external_laundry
            && !page->wanted
            && !page->absent
            && page->object->alive;
@@ -1157,26 +1156,19 @@ restart:
      * fault could occur, during which the map would be locked.
      * This fault would cause a new paging request to the default
      * pager. Receiving that request would deadlock when trying to
-     * lock the map again. Instead, the page isn't double paged.
-     * The external_laundry bit is set to indicate this situation
-     * to vm_pageout_setup.
+     * lock the map again. Instead, the page isn't double paged
+     * and vm_pageout_setup wires the page down, trusting the
+     * default pager as for internal pages.
      */
 
-    assert(!page->laundry && !page->external_laundry);
+    assert(!page->laundry);
     assert(!(double_paging && page->external));
 
-    if (object->internal) {
+    if (object->internal || !alloc_paused ||
+        memory_manager_default_port(object->pager)) {
         double_paging = FALSE;
     } else {
-        if (memory_manager_default_port(object->pager)) {
-            double_paging = FALSE;
-            page->external_laundry = TRUE;
-        } else if (!alloc_paused) {
-            double_paging = FALSE;
-        } else {
-            double_paging = TRUE;
-            page->laundry = TRUE;
-        }
+        double_paging = page->laundry = TRUE;
     }
 
 out:

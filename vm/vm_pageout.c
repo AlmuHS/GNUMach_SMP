@@ -47,6 +47,7 @@
 #include <kern/task.h>
 #include <kern/thread.h>
 #include <kern/printf.h>
+#include <vm/memory_object.h>
 #include <vm/pmap.h>
 #include <vm/vm_map.h>
 #include <vm/vm_object.h>
@@ -253,21 +254,13 @@ vm_pageout_setup(
 
 		assert(!old_object->internal);
 		m->laundry = FALSE;
-	} else if (old_object->internal) {
+	} else if (old_object->internal ||
+		   memory_manager_default_port(old_object->pager)) {
 		m->laundry = TRUE;
 		vm_page_laundry_count++;
 
 		vm_page_wire(m);
 	} else {
-		/*
-		 *	The caller is telling us that this page belongs
-		 *	to an external object managed by the default pager.
-		 *	Wire it to avoid a deadlock on the default pager map.
-		 */
-		if (m->external_laundry) {
-			vm_page_wire(m);
-		}
-
 		m->external_laundry = TRUE;
 
 		/*
