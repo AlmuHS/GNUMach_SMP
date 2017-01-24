@@ -109,7 +109,24 @@ static int month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 int
 yeartoday(int year)
 {
-	return((year%4) ? 365 : 366);
+	if (year%4)
+		/* Not divisible by 4, not bissextile */
+		return 365;
+
+	/* Divisible by 4 */
+	if (year % 100)
+		/* Not divisible by 100, bissextile */
+		return 366;
+
+	/* Divisible by 100 */
+	if (year % 400)
+		/* Not divisible by 400, not bissextile */
+		return 365;
+
+	/* Divisible by 400 */
+	/* Rules for 2000 and further have not been officially decided yet.
+	 * 2000 was made bissextile.  */
+	return 366;
 }
 
 int
