@@ -17,34 +17,59 @@
 */
 
 #include <kern/gsync.h>
+#include <kern/kmutex.h>
 #include <kern/sched_prim.h>
 #include <kern/thread.h>
-#include <kern/lock.h>
 #include <kern/list.h>
 #include <vm/vm_map.h>
+#include <vm/vm_kern.h>
 
 /* An entry in the global hash table. */
 struct gsync_hbucket
 {
   struct list entries;
-  decl_simple_lock_data (, lock)
+  struct kmutex lock;
 };
 
 /* A key used to uniquely identify an address that a thread is
  * waiting on. Its members' values depend on whether said
- * address is shared or task-local. */
-struct gsync_key
+ * address is shared or task-local. Note that different types of keys
+ * should never compare equal, since a task map should never have
+ * the same address as a VM object. */
+union gsync_key
 {
-  unsigned long u;
-  unsigned long v;
+  struct
+    {
+      vm_map_t map;
+      vm_offset_t addr;
+    } local;
+
+  struct
+    {
+      vm_object_t obj;
+      vm_offset_t off;
+    } shared;
+
+  struct
+    {
+      unsigned long u;
+      unsigned long v;
+    } any;
 };
 
 /* A thread that is blocked on an address with 'gsync_wait'. */
 struct gsync_waiter
 {
   struct list link;
-  struct gsync_key key;
+  union gsync_key key;
   thread_t waiter;
+};
+
+/* Needed data for temporary mappings. */
+struct vm_args
+{
+  vm_object_t obj;
+  vm_offset_t off;
 };
 
 #define GSYNC_NBUCKETS   512
@@ -56,97 +81,93 @@ void gsync_setup (void)
   for (i = 0; i < GSYNC_NBUCKETS; ++i)
     {
       list_init (&gsync_buckets[i].entries);
-      simple_lock_init (&gsync_buckets[i].lock);
+      kmutex_init (&gsync_buckets[i].lock);
     }
 }
 
 /* Convenience comparison functions for gsync_key's. */
 
 static inline int
-gsync_key_eq (const struct gsync_key *lp,
-  const struct gsync_key *rp)
+gsync_key_eq (const union gsync_key *lp,
+  const union gsync_key *rp)
 {
-  return (lp->u == rp->u && lp->v == rp->v);
+  return (lp->any.u == rp->any.u && lp->any.v == rp->any.v);
 }
 
 static inline int
-gsync_key_lt (const struct gsync_key *lp,
-  const struct gsync_key *rp)
+gsync_key_lt (const union gsync_key *lp,
+  const union gsync_key *rp)
 {
-  return (lp->u < rp->u || (lp->u == rp->u && lp->v < rp->v));
+  return (lp->any.u < rp->any.u ||
+    (lp->any.u == rp->any.u && lp->any.v < rp->any.v));
 }
 
 #define MIX2_LL(x, y)   ((((x) << 5) | ((x) >> 27)) ^ (y))
 
 static inline unsigned int
-gsync_key_hash (const struct gsync_key *keyp)
+gsync_key_hash (const union gsync_key *keyp)
 {
   unsigned int ret = sizeof (void *);
 #ifndef __LP64__
-  ret = MIX2_LL (ret, keyp->u);
-  ret = MIX2_LL (ret, keyp->v);
+  ret = MIX2_LL (ret, keyp->any.u);
+  ret = MIX2_LL (ret, keyp->any.v);
 #else
-  ret = MIX2_LL (ret, keyp->u & ~0U);
-  ret = MIX2_LL (ret, keyp->u >> 32);
-  ret = MIX2_LL (ret, keyp->v & ~0U);
-  ret = MIX2_LL (ret, keyp->v >> 32);
+  ret = MIX2_LL (ret, keyp->any.u & ~0U);
+  ret = MIX2_LL (ret, keyp->any.u >> 32);
+  ret = MIX2_LL (ret, keyp->any.v & ~0U);
+  ret = MIX2_LL (ret, keyp->any.v >> 32);
 #endif
   return (ret);
 }
 
-/* Test if the passed VM Map can access the address ADDR. The
- * parameter FLAGS is used to specify the width and protection
- * of the address. */
+/* Perform a VM lookup for the address in the map. The FLAGS
+ * parameter is used to specify some attributes for the address,
+ * such as protection. Place the corresponding VM object/offset pair
+ * in VAP. Returns 0 if successful, -1 otherwise. */
 static int
-valid_access_p (vm_map_t map, vm_offset_t addr, int flags)
+probe_address (vm_map_t map, vm_offset_t addr,
+  int flags, struct vm_args *vap)
 {
   vm_prot_t prot = VM_PROT_READ |
     ((flags & GSYNC_MUTATE) ? VM_PROT_WRITE : 0);
-  vm_offset_t size = sizeof (unsigned int) *
-    ((flags & GSYNC_QUAD) ? 2 : 1);
+  vm_map_version_t ver;
+  vm_prot_t rprot;
+  boolean_t wired_p;
 
-  vm_map_entry_t entry;
-  return (vm_map_lookup_entry (map, addr, &entry) &&
-    entry->vme_end >= addr + size &&
-    (prot & entry->protection) == prot);
+  if (vm_map_lookup (&map, addr, prot, &ver,
+      &vap->obj, &vap->off, &rprot, &wired_p) != KERN_SUCCESS)
+    return (-1);
+  else if ((rprot & prot) != prot)
+    {
+      vm_object_unlock (vap->obj);
+      return (-1);
+    }
+
+  return (0);
 }
 
-/* Given a task and an address, initialize the key at *KEYP and
- * return the corresponding bucket in the global hash table. */
+/* Initialize the key with its needed members, depending on whether the
+ * address is local or shared. Also stores the VM object and offset inside
+ * the argument VAP for future use. */
 static int
-gsync_fill_key (task_t task, vm_offset_t addr,
-  int flags, struct gsync_key *keyp)
+gsync_prepare_key (task_t task, vm_offset_t addr, int flags,
+  union gsync_key *keyp, struct vm_args *vap)
 {
-  if (flags & GSYNC_SHARED)
+  if (probe_address (task->map, addr, flags, vap) < 0)
+    return (-1);
+  else if (flags & GSYNC_SHARED)
     {
       /* For a shared address, we need the VM object
        * and offset as the keys. */
-      vm_map_t map = task->map;
-      vm_prot_t prot = VM_PROT_READ |
-        ((flags & GSYNC_MUTATE) ? VM_PROT_WRITE : 0);
-      vm_map_version_t ver;
-      vm_prot_t rpr;
-      vm_object_t obj;
-      vm_offset_t off;
-      boolean_t wired_p;
-
-      if (unlikely (vm_map_lookup (&map, addr, prot, &ver,
-          &obj, &off, &rpr, &wired_p) != KERN_SUCCESS))
-        return (-1);
-
-      /* The VM object is returned locked. However, we check the
-       * address' accessibility later, so we can release it. */
-      vm_object_unlock (obj);
-
-      keyp->u = (unsigned long)obj;
-      keyp->v = (unsigned long)off;
+      keyp->shared.obj = vap->obj;
+      keyp->shared.off = vap->off;
     }
   else
     {
       /* Task-local address. The keys are the task's map and
        * the virtual address itself. */
-      keyp->u = (unsigned long)task->map;
-      keyp->v = (unsigned long)addr;
+      keyp->local.map = task->map;
+      keyp->local.addr = addr;
     }
 
   return ((int)(gsync_key_hash (keyp) % GSYNC_NBUCKETS));
@@ -160,7 +181,7 @@ node_to_waiter (struct list *nodep)
 
 static inline struct list*
 gsync_find_key (const struct list *entries,
-  const struct gsync_key *keyp, int *exactp)
+  const union gsync_key *keyp, int *exactp)
 {
   /* Look for a key that matches. We take advantage of the fact
    * that the entries are sorted to break out of the loop as
@@ -182,57 +203,105 @@ gsync_find_key (const struct list *entries,
   return (runp);
 }
 
+/* Create a temporary mapping in the kernel.*/
+static inline vm_offset_t
+temp_mapping (struct vm_args *vap, vm_offset_t addr, vm_prot_t prot)
+{
+  vm_offset_t paddr;
+  /* Adjust the offset for addresses that aren't page-aligned. */
+  vm_offset_t off = vap->off - (addr - trunc_page (addr));
+
+  if (vm_map_enter (kernel_map, &paddr, PAGE_SIZE,
+      0, TRUE, vap->obj, off, FALSE, prot, VM_PROT_ALL,
+      VM_INHERIT_DEFAULT) != KERN_SUCCESS)
+    paddr = 0;
+
+  return (paddr);
+}
+
 kern_return_t gsync_wait (task_t task, vm_offset_t addr,
   unsigned int lo, unsigned int hi, natural_t msec, int flags)
 {
-  if (unlikely (task != current_task()))
-    /* Not implemented yet.  */
-    return (KERN_FAILURE);
-
-  struct gsync_waiter w;
-  int bucket = gsync_fill_key (task, addr, flags, &w.key);
-
-  if (unlikely (bucket < 0))
+  if (task == 0)
+    return (KERN_INVALID_TASK);
+  else if (addr % sizeof (int) != 0)
     return (KERN_INVALID_ADDRESS);
 
-  /* Test that the address is actually valid for the
-   * given task. Do so with the read-lock held in order
-   * to prevent memory deallocations. */
   vm_map_lock_read (task->map);
 
-  struct gsync_hbucket *hbp = gsync_buckets + bucket;
-  simple_lock (&hbp->lock);
+  struct gsync_waiter w;
+  struct vm_args va;
+  boolean_t remote = task != current_task ();
+  int bucket = gsync_prepare_key (task, addr, flags, &w.key, &va);
 
-  if (unlikely (!valid_access_p (task->map, addr, flags)))
+  if (bucket < 0)
     {
-      simple_unlock (&hbp->lock);
       vm_map_unlock_read (task->map);
       return (KERN_INVALID_ADDRESS);
     }
+  else if (remote)
+    /* The VM object is returned locked. However, we are about to acquire
+     * a sleeping lock for a bucket, so we must not hold any simple
+     * locks. To prevent this object from going away, we add a reference
+     * to it when requested. */
+    vm_object_reference_locked (va.obj);
+
+  /* We no longer need the lock on the VM object. */
+  vm_object_unlock (va.obj);
+
+  struct gsync_hbucket *hbp = gsync_buckets + bucket;
+  kmutex_lock (&hbp->lock, FALSE);
 
   /* Before doing any work, check that the expected value(s)
    * match the contents of the address. Otherwise, the waiting
    * thread could potentially miss a wakeup. */
-  if (((unsigned int *)addr)[0] != lo ||
-      ((flags & GSYNC_QUAD) &&
-        ((unsigned int *)addr)[1] != hi))
+
+  boolean_t equal;
+  if (! remote)
+    equal = ((unsigned int *)addr)[0] == lo &&
+      ((flags & GSYNC_QUAD) == 0 ||
+       ((unsigned int *)addr)[1] == hi);
+  else
     {
-      simple_unlock (&hbp->lock);
-      vm_map_unlock_read (task->map);
-      return (KERN_INVALID_ARGUMENT);
+      vm_offset_t paddr = temp_mapping (&va, addr, VM_PROT_READ);
+      if (unlikely (paddr == 0))
+        {
+          kmutex_unlock (&hbp->lock);
+          vm_map_unlock_read (task->map);
+          /* Make sure to remove the reference we added. */
+          vm_object_deallocate (va.obj);
+          return (KERN_MEMORY_FAILURE);
+        }
+
+      vm_offset_t off = addr & (PAGE_SIZE - 1);
+      paddr += off;
+
+      equal = ((unsigned int *)paddr)[0] == lo &&
+        ((flags & GSYNC_QUAD) == 0 ||
+         ((unsigned int *)paddr)[1] == hi);
+
+      paddr -= off;
+
+      /* Note that the call to 'vm_map_remove' will unreference
+       * the VM object, so we don't have to do it ourselves. */
+      vm_map_remove (kernel_map, paddr, paddr + PAGE_SIZE);
     }
 
+  /* Done with the task's map. */
   vm_map_unlock_read (task->map);
+
+  if (! equal)
+    {
+      kmutex_unlock (&hbp->lock);
+      return (KERN_INVALID_ARGUMENT);
+    }
 
   /* Look for the first entry in the hash bucket that
    * compares strictly greater than this waiter. */
   struct list *runp;
   list_for_each (&hbp->entries, runp)
-    {
-      struct gsync_waiter *p = node_to_waiter (runp);
-      if (gsync_key_lt (&w.key, &p->key))
-        break;
-    }
+    if (gsync_key_lt (&w.key, &node_to_waiter(runp)->key))
+      break;
 
   /* Finally, add ourselves to the list and go to sleep. */
   list_add (runp->prev, runp, &w.link);
@@ -243,24 +312,23 @@ kern_return_t gsync_wait (task_t task, vm_offset_t addr,
   else
     thread_will_wait (w.waiter);
 
-  thread_sleep (0, (simple_lock_t)&hbp->lock, TRUE);
+  kmutex_unlock (&hbp->lock);
+  thread_block (thread_no_continuation);
 
   /* We're back. */
-  kern_return_t ret = current_thread()->wait_result;
-  if (ret != THREAD_AWAKENED)
+  kern_return_t ret = KERN_SUCCESS;
+  if (current_thread()->wait_result != THREAD_AWAKENED)
     {
       /* We were interrupted or timed out. */
-      simple_lock (&hbp->lock);
-      if (w.link.next != 0)
+      kmutex_lock (&hbp->lock, FALSE);
+      if (!list_node_unlinked (&w.link))
         list_remove (&w.link);
-      simple_unlock (&hbp->lock);
+      kmutex_unlock (&hbp->lock);
 
       /* Map the error code. */
-      ret = ret == THREAD_INTERRUPTED ?
+      ret = current_thread()->wait_result == THREAD_INTERRUPTED ?
         KERN_INTERRUPTED : KERN_TIMEDOUT;
     }
-  else
-    ret = KERN_SUCCESS;
 
   return (ret);
 }
@@ -281,34 +349,60 @@ dequeue_waiter (struct list *nodep)
 kern_return_t gsync_wake (task_t task,
   vm_offset_t addr, unsigned int val, int flags)
 {
-  if (unlikely (task != current_task()))
-    /* Not implemented yet.  */
-    return (KERN_FAILURE);
-
-  struct gsync_key key;
-  int bucket = gsync_fill_key (task, addr, flags, &key);
-
-  if (unlikely (bucket < 0))
+  if (task == 0)
+    return (KERN_INVALID_TASK);
+  else if (addr % sizeof (int) != 0)
     return (KERN_INVALID_ADDRESS);
 
-  kern_return_t ret = KERN_INVALID_ARGUMENT;
-
   vm_map_lock_read (task->map);
-  struct gsync_hbucket *hbp = gsync_buckets + bucket;
-  simple_lock (&hbp->lock);
 
-  if (unlikely (!valid_access_p (task->map, addr, flags)))
+  union gsync_key key;
+  struct vm_args va;
+  int bucket = gsync_prepare_key (task, addr, flags, &key, &va);
+
+  if (bucket < 0)
     {
-      simple_unlock (&hbp->lock);
       vm_map_unlock_read (task->map);
       return (KERN_INVALID_ADDRESS);
     }
+  else if (current_task () != task && (flags & GSYNC_MUTATE) != 0)
+    /* See above on why we do this. */
+    vm_object_reference_locked (va.obj);
+
+  /* Done with the VM object lock. */
+  vm_object_unlock (va.obj);
+
+  kern_return_t ret = KERN_INVALID_ARGUMENT;
+  struct gsync_hbucket *hbp = gsync_buckets + bucket;
+
+  kmutex_lock (&hbp->lock, FALSE);
 
   if (flags & GSYNC_MUTATE)
-    /* Set the contents of the address to the specified value,
-     * even if we don't end up waking any threads. Note that
-     * the buckets' simple locks give us atomicity. */
-    *(unsigned int *)addr = val;
+    {
+      /* Set the contents of the address to the specified value,
+       * even if we don't end up waking any threads. Note that
+       * the buckets' simple locks give us atomicity. */
+
+      if (task != current_task ())
+        {
+          vm_offset_t paddr = temp_mapping (&va, addr,
+            VM_PROT_READ | VM_PROT_WRITE);
+
+          if (paddr == 0)
+            {
+              kmutex_unlock (&hbp->lock);
+              vm_map_unlock_read (task->map);
+              vm_object_deallocate (va.obj);
+              return (KERN_MEMORY_FAILURE);
+            }
+
+          addr = paddr + (addr & (PAGE_SIZE - 1));
+        }
+
+      *(unsigned int *)addr = val;
+      if (task != current_task ())
+        vm_map_remove (kernel_map, addr, addr + sizeof (int));
+    }
 
   vm_map_unlock_read (task->map);
 
@@ -325,37 +419,35 @@ kern_return_t gsync_wake (task_t task,
       ret = KERN_SUCCESS;
     }
 
-  simple_unlock (&hbp->lock);
+  kmutex_unlock (&hbp->lock);
   return (ret);
 }
 
 kern_return_t gsync_requeue (task_t task, vm_offset_t src,
   vm_offset_t dst, boolean_t wake_one, int flags)
 {
-  if (unlikely (task != current_task()))
-    /* Not implemented yet.  */
-    return (KERN_FAILURE);
-
-  struct gsync_key src_k, dst_k;
-  int src_bkt = gsync_fill_key (task, src, flags, &src_k);
-  int dst_bkt = gsync_fill_key (task, dst, flags, &dst_k);
-
-  if ((src_bkt | dst_bkt) < 0)
+  if (task == 0)
+    return (KERN_INVALID_TASK);
+  else if (src % sizeof (int) != 0 || dst % sizeof (int) != 0)
     return (KERN_INVALID_ADDRESS);
 
-  vm_map_lock_read (task->map);
+  union gsync_key src_k, dst_k;
+  struct vm_args va;
 
-  /* We don't actually dereference or modify the contents
-   * of the addresses, but we still check that they can
-   * be accessed by the task. */
-  if (unlikely (!valid_access_p (task->map, src, flags) ||
-      !valid_access_p (task->map, dst, flags)))
-    {
-      vm_map_unlock_read (task->map);
-      return (KERN_INVALID_ADDRESS);
-    }
+  int src_bkt = gsync_prepare_key (task, src, flags, &src_k, &va);
+  if (src_bkt < 0)
+    return (KERN_INVALID_ADDRESS);
 
-  vm_map_unlock_read (task->map);
+  /* Unlock the VM object before the second lookup. */
+  vm_object_unlock (va.obj);
+
+  int dst_bkt = gsync_prepare_key (task, dst, flags, &dst_k, &va);
+  if (dst_bkt < 0)
+    return (KERN_INVALID_ADDRESS);
+
+  /* We never create any temporary mappings in 'requeue', so we
+   * can unlock the VM object right now. */
+  vm_object_unlock (va.obj);
 
   /* If we're asked to unconditionally wake up a waiter, then
    * we need to remove a maximum of two threads from the queue. */
@@ -365,23 +457,23 @@ kern_return_t gsync_requeue (task_t task, vm_offset_t src,
 
   /* Acquire the locks in order, to prevent any potential deadlock. */
   if (bp1 == bp2)
-    simple_lock (&bp1->lock);
+    kmutex_lock (&bp1->lock, FALSE);
   else if ((unsigned long)bp1 < (unsigned long)bp2)
     {
-      simple_lock (&bp1->lock);
-      simple_lock (&bp2->lock);
+      kmutex_lock (&bp1->lock, FALSE);
+      kmutex_lock (&bp2->lock, FALSE);
     }
   else
     {
-      simple_lock (&bp2->lock);
-      simple_lock (&bp1->lock);
+      kmutex_lock (&bp2->lock, FALSE);
+      kmutex_lock (&bp1->lock, FALSE);
     }
 
   kern_return_t ret = KERN_SUCCESS;
   int exact;
   struct list *inp = gsync_find_key (&bp1->entries, &src_k, &exact);
 
-  if (!exact)
+  if (! exact)
     /* There are no waiters in the source queue. */
     ret = KERN_INVALID_ARGUMENT;
   else
@@ -416,9 +508,9 @@ kern_return_t gsync_requeue (task_t task, vm_offset_t src,
     }
 
   /* Release the locks and we're done.*/
-  simple_unlock (&bp1->lock);
+  kmutex_unlock (&bp1->lock);
   if (bp1 != bp2)
-    simple_unlock (&bp2->lock);
+    kmutex_unlock (&bp2->lock);
 
   return (ret);
 }

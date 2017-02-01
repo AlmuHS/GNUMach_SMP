@@ -396,4 +396,18 @@ MACRO_END
 extern int	vm_object_external_count;
 extern int	vm_object_external_pages;
 
+/* Add a reference to a locked VM object. */
+static inline int
+vm_object_reference_locked (vm_object_t obj)
+{
+  return (++obj->ref_count);
+}
+
+/* Remove a reference from a locked VM object. */
+static inline int
+vm_object_unreference_locked (vm_object_t obj)
+{
+  return (--obj->ref_count);
+}
+
 #endif	/* _VM_VM_OBJECT_H_ */
