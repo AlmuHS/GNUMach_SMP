@@ -72,7 +72,7 @@ extern void	thread_sleep(
 	simple_lock_t	lock,
 	boolean_t	interruptible);
 extern void	thread_wakeup(void);		/* for function pointers */
-extern void	thread_wakeup_prim(
+extern boolean_t	thread_wakeup_prim(
 	event_t		event,
 	boolean_t	one_thread,
 	int		result);

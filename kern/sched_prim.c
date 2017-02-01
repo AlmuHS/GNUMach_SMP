@@ -376,13 +376,14 @@ void clear_wait(
  *	and thread_wakeup_one.
  *
  */
-void thread_wakeup_prim(
+boolean_t thread_wakeup_prim(
 	event_t		event,
 	boolean_t	one_thread,
 	int		result)
 {
 	queue_t			q;
 	int			index;
+	boolean_t woke = FALSE;
 	thread_t		thread, next_th;
 	decl_simple_lock_data( , *lock);
 	spl_t			s;
@@ -435,6 +436,7 @@ void thread_wakeup_prim(
 				break;
 			}
 			thread_unlock(thread);
+			woke = TRUE;
 			if (one_thread)
 				break;
 		}
@@ -442,6 +444,7 @@ void thread_wakeup_prim(
 	}
 	simple_unlock(lock);
 	splx(s);
+	return (woke);
 }
 
 /*
