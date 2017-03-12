@@ -180,6 +180,12 @@ void bootstrap_create(void)
       if (losers)
 	panic ("cannot set boot-script variable device-port: %s",
 	       boot_script_error_string (losers));
+      losers = boot_script_set_variable
+	("kernel-task", VAL_PORT,
+	 (long) kernel_task->itk_self);
+      if (losers)
+	panic ("cannot set boot-script variable kernel-task: %s",
+	       boot_script_error_string (losers));
 
       losers = boot_script_set_variable ("kernel-command-line", VAL_STR,
 					 (long) kernel_cmdline);
