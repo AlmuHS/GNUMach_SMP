@@ -129,4 +129,6 @@ db_write_bytes_user_space(
 	char		*data,
 	task_t		task);
 
+void db_debug_all_traps (boolean_t enable);
+
 #endif /* _I386_DB_INTERFACE_H_ */

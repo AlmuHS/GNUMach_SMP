@@ -1566,3 +1566,13 @@ mach_port_clear_protected_payload(
 	ip_unlock(port);
 	return KERN_SUCCESS;
 }
+
+#if	MACH_KDB
+
+void
+db_debug_port_references (boolean_t enable)
+{
+	mach_port_deallocate_debug = enable;
+}
+
+#endif	/* MACH_KDB */

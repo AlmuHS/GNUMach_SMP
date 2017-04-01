@@ -65,4 +65,8 @@ mach_port_get_receive_status(
 	mach_port_t 		name,
 	mach_port_status_t 	*statusp);
 
+#if	MACH_KDB
+void db_debug_port_references (boolean_t enable);
+#endif	/* MACH_KDB */
+
 #endif /* _IPC_MACH_PORT_H_ */

@@ -626,3 +626,13 @@ interrupted_pc(t)
  	return iss->eip;
 }
 #endif	/* MACH_PCSAMPLE > 0 */
+
+#if	MACH_KDB
+
+void
+db_debug_all_traps (boolean_t enable)
+{
+	debug_all_traps_with_kdb = enable;
+}
+
+#endif	/* MACH_KDB */

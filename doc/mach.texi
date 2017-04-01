@@ -7125,6 +7125,14 @@ If you want to clear a watch point in user space, specify @code{T} and
 parameter is omitted, a task of the default target thread or a current
 task is assumed.  If you specify a wrong space address, the request is
 rejected with an error message.
+
+@item debug traps /on|/off
+Enables or disables debugging of all traps with @code{ddb}.
+
+@item debug references /on|/off
+Enables or disables debugging of all port reference counting errors
+with @code{ddb}.
+
 @end table
 
 

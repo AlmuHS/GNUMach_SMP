@@ -332,6 +332,23 @@ struct db_command db_show_cmds[] = {
 	{ (char *)0, }
 };
 
+void
+db_debug_all_traps_cmd(db_expr_t addr,
+		int have_addr,
+		db_expr_t count,
+		const char *modif);
+void
+db_debug_port_references_cmd(db_expr_t addr,
+			 int have_addr,
+			 db_expr_t count,
+			 const char *modif);
+
+struct db_command db_debug_cmds[] = {
+	{ "traps",		db_debug_all_traps_cmd,		0,	0 },
+	{ "references",		db_debug_port_references_cmd,	0,	0 },
+	{ (char *)0, }
+};
+
 struct db_command db_command_table[] = {
 #ifdef DB_MACHINE_COMMANDS
   /* this must be the first entry, if it exists */
@@ -364,6 +381,7 @@ struct db_command db_command_table[] = {
 	{ "macro",	db_def_macro_cmd,	CS_OWN,	 	0 },
 	{ "dmacro",	db_del_macro_cmd,	CS_OWN,		0 },
 	{ "show",	0,			0,	db_show_cmds },
+	{ "debug",	0,			0,	db_debug_cmds },
 	{ "reset",	db_reset_cpu,		0,		0 },
 	{ "reboot",	db_reset_cpu,		0,		0 },
 	{ "halt",	db_halt_cpu,		0,		0 },
@@ -536,6 +554,34 @@ db_option(modif, option)
 	    if (*p == option)
 		return(TRUE);
 	return(FALSE);
+}
+
+void
+db_debug_all_traps_cmd(db_expr_t addr,
+		       int have_addr,
+		       db_expr_t count,
+		       const char *modif)
+{
+  if (strcmp (modif, "on") == 0)
+    db_debug_all_traps (TRUE);
+  else if (strcmp (modif, "off") == 0)
+    db_debug_all_traps (FALSE);
+  else
+    db_error ("debug traps /on|/off\n");
+}
+
+void
+db_debug_port_references_cmd(db_expr_t addr,
+			     int have_addr,
+			     db_expr_t count,
+			     const char *modif)
+{
+  if (strcmp (modif, "on") == 0)
+    db_debug_port_references (TRUE);
+  else if (strcmp (modif, "off") == 0)
+    db_debug_port_references (FALSE);
+  else
+    db_error ("debug references /on|/off\n");
 }
 
 #endif /* MACH_KDB */
