@@ -7039,7 +7039,7 @@ will print the contents of a list starting from @code{xxx_list} by each
 @item dmacro @var{name}
 Delete the macro named @var{name}.
 
-@item show all threads[/ul]
+@item show all threads[/uls]
 Display all tasks and threads information.  This version of @code{ddb}
 prints more information than previous one.  It shows UNIX process
 information like @command{ps} for each task.  The UNIX process
@@ -7056,7 +7056,8 @@ thread.  The status consists of 6 letters, R(run), W(wait), S(suspended),
 O(swapped out), N(interruptible), and F(loating) point arithmetic used (if
 supported by the platform). If the corresponding
 status bit is off, @code{.}  is printed instead.  If @code{l} option is
-specified, more detail information is printed for each thread.
+specified, more detail information is printed for each thread.  If the
+@code{s} option is given, scheduling information is displayed.
 
 @item show all tasks
 Displays all tasks similar to @code{show all threads}, but omits

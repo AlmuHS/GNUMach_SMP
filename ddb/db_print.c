@@ -34,6 +34,7 @@
  * Miscellaneous printing.
  */
 #include <string.h>
+#include <mach/policy.h>
 #include <mach/port.h>
 #include <kern/task.h>
 #include <kern/thread.h>
@@ -112,6 +113,7 @@ db_show_regs(
 
 #define OPTION_LONG		0x001		/* long print option */
 #define OPTION_USER		0x002		/* print ps-like stuff */
+#define OPTION_SCHED		0x004		/* print scheduling info */
 #define OPTION_INDENT		0x100		/* print with indent */
 #define OPTION_THREAD_TITLE	0x200		/* print thread title */
 #define OPTION_TASK_TITLE	0x400		/* print thread title */
@@ -152,10 +154,10 @@ db_print_thread(
 	if (flag & OPTION_USER) {
 	    char status[8];
 	    char *indent = "";
+	    if (flag & OPTION_INDENT)
+	      indent = "    ";
 
 	    if (flag & OPTION_LONG) {
-		if (flag & OPTION_INDENT)
-		    indent = "    ";
 		if (flag & OPTION_THREAD_TITLE) {
 		    db_printf("%s ID: THREAD   STAT   STACK    PCB", indent);
 		    db_printf("      SUS PRI CONTINUE,WAIT_FUNC\n");
@@ -177,6 +179,33 @@ db_print_thread(
 		    db_task_printsym((db_addr_t)thread->wait_event,
 				     DB_STGY_ANY, kernel_task);
 		db_printf("\n");
+	    } else if (flag & OPTION_SCHED) {
+		if (flag & OPTION_THREAD_TITLE) {
+		    db_printf("%s     "
+			      "STAT    PRIORITY            POLICY   USAGE                 LAST\n",
+			      indent);
+		    db_printf("%s ID: "
+			      "RWSONF  SET  MAX COMP DEPR  P DATA   CPU        SCHED      UPDATED\n",
+			      indent);
+		    db_printf(" \n");
+		}
+		db_printf("%s%3d%c %s %4d %4d %4d %4d  %c %4d  %10d %10d %10d\n",
+			  indent, thread_id,
+			  (thread == current_thread())? '#': ':',
+			  db_thread_stat(thread, status),
+			  thread->priority,
+			  thread->max_priority,
+			  thread->sched_pri,
+			  thread->depress_priority,
+#if	MACH_FIXPRI
+			  thread->policy == POLICY_TIMESHARE ? 'T' : 'F',
+			  thread->sched_data,
+#else	/* MACH_FIXPRI */
+			  'T', 0,
+#endif	/* MACH_FIXPRI */
+			  thread->cpu_usage,
+			  thread->sched_usage,
+			  thread->sched_stamp);
 	    } else {
 		if (thread_id % 3 == 0) {
 		    if (flag & OPTION_INDENT)
@@ -228,7 +257,7 @@ db_print_task(
 	    if (flag & OPTION_TASK_TITLE) {
 		db_printf(" ID: TASK     MAP      THD SUS PR %s",
 			  DB_TASK_NAME_TITLE);
-		if ((flag & OPTION_LONG) == 0)
+		if ((flag & (OPTION_LONG|OPTION_SCHED)) == 0)
 		    db_printf("  THREADS");
 		db_printf("\n");
 	    }
@@ -237,7 +266,7 @@ db_print_task(
 			    2*sizeof(vm_offset_t), task->map, task->thread_count,
 			    task->suspend_count, task->priority);
 	    DB_TASK_NAME(task);
-	    if (flag & OPTION_LONG) {
+	    if (flag & (OPTION_LONG|OPTION_SCHED)) {
 		if (flag & OPTION_TASK_TITLE)
 		    flag |= OPTION_THREAD_TITLE;
 		db_printf("\n");
@@ -249,7 +278,7 @@ db_print_task(
 		flag &= ~OPTION_THREAD_TITLE;
 		thread_id++;
 	    }
-	    if ((flag & OPTION_LONG) == 0)
+	    if ((flag & (OPTION_LONG|OPTION_SCHED)) == 0)
 		db_printf("\n");
 	} else {
 	    if (flag & OPTION_TASK_TITLE)
@@ -318,6 +347,8 @@ db_show_all_threads(addr, have_addr, count, modif)
 	    flag |= OPTION_USER;
 	if (db_option(modif, 'l'))
 	    flag |= OPTION_LONG;
+	if (db_option(modif, 's'))
+	    flag |= OPTION_SCHED;
 
 	task_id = 0;
 	queue_iterate(&all_psets, pset, processor_set_t, all_psets) {
@@ -368,6 +399,8 @@ db_show_one_thread(addr, have_addr, count, modif)
 	    flag |= OPTION_USER;
 	if (db_option(modif, 'l'))
 	    flag |= OPTION_LONG;
+	if (db_option(modif, 's'))
+	    flag |= OPTION_SCHED;
 
 	if (!have_addr) {
 	    thread = current_thread();
