@@ -154,7 +154,7 @@ kern_return_t	host_info(
 	    {
 		host_sched_info_t	sched_info;
 		extern int	min_quantum;
-					/* minimum quantum, in microseconds */
+					/* minimum quantum, in ticks */
 
 		/*
 		 *	Return scheduler information.
@@ -165,8 +165,9 @@ kern_return_t	host_info(
 		sched_info = (host_sched_info_t) info;
 
 		sched_info->min_timeout = tick / 1000;
-		sched_info->min_quantum = min_quantum / 1000;
 				/* convert microseconds to milliseconds */
+		sched_info->min_quantum = min_quantum * tick / 1000;
+				/* convert ticks to milliseconds */
 
 		*count = HOST_SCHED_INFO_COUNT;
 		return KERN_SUCCESS;
