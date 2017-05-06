@@ -162,7 +162,7 @@ noinst_PROGRAMS += \
 
 # This is the list of routines we decide is OK to steal from the C library.
 clib_routines := htonl htons ntohl ntohs			\
-		 udivdi3 __udivdi3 __umoddi3			\
+		 udivdi3 __udivdi3 __udivmoddi4 __umoddi3	\
 		 __rel_iplt_start __rel_iplt_end		\
 		 __ffsdi2					\
 		 _START _start etext _edata end _end # actually ld magic, not libc.
