@@ -167,7 +167,9 @@ readtodc(u_int *tp)
 	dom = hexdectodec(rtclk.rtc_dom);
 	mon = hexdectodec(rtclk.rtc_mon);
 	yr = hexdectodec(rtclk.rtc_yr);
-	yr = (yr < CENTURY_START%100) ? yr+CENTURY_START+100 : yr+CENTURY_START;
+	yr = (yr < CENTURY_START%100) ?
+		yr+CENTURY_START-CENTURY_START%100+100 :
+		yr+CENTURY_START-CENTURY_START%100;
 
 	n = sec + 60 * min + 3600 * hr;
 	n += (dom - 1) * 3600 * 24;
