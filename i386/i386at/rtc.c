@@ -53,6 +53,10 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <i386/pio.h>
 #include <i386at/rtc.h>
 
+/* time of day stored in RTC are currently between 1970 and 2070. Update that
+ * before 2070 please. */
+#define CENTURY_START	1970
+
 static boolean_t first_rtcopen_ever = TRUE;
 
 void
@@ -163,7 +167,7 @@ readtodc(u_int *tp)
 	dom = hexdectodec(rtclk.rtc_dom);
 	mon = hexdectodec(rtclk.rtc_mon);
 	yr = hexdectodec(rtclk.rtc_yr);
-	yr = (yr < 70) ? yr+100 : yr;
+	yr = (yr < CENTURY_START%100) ? yr+CENTURY_START+100 : yr+CENTURY_START;
 
 	n = sec + 60 * min + 3600 * hr;
 	n += (dom - 1) * 3600 * 24;
@@ -173,7 +177,8 @@ readtodc(u_int *tp)
 	for (i = mon - 2; i >= 0; i--)
 		days += month[i];
 	month[1] = 28;
-	for (i = 70; i < yr; i++)
+	/* Epoch shall be 1970 January 1st */
+	for (i = 1970; i < yr; i++)
 		days += yeartoday(i);
 	n += days * 3600 * 24;
 
@@ -208,6 +213,7 @@ writetodc(void)
 	n = (time.tv_sec - diff) / (3600 * 24);	/* days */
 	rtclk.rtc_dow = (n + 4) % 7;  /* 1/1/70 is Thursday */
 
+	/* Epoch shall be 1970 January 1st */
 	for (j = 1970, i = yeartoday(j); n >= i; j++, i = yeartoday(j))
 		n -= i;
 
