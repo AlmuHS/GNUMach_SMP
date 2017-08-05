@@ -1370,7 +1370,7 @@ void pmap_reference(pmap_t p)
  *	Assumes that the pte-page exists.
  */
 
-/* static */
+static
 void pmap_remove_range(
 	pmap_t			pmap,
 	vm_offset_t		va,
