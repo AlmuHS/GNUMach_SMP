@@ -7058,6 +7058,10 @@ supported by the platform). If the corresponding
 status bit is off, @code{.}  is printed instead.  If @code{l} option is
 specified, more detail information is printed for each thread.
 
+@item show all tasks
+Displays all tasks similar to @code{show all threads}, but omits
+information about the individual threads.
+
 @item show task [ @var{addr} ]
 Display the information of a task specified by @var{addr}.  If
 @var{addr} is omitted, current task information is displayed.
