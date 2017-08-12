@@ -64,4 +64,10 @@ db_get_task_thread(
 	int			flag,
 	db_var_aux_param_t	ap);
 
+extern void
+db_get_map(struct db_variable *vp,
+	   db_expr_t *valuep,
+	   int flag,
+	   db_var_aux_param_t ap);
+
 #endif  /* _DDB_DB_TASK_THREAD_H_ */

@@ -61,6 +61,8 @@ struct db_variable db_vars[] = {
 	{ "thread",	0,			db_set_default_thread	},
 	{ "task",	0,			db_get_task_thread,
 	  1,		2,			-1,	-1		},
+	{ "map",	0,			db_get_map,
+	  1,		1,			-1,	-1		},
 	{ "work",	&db_work[0],		FCN_NULL,
 	  1,		1,			0,	DB_NWORK-1	},
 	{ "arg",	0,			db_arg_variable,

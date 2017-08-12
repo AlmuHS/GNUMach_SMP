@@ -303,4 +303,29 @@ db_get_task_thread(
 	return;
 }
 
+/*
+ * convert $mapXXX type DDB variable to map address
+ */
+void
+db_get_map(struct db_variable *vp,
+	   db_expr_t *valuep,
+	   int flag,
+	   db_var_aux_param_t ap)
+{
+  task_t task;
+
+  if (flag != DB_VAR_GET) {
+    db_error("Cannot set to $map variable\n");
+    /* NOTREACHED */
+  }
+
+  if ((task = db_lookup_task_id(ap->suffix[0])) == TASK_NULL) {
+    db_printf("no such map($map%d)\n", ap->suffix[0]);
+    db_error(0);
+    /* NOTREACHED */
+  }
+
+  *valuep = (db_expr_t) task->map;
+}
+
 #endif /* MACH_KDB */

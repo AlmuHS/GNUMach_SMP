@@ -7155,6 +7155,11 @@ Task or thread structure address.  @var{xx} and @var{yy} are task and
 thread identification numbers printed by a @code{show all threads}
 command respectively.  This variable is read only.
 
+@item map@var{xx}
+VM map structure address.  @var{xx} is a task identification number
+printed by a @code{show all tasks} command.  This variable is read
+only.
+
 @item thread
 The default target thread.  The value is used when @code{t} option is
 specified without explicit thread structure address parameter in command
