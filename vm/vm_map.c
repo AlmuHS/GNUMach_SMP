@@ -216,7 +216,7 @@ vm_map_t vm_map_create(
 
 	result = (vm_map_t) kmem_cache_alloc(&vm_map_cache);
 	if (result == VM_MAP_NULL)
-		panic("vm_map_create");
+		return VM_MAP_NULL;
 
 	vm_map_setup(result, pmap, min, max);
 
@@ -4245,6 +4245,10 @@ vm_map_t vm_map_fork(vm_map_t old_map)
 	new_map = vm_map_create(new_pmap,
 			old_map->min_offset,
 			old_map->max_offset);
+	if (new_pmap == PMAP_NULL) {
+		pmap_destroy(new_pmap);
+		return VM_MAP_NULL;
+	}
 
 	for (
 	    old_entry = vm_map_first_entry(old_map);
