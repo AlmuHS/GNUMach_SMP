@@ -1533,7 +1533,6 @@ void pmap_remove(
 	vm_offset_t	e)
 {
 	int			spl;
-	pt_entry_t		*pde;
 	pt_entry_t		*spte, *epte;
 	vm_offset_t		l;
 	vm_offset_t		_s = s;
@@ -1543,8 +1542,9 @@ void pmap_remove(
 
 	PMAP_READ_LOCK(map, spl);
 
-	pde = pmap_pde(map, s);
 	while (s < e) {
+	    pt_entry_t *pde = pmap_pde(map, s);
+
 	    l = (s + PDE_MAPPED_SIZE) & ~(PDE_MAPPED_SIZE-1);
 	    if (l > e)
 		l = e;
@@ -1555,7 +1555,6 @@ void pmap_remove(
 		pmap_remove_range(map, s, spte, epte);
 	    }
 	    s = l;
-	    pde++;
 	}
 	PMAP_UPDATE_TLBS(map, _s, e);
 
@@ -1953,7 +1952,6 @@ Retry:
 	     * Enter the new page table page in the page directory.
 	     */
 	    i = ptes_per_vm_page;
-	    /*XX pdp = &pmap->dirbase[pdenum(v) & ~(i-1)];*/
 	    pdp = pmap_pde(pmap, v);
 	    do {
 #ifdef	MACH_PV_PAGETABLES
@@ -1970,7 +1968,7 @@ Retry:
 					        | INTEL_PTE_USER
 					        | INTEL_PTE_WRITE;
 #endif	/* MACH_PV_PAGETABLES */
-		pdp++;
+		pdp++;	/* Note: This is safe b/c we stay in one page.  */
 		ptp += INTEL_PGBYTES;
 	    } while (--i > 0);
 
