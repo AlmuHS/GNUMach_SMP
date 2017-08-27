@@ -72,7 +72,8 @@ db_get_task_value(
 	db_expr_t 	value;
 	int		i;
 
-	db_read_bytes(addr, size, data, task);
+	if (!db_read_bytes(addr, size, data, task))
+	    return 0;
 
 	value = 0;
 #if	BYTE_MSF

@@ -473,7 +473,10 @@ db_xcdump(
 		if (!DB_CHECK_ACCESS(next_page_addr, sizeof(int), task))
 		    bcount = next_page_addr - addr;
 	    }
-	    db_read_bytes(addr, bcount, data, task);
+	    if (!db_read_bytes(addr, bcount, data, task)) {
+		db_printf("*\n");
+		continue;
+	    }
 	    for (i = 0; i < bcount && off != 0; i += size) {
 		if (i % 4 == 0)
 			db_printf(" ");

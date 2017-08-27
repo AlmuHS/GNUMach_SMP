@@ -32,7 +32,7 @@ extern boolean_t kdb_trap (
 	int			code,
 	struct i386_saved_state *regs);
 
-extern void db_read_bytes (
+extern boolean_t db_read_bytes (
 	vm_offset_t	addr,
 	int		size,
 	char		*data,

@@ -446,8 +446,6 @@ db_user_to_kernel_address(
 	    }
 	    if (flag) {
 		db_printf("\nno memory is assigned to address %08x\n", addr);
-		db_error(0);
-		/* NOTREACHED */
 	    }
 	    return(-1);
 	}
@@ -459,7 +457,7 @@ db_user_to_kernel_address(
  * Read bytes from kernel address space for debugger.
  */
 
-void
+boolean_t
 db_read_bytes(
 	vm_offset_t	addr,
 	int		size,
@@ -477,17 +475,16 @@ db_read_bytes(
 	    while (--size >= 0) {
 		if (addr < VM_MIN_KERNEL_ADDRESS && task == TASK_NULL) {
 		    db_printf("\nbad address %x\n", addr);
-		    db_error(0);
-		    /* NOTREACHED */
+		    return FALSE;
 		}
 		addr++;
 		*data++ = *src++;
 	    }
-	    return;
+	    return TRUE;
 	}
 	while (size > 0) {
 	    if (db_user_to_kernel_address(task, addr, &kern_addr, 1) < 0)
-		return;
+		return FALSE;
 	    src = (char *)kern_addr;
 	    n = intel_trunc_page(addr+INTEL_PGBYTES) - addr;
 	    if (n > size)
@@ -497,6 +494,7 @@ db_read_bytes(
 	    while (--n >= 0)
 		*data++ = *src++;
 	}
+	return TRUE;
 }
 
 /*
