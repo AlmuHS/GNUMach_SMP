@@ -1920,8 +1920,6 @@ void vm_object_destroy(
 	vm_object_deallocate(object);
 }
 
-boolean_t	vm_object_accept_old_init_protocol = FALSE;
-
 /*
  *	Routine:	vm_object_enter
  *	Purpose:
@@ -2108,9 +2106,6 @@ restart:
 
 		vm_object_lock(object);
 		object->pager_initialized = TRUE;
-
-		if (vm_object_accept_old_init_protocol)
-			object->pager_ready = TRUE;
 
 		vm_object_wakeup(object, VM_OBJECT_EVENT_INITIALIZED);
 	} else {
