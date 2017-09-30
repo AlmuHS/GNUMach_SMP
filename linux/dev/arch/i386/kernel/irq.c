@@ -393,6 +393,18 @@ probe_irq_off (unsigned long irqs)
  * Reserve IRQs used by Mach drivers.
  * Must be called before Linux IRQ detection, after Mach IRQ detection.
  */
+
+static void reserved_mach_handler (int line, void *cookie, struct pt_regs *regs)
+{
+  /* These interrupts are actually handled in Mach.  */
+  assert (! "reached");
+}
+
+static const struct linux_action reserved_mach =
+  {
+    reserved_mach_handler, NULL, NULL, 0
+  };
+
 static void
 reserve_mach_irqs (void)
 {
@@ -401,8 +413,10 @@ reserve_mach_irqs (void)
   for (i = 0; i < 16; i++)
     {
       if (ivect[i] != prtnull && ivect[i] != intnull)
-	/* Set non-NULL value. */
-	irq_action[i] = (struct linux_action *) -1;
+	/* This dummy action does not specify SA_SHIRQ, so
+	   setup_x86_irq will not try to add a handler to this
+	   slot.  Therefore, the cast is safe.  */
+	irq_action[i] = (struct linux_action *) &reserved_mach;
     }
 }
 
