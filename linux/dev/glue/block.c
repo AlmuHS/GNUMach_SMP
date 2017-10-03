@@ -1303,7 +1303,7 @@ device_write (void *d, ipc_port_t reply_port,
   int resid, amt, i;
   int count = (int) orig_count;
   io_return_t err = 0;
-  vm_map_copy_t copy;
+  vm_map_copy_t copy = (vm_map_copy_t) data;
   vm_offset_t addr, uaddr;
   vm_size_t len, size;
   struct block_data *bd = d;
@@ -1327,7 +1327,6 @@ device_write (void *d, ipc_port_t reply_port,
     }
 
   resid = count;
-  copy = (vm_map_copy_t) data;
   uaddr = copy->offset;
 
   /* Allocate a kernel buffer.  */
