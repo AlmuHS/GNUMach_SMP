@@ -147,7 +147,7 @@ MACRO_END
 
 #define	ikm_free(kmsg)							\
 MACRO_BEGIN								\
-	register vm_size_t _size = (kmsg)->ikm_size;			\
+	vm_size_t _size = (kmsg)->ikm_size;				\
 									\
 	if ((integer_t)_size > 0)					\
 		kfree((vm_offset_t) (kmsg), _size);			\
@@ -196,7 +196,7 @@ extern ipc_kmsg_t ipc_kmsg_queue_next(
 
 #define	ipc_kmsg_rmqueue_first_macro(queue, kmsg)			\
 MACRO_BEGIN								\
-	register ipc_kmsg_t _next;					\
+	ipc_kmsg_t _next;						\
 									\
 	assert((queue)->ikmq_base == (kmsg));				\
 									\
@@ -205,7 +205,7 @@ MACRO_BEGIN								\
 		assert((kmsg)->ikm_prev == (kmsg));			\
 		(queue)->ikmq_base = IKM_NULL;				\
 	} else {							\
-		register ipc_kmsg_t _prev = (kmsg)->ikm_prev;		\
+		ipc_kmsg_t _prev = (kmsg)->ikm_prev;			\
 									\
 		(queue)->ikmq_base = _next;				\
 		_next->ikm_prev = _prev;				\
@@ -216,14 +216,14 @@ MACRO_END
 
 #define	ipc_kmsg_enqueue_macro(queue, kmsg)				\
 MACRO_BEGIN								\
-	register ipc_kmsg_t _first = (queue)->ikmq_base;		\
+	ipc_kmsg_t _first = (queue)->ikmq_base;				\
 									\
 	if (_first == IKM_NULL) {					\
 		(queue)->ikmq_base = (kmsg);				\
 		(kmsg)->ikm_next = (kmsg);				\
 		(kmsg)->ikm_prev = (kmsg);				\
 	} else {							\
-		register ipc_kmsg_t _last = _first->ikm_prev;		\
+		ipc_kmsg_t _last = _first->ikm_prev;			\
 									\
 		(kmsg)->ikm_next = _first;				\
 		(kmsg)->ikm_prev = _last;				\

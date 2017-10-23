@@ -372,7 +372,7 @@ static void vm_object_cache_remove(
 }
 
 void vm_object_collect(
-	register vm_object_t	object)
+	vm_object_t	object)
 {
 	vm_object_unlock(object);
 

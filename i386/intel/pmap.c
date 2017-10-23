@@ -2384,7 +2384,7 @@ void pmap_collect(pmap_t p)
  */
 #if	0
 void pmap_activate(my_pmap, th, my_cpu)
-	register pmap_t	my_pmap;
+	pmap_t	my_pmap;
 	thread_t	th;
 	int		my_cpu;
 {
@@ -2427,9 +2427,9 @@ pmap_t pmap_kernel()
  */
 #if	0
 pmap_zero_page(phys)
-	register vm_offset_t	phys;
+	vm_offset_t	phys;
 {
-	register int	i;
+	int	i;
 
 	assert(phys != vm_page_fictitious_addr);
 	i = PAGE_SIZE / INTEL_PGBYTES;

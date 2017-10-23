@@ -2257,7 +2257,7 @@ thread_wire(
 
 void thread_collect_scan(void)
 {
-	register thread_t	thread, prev_thread;
+	thread_t	thread, prev_thread;
 	processor_set_t		pset, prev_pset;
 
 	prev_thread = THREAD_NULL;
