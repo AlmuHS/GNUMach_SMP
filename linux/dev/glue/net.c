@@ -427,8 +427,7 @@ device_write (void *d, ipc_port_t reply_port,
 	      recnum_t bn, io_buf_ptr_t data, unsigned int count,
 	      int *bytes_written)
 {
-  unsigned char *p;
-  int i, s;
+  int s;
   vm_map_copy_t copy = (vm_map_copy_t) data;
   char *map_data;
   vm_offset_t map_addr;
