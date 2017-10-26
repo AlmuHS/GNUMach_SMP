@@ -140,6 +140,10 @@ extern kern_return_t	task_create(
 	task_t		parent_task,
 	boolean_t	inherit_memory,
 	task_t		*child_task);
+extern kern_return_t	task_create_kernel(
+	task_t		parent_task,
+	boolean_t	inherit_memory,
+	task_t		*child_task);
 extern kern_return_t	task_terminate(
 	task_t		task);
 extern kern_return_t	task_suspend(

@@ -819,7 +819,7 @@ boot_script_free (void *ptr, unsigned int size)
 int
 boot_script_task_create (struct cmd *cmd)
 {
-  kern_return_t rc = task_create(TASK_NULL, FALSE, &cmd->task);
+  kern_return_t rc = task_create_kernel(TASK_NULL, FALSE, &cmd->task);
   if (rc)
     {
       printf("boot_script_task_create failed with %x\n", rc);

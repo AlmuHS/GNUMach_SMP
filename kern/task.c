@@ -73,12 +73,38 @@ void task_init(void)
 	 * Task_create must assign to kernel_task as a side effect,
 	 * for other initialization. (:-()
 	 */
-	(void) task_create(TASK_NULL, FALSE, &kernel_task);
+	(void) task_create_kernel(TASK_NULL, FALSE, &kernel_task);
 	(void) task_set_name(kernel_task, "gnumach");
 	vm_map_set_name(kernel_map, kernel_task->name);
 }
 
+int
+task_ledger_acquire (task_t task, enum ledger_kind kind)
+{
+	return ledger_acquire (task->ledgers, kind);
+}
+
+void
+task_ledger_release (task_t task, enum ledger_kind kind)
+{
+	ledger_release (task->ledgers, kind);
+}
+
+
 kern_return_t task_create(
+	task_t		parent_task,
+	boolean_t	inherit_memory,
+	task_t		*child_task)		/* OUT */
+{
+	if (parent_task == TASK_NULL)
+		return KERN_INVALID_TASK;
+
+	return task_create_kernel (parent_task, inherit_memory,
+				   child_task);
+}
+
+kern_return_t
+task_create_kernel(
 	task_t		parent_task,
 	boolean_t	inherit_memory,
 	task_t		*child_task)		/* OUT */
