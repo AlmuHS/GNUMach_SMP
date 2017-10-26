@@ -222,7 +222,9 @@ task_create_kernel(
 		task_reference (parent_task);
 		mach_notify_new_task (new_task_notification,
 				      convert_task_to_port (new_task),
-				      convert_task_to_port (parent_task));
+				      parent_task
+				      ? convert_task_to_port (parent_task)
+				      : IP_NULL);
 	}
 
 	ipc_task_enable(new_task);
