@@ -78,19 +78,6 @@ void task_init(void)
 	vm_map_set_name(kernel_map, kernel_task->name);
 }
 
-int
-task_ledger_acquire (task_t task, enum ledger_kind kind)
-{
-	return ledger_acquire (task->ledgers, kind);
-}
-
-void
-task_ledger_release (task_t task, enum ledger_kind kind)
-{
-	ledger_release (task->ledgers, kind);
-}
-
-
 kern_return_t task_create(
 	task_t		parent_task,
 	boolean_t	inherit_memory,
