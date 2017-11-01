@@ -578,6 +578,7 @@ rdwr_full (int rw, kdev_t dev, loff_t *off, char **buf, int *resid, int bshift)
   int cc, err = 0, i, j, nb, nbuf;
   long blk;
   struct buffer_head bhead[MAX_BUF], *bh, *bhp[MAX_BUF];
+  phys_addr_t pa;
 
   assert ((*off & BMASK) == 0);
 
@@ -592,7 +593,10 @@ rdwr_full (int rw, kdev_t dev, loff_t *off, char **buf, int *resid, int bshift)
       if (rw == WRITE)
 	set_bit (BH_Dirty, &bh->b_state);
       cc = PAGE_SIZE - (((int) *buf + (nb << bshift)) & PAGE_MASK);
-      if (cc >= BSIZE && (((int) *buf + (nb << bshift)) & 511) == 0)
+      pa = pmap_extract (vm_map_pmap (device_io_map),
+			 (((vm_offset_t) *buf) + (nb << bshift)));
+      if (cc >= BSIZE && (((int) *buf + (nb << bshift)) & 511) == 0
+	  && pa + cc <= VM_PAGE_DIRECTMAP_LIMIT)
 	cc &= ~BMASK;
       else
 	{
@@ -602,9 +606,7 @@ rdwr_full (int rw, kdev_t dev, loff_t *off, char **buf, int *resid, int bshift)
       if (cc > ((nbuf - nb) << bshift))
 	cc = (nbuf - nb) << bshift;
       if (! test_bit (BH_Bounce, &bh->b_state))
-	bh->b_data = (char *) phystokv(pmap_extract (vm_map_pmap (device_io_map),
-					    (((vm_offset_t) *buf)
-					     + (nb << bshift))));
+	bh->b_data = (char *) phystokv(pa);
       else
 	{
 	  bh->b_data = alloc_buffer (cc);
