@@ -40,6 +40,7 @@ struct descriptor {
 
 typedef struct descriptor descriptor_t;
 typedef	struct descriptor *descriptor_list_t;
+typedef        const struct descriptor *const_descriptor_list_t;
 
 /*
  * i386 I/O port
