@@ -122,7 +122,7 @@ lpropen(dev_t dev, int flag, io_req_t ior)
 	tp = &lpr_tty[unit];
 	addr = (u_short) isai->address;
 	tp->t_dev = dev;
-	tp->t_addr = addr;
+	tp->t_addr = (void*) (natural_t) addr;
 	tp->t_oproc = lprstart;
 	tp->t_state |= TS_WOPEN;
 	tp->t_stop = lprstop;
