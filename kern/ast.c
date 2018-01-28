@@ -227,7 +227,7 @@ ast_check(void)
 		break;
 
 	    default:
-	        panic("ast_check: Bad processor state (cpu %d processor %08x) state: %d",
+	        panic("ast_check: Bad processor state (cpu %d processor %p) state: %d",
 			mycpu, myprocessor, myprocessor->state);
 	}
 
