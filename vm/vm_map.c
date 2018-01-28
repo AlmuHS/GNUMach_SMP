@@ -2793,7 +2793,7 @@ kern_return_t vm_map_copyout(
 			m = vm_page_lookup(object, offset);
 			if (m == VM_PAGE_NULL || m->wire_count == 0 ||
 			    m->absent)
-			    panic("vm_map_copyout: wiring 0x%x", m);
+			    panic("vm_map_copyout: wiring %p", m);
 
 			m->busy = TRUE;
 			vm_object_unlock(object);
