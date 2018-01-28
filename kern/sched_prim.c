@@ -231,7 +231,7 @@ void assert_wait(
 
 	thread = current_thread();
 	if (thread->wait_event != 0) {
-		panic("assert_wait: already asserted event %#x\n",
+		panic("assert_wait: already asserted event %p\n",
 		      thread->wait_event);
 	}
  	s = splsched();
