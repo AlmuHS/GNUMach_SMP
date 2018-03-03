@@ -68,8 +68,6 @@
 #ifndef _DEVICE_BPF_H_
 #define _DEVICE_BPF_H_
 
-#include <sys/types.h> /* u_short */
-
 /*
  * Alignment macros.  BPF_WORDALIGN rounds up to the next 
  * even multiple of BPF_ALIGNMENT. 
@@ -89,8 +87,8 @@
  * It has nothing to do with the source code version.
  */
 struct bpf_version {
-	u_short bv_major;
-	u_short bv_minor;
+	unsigned short bv_major;
+	unsigned short bv_minor;
 };
 /* Current version number. */
 #define BPF_MAJOR_VERSION 1
