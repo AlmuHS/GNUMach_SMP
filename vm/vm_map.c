@@ -685,7 +685,7 @@ restart:
 		start = (map->min_offset + mask) & ~mask;
 		end = start + size;
 
-		if ((end <= start) || (end > map->max_offset)) {
+		if ((start < map->min_offset) || (end <= start) || (end > map->max_offset)) {
 			goto error;
 		}
 
@@ -699,7 +699,8 @@ restart:
 		start = (entry->vme_end + mask) & ~mask;
 		end = start + size;
 
-		if ((end > start)
+		if ((start >= entry->vme_end)
+		    && (end > start)
 		    && (end <= map->max_offset)
 		    && (end <= (entry->vme_end + entry->gap_size))) {
 			*startp = start;
@@ -738,6 +739,7 @@ restart:
 
 	assert(entry->gap_size >= max_size);
 	start = (entry->vme_end + mask) & ~mask;
+	assert(start >= entry->vme_end);
 	end = start + size;
 	assert(end > start);
 	assert(end <= (entry->vme_end + entry->gap_size));
