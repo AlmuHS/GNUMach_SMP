@@ -226,6 +226,14 @@ static int config_drive_for_dma (ide_drive_t *drive)
 				return 1;	/* DMA disabled */
 			}
 		}
+
+		if (!strcmp("QEMU HARDDISK", id->model)) {
+			/* Virtual disks don't have issues with DMA :) */
+			drive->using_dma = 1;
+			/* And keep enabled even if some requests time out due to emulation lag. */
+			drive->keep_settings = 1;
+			return 1;		/* DMA enabled */
+		}
 		/* Enable DMA on any drive that has mode 4 or 2 UltraDMA enabled */
 		if (id->field_valid & 4) {	/* UltraDMA */
 			/* Enable DMA on any drive that has mode 4 UltraDMA enabled */
