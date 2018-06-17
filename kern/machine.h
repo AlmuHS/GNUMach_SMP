@@ -54,5 +54,6 @@ extern kern_return_t processor_shutdown (processor_t);
  *  action_thread() shuts down processors or changes their assignment.
  */
 extern void action_thread_continue (void) __attribute__((noreturn));
+extern void action_thread(void) __attribute__((noreturn));
 
 #endif /* _MACHINE_H_ */
