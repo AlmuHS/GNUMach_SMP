@@ -54,6 +54,7 @@ extern spl_t	(spldcm)(void);
 extern spl_t	(spl6)(void);
 extern spl_t	(spltty)(void);
 extern spl_t	(splimp)(void);
+extern spl_t	(splvm)(void);
 
 extern spl_t	(spl7)(void);
 extern spl_t	(splclock)(void);
