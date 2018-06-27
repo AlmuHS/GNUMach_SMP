@@ -543,7 +543,7 @@ vm_offset_t pmap_map_bd(
 	if (prot & VM_PROT_WRITE)
 	    template |= INTEL_PTE_WRITE;
 
-	PMAP_READ_LOCK(pmap, spl);
+	PMAP_READ_LOCK(kernel_pmap, spl);
 	while (start < end) {
 		pte = pmap_pte(kernel_pmap, virt);
 		if (pte == PT_ENTRY_NULL)
@@ -572,7 +572,7 @@ vm_offset_t pmap_map_bd(
 	if (n != i)
 		panic("couldn't pmap_map_bd\n");
 #endif	/* MACH_PV_PAGETABLES */
-	PMAP_READ_UNLOCK(pmap, spl);
+	PMAP_READ_UNLOCK(kernel_pmap, spl);
 	return(virt);
 }
 
