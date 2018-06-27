@@ -87,6 +87,10 @@
 #include <i386at/biosmem.h>
 #include <i386at/model_dep.h>
 
+#if	NCPUS > 1
+#include <i386/mp_desc.h>
+#endif
+
 #ifdef	MACH_PSEUDO_PHYS
 #define	WRITE_PTE(pte_p, pte_entry)		*(pte_p) = pte_entry?pa_to_ma(pte_entry):0;
 #else	/* MACH_PSEUDO_PHYS */
