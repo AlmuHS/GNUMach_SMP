@@ -41,6 +41,7 @@
  */
 
 #include "cpu_number.h"
+#include <kern/kern_types.h>
 #include <kern/macros.h>
 #include <machine/ast.h>
 
@@ -130,5 +131,9 @@ MACRO_END
 extern void ast_init (void);
 
 extern void ast_check (void);
+
+#if	NCPUS > 1
+extern void cause_ast_check(const processor_t processor);
+#endif
 
 #endif	/* _KERN_AST_H_ */
