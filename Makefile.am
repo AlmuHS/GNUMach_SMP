@@ -74,6 +74,10 @@ if disable_smashing_stack_protector
 AM_CFLAGS += \
 	-fno-stack-protector
 endif
+
+# We do not support or need position-independent
+AM_CFLAGS += \
+	-no-pie -fno-pic
 
 #
 # Silent build support.
