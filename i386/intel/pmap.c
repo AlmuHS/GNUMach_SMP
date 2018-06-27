@@ -83,6 +83,7 @@
 #include <i386/proc_reg.h>
 #include <i386/locore.h>
 #include <i386/model_dep.h>
+#include <i386/spl.h>
 #include <i386at/biosmem.h>
 #include <i386at/model_dep.h>
 
