@@ -44,13 +44,13 @@
  */
 
 #define	_simple_lock_xchg_(lock, new_val) \
-   ({	int _old_val_; \
+    ({	int _old_val_; \
 	asm volatile("xchgl %0, %2" \
 		    : "=r" (_old_val_) \
 		    : "0" (new_val), "m" (*(lock)) : "memory" \
 		    ); \
 	_old_val_; \
-   })
+    })
 
 #define	simple_lock_init(l) \
 	((l)->lock_data = 0)
