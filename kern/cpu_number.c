@@ -1,7 +1,7 @@
 int apic2kernel[255];
 int cpu_number_start = 0, cpu_number_counter = 0;
 
-static int cpu_number(void) {
+int cpu_number(void) {
   int eax = 1, ebx = 0, ecx = 0, edx = 0;
   unsigned int i = 0;
   int apic_id = 0;
