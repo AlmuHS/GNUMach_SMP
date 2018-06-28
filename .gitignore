@@ -50,3 +50,6 @@ build-aux/
 /doc/mach.toc
 /doc/mach.tp
 /doc/mach.vr
+/build
+Makefile.am.orig
+Makefile.am.rej
