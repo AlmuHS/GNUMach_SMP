@@ -139,6 +139,7 @@ libkernel_a_SOURCES += \
 	kern/counters.c \
 	kern/counters.h \
 	kern/cpu_number.h \
+	kern/cpu_number.c \
 	kern/debug.c \
 	kern/debug.h \
 	kern/eventcount.c \

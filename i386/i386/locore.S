@@ -37,6 +37,7 @@
 #include <i386/i386asm.h>
 #include <i386/cpu_number.h>
 #include <i386/xen.h>
+.include "i386/cpu_number.S"
 
 /*
  * Fault recovery.
@@ -243,7 +244,7 @@ timer_normalize:
  * Switch to a new timer.
  */
 ENTRY(timer_switch)
-	CPU_NUMBER(%edx)			/* get this CPU  */
+	CPU_NUMBER %edx			/* get this CPU  */
 	movl	VA_ETC,%ecx			/* get timer */
 	movl	CX(EXT(current_tstamp),%edx),%eax	/* get old time stamp  */
 	movl	%ecx,CX(EXT(current_tstamp),%edx)	/* set new time stamp */
@@ -261,7 +262,7 @@ ENTRY(timer_switch)
  * Initialize the first timer for a CPU.
  */
 ENTRY(start_timer)
-	CPU_NUMBER(%edx)			/* get this CPU */
+	CPU_NUMBER %edx			/* get this CPU */
 	movl	VA_ETC,%ecx			/* get timer */
 	movl	%ecx,CX(EXT(current_tstamp),%edx)	/* set initial time stamp */
 	movl	S_ARG0,%ecx			/* get timer */
@@ -479,7 +480,7 @@ trap_set_segs:
 	jz	trap_from_kernel	/* kernel trap if not */
 trap_from_user:
 
-	CPU_NUMBER(%edx)
+	CPU_NUMBER %edx
 	TIME_TRAP_UENTRY
 
 	movl	CX(EXT(kernel_stack),%edx),%ebx
@@ -501,7 +502,7 @@ _take_trap:
  */
 
 _return_from_trap:
-	CPU_NUMBER(%edx)
+	CPU_NUMBER %edx
 	cmpl	$0,CX(EXT(need_ast),%edx)
 	jz	_return_to_user		/* if we need an AST: */
 
@@ -547,7 +548,7 @@ trap_from_kernel:
 	cmpl	EXT(int_stack_base),%edx
 	je	1f			/* OK if so */
 
-	CPU_NUMBER(%edx)		/* get CPU number */
+	CPU_NUMBER %edx		/* get CPU number */
 	cmpl	CX(EXT(kernel_stack),%edx),%esp
 					/* already on kernel stack? */
 	ja	0f
@@ -664,7 +665,7 @@ ENTRY(all_intrs)
 	mov	%dx,%fs
 	mov	%dx,%gs
 
-	CPU_NUMBER(%edx)
+	CPU_NUMBER %edx
 
 	movl	CX(EXT(int_stack_top),%edx),%ecx
 	xchgl	%ecx,%esp		/* switch to interrupt stack */
@@ -683,7 +684,7 @@ ENTRY(all_intrs)
 	.globl	EXT(return_to_iret)
 LEXT(return_to_iret)			/* ( label for kdb_kintr and hardclock) */
 
-	CPU_NUMBER(%edx)
+	CPU_NUMBER %edx
 #if	STAT_TIME
 #else
 	TIME_INT_EXIT			/* do timing */
@@ -760,7 +761,7 @@ ast_from_interrupt:
 	mov	%dx,%fs
 	mov	%dx,%gs
 
-	CPU_NUMBER(%edx)
+	CPU_NUMBER %edx
 	TIME_TRAP_UENTRY
 
 	movl	CX(EXT(kernel_stack),%edx),%esp
@@ -1025,7 +1026,7 @@ syscall_entry_2:
 	movl	%edx,R_CS(%esp)		/* fix cs */
 	movl	%ebx,R_EFLAGS(%esp)	/* fix eflags */
 
-	CPU_NUMBER(%edx)
+	CPU_NUMBER %edx
 	TIME_TRAP_SENTRY
 
 	movl	CX(EXT(kernel_stack),%edx),%ebx
