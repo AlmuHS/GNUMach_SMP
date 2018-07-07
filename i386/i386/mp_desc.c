@@ -64,6 +64,11 @@ vm_offset_t	int_stack_high;
 char		intstack[];	/* bottom */
 char		eintstack[];	/* top */
 
+
+static struct kmutex mp_cpu_boot_lock;
+extern int apic2kernel[];
+extern int kernel2apic[];
+
 /*
  * Multiprocessor i386/i486 systems use a separate copy of the
  * GDT, IDT, LDT, and kernel TSS per processor.  The first three
@@ -165,10 +170,14 @@ mp_desc_init(int mycpu)
 }
 
 
+
 kern_return_t intel_startCPU(int slot_num)
 {
-	int	lapic = cpu_to_lapic[slot_num];
+	/*int	lapic = cpu_to_lapic[slot_num];*/
+	int lapic = kernel2apic[slot_num];
 	int eFlagsRegister;
+
+	kmutex_init(&mp_cpu_boot_lock);
 
 	assert(lapic != -1);
 
@@ -192,7 +201,8 @@ kern_return_t intel_startCPU(int slot_num)
 	if (slot_num == cpu_number()) {
 		/*ml_set_interrupts_enabled(istate);*/
 		cpu_intr_restore(eFlagsRegister);
-		lck_mtx_unlock(&mp_cpu_boot_lock);
+		/*lck_mtx_unlock(&mp_cpu_boot_lock);*/
+		kmutex_unlock(&mp_cpu_boot_lock);
 		return KERN_SUCCESS;
 	}
 
@@ -213,9 +223,11 @@ kern_return_t intel_startCPU(int slot_num)
 
 	/*ml_set_interrupts_enabled(istate);*/
 	cpu_intr_restore(eFlagsRegister);
-	lck_mtx_unlock(&mp_cpu_boot_lock);
+	/*lck_mtx_unlock(&mp_cpu_boot_lock);*/
+	kmutex_unlock(&mp_cpu_boot_lock);
 
-	if (!cpu_datap(slot_num)->cpu_running) {
+	/*if (!cpu_datap(slot_num)->cpu_running) {*/
+	if(!machine_slot[slot_num].running){
 		kprintf("Failed to start CPU %02d\n", slot_num);
 		printf("Failed to start CPU %02d, rebooting...\n", slot_num);
 		delay(1000000);
