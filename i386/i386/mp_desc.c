@@ -33,6 +33,7 @@
 #include <mach/machine.h>
 #include <mach/xen.h>
 #include <vm/vm_kern.h>
+#include <kern/kmutex.h>
 
 #include <i386/mp_desc.h>
 #include <i386/lock.h>
