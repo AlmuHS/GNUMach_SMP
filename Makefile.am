@@ -170,8 +170,8 @@ clib_routines := htonl htons ntohl ntohs			\
 		 __divdi3 					\
 		 __rel_iplt_start __rel_iplt_end		\
 		 __ffsdi2					\
-		_START _start etext _edata end _end # actually ld magic, not libc.
-		ffs intel_startCPU local_bh_count local_irq_count
+		 ffs intel_startCPU local_bh_count local_irq_count \
+		_START _start etext _edata end _end # actually ld magic, not libc.							    
 gnumach-undef: gnumach.$(OBJEXT)
 	$(NM_V) $(NM) -u $< | sed 's/  *U  *//' | sort -u > $@
 MOSTLYCLEANFILES += gnumach-undef
