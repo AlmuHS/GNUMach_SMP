@@ -5,8 +5,7 @@
 #include <i386/i386/pcb.h>
 #include <i386/i386/tss.h>
 
-kern_return_t intel_startCPU(
-	int	slot_num)
+kern_return_t intel_startCPU(int slot_num)
 {
 	int	lapic = cpu_to_lapic[slot_num];
 	int eFlagsRegister;
@@ -22,7 +21,8 @@ kern_return_t intel_startCPU(
 	 * Initialize (or re-initialize) the descriptor tables for this cpu.
 	 * Propagate processor mode to slave.
 	 */
-	cpu_desc_init64(cpu_datap(slot_num));
+	/*cpu_desc_init64(cpu_datap(slot_num));*/
+	mp_desc_init(slot_num);
 
 	/* Serialize use of the slave boot stack, etc. */
 	kmutex_lock(&mp_cpu_boot_lock);
@@ -47,7 +47,7 @@ kern_return_t intel_startCPU(
 	 * processors rendezvous'ed. This is required during periods when
 	 * the cache-disable bit is set for MTRR/PAT initialization.
 	 */
-	mp_rendezvous_no_intrs(start_cpu, (void *) &start_info);
+	/*mp_rendezvous_no_intrs(start_cpu, (void *) &start_info);*/
 
 	start_info.target_cpu = 0;
 
