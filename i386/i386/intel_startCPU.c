@@ -6,6 +6,12 @@
 #include <i386/i386/tss.h>
 
 
+typedef struct {
+	int			target_cpu;
+	int			target_lapic;
+	int			starter_cpu;
+} processor_start_info_t;
+
 static struct kmutex mp_cpu_boot_lock;
 extern int apic2kernel[];
 extern int kernel2apic[];
@@ -34,7 +40,7 @@ kern_return_t intel_startCPU(int slot_num)
 	mp_desc_init(slot_num);
 
 	/* Serialize use of the slave boot stack, etc. */
-	kmutex_lock(&mp_cpu_boot_lock);
+	kmutex_lock(&mp_cpu_boot_lock, FALSE);
 
 	/*istate = ml_set_interrupts_enabled(FALSE);*/
 	cpu_intr_save(&eFlagsRegister);
