@@ -1,4 +1,6 @@
-int apic2kernel[255];
+#define MAX_CPUS 32  /* (8*sizeof(long)) */
+
+int apic2kernel[MAX_CPUS];
 int cpu_number_start = 0, cpu_number_counter = 0;
 
 int cpu_number(void) {
@@ -7,7 +9,7 @@ int cpu_number(void) {
   int apic_id = 0;
 
   if (!cpu_number_start) {
-    for (i = 0; i < 255; i++) {
+    for (i = 0; i < MAX_CPUS; i++) {
       apic2kernel[i] = -1;
     }
     cpu_number_start = 1;
@@ -15,7 +17,6 @@ int cpu_number(void) {
 
   asm("cpuid" : "=a" (eax), "=b" (ebx), "=c" (ecx), "=d" (edx) : "a" (eax));
   apic_id = (char) (ebx >> 24) & 0xff;
-  //printf("apic_id = %d\n", apic_id);
 
   if (apic2kernel[apic_id] != -1) {
     return apic2kernel[apic_id];
