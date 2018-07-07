@@ -165,6 +165,68 @@ mp_desc_init(int mycpu)
 }
 
 
+kern_return_t intel_startCPU(int slot_num)
+{
+	int	lapic = cpu_to_lapic[slot_num];
+	int eFlagsRegister;
+
+	assert(lapic != -1);
+
+	DBGLOG_CPU_INIT(slot_num);
+
+	DBG("intel_startCPU(%d) lapic_id=%d\n", slot_num, lapic);
+	DBG("IdlePTD(%p): 0x%x\n", &IdlePTD, (int) (uintptr_t)IdlePTD);
+
+	/*
+	 * Initialize (or re-initialize) the descriptor tables for this cpu.
+	 * Propagate processor mode to slave.
+	 */
+	/*cpu_desc_init64(cpu_datap(slot_num));*/
+	mp_desc_init(slot_num);
+
+	/* Serialize use of the slave boot stack, etc. */
+	kmutex_lock(&mp_cpu_boot_lock);
+
+	/*istate = ml_set_interrupts_enabled(FALSE);*/
+	cpu_intr_save(&eFlagsRegister);
+	if (slot_num == cpu_number()) {
+		/*ml_set_interrupts_enabled(istate);*/
+		cpu_intr_restore(eFlagsRegister);
+		lck_mtx_unlock(&mp_cpu_boot_lock);
+		return KERN_SUCCESS;
+	}
+
+	start_info.starter_cpu  = cpu_number();
+	start_info.target_cpu   = slot_num;
+	start_info.target_lapic = lapic;
+	tsc_entry_barrier = 2;
+	tsc_exit_barrier = 2;
+
+	/*
+	 * Perform the processor startup sequence with all running
+	 * processors rendezvous'ed. This is required during periods when
+	 * the cache-disable bit is set for MTRR/PAT initialization.
+	 */
+	/*mp_rendezvous_no_intrs(start_cpu, (void *) &start_info);*/
+
+	start_info.target_cpu = 0;
+
+	/*ml_set_interrupts_enabled(istate);*/
+	cpu_intr_restore(eFlagsRegister);
+	lck_mtx_unlock(&mp_cpu_boot_lock);
+
+	if (!cpu_datap(slot_num)->cpu_running) {
+		kprintf("Failed to start CPU %02d\n", slot_num);
+		printf("Failed to start CPU %02d, rebooting...\n", slot_num);
+		delay(1000000);
+		halt_cpu();
+		return KERN_SUCCESS;
+	} else {
+		kprintf("Started cpu %d (lapic id %08x)\n", slot_num, lapic);
+		return KERN_SUCCESS;
+	}
+}
+
 /*
  * Called after all CPUs have been found, but before the VM system
  * is running.  The machine array must show which CPUs exist.
