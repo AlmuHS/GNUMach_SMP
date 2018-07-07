@@ -195,7 +195,7 @@ kern_return_t intel_startCPU(int slot_num)
 	mp_desc_init(slot_num);
 
 	/* Serialize use of the slave boot stack, etc. */
-	kmutex_lock(&mp_cpu_boot_lock);
+	kmutex_lock(&mp_cpu_boot_lock, FALSE);
 
 	/*istate = ml_set_interrupts_enabled(FALSE);*/
 	cpu_intr_save(&eFlagsRegister);
