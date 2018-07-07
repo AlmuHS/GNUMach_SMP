@@ -1,5 +1,6 @@
 #define MAX_CPUS 32  /* (8*sizeof(long)) */
 
+int kernel2apic[MAX_CPUS];
 int apic2kernel[MAX_CPUS];
 int cpu_number_start = 0, cpu_number_counter = 0;
 
@@ -11,6 +12,7 @@ int cpu_number(void) {
   if (!cpu_number_start) {
     for (i = 0; i < MAX_CPUS; i++) {
       apic2kernel[i] = -1;
+	  kernel2apic[i] = -1;
     }
     cpu_number_start = 1;
   }
@@ -22,6 +24,7 @@ int cpu_number(void) {
     return apic2kernel[apic_id];
   } else {
     apic2kernel[apic_id] = cpu_number_counter;
+	kernel2apic[cpu_number_counter] = apic_id;
     cpu_number_counter++;
   }
 

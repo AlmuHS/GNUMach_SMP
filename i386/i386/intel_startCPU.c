@@ -5,12 +5,19 @@
 #include <i386/i386/pcb.h>
 #include <i386/i386/tss.h>
 
+
 static struct kmutex mp_cpu_boot_lock;
+extern int apic2kernel[];
+extern int kernel2apic[];
+
 
 kern_return_t intel_startCPU(int slot_num)
 {
-	int	lapic = cpu_to_lapic[slot_num];
+	/*int	lapic = cpu_to_lapic[slot_num];*/
+	int lapic = kernel2apic[slot_num];
 	int eFlagsRegister;
+
+	kmutex_init(&mp_cpu_boot_lock);
 
 	assert(lapic != -1);
 
