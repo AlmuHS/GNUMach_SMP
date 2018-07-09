@@ -241,7 +241,7 @@ kern_return_t intel_startCPU(int slot_num)
 		halt_cpu();
 		return KERN_SUCCESS;
 	} else {
-		kprintf("Started cpu %d (lapic id %08x)\n", slot_num, lapic);
+		printf("Started cpu %d (lapic id %08x)\n", slot_num, lapic);
 		return KERN_SUCCESS;
 	}
 }
