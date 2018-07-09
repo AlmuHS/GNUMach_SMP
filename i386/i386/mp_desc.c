@@ -53,6 +53,9 @@
  * than any thread`s kernel stack.
  */
 
+#undef interrupt_stack
+#undef int_stack_top
+
 /*
  * Addresses of bottom and top of interrupt stacks.
  */
