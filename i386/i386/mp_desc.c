@@ -182,7 +182,7 @@ kern_return_t intel_startCPU(int slot_num)
 
 	assert(lapic != -1);
 
-	DBGLOG_CPU_INIT(slot_num);
+	/*DBGLOG_CPU_INIT(slot_num);*/
 
 	/*DBG("intel_startCPU(%d) lapic_id=%d\n", slot_num, lapic);
 	 *DBG("IdlePTD(%p): 0x%x\n", &IdlePTD, (int) (uintptr_t)IdlePTD);
