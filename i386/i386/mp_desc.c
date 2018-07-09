@@ -222,7 +222,7 @@ kern_return_t intel_startCPU(int slot_num)
 	 */
 	/*mp_rendezvous_no_intrs(start_cpu, (void *) &start_info);*/
 
-	start_info.target_cpu = 0;
+	/*start_info.target_cpu = 0;*/
 
 	/*ml_set_interrupts_enabled(istate);*/
 	cpu_intr_restore(eFlagsRegister);
