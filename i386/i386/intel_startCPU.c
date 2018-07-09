@@ -7,8 +7,7 @@
 #include <i386/i386/cpu.h>
 #include <i386/i386/model_dep.h>
 #include <kern/printf.h>
-
-#include <stdlib.h>
+#include <i386/i386/loose_ends.h>
 
 
 

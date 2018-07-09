@@ -28,8 +28,6 @@
 
 #include <string.h> 
 
-#include <stdlib.h>
-
 #include <i386/cpu.h>
 #include <kern/cpu_number.h>
 #include <kern/debug.h>
@@ -38,6 +36,7 @@
 #include <vm/vm_kern.h>
 #include <kern/kmutex.h>
 #include <kern/printf.h>
+#include <i386/loose_ends.h>
 
 #include <i386/model_dep.h>
 #include <i386/mp_desc.h>
