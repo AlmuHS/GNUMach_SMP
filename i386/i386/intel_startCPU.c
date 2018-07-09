@@ -4,7 +4,7 @@
 #include <i386/ldt.h>
 #include <i386/i386/pcb.h>
 #include <i386/i386/tss.h>
-
+#include <i386/i386/cpu.h>
 
 static struct kmutex mp_cpu_boot_lock;
 extern int apic2kernel[];

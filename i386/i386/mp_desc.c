@@ -28,6 +28,7 @@
 
 #include <string.h> 
 
+#include <i386/cpu.h>
 #include <kern/cpu_number.h>
 #include <kern/debug.h>
 #include <mach/machine.h>
