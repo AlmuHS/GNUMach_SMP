@@ -27,6 +27,8 @@
 #if	NCPUS > 1
 
 #include <string.h> 
+#include <stdio.h>
+#include <stdlib.h>
 
 #include <i386/cpu.h>
 #include <kern/cpu_number.h>
@@ -36,6 +38,7 @@
 #include <vm/vm_kern.h>
 #include <kern/kmutex.h>
 
+#include <i386/model_dep.h>
 #include <i386/mp_desc.h>
 #include <i386/lock.h>
 #include <machine/ktss.h>
@@ -232,7 +235,7 @@ kern_return_t intel_startCPU(int slot_num)
 
 	/*if (!cpu_datap(slot_num)->cpu_running) {*/
 	if(!machine_slot[slot_num].running){
-		kprintf("Failed to start CPU %02d\n", slot_num);
+		printf("Failed to start CPU %02d\n", slot_num);
 		printf("Failed to start CPU %02d, rebooting...\n", slot_num);
 		delay(1000000);
 		halt_cpu();

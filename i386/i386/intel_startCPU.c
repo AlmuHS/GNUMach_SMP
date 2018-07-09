@@ -5,6 +5,12 @@
 #include <i386/i386/pcb.h>
 #include <i386/i386/tss.h>
 #include <i386/i386/cpu.h>
+#include <i386/i386/model_dep.h>
+
+#include <stdio.h>
+#include <stdlib.h>
+
+
 
 static struct kmutex mp_cpu_boot_lock;
 extern int apic2kernel[];
@@ -70,7 +76,7 @@ kern_return_t intel_startCPU(int slot_num)
 
 	/*if (!cpu_datap(slot_num)->cpu_running) {*/
 	if(!machine_slot[slot_num].running){
-		kprintf("Failed to start CPU %02d\n", slot_num);
+		printf("Failed to start CPU %02d\n", slot_num);
 		printf("Failed to start CPU %02d, rebooting...\n", slot_num);
 		delay(1000000);
 		halt_cpu();
