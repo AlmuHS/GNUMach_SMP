@@ -177,7 +177,7 @@ kern_return_t intel_startCPU(int slot_num)
 {
 	/*int	lapic = cpu_to_lapic[slot_num];*/
 	int lapic = kernel2apic[slot_num];
-	int eFlagsRegister;
+	unsigned long eFlagsRegister;
 
 	kmutex_init(&mp_cpu_boot_lock);
 
