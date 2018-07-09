@@ -27,7 +27,7 @@
 #if	NCPUS > 1
 
 #include <string.h> 
-#include <stdio.h>
+
 #include <stdlib.h>
 
 #include <i386/cpu.h>
@@ -37,6 +37,7 @@
 #include <mach/xen.h>
 #include <vm/vm_kern.h>
 #include <kern/kmutex.h>
+#include <kern/printf.h>
 
 #include <i386/model_dep.h>
 #include <i386/mp_desc.h>
