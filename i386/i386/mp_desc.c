@@ -38,6 +38,7 @@
 #include <kern/printf.h>
 #include <i386/loose_ends.h>
 
+#include <i386at/model_dep.h>
 #include <i386/model_dep.h>
 #include <i386/mp_desc.h>
 #include <i386/lock.h>
