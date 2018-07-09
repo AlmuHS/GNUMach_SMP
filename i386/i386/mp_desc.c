@@ -53,14 +53,11 @@
  * than any thread`s kernel stack.
  */
 
-#undef interrupt_stack
-#undef int_stack_top
-
 /*
  * Addresses of bottom and top of interrupt stacks.
  */
 vm_offset_t	interrupt_stack[NCPUS];
-vm_offset_t	int_stack_top[NCPUS];
+vm_offset_t	_int_stack_top[NCPUS];
 
 /*
  * Barrier address.
@@ -282,11 +279,11 @@ interrupt_stack_alloc(void)
 	for (i = 0; i < NCPUS; i++) {
 	    if (i == master_cpu) {
 		interrupt_stack[i] = (vm_offset_t) intstack;
-		int_stack_top[i]   = (vm_offset_t) eintstack;
+		_int_stack_top[i]   = (vm_offset_t) eintstack;
 	    }
 	    else if (machine_slot[i].is_cpu) {
 		interrupt_stack[i] = stack_start;
-		int_stack_top[i]   = stack_start + INTSTACK_SIZE;
+		_int_stack_top[i]   = stack_start + INTSTACK_SIZE;
 
 		stack_start += INTSTACK_SIZE;
 	    }
