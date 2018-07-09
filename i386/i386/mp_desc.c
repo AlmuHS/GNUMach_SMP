@@ -184,8 +184,9 @@ kern_return_t intel_startCPU(int slot_num)
 
 	DBGLOG_CPU_INIT(slot_num);
 
-	DBG("intel_startCPU(%d) lapic_id=%d\n", slot_num, lapic);
-	DBG("IdlePTD(%p): 0x%x\n", &IdlePTD, (int) (uintptr_t)IdlePTD);
+	/*DBG("intel_startCPU(%d) lapic_id=%d\n", slot_num, lapic);
+	 *DBG("IdlePTD(%p): 0x%x\n", &IdlePTD, (int) (uintptr_t)IdlePTD);
+	 */
 
 	/*
 	 * Initialize (or re-initialize) the descriptor tables for this cpu.
@@ -207,11 +208,12 @@ kern_return_t intel_startCPU(int slot_num)
 		return KERN_SUCCESS;
 	}
 
-	start_info.starter_cpu  = cpu_number();
-	start_info.target_cpu   = slot_num;
-	start_info.target_lapic = lapic;
-	tsc_entry_barrier = 2;
-	tsc_exit_barrier = 2;
+	/*start_info.starter_cpu  = cpu_number();
+	 *start_info.target_cpu   = slot_num;
+	 *start_info.target_lapic = lapic;
+	 *tsc_entry_barrier = 2;
+	 *tsc_exit_barrier = 2;
+     */
 
 	/*
 	 * Perform the processor startup sequence with all running
@@ -239,7 +241,6 @@ kern_return_t intel_startCPU(int slot_num)
 		return KERN_SUCCESS;
 	}
 }
-
 /*
  * Called after all CPUs have been found, but before the VM system
  * is running.  The machine array must show which CPUs exist.
