@@ -1925,7 +1925,7 @@ Retry:
 		 * Would have to enter the new page-table page in
 		 * EVERY pmap.
 		 */
-		panic("pmap_expand kernel pmap to %#x", v);
+		panic("pmap_expand kernel pmap to %#lx", v);
 	    }
 
 	    /*
