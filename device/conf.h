@@ -53,7 +53,7 @@ struct dev_ops {
 	int		(*d_write)(dev_t, io_req_t);	/* write */
 	int		(*d_getstat)(dev_t, dev_flavor_t, dev_status_t, mach_msg_type_number_t *);	/* get status/control */
 	int		(*d_setstat)(dev_t, dev_flavor_t, dev_status_t, mach_msg_type_number_t);	/* set status/control */
-	int		(*d_mmap)(dev_t, vm_offset_t, vm_prot_t);	/* map memory */
+	vm_offset_t	(*d_mmap)(dev_t, vm_offset_t, vm_prot_t);	/* map memory */
 	int		(*d_async_in)();		/* asynchronous input setup */
 	int		(*d_reset)();			/* reset device */
 	int		(*d_port_death)(dev_t, mach_port_t);
@@ -76,7 +76,7 @@ extern io_return_t	nulldev_getstat(dev_t dev, dev_flavor_t flavor, dev_status_t 
 extern io_return_t	nulldev_setstat(dev_t dev, dev_flavor_t flavor, dev_status_t data, mach_msg_type_number_t count);
 extern io_return_t	nulldev_portdeath(dev_t dev, mach_port_t port);
 extern int	nodev(void);		/* no operation - error */
-extern int	nomap(dev_t dev, vm_offset_t off, int prot);		/* no operation - error */
+extern vm_offset_t	nomap(dev_t dev, vm_offset_t off, int prot);		/* no operation - error */
 
 /*
  * Flavor constants for d_dev_info routine

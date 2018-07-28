@@ -771,7 +771,7 @@ extern io_return_t kdsetstat(
 	mach_msg_type_number_t	count);
 
 extern int kdportdeath(dev_t dev, mach_port_t port);
-extern int kdmmap(dev_t dev, vm_offset_t off, vm_prot_t prot);
+extern vm_offset_t kdmmap(dev_t dev, vm_offset_t off, vm_prot_t prot);
 
 boolean_t kdcheckmagic(Scancode scancode);
 

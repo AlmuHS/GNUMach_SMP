@@ -83,10 +83,10 @@ int nodev(void)
 	return (D_INVALID_OPERATION);
 }
 
-int
+vm_offset_t
 nomap(dev_t dev, vm_offset_t off, int prot)
 {
-	return (D_INVALID_OPERATION);
+	return -1;
 }
 
 /*

@@ -545,7 +545,7 @@ io_req_t uio;
  */
 
 /*ARGSUSED*/
-int
+vm_offset_t
 kdmmap(dev, off, prot)
 	dev_t dev;
 	vm_offset_t off;

@@ -30,7 +30,7 @@ extern vm_offset_t int_stack_top, int_stack_base;
 /* Check whether P points to the interrupt stack.  */
 #define ON_INT_STACK(P)	(((P) & ~(KERNEL_STACK_SIZE-1)) == int_stack_base)
 
-extern int timemmap(dev_t dev, vm_offset_t off, vm_prot_t prot);
+extern vm_offset_t timemmap(dev_t dev, vm_offset_t off, vm_prot_t prot);
 
 void inittodr(void);
 
