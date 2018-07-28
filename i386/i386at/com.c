@@ -443,9 +443,9 @@ mach_port_t	port;
 io_return_t
 comgetstat(dev, flavor, data, count)
 dev_t		dev;
-int		flavor;
-int		*data;		/* pointer to OUT array */
-natural_t	*count;		/* out */
+dev_flavor_t	flavor;
+dev_status_t	data;		/* pointer to OUT array */
+mach_msg_type_number_t	*count;		/* out */
 {
 	io_return_t	result = D_SUCCESS;
 	int		unit = minor(dev);
@@ -466,9 +466,9 @@ natural_t	*count;		/* out */
 io_return_t
 comsetstat(
 	dev_t		dev,
-	int		flavor,
-	int *		data,
-	natural_t	count)
+	dev_flavor_t	flavor,
+	dev_status_t	data,
+	mach_msg_type_number_t	count)
 {
 	io_return_t	result = D_SUCCESS;
 	int 		unit = minor(dev);

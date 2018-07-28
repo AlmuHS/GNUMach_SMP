@@ -145,9 +145,9 @@ kbdclose(
 
 io_return_t kbdgetstat(
 	dev_t		dev,
-	int		flavor,
-	int *		data,		/* pointer to OUT array */
-	unsigned int	*count)		/* OUT */
+	dev_flavor_t	flavor,
+	dev_status_t	data,		/* pointer to OUT array */
+	mach_msg_type_number_t	*count)		/* OUT */
 {
 	switch (flavor) {
 	    case KDGKBDTYPE:
@@ -167,9 +167,9 @@ io_return_t kbdgetstat(
 
 io_return_t kbdsetstat(
 	dev_t		dev,
-	int		flavor,
-	int *		data,
-	unsigned int	count)
+	dev_flavor_t	flavor,
+	dev_status_t	data,
+	mach_msg_type_number_t	count)
 {
 	switch (flavor) {
 	    case KDSKBDMODE:

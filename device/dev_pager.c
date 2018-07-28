@@ -57,6 +57,7 @@
 #include <device/memory_object_reply.user.h>
 #include <device/dev_pager.h>
 #include <device/blkio.h>
+#include <device/conf.h>
 
 /*
  *	The device pager routines are called directly from the message

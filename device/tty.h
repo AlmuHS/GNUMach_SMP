@@ -72,8 +72,8 @@ struct tty {
  * Items beyond this point should be removed to device-specific
  * extension structures.
  */
-	io_return_t	(*t_getstat)(dev_t, int, int *, natural_t *);	/* routine to get status */
-	io_return_t	(*t_setstat)(dev_t, int, int *, natural_t);	/* routine to set status */
+	io_return_t	(*t_getstat)(dev_t, dev_flavor_t, dev_status_t, mach_msg_type_number_t *);	/* routine to get status */
+	io_return_t	(*t_setstat)(dev_t, dev_flavor_t, dev_status_t, mach_msg_type_number_t);	/* routine to set status */
 	dev_ops_t	t_tops;		/* another device to possibly
 					   push through */
 };

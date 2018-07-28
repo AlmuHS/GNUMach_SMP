@@ -297,9 +297,9 @@ kd_mouse_close(
 
 io_return_t mousegetstat(
 	dev_t		  dev,
-	int		  flavor,
-	int *		  data,		/* pointer to OUT array */
-	unsigned int	  *count)	/* OUT */
+	dev_flavor_t	  flavor,
+	dev_status_t	  data,		/* pointer to OUT array */
+	mach_msg_type_number_t	*count)	/* OUT */
 {
 	switch (flavor) {
 	    case DEV_GET_SIZE:

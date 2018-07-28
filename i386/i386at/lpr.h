@@ -44,16 +44,16 @@ void lprattach(struct bus_device *dev);
 extern io_return_t
 lprgetstat(
 	dev_t		dev,
-	int		flavor,
-	int		*data,
-	natural_t	*count);
+	dev_flavor_t	flavor,
+	dev_status_t	data,
+	mach_msg_type_number_t	*count);
 
 extern io_return_t
 lprsetstat(
 	dev_t		dev,
-	int		flavor,
-	int		*data,
-	natural_t	count);
+	dev_flavor_t	flavor,
+	dev_status_t	data,
+	mach_msg_type_number_t	count);
 
 void lprpr_addr(unsigned short addr);
 

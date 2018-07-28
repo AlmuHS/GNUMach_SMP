@@ -169,12 +169,12 @@ void hypcnstop()
 {
 }
 
-io_return_t hypcngetstat(dev_t dev, int flavor, int *data, unsigned int *count)
+io_return_t hypcngetstat(dev_t dev, dev_flavor_t flavor, dev_status_t data, mach_msg_type_number_t *count)
 {
 	return tty_get_status(&hypcn_tty, flavor, data, count);
 }
 
-io_return_t hypcnsetstat(dev_t dev, int flavor, int *data, unsigned int count)
+io_return_t hypcnsetstat(dev_t dev, dev_flavor_t flavor, dev_status_t data, mach_msg_type_number_t count)
 {
 	return tty_set_status(&hypcn_tty, flavor, data, count);
 }

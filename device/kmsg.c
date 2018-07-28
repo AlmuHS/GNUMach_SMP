@@ -195,7 +195,7 @@ kmsg_read_done (io_req_t ior)
 }
 
 io_return_t
-kmsggetstat (dev_t dev, int flavor, int *data, unsigned int *count)
+kmsggetstat (dev_t dev, dev_flavor_t flavor, dev_status_t data, mach_msg_type_number_t *count)
 {
   switch (flavor)
     {
