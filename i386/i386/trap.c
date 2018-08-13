@@ -65,7 +65,7 @@
 #include "debug.h"
 
 #if	MACH_KDB
-boolean_t	debug_all_traps_with_kdb = TRUE;
+boolean_t	debug_all_traps_with_kdb = FALSE;
 extern struct db_watchpoint *db_watchpoint_list;
 extern boolean_t db_watchpoints_inserted;
 
