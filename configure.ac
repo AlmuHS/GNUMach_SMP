@@ -217,8 +217,8 @@ dnl     config.status
 dnl ])
 AC_CONFIG_COMMANDS_POST([
   if "$PATCH" -f < "$srcdir"/config.status.dep.patch > /dev/null 2>&1 ||
-     "$PATCH" -f < "$srcdir"/Makefile.in.dep.patch > /dev/null 2>&1 ||
-     grep "Ugly bootstrap hack to get to-be-generated files created" Makefile.in > /dev/null 2>&1
+     ( cd "$srcdir" && "$PATCH" -f < Makefile.in.dep.patch ||
+       grep "Ugly bootstrap hack to get to-be-generated files created" Makefile.in ) > /dev/null 2>&1
   then] AC_MSG_NOTICE([Applied a patch to work around a deficiency in]
     [Automake.  See `configure.ac' for details.])
   [else] AC_MSG_ERROR([failed to patch using `config.status.dep.patch'.]
