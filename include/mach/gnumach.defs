@@ -151,3 +151,17 @@ routine	vm_wire_all(
 		host		: mach_port_t;
 		task		: vm_task_t;
 		flags		: vm_wire_t);
+
+routine vm_object_sync(
+		object		: memory_object_name_t;
+		offset		: vm_offset_t;
+		size		: vm_size_t;
+		should_flush	: boolean_t;
+		should_return	: boolean_t;
+		should_iosync	: boolean_t);
+
+routine vm_msync(
+		target_task	: vm_task_t;
+		address		: vm_address_t;
+		size		: vm_size_t;
+		sync_flags	: vm_sync_t);

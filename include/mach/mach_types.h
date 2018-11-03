@@ -54,6 +54,7 @@
 #include <mach/vm_statistics.h>
 #include <mach/vm_cache_statistics.h>
 #include <mach/vm_wire.h>
+#include <mach/vm_sync.h>
 
 #ifdef	MACH_KERNEL
 #include <kern/task.h>		/* for task_array_t */
