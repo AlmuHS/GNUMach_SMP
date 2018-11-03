@@ -209,7 +209,7 @@ simpleroutine	memory_object_data_unlock(
 skip;	/* was: memory_object_data_write */
 
 /*
- *	Indicate that a previous memory_object_lock_reqeust has been
+ *	Indicate that a previous memory_object_lock_request has been
  *	completed.  Note that this call is made on whatever
  *	port is specified in the memory_object_lock_request; that port
  *	need not be the memory object port itself.
