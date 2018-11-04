@@ -31,10 +31,10 @@
 #define	_I386_SCHED_PARAM_H_
 
 /*
- *	Sequent requires a right shift of 18 bits to convert
+ *	Sequent requires a right shift of 17 bits to convert
  *	microseconds to priorities.
  */
 
-#define	PRI_SHIFT	18
+#define	PRI_SHIFT	17
 
 #endif	/* _I386_SCHED_PARAM_H_ */

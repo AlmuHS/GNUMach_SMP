@@ -47,10 +47,10 @@
 #if	STAT_TIME
 
 /*
- *	Statistical timing uses microseconds as timer units.  18 bit shift
+ *	Statistical timing uses microseconds as timer units.  17 bit shift
  *	yields priorities.  PRI_SHIFT_2 isn't needed.
  */
-#define PRI_SHIFT	18
+#define PRI_SHIFT	17
 
 #else	/* STAT_TIME */
 
@@ -60,7 +60,7 @@
 #include <machine/sched_param.h>
 
 #endif	/* STAT_TIME */
-#define NRQS	50			/* 50 run queues per cpu */
+#define NRQS	64			/* 64 run queues per cpu */
 
 struct run_queue {
 	queue_head_t		runq[NRQS];	/* one for each priority */
