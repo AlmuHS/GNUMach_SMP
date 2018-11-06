@@ -25,7 +25,7 @@ AC_CONFIG_AUX_DIR([build-aux])
 
 AM_INIT_AUTOMAKE(
   [1.10.2]
-  [dist-bzip2]
+  [dist-xz]
 dnl Don't define `PACKAGE' and `VERSION'.
   [no-define]
 dnl Do not clutter the main build directory.
