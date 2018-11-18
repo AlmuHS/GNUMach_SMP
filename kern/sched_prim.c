@@ -153,7 +153,7 @@ void sched_init(void)
 	recompute_priorities_timer.fcn = recompute_priorities;
 	recompute_priorities_timer.param = NULL;
 
-	min_quantum = hz / 10;		/* context switch 10 times/second */
+	min_quantum = MIN_QUANTUM;
 	wait_queue_init();
 	pset_sys_bootstrap();		/* initialize processor mgmt. */
 	queue_init(&action_queue);

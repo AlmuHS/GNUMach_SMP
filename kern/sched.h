@@ -113,6 +113,7 @@ extern queue_head_t	action_queue;	/* assign/shutdown queue */
 decl_simple_lock_data(extern,action_lock);
 
 extern int		min_quantum;	/* defines max context switch rate */
+#define MIN_QUANTUM	(hz / 33)	/* context switch 33 times/second */
 
 /*
  *	Default base priorities for threads.
