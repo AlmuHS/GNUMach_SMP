@@ -64,10 +64,6 @@ int		min_quantum;	/* defines max context switch rate */
 
 unsigned	sched_tick;
 
-#if	SIMPLE_CLOCK
-int		sched_usec;
-#endif	/* SIMPLE_CLOCK */
-
 thread_t	sched_thread_id;
 
 timer_elt_data_t recompute_priorities_timer;
@@ -159,9 +155,6 @@ void sched_init(void)
 	queue_init(&action_queue);
 	simple_lock_init(&action_lock);
 	sched_tick = 0;
-#if	SIMPLE_CLOCK
-	sched_usec = 0;
-#endif	/* SIMPLE_CLOCK */
 	ast_init();
 }
 
@@ -1089,21 +1082,8 @@ void compute_my_priority(
  */
 void recompute_priorities(void *param)
 {
-#if	SIMPLE_CLOCK
-	int	new_usec;
-#endif	/* SIMPLE_CLOCK */
-
 	sched_tick++;		/* age usage one more time */
 	set_timeout(&recompute_priorities_timer, hz);
-#if	SIMPLE_CLOCK
-	/*
-	 *	Compensate for clock drift.  sched_usec is an
-	 *	exponential average of the number of microseconds in
-	 *	a second.  It decays in the same fashion as cpu_usage.
-	 */
-	new_usec = sched_usec_elapsed();
-	sched_usec = (5*sched_usec + 3*new_usec)/8;
-#endif	/* SIMPLE_CLOCK */
 	/*
 	 *	Wakeup scheduler thread.
 	 */

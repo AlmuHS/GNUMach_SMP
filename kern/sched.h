@@ -166,13 +166,4 @@ MACRO_BEGIN							\
 			(thread)->processor_set->sched_load;	\
 MACRO_END
 
-#if	SIMPLE_CLOCK
-/*
- *	sched_usec is an exponential average of number of microseconds
- *	in a second for clock drift compensation.
- */
-
-extern int	sched_usec;
-#endif	/* SIMPLE_CLOCK */
-
 #endif	/* _KERN_SCHED_H_ */

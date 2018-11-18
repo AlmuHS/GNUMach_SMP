@@ -1527,13 +1527,6 @@ kern_return_t thread_info(
 	    basic_info->cpu_usage = thread->cpu_usage /
 					(TIMER_RATE/TH_USAGE_SCALE);
 	    basic_info->cpu_usage = (basic_info->cpu_usage * 3) / 5;
-#if	SIMPLE_CLOCK
-	    /*
-	     *	Clock drift compensation.
-	     */
-	    basic_info->cpu_usage =
-		(basic_info->cpu_usage * 1000000)/sched_usec;
-#endif	/* SIMPLE_CLOCK */
 
 	    flags = 0;
 	    if (thread->state & TH_SWAPPED)
