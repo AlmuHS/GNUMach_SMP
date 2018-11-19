@@ -444,6 +444,17 @@ kern_return_t thread_create(
 	task_unlock(parent_task);
 
 	/*
+	 *	This thread will mosty probably start working, assume it
+	 *	will take its share of CPU, to avoid having to find it out
+	 *	slowly.  Decaying will however fix that quickly if it actually
+	 *	does not work
+	 */
+	new_thread->cpu_usage = TIMER_RATE * SCHED_SCALE /
+				(pset->load_average >= SCHED_SCALE ?
+				  pset->load_average : SCHED_SCALE);
+	new_thread->sched_usage = TIMER_RATE * SCHED_SCALE;
+
+	/*
 	 *	Lock both the processor set and the task,
 	 *	so that the thread can be added to both
 	 *	simultaneously.  Processor set must be
