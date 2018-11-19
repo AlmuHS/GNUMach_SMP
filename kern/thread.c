@@ -2326,7 +2326,8 @@ void consider_thread_collect(void)
 
 	if (thread_collect_allowed &&
 	    (sched_tick >
-	     (thread_collect_last_tick + thread_collect_max_rate))) {
+	     (thread_collect_last_tick +
+	      thread_collect_max_rate / (hz / 1)))) {
 		thread_collect_last_tick = sched_tick;
 		thread_collect_scan();
 	}

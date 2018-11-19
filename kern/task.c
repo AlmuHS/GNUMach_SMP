@@ -1224,7 +1224,8 @@ void consider_task_collect(void)
 		task_collect_max_rate = hz;
 
 	if (task_collect_allowed &&
-	    (sched_tick > (task_collect_last_tick + task_collect_max_rate))) {
+	    (sched_tick > (task_collect_last_tick +
+			   task_collect_max_rate / (hz / 1)))) {
 		task_collect_last_tick = sched_tick;
 		task_collect_scan();
 	}
