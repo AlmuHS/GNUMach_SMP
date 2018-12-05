@@ -73,7 +73,7 @@
 #define PCI_CFG2_START	0xc000
 #define PCI_CFG2_END	0xcfff
 
-#define IS_IN_PROTECTED_RANGE(from, to) \
+#define CONTAINS_PCI_CFG(from, to) \
   ( ( ( from <= PCI_CFG1_END ) && ( to >= PCI_CFG1_START ) ) || \
     ( ( from <= PCI_CFG2_END ) && ( to >= PCI_CFG2_START ) ) )
 
@@ -125,7 +125,7 @@ void
 io_perm_deallocate (io_perm_t io_perm)
 {
   /* We need to check if the io_perm was a PCI cfg one and release it */
-  if (IS_IN_PROTECTED_RANGE(io_perm->from, io_perm->to))
+  if (CONTAINS_PCI_CFG(io_perm->from, io_perm->to))
     taken_pci_cfg = FALSE;
 }
 
@@ -196,7 +196,7 @@ i386_io_perm_create (const ipc_port_t master_port, io_port_t from, io_port_t to,
     return KERN_INVALID_ARGUMENT;
 
   /* Only one process may take a range that includes PCI cfg registers */
-  if (taken_pci_cfg && IS_IN_PROTECTED_RANGE(from, to))
+  if (taken_pci_cfg && CONTAINS_PCI_CFG(from, to))
     return KERN_PROTECTION_FAILURE;
 
   io_perm_t io_perm;
@@ -230,7 +230,7 @@ i386_io_perm_create (const ipc_port_t master_port, io_port_t from, io_port_t to,
 
   *new = io_perm;
 
-  if (IS_IN_PROTECTED_RANGE(from, to))
+  if (CONTAINS_PCI_CFG(from, to))
     taken_pci_cfg = TRUE;
 
   return KERN_SUCCESS;
