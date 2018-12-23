@@ -32,7 +32,7 @@
  */
 
 int	master_cpu;	/* 'master' processor - keeps time */
-volatile int lapic = 0xFEE00020/*FEE0 0020H*/
+//volatile int lapic = 0xFEE00020/*FEE0 0020H*/
 
 #if	(NCPUS == 1)
 	/* cpu number is always 0 on a single processor system */
