@@ -54,6 +54,9 @@ AM_CPPFLAGS += \
 AM_CFLAGS += \
 	-fno-builtin-log
 
+AM_CCASFLAGS += \
+	-D__ASSEMBLY__
+
 # Yes, this makes the eyes hurt.  But perhaps someone will finally take care of
 # all that scruffy Mach code...  Also see <http://savannah.gnu.org/task/?5726>.
 AM_CFLAGS += \

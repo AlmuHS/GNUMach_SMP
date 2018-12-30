@@ -43,7 +43,7 @@ liblinux_a_CFLAGS += \
 
 # TODO.  Do we really need `-traditional'?
 liblinux_a_CCASFLAGS = $(AM_CCASFLAGS) \
-	-D__ASSEMBLY__ -traditional \
+	-traditional \
 	$(liblinux_a_CPPFLAGS)
 
 liblinux_a_SOURCES = \
