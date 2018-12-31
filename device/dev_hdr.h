@@ -61,7 +61,7 @@
 #include <kern/lock.h>
 #include <kern/queue.h>
 
-#include <device/conf.h>
+typedef struct dev_ops *dev_ops_t;
 
 /* This structure is associated with each open device port.
    The port representing the device points to this structure.  */

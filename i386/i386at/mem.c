@@ -30,7 +30,7 @@
 /* This provides access to any memory that is not main RAM */
 
 /*ARGSUSED*/
-int
+vm_offset_t
 memmmap(dev, off, prot)
 dev_t		dev;
 vm_offset_t	off;

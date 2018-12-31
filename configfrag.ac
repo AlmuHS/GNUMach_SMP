@@ -103,9 +103,6 @@ AC_DEFINE([MACH_VM_DEBUG], [1], [MACH_VM_DEBUG])
 # Mach-dep power conservation.
 AC_DEFINE([POWER_SAVE], [1], [POWER_SAVE])
 
-# No hardware clock rollover.
-AC_DEFINE([SIMPLE_CLOCK], [0], [SIMPLE_CLOCK])
-
 # Use statistical timing.
 AC_DEFINE([STAT_TIME], [1], [STAT_TIME])
 

@@ -422,6 +422,7 @@ include_mach_HEADERS = \
 	include/mach/vm_param.h \
 	include/mach/vm_prot.h \
 	include/mach/vm_statistics.h \
+	include/mach/vm_sync.h \
 	include/mach/vm_wire.h \
 	include/mach/inline.h \
 	include/mach/xen.h

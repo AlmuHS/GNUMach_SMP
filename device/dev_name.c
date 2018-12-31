@@ -63,12 +63,12 @@ int nulldev_write(dev_t dev, io_req_t ior)
 	return (D_SUCCESS);
 }
 
-io_return_t nulldev_getstat(dev_t dev, int flavor, int *data, natural_t *count)
+io_return_t nulldev_getstat(dev_t dev, dev_flavor_t flavor, dev_status_t data, mach_msg_type_number_t *count)
 {
 	return (D_SUCCESS);
 }
 
-io_return_t nulldev_setstat(dev_t dev, int flavor, int *data, natural_t count)
+io_return_t nulldev_setstat(dev_t dev, dev_flavor_t flavor, dev_status_t data, mach_msg_type_number_t count)
 {
 	return (D_SUCCESS);
 }
@@ -83,10 +83,10 @@ int nodev(void)
 	return (D_INVALID_OPERATION);
 }
 
-int
+vm_offset_t
 nomap(dev_t dev, vm_offset_t off, int prot)
 {
-	return (D_INVALID_OPERATION);
+	return -1;
 }
 
 /*

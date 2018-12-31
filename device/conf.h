@@ -35,6 +35,7 @@
 #include <sys/types.h>
 #include <mach/port.h>
 #include <mach/vm_prot.h>
+#include <device/device_types.h>
 
 struct io_req;
 typedef struct io_req *io_req_t;
@@ -50,9 +51,9 @@ struct dev_ops {
 	void		(*d_close)(dev_t, int);		/* close device */
 	int		(*d_read)(dev_t, io_req_t);	/* read */
 	int		(*d_write)(dev_t, io_req_t);	/* write */
-	int		(*d_getstat)(dev_t, int, int *, natural_t *);	/* get status/control */
-	int		(*d_setstat)(dev_t, int, int *, natural_t);	/* set status/control */
-	int		(*d_mmap)(dev_t, vm_offset_t, vm_prot_t);	/* map memory */
+	int		(*d_getstat)(dev_t, dev_flavor_t, dev_status_t, mach_msg_type_number_t *);	/* get status/control */
+	int		(*d_setstat)(dev_t, dev_flavor_t, dev_status_t, mach_msg_type_number_t);	/* set status/control */
+	vm_offset_t	(*d_mmap)(dev_t, vm_offset_t, vm_prot_t);	/* map memory */
 	int		(*d_async_in)();		/* asynchronous input setup */
 	int		(*d_reset)();			/* reset device */
 	int		(*d_port_death)(dev_t, mach_port_t);
@@ -71,11 +72,11 @@ extern int	nulldev_open(dev_t dev, int flag, io_req_t ior);
 extern void	nulldev_close(dev_t dev, int flags);
 extern int	nulldev_read(dev_t dev, io_req_t ior);
 extern int	nulldev_write(dev_t dev, io_req_t ior);
-extern io_return_t	nulldev_getstat(dev_t dev, int flavor, int *data, natural_t *count);
-extern io_return_t	nulldev_setstat(dev_t dev, int flavor, int *data, natural_t count);
+extern io_return_t	nulldev_getstat(dev_t dev, dev_flavor_t flavor, dev_status_t data, mach_msg_type_number_t *count);
+extern io_return_t	nulldev_setstat(dev_t dev, dev_flavor_t flavor, dev_status_t data, mach_msg_type_number_t count);
 extern io_return_t	nulldev_portdeath(dev_t dev, mach_port_t port);
 extern int	nodev(void);		/* no operation - error */
-extern int	nomap(dev_t dev, vm_offset_t off, int prot);		/* no operation - error */
+extern vm_offset_t	nomap(dev_t dev, vm_offset_t off, int prot);		/* no operation - error */
 
 /*
  * Flavor constants for d_dev_info routine

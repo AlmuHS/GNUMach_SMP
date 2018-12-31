@@ -643,7 +643,7 @@ void c_boot_entry(vm_offset_t bi)
 #include <vm/pmap.h>
 #include <mach/time_value.h>
 
-int
+vm_offset_t
 timemmap(dev, off, prot)
 	dev_t dev;
 	vm_offset_t off;

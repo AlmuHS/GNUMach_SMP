@@ -39,8 +39,10 @@
 #include <mach/vm_param.h>
 #include <mach/vm_statistics.h>
 #include <mach/vm_cache_statistics.h>
+#include <mach/vm_sync.h>
 #include <kern/host.h>
 #include <kern/task.h>
+#include <kern/mach.server.h>
 #include <vm/vm_fault.h>
 #include <vm/vm_kern.h>
 #include <vm/vm_map.h>
@@ -478,4 +480,54 @@ kern_return_t vm_wire_all(const ipc_port_t port, vm_map_t map, vm_wire_t flags)
 	}
 
 	return vm_map_pageable_all(map, flags);
+}
+
+/*
+ *	vm_object_sync synchronizes out pages from the memory object to its
+ *	memory manager, if any.
+ */
+kern_return_t vm_object_sync(
+	vm_object_t		object,
+	vm_offset_t		offset,
+	vm_size_t		size,
+	boolean_t		should_flush,
+	boolean_t		should_return,
+	boolean_t		should_iosync)
+{
+	if (object == VM_OBJECT_NULL)
+		return KERN_INVALID_ARGUMENT;
+
+	/* FIXME: we should rather introduce an internal function, e.g.
+	   vm_object_update, rather than calling memory_object_lock_request.  */
+	vm_object_reference(object);
+
+	/* This is already always synchronous for now.  */
+	(void) should_iosync;
+
+	size = round_page(offset + size) - trunc_page(offset);
+	offset = trunc_page(offset);
+
+	return  memory_object_lock_request(object, offset, size,
+					   should_return ?
+						MEMORY_OBJECT_RETURN_ALL :
+						MEMORY_OBJECT_RETURN_NONE,
+					   should_flush,
+					   VM_PROT_NO_CHANGE,
+					   NULL, 0);
+}
+
+/*
+ *	vm_msync synchronizes out pages from the map to their memory manager,
+ *	if any.
+ */
+kern_return_t vm_msync(
+	vm_map_t		map,
+	vm_address_t		address,
+	vm_size_t		size,
+	vm_sync_t		sync_flags)
+{
+	if (map == VM_MAP_NULL)
+		return KERN_INVALID_ARGUMENT;
+
+	return vm_map_msync(map, (vm_offset_t) address, size, sync_flags);
 }

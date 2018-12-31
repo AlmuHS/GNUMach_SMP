@@ -1374,7 +1374,7 @@ net_getstat(
 	struct ifnet	*ifp,
 	dev_flavor_t	flavor,
 	dev_status_t	status,		/* pointer to OUT array */
-	natural_t	*count)		/* OUT */
+	mach_msg_type_number_t	*count)		/* OUT */
 {
 	switch (flavor) {
 	    case NET_STATUS:

@@ -40,15 +40,15 @@ extern int kbdread(dev_t dev, io_req_t ior);
 
 extern io_return_t kbdgetstat(
 	dev_t		dev,
-	int		flavor,
-	int 		*data,
-	unsigned int	*count);
+	dev_flavor_t	flavor,
+	dev_status_t	data,
+	mach_msg_type_number_t	*count);
 
 extern io_return_t kbdsetstat(
 	dev_t		dev,
-	int		flavor,
-	int 		*data,
-	unsigned int	count);
+	dev_flavor_t	flavor,
+	dev_status_t 	data,
+	mach_msg_type_number_t	count);
 
 extern void kd_enqsc(Scancode sc);
 

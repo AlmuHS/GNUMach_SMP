@@ -47,10 +47,10 @@
 #if	STAT_TIME
 
 /*
- *	Statistical timing uses microseconds as timer units.  18 bit shift
+ *	Statistical timing uses microseconds as timer units.  17 bit shift
  *	yields priorities.  PRI_SHIFT_2 isn't needed.
  */
-#define PRI_SHIFT	18
+#define PRI_SHIFT	17
 
 #else	/* STAT_TIME */
 
@@ -60,7 +60,7 @@
 #include <machine/sched_param.h>
 
 #endif	/* STAT_TIME */
-#define NRQS	50			/* 50 run queues per cpu */
+#define NRQS	64			/* 64 run queues per cpu */
 
 struct run_queue {
 	queue_head_t		runq[NRQS];	/* one for each priority */
@@ -113,6 +113,7 @@ extern queue_head_t	action_queue;	/* assign/shutdown queue */
 decl_simple_lock_data(extern,action_lock);
 
 extern int		min_quantum;	/* defines max context switch rate */
+#define MIN_QUANTUM	(hz / 33)	/* context switch 33 times/second */
 
 /*
  *	Default base priorities for threads.
@@ -164,14 +165,5 @@ MACRO_BEGIN							\
 	(thread)->sched_delta += delta * 			\
 			(thread)->processor_set->sched_load;	\
 MACRO_END
-
-#if	SIMPLE_CLOCK
-/*
- *	sched_usec is an exponential average of number of microseconds
- *	in a second for clock drift compensation.
- */
-
-extern int	sched_usec;
-#endif	/* SIMPLE_CLOCK */
 
 #endif	/* _KERN_SCHED_H_ */

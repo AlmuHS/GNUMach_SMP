@@ -444,6 +444,17 @@ kern_return_t thread_create(
 	task_unlock(parent_task);
 
 	/*
+	 *	This thread will mosty probably start working, assume it
+	 *	will take its share of CPU, to avoid having to find it out
+	 *	slowly.  Decaying will however fix that quickly if it actually
+	 *	does not work
+	 */
+	new_thread->cpu_usage = TIMER_RATE * SCHED_SCALE /
+				(pset->load_average >= SCHED_SCALE ?
+				  pset->load_average : SCHED_SCALE);
+	new_thread->sched_usage = TIMER_RATE * SCHED_SCALE;
+
+	/*
 	 *	Lock both the processor set and the task,
 	 *	so that the thread can be added to both
 	 *	simultaneously.  Processor set must be
@@ -1527,13 +1538,6 @@ kern_return_t thread_info(
 	    basic_info->cpu_usage = thread->cpu_usage /
 					(TIMER_RATE/TH_USAGE_SCALE);
 	    basic_info->cpu_usage = (basic_info->cpu_usage * 3) / 5;
-#if	SIMPLE_CLOCK
-	    /*
-	     *	Clock drift compensation.
-	     */
-	    basic_info->cpu_usage =
-		(basic_info->cpu_usage * 1000000)/sched_usec;
-#endif	/* SIMPLE_CLOCK */
 
 	    flags = 0;
 	    if (thread->state & TH_SWAPPED)
@@ -2333,7 +2337,8 @@ void consider_thread_collect(void)
 
 	if (thread_collect_allowed &&
 	    (sched_tick >
-	     (thread_collect_last_tick + thread_collect_max_rate))) {
+	     (thread_collect_last_tick +
+	      thread_collect_max_rate / (hz / 1)))) {
 		thread_collect_last_tick = sched_tick;
 		thread_collect_scan();
 	}

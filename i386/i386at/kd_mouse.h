@@ -60,9 +60,9 @@ extern int mouseread(dev_t dev, io_req_t ior);
 
 extern io_return_t mousegetstat(
 	dev_t		  dev,
-	int		  flavor,
-	int 		  *data,
-	unsigned int	  *count);
+	dev_flavor_t	  flavor,
+	dev_status_t	  data,
+	mach_msg_type_number_t	  *count);
 
 void mouseintr(int unit);
 boolean_t mouse_read_done(io_req_t ior);

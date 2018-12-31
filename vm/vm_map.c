@@ -4868,6 +4868,37 @@ kern_return_t vm_map_machine_attribute(
 	return ret;
 }
 
+/*
+ *	Routine:	vm_map_msync
+ *	Purpose:
+ *		Synchronize out pages of the given map out to their memory
+ *		manager, if any.
+ */
+kern_return_t vm_map_msync(
+	vm_map_t	map,
+	vm_offset_t	address,
+	vm_size_t	size,
+	vm_sync_t	sync_flags)
+{
+	if (map == VM_MAP_NULL)
+		KERN_INVALID_ARGUMENT;
+
+	if (sync_flags & (VM_SYNC_ASYNCHRONOUS | VM_SYNC_SYNCHRONOUS) ==
+			 (VM_SYNC_ASYNCHRONOUS | VM_SYNC_SYNCHRONOUS))
+		KERN_INVALID_ARGUMENT;
+
+	size =	round_page(address + size) - trunc_page(address);
+	address = trunc_page(address);
+
+	if (size == 0)
+		return KERN_SUCCESS;
+
+	/* TODO */
+
+	return KERN_INVALID_ARGUMENT;
+}
+
+
 
 #if	MACH_KDB
 

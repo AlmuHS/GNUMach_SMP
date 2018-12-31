@@ -545,7 +545,7 @@ io_req_t uio;
  */
 
 /*ARGSUSED*/
-int
+vm_offset_t
 kdmmap(dev, off, prot)
 	dev_t dev;
 	vm_offset_t off;
@@ -569,9 +569,9 @@ kdportdeath(
 /*ARGSUSED*/
 io_return_t kdgetstat(
 	dev_t		dev,
-	int		flavor,
-	int *		data,		/* pointer to OUT array */
-	natural_t	*count)		/* OUT */
+	dev_flavor_t	flavor,
+	dev_status_t	data,		/* pointer to OUT array */
+	mach_msg_type_number_t	*count)		/* OUT */
 {
 	io_return_t	result;
 
@@ -599,9 +599,9 @@ io_return_t kdgetstat(
 /*ARGSUSED*/
 io_return_t kdsetstat(
 	dev_t		dev,
-	int		flavor,
-	int *		data,
-	natural_t	count)
+	dev_flavor_t	flavor,
+	dev_status_t	data,
+	mach_msg_type_number_t	count)
 {
 	io_return_t	result;
 

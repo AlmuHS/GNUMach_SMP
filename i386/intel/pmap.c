@@ -87,6 +87,10 @@
 #include <i386at/biosmem.h>
 #include <i386at/model_dep.h>
 
+#if	NCPUS > 1
+#include <i386/mp_desc.h>
+#endif
+
 #ifdef	MACH_PSEUDO_PHYS
 #define	WRITE_PTE(pte_p, pte_entry)		*(pte_p) = pte_entry?pa_to_ma(pte_entry):0;
 #else	/* MACH_PSEUDO_PHYS */
@@ -1921,7 +1925,7 @@ Retry:
 		 * Would have to enter the new page-table page in
 		 * EVERY pmap.
 		 */
-		panic("pmap_expand kernel pmap to %#x", v);
+		panic("pmap_expand kernel pmap to %#lx", v);
 	    }
 
 	    /*

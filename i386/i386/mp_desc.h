@@ -79,6 +79,9 @@ extern struct mp_desc_table *	mp_desc_init(int);
 extern kern_return_t intel_startCPU(int slot_num);
 
 
+extern void interrupt_processor(int cpu);
+
+
 #endif /* MULTIPROCESSOR */
 
 extern void start_other_cpus(void);

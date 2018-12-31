@@ -40,7 +40,6 @@
 
 #include <kern/lock.h>
 
-#include <i386/tss.h>
 #include "gdt.h"
 
 /*

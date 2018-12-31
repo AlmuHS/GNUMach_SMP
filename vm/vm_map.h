@@ -47,6 +47,7 @@
 #include <mach/vm_prot.h>
 #include <mach/vm_inherit.h>
 #include <mach/vm_wire.h>
+#include <mach/vm_sync.h>
 #include <vm/pmap.h>
 #include <vm/vm_object.h>
 #include <vm/vm_page.h>
@@ -442,6 +443,9 @@ extern kern_return_t	vm_map_machine_attribute(vm_map_t, vm_offset_t,
 						 vm_size_t,
 						 vm_machine_attribute_t,
 						 vm_machine_attribute_val_t *);
+
+extern kern_return_t	vm_map_msync(vm_map_t,
+				     vm_offset_t, vm_size_t, vm_sync_t);
 
 /* Delete entry from map */
 extern void		vm_map_entry_delete(vm_map_t, vm_map_entry_t);

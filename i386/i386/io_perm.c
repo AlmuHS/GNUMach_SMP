@@ -67,10 +67,22 @@
 #include "io_perm.h"
 #include "gdt.h"
 #include "pcb.h"
+
+#define PCI_CFG1_START	0xcf8
+#define PCI_CFG1_END	0xcff
+#define PCI_CFG2_START	0xc000
+#define PCI_CFG2_END	0xcfff
+
+#define CONTAINS_PCI_CFG(from, to) \
+  ( ( ( from <= PCI_CFG1_END ) && ( to >= PCI_CFG1_START ) ) || \
+    ( ( from <= PCI_CFG2_END ) && ( to >= PCI_CFG2_START ) ) )
+
 
 /* Our device emulation ops.  See below, at the bottom of this file.  */
 static struct device_emulation_ops io_perm_device_emulation_ops;
 
+/* Flag to hold PCI io cfg access lock */
+static boolean_t taken_pci_cfg = FALSE;
 
 /* The outtran which allows MIG to convert an io_perm_t object to a port
    representing it.  */
@@ -107,17 +119,15 @@ convert_port_to_io_perm (ipc_port_t port)
   return io_perm;
 }
 
-#if TODO_REMOVE_ME
-/* TODO.  Fix this comment.  */
 /* The destructor which is called when the last send right to a port
    representing an io_perm_t object vanishes.  */
 void
 io_perm_deallocate (io_perm_t io_perm)
 {
-  /* TODO.  Is there anything to deallocate in here?  I don't think so, as we
-     don't allocate anything in `convert_port_to_io_perm'.  */
+  /* We need to check if the io_perm was a PCI cfg one and release it */
+  if (CONTAINS_PCI_CFG(io_perm->from, io_perm->to))
+    taken_pci_cfg = FALSE;
 }
-#endif
 
 /* Our ``no senders'' handling routine.  Deallocate the object.  */
 static
@@ -185,6 +195,10 @@ i386_io_perm_create (const ipc_port_t master_port, io_port_t from, io_port_t to,
   if (from > to)
     return KERN_INVALID_ARGUMENT;
 
+  /* Only one process may take a range that includes PCI cfg registers */
+  if (taken_pci_cfg && CONTAINS_PCI_CFG(from, to))
+    return KERN_PROTECTION_FAILURE;
+
   io_perm_t io_perm;
 
   io_perm = (io_perm_t) kalloc (sizeof *io_perm);
@@ -215,6 +229,9 @@ i386_io_perm_create (const ipc_port_t master_port, io_port_t from, io_port_t to,
   assert(notify == IP_NULL);
 
   *new = io_perm;
+
+  if (CONTAINS_PCI_CFG(from, to))
+    taken_pci_cfg = TRUE;
 
   return KERN_SUCCESS;
 }
