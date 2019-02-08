@@ -24,8 +24,6 @@
  * the rights to redistribute these changes.
  */
 
-#include "imps/apic.h"
-
 #ifndef _KERN_CPU_NUMBER_H_
 #define _KERN_CPU_NUMBER_H_
 
@@ -42,13 +40,7 @@ int	master_cpu;	/* 'master' processor - keeps time */
 
 #else	/* NCPUS == 1 */
 
-//extern int cpu_number(void);
-
-static inline int
-cpu_number()
-{
-	return apic_local_unit.unit_id.r >> 24;
-}
+	#include "imps/cpu_number.h"
 
 #endif /* NCPUS != 1 */
 
