@@ -39,19 +39,20 @@ typedef struct ApicIoUnit
 #define APIC_IO_REDIR_LOW(int_pin)	(0x10+(int_pin)*2)
 #define APIC_IO_REDIR_HIGH(int_pin)	(0x11+(int_pin)*2)
 
+
 typedef struct ApicLocalUnit
 {
 	ApicReg reserved0;
 	ApicReg reserved1;
-	ApicReg unit_id;
+	ApicReg apic_id;
 	ApicReg version;
 	ApicReg reserved4;
 	ApicReg reserved5;
 	ApicReg reserved6;
 	ApicReg reserved7;
 	ApicReg task_pri;
-	ApicReg reservedb;
-	ApicReg reservedc;
+	ApicReg arbitration_pri;
+	ApicReg processor_pri;
 	ApicReg eoi;
 	ApicReg remote;
 	ApicReg logical_dest;
@@ -60,14 +61,15 @@ typedef struct ApicLocalUnit
 	ApicReg isr[8];
 	ApicReg tmr[8];
 	ApicReg irr[8];
-	ApicReg reserved28[8];
-	ApicReg	int_command[2];
+	ApicReg error_status;
+	ApicReg reserved28[7];
+	ApicReg	icr[2];
 	ApicReg timer_vector;
-	ApicReg reserved33;
-	ApicReg reserved34;
+	ApicReg thermal_sensor;
+	ApicReg performance_monitor;
 	ApicReg lint0_vector;
 	ApicReg lint1_vector;
-	ApicReg reserved37;
+	ApicReg error;
 	ApicReg init_count;
 	ApicReg cur_count;
 	ApicReg reserved3a;
@@ -93,4 +95,4 @@ typedef struct ApicLocalUnit
 #define APIC_CLEAR_MASK_BIT(reg, bit) \
 	((reg)[(bit) >> 5].r &= ~(1 << ((bit) & 0x1f)))
 
-#endif _IMPS_APIC_
+#endif /*_IMPS_APIC_*/

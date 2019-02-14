@@ -72,8 +72,6 @@ char		eintstack[];	/* top */
 
 
 static struct kmutex mp_cpu_boot_lock;
-extern int apic2kernel[];
-extern int kernel2apic[];
 
 /*
  * Multiprocessor i386/i486 systems use a separate copy of the
@@ -180,12 +178,12 @@ mp_desc_init(int mycpu)
 kern_return_t intel_startCPU(int slot_num)
 {
 	/*int	lapic = cpu_to_lapic[slot_num];*/
-	int lapic = kernel2apic[slot_num];
+	//int lapic = kernel2apic[slot_num];
 	unsigned long eFlagsRegister;
 
 	kmutex_init(&mp_cpu_boot_lock);
 
-	assert(lapic != -1);
+	//assert(lapic != -1);
 
 	/*DBGLOG_CPU_INIT(slot_num);*/
 
@@ -242,7 +240,7 @@ kern_return_t intel_startCPU(int slot_num)
 		halt_cpu();
 		return KERN_SUCCESS;
 	} else {
-		printf("Started cpu %d (lapic id %08x)\n", slot_num, lapic);
+		//printf("Started cpu %d (lapic id %08x)\n", slot_num, lapic);
 		return KERN_SUCCESS;
 	}
 }

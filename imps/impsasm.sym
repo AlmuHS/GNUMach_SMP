@@ -20,31 +20,10 @@
  *
  *      Author: Bryan Ford, University of Utah CSL
  */
-#ifndef _IMPS_CPU_NUMBER_
-#define _IMPS_CPU_NUMBER_
-
-
-#ifndef ASSEMBLER
 
 #include "apic.h"
 
-static inline int
-cpu_number()
-{
-	return apic_local_unit.apic_id.r >> 24;
-}
+expr	APIC_LOCAL_VA
 
-#else
+offset	ApicLocalUnit	apic_local	unit_id
 
-#include "impsasm.h"
-
-#define	CPU_NUMBER(reg)		\
-	movzbl	APIC_LOCAL_VA+APIC_LOCAL_UNIT_ID+3,reg
-
-#endif
-
-
-#include "i386/cpu_number.h"
-
-
-#endif 

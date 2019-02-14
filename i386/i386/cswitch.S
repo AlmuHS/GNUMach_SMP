@@ -29,7 +29,6 @@
 #include <i386/proc_reg.h>
 #include <i386/i386asm.h>
 #include <i386/cpu_number.h>
-.include  "i386/cpu_number.S"
 
 /*
  * Context switch routines for i386.
@@ -40,7 +39,7 @@ ENTRY(Load_context)
 	movl	TH_KERNEL_STACK(%ecx),%ecx	/* get kernel stack */
 	lea	KERNEL_STACK_SIZE-IKS_SIZE-IEL_SIZE(%ecx),%edx
 						/* point to stack top */
-	CPU_NUMBER %eax
+	CPU_NUMBER(%eax)
 	movl	%ecx,CX(EXT(active_stacks),%eax)	/* store stack address */
 	movl	%edx,CX(EXT(kernel_stack),%eax)	/* store stack top */
 
@@ -58,7 +57,7 @@ ENTRY(Load_context)
  */
 
 ENTRY(Switch_context)
-	CPU_NUMBER %edx
+	CPU_NUMBER(%edx)
 	movl	CX(EXT(active_stacks),%edx),%ecx	/* get old kernel stack */
 
 	movl	%ebx,KSS_EBX(%ecx)		/* save registers */
@@ -110,7 +109,7 @@ ENTRY(Thread_continue)
  * has no FPU state)
  */
 ENTRY(switch_to_shutdown_context)
-	CPU_NUMBER %edx
+	CPU_NUMBER(%edx)
 	movl	EXT(active_stacks)(,%edx,4),%ecx	/* get old kernel stack */
 	movl	%ebx,KSS_EBX(%ecx)		/* save registers */
 	movl	%ebp,KSS_EBP(%ecx)
