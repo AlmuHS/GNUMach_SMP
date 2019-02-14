@@ -173,7 +173,7 @@ clib_routines := htonl htons ntohl ntohs			\
 		 __divdi3 					\
 		 __rel_iplt_start __rel_iplt_end		\
 		 __ffsdi2					\
-		 ffs intel_startCPU local_bh_count local_irq_count \
+		 ffs cpu_number intel_startCPU local_bh_count local_irq_count \
 		_START _start etext _edata end _end # actually ld magic, not libc.							    
 
 gnumach-undef: gnumach.$(OBJEXT)

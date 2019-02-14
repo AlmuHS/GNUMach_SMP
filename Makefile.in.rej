@@ -1,0 +1,19 @@
+--- Makefile.in
++++ Makefile.in
+@@ -4785,7 +4785,15 @@ distclean-compile:
+ 
+ $(am__depfiles_remade):
+ 	@$(MKDIR_P) $(@D)
+-	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
++	# Ugly bootstrap hack to get to-be-generated files created
++	# Try to guess what file this dependency file is from...
++	@f=$(srcdir)/`dirname "$(@D)"`/`basename "$@" .Po | sed s/lib[^-]\*-//` ; \
++	for f in "$$f"*; do \
++		case $$f in \
++			*.c | *.S) echo "$$f"': $$(filter-out $$(DIST_SOURCES),$$(SOURCES))' ;; \
++			*) echo '# dummy';; \
++		esac ; \
++	done >$@-t && $(am__mv) $@-t $@
+ 
+ am--depfiles: $(am__depfiles_remade)
+ 
