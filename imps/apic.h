@@ -80,13 +80,16 @@ typedef struct ApicLocalUnit
 
 #endif
 
-#define APIC_IO_APIC_ID			0x00
+#define APIC_IO_UNIT_ID			0x00
 #define APIC_IO_VERSION			0x01
 #define APIC_IO_REDIR_LOW(int_pin)	(0x10+(int_pin)*2)
 #define APIC_IO_REDIR_HIGH(int_pin)	(0x11+(int_pin)*2)
 
 /* Address at which the local unit is mapped in kernel virtual memory.
-   Must be constant.  */
+ *   Must be constant.  
+ * TODO: Get real address from ACPI tables
+*/
+
 #define APIC_LOCAL_VA	0xc1000000
 
 #define apic_local_unit (*((volatile ApicLocalUnit*)APIC_LOCAL_VA))
