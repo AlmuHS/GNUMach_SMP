@@ -30,7 +30,6 @@
 #include <i386/i386asm.h>
 
 
-#ifndef ASSEMBLER
 #define ASSEMBLER
 /*
  * Context switch routines for i386.
@@ -140,4 +139,3 @@ ENTRY(switch_to_shutdown_context)
 	hlt					/* (should never return) */
 
 #endif	/* NCPUS > 1 */
-#endif

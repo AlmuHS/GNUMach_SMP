@@ -23,7 +23,6 @@
 #ifndef _IMPS_CPU_NUMBER_
 #define _IMPS_CPU_NUMBER_
 
-
 #ifndef ASSEMBLER
 
 #include "apic.h"
@@ -37,11 +36,13 @@ cpu_number()
 #else
 
 //#include "impsasm.h"
+#define APIC_LOCAL_VA	0xc1000000
 
 #define	CPU_NUMBER(reg)		\
 	movzbl	APIC_LOCAL_VA+APIC_LOCAL_APIC_ID+3,reg
 
 #endif
+
 
 
 #endif 
