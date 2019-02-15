@@ -45,7 +45,7 @@
 	#include <kern/cpu_number.h>
 #else
 	#define	CPU_NUMBER(reg)		\
-			movzbl	APIC_LOCAL_VA+APIC_LOCAL_APIC_ID+3,reg
+			movzbl	APIC_LOCAL_VA+0x20,reg
 #endif
 
 #endif
