@@ -39,12 +39,9 @@ cpu_number()
 //#include "impsasm.h"
 
 #define	CPU_NUMBER(reg)		\
-	movzbl	APIC_LOCAL_VA+APIC_LOCAL_UNIT_ID+3,reg
+	movzbl	APIC_LOCAL_VA+APIC_LOCAL_APIC_ID+3,reg
 
 #endif
-
-
-#include "i386/cpu_number.h"
 
 
 #endif 
