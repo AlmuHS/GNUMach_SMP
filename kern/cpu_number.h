@@ -41,14 +41,12 @@ unsigned int master_cpu;	/* 'master' processor - keeps time */
 
 #else	/* NCPUS == 1 */
 
-	#ifndef ASSEMBLER
-
-		static inline int
-		cpu_number()
-		{
-			return apic_local_unit.apic_id.r >> 24;
-		}
-	#endif
+	/*TODO: Get kernelID from cpus vector*/
+	static inline int
+	cpu_number()
+	{
+		return apic_local_unit.apic_id.r >> 24;
+	}
 
 #endif /* NCPUS != 1 */
 
