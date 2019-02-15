@@ -30,6 +30,8 @@
 #ifndef	_I386_CPU_NUMBER_H_
 #define	_I386_CPU_NUMBER_H_
 
+#include <kern/cpu_number.h>
+
 #if	NCPUS > 1
 
 /* More-specific code must define cpu_number() and CPU_NUMBER.  */
@@ -41,9 +43,5 @@
 #define	CX(addr,reg)	addr
 
 #endif	/* NCPUS == 1 */
-
-#ifndef __ASSEMBLER__
-#include "kern/cpu_number.h"
-#endif
 
 #endif	/* _I386_CPU_NUMBER_H_ */
