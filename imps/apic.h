@@ -23,6 +23,8 @@
 #ifndef _IMPS_APIC_
 #define _IMPS_APIC_
 
+#ifndef __ASSEMBLER__
+
 typedef struct ApicReg
 {
 	unsigned r;	/* the actual register */
@@ -34,10 +36,6 @@ typedef struct ApicIoUnit
 	ApicReg select;
 	ApicReg window;
 } ApicIoUnit;
-#define APIC_IO_UNIT_ID			0x00
-#define APIC_IO_VERSION			0x01
-#define APIC_IO_REDIR_LOW(int_pin)	(0x10+(int_pin)*2)
-#define APIC_IO_REDIR_HIGH(int_pin)	(0x11+(int_pin)*2)
 
 
 typedef struct ApicLocalUnit
@@ -80,6 +78,12 @@ typedef struct ApicLocalUnit
 	ApicReg reserved3f;
 } ApicLocalUnit;
 
+#endif
+
+#define APIC_IO_APIC_ID			0x00
+#define APIC_IO_VERSION			0x01
+#define APIC_IO_REDIR_LOW(int_pin)	(0x10+(int_pin)*2)
+#define APIC_IO_REDIR_HIGH(int_pin)	(0x11+(int_pin)*2)
 
 /* Address at which the local unit is mapped in kernel virtual memory.
    Must be constant.  */

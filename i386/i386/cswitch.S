@@ -42,7 +42,7 @@ ENTRY(Load_context)
 	movl	TH_KERNEL_STACK(%ecx),%ecx	/* get kernel stack */
 	lea	KERNEL_STACK_SIZE-IKS_SIZE-IEL_SIZE(%ecx),%edx
 						/* point to stack top */
-	CPU_NUMBER (%eax)
+	CPU_NUMBER(%eax)
 	movl	%ecx,CX(EXT(active_stacks),%eax)	/* store stack address */
 	movl	%edx,CX(EXT(kernel_stack),%eax)	/* store stack top */
 

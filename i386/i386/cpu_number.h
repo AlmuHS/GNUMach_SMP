@@ -30,22 +30,23 @@
 #ifndef	_I386_CPU_NUMBER_H_
 #define	_I386_CPU_NUMBER_H_
 
+#include <imps/apic.h>
+
 #if	NCPUS > 1
 
-/* More-specific code must define cpu_number() and CPU_NUMBER.  */
-#define	CX(addr, reg)	addr(,reg,4)
+	/* More-specific code must define cpu_number() and CPU_NUMBER.  */
+	#define	CX(addr, reg)	addr(,reg,4)
 
 #else	/* NCPUS == 1 */
-
-#define	CPU_NUMBER(reg)
-#define	CX(addr,reg)	addr
-
+	#define	CX(addr,reg)	addr
 #endif	/* NCPUS == 1 */
 
 #ifndef __ASSEMBLER__
-	#include "kern/cpu_number.h"
+	#include <kern/cpu_number.h>
 #else
-	#include <imps/cpu_number.h>
+	#define	CPU_NUMBER(reg)		\
+			movzbl	APIC_LOCAL_VA+APIC_LOCAL_APIC_ID+3,reg
 #endif
 
-#endif	/* _I386_CPU_NUMBER_H_ */
+#endif
+

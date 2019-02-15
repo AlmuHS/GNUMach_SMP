@@ -27,12 +27,13 @@
 #ifndef _KERN_CPU_NUMBER_H_
 #define _KERN_CPU_NUMBER_H_
 
+#include <imps/apic.h>
+
 /*
  *	Definitions for cpu identification in multi-processors.
  */
 
-int	master_cpu;	/* 'master' processor - keeps time */
-//volatile int lapic = 0xFEE00020/*FEE0 0020H*/
+unsigned int master_cpu;	/* 'master' processor - keeps time */
 
 #if	(NCPUS == 1)
 	/* cpu number is always 0 on a single processor system */
@@ -40,7 +41,14 @@ int	master_cpu;	/* 'master' processor - keeps time */
 
 #else	/* NCPUS == 1 */
 
-	#include <imps/cpu_number.h>
+	#ifndef ASSEMBLER
+
+		static inline int
+		cpu_number()
+		{
+			return apic_local_unit.apic_id.r >> 24;
+		}
+	#endif
 
 #endif /* NCPUS != 1 */
 
