@@ -177,8 +177,7 @@ mp_desc_init(int mycpu)
 
 kern_return_t intel_startCPU(int slot_num)
 {
-	/*int	lapic = cpu_to_lapic[slot_num];*/
-	//int lapic = kernel2apic[slot_num];
+	/*int	lapic = cpu_to_lapic[slot_num];
 	unsigned long eFlagsRegister;
 
 	kmutex_init(&mp_cpu_boot_lock);
@@ -342,6 +341,8 @@ void
 start_other_cpus(void)
 {
 	int cpu;
+
+	/*TODO: Change NCPUS to ncpus variable*/
 	for (cpu = 0; cpu < NCPUS; cpu++)
 		if (cpu != cpu_number())
 			cpu_start(cpu);
