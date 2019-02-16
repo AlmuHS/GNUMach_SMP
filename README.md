@@ -77,21 +77,21 @@ is the hardware driver for SMP: enumeration and initialization." - Samuel Thibau
             We can find this code here: [`apic.h`](http://git.savannah.gnu.org/cgit/hurd/gnumach.git/commit/i386/imps/apic.h?id=0266d331d780ff0e595eda337a3501ffbfea9330)
             This code was removed in this commit, but could be interesting recover and update It.
      
-        - Other tasks
+        - **Other tasks**
         
             Also, we need to initialize the `machine_slot` of each processor (currently only initializes cpu0). 
       
             The `machine_slot` has this structure. [Reference](https://github.com/AlmuHS/GNUMach_SMP/blob/0d490ef21c156907f3f26a6cdc00842f462a877a/include/mach/machine.h#L68):
       
                       
-                      struct machine_slot {
-                        /*boolean_t*/integer_t	is_cpu;		/* is there a cpu in this slot? */
-                        	cpu_type_t	cpu_type;	/* type of cpu */
-                        	cpu_subtype_t	cpu_subtype;	/* subtype of cpu */
-                        /*boolean_t*/integer_t	running;	/* is cpu running */
-                        	integer_t	cpu_ticks[CPU_STATE_MAX];
-                        	integer_t	clock_freq;	/* clock interrupt frequency */
-                      };
+              struct machine_slot {
+                /*boolean_t*/integer_t	is_cpu;		/* is there a cpu in this slot? */
+                	cpu_type_t	cpu_type;	/* type of cpu */
+                	cpu_subtype_t	cpu_subtype;	/* subtype of cpu */
+                /*boolean_t*/integer_t	running;	/* is cpu running */
+                	integer_t	cpu_ticks[CPU_STATE_MAX];
+                	integer_t	clock_freq;	/* clock interrupt frequency */
+              };
                        
             We can find an example of initialization in this link: [Example](https://github.com/AlmuHS/GNUMach_SMP/blob/0d490ef21c156907f3f26a6cdc00842f462a877a/i386/i386at/model_dep.c#L612)
       
@@ -111,19 +111,18 @@ is the hardware driver for SMP: enumeration and initialization." - Samuel Thibau
                  
             Another interesting struct is `machine_info`. This struct save the number of cpus, and other data about the machine
             
-                    struct machine_info {                                                               │
-                        integer_t       major_version;  /* kernel major version id */               │objdump: supported targets: elf32-i386 elf32-iamcu elf32-little elf32-big plugin sr
-                        integer_t       minor_version;  /* kernel minor version id */               │ec symbolsrec verilog tekhex binary ihex
-                        integer_t       max_cpus;       /* max number of cpus compiled */           │objdump: supported architectures: i386 i386:x86-64 i386:x64-32 i8086 i386:intel i38
-                        integer_t       avail_cpus;     /* number actually available */             │6:x86-64:intel i386:x64-32:intel i386:nacl i386:x86-64:nacl i386:x64-32:nacl iamcu
-                        vm_size_t       memory_size;    /* size of memory in bytes */               │iamcu:intel plugin
-                    };
+	            struct machine_info {                                                               │
+	                integer_t       major_version;  /* kernel major version id */               │objdump: supported targets: elf32-i386 elf32-iamcu elf32-little elf32-big plugin sr
+	                integer_t       minor_version;  /* kernel minor version id */               │ec symbolsrec verilog tekhex binary ihex
+	                integer_t       max_cpus;       /* max number of cpus compiled */           │objdump: supported architectures: i386 i386:x86-64 i386:x64-32 i8086 i386:intel i38
+	                integer_t       avail_cpus;     /* number actually available */             │6:x86-64:intel i386:x64-32:intel i386:nacl i386:x86-64:nacl i386:x64-32:nacl iamcu
+	                vm_size_t       memory_size;    /* size of memory in bytes */               │iamcu:intel plugin
+	            };
       
       - Interesting files and functions
       
           - `machine.c` [Reference](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/kern/machine.c)
           - `c_boot_entry()` [reference](https://github.com/AlmuHS/GNUMach_SMP/blob/0d490ef21c156907f3f26a6cdc00842f462a877a/i386/i386at/model_dep.c#L529)  
-          -  Example, in X15 OS: [reference](https://github.com/richardbraun/x15/blob/d6d90a3276a09da65690b019e985392bf77b53b0/arch/x86/machine/cpu.c#L1114)  
           - SMP implementation in OSKit: [reference](http://cvs.savannah.nongnu.org/viewvc/oskit/oskit/smp/x86/)
    
      1.1. Implements `cpu_number()` function: this function must return the kernel ID of the processor which is executing the function.  
@@ -148,9 +147,9 @@ is the hardware driver for SMP: enumeration and initialization." - Samuel Thibau
       We have a current implementation of `intel_startCPU()` in this [link](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/mp_desc.c). 
       This implementation is based in XNU's `intel_startCPU()` [function](https://github.com/nneonneo/osx-10.9-opensource/blob/f5a0b24e4d98574462c8f5e5dfcf0d37ef7e0764/xnu-2422.1.72/osfmk/i386/mp.c#L423)
   
-      We can find explainations about how to raise an IPI in this pages: [*Reference 1*](https://www.cs.usfca.edu/~cruse/cs630f08/lesson22.ppt), 
+      We can find explainations about how to raise an IPI in this pages:
+      [*Reference 1*](https://www.cs.usfca.edu/~cruse/cs630f08/lesson22.ppt), 
       [*Reference 2*](https://www.cheesecake.org/sac/smp.html), 
-      [*Reference 3*](http://www.dis.uniroma1.it/pub/quaglia/AOSV-traps-interrupts.pdf)
   
       We can get information about how to raise an IPI in Intel Developer Guide, Volume 3, Chapter 10.6
   
@@ -203,8 +202,6 @@ is the hardware driver for SMP: enumeration and initialization." - Samuel Thibau
     [22:36] <youpi> that's the idea
     [22:36] <youpi> the IPI probably needs some setup
     ```
-  
-  We can to use [XV6 source code](https://pdos.csail.mit.edu/6.828/2018/xv6.html). as model to implements the function and routines. Some interesting files are [`lapic.c`](https://github.com/mit-pdos/xv6-public/blob/master/lapic.c), [`proc.c`](https://github.com/mit-pdos/xv6-public/blob/master/proc.c) and [`main.c`](https://github.com/mit-pdos/xv6-public/blob/master/main.c)
 
   
 ## References
@@ -223,9 +220,7 @@ is the hardware driver for SMP: enumeration and initialization." - Samuel Thibau
  - [**MultiProcessor Specification**](https://pdos.csail.mit.edu/6.828/2011/readings/ia32/MPspec.pdf)
  - [**ACPI Specification**](http://www.uefi.org/sites/default/files/resources/ACPI%206_2_A_Sept29.pdf)
  - [Mach boot trace](https://www.gnu.org/software/hurd/microkernel/mach/gnumach/boot_trace.html)
- - [SPL man page](https://man.openbsd.org/spl)
  - [Book: The Mach System](http://codex.cs.yale.edu/avi/os-book/OS9/appendices-dir/b.pdf)
- - [Book: Mach3 Mysteries](http://www.nv50.0fees.net/Doc/Mach3Mysteries.pdf)
  - [X15 operating system](https://www.sceen.net/x15)
  - [Symmetric Multiprocessing - OSDev Wiki](https://wiki.osdev.org/Symmetric_Multiprocessing)
  - [**Intel® 64 and IA-32 Architectures Software Developer’s Manuals**](https://software.intel.com/sites/default/files/managed/39/c5/325462-sdm-vol-1-2abcd-3abcd.pdf)
