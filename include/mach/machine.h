@@ -70,6 +70,7 @@ struct machine_slot {
 	cpu_type_t	cpu_type;	/* type of cpu */
 	cpu_subtype_t	cpu_subtype;	/* subtype of cpu */
 /*boolean_t*/integer_t	running;	/* is cpu running */
+        integer_t       apic_id;        /* apic id of the cpu */
 	integer_t	cpu_ticks[CPU_STATE_MAX];
 	integer_t	clock_freq;	/* clock interrupt frequency */
 };
