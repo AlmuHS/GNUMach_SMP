@@ -15,30 +15,30 @@
 #ifndef __ACPI_H__
 #define __ACPI_H__
 
-#include <types.h>
+#include <stdint.h> //uint16_t, uint32_t_t...
 
 
 #define ACPI_RSDP_ALIGN 16
 #define ACPI_RSDP_SIG "RSD PTR "
 
 struct acpi_rsdp {
-    uint8 signature[8];
-    uint8 checksum;
-    uint8 oem_id[6];
-    uint8 revision[1];
-    uint32 rsdt_addr;
+    uint8_t signature[8];
+    uint8_t checksum;
+    uint8_t oem_id[6];
+    uint8_t revision[1];
+    uint32_t rsdt_addr;
 } __attribute__((__packed__));
 
 struct acpi_dhdr {
-    uint8 signature[4];
-    uint32 length;
-    uint8 revision;
-    uint8 checksum;
-    uint8 oem_id[6];
-    uint8 oem_table_id[8];
-    uint32 oem_revision;
-    uint8 creator_id[4];
-    uint32 creator_revision;
+    uint8_t signature[4];
+    uint32_t length;
+    uint8_t revision;
+    uint8_t checksum;
+    uint8_t oem_id[6];
+    uint8_t oem_table_id[8];
+    uint32_t oem_revision;
+    uint8_t creator_id[4];
+    uint32_t creator_revision;
 } __attribute__((__packed__));
 
 
@@ -46,7 +46,7 @@ struct acpi_dhdr {
 
 struct acpi_rsdt {
     struct acpi_dhdr header;
-    uint32 entry[0];
+    uint32_t entry[0];
 } __attribute__((__packed__));
 
 
@@ -56,32 +56,32 @@ struct acpi_rsdt {
 #define ACPI_APIC_ENTRY_IOAPIC 1
 
 struct acpi_apic_dhdr {
-    uint8 type;
-    uint8 length;
+    uint8_t type;
+    uint8_t length;
 } __attribute__((__packed__));
 
 struct acpi_apic {
     struct acpi_dhdr header;
-    uint32 lapic_addr;
-    uint32 flags;
+    uint32_t lapic_addr;
+    uint32_t flags;
     struct acpi_apic_dhdr entry[0];
 } __attribute__((__packed__));
 
 
 struct acpi_apic_lapic {
     struct acpi_apic_dhdr header;
-    uint8 processor_id;
-    uint8 apic_id;
-    uint32 flags;
+    uint8_t processor_id;
+    uint8_t apic_id;
+    uint32_t flags;
 } __attribute__((__packed__));
 
 
 struct acpi_apic_ioapic {
     struct acpi_apic_dhdr header;
-    uint8 apic_id;
-    uint8 reserved;
-    uint32 addr;
-    uint32 base;
+    uint8_t apic_id;
+    uint8_t reserved;
+    uint32_t addr;
+    uint32_t base;
 } __attribute__((__packed__));
 
 
