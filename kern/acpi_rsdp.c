@@ -48,29 +48,29 @@ extern struct list ioapics;
 int
 acpi_setup(){
 
-	//Try to get rsdp pointer
+    //Try to get rsdp pointer
     if(acpi_get_rsdp() || rsdp==0)
         return -1;
 
-	//Try to get rsdt pointer
+    //Try to get rsdt pointer
     if(acpi_get_rsdt() || rsdt==0)
         return -1;
 	
-	//Search APIC entries in rsdt array
+    //Search APIC entries in rsdt array
     int i;
     struct acpi_dhdr *descr_header;
     for(i = 0;i < acpi_rsdt_n; i++){
         descr_header = (struct acpi_dhdr*) rsdt->entry[i];
 
-		//Check if the entry contains an APIC
+        //Check if the entry contains an APIC
         if(memcmp(descr_header->signature, ACPI_APIC_SIG, 
                     sizeof(descr_header->signature)) == 0){
 
-			//If yes, store the entry in apic
+                //If yes, store the entry in apic
 	        apic = (struct acpi_apic*) rsdt->entry[i];
 
-            //continue;
-			break;
+                //continue;
+	        break;
         }
     }
 
@@ -105,7 +105,7 @@ acpi_checksum(void *addr, uint32_t length){
     int checksum = 0;
     unsigned int i;
 
-	//Sum all bytes of addr
+    //Sum all bytes of addr
     for(i = 0;i < length; i++){
         checksum += bytes[i];
     }
@@ -116,11 +116,11 @@ acpi_checksum(void *addr, uint32_t length){
 static int
 acpi_check_rsdp(struct acpi_rsdp *rsdp){
 
-	//Check is rsdp signature is equals to ACPI RSDP signature
+    //Check is rsdp signature is equals to ACPI RSDP signature
     if(memcmp(rsdp->signature, ACPI_RSDP_SIG, sizeof(rsdp->signature)) != 0)
         return -1;
 
-	//If yes, calculates rdsp checksum and check It
+    //If yes, calculates rdsp checksum and check It
     uint32_t checksum;
     checksum = acpi_checksum(rsdp, sizeof(*rsdp));
 
@@ -139,13 +139,13 @@ acpi_search_rsdp(void *addr, uint32_t length){
     if((uint32_t)addr & (ACPI_RSDP_ALIGN-1))
         return -1;
 
-	//Search RDSP in memory space between addr and addr+lenght
+    //Search RDSP in memory space between addr and addr+lenght
     for(end = addr+length; addr < end; addr += ACPI_RSDP_ALIGN){
 
-		//Check if the current memory block store the RDSP
+        //Check if the current memory block store the RDSP
         if(acpi_check_rsdp(addr) == 0){
 
-			//If yes, store RSDP address
+            //If yes, store RSDP address
             rsdp = (struct acpi_rsdp*)addr;
             return 0;
         }
@@ -161,19 +161,19 @@ acpi_get_rsdp(){
 
     uint32_t base = 0x0;
 
-	//EDBA start address 
+    //EDBA start address 
     base = *((uint16_t*) 0x040e);
 
     if(base != 0){	//Memory check
 
         base <<= 4; //base = base * 16
 
-		//Search RSDP in first 1024 bytes from EDBA
+        //Search RSDP in first 1024 bytes from EDBA
         if(acpi_search_rsdp((void*)base,1024) == 0)
             return 0;
     }
 
-	//If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh
+    //If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh
     if(acpi_search_rsdp((void*)0x0e0000, 0x100000 - 0x0e0000) == 0)
         return 0;
 
@@ -190,19 +190,19 @@ acpi_check_rsdt(struct acpi_rsdt *rsdt){
 static int
 acpi_get_rsdt(){
 
-	//Get rsdt address from rsdp
+    //Get rsdt address from rsdp
     rsdt = (struct acpi_rsdt*)rsdp->rsdt_addr;
 
-	//Check is rsdt signature is equals to ACPI RSDT signature
+    //Check is rsdt signature is equals to ACPI RSDT signature
     if(memcmp(rsdt->header.signature, ACPI_RSDT_SIG, 
                 sizeof(rsdt->header.signature)) != 0)
         return -1;
 
-	//Check if rsdt is correct
+    //Check if rsdt is correct
     if(acpi_check_rsdt(rsdt))
         return -1;
 
-	//Calculated number of elements stored in rsdt
+    //Calculated number of elements stored in rsdt
     acpi_rsdt_n = (rsdt->header.length - sizeof(rsdt->header)) 
         / sizeof(rsdt->entry[0]);
 
@@ -217,7 +217,7 @@ acpi_apic_setup(){
     if(apic == 0)
         return -1;
 
-	//Check the checksum of the APIC
+    //Check the checksum of the APIC
     if(acpi_checksum(apic, apic->header.length))
         return -1;
 
@@ -229,38 +229,38 @@ acpi_apic_setup(){
     struct acpi_apic_dhdr *apic_entry = apic->entry;
     uint32_t end = (uint32_t) apic + apic->header.length;
 
-	//Search in APIC entry
+    //Search in APIC entry
     while((uint32_t)apic_entry < end){
         struct acpi_apic_lapic *lapic_entry;
         struct acpi_apic_ioapic *ioapic_entry;
 
-		//Check entry type
+        //Check entry type
         switch(apic_entry->type){
 
-			//If APIC entry is a CPU lapic
+            //If APIC entry is a CPU lapic
             case ACPI_APIC_ENTRY_LAPIC:
 
-				//Store lapic
+                //Store lapic
                 lapic_entry = (struct acpi_apic_lapic*) apic_entry;
 
-				//If cpu flag is correct, and the maximum number of CPUs is not reached
+                //If cpu flag is correct, and the maximum number of CPUs is not reached
                 if((lapic_entry->flags & 0x1) && ncpu < NCPU){
 
-					//Enumerate CPU and add It to cpu/apic vector
+                    //Enumerate CPU and add It to cpu/apic vector
                     cpus[ncpu].apic_id = lapic_entry->apic_id;
 
-					//Increase number of CPU
+                    //Increase number of CPU
                     ncpu++;
                 }
                 break;
 
-			//If APIC entry is an IOAPIC
+            //If APIC entry is an IOAPIC
             case ACPI_APIC_ENTRY_IOAPIC:
 
-				//Store ioapic
+                //Store ioapic
                 ioapic_entry = (struct acpi_apic_ioapic*) apic_entry;
 
-				//Initialice ioapic table
+                //Initialice ioapic table
                 struct ioapic *ioapic_last;
 
                 ioapic_last = malloc(sizeof(struct ioapic));
@@ -269,15 +269,15 @@ acpi_apic_setup(){
                 ioapic_last->addr = ioapic_entry->addr;
                 ioapic_last->base = ioapic_entry->base;
 
-				//Insert ioapic in ioapic's list
+                //Insert ioapic in ioapic's list
                 list_insert_tail(&ioapics, &ioapic_last->node);
 
-				//Increase number of ioapic
+                //Increase number of ioapic
                 nioapic++;
                 break;
         }
 
-		//Get next APIC entry
+        //Get next APIC entry
         apic_entry =(struct acpi_apic_dhdr*)((uint32_t) apic_entry 
                 + apic_entry->length);
     }
