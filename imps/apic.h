@@ -25,6 +25,8 @@
 
 #ifndef __ASSEMBLER__
 
+#include <kern/list.h>
+
 typedef struct ApicReg
 {
 	unsigned r;	/* the actual register */
@@ -36,6 +38,14 @@ typedef struct ApicIoUnit
 	ApicReg select;
 	ApicReg window;
 } ApicIoUnit;
+
+
+struct ioapic {
+    uint8_t apic_id;
+    uint32_t addr;
+    uint32_t base;
+    struct list node;
+};
 
 
 typedef struct ApicLocalUnit
@@ -117,6 +127,11 @@ typedef struct ApicLocalUnit
     /* 0x3f0 */
     ApicReg reserved3f;
 } ApicLocalUnit;
+
+
+ApicLocalUnit *lapic;
+
+
 
 
 #endif

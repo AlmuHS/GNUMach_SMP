@@ -19,6 +19,7 @@
 #include <imps/apic.h> //lapic, ioapic...
 #include <kern/printf.h> //printf
 #include <stdint.h> //uint16_t, uint32_t...
+#include <kern/list.h> //struct list
 
 
 struct acpi_rsdp *rsdp;
