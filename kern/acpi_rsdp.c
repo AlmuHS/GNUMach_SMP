@@ -20,8 +20,6 @@
 #include <kern/printf.h> //printf
 #include <stdint.h> //uint16_t, uint32_t...
 
-/*TODO: Find similar structure in gnumach*/
-//#include <cpu.h>
 
 struct acpi_rsdp *rsdp;
 struct acpi_rsdt *rsdt;
@@ -38,8 +36,7 @@ static int acpi_apic_setup();
 extern int ncpu;
 extern volatile ApicLocalUnit* lapic;
 
-/*TODO: Change to equivalent gnumach struct*/
-extern struct cpu cpus[];
+extern struct machine_slot	machine_slot[NCPUS];
 
 extern int nioapic;
 extern struct list ioapics;
@@ -247,7 +244,7 @@ acpi_apic_setup(){
                 if((lapic_entry->flags & 0x1) && ncpu < NCPU){
 
                     //Enumerate CPU and add It to cpu/apic vector
-                    cpus[ncpu].apic_id = lapic_entry->apic_id;
+                    machine_slot[ncpu].apic_id = lapic_entry->apic_id;
 
                     //Increase number of CPU
                     ncpu++;
