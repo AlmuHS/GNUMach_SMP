@@ -20,7 +20,7 @@
 #include <kern/printf.h> //printf
 #include <stdint.h> //uint16_t, uint32_t...
 
-//#include <mp.h>
+/*TODO: Find similar structure in gnumach*/
 //#include <cpu.h>
 
 struct acpi_rsdp *rsdp;
@@ -34,10 +34,12 @@ static int acpi_check_rsdt(struct acpi_rsdt *);
 static int acpi_get_rsdt();
 
 static int acpi_apic_setup();
+
 extern int ncpu;
-extern volatile uint16_t* lapic;
+extern volatile ApicLocalUnit* lapic;
+
+/*TODO: Change to equivalent gnumach struct*/
 extern struct cpu cpus[];
-extern int cpu;
 
 extern int nioapic;
 extern struct list ioapics;
