@@ -15,11 +15,14 @@
 #ifndef __ACPI_H__
 #define __ACPI_H__
 
-#include <stdint.h> //uint16_t, uint32_t_t...
+#include <include/stdint.h> //uint16_t, uint32_t_t...
 
 
 #define ACPI_RSDP_ALIGN 16
 #define ACPI_RSDP_SIG "RSD PTR "
+
+/*TODO: Move ncpu to a better place*/
+int ncpu;
 
 struct acpi_rsdp {
     uint8_t signature[8];

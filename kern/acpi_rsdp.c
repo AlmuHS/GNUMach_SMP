@@ -18,7 +18,7 @@
 
 #include <imps/apic.h> //lapic, ioapic...
 #include <kern/printf.h> //printf
-#include <stdint.h> //uint16_t, uint32_t...
+#include <include/stdint.h> //uint16_t, uint32_t...
 #include <kern/list.h> //struct list
 
 
@@ -34,11 +34,13 @@ static int acpi_get_rsdt();
 
 static int acpi_apic_setup();
 
+/*TODO: move ncpu to a better place. Currently in apic_rsdp.h*/
 extern int ncpu;
 extern volatile ApicLocalUnit* lapic;
 
 extern struct machine_slot	machine_slot[NCPUS];
 
+/*TODO: Implement ioapic support*/
 extern int nioapic;
 extern struct list ioapics;
 
