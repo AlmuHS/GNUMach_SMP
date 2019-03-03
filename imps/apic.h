@@ -25,7 +25,7 @@
 
 #ifndef __ASSEMBLER__
 
-#include <kern/list.h>
+//#include <kern/list.h>
 
 typedef struct ApicReg
 {
@@ -40,13 +40,15 @@ typedef struct ApicIoUnit
 } ApicIoUnit;
 
 
-struct ioapic {
+/*struct ioapic {
     uint8_t apic_id;
     uint32_t addr;
     uint32_t base;
     struct list node;
-};
+};*/
 
+int nioapic;
+struct list ioapics;
 
 typedef struct ApicLocalUnit
 {
