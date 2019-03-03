@@ -40,6 +40,7 @@ typedef struct ApicIoUnit
 } ApicIoUnit;
 
 
+/*TODO: Enable struct. Reimplement as linked list? */ 
 /*struct ioapic {
     uint8_t apic_id;
     uint32_t addr;
