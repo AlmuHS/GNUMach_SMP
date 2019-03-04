@@ -407,6 +407,10 @@ i386at_init(void)
 	}
 #endif	/* MACH_XEN */
 
+	/*Read lapic and ioapic from acpi tables*/
+	acpi_setup();
+
+
 	/*
 	 *	Initialize kernel physical map, mapping the
 	 *	region from loadpt to avail_start.
@@ -476,9 +480,7 @@ i386at_init(void)
 	pmap_clear_bootstrap_pagetable((void *)boot_info.pt_base);
 #endif	/* MACH_PV_PAGETABLES */
 
-	/*Read lapic and ioapic from acpi tables*/
-	acpi_setup();
-
+	
 	/*
 	 * Initialize and activate the real i386 protected-mode structures.
 	 */
