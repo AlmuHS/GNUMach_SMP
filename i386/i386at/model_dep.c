@@ -72,11 +72,14 @@
 #include <i386at/kd.h>
 #include <i386at/rtc.h>
 #include <i386at/model_dep.h>
+
+#include <kern/acpi_rsdp.h>
+
 #ifdef	MACH_XEN
-#include <xen/console.h>
-#include <xen/store.h>
-#include <xen/evt.h>
-#include <xen/xen.h>
+    #include <xen/console.h>
+    #include <xen/store.h>
+    #include <xen/evt.h>
+    #include <xen/xen.h>
 #endif	/* MACH_XEN */
 
 #if	ENABLE_IMMEDIATE_CONSOLE
@@ -472,6 +475,9 @@ i386at_init(void)
 #ifdef	MACH_PV_PAGETABLES
 	pmap_clear_bootstrap_pagetable((void *)boot_info.pt_base);
 #endif	/* MACH_PV_PAGETABLES */
+
+	/*Read lapic and ioapic from acpi tables*/
+	acpi_setup();
 
 	/*
 	 * Initialize and activate the real i386 protected-mode structures.
