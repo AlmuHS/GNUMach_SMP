@@ -21,9 +21,6 @@
 #define ACPI_RSDP_ALIGN 16
 #define ACPI_RSDP_SIG "RSD PTR "
 
-/*TODO: Move ncpu to a better place*/
-int ncpu;
-
 struct acpi_rsdp {
     uint8_t signature[8];
     uint8_t checksum;
