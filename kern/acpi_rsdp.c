@@ -21,6 +21,7 @@
 #include <include/stdint.h> //uint16_t, uint32_t...
 #include <kern/list.h> //struct list
 #include <mach/machine.h>
+#include <i386/vm_param.h>
 
 
 struct acpi_rsdp *rsdp;
@@ -156,10 +157,10 @@ acpi_search_rsdp(void *addr, uint32_t length){
 static int
 acpi_get_rsdp(){
 
-    uint32_t base = 0x0;
+    uint32_t base = phystokv(0x0);
 
     //EDBA start address 
-    base = *((uint16_t*) 0x040e);
+    base = *((uint16_t*) phystokv(0x040e));
 
     if(base != 0){	//Memory check
 
@@ -171,7 +172,7 @@ acpi_get_rsdp(){
     }
 
     //If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh
-    if(acpi_search_rsdp((void*)0x0e0000, 0x100000 - 0x0e0000) == 0)
+    if(acpi_search_rsdp((void*)phystokv(0x0e0000), phystokv(0x100000 - 0x0e0000)) == 0)
         return 0;
 
     return -1;
@@ -221,7 +222,7 @@ acpi_apic_setup(){
 
     ncpu = 0;
     nioapic = 0;
-    lapic = (uint16_t*) apic->lapic_addr;
+    lapic = (ApicLocalUnit*) apic->lapic_addr;
     //list_init(&ioapics);
     struct acpi_apic_dhdr *apic_entry = apic->entry;
     uint32_t end = (uint32_t) apic + apic->header.length;
@@ -245,7 +246,7 @@ acpi_apic_setup(){
                 if((lapic_entry->flags & 0x1) && ncpu < NCPUS){
 
                     //Enumerate CPU and add It to cpu/apic vector
-                    machine_slot[NCPUS].apic_id = lapic_entry->apic_id;
+                    machine_slot[ncpu].apic_id = lapic_entry->apic_id;
 
                     //Increase number of CPU
                     ncpu++;
