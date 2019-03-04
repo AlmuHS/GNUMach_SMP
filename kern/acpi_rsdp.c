@@ -189,7 +189,7 @@ static int
 acpi_get_rsdt(){
 
     //Get rsdt address from rsdp
-    rsdt = (struct acpi_rsdt*)rsdp->rsdt_addr;
+    rsdt = (struct acpi_rsdt*) phystokv(rsdp->rsdt_addr);
 
     //Check is rsdt signature is equals to ACPI RSDT signature
     if(memcmp(rsdt->header.signature, ACPI_RSDT_SIG, 
@@ -222,7 +222,7 @@ acpi_apic_setup(){
 
     ncpu = 0;
     nioapic = 0;
-    lapic = (ApicLocalUnit*) apic->lapic_addr;
+    lapic = (ApicLocalUnit*) phystokv(apic->lapic_addr);
     //list_init(&ioapics);
     struct acpi_apic_dhdr *apic_entry = apic->entry;
     uint32_t end = (uint32_t) apic + apic->header.length;
@@ -238,7 +238,6 @@ acpi_apic_setup(){
             //If APIC entry is a CPU lapic
             case ACPI_APIC_ENTRY_LAPIC:
 
-		                
 		//Store lapic
                 lapic_entry = (struct acpi_apic_lapic*) apic_entry;
 
