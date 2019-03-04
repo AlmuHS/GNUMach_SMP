@@ -136,13 +136,13 @@ acpi_search_rsdp(void *addr, uint32_t length){
         return -1;
 
     //Search RDSP in memory space between addr and addr+lenght
-    for(end = phystokv(addr+length); addr < end; addr += ACPI_RSDP_ALIGN){
+    for(end = addr+length; addr < end; addr += ACPI_RSDP_ALIGN){
 
         //Check if the current memory block store the RDSP
         if(acpi_check_rsdp(addr) == 0){
 
             //If yes, store RSDP address
-            rsdp = (struct acpi_rsdp*) phystokv(addr);
+            rsdp = (struct acpi_rsdp*) addr;
             return 0;
         }
 
@@ -237,7 +237,7 @@ acpi_apic_setup(){
             case ACPI_APIC_ENTRY_LAPIC:
 
 		//Store lapic
-                lapic_entry = (struct acpi_apic_lapic*) phystokv(apic_entry);
+                lapic_entry = (struct acpi_apic_lapic*) apic_entry;
 
                 //If cpu flag is correct, and the maximum number of CPUs is not reached
                 if((lapic_entry->flags & 0x1) && ncpu < NCPUS){
@@ -276,8 +276,8 @@ acpi_apic_setup(){
         }
 
         //Get next APIC entry
-        apic_entry = (struct acpi_apic_dhdr*)((uint32_t) phystokv(apic_entry 
-                + apic_entry->length));
+        apic_entry = (struct acpi_apic_dhdr*)((uint32_t) apic_entry 
+                + apic_entry->length);
     }
 
 
