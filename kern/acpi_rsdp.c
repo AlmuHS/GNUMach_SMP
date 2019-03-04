@@ -58,17 +58,15 @@ acpi_setup(){
     int i;
     struct acpi_dhdr *descr_header;
     for(i = 0;i < acpi_rsdt_n; i++){
-        descr_header = (struct acpi_dhdr*) rsdt->entry[i];
+        descr_header = (struct acpi_dhdr*) phystokv(rsdt->entry[i]);
 
         //Check if the entry contains an APIC
         if(memcmp(descr_header->signature, ACPI_APIC_SIG, 
                     sizeof(descr_header->signature)) == 0){
 
                 //If yes, store the entry in apic
-	        apic = (struct acpi_apic*) rsdt->entry[i];
+	        apic = (struct acpi_apic*) phystokv(rsdt->entry[i]);
 
-                //continue;
-	        break;
         }
     }
 
@@ -87,11 +85,11 @@ acpi_print_info(){
            acpi_rsdt_n);
     int i;
     struct acpi_dhdr *descr_header;
-    for(i=0;i<acpi_rsdt_n;i++){
-        descr_header = (struct acpi_dhdr*) rsdt->entry[i];
+    for(i = 0; i < acpi_rsdt_n; i++){
+        descr_header = (struct acpi_dhdr*) phystokv(rsdt->entry[i]);
         printf("  %x: %c%c%c%c (%x)\n", i, descr_header->signature[0],
                 descr_header->signature[1], descr_header->signature[2],
-                descr_header->signature[3], rsdt->entry[i]);
+                descr_header->signature[3], phystokv(rsdt->entry[i]));
     }
 
 }
@@ -138,13 +136,13 @@ acpi_search_rsdp(void *addr, uint32_t length){
         return -1;
 
     //Search RDSP in memory space between addr and addr+lenght
-    for(end = addr+length; addr < end; addr += ACPI_RSDP_ALIGN){
+    for(end = phystokv(addr+length); addr < end; addr += ACPI_RSDP_ALIGN){
 
         //Check if the current memory block store the RDSP
         if(acpi_check_rsdp(addr) == 0){
 
             //If yes, store RSDP address
-            rsdp = (struct acpi_rsdp*)addr;
+            rsdp = (struct acpi_rsdp*) phystokv(addr);
             return 0;
         }
 
@@ -172,7 +170,7 @@ acpi_get_rsdp(){
     }
 
     //If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh
-    if(acpi_search_rsdp((void*)phystokv(0x0e0000), 0x100000 - 0x0e0000) == 0)
+    if(acpi_search_rsdp((void*) phystokv(0x0e0000), 0x100000 - 0x0e0000) == 0)
         return 0;
 
     return -1;
@@ -225,7 +223,7 @@ acpi_apic_setup(){
     lapic = (ApicLocalUnit*) phystokv(apic->lapic_addr);
     //list_init(&ioapics);
     struct acpi_apic_dhdr *apic_entry = apic->entry;
-    uint32_t end = (uint32_t) apic + apic->header.length;
+    uint32_t end = (uint32_t) phystokv(apic + apic->header.length);
 
     //Search in APIC entry
     while((uint32_t)apic_entry < end){
@@ -239,7 +237,7 @@ acpi_apic_setup(){
             case ACPI_APIC_ENTRY_LAPIC:
 
 		//Store lapic
-                lapic_entry = (struct acpi_apic_lapic*) apic_entry;
+                lapic_entry = (struct acpi_apic_lapic*) phystokv(apic_entry);
 
                 //If cpu flag is correct, and the maximum number of CPUs is not reached
                 if((lapic_entry->flags & 0x1) && ncpu < NCPUS){
@@ -273,17 +271,17 @@ acpi_apic_setup(){
                  *list_insert_tail(&ioapics, &ioapic_last->node);
 		 */
                 //Increase number of ioapic
-                nioapic++;
+                //nioapic++;
                 break;
         }
 
         //Get next APIC entry
-        apic_entry =(struct acpi_apic_dhdr*)((uint32_t) apic_entry 
-                + apic_entry->length);
+        apic_entry = (struct acpi_apic_dhdr*)((uint32_t) phystokv(apic_entry 
+                + apic_entry->length));
     }
 
 
-    if(NCPUS == 0 || nioapic == 0)
+    if(ncpu == 0 || nioapic == 0)
         return -1;
 
 
