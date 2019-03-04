@@ -80,7 +80,7 @@ void
 acpi_print_info(){
 
     printf("ACPI:\n");
-    printf(" rsdp = %x; rsdp->rsdt_addr = %x\n", rsdp, rsdp->rsdt_addr);
+    printf(" rsdp = %x; rsdp->rsdt_addr = %x\n", rsdp, phystokv(rsdp->rsdt_addr));
     printf(" rsdt = %x; rsdt->length = %x (n = %x)\n", rsdt, rsdt->header.length,
            acpi_rsdt_n);
     int i;
@@ -222,7 +222,7 @@ acpi_apic_setup(){
     nioapic = 0;
     lapic = (ApicLocalUnit*) phystokv(apic->lapic_addr);
     //list_init(&ioapics);
-    struct acpi_apic_dhdr *apic_entry = apic->entry;
+    struct acpi_apic_dhdr *apic_entry = phystokv(apic->entry);
     uint32_t end = (uint32_t) phystokv(apic + apic->header.length);
 
     //Search in APIC entry
