@@ -13,13 +13,14 @@
  *along with Min_SMP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <acpi_rsdp.h> 
+#include <kern/acpi_rsdp.h> 
 #include <string.h> //memcmp, memcpy...
 
 #include <imps/apic.h> //lapic, ioapic...
 #include <kern/printf.h> //printf
 #include <include/stdint.h> //uint16_t, uint32_t...
 #include <kern/list.h> //struct list
+#include <mach/machine.h>
 
 
 struct acpi_rsdp *rsdp;
@@ -34,15 +35,14 @@ static int acpi_get_rsdt();
 
 static int acpi_apic_setup();
 
-/*TODO: move ncpu to a better place. Currently in apic_rsdp.h*/
-extern int ncpu;
-extern volatile ApicLocalUnit* lapic;
+/*TODO: move NCPUS to a better place. Currently in apic_rsdp.h*/
+//extern volatile ApicLocalUnit* lapic;
 
 extern struct machine_slot	machine_slot[NCPUS];
 
 /*TODO: Implement ioapic support*/
 extern int nioapic;
-extern struct list ioapics;
+//extern struct list ioapics;
 
 
 int
@@ -101,7 +101,7 @@ acpi_print_info(){
 
 static int
 acpi_checksum(void *addr, uint32_t length){
-    int8 *bytes = addr;
+    char *bytes = addr;
     int checksum = 0;
     unsigned int i;
 
@@ -225,14 +225,14 @@ acpi_apic_setup(){
     ncpu = 0;
     nioapic = 0;
     lapic = (uint16_t*) apic->lapic_addr;
-    list_init(&ioapics);
+    //list_init(&ioapics);
     struct acpi_apic_dhdr *apic_entry = apic->entry;
     uint32_t end = (uint32_t) apic + apic->header.length;
 
     //Search in APIC entry
     while((uint32_t)apic_entry < end){
         struct acpi_apic_lapic *lapic_entry;
-        struct acpi_apic_ioapic *ioapic_entry;
+        //struct acpi_apic_ioapic *ioapic_entry;
 
         //Check entry type
         switch(apic_entry->type){
@@ -240,14 +240,15 @@ acpi_apic_setup(){
             //If APIC entry is a CPU lapic
             case ACPI_APIC_ENTRY_LAPIC:
 
-                //Store lapic
+		                
+		//Store lapic
                 lapic_entry = (struct acpi_apic_lapic*) apic_entry;
 
                 //If cpu flag is correct, and the maximum number of CPUs is not reached
-                if((lapic_entry->flags & 0x1) && ncpu < NCPU){
+                if((lapic_entry->flags & 0x1) && ncpu < NCPUS){
 
                     //Enumerate CPU and add It to cpu/apic vector
-                    machine_slot[ncpu].apic_id = lapic_entry->apic_id;
+                    machine_slot[NCPUS].apic_id = lapic_entry->apic_id;
 
                     //Increase number of CPU
                     ncpu++;
@@ -258,7 +259,7 @@ acpi_apic_setup(){
             case ACPI_APIC_ENTRY_IOAPIC:
 
                 //Store ioapic
-                ioapic_entry = (struct acpi_apic_ioapic*) apic_entry;
+                //ioapic_entry = (struct acpi_apic_ioapic*) apic_entry;
 
                 //Initialice ioapic table
                 //struct ioapic *ioapic_last;
@@ -285,7 +286,7 @@ acpi_apic_setup(){
     }
 
 
-    if(ncpu == 0 || nioapic == 0)
+    if(NCPUS == 0 || nioapic == 0)
         return -1;
 
 
