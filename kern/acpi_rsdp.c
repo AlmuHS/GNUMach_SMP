@@ -35,13 +35,10 @@ static int acpi_get_rsdt();
 
 static int acpi_apic_setup();
 
-/*TODO: move NCPUS to a better place. Currently in apic_rsdp.h*/
-//extern volatile ApicLocalUnit* lapic;
-
 extern struct machine_slot	machine_slot[NCPUS];
 
 /*TODO: Implement ioapic support*/
-extern int nioapic;
+//extern int nioapic;
 //extern struct list ioapics;
 
 
