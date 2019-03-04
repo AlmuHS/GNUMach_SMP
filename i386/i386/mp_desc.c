@@ -47,6 +47,9 @@
 #include <machine/io_perm.h>
 #include <machine/vm_param.h>
 
+#include <kern/acpi_rsdp.h>
+
+
 /*
  * The i386 needs an interrupt stack to keep the PCB stack from being
  * overrun by interrupts.  All interrupt stacks MUST lie at lower addresses
@@ -344,7 +347,7 @@ start_other_cpus(void)
 	int cpu;
 
 	/*TODO: Change NCPUS to ncpus variable*/
-	for (cpu = 0; cpu < NCPUS; cpu++)
+	for (cpu = 0; cpu < ncpu; cpu++)
 		if (cpu != cpu_number())
 			cpu_start(cpu);
 }
