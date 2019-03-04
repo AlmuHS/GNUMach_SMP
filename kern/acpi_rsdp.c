@@ -20,7 +20,7 @@
 #include <kern/printf.h> //printf
 #include <include/stdint.h> //uint16_t, uint32_t...
 #include <kern/list.h> //struct list
-#include <mach/machine.h>
+#include <mach/machine.h> //machine_slot
 #include <i386/vm_param.h>
 
 
@@ -64,8 +64,8 @@ acpi_setup(){
         if(memcmp(descr_header->signature, ACPI_APIC_SIG, 
                     sizeof(descr_header->signature)) == 0){
 
-                //If yes, store the entry in apic
-	        apic = (struct acpi_apic*) phystokv(rsdt->entry[i]);
+            //If yes, store the entry in apic
+            apic = (struct acpi_apic*) phystokv(rsdt->entry[i]);
 
         }
     }
@@ -220,10 +220,12 @@ acpi_apic_setup(){
 
     ncpu = 0;
     nioapic = 0;
+
+
     lapic = (ApicLocalUnit*) phystokv(apic->lapic_addr);
     //list_init(&ioapics);
     struct acpi_apic_dhdr *apic_entry = phystokv(apic->entry);
-    uint32_t end = (uint32_t) phystokv(apic + apic->header.length);
+    uint32_t end = (uint32_t) apic + apic->header.length;
 
     //Search in APIC entry
     while((uint32_t)apic_entry < end){
@@ -236,7 +238,7 @@ acpi_apic_setup(){
             //If APIC entry is a CPU lapic
             case ACPI_APIC_ENTRY_LAPIC:
 
-		//Store lapic
+                //Store lapic
                 lapic_entry = (struct acpi_apic_lapic*) apic_entry;
 
                 //If cpu flag is correct, and the maximum number of CPUs is not reached
@@ -259,10 +261,10 @@ acpi_apic_setup(){
                 //Initialice ioapic table
                 //struct ioapic *ioapic_last;
 
-		/*TODO: Find replacement to malloc*/
+		        /*TODO: Find replacement to malloc*/
                 //ioapic_last = malloc(sizeof(struct ioapic));
                 
-		/*list_node_init(&ioapic_last->node);
+                /*list_node_init(&ioapic_last->node);
                  *ioapic_last->apic_id = ioapic_entry->apic_id;
                  *ioapic_last->addr = ioapic_entry->addr;
                  *ioapic_last->base = ioapic_entry->base;
@@ -281,7 +283,7 @@ acpi_apic_setup(){
     }
 
 
-    if(ncpu == 0 || nioapic == 0)
+    if(ncpu == 0 /*|| nioapic == 0*/)
         return -1;
 
 
