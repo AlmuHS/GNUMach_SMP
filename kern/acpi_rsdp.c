@@ -155,14 +155,14 @@ acpi_search_rsdp(void *addr, uint32_t length){
 static int
 acpi_get_rsdp(){
 
-	    uint32_t* base = 0x0;
+	    uint32_t base = 0x0;
 
 	    //EDBA start address 
-	    base = (uint16_t*) phystokv(0x040e);
+	    base = *((uint16_t*) phystokv(0x040e));
 
 	    if(base != 0){	//Memory check
 
-		*base <<= 4; //base = base * 16
+		base <<= 4; //base = base * 16
 
 		//Search RSDP in first 1024 bytes from EDBA
 		if(acpi_search_rsdp((void*)phystokv(base),1024) == 0)
