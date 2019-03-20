@@ -163,6 +163,7 @@ acpi_get_rsdp(){
     if(base != 0){	//Memory check
 
         *base <<= 4; //base = base * 16
+	base = phystokv(base);
 
         //Search RSDP in first 1024 bytes from EDBA
         if(acpi_search_rsdp((void*)base,1024) == 0)
