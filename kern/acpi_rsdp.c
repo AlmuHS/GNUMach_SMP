@@ -158,7 +158,7 @@ acpi_get_rsdp(){
     uint32_t base = 0x0;
 
     //EDBA start address 
-    base = *((uint16_t*) phystokv(0x040e));
+    base = *((uint32_t*) phystokv(0x040e));
 
     if(base != 0){	//Memory check
 
@@ -261,7 +261,7 @@ acpi_apic_setup(){
                 //Initialice ioapic table
                 //struct ioapic *ioapic_last;
 
-		        /*TODO: Find replacement to malloc*/
+                /*TODO: Find replacement to malloc*/
                 //ioapic_last = malloc(sizeof(struct ioapic));
                 
                 /*list_node_init(&ioapic_last->node);
