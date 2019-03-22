@@ -46,12 +46,12 @@ is the hardware driver for SMP: enumeration and initialization." - Samuel Thibau
    > "Yes, this is a real concern. For the Linux drivers, the long-term goal is to move them to userland anyway. For Mach drivers, quite often they are not performance-sensitive, so big locks would be enough." - Samuel Thibault
    [link](https://lists.gnu.org/archive/html/bug-hurd/2018-08/msg00073.html)
   
-### Project draft  
+## Project draft  
   
   You can read the full project draft in [*Hurd SMP Project draft*](https://gitlab.com/snippets/1756024)
   
       
-### How to test
+## How to test
 
 To test the software you will need:
 	
@@ -105,6 +105,21 @@ To test the software you will need:
 	 	After reboot, you must to select gnumach-smp.gz in GRUB menu
 
 More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/building.html>
+
+## Task done
+
+- Recover and update old APIC headers from Mach 4
+- Modify `configfrag.ac`
+	+ Now, if `mach_ncpus = 1`, `NCPUS` will be set to 256
+
+
+## Current status
+
+- In the Min_SMP test environment, the cpus are detected and started correctly
+	+ I need to implement APIC configuration
+- Now I'm integrating the ACPI RSDP code in gnumach
+	+ Compile, but don't boot
+
   
 ## References
 
