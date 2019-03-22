@@ -120,6 +120,13 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - Now I'm integrating the ACPI RSDP code in gnumach
 	+ Compile, but don't boot
 
+
+## Gratitude
+
+- [Bosco García](https://github.com/jbgg): original [MinSMP](https://github.com/jbgg/MinSMP) developer, explainations and documentation about MultiProcessor architecture, helpful with *gnumach* development. 
+
+- [Samuel Thibault](https://github.com/sthibaul): Hurd core dev. Clarifications about SMP status in gnumach, helpful with gnumach questions.
+
   
 ## References
 
