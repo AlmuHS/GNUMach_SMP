@@ -125,6 +125,8 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 
 - [Bosco García](https://github.com/jbgg): original [MinSMP](https://github.com/jbgg/MinSMP) developer, explainations and documentation about MultiProcessor architecture, helpful with *gnumach* development. 
 
+- Guillermo Bernaldo de Quiros Maraver: Helpful in original development, first full compilation, and find original SMP problem (SMP non-ACPI support)
+
 - [Samuel Thibault](https://github.com/sthibaul): Hurd core dev. Clarifications about SMP status in gnumach, helpful with gnumach questions.
 
   
