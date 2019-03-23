@@ -407,8 +407,7 @@ i386at_init(void)
 	}
 #endif	/* MACH_XEN */
 
-	/*Read lapic and ioapic from acpi tables*/
-	acpi_setup();
+	
 
 
 	/*
@@ -599,6 +598,8 @@ void c_boot_entry(vm_offset_t bi)
 	 * Do basic VM initialization
 	 */
 	i386at_init();
+	/*Read lapic and ioapic from acpi tables*/
+	acpi_setup();
 
 #if	MACH_KDB
 	/*
