@@ -13,7 +13,7 @@
  *along with Min_SMP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <kern/acpi_rsdp.h> 
+#include <i386at/acpi_rsdp.h> 
 #include <string.h> //memcmp, memcpy...
 
 #include <imps/apic.h> //lapic, ioapic...
