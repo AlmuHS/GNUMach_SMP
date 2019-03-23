@@ -47,7 +47,7 @@
 #include <machine/io_perm.h>
 #include <machine/vm_param.h>
 
-#include <kern/acpi_rsdp.h>
+#include <i386at/acpi_rsdp.h>
 
 
 /*

@@ -127,8 +127,6 @@ EXTRA_DIST += \
 #
 
 libkernel_a_SOURCES += \
-	kern/acpi_rsdp.h \
-	kern/acpi_rsdp.c \
 	kern/act.c \
 	kern/act.h \
 	kern/assert.h \

@@ -32,6 +32,8 @@ libkernel_a_SOURCES += \
 
 if PLATFORM_at
 libkernel_a_SOURCES += \
+	i386/i386at/acpi_rsdp.h \
+	i386/i386at/acpi_rsdp.c \
 	i386/i386at/boothdr.S \
 	i386/i386at/com.c \
 	i386/i386at/com.h \

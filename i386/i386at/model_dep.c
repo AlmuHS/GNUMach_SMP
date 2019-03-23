@@ -73,7 +73,7 @@
 #include <i386at/rtc.h>
 #include <i386at/model_dep.h>
 
-#include <kern/acpi_rsdp.h>
+#include <i386at/acpi_rsdp.h>
 
 #ifdef	MACH_XEN
     #include <xen/console.h>
