@@ -139,10 +139,10 @@ acpi_search_rsdp(void *addr, uint32_t length){
     for(end = addr+length; addr < end; addr += ACPI_RSDP_ALIGN){
 
         //Check if the current memory block store the RDSP
-        if(acpi_check_rsdp(addr) == 0){
+        if(acpi_check_rsdp(phystokv(addr)) == 0){
 
             //If yes, store RSDP address
-            rsdp = (struct acpi_rsdp*) addr;
+            rsdp = (struct acpi_rsdp*) phystokv(addr);
             return 0;
         }
 
