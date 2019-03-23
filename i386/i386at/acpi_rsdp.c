@@ -227,7 +227,7 @@ acpi_apic_setup(){
 
     lapic = (ApicLocalUnit*) phystokv(apic->lapic_addr);
     //list_init(&ioapics);
-    struct acpi_apic_dhdr *apic_entry = phystokv(apic->entry);
+    struct acpi_apic_dhdr *apic_entry = apic->entry;
     uint32_t end = (uint32_t) apic + apic->header.length;
 
     //Search in APIC entry
