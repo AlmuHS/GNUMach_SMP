@@ -142,7 +142,7 @@ acpi_search_rsdp(void *addr, uint32_t length){
         if(acpi_check_rsdp(addr) == 0){
 
             //If yes, store RSDP address
-            rsdp = (struct acpi_rsdp*) phystokv(addr);
+            rsdp = (struct acpi_rsdp*) addr;
             return 0;
         }
 
