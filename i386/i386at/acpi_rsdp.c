@@ -258,25 +258,27 @@ acpi_apic_setup(){
             //If APIC entry is an IOAPIC
             case ACPI_APIC_ENTRY_IOAPIC:
 
+		#if 0
                 //Store ioapic
-                //ioapic_entry = (struct acpi_apic_ioapic*) apic_entry;
+               	ioapic_entry = (struct acpi_apic_ioapic*) apic_entry;
 
                 //Initialice ioapic table
-                //struct ioapic *ioapic_last;
+                struct ioapic *ioapic_last;
 
                 /*TODO: Find replacement to malloc*/
-                //ioapic_last = malloc(sizeof(struct ioapic));
+                ioapic_last = malloc(sizeof(struct ioapic));
                 
-                /*list_node_init(&ioapic_last->node);
-                 *ioapic_last->apic_id = ioapic_entry->apic_id;
-                 *ioapic_last->addr = ioapic_entry->addr;
-                 *ioapic_last->base = ioapic_entry->base;
+                list_node_init(&ioapic_last->node);
+                ioapic_last->apic_id = ioapic_entry->apic_id;
+                ioapic_last->addr = ioapic_entry->addr;
+                ioapic_last->base = ioapic_entry->base;
 
-                 //Insert ioapic in ioapic's list
-                 *list_insert_tail(&ioapics, &ioapic_last->node);
-		 */
+                //Insert ioapic in ioapic's list
+                list_insert_tail(&ioapics, &ioapic_last->node);
+		 
                 //Increase number of ioapic
-                //nioapic++;
+                nioapic++;
+		#endif
                 break;
         }
 
