@@ -262,7 +262,7 @@ interrupt_stack_alloc(void)
 	 * Count the number of CPUs.
 	 */
 	cpu_count = 0;
-	for (i = 0; i < NCPUS; i++)
+	for (i = 0; i < ncpu; i++)
 	    if (machine_slot[i].is_cpu)
 		cpu_count++;
 
@@ -277,7 +277,7 @@ interrupt_stack_alloc(void)
 	/*
 	 * Set up pointers to the top of the interrupt stack.
 	 */
-	for (i = 0; i < NCPUS; i++) {
+	for (i = 0; i < ncpu; i++) {
 	    if (i == master_cpu) {
 		interrupt_stack[i] = (vm_offset_t) intstack;
 		_int_stack_top[i]   = (vm_offset_t) eintstack;
