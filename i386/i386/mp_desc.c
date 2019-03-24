@@ -345,6 +345,7 @@ void
 start_other_cpus(void)
 {
 	int cpu;
+	printf("found %d cpus\n", ncpu);
 
 	/*TODO: Change NCPUS to ncpus variable*/
 	for (cpu = 0; cpu < ncpu; cpu++)
