@@ -181,7 +181,7 @@ mp_desc_init(int mycpu)
 kern_return_t intel_startCPU(int slot_num)
 {
 	/*TODO: Get local APIC from cpu*/	
-	int lapic_id = machine_slot[slot_num].apic_id;
+	//int lapic_id = machine_slot[slot_num].apic_id;
 	unsigned long eFlagsRegister;
 
 	kmutex_init(&mp_cpu_boot_lock);
