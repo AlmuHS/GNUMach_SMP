@@ -347,7 +347,7 @@ start_other_cpus(void)
 	int cpu;
 
 	/*TODO: Change NCPUS to ncpus variable*/
-	for (cpu = 0; cpu < NCPUS; cpu++)
+	for (cpu = 0; cpu < ncpu; cpu++)
 		if (cpu != cpu_number())
 			cpu_start(cpu);
 }
