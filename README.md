@@ -122,6 +122,20 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 	+ I need to implement ioapic enumeration
 
 
+## Implementation 
+
+- The cpu detection and enumeration are implemented in [`acpi_rdsp.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.c) and [`acpi_rdsp.h`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.h).  
+	+ The main function [`acpi_setup()`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/i386/i386at/acpi_rsdp.c#L47) is called from [`model_dep.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/i386/i386at/model_dep.c#L411)
+	+ This function generates some structures:
+		* 	[`*lapic`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/imps/apic.h#L134): pointer to the local apic of the current processor. Store the registers of the local apic.  
+		* [	`ncpu`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/include/mach/machine.h#L48): variable which store the number of cpus 
+	+ 	The `apic_id` is stored in [`machine_slot`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/include/mach/machine.h#L75)
+		
+- 	The APIC structures, recovered from old *gnumach* code, are stored in [`apic.h`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/imps/apic.h)
+- 	[`cpu_number()`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/kern/cpu_number.h#L46) C implementation was added to `kern/cpu_number()`.
+- 	The [`CPU_NUMBER()`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/i386/i386/cpu_number.h#L48) assembly implementation was added to `i386/i386/cpu_number.h`
+- 	Function [`start_other_cpus()`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/i386/i386/mp_desc.c#L351) was modified, to change `NCPUS` macro to `ncpu` variable
+
 ## Gratitude
 
 - [Bosco García](https://github.com/jbgg): original [MinSMP](https://github.com/jbgg/MinSMP) developer, explainations and documentation about MultiProcessor architecture, helpful with *gnumach* development. 
