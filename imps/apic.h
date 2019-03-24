@@ -132,7 +132,7 @@ typedef struct ApicLocalUnit
 } ApicLocalUnit;
 
 
-volatile ApicLocalUnit* lapic = (void*) 0;
+extern volatile ApicLocalUnit* lapic;
 
 
 

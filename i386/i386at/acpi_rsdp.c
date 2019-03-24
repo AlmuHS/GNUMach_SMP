@@ -23,6 +23,7 @@
 #include <mach/machine.h> //machine_slot
 #include <i386/vm_param.h>
 
+volatile ApicLocalUnit* lapic = (void*) 0;
 
 struct acpi_rsdp *rsdp;
 struct acpi_rsdt *rsdt;
