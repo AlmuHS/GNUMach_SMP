@@ -28,6 +28,7 @@
 #define _KERN_CPU_NUMBER_H_
 
 #include <imps/apic.h>
+#include <mach/machine.h>
 
 /*
  *	Definitions for cpu identification in multi-processors.
@@ -45,7 +46,13 @@ unsigned int master_cpu;	/* 'master' processor - keeps time */
 	static inline int
 	cpu_number()
 	{
-		return apic_local_unit.apic_id.r >> 24;
+		int apic_id = lapic->apic_id.r;
+		int i = 0;
+		
+		while(machine_slot[i].apic_id != apic_id && i < ncpu) i++;
+		
+		if(i == ncpu) return -1;
+		else return i;
 	}
 
 #endif /* NCPUS != 1 */
