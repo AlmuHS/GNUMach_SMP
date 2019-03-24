@@ -117,8 +117,9 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 
 - In the [Min_SMP](https://github.com/AlmuHS/Min_SMP/) test environment, the cpus are detected and started correctly
 	+ I need to implement APIC configuration
-- Now I'm integrating the ACPI RSDP code in gnumach
-	+ Compile, but don't boot
+- Integrated cpu detection and enumeration in acpi_rsdp
+	+ Number of cpus is detected correctly
+	+ TODO: Get ioapic
 
 
 ## Gratitude
