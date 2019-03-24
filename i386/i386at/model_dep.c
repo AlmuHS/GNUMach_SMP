@@ -408,12 +408,12 @@ i386at_init(void)
 #endif	/* MACH_XEN */
 
 	/*Read lapic and ioapic from acpi tables*/
-	if(acpi_setup()){
+	if(acpi_setup() == 0){
 	    printf("acpi found %d cpus\n", ncpu);
-    }
-    else{
-        panic("could not find acpi tables for multiprocessor");
-    }
+    	}
+    	else{
+        	panic("could not find acpi tables for multiprocessor");
+    	}
     
 
 	/*
