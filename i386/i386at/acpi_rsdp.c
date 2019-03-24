@@ -22,8 +22,10 @@
 #include <kern/list.h> //struct list
 #include <mach/machine.h> //machine_slot
 #include <i386/vm_param.h>
+#include <i386at/biosmem.h> //biosmem_register_boot_data
 
 volatile ApicLocalUnit* lapic = (void*) 0;
+volatile int lapic_addr;
 
 struct acpi_rsdp *rsdp;
 struct acpi_rsdt *rsdt;
@@ -210,7 +212,6 @@ acpi_get_rsdt(){
     return 0;
 }
 
-
 static int
 acpi_apic_setup(){
 
@@ -226,7 +227,14 @@ acpi_apic_setup(){
     nioapic = 0;
 
 
-    lapic = (ApicLocalUnit*) phystokv(apic->lapic_addr);
+    //lapic = (ApicLocalUnit*) phystokv(apic->lapic_addr);
+    lapic_addr = phystokv(apic->lapic_addr);
+
+    /* register lapic i/o registers in memory */
+    biosmem_register_boot_data((phys_addr_t) (apic->lapic_addr), ((phys_addr_t) (apic->lapic_addr)) + sizeof(*apic), FALSE);
+
+    
+
     //list_init(&ioapics);
     struct acpi_apic_dhdr *apic_entry = apic->entry;
     uint32_t end = (uint32_t) apic + apic->header.length;
