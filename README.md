@@ -111,7 +111,7 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - Recover and update old APIC headers from Mach 4
 - Modify `configfrag.ac`
 	+ Now, if `mach_ncpus > 1`, `NCPUS` will be set to 255
-- - Integrated cpu detection and enumeration from acpi tables
+- Integrated cpu detection and enumeration from acpi tables
 
 
 ## Current status
