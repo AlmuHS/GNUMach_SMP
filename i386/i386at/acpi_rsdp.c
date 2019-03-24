@@ -26,6 +26,7 @@
 
 volatile ApicLocalUnit* lapic = (void*) 0;
 volatile int lapic_addr;
+int ncpu;
 
 struct acpi_rsdp *rsdp;
 struct acpi_rsdt *rsdt;
@@ -233,7 +234,7 @@ acpi_apic_setup(){
     /* register lapic i/o registers in memory */
     biosmem_register_boot_data((phys_addr_t) (apic->lapic_addr), ((phys_addr_t) (apic->lapic_addr)) + sizeof(*apic), FALSE);
 
-    
+    printf("LAPIC version: %x\n", lapic->version.r);
 
     //list_init(&ioapics);
     struct acpi_apic_dhdr *apic_entry = apic->entry;
