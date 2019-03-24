@@ -131,7 +131,7 @@ typedef struct ApicLocalUnit
 } ApicLocalUnit;
 
 
-ApicLocalUnit *lapic;
+volatile ApicLocalUnit *lapic;
 
 
 
