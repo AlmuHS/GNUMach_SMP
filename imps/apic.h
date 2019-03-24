@@ -25,6 +25,7 @@
 
 #ifndef __ASSEMBLER__
 
+
 //#include <kern/list.h>
 
 typedef struct ApicReg
@@ -131,7 +132,7 @@ typedef struct ApicLocalUnit
 } ApicLocalUnit;
 
 
-volatile ApicLocalUnit *lapic = NULL;
+volatile ApicLocalUnit* lapic = (void*) 0;
 
 
 

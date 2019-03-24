@@ -46,7 +46,7 @@ unsigned int master_cpu;	/* 'master' processor - keeps time */
 	static inline int
 	cpu_number()
 	{
-		if(lapic != NULL){ 
+		if(lapic != 0){ 
 
 			unsigned apic_id = lapic->apic_id.r >>24;
 			int i = 0;
