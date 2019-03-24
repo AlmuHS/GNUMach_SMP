@@ -27,6 +27,8 @@
 volatile ApicLocalUnit* lapic = (void*) 0;
 volatile int lapic_addr;
 int ncpu;
+int nioapic;
+//struct list ioapics;
 
 struct acpi_rsdp *rsdp;
 struct acpi_rsdt *rsdt;

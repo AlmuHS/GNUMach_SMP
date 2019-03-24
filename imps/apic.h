@@ -48,8 +48,8 @@ typedef struct ApicIoUnit
     struct list node;
 };*/
 
-int nioapic;
-//struct list ioapics;
+extern int nioapic;
+//extern struct list ioapics;
 
 typedef struct ApicLocalUnit
 {
