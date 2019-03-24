@@ -408,9 +408,13 @@ i386at_init(void)
 #endif	/* MACH_XEN */
 
 	/*Read lapic and ioapic from acpi tables*/
-	acpi_setup();
-	printf("acpi found %d cpus", ncpu);
-
+	if(acpi_setup()){
+	    printf("acpi found %d cpus\n", ncpu);
+    }
+    else{
+        panic("could not find acpi tables for multiprocessor");
+    }
+    
 
 	/*
 	 *	Initialize kernel physical map, mapping the
