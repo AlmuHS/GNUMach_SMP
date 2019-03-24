@@ -45,7 +45,7 @@
  *	possible cpu in the system.
  */
 
-int ncpu;
+extern int ncpu;
 
 struct machine_info {
 	integer_t	major_version;	/* kernel major version id */
