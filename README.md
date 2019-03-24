@@ -111,15 +111,15 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - Recover and update old APIC headers from Mach 4
 - Modify `configfrag.ac`
 	+ Now, if `mach_ncpus > 1`, `NCPUS` will be set to 255
+- - Integrated cpu detection and enumeration from acpi tables
 
 
 ## Current status
 
 - In the [Min_SMP](https://github.com/AlmuHS/Min_SMP/) test environment, the cpus are detected and started correctly
 	+ I need to implement APIC configuration
-- Integrated cpu detection and enumeration in acpi_rsdp
-	+ Number of cpus is detected correctly
-	+ TODO: Get ioapic
+- In gnumach, the number of cpus and its lapic structures are detected and enumerated correctly
+	+ I need to implement ioapic enumeration
 
 
 ## Gratitude
