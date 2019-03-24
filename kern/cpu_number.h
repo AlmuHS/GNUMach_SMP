@@ -46,13 +46,17 @@ unsigned int master_cpu;	/* 'master' processor - keeps time */
 	static inline int
 	cpu_number()
 	{
-		unsigned apic_id = lapic->apic_id.r >>24;
-		int i = 0;
-		
-		while(i< ncpu && machine_slot[i].apic_id != apic_id) i++;
-		
-		if(i == ncpu) return -1;
-		else return i;
+		if(lapic != NULL){ 
+
+			unsigned apic_id = lapic->apic_id.r >>24;
+			int i = 0;
+			
+			while(i< ncpu && machine_slot[i].apic_id != apic_id) i++;
+			
+			if(i == ncpu) return -1;
+			else return i;
+		}
+		else return 0;
 	}
 
 #endif /* NCPUS != 1 */
