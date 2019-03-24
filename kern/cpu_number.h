@@ -46,7 +46,7 @@ unsigned int master_cpu;	/* 'master' processor - keeps time */
 	static inline int
 	cpu_number()
 	{
-		unsigned apic_id = lapic->apic_id.r;
+		unsigned apic_id = lapic->apic_id.r >>24;
 		int i = 0;
 		
 		while(machine_slot[i].apic_id != apic_id && i < ncpu) i++;
