@@ -409,11 +409,11 @@ i386at_init(void)
 
 	/*Read lapic and ioapic from acpi tables*/
 	if(acpi_setup() == 0){
-	    printf("acpi found %d cpus\n", ncpu);
-    	}
-    	else{
-        	panic("could not find acpi tables for multiprocessor");
-    	}
+		printf("acpi found %d cpus\n", ncpu);
+	}
+	else{
+		panic("could not find acpi tables for multiprocessor");
+	}
     
 
 	/*
