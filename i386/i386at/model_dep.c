@@ -409,6 +409,7 @@ i386at_init(void)
 
 	/*Read lapic and ioapic from acpi tables*/
 	acpi_setup();
+	printf("acpi found %d cpus", ncpu);
 
 
 	/*
