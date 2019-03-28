@@ -25,9 +25,9 @@
 #include <i386at/biosmem.h> //biosmem_register_boot_data
 
 volatile ApicLocalUnit* lapic = (void*) 0;
-volatile int lapic_addr;
-int ncpu;
-int nioapic;
+int lapic_addr;
+int ncpu = 1;
+int nioapic = 0;
 //struct list ioapics;
 
 struct acpi_rsdp *rsdp;
@@ -303,4 +303,10 @@ acpi_apic_setup(){
 
 
     return 0;
+}
+
+void acpi_reserve_lapic(){
+	//lapic = (ApicLocalUnit*)
+	static struct vm_map lapic_map_store;
+	vm_map_t lapic_map =  &lapic_map_store;
 }
