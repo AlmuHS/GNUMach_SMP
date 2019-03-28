@@ -208,7 +208,7 @@ void start_kernel_threads(void)
 	 *	Create the idle threads and the other
 	 *	service threads.
 	 */
-	for (i = 0; i < NCPUS; i++) {
+	for (i = 0; i < ncpu; i++) {
 	    if (machine_slot[i].is_cpu) {
 		thread_t	th;
 
@@ -233,7 +233,7 @@ void start_kernel_threads(void)
 	/*
 	 *	Allow other CPUs to run.
 	 */
-	start_other_cpus();
+	if(ncpu > 1) start_other_cpus();
 #endif	/* NCPUS > 1 */
 
 	/*
