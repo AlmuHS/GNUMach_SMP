@@ -46,7 +46,7 @@
 #else
 	/*TODO: call to real cpu_number()*/
 	#define	CPU_NUMBER(reg)		\
-			movzbl	APIC_LOCAL_VA+0x20,reg
+			call cpu_number
 #endif
 
 #endif
