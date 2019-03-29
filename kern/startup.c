@@ -64,7 +64,6 @@
 #include <mach/version.h>
 #include <device/device_init.h>
 
-#include <i386at/acpi_rsdp.h>
 
 #if MACH_KDB
 #include <device/cons.h>
@@ -77,6 +76,10 @@ boolean_t reboot_on_panic = TRUE;
 #if	NCPUS > 1
 #include <machine/mp_desc.h>
 #include <kern/machine.h>
+
+	#ifndef __ASSEMBLER__
+		#include <i386at/acpi_rsdp.h>
+	#endif
 #endif	/* NCPUS > 1 */
 
 /* XX */
