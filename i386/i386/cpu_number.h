@@ -31,6 +31,7 @@
 #define	_I386_CPU_NUMBER_H_
 
 #include <imps/apic.h>
+#include <i386at/acpi_rsdp.h>
 
 #if	NCPUS > 1
 

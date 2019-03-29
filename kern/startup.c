@@ -64,6 +64,8 @@
 #include <mach/version.h>
 #include <device/device_init.h>
 
+#include <i386at/acpi_rsdp.h>
+
 #if MACH_KDB
 #include <device/cons.h>
 #endif /* MACH_KDB */
