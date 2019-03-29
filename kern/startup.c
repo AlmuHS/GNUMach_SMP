@@ -230,18 +230,16 @@ void start_kernel_threads(void)
 	(void) kernel_thread(kernel_task, sched_thread, (char *) 0);
 
 #if	NCPUS > 1
-	if(ncpu > 1){
-		/*
-		 *	Create the shutdown thread.
-		 */
-		(void) kernel_thread(kernel_task, action_thread, (char *) 0);
+	/*
+	 *	Create the shutdown thread.
+	 */
+	(void) kernel_thread(kernel_task, action_thread, (char *) 0);
 
-		/*
-		 *	Allow other CPUs to run.
-		 */
+	/*
+	 *	Allow other CPUs to run.
+	 */
 
-		start_other_cpus();
-	}
+	start_other_cpus();
 #endif	/* NCPUS > 1 */
 
 	/*
