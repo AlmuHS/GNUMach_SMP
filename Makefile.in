@@ -1236,8 +1236,8 @@ am__libkernel_a_SOURCES_DIST = ddb/db_access.c ddb/db_access.h \
 	ipc/ipc_table.h ipc/ipc_target.c ipc/ipc_target.h \
 	ipc/ipc_thread.c ipc/ipc_thread.h ipc/ipc_types.h \
 	ipc/mach_msg.c ipc/mach_msg.h ipc/mach_port.c ipc/mach_port.h \
-	ipc/mach_rpc.c ipc/mach_debug.c ipc/port.h kern/acpi_rsdp.h \
-	kern/acpi_rsdp.c kern/act.c kern/act.h kern/assert.h \
+	ipc/mach_rpc.c ipc/mach_debug.c ipc/port.h  \
+        kern/act.c kern/act.h kern/assert.h \
 	kern/ast.c kern/ast.h kern/atomic.h kern/boot_script.h \
 	kern/bootstrap.c kern/bootstrap.h kern/counters.c \
 	kern/counters.h kern/cpu_number.h kern/debug.c kern/debug.h \
@@ -1445,7 +1445,7 @@ am_libkernel_a_OBJECTS = $(am__objects_2) ipc/ipc_entry.$(OBJEXT) \
 	ipc/ipc_table.$(OBJEXT) ipc/ipc_target.$(OBJEXT) \
 	ipc/ipc_thread.$(OBJEXT) ipc/mach_msg.$(OBJEXT) \
 	ipc/mach_port.$(OBJEXT) ipc/mach_rpc.$(OBJEXT) \
-	ipc/mach_debug.$(OBJEXT) kern/acpi_rsdp.$(OBJEXT) \
+	ipc/mach_debug.$(OBJEXT)  \
 	kern/act.$(OBJEXT) kern/ast.$(OBJEXT) kern/bootstrap.$(OBJEXT) \
 	kern/counters.$(OBJEXT) kern/debug.$(OBJEXT) \
 	kern/eventcount.$(OBJEXT) kern/exception.$(OBJEXT) \
@@ -1983,7 +1983,7 @@ am__depfiles_remade = ./$(DEPDIR)/version.Po chips/$(DEPDIR)/busses.Po \
 	ipc/$(DEPDIR)/lib_dep_tr_for_defs_a-notify.none.defs.Po \
 	ipc/$(DEPDIR)/mach_debug.Po ipc/$(DEPDIR)/mach_msg.Po \
 	ipc/$(DEPDIR)/mach_port.Po ipc/$(DEPDIR)/mach_port.server.Po \
-	ipc/$(DEPDIR)/mach_rpc.Po kern/$(DEPDIR)/acpi_rsdp.Po \
+	ipc/$(DEPDIR)/mach_rpc.Po  \
 	kern/$(DEPDIR)/act.Po kern/$(DEPDIR)/ast.Po \
 	kern/$(DEPDIR)/boot_script.Po kern/$(DEPDIR)/bootstrap.Po \
 	kern/$(DEPDIR)/counters.Po kern/$(DEPDIR)/debug.Po \
@@ -2841,8 +2841,8 @@ libkernel_a_SOURCES = $(am__append_2) ipc/ipc_entry.c ipc/ipc_entry.h \
 	ipc/ipc_table.h ipc/ipc_target.c ipc/ipc_target.h \
 	ipc/ipc_thread.c ipc/ipc_thread.h ipc/ipc_types.h \
 	ipc/mach_msg.c ipc/mach_msg.h ipc/mach_port.c ipc/mach_port.h \
-	ipc/mach_rpc.c ipc/mach_debug.c ipc/port.h kern/acpi_rsdp.h \
-	kern/acpi_rsdp.c kern/act.c kern/act.h kern/assert.h \
+	ipc/mach_rpc.c ipc/mach_debug.c ipc/port.h  \
+	kern/act.c kern/act.h kern/assert.h \
 	kern/ast.c kern/ast.h kern/atomic.h kern/boot_script.h \
 	kern/bootstrap.c kern/bootstrap.h kern/counters.c \
 	kern/counters.h kern/cpu_number.h kern/debug.c kern/debug.h \
@@ -3487,8 +3487,6 @@ ipc/mach_rpc.$(OBJEXT): ipc/$(am__dirstamp) \
 	ipc/$(DEPDIR)/$(am__dirstamp)
 ipc/mach_debug.$(OBJEXT): ipc/$(am__dirstamp) \
 	ipc/$(DEPDIR)/$(am__dirstamp)
-kern/acpi_rsdp.$(OBJEXT): kern/$(am__dirstamp) \
-	kern/$(DEPDIR)/$(am__dirstamp)
 kern/act.$(OBJEXT): kern/$(am__dirstamp) \
 	kern/$(DEPDIR)/$(am__dirstamp)
 kern/ast.$(OBJEXT): kern/$(am__dirstamp) \
@@ -4559,7 +4557,6 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@ipc/$(DEPDIR)/mach_port.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ipc/$(DEPDIR)/mach_port.server.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@ipc/$(DEPDIR)/mach_rpc.Po@am__quote@ # am--include-marker
-@AMDEP_TRUE@@am__include@ @am__quote@kern/$(DEPDIR)/acpi_rsdp.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@kern/$(DEPDIR)/act.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@kern/$(DEPDIR)/ast.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@kern/$(DEPDIR)/boot_script.Po@am__quote@ # am--include-marker
@@ -8078,7 +8075,6 @@ distclean: distclean-recursive
 	-rm -f ipc/$(DEPDIR)/mach_port.Po
 	-rm -f ipc/$(DEPDIR)/mach_port.server.Po
 	-rm -f ipc/$(DEPDIR)/mach_rpc.Po
-	-rm -f kern/$(DEPDIR)/acpi_rsdp.Po
 	-rm -f kern/$(DEPDIR)/act.Po
 	-rm -f kern/$(DEPDIR)/ast.Po
 	-rm -f kern/$(DEPDIR)/boot_script.Po
@@ -8573,7 +8569,6 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f ipc/$(DEPDIR)/mach_port.Po
 	-rm -f ipc/$(DEPDIR)/mach_port.server.Po
 	-rm -f ipc/$(DEPDIR)/mach_rpc.Po
-	-rm -f kern/$(DEPDIR)/acpi_rsdp.Po
 	-rm -f kern/$(DEPDIR)/act.Po
 	-rm -f kern/$(DEPDIR)/ast.Po
 	-rm -f kern/$(DEPDIR)/boot_script.Po
