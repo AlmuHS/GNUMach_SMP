@@ -127,6 +127,12 @@ void setup_main(void)
 	 */
 	PMAP_ACTIVATE_KERNEL(master_cpu);
 
+        /*
+         * After virtual memory is up, do extra initializations:
+         * currently it maps LAPIC (in acpi_rsdp.c)
+         */
+        extra_setup();
+
 	init_timers();
 	init_timeout();
 

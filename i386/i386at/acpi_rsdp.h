@@ -91,6 +91,7 @@ struct acpi_apic_ioapic {
 
 int acpi_setup();
 void acpi_print_info();
+int extra_setup();
 
 #endif
 

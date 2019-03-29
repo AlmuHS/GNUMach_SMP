@@ -249,6 +249,8 @@ libkernel_a_SOURCES += \
 #
 
 libkernel_a_SOURCES += \
+	vm/vm_map_physical.c \
+	vm/vm_map_physical.h \
 	vm/memory_object_proxy.c \
 	vm/memory_object_proxy.h \
 	vm/memory_object.c \

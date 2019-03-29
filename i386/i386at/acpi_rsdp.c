@@ -22,10 +22,11 @@
 #include <kern/list.h> //struct list
 #include <mach/machine.h> //machine_slot
 #include <i386/vm_param.h>
-#include <i386at/biosmem.h> //biosmem_register_boot_data
+#include <vm/vm_map_physical.h>
+#include <kern/debug.h>
 
 volatile ApicLocalUnit* lapic = (void*) 0;
-int lapic_addr;
+uint32_t lapic_addr = 0;
 int ncpu = 1;
 int nioapic = 0;
 //struct list ioapics;
@@ -230,11 +231,11 @@ acpi_apic_setup(){
     nioapic = 0;
 
 
-    //lapic = (ApicLocalUnit*) phystokv(apic->lapic_addr);
-    lapic_addr = phystokv(apic->lapic_addr);
-
-    /* register lapic i/o registers in memory */
-    biosmem_register_boot_data((phys_addr_t) (apic->lapic_addr), ((phys_addr_t) (apic->lapic_addr)) + sizeof(*apic), FALSE);
+    /*
+     * save lapic_addr in order to use it later for updating lapic,
+     * in extra_setup()
+     */
+    lapic_addr = apic->lapic_addr;
 
     //list_init(&ioapics);
     struct acpi_apic_dhdr *apic_entry = apic->entry;
@@ -312,3 +313,29 @@ void acpi_reserve_lapic(){
 	vm_map_t lapic_map =  &lapic_map_store;
 }
 #endif
+
+int extra_setup()
+{
+  if (lapic_addr == 0)
+  {
+    printf("LAPIC mapping skipped\n");
+    return 1;
+  }
+  vm_offset_t virt = 0;
+  // TODO: FIX: it might be desirable to map LAPIC memory with attribute PCD
+  //            (Page Cache Disable)
+  long ret = vm_map_physical(&virt, lapic_addr, sizeof(ApicLocalUnit), 0);
+  if (ret)
+  {
+    panic("Could not map LAPIC");
+    return -1;
+  }
+  else
+  {
+    lapic = (ApicLocalUnit*)virt;
+    printf("LAPIC mapped: physical: 0x%lx virtual: 0x%lx version: 0x%x\n",
+           (unsigned long)lapic_addr, (unsigned long)virt,
+           (unsigned)lapic->version.r);
+    return 0;
+  }
+}
