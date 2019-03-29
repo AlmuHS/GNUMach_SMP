@@ -221,7 +221,6 @@
 # "AS IS" CONDITION.  THE FREE SOFTWARE FOUNDATION DISCLAIMS ANY
 # LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
 # USE OF THIS SOFTWARE.
-
 #
 # Source files for any i386 kernel.
 #
@@ -951,6 +950,8 @@ noinst_PROGRAMS = gnumach.o$(EXEEXT)
 @PLATFORM_xen_TRUE@	xen/xen.h
 
 @HOST_ix86_TRUE@am__append_113 = \
+@HOST_ix86_TRUE@	i386/i386at/acpi_rsdp.h \
+@HOST_ix86_TRUE@	i386/i386at/acpi_rsdp.c \
 @HOST_ix86_TRUE@	i386/i386at/autoconf.c \
 @HOST_ix86_TRUE@	i386/i386at/autoconf.h \
 @HOST_ix86_TRUE@	i386/i386at/biosmem.c \
@@ -1236,14 +1237,14 @@ am__libkernel_a_SOURCES_DIST = ddb/db_access.c ddb/db_access.h \
 	ipc/ipc_table.h ipc/ipc_target.c ipc/ipc_target.h \
 	ipc/ipc_thread.c ipc/ipc_thread.h ipc/ipc_types.h \
 	ipc/mach_msg.c ipc/mach_msg.h ipc/mach_port.c ipc/mach_port.h \
-	ipc/mach_rpc.c ipc/mach_debug.c ipc/port.h  \
-        kern/act.c kern/act.h kern/assert.h \
-	kern/ast.c kern/ast.h kern/atomic.h kern/boot_script.h \
-	kern/bootstrap.c kern/bootstrap.h kern/counters.c \
-	kern/counters.h kern/cpu_number.h kern/debug.c kern/debug.h \
-	kern/eventcount.c kern/eventcount.h kern/exception.c \
-	kern/exception.h kern/gsync.c kern/gsync.h kern/host.c \
-	kern/host.h kern/ipc_host.c kern/ipc_host.h kern/ipc_kobject.c \
+	ipc/mach_rpc.c ipc/mach_debug.c ipc/port.h kern/act.c \
+	kern/act.h kern/assert.h kern/ast.c kern/ast.h kern/atomic.h \
+	kern/boot_script.h kern/bootstrap.c kern/bootstrap.h \
+	kern/counters.c kern/counters.h kern/cpu_number.h \
+	kern/cpu_number.c kern/debug.c kern/debug.h kern/eventcount.c \
+	kern/eventcount.h kern/exception.c kern/exception.h \
+	kern/gsync.c kern/gsync.h kern/host.c kern/host.h \
+	kern/ipc_host.c kern/ipc_host.h kern/ipc_kobject.c \
 	kern/ipc_kobject.h kern/ipc_mig.c kern/ipc_mig.h \
 	kern/ipc_sched.c kern/ipc_sched.h kern/ipc_tt.c kern/ipc_tt.h \
 	kern/kalloc.h kern/kern_types.h kern/kmutex.c kern/kmutex.h \
@@ -1304,6 +1305,7 @@ am__libkernel_a_SOURCES_DIST = ddb/db_access.c ddb/db_access.h \
 	xen/console.h xen/evt.c xen/evt.h xen/grant.c xen/grant.h \
 	xen/net.c xen/net.h xen/ring.c xen/ring.h xen/store.c \
 	xen/store.h xen/time.c xen/time.h xen/xen.c xen/xen.h \
+	i386/i386at/acpi_rsdp.h i386/i386at/acpi_rsdp.c \
 	i386/i386at/autoconf.c i386/i386at/autoconf.h \
 	i386/i386at/biosmem.c i386/i386at/biosmem.h i386/i386at/conf.c \
 	i386/i386at/cons_conf.c i386/i386at/elf.h i386/i386at/idt.h \
@@ -1376,7 +1378,8 @@ am__libkernel_a_SOURCES_DIST = ddb/db_access.c ddb/db_access.h \
 @PLATFORM_xen_TRUE@	xen/grant.$(OBJEXT) xen/net.$(OBJEXT) \
 @PLATFORM_xen_TRUE@	xen/ring.$(OBJEXT) xen/store.$(OBJEXT) \
 @PLATFORM_xen_TRUE@	xen/time.$(OBJEXT) xen/xen.$(OBJEXT)
-@HOST_ix86_TRUE@am__objects_5 = i386/i386at/autoconf.$(OBJEXT) \
+@HOST_ix86_TRUE@am__objects_5 = i386/i386at/acpi_rsdp.$(OBJEXT) \
+@HOST_ix86_TRUE@	i386/i386at/autoconf.$(OBJEXT) \
 @HOST_ix86_TRUE@	i386/i386at/biosmem.$(OBJEXT) \
 @HOST_ix86_TRUE@	i386/i386at/conf.$(OBJEXT) \
 @HOST_ix86_TRUE@	i386/i386at/cons_conf.$(OBJEXT) \
@@ -1445,9 +1448,9 @@ am_libkernel_a_OBJECTS = $(am__objects_2) ipc/ipc_entry.$(OBJEXT) \
 	ipc/ipc_table.$(OBJEXT) ipc/ipc_target.$(OBJEXT) \
 	ipc/ipc_thread.$(OBJEXT) ipc/mach_msg.$(OBJEXT) \
 	ipc/mach_port.$(OBJEXT) ipc/mach_rpc.$(OBJEXT) \
-	ipc/mach_debug.$(OBJEXT)  \
-	kern/act.$(OBJEXT) kern/ast.$(OBJEXT) kern/bootstrap.$(OBJEXT) \
-	kern/counters.$(OBJEXT) kern/debug.$(OBJEXT) \
+	ipc/mach_debug.$(OBJEXT) kern/act.$(OBJEXT) kern/ast.$(OBJEXT) \
+	kern/bootstrap.$(OBJEXT) kern/counters.$(OBJEXT) \
+	kern/cpu_number.$(OBJEXT) kern/debug.$(OBJEXT) \
 	kern/eventcount.$(OBJEXT) kern/exception.$(OBJEXT) \
 	kern/gsync.$(OBJEXT) kern/host.$(OBJEXT) \
 	kern/ipc_host.$(OBJEXT) kern/ipc_kobject.$(OBJEXT) \
@@ -1953,6 +1956,7 @@ am__depfiles_remade = ./$(DEPDIR)/version.Po chips/$(DEPDIR)/busses.Po \
 	i386/i386/$(DEPDIR)/pit.Po i386/i386/$(DEPDIR)/seg.Po \
 	i386/i386/$(DEPDIR)/spl.Po i386/i386/$(DEPDIR)/strings.Po \
 	i386/i386/$(DEPDIR)/trap.Po i386/i386/$(DEPDIR)/user_ldt.Po \
+	i386/i386at/$(DEPDIR)/acpi_rsdp.Po \
 	i386/i386at/$(DEPDIR)/autoconf.Po \
 	i386/i386at/$(DEPDIR)/biosmem.Po \
 	i386/i386at/$(DEPDIR)/boothdr.Po i386/i386at/$(DEPDIR)/com.Po \
@@ -1983,10 +1987,10 @@ am__depfiles_remade = ./$(DEPDIR)/version.Po chips/$(DEPDIR)/busses.Po \
 	ipc/$(DEPDIR)/lib_dep_tr_for_defs_a-notify.none.defs.Po \
 	ipc/$(DEPDIR)/mach_debug.Po ipc/$(DEPDIR)/mach_msg.Po \
 	ipc/$(DEPDIR)/mach_port.Po ipc/$(DEPDIR)/mach_port.server.Po \
-	ipc/$(DEPDIR)/mach_rpc.Po  \
-	kern/$(DEPDIR)/act.Po kern/$(DEPDIR)/ast.Po \
-	kern/$(DEPDIR)/boot_script.Po kern/$(DEPDIR)/bootstrap.Po \
-	kern/$(DEPDIR)/counters.Po kern/$(DEPDIR)/debug.Po \
+	ipc/$(DEPDIR)/mach_rpc.Po kern/$(DEPDIR)/act.Po \
+	kern/$(DEPDIR)/ast.Po kern/$(DEPDIR)/boot_script.Po \
+	kern/$(DEPDIR)/bootstrap.Po kern/$(DEPDIR)/counters.Po \
+	kern/$(DEPDIR)/cpu_number.Po kern/$(DEPDIR)/debug.Po \
 	kern/$(DEPDIR)/elf-load.Po kern/$(DEPDIR)/eventcount.Po \
 	kern/$(DEPDIR)/exception.Po kern/$(DEPDIR)/gnumach.server.Po \
 	kern/$(DEPDIR)/gsync.Po kern/$(DEPDIR)/host.Po \
@@ -2841,14 +2845,14 @@ libkernel_a_SOURCES = $(am__append_2) ipc/ipc_entry.c ipc/ipc_entry.h \
 	ipc/ipc_table.h ipc/ipc_target.c ipc/ipc_target.h \
 	ipc/ipc_thread.c ipc/ipc_thread.h ipc/ipc_types.h \
 	ipc/mach_msg.c ipc/mach_msg.h ipc/mach_port.c ipc/mach_port.h \
-	ipc/mach_rpc.c ipc/mach_debug.c ipc/port.h  \
-	kern/act.c kern/act.h kern/assert.h \
-	kern/ast.c kern/ast.h kern/atomic.h kern/boot_script.h \
-	kern/bootstrap.c kern/bootstrap.h kern/counters.c \
-	kern/counters.h kern/cpu_number.h kern/debug.c kern/debug.h \
-	kern/eventcount.c kern/eventcount.h kern/exception.c \
-	kern/exception.h kern/gsync.c kern/gsync.h kern/host.c \
-	kern/host.h kern/ipc_host.c kern/ipc_host.h kern/ipc_kobject.c \
+	ipc/mach_rpc.c ipc/mach_debug.c ipc/port.h kern/act.c \
+	kern/act.h kern/assert.h kern/ast.c kern/ast.h kern/atomic.h \
+	kern/boot_script.h kern/bootstrap.c kern/bootstrap.h \
+	kern/counters.c kern/counters.h kern/cpu_number.h \
+	kern/cpu_number.c kern/debug.c kern/debug.h kern/eventcount.c \
+	kern/eventcount.h kern/exception.c kern/exception.h \
+	kern/gsync.c kern/gsync.h kern/host.c kern/host.h \
+	kern/ipc_host.c kern/ipc_host.h kern/ipc_kobject.c \
 	kern/ipc_kobject.h kern/ipc_mig.c kern/ipc_mig.h \
 	kern/ipc_sched.c kern/ipc_sched.h kern/ipc_tt.c kern/ipc_tt.h \
 	kern/kalloc.h kern/kern_types.h kern/kmutex.c kern/kmutex.h \
@@ -3495,6 +3499,8 @@ kern/bootstrap.$(OBJEXT): kern/$(am__dirstamp) \
 	kern/$(DEPDIR)/$(am__dirstamp)
 kern/counters.$(OBJEXT): kern/$(am__dirstamp) \
 	kern/$(DEPDIR)/$(am__dirstamp)
+kern/cpu_number.$(OBJEXT): kern/$(am__dirstamp) \
+	kern/$(DEPDIR)/$(am__dirstamp)
 kern/debug.$(OBJEXT): kern/$(am__dirstamp) \
 	kern/$(DEPDIR)/$(am__dirstamp)
 kern/eventcount.$(OBJEXT): kern/$(am__dirstamp) \
@@ -3648,6 +3654,8 @@ i386/i386at/$(am__dirstamp):
 i386/i386at/$(DEPDIR)/$(am__dirstamp):
 	@$(MKDIR_P) i386/i386at/$(DEPDIR)
 	@: > i386/i386at/$(DEPDIR)/$(am__dirstamp)
+i386/i386at/acpi_rsdp.$(OBJEXT): i386/i386at/$(am__dirstamp) \
+	i386/i386at/$(DEPDIR)/$(am__dirstamp)
 i386/i386at/autoconf.$(OBJEXT): i386/i386at/$(am__dirstamp) \
 	i386/i386at/$(DEPDIR)/$(am__dirstamp)
 i386/i386at/biosmem.$(OBJEXT): i386/i386at/$(am__dirstamp) \
@@ -4512,6 +4520,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@i386/i386/$(DEPDIR)/strings.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@i386/i386/$(DEPDIR)/trap.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@i386/i386/$(DEPDIR)/user_ldt.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@i386/i386at/$(DEPDIR)/acpi_rsdp.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@i386/i386at/$(DEPDIR)/autoconf.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@i386/i386at/$(DEPDIR)/biosmem.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@i386/i386at/$(DEPDIR)/boothdr.Po@am__quote@ # am--include-marker
@@ -4562,6 +4571,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@kern/$(DEPDIR)/boot_script.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@kern/$(DEPDIR)/bootstrap.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@kern/$(DEPDIR)/counters.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@kern/$(DEPDIR)/cpu_number.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@kern/$(DEPDIR)/debug.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@kern/$(DEPDIR)/elf-load.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@kern/$(DEPDIR)/eventcount.Po@am__quote@ # am--include-marker
@@ -4790,15 +4800,7 @@ distclean-compile:
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
-	# Ugly bootstrap hack to get to-be-generated files created
-	# Try to guess what file this dependency file is from...
-	@f=$(srcdir)/`dirname "$(@D)"`/`basename "$@" .Po | sed s/lib[^-]\*-//` ; \
-	for f in "$$f"*; do \
-		case $$f in \
-			*.c | *.S) echo "$$f"': $$(filter-out $$(DIST_SOURCES),$$(SOURCES))' ;; \
-			*) echo '# dummy';; \
-		esac ; \
-	done >$@-t && $(am__mv) $@-t $@
+	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
 
 am--depfiles: $(am__depfiles_remade)
 
@@ -8030,6 +8032,7 @@ distclean: distclean-recursive
 	-rm -f i386/i386/$(DEPDIR)/strings.Po
 	-rm -f i386/i386/$(DEPDIR)/trap.Po
 	-rm -f i386/i386/$(DEPDIR)/user_ldt.Po
+	-rm -f i386/i386at/$(DEPDIR)/acpi_rsdp.Po
 	-rm -f i386/i386at/$(DEPDIR)/autoconf.Po
 	-rm -f i386/i386at/$(DEPDIR)/biosmem.Po
 	-rm -f i386/i386at/$(DEPDIR)/boothdr.Po
@@ -8080,6 +8083,7 @@ distclean: distclean-recursive
 	-rm -f kern/$(DEPDIR)/boot_script.Po
 	-rm -f kern/$(DEPDIR)/bootstrap.Po
 	-rm -f kern/$(DEPDIR)/counters.Po
+	-rm -f kern/$(DEPDIR)/cpu_number.Po
 	-rm -f kern/$(DEPDIR)/debug.Po
 	-rm -f kern/$(DEPDIR)/elf-load.Po
 	-rm -f kern/$(DEPDIR)/eventcount.Po
@@ -8524,6 +8528,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f i386/i386/$(DEPDIR)/strings.Po
 	-rm -f i386/i386/$(DEPDIR)/trap.Po
 	-rm -f i386/i386/$(DEPDIR)/user_ldt.Po
+	-rm -f i386/i386at/$(DEPDIR)/acpi_rsdp.Po
 	-rm -f i386/i386at/$(DEPDIR)/autoconf.Po
 	-rm -f i386/i386at/$(DEPDIR)/biosmem.Po
 	-rm -f i386/i386at/$(DEPDIR)/boothdr.Po
@@ -8574,6 +8579,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f kern/$(DEPDIR)/boot_script.Po
 	-rm -f kern/$(DEPDIR)/bootstrap.Po
 	-rm -f kern/$(DEPDIR)/counters.Po
+	-rm -f kern/$(DEPDIR)/cpu_number.Po
 	-rm -f kern/$(DEPDIR)/debug.Po
 	-rm -f kern/$(DEPDIR)/elf-load.Po
 	-rm -f kern/$(DEPDIR)/eventcount.Po

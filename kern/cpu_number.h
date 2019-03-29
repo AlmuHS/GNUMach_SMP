@@ -29,7 +29,7 @@
 
 #include <imps/apic.h>
 #include <mach/machine.h>
-#include <i386at/acpi_rsdp.h>
+
 
 /*
  *	Definitions for cpu identification in multi-processors.
@@ -44,24 +44,7 @@ unsigned int master_cpu;	/* 'master' processor - keeps time */
 #else	/* NCPUS == 1 */
 
 	/*TODO: Get kernelID from cpus vector*/
-	static inline int
-	cpu_number()
-	{
-		if(ncpu == 1) return 0;
-		else{		
-			if(lapic != 0){ 
-
-				unsigned apic_id = lapic->apic_id.r >>24;
-				int i = 0;
-				
-				while(i< ncpu && machine_slot[i].apic_id != apic_id) i++;
-				
-				if(i == ncpu) return -1;
-				else return i;
-			}
-			else return 0;
-		}
-	}
+	int cpu_number();
 
 #endif /* NCPUS != 1 */
 
