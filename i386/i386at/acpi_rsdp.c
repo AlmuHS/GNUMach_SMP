@@ -305,8 +305,10 @@ acpi_apic_setup(){
     return 0;
 }
 
+#if 0
 void acpi_reserve_lapic(){
 	//lapic = (ApicLocalUnit*)
 	static struct vm_map lapic_map_store;
 	vm_map_t lapic_map =  &lapic_map_store;
 }
+#endif
