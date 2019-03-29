@@ -29,6 +29,7 @@
 
 #include <imps/apic.h>
 #include <mach/machine.h>
+#include <i386at/acpi_rsdp.h>
 
 /*
  *	Definitions for cpu identification in multi-processors.
