@@ -181,10 +181,11 @@ mp_desc_init(int mycpu)
 kern_return_t intel_startCPU(int slot_num)
 {
 	/*TODO: Get local APIC from cpu*/	
-	//int lapic_id = machine_slot[slot_num].apic_id;
+	int lapic_id = machine_slot[slot_num].apic_id;
 	unsigned long eFlagsRegister;
 
 	kmutex_init(&mp_cpu_boot_lock);
+	printf("Trying to enable: %d\n", lapic_id);
 
 	//assert(lapic != -1);
 
@@ -346,6 +347,7 @@ start_other_cpus(void)
 {
 	int cpu;
 	printf("found %d cpus\n", ncpu);
+	printf("The current cpu is: %d\n", cpu_number());
 
 	for (cpu = 0; cpu < ncpu; cpu++)
 		if (cpu != cpu_number())
