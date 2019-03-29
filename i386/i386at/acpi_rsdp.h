@@ -21,6 +21,8 @@
 #define ACPI_RSDP_ALIGN 16
 #define ACPI_RSDP_SIG "RSD PTR "
 
+#ifndef __ASSEMBLER__
+
 struct acpi_rsdp {
     uint8_t signature[8];
     uint8_t checksum;
@@ -90,5 +92,6 @@ struct acpi_apic_ioapic {
 int acpi_setup();
 void acpi_print_info();
 
+#endif
 
 #endif /* __ACPI_H__ */
