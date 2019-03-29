@@ -21,7 +21,6 @@
 #define ACPI_RSDP_ALIGN 16
 #define ACPI_RSDP_SIG "RSD PTR "
 
-#ifndef __ASSEMBLER__
 
 struct acpi_rsdp {
     uint8_t signature[8];
@@ -93,6 +92,5 @@ int acpi_setup();
 void acpi_print_info();
 int extra_setup();
 
-#endif
 
 #endif /* __ACPI_H__ */

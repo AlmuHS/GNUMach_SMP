@@ -74,12 +74,11 @@ boolean_t reboot_on_panic = TRUE;
 #endif
 
 #if	NCPUS > 1
+
 #include <machine/mp_desc.h>
 #include <kern/machine.h>
+#include <i386at/acpi_rsdp.h>
 
-	#ifndef __ASSEMBLER__
-		#include <i386at/acpi_rsdp.h>
-	#endif
 #endif	/* NCPUS > 1 */
 
 /* XX */
