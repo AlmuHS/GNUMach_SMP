@@ -114,6 +114,9 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - Integrated cpu detection and enumeration from acpi tables
 - Solved memory mapping for `*lapic`. Now It's possible to read the Local APIC of the current processsor.
 - Solved ioapic enumeration: changed linked list to array
+- Initialized *master_cpu* variable to 0
+- Initialized *ktss* for master_cpu
+
 
 
 ## Current status
@@ -123,6 +126,8 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - In gnumach, the number of cpus and its lapic structures are detected and enumerated correctly
 - ioapic enumeration feels to work correctly
 	+ Mach use PIC 8259 controller, so ioapic is not necessary. Migrate Mach to ioapic is a future TODO
+- *gnumach* boots correctly with a only cpu, in SMP mode
+	+ I need to implement cpu enabling.
 
 ## Implementation 
 
