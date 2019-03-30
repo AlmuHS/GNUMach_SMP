@@ -1,6 +1,8 @@
 #include <kern/cpu_number.h>
 #include <i386at/acpi_rsdp.h>
 
+unsigned int master_cpu = 0;	/* 'master' processor - keeps time */
+
 int
 cpu_number()
 {
