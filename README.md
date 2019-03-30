@@ -112,6 +112,7 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - Modify `configfrag.ac`
 	+ Now, if `mach_ncpus > 1`, `NCPUS` will be set to 255
 - Integrated cpu detection and enumeration from acpi tables
+- Solved memory mapping for `*lapic`. Now It's possible to read the Local APIC of the current processsor.
 - Solved ioapic enumeration: changed linked list to array
 
 
