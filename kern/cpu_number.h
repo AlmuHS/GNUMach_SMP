@@ -27,8 +27,6 @@
 #ifndef _KERN_CPU_NUMBER_H_
 #define _KERN_CPU_NUMBER_H_
 
-#include <imps/apic.h>
-#include <mach/machine.h>
 
 
 /*
