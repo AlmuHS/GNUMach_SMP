@@ -19,7 +19,6 @@
 #include <imps/apic.h> //lapic, ioapic...
 #include <kern/printf.h> //printf
 #include <include/stdint.h> //uint16_t, uint32_t...
-#include <kern/list.h> //struct list
 #include <mach/machine.h> //machine_slot
 #include <i386/vm_param.h>
 #include <vm/vm_map_physical.h>
@@ -235,7 +234,6 @@ acpi_apic_setup(){
      */
     lapic_addr = apic->lapic_addr;
 
-    //list_init(&ioapics);
     struct acpi_apic_dhdr *apic_entry = apic->entry;
     uint32_t end = (uint32_t) apic + apic->header.length;
 
