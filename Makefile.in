@@ -1266,6 +1266,7 @@ am__libkernel_a_SOURCES_DIST = ddb/db_access.c ddb/db_access.h \
 	kern/time_stamp.h kern/timer.c kern/timer.h kern/xpr.c \
 	kern/xpr.h kern/elf-load.c kern/boot_script.c util/putchar.c \
 	util/putchar.h util/puts.c util/atoi.c util/atoi.h \
+	vm/vm_map_physical.c vm/vm_map_physical.h \
 	vm/memory_object_proxy.c vm/memory_object_proxy.h \
 	vm/memory_object.c vm/memory_object.h vm/pmap.h vm/vm_debug.c \
 	vm/vm_external.c vm/vm_external.h vm/vm_fault.c vm/vm_fault.h \
@@ -1471,10 +1472,10 @@ am_libkernel_a_OBJECTS = $(am__objects_2) ipc/ipc_entry.$(OBJEXT) \
 	kern/timer.$(OBJEXT) kern/xpr.$(OBJEXT) \
 	kern/elf-load.$(OBJEXT) kern/boot_script.$(OBJEXT) \
 	util/putchar.$(OBJEXT) util/puts.$(OBJEXT) util/atoi.$(OBJEXT) \
-	vm/memory_object_proxy.$(OBJEXT) vm/memory_object.$(OBJEXT) \
-	vm/vm_debug.$(OBJEXT) vm/vm_external.$(OBJEXT) \
-	vm/vm_fault.$(OBJEXT) vm/vm_init.$(OBJEXT) \
-	vm/vm_kern.$(OBJEXT) vm/vm_map.$(OBJEXT) \
+	vm/vm_map_physical.$(OBJEXT) vm/memory_object_proxy.$(OBJEXT) \
+	vm/memory_object.$(OBJEXT) vm/vm_debug.$(OBJEXT) \
+	vm/vm_external.$(OBJEXT) vm/vm_fault.$(OBJEXT) \
+	vm/vm_init.$(OBJEXT) vm/vm_kern.$(OBJEXT) vm/vm_map.$(OBJEXT) \
 	vm/vm_object.$(OBJEXT) vm/vm_page.$(OBJEXT) \
 	vm/vm_pageout.$(OBJEXT) vm/vm_resident.$(OBJEXT) \
 	vm/vm_user.$(OBJEXT) device/blkio.$(OBJEXT) \
@@ -2178,13 +2179,14 @@ am__depfiles_remade = ./$(DEPDIR)/version.Po chips/$(DEPDIR)/busses.Po \
 	vm/$(DEPDIR)/vm_debug.Po vm/$(DEPDIR)/vm_external.Po \
 	vm/$(DEPDIR)/vm_fault.Po vm/$(DEPDIR)/vm_init.Po \
 	vm/$(DEPDIR)/vm_kern.Po vm/$(DEPDIR)/vm_map.Po \
-	vm/$(DEPDIR)/vm_object.Po vm/$(DEPDIR)/vm_page.Po \
-	vm/$(DEPDIR)/vm_pageout.Po vm/$(DEPDIR)/vm_resident.Po \
-	vm/$(DEPDIR)/vm_user.Po xen/$(DEPDIR)/block.Po \
-	xen/$(DEPDIR)/console.Po xen/$(DEPDIR)/evt.Po \
-	xen/$(DEPDIR)/grant.Po xen/$(DEPDIR)/net.Po \
-	xen/$(DEPDIR)/ring.Po xen/$(DEPDIR)/store.Po \
-	xen/$(DEPDIR)/time.Po xen/$(DEPDIR)/xen.Po
+	vm/$(DEPDIR)/vm_map_physical.Po vm/$(DEPDIR)/vm_object.Po \
+	vm/$(DEPDIR)/vm_page.Po vm/$(DEPDIR)/vm_pageout.Po \
+	vm/$(DEPDIR)/vm_resident.Po vm/$(DEPDIR)/vm_user.Po \
+	xen/$(DEPDIR)/block.Po xen/$(DEPDIR)/console.Po \
+	xen/$(DEPDIR)/evt.Po xen/$(DEPDIR)/grant.Po \
+	xen/$(DEPDIR)/net.Po xen/$(DEPDIR)/ring.Po \
+	xen/$(DEPDIR)/store.Po xen/$(DEPDIR)/time.Po \
+	xen/$(DEPDIR)/xen.Po
 am__mv = mv -f
 AM_V_lt = $(am__v_lt_@AM_V@)
 am__v_lt_ = $(am__v_lt_@AM_DEFAULT_V@)
@@ -2874,6 +2876,7 @@ libkernel_a_SOURCES = $(am__append_2) ipc/ipc_entry.c ipc/ipc_entry.h \
 	kern/time_stamp.h kern/timer.c kern/timer.h kern/xpr.c \
 	kern/xpr.h kern/elf-load.c kern/boot_script.c util/putchar.c \
 	util/putchar.h util/puts.c util/atoi.c util/atoi.h \
+	vm/vm_map_physical.c vm/vm_map_physical.h \
 	vm/memory_object_proxy.c vm/memory_object_proxy.h \
 	vm/memory_object.c vm/memory_object.h vm/pmap.h vm/vm_debug.c \
 	vm/vm_external.c vm/vm_external.h vm/vm_fault.c vm/vm_fault.h \
@@ -3591,6 +3594,8 @@ util/puts.$(OBJEXT): util/$(am__dirstamp) \
 	util/$(DEPDIR)/$(am__dirstamp)
 util/atoi.$(OBJEXT): util/$(am__dirstamp) \
 	util/$(DEPDIR)/$(am__dirstamp)
+vm/vm_map_physical.$(OBJEXT): vm/$(am__dirstamp) \
+	vm/$(DEPDIR)/$(am__dirstamp)
 vm/memory_object_proxy.$(OBJEXT): vm/$(am__dirstamp) \
 	vm/$(DEPDIR)/$(am__dirstamp)
 vm/memory_object.$(OBJEXT): vm/$(am__dirstamp) \
@@ -4783,6 +4788,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@vm/$(DEPDIR)/vm_init.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@vm/$(DEPDIR)/vm_kern.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@vm/$(DEPDIR)/vm_map.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@vm/$(DEPDIR)/vm_map_physical.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@vm/$(DEPDIR)/vm_object.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@vm/$(DEPDIR)/vm_page.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@vm/$(DEPDIR)/vm_pageout.Po@am__quote@ # am--include-marker
@@ -4800,7 +4806,15 @@ distclean-compile:
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
-	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
+	# Ugly bootstrap hack to get to-be-generated files created
+	# Try to guess what file this dependency file is from...
+	@f=$(srcdir)/`dirname "$(@D)"`/`basename "$@" .Po | sed s/lib[^-]\*-//` ; \
+	for f in "$$f"*; do \
+		case $$f in \
+			*.c | *.S) echo "$$f"': $$(filter-out $$(DIST_SOURCES),$$(SOURCES))' ;; \
+			*) echo '# dummy';; \
+		esac ; \
+	done >$@-t && $(am__mv) $@-t $@
 
 am--depfiles: $(am__depfiles_remade)
 
@@ -8295,6 +8309,7 @@ distclean: distclean-recursive
 	-rm -f vm/$(DEPDIR)/vm_init.Po
 	-rm -f vm/$(DEPDIR)/vm_kern.Po
 	-rm -f vm/$(DEPDIR)/vm_map.Po
+	-rm -f vm/$(DEPDIR)/vm_map_physical.Po
 	-rm -f vm/$(DEPDIR)/vm_object.Po
 	-rm -f vm/$(DEPDIR)/vm_page.Po
 	-rm -f vm/$(DEPDIR)/vm_pageout.Po
@@ -8791,6 +8806,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f vm/$(DEPDIR)/vm_init.Po
 	-rm -f vm/$(DEPDIR)/vm_kern.Po
 	-rm -f vm/$(DEPDIR)/vm_map.Po
+	-rm -f vm/$(DEPDIR)/vm_map_physical.Po
 	-rm -f vm/$(DEPDIR)/vm_object.Po
 	-rm -f vm/$(DEPDIR)/vm_page.Po
 	-rm -f vm/$(DEPDIR)/vm_pageout.Po
