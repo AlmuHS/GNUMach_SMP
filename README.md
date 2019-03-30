@@ -112,6 +112,7 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - Modify `configfrag.ac`
 	+ Now, if `mach_ncpus > 1`, `NCPUS` will be set to 255
 - Integrated cpu detection and enumeration from acpi tables
+- Solved ioapic enumeration: changed linked list to array
 
 
 ## Current status
@@ -119,8 +120,8 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - In the [Min_SMP](https://github.com/AlmuHS/Min_SMP/) test environment, the cpus are detected and started correctly
 	+ I need to implement APIC configuration
 - In gnumach, the number of cpus and its lapic structures are detected and enumerated correctly
-	+ I need to implement ioapic enumeration
-
+- ioapic enumeration feels to work correctly
+	+ Mach use PIC 8259 controller, so ioapic is not necessary. Migrate Mach to ioapic is a future TODO
 
 ## Implementation 
 
