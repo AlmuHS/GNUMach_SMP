@@ -496,6 +496,7 @@ i386at_init(void)
 #endif	/* MACH_HYP */
 	ldt_init();
 	ktss_init();
+	mp_desc_init(master_cpu);
 
 	
 
