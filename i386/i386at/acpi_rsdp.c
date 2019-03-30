@@ -162,22 +162,22 @@ acpi_search_rsdp(void *addr, uint32_t length){
 static int
 acpi_get_rsdp(){
 
-        uint16_t *start = 0x0;
-	    uint32_t base = 0x0;
+uint16_t *start = 0x0;
+     uint32_t base = 0x0;
 
 
-	    //EDBA start address
-        start = (uint16_t*) phystokv(0x040e);
-	    base = *start;
+    //EDBA start address
+    start = (uint16_t*) phystokv(0x040e);
+    base = *start;
 
-	    if(base != 0){	//Memory check
+    if(base != 0){  //Memory check
 
-		base <<= 4; //base = base * 16
+        base <<= 4; //base = base * 16
 
-		//Search RSDP in first 1024 bytes from EDBA
-		if(acpi_search_rsdp((void*)phystokv(base),1024) == 0)
-		    return 0;
-	    }
+        //Search RSDP in first 1024 bytes from EDBA
+        if(acpi_search_rsdp((void*)phystokv(base),1024) == 0)
+            return 0;
+    }
 
     //If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh
     if(acpi_search_rsdp((void*) phystokv(0x0e0000), 0x100000 - 0x0e0000) == 0)
