@@ -162,8 +162,8 @@ acpi_search_rsdp(void *addr, uint32_t length){
 static int
 acpi_get_rsdp(){
 
-uint16_t *start = 0x0;
-     uint32_t base = 0x0;
+    uint16_t *start = 0x0;
+    uint32_t base = 0x0;
 
 
     //EDBA start address
