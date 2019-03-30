@@ -286,7 +286,7 @@ acpi_apic_setup(){
     }
 
 
-    if(ncpu == 0 /*|| nioapic == 0*/)
+    if(ncpu == 0 || nioapic == 0)
         return -1;
 
 
