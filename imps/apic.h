@@ -25,8 +25,7 @@
 
 #ifndef __ASSEMBLER__
 
-
-//#include <kern/list.h>
+#include <stdint.h>
 
 typedef struct ApicReg
 {
@@ -41,15 +40,14 @@ typedef struct ApicIoUnit
 } ApicIoUnit;
 
 
-/*struct ioapic {
+struct ioapic {
     uint8_t apic_id;
     uint32_t addr;
     uint32_t base;
-    struct list node;
-};*/
+};
 
 extern int nioapic;
-//extern struct list ioapics;
+extern struct ioapic ioapics[16];
 
 typedef struct ApicLocalUnit
 {
@@ -149,7 +147,7 @@ extern volatile ApicLocalUnit* lapic;
  * TODO: Get real address from ACPI tables
 */
 
-#define APIC_LOCAL_VA	0xc1000000
+#define APIC_LOCAL_VA	lapic
 
 #define apic_local_unit (*((volatile ApicLocalUnit*)APIC_LOCAL_VA))
 

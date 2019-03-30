@@ -29,7 +29,6 @@ volatile ApicLocalUnit* lapic = (void*) 0;
 uint32_t lapic_addr = 0;
 int ncpu = 1;
 int nioapic = 0;
-//struct list ioapics;
 
 struct acpi_rsdp *rsdp;
 struct acpi_rsdt *rsdt;
@@ -46,8 +45,7 @@ static int acpi_apic_setup();
 extern struct machine_slot	machine_slot[NCPUS];
 
 /*TODO: Implement ioapic support*/
-//extern int nioapic;
-//extern struct list ioapics;
+struct ioapic ioapics[16];
 
 
 int
@@ -244,7 +242,7 @@ acpi_apic_setup(){
     //Search in APIC entry
     while((uint32_t)apic_entry < end){
         struct acpi_apic_lapic *lapic_entry;
-        //struct acpi_apic_ioapic *ioapic_entry;
+        struct acpi_apic_ioapic *ioapic_entry;
 
         //Check entry type
         switch(apic_entry->type){
@@ -268,28 +266,17 @@ acpi_apic_setup(){
 
             //If APIC entry is an IOAPIC
             case ACPI_APIC_ENTRY_IOAPIC:
-
-		#if 0
+		
                 //Store ioapic
                	ioapic_entry = (struct acpi_apic_ioapic*) apic_entry;
 
-                //Initialice ioapic table
-                struct ioapic *ioapic_last;
-
-                /*TODO: Find replacement to malloc*/
-                ioapic_last = malloc(sizeof(struct ioapic));
-                
-                list_node_init(&ioapic_last->node);
-                ioapic_last->apic_id = ioapic_entry->apic_id;
-                ioapic_last->addr = ioapic_entry->addr;
-                ioapic_last->base = ioapic_entry->base;
-
-                //Insert ioapic in ioapic's list
-                list_insert_tail(&ioapics, &ioapic_last->node);
+                /*Insert ioapic in ioapics array*/
+                ioapics[nioapic].apic_id = ioapic_entry->apic_id;
+                ioapics[nioapic].addr = ioapic_entry->addr;
+                ioapics[nioapic].base = ioapic_entry->base;
 		 
                 //Increase number of ioapic
                 nioapic++;
-		#endif
                 break;
         }
 
