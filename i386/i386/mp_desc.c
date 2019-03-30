@@ -349,7 +349,7 @@ start_other_cpus(void)
 	printf("found %d cpus\n", ncpu);
 	printf("The current cpu is: %d\n", cpu_number());
 
-	for (cpu = 0; cpu < ncpu; cpu++)
+	for (cpu = 0; cpu < ncpu-1; cpu++)
 		if (cpu != cpu_number())
 			cpu_start(cpu);
 }
