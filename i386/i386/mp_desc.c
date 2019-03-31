@@ -362,22 +362,14 @@ void
 interrupt_stack_alloc(void)
 {
 	int		i;
-	int		cpu_count;
 	vm_offset_t	stack_start;
-
-	/*
-	 * Count the number of CPUs.
-	 */
-	cpu_count = 0;
-	for (i = 0; i < ncpu; i++)
-	    if (machine_slot[i].is_cpu)
-		cpu_count++;
+	
 
 	/*
 	 * Allocate an interrupt stack for each CPU except for
 	 * the master CPU (which uses the bootstrap stack)
 	 */
-	if (!init_alloc_aligned(INTSTACK_SIZE*(cpu_count-1), &stack_start))
+	if (!init_alloc_aligned(INTSTACK_SIZE*(ncpu-1), &stack_start))
 		panic("not enough memory for interrupt stacks");
 	stack_start = phystokv(stack_start);
 
