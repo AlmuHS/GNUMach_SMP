@@ -20,7 +20,7 @@
 #include <kern/printf.h> //printf
 #include <include/stdint.h> //uint16_t, uint32_t...
 #include <mach/machine.h> //machine_slot
-#include <i386/vm_param.h>
+#include <i386/vm_param.h> //phystokv
 #include <vm/vm_map_physical.h>
 #include <kern/debug.h>
 

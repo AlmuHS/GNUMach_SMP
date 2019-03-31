@@ -48,7 +48,9 @@
 #include <machine/vm_param.h>
 
 #include <i386at/acpi_rsdp.h>
-
+#include <string.h>
+#include <include/stdint.h> //uint16_t, uint32_t_t...
+#include <imps/apic.h>
 
 /*
  * The i386 needs an interrupt stack to keep the PCB stack from being
@@ -106,6 +108,37 @@ struct real_descriptor	*mp_gdt[NCPUS] = { 0 };
 extern struct real_gate		idt[IDTSZ];
 extern struct real_descriptor	gdt[GDTSZ];
 extern struct real_descriptor	ldt[LDTSZ];
+
+/*
+ * Address of cpu start routine, to skip to protected mode after startup IPI
+ */
+extern void* *apboot, *apbootend;
+#define AP_BOOT_ADDR (0x7000)	
+
+//cpu stack
+extern void* *stack_ptr;
+extern void *stack_bsp;
+
+//ICR Destination mode
+#define PHYSICAL 0
+#define LOGICAL 1
+
+//ICR Delivery mode
+#define STARTUP 6
+#define INIT 5
+
+//ICR Level
+#define DE_ASSERT 0
+#define ASSERT 1
+
+//ICR Trigger mode
+#define EDGE 0
+#define LEVEL 1
+
+//ICR Destination Shorthand
+#define NO_SHORTHAND 0
+
+#define SEND_PENDING 1
 
 /*
  * Allocate and initialize the per-processor descriptor tables.
@@ -176,6 +209,92 @@ mp_desc_init(int mycpu)
 	}
 }
 
+static void send_IPI(unsigned icr_h, unsigned icr_l){
+    lapic->icr_high.r = icr_h;
+    lapic->icr_low.r = icr_l;    
+}
+
+
+/*TODO: Add delay between IPI*/
+void startup_cpu(uint32_t apic_id){	    
+    unsigned icr_h = 0;
+    unsigned icr_l = 0;
+
+	//send INIT Assert IPI
+    icr_h = (apic_id << 24);
+    icr_l = (INIT << 8) | (ASSERT << 14) | (LEVEL << 15); 
+    send_IPI(icr_h, icr_l);
+
+    dummyf(lapic->apic_id.r);	
+
+	//wait until IPI is sent
+	while(lapic->icr_low.r & (1 << 12) == SEND_PENDING);
+
+	//Send INIT De-Assert IPI
+    icr_h = 0; icr_l = 0;
+    icr_h = (apic_id << 24);
+    icr_l = (INIT << 8) | (DE_ASSERT << 14) | (LEVEL << 15);
+    send_IPI(icr_h, icr_l);
+
+    dummyf(lapic->apic_id.r);
+
+	//wait until IPI is sent
+	while(lapic->icr_low.r & (1 << 12) == SEND_PENDING);
+
+	//Send StartUp IPI
+    icr_h = 0; icr_l = 0;
+    icr_h = (apic_id << 24);
+    icr_l = (STARTUP << 8) | ((AP_BOOT_ADDR >>12) & 0xff);
+    send_IPI(icr_h, icr_l);
+
+    dummyf(lapic->apic_id.r);
+
+	//wait until IPI is sent
+	while(lapic->icr_low.r & (1 << 12) == SEND_PENDING);
+
+	//Send second StartUp IPI
+    icr_h = 0; icr_l = 0;
+    icr_h = (apic_id << 24);
+    icr_l = (STARTUP << 8) | ((AP_BOOT_ADDR >>12) & 0xff);
+    send_IPI(icr_h, icr_l);
+
+    dummyf(lapic->apic_id.r);
+
+	//wait until IPI is sent
+	while(lapic->icr_low.r & (1 << 12) == SEND_PENDING);
+
+}
+
+int
+cpu_setup(){
+
+    int i = 0;
+    while(i < ncpu && machine_slot[i].running) i++;
+
+    /* panic? */
+    if(i >= ncpu)
+	return -1;
+
+    /* assume Pentium 4, Xeon, or later processors */
+	machine_slot[i].apic_id = (lapic->apic_id.r >> 24) & 0xff;
+	machine_slot[i].running = 1;
+
+    return 0;
+}
+
+
+void
+cpu_ap_main(){
+
+    printf("\nstarting cpu: %d\n", cpu_number());
+
+   if(cpu_setup())
+        goto idle;
+
+idle:
+    for(;;)
+        asm volatile("hlt");
+}
 
 /*TODO: Reimplement function to send Startup IPI to cpu*/
 kern_return_t intel_startCPU(int slot_num)
@@ -187,13 +306,8 @@ kern_return_t intel_startCPU(int slot_num)
 	kmutex_init(&mp_cpu_boot_lock);
 	printf("Trying to enable: %d\n", lapic_id);
 
+
 	//assert(lapic != -1);
-
-	/*DBGLOG_CPU_INIT(slot_num);*/
-
-	/*DBG("intel_startCPU(%d) lapic_id=%d\n", slot_num, lapic);
-	 *DBG("IdlePTD(%p): 0x%x\n", &IdlePTD, (int) (uintptr_t)IdlePTD);
-	 */
 
 	/*
 	 * Initialize (or re-initialize) the descriptor tables for this cpu.
@@ -215,21 +329,13 @@ kern_return_t intel_startCPU(int slot_num)
 		return KERN_SUCCESS;
 	}
 
-	/*start_info.starter_cpu  = cpu_number();
-	 *start_info.target_cpu   = slot_num;
-	 *start_info.target_lapic = lapic;
-	 *tsc_entry_barrier = 2;
-	 *tsc_exit_barrier = 2;
-     */
-
 	/*
 	 * Perform the processor startup sequence with all running
 	 * processors rendezvous'ed. This is required during periods when
 	 * the cache-disable bit is set for MTRR/PAT initialization.
 	 */
 	/*mp_rendezvous_no_intrs(start_cpu, (void *) &start_info);*/
-
-	/*start_info.target_cpu = 0;*/
+	startup_cpu(lapic_id);	
 
 	/*ml_set_interrupts_enabled(istate);*/
 	cpu_intr_restore(eFlagsRegister);
@@ -244,7 +350,7 @@ kern_return_t intel_startCPU(int slot_num)
 		halt_cpu();
 		return KERN_SUCCESS;
 	} else {
-		//printf("Started cpu %d (lapic id %08x)\n", slot_num, lapic);
+		printf("Started cpu %d (lapic id %08x)\n", slot_num, lapic_id);
 		return KERN_SUCCESS;
 	}
 }
@@ -348,6 +454,13 @@ start_other_cpus(void)
 	int cpu;
 	printf("found %d cpus\n", ncpu);
 	printf("The current cpu is: %d\n", cpu_number());
+
+	//copy start routine
+	memcpy((void*)AP_BOOT_ADDR, (void*)phystokv(&apboot), (uint32_t)&apbootend - (uint32_t)&apboot);
+
+	//Initialize cpu stack
+	#define STACK_SIZE (4096 * 2)
+	*stack_ptr = kalloc(STACK_SIZE);
 
 	for (cpu = 0; cpu < ncpu; cpu++){
 		if (cpu != cpu_number()){

@@ -43,7 +43,7 @@
 #include <i386at/idt.h>
 #include "gdt.h"
 #include "ldt.h"
-
+#include <include/stdint.h> //uint16_t, uint32_t_t...
 /*
  * The descriptor tables are together in a structure
  * allocated one per processor (except for the boot processor).
@@ -80,6 +80,7 @@ extern kern_return_t intel_startCPU(int slot_num);
 
 
 extern void interrupt_processor(int cpu);
+void startup_cpu(uint32_t apic_id);
 
 
 #endif /* MULTIPROCESSOR */
