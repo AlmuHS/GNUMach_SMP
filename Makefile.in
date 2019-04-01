@@ -1011,6 +1011,7 @@ noinst_PROGRAMS = gnumach.o$(EXEEXT)
 @HOST_ix86_TRUE@	i386/i386/cpu.h \
 @HOST_ix86_TRUE@	i386/i386/cpu_number.h \
 @HOST_ix86_TRUE@	i386/i386/cswitch.S \
+@HOST_ix86_TRUE@	i386/i386/cpuboot.S \
 @HOST_ix86_TRUE@	i386/i386/db_disasm.c \
 @HOST_ix86_TRUE@	i386/i386/db_interface.c \
 @HOST_ix86_TRUE@	i386/i386/db_interface.h \
@@ -1324,7 +1325,7 @@ am__libkernel_a_SOURCES_DIST = ddb/db_access.c ddb/db_access.h \
 	i386/i386at/pic_isa.c i386/i386at/rtc.c i386/i386at/rtc.h \
 	i386/i386at/lpr.c i386/i386at/lpr.h i386/i386/ast.h \
 	i386/i386/ast_check.c i386/i386/ast_types.h i386/i386/cpu.h \
-	i386/i386/cpu_number.h i386/i386/cswitch.S \
+	i386/i386/cpu_number.h i386/i386/cswitch.S i386/i386/cpuboot.S \
 	i386/i386/db_disasm.c i386/i386/db_interface.c \
 	i386/i386/db_interface.h i386/i386/db_machdep.h \
 	i386/i386/db_trace.c i386/i386/db_trace.h i386/i386/debug.h \
@@ -1402,6 +1403,7 @@ am__libkernel_a_SOURCES_DIST = ddb/db_access.c ddb/db_access.h \
 @HOST_ix86_TRUE@@enable_lpr_TRUE@	i386/i386at/lpr.$(OBJEXT)
 @HOST_ix86_TRUE@am__objects_8 = i386/i386/ast_check.$(OBJEXT) \
 @HOST_ix86_TRUE@	i386/i386/cswitch.$(OBJEXT) \
+@HOST_ix86_TRUE@	i386/i386/cpuboot.$(OBJEXT) \
 @HOST_ix86_TRUE@	i386/i386/db_disasm.$(OBJEXT) \
 @HOST_ix86_TRUE@	i386/i386/db_interface.$(OBJEXT) \
 @HOST_ix86_TRUE@	i386/i386/db_trace.$(OBJEXT) \
@@ -1935,7 +1937,7 @@ am__depfiles_remade = ./$(DEPDIR)/version.Po chips/$(DEPDIR)/busses.Po \
 	device/$(DEPDIR)/net_io.Po device/$(DEPDIR)/subrs.Po \
 	i386/i386/$(DEPDIR)/_setjmp.Po \
 	i386/i386/$(DEPDIR)/ast_check.Po \
-	i386/i386/$(DEPDIR)/cswitch.Po \
+	i386/i386/$(DEPDIR)/cpuboot.Po i386/i386/$(DEPDIR)/cswitch.Po \
 	i386/i386/$(DEPDIR)/db_disasm.Po \
 	i386/i386/$(DEPDIR)/db_interface.Po \
 	i386/i386/$(DEPDIR)/db_trace.Po \
@@ -3703,6 +3705,8 @@ i386/i386/ast_check.$(OBJEXT): i386/i386/$(am__dirstamp) \
 	i386/i386/$(DEPDIR)/$(am__dirstamp)
 i386/i386/cswitch.$(OBJEXT): i386/i386/$(am__dirstamp) \
 	i386/i386/$(DEPDIR)/$(am__dirstamp)
+i386/i386/cpuboot.$(OBJEXT): i386/i386/$(am__dirstamp) \
+	i386/i386/$(DEPDIR)/$(am__dirstamp)
 i386/i386/db_disasm.$(OBJEXT): i386/i386/$(am__dirstamp) \
 	i386/i386/$(DEPDIR)/$(am__dirstamp)
 i386/i386/db_interface.$(OBJEXT): i386/i386/$(am__dirstamp) \
@@ -4494,6 +4498,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@device/$(DEPDIR)/subrs.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@i386/i386/$(DEPDIR)/_setjmp.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@i386/i386/$(DEPDIR)/ast_check.Po@am__quote@ # am--include-marker
+@AMDEP_TRUE@@am__include@ @am__quote@i386/i386/$(DEPDIR)/cpuboot.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@i386/i386/$(DEPDIR)/cswitch.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@i386/i386/$(DEPDIR)/db_disasm.Po@am__quote@ # am--include-marker
 @AMDEP_TRUE@@am__include@ @am__quote@i386/i386/$(DEPDIR)/db_interface.Po@am__quote@ # am--include-marker
@@ -4806,15 +4811,7 @@ distclean-compile:
 
 $(am__depfiles_remade):
 	@$(MKDIR_P) $(@D)
-	# Ugly bootstrap hack to get to-be-generated files created
-	# Try to guess what file this dependency file is from...
-	@f=$(srcdir)/`dirname "$(@D)"`/`basename "$@" .Po | sed s/lib[^-]\*-//` ; \
-	for f in "$$f"*; do \
-		case $$f in \
-			*.c | *.S) echo "$$f"': $$(filter-out $$(DIST_SOURCES),$$(SOURCES))' ;; \
-			*) echo '# dummy';; \
-		esac ; \
-	done >$@-t && $(am__mv) $@-t $@
+	@echo '# dummy' >$@-t && $(am__mv) $@-t $@
 
 am--depfiles: $(am__depfiles_remade)
 
@@ -8015,6 +8012,7 @@ distclean: distclean-recursive
 	-rm -f device/$(DEPDIR)/subrs.Po
 	-rm -f i386/i386/$(DEPDIR)/_setjmp.Po
 	-rm -f i386/i386/$(DEPDIR)/ast_check.Po
+	-rm -f i386/i386/$(DEPDIR)/cpuboot.Po
 	-rm -f i386/i386/$(DEPDIR)/cswitch.Po
 	-rm -f i386/i386/$(DEPDIR)/db_disasm.Po
 	-rm -f i386/i386/$(DEPDIR)/db_interface.Po
@@ -8512,6 +8510,7 @@ maintainer-clean: maintainer-clean-recursive
 	-rm -f device/$(DEPDIR)/subrs.Po
 	-rm -f i386/i386/$(DEPDIR)/_setjmp.Po
 	-rm -f i386/i386/$(DEPDIR)/ast_check.Po
+	-rm -f i386/i386/$(DEPDIR)/cpuboot.Po
 	-rm -f i386/i386/$(DEPDIR)/cswitch.Po
 	-rm -f i386/i386/$(DEPDIR)/db_disasm.Po
 	-rm -f i386/i386/$(DEPDIR)/db_interface.Po
