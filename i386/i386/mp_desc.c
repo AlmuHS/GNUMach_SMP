@@ -484,18 +484,13 @@ start_other_cpus(void)
 	//copy start routine
 	memcpy((void*)phystokv(AP_BOOT_ADDR), (void*) &apboot, (uint32_t)&apbootend - (uint32_t)&apboot);
 
-    machine_slot[0].running = TRUE;
-
-    if(cpu_setup()) return -1;
+    //Initialize cpu stack
+    #define STACK_SIZE (4096 * 2)
+    *stack_ptr = kalloc(STACK_SIZE);
 
 	for (cpu = 0; cpu < ncpu; cpu++){
 		if (cpu != cpu_number()){
             machine_slot[cpu].running = FALSE;
-
-            //Initialize cpu stack
-            #define STACK_SIZE (4096 * 2)
-	        *stack_ptr = kalloc(STACK_SIZE);
-
 			cpu_start(cpu);
 		}
 	}
