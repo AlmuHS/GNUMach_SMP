@@ -476,7 +476,7 @@ start_other_cpus(void)
 	printf("The current cpu is: %d\n", cpu_number());
 
 	//copy start routine
-	memcpy((void*)AP_BOOT_ADDR, (void*) &apboot, (uint32_t)&apbootend - (uint32_t)&apboot);
+	memcpy((void*)phystokv(AP_BOOT_ADDR), (void*) &apboot, (uint32_t)&apbootend - (uint32_t)&apboot);
 
 	//Initialize cpu stack
 	#define STACK_SIZE (4096 * 2)
