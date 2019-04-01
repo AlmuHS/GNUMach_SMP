@@ -488,7 +488,7 @@ start_other_cpus(void)
 
 	for (cpu = 0; cpu < ncpu; cpu++){
 		if (cpu != cpu_number()){
-            machine_slot[i].running = FALSE;
+            machine_slot[cpu].running = FALSE;
 
             //Initialize cpu stack
             #define STACK_SIZE (4096 * 2)
