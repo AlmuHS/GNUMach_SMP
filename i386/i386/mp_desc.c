@@ -275,10 +275,38 @@ cpu_setup(){
     if(i >= ncpu)
 	return -1;
 
+  /*TODO: Move this code to a separate function*/
+
     /* assume Pentium 4, Xeon, or later processors */
 	machine_slot[i].apic_id = (lapic->apic_id.r >> 24) & 0xff;
-	machine_slot[i].running = 1;
+	machine_slot[i].running = TRUE;
+	machine_slot[i].is_cpu = TRUE;
+	machine_slot[i].cpu_subtype = CPU_SUBTYPE_AT386;
 
+	int cpu_type = discover_x86_cpu_type ();
+
+	switch (cpu_type)
+  {
+    default:
+      printf("warning: unknown cpu type %d, assuming i386\n", cpu_type);
+    
+    case 3:
+      machine_slot[i].cpu_type = CPU_TYPE_I386;
+      break;
+    
+    case 4:
+      machine_slot[i].cpu_type = CPU_TYPE_I486;
+      break;
+    
+    case 5:
+      machine_slot[i].cpu_type = CPU_TYPE_PENTIUM;
+      break;
+    case 6:
+    case 15:
+      machine_slot[i].cpu_type = CPU_TYPE_PENTIUMPRO;
+      break;
+  }
+	
     return 0;
 }
 
