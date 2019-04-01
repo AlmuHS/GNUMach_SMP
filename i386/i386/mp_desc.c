@@ -370,6 +370,8 @@ kern_return_t intel_startCPU(int slot_num)
 	/*lck_mtx_unlock(&mp_cpu_boot_lock);*/
 	kmutex_unlock(&mp_cpu_boot_lock);
 
+  delay(1000000);
+
 	/*if (!cpu_datap(slot_num)->cpu_running) {*/
 	if(!machine_slot[slot_num].running){
 		printf("Failed to start CPU %02d\n", slot_num);
