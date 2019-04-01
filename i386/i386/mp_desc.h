@@ -80,9 +80,9 @@ extern kern_return_t intel_startCPU(int slot_num);
 
 
 extern void interrupt_processor(int cpu);
-void startup_cpu(uint32_t apic_id);
-void cpu_ap_main();
-int cpu_setup();
+extern void startup_cpu(uint32_t apic_id);
+extern void cpu_ap_main();
+extern int cpu_setup();
 
 
 #endif /* MULTIPROCESSOR */
