@@ -228,6 +228,7 @@ void startup_cpu(uint32_t apic_id){
     dummyf(lapic->apic_id.r);	
 
   //wait until IPI is sent
+  delay(10000);
 	while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
 
 	//Send INIT De-Assert IPI
@@ -239,6 +240,7 @@ void startup_cpu(uint32_t apic_id){
     dummyf(lapic->apic_id.r);
 
 	//wait until IPI is sent
+  delay(10000);
 	while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
 
 	//Send StartUp IPI
@@ -250,6 +252,7 @@ void startup_cpu(uint32_t apic_id){
     dummyf(lapic->apic_id.r);
 
 	//wait until IPI is sent
+  delay(1000);
 	while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
 
 	//Send second StartUp IPI
@@ -261,6 +264,7 @@ void startup_cpu(uint32_t apic_id){
     dummyf(lapic->apic_id.r);
 
 	//wait until IPI is sent
+  delay(1000);
 	while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
 
 }
