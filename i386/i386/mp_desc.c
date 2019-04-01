@@ -484,6 +484,8 @@ start_other_cpus(void)
 	//copy start routine
 	memcpy((void*)phystokv(AP_BOOT_ADDR), (void*) &apboot, (uint32_t)&apbootend - (uint32_t)&apboot);
 
+    machine_slot[0].running = TRUE;
+
     if(cpu_setup()) return -1;
 
 	for (cpu = 0; cpu < ncpu; cpu++){
