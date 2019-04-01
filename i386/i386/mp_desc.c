@@ -220,18 +220,18 @@ void startup_cpu(uint32_t apic_id){
     unsigned icr_h = 0;
     unsigned icr_l = 0;
 
-	//send INIT Assert IPI
+    //send INIT Assert IPI
     icr_h = (apic_id << 24);
     icr_l = (INIT << 8) | (ASSERT << 14) | (LEVEL << 15); 
     send_IPI(icr_h, icr_l);
 
     dummyf(lapic->apic_id.r);	
 
-  //wait until IPI is sent
-  delay(10000);
-	while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
+    //wait until IPI is sent
+    delay(10000);
+    while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
 
-	//Send INIT De-Assert IPI
+    //Send INIT De-Assert IPI
     icr_h = 0; icr_l = 0;
     icr_h = (apic_id << 24);
     icr_l = (INIT << 8) | (DE_ASSERT << 14) | (LEVEL << 15);
@@ -239,11 +239,11 @@ void startup_cpu(uint32_t apic_id){
 
     dummyf(lapic->apic_id.r);
 
-	//wait until IPI is sent
-  delay(10000);
-	while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
+    //wait until IPI is sent
+    delay(10000);
+    while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
 
-	//Send StartUp IPI
+    //Send StartUp IPI
     icr_h = 0; icr_l = 0;
     icr_h = (apic_id << 24);
     icr_l = (STARTUP << 8) | ((AP_BOOT_ADDR >>12) & 0xff);
@@ -251,11 +251,11 @@ void startup_cpu(uint32_t apic_id){
 
     dummyf(lapic->apic_id.r);
 
-	//wait until IPI is sent
-  delay(1000);
-	while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
+    //wait until IPI is sent
+    delay(1000);
+    while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
 
-	//Send second StartUp IPI
+    //Send second StartUp IPI
     icr_h = 0; icr_l = 0;
     icr_h = (apic_id << 24);
     icr_l = (STARTUP << 8) | ((AP_BOOT_ADDR >>12) & 0xff);
@@ -263,9 +263,9 @@ void startup_cpu(uint32_t apic_id){
 
     dummyf(lapic->apic_id.r);
 
-	//wait until IPI is sent
-  delay(1000);
-	while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
+    //wait until IPI is sent
+    delay(1000);
+    while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
 
 }
 
@@ -273,7 +273,7 @@ int
 cpu_setup(){
 
     int i = 0;
-    while(i < ncpu && machine_slot[i].running) i++;
+    while(i < ncpu && (machine_slot[i].running == TRUE)) i++;
 
     /* panic? */
     if(i >= ncpu)
@@ -484,12 +484,16 @@ start_other_cpus(void)
 	//copy start routine
 	memcpy((void*)phystokv(AP_BOOT_ADDR), (void*) &apboot, (uint32_t)&apbootend - (uint32_t)&apboot);
 
-	//Initialize cpu stack
-	#define STACK_SIZE (4096 * 2)
-	*stack_ptr = kalloc(STACK_SIZE);
+    if(cpu_setup()) return -1;
 
 	for (cpu = 0; cpu < ncpu; cpu++){
 		if (cpu != cpu_number()){
+            machine_slot[i].running = FALSE;
+
+            //Initialize cpu stack
+            #define STACK_SIZE (4096 * 2)
+	        *stack_ptr = kalloc(STACK_SIZE);
+
 			cpu_start(cpu);
 		}
 	}
