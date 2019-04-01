@@ -227,7 +227,7 @@ void startup_cpu(uint32_t apic_id){
 
     dummyf(lapic->apic_id.r);	
 
-	//wait until IPI is sent
+  //wait until IPI is sent
 	while(lapic->icr_low.r & (1 << 12) == SEND_PENDING);
 
 	//Send INIT De-Assert IPI
@@ -476,7 +476,7 @@ start_other_cpus(void)
 	printf("The current cpu is: %d\n", cpu_number());
 
 	//copy start routine
-	memcpy((void*)AP_BOOT_ADDR, (void*)phystokv(&apboot), (uint32_t)&apbootend - (uint32_t)&apboot);
+	memcpy((void*)AP_BOOT_ADDR, (void*) &apboot, (uint32_t)&apbootend - (uint32_t)&apboot);
 
 	//Initialize cpu stack
 	#define STACK_SIZE (4096 * 2)
