@@ -160,6 +160,8 @@ counter:
 
     pushl stack_ptr
 
+    incw M(counter)
+
     halt:
 	hlt
     
