@@ -161,7 +161,7 @@ counter:
     halt:
 	hlt
     
-    jmp $(halt - 0xc0000000)
+    jmpl halt - 0xc0000000
 
 
     pushl stack_ptr
