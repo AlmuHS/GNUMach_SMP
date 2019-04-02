@@ -138,12 +138,12 @@ counter:
 
     incw M(counter)
 
-    lidtl idt_descr-0xC0000000
+    lidtl idt_descr-0xc0000000
 
     incw M(counter)
 
-    lgdt gdt_descr-0xC0000000
-    ljmpl $0x8, $1f
+    lgdt gdt_descr-0xc0000000
+    ljmpl $0x8, $(1f-0xc0000000)
 
 1:
     mov $0x10, %eax
@@ -157,6 +157,12 @@ counter:
     addl $STACK_SIZE, %esp
 
     incw M(counter)
+
+    halt:
+	hlt
+    
+    jmp $(halt - 0xc0000000)
+
 
     pushl stack_ptr
     call cpu_ap_main
