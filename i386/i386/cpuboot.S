@@ -162,11 +162,6 @@ counter:
 
     incw M(counter)
 
-    halt:
-	hlt
-    
-    jmpl halt - 0xc0000000
-
     call cpu_ap_main
 
 
