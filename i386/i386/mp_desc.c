@@ -241,7 +241,7 @@ void startup_cpu(uint32_t apic_id){
 
     //wait until IPI is sent
     delay(10000);
-    while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
+    //while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
 
     //Send StartUp IPI
     icr_h = 0; icr_l = 0;
@@ -253,7 +253,7 @@ void startup_cpu(uint32_t apic_id){
 
     //wait until IPI is sent
     delay(1000);
-    while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
+    //while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
 
     //Send second StartUp IPI
     icr_h = 0; icr_l = 0;
@@ -265,7 +265,7 @@ void startup_cpu(uint32_t apic_id){
 
     //wait until IPI is sent
     delay(1000);
-    while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
+    //while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
 
 }
 
@@ -484,9 +484,9 @@ start_other_cpus(void)
 	//copy start routine
 	memcpy((void*)phystokv(AP_BOOT_ADDR), (void*) &apboot, (uint32_t)&apbootend - (uint32_t)&apboot);
 
-    //Initialize cpu stack
-    #define STACK_SIZE (4096 * 2)
-    *stack_ptr = kalloc(STACK_SIZE);
+	//Initialize cpu stack
+	#define STACK_SIZE (4096 * 2)
+	*stack_ptr = kalloc(STACK_SIZE);
 
 	for (cpu = 0; cpu < ncpu; cpu++){
 		if (cpu != cpu_number()){
