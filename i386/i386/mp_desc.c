@@ -321,7 +321,7 @@ cpu_setup(){
 int
 cpu_ap_main(){
 
-   return 2;
+   return 5;
 
 	 volatile unsigned* count = (unsigned *) phystokv(AP_BOOT_ADDR + (unsigned)&counter - (unsigned)&apboot); 
    (*count)++;
