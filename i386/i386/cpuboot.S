@@ -153,7 +153,7 @@ counter:
 
 
     movw %ax, %ss
-    movl stack_ptr, %esp
+    movl stack_ptr-0xc0000000, %esp
     addl $STACK_SIZE, %esp
 
     incw M(counter)

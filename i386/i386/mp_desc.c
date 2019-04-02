@@ -499,8 +499,8 @@ start_other_cpus(void)
 
 	//Initialize cpu stack
 	#define STACK_SIZE (4096 * 2)
-	stack_ptr = (void*) kalloc(STACK_SIZE);
-  printf("stack: %x\n", *stack_ptr);
+	*stack_ptr = (void*) kalloc(STACK_SIZE);
+  printf("stack: %x\n", stack_ptr);
 
 	for (cpu = 0; cpu < ncpu; cpu++){
 		if (cpu != cpu_number()){
