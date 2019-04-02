@@ -321,7 +321,7 @@ cpu_setup(){
 int
 cpu_ap_main(){
 
-   return 5;
+   return 1024;
 
 	 volatile unsigned* count = (unsigned *) phystokv(AP_BOOT_ADDR + (unsigned)&counter - (unsigned)&apboot); 
    (*count)++;
@@ -499,7 +499,7 @@ start_other_cpus(void)
 
 	//Initialize cpu stack
 	#define STACK_SIZE (4096 * 2)
-	*stack_ptr = kalloc(STACK_SIZE);
+	stack_ptr = kalloc(STACK_SIZE);
   printf("stack: %x\n", *stack_ptr);
 
 	for (cpu = 0; cpu < ncpu; cpu++){
