@@ -1,24 +1,28 @@
-#define MULTIBOOT_MAGIC 0x1badb002
-#define MULTIBOOT_FLAGS 0x0
-#define MULTIBOOT_CHECKSUM -(MULTIBOOT_MAGIC + MULTIBOOT_FLAGS)
-
-
-#define STACK_SIZE (4096 * 2)
-
+#include <mach/machine/asm.h>
+#include <i386/i386asm.h>
 
     .section .boot, "awx"
 
-
     .align 0x10
 
+    .text
+    .globl apstart, _apstart
+
+apstart:
+_apstart:
+	jmp boot_start
+
+	#define MULTIBOOT_MAGIC 0x1badb002
+	#define MULTIBOOT_FLAGS 0x0
+	#define MULTIBOOT_CHECKSUM -(MULTIBOOT_MAGIC + MULTIBOOT_FLAGS)
+	#define STACK_SIZE (4096 * 2)
+
+ap_data:
     .long MULTIBOOT_MAGIC
     .long MULTIBOOT_FLAGS
     .long MULTIBOOT_CHECKSUM
 
-
-    .text
-    .globl _ap_start
-_ap_start:
+boot_start:
     /* loading idt and gdt */
     lidt idt_descr
     lgdt gdt_descr
