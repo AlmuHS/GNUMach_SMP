@@ -139,6 +139,8 @@ counter:
 
     lidtl idt_descr
 
+    incw M(counter)
+
     lgdt gdt_descr
     ljmpl $0x8, $1f
 
