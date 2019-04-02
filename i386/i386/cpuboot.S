@@ -1,5 +1,6 @@
-#include <mach/machine/asm.h>
-#include <i386/i386asm.h>
+//#include <mach/machine/asm.h>
+//#include <i386/i386asm.h>
+//#include <i386/vm_param.h> //phystokv
 
     .section .boot, "awx"
 
@@ -57,7 +58,7 @@ idt_descr:
     .align 0x10
 gdt_descr:
     .word 0x8*5 - 1
-    .long gdt
+    .long gdt-0xc0000000
 
     .align 0x10
 gdt:
@@ -137,11 +138,11 @@ counter:
 
     incw M(counter)
 
-    lidtl idt_descr
+    lidtl idt_descr-0xC0000000
 
     incw M(counter)
 
-    lgdt gdt_descr
+    lgdt gdt_descr-0xC0000000
     ljmpl $0x8, $1f
 
 1:
