@@ -155,6 +155,8 @@ counter:
     movl stack_ptr, %esp
     addl $STACK_SIZE, %esp
 
+    incw M(counter)
+
     pushl stack_ptr
     call cpu_ap_main
 
