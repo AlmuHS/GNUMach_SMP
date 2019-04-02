@@ -162,7 +162,7 @@ counter:
 
     incw M(counter)
 
-    call cpu_ap_main
+    call cpu_ap_main-0xc0000000
 
 
     cli
