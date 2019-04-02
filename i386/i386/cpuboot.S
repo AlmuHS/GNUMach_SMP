@@ -135,7 +135,7 @@ counter:
     mov %ax, %ss
     mov $0x7000, %esp
 
-    inc M(counter)
+    incw M(counter)
 
     lidtl idt_descr
 
