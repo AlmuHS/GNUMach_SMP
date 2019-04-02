@@ -322,6 +322,7 @@ void
 cpu_ap_main(){
 
     printf("\nstarting cpu: %d\n", cpu_number());
+	  counter++;
 
    if(cpu_setup())
         goto idle;
