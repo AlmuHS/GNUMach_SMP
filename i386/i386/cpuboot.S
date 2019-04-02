@@ -158,13 +158,13 @@ counter:
 
     incw M(counter)
 
+    pushl stack_ptr
+
     halt:
 	hlt
     
     jmpl halt - 0xc0000000
 
-
-    pushl stack_ptr
     call cpu_ap_main
 
 
