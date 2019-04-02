@@ -119,6 +119,9 @@ extern void* *apboot, *apbootend;
 extern void* *stack_ptr;
 extern void *stack_bsp;
 
+//Little trace
+extern unsigned counter;
+
 //ICR Destination mode
 #define PHYSICAL 0
 #define LOGICAL 1
@@ -381,6 +384,8 @@ kern_return_t intel_startCPU(int slot_num)
 		printf("Failed to start CPU %02d\n", slot_num);
 		printf("Failed to start CPU %02d, rebooting...\n", slot_num);
 		delay(1000000);
+		unsigned * cont = (unsigned *) phystokv(AP_BOOT_ADDR + (unsigned)&contador - (unsigned)&apboot);	
+		printf("contador: %x: %x\n", (unsigned)cont, *cont);
 		halt_cpu();
 		return KERN_SUCCESS;
 	} else {
