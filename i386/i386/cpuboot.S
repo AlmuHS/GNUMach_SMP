@@ -150,15 +150,14 @@ counter:
     movw %ax, %ds
     movw %ax, %es
 
-
-
     movw %ax, %ss
-    movl stack_ptr-0xc0000000, %esp
-    addl $STACK_SIZE, %esp
+
+    movl $(stack_high-0xc0000000), %esp
+    // addl $STACK_SIZE, %esp
 
     incw M(counter)
 
-    pushl stack_ptr-0xc0000000
+    pushl $(stack_high-0xc0000000)
 
     incw M(counter)
 
@@ -204,6 +203,11 @@ gdt_tmp:
 
 _apbootend:
 apbootend:
+
+	.align 4096
+	stack_low:
+		.skip 8192, 0
+	stack_high:
 
     .globl dummyf
 dummyf:
