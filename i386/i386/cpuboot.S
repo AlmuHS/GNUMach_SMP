@@ -6,7 +6,7 @@
     .align 0x10
 
     .text
-    .globl apstart, _apstart
+    .globl apstart, _apstart, counter
 
 apstart:
 _apstart:
