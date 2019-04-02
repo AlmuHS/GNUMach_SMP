@@ -122,6 +122,10 @@ _apboot:
     mov %eax, %cr0
 
     ljmp $0x8, $M(1f)
+
+counter:
+.long 0
+
 1:
     .code32
 
@@ -131,10 +135,13 @@ _apboot:
     mov %ax, %ss
     mov $0x7000, %esp
 
+    inc M(counter)
+
     lidtl idt_descr
 
     lgdt gdt_descr
     ljmpl $0x8, $1f
+
 1:
     mov $0x10, %eax
     movw %ax, %ds
