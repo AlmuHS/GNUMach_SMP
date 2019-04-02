@@ -25,8 +25,8 @@ ap_data:
 
 boot_start:
     /* loading idt and gdt */
-    lidt idt_descr
-    lgdt gdt_descr
+    lidt idt_descr-0xc0000000
+    lgdt gdt_descr-0xc0000000
 
     ljmp $0x8, $1f
 1:
