@@ -318,10 +318,12 @@ cpu_setup(){
 }
 
 
-void
+int
 cpu_ap_main(){
 
-	  unsigned * count = (unsigned *) phystokv(AP_BOOT_ADDR + (unsigned)&counter - (unsigned)&apboot); 
+   return 2;
+
+	 volatile unsigned* count = (unsigned *) phystokv(AP_BOOT_ADDR + (unsigned)&counter - (unsigned)&apboot); 
    (*count)++;
 
     printf("\nstarting cpu: %d\n", cpu_number());
