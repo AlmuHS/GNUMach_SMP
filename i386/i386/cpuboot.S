@@ -164,6 +164,9 @@ counter:
 
     call cpu_ap_main-0xc0000000
 
+    incw M(counter)
+    mov %eax, M(counter)
+
 
     cli
 1:
