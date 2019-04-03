@@ -1,6 +1,6 @@
-//#include <mach/machine/asm.h>
-//#include <i386/i386asm.h>
-//#include <i386/vm_param.h> //phystokv
+/*#include <mach/machine/asm.h>*/
+/*#include <i386/i386asm.h>*/
+/*#include <i386/vm_param.h> //phystokv*/
 
     .section .boot, "awx"
 
@@ -129,13 +129,13 @@ counter:
 
 	incw M(counter)
 
-//    lgdt boot_gdt_descr-KERNELBASE
-//    ljmpl $0x8, $(1f-KERNELBASE)
+/*    lgdt boot_gdt_descr-KERNELBASE*/
+/*    ljmpl $0x8, $(1f-KERNELBASE)*/
 
-//1:
-//    mov $0x10, %eax
-//    movw %ax, %ds
-//    movw %ax, %es
+/*1:*/
+/*    mov $0x10, %eax*/
+/*    movw %ax, %ds*/
+/*    movw %ax, %es*/
 
 
 	/* use segmentation to offset ourself. */
