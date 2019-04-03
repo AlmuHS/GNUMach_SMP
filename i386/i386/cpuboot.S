@@ -7,50 +7,8 @@
     .align 0x10
 
     .text
-    .globl apstart, _apstart, counter
+    .globl counter
 
-apstart:
-_apstart:
-	jmp boot_start
-
-	#define MULTIBOOT_MAGIC 0x1badb002
-	#define MULTIBOOT_FLAGS 0x0
-	#define MULTIBOOT_CHECKSUM -(MULTIBOOT_MAGIC + MULTIBOOT_FLAGS)
-	#define STACK_SIZE (4096 * 2)
-
-ap_data:
-    .long MULTIBOOT_MAGIC
-    .long MULTIBOOT_FLAGS
-    .long MULTIBOOT_CHECKSUM
-
-boot_start:
-    /* loading idt and gdt */
-    lidt idt_descr-0xc0000000
-    lgdt gdt_descr-0xc0000000
-
-    ljmp $0x8, $1f
-0:
-    mov $0x10, %eax
-    movw %ax, %ds
-    movw %ax, %es
-
-    movw %ax, %ss
-    movl $(stack_bsp + STACK_SIZE), %esp
-
-
-    /* first argument: multiboot */
-    push %ebx
-
-    cli
-0:
-    hlt
-    jmp 1b
-
-    .section .rodata
-
-    .align 0x10
-
-    .globl idt_descr
 idt_descr:
     .word 0
     .long 0
