@@ -66,7 +66,7 @@ _apboot:
     or $0x1, %eax
     mov %eax, %cr0
 
-    ljmp $0x8, $M(1f)
+    ljmp $0x8, $M(0f)
 
 
 counter:
@@ -110,16 +110,10 @@ counter:
 	movw	%ax,%es
 	movw	%ax,%ss
 
-	/* Switch to our own interrupt stack.  */
-	movl	$_intstack+INTSTACK_SIZE,%esp
-
 	/* Reset EFLAGS to a known state.  */
 	pushl	$0
 	popf
 
-
-
-    movw %ax, %ss
     movl stack_ptr, %esp
     addl $STACK_SIZE, %esp
 
@@ -135,7 +129,7 @@ counter:
     cli
 0:
     hlt
-    jmp 1b
+    jmp 0b
 
 stack_ptr:
     .long 0x0
