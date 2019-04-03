@@ -1,6 +1,8 @@
 #include <mach/machine/asm.h>
 #include <i386/i386asm.h>
 
+#define STACK_SIZE (4096 * 2)
+
     .section .boot, "awx"
 
     .align 0x10
