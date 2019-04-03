@@ -29,7 +29,7 @@ boot_start:
     lgdt gdt_descr-0xc0000000
 
     ljmp $0x8, $1f
-1:
+0:
     mov $0x10, %eax
     movw %ax, %ds
     movw %ax, %es
@@ -42,7 +42,7 @@ boot_start:
     push %ebx
 
     cli
-1:
+0:
     hlt
     jmp 1b
 
@@ -55,43 +55,29 @@ idt_descr:
     .word 0
     .long 0
 
-    .align 0x10
-gdt_descr:
-    .word 0x8*5 - 1
-    .long gdt-0xc0000000
-
-    .align 0x10
-gdt:
-    /* 0 */
-    .quad 0
-    /* boot CS = 0x8 */
-    .word 0xffff
-    .word 0x0000
-    .byte 0x00
-    .byte 0x9a
-    .byte 0xcf
-    .byte 0x00
-    /* boot DS = 0x10 */
-    .word 0xffff
-    .word 0x0000
-    .byte 0x00
-    .byte 0x92
-    .byte 0xcf
-    .byte 0x00
-    /* rm CS = 0x18 */
-    .word 0xffff
-    .word 0
-    .byte 0
-    .byte 0x9a
-    .byte 0x8f
-    .byte 0
-    /* rm DS = 0x20 */
-    .word 0xffff
-    .word 0
-    .byte 0
-    .byte 0x92
-    .byte 0x8f
-
+.align 16
+	.word 0
+boot_gdt_descr:
+	.word 3*8+7
+	.long boot_gdt - KERNELBASE
+.align 16
+boot_gdt:
+	/* 0 */
+	.quad 0
+	/* boot CS = 8 */
+	.word 0xffff
+	.word (-KERNELBASE) & 0xffff
+	.byte ((-KERNELBASE) >> 16) & 0xff
+	.byte 0x9a
+	.byte 0xcf
+	.byte ((-KERNELBASE) >> 24) & 0xff
+	/* boot DS = 8 */
+	.word 0xffff
+	.word (-KERNELBASE) & 0xffff
+	.byte ((-KERNELBASE) >> 16) & 0xff
+	.byte 0x92
+	.byte 0xcf
+	.byte ((-KERNELBASE) >> 24) & 0xff
 
     .bss
     .p2align 4
@@ -124,51 +110,72 @@ _apboot:
 
     ljmp $0x8, $M(1f)
 
+
 counter:
 .long 0
 
-1:
-    .code32
+0:
+	.code32
 
-    mov $0x10, %eax
-    mov %ax, %ds
-    mov %ax, %es
-    mov %ax, %ss
-    mov $0x7000, %esp
+	mov $0x10, %eax
+	mov %ax, %ds
+	mov %ax, %es
+	mov %ax, %ss
+	mov $0x7000, %esp
 
-    incw M(counter)
+	incw M(counter)
 
-    lidtl idt_descr-0xc0000000
+	lidtl idt_descr-KERNELBASE
 
-    incw M(counter)
+	incw M(counter)
 
-    lgdt gdt_descr-0xc0000000
-    ljmpl $0x8, $(1f-0xc0000000)
+//    lgdt boot_gdt_descr-KERNELBASE
+//    ljmpl $0x8, $(1f-KERNELBASE)
 
-1:
-    mov $0x10, %eax
-    movw %ax, %ds
-    movw %ax, %es
+//1:
+//    mov $0x10, %eax
+//    movw %ax, %ds
+//    movw %ax, %es
+
+
+	/* use segmentation to offset ourself. */
+	lgdt	boot_gdt_descr - KERNELBASE
+	ljmp	$8,$0f
+0:
+	movw	$0,%ax
+	movw	%ax,%ds
+	movw	%ax,%es
+	movw	%ax,%fs
+	movw	%ax,%gs
+	movw	$16,%ax
+	movw	%ax,%ds
+	movw	%ax,%es
+	movw	%ax,%ss
+
+	/* Switch to our own interrupt stack.  */
+	movl	$_intstack+INTSTACK_SIZE,%esp
+
+	/* Reset EFLAGS to a known state.  */
+	pushl	$0
+	popf
+
+
 
     movw %ax, %ss
-
-    movl $(stack_high-0xc0000000), %esp
-    // addl $STACK_SIZE, %esp
-
-    incw M(counter)
-
-    pushl $(stack_high-0xc0000000)
+    movl stack_ptr, %esp
+    addl $STACK_SIZE, %esp
 
     incw M(counter)
 
-    call cpu_ap_main-0xc0000000
+    pushl stack_ptr
 
     incw M(counter)
-    mov %eax, M(counter)
+
+    call cpu_ap_main-KERNELBASE
 
 
     cli
-1:
+0:
     hlt
     jmp 1b
 
@@ -204,11 +211,7 @@ gdt_tmp:
 _apbootend:
 apbootend:
 
-	.align 4096
-	stack_low:
-		.skip 8192, 0
-	stack_high:
-
     .globl dummyf
 dummyf:
 ret
+
