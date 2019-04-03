@@ -131,7 +131,7 @@ counter:
 
     incw M(counter)
 
-    call cpu_ap_main-KERNELBASE
+    call cpu_ap_main
 
 
     cli
