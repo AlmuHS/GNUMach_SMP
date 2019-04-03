@@ -100,12 +100,13 @@ counter:
 	/* use segmentation to offset ourself. */
 	lgdt	boot_gdt_descr - KERNELBASE
 
-/*	incw M(counter)*/
+	incw M(counter)
 
 	ljmp	$8,$0f
 
 0:
-    /*incw M(counter)*/
+    incw M(counter)
+
 	movw	$0,%ax
 	movw	%ax,%ds
 	movw	%ax,%es
@@ -116,7 +117,7 @@ counter:
 	movw	%ax,%es
 	movw	%ax,%ss
 
-	incw M(counter)
+	incw counter
 
 	/* Reset EFLAGS to a known state.  */
 /*	pushl	$0*/
@@ -125,11 +126,11 @@ counter:
     movl stack_ptr, %esp
     addl $STACK_SIZE, %esp
 
-    incw M(counter)
+    incw counter
 
     pushl stack_ptr
 
-    incw M(counter)
+    incw counter
 
     call cpu_ap_main
 
