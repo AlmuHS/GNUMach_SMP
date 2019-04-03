@@ -212,7 +212,7 @@ mp_desc_init(int mycpu)
 	}
 }
 
-static void send_IPI(unsigned icr_h, unsigned icr_l){
+static void send_ipi(unsigned icr_h, unsigned icr_l){
     lapic->icr_high.r = icr_h;
     lapic->icr_low.r = icr_l;    
 }
@@ -226,7 +226,7 @@ void startup_cpu(uint32_t apic_id){
     //send INIT Assert IPI
     icr_h = (apic_id << 24);
     icr_l = (INIT << 8) | (ASSERT << 14) | (LEVEL << 15); 
-    send_IPI(icr_h, icr_l);
+    send_ipi(icr_h, icr_l);
 
     dummyf(lapic->apic_id.r);	
 
@@ -328,8 +328,8 @@ cpu_ap_main(){
 
     printf("\nstarting cpu: %d\n", cpu_number());
 
-	for(;;)
-        asm volatile("hlt");
+	//for(;;)
+        //asm volatile("hlt");
 
    if(cpu_setup())
         goto idle;
