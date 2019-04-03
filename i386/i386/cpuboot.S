@@ -1,6 +1,5 @@
-/*#include <mach/machine/asm.h>*/
-/*#include <i386/i386asm.h>*/
-/*#include <i386/vm_param.h> //phystokv*/
+#include <mach/machine/asm.h>
+#include <i386/i386asm.h>
 
     .section .boot, "awx"
 
