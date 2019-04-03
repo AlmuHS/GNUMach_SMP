@@ -100,12 +100,12 @@ counter:
 	/* use segmentation to offset ourself. */
 	lgdt	boot_gdt_descr - KERNELBASE
 
-	incw M(counter)
+	incw counter
 
 	ljmp	$8,$0f
 
 0:
-    incw M(counter)
+    incw counter
 
 	movw	$0,%ax
 	movw	%ax,%ds
