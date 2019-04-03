@@ -100,12 +100,12 @@ counter:
 	/* use segmentation to offset ourself. */
 	lgdt	boot_gdt_descr - KERNELBASE
 
-	incw M(counter)
+/*	incw M(counter)*/
 
 	ljmp	$8,$0f
 
 0:
-	incw M(counter)
+    /*incw M(counter)*/
 	movw	$0,%ax
 	movw	%ax,%ds
 	movw	%ax,%es
@@ -119,8 +119,8 @@ counter:
 	incw M(counter)
 
 	/* Reset EFLAGS to a known state.  */
-	pushl	$0
-	popf
+/*	pushl	$0*/
+/*	popf*/
 
     movl stack_ptr, %esp
     addl $STACK_SIZE, %esp
