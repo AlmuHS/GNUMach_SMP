@@ -51,6 +51,9 @@ boot_gdt:
     .align 0x10
     .code16
 
+counter:
+.long 0
+
 apboot:
 _apboot:
     cli
@@ -67,10 +70,6 @@ _apboot:
     mov %eax, %cr0
 
     ljmp $0x8, $M(0f)
-
-
-counter:
-.long 0
 
 0:
 	.code32
