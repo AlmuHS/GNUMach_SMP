@@ -50,10 +50,9 @@ boot_gdt:
     .globl apboot, apbootend, stack_ptr
     .align 0x10
     .code16
+
 apboot:
 _apboot:
-
-
     cli
     xor %ax, %ax
     mov %ax, %ds
