@@ -21,22 +21,22 @@ boot_gdt_descr:
 	.long boot_gdt - KERNELBASE
 .align 16
 boot_gdt:
-	/* 0 */
+	/* NULL segment */
 	.quad 0
-	/* boot CS = 8 */
-	.word 0xffff
-	.word (-KERNELBASE) & 0xffff
-	.byte ((-KERNELBASE) >> 16) & 0xff
-	.byte 0x9a
-	.byte 0xcf
-	.byte ((-KERNELBASE) >> 24) & 0xff
-	/* boot DS = 8 */
-	.word 0xffff
-	.word (-KERNELBASE) & 0xffff
-	.byte ((-KERNELBASE) >> 16) & 0xff
-	.byte 0x92
-	.byte 0xcf
-	.byte ((-KERNELBASE) >> 24) & 0xff
+	/* boot CS = 8 . Code Segment*/
+	.word 0xffff /* Segment limit first 0-15 bits*/
+	.word (-KERNELBASE) & 0xffff /*Base first 0-15 bits*/
+	.byte ((-KERNELBASE) >> 16) & 0xff /*Base 16-23 bits */
+	.byte 0x9a /*Access byte */
+	.byte 0xcf /* High 4 bits */
+	.byte ((-KERNELBASE) >> 24) & 0xff /*Base 24-31 bits */
+	/* boot DS = 8 . Data segment*/
+	.word 0xffff /*Segment limit */
+	.word (-KERNELBASE) & 0xffff /*Base first 0-15 bits*/
+	.byte ((-KERNELBASE) >> 16) & 0xff 
+	.byte 0x92 /*Access byte*/
+	.byte 0xcf /* High 4 bits */
+	.byte ((-KERNELBASE) >> 24) & 0xff /*Base 24-31 bits */
 
     .bss
     .p2align 4
@@ -76,17 +76,13 @@ counter:
 0:
 	.code32
 
-	mov $0x10, %eax
-	mov %ax, %ds
-	mov %ax, %es
-	mov %ax, %ss
-	mov $0x7000, %esp
+/*	mov $0x10, %eax*/
+/*	mov %ax, %ds*/
+/*	mov %ax, %es*/
+/*	mov %ax, %ss*/
+/*	mov $0x7000, %esp*/
 
-	incw M(counter)
-
-	lidtl idt_descr-KERNELBASE
-
-	incw M(counter)
+/*	lidtl idt_descr-KERNELBASE*/
 
 /*    lgdt boot_gdt_descr-KERNELBASE*/
 /*    ljmpl $0x8, $(1f-KERNELBASE)*/
@@ -111,8 +107,6 @@ counter:
 	movw	%ax,%ds
 	movw	%ax,%es
 	movw	%ax,%ss
-
-	incw counter
 
 	/* Reset EFLAGS to a known state.  */
 /*	pushl	$0*/
