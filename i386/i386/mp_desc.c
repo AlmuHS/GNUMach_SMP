@@ -119,9 +119,6 @@ extern void* *apboot, *apbootend;
 extern void* *stack_ptr;
 extern void *stack_bsp;
 
-//Little trace
-extern unsigned counter;
-
 //ICR Destination mode
 #define PHYSICAL 0
 #define LOGICAL 1
@@ -381,9 +378,6 @@ kern_return_t intel_startCPU(int slot_num)
 	if(!machine_slot[slot_num].running){
 		printf("Failed to start CPU %02d\n", slot_num);
 		printf("Failed to start CPU %02d, rebooting...\n", slot_num);
-		delay(1000000);
-		unsigned * count = (unsigned *) phystokv(AP_BOOT_ADDR + (unsigned)&counter - (unsigned)&apboot);	
-		printf("counter: %x: %x\n", (unsigned)count, *count);
 		return KERN_SUCCESS;
 	} else {
 		printf("Started cpu %d (lapic id %08x)\n", slot_num, lapic_id);

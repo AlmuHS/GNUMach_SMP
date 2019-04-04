@@ -8,7 +8,6 @@
     .align 0x10
 
     .text
-    .globl counter
 
 idt_descr:
     .word 0
@@ -51,9 +50,6 @@ boot_gdt:
     .align 0x10
     .code16
 
-counter:
-.long 0
-
 apboot:
 _apboot:
     cli
@@ -80,17 +76,6 @@ _apboot:
 	mov %ax, %ss
 	mov $0x7000, %esp
 
-/*	lidtl idt_descr-KERNELBASE*/
-
-/*    lgdt boot_gdt_descr-KERNELBASE*/
-/*    ljmpl $0x8, $(1f-KERNELBASE)*/
-
-/*1:*/
-/*    mov $0x10, %eax*/
-/*    movw %ax, %ds*/
-/*    movw %ax, %es*/
-
-
 	/* use segmentation to offset ourself. */
 	lgdt	boot_gdt_descr - KERNELBASE
 	ljmp	$8,$0f
@@ -110,11 +95,7 @@ _apboot:
     movl stack_ptr, %esp
     addl $STACK_SIZE, %esp
 
-    incw counter
-
     pushl stack_ptr
-
-    incw counter
 
     call cpu_ap_main
     cli
