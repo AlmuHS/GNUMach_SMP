@@ -117,11 +117,8 @@ _apboot:
     incw counter
 
     call cpu_ap_main
-
     cli
-0:
-    hlt
-    jmp 0b
+
 
 stack_ptr:
     .long 0x0
