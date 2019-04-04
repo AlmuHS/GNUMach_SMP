@@ -378,6 +378,7 @@ kern_return_t intel_startCPU(int slot_num)
 	if(!machine_slot[slot_num].running){
 		printf("Failed to start CPU %02d\n", slot_num);
 		printf("Failed to start CPU %02d, rebooting...\n", slot_num);
+		halt_cpu();
 		return KERN_SUCCESS;
 	} else {
 		printf("Started cpu %d (lapic id %08x)\n", slot_num, lapic_id);
