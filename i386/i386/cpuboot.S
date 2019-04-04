@@ -76,11 +76,11 @@ counter:
 0:
 	.code32
 
-/*	mov $0x10, %eax*/
-/*	mov %ax, %ds*/
-/*	mov %ax, %es*/
-/*	mov %ax, %ss*/
-/*	mov $0x7000, %esp*/
+	mov $0x10, %eax
+	mov %ax, %ds
+	mov %ax, %es
+	mov %ax, %ss
+	mov $0x7000, %esp
 
 /*	lidtl idt_descr-KERNELBASE*/
 
