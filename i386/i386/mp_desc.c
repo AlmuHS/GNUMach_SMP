@@ -321,16 +321,6 @@ cpu_setup(){
 int
 cpu_ap_main(){
 
-   return 1024;
-
-	 volatile unsigned* count = (unsigned *) phystokv(AP_BOOT_ADDR + (unsigned)&counter - (unsigned)&apboot); 
-   (*count)++;
-
-    printf("\nstarting cpu: %d\n", cpu_number());
-
-	//for(;;)
-        //asm volatile("hlt");
-
    if(cpu_setup())
         goto idle;
 

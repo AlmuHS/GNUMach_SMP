@@ -106,9 +106,6 @@ _apboot:
 	movw	%ax,%es
 	movw	%ax,%ss
 
-	/* Reset EFLAGS to a known state.  */
-/*	pushl	$0*/
-/*	popf*/
 
     movl stack_ptr, %esp
     addl $STACK_SIZE, %esp
@@ -120,7 +117,6 @@ _apboot:
     incw counter
 
     call cpu_ap_main
-
 
     cli
 0:
