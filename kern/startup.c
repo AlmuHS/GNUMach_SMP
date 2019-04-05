@@ -245,7 +245,7 @@ void start_kernel_threads(void)
 	 */
 
 	start_other_cpus();
-	sched_init();
+	pset_sys_bootstrap();
 #endif	/* NCPUS > 1 */
 
 	/*
