@@ -108,15 +108,16 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 
 ## Task done
 
-- Recover and update old APIC headers from Mach 4
-- Modify `configfrag.ac`
+- Recovered and updated old APIC headers from Mach 4
+- Modified `configfrag.ac`
 	+ Now, if `mach_ncpus > 1`, `NCPUS` will be set to 255
 - Integrated cpu detection and enumeration from acpi tables
 - Solved memory mapping for `*lapic`. Now It's possible to read the Local APIC of the current processsor.
 - Solved ioapic enumeration: changed linked list to array
 - Initialized *master_cpu* variable to 0
 - Initialized *ktss* for master_cpu
-- Enable cpus using StartUp IPI, and switch them to protected mode
+- Enabled cpus using StartUp IPI, and switched them to protected mode
+	+ Loaded GDT and IDT
 
 
 
@@ -129,7 +130,7 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 	+ Mach use PIC 8259 controller, so ioapic is not necessary. Migrate Mach to ioapic is a future TODO
 - *gnumach* boots successfully with a only cpu, in SMP mode
 - *gnumach* enable all cpus and boots successfully
-	+ Now I need to "link" the cpus to the rest of the system
+	+ I need to "link" the cpus to the rest of the system
 
 ## Implementation 
 
