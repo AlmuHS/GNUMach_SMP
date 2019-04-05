@@ -115,7 +115,7 @@ void pset_sys_init(void)
 	 * Give each processor a control port.
 	 * The master processor already has one.
 	 */
-	for (i = 0; i < NCPUS; i++) {
+	for (i = 0; i < ncpu; i++) {
 	    processor = cpu_to_processor(i);
 	    if (processor != master_processor &&
 		machine_slot[i].is_cpu)
