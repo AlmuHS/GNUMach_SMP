@@ -93,13 +93,17 @@ _apboot:
 	movw	%ax,%ss
 
 
-    movl stack_ptr, %esp
-    addl $STACK_SIZE, %esp
+	movl stack_ptr, %esp
+	addl $STACK_SIZE, %esp
 
-    pushl stack_ptr
+	/* Reset EFLAGS to a known state.  */
+	pushl $0
+	popf
 
-    call cpu_ap_main
-    cli
+	pushl stack_ptr
+
+	call cpu_ap_main
+	cli
 
 
 stack_ptr:
