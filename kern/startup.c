@@ -245,6 +245,7 @@ void start_kernel_threads(void)
 	 */
 
 	start_other_cpus();
+	sched_init();
 #endif	/* NCPUS > 1 */
 
 	/*

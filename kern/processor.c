@@ -74,7 +74,7 @@ void pset_sys_bootstrap(void)
 
 	pset_init(&default_pset);
 	default_pset.empty = FALSE;
-	for (i = 0; i < NCPUS; i++) {
+	for (i = 0; i < ncpu; i++) {
 		/*
 		 *	Initialize processor data structures.
 		 *	Note that cpu_to_processor(i) is processor_ptr[i].
