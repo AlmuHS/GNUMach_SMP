@@ -245,7 +245,7 @@ void start_kernel_threads(void)
 	 */
 
 	start_other_cpus();
-	pset_sys_bootstrap();
+	//pset_sys_bootstrap();
 #endif	/* NCPUS > 1 */
 
 	/*
