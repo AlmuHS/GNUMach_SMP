@@ -116,6 +116,7 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - Solved ioapic enumeration: changed linked list to array
 - Initialized *master_cpu* variable to 0
 - Initialized *ktss* for master_cpu
+- Enable cpus using StartUp IPI, and switch them to protected mode
 
 
 
@@ -123,11 +124,12 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 
 - In the [Min_SMP](https://github.com/AlmuHS/Min_SMP/) test environment, the cpus are detected and started correctly
 	+ I need to implement APIC configuration
-- In gnumach, the number of cpus and its lapic structures are detected and enumerated correctly
+- In *gnumach*, the number of cpus and its lapic structures are detected and enumerated correctly
 - ioapic enumeration feels to work correctly
 	+ Mach use PIC 8259 controller, so ioapic is not necessary. Migrate Mach to ioapic is a future TODO
-- *gnumach* boots correctly with a only cpu, in SMP mode
-	+ I need to implement cpu enabling.
+- *gnumach* boots successfully with a only cpu, in SMP mode
+- *gnumach* enable all cpus and boots successfully
+	+ Now I need to "link" the cpus to the rest of the system
 
 ## Implementation 
 
@@ -145,6 +147,8 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - 	The memory mapping is implemented in [`vm_map_physical.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/vm/vm_map_physical.c) and [`vm_map_physical.h`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/vm/vm_map_physical.h)
 	+ 	The lapic mapping is in [`extra_setup()`](https://github.com/AlmuHS/GNUMach_SMP/blob/0d31cc80e8f1e4f041568508b6b165b0174b4334/i386/i386at/acpi_rsdp.c#L297)
 	+ 	This call require that pagging is configured, so the call is added in [`kern/startup.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/0d31cc80e8f1e4f041568508b6b165b0174b4334/kern/startup.c#L133), after pagging configuration
+- 	The cpus enabling is implemented in [`mp_desc.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/mp_desc.c)
+	+ 	The routine to switch the cpus to protected mode is [`cpuboot.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/cpuboot.S	)
 
 ## Gratitude
 
