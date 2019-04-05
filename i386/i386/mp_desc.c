@@ -272,16 +272,16 @@ void startup_cpu(uint32_t apic_id){
 int
 cpu_setup(){
 
-    int i = 0;
-    while(i < ncpu && (machine_slot[i].running == TRUE)) i++;
+	int i = 0;
+	while(i < ncpu && (machine_slot[i].running == TRUE)) i++;
 
-    /* panic? */
-    if(i >= ncpu)
+	/* panic? */
+	if(i >= ncpu)
 	return -1;
 
-  /*TODO: Move this code to a separate function*/
+	/*TODO: Move this code to a separate function*/
 
-    /* assume Pentium 4, Xeon, or later processors */
+	/* assume Pentium 4, Xeon, or later processors */
 	machine_slot[i].apic_id = (lapic->apic_id.r >> 24) & 0xff;
 	machine_slot[i].running = TRUE;
 	machine_slot[i].is_cpu = TRUE;
@@ -290,28 +290,28 @@ cpu_setup(){
 	int cpu_type = discover_x86_cpu_type ();
 
 	switch (cpu_type)
-  {
-    default:
-      printf("warning: unknown cpu type %d, assuming i386\n", cpu_type);
-    
-    case 3:
-      machine_slot[i].cpu_type = CPU_TYPE_I386;
-      break;
-    
-    case 4:
-      machine_slot[i].cpu_type = CPU_TYPE_I486;
-      break;
-    
-    case 5:
-      machine_slot[i].cpu_type = CPU_TYPE_PENTIUM;
-      break;
-    case 6:
-    case 15:
-      machine_slot[i].cpu_type = CPU_TYPE_PENTIUMPRO;
-      break;
-  }
-	
-    return 0;
+	{
+		default:
+			printf("warning: unknown cpu type %d, assuming i386\n", cpu_type);
+
+		case 3:
+			machine_slot[i].cpu_type = CPU_TYPE_I386;
+		break;
+
+		case 4:
+			machine_slot[i].cpu_type = CPU_TYPE_I486;
+		break;
+
+		case 5:
+			machine_slot[i].cpu_type = CPU_TYPE_PENTIUM;
+		break;
+		case 6:
+		case 15:
+			machine_slot[i].cpu_type = CPU_TYPE_PENTIUMPRO;
+		break;
+	}
+
+	return 0;
 }
 
 
