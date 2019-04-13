@@ -151,6 +151,106 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - 	The cpus enabling is implemented in [`mp_desc.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/mp_desc.c)
 	+ 	The routine to switch the cpus to protected mode is [`cpuboot.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/cpuboot.S	)
 
+### Recover old *gnumach* APIC headers
+
+We have recovered the [`apic.h`](http://git.savannah.gnu.org/cgit/hurd/gnumach.git/commit/i386/imps/apic.h?id=0266d331d780ff0e595eda337a3501ffbfea9330) header, original from Mach 4, with Local APIC and IOAPIC structs, and an old implementation of [`cpu_number()`](http://git.savannah.gnu.org/cgit/hurd/gnumach.git/diff/i386/imps/cpu_number.h?id=0266d331d780ff0e595eda337a3501ffbfea9330).
+
+- `cpu_number()` C implementation was moved to [`kern/cpu_number.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/kern/cpu_number.c), and the assembly `CPU_NUMBER()` implementation was moved to [`i386/i386/cpu_number.h`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/cpu_number.h)
+
+- `struct ApicLocalUnit` was updated to the latest Local APIC fields, and stored in [`imps/apic.h`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/imps/apic.h)
+
+
+### CPU detection and enumeration
+
+In this step, we find the Local APIC and IOAPIC registers in the ACPI tables, and enumerate them.
+
+The implementation of this step is based in [Min_SMP acpi.c](https://github.com/AlmuHS/Min_SMP/blob/master/acpi.c) implementation. The main function is `acpi_setup()`, who call to other functions to go across ACPI tables. 
+
+To adapt the code to *gnumach*, It was necessary some changes:
+
+- **Copy and rename files**
+
+	The [`acpi.c`](https://github.com/AlmuHS/Min_SMP/blob/master/acpi.c) and [`acpi.h`](https://github.com/AlmuHS/Min_SMP/blob/master/acpi.h) files were renamed to [`acpi_rsdp.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.c) and [`acpi_rsdp.h`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.h)  
+	  
+	These files were copied in `i386/i386at/..` directory
+
+- **Change headers and move variables**
+  
+  The #include headers must be changed to the *gnumach* equivalent.
+  Some variables declared in [`cpu.c`](https://github.com/AlmuHS/Min_SMP/blob/master/cpu.c) were moved to [`acpi_rsdp.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.c) or other files:
+  
+  - The number of cpus, `ncpu`, was moved to [`acpi_rsdp.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.c)
+  - The lapic ID, stored in [`cpus[]`](https://github.com/AlmuHS/Min_SMP/blob/master/acpi.c) array, was added to [`machine_slot[NCPUS]`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/kern/machine.c) array, and the cpus[] array was removed.
+  - The lapic pointer extern declaration was added to `kern/machine.h`
+  - The `struct list ioapics` was changed to `ioapics[16]` array, in [`acpi_rsdp.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.c)
+  - `struct ioapic` was moved to [`imps/apic.h`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/imps/apic.h)
+   
+- **Replace physical address with logical address**
+
+	The most important modification is to replace the physical address with the equivalent logical address. To ease this task, this function is called before configure pagging.
+	
+	The memory address below 0xc0000000 are mapped directly by the kernel, and their logical address can be got using the macro [`phystokv(address)`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/vm_param.h). This way is used to get the logical address of ACPI tables pointers. 
+	
+	But the lapic pointer is sitted in a high memory position, up to 0xf0000000, so It must be mapped manually. To map this address, we need to use pagging, which is not configured yet. To solve this, we split the process in two steps:
+	
+	- In APIC enumeration step, we store the lapic address in a temporary variable: `lapic_addr`
+	- After pagging is configured, we [call](https://github.com/AlmuHS/GNUMach_SMP/blob/434cf68e9daacdc3bb2b6e1d37c895c5045f8eb5/kern/startup.c#L133) to function [`extra_setup()`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.c) which reserve the memory address to the lapic pointer and initialize the real pointer, `*lapic`.
+
+### Implementation of `cpu_number()` function
+
+Once get the lapic pointer, we could use this pointer to access to the Local APIC of the current processor. Using this, we have implemented `cpu_number()` function, which search in `machine_slot[]` array the apic_id of the current processor, and return the index as kernel ID. 
+
+This function will be used later to get the cpu currently working.
+
+### CPU enabling using StartUp IPI
+
+In this step, we enable the cpus using the StartUp IPI. To do this, we need to write the ICR register in the Local APIC of the processor who raise the IPI (in this case, the BSP raise the IPI to each processor).
+
+To implement this step, we have been inspired in Min_SMP [`mp.c`](https://github.com/AlmuHS/Min_SMP/blob/master/mp.c) and [`cpu.c`](https://github.com/AlmuHS/Min_SMP/blob/master/cpu.c) files, and based in the existent work in [`i386/i386/mp_desc.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/mp_desc.c)
+
+We have split this task in some steps:
+
+- **Modify `start_other_cpus()`**
+
+  The `start_other_cpus()` function calls to `cpu_start(cpu)` for each cpu, to enable It.
+  We have modified this function to change the `NCPUS` macro to `ncpu` variable, reserve
+  memory to the cpu stack, and initialize the `machine_slot[]` to indicate cpu is unabled.  
+    
+  Furthermore, we have added some printf to show the number of cpus and the kernel ID of current cpu. 
+  
+- **Complete `intel_startCPU()`**
+  
+  The `intel_startCPU()` function has the purpose of enable the cpu indicated by parameter, calling to `startup_cpu()` to raise the Startup IPI, and check if the cpu has been enabled correctly.
+  
+  To write this function, we have based in [XNU's `intel_startCPU()` function](https://github.com/nneonneo/osx-10.9-opensource/blob/f5a0b24e4d98574462c8f5e5dfcf0d37ef7e0764/xnu-2422.1.72/osfmk/i386/mp.c#L423), replacing its calls to the *gnumach* equivalent, and removing garbage code blocks.
+  
+- **Raise Startup IPI and initialize cpu**
+
+  *gnumach* doesn't include any function to raise the Startup IPI, so we have implemented this functions based in Min_SMP [`cpu.c`](https://github.com/AlmuHS/Min_SMP/blob/master/cpu.c) and [`mp.c`](https://github.com/AlmuHS/Min_SMP/blob/master/mp.c )functions: 
+  - `startup_cpu()`: This function is called by `intel_startCPU()` to start the Startup IPI sequence in the cpu. 
+  - `send_ipi()`: function to write the IPI fields in the ICR register of the current cpu
+  - `cpu_ap_main()`: The first function executed by the new cpu after startup. Calls to `cpu_setup()` and check errors.
+  - `cpu_setup()`: Initialize the `machine_slot` fields of the cpu
+  
+  This functions has been added to [`i386/i386/mp_desc.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/mp_desc.c)
+  
+- **Implement assembly routine to switch the cpu to protected mode**
+
+	After raise Startup IPI to the cpu, the cpu starts in real mode, so we need to add a routine to switch the cpu to protected mode. Because the real mode is 16 bit, we can't use C instructions (32 bit), so this routine must be written in assembly.
+	
+	This routine load the GDT and IDT registers in the cpu, and call to `cpu_ap_main()` to initialize the `machine_slot` of the cpu.
+	
+	To write the routine, we has taken the Min_SMP [`boot.S`](https://github.com/AlmuHS/Min_SMP/blob/master/boot.S) as base, with a few modifications:
+	
+	- The GDT descriptor are replaced with *gnumach* GDT descriptor (`boot_gdt:` and `boot_gdt_descr:`), taken from [`boothdr.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/boothdr.S).
+	We also copied the register initialization after GDT loading
+	
+	- The `_start` routine is unnecessary and has been removed 
+	- The physical address has been replaced with their equivalent logical address, using the same shift used in `boothdr.S`
+	- We have removed the `hlt` instruction after `call cpu_ap_main`
+	
+   The final code is stored in [`i386/i386/cpuboot.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/cpuboot.S)
+
 ## Gratitude
 
 - [Bosco García](https://github.com/jbgg): Development guidance, original [MinSMP](https://github.com/jbgg/MinSMP) developer, explainations and documentation about MultiProcessor architecture, helpful with *gnumach* development. 
