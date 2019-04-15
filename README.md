@@ -113,11 +113,14 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 	+ Now, if `mach_ncpus > 1`, `NCPUS` will be set to 255
 - Integrated cpu detection and enumeration from acpi tables
 - Solved memory mapping for `*lapic`. Now It's possible to read the Local APIC of the current processsor.
+- Implemented `cpu_number()` function
 - Solved ioapic enumeration: changed linked list to array
 - Initialized *master_cpu* variable to 0
 - Initialized *ktss* for master_cpu
 - Enabled cpus using StartUp IPI, and switched them to protected mode
 	+ Loaded GDT and IDT
+- Implemented assembly `CPU_NUMBER()`
+- Refactorized `cpu_number()` with a more efficient implementation
 
 
 
@@ -129,10 +132,12 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - ioapic enumeration feels to work correctly
 	+ Mach use PIC 8259 controller, so ioapic is not necessary. Migrate Mach to ioapic is a future TODO
 - *gnumach* boots successfully with a only cpu, in SMP mode
-- *gnumach* enable all cpus and boots successfully
+- *gnumach* enable all cpus during the boot successfully
 	+ I need to "link" the cpus to the rest of the system
 
 ## Implementation 
+
+### Summary
 
 - The cpu detection and enumeration are implemented in [`acpi_rdsp.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.c) and [`acpi_rdsp.h`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.h).  
 	+ The main function [`acpi_setup()`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/i386/i386at/acpi_rsdp.c#L47) is called from [`model_dep.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/i386/i386at/model_dep.c#L411)
@@ -150,6 +155,8 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 	+ 	This call require that pagging is configured, so the call is added in [`kern/startup.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/0d31cc80e8f1e4f041568508b6b165b0174b4334/kern/startup.c#L133), after pagging configuration
 - 	The cpus enabling is implemented in [`mp_desc.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/mp_desc.c)
 	+ 	The routine to switch the cpus to protected mode is [`cpuboot.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/cpuboot.S	)
+- 	`cpu_number()` has been refactorized, replacing the while loop with the array `apic2kernel[]`, indexed by apic_id
+- 	`CPU_NUMBER() ` assembly function has been implemented using `apic2kernel[]` array
 
 ### Recover old *gnumach* APIC headers
 
@@ -199,6 +206,8 @@ To adapt the code to *gnumach*, It was necessary some changes:
 ### Implementation of `cpu_number()` function
 
 Once get the lapic pointer, we could use this pointer to access to the Local APIC of the current processor. Using this, we have implemented `cpu_number()` function, which search in `machine_slot[]` array the apic_id of the current processor, and return the index as kernel ID. 
+
+A newer implementation get the Kernel ID from the `apic2kernel[]` array, using the apic_id as index.
 
 This function will be used later to get the cpu currently working.
 
