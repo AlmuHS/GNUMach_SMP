@@ -287,8 +287,6 @@ cpu_setup(){
 	machine_slot[i].is_cpu = TRUE;
 	machine_slot[i].cpu_subtype = CPU_SUBTYPE_AT386;
 
-	apic2kernel[machine_slot[i].apic_id] = i;
-
 	int cpu_type = discover_x86_cpu_type ();
 
 	switch (cpu_type)
@@ -312,6 +310,9 @@ cpu_setup(){
 			machine_slot[i].cpu_type = CPU_TYPE_PENTIUMPRO;
 		break;
 	}
+
+    apic2kernel[machine_slot[i].apic_id] = i;
+
 
 	return 0;
 }
