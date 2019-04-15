@@ -299,31 +299,7 @@ acpi_apic_setup(){
 
 int extra_setup()
 {
-<<<<<<< HEAD
-    if (lapic_addr == 0)
-        {
-            printf("LAPIC mapping skipped\n");
-            return 1;
-        }
-    vm_offset_t virt = 0;
-    // TODO: FIX: it might be desirable to map LAPIC memory with attribute PCD
-    //            (Page Cache Disable)
-    long ret = vm_map_physical(&virt, lapic_addr, sizeof(ApicLocalUnit), 0);
-    if (ret)
-        {
-            panic("Could not map LAPIC");
-            return -1;
-        }
-    else
-        {
-            lapic = (ApicLocalUnit*)virt;
-            printf("LAPIC mapped: physical: 0x%lx virtual: 0x%lx version: 0x%x\n",
-                   (unsigned long)lapic_addr, (unsigned long)virt,
-                   (unsigned)lapic->version.r);
-            return 0;
-        }
 
-=======
   if (lapic_addr == 0)
   {
     printf("LAPIC mapping skipped\n");
@@ -346,5 +322,4 @@ int extra_setup()
            (unsigned)lapic->version.r);
     return 0;
   }
->>>>>>> parent of 40587d2b... rewritten cpu_number
 }
