@@ -273,6 +273,7 @@ int
 cpu_setup(){
 
 	int i = 0;
+	unsigned apic_id = (lapic->apic_id.r >> 24) & 0xff;
 	while(i < ncpu && (machine_slot[i].running == TRUE)) i++;
 
 	/* panic? */
@@ -282,7 +283,8 @@ cpu_setup(){
 	/*TODO: Move this code to a separate function*/
 
 	/* assume Pentium 4, Xeon, or later processors */
-	machine_slot[i].apic_id = (lapic->apic_id.r >> 24) & 0xff;
+	apic2kernel[apic_id] = i;
+	machine_slot[i].apic_id =  apic_id;
 	machine_slot[i].running = TRUE;
 	machine_slot[i].is_cpu = TRUE;
 	machine_slot[i].cpu_subtype = CPU_SUBTYPE_AT386;
@@ -310,9 +312,6 @@ cpu_setup(){
 			machine_slot[i].cpu_type = CPU_TYPE_PENTIUMPRO;
 		break;
 	}
-
-    apic2kernel[machine_slot[i].apic_id] = i;
-
 
 	return 0;
 }
