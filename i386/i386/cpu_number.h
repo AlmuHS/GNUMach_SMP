@@ -51,7 +51,7 @@
 		jz 0f; \
 		movl 0x20(reg), reg; \
 		shrl $24, reg; \
-		movl apic2kernel(,reg,4), reg; \
+		movswl apic2kernel(,reg,2), reg; \
 		0:
 #endif
 

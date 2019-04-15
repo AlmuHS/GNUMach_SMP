@@ -82,6 +82,9 @@ acpi_setup()
         }
     }
 
+    if(acpi_apic_setup())
+        return -1;
+
     return 0;
 }
 
@@ -228,7 +231,6 @@ acpi_apic_setup(){
     if(acpi_checksum(apic, apic->header.length))
         return -1;
 
-
     ncpu = 0;
     nioapic = 0;
 
@@ -300,7 +302,6 @@ acpi_apic_setup(){
 
 int extra_setup()
 {
-
   if (lapic_addr == 0)
   {
     printf("LAPIC mapping skipped\n");
