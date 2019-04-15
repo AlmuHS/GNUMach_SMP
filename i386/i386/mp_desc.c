@@ -276,6 +276,8 @@ cpu_setup(){
 	unsigned apic_id = (lapic->apic_id.r >> 24) & 0xff;
 	while(i < ncpu && (machine_slot[i].running == TRUE)) i++;
 
+	printf("cpu %d enabled", cpu_number());
+
 	/* panic? */
 	if(i >= ncpu)
 	return -1;
@@ -312,8 +314,6 @@ cpu_setup(){
 			machine_slot[i].cpu_type = CPU_TYPE_PENTIUMPRO;
 		break;
 	}
-
-	printf("started cpu %d", cpu_number());
 
 	return 0;
 }
