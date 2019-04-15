@@ -37,13 +37,13 @@ extern unsigned int master_cpu;	/* 'master' processor - keeps time */
 extern unsigned apic2kernel[NCPUS];
 
 #if	(NCPUS == 1)
-	/* cpu number is always 0 on a single processor system */
-	#define	cpu_number()	(0)
+/* cpu number is always 0 on a single processor system */
+#define	cpu_number()	(0)
 
 #else	/* NCPUS == 1 */
 
-	/*TODO: Get kernelID from cpus vector*/
-	int cpu_number();
+/*TODO: Get kernelID from cpus vector*/
+int cpu_number();
 
 #endif /* NCPUS != 1 */
 
