@@ -272,7 +272,7 @@ void startup_cpu(uint32_t apic_id){
 int
 cpu_setup(){
 
-	int i = 0;
+	int i = 1;
 	unsigned apic_id = (lapic->apic_id.r >> 24) & 0xff;
 	while(i < ncpu && (machine_slot[i].running == TRUE)) i++;
 
@@ -283,7 +283,7 @@ cpu_setup(){
 	/*TODO: Move this code to a separate function*/
 
 	/* assume Pentium 4, Xeon, or later processors */
-	apic2kernel[apic_id] = i;
+	apic2kernel[lapic->apic_id.r] = i;
 	machine_slot[i].apic_id =  apic_id;
 	machine_slot[i].running = TRUE;
 	machine_slot[i].is_cpu = TRUE;
@@ -482,7 +482,7 @@ start_other_cpus(void)
 
 	//copy start routine
 	memcpy((void*)phystokv(AP_BOOT_ADDR), (void*) &apboot, (uint32_t)&apbootend - (uint32_t)&apboot);
-
+	machine_slot[0].apic_id =  lapic->apic_id.r;
 
 	for (cpu = 0; cpu < ncpu; cpu++){
 		if (cpu != cpu_number()){

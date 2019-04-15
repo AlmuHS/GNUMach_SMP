@@ -54,7 +54,7 @@ acpi_setup()
 {
     int j;
 
-    for(j = 0; j < NCPUS; j++)
+    for(j = 0; j < 256; j++)
         {
             apic2kernel[j] = -1;
         }
