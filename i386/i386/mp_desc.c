@@ -273,7 +273,7 @@ int
 cpu_setup(){
 
 	int i = 1;
-	unsigned apic_id = (lapic->apic_id.r >> 24) & 0xff;
+	//unsigned apic_id = (lapic->apic_id.r >> 24) & 0xff;
 	while(i < ncpu && (machine_slot[i].running == TRUE)) i++;
 
 	printf("cpu %d enabled", cpu_number());
@@ -286,7 +286,7 @@ cpu_setup(){
 
 	/* assume Pentium 4, Xeon, or later processors */
 	//apic2kernel[lapic->apic_id.r] = i;
-	machine_slot[i].apic_id =  apic_id;
+	//machine_slot[i].apic_id =  apic_id;
 	machine_slot[i].running = TRUE;
 	machine_slot[i].is_cpu = TRUE;
 	machine_slot[i].cpu_subtype = CPU_SUBTYPE_AT386;
