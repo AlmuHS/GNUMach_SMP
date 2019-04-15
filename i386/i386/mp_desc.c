@@ -276,7 +276,7 @@ cpu_setup(){
 	//unsigned apic_id = (lapic->apic_id.r >> 24) & 0xff;
 	while(i < ncpu && (machine_slot[i].running == TRUE)) i++;
 
-	printf("cpu %d enabled", cpu_number());
+	//printf("cpu %d enabled", cpu_number());
 
 	/* panic? */
 	if(i >= ncpu)
