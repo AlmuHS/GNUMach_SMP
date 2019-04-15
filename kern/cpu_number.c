@@ -10,7 +10,7 @@ cpu_number()
 {
 	if(ncpu == 1 | lapic == 0) return 0;
 	else{ 
-		unsigned apic_id = lapic->apic_id.r >>24;
+		int apic_id = lapic->apic_id.r >>24;
 		return apic2kernel[apic_id];
 	}
 }

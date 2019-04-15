@@ -27,7 +27,7 @@
 #ifndef _KERN_CPU_NUMBER_H_
 #define _KERN_CPU_NUMBER_H_
 
-extern unsigned apic2kernel[NCPUS];
+extern int apic2kernel[256];
 
 /*
  *	Definitions for cpu identification in multi-processors.

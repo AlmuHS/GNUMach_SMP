@@ -42,13 +42,14 @@ static int acpi_get_rsdt();
 static int acpi_apic_setup();
 
 extern struct machine_slot	machine_slot[NCPUS];
-unsigned apic2kernel[256];
+int apic2kernel[256];
 
 /*TODO: Implement ioapic support*/
 struct ioapic ioapics[16];
 
 
 int
+
 acpi_setup()
 {
     int j;
