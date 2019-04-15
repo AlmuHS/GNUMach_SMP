@@ -1,32 +1,32 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1991,1990 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
 
 #if	NCPUS > 1
 
-#include <string.h> 
+#include <string.h>
 
 #include <i386/cpu.h>
 #include <kern/cpu_number.h>
@@ -113,7 +113,7 @@ extern struct real_descriptor	ldt[LDTSZ];
  * Address of cpu start routine, to skip to protected mode after startup IPI
  */
 extern void* *apboot, *apbootend;
-#define AP_BOOT_ADDR (0x7000)	
+#define AP_BOOT_ADDR (0x7000)
 
 //cpu stack
 extern void* *stack_ptr;
@@ -181,7 +181,7 @@ mp_desc_init(int mycpu)
 		memcpy(mpt->ldt,
 		  ldt,
 		  sizeof(ldt));
-		memset(&mpt->ktss, 0, 
+		memset(&mpt->ktss, 0,
 		  sizeof(struct task_tss));
 
 		/*
@@ -211,21 +211,21 @@ mp_desc_init(int mycpu)
 
 static void send_ipi(unsigned icr_h, unsigned icr_l){
     lapic->icr_high.r = icr_h;
-    lapic->icr_low.r = icr_l;    
+    lapic->icr_low.r = icr_l;
 }
 
 
 /*TODO: Add delay between IPI*/
-void startup_cpu(uint32_t apic_id){	    
+void startup_cpu(uint32_t apic_id){
     unsigned icr_h = 0;
     unsigned icr_l = 0;
 
     //send INIT Assert IPI
     icr_h = (apic_id << 24);
-    icr_l = (INIT << 8) | (ASSERT << 14) | (LEVEL << 15); 
+    icr_l = (INIT << 8) | (ASSERT << 14) | (LEVEL << 15);
     send_ipi(icr_h, icr_l);
 
-    dummyf(lapic->apic_id.r);	
+    dummyf(lapic->apic_id.r);
 
     //wait until IPI is sent
     delay(10000);
@@ -287,6 +287,8 @@ cpu_setup(){
 	machine_slot[i].is_cpu = TRUE;
 	machine_slot[i].cpu_subtype = CPU_SUBTYPE_AT386;
 
+	apic2kernel[machine_slot[i].apic_id] = i;
+
 	int cpu_type = discover_x86_cpu_type ();
 
 	switch (cpu_type)
@@ -329,7 +331,7 @@ idle:
 /*TODO: Reimplement function to send Startup IPI to cpu*/
 kern_return_t intel_startCPU(int slot_num)
 {
-	/*TODO: Get local APIC from cpu*/	
+	/*TODO: Get local APIC from cpu*/
 	int lapic_id = machine_slot[slot_num].apic_id;
 	unsigned long eFlagsRegister;
 
@@ -365,7 +367,7 @@ kern_return_t intel_startCPU(int slot_num)
 	 * the cache-disable bit is set for MTRR/PAT initialization.
 	 */
 	/*mp_rendezvous_no_intrs(start_cpu, (void *) &start_info);*/
-	startup_cpu(lapic_id);	
+	startup_cpu(lapic_id);
 
 	/*ml_set_interrupts_enabled(istate);*/
 	cpu_intr_restore(eFlagsRegister);
@@ -394,7 +396,7 @@ interrupt_stack_alloc(void)
 {
 	int		i;
 	vm_offset_t	stack_start;
-	
+
 
 	/*
 	 * Allocate an interrupt stack for each CPU except for

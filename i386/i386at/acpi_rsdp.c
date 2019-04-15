@@ -53,7 +53,8 @@ acpi_setup()
 {
     int j;
 
-    for(j = 0; j < NCPUS; j++){
+    for(j = 0; j < NCPUS; j++)
+    {
         apic2kernel[j] = -1;
     }
 
@@ -69,22 +70,19 @@ acpi_setup()
     int i;
     struct acpi_dhdr *descr_header;
     for(i = 0; i < acpi_rsdt_n; i++)
+    {
+        descr_header = (struct acpi_dhdr*) phystokv(rsdt->entry[i]);
+
+        //Check if the entry contains an APIC
+        if(memcmp(descr_header->signature, ACPI_APIC_SIG,
+                  sizeof(descr_header->signature)) == 0)
         {
-            descr_header = (struct acpi_dhdr*) phystokv(rsdt->entry[i]);
 
-            //Check if the entry contains an APIC
-            if(memcmp(descr_header->signature, ACPI_APIC_SIG,
-                      sizeof(descr_header->signature)) == 0)
-                {
+            //If yes, store the entry in apic
+            apic = (struct acpi_apic*) phystokv(rsdt->entry[i]);
 
-                    //If yes, store the entry in apic
-                    apic = (struct acpi_apic*) phystokv(rsdt->entry[i]);
-
-                }
         }
-
-    if(acpi_apic_setup())
-        return -1;
+    }
 
     return 0;
 }
@@ -100,12 +98,12 @@ acpi_print_info()
     int i;
     struct acpi_dhdr *descr_header;
     for(i = 0; i < acpi_rsdt_n; i++)
-        {
-            descr_header = (struct acpi_dhdr*) phystokv(rsdt->entry[i]);
-            printf("  %x: %c%c%c%c (%x)\n", i, descr_header->signature[0],
-                   descr_header->signature[1], descr_header->signature[2],
-                   descr_header->signature[3], phystokv(rsdt->entry[i]));
-        }
+    {
+        descr_header = (struct acpi_dhdr*) phystokv(rsdt->entry[i]);
+        printf("  %x: %c%c%c%c (%x)\n", i, descr_header->signature[0],
+               descr_header->signature[1], descr_header->signature[2],
+               descr_header->signature[3], phystokv(rsdt->entry[i]));
+    }
 
 }
 
@@ -119,9 +117,9 @@ acpi_checksum(void *addr, uint32_t length)
 
     //Sum all bytes of addr
     for(i = 0; i < length; i++)
-        {
-            checksum += bytes[i];
-        }
+    {
+        checksum += bytes[i];
+    }
 
     return checksum & 0xff;
 }
@@ -156,18 +154,18 @@ acpi_search_rsdp(void *addr, uint32_t length)
 
     //Search RDSP in memory space between addr and addr+lenght
     for(end = addr+length; addr < end; addr += ACPI_RSDP_ALIGN)
+    {
+
+        //Check if the current memory block store the RDSP
+        if(acpi_check_rsdp(addr) == 0)
         {
 
-            //Check if the current memory block store the RDSP
-            if(acpi_check_rsdp(addr) == 0)
-                {
-
-                    //If yes, store RSDP address
-                    rsdp = (struct acpi_rsdp*) addr;
-                    return 0;
-                }
-
+            //If yes, store RSDP address
+            rsdp = (struct acpi_rsdp*) addr;
+            return 0;
         }
+
+    }
 
 
     return -1;
@@ -186,14 +184,14 @@ acpi_get_rsdp()
     base = *start;
 
     if(base != 0)   //Memory check
-        {
+    {
 
-            base <<= 4; //base = base * 16
+        base <<= 4; //base = base * 16
 
-            //Search RSDP in first 1024 bytes from EDBA
-            if(acpi_search_rsdp((void*)phystokv(base),1024) == 0)
-                return 0;
-        }
+        //Search RSDP in first 1024 bytes from EDBA
+        if(acpi_search_rsdp((void*)phystokv(base),1024) == 0)
+            return 0;
+    }
 
     //If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh
     if(acpi_search_rsdp((void*) phystokv(0x0e0000), 0x100000 - 0x0e0000) == 0)
@@ -261,53 +259,53 @@ acpi_apic_setup()
 
     //Search in APIC entry
     while((uint32_t)apic_entry < end)
+    {
+        struct acpi_apic_lapic *lapic_entry;
+        struct acpi_apic_ioapic *ioapic_entry;
+
+        //Check entry type
+        switch(apic_entry->type)
         {
-            struct acpi_apic_lapic *lapic_entry;
-            struct acpi_apic_ioapic *ioapic_entry;
 
-            //Check entry type
-            switch(apic_entry->type)
-                {
+        //If APIC entry is a CPU lapic
+        case ACPI_APIC_ENTRY_LAPIC:
 
-                //If APIC entry is a CPU lapic
-                case ACPI_APIC_ENTRY_LAPIC:
+            //Store lapic
+            lapic_entry = (struct acpi_apic_lapic*) apic_entry;
 
-                    //Store lapic
-                    lapic_entry = (struct acpi_apic_lapic*) apic_entry;
+            //If cpu flag is correct, and the maximum number of CPUs is not reached
+            if((lapic_entry->flags & 0x1) && ncpu < NCPUS)
+            {
 
-                    //If cpu flag is correct, and the maximum number of CPUs is not reached
-                    if((lapic_entry->flags & 0x1) && ncpu < NCPUS)
-                        {
+                //Enumerate CPU and add It to cpu/apic vector
+                machine_slot[ncpu].apic_id = lapic_entry->apic_id;
+                apic2kernel[lapic_entry->apic_id] = ncpu;
 
-                            //Enumerate CPU and add It to cpu/apic vector
-                            machine_slot[ncpu].apic_id = lapic_entry->apic_id;
-                            apic2kernel[lapic_entry->apic_id] = ncpu;
+                //Increase number of CPU
+                ncpu++;
+            }
+            break;
 
-                            //Increase number of CPU
-                            ncpu++;
-                        }
-                    break;
+        //If APIC entry is an IOAPIC
+        case ACPI_APIC_ENTRY_IOAPIC:
 
-                //If APIC entry is an IOAPIC
-                case ACPI_APIC_ENTRY_IOAPIC:
+            //Store ioapic
+            ioapic_entry = (struct acpi_apic_ioapic*) apic_entry;
 
-                    //Store ioapic
-                    ioapic_entry = (struct acpi_apic_ioapic*) apic_entry;
+            /*Insert ioapic in ioapics array*/
+            ioapics[nioapic].apic_id = ioapic_entry->apic_id;
+            ioapics[nioapic].addr = ioapic_entry->addr;
+            ioapics[nioapic].base = ioapic_entry->base;
 
-                    /*Insert ioapic in ioapics array*/
-                    ioapics[nioapic].apic_id = ioapic_entry->apic_id;
-                    ioapics[nioapic].addr = ioapic_entry->addr;
-                    ioapics[nioapic].base = ioapic_entry->base;
-
-                    //Increase number of ioapic
-                    nioapic++;
-                    break;
-                }
-
-            //Get next APIC entry
-            apic_entry = (struct acpi_apic_dhdr*)((uint32_t) apic_entry
-                                                  + apic_entry->length);
+            //Increase number of ioapic
+            nioapic++;
+            break;
         }
+
+        //Get next APIC entry
+        apic_entry = (struct acpi_apic_dhdr*)((uint32_t) apic_entry
+                                              + apic_entry->length);
+    }
 
 
     if(ncpu == 0 || nioapic == 0)
@@ -321,25 +319,25 @@ acpi_apic_setup()
 int extra_setup()
 {
     if (lapic_addr == 0)
-        {
-            printf("LAPIC mapping skipped\n");
-            return 1;
-        }
+    {
+        printf("LAPIC mapping skipped\n");
+        return 1;
+    }
     vm_offset_t virt = 0;
     // TODO: FIX: it might be desirable to map LAPIC memory with attribute PCD
     //            (Page Cache Disable)
     long ret = vm_map_physical(&virt, lapic_addr, sizeof(ApicLocalUnit), 0);
     if (ret)
-        {
-            panic("Could not map LAPIC");
-            return -1;
-        }
+    {
+        panic("Could not map LAPIC");
+        return -1;
+    }
     else
-        {
-            lapic = (ApicLocalUnit*)virt;
-            printf("LAPIC mapped: physical: 0x%lx virtual: 0x%lx version: 0x%x\n",
-                   (unsigned long)lapic_addr, (unsigned long)virt,
-                   (unsigned)lapic->version.r);
-            return 0;
-        }
+    {
+        lapic = (ApicLocalUnit*)virt;
+        printf("LAPIC mapped: physical: 0x%lx virtual: 0x%lx version: 0x%x\n",
+               (unsigned long)lapic_addr, (unsigned long)virt,
+               (unsigned)lapic->version.r);
+        return 0;
+    }
 }
