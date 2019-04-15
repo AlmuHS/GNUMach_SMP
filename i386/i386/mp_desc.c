@@ -289,8 +289,13 @@ cpu_setup(){
 	/*TODO: Move this code to a separate function*/
 
 	/* assume Pentium 4, Xeon, or later processors */
+
+	/* Update apic2kernel and machine_slot with the newest apic_id */
+	apic2kernel[machine_slot[i].apic_id] = -1;
 	apic2kernel[apic_id] = i;
 	machine_slot[i].apic_id =  apic_id;
+
+	/* Initialize machine_slot fields with the cpu data */
 	machine_slot[i].running = TRUE;
 	machine_slot[i].is_cpu = TRUE;
 	machine_slot[i].cpu_subtype = CPU_SUBTYPE_AT386;
@@ -489,6 +494,7 @@ start_other_cpus(void)
 	//copy start routine
 	memcpy((void*)phystokv(AP_BOOT_ADDR), (void*) &apboot, (uint32_t)&apbootend - (uint32_t)&apboot);
 	machine_slot[0].apic_id =  lapic->apic_id.r >>24;
+	apic2kernel[lapic->apic_id.r] = 0;
 
 	for (cpu = 0; cpu < ncpu; cpu++){
 		if (cpu != cpu_number()){
