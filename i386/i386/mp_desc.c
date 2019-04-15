@@ -140,6 +140,8 @@ extern void *stack_bsp;
 
 #define SEND_PENDING 1
 
+extern int lapic_addr;
+
 /*
  * Allocate and initialize the per-processor descriptor tables.
  */
@@ -273,10 +275,12 @@ int
 cpu_setup(){
 
 	int i = 1;
-	//unsigned apic_id = (lapic->apic_id.r >> 24) & 0xff;
 	while(i < ncpu && (machine_slot[i].running == TRUE)) i++;
 
-	//printf("cpu %d enabled", cpu_number());
+	unsigned apic_id = (((ApicLocalUnit*)phystokv(lapic_addr))->apic_id.r >> 24) & 0xff;
+	printf("cpu %d enabled\n", apic_id);
+
+
 
 	/* panic? */
 	if(i >= ncpu)
@@ -285,8 +289,8 @@ cpu_setup(){
 	/*TODO: Move this code to a separate function*/
 
 	/* assume Pentium 4, Xeon, or later processors */
-	//apic2kernel[lapic->apic_id.r] = i;
-	//machine_slot[i].apic_id =  apic_id;
+	apic2kernel[apic_id] = i;
+	machine_slot[i].apic_id =  apic_id;
 	machine_slot[i].running = TRUE;
 	machine_slot[i].is_cpu = TRUE;
 	machine_slot[i].cpu_subtype = CPU_SUBTYPE_AT386;
