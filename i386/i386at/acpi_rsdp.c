@@ -42,7 +42,7 @@ static int acpi_get_rsdt();
 static int acpi_apic_setup();
 
 extern struct machine_slot	machine_slot[NCPUS];
-unsigned apic2kernel[NCPUS];
+unsigned apic2kernel[256];
 
 /*TODO: Implement ioapic support*/
 struct ioapic ioapics[16];
@@ -261,6 +261,7 @@ acpi_apic_setup(){
 
                     //Enumerate CPU and add It to cpu/apic vector
                     machine_slot[ncpu].apic_id = lapic_entry->apic_id;
+                    apic2kernel[lapic_entry->apic_id] = ncpu;
 
                     //Increase number of CPU
                     ncpu++;
