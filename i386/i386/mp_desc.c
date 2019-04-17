@@ -277,7 +277,9 @@ cpu_setup(){
 	int i = 1;
 	while(i < ncpu && (machine_slot[i].running == TRUE)) i++;
 
-	unsigned apic_id = (((ApicLocalUnit*)phystokv(lapic_addr))->apic_id.r >> 24) & 0xff;
+	lapic = (ApicLocalUnit*)phystokv(lapic_addr);
+
+	unsigned apic_id = (lapic->apic_id.r >> 24) & 0xff;
 	printf("cpu %d enabled\n", apic_id);
 
 
