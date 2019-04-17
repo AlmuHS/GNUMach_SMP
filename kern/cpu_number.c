@@ -2,6 +2,7 @@
 #include <i386at/acpi_rsdp.h>
 #include <imps/apic.h>
 #include <mach/machine.h>
+#include <i386/vm_param.h> //phystokv
 
 unsigned int master_cpu = 0;	/* 'master' processor - keeps time */
 
