@@ -291,7 +291,10 @@ cpu_setup(){
 	/* assume Pentium 4, Xeon, or later processors */
 
 	/* Update apic2kernel and machine_slot with the newest apic_id */
-	apic2kernel[machine_slot[i].apic_id] = -1;
+	if(apic2kernel[machine_slot[i].apic_id] == i){
+		apic2kernel[machine_slot[i].apic_id] = -1;
+	}	
+
 	apic2kernel[apic_id] = i;
 	machine_slot[i].apic_id =  apic_id;
 
