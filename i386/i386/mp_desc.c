@@ -281,7 +281,6 @@ cpu_setup(){
 	printf("cpu %d enabled\n", apic_id);
 
 
-
 	/* panic? */
 	if(i >= ncpu)
 	return -1;
@@ -388,7 +387,7 @@ kern_return_t intel_startCPU(int slot_num)
 	/*lck_mtx_unlock(&mp_cpu_boot_lock);*/
 	kmutex_unlock(&mp_cpu_boot_lock);
 
-  delay(1000000);
+	delay(1000000);
 
 	/*if (!cpu_datap(slot_num)->cpu_running) {*/
 	if(!machine_slot[slot_num].running){
@@ -493,11 +492,12 @@ start_other_cpus(void)
 	int cpu;
 	printf("found %d cpus\n", ncpu);
 	printf("The current cpu is: %d\n", cpu_number());
+	int apic_id = lapic->apic_id.r >>24;
 
 	//copy start routine
 	memcpy((void*)phystokv(AP_BOOT_ADDR), (void*) &apboot, (uint32_t)&apbootend - (uint32_t)&apboot);
-	machine_slot[0].apic_id =  lapic->apic_id.r >>24;
-	apic2kernel[lapic->apic_id.r] = 0;
+	machine_slot[0].apic_id = apic_id;
+	apic2kernel[apic_id] = 0;
 
 	for (cpu = 0; cpu < ncpu; cpu++){
 		if (cpu != cpu_number()){
