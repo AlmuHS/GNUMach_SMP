@@ -278,7 +278,7 @@ cpu_setup(){
 	while(i < ncpu && (machine_slot[i].running == TRUE)) i++;
 
 	unsigned apic_id = (((ApicLocalUnit*)phystokv(lapic_addr))->apic_id.r >> 24) & 0xff;
-	printf("cpu %d enabled\n", apic_id);
+	printf("cpu %d enabled\n", cpu_number());
 
 
 	/* panic? */
@@ -391,7 +391,6 @@ kern_return_t intel_startCPU(int slot_num)
 
 	/*if (!cpu_datap(slot_num)->cpu_running) {*/
 	if(!machine_slot[slot_num].running){
-		printf("Failed to start CPU %02d\n", slot_num);
 		printf("Failed to start CPU %02d, rebooting...\n", slot_num);
 		halt_cpu();
 		return KERN_SUCCESS;
