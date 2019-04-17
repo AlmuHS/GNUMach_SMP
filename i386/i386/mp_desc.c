@@ -496,6 +496,8 @@ start_other_cpus(void)
 
 	//copy start routine
 	memcpy((void*)phystokv(AP_BOOT_ADDR), (void*) &apboot, (uint32_t)&apbootend - (uint32_t)&apboot);
+
+	//update BSP machine_slot and apic2kernel 
 	machine_slot[0].apic_id = apic_id;
 	apic2kernel[apic_id] = 0;
 
