@@ -72,6 +72,7 @@
 #include <i386at/kd.h>
 #include <i386at/rtc.h>
 #include <i386at/model_dep.h>
+#include <i386/mp_desc.h>
 
 #include <i386at/acpi_rsdp.h>
 
@@ -414,7 +415,7 @@ i386at_init(void)
 	else{
 		panic("could not find acpi tables for multiprocessor");
 	}
-    
+
 
 	/*
 	 *	Initialize kernel physical map, mapping the
@@ -485,7 +486,7 @@ i386at_init(void)
 	pmap_clear_bootstrap_pagetable((void *)boot_info.pt_base);
 #endif	/* MACH_PV_PAGETABLES */
 
-	
+
 	/*
 	 * Initialize and activate the real i386 protected-mode structures.
 	 */
@@ -498,7 +499,7 @@ i386at_init(void)
 	ktss_init();
 	mp_desc_init(master_cpu);
 
-	
+
 
 #if INIT_VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
 	/* Get rid of the temporary direct mapping and flush it out of the TLB.  */

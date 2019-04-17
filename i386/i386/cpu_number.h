@@ -45,8 +45,14 @@
 	#include <kern/cpu_number.h>
 #else
 	/*TODO: call to real cpu_number()*/
-	#define	CPU_NUMBER(reg)		\
-		movzbl	APIC_LOCAL_VA+0x20,reg
+	#define CPU_NUMBER(reg) \
+		movl lapic, reg; \
+		test reg, reg; \
+		jz 0f; \
+		movl 0x20(reg), reg; \
+		shrl $24, reg; \
+		movl apic2kernel(,reg,4), reg; \
+		0:
 #endif
 
 #endif

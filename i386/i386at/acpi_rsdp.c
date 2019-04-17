@@ -42,13 +42,22 @@ static int acpi_get_rsdt();
 static int acpi_apic_setup();
 
 extern struct machine_slot	machine_slot[NCPUS];
+int apic2kernel[256];
 
 /*TODO: Implement ioapic support*/
 struct ioapic ioapics[16];
 
 
 int
-acpi_setup(){
+
+acpi_setup()
+{
+    int j;
+
+    for(j = 0; j < 256; j++)
+        {
+            apic2kernel[j] = -1;
+        }
 
     //Try to get rsdp pointer
     if(acpi_get_rsdp() || rsdp==0)
@@ -223,7 +232,6 @@ acpi_apic_setup(){
     if(acpi_checksum(apic, apic->header.length))
         return -1;
 
-
     ncpu = 0;
     nioapic = 0;
 
@@ -256,6 +264,7 @@ acpi_apic_setup(){
 
                     //Enumerate CPU and add It to cpu/apic vector
                     machine_slot[ncpu].apic_id = lapic_entry->apic_id;
+                    apic2kernel[lapic_entry->apic_id] = ncpu;
 
                     //Increase number of CPU
                     ncpu++;

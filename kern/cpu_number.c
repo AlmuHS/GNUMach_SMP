@@ -11,11 +11,8 @@ cpu_number()
 	if(ncpu == 1 | lapic == 0) return 0;
 	else{ 
 		unsigned apic_id = lapic->apic_id.r >>24;
-		int i = 0;
-		
-		while(i< ncpu && machine_slot[i].apic_id != apic_id) i++;
-		
-		if(i == ncpu) return -1;
-		else return i;
+
+		return apic2kernel[apic_id];
+
 	}
 }

@@ -27,7 +27,7 @@
 #ifndef _KERN_CPU_NUMBER_H_
 #define _KERN_CPU_NUMBER_H_
 
-
+extern int apic2kernel[256];
 
 /*
  *	Definitions for cpu identification in multi-processors.
@@ -36,13 +36,13 @@
 extern unsigned int master_cpu;	/* 'master' processor - keeps time */
 
 #if	(NCPUS == 1)
-	/* cpu number is always 0 on a single processor system */
-	#define	cpu_number()	(0)
+/* cpu number is always 0 on a single processor system */
+#define	cpu_number()	(0)
 
 #else	/* NCPUS == 1 */
 
-	/*TODO: Get kernelID from cpus vector*/
-	int cpu_number();
+/*TODO: Get kernelID from cpus vector*/
+int cpu_number();
 
 #endif /* NCPUS != 1 */
 

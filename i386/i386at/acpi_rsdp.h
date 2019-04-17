@@ -1,5 +1,5 @@
 /*Copyright 2018 Juan Bosco Garcia
- *This file is part of Min_SMP. 
+ *This file is part of Min_SMP.
  *Min_SMP is free software: you can redistribute it and/or modify
  *it under the terms of the GNU General Public License as published by
  *the Free Software Foundation, either version 3 of the License, or
@@ -22,7 +22,8 @@
 #define ACPI_RSDP_SIG "RSD PTR "
 
 
-struct acpi_rsdp {
+struct acpi_rsdp
+{
     uint8_t signature[8];
     uint8_t checksum;
     uint8_t oem_id[6];
@@ -30,7 +31,8 @@ struct acpi_rsdp {
     uint32_t rsdt_addr;
 } __attribute__((__packed__));
 
-struct acpi_dhdr {
+struct acpi_dhdr
+{
     uint8_t signature[4];
     uint32_t length;
     uint8_t revision;
@@ -45,7 +47,8 @@ struct acpi_dhdr {
 
 #define ACPI_RSDT_SIG "RSDT"
 
-struct acpi_rsdt {
+struct acpi_rsdt
+{
     struct acpi_dhdr header;
     uint32_t entry[0];
 } __attribute__((__packed__));
@@ -56,12 +59,14 @@ struct acpi_rsdt {
 #define ACPI_APIC_ENTRY_LAPIC  0
 #define ACPI_APIC_ENTRY_IOAPIC 1
 
-struct acpi_apic_dhdr {
+struct acpi_apic_dhdr
+{
     uint8_t type;
     uint8_t length;
 } __attribute__((__packed__));
 
-struct acpi_apic {
+struct acpi_apic
+{
     struct acpi_dhdr header;
     uint32_t lapic_addr;
     uint32_t flags;
@@ -69,7 +74,8 @@ struct acpi_apic {
 } __attribute__((__packed__));
 
 
-struct acpi_apic_lapic {
+struct acpi_apic_lapic
+{
     struct acpi_apic_dhdr header;
     uint8_t processor_id;
     uint8_t apic_id;
@@ -77,7 +83,8 @@ struct acpi_apic_lapic {
 } __attribute__((__packed__));
 
 
-struct acpi_apic_ioapic {
+struct acpi_apic_ioapic
+{
     struct acpi_apic_dhdr header;
     uint8_t apic_id;
     uint8_t reserved;
