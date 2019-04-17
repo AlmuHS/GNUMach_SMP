@@ -5,6 +5,8 @@
 
 unsigned int master_cpu = 0;	/* 'master' processor - keeps time */
 
+extern int lapic_entry;
+
 int
 cpu_number()
 {

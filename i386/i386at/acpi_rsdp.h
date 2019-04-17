@@ -99,6 +99,5 @@ int acpi_setup();
 void acpi_print_info();
 int extra_setup();
 
-extern uint32_t lapic_addr;
 
 #endif /* __ACPI_H__ */
