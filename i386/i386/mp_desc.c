@@ -279,7 +279,7 @@ cpu_setup(){
 
 	lapic = (ApicLocalUnit*)phystokv(lapic_addr);
 
-	unsigned apic_id = (lapic->apic_id.r >> 24) & 0xff;
+	unsigned apic_id = (((ApicLocalUnit*)phystokv(lapic_addr))->apic_id.r >> 24) & 0xff;
 	printf("cpu %d enabled\n", apic_id);
 
 
