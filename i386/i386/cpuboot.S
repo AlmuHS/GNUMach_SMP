@@ -39,9 +39,6 @@ boot_gdt:
 
     .bss
     .p2align 4
-    .globl stack_bsp
-    .comm stack_bsp, STACK_SIZE
-
 
 #define M(addr) (addr - apboot + 0x7000)
 
