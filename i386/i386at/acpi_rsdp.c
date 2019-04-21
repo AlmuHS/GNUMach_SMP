@@ -70,18 +70,20 @@ acpi_setup()
     //Search APIC entries in rsdt array
     int i;
     struct acpi_dhdr *descr_header;
-    for(i = 0;i < acpi_rsdt_n; i++){
-        descr_header = (struct acpi_dhdr*) phystokv(rsdt->entry[i]);
+    for(i = 0; i < acpi_rsdt_n; i++)
+        {
+            descr_header = (struct acpi_dhdr*) phystokv(rsdt->entry[i]);
 
-        //Check if the entry contains an APIC
-        if(memcmp(descr_header->signature, ACPI_APIC_SIG,
-                    sizeof(descr_header->signature)) == 0){
+            //Check if the entry contains an APIC
+            if(memcmp(descr_header->signature, ACPI_APIC_SIG,
+                      sizeof(descr_header->signature)) == 0)
+                {
 
-            //If yes, store the entry in apic
-            apic = (struct acpi_apic*) phystokv(rsdt->entry[i]);
+                    //If yes, store the entry in apic
+                    apic = (struct acpi_apic*) phystokv(rsdt->entry[i]);
 
+                }
         }
-    }
 
     if(acpi_apic_setup())
         return -1;
@@ -90,7 +92,8 @@ acpi_setup()
 }
 
 void
-acpi_print_info(){
+acpi_print_info()
+{
 
     printf("ACPI:\n");
     printf(" rsdp = %x; rsdp->rsdt_addr = %x\n", rsdp, phystokv(rsdp->rsdt_addr));
@@ -98,32 +101,36 @@ acpi_print_info(){
            acpi_rsdt_n);
     int i;
     struct acpi_dhdr *descr_header;
-    for(i = 0; i < acpi_rsdt_n; i++){
-        descr_header = (struct acpi_dhdr*) phystokv(rsdt->entry[i]);
-        printf("  %x: %c%c%c%c (%x)\n", i, descr_header->signature[0],
-                descr_header->signature[1], descr_header->signature[2],
-                descr_header->signature[3], phystokv(rsdt->entry[i]));
-    }
+    for(i = 0; i < acpi_rsdt_n; i++)
+        {
+            descr_header = (struct acpi_dhdr*) phystokv(rsdt->entry[i]);
+            printf("  %x: %c%c%c%c (%x)\n", i, descr_header->signature[0],
+                   descr_header->signature[1], descr_header->signature[2],
+                   descr_header->signature[3], phystokv(rsdt->entry[i]));
+        }
 
 }
 
 
 static int
-acpi_checksum(void *addr, uint32_t length){
+acpi_checksum(void *addr, uint32_t length)
+{
     char *bytes = addr;
     int checksum = 0;
     unsigned int i;
 
     //Sum all bytes of addr
-    for(i = 0;i < length; i++){
-        checksum += bytes[i];
-    }
+    for(i = 0; i < length; i++)
+        {
+            checksum += bytes[i];
+        }
 
     return checksum & 0xff;
 }
 
 static int
-acpi_check_rsdp(struct acpi_rsdp *rsdp){
+acpi_check_rsdp(struct acpi_rsdp *rsdp)
+{
 
     //Check is rsdp signature is equals to ACPI RSDP signature
     if(memcmp(rsdp->signature, ACPI_RSDP_SIG, sizeof(rsdp->signature)) != 0)
@@ -141,7 +148,8 @@ acpi_check_rsdp(struct acpi_rsdp *rsdp){
 
 
 static int
-acpi_search_rsdp(void *addr, uint32_t length){
+acpi_search_rsdp(void *addr, uint32_t length)
+{
 
     void *end;
     /* check alignment */
@@ -149,24 +157,27 @@ acpi_search_rsdp(void *addr, uint32_t length){
         return -1;
 
     //Search RDSP in memory space between addr and addr+lenght
-    for(end = addr+length; addr < end; addr += ACPI_RSDP_ALIGN){
+    for(end = addr+length; addr < end; addr += ACPI_RSDP_ALIGN)
+        {
 
-        //Check if the current memory block store the RDSP
-        if(acpi_check_rsdp(addr) == 0){
+            //Check if the current memory block store the RDSP
+            if(acpi_check_rsdp(addr) == 0)
+                {
 
-            //If yes, store RSDP address
-            rsdp = (struct acpi_rsdp*) addr;
-            return 0;
+                    //If yes, store RSDP address
+                    rsdp = (struct acpi_rsdp*) addr;
+                    return 0;
+                }
+
         }
-
-    }
 
 
     return -1;
 }
 
 static int
-acpi_get_rsdp(){
+acpi_get_rsdp()
+{
 
     uint16_t *start = 0x0;
     uint32_t base = 0x0;
@@ -176,14 +187,15 @@ acpi_get_rsdp(){
     start = (uint16_t*) phystokv(0x040e);
     base = *start;
 
-    if(base != 0){  //Memory check
+    if(base != 0)   //Memory check
+        {
 
-        base <<= 4; //base = base * 16
+            base <<= 4; //base = base * 16
 
-        //Search RSDP in first 1024 bytes from EDBA
-        if(acpi_search_rsdp((void*)phystokv(base),1024) == 0)
-            return 0;
-    }
+            //Search RSDP in first 1024 bytes from EDBA
+            if(acpi_search_rsdp((void*)phystokv(base),1024) == 0)
+                return 0;
+        }
 
     //If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh
     if(acpi_search_rsdp((void*) phystokv(0x0e0000), 0x100000 - 0x0e0000) == 0)
@@ -194,20 +206,22 @@ acpi_get_rsdp(){
 
 
 static int
-acpi_check_rsdt(struct acpi_rsdt *rsdt){
+acpi_check_rsdt(struct acpi_rsdt *rsdt)
+{
 
     return acpi_checksum(rsdt, rsdt->header.length);
 }
 
 static int
-acpi_get_rsdt(){
+acpi_get_rsdt()
+{
 
     //Get rsdt address from rsdp
     rsdt = (struct acpi_rsdt*) phystokv(rsdp->rsdt_addr);
 
     //Check is rsdt signature is equals to ACPI RSDT signature
     if(memcmp(rsdt->header.signature, ACPI_RSDT_SIG,
-                sizeof(rsdt->header.signature)) != 0)
+              sizeof(rsdt->header.signature)) != 0)
         return -1;
 
     //Check if rsdt is correct
@@ -216,14 +230,15 @@ acpi_get_rsdt(){
 
     //Calculated number of elements stored in rsdt
     acpi_rsdt_n = (rsdt->header.length - sizeof(rsdt->header))
-        / sizeof(rsdt->entry[0]);
+                  / sizeof(rsdt->entry[0]);
 
 
     return 0;
 }
 
 static int
-acpi_apic_setup(){
+acpi_apic_setup()
+{
 
     if(apic == 0)
         return -1;
@@ -246,57 +261,61 @@ acpi_apic_setup(){
     uint32_t end = (uint32_t) apic + apic->header.length;
 
     //Search in APIC entry
-    while((uint32_t)apic_entry < end){
-        struct acpi_apic_lapic *lapic_entry;
-        struct acpi_apic_ioapic *ioapic_entry;
+    while((uint32_t)apic_entry < end)
+        {
+            struct acpi_apic_lapic *lapic_entry;
+            struct acpi_apic_ioapic *ioapic_entry;
 
-        //Check entry type
-        switch(apic_entry->type){
+            //Check entry type
+            switch(apic_entry->type)
+                {
 
-            //If APIC entry is a CPU lapic
-            case ACPI_APIC_ENTRY_LAPIC:
+                //If APIC entry is a CPU lapic
+                case ACPI_APIC_ENTRY_LAPIC:
 
-                //Store lapic
-                lapic_entry = (struct acpi_apic_lapic*) apic_entry;
+                    //Store lapic
+                    lapic_entry = (struct acpi_apic_lapic*) apic_entry;
 
-                //If cpu flag is correct, and the maximum number of CPUs is not reached
-                if((lapic_entry->flags & 0x1) && ncpu < NCPUS){
+                    //If cpu flag is correct, and the maximum number of CPUs is not reached
+                    if((lapic_entry->flags & 0x1) && ncpu < NCPUS)
+                        {
 
-                    //Enumerate CPU and add It to cpu/apic vector
-                    machine_slot[ncpu].apic_id = lapic_entry->apic_id;
-                    machine_slot[ncpu].is_cpu = TRUE;
-                    apic2kernel[lapic_entry->apic_id] = ncpu;
+                            //Enumerate CPU and add It to cpu/apic vector
+                            machine_slot[ncpu].apic_id = lapic_entry->apic_id;
+                            machine_slot[ncpu].is_cpu = TRUE;
+                            apic2kernel[lapic_entry->apic_id] = ncpu;
 
-                    //Increase number of CPU
-                    ncpu++;
+                            //Increase number of CPU
+                            ncpu++;
+                        }
+                    break;
+
+                //If APIC entry is an IOAPIC
+                case ACPI_APIC_ENTRY_IOAPIC:
+
+                    //Store ioapic
+                    ioapic_entry = (struct acpi_apic_ioapic*) apic_entry;
+
+                    /*Insert ioapic in ioapics array*/
+                    ioapics[nioapic].apic_id = ioapic_entry->apic_id;
+                    ioapics[nioapic].addr = ioapic_entry->addr;
+                    ioapics[nioapic].base = ioapic_entry->base;
+
+                    //Increase number of ioapic
+                    nioapic++;
+                    break;
                 }
-                break;
 
-            //If APIC entry is an IOAPIC
-            case ACPI_APIC_ENTRY_IOAPIC:
-
-                //Store ioapic
-               	ioapic_entry = (struct acpi_apic_ioapic*) apic_entry;
-
-                /*Insert ioapic in ioapics array*/
-                ioapics[nioapic].apic_id = ioapic_entry->apic_id;
-                ioapics[nioapic].addr = ioapic_entry->addr;
-                ioapics[nioapic].base = ioapic_entry->base;
-
-                //Increase number of ioapic
-                nioapic++;
-                break;
+            //Get next APIC entry
+            apic_entry = (struct acpi_apic_dhdr*)((uint32_t) apic_entry
+                                                  + apic_entry->length);
         }
-
-        //Get next APIC entry
-        apic_entry = (struct acpi_apic_dhdr*)((uint32_t) apic_entry
-                + apic_entry->length);
-    }
 
 
     if(ncpu == 0 || nioapic == 0)
         return -1;
-
+    else
+        interrupt_stack_alloc();
 
     return 0;
 }
@@ -304,26 +323,26 @@ acpi_apic_setup(){
 
 int extra_setup()
 {
-  if (lapic_addr == 0)
-  {
-    printf("LAPIC mapping skipped\n");
-    return 1;
-  }
-  vm_offset_t virt = 0;
-  // TODO: FIX: it might be desirable to map LAPIC memory with attribute PCD
-  //            (Page Cache Disable)
-  long ret = vm_map_physical(&virt, lapic_addr, sizeof(ApicLocalUnit), 0);
-  if (ret)
-  {
-    panic("Could not map LAPIC");
-    return -1;
-  }
-  else
-  {
-    lapic = (ApicLocalUnit*)virt;
-    printf("LAPIC mapped: physical: 0x%lx virtual: 0x%lx version: 0x%x\n",
-           (unsigned long)lapic_addr, (unsigned long)virt,
-           (unsigned)lapic->version.r);
-    return 0;
-  }
+    if (lapic_addr == 0)
+        {
+            printf("LAPIC mapping skipped\n");
+            return 1;
+        }
+    vm_offset_t virt = 0;
+    // TODO: FIX: it might be desirable to map LAPIC memory with attribute PCD
+    //            (Page Cache Disable)
+    long ret = vm_map_physical(&virt, lapic_addr, sizeof(ApicLocalUnit), 0);
+    if (ret)
+        {
+            panic("Could not map LAPIC");
+            return -1;
+        }
+    else
+        {
+            lapic = (ApicLocalUnit*)virt;
+            printf("LAPIC mapped: physical: 0x%lx virtual: 0x%lx version: 0x%x\n",
+                   (unsigned long)lapic_addr, (unsigned long)virt,
+                   (unsigned)lapic->version.r);
+            return 0;
+        }
 }
