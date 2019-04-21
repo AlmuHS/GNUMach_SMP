@@ -513,6 +513,8 @@ start_other_cpus(void)
 			cpu_start(cpu);
 		}
 	}
+
+	interrupt_stack_alloc();
 }
 
 #endif	/* NCPUS > 1 */
