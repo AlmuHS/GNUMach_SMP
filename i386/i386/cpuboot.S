@@ -32,15 +32,13 @@ boot_gdt:
 	/* boot DS = 8 . Data segment*/
 	.word 0xffff /*Segment limit */
 	.word (-KERNELBASE) & 0xffff /*Base first 0-15 bits*/
-	.byte ((-KERNELBASE) >> 16) & 0xff 
+	.byte ((-KERNELBASE) >> 16) & 0xff
 	.byte 0x92 /*Access byte*/
 	.byte 0xcf /* High 4 bits */
 	.byte ((-KERNELBASE) >> 24) & 0xff /*Base 24-31 bits */
 
     .bss
     .p2align 4
-    .globl stack_bsp
-    .comm stack_bsp, STACK_SIZE
 
 
 #define M(addr) (addr - apboot + 0x7000)
