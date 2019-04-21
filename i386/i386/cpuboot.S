@@ -96,25 +96,10 @@ _apboot:
 	/* Switch to our own interrupt stack.  */
 	movl	$_intstack+INTSTACK_SIZE,%esp
 
-
 	/* Reset EFLAGS to a known state.  */
 	pushl $0
 	popf
 
-iplt_cont:
-	cmpl    %edi,%esi
-	jae     iplt_done
-	movl    (%esi),%ebx	/* r_offset */
-	movb    4(%esi),%al	/* info */
-	cmpb    $42,%al		/* IRELATIVE */
-	jnz     iplt_next
-	call    *(%ebx)		/* call ifunc */
-	movl    %eax,(%ebx)	/* fixed address */
-iplt_next:
-	addl    $8,%esi
-	jmp     iplt_cont
-
-iplt_done:
 	pushl stack_ptr
 
 	call cpu_ap_main
