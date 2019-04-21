@@ -297,6 +297,8 @@ acpi_apic_setup(){
     if(ncpu == 0 || nioapic == 0)
         return -1;
 
+
+    interrupt_stack_alloc();
     return 0;
 }
 
