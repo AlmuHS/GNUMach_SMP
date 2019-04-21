@@ -93,9 +93,6 @@ _apboot:
 	movl stack_ptr, %esp
 	addl $STACK_SIZE, %esp
 
-	/* Switch to our own interrupt stack.  */
-	movl	$_intstack+INTSTACK_SIZE,%esp
-
 	/* Reset EFLAGS to a known state.  */
 	pushl $0
 	popf
