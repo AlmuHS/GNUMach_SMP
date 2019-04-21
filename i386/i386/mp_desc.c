@@ -278,7 +278,6 @@ cpu_setup(){
 	while(i < ncpu && (machine_slot[i].running == TRUE)) i++;
 
 	unsigned apic_id = (((ApicLocalUnit*)phystokv(lapic_addr))->apic_id.r >> 24) & 0xff;
-	printf("cpu %d enabled\n", apic_id);
 
 
 	/* panic? */
@@ -292,14 +291,13 @@ cpu_setup(){
 	/* Update apic2kernel and machine_slot with the newest apic_id */
 	if(apic2kernel[machine_slot[i].apic_id] == i){
 		apic2kernel[machine_slot[i].apic_id] = -1;
-	}	
+	}
 
 	apic2kernel[apic_id] = i;
 	machine_slot[i].apic_id =  apic_id;
 
 	/* Initialize machine_slot fields with the cpu data */
 	machine_slot[i].running = TRUE;
-	machine_slot[i].is_cpu = TRUE;
 	machine_slot[i].cpu_subtype = CPU_SUBTYPE_AT386;
 
 	int cpu_type = discover_x86_cpu_type ();
@@ -325,6 +323,8 @@ cpu_setup(){
 			machine_slot[i].cpu_type = CPU_TYPE_PENTIUMPRO;
 		break;
 	}
+
+	//printf("cpu %d enabled\n", cpu_number());
 
 	return 0;
 }
@@ -381,6 +381,7 @@ kern_return_t intel_startCPU(int slot_num)
 	 */
 	/*mp_rendezvous_no_intrs(start_cpu, (void *) &start_info);*/
 	startup_cpu(lapic_id);
+	cpu_up(slot_num);
 
 	/*ml_set_interrupts_enabled(istate);*/
 	cpu_intr_restore(eFlagsRegister);
@@ -391,7 +392,6 @@ kern_return_t intel_startCPU(int slot_num)
 
 	/*if (!cpu_datap(slot_num)->cpu_running) {*/
 	if(!machine_slot[slot_num].running){
-		printf("Failed to start CPU %02d\n", slot_num);
 		printf("Failed to start CPU %02d, rebooting...\n", slot_num);
 		halt_cpu();
 		return KERN_SUCCESS;
@@ -399,6 +399,7 @@ kern_return_t intel_startCPU(int slot_num)
 		printf("Started cpu %d (lapic id %08x)\n", slot_num, lapic_id);
 		return KERN_SUCCESS;
 	}
+
 }
 /*
  * Called after all CPUs have been found, but before the VM system
@@ -497,7 +498,7 @@ start_other_cpus(void)
 	//copy start routine
 	memcpy((void*)phystokv(AP_BOOT_ADDR), (void*) &apboot, (uint32_t)&apbootend - (uint32_t)&apboot);
 
-	//update BSP machine_slot and apic2kernel 
+	//update BSP machine_slot and apic2kernel
 	machine_slot[0].apic_id = apic_id;
 	apic2kernel[apic_id] = 0;
 

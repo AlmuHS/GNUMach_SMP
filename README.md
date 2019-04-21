@@ -121,6 +121,7 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 	+ Loaded GDT and IDT
 - Implemented assembly `CPU_NUMBER()`
 - Refactorized `cpu_number()` with a more efficient implementation
+- Added interrupt stack to cpus
 
 
 
@@ -157,6 +158,7 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 	+ 	The routine to switch the cpus to protected mode is [`cpuboot.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/cpuboot.S	)
 - 	[`cpu_number()`](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/kern/cpu_number.c#L9) has been refactorized, replacing the while loop with the array [`apic2kernel[]`](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/i386/i386at/acpi_rsdp.c#L45), indexed by apic_id
 - 	[`CPU_NUMBER() `](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/i386/i386/cpu_number.h#L48) assembly function has been implemented using `apic2kernel[]` array
+- 	Added call to `interrupt_stack_alloc()` before `mp_desc_init()`
 
 ### Recover old *gnumach* APIC headers
 

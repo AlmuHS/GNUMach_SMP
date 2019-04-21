@@ -32,15 +32,13 @@ boot_gdt:
 	/* boot DS = 8 . Data segment*/
 	.word 0xffff /*Segment limit */
 	.word (-KERNELBASE) & 0xffff /*Base first 0-15 bits*/
-	.byte ((-KERNELBASE) >> 16) & 0xff 
+	.byte ((-KERNELBASE) >> 16) & 0xff
 	.byte 0x92 /*Access byte*/
 	.byte 0xcf /* High 4 bits */
 	.byte ((-KERNELBASE) >> 24) & 0xff /*Base 24-31 bits */
 
     .bss
     .p2align 4
-    .globl stack_bsp
-    .comm stack_bsp, STACK_SIZE
 
 
 #define M(addr) (addr - apboot + 0x7000)
@@ -92,17 +90,35 @@ _apboot:
 	movw	%ax,%es
 	movw	%ax,%ss
 
-
 	movl stack_ptr, %esp
 	addl $STACK_SIZE, %esp
+
+	/* Switch to our own interrupt stack.  */
+	movl	$_intstack+INTSTACK_SIZE,%esp
+
 
 	/* Reset EFLAGS to a known state.  */
 	pushl $0
 	popf
 
+iplt_cont:
+	cmpl    %edi,%esi
+	jae     iplt_done
+	movl    (%esi),%ebx	/* r_offset */
+	movb    4(%esi),%al	/* info */
+	cmpb    $42,%al		/* IRELATIVE */
+	jnz     iplt_next
+	call    *(%ebx)		/* call ifunc */
+	movl    %eax,(%ebx)	/* fixed address */
+iplt_next:
+	addl    $8,%esi
+	jmp     iplt_cont
+
+iplt_done:
 	pushl stack_ptr
 
 	call cpu_ap_main
+	.comm	_intstack,INTSTACK_SIZE
 	cli
 
 

@@ -77,10 +77,10 @@
 #include <i386at/acpi_rsdp.h>
 
 #ifdef	MACH_XEN
-    #include <xen/console.h>
-    #include <xen/store.h>
-    #include <xen/evt.h>
-    #include <xen/xen.h>
+#include <xen/console.h>
+#include <xen/store.h>
+#include <xen/evt.h>
+#include <xen/xen.h>
 #endif	/* MACH_XEN */
 
 #if	ENABLE_IMMEDIATE_CONSOLE
@@ -146,59 +146,59 @@ extern void linux_init(void);
  */
 void machine_init(void)
 {
-	/*
-	 * Initialize the console.
-	 */
-	cninit();
+    /*
+     * Initialize the console.
+     */
+    cninit();
 
-	/*
-	 * Make more free memory.
-	 *
-	 * This is particularly important for the Linux drivers which
-	 * require available DMA memory.
-	 */
-	biosmem_free_usable();
+    /*
+     * Make more free memory.
+     *
+     * This is particularly important for the Linux drivers which
+     * require available DMA memory.
+     */
+    biosmem_free_usable();
 
-	/*
-	 * Set up to use floating point.
-	 */
-	init_fpu();
+    /*
+     * Set up to use floating point.
+     */
+    init_fpu();
 
 #ifdef MACH_HYP
-	hyp_init();
+    hyp_init();
 #else	/* MACH_HYP */
 #ifdef LINUX_DEV
-	/*
-	 * Initialize Linux drivers.
-	 */
-	linux_init();
+    /*
+     * Initialize Linux drivers.
+     */
+    linux_init();
 #endif
 
-	/*
-	 * Find the devices
-	 */
-	probeio();
+    /*
+     * Find the devices
+     */
+    probeio();
 #endif	/* MACH_HYP */
 
-	/*
-	 * Get the time
-	 */
-	inittodr();
+    /*
+     * Get the time
+     */
+    inittodr();
 
 #ifndef MACH_HYP
-	/*
-	 * Tell the BIOS not to clear and test memory.
-	 */
-	*(unsigned short *)phystokv(0x472) = 0x1234;
+    /*
+     * Tell the BIOS not to clear and test memory.
+     */
+    *(unsigned short *)phystokv(0x472) = 0x1234;
 #endif	/* MACH_HYP */
 
 #if VM_MIN_KERNEL_ADDRESS == 0
-	/*
-	 * Unmap page 0 to trap NULL references.
-	 *
-	 * Note that this breaks accessing some BIOS areas stored there.
-	 */
-	pmap_unmap_page_zero();
+    /*
+     * Unmap page 0 to trap NULL references.
+     *
+     * Note that this breaks accessing some BIOS areas stored there.
+     */
+    pmap_unmap_page_zero();
 #endif
 }
 
@@ -206,16 +206,16 @@ void machine_init(void)
 void machine_idle (int cpu)
 {
 #ifdef	MACH_HYP
-  hyp_idle();
+    hyp_idle();
 #else	/* MACH_HYP */
-  assert (cpu == cpu_number ());
-  asm volatile ("hlt" : : : "memory");
+    assert (cpu == cpu_number ());
+    asm volatile ("hlt" : : : "memory");
 #endif	/* MACH_HYP */
 }
 
 void machine_relax (void)
 {
-	asm volatile ("rep; nop" : : : "memory");
+    asm volatile ("rep; nop" : : : "memory");
 }
 
 /*
@@ -224,11 +224,11 @@ void machine_relax (void)
 void halt_cpu(void)
 {
 #ifdef	MACH_HYP
-	hyp_halt();
+    hyp_halt();
 #else	/* MACH_HYP */
-	asm volatile("cli");
-	while (TRUE)
-	  machine_idle (cpu_number ());
+    asm volatile("cli");
+    while (TRUE)
+        machine_idle (cpu_number ());
 #endif	/* MACH_HYP */
 }
 
@@ -237,38 +237,40 @@ void halt_cpu(void)
  */
 void halt_all_cpus(boolean_t reboot)
 {
-	if (reboot) {
+    if (reboot)
+        {
 #ifdef	MACH_HYP
-	    hyp_reboot();
+            hyp_reboot();
 #endif	/* MACH_HYP */
-	    kdreboot();
-	}
-	else {
-	    rebootflag = TRUE;
+            kdreboot();
+        }
+    else
+        {
+            rebootflag = TRUE;
 #ifdef	MACH_HYP
-	    hyp_halt();
+            hyp_halt();
 #endif	/* MACH_HYP */
-	    printf("Shutdown completed successfully, now in tight loop.\n");
-	    printf("You can safely power off the system or hit ctl-alt-del to reboot\n");
-	    (void) spl0();
-	}
-	while (TRUE)
-	  machine_idle (cpu_number ());
+            printf("Shutdown completed successfully, now in tight loop.\n");
+            printf("You can safely power off the system or hit ctl-alt-del to reboot\n");
+            (void) spl0();
+        }
+    while (TRUE)
+        machine_idle (cpu_number ());
 }
 
 void exit(int rc)
 {
-	halt_all_cpus(0);
+    halt_all_cpus(0);
 }
 
 void db_halt_cpu(void)
 {
-	halt_all_cpus(0);
+    halt_all_cpus(0);
 }
 
 void db_reset_cpu(void)
 {
-	halt_all_cpus(1);
+    halt_all_cpus(1);
 }
 
 #ifndef	MACH_HYP
@@ -276,58 +278,64 @@ void db_reset_cpu(void)
 static void
 register_boot_data(const struct multiboot_raw_info *mbi)
 {
-	struct multiboot_raw_module *mod;
-	struct elf_shdr *shdr;
-	unsigned long tmp;
-	unsigned int i;
+    struct multiboot_raw_module *mod;
+    struct elf_shdr *shdr;
+    unsigned long tmp;
+    unsigned int i;
 
-	extern char _start[], _end[];
+    extern char _start[], _end[];
 
-	biosmem_register_boot_data(_kvtophys(&_start), _kvtophys(&_end), FALSE);
+    biosmem_register_boot_data(_kvtophys(&_start), _kvtophys(&_end), FALSE);
 
-	/* cmdline and modules are moved to a safe place by i386at_init.  */
+    /* cmdline and modules are moved to a safe place by i386at_init.  */
 
-	if ((mbi->flags & MULTIBOOT_LOADER_CMDLINE) && (mbi->cmdline != 0)) {
-		biosmem_register_boot_data(mbi->cmdline,
-					   mbi->cmdline
-					   + strlen((void *)phystokv(mbi->cmdline)) + 1, TRUE);
-	}
+    if ((mbi->flags & MULTIBOOT_LOADER_CMDLINE) && (mbi->cmdline != 0))
+        {
+            biosmem_register_boot_data(mbi->cmdline,
+                                       mbi->cmdline
+                                       + strlen((void *)phystokv(mbi->cmdline)) + 1, TRUE);
+        }
 
-	if (mbi->flags & MULTIBOOT_LOADER_MODULES) {
-		i = mbi->mods_count * sizeof(struct multiboot_raw_module);
-		biosmem_register_boot_data(mbi->mods_addr, mbi->mods_addr + i, TRUE);
+    if (mbi->flags & MULTIBOOT_LOADER_MODULES)
+        {
+            i = mbi->mods_count * sizeof(struct multiboot_raw_module);
+            biosmem_register_boot_data(mbi->mods_addr, mbi->mods_addr + i, TRUE);
 
-		tmp = phystokv(mbi->mods_addr);
+            tmp = phystokv(mbi->mods_addr);
 
-		for (i = 0; i < mbi->mods_count; i++) {
-			mod = (struct multiboot_raw_module *)tmp + i;
-			biosmem_register_boot_data(mod->mod_start, mod->mod_end, TRUE);
+            for (i = 0; i < mbi->mods_count; i++)
+                {
+                    mod = (struct multiboot_raw_module *)tmp + i;
+                    biosmem_register_boot_data(mod->mod_start, mod->mod_end, TRUE);
 
-			if (mod->string != 0) {
-				biosmem_register_boot_data(mod->string,
-							   mod->string
-							   + strlen((void *)phystokv(mod->string)) + 1,
-							   TRUE);
-			}
-		}
-	}
+                    if (mod->string != 0)
+                        {
+                            biosmem_register_boot_data(mod->string,
+                                                       mod->string
+                                                       + strlen((void *)phystokv(mod->string)) + 1,
+                                                       TRUE);
+                        }
+                }
+        }
 
-	if (mbi->flags & MULTIBOOT_LOADER_SHDR) {
-		tmp = mbi->shdr_num * mbi->shdr_size;
-		biosmem_register_boot_data(mbi->shdr_addr, mbi->shdr_addr + tmp, FALSE);
+    if (mbi->flags & MULTIBOOT_LOADER_SHDR)
+        {
+            tmp = mbi->shdr_num * mbi->shdr_size;
+            biosmem_register_boot_data(mbi->shdr_addr, mbi->shdr_addr + tmp, FALSE);
 
-		tmp = phystokv(mbi->shdr_addr);
+            tmp = phystokv(mbi->shdr_addr);
 
-		for (i = 0; i < mbi->shdr_num; i++) {
-			shdr = (struct elf_shdr *)(tmp + (i * mbi->shdr_size));
+            for (i = 0; i < mbi->shdr_num; i++)
+                {
+                    shdr = (struct elf_shdr *)(tmp + (i * mbi->shdr_size));
 
-			if ((shdr->type != ELF_SHT_SYMTAB)
-			    && (shdr->type != ELF_SHT_STRTAB))
-				continue;
+                    if ((shdr->type != ELF_SHT_SYMTAB)
+                            && (shdr->type != ELF_SHT_STRTAB))
+                        continue;
 
-			biosmem_register_boot_data(shdr->addr, shdr->addr + shdr->size, FALSE);
-		}
-	}
+                    biosmem_register_boot_data(shdr->addr, shdr->addr + shdr->size, FALSE);
+                }
+        }
 }
 
 #endif /* MACH_HYP */
@@ -339,204 +347,213 @@ register_boot_data(const struct multiboot_raw_info *mbi)
 void
 i386at_init(void)
 {
-	/* XXX move to intel/pmap.h */
-	extern pt_entry_t *kernel_page_dir;
-	int nb_direct, i;
-	vm_offset_t addr, delta;
+    /* XXX move to intel/pmap.h */
+    extern pt_entry_t *kernel_page_dir;
+    int nb_direct, i;
+    vm_offset_t addr, delta;
 
-	/*
-	 * Initialize the PIC prior to any possible call to an spl.
-	 */
+    /*
+     * Initialize the PIC prior to any possible call to an spl.
+     */
 #ifndef	MACH_HYP
-	picinit();
+    picinit();
 #else	/* MACH_HYP */
-	hyp_intrinit();
+    hyp_intrinit();
 #endif	/* MACH_HYP */
 
-	/*
-	 * Read memory map and load it into the physical page allocator.
-	 */
+    /*
+     * Read memory map and load it into the physical page allocator.
+     */
 #ifdef MACH_HYP
-	biosmem_xen_bootstrap();
+    biosmem_xen_bootstrap();
 #else /* MACH_HYP */
-	register_boot_data((struct multiboot_raw_info *) &boot_info);
-	biosmem_bootstrap((struct multiboot_raw_info *) &boot_info);
+    register_boot_data((struct multiboot_raw_info *) &boot_info);
+    biosmem_bootstrap((struct multiboot_raw_info *) &boot_info);
 #endif /* MACH_HYP */
 
 #ifdef MACH_XEN
-	kernel_cmdline = (char*) boot_info.cmd_line;
+    kernel_cmdline = (char*) boot_info.cmd_line;
 #else	/* MACH_XEN */
-	/* Copy content pointed by boot_info before losing access to it when it
-	 * is too far in physical memory.
-	 * Also avoids leaving them in precious areas such as DMA memory.  */
-	if (boot_info.flags & MULTIBOOT_CMDLINE) {
-		int len = strlen ((char*)phystokv(boot_info.cmdline)) + 1;
-		if (! init_alloc_aligned(round_page(len), &addr))
-		  panic("could not allocate memory for multiboot command line");
-		kernel_cmdline = (char*) phystokv(addr);
-		memcpy(kernel_cmdline, (void *)phystokv(boot_info.cmdline), len);
-		boot_info.cmdline = addr;
-	}
+    /* Copy content pointed by boot_info before losing access to it when it
+     * is too far in physical memory.
+     * Also avoids leaving them in precious areas such as DMA memory.  */
+    if (boot_info.flags & MULTIBOOT_CMDLINE)
+        {
+            int len = strlen ((char*)phystokv(boot_info.cmdline)) + 1;
+            if (! init_alloc_aligned(round_page(len), &addr))
+                panic("could not allocate memory for multiboot command line");
+            kernel_cmdline = (char*) phystokv(addr);
+            memcpy(kernel_cmdline, (void *)phystokv(boot_info.cmdline), len);
+            boot_info.cmdline = addr;
+        }
 
-	if (boot_info.flags & MULTIBOOT_MODS) {
-		struct multiboot_module *m;
-		int i;
+    if (boot_info.flags & MULTIBOOT_MODS)
+        {
+            struct multiboot_module *m;
+            int i;
 
-		if (! init_alloc_aligned(
-			round_page(boot_info.mods_count * sizeof(*m)), &addr))
-		  panic("could not allocate memory for multiboot modules");
-		m = (void*) phystokv(addr);
-		memcpy(m, (void*) phystokv(boot_info.mods_addr), boot_info.mods_count * sizeof(*m));
-		boot_info.mods_addr = addr;
+            if (! init_alloc_aligned(
+                        round_page(boot_info.mods_count * sizeof(*m)), &addr))
+                panic("could not allocate memory for multiboot modules");
+            m = (void*) phystokv(addr);
+            memcpy(m, (void*) phystokv(boot_info.mods_addr), boot_info.mods_count * sizeof(*m));
+            boot_info.mods_addr = addr;
 
-		for (i = 0; i < boot_info.mods_count; i++) {
-			vm_size_t size = m[i].mod_end - m[i].mod_start;
-			if (! init_alloc_aligned(round_page(size), &addr))
-			  panic("could not allocate memory for multiboot "
-				"module %d", i);
-			memcpy((void*) phystokv(addr), (void*) phystokv(m[i].mod_start), size);
-			m[i].mod_start = addr;
-			m[i].mod_end = addr + size;
+            for (i = 0; i < boot_info.mods_count; i++)
+                {
+                    vm_size_t size = m[i].mod_end - m[i].mod_start;
+                    if (! init_alloc_aligned(round_page(size), &addr))
+                        panic("could not allocate memory for multiboot "
+                              "module %d", i);
+                    memcpy((void*) phystokv(addr), (void*) phystokv(m[i].mod_start), size);
+                    m[i].mod_start = addr;
+                    m[i].mod_end = addr + size;
 
-			size = strlen((char*) phystokv(m[i].string)) + 1;
-			if (! init_alloc_aligned(round_page(size), &addr))
-			  panic("could not allocate memory for multiboot "
-				"module command line %d", i);
-			memcpy((void*) phystokv(addr), (void*) phystokv(m[i].string), size);
-			m[i].string = addr;
-		}
-	}
+                    size = strlen((char*) phystokv(m[i].string)) + 1;
+                    if (! init_alloc_aligned(round_page(size), &addr))
+                        panic("could not allocate memory for multiboot "
+                              "module command line %d", i);
+                    memcpy((void*) phystokv(addr), (void*) phystokv(m[i].string), size);
+                    m[i].string = addr;
+                }
+        }
 #endif	/* MACH_XEN */
 
-	/*Read lapic and ioapic from acpi tables*/
-	if(acpi_setup() == 0){
-		printf("acpi found %d cpus\n", ncpu);
-	}
-	else{
-		panic("could not find acpi tables for multiprocessor");
-	}
+    /*Read lapic and ioapic from acpi tables*/
+    if(acpi_setup() == 0)
+        {
+            printf("acpi found %d cpus\n", ncpu);
+        }
+    else
+        {
+            panic("could not find acpi tables for multiprocessor");
+        }
 
 
-	/*
-	 *	Initialize kernel physical map, mapping the
-	 *	region from loadpt to avail_start.
-	 *	Kernel virtual address starts at VM_KERNEL_MIN_ADDRESS.
-	 *	XXX make the BIOS page (page 0) read-only.
-	 */
-	pmap_bootstrap();
+    /*
+     *	Initialize kernel physical map, mapping the
+     *	region from loadpt to avail_start.
+     *	Kernel virtual address starts at VM_KERNEL_MIN_ADDRESS.
+     *	XXX make the BIOS page (page 0) read-only.
+     */
+    pmap_bootstrap();
 
-	/*
-	 *	Load physical segments into the VM system.
-	 *	The early allocation functions become unusable after
-	 *	this point.
-	 */
-	biosmem_setup();
+    /*
+     *	Load physical segments into the VM system.
+     *	The early allocation functions become unusable after
+     *	this point.
+     */
+    biosmem_setup();
 
-	/*
-	 * We'll have to temporarily install a direct mapping
-	 * between physical memory and low linear memory,
-	 * until we start using our new kernel segment descriptors.
-	 */
+    /*
+     * We'll have to temporarily install a direct mapping
+     * between physical memory and low linear memory,
+     * until we start using our new kernel segment descriptors.
+     */
 #if INIT_VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
-	delta = INIT_VM_MIN_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS;
-	if ((vm_offset_t)(-delta) < delta)
-		delta = (vm_offset_t)(-delta);
-	nb_direct = delta >> PDESHIFT;
-	for (i = 0; i < nb_direct; i++)
-		kernel_page_dir[lin2pdenum_cont(INIT_VM_MIN_KERNEL_ADDRESS) + i] =
-			kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS) + i];
+    delta = INIT_VM_MIN_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS;
+    if ((vm_offset_t)(-delta) < delta)
+        delta = (vm_offset_t)(-delta);
+    nb_direct = delta >> PDESHIFT;
+    for (i = 0; i < nb_direct; i++)
+        kernel_page_dir[lin2pdenum_cont(INIT_VM_MIN_KERNEL_ADDRESS) + i] =
+            kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS) + i];
 #endif
-	/* We need BIOS memory mapped at 0xc0000 & co for Linux drivers */
+    /* We need BIOS memory mapped at 0xc0000 & co for Linux drivers */
 #ifdef LINUX_DEV
 #if VM_MIN_KERNEL_ADDRESS != 0
-	kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS)] =
-		kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS)];
+    kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS)] =
+        kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS)];
 #endif
 #endif
 
 #ifdef	MACH_PV_PAGETABLES
-	for (i = 0; i < PDPNUM; i++)
-		pmap_set_page_readonly_init((void*) kernel_page_dir + i * INTEL_PGBYTES);
+    for (i = 0; i < PDPNUM; i++)
+        pmap_set_page_readonly_init((void*) kernel_page_dir + i * INTEL_PGBYTES);
 #if PAE
-	pmap_set_page_readonly_init(kernel_pmap->pdpbase);
+    pmap_set_page_readonly_init(kernel_pmap->pdpbase);
 #endif	/* PAE */
 #endif	/* MACH_PV_PAGETABLES */
 #if PAE
-	set_cr3((unsigned)_kvtophys(kernel_pmap->pdpbase));
+    set_cr3((unsigned)_kvtophys(kernel_pmap->pdpbase));
 #ifndef	MACH_HYP
-	if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
-		panic("CPU doesn't have support for PAE.");
-	set_cr4(get_cr4() | CR4_PAE);
+    if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
+        panic("CPU doesn't have support for PAE.");
+    set_cr4(get_cr4() | CR4_PAE);
 #endif	/* MACH_HYP */
 #else
-	set_cr3((unsigned)_kvtophys(kernel_page_dir));
+    set_cr3((unsigned)_kvtophys(kernel_page_dir));
 #endif	/* PAE */
 #ifndef	MACH_HYP
-	/* Turn paging on.
-	 * Also set the WP bit so that on 486 or better processors
-	 * page-level write protection works in kernel mode.
-	 */
-	set_cr0(get_cr0() | CR0_PG | CR0_WP);
-	set_cr0(get_cr0() & ~(CR0_CD | CR0_NW));
-	if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
-		set_cr4(get_cr4() | CR4_PGE);
+    /* Turn paging on.
+     * Also set the WP bit so that on 486 or better processors
+     * page-level write protection works in kernel mode.
+     */
+    set_cr0(get_cr0() | CR0_PG | CR0_WP);
+    set_cr0(get_cr0() & ~(CR0_CD | CR0_NW));
+    if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
+        set_cr4(get_cr4() | CR4_PGE);
 #endif	/* MACH_HYP */
-	flush_instr_queue();
+    flush_instr_queue();
 #ifdef	MACH_PV_PAGETABLES
-	pmap_clear_bootstrap_pagetable((void *)boot_info.pt_base);
+    pmap_clear_bootstrap_pagetable((void *)boot_info.pt_base);
 #endif	/* MACH_PV_PAGETABLES */
 
 
-	/*
-	 * Initialize and activate the real i386 protected-mode structures.
-	 */
-	gdt_init();
-	idt_init();
+    /*
+     * Initialize and activate the real i386 protected-mode structures.
+     */
+
+    gdt_init();
+    idt_init();
 #ifndef	MACH_HYP
-	int_init();
+    int_init();
 #endif	/* MACH_HYP */
-	ldt_init();
-	ktss_init();
-	mp_desc_init(master_cpu);
+    ldt_init();
+    ktss_init();
+    interrupt_stack_alloc();
+
+    mp_desc_init(master_cpu);
 
 
 
 #if INIT_VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
-	/* Get rid of the temporary direct mapping and flush it out of the TLB.  */
-	for (i = 0 ; i < nb_direct; i++) {
+    /* Get rid of the temporary direct mapping and flush it out of the TLB.  */
+    for (i = 0 ; i < nb_direct; i++)
+        {
 #ifdef	MACH_XEN
 #ifdef	MACH_PSEUDO_PHYS
-		if (!hyp_mmu_update_pte(kv_to_ma(&kernel_page_dir[lin2pdenum_cont(VM_MIN_KERNEL_ADDRESS) + i]), 0))
+            if (!hyp_mmu_update_pte(kv_to_ma(&kernel_page_dir[lin2pdenum_cont(VM_MIN_KERNEL_ADDRESS) + i]), 0))
 #else	/* MACH_PSEUDO_PHYS */
-		if (hyp_do_update_va_mapping(VM_MIN_KERNEL_ADDRESS + i * INTEL_PGBYTES, 0, UVMF_INVLPG | UVMF_ALL))
+            if (hyp_do_update_va_mapping(VM_MIN_KERNEL_ADDRESS + i * INTEL_PGBYTES, 0, UVMF_INVLPG | UVMF_ALL))
 #endif	/* MACH_PSEUDO_PHYS */
-			printf("couldn't unmap frame %d\n", i);
+                printf("couldn't unmap frame %d\n", i);
 #else	/* MACH_XEN */
-		kernel_page_dir[lin2pdenum_cont(INIT_VM_MIN_KERNEL_ADDRESS) + i] = 0;
+            kernel_page_dir[lin2pdenum_cont(INIT_VM_MIN_KERNEL_ADDRESS) + i] = 0;
 #endif	/* MACH_XEN */
-	}
+        }
 #endif
-	/* Keep BIOS memory mapped */
+    /* Keep BIOS memory mapped */
 #ifdef LINUX_DEV
 #if VM_MIN_KERNEL_ADDRESS != 0
-	kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS)] =
-		kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS)];
+    kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS)] =
+        kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS)];
 #endif
 #endif
 
-	/* Not used after boot, better give it back.  */
+    /* Not used after boot, better give it back.  */
 #ifdef	MACH_XEN
-	hyp_free_page(0, (void*) VM_MIN_KERNEL_ADDRESS);
+    hyp_free_page(0, (void*) VM_MIN_KERNEL_ADDRESS);
 #endif	/* MACH_XEN */
 
-	flush_tlb();
+    flush_tlb();
 
 #ifdef	MACH_XEN
-	hyp_p2m_init();
+    hyp_p2m_init();
 #endif	/* MACH_XEN */
 
-	int_stack_base = (vm_offset_t)&int_stack;
-	int_stack_top = int_stack_base + KERNEL_STACK_SIZE - 4;
+    int_stack_base = (vm_offset_t)&int_stack;
+    int_stack_top = int_stack_base + KERNEL_STACK_SIZE - 4;
 }
 
 /*
@@ -546,115 +563,115 @@ i386at_init(void)
 void c_boot_entry(vm_offset_t bi)
 {
 #if	ENABLE_IMMEDIATE_CONSOLE
-	romputc = immc_romputc;
+    romputc = immc_romputc;
 #endif	/* ENABLE_IMMEDIATE_CONSOLE */
 
-	/* Stash the boot_image_info pointer.  */
-	boot_info = *(typeof(boot_info)*)phystokv(bi);
-	int cpu_type;
+    /* Stash the boot_image_info pointer.  */
+    boot_info = *(typeof(boot_info)*)phystokv(bi);
+    int cpu_type;
 
-	/* Before we do _anything_ else, print the hello message.
-	   If there are no initialized console devices yet,
-	   it will be stored and printed at the first opportunity.  */
-	printf("%s", version);
-	printf("\n");
+    /* Before we do _anything_ else, print the hello message.
+       If there are no initialized console devices yet,
+       it will be stored and printed at the first opportunity.  */
+    printf("%s", version);
+    printf("\n");
 
 #ifdef MACH_XEN
-	printf("Running on %s.\n", boot_info.magic);
-	if (boot_info.flags & SIF_PRIVILEGED)
-		panic("Mach can't run as dom0.");
+    printf("Running on %s.\n", boot_info.magic);
+    if (boot_info.flags & SIF_PRIVILEGED)
+        panic("Mach can't run as dom0.");
 #ifdef MACH_PSEUDO_PHYS
-	mfn_list = (void*)boot_info.mfn_list;
+    mfn_list = (void*)boot_info.mfn_list;
 #endif
 #else	/* MACH_XEN */
 
 #if	MACH_KDB
-	/*
-	 * Locate the kernel's symbol table, if the boot loader provided it.
-	 * We need to do this before i386at_init()
-	 * so that the symbol table's memory won't be stomped on.
-	 */
-	if ((boot_info.flags & MULTIBOOT_AOUT_SYMS)
-	    && boot_info.syms.a.addr)
-	{
-		vm_size_t symtab_size, strtab_size;
+    /*
+     * Locate the kernel's symbol table, if the boot loader provided it.
+     * We need to do this before i386at_init()
+     * so that the symbol table's memory won't be stomped on.
+     */
+    if ((boot_info.flags & MULTIBOOT_AOUT_SYMS)
+            && boot_info.syms.a.addr)
+        {
+            vm_size_t symtab_size, strtab_size;
 
-		kern_sym_start = (vm_offset_t)phystokv(boot_info.syms.a.addr);
-		symtab_size = (vm_offset_t)phystokv(boot_info.syms.a.tabsize);
-		strtab_size = (vm_offset_t)phystokv(boot_info.syms.a.strsize);
-		kern_sym_end = kern_sym_start + 4 + symtab_size + strtab_size;
+            kern_sym_start = (vm_offset_t)phystokv(boot_info.syms.a.addr);
+            symtab_size = (vm_offset_t)phystokv(boot_info.syms.a.tabsize);
+            strtab_size = (vm_offset_t)phystokv(boot_info.syms.a.strsize);
+            kern_sym_end = kern_sym_start + 4 + symtab_size + strtab_size;
 
-		printf("kernel symbol table at %08lx-%08lx (%d,%d)\n",
-		       kern_sym_start, kern_sym_end,
-		       symtab_size, strtab_size);
-	}
+            printf("kernel symbol table at %08lx-%08lx (%d,%d)\n",
+                   kern_sym_start, kern_sym_end,
+                   symtab_size, strtab_size);
+        }
 
-	if ((boot_info.flags & MULTIBOOT_ELF_SHDR)
-	    && boot_info.syms.e.num)
-	{
-		elf_shdr_num = boot_info.syms.e.num;
-		elf_shdr_size = boot_info.syms.e.size;
-		elf_shdr_addr = (vm_offset_t)phystokv(boot_info.syms.e.addr);
-		elf_shdr_shndx = boot_info.syms.e.shndx;
+    if ((boot_info.flags & MULTIBOOT_ELF_SHDR)
+            && boot_info.syms.e.num)
+        {
+            elf_shdr_num = boot_info.syms.e.num;
+            elf_shdr_size = boot_info.syms.e.size;
+            elf_shdr_addr = (vm_offset_t)phystokv(boot_info.syms.e.addr);
+            elf_shdr_shndx = boot_info.syms.e.shndx;
 
-		printf("ELF section header table at %08lx\n", elf_shdr_addr);
-	}
+            printf("ELF section header table at %08lx\n", elf_shdr_addr);
+        }
 #endif	/* MACH_KDB */
 #endif	/* MACH_XEN */
 
-	cpu_type = discover_x86_cpu_type ();
+    cpu_type = discover_x86_cpu_type ();
 
-	/*
-	 * Do basic VM initialization
-	 */
-	i386at_init();
+    /*
+     * Do basic VM initialization
+     */
+    i386at_init();
 
-	//printf("LAPIC version: %x\n", lapic->version.r);
+    //printf("LAPIC version: %x\n", lapic->version.r);
 
 #if	MACH_KDB
-	/*
-	 * Initialize the kernel debugger's kernel symbol table.
-	 */
-	if (kern_sym_start)
-	{
-		aout_db_sym_init((char *)kern_sym_start, (char *)kern_sym_end, "mach", (char *)0);
-	}
+    /*
+     * Initialize the kernel debugger's kernel symbol table.
+     */
+    if (kern_sym_start)
+        {
+            aout_db_sym_init((char *)kern_sym_start, (char *)kern_sym_end, "mach", (char *)0);
+        }
 
-	if (elf_shdr_num)
-	{
-		elf_db_sym_init(elf_shdr_num,elf_shdr_size,
-				elf_shdr_addr, elf_shdr_shndx,
-				"mach", NULL);
-	}
+    if (elf_shdr_num)
+        {
+            elf_db_sym_init(elf_shdr_num,elf_shdr_size,
+                            elf_shdr_addr, elf_shdr_shndx,
+                            "mach", NULL);
+        }
 #endif	/* MACH_KDB */
 
-	machine_slot[0].is_cpu = TRUE;
-	machine_slot[0].running = TRUE;
-	machine_slot[0].cpu_subtype = CPU_SUBTYPE_AT386;
+    machine_slot[0].is_cpu = TRUE;
+    machine_slot[0].running = TRUE;
+    machine_slot[0].cpu_subtype = CPU_SUBTYPE_AT386;
 
-	switch (cpu_type)
-	  {
-	  default:
-	    printf("warning: unknown cpu type %d, assuming i386\n", cpu_type);
-	  case 3:
-	    machine_slot[0].cpu_type = CPU_TYPE_I386;
-	    break;
-	  case 4:
-	    machine_slot[0].cpu_type = CPU_TYPE_I486;
-	    break;
-	  case 5:
-	    machine_slot[0].cpu_type = CPU_TYPE_PENTIUM;
-	    break;
-	  case 6:
-	  case 15:
-	    machine_slot[0].cpu_type = CPU_TYPE_PENTIUMPRO;
-	    break;
-	  }
+    switch (cpu_type)
+        {
+        default:
+            printf("warning: unknown cpu type %d, assuming i386\n", cpu_type);
+        case 3:
+            machine_slot[0].cpu_type = CPU_TYPE_I386;
+            break;
+        case 4:
+            machine_slot[0].cpu_type = CPU_TYPE_I486;
+            break;
+        case 5:
+            machine_slot[0].cpu_type = CPU_TYPE_PENTIUM;
+            break;
+        case 6:
+        case 15:
+            machine_slot[0].cpu_type = CPU_TYPE_PENTIUMPRO;
+            break;
+        }
 
-	/*
-	 * Start the system.
-	 */
-	setup_main();
+    /*
+     * Start the system.
+     */
+    setup_main();
 
 }
 
@@ -664,55 +681,55 @@ void c_boot_entry(vm_offset_t bi)
 
 vm_offset_t
 timemmap(dev, off, prot)
-	dev_t dev;
-	vm_offset_t off;
-	vm_prot_t prot;
+dev_t dev;
+vm_offset_t off;
+vm_prot_t prot;
 {
-	extern time_value_t *mtime;
+    extern time_value_t *mtime;
 
-	if (prot & VM_PROT_WRITE) return (-1);
+    if (prot & VM_PROT_WRITE) return (-1);
 
-	return (i386_btop(pmap_extract(pmap_kernel(), (vm_offset_t) mtime)));
+    return (i386_btop(pmap_extract(pmap_kernel(), (vm_offset_t) mtime)));
 }
 
 void
 startrtclock(void)
 {
-	clkstart();
+    clkstart();
 }
 
 void
 inittodr(void)
 {
-	time_value_t	new_time;
+    time_value_t	new_time;
 
-	new_time.seconds = 0;
-	new_time.microseconds = 0;
+    new_time.seconds = 0;
+    new_time.microseconds = 0;
 
-	(void) readtodc((u_int *)&new_time.seconds);
+    (void) readtodc((u_int *)&new_time.seconds);
 
-	{
-	    spl_t	s = splhigh();
-	    time = new_time;
-	    splx(s);
-	}
+    {
+        spl_t	s = splhigh();
+        time = new_time;
+        splx(s);
+    }
 }
 
 void
 resettodr(void)
 {
-	writetodc();
+    writetodc();
 }
 
 boolean_t
 init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 {
-	*addrp = biosmem_bootalloc(vm_page_atop(vm_page_round(size)));
+    *addrp = biosmem_bootalloc(vm_page_atop(vm_page_round(size)));
 
-	if (*addrp == 0)
-		return FALSE;
+    if (*addrp == 0)
+        return FALSE;
 
-	return TRUE;
+    return TRUE;
 }
 
 /* Grab a physical page:
@@ -721,8 +738,8 @@ init_alloc_aligned(vm_size_t size, vm_offset_t *addrp)
 vm_offset_t
 pmap_grab_page(void)
 {
-	vm_offset_t addr;
-	if (!init_alloc_aligned(PAGE_SIZE, &addr))
-		panic("Not enough memory to initialize Mach");
-	return addr;
+    vm_offset_t addr;
+    if (!init_alloc_aligned(PAGE_SIZE, &addr))
+        panic("Not enough memory to initialize Mach");
+    return addr;
 }
