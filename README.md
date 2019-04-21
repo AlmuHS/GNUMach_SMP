@@ -278,7 +278,7 @@ After this, `nproc` command shows all cpus of the machine, but this cpus aren't 
   To allow cpus execute interrupt handlers, It's needed a interrupt stack.
   Each cpu has its own interrupt stack. 
   
-  To add a interrupt stack, we've token `boothdr.S` as base, copying the *iplt* related blocks in the `cpuboot.S` assembly routine.
+  To add a interrupt stack, we've token `boothdr.S` as base, copying the reserve of *_intstack*  in the `cpuboot.S` assembly routine.
   
  After this, we've added a call to `interrupt_stack_alloc()` to initialize the cpus interrupt stack array before call to `mp_desc_init()`.
  
