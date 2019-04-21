@@ -503,6 +503,7 @@ i386at_init(void)
     /*
      * Initialize and activate the real i386 protected-mode structures.
      */
+
     gdt_init();
     idt_init();
 #ifndef	MACH_HYP
@@ -510,6 +511,8 @@ i386at_init(void)
 #endif	/* MACH_HYP */
     ldt_init();
     ktss_init();
+    interrupt_stack_alloc();
+
     mp_desc_init(master_cpu);
 
 

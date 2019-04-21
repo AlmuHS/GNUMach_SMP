@@ -324,7 +324,6 @@ cpu_setup(){
 		break;
 	}
 
-	//cpu_up(i);
 	//printf("cpu %d enabled\n", cpu_number());
 
 	return 0;
