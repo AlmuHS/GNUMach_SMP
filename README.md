@@ -135,6 +135,7 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - *gnumach* boots successfully with a only cpu, in SMP mode
 - *gnumach* enable all cpus during the boot successfully
 	+ I need to "link" the cpus to the rest of the system
+- `nproc` command show all cpus 
 
 ## Implementation 
 
