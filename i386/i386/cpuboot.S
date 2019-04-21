@@ -90,11 +90,8 @@ _apboot:
 	movw	%ax,%es
 	movw	%ax,%ss
 
-	movl stack_ptr, %esp
+	movl stack_ptr+STACK_SIZE, %esp
 	addl $STACK_SIZE, %esp
-
-	/* Switch to our own interrupt stack.  */
-	movl	$_intstack+INTSTACK_SIZE,%esp
 
 	/* Reset EFLAGS to a known state.  */
 	pushl $0
