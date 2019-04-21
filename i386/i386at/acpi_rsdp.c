@@ -1,6 +1,6 @@
 /*Copyright 2018 Juan Bosco Garcia
  *Copyright 2018 2019 Almudena Garcia Jurado-Centurion
- *This file is part of Min_SMP. 
+ *This file is part of Min_SMP.
  *Min_SMP is free software: you can redistribute it and/or modify
  *it under the terms of the GNU General Public License as published by
  *the Free Software Foundation, either version 3 of the License, or
@@ -13,7 +13,7 @@
  *along with Min_SMP.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <i386at/acpi_rsdp.h> 
+#include <i386at/acpi_rsdp.h>
 #include <string.h> //memcmp, memcpy...
 
 #include <imps/apic.h> //lapic, ioapic...
@@ -66,7 +66,7 @@ acpi_setup()
     //Try to get rsdt pointer
     if(acpi_get_rsdt() || rsdt==0)
         return -1;
-	
+
     //Search APIC entries in rsdt array
     int i;
     struct acpi_dhdr *descr_header;
@@ -74,7 +74,7 @@ acpi_setup()
         descr_header = (struct acpi_dhdr*) phystokv(rsdt->entry[i]);
 
         //Check if the entry contains an APIC
-        if(memcmp(descr_header->signature, ACPI_APIC_SIG, 
+        if(memcmp(descr_header->signature, ACPI_APIC_SIG,
                     sizeof(descr_header->signature)) == 0){
 
             //If yes, store the entry in apic
@@ -206,7 +206,7 @@ acpi_get_rsdt(){
     rsdt = (struct acpi_rsdt*) phystokv(rsdp->rsdt_addr);
 
     //Check is rsdt signature is equals to ACPI RSDT signature
-    if(memcmp(rsdt->header.signature, ACPI_RSDT_SIG, 
+    if(memcmp(rsdt->header.signature, ACPI_RSDT_SIG,
                 sizeof(rsdt->header.signature)) != 0)
         return -1;
 
@@ -215,7 +215,7 @@ acpi_get_rsdt(){
         return -1;
 
     //Calculated number of elements stored in rsdt
-    acpi_rsdt_n = (rsdt->header.length - sizeof(rsdt->header)) 
+    acpi_rsdt_n = (rsdt->header.length - sizeof(rsdt->header))
         / sizeof(rsdt->entry[0]);
 
 
@@ -264,6 +264,7 @@ acpi_apic_setup(){
 
                     //Enumerate CPU and add It to cpu/apic vector
                     machine_slot[ncpu].apic_id = lapic_entry->apic_id;
+                    machine_slot[ncpu].is_cpu = TRUE;
                     apic2kernel[lapic_entry->apic_id] = ncpu;
 
                     //Increase number of CPU
@@ -273,7 +274,7 @@ acpi_apic_setup(){
 
             //If APIC entry is an IOAPIC
             case ACPI_APIC_ENTRY_IOAPIC:
-		
+
                 //Store ioapic
                	ioapic_entry = (struct acpi_apic_ioapic*) apic_entry;
 
@@ -281,14 +282,14 @@ acpi_apic_setup(){
                 ioapics[nioapic].apic_id = ioapic_entry->apic_id;
                 ioapics[nioapic].addr = ioapic_entry->addr;
                 ioapics[nioapic].base = ioapic_entry->base;
-		 
+
                 //Increase number of ioapic
                 nioapic++;
                 break;
         }
 
         //Get next APIC entry
-        apic_entry = (struct acpi_apic_dhdr*)((uint32_t) apic_entry 
+        apic_entry = (struct acpi_apic_dhdr*)((uint32_t) apic_entry
                 + apic_entry->length);
     }
 
