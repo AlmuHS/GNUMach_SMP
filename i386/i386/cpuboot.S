@@ -32,7 +32,7 @@ boot_gdt:
 	/* boot DS = 8 . Data segment*/
 	.word 0xffff /*Segment limit */
 	.word (-KERNELBASE) & 0xffff /*Base first 0-15 bits*/
-	.byte ((-KERNELBASE) >> 16) & 0xff
+	.byte ((-KERNELBASE) >> 16) & 0xff 
 	.byte 0x92 /*Access byte*/
 	.byte 0xcf /* High 4 bits */
 	.byte ((-KERNELBASE) >> 24) & 0xff /*Base 24-31 bits */
@@ -92,28 +92,16 @@ _apboot:
 	movw	%ax,%es
 	movw	%ax,%ss
 
-
 	movl stack_ptr, %esp
 	addl $STACK_SIZE, %esp
 
-    /* Switch to our own interrupt stack.  */
+	/* Switch to our own interrupt stack.  */
 	movl	$_intstack+INTSTACK_SIZE,%esp
+
 
 	/* Reset EFLAGS to a known state.  */
 	pushl $0
 	popf
-
-	/* Clear uninitialized data.  */
-	lea     _edata,%edi
-	lea     _end,%ecx
-	subl    %edi,%ecx
-	xorl    %eax,%eax
-	rep
-	stosb
-
-	/* Fix ifunc entries */
-	movl    $__rel_iplt_start,%esi
-	movl    $__rel_iplt_end,%edi
 
 iplt_cont:
 	cmpl    %edi,%esi
@@ -127,10 +115,12 @@ iplt_cont:
 iplt_next:
 	addl    $8,%esi
 	jmp     iplt_cont
+
 iplt_done:
 	pushl stack_ptr
 
 	call cpu_ap_main
+	.comm	_intstack,INTSTACK_SIZE
 	cli
 
 
