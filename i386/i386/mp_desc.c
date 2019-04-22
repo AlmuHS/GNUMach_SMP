@@ -276,6 +276,8 @@ cpu_setup(){
 
 	int i = 1;
 	while(i < ncpu && (machine_slot[i].running == TRUE)) i++;
+    kmutex_init(&mp_cpu_boot_lock);
+
 
 	unsigned apic_id = (((ApicLocalUnit*)phystokv(lapic_addr))->apic_id.r >> 24) & 0xff;
 
@@ -324,7 +326,10 @@ cpu_setup(){
 		break;
 	}
 
+	kmutex_lock(&mp_cpu_boot_lock, FALSE);
     slave_main(i);
+    kmutex_unlock(&mp_cpu_boot_lock);
+
 
 	printf("launched first thread of cpu %d\n", i);
 
