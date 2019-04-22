@@ -182,7 +182,6 @@ void setup_main(void)
 	 */
 	(void) thread_create(kernel_task, &startup_thread);
 	thread_start(startup_thread, start_kernel_threads);
-	//pset_sys_bootstrap();
 
 	/*
 	 * Give it a kernel stack.
@@ -327,7 +326,7 @@ void cpu_launch_first_thread(thread_t th, int mycpu)
 
 	startrtclock();		/* needs an active thread */
 
-    printf("clock started in cpu %d\n", cpu_number());
+    printf("clock started in cpu %d\n", mycpu);
 
 	load_context(th);
 	/*NOTREACHED*/
