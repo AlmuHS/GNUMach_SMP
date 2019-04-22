@@ -324,6 +324,8 @@ cpu_setup(){
 		break;
 	}
 
+	slave_main(i);
+
 	//printf("cpu %d enabled\n", cpu_number());
 
 	return 0;
@@ -381,7 +383,7 @@ kern_return_t intel_startCPU(int slot_num)
 	 */
 	/*mp_rendezvous_no_intrs(start_cpu, (void *) &start_info);*/
 	startup_cpu(lapic_id);
-	cpu_up(slot_num);
+	//cpu_up(slot_num);
 
 	/*ml_set_interrupts_enabled(istate);*/
 	cpu_intr_restore(eFlagsRegister);

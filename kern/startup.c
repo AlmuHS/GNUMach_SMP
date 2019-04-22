@@ -182,7 +182,7 @@ void setup_main(void)
 	 */
 	(void) thread_create(kernel_task, &startup_thread);
 	thread_start(startup_thread, start_kernel_threads);
-	//pset_sys_bootstrap();	
+	//pset_sys_bootstrap();
 
 	/*
 	 * Give it a kernel stack.
@@ -203,7 +203,7 @@ void setup_main(void)
 	/*
 	 * Start the thread.
 	 */
-	cpu_launch_first_thread(startup_thread);
+	cpu_launch_first_thread(startup_thread, 0);
 	/*NOTREACHED*/
 }
 
@@ -280,9 +280,9 @@ void start_kernel_threads(void)
 }
 
 #if	NCPUS > 1
-void slave_main(void)
+void slave_main(int mycpu)
 {
-	cpu_launch_first_thread(THREAD_NULL);
+	cpu_launch_first_thread(THREAD_NULL, mycpu);
 }
 #endif	/* NCPUS > 1 */
 
@@ -290,9 +290,9 @@ void slave_main(void)
  *	Start up the first thread on a CPU.
  *	First thread is specified for the master CPU.
  */
-void cpu_launch_first_thread(thread_t th)
+void cpu_launch_first_thread(thread_t th, int mycpu)
 {
-	int	mycpu;
+	//int	mycpu;
 
 	mycpu = cpu_number();
 
