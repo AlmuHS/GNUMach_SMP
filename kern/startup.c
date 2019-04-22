@@ -294,7 +294,7 @@ void cpu_launch_first_thread(thread_t th, int mycpu)
 {
 	//int	mycpu;
 
-	mycpu = cpu_number();
+	//mycpu = cpu_number();
 
 	cpu_up(mycpu);
 
