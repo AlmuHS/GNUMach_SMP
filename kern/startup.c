@@ -331,4 +331,6 @@ void cpu_launch_first_thread(thread_t th, int mycpu)
 
 	load_context(th);
 	/*NOTREACHED*/
+
+	printf("cpu %d up successfully\n", mycpu);
 }

@@ -284,6 +284,10 @@ cpu_setup(){
 	if(i >= ncpu)
 	return -1;
 
+	slave_main(i);
+
+	printf("launched first thread of cpu %d\n", i);
+
 	/*TODO: Move this code to a separate function*/
 
 	/* assume Pentium 4, Xeon, or later processors */
@@ -324,7 +328,7 @@ cpu_setup(){
 		break;
 	}
 
-	slave_main(i);
+
 
 	//printf("cpu %d enabled\n", cpu_number());
 
