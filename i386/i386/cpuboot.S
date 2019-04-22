@@ -90,7 +90,7 @@ _apboot:
 	movw	%ax,%es
 	movw	%ax,%ss
 
-	movl stack_ptr+STACK_SIZE, %esp
+	movl stack_ptr, %esp
 	addl $STACK_SIZE, %esp
 
 	/* Reset EFLAGS to a known state.  */
