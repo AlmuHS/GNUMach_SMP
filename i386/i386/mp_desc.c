@@ -324,7 +324,7 @@ cpu_setup(){
 		break;
 	}
 
-	//slave_main(i);
+	slave_main(i);
 
 	printf("launched first thread of cpu %d\n", i);
 
