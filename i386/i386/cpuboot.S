@@ -78,15 +78,15 @@ _apboot:
 	ljmp $KERNEL_CS, $0f
 
 0:
-	movw	$0,%ax
-	movw	%ax,%ds
-	movw	%ax,%es
-	movw	%ax,%fs
-	movw	%ax,%gs
-	movw	$KERNEL_DS,%ax
-	movw	%ax,%ds
-	movw	%ax,%es
-	movw	%ax,%ss
+/*	movw	$0,%ax*/
+/*	movw	%ax,%ds*/
+/*	movw	%ax,%es*/
+/*	movw	%ax,%fs*/
+/*	movw	%ax,%gs*/
+/*	movw	$KERNEL_DS,%ax*/
+/*	movw	%ax,%ds*/
+/*	movw	%ax,%es*/
+/*	movw	%ax,%ss*/
 
 	movl stack_ptr, %esp
 	addl $STACK_SIZE, %esp
