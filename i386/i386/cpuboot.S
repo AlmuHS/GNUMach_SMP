@@ -62,12 +62,12 @@ _apboot:
     or $0x1, %eax
     mov %eax, %cr0
 
-    ljmp $KERNEL_CS, $M(0f)
+    ljmp $0x8, $M(0f)
 
 0:
 	.code32
 
-	mov $KERNEL_DS, %eax
+	mov $0x10, %eax
 	mov %ax, %ds
 	mov %ax, %es
 	mov %ax, %ss
@@ -83,7 +83,7 @@ _apboot:
 	movw	%ax,%es
 	movw	%ax,%fs
 	movw	%ax,%gs
-	movw	$16,%ax
+	movw	$KERNEL_DS,%ax
 	movw	%ax,%ds
 	movw	%ax,%es
 	movw	%ax,%ss
