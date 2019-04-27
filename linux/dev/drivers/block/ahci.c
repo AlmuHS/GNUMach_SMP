@@ -829,6 +829,8 @@ static void ahci_probe_dev(unsigned char bus, unsigned char device)
 		printk("ahci: %02x:%02x.%x: Can not read configuration", bus, dev, fun);
 		return;
 	}
+	/* Ignore multifunction bit */
+	hdrtype &= ~0x80;
 
 	if (hdrtype != 0) {
 		printk("ahci: %02x:%02x.%x: Unknown hdrtype %d\n", bus, dev, fun, hdrtype);
