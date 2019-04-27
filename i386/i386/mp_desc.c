@@ -324,10 +324,9 @@ cpu_setup(){
 		break;
 	}
 
-	gdt_init();
-	idt_init();
-
 	//slave_main(i);
+
+	printf("launched first thread of cpu %d\n", i);
 
 	//printf("cpu %d enabled\n", cpu_number());
 
