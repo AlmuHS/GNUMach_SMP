@@ -63,12 +63,12 @@ _apboot:
     or $0x1, %eax
     mov %eax, %cr0
 
-    ljmp $0x8, $M(0f)
+    ljmp $KERNEL_CS, $M(0f)
 
 0:
 	.code32
 
-	mov $0x10, %eax
+	mov $KERNEL_DS, %eax
 	mov %ax, %ds
 	mov %ax, %es
 	mov %ax, %ss
@@ -77,7 +77,7 @@ _apboot:
 	/* use segmentation to offset ourself. */
 	lidtl idt_descr - KERNELBASE
 	lgdt	boot_gdt_descr - KERNELBASE
-	ljmp	$8,$0f
+	ljmp $KERNEL_CS, $0f
 
 0:
 	movw	$0,%ax
