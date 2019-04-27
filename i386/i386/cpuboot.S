@@ -55,7 +55,6 @@ _apboot:
     mov %ax, %ds
     mov %ax, %es
     mov %ax, %ss
-    mov $0x7000, %sp
 
     lgdt M(gdt_descr_tmp)
 
@@ -72,7 +71,6 @@ _apboot:
 	mov %ax, %ds
 	mov %ax, %es
 	mov %ax, %ss
-	mov $0x7000, %esp
 
 	/* use segmentation to offset ourself. */
 	lidtl idt_descr - KERNELBASE
