@@ -289,7 +289,7 @@ register_boot_data(const struct multiboot_raw_info *mbi)
 					   + strlen((void *)phystokv(mbi->cmdline)) + 1, TRUE);
 	}
 
-	if (mbi->flags & MULTIBOOT_LOADER_MODULES) {
+	if (mbi->flags & MULTIBOOT_LOADER_MODULES && mbi->mods_count) {
 		i = mbi->mods_count * sizeof(struct multiboot_raw_module);
 		biosmem_register_boot_data(mbi->mods_addr, mbi->mods_addr + i, TRUE);
 
@@ -374,7 +374,7 @@ i386at_init(void)
 		boot_info.cmdline = addr;
 	}
 
-	if (boot_info.flags & MULTIBOOT_MODS) {
+	if (boot_info.flags & MULTIBOOT_MODS && boot_info.mods_count) {
 		struct multiboot_module *m;
 		int i;
 
