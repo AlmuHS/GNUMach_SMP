@@ -297,7 +297,8 @@ register_boot_data(const struct multiboot_raw_info *mbi)
 
 		for (i = 0; i < mbi->mods_count; i++) {
 			mod = (struct multiboot_raw_module *)tmp + i;
-			biosmem_register_boot_data(mod->mod_start, mod->mod_end, TRUE);
+			if (mod->mod_end != mod->mod_start)
+				biosmem_register_boot_data(mod->mod_start, mod->mod_end, TRUE);
 
 			if (mod->string != 0) {
 				biosmem_register_boot_data(mod->string,
@@ -310,7 +311,8 @@ register_boot_data(const struct multiboot_raw_info *mbi)
 
 	if (mbi->flags & MULTIBOOT_LOADER_SHDR) {
 		tmp = mbi->shdr_num * mbi->shdr_size;
-		biosmem_register_boot_data(mbi->shdr_addr, mbi->shdr_addr + tmp, FALSE);
+		if (tmp != 0)
+			biosmem_register_boot_data(mbi->shdr_addr, mbi->shdr_addr + tmp, FALSE);
 
 		tmp = phystokv(mbi->shdr_addr);
 
@@ -321,7 +323,8 @@ register_boot_data(const struct multiboot_raw_info *mbi)
 			    && (shdr->type != ELF_SHT_STRTAB))
 				continue;
 
-			biosmem_register_boot_data(shdr->addr, shdr->addr + shdr->size, FALSE);
+			if (shdr->size != 0)
+				biosmem_register_boot_data(shdr->addr, shdr->addr + shdr->size, FALSE);
 		}
 	}
 }
