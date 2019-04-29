@@ -543,14 +543,15 @@ start_other_cpus(void)
         {
             if (cpu != cpu_number())
                 {
-                    if (!init_alloc_aligned(STACK_SIZE*(ncpu-1), &stack_start))
+                 /*   if (!init_alloc_aligned(STACK_SIZE*(ncpu-1), &stack_start))
                         panic("not enough memory for cpu stacks");
-                    stack_start = phystokv(stack_start);
+                    stack_start = phystokv(stack_start);*/
                     //Initialize cpu stack
 
                     /*TODO: Put stacks in an array */
                     //*stack_ptr = (void*) kalloc(STACK_SIZE);
-                    cpu_stack[cpu] = stack_start;
+                    //cpu_stack[cpu] = stack_start;
+                    cpu_stack[cpu] = (void*) kalloc(STACK_SIZE);
                     _cpu_stack_top[cpu]   = stack_start + STACK_SIZE;
 
                     stack_ptr = cpu_stack[cpu];
