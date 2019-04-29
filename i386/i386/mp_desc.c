@@ -553,6 +553,8 @@ start_other_cpus(void)
                     cpu_stack[cpu] = stack_start;
                     _cpu_stack_top[cpu]   = stack_start + STACK_SIZE;
 
+                    stack_ptr = cpu_stack[cpu];
+
                     machine_slot[cpu].running = FALSE;
                     cpu_start(cpu);
                 }
