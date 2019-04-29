@@ -554,7 +554,7 @@ start_other_cpus(void)
                     cpu_stack[cpu] = (void*) kalloc(STACK_SIZE);
                     _cpu_stack_top[cpu]   = stack_start + STACK_SIZE;
 
-                    stack_ptr = cpu_stack[cpu];
+                    stack_ptr = &cpu_stack[cpu];
 
                     machine_slot[cpu].running = FALSE;
                     cpu_start(cpu);
