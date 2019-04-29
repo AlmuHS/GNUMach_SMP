@@ -98,7 +98,6 @@ _apboot:
 	pushl stack_ptr
 
 	call cpu_ap_main
-	.comm	_intstack,INTSTACK_SIZE
 	cli
 
 

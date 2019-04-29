@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 1994 The University of Utah and
  * the Computer Systems Laboratory at the University of Utah (CSL).
  * All rights reserved.
@@ -75,6 +75,7 @@
 #else	/* MACH_PV_PAGETABLES */
 #define KERNEL_STACK_SIZE	(1*I386_PGBYTES)
 #define INTSTACK_SIZE		(1*I386_PGBYTES)
+#define STACK_SIZE (4096 * 2)
 #endif	/* MACH_PV_PAGETABLES */
 						/* interrupt stack size */
 
