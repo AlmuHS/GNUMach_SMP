@@ -161,6 +161,7 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - 	[`CPU_NUMBER() `](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/i386/i386/cpu_number.h#L48) assembly function has been implemented using `apic2kernel[]` array
 - 	Added call to `interrupt_stack_alloc()` before `mp_desc_init()`
 - 	Improve memory reserve to cpu stack, using Mach style (similar to interrupt stack)
+- 	Disabled temporary call to `cpu_up()`
 
 ### Recover old *gnumach* APIC headers
 
