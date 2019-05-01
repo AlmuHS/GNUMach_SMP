@@ -129,7 +129,7 @@ extern void* *apboot, *apbootend;
 #define AP_BOOT_ADDR (0x7000)
 
 //cpu stack
-extern void* *stack_ptr;
+extern void* stack_ptr;
 extern void *stack_bsp;
 
 //ICR Destination mode
@@ -526,6 +526,7 @@ start_other_cpus(void)
     int cpu;
     vm_offset_t	stack_start;
     int apic_id = lapic->apic_id.r >>24;
+
     printf("found %d cpus\n", ncpu);
     printf("The current cpu is: %d\n", cpu_number());
 
@@ -553,12 +554,12 @@ start_other_cpus(void)
                     //Initialize cpu stack
                     cpu_stack[cpu] = stack_start;
                     _cpu_stack_top[cpu] = stack_start + STACK_SIZE;
-                    stack_start += STACK_SIZE;
 
-                    stack_ptr = (void*) cpu_stack[cpu];
+                    stack_ptr = (void*) &cpu_stack[cpu];
 
                     machine_slot[cpu].running = FALSE;
                     cpu_start(cpu);
+                    stack_start += STACK_SIZE;
                 }
         }
 }
