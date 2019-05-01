@@ -44,7 +44,7 @@ boot_gdt:
 #define M(addr) (addr - apboot + 0x7000)
 
     .text
-    .globl apboot, apbootend, stack_ptr
+    .globl apboot, apbootend
     .align 0x10
     .code16
 

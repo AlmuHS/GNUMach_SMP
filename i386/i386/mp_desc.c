@@ -129,8 +129,7 @@ extern void* *apboot, *apbootend;
 #define AP_BOOT_ADDR (0x7000)
 
 //cpu stack
-extern void* stack_ptr;
-extern void **stack_bsp;
+void* stack_ptr = 0;
 
 //ICR Destination mode
 #define PHYSICAL 0
