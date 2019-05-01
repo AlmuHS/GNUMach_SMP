@@ -130,7 +130,7 @@ extern void* *apboot, *apbootend;
 
 //cpu stack
 extern void* stack_ptr;
-extern void *stack_bsp;
+extern void **stack_bsp;
 
 //ICR Destination mode
 #define PHYSICAL 0
@@ -555,7 +555,7 @@ start_other_cpus(void)
                     cpu_stack[cpu] = stack_start;
                     _cpu_stack_top[cpu] = stack_start + STACK_SIZE;
 
-                    stack_ptr = (void*) &cpu_stack[cpu];
+                    stack_ptr = &cpu_stack[cpu];
 
                     machine_slot[cpu].running = FALSE;
                     cpu_start(cpu);
