@@ -537,19 +537,23 @@ start_other_cpus(void)
     machine_slot[0].apic_id = apic_id;
     apic2kernel[apic_id] = 0;
 
+    //Reserve memory for cpu stack
+    if (!init_alloc_aligned(STACK_SIZE*(ncpu-1), &stack_start))
+        panic("not enough memory for cpu stacks");
+    stack_start = phystokv(stack_start);
+
+
     for (cpu = 0; cpu < ncpu; cpu++)
         {
             if (cpu != cpu_number())
                 {
-                   if (!init_alloc_aligned(STACK_SIZE*(ncpu-1), &stack_start))
-                        panic("not enough memory for cpu stacks");
-                    stack_start = phystokv(stack_start);
-                    //Initialize cpu stack
 
-                    /*TODO: Put stacks in an array */
                     //*stack_ptr = (void*) kalloc(STACK_SIZE);
+
+                    //Initialize cpu stack
                     cpu_stack[cpu] = stack_start;
                     _cpu_stack_top[cpu] = stack_start + STACK_SIZE;
+                    stack_start += STACK_SIZE;
 
                     stack_ptr = (void*) cpu_stack[cpu];
 
