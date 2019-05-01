@@ -160,6 +160,7 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - 	[`cpu_number()`](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/kern/cpu_number.c#L9) has been refactorized, replacing the while loop with the array [`apic2kernel[]`](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/i386/i386at/acpi_rsdp.c#L45), indexed by apic_id
 - 	[`CPU_NUMBER() `](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/i386/i386/cpu_number.h#L48) assembly function has been implemented using `apic2kernel[]` array
 - 	Added call to `interrupt_stack_alloc()` before `mp_desc_init()`
+- 	Improve memory reserve to cpu stack, using Mach style (similar to interrupt stack)
 
 ### Recover old *gnumach* APIC headers
 
@@ -278,11 +279,9 @@ After this, `nproc` command shows all cpus of the machine, but this cpus aren't 
   To allow cpus execute interrupt handlers, It's needed a interrupt stack.
   Each cpu has its own interrupt stack. 
   
-  To add a interrupt stack, we've token `boothdr.S` as base, copying the reserve of *_intstack*  in the `cpuboot.S` assembly routine.
-  
- After this, we've added a call to `interrupt_stack_alloc()` to initialize the cpus interrupt stack array before call to `mp_desc_init()`.
+  To get this, we've added a call to `interrupt_stack_alloc()` to initialize the cpus interrupt stack array before call to `mp_desc_init()`.
  
- This step don't shows any new effect yet.
+  This step don't shows any new effect yet.
 
 ## Gratitude
 
