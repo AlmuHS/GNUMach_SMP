@@ -311,8 +311,6 @@ void cpu_launch_first_thread(thread_t th, int mycpu)
 
 	PMAP_ACTIVATE_KERNEL(mycpu);
 
-	printf("kernel pmap enabled in cpu %d\n", mycpu);
-
 	active_threads[mycpu] = th;
 	active_stacks[mycpu] = th->kernel_stack;
 	thread_lock(th);
@@ -322,14 +320,8 @@ void cpu_launch_first_thread(thread_t th, int mycpu)
 
 	PMAP_ACTIVATE_USER(vm_map_pmap(th->task->map), th, mycpu);
 
-    printf("user pmap enabled in cpu %d\n", mycpu);
-
 	startrtclock();		/* needs an active thread */
-
-    printf("clock started in cpu %d\n", mycpu);
 
 	load_context(th);
 	/*NOTREACHED*/
-
-	printf("cpu %d up successfully\n", mycpu);
 }
