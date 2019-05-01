@@ -123,6 +123,8 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - Refactorized `cpu_number()` with a more efficient implementation
 - Added interrupt stack to cpus
 - Registered cpus in the system using `cpu_up()`
+- Improve memory reserve to cpu stack, using Mach style (similar to interrupt stack)
+
 
 
 ## Current status
@@ -160,7 +162,6 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - 	[`cpu_number()`](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/kern/cpu_number.c#L9) has been refactorized, replacing the while loop with the array [`apic2kernel[]`](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/i386/i386at/acpi_rsdp.c#L45), indexed by apic_id
 - 	[`CPU_NUMBER() `](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/i386/i386/cpu_number.h#L48) assembly function has been implemented using `apic2kernel[]` array
 - 	Added call to `interrupt_stack_alloc()` before `mp_desc_init()`
-- 	Improve memory reserve to cpu stack, using Mach style (similar to interrupt stack)
 - 	Disabled temporary call to `cpu_up()`
 
 ### Recover old *gnumach* APIC headers
@@ -232,6 +233,24 @@ We have split this task in some steps:
     
   Furthermore, we have added some printf to show the number of cpus and the kernel ID of current cpu. 
   
+  - **Reserve memory for cpu stack**
+	  
+	  To implement this step, we token the interrupt stack code as base, using the function  `interrupt_stack_alloc()` .
+	  
+	We have added two new arrays, to store the pointer to the stack of each cpu.
+	
+	- `cpu_stack[]` store the pointer to the stack
+	- `_cpu_stack_top[]` store the address of stack top
+	
+	All stack use a single memory reserve. In this way, we only reserve a single memory block, which will be splited to each cpu stack. To reserve the memory, we call to `init_alloc_aligned()`, which reserve memory from the BIOS area. This function return the initial address of the memory block, which is stored in `stack_start`.
+	
+	All stack have the same size, which is stored in `STACK_SIZE` macro.
+	
+	Once reserved the memory, we assing the slides to each cpu using `stack_start` as base address. In each step, we assign `stack_start` to `cpu_stack[cpu]`, `stack_start+STACK_SIZE` to `_cpu_stack_top[cpu]`, and increase `stack_size` with `STACK_SIZE`
+
+	To ease the stack loading to each cpu, we have added a unique stack pointer, called `stack_ptr`. Before enable each cpu, this pointer is updated to the `cpu_stack` of the current cpu. This pointer will be used in the `cpuboot.S` assembly routine to load the stack in the current cpu.
+	
+	  
 - **Complete `intel_startCPU()`**
   
   The `intel_startCPU()` function has the purpose of enable the cpu indicated by parameter, calling to `startup_cpu()` to raise the Startup IPI, and check if the cpu has been enabled correctly.
