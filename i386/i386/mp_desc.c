@@ -51,6 +51,7 @@
 #include <string.h>
 #include <include/stdint.h> //uint16_t, uint32_t_t...
 #include <imps/apic.h>
+#include <i386/locore.h>
 
 /*
  * The i386 needs an interrupt stack to keep the PCB stack from being
@@ -293,7 +294,7 @@ void startup_cpu(uint32_t apic_id)
 int
 cpu_setup()
 {
-
+    extern pt_entry_t *kernel_page_dir;
     int i = 1;
     while(i < ncpu && (machine_slot[i].running == TRUE)) i++;
 
@@ -345,9 +346,30 @@ cpu_setup()
             break;
         }
 
+#if PAE
+    set_cr3((unsigned)_kvtophys(kernel_pmap->pdpbase));
+#ifndef	MACH_HYP
+    if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
+        panic("CPU doesn't have support for PAE.");
+    set_cr4(get_cr4() | CR4_PAE);
+#endif	/* MACH_HYP */
+#else
+    set_cr3((unsigned)_kvtophys(kernel_page_dir));
+#endif	/* PAE */
+#ifndef	MACH_HYP
+    /* Turn paging on.
+     * Also set the WP bit so that on 486 or better processors
+     * page-level write protection works in kernel mode.
+     */
+    set_cr0(get_cr0() | CR0_PG | CR0_WP);
+    set_cr0(get_cr0() & ~(CR0_CD | CR0_NW));
+    if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
+        set_cr4(get_cr4() | CR4_PGE);
+#endif	/* MACH_HYP */
+
     //slave_main(i);
 
-    //printf("cpu %d enabled\n", cpu_number());
+    printf("cpu %d enabled\n", cpu_number());
 
     return 0;
 }
