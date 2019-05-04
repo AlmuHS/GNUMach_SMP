@@ -419,6 +419,8 @@ i386at_init(void)
         }
 #endif	/* MACH_XEN */
 
+
+#if NCPUS > 1
     /*Read lapic and ioapic from acpi tables*/
     if(acpi_setup() == 0)
         {
@@ -428,6 +430,7 @@ i386at_init(void)
         {
             panic("could not find acpi tables for multiprocessor");
         }
+#endif
 
 
     /*
