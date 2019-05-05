@@ -100,6 +100,22 @@ _apboot:
 	call cpu_ap_main
 	cli
 
+	/* Initialize pagging */
+	mov kernel_page_dir, %eax
+	add  KERNELBASE,%eax
+	mov %eax, %cr3
+
+    mov    %cr0,%eax
+    or     $0x80010000,%eax
+
+    mov    %eax,%cr0
+    mov    %cr0,%eax
+    and    $0x9fffffff,%eax
+    mov    %eax,%cr0
+    mov    %cr4,%eax
+    or     $0x80,%al
+    mov    %eax,%cr4
+
     .align 0x10
 gdt_descr_tmp:
     .short 0x8*3 - 1
