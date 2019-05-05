@@ -117,6 +117,7 @@ _apboot:
     call cpu_ap_main
 
 
+
     .align 0x10
 gdt_descr_tmp:
     .short 0x8*3 - 1
