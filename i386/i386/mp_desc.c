@@ -346,16 +346,6 @@ cpu_setup()
             break;
         }
 
-#if 0
-
-#ifdef	MACH_PV_PAGETABLES
-    for (i = 0; i < PDPNUM; i++)
-        pmap_set_page_readonly_init((void*) kernel_page_dir + i * INTEL_PGBYTES);
-#if PAE
-    pmap_set_page_readonly_init(kernel_pmap->pdpbase);
-#endif	/* PAE */
-#endif	/* MACH_PV_PAGETABLES */
-
 #if PAE
     set_cr3((unsigned)_kvtophys(kernel_pmap->pdpbase));
 #ifndef	MACH_HYP
@@ -377,7 +367,6 @@ cpu_setup()
         set_cr4(get_cr4() | CR4_PGE);
 #endif	/* MACH_HYP */
 
-#endif
     //slave_main(i);
 
     printf("cpu %d enabled\n", cpu_number());
