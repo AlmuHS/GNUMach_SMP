@@ -81,7 +81,7 @@ extern unsigned int cpu_features[1];
 #define CPU_FEATURE_CFLSH	19
 #define CPU_FEATURE_DS		21
 #define CPU_FEATURE_ACPI	22
-#define CPU_FEATURE_MMX		23
+#define CPU_FEATURE_MMX	    23
 #define CPU_FEATURE_FXSR	24
 #define CPU_FEATURE_SSE		25
 #define CPU_FEATURE_SSE2	26

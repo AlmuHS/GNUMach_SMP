@@ -97,6 +97,7 @@ _apboot:
 
 	pushl stack_ptr
 
+	call pmap_conf
 	call cpu_ap_main
 	cli
 

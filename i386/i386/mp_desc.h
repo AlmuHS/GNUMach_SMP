@@ -82,6 +82,7 @@ extern kern_return_t intel_startCPU(int slot_num);
 
 extern void interrupt_processor(int cpu);
 extern void startup_cpu(uint32_t apic_id);
+extern void pmap_conf();
 extern int cpu_ap_main();
 extern int cpu_setup();
 

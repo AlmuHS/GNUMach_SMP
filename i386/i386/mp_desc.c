@@ -51,6 +51,7 @@
 #include <string.h>
 #include <include/stdint.h> //uint16_t, uint32_t_t...
 #include <imps/apic.h>
+#include <i386/locore.h>
 
 /*
  * The i386 needs an interrupt stack to keep the PCB stack from being
@@ -153,6 +154,8 @@ void* stack_ptr = 0;
 #define SEND_PENDING 1
 
 extern int lapic_addr;
+extern pt_entry_t *kernel_page_dir;
+
 
 /*
  * Allocate and initialize the per-processor descriptor tables.
@@ -287,6 +290,42 @@ void startup_cpu(uint32_t apic_id)
     //wait until IPI is sent
     delay(1000);
     while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
+
+}
+
+void pmap_conf()
+{
+#ifdef	MACH_PV_PAGETABLES
+    for (i = 0; i < PDPNUM; i++)
+        pmap_set_page_readonly_init((void*) kernel_page_dir + i * INTEL_PGBYTES);
+#if PAE
+    pmap_set_page_readonly_init(kernel_pmap->pdpbase);
+#endif	/* PAE */
+#endif	/* MACH_PV_PAGETABLES */
+#if PAE
+    set_cr3((unsigned)_kvtophys(kernel_pmap->pdpbase));
+#ifndef	MACH_HYP
+    if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
+        panic("CPU doesn't have support for PAE.");
+    set_cr4(get_cr4() | CR4_PAE);
+#endif	/* MACH_HYP */
+#else
+    set_cr3((unsigned)_kvtophys(kernel_page_dir));
+#endif	/* PAE */
+#ifndef	MACH_HYP
+    /* Turn paging on.
+     * Also set the WP bit so that on 486 or better processors
+     * page-level write protection works in kernel mode.
+     */
+    set_cr0(get_cr0() | CR0_PG | CR0_WP);
+    set_cr0(get_cr0() & ~(CR0_CD | CR0_NW));
+    if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
+        set_cr4(get_cr4() | CR4_PGE);
+#endif	/* MACH_HYP */
+    flush_instr_queue();
+#ifdef	MACH_PV_PAGETABLES
+    pmap_clear_bootstrap_pagetable((void *)boot_info.pt_base);
+#endif	/* MACH_PV_PAGETABLES */
 
 }
 
