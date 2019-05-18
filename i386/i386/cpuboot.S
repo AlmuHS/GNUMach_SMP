@@ -88,6 +88,50 @@ _apboot:
 	movw	%ax,%es
 	movw	%ax,%ss
 
+#if PAE
+    //set_cr3((unsigned)_kvtophys(kernel_pmap->pdpbase));
+	movl %cr3, %eax
+	movl %eax, _kvtophys(kernel_pmap->pdpbase)
+	movl %eax, %cr3
+
+#ifndef	MACH_HYP
+    if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
+        panic("CPU doesn't have support for PAE.");
+    //set_cr4(get_cr4() | CR4_PAE);
+	movl %cr4, %eax
+	orl CR4_PAE, %eax
+	movl %eax, %cr4
+
+#endif	/* MACH_HYP */
+#else
+    set_cr3((unsigned)_kvtophys(kernel_page_dir));
+#endif	/* PAE */
+#ifndef	MACH_HYP
+    /* Turn paging on.
+     * Also set the WP bit so that on 486 or better processors
+     * page-level write protection works in kernel mode.
+     */
+    //set_cr0(get_cr0() | CR0_PG | CR0_WP);
+	movl %cr0, %eax
+	orl CR0_PG, %eax
+	orl CR0_WP, %eax
+	movl %eax, %cr0	
+
+    //set_cr0(get_cr0() & ~(CR0_CD | CR0_NW));
+	movl %cr0, %eax
+	andl ~(CR0_CD | CR0_NW), %eax 
+	movl %eax, %cr0
+
+
+    if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
+        //set_cr4(get_cr4() | CR4_PGE);
+		movl %cr4, %eax
+		orl CR4_PGE, %eax
+		mov %eax, %cr4
+
+#endif	/* MACH_HYP */
+
+
 	movl stack_ptr, %esp
 	addl $STACK_SIZE, %esp
 
@@ -97,7 +141,6 @@ _apboot:
 
 	pushl stack_ptr
 
-	call pmap_conf
 	call cpu_ap_main
 	cli
 
@@ -133,4 +176,3 @@ apbootend:
     .globl dummyf
 dummyf:
 ret
-
