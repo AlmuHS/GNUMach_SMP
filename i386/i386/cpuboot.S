@@ -132,7 +132,7 @@ nopae:
 	movl $CR0_CD, %edx
 	orl $CR0_NW, %edx
 	not %edx
-    mov %edx, %eax
+    andl %edx, %eax
 	movl %eax, %cr0
 
 
