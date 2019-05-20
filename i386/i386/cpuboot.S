@@ -103,6 +103,7 @@ _apboot:
     jz nopae
 
 setpae:
+    //set_cr4(get_cr4() | CR4_PAE);
 	movl %cr4, %eax
 	orl $CR4_PAE, %eax
 	movl %eax, %cr4
@@ -148,6 +149,13 @@ nopae:
 
 #endif	/* MACH_HYP */
 
+//flush_instr_queue();
+	jmp 0f
+0:
+	//flush_tlb();
+	mov %cr3, %eax
+	mov %eax, %cr3
+
 
 	movl stack_ptr, %esp
 	addl $STACK_SIZE, %esp
@@ -157,13 +165,6 @@ nopae:
 	popf
 
 	pushl stack_ptr
-
-	//flush_instr_queue
-	jmp 0f
-0:
-	//flush_tlb();
-	mov %cr3, %eax
-	mov %eax, %cr3
 
 	call cpu_ap_main
 	cli
