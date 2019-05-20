@@ -128,11 +128,7 @@ nopae:
 
     //set_cr0(get_cr0() & ~(CR0_CD | CR0_NW));
 	movl %cr0, %eax
-	movl $0, %edx
-	movl $CR0_CD, %edx
-	orl $CR0_NW, %edx
-	not %edx
-	andl %edx, %eax
+	andl $(~(CR0_CD | CR0_NW)), %eax
 	movl %eax, %cr0
 
 
