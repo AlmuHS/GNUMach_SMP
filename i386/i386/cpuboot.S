@@ -92,7 +92,6 @@ _apboot:
 
 #if PAE
     //set_cr3((unsigned)_kvtophys(kernel_pmap->pdpbase));
-	movl %cr3, %eax
 	movl pdpbase_addr, %eax
 	movl %eax, %cr3
 
