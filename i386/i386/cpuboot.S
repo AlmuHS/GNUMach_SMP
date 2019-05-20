@@ -165,6 +165,13 @@ nopae:
 
 	pushl stack_ptr
 
+	//flush_instr_queue
+	jmp 0f
+0:
+	//flush_tlb();
+	mov %cr3, %eax
+	mov %eax, %cr3
+
 	call cpu_ap_main
 	cli
 
