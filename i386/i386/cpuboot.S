@@ -100,8 +100,8 @@ _apboot:
     //if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
     mov cpu_features, %eax
     test $(1<<CPU_FEATURE_PAE), %eax
-    jz setpae
-    jnz nopae
+    jnz setpae
+    jz nopae
 
 setpae:
 	movl %cr4, %eax
