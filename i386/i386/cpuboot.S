@@ -97,7 +97,7 @@ _apboot:
 
 #ifndef	MACH_HYP
     //if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
-    mov cpu_features, %eax
+    movl cpu_features, %eax
     test $(1<<CPU_FEATURE_PAE), %eax
     jnz setpae
     jz nopae
@@ -143,18 +143,18 @@ nopae:
         //set_cr4(get_cr4() | CR4_PGE);
 		movl %cr4, %eax
 		orl $CR4_PGE, %eax
-		mov %eax, %cr4
+		movl %eax, %cr4
     nopge:
         nop
 
 #endif	/* MACH_HYP */
 
-//flush_instr_queue();
+    //flush_instr_queue();
 	jmp 0f
 0:
 	//flush_tlb();
-	mov %cr3, %eax
-	mov %eax, %cr3
+	movl %cr3, %eax
+	movl %eax, %cr3
 
 
 	movl stack_ptr, %esp
