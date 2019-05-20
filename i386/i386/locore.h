@@ -19,9 +19,13 @@
 #ifndef _MACHINE_LOCORE_H_
 #define _MACHINE_LOCORE_H_
 
+#ifndef __ASSEMBLER__
+
 #include <sys/types.h>
 
 #include <kern/sched_prim.h>
+
+
 
 /*
  * Fault recovery in copyin/copyout routines.
@@ -59,6 +63,8 @@ extern void cpu_shutdown (void);
 extern int syscall (void);
 
 extern unsigned int cpu_features[1];
+
+#endif // __ASSEMBLER__
 
 #define CPU_FEATURE_FPU		 0
 #define CPU_FEATURE_VME		 1

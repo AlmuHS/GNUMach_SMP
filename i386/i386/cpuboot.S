@@ -1,5 +1,7 @@
 #include <mach/machine/asm.h>
 #include <i386/i386asm.h>
+#include <i386/locore.h>
+#include <i386/proc_reg.h>
 
 #define STACK_SIZE (4096 * 2)
 
@@ -96,9 +98,10 @@ _apboot:
 
 #ifndef	MACH_HYP
     //if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
-    bt %cr4, $CPU_FEATURE_PAE
-    jc setpae
-    jnc nopae
+    mov cpu_features, %eax
+    test $(1<<CPU_FEATURE_PAE), %eax
+    jz setpae
+    jnz nopae
 
 setpae:
 	movl %cr4, %eax
@@ -132,14 +135,15 @@ nopae:
 	movl $CR0_CD, %edx
 	orl $CR0_NW, %edx
 	not %edx
-    andl %edx, %eax
+	andl %edx, %eax
 	movl %eax, %cr0
 
 
     //if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
-    bt %cr4, $CPU_FEATURE_PGE
-    jc setpge
-    jnc nopge
+    movl cpu_features, %eax
+    test $(1<<CPU_FEATURE_PGE), %eax
+    jnz setpge
+    jz nopge
 
     setpge:
         //set_cr4(get_cr4() | CR4_PGE);
