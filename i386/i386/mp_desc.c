@@ -300,8 +300,8 @@ cpu_setup()
     int i = 1;
     while(i < ncpu && (machine_slot[i].running == TRUE)) i++;
 
-    //unsigned apic_id = (((ApicLocalUnit*)phystokv(lapic_addr))->apic_id.r >> 24) & 0xff;
-    unsigned apic_id = lapic->apic_id.r >> 24;
+    unsigned apic_id = (((ApicLocalUnit*)phystokv(lapic_addr))->apic_id.r >> 24) & 0xff;
+    //unsigned apic_id = lapic->apic_id.r >> 24;
 
     /* panic? */
     if(i >= ncpu)

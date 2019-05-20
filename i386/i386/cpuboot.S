@@ -93,7 +93,7 @@ _apboot:
 #if PAE
     //set_cr3((unsigned)_kvtophys(kernel_pmap->pdpbase));
 	movl %cr3, %eax
-	movl kernel_pmap->pdpbase - KERNELBASE, %eax
+	movl pdpbase_addr, %eax
 	movl %eax, %cr3
 
 #ifndef	MACH_HYP
@@ -105,7 +105,7 @@ _apboot:
 
 setpae:
 	movl %cr4, %eax
-	orl CR4_PAE, %eax
+	orl $CR4_PAE, %eax
 	movl %eax, %cr4
 nopae:
     nop
@@ -113,8 +113,7 @@ nopae:
 #endif	/* MACH_HYP */
 #else
     //set_cr3((unsigned)_kvtophys(kernel_page_dir));
-    movl %cr3, %eax
-    movl kernel_page_dir - KERNELBASE, %eax
+    movl kernel_page_dir_addr, %eax
     movl %eax, %cr3
 
 #endif	/* PAE */
@@ -125,8 +124,7 @@ nopae:
      */
     //set_cr0(get_cr0() | CR0_PG | CR0_WP);
 	movl %cr0, %eax
-	orl CR0_PG, %eax
-	orl CR0_WP, %eax
+	orl $(CR0_PG | CR0_WP), %eax
 	movl %eax, %cr0
 
     //set_cr0(get_cr0() & ~(CR0_CD | CR0_NW));
@@ -148,7 +146,7 @@ nopae:
     setpge:
         //set_cr4(get_cr4() | CR4_PGE);
 		movl %cr4, %eax
-		orl CR4_PGE, %eax
+		orl $CR4_PGE, %eax
 		mov %eax, %cr4
     nopge:
         nop
