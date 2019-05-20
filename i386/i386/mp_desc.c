@@ -350,7 +350,7 @@ cpu_setup()
 
     //slave_main(i);
 
-    //printf("cpu %d enabled\n", cpu_number());
+    printf("cpu %d enabled\n", cpu_number());
 
     return 0;
 }
