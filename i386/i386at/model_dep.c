@@ -141,6 +141,9 @@ vm_offset_t int_stack_top, int_stack_base;
 extern void linux_init(void);
 #endif
 
+unsigned kernel_page_dir_addr = 0;
+unsigned pdpbase_addr = 0;
+
 /*
  * Find devices.  The system is alive.
  */
@@ -478,14 +481,16 @@ i386at_init(void)
 #endif	/* PAE */
 #endif	/* MACH_PV_PAGETABLES */
 #if PAE
-    set_cr3((unsigned)_kvtophys(kernel_pmap->pdpbase));
+    pdpbase_addr = (unsigned)_kvtophys(kernel_pmap->pdpbase);
+    set_cr3(pdpbase_addr);
 #ifndef	MACH_HYP
     if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
         panic("CPU doesn't have support for PAE.");
     set_cr4(get_cr4() | CR4_PAE);
 #endif	/* MACH_HYP */
 #else
-    set_cr3((unsigned)_kvtophys(kernel_page_dir));
+    kernel_page_dir_addr = (unsigned)_kvtophys(kernel_page_dir);
+    set_cr3(kernel_page_dir_addr);
 #endif	/* PAE */
 #ifndef	MACH_HYP
     /* Turn paging on.

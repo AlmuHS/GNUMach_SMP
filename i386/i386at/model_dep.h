@@ -26,6 +26,8 @@
  * Interrupt stack.
  */
 extern vm_offset_t int_stack_top, int_stack_base;
+extern unsigned kernel_page_dir_addr, pdpbase_addr;
+
 
 /* Check whether P points to the interrupt stack.  */
 #define ON_INT_STACK(P)	(((P) & ~(KERNEL_STACK_SIZE-1)) == int_stack_base)
