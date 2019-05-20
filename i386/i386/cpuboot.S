@@ -92,7 +92,7 @@ _apboot:
 
 #if PAE
     //set_cr3((unsigned)_kvtophys(kernel_pmap->pdpbase));
-	movl pdpbase_addr, %eax
+	movl $pdpbase_addr, %eax
 	movl %eax, %cr3
 
 #ifndef	MACH_HYP
@@ -112,7 +112,7 @@ nopae:
 #endif	/* MACH_HYP */
 #else
     //set_cr3((unsigned)_kvtophys(kernel_page_dir));
-    movl kernel_page_dir_addr, %eax
+    movl $kernel_page_dir_addr, %eax
     movl %eax, %cr3
 
 #endif	/* PAE */
