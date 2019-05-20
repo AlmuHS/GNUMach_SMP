@@ -91,20 +91,29 @@ _apboot:
 #if PAE
     //set_cr3((unsigned)_kvtophys(kernel_pmap->pdpbase));
 	movl %cr3, %eax
-	movl %eax, _kvtophys(kernel_pmap->pdpbase)
+	movl kernel_pmap->pdpbase - KERNELBASE, %eax
 	movl %eax, %cr3
 
 #ifndef	MACH_HYP
-    if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
-        panic("CPU doesn't have support for PAE.");
-    //set_cr4(get_cr4() | CR4_PAE);
+    //if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
+    bt %cr4, $CPU_FEATURE_PAE
+    jc setpae
+    jnc nopae
+
+setpae:
 	movl %cr4, %eax
 	orl CR4_PAE, %eax
 	movl %eax, %cr4
+nopae:
+    nop
 
 #endif	/* MACH_HYP */
 #else
-    set_cr3((unsigned)_kvtophys(kernel_page_dir));
+    //set_cr3((unsigned)_kvtophys(kernel_page_dir));
+    movl %cr3, %eax
+    movl kernel_page_dir - KERNELBASE, %eax
+    movl %eax, %cr3
+
 #endif	/* PAE */
 #ifndef	MACH_HYP
     /* Turn paging on.
@@ -115,19 +124,30 @@ _apboot:
 	movl %cr0, %eax
 	orl CR0_PG, %eax
 	orl CR0_WP, %eax
-	movl %eax, %cr0	
+	movl %eax, %cr0
 
     //set_cr0(get_cr0() & ~(CR0_CD | CR0_NW));
 	movl %cr0, %eax
-	andl ~(CR0_CD | CR0_NW), %eax 
+	movl $0, %edx
+	movl $CR0_CD, %edx
+	orl $CR0_NW, %edx
+	not %edx
+    mov %edx, %eax
 	movl %eax, %cr0
 
 
-    if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
+    //if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
+    bt %cr4, $CPU_FEATURE_PGE
+    jc setpge
+    jnc nopge
+
+    setpge:
         //set_cr4(get_cr4() | CR4_PGE);
 		movl %cr4, %eax
 		orl CR4_PGE, %eax
 		mov %eax, %cr4
+    nopge:
+        nop
 
 #endif	/* MACH_HYP */
 
