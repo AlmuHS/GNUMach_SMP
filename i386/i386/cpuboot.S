@@ -75,7 +75,7 @@ _apboot:
 	mov %ax, %ss
 
 	/* use segmentation to offset ourself. */
-	lidtl idt_descr - KERNELBASE
+	lidt idt_descr - KERNELBASE
 	lgdt	boot_gdt_descr - KERNELBASE
 	ljmp $KERNEL_CS, $0f
 
