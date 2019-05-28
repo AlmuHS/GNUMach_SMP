@@ -92,12 +92,12 @@ _apboot:
 
 #if PAE
     //set_cr3((unsigned)_kvtophys(kernel_pmap->pdpbase));
-	movl pdpbase_addr, %eax
+	movl (pdpbase_addr), %eax
 	movl %eax, %cr3
 
 #ifndef	MACH_HYP
     //if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
-    movl cpu_features, %eax
+    movl (cpu_features), %eax
     test $(1<<CPU_FEATURE_PAE), %eax
     jnz setpae
     jz nopae
@@ -113,7 +113,7 @@ nopae:
 #endif	/* MACH_HYP */
 #else
     //set_cr3((unsigned)_kvtophys(kernel_page_dir));
-    movl kernel_page_dir_addr, %eax
+    movl (kernel_page_dir_addr), %eax
     movl %eax, %cr3
 
 #endif	/* PAE */
@@ -134,7 +134,7 @@ nopae:
 
 
     //if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
-    movl cpu_features, %eax
+    movl (cpu_features), %eax
     test $(1<<CPU_FEATURE_PGE), %eax
     jnz setpge
     jz nopge
