@@ -123,14 +123,14 @@ nopae:
      * page-level write protection works in kernel mode.
      */
     //set_cr0(get_cr0() | CR0_PG | CR0_WP);
-	movl %cr0, %eax
-	orl $(CR0_PG | CR0_WP), %eax
-	movl %eax, %cr0
+	mov %cr0, %eax
+	or $(CR0_PG | CR0_WP), %eax
+	mov %eax, %cr0
 
     //set_cr0(get_cr0() & ~(CR0_CD | CR0_NW));
-	movl %cr0, %eax
-	andl $(~(CR0_CD | CR0_NW)), %eax
-	movl %eax, %cr0
+	mov %cr0, %eax
+	and $(~(CR0_CD | CR0_NW)), %eax
+	mov %eax, %cr0
 
 
     //if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
