@@ -122,9 +122,7 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - Implemented assembly `CPU_NUMBER()`
 - Refactorized `cpu_number()` with a more efficient implementation
 - Added interrupt stack to cpus
-- Registered cpus in the system using `cpu_up()`
 - Improve memory reserve to cpu stack, using Mach style (similar to interrupt stack)
-
 
 
 ## Current status
@@ -137,7 +135,6 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - *gnumach* boots successfully with a only cpu, in SMP mode
 - *gnumach* enable all cpus during the boot successfully
 	+ I need to "link" the cpus to the rest of the system
-- `nproc` command show all cpus 
 
 ## Implementation 
 
