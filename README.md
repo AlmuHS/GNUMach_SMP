@@ -298,7 +298,7 @@ To enable paging, we need to initialize CR0, CR3 and CR4 registers. as similar f
 
 This code, translated to assembly, has been added to  [`cpuboot.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/wip/i386/i386/cpuboot.S) assembly routine.
 
-Once paging will be enabled, each cpu will can to read its own Local APIC, using the `*lapic` pointer. It will also allow to execute `cpu_number()` function, which is necessary to execute the `slave_main()` function to add the cpu to the kernel.
+Once paging will be enabled, each cpu will can to read its own Local APIC, using the `*lapic` pointer. It will also allow to execute `cpu_number()` function, which is necessary to execute the [`slave_main()`](https://github.com/AlmuHS/GNUMach_SMP/blob/eb8b0bbf6299a0c19fca12ab71b810447f0d47f5/kern/startup.c#L282) function to add the cpu to the kernel.
 
 
 ## Gratitude
