@@ -284,17 +284,7 @@ We have split this task in some steps:
 	
    The final code is stored in [`i386/i386/cpuboot.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/cpuboot.S)
 
-### Register cpus in the system (WIP)
-
-Although cpus are enabled, this cpus aren't available to the system. To mark the cpus as available, we need to register them in the system.
-
-The function which register a cpu in the system is `cpu_up()`. This function initialize the `processor_t` struct for the cpu, and add the cpu to default processor set for scheduling.
-
-To register the cpus, we've added a call to `cpu_up()` in `intel_startCPU()`, after `startup_cpu()`.
-
-After this, `nproc` command shows all cpus of the machine, but this cpus aren't used for any process.
-
-### Add interrupt stack to cpus (Pending review)
+### Add interrupt stack to cpus
   
   To allow cpus execute interrupt handlers, It's needed a interrupt stack.
   Each cpu has its own interrupt stack. 
@@ -302,6 +292,17 @@ After this, `nproc` command shows all cpus of the machine, but this cpus aren't 
   To get this, we've added a call to `interrupt_stack_alloc()` to initialize the cpus interrupt stack array before call to `mp_desc_init()`.
  
   This step don't shows any new effect yet.
+
+### Enable paging in the cpus (WIP)
+
+Before add the cpus to the kernel, we need to configure paging in them, to allow fully access to the memory.
+
+To enable paging, we need to initialize CR0, CR2 and CR4 registers. as similar for to [this](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/model_dep.c#L477-L500).
+
+This code, translated to assembly, has been added to  [`cpuboot.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/wip/i386/i386/cpuboot.S) assembly routine.
+
+Once paging will be enabled, each cpu will can to read its own Local APIC, using the `*lapic` pointer. It will also allow to execute `cpu_number()` function, which is necessary to execute the `slave_main()` function to add the cpu to the kernel.
+
 
 ## Gratitude
 
