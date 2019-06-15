@@ -297,7 +297,7 @@ We have split this task in some steps:
 
 Before add the cpus to the kernel, we need to configure paging in them, to allow fully access to the memory.
 
-To enable paging, we need to initialize CR0, CR2 and CR4 registers. as similar for to [this](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/model_dep.c#L477-L500).
+To enable paging, we need to initialize CR0, CR3 and CR4 registers. as similar for to [this](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/model_dep.c#L477-L500).
 
 This code, translated to assembly, has been added to  [`cpuboot.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/wip/i386/i386/cpuboot.S) assembly routine.
 
