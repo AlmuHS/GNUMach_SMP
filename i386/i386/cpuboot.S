@@ -118,8 +118,9 @@ nopae:
      * page-level write protection works in kernel mode.
      */
     //set_cr0(get_cr0() | CR0_PG | CR0_WP);
-	movl %cr0, %eax
-	orl $(CR0_PG | CR0_WP), %eax
+	//movl %cr0, %eax
+	//orl $(CR0_PG | CR0_WP), %eax
+	movl $0x8001003b, %eax	
 	movl %eax, %cr0
 
     //set_cr0(get_cr0() & ~(CR0_CD | CR0_NW));

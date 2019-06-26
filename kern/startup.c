@@ -246,7 +246,7 @@ void start_kernel_threads(void)
 	 */
 
 	start_other_cpus();
-	while(1);
+	//while(1);
 #endif	/* NCPUS > 1 */
 
 	/*
