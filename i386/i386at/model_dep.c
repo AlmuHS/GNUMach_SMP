@@ -537,7 +537,8 @@ i386at_init(void)
 #endif	/* MACH_PSEUDO_PHYS */
                 printf("couldn't unmap frame %d\n", i);
 #else	/* MACH_XEN */
-            kernel_page_dir[lin2pdenum_cont(INIT_VM_MIN_KERNEL_ADDRESS) + i] = 0;
+            /* XXX: Uncomment*/
+            //kernel_page_dir[lin2pdenum_cont(INIT_VM_MIN_KERNEL_ADDRESS) + i] = 0;
 #endif	/* MACH_XEN */
         }
 #endif
