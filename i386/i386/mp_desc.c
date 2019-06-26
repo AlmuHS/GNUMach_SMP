@@ -349,7 +349,7 @@ cpu_setup()
             break;
         }
 
-    slave_main(i);
+    //slave_main(i);
 
     //printf("cpu %d enabled\n", cpu_number());
 
