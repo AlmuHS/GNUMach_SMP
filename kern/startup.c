@@ -183,6 +183,8 @@ void setup_main(void)
 	(void) thread_create(kernel_task, &startup_thread);
 	thread_start(startup_thread, start_kernel_threads);
 
+	while(true);
+
 	/*
 	 * Give it a kernel stack.
 	 */
