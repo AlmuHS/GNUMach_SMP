@@ -281,7 +281,7 @@ void start_kernel_threads(void)
 }
 
 #if	NCPUS > 1
-void slave_main(int mycpu)
+void slave_main()
 {
 	cpu_launch_first_thread(THREAD_NULL);
 }

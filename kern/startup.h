@@ -26,7 +26,7 @@ void cpu_launch_first_thread(thread_t th);
 void start_kernel_threads(void);
 
 #if	NCPUS > 1
-void slave_main(int mycpu);
+void slave_main();
 #endif
 
 #endif /* _KERN_STARTUP_H_ */
