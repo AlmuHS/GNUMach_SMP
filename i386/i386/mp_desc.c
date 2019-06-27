@@ -529,6 +529,9 @@ start_other_cpus(void)
     int cpu;
     vm_offset_t	stack_start;
     int apic_id = lapic->apic_id.r >>24;
+    extern pt_entry_t *kernel_page_dir;
+    extern int nb_direct_value;
+    int i = 0;
 
     printf("found %d cpus\n", ncpu);
     printf("The current cpu is: %d\n", cpu_number());
@@ -563,6 +566,11 @@ start_other_cpus(void)
                     stack_start += STACK_SIZE;
                 }
         }
+
+    /* Get rid of the temporary direct mapping and flush it out of the TLB.  */
+    for (i = 0 ; i < nb_direct_value; i++){
+        kernel_page_dir[lin2pdenum_cont(INIT_VM_MIN_KERNEL_ADDRESS) + i] = 0;
+    }
 }
 
 #endif	/* NCPUS > 1 */

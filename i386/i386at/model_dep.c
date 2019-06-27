@@ -143,6 +143,7 @@ extern void linux_init(void);
 
 unsigned kernel_page_dir_addr = 0;
 unsigned pdpbase_addr = 0;
+int nb_direct_value = 0;
 
 /*
  * Find devices.  The system is alive.
@@ -461,6 +462,7 @@ i386at_init(void)
     if ((vm_offset_t)(-delta) < delta)
         delta = (vm_offset_t)(-delta);
     nb_direct = delta >> PDESHIFT;
+    nb_direct_value = nb_direct;
     for (i = 0; i < nb_direct; i++)
         kernel_page_dir[lin2pdenum_cont(INIT_VM_MIN_KERNEL_ADDRESS) + i] =
             kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS) + i];
