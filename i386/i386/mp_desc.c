@@ -298,6 +298,7 @@ cpu_setup()
 {
 
     int i = 1;
+    int kernel_id = 0;
     while(i < ncpu && (machine_slot[i].running == TRUE)) i++;
 
     /* assume Pentium 4, Xeon, or later processors */
@@ -351,7 +352,8 @@ cpu_setup()
 
     //slave_main(i);
 
-    //printf("cpu %d enabled\n", cpu_number());
+    kernel_id = cpu_number();
+    printf("cpu %d enabled\n", kernel_id);
 
     return 0;
 }
@@ -403,8 +405,6 @@ kern_return_t intel_startCPU(int slot_num)
      */
     /*mp_rendezvous_no_intrs(start_cpu, (void *) &start_info);*/
     startup_cpu(lapic_id);
-    //cpu_up(slot_num);
-
 
     /*
      * Initialize (or re-initialize) the descriptor tables for this cpu.
