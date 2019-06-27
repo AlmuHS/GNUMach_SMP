@@ -350,7 +350,7 @@ cpu_setup()
             break;
         }
 
-    //slave_main(i);
+    slave_main(i);
 
     kernel_id = cpu_number();
     printf("cpu %d enabled\n", kernel_id);
