@@ -22,7 +22,7 @@
 #include <kern/thread.h>
 
 extern void setup_main(void);
-void cpu_launch_first_thread(thread_t th, int mycpu);
+void cpu_launch_first_thread(thread_t th);
 void start_kernel_threads(void);
 
 #if	NCPUS > 1

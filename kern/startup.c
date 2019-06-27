@@ -203,7 +203,7 @@ void setup_main(void)
 	/*
 	 * Start the thread.
 	 */
-	cpu_launch_first_thread(startup_thread, 0);
+	cpu_launch_first_thread(startup_thread);
 	/*NOTREACHED*/
 }
 
@@ -283,7 +283,7 @@ void start_kernel_threads(void)
 #if	NCPUS > 1
 void slave_main(int mycpu)
 {
-	cpu_launch_first_thread(THREAD_NULL, mycpu);
+	cpu_launch_first_thread(THREAD_NULL);
 }
 #endif	/* NCPUS > 1 */
 
@@ -291,11 +291,11 @@ void slave_main(int mycpu)
  *	Start up the first thread on a CPU.
  *	First thread is specified for the master CPU.
  */
-void cpu_launch_first_thread(thread_t th, int mycpu)
+void cpu_launch_first_thread(thread_t th)
 {
-	//int	mycpu;
+	int	mycpu;
 
-	//mycpu = cpu_number();
+	mycpu = cpu_number();
 
 	cpu_up(mycpu);
 
