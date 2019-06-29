@@ -528,7 +528,7 @@ start_other_cpus(void)
 {
     int cpu;
     vm_offset_t	stack_start;
-    int apic_id = lapic->apic_id.r >>24;
+    int apic_id = lapic->apic_id.r;
     extern pt_entry_t *kernel_page_dir;
     extern int nb_direct_value;
     int i = 0;
