@@ -349,8 +349,9 @@ cpu_setup()
             machine_slot[i].cpu_type = CPU_TYPE_PENTIUMPRO;
             break;
         }
-
-    //slave_main();
+    gdt_init();
+    idt_init();
+    slave_main();
 
     kernel_id = cpu_number();
     printf("cpu %d enabled\n", kernel_id);
