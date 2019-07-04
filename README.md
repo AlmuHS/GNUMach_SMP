@@ -118,11 +118,14 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - Initialized *master_cpu* variable to 0
 - Initialized *ktss* for master_cpu
 - Enabled cpus using StartUp IPI, and switched them to protected mode
-	+ Loaded GDT and IDT
+	+ Loaded temporary GDT and IDT
 - Implemented assembly `CPU_NUMBER()`
 - Refactorized `cpu_number()` with a more efficient implementation
 - Added interrupt stack to cpus
 - Improve memory reserve to cpu stack, using Mach style (similar to interrupt stack)
+- Enabled paging in AP processors
+- Loaded final GDT and IDT
+- Added cpus to scheduler
 
 
 ## Current status
@@ -132,9 +135,13 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - In *gnumach*, the number of cpus and its lapic structures are detected and enumerated correctly
 - ioapic enumeration feels to work correctly
 	+ Mach use PIC 8259 controller, so ioapic is not necessary. Migrate Mach to ioapic is a future TODO
-- *gnumach* boots successfully with a only cpu, in SMP mode
 - *gnumach* enable all cpus during the boot successfully
-	+ I need to "link" the cpus to the rest of the system
+- The cpus are added successfully to the kernel
+- *gnumach* boots with 2 cpu
+	+ It fails with more than 2 cpu, and with a only cpu. TODO: fix It
+- Some Hurd servers fails
+	+ DHCP client crash during the boot
+	+ Login screen don't receive keyboard touch
 
 ## Implementation 
 
@@ -159,7 +166,9 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - 	[`cpu_number()`](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/kern/cpu_number.c#L9) has been refactorized, replacing the while loop with the array [`apic2kernel[]`](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/i386/i386at/acpi_rsdp.c#L45), indexed by apic_id
 - 	[`CPU_NUMBER() `](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/i386/i386/cpu_number.h#L48) assembly function has been implemented using `apic2kernel[]` array
 - 	Added call to `interrupt_stack_alloc()` before `mp_desc_init()`
-- 	Disabled temporary call to `cpu_up()`
+- 	Added paging configuration in [`cpuboot.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/cpuboot.S	)
+- 	Added calls to `gdt_init()` and `idt_init()` before call to `slave_main()`, to load final GDT and IDT.
+- 	Enabled call to `slave_main()`, to add AP processors to the kernel
 
 ### Recover old *gnumach* APIC headers
 
@@ -298,7 +307,18 @@ To enable paging, we need to initialize CR0, CR3 and CR4 registers. as similar f
 
 This code, translated to assembly, has been added to  [`cpuboot.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/wip/i386/i386/cpuboot.S) assembly routine.
 
-Once paging will be enabled, each cpu will can to read its own Local APIC, using the `*lapic` pointer. It will also allow to execute `cpu_number()` function, which is necessary to execute the [`slave_main()`](https://github.com/AlmuHS/GNUMach_SMP/blob/eb8b0bbf6299a0c19fca12ab71b810447f0d47f5/kern/startup.c#L282) function to add the cpu to the kernel.
+The paging initialization requires a temporary mapping in some low memory address.
+We keep the temporary mapping done in BSP processor until all AP will be enabled.
+
+## Add AP processors to the kernel
+
+Once paging is enabled, each cpu will can to read its own Local APIC, using the `*lapic` pointer. It also allows to execute `cpu_number()` function, which is necessary to execute the [`slave_main()`](https://github.com/AlmuHS/GNUMach_SMP/blob/eb8b0bbf6299a0c19fca12ab71b810447f0d47f5/kern/startup.c#L282) function to add the cpu to the kernel.
+
+Before call to `slave_main()`, we need to load the final GDT and IDT, to get the same value than BSP processor, and be able to load correctly the LDT entries.
+
+To do this, we call to `gdt_init()` and `idt_init()` in `cpu_setup()`, just before call to `slave_main()`.
+
+Once final GDT and IDT are loaded, `slave_main()` finish successfully, and the AP processors are added to the kernel.
 
 
 ## Gratitude
