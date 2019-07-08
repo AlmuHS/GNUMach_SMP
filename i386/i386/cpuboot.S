@@ -93,9 +93,6 @@ _apboot:
 	pushl $0
 	popf
 
-	/* Load stack pointer */
-	pushl stack_ptr
-
 	/* Enable paging in the cpu */
 	call paging_setup
 
