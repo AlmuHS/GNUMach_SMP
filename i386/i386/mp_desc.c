@@ -301,8 +301,8 @@ cpu_setup()
     int i = 1;
     int kernel_id = 0;
 
-    kmutex_init(&ap_config_lock);
-    kmutex_lock(&ap_config_lock, FALSE);
+    //kmutex_init(&ap_config_lock);
+    //kmutex_lock(&ap_config_lock, FALSE);
 
     while(i < ncpu && (machine_slot[i].running == TRUE)) i++;
 
@@ -359,7 +359,7 @@ cpu_setup()
     ktss_init();
     slave_main();
 
-    kmutex_unlock(&ap_config_lock);
+    //kmutex_unlock(&ap_config_lock);
 
     kernel_id = cpu_number();
     printf("cpu %d enabled\n", kernel_id);
