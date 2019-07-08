@@ -361,9 +361,6 @@ cpu_setup()
 
     //kmutex_unlock(&ap_config_lock);
 
-    kernel_id = cpu_number();
-    printf("cpu %d enabled\n", kernel_id);
-
     return 0;
 }
 
