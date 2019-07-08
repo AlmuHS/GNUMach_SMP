@@ -325,7 +325,7 @@ cpu_setup()
         }
 
     apic2kernel[apic_id] = i;
-    machine_slot[i].apic_id =  apic_id >>24;
+    machine_slot[i].apic_id =  apic_id;
 
     /* Initialize machine_slot fields with the cpu data */
     machine_slot[i].running = TRUE;
