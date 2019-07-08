@@ -351,6 +351,7 @@ cpu_setup()
         }
     gdt_init();
     idt_init();
+    ktss_init();
     slave_main();
 
     kernel_id = cpu_number();
