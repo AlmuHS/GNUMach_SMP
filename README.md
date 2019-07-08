@@ -169,6 +169,7 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - 	Added paging configuration in [`cpuboot.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/cpuboot.S	)
 - 	Added calls to `gdt_init()` and `idt_init()` before call to `slave_main()`, to load final GDT and IDT.
 - 	Enabled call to `slave_main()`, to add AP processors to the kernel
+- 	Moved paging configuration to `paging_setup()` function
 
 ### Recover old *gnumach* APIC headers
 
@@ -303,11 +304,11 @@ We have split this task in some steps:
 
 Before add the cpus to the kernel, we need to configure paging in them, to allow fully access to the memory.
 
-To enable paging, we need to initialize CR0, CR3 and CR4 registers. as similar for to [this](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/model_dep.c#L477-L500).
+To enable paging, we need to initialize CR0, CR3 and CR4 registers. in a similar way to [this](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/model_dep.c#L477-L500).
 
-This code, translated to assembly, has been added to  [`cpuboot.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/wip/i386/i386/cpuboot.S) assembly routine.
+This code has been copied in `paging_setup()` function, in `mp_desc.c`. The processor, at starts, isn't capable to read the content from a pointer, so we copied the memory address of `kernel_page_dir` and `pdpbase` in two temporary integer variables: `kernel_page_dir_addr`, and `pdpbase_addr`.
 
-The paging initialization requires a temporary mapping in some low memory address.
+The paging initialization also requires a temporary mapping in some low memory address.
 We keep the temporary mapping done in BSP processor until all AP will be enabled.
 
 ## Add AP processors to the kernel
