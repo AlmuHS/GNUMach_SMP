@@ -90,6 +90,7 @@ vm_offset_t	cpu_stack_high;
 
 
 static struct kmutex mp_cpu_boot_lock;
+static struct kmutex ap_config_lock;
 
 /*
  * Multiprocessor i386/i486 systems use a separate copy of the
@@ -299,6 +300,10 @@ cpu_setup()
 
     int i = 1;
     int kernel_id = 0;
+
+    kmutex_init(&ap_config_lock);
+    kmutex_lock(&ap_config_lock, FALSE);
+
     while(i < ncpu && (machine_slot[i].running == TRUE)) i++;
 
     /* assume Pentium 4, Xeon, or later processors */
@@ -353,6 +358,8 @@ cpu_setup()
     idt_init();
     ktss_init();
     slave_main();
+
+    kmutex_unlock(&ap_config_lock);
 
     kernel_id = cpu_number();
     printf("cpu %d enabled\n", kernel_id);
