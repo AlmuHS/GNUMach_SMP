@@ -170,6 +170,7 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - 	Added calls to `gdt_init()` and `idt_init()` before call to `slave_main()`, to load final GDT and IDT.
 - 	Enabled call to `slave_main()`, to add AP processors to the kernel
 - 	Moved paging configuration to `paging_setup()` function
+- 	Solved little problem with AP stack: now each AP has their own stack
 
 ### Recover old *gnumach* APIC headers
 
