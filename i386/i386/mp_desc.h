@@ -89,5 +89,6 @@ extern int cpu_setup();
 #endif /* MULTIPROCESSOR */
 
 extern void start_other_cpus(void);
+extern void paging_setup();
 
 #endif	/* _I386_MP_DESC_H_ */

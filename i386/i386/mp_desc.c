@@ -367,6 +367,34 @@ cpu_setup()
     return 0;
 }
 
+void paging_setup(){
+
+#if PAE
+    set_cr3(pdpbase_addr);
+#ifndef	MACH_HYP
+    if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
+        set_cr4(get_cr4() | CR4_PAE);
+#endif	/* MACH_HYP */
+#else
+    set_cr3(kernel_page_dir_addr);
+#endif	/* PAE */
+#ifndef	MACH_HYP
+    /* Turn paging on.
+     * Also set the WP bit so that on 486 or better processors
+     * page-level write protection works in kernel mode.
+     */
+    set_cr0(get_cr0() | CR0_PG | CR0_WP);
+    set_cr0(get_cr0() & ~(CR0_CD | CR0_NW));
+
+    if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
+        set_cr4(get_cr4() | CR4_PGE);
+
+#endif	/* MACH_HYP */
+
+    flush_instr_queue();
+    flush_tlb();
+
+}
 
 int
 cpu_ap_main()

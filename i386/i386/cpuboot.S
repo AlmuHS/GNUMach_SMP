@@ -85,72 +85,72 @@ _apboot:
 	movw	%ax,%es
 	movw	%ax,%ss
 
-#if PAE
-    //set_cr3((unsigned)_kvtophys(kernel_pmap->pdpbase));
-	movl (pdpbase_addr), %eax
-	movl %eax, %cr3
+/*#if PAE*/
+/*    //set_cr3((unsigned)_kvtophys(kernel_pmap->pdpbase));*/
+/*	movl (pdpbase_addr), %eax*/
+/*	movl %eax, %cr3*/
 
-#ifndef	MACH_HYP
-    //if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
-    movl (cpu_features), %eax
-    test $(1<<CPU_FEATURE_PAE), %eax
-    jnz setpae
-    jz nopae
+/*#ifndef	MACH_HYP*/
+/*    //if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))*/
+/*    movl (cpu_features), %eax*/
+/*    test $(1<<CPU_FEATURE_PAE), %eax*/
+/*    jnz setpae*/
+/*    jz nopae*/
 
-setpae:
-    //set_cr4(get_cr4() | CR4_PAE);
-	movl %cr4, %eax
-	orl $CR4_PAE, %eax
-	movl %eax, %cr4
-nopae:
-    nop
+/*setpae:*/
+/*    //set_cr4(get_cr4() | CR4_PAE);*/
+/*	movl %cr4, %eax*/
+/*	orl $CR4_PAE, %eax*/
+/*	movl %eax, %cr4*/
+/*nopae:*/
+/*    nop*/
 
-#endif	/* MACH_HYP */
-#else
-    //set_cr3((unsigned)_kvtophys(kernel_page_dir));
-    movl (kernel_page_dir_addr), %eax
-    movl %eax, %cr3
+/*#endif	/* MACH_HYP */
+/*#else*/
+/*    //set_cr3((unsigned)_kvtophys(kernel_page_dir));*/
+/*    movl (kernel_page_dir_addr), %eax*/
+/*    movl %eax, %cr3*/
 
-#endif	/* PAE */
-#ifndef	MACH_HYP
-    /* Turn paging on.
-     * Also set the WP bit so that on 486 or better processors
-     * page-level write protection works in kernel mode.
-     */
-    //set_cr0(get_cr0() | CR0_PG | CR0_WP);
-	//movl %cr0, %eax
-	//orl $(CR0_PG | CR0_WP), %eax
-	movl $0x8001003b, %eax	
-	movl %eax, %cr0
+/*#endif	 PAE */
+/*#ifndef	MACH_HYP*/
+/*    /* Turn paging on.*/
+/*     * Also set the WP bit so that on 486 or better processors*/
+/*     * page-level write protection works in kernel mode.*/
+/*     */
+/*    //set_cr0(get_cr0() | CR0_PG | CR0_WP);*/
+/*	//movl %cr0, %eax*/
+/*	//orl $(CR0_PG | CR0_WP), %eax*/
+/*	movl $0x8001003b, %eax*/
+/*	movl %eax, %cr0*/
 
-    //set_cr0(get_cr0() & ~(CR0_CD | CR0_NW));
-	movl %cr0, %eax
-	andl $(~(CR0_CD | CR0_NW)), %eax
-	movl %eax, %cr0
+/*    //set_cr0(get_cr0() & ~(CR0_CD | CR0_NW));*/
+/*	movl %cr0, %eax*/
+/*	andl $(~(CR0_CD | CR0_NW)), %eax*/
+/*	movl %eax, %cr0*/
 
 
-    //if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
-    movl (cpu_features), %eax
-    test $(1<<CPU_FEATURE_PGE), %eax
-    jnz setpge
-    jz nopge
+/*    //if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))*/
+/*    movl (cpu_features), %eax*/
+/*    test $(1<<CPU_FEATURE_PGE), %eax*/
+/*    jnz setpge*/
+/*    jz nopge*/
 
-    setpge:
-        //set_cr4(get_cr4() | CR4_PGE);
-		movl %cr4, %eax
-		orl $CR4_PGE, %eax
-		movl %eax, %cr4
-    nopge:
-        nop
+/*    setpge:*/
+/*        //set_cr4(get_cr4() | CR4_PGE);*/
+/*		movl %cr4, %eax*/
+/*		orl $CR4_PGE, %eax*/
+/*		movl %eax, %cr4*/
+/*    nopge:*/
+/*        nop*/
 
-#endif	/* MACH_HYP */
+/*#endif	/* MACH_HYP */
 
-    //flush_instr_queue();
-	jmp 0f
-0:
-	//flush_tlb();
-	movl %cr3, %eax
-	movl %eax, %cr3
+/*    //flush_instr_queue();*/
+/*	jmp 0f*/
+/*0:*/
+/*	//flush_tlb();*/
+/*	movl %cr3, %eax*/
+/*	movl %eax, %cr3*/
 
 
 	movl stack_ptr, %esp
@@ -162,6 +162,7 @@ nopae:
 
 	pushl stack_ptr
 
+	call paging_setup
 	call cpu_ap_main
 	cli
 
