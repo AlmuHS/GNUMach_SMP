@@ -396,13 +396,7 @@ void paging_setup(){
 int
 cpu_ap_main()
 {
-
-    if(cpu_setup())
-        goto idle;
-
-idle:
-    for(;;)
-        asm volatile("hlt");
+    if(cpu_setup()) return -1;
 }
 
 /*TODO: Reimplement function to send Startup IPI to cpu*/
