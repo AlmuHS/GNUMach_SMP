@@ -605,6 +605,8 @@ start_other_cpus(void)
     for (i = 0 ; i < nb_direct_value; i++){
         kernel_page_dir[lin2pdenum_cont(INIT_VM_MIN_KERNEL_ADDRESS) + i] = 0;
     }
+
+    flush_tlb();
 }
 
 #endif	/* NCPUS > 1 */
