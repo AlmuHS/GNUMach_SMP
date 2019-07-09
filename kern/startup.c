@@ -245,8 +245,7 @@ void start_kernel_threads(void)
 	 *	Allow other CPUs to run.
 	 */
 
-	start_other_cpus();
-	//while(1);
+	if(ncpu > 1) start_other_cpus();
 #endif	/* NCPUS > 1 */
 
 	/*
