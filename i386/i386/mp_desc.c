@@ -592,6 +592,8 @@ start_other_cpus(void)
                     cpu_start(cpu);
 
                     stack_start += STACK_SIZE;
+
+                    delay(3000000);
                 }
         }
 
