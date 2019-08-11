@@ -718,7 +718,7 @@ mach_port_mod_refs(
 		if (MACH_PORT_VALID (name) && space == current_space()) {
 			printf("task %.*s %screasing a bogus port "
 			       "%lu by %d, most probably a bug.\n",
-			       sizeof current_task()->name,
+			       (int) (sizeof current_task()->name),
 			       current_task()->name,
 			       delta < 0 ? "de" : "in", name,
 			       delta < 0 ? -delta : delta);
