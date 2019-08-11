@@ -4247,7 +4247,7 @@ vm_map_t vm_map_fork(vm_map_t old_map)
 	new_map = vm_map_create(new_pmap,
 			old_map->min_offset,
 			old_map->max_offset);
-	if (new_pmap == PMAP_NULL) {
+	if (new_map == PMAP_NULL) {
 		pmap_destroy(new_pmap);
 		return VM_MAP_NULL;
 	}
