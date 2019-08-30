@@ -4881,11 +4881,11 @@ kern_return_t vm_map_msync(
 	vm_sync_t	sync_flags)
 {
 	if (map == VM_MAP_NULL)
-		KERN_INVALID_ARGUMENT;
+		return KERN_INVALID_ARGUMENT;
 
 	if (sync_flags & (VM_SYNC_ASYNCHRONOUS | VM_SYNC_SYNCHRONOUS) ==
 			 (VM_SYNC_ASYNCHRONOUS | VM_SYNC_SYNCHRONOUS))
-		KERN_INVALID_ARGUMENT;
+		return KERN_INVALID_ARGUMENT;
 
 	size =	round_page(address + size) - trunc_page(address);
 	address = trunc_page(address);
