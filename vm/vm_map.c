@@ -4883,7 +4883,7 @@ kern_return_t vm_map_msync(
 	if (map == VM_MAP_NULL)
 		return KERN_INVALID_ARGUMENT;
 
-	if (sync_flags & (VM_SYNC_ASYNCHRONOUS | VM_SYNC_SYNCHRONOUS) ==
+	if ((sync_flags & (VM_SYNC_ASYNCHRONOUS | VM_SYNC_SYNCHRONOUS)) ==
 			 (VM_SYNC_ASYNCHRONOUS | VM_SYNC_SYNCHRONOUS))
 		return KERN_INVALID_ARGUMENT;
 
