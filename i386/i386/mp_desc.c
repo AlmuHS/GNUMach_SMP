@@ -354,9 +354,16 @@ cpu_setup()
             machine_slot[i].cpu_type = CPU_TYPE_PENTIUMPRO;
             break;
         }
+
+    /*
+     * Initialize and activate the real i386 protected-mode structures.
+     */
     gdt_init();
     idt_init();
+    ldt_init();
     ktss_init();
+
+    /* Add cpu to the kernel */
     slave_main();
 
     kmutex_unlock(&ap_config_lock);
