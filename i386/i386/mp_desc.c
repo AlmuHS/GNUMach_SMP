@@ -236,7 +236,6 @@ static void send_ipi(unsigned icr_h, unsigned icr_l)
 }
 
 
-/*TODO: Add delay between IPI*/
 void startup_cpu(uint32_t apic_id)
 {
     unsigned icr_h = 0;
@@ -585,15 +584,15 @@ start_other_cpus(void)
     stack_start = phystokv(stack_start);
 
 
-    for (cpu = 0; cpu < ncpu; cpu++)
+    for (cpu = 1; cpu < ncpu; cpu++)
         {
             if (cpu != cpu_number())
                 {
                     //Initialize cpu stack
-                    cpu_stack[cpu] = stack_start;
-                    _cpu_stack_top[cpu] = stack_start + STACK_SIZE;
+                    cpu_stack[cpu-1] = stack_start;
+                    _cpu_stack_top[cpu-1] = stack_start + STACK_SIZE;
 
-                    stack_ptr = cpu_stack[cpu];
+                    stack_ptr = cpu_stack[cpu-1];
 
                     machine_slot[cpu].running = FALSE;
                     cpu_start(cpu);
