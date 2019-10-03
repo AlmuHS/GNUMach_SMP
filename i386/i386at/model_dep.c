@@ -528,7 +528,10 @@ i386at_init(void)
 
 
 #if INIT_VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
-    /* Get rid of the temporary direct mapping and flush it out of the TLB.  */
+    /* Get rid of the temporary direct mapping and flush it out of the TLB (only if there are an only cpu).  */
+
+if(ncpu == 1){
+
     for (i = 0 ; i < nb_direct; i++)
         {
 #ifdef	MACH_XEN
@@ -539,11 +542,11 @@ i386at_init(void)
 #endif	/* MACH_PSEUDO_PHYS */
                 printf("couldn't unmap frame %d\n", i);
 #else	/* MACH_XEN */
-            /* XXX: Uncomment*/
-            //kernel_page_dir[lin2pdenum_cont(INIT_VM_MIN_KERNEL_ADDRESS) + i] = 0;
+            kernel_page_dir[lin2pdenum_cont(INIT_VM_MIN_KERNEL_ADDRESS) + i] = 0;
 #endif	/* MACH_XEN */
         }
 #endif
+}
     /* Keep BIOS memory mapped */
 #ifdef LINUX_DEV
 #if VM_MIN_KERNEL_ADDRESS != 0
