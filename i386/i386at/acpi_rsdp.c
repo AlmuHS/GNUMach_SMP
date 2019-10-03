@@ -320,7 +320,6 @@ int extra_setup()
   else
   {
     lapic = (ApicLocalUnit*)virt;
-    apic2kernel[lapic->apic_id.r];
     printf("LAPIC mapped: physical: 0x%lx virtual: 0x%lx version: 0x%x\n",
            (unsigned long)lapic_addr, (unsigned long)virt,
            (unsigned)lapic->version.r);
