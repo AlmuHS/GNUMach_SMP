@@ -263,9 +263,9 @@ acpi_apic_setup(){
                 if((lapic_entry->flags & 0x1) && ncpu < NCPUS){
 
                     //Enumerate CPU and add It to cpu/apic vector
-                    machine_slot[ncpu].apic_id = lapic_entry->apic_id;
+                    machine_slot[ncpu].apic_id = lapic_entry->apic_id >>24;
                     machine_slot[ncpu].is_cpu = TRUE;
-                    apic2kernel[lapic_entry->apic_id] = ncpu;
+                    apic2kernel[lapic_entry->apic_id >>24] = ncpu;
 
                     //Increase number of CPU
                     ncpu++;

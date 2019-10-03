@@ -689,7 +689,7 @@ void c_boot_entry(vm_offset_t bi)
         }
 
     if(lapic != 0){
-        apic_id = lapic->apic_id.r;
+        apic_id = lapic->apic_id.r >>24;
 
         //update BSP machine_slot and apic2kernel
         machine_slot[0].apic_id = apic_id;
