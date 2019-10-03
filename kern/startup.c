@@ -130,7 +130,7 @@ void setup_main(void)
          * After virtual memory is up, do extra initializations:
          * currently it maps LAPIC (in acpi_rsdp.c)
          */
-        if(ncpu > 1) extra_setup();
+        extra_setup();
 
 	init_timers();
 	init_timeout();
