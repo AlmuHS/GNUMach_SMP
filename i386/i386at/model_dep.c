@@ -75,6 +75,7 @@
 #include <i386/mp_desc.h>
 
 #include <i386at/acpi_rsdp.h>
+#include <imps/apic.h> //lapic, ioapic...
 
 #ifdef	MACH_XEN
 #include <xen/console.h>
@@ -144,6 +145,10 @@ extern void linux_init(void);
 unsigned kernel_page_dir_addr = 0;
 unsigned pdpbase_addr = 0;
 int nb_direct_value = 0;
+
+
+/* Local APIC common pointer*/
+extern volatile ApicLocalUnit* lapic;
 
 /*
  * Find devices.  The system is alive.
