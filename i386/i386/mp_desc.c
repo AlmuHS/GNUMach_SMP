@@ -246,8 +246,6 @@ void startup_cpu(uint32_t apic_id)
     icr_l = (INIT << 8) | (ASSERT << 14) | (LEVEL << 15);
     send_ipi(icr_h, icr_l);
 
-    //dummyf(lapic->apic_id.r);
-
     //wait until IPI is sent
     delay(10000);
     while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
@@ -258,8 +256,6 @@ void startup_cpu(uint32_t apic_id)
     icr_h = (apic_id << 24);
     icr_l = (INIT << 8) | (DE_ASSERT << 14) | (LEVEL << 15);
     send_ipi(icr_h, icr_l);
-
-    //dummyf(lapic->apic_id.r);
 
     //wait until IPI is sent
     delay(10000);
@@ -272,8 +268,6 @@ void startup_cpu(uint32_t apic_id)
     icr_l = (STARTUP << 8) | ((AP_BOOT_ADDR >>12) & 0xff);
     send_ipi(icr_h, icr_l);
 
-    dummyf(lapic->apic_id.r);
-
     //wait until IPI is sent
     delay(1000);
     while( ( (lapic->icr_low.r >> 12) & 1) == SEND_PENDING);
@@ -284,8 +278,6 @@ void startup_cpu(uint32_t apic_id)
     icr_h = (apic_id << 24);
     icr_l = (STARTUP << 8) | ((AP_BOOT_ADDR >>12) & 0xff);
     send_ipi(icr_h, icr_l);
-
-    //dummyf(lapic->apic_id.r);
 
     //wait until IPI is sent
     delay(1000);
