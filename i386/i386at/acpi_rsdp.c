@@ -224,6 +224,8 @@ acpi_get_rsdt(){
 
 static int
 acpi_apic_setup(){
+	unsigned apic_id;
+
 
     if(apic == 0)
         return -1;
@@ -262,10 +264,12 @@ acpi_apic_setup(){
                 //If cpu flag is correct, and the maximum number of CPUs is not reached
                 if((lapic_entry->flags & 0x1) && ncpu < NCPUS){
 
+                    apic_id = lapic_entry->apic_id >>24;
+
                     //Enumerate CPU and add It to cpu/apic vector
-                    machine_slot[ncpu].apic_id = lapic_entry->apic_id >>24;
+                    machine_slot[ncpu].apic_id = apic_id;
                     machine_slot[ncpu].is_cpu = TRUE;
-                    apic2kernel[lapic_entry->apic_id >>24] = ncpu;
+                    apic2kernel[apic_id] = ncpu;
 
                     //Increase number of CPU
                     ncpu++;
