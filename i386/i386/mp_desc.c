@@ -246,7 +246,7 @@ void startup_cpu(uint32_t apic_id)
     icr_l = (INIT << 8) | (ASSERT << 14) | (LEVEL << 15);
     send_ipi(icr_h, icr_l);
 
-    dummyf(lapic->apic_id.r);
+    //dummyf(lapic->apic_id.r);
 
     //wait until IPI is sent
     delay(10000);
@@ -259,7 +259,7 @@ void startup_cpu(uint32_t apic_id)
     icr_l = (INIT << 8) | (DE_ASSERT << 14) | (LEVEL << 15);
     send_ipi(icr_h, icr_l);
 
-    dummyf(lapic->apic_id.r);
+    //dummyf(lapic->apic_id.r);
 
     //wait until IPI is sent
     delay(10000);
@@ -285,7 +285,7 @@ void startup_cpu(uint32_t apic_id)
     icr_l = (STARTUP << 8) | ((AP_BOOT_ADDR >>12) & 0xff);
     send_ipi(icr_h, icr_l);
 
-    dummyf(lapic->apic_id.r);
+    //dummyf(lapic->apic_id.r);
 
     //wait until IPI is sent
     delay(1000);
@@ -590,7 +590,7 @@ start_other_cpus(void)
                 {
                     //Initialize cpu stack
                     cpu_stack[cpu-1] = stack_start;
-                    _cpu_stack_top[cpu-1] = stack_start + STACK_SIZE;
+                    _cpu_stack_top[cpu-1] = stack_start + STACK_SIZE - 1;
 
                     stack_ptr = cpu_stack[cpu-1];
 
