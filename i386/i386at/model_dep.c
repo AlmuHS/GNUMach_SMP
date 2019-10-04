@@ -644,7 +644,7 @@ void c_boot_entry(vm_offset_t bi)
      */
     i386at_init();
 
-    if(lapic != 0) printf("LAPIC version: %x\n", lapic->version.r);
+    //printf("LAPIC version: %x\n", lapic->version.r);
 
 #if	MACH_KDB
     /*
