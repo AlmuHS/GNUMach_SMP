@@ -129,6 +129,3 @@ gdt_tmp:
 _apbootend:
 apbootend:
 
-//    .globl dummyf
-//dummyf:
-ret
