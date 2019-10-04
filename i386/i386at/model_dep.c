@@ -580,7 +580,6 @@ if(ncpu == 1){
  */
 void c_boot_entry(vm_offset_t bi)
 {
-    int apic_id;
 #if	ENABLE_IMMEDIATE_CONSOLE
     romputc = immc_romputc;
 #endif	/* ENABLE_IMMEDIATE_CONSOLE */
@@ -686,15 +685,6 @@ void c_boot_entry(vm_offset_t bi)
             machine_slot[0].cpu_type = CPU_TYPE_PENTIUMPRO;
             break;
         }
-
-    if(lapic != 0){
-        apic_id = lapic->apic_id.r;
-
-        //update BSP machine_slot and apic2kernel
-        machine_slot[0].apic_id = apic_id;
-        apic2kernel[apic_id] = 0;
-    }
-    
 
     /*
      * Start the system.

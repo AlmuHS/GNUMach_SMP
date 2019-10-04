@@ -566,6 +566,9 @@ start_other_cpus(void)
     /*TODO: Copy the routine in a physical page */
     memcpy((void*)phystokv(AP_BOOT_ADDR), (void*) &apboot, (uint32_t)&apbootend - (uint32_t)&apboot);
 
+    //update BSP machine_slot and apic2kernel
+    machine_slot[0].apic_id = apic_id;
+    apic2kernel[apic_id] = 0;
 
     //Reserve memory for cpu stack
     if (!init_alloc_aligned(STACK_SIZE*(ncpu-1), &stack_start))
@@ -591,7 +594,6 @@ start_other_cpus(void)
                     delay(3000000);
                 }
         }
-
 
     /* Get rid of the temporary direct mapping and flush it out of the TLB.  */
     for (i = 0 ; i < nb_direct_value; i++){
