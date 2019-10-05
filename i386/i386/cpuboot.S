@@ -94,7 +94,7 @@ _apboot:
 	popf
 
 	/* Enable paging in the cpu */
-	call paging_setup
+	//call paging_setup
 
 	/* Finish the cpu configuration */
 	call cpu_ap_main

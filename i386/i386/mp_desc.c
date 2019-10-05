@@ -298,8 +298,8 @@ cpu_setup()
     while(i < ncpu && (machine_slot[i].running == TRUE)) i++;
 
     /* assume Pentium 4, Xeon, or later processors */
-    //unsigned apic_id = (((ApicLocalUnit*)phystokv(lapic_addr))->apic_id.r >> 24) & 0xff;
-    unsigned apic_id = lapic->apic_id.r;
+    unsigned apic_id = (((ApicLocalUnit*)phystokv(lapic_addr))->apic_id.r >> 24) & 0xff;
+    //unsigned apic_id = lapic->apic_id.r;
 
     /* panic? */
     if(i >= ncpu)
@@ -355,7 +355,7 @@ cpu_setup()
     ktss_init();
 
     /* Add cpu to the kernel */
-    slave_main();
+    //slave_main();
 
     kmutex_unlock(&ap_config_lock);
 
@@ -595,12 +595,15 @@ start_other_cpus(void)
                 }
         }
 
+
+    #if 0
     /* Get rid of the temporary direct mapping and flush it out of the TLB.  */
     for (i = 0 ; i < nb_direct_value; i++){
         kernel_page_dir[lin2pdenum_cont(INIT_VM_MIN_KERNEL_ADDRESS) + i] = 0;
     }
 
     flush_tlb();
+    #endif
 }
 
 #endif	/* NCPUS > 1 */
