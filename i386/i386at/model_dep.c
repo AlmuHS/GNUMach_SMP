@@ -529,7 +529,7 @@ i386at_init(void)
 #if INIT_VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
     /* Get rid of the temporary direct mapping and flush it out of the TLB (only if there are an only cpu).  */
 
-if(ncpu > 1){
+if(ncpu == 1){
 
     for (i = 0 ; i < nb_direct; i++)
         {
