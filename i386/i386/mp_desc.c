@@ -432,12 +432,6 @@ kern_return_t intel_startCPU(int slot_num)
     /*mp_rendezvous_no_intrs(start_cpu, (void *) &start_info);*/
     startup_cpu(lapic_id);
 
-    /*
-     * Initialize (or re-initialize) the descriptor tables for this cpu.
-     * Propagate processor mode to slave.
-     */
-    /*cpu_desc_init64(cpu_datap(slot_num));*/
-    mp_desc_init(slot_num);
 
     /*ml_set_interrupts_enabled(istate);*/
     cpu_intr_restore(eFlagsRegister);
@@ -445,6 +439,12 @@ kern_return_t intel_startCPU(int slot_num)
     kmutex_unlock(&mp_cpu_boot_lock);
 
     delay(1000000);
+
+    /*
+     * Initialize (or re-initialize) the descriptor tables for this cpu.
+     * Propagate processor mode to slave.
+     */
+    mp_desc_init(slot_num);
 
     /*if (!cpu_datap(slot_num)->cpu_running) {*/
     if(!machine_slot[slot_num].running)
