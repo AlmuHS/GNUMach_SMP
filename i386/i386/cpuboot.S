@@ -99,6 +99,7 @@ _apboot:
 	/* Finish the cpu configuration */
 	call cpu_ap_main
 	cli
+	jmp apbootend
 
     .align 0x10
 gdt_descr_tmp:
@@ -128,4 +129,4 @@ gdt_tmp:
 
 _apbootend:
 apbootend:
-
+nop
