@@ -596,14 +596,12 @@ start_other_cpus(void)
         }
 
 
-    #if 0
     /* Get rid of the temporary direct mapping and flush it out of the TLB.  */
     for (i = 0 ; i < nb_direct_value; i++){
         kernel_page_dir[lin2pdenum_cont(INIT_VM_MIN_KERNEL_ADDRESS) + i] = 0;
     }
 
     flush_tlb();
-    #endif
 }
 
 #endif	/* NCPUS > 1 */
