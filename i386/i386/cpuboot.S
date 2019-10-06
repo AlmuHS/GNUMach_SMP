@@ -105,10 +105,11 @@ _apboot:
 	/*if the processor is not added to the kernel, stop it*/
 	sti
 	nop
+halt:
 	hlt
 
-	/*if the processor continues, skip to the end*/	
-	jmp apbootend
+	/*if the processor continues, returns to halt*/	
+	jmp halt
 
     .align 0x10
 gdt_descr_tmp:
