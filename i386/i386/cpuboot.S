@@ -96,9 +96,18 @@ _apboot:
 	/* Enable paging in the cpu */
 	call paging_setup
 
+	/*lock interrupts*/
+	cli
+
 	/* Finish the cpu configuration */
 	call cpu_ap_main
-	cli
+
+	/*if the processor is not added to the kernel, stop it*/
+	sti
+	nop
+	hlt
+
+	/*if the processor continues, skip to the end*/	
 	jmp apbootend
 
     .align 0x10
@@ -130,3 +139,4 @@ gdt_tmp:
 _apbootend:
 apbootend:
 nop
+hlt
