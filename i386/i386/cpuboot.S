@@ -86,7 +86,7 @@ _apboot:
 	movw	%ax,%ss
 
 	/* Load cpu stack */
-	movl stack_ptr, %esp
+	movl (stack_ptr), %esp
 	addl $STACK_SIZE, %esp
 
 	/* Reset EFLAGS to a known state.  */

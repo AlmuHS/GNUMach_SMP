@@ -522,6 +522,7 @@ i386at_init(void)
     ldt_init();
     ktss_init();
 
+    interrupt_stack_alloc();
     mp_desc_init(master_cpu);
 
 

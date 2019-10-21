@@ -73,8 +73,8 @@ vm_offset_t	int_stack_high;
 /*
  * First cpu`s interrupt stack.
  */
-char		intstack[];	/* bottom */
-char		eintstack[];	/* top */
+extern char		_intstack[];	/* bottom */
+extern char		_eintstack[];	/* top */
 
 
 /*
@@ -475,10 +475,13 @@ interrupt_stack_alloc(void)
      * Allocate an interrupt stack for each CPU except for
      * the master CPU (which uses the bootstrap stack)
      */
-    if (!init_alloc_aligned(INTSTACK_SIZE*(ncpu-1), &stack_start))
-        panic("not enough memory for interrupt stacks");
-    stack_start = phystokv(stack_start);
 
+	if(ncpu > 1){
+		if (!init_alloc_aligned(INTSTACK_SIZE*(ncpu-1), &stack_start))
+        	panic("not enough memory for interrupt stacks");
+	    stack_start = phystokv(stack_start);
+	}
+    
     /*
      * Set up pointers to the top of the interrupt stack.
      */
@@ -486,8 +489,8 @@ interrupt_stack_alloc(void)
         {
             if (i == master_cpu)
                 {
-                    interrupt_stack[i] = (vm_offset_t) intstack;
-                    _int_stack_top[i]   = (vm_offset_t) eintstack;
+                    interrupt_stack[i] = (vm_offset_t) _intstack;
+                    _int_stack_top[i]   = (vm_offset_t) _intstack + INTSTACK_SIZE;
                 }
             else if (machine_slot[i].is_cpu)
                 {
@@ -502,7 +505,7 @@ interrupt_stack_alloc(void)
      * Set up the barrier address.  All thread stacks MUST
      * be above this address.
      */
-    int_stack_high = stack_start;
+    if(ncpu > 1) int_stack_high = stack_start;
 }
 
 /* XXX should be adjusted per CPU speed */
