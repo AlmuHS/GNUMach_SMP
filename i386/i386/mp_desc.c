@@ -73,8 +73,8 @@ vm_offset_t	int_stack_high;
 /*
  * First cpu`s interrupt stack.
  */
-char		intstack[];	/* bottom */
-char		eintstack[];	/* top */
+extern char		_intstack[];	/* bottom */
+extern char		_eintstack[];	/* top */
 
 
 /*
@@ -486,8 +486,8 @@ interrupt_stack_alloc(void)
         {
             if (i == master_cpu)
                 {
-                    interrupt_stack[i] = (vm_offset_t) intstack;
-                    _int_stack_top[i]   = (vm_offset_t) eintstack;
+                    interrupt_stack[i] = (vm_offset_t) _intstack;
+                    _int_stack_top[i]   = (vm_offset_t) _intstack + INTSTACK_SIZE;
                 }
             else if (machine_slot[i].is_cpu)
                 {
