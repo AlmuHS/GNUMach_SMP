@@ -354,6 +354,11 @@ cpu_setup()
     ldt_init();
     ktss_init();
 
+    /*
+     * Initialize (or re-initialize) the descriptor tables for this cpu.
+     */
+    mp_desc_init(cpu_number());
+
     /* Add cpu to the kernel */
     slave_main();
 
@@ -440,11 +445,6 @@ kern_return_t intel_startCPU(int slot_num)
 
     delay(1000000);
 
-    /*
-     * Initialize (or re-initialize) the descriptor tables for this cpu.
-     * Propagate processor mode to slave.
-     */
-    mp_desc_init(slot_num);
 
     /*if (!cpu_datap(slot_num)->cpu_running) {*/
     if(!machine_slot[slot_num].running)
@@ -481,7 +481,7 @@ interrupt_stack_alloc(void)
         	panic("not enough memory for interrupt stacks");
 	    stack_start = phystokv(stack_start);
 	}
-    
+
     /*
      * Set up pointers to the top of the interrupt stack.
      */
