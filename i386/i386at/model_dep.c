@@ -517,9 +517,11 @@ i386at_init(void)
     ldt_init();
     ktss_init();
 
+
+#if NCPUS > 1
     interrupt_stack_alloc();
     mp_desc_init(master_cpu);
-
+#endif
 
 
 #if INIT_VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
