@@ -531,3 +531,97 @@ kern_return_t vm_msync(
 
 	return vm_map_msync(map, (vm_offset_t) address, size, sync_flags);
 }
+
+kern_return_t experimental_vm_allocate_contiguous(host_priv, map, result_vaddr, result_paddr, size)
+	host_t			host_priv;
+	vm_map_t		map;
+	vm_address_t		*result_vaddr;
+	vm_address_t		*result_paddr;
+	vm_size_t		size;
+{
+	vm_size_t		alloc_size;
+	unsigned int		npages;
+	unsigned int		i;
+	unsigned int		order;
+	vm_page_t		pages;
+	vm_object_t		object;
+	kern_return_t		kr;
+	vm_address_t		vaddr;
+
+	if (host_priv == HOST_NULL)
+		return KERN_INVALID_HOST;
+
+	if (map == VM_MAP_NULL)
+		return KERN_INVALID_TASK;
+
+	size = vm_page_round(size);
+
+	if (size == 0)
+		return KERN_INVALID_ARGUMENT;
+
+	object = vm_object_allocate(size);
+
+	if (object == NULL)
+		return KERN_RESOURCE_SHORTAGE;
+
+	/*
+	 * XXX The page allocator returns blocks with a power-of-two size.
+	 * The requested size may not be a power-of-two, requiring some
+	 * work to release back the pages that aren't needed.
+	 */
+	order = vm_page_order(size);
+	alloc_size = (1 << (order + PAGE_SHIFT));
+	npages = vm_page_atop(alloc_size);
+
+	pages = vm_page_grab_contig(alloc_size, VM_PAGE_SEL_DIRECTMAP);
+
+	if (pages == NULL) {
+		vm_object_deallocate(object);
+		return KERN_RESOURCE_SHORTAGE;
+	}
+
+	vm_object_lock(object);
+	vm_page_lock_queues();
+
+	for (i = 0; i < vm_page_atop(size); i++) {
+		/*
+		 * XXX We can safely handle contiguous pages as an array,
+		 * but this relies on knowing the implementation of the
+		 * page allocator.
+		 */
+		pages[i].busy = FALSE;
+		vm_page_insert(&pages[i], object, vm_page_ptoa(i));
+		vm_page_wire(&pages[i]);
+	}
+
+	vm_page_unlock_queues();
+	vm_object_unlock(object);
+
+	for (i = vm_page_atop(size); i < npages; i++) {
+		vm_page_release(&pages[i], FALSE, FALSE);
+	}
+
+	vaddr = 0;
+	kr = vm_map_enter(map, &vaddr, size, 0, TRUE, object, 0, FALSE,
+			  VM_PROT_READ | VM_PROT_WRITE,
+			  VM_PROT_READ | VM_PROT_WRITE, VM_INHERIT_DEFAULT);
+
+	if (kr != KERN_SUCCESS) {
+		vm_object_deallocate(object);
+		return kr;
+	}
+
+	kr = vm_map_pageable(map, vaddr, vaddr + size,
+			     VM_PROT_READ | VM_PROT_WRITE,
+			     TRUE, TRUE);
+
+	if (kr != KERN_SUCCESS) {
+		vm_map_remove(map, vaddr, vaddr + size);
+		return kr;
+	}
+
+	*result_vaddr = vaddr;
+	*result_paddr = pages->phys_addr;
+
+	return KERN_SUCCESS;
+}

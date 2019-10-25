@@ -37,6 +37,22 @@ type vm_cache_statistics_data_t = struct[11] of integer_t;
 
 type vm_wire_t = int;
 
+type shutdown_notify_port_t = mach_port_t
+	ctype: mach_port_t
+#ifdef	SHUTDOWN_NOTIFY_INTRAN
+	intran: SHUTDOWN_NOTIFY_INTRAN
+#endif
+#ifdef	SHUTDOWN_NOTIFY_INTRAN_PAYLOAD
+	intranpayload: SHUTDOWN_NOTIFY_INTRAN_PAYLOAD
+#endif
+#ifdef	SHUTDOWN_NOTIFY_OUTTRAN
+	outtran: SHUTDOWN_NOTIFY_OUTTRAN
+#endif
+#ifdef	SHUTDOWN_NOTIFY_DESTRUCTOR
+	destructor: SHUTDOWN_NOTIFY_DESTRUCTOR
+#endif
+;
+
 /*
  * Return page cache statistics for the host on which the target task
  * resides.
@@ -165,3 +181,8 @@ routine vm_msync(
 		address		: vm_address_t;
 		size		: vm_size_t;
 		sync_flags	: vm_sync_t);
+
+/* These notifications are sent to the port registered via
+   `register_new_shutdown_notification' */
+simpleroutine mach_notify_new_shutdown(
+               notify  : shutdown_notify_port_t);

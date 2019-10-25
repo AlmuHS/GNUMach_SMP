@@ -1,4 +1,5 @@
 \input texinfo                  @c -*- Texinfo -*-
+@documentencoding ISO-8859-1
 @setfilename mach.info
 @settitle The GNU Mach Reference Manual
 @setchapternewpage odd

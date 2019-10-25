@@ -51,6 +51,7 @@
 #include <vm/vm_user.h>
 #include <vm/pmap.h>
 #include <device/device_port.h>
+#include <device/ramdisk.h>
 
 #if	MACH_KDB
 #include <machine/db_machdep.h>
@@ -814,6 +815,23 @@ void
 boot_script_free (void *ptr, unsigned int size)
 {
   kfree ((vm_offset_t)ptr, size);
+}
+
+int
+boot_script_ramdisk_create (struct cmd *cmd, char **name)
+{
+  struct multiboot_module *mod = cmd->hook;
+  vm_size_t size = mod->mod_end - mod->mod_start;
+  kern_return_t rc;
+  int no;
+
+  rc = ramdisk_create (size, (void *) phystokv (mod->mod_start), &no);
+  if (rc != KERN_SUCCESS)
+    return BOOT_SCRIPT_MACH_ERROR;
+
+  *name = boot_script_malloc (RAMDISK_NAMESZ);
+  sprintf(*name, RAMDISK_NAME "%d", no);
+  return 0;
 }
 
 int

@@ -256,6 +256,7 @@ void halt_all_cpus(boolean_t reboot)
 #endif	/* MACH_HYP */
             printf("Shutdown completed successfully, now in tight loop.\n");
             printf("You can safely power off the system or hit ctl-alt-del to reboot\n");
+	    notify_real_shutdown();
             (void) spl0();
         }
     while (TRUE)

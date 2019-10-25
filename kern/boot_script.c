@@ -88,12 +88,20 @@ prompt_resume_task (struct cmd *cmd, const long *val)
   return boot_script_prompt_task_resume (cmd);
 }
 
+/* Create an initial ramdisk */
+static int
+ramdisk_create (struct cmd *cmd, long *val)
+{
+  return boot_script_ramdisk_create (cmd, (char **) val);
+}
+
 /* List of builtin symbols.  */
 static struct sym builtin_symbols[] =
 {
   { "task-create", VAL_FUNC, (long) create_task, VAL_TASK, 0 },
   { "task-resume", VAL_FUNC, (long) resume_task, VAL_NONE, 1 },
   { "prompt-task-resume", VAL_FUNC, (long) prompt_resume_task, VAL_NONE, 1 },
+  { "ramdisk-create", VAL_FUNC, (long) ramdisk_create, VAL_STR, 0 },
 };
 #define NUM_BUILTIN (sizeof (builtin_symbols) / sizeof (builtin_symbols[0]))
 

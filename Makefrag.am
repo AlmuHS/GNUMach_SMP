@@ -228,6 +228,8 @@ EXTRA_DIST += \
 	kern/mach.srv \
 	kern/mach4.srv \
 	kern/gnumach.srv \
+	kern/gnumach.cli \
+	kern/experimental.srv \
 	kern/mach_debug.srv \
 	kern/mach_host.srv \
 	kern/task_notify.cli
@@ -314,12 +316,15 @@ libkernel_a_SOURCES += \
 	device/device_types_kernel.h \
 	device/ds_routines.c \
 	device/ds_routines.h \
+	device/intr.c \
 	device/if_ether.h \
 	device/if_hdr.h \
 	device/io_req.h \
 	device/net_io.c \
 	device/net_io.h \
 	device/param.h \
+	device/ramdisk.c \
+	device/ramdisk.h \
 	device/subrs.c \
 	device/subrs.h \
 	device/tty.h
@@ -362,6 +367,7 @@ include_device_HEADERS = \
 	include/device/device_types.defs \
 	include/device/device_types.h \
 	include/device/disk_status.h \
+	include/device/intr.h \
 	include/device/net_status.h \
 	include/device/tape_status.h \
 	include/device/tty_status.h
@@ -384,6 +390,7 @@ include_mach_HEADERS = \
 	include/mach/memory_object_default.defs \
 	include/mach/notify.defs \
 	include/mach/std_types.defs \
+	include/mach/experimental.defs \
 	include/mach/alert.h \
 	include/mach/boolean.h \
 	include/mach/boot.h \
@@ -510,6 +517,14 @@ nodist_libkernel_a_SOURCES += \
 	kern/task_notify.user.c \
 	kern/task_notify.user.msgids
 
+# Shutdown notifications
+nodist_lib_dep_tr_for_defs_a_SOURCES += \
+	kern/gnumach.user.defs.c
+nodist_libkernel_a_SOURCES += \
+	kern/gnumach.user.h \
+	kern/gnumach.user.c \
+	kern/gnumach.user.msgids
+
 # Server stubs.
 nodist_lib_dep_tr_for_defs_a_SOURCES += \
 	device/device.server.defs.c \
@@ -534,6 +549,7 @@ nodist_lib_dep_tr_for_defs_a_SOURCES += \
 	kern/mach.server.defs.c \
 	kern/mach4.server.defs.c \
 	kern/gnumach.server.defs.c \
+	kern/experimental.server.defs.c \
 	kern/mach_debug.server.defs.c \
 	kern/mach_host.server.defs.c
 nodist_libkernel_a_SOURCES += \
@@ -546,6 +562,9 @@ nodist_libkernel_a_SOURCES += \
 	kern/gnumach.server.h \
 	kern/gnumach.server.c \
 	kern/gnumach.server.msgids \
+	kern/experimental.server.h \
+	kern/experimental.server.c \
+	kern/experimental.server.msgids \
 	kern/mach_debug.server.h \
 	kern/mach_debug.server.c \
 	kern/mach_debug.server.msgids \
@@ -555,6 +574,7 @@ nodist_libkernel_a_SOURCES += \
 #	kern/mach.server.defs
 #	kern/mach4.server.defs
 #	kern/gnumach.server.defs
+#	kern/experimental.server.defs
 #	kern/mach_debug.server.defs
 #	kern/mach_host.server.defs
 

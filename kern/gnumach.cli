@@ -1,0 +1,65 @@
+/*
+ * Copyright (c) 2018 Free Software Foundation.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
+/* This is a client presentation file.  */
+
+#define KERNEL_USER 1
+
+subsystem
+	  KernelUser
+		       gnumach 4200;
+
+#include <mach/std_types.defs>
+#include <mach/mach_types.defs>
+#include <mach_debug/mach_debug_types.defs>
+
+#ifdef	GNUMACH_IMPORTS
+GNUMACH_IMPORTS
+#endif
+
+type shutdown_notify_port_t = mach_port_t
+	ctype: mach_port_t
+#ifdef	SHUTDOWN_NOTIFY_INTRAN
+	intran: SHUTDOWN_NOTIFY_INTRAN
+#endif
+#ifdef	SHUTDOWN_NOTIFY_INTRAN_PAYLOAD
+	intranpayload: SHUTDOWN_NOTIFY_INTRAN_PAYLOAD
+#endif
+#ifdef	SHUTDOWN_NOTIFY_OUTTRAN
+	outtran: SHUTDOWN_NOTIFY_OUTTRAN
+#endif
+#ifdef	SHUTDOWN_NOTIFY_DESTRUCTOR
+	destructor: SHUTDOWN_NOTIFY_DESTRUCTOR
+#endif
+;
+
+skip; /* vm_cache_statistics */
+skip; /* thread_terminate_release */
+skip; /* task_set_name */
+skip; /* register_new_task_notification */
+skip; /* gsync_wait */
+skip; /* gsync_wake */
+skip; /* gsync_requeue */
+skip; /* vm_wire_all */
+skip; /* vm_object_sync */
+skip; /* vm_msync */
+
+/* These notifications are sent to the port registered via
+   `register_new_shutdown_notification' */
+simpleroutine mach_notify_new_shutdown(
+               notify  : shutdown_notify_port_t);
