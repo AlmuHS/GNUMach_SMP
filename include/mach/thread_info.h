@@ -66,6 +66,7 @@ struct thread_basic_info {
 	integer_t	sleep_time;	/* number of seconds that thread
 					   has been sleeping */
 	time_value_t	creation_time;	/* time stamp of creation */
+	integer_t	last_processor; /* last processor used by the thread */
 };
 
 typedef struct thread_basic_info	thread_basic_info_data_t;

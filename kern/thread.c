@@ -1530,6 +1530,10 @@ kern_return_t thread_info(
 	    read_time_stamp(&thread->creation_time,
 			    &basic_info->creation_time);
 
+		#if NCPUS > 1
+		basic_info->last_processor = thread->last_processor;
+		#endif
+
 	    /*
 	     *	To calculate cpu_usage, first correct for timer rate,
 	     *	then for 5/8 ageing.  The correction factor [3/5] is
