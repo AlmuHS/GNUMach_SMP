@@ -50,6 +50,7 @@
 #include <kern/xpr.h>
 #include <kern/bootstrap.h>
 #include <kern/time_stamp.h>
+#include <kern/gnumach.user.h>
 #include <kern/startup.h>
 #include <vm/vm_kern.h>
 #include <vm/vm_map.h>
@@ -83,6 +84,10 @@ boolean_t reboot_on_panic = TRUE;
 
 /* XX */
 extern char *kernel_cmdline;
+extern void	intr_thread();
+
+/* Where to send notifications about shutdown.  */
+ipc_port_t new_shutdown_notification = NULL;
 
 /*
  *	Running in virtual memory, on the interrupt stack.
@@ -237,6 +242,9 @@ void start_kernel_threads(void)
 	(void) kernel_thread(kernel_task, reaper_thread, (char *) 0);
 	(void) kernel_thread(kernel_task, swapin_thread, (char *) 0);
 	(void) kernel_thread(kernel_task, sched_thread, (char *) 0);
+#ifndef MACH_XEN
+	(void) kernel_thread(kernel_task, intr_thread, (char *)0);
+#endif	/* MACH_XEN */
 
 #if	NCPUS > 1
 	/*
@@ -328,4 +336,30 @@ void cpu_launch_first_thread(thread_t th)
 
 	load_context(th);
 	/*NOTREACHED*/
+}
+
+/*
+ *     notify_real_shutdown
+ *
+ *     Send the shutdown notification immediately.
+ */
+void
+notify_real_shutdown(void)
+{
+       mach_notify_new_shutdown(new_shutdown_notification);
+}
+
+/*
+ *     register_new_shutdown_notification
+ *
+ *     Register a port to which a notification about shutdown is sent.
+ */
+kern_return_t
+register_new_shutdown_notification(ipc_port_t notification)
+{
+       if (new_shutdown_notification != NULL)
+               return KERN_NO_ACCESS;
+
+       new_shutdown_notification = notification;
+       return KERN_SUCCESS;
 }

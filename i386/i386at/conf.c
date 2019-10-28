@@ -31,6 +31,7 @@
 #include <device/conf.h>
 #include <kern/mach_clock.h>
 #include <i386at/model_dep.h>
+#include <device/ramdisk.h>
 
 #define	timename		"time"
 
@@ -134,6 +135,8 @@ struct dev_ops	dev_name_list[] =
 	  nodev,	nulldev,	nulldev_portdeath,	0,
 	  nodev },
 #endif	/* MACH_HYP */
+
+	RAMDISK_DEV_OPS,
 
 #ifdef	MACH_KMSG
         { kmsgname,     kmsgopen,       kmsgclose,       kmsgread,

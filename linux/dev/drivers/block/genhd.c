@@ -812,7 +812,9 @@ void device_setup(void)
 #ifdef MACH
 	linux_intr_pri = SPL6;
 #endif
-	net_dev_init();
+	extern char *kernel_cmdline;
+	if (!strstr(kernel_cmdline, " nonetdev"))
+		net_dev_init();
 #endif
 #ifndef MACH
 	console_map_init();

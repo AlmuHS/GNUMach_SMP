@@ -1733,6 +1733,10 @@ kd_parserest(u_char *cp)
 			kd_erase(number[0]);
 		esc_spt = esc_seq;
 		break;
+	case 'n':
+		/* Ignore status/cursor report request */
+		esc_spt = esc_seq;
+		break;
 	case '\0':
 		break;			/* not enough yet */
 	default:

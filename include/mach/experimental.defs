@@ -1,0 +1,100 @@
+/* 
+ * Mach Operating System
+ * Copyright (c) 1991,1990,1989 Carnegie Mellon University
+ * All Rights Reserved.
+ * 
+ * Permission to use, copy, modify and distribute this software and its
+ * documentation is hereby granted, provided that both the copyright
+ * notice and this permission notice appear in all copies of the
+ * software, derivative works or modified versions, and any portions
+ * thereof, and that both notices appear in supporting documentation.
+ * 
+ * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
+ * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
+ * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
+ * 
+ * Carnegie Mellon requests users of this software to return to
+ * 
+ *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
+ *  School of Computer Science
+ *  Carnegie Mellon University
+ *  Pittsburgh PA 15213-3890
+ * 
+ * any improvements or extensions that they make and grant Carnegie Mellon
+ * the rights to redistribute these changes.
+ */
+
+subsystem
+#if	KERNEL_USER
+	  KernelUser
+#endif	/* KERNEL_USER */
+#if	KERNEL_SERVER
+	  KernelServer
+#endif	/* KERNEL_SERVER */
+		experimental 424242;
+
+#include <mach/std_types.defs>
+#include <mach/mach_types.defs>
+
+serverprefix experimental_;
+
+type notify_port_t = MACH_MSG_TYPE_MOVE_SEND_ONCE
+	ctype: mach_port_t;
+
+skip; /*simpleroutine mach_intr_notify(
+		notify	: notify_port_t;
+		name	: int);*/
+
+routine device_intr_register(
+		master_port	: mach_port_t;
+	in	line		: int;
+	in	id		: int;
+	in	flags		: int;
+	in	receive_port	: mach_port_send_t
+	);
+
+/*
+ *	enable/disable the specified line.
+ */
+/* XXX: Naming a function taht can disable something "xxx_enable" is confusing. */
+/* Is the disable part actually used at all? AIUI, the kernel IRQ handler
+should always disable the line; and the userspace driver only has to
+reenable it, after acknowledging and handling the interrupt...
+*/
+routine device_intr_enable(
+		master_port	: mach_port_t;
+		line		: int;
+		status		: char);
+
+/*
+ *	This routine is created for allocating DMA buffers.
+ *	We are going to get a contiguous physical memory
+ *	and its physical address in addition to the virtual address.
+ */
+
+ /* XXX
+ This RPC lacks a few additional constraints like boundaries, alignment
+and maybe phase. We may not use them now, but they're important for
+portability (e.g. if GNU Mach supports PAE, drivers that can't use
+physical memory beyond the 4 GiB limit must be able to express it).
+
+> What do you mean by "phase"?
+
+Offset from the alignment. But I don't think it's useful at all in this
+case. Minimum and maximum addresses and alignment should do. Maybe
+boundary crossing but usually, specifying the right alignment and size
+is enough.
+
+For upstream
+inclusion, we need to do it properly: the RPC should return a special
+memory object (similar to device_map() ), which can then be mapped into
+the process address space with vm_map() like any other memory object.
+
+phys_address_t?
+ */
+routine vm_allocate_contiguous(
+		host_priv	: host_priv_t;
+		target_task	: vm_task_t;
+	out	vaddr		: vm_address_t;
+	out	paddr		: vm_address_t;
+		size		: vm_size_t);

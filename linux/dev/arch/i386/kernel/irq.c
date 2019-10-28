@@ -83,6 +83,7 @@ struct linux_action
   void *dev_id;
   struct linux_action *next;
   unsigned long flags;
+  volatile ipc_port_t delivery_port;
 };
 
 static struct linux_action *irq_action[16] =
@@ -102,6 +103,7 @@ linux_intr (int irq)
 {
   struct pt_regs regs;
   struct linux_action *action = *(irq_action + irq);
+  struct linux_action **prev = &irq_action[irq];
   unsigned long flags;
 
   kstat.interrupts[irq]++;
@@ -113,7 +115,37 @@ linux_intr (int irq)
 
   while (action)
     {
-      action->handler (irq, action->dev_id, &regs);
+      // TODO I might need to check whether the interrupt belongs to
+      // the current device. But I don't do it for now.
+      if (action->delivery_port)
+	{
+	  /* The reference of the port was increased
+	   * when the port was installed.
+	   * If the reference is 1, it means the port should
+	   * have been destroyed and I destroy it now. */
+	  if (action->delivery_port
+	      && action->delivery_port->ip_references == 1)
+	    {
+	      mark_intr_removed (irq, action->delivery_port);
+	      ipc_port_release (action->delivery_port);
+	      *prev = action->next;
+	      printk ("irq handler %d: release a dead delivery port\n", irq);
+	      linux_kfree(action);
+	      action = *prev;
+	      continue;
+	    }
+	  else
+	    {
+	      /* We disable the irq here and it will be enabled
+	       * after the interrupt is handled by the user space driver. */
+	      disable_irq (irq);
+	      queue_intr (irq, action->delivery_port);
+	    }
+
+	}
+      else if (action->handler)
+	action->handler (irq, action->dev_id, &regs);
+      prev = &action->next;
       action = action->next;
     }
 
@@ -233,6 +265,7 @@ setup_x86_irq (int irq, struct linux_action *new)
 	}
       while (old);
       shared = 1;
+      printk("store a new irq %d\n", irq);
     }
 
   save_flags (flags);
@@ -248,6 +281,51 @@ setup_x86_irq (int irq, struct linux_action *new)
     }
   restore_flags (flags);
   return 0;
+}
+
+int
+install_user_intr_handler (unsigned int irq, unsigned long flags,
+			  ipc_port_t dest)
+{
+  struct linux_action *action;
+  struct linux_action *old;
+  int retval;
+
+  assert (irq < 16);
+
+  /* Test whether the irq handler has been set */
+  // TODO I need to protect the array when iterating it.
+  old = irq_action[irq];
+  while (old)
+    {
+      if (old->delivery_port == dest)
+	{
+	  printk ("The interrupt handler has been installed on line %d", irq);
+	  return linux_to_mach_error (-EAGAIN);
+	}
+      old = old->next;
+    }
+
+  /*
+   * Hmm... Should I use `kalloc()' ?
+   * By OKUJI Yoshinori.
+   */
+  action = (struct linux_action *)
+    linux_kmalloc (sizeof (struct linux_action), GFP_KERNEL);
+  if (action == NULL)
+    return linux_to_mach_error (-ENOMEM);
+  
+  action->handler = NULL;
+  action->next = NULL;
+  action->dev_id = NULL;
+  action->flags = flags;
+  action->delivery_port = dest;
+  
+  retval = setup_x86_irq (irq, action);
+  if (retval)
+    linux_kfree (action);
+  
+  return linux_to_mach_error (retval);
 }
 
 /*
@@ -278,6 +356,7 @@ request_irq (unsigned int irq, void (*handler) (int, void *, struct pt_regs *),
   action->next = NULL;
   action->dev_id = dev_id;
   action->flags = flags;
+  action->delivery_port = NULL;
   
   retval = setup_x86_irq (irq, action);
   if (retval)

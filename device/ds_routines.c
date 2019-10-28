@@ -318,6 +318,43 @@ ds_device_map (device_t dev, vm_prot_t prot, vm_offset_t offset,
 				offset, size, pager, unmap);
 }
 
+io_return_t
+experimental_device_intr_register (ipc_port_t master_port, int line,
+		       int id, int flags, ipc_port_t receive_port)
+{
+#ifdef MACH_XEN
+  return D_INVALID_OPERATION;
+#else	/* MACH_XEN */
+  extern int install_user_intr_handler (unsigned int line,
+					unsigned long flags,
+					ipc_port_t dest);
+  io_return_t ret;
+
+  /* Open must be called on the master device port.  */
+  if (master_port != master_device_port)
+    return D_INVALID_OPERATION;
+
+  /* XXX: move to arch-specific */
+  if (line < 0 || line >= 16)
+    return D_INVALID_OPERATION;
+
+  ret = insert_intr_entry (line, receive_port);
+  if (ret)
+    return ret;
+  // TODO The original port should be replaced
+  // when the same device driver calls it again, 
+  // in order to handle the case that the device driver crashes and restarts.
+  ret = install_user_intr_handler (line, flags, receive_port);
+
+  /* If the port is installed successfully, increase its reference by 1.
+   * Thus, the port won't be destroyed after its task is terminated. */
+  if (ret == 0)
+    ip_reference (receive_port);
+
+  return ret;
+#endif	/* MACH_XEN */
+}
+
 boolean_t
 ds_notify (mach_msg_header_t *msg)
 {
@@ -1796,6 +1833,24 @@ device_writev_trap (mach_device_t device, dev_mode_t mode,
 
 	kmem_cache_free(&io_trap_cache, (vm_offset_t) ior);
 	return (result);
+}
+
+kern_return_t
+experimental_device_intr_enable(ipc_port_t master_port, int line, char status)
+{
+#ifdef MACH_XEN
+  return D_INVALID_OPERATION;
+#else	/* MACH_XEN */
+  if (master_port != master_device_port)
+    return D_INVALID_OPERATION;
+
+  if (status)
+    /* TODO: better name for generic-to-arch-specific call */
+    enable_irq (line);
+  else
+    disable_irq (line);
+  return 0;
+#endif	/* MACH_XEN */
 }
 
 struct device_emulation_ops mach_device_emulation_ops =

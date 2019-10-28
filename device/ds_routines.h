@@ -83,4 +83,7 @@ io_return_t ds_device_writev_trap(
 	io_buf_vec_t 	*iovec,
 	vm_size_t 	count);
 
+/* XXX arch-specific */
+extern ipc_port_t intr_rcv_ports[16];
+
 #endif	/* DS_ROUTINES_H */

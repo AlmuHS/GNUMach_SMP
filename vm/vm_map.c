@@ -1035,7 +1035,8 @@ kern_return_t vm_map_enter(
 	 *	extend from below.]
 	 */
 
-	if ((object == VM_OBJECT_NULL) &&
+	if (0 &&
+	    (object == VM_OBJECT_NULL) &&
 	    (entry != vm_map_to_entry(map)) &&
 	    (entry->vme_end == start) &&
 	    (!entry->is_shared) &&
