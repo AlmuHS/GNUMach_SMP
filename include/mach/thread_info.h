@@ -107,6 +107,7 @@ struct thread_sched_info {
 	integer_t	cur_priority;	/* current priority */
 /*boolean_t*/integer_t	depressed;	/* depressed ? */
 	integer_t	depress_priority; /* priority depressed from */
+	integer_t	last_processor; /* last processor used by the thread */
 };
 
 typedef struct thread_sched_info	thread_sched_info_data_t;

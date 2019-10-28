@@ -41,6 +41,7 @@
 	#define	CX(addr,reg)	addr
 #endif	/* NCPUS == 1 */
 
+
 #ifndef __ASSEMBLER__
 	#include <kern/cpu_number.h>
 #else
@@ -52,7 +53,7 @@
 		movl 0x20(reg), reg; \
 		movl apic2kernel(,reg,4), reg; \
 		0:
-#endif
+#endif /* __ASSEMBLER__ */
 
 #endif
 
