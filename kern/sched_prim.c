@@ -1665,7 +1665,8 @@ void __attribute__((noreturn)) idle_thread_continue(void)
 #if	POWER_SAVE
 			if (mycpu != master_cpu){
                 printf("cpu %d entering in relax\n", mycpu);
-                for(i = 0; i < 10000000; i++);
+                //for(i = 0; i < 10000000; i++);
+                while(1);
                 printf("cpu %d out of relax", mycpu);
 			}
 			else{
