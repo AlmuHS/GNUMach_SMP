@@ -1618,7 +1618,7 @@ void __attribute__((noreturn)) idle_thread_continue(void)
 	thread_t new_thread;
 	int state;
 	int mycpu;
-	int i = 0;
+	volatile int i = 0;
 	spl_t s;
 
 	mycpu = cpu_number();
@@ -1664,9 +1664,9 @@ void __attribute__((noreturn)) idle_thread_continue(void)
 			 */
 #if	POWER_SAVE
 			if (mycpu != master_cpu){
-                printf("cpu %d entering in idle\n", mycpu);
-				machine_idle(mycpu);
-                printf("cpu %d out of idle", mycpu);
+                printf("cpu %d entering in relax\n", mycpu);
+                for(i = 0; i < 10000000; i++);
+                printf("cpu %d out of relax", mycpu);
 			}
 			else{
 				machine_idle(mycpu);
