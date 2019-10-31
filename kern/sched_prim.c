@@ -1663,11 +1663,7 @@ void __attribute__((noreturn)) idle_thread_continue(void)
 			 * to conserve power.
 			 */
 #if	POWER_SAVE
-	i = 0;
-	while(i < 1000000){
-		machine_relax(mycpu);
-		i++;
-	}
+			machine_idle(mycpu);
 #endif /* POWER_SAVE */
 		}
 
