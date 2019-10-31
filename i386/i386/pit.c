@@ -70,6 +70,10 @@ clkstart(void)
 	unsigned char	byte;
 	unsigned long s;
 
+	if (cpu_number() != 0)
+		/* Only one PIT initialization is needed */
+		return;
+
 	intpri[0] = SPLHI;
 	form_pic_mask();
 
