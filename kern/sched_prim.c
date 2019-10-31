@@ -1625,6 +1625,8 @@ void __attribute__((noreturn)) idle_thread_continue(void)
 	threadp = (volatile thread_t *) &myprocessor->next_thread;
 	lcount = (volatile int *) &myprocessor->runq.count;
 
+	printf("cpu %d continue in idle thread", mycpu);
+
 	while (TRUE) {
 #ifdef	MARK_CPU_IDLE
 		MARK_CPU_IDLE(mycpu);
@@ -1768,6 +1770,8 @@ void idle_thread(void)
 {
 	thread_t self = current_thread();
 	spl_t s;
+
+	printf("cpu %d entering in idle_thread", cpu_number());
 
 	stack_privilege(self);
 
