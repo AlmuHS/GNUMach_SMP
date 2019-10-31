@@ -1664,11 +1664,12 @@ void __attribute__((noreturn)) idle_thread_continue(void)
 			 */
 #if	POWER_SAVE
 			if (mycpu != master_cpu){
-				printf("cpu %d entering in relax\n", mycpu);
-				machine_relax(mycpu);
+				machine_relax(mycpu);				
 			}
 			else{
+				printf("cpu %d entering in idle\n", mycpu);
 				machine_idle(mycpu);
+				printf("cpu %d out of idle", mycpu);
 			}
 #endif /* POWER_SAVE */
 		}
