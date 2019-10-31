@@ -535,9 +535,12 @@ thread_t thread_select(
 				if (thread->sched_stamp != sched_tick)
 				    update_priority(thread);
 				thread_unlock(thread);
+
+				printf("thread unlock in cpu %d\n", myprocessor);
 			}
 			else {
 				thread = choose_pset_thread(myprocessor, pset);
+				printf("choose pset %d in %d", pset, myprocessor);
 			}
 		}
 		else {
@@ -1309,6 +1312,7 @@ void thread_setrun(
 	     *  processor here because it may not be the current one.
 	     */
 	    if (processor->state == PROCESSOR_IDLE) {
+                printf("cpu %d in idle state\n", processor->slot_num);
 		simple_lock(&processor->lock);
 		pset = processor->processor_set;
 		simple_lock(&pset->idle_lock);
