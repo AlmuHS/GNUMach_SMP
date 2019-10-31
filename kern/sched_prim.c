@@ -1351,7 +1351,7 @@ void thread_setrun(
 	     *  XXX expensive for all the unparallelized U*x code.
 	     */
 	    if (processor == current_processor()) {
-                printf("lock ast in cpu %d\n", processor->slot_num);
+                //printf("lock ast in cpu %d\n", processor->slot_num);
 		ast_on(cpu_number(), AST_BLOCK);
 	    }
 	    else if ((processor != master_processor) &&
