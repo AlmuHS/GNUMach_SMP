@@ -1247,6 +1247,7 @@ void thread_setrun(
 	    /*
 	     *	Not bound, any processor in the processor set is ok.
 	     */
+            printf("bound processor set to NULL\n");
 	    pset = th->processor_set;
 #if	HW_FOOTPRINT
 	    /*
@@ -1304,6 +1305,7 @@ void thread_setrun(
 			 */
 			current_processor()->first_quantum = FALSE;
 			ast_on(cpu_number(), AST_BLOCK);
+			printf("ast set to on in cpu %d\n", cpu_number());
 	    }
 	}
 	else {
@@ -1314,19 +1316,28 @@ void thread_setrun(
 	    if (processor->state == PROCESSOR_IDLE) {
                 printf("cpu %d in idle state\n", processor->slot_num);
 		simple_lock(&processor->lock);
+		printf("set lock in cpu %d\n", processor->slot_num);
 		pset = processor->processor_set;
+		printf("cpu %d is in pset %d\n", processor->slot_num, pset);
 		simple_lock(&pset->idle_lock);
+		printf("pset %d locked\n", pset);
 		if (processor->state == PROCESSOR_IDLE) {
+                    printf("cpu %d continues idle\n", processor->slot_num);
+                    printf("cpu %d removed of idle queue\n", processor->slot_num);
 		    queue_remove(&pset->idle_queue, processor,
 			processor_t, processor_queue);
 		    pset->idle_count--;
 		    processor->next_thread = th;
 		    processor->state = PROCESSOR_DISPATCHING;
+		    printf("cpu %d in dispatch\n", processor->slot_num);
 		    simple_unlock(&pset->idle_lock);
+		    printf("pset %d unlocked\n", pset);
 		    simple_unlock(&processor->lock);
+		    printf("cpu %d unlocked\n", processor->slot_num);
 		    return;
 		}
 		simple_unlock(&pset->idle_lock);
+
 		simple_unlock(&processor->lock);
 	    }
 	    rq = &(processor->runq);
@@ -1340,10 +1351,12 @@ void thread_setrun(
 	     *  XXX expensive for all the unparallelized U*x code.
 	     */
 	    if (processor == current_processor()) {
+                printf("lock ast in cpu %d\n", processor->slot_num);
 		ast_on(cpu_number(), AST_BLOCK);
 	    }
 	    else if ((processor != master_processor) &&
 	    	     (processor->state != PROCESSOR_OFF_LINE)) {
+                        printf("send ast to cpu %d\n", processor->slot_num);
 			cause_ast_check(processor);
 	    }
 	}
