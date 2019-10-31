@@ -332,7 +332,8 @@ void cpu_launch_first_thread(thread_t th)
 
 	PMAP_ACTIVATE_USER(vm_map_pmap(th->task->map), th, mycpu);
 
-	startrtclock();		/* needs an active thread */
+	if(th != THREAD_NULL) 
+		startrtclock();		/* needs an active thread */
 
 	load_context(th);
 	/*NOTREACHED*/
