@@ -1662,7 +1662,7 @@ void __attribute__((noreturn)) idle_thread_continue(void)
 			 * to conserve power.
 			 */
 #if	POWER_SAVE
-			machine_idle(mycpu);
+			machine_relax(mycpu);
 #endif /* POWER_SAVE */
 		}
 
