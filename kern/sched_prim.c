@@ -1663,7 +1663,10 @@ void __attribute__((noreturn)) idle_thread_continue(void)
 			 * to conserve power.
 			 */
 #if	POWER_SAVE
-			machine_idle(mycpu);
+			if (mycpu != master_cpu)
+				machine_relax(mycpu);
+			else
+				machine_idle(mycpu);
 #endif /* POWER_SAVE */
 		}
 
