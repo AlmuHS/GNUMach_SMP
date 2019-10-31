@@ -1618,6 +1618,7 @@ void __attribute__((noreturn)) idle_thread_continue(void)
 	thread_t new_thread;
 	int state;
 	int mycpu;
+	int i = 0;
 	spl_t s;
 
 	mycpu = cpu_number();
@@ -1662,7 +1663,9 @@ void __attribute__((noreturn)) idle_thread_continue(void)
 			 * to conserve power.
 			 */
 #if	POWER_SAVE
-			machine_relax(mycpu);
+	i = 0;
+	while(i < 1000) 
+		machine_relax(mycpu);
 #endif /* POWER_SAVE */
 		}
 
