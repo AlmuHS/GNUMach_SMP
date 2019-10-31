@@ -361,7 +361,7 @@ void thread_init(void)
 	thread_template.ast = AST_ZILCH;
 
 	/* thread_template.processor_set (later) */
-	thread_template.bound_processor = PROCESSOR_NULL;
+	thread_template.bound_processor = cpu_to_processor(0);
 #if	MACH_HOST
 	thread_template.may_assign = TRUE;
 	thread_template.assign_active = FALSE;
