@@ -1358,7 +1358,8 @@ void thread_setrun(
 		ast_on(cpu_number(), AST_BLOCK);
 	    }
 
-	    else if ((processor->state != PROCESSOR_OFF_LINE)) {
+	    else if ((processor != master_processor) &&
+                ((processor->state != PROCESSOR_OFF_LINE)) {
                 printf("send ast to cpu %d\n", processor->slot_num);
 		cause_ast_check(processor);
 	    }
