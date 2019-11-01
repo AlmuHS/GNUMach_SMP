@@ -545,7 +545,7 @@ thread_t thread_select(
 				if (thread->sched_stamp != sched_tick)
 				    update_priority(thread);
 				thread_unlock(thread);
-				printf("thread unlock in thread %s over cpu %d\n", thread->task ? thread->task->name : "no name", myprocessor->slot_num);
+				//printf("thread unlock in thread %s over cpu %d\n", thread->task ? thread->task->name : "no name", myprocessor->slot_num);
 			}
 			else {
 				thread = choose_pset_thread(myprocessor->slot_num, pset);
