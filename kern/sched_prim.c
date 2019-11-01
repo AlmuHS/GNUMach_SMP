@@ -503,7 +503,7 @@ thread_t thread_select(
 	if (myprocessor->runq.count > 0) {
                 printf("runq empty in cpu %d\n. Selecting thread\n", myprocessor->slot_num);
 		thread = choose_thread(myprocessor);
-		printf("thread %d selected in cpu %d\n", thread->task->name, myprocessor->slot_num);
+		printf("thread %x with name %s selected in cpu %d\n", thread, thread->task->name, myprocessor->slot_num);
 		myprocessor->quantum = min_quantum;
 		printf("cpu %d quantum set to %d\n", myprocessor->slot_num, myprocessor->quantum);
 	}
