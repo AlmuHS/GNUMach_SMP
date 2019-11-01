@@ -536,8 +536,8 @@ thread_t thread_select(
 			    ((thread->bound_processor == PROCESSOR_NULL) ||
 			     (thread->bound_processor == myprocessor))) {
 
-                                if(thread->bound_processor != PROCESSOR_NULL)
-                                        printf("the bound processor is %d\n", thread->bound_processor->slot_num);
+                                //if(thread->bound_processor != PROCESSOR_NULL)
+                                        //printf("the bound processor is %d\n", thread->bound_processor->slot_num);
 
 				simple_unlock(&pset->runq.lock);
 				printf("thread lock in thread %s over cpu %d\n", thread->task->name, myprocessor->slot_num);
