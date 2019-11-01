@@ -559,15 +559,21 @@ thread_t thread_select(
 			 *	If there is a thread at hint, grab it,
 			 *	else call choose_pset_thread.
 			 */
+                        printf("Detected thread at hint\n");
 			q = pset->runq.runq + pset->runq.low;
 
 			if (queue_empty(q)) {
 				pset->runq.low++;
+				printf("queue %d empty. Adding new thread\n", q);
 				thread = choose_pset_thread(myprocessor, pset);
+				printf("added thread %d with name %s to cpu %d\n", thread, thread->task->name, myprocessor);
 			}
 			else {
+				printf("queue %d NOT empty. Removing current thread\n", q);
 				thread = (thread_t) dequeue_head(q);
+                                printf("removed thread %x with name %s from queue %d\n", thread, thread->task->name, q);
 				thread->runq = RUN_QUEUE_NULL;
+                                printf("runq of thread %x with name %s set to NULL\n", thread, thread->task->name);
 				pset->runq.count--;
 #if	MACH_FIXPRI
 				/*
