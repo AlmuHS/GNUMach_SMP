@@ -517,6 +517,7 @@ thread_t thread_select(
 		pset = &default_pset;
 #endif	/* MACH_HOST */
 		simple_lock(&pset->runq.lock);
+		printf("pset %x locked\n", pset);
 #if	DEBUG
 		checkrq(&pset->runq, "thread_select");
 #endif	/* DEBUG */
@@ -549,7 +550,7 @@ thread_t thread_select(
 			}
 			else {
 				thread = choose_pset_thread(myprocessor, pset);
-				printf("choose pset %d in %d", pset, myprocessor->slot_num);
+				printf("choose pset %x in %d", pset, myprocessor->slot_num);
 			}
 		}
 		else {
@@ -566,7 +567,8 @@ thread_t thread_select(
 				pset->runq.low++;
 				printf("queue %d empty. Adding new thread\n", q);
 				thread = choose_pset_thread(myprocessor, pset);
-				printf("added thread %d with name %s to cpu %d\n", thread, thread->task->name, myprocessor);
+				printf("added thread %d with name %s, priority %d and state %d, to cpu %d\n", thread, thread->task->name,
+                                        thread->priority, thread->state, myprocessor);
 			}
 			else {
 				printf("queue %d NOT empty. Removing current thread\n", q);
@@ -592,6 +594,7 @@ thread_t thread_select(
 				checkrq(&pset->runq, "thread_select: after");
 #endif	/* DEBUG */
 				simple_unlock(&pset->runq.lock);
+                                printf("pset %x unlocked\n", pset);
 			}
 		}
 
