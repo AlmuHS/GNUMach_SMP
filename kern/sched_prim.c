@@ -521,7 +521,7 @@ thread_t thread_select(
 		checkrq(&pset->runq, "thread_select");
 #endif	/* DEBUG */
 		if (pset->runq.count == 0) {
-                        printf("runq count is 0 in cpu %d. Nothing else runnable\n", myprocessor->slot_num);
+                        //printf("runq count is 0 in cpu %d. Nothing else runnable\n", myprocessor->slot_num);
 			/*
 			 *	Nothing else runnable.  Return if this
 			 *	thread is still runnable on this processor.
