@@ -528,7 +528,7 @@ thread_t thread_select(
 			 *	Check for priority update if required.
 			 */
 			thread = current_thread();
-			printf("current thread is %d with name %s , priority %d and state %d\n", thread, thread->task ? thread->task->name : "no name", thread->state);
+			//printf("current thread is %d with name %s , priority %d and state %d\n", thread, thread->task ? thread->task->name : "no name", thread->state);
 			if ((thread->state == TH_RUN) &&
 #if	MACH_HOST
 			    (thread->processor_set == pset) &&
