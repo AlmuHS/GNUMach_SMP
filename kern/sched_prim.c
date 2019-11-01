@@ -520,12 +520,14 @@ thread_t thread_select(
 		checkrq(&pset->runq, "thread_select");
 #endif	/* DEBUG */
 		if (pset->runq.count == 0) {
+                        printf("runq count is 0 in cpu %d. Nothing else runnable\n", myprocessor->slot_num);
 			/*
 			 *	Nothing else runnable.  Return if this
 			 *	thread is still runnable on this processor.
 			 *	Check for priority update if required.
 			 */
 			thread = current_thread();
+			printf("current thread is %s \n", thread->task->name);
 			if ((thread->state == TH_RUN) &&
 #if	MACH_HOST
 			    (thread->processor_set == pset) &&
@@ -533,17 +535,19 @@ thread_t thread_select(
 			    ((thread->bound_processor == PROCESSOR_NULL) ||
 			     (thread->bound_processor == myprocessor))) {
 
+                                printf("the bound processor is %d\n", thread->bound_processor->slot_num);
+
 				simple_unlock(&pset->runq.lock);
+				printf("thread lock in thread %s over cpu %d\n", thread->task->name, myprocessor->slot_num);
 				thread_lock(thread);
 				if (thread->sched_stamp != sched_tick)
 				    update_priority(thread);
 				thread_unlock(thread);
-
-				printf("thread unlock in cpu %d\n", myprocessor);
+				printf("thread unlock in thread %s over cpu %d\n", thread->task->name, myprocessor->slot_num);
 			}
 			else {
-				thread = choose_pset_thread(myprocessor, pset);
-				printf("choose pset %d in %d", pset, myprocessor);
+				thread = choose_pset_thread(myprocessor->slot_num, pset);
+				printf("choose pset %d in %d", pset, myprocessor->slot_num);
 			}
 		}
 		else {
@@ -1355,7 +1359,7 @@ void thread_setrun(
                 //printf("lock ast in cpu %d\n", processor->slot_num);
 		ast_on(cpu_number(), AST_BLOCK);
 	    }
-	    else if ((processor != master_processor) &&
+	    else if (/*(processor != master_processor) &&*/
 	    	     (processor->state != PROCESSOR_OFF_LINE)) {
                         printf("send ast to cpu %d\n", processor->slot_num);
 			cause_ast_check(processor);
