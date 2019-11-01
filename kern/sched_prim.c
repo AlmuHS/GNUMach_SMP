@@ -521,14 +521,14 @@ thread_t thread_select(
 		checkrq(&pset->runq, "thread_select");
 #endif	/* DEBUG */
 		if (pset->runq.count == 0) {
-                        //printf("runq count is 0 in cpu %d. Nothing else runnable\n", myprocessor->slot_num);
+                        printf("runq count is 0 in cpu %d. Nothing else runnable\n", myprocessor->slot_num);
 			/*
 			 *	Nothing else runnable.  Return if this
 			 *	thread is still runnable on this processor.
 			 *	Check for priority update if required.
 			 */
 			thread = current_thread();
-			//printf("current thread is %d with name %s , priority %d and state %d\n", thread, thread->task ? thread->task->name : "no name", thread->state);
+			printf("current thread is %d with name %s , priority %d and state %d\n", thread, thread->task ? thread->task->name : "no name", thread->state);
 			if ((thread->state == TH_RUN) &&
 #if	MACH_HOST
 			    (thread->processor_set == pset) &&
@@ -540,12 +540,12 @@ thread_t thread_select(
                                         //printf("the bound processor is %d\n", thread->bound_processor->slot_num);
 
 				simple_unlock(&pset->runq.lock);
-				//printf("thread lock in thread %s over cpu %d\n", thread->task ? thread->task->name : "no name", myprocessor->slot_num);
+				printf("thread lock in thread %s over cpu %d\n", thread->task ? thread->task->name : "no name", myprocessor->slot_num);
 				thread_lock(thread);
 				if (thread->sched_stamp != sched_tick)
 				    update_priority(thread);
 				thread_unlock(thread);
-				//printf("thread unlock in thread %s over cpu %d\n", thread->task ? thread->task->name : "no name", myprocessor->slot_num);
+				printf("thread unlock in thread %s over cpu %d\n", thread->task ? thread->task->name : "no name", myprocessor->slot_num);
 			}
 			else {
 				thread = choose_pset_thread(myprocessor, pset);
