@@ -528,7 +528,7 @@ thread_t thread_select(
 			 *	Check for priority update if required.
 			 */
 			thread = current_thread();
-			printf("current thread is %d with name %s , priority %d and state %d\n", thread, thread->task ? thread->task->name : "no name", thread->state);
+			printf("current thread is %x with name %s , priority %d and state %d\n", thread, thread->task ? thread->task->name : "no name", thread->state);
 			if ((thread->state == TH_RUN) &&
 #if	MACH_HOST
 			    (thread->processor_set == pset) &&
@@ -536,16 +536,16 @@ thread_t thread_select(
 			    ((thread->bound_processor == PROCESSOR_NULL) ||
 			     (thread->bound_processor == myprocessor))) {
 
-                                //if(thread->bound_processor != PROCESSOR_NULL)
-                                        //printf("the bound processor is %d\n", thread->bound_processor->slot_num);
+                                if(thread->bound_processor != PROCESSOR_NULL)
+                                        printf("the bound processor is %d\n", thread->bound_processor->slot_num);
 
 				simple_unlock(&pset->runq.lock);
-				printf("thread lock in thread %s over cpu %d\n", thread->task ? thread->task->name : "no name", myprocessor->slot_num);
+				printf("thread lock in thread %x with name %s, over cpu %d\n", thread, thread->task ? thread->task->name : "no name", myprocessor->slot_num);
 				thread_lock(thread);
 				if (thread->sched_stamp != sched_tick)
 				    update_priority(thread);
 				thread_unlock(thread);
-				printf("thread unlock in thread %s over cpu %d\n", thread->task ? thread->task->name : "no name", myprocessor->slot_num);
+				printf("thread unlock in thread %x with name %s over cpu %d\n", thread, thread->task ? thread->task->name : "no name", myprocessor->slot_num);
 			}
 			else {
 				thread = choose_pset_thread(myprocessor, pset);
