@@ -503,7 +503,7 @@ thread_t thread_select(
 	if (myprocessor->runq.count > 0) {
                 printf("runq empty in cpu %d\n. Selecting thread\n", myprocessor->slot_num);
 		thread = choose_thread(myprocessor);
-		//printf("thread %x with name %s , priority %d, and state %d selected in cpu %d\n", thread,
+		printf("thread %x with name %s , priority %d, and state %d selected in cpu %d\n", thread,
                         thread->task ? thread->task->name : "no name", thread->sched_pri, thread->state, myprocessor->slot_num);
 		myprocessor->quantum = min_quantum;
 		printf("cpu %d quantum set to %d\n", myprocessor->slot_num, myprocessor->quantum);
@@ -540,7 +540,7 @@ thread_t thread_select(
                                         //printf("the bound processor is %d\n", thread->bound_processor->slot_num);
 
 				simple_unlock(&pset->runq.lock);
-				printf("thread lock in thread %s over cpu %d\n", thread->task ? thread->task->name : "no name", myprocessor->slot_num);
+				//printf("thread lock in thread %s over cpu %d\n", thread->task ? thread->task->name : "no name", myprocessor->slot_num);
 				thread_lock(thread);
 				if (thread->sched_stamp != sched_tick)
 				    update_priority(thread);
