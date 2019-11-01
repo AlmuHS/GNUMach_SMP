@@ -503,9 +503,9 @@ thread_t thread_select(
 	if (myprocessor->runq.count > 0) {
                 printf("runq empty in cpu %d\n. Selecting thread\n", myprocessor->slot_num);
 		thread = choose_thread(myprocessor);
-		printf("thread %d selected in cpu %d\n", thread->code, myprocessor->slot_num);
+		printf("thread %d selected in cpu %d\n", thread, myprocessor->slot_num);
 		myprocessor->quantum = min_quantum;
-		printf("cpu %d quantum set to %d\n", myprocessor->slot_num, myprocessor->quantum)
+		printf("cpu %d quantum set to %d\n", myprocessor->slot_num, myprocessor->quantum);
 	}
 	else {
 		processor_set_t pset;
@@ -1321,9 +1321,7 @@ void thread_setrun(
 		simple_lock(&processor->lock);
 		printf("set lock in cpu %d\n", processor->slot_num);
 		pset = processor->processor_set;
-		printf("cpu %d is in pset %d\n", processor->slot_num, pset);
 		simple_lock(&pset->idle_lock);
-		printf("pset %d locked\n", pset);
 		if (processor->state == PROCESSOR_IDLE) {
                     printf("cpu %d continues idle\n", processor->slot_num);
                     printf("cpu %d removed of idle queue\n", processor->slot_num);
