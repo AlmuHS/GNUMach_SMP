@@ -1350,19 +1350,15 @@ void thread_setrun(
 
 	    /*
 	     *	Cause ast on processor if processor is on line.
-	     *
-	     *	XXX Don't do this remotely to master because this will
-	     *	XXX send an interprocessor interrupt, and that's too
-	     *  XXX expensive for all the unparallelized U*x code.
 	     */
 	    if (processor == current_processor()) {
                 //printf("lock ast in cpu %d\n", processor->slot_num);
 		ast_on(cpu_number(), AST_BLOCK);
 	    }
-	    else if (/*(processor != master_processor) &&*/
-	    	     (processor->state != PROCESSOR_OFF_LINE)) {
-                        printf("send ast to cpu %d\n", processor->slot_num);
-			cause_ast_check(processor);
+
+	    else if ((processor->state != PROCESSOR_OFF_LINE)) {
+                printf("send ast to cpu %d\n", processor->slot_num);
+		cause_ast_check(processor);
 	    }
 	}
 #else	/* NCPUS > 1 */
