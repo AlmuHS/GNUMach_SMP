@@ -501,8 +501,11 @@ thread_t thread_select(
 	 *	empty and global runq has entry at hint.
 	 */
 	if (myprocessor->runq.count > 0) {
+                printf("runq empty in cpu %d\n. Selecting thread\n", myprocessor->slot_num);
 		thread = choose_thread(myprocessor);
+		printf("thread %d selected in cpu %d\n", thread->code, myprocessor->slot_num);
 		myprocessor->quantum = min_quantum;
+		printf("cpu %d quantum set to %d\n", myprocessor->slot_num, myprocessor->quantum)
 	}
 	else {
 		processor_set_t pset;
