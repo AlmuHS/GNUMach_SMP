@@ -548,7 +548,7 @@ thread_t thread_select(
 				//printf("thread unlock in thread %s over cpu %d\n", thread->task ? thread->task->name : "no name", myprocessor->slot_num);
 			}
 			else {
-				thread = choose_pset_thread(myprocessor->slot_num, pset);
+				thread = choose_pset_thread(myprocessor, pset);
 				printf("choose pset %d in %d", pset, myprocessor->slot_num);
 			}
 		}
