@@ -63,6 +63,8 @@ extern int db_user_to_kernel_address(
 
 extern void db_task_name (task_t task);
 
+extern void cpu_interrupt_to_db(int i);
+
 #define I386_DB_TYPE_X 0
 #define I386_DB_TYPE_W 1
 #define I386_DB_TYPE_RW 3

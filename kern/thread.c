@@ -1,25 +1,25 @@
-/* 
+/*
  * Mach Operating System
  * Copyright (c) 1994-1987 Carnegie Mellon University
  * All Rights Reserved.
- * 
+ *
  * Permission to use, copy, modify and distribute this software and its
  * documentation is hereby granted, provided that both the copyright
  * notice and this permission notice appear in all copies of the
  * software, derivative works or modified versions, and any portions
  * thereof, and that both notices appear in supporting documentation.
- * 
+ *
  * CARNEGIE MELLON ALLOWS FREE USE OF THIS SOFTWARE IN ITS "AS IS"
  * CONDITION.  CARNEGIE MELLON DISCLAIMS ANY LIABILITY OF ANY KIND FOR
  * ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
- * 
+ *
  * Carnegie Mellon requests users of this software to return to
- * 
+ *
  *  Software Distribution Coordinator  or  Software.Distribution@CS.CMU.EDU
  *  School of Computer Science
  *  Carnegie Mellon University
  *  Pittsburgh PA 15213-3890
- * 
+ *
  * any improvements or extensions that they make and grant Carnegie Mellon
  * the rights to redistribute these changes.
  */
@@ -361,7 +361,8 @@ void thread_init(void)
 	thread_template.ast = AST_ZILCH;
 
 	/* thread_template.processor_set (later) */
-	thread_template.bound_processor = PROCESSOR_NULL;
+	//thread_template.bound_processor = PROCESSOR_NULL;
+	thread_template.bound_processor = cpu_to_processor(0);
 #if	MACH_HOST
 	thread_template.may_assign = TRUE;
 	thread_template.assign_active = FALSE;
@@ -524,7 +525,7 @@ kern_return_t thread_create(
 	 *	processors queue to avoid master.
 	 */
 	if (!pset->empty) {
-		new_thread->last_processor = 
+		new_thread->last_processor =
 			(processor_t)queue_first(&pset->processors);
 	}
 	else {
@@ -812,7 +813,7 @@ kern_return_t thread_terminate(
 		thread_terminate(cur_thread);
 		return KERN_FAILURE;
 	}
-    
+
 	thread_unlock(cur_thread);
 	task_unlock(cur_task);
 
@@ -989,7 +990,7 @@ kern_return_t thread_halt(
 		}
 
 		thread_unlock(cur_thread);
-	
+
 	}
 	else {
 		/*
@@ -1037,7 +1038,7 @@ kern_return_t thread_halt(
 	/*
 	 *	Otherwise, have to do it ourselves.
 	 */
-		
+
 	thread_ast_set(thread, AST_HALT);
 
 	while (TRUE) {
@@ -1501,11 +1502,11 @@ kern_return_t thread_info(
 	    thread_basic_info_t	basic_info;
 
 	    /* Allow *thread_info_count to be one smaller than the
-	       usual amount, because creation_time is a new member
-	       that some callers might not know about. */
+	       usual amount, because creation_time is a
+		   new member that some callers might not know about. */
 
 	    if (*thread_info_count < THREAD_BASIC_INFO_COUNT - 1) {
-		return KERN_INVALID_ARGUMENT;
+			return KERN_INVALID_ARGUMENT;
 	    }
 
 	    basic_info = (thread_basic_info_t) thread_info_out;
@@ -1580,8 +1581,11 @@ kern_return_t thread_info(
 	else if (flavor == THREAD_SCHED_INFO) {
 	    thread_sched_info_t	sched_info;
 
-	    if (*thread_info_count < THREAD_SCHED_INFO_COUNT) {
-		return KERN_INVALID_ARGUMENT;
+	    /* Allow *thread_info_count to be one smaller than the
+	       usual amount, because last_processor is a
+	       new member that some callers might not know about. */
+	    if (*thread_info_count < THREAD_SCHED_INFO_COUNT -1) {
+		    return KERN_INVALID_ARGUMENT;
 	    }
 
 	    sched_info = (thread_sched_info_t) thread_info_out;
@@ -1605,9 +1609,15 @@ kern_return_t thread_info(
 	    sched_info->base_priority = thread->priority;
 	    sched_info->max_priority = thread->max_priority;
 	    sched_info->cur_priority = thread->sched_pri;
-	    
+
 	    sched_info->depressed = (thread->depress_priority >= 0);
 	    sched_info->depress_priority = thread->depress_priority;
+
+#if NCPUS > 1
+	    sched_info->last_processor = thread->last_processor;
+#else
+	    sched_info->last_processor = 0;
+#endif
 
 	    thread_unlock(thread);
 	    splx(s);
@@ -1628,7 +1638,7 @@ kern_return_t	thread_abort(
 
 	/*
 	 *
-         *	clear it of an event wait 
+         *	clear it of an event wait
          */
 	evc_notify_abort(thread);
 
@@ -1779,7 +1789,7 @@ thread_assign(
  *	thread_freeze:
  *
  *	Freeze thread's assignment.  Prelude to assigning thread.
- *	Only one freeze may be held per thread.  
+ *	Only one freeze may be held per thread.
  */
 void
 thread_freeze(
@@ -1841,7 +1851,7 @@ thread_doassign(
 	boolean_t			old_empty, new_empty;
 	boolean_t			recompute_pri = FALSE;
 	spl_t				s;
-	
+
 	/*
 	 *	Check for silly no-op.
 	 */
@@ -1991,7 +2001,7 @@ thread_assign_default(
  *	thread_get_assignment
  *
  *	Return current assignment for this thread.
- */	    
+ */
 kern_return_t thread_get_assignment(
 	thread_t	thread,
 	processor_set_t	*pset)

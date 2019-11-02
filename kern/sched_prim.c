@@ -501,8 +501,12 @@ thread_t thread_select(
 	 *	empty and global runq has entry at hint.
 	 */
 	if (myprocessor->runq.count > 0) {
+                printf("runq empty in cpu %d\n. Selecting thread\n", myprocessor->slot_num);
 		thread = choose_thread(myprocessor);
-		myprocessor->quantum = min_quantum;
+		printf("thread %x with name %s , priority %d, and state %d selected in cpu %d\n", thread,
+                        thread->task ? thread->task->name : "no name", thread->sched_pri, thread->state, myprocessor->slot_num);
+		//myprocessor->quantum = min_quantum;
+		//printf("cpu %d quantum set to %d\n", myprocessor->slot_num, myprocessor->quantum);
 	}
 	else {
 		processor_set_t pset;
@@ -513,16 +517,19 @@ thread_t thread_select(
 		pset = &default_pset;
 #endif	/* MACH_HOST */
 		simple_lock(&pset->runq.lock);
+		printf("pset %x locked\n", pset);
 #if	DEBUG
 		checkrq(&pset->runq, "thread_select");
 #endif	/* DEBUG */
 		if (pset->runq.count == 0) {
+                        printf("runq count is 0 in cpu %d. Nothing else runnable\n", myprocessor->slot_num);
 			/*
 			 *	Nothing else runnable.  Return if this
 			 *	thread is still runnable on this processor.
 			 *	Check for priority update if required.
 			 */
 			thread = current_thread();
+			printf("current thread is %x with name %s , priority %d and state %d\n", thread, thread->task ? thread->task->name : "no name", thread->state);
 			if ((thread->state == TH_RUN) &&
 #if	MACH_HOST
 			    (thread->processor_set == pset) &&
@@ -530,14 +537,20 @@ thread_t thread_select(
 			    ((thread->bound_processor == PROCESSOR_NULL) ||
 			     (thread->bound_processor == myprocessor))) {
 
+                                if(thread->bound_processor != PROCESSOR_NULL)
+                                        printf("the bound processor is %d\n", thread->bound_processor->slot_num);
+
 				simple_unlock(&pset->runq.lock);
+				printf("thread lock in thread %x with name %s, over cpu %d\n", thread, thread->task ? thread->task->name : "no name", myprocessor->slot_num);
 				thread_lock(thread);
 				if (thread->sched_stamp != sched_tick)
 				    update_priority(thread);
 				thread_unlock(thread);
+				printf("thread unlock in thread %x with name %s over cpu %d\n", thread, thread->task ? thread->task->name : "no name", myprocessor->slot_num);
 			}
 			else {
 				thread = choose_pset_thread(myprocessor, pset);
+				printf("choose pset %x in %d", pset, myprocessor->slot_num);
 			}
 		}
 		else {
@@ -547,15 +560,22 @@ thread_t thread_select(
 			 *	If there is a thread at hint, grab it,
 			 *	else call choose_pset_thread.
 			 */
+                        printf("Detected thread at hint\n");
 			q = pset->runq.runq + pset->runq.low;
 
 			if (queue_empty(q)) {
 				pset->runq.low++;
+				printf("queue %d empty. Adding new thread\n", q);
 				thread = choose_pset_thread(myprocessor, pset);
+				printf("added thread %d with name %s, priority %d and state %d, to cpu %d\n", thread, thread->task->name,
+                                        thread->priority, thread->state, myprocessor);
 			}
 			else {
+				printf("queue %d NOT empty. Removing current thread\n", q);
 				thread = (thread_t) dequeue_head(q);
+                                printf("removed thread %x with name %s from queue %d\n", thread, thread->task->name, q);
 				thread->runq = RUN_QUEUE_NULL;
+                                printf("runq of thread %x with name %s set to NULL\n", thread, thread->task->name);
 				pset->runq.count--;
 #if	MACH_FIXPRI
 				/*
@@ -574,6 +594,7 @@ thread_t thread_select(
 				checkrq(&pset->runq, "thread_select: after");
 #endif	/* DEBUG */
 				simple_unlock(&pset->runq.lock);
+                                printf("pset %x unlocked\n", pset);
 			}
 		}
 
@@ -1244,6 +1265,7 @@ void thread_setrun(
 	    /*
 	     *	Not bound, any processor in the processor set is ok.
 	     */
+            printf("bound processor set to NULL\n");
 	    pset = th->processor_set;
 #if	HW_FOOTPRINT
 	    /*
@@ -1301,6 +1323,7 @@ void thread_setrun(
 			 */
 			current_processor()->first_quantum = FALSE;
 			ast_on(cpu_number(), AST_BLOCK);
+			printf("ast set to on in cpu %d\n", cpu_number());
 	    }
 	}
 	else {
@@ -1309,20 +1332,28 @@ void thread_setrun(
 	     *  processor here because it may not be the current one.
 	     */
 	    if (processor->state == PROCESSOR_IDLE) {
+                printf("cpu %d in idle state\n", processor->slot_num);
 		simple_lock(&processor->lock);
+		printf("set lock in cpu %d\n", processor->slot_num);
 		pset = processor->processor_set;
 		simple_lock(&pset->idle_lock);
 		if (processor->state == PROCESSOR_IDLE) {
+                    printf("cpu %d continues idle\n", processor->slot_num);
+                    printf("cpu %d removed of idle queue\n", processor->slot_num);
 		    queue_remove(&pset->idle_queue, processor,
 			processor_t, processor_queue);
 		    pset->idle_count--;
 		    processor->next_thread = th;
 		    processor->state = PROCESSOR_DISPATCHING;
+		    printf("cpu %d in dispatch\n", processor->slot_num);
 		    simple_unlock(&pset->idle_lock);
+		    printf("pset %d unlocked\n", pset);
 		    simple_unlock(&processor->lock);
+		    printf("cpu %d unlocked\n", processor->slot_num);
 		    return;
 		}
 		simple_unlock(&pset->idle_lock);
+
 		simple_unlock(&processor->lock);
 	    }
 	    rq = &(processor->runq);
@@ -1330,17 +1361,14 @@ void thread_setrun(
 
 	    /*
 	     *	Cause ast on processor if processor is on line.
-	     *
-	     *	XXX Don't do this remotely to master because this will
-	     *	XXX send an interprocessor interrupt, and that's too
-	     *  XXX expensive for all the unparallelized U*x code.
 	     */
 	    if (processor == current_processor()) {
+                //printf("lock ast in cpu %d\n", processor->slot_num);
 		ast_on(cpu_number(), AST_BLOCK);
 	    }
-	    else if ((processor != master_processor) &&
-	    	     (processor->state != PROCESSOR_OFF_LINE)) {
-			cause_ast_check(processor);
+	    else if ((processor->state != PROCESSOR_OFF_LINE)) {
+                printf("send ast to cpu %d\n", processor->slot_num);
+		cause_ast_check(processor);
 	    }
 	}
 #else	/* NCPUS > 1 */
@@ -1618,12 +1646,16 @@ void __attribute__((noreturn)) idle_thread_continue(void)
 	thread_t new_thread;
 	int state;
 	int mycpu;
+	volatile int i = 0;
 	spl_t s;
 
 	mycpu = cpu_number();
 	myprocessor = current_processor();
 	threadp = (volatile thread_t *) &myprocessor->next_thread;
 	lcount = (volatile int *) &myprocessor->runq.count;
+
+	if(mycpu != 0)
+		printf("cpu %d continue in idle thread\n", mycpu);
 
 	while (TRUE) {
 #ifdef	MARK_CPU_IDLE
@@ -1659,7 +1691,16 @@ void __attribute__((noreturn)) idle_thread_continue(void)
 			 * to conserve power.
 			 */
 #if	POWER_SAVE
-			machine_idle(mycpu);
+			if (mycpu != master_cpu){
+                printf("cpu %d entering in relax\n", mycpu);
+                //for(i = 0; i < 10000000; i++);
+                //while(1);
+                machine_idle(mycpu);
+                printf("cpu %d out of relax", mycpu);
+			}
+			else{
+				machine_idle(mycpu);
+			}
 #endif /* POWER_SAVE */
 		}
 
@@ -1768,6 +1809,9 @@ void idle_thread(void)
 {
 	thread_t self = current_thread();
 	spl_t s;
+
+	if(cpu_number() != 0)
+		printf("cpu %d entering in idle_thread\n", cpu_number());
 
 	stack_privilege(self);
 
