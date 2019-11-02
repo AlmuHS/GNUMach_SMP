@@ -504,7 +504,7 @@ thread_t thread_select(
                 //printf("runq empty in cpu %d\n. Selecting thread\n", myprocessor->slot_num);
 		thread = choose_thread(myprocessor);
 		//printf("thread %x with name %s , priority %d, and state %d selected in cpu %d\n", thread,
-                        thread->task ? thread->task->name : "no name", thread->sched_pri, thread->state, myprocessor->slot_num);
+                        //thread->task ? thread->task->name : "no name", thread->sched_pri, thread->state, myprocessor->slot_num);
 		//myprocessor->quantum = min_quantum;
 		//printf("cpu %d quantum set to %d\n", myprocessor->slot_num, myprocessor->quantum);
 	}
@@ -568,7 +568,7 @@ thread_t thread_select(
 				//printf("queue %d empty. Adding new thread\n", q);
 				thread = choose_pset_thread(myprocessor, pset);
 				//printf("added thread %d with name %s, priority %d and state %d, to cpu %d\n", thread, thread->task->name,
-                                        thread->priority, thread->state, myprocessor);
+                                        //thread->priority, thread->state, myprocessor);
 			}
 			else {
 				//printf("queue %d NOT empty. Removing current thread\n", q);
