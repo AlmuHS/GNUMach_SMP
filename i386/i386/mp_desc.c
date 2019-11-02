@@ -396,10 +396,10 @@ void paging_setup(){
 
 }
 
-int
+void
 cpu_ap_main()
 {
-    if(cpu_setup()) return -1;
+    /*return*/ cpu_setup();
 }
 
 /*TODO: Reimplement function to send Startup IPI to cpu*/
