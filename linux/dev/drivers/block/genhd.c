@@ -774,9 +774,6 @@ void device_setup(void)
 	char *c, *param, *white;
 	struct gendisk *p;
 	int nr=0;
-#ifdef MACH
-	linux_intr_pri = SPL6;
-#endif
 
 	for (c = kernel_cmdline; c; )
 	{
@@ -809,9 +806,6 @@ void device_setup(void)
 	scsi_dev_init();
 #endif
 #ifdef CONFIG_INET
-#ifdef MACH
-	linux_intr_pri = SPL6;
-#endif
 	net_dev_init();
 #endif
 #ifndef MACH

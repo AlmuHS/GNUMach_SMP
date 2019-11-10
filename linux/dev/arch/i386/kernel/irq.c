@@ -63,13 +63,6 @@ unsigned int local_irq_count[NR_CPUS];
 int EISA_bus = 0;
 
 /*
- * Priority at which a Linux handler should be called.
- * This is used at the time of an IRQ allocation.  It is
- * set by emulation routines for each class of device.
- */
-spl_t linux_intr_pri;
-
-/*
  * Flag indicating an interrupt is being handled.
  */
 unsigned int intr_count = 0;
@@ -191,15 +184,6 @@ enable_irq (unsigned int irq_nr)
   restore_flags (flags);
 }
 
-/*
- * Default interrupt handler for Linux.
- */
-void
-linux_bad_intr (int irq)
-{
-  mask_irq (irq);
-}
-
 static int
 setup_x86_irq (int irq, struct linux_action *new)
 {
@@ -216,10 +200,6 @@ setup_x86_irq (int irq, struct linux_action *new)
 
       /* Can't share interrupts unless both are same type */
       if ((old->flags ^ new->flags) & SA_INTERRUPT)
-	return (-EBUSY);
-
-      /* Can't share at different levels */
-      if (intpri[irq] && linux_intr_pri != intpri[irq])
 	return (-EBUSY);
 
       /* add new interrupt at end of irq queue */
@@ -240,7 +220,6 @@ setup_x86_irq (int irq, struct linux_action *new)
     {
       ivect[irq] = linux_intr;
       iunit[irq] = irq;
-      intpri[irq] = linux_intr_pri;
       unmask_irq (irq);
     }
   restore_flags (flags);
@@ -306,9 +285,8 @@ free_irq (unsigned int irq, void *dev_id)
       if (!irq_action[irq])
 	{
 	  mask_irq (irq);
-	  ivect[irq] = linux_bad_intr;
+	  ivect[irq] = intnull;
 	  iunit[irq] = irq;
-	  intpri[irq] = SPL0;
 	}
       restore_flags (flags);
       linux_kfree (action);
@@ -334,9 +312,8 @@ probe_irq_on (void)
    */
   for (i = 15; i > 0; i--)
     {
-      if (!irq_action[i] && ivect[i] == linux_bad_intr)
+      if (!irq_action[i] && ivect[i] == intnull)
 	{
-	  intpri[i] = linux_intr_pri;
 	  enable_irq (i);
 	  irqs |= 1 << i;
 	}
@@ -368,10 +345,9 @@ probe_irq_off (unsigned long irqs)
    */
   for (i = 15; i > 0; i--)
     {
-      if (!irq_action[i] && ivect[i] == linux_bad_intr)
+      if (!irq_action[i] && ivect[i] == intnull)
 	{
 	  disable_irq (i);
-	  intpri[i] = SPL0;
 	}
     }
   
@@ -409,7 +385,7 @@ reserve_mach_irqs (void)
 
   for (i = 0; i < 16; i++)
     {
-      if (ivect[i] != prtnull && ivect[i] != intnull)
+      if (ivect[i] != intnull)
 	/* This dummy action does not specify SA_SHIRQ, so
 	   setup_x86_irq will not try to add a handler to this
 	   slot.  Therefore, the cast is safe.  */
@@ -688,12 +664,10 @@ void __global_restore_flags(unsigned long flags)
 #endif
 
 static void (*old_clock_handler) ();
-static int old_clock_pri;
 
 void
 init_IRQ (void)
 {
-  int i;
   char *p;
   int latch = (CLKNUM + hz / 2) / hz;
   
@@ -713,27 +687,10 @@ init_IRQ (void)
    * Install our clock interrupt handler.
    */
   old_clock_handler = ivect[0];
-  old_clock_pri = intpri[0];
   ivect[0] = linux_timer_intr;
-  intpri[0] = SPLHI;
 
   reserve_mach_irqs ();
 
-  for (i = 1; i < 16; i++)
-    {
-      /*
-       * irq2 and irq13 should be igonored.
-       */
-      if (i == 2 || i == 13)
-	continue;
-      if (ivect[i] == prtnull || ivect[i] == intnull)
-	{
-          ivect[i] = linux_bad_intr;
-          iunit[i] = i;
-          intpri[i] = SPL0;
-	}
-    }
-  
   /*
    * Enable interrupts.
    */
@@ -771,6 +728,5 @@ restore_IRQ (void)
    * Restore clock interrupt handler.
    */
   ivect[0] = old_clock_handler;
-  intpri[0] = old_clock_pri;
 }
   

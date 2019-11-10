@@ -75,8 +75,6 @@ clkstart(void)
 		/* Only one PIT initialization is needed */
 		return;
 
-	intpri[0] = SPLHI;
-
 	s = sploff();         /* disable interrupts */
 
 	/* Since we use only timer 0, we program that.

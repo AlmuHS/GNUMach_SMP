@@ -176,11 +176,3 @@ intnull(int unit_dev)
 {
 	printf("intnull(%d)\n", unit_dev);
 }
-
-int prtnull_count = 0;
-
-void
-prtnull(int unit)
-{
-	++prtnull_count;
-}
