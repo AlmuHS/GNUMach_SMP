@@ -130,7 +130,6 @@ void take_dev_irq(
 		iunit[pic] = dev->unit;
 		ivect[pic] = dev->intr;
 		intpri[pic] = (int)dev->sysdep;
-		form_pic_mask();
 	} else {
 		printf("The device below will clobber IRQ %d.\n", pic);
 		printf("You have two devices at the same IRQ.\n");
@@ -151,7 +150,6 @@ void take_ctlr_irq(
 		iunit[pic] = ctlr->unit;
 		ivect[pic] = ctlr->intr;
 		intpri[pic] = (int)ctlr->sysdep;
-		form_pic_mask();
 	} else {
 		printf("The device below will clobber IRQ %d.\n", pic);
 		printf("You have two devices at the same IRQ.  This won't work.\n");

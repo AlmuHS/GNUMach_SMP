@@ -76,7 +76,6 @@ clkstart(void)
 		return;
 
 	intpri[0] = SPLHI;
-	form_pic_mask();
 
 	s = sploff();         /* disable interrupts */
 

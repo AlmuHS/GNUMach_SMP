@@ -177,10 +177,8 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define READ_IS_ONRD		0x01
 
 #ifndef __ASSEMBLER__
-extern void form_pic_mask (void);
 extern void picinit (void);
 extern int curr_pic_mask;
-extern int pic_mask[];
 extern void prtnull(int unit);
 extern void intnull(int unit);
 #endif /* __ASSEMBLER__ */

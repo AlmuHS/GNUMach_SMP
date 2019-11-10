@@ -2703,6 +2703,8 @@ static int try_to_identify (ide_drive_t *drive, byte cmd)
 	int irq_off;
 
 	if (!HWIF(drive)->irq) {		/* already got an IRQ? */
+		printk("%s: Not probing legacy IRQs)\n", drive->name);
+		return 2;
 		probe_irq_off(probe_irq_on());	/* clear dangling irqs */
 		irqs_on = probe_irq_on();	/* start monitoring irqs */
 		OUT_BYTE(drive->ctl,IDE_CONTROL_REG);	/* enable device irq */

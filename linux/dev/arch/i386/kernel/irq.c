@@ -128,18 +128,15 @@ linux_intr (int irq)
 static inline void
 mask_irq (unsigned int irq_nr)
 {
-  int i;
+  int new_pic_mask = curr_pic_mask | 1 << irq_nr;
 
-  for (i = 0; i < intpri[irq_nr]; i++)
-    pic_mask[i] |= 1 << irq_nr;
-
-  if (curr_pic_mask != pic_mask[curr_ipl])
+  if (curr_pic_mask != new_pic_mask)
     {
-      curr_pic_mask = pic_mask[curr_ipl];
+      curr_pic_mask = new_pic_mask;
       if (irq_nr < 8)
-	outb (curr_pic_mask & 0xff, PIC_MASTER_OCW);
+       outb (curr_pic_mask & 0xff, PIC_MASTER_OCW);
       else
-	outb (curr_pic_mask >> 8, PIC_SLAVE_OCW);
+       outb (curr_pic_mask >> 8, PIC_SLAVE_OCW);
     }
 }
 
@@ -149,18 +146,18 @@ mask_irq (unsigned int irq_nr)
 static inline void
 unmask_irq (unsigned int irq_nr)
 {
-  int mask, i;
+  int mask;
+  int new_pic_mask;
 
   mask = 1 << irq_nr;
   if (irq_nr >= 8)
     mask |= 1 << 2;
 
-  for (i = 0; i < intpri[irq_nr]; i++)
-    pic_mask[i] &= ~mask;
+  new_pic_mask = curr_pic_mask & ~mask;
 
-  if (curr_pic_mask != pic_mask[curr_ipl])
+  if (curr_pic_mask != new_pic_mask)
     {
-      curr_pic_mask = pic_mask[curr_ipl];
+      curr_pic_mask = new_pic_mask;
       if (irq_nr < 8)
 	outb (curr_pic_mask & 0xff, PIC_MASTER_OCW);
       else
@@ -737,8 +734,6 @@ init_IRQ (void)
 	}
     }
   
-  form_pic_mask ();
-  
   /*
    * Enable interrupts.
    */
@@ -777,6 +772,5 @@ restore_IRQ (void)
    */
   ivect[0] = old_clock_handler;
   intpri[0] = old_clock_pri;
-  form_pic_mask ();
 }
   

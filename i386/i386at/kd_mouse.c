@@ -228,7 +228,6 @@ kd_mouse_open(
 	ivect[mouse_pic] = kdintr;
 	oldspl = intpri[mouse_pic];
 	intpri[mouse_pic] = SPL6;
-	form_pic_mask();
 	splx(s);
 }
 
@@ -291,7 +290,6 @@ kd_mouse_close(
 
 	ivect[mouse_pic] = oldvect;
 	intpri[mouse_pic] = oldspl;
-	form_pic_mask();
 	splx(s);
 }
 

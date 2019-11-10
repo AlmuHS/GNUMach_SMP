@@ -19,7 +19,6 @@
 
 #include <mach/machine/asm.h>
 #include <i386/ipl.h>
-#include <i386/pic.h>
 #include <i386/i386asm.h>
 #include <i386/xen.h>
 
@@ -30,20 +29,9 @@
 #endif
 
 /*
- * Program PICs with mask in %eax.
+ * Program XEN evt masks from %eax.
  */
-#ifndef	MACH_XEN
-#define SETMASK()				\
-	cmpl	EXT(curr_pic_mask),%eax;	\
-	je	9f;				\
-	outb	%al,$(PIC_MASTER_OCW);		\
-	movl	%eax,EXT(curr_pic_mask);	\
-	movb	%ah,%al;			\
-	outb	%al,$(PIC_SLAVE_OCW);		\
-9:
-#else	/* MACH_XEN */
-#define pic_mask int_mask
-#define SETMASK()				\
+#define XEN_SETMASK()				\
 	pushl	%ebx;				\
 	movl	%eax,%ebx;			\
 	xchgl	%eax,hyp_shared_info+EVTMASK;	\
@@ -55,7 +43,6 @@
 lock	orl	$1,hyp_shared_info+CPU_PENDING_SEL; /* Yes, activate it */ \
 	movb	$1,hyp_shared_info+CPU_PENDING; \
 9:
-#endif	/* MACH_XEN */
 
 ENTRY(spl0)
 	mb;
@@ -90,9 +77,11 @@ ENTRY(spl0)
 	cmpl	$(SPL0),EXT(curr_ipl)	/* are we at spl0? */
 	je	1f			/* yes, all done */
 	movl	$(SPL0),EXT(curr_ipl)	/* set ipl */
-	movl	EXT(pic_mask)+SPL0*4,%eax
-					/* get PIC mask */
-	SETMASK()			/* program PICs with new mask */
+#ifdef MACH_XEN
+	movl	EXT(int_mask)+SPL0*4,%eax
+					/* get xen mask */
+	XEN_SETMASK()			/* program xen evts */
+#endif
 1:
 	sti				/* enable interrupts */
 	popl	%eax			/* return previous mask */
@@ -129,9 +118,9 @@ Entry(splhi)
 ENTRY(spl7)
 	mb;
 	/* just clear IF */
-	movl	$SPL7,%eax
-	xchgl	EXT(curr_ipl),%eax
 	cli
+	movl    $SPL7,%eax
+	xchgl   EXT(curr_ipl),%eax
 	ret
 
 ENTRY(splx)
@@ -202,9 +191,11 @@ splx_cli:
 	cmpl	EXT(curr_ipl),%edx	/* same ipl as current? */
 	je	1f			/* yes, all done */
 	movl	%edx,EXT(curr_ipl)	/* set ipl */
-	movl	EXT(pic_mask)(,%edx,4),%eax
-					/* get PIC mask */
-	SETMASK()			/* program PICs with new mask */
+#ifdef MACH_XEN
+	movl	EXT(int_mask)(,%edx,4),%eax
+					/* get int mask */
+	XEN_SETMASK()			/* program xen evts with new mask */
+#endif
 1:
 	ret
 
@@ -229,11 +220,15 @@ spl:
 #endif	/* (MACH_KDB || MACH_TTD) && !MACH_XEN */
 	cmpl	$SPL7,%edx		/* spl7? */
 	je	EXT(spl7)		/* yes, handle specially */
-	movl	EXT(pic_mask)(,%edx,4),%eax
-					/* get PIC mask */
+#ifdef MACH_XEN
+	movl	EXT(int_mask)(,%edx,4),%eax
+					/* get int mask */
+#endif
 	cli				/* disable interrupts */
 	xchgl	EXT(curr_ipl),%edx	/* set ipl */
-	SETMASK()			/* program PICs with new mask */
+#ifdef MACH_XEN
+	XEN_SETMASK()			/* program PICs with new mask */
+#endif
 	sti				/* enable interrupts */
 	movl	%edx,%eax		/* return previous ipl */
 	ret
