@@ -1006,8 +1006,7 @@ void pmap_init(void)
 			KMEM_CACHE_PHYSMEM);
 #if PAE
 	kmem_cache_init(&pdpt_cache, "pdpt",
-			PDPNUM * sizeof(pt_entry_t),
-			PDPNUM * sizeof(pt_entry_t), NULL,
+			INTEL_PGBYTES, INTEL_PGBYTES, NULL,
 			KMEM_CACHE_PHYSMEM);
 #endif
 	s = (vm_size_t) sizeof(struct pv_entry);
