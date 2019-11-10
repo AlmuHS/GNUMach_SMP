@@ -395,6 +395,7 @@ static void init_hwif_data (unsigned int index)
 	/* fill in any non-zero initial values */
 	hwif->index     = index;
 	hwif->io_base	= default_io_base[index];
+	hwif->irq	= default_irqs[index];
 	hwif->ctl_port	= hwif->io_base ? hwif->io_base+0x206 : 0x000;
 #ifdef CONFIG_BLK_DEV_HD
 	if (hwif->io_base == HD_DATA)
