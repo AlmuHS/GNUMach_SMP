@@ -30,8 +30,7 @@ ENTRY(interrupt)
 	pushl	%eax			/* save irq number */
 	movl	%eax,%ecx		/* copy irq number */
 	shll	$2,%ecx			/* irq * 4 */
-	movl	EXT(intpri)(%ecx),%edx	/* get new ipl */
-	call	spl			/* set ipl */
+	call	spl7			/* set ipl */
 	movl	EXT(iunit)(%ecx),%edx	/* get device unit number */
 	pushl	%eax			/* push previous ipl */
 	pushl	%edx			/* push unit number */
