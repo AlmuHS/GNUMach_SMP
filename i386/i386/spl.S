@@ -30,25 +30,6 @@
 #endif
 
 /*
- * Set IPL to the specified value.
- *
- * NOTE: Normally we would not have to enable interrupts
- * here.  Linux drivers, however, use cli()/sti(), so we must
- * guard against the case where a Mach routine which
- * has done an spl() calls a Linux routine that returns
- * with interrupts disabled.  A subsequent splx() can,
- * potentially, return with interrupts disabled.
- */
-#define SETIPL(level)			\
-	mb;				\
-	movl	$(level),%edx;		\
-	cmpl	EXT(curr_ipl),%edx;	\
-	jne	spl;			\
-	sti;				\
-	movl	%edx,%eax;		\
-	ret
-
-/*
  * Program PICs with mask in %eax.
  */
 #ifndef	MACH_XEN
@@ -117,39 +98,37 @@ ENTRY(spl0)
 	popl	%eax			/* return previous mask */
 	ret
 
+
+/*
+ * Historically, SETIPL(level) was called
+ * for spl levels 1-6, now we have combined
+ * all the intermediate levels into the highest level
+ * such that interrupts are either on or off,
+ * since modern hardware can handle it.
+ * This simplifies the interrupt handling
+ * especially for the linux drivers.
+ */
 Entry(splsoftclock)
 ENTRY(spl1)
-	SETIPL(SPL1)
-
 ENTRY(spl2)
-	SETIPL(SPL2)
-
 ENTRY(spl3)
-	SETIPL(SPL3)
-
 Entry(splnet)
 Entry(splhdw)
 ENTRY(spl4)
-	SETIPL(SPL4)
-
 Entry(splbio)
 Entry(spldcm)
 ENTRY(spl5)
-	SETIPL(SPL5)
-
 Entry(spltty)
 Entry(splimp)
 Entry(splvm)
 ENTRY(spl6)
-	SETIPL(SPL6)
-
 Entry(splclock)
 Entry(splsched)
 Entry(splhigh)
 Entry(splhi)
 ENTRY(spl7)
 	mb;
-	/* ipl7 just clears IF */
+	/* just clear IF */
 	movl	$SPL7,%eax
 	xchgl	EXT(curr_ipl),%eax
 	cli
