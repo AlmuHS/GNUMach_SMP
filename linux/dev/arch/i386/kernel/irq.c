@@ -158,8 +158,13 @@ unmask_irq (unsigned int irq_nr)
     }
 }
 
+/* Count how many subsystems requested to disable each IRQ */
+static unsigned ndisabled_irq[NR_IRQS];
+
+/* These disable/enable IRQs for real after counting how many subsystems
+ * requested that */
 void
-disable_irq (unsigned int irq_nr)
+__disable_irq (unsigned int irq_nr)
 {
   unsigned long flags;
 
@@ -167,7 +172,46 @@ disable_irq (unsigned int irq_nr)
 
   save_flags (flags);
   cli ();
-  mask_irq (irq_nr);
+  ndisabled_irq[irq_nr]++;
+  assert (ndisabled_irq[irq_nr] > 0);
+  if (ndisabled_irq[irq_nr] == 1)
+    mask_irq (irq_nr);
+  restore_flags (flags);
+}
+
+void
+__enable_irq (unsigned int irq_nr)
+{
+  unsigned long flags;
+
+  assert (irq_nr < NR_IRQS);
+
+  save_flags (flags);
+  cli ();
+  assert (ndisabled_irq[irq_nr] > 0);
+  ndisabled_irq[irq_nr]--;
+  if (ndisabled_irq[irq_nr] == 0)
+    unmask_irq (irq_nr);
+  restore_flags (flags);
+}
+
+/* IRQ mask according to Linux drivers */
+static unsigned linux_pic_mask;
+
+/* These only record that Linux requested to mask IRQs */
+void
+disable_irq (unsigned int irq_nr)
+{
+  unsigned long flags;
+  unsigned mask = 1U << irq_nr;
+
+  save_flags (flags);
+  cli ();
+  if (!(linux_pic_mask & mask))
+  {
+    linux_pic_mask |= mask;
+    __disable_irq(irq_nr);
+  }
   restore_flags (flags);
 }
 
@@ -175,12 +219,15 @@ void
 enable_irq (unsigned int irq_nr)
 {
   unsigned long flags;
-
-  assert (irq_nr < NR_IRQS);
+  unsigned mask = 1U << irq_nr;
 
   save_flags (flags);
   cli ();
-  unmask_irq (irq_nr);
+  if (linux_pic_mask & mask)
+  {
+    linux_pic_mask &= ~mask;
+    __enable_irq(irq_nr);
+  }
   restore_flags (flags);
 }
 
