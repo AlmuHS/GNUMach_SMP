@@ -174,5 +174,14 @@ picinit(void)
 void
 intnull(int unit_dev)
 {
-	printf("intnull(%d)\n", unit_dev);
+	static char warned[NINTR];
+
+	if (unit_dev >= NINTR)
+		printf("Unknown interrupt %d\n", unit_dev);
+	else if (!warned[unit_dev])
+	{
+		printf("intnull(%d)\n", unit_dev);
+		warned[unit_dev] = 1;
+	}
+
 }
