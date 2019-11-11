@@ -145,13 +145,13 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 #define NON_SPEC_EOI		0x20
-#define SPECIFIC_EOI		0x30
-#define ROT_NON_SPEC		0x50
-#define SET_ROT_AEOI		0x40
+#define SPECIFIC_EOI		0x60
+#define ROT_NON_SPEC		0xA0
+#define SET_ROT_AEOI		0x80
 #define RSET_ROTAEOI		0x00
-#define ROT_SPEC_EOI		0x70
-#define SET_PRIORITY		0x60
-#define NO_OPERATION		0x20
+#define ROT_SPEC_EOI		0xE0
+#define SET_PRIORITY		0xC0
+#define NO_OPERATION		0x40
 
 #define SEND_EOI_IR0		0x00
 #define SEND_EOI_IR1		0x01
