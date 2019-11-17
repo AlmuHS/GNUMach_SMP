@@ -63,6 +63,7 @@
 
 #include <vm/vm_print.h>
 #include <ipc/ipc_print.h>
+#include <ipc/mach_port.h>
 #include <kern/lock.h>
 
 /*

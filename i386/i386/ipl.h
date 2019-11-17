@@ -74,7 +74,6 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <machine/machspl.h>
 extern void	(*ivect[])();
 extern int	iunit[];
-extern int	intpri[];
 extern spl_t	curr_ipl;
 #endif	/* __ASSEMBLER__ */
 #endif	/* KERNEL */

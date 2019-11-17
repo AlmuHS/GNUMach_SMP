@@ -57,7 +57,6 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <i386/pio.h>
 
 spl_t	curr_ipl;
-int	pic_mask[NSPL];
 int	curr_pic_mask;
 
 int	iunit[NINTR] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
@@ -72,33 +71,18 @@ u_short PICM_ICW4, PICS_ICW4 ;
 /*
 ** picinit() - This routine
 **		* Establishes a table of interrupt vectors
-**		* Establishes a table of interrupt priority levels
-**		* Establishes a table of interrupt masks to be put
-**			in the PICs.
 **		* Establishes location of PICs in the system
+**		* Unmasks all interrupts in the PICs
 **		* Initialises them
 **
 **	At this stage the interrupt functionality of this system should be
-**	coplete.
-**
+**	complete.
 */
 
-
 /*
-** 1. First we form a table of PIC masks - rather then calling form_pic_mask()
-**	each time there is a change of interrupt level - we will form a table
-**	of pic masks, as there are only 7 interrupt priority levels.
-**
-** 2. The next thing we must do is to determine which of the PIC interrupt
-**	request lines have to be masked out, this is done by calling
-**	form_pic_mask() with a (int_lev) of zero, this will find all the
-**	interrupt lines that have priority 0, (ie to be ignored).
-**	Then we split this up for the master/slave PICs.
-**
-** 2. Initialise the PICs , master first, then the slave.
-**	All the register field definitions are described in pic_jh.h, also
-**	the settings of these fields for the various registers are selected.
-**
+** Initialise the PICs , master first, then the slave.
+** All the register field definitions are described in pic.h also
+** the settings of these fields for the various registers are selected.
 */
 
 void
@@ -108,23 +92,14 @@ picinit(void)
 	asm("cli");
 
 	/*
-	** 1. Form pic mask table
-	*/
-#if 0
-	printf (" Let the console driver screw up this line ! \n");
-#endif
-
-	form_pic_mask();
-
-	/*
-	** 1a. Select current SPL.
+	** 0. Initialise the current level to match cli() 
 	*/
 
 	curr_ipl = SPLHI;
-	curr_pic_mask = pic_mask[SPLHI];
+	curr_pic_mask = 0;
 
 	/*
-	** 2. Generate addresses to each PIC port.
+	** 1. Generate addresses to each PIC port.
 	*/
 
 	master_icw = PIC_MASTER_ICW;
@@ -133,7 +108,7 @@ picinit(void)
 	slaves_ocw = PIC_SLAVE_OCW;
 
 	/*
-	** 3. Select options for each ICW and each OCW for each PIC.
+	** 2. Select options for each ICW and each OCW for each PIC.
 	*/
 
 	PICM_ICW1 =
@@ -164,9 +139,8 @@ picinit(void)
 	PICM_OCW3 = (OCW_TEMPLATE | READ_NEXT_RD | READ_IR_ONRD );
 	PICS_OCW3 = (OCW_TEMPLATE | READ_NEXT_RD | READ_IR_ONRD );
 
-
 	/*
-	** 4.	Initialise master - send commands to master PIC
+	** 3.	Initialise master - send commands to master PIC
 	*/
 
 	outb ( master_icw, PICM_ICW1 );
@@ -178,7 +152,7 @@ picinit(void)
 	outb ( master_icw, PICM_OCW3 );
 
 	/*
-	** 5.	Initialise slave - send commands to slave PIC
+	** 4.	Initialise slave - send commands to slave PIC
 	*/
 
 	outb ( slaves_icw, PICS_ICW1 );
@@ -191,61 +165,23 @@ picinit(void)
 	outb ( slaves_icw, PICS_OCW3 );
 
 	/*
-	** 6. Initialise interrupts
+	** 5. Initialise interrupts
 	*/
 	outb ( master_ocw, PICM_OCW1 );
 
-#if 0
-	printf(" spl set to %x \n", curr_pic_mask);
-#endif
-
-}
-
-
-/*
-** form_pic_mask(int_lvl)
-**
-**	For a given interrupt priority level (int_lvl), this routine goes out
-** and scans through the interrupt level table, and forms a mask based on the
-** entries it finds there that have the same or lower interrupt priority level
-** as (int_lvl). It returns a 16-bit mask which will have to be split up between
-** the 2 pics.
-**
-*/
-
-#if	defined(AT386)
-#define SLAVEMASK       (0xFFFF ^ SLAVE_ON_IR2)
-#endif	/* defined(AT386) */
-
-#define SLAVEACTV	0xFF00
-
-void
-form_pic_mask(void)
-{
-	unsigned int i, j, bit, mask;
-
-	for (i=SPL0; i < NSPL; i++) {
-	 	for (j=0x00, bit=0x01, mask = 0; j < NINTR; j++, bit<<=1)
-			if (intpri[j] <= i)
-				mask |= bit;
-
-	 	if ((mask & SLAVEACTV) != SLAVEACTV )
-			mask &= SLAVEMASK;
-
-		pic_mask[i] = mask;
-	}
 }
 
 void
 intnull(int unit_dev)
 {
-	printf("intnull(%d)\n", unit_dev);
-}
+	static char warned[NINTR];
 
-int prtnull_count = 0;
+	if (unit_dev >= NINTR)
+		printf("Unknown interrupt %d\n", unit_dev);
+	else if (!warned[unit_dev])
+	{
+		printf("intnull(%d)\n", unit_dev);
+		warned[unit_dev] = 1;
+	}
 
-void
-prtnull(int unit)
-{
-	++prtnull_count;
 }

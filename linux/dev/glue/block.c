@@ -943,7 +943,6 @@ init_partition (struct name_map *np, kdev_t *dev,
       if (gd->part[MINOR (d->inode.i_rdev)].nr_sects <= 0
 	  || gd->part[MINOR (d->inode.i_rdev)].start_sect < 0)
 	continue;
-      linux_intr_pri = SPL6;
       d->file.f_flags = 0;
       d->file.f_mode = O_RDONLY;
       if (ds->fops->open && (*ds->fops->open) (&d->inode, &d->file))
@@ -1089,7 +1088,6 @@ device_open (ipc_port_t reply_port, mach_msg_type_name_t reply_port_type,
   if (ds->fops->open)
     {
       td.inode.i_rdev = dev;
-      linux_intr_pri = SPL6;
       err = (*ds->fops->open) (&td.inode, &td.file);
       if (err)
 	{
