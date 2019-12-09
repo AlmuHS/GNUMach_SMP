@@ -63,13 +63,6 @@ unsigned int local_irq_count[NR_CPUS];
 int EISA_bus = 0;
 
 /*
- * Priority at which a Linux handler should be called.
- * This is used at the time of an IRQ allocation.  It is
- * set by emulation routines for each class of device.
- */
-spl_t linux_intr_pri;
-
-/*
  * Flag indicating an interrupt is being handled.
  */
 unsigned int intr_count = 0;
@@ -160,18 +153,15 @@ linux_intr (int irq)
 static inline void
 mask_irq (unsigned int irq_nr)
 {
-  int i;
+  int new_pic_mask = curr_pic_mask | 1 << irq_nr;
 
-  for (i = 0; i < intpri[irq_nr]; i++)
-    pic_mask[i] |= 1 << irq_nr;
-
-  if (curr_pic_mask != pic_mask[curr_ipl])
+  if (curr_pic_mask != new_pic_mask)
     {
-      curr_pic_mask = pic_mask[curr_ipl];
+      curr_pic_mask = new_pic_mask;
       if (irq_nr < 8)
-	outb (curr_pic_mask & 0xff, PIC_MASTER_OCW);
+       outb (curr_pic_mask & 0xff, PIC_MASTER_OCW);
       else
-	outb (curr_pic_mask >> 8, PIC_SLAVE_OCW);
+       outb (curr_pic_mask >> 8, PIC_SLAVE_OCW);
     }
 }
 
@@ -181,18 +171,18 @@ mask_irq (unsigned int irq_nr)
 static inline void
 unmask_irq (unsigned int irq_nr)
 {
-  int mask, i;
+  int mask;
+  int new_pic_mask;
 
   mask = 1 << irq_nr;
   if (irq_nr >= 8)
     mask |= 1 << 2;
 
-  for (i = 0; i < intpri[irq_nr]; i++)
-    pic_mask[i] &= ~mask;
+  new_pic_mask = curr_pic_mask & ~mask;
 
-  if (curr_pic_mask != pic_mask[curr_ipl])
+  if (curr_pic_mask != new_pic_mask)
     {
-      curr_pic_mask = pic_mask[curr_ipl];
+      curr_pic_mask = new_pic_mask;
       if (irq_nr < 8)
 	outb (curr_pic_mask & 0xff, PIC_MASTER_OCW);
       else
@@ -200,8 +190,13 @@ unmask_irq (unsigned int irq_nr)
     }
 }
 
+/* Count how many subsystems requested to disable each IRQ */
+static unsigned ndisabled_irq[NR_IRQS];
+
+/* These disable/enable IRQs for real after counting how many subsystems
+ * requested that */
 void
-disable_irq (unsigned int irq_nr)
+__disable_irq (unsigned int irq_nr)
 {
   unsigned long flags;
 
@@ -209,7 +204,46 @@ disable_irq (unsigned int irq_nr)
 
   save_flags (flags);
   cli ();
-  mask_irq (irq_nr);
+  ndisabled_irq[irq_nr]++;
+  assert (ndisabled_irq[irq_nr] > 0);
+  if (ndisabled_irq[irq_nr] == 1)
+    mask_irq (irq_nr);
+  restore_flags (flags);
+}
+
+void
+__enable_irq (unsigned int irq_nr)
+{
+  unsigned long flags;
+
+  assert (irq_nr < NR_IRQS);
+
+  save_flags (flags);
+  cli ();
+  assert (ndisabled_irq[irq_nr] > 0);
+  ndisabled_irq[irq_nr]--;
+  if (ndisabled_irq[irq_nr] == 0)
+    unmask_irq (irq_nr);
+  restore_flags (flags);
+}
+
+/* IRQ mask according to Linux drivers */
+static unsigned linux_pic_mask;
+
+/* These only record that Linux requested to mask IRQs */
+void
+disable_irq (unsigned int irq_nr)
+{
+  unsigned long flags;
+  unsigned mask = 1U << irq_nr;
+
+  save_flags (flags);
+  cli ();
+  if (!(linux_pic_mask & mask))
+  {
+    linux_pic_mask |= mask;
+    __disable_irq(irq_nr);
+  }
   restore_flags (flags);
 }
 
@@ -217,22 +251,16 @@ void
 enable_irq (unsigned int irq_nr)
 {
   unsigned long flags;
-
-  assert (irq_nr < NR_IRQS);
+  unsigned mask = 1U << irq_nr;
 
   save_flags (flags);
   cli ();
-  unmask_irq (irq_nr);
+  if (linux_pic_mask & mask)
+  {
+    linux_pic_mask &= ~mask;
+    __enable_irq(irq_nr);
+  }
   restore_flags (flags);
-}
-
-/*
- * Default interrupt handler for Linux.
- */
-void
-linux_bad_intr (int irq)
-{
-  mask_irq (irq);
 }
 
 static int
@@ -251,10 +279,6 @@ setup_x86_irq (int irq, struct linux_action *new)
 
       /* Can't share interrupts unless both are same type */
       if ((old->flags ^ new->flags) & SA_INTERRUPT)
-	return (-EBUSY);
-
-      /* Can't share at different levels */
-      if (intpri[irq] && linux_intr_pri != intpri[irq])
 	return (-EBUSY);
 
       /* add new interrupt at end of irq queue */
@@ -276,7 +300,6 @@ setup_x86_irq (int irq, struct linux_action *new)
     {
       ivect[irq] = linux_intr;
       iunit[irq] = irq;
-      intpri[irq] = linux_intr_pri;
       unmask_irq (irq);
     }
   restore_flags (flags);
@@ -388,9 +411,8 @@ free_irq (unsigned int irq, void *dev_id)
       if (!irq_action[irq])
 	{
 	  mask_irq (irq);
-	  ivect[irq] = linux_bad_intr;
+	  ivect[irq] = intnull;
 	  iunit[irq] = irq;
-	  intpri[irq] = SPL0;
 	}
       restore_flags (flags);
       linux_kfree (action);
@@ -416,9 +438,8 @@ probe_irq_on (void)
    */
   for (i = 15; i > 0; i--)
     {
-      if (!irq_action[i] && ivect[i] == linux_bad_intr)
+      if (!irq_action[i] && ivect[i] == intnull)
 	{
-	  intpri[i] = linux_intr_pri;
 	  enable_irq (i);
 	  irqs |= 1 << i;
 	}
@@ -450,10 +471,9 @@ probe_irq_off (unsigned long irqs)
    */
   for (i = 15; i > 0; i--)
     {
-      if (!irq_action[i] && ivect[i] == linux_bad_intr)
+      if (!irq_action[i] && ivect[i] == intnull)
 	{
 	  disable_irq (i);
-	  intpri[i] = SPL0;
 	}
     }
   
@@ -491,7 +511,7 @@ reserve_mach_irqs (void)
 
   for (i = 0; i < 16; i++)
     {
-      if (ivect[i] != prtnull && ivect[i] != intnull)
+      if (ivect[i] != intnull)
 	/* This dummy action does not specify SA_SHIRQ, so
 	   setup_x86_irq will not try to add a handler to this
 	   slot.  Therefore, the cast is safe.  */
@@ -770,12 +790,10 @@ void __global_restore_flags(unsigned long flags)
 #endif
 
 static void (*old_clock_handler) ();
-static int old_clock_pri;
 
 void
 init_IRQ (void)
 {
-  int i;
   char *p;
   int latch = (CLKNUM + hz / 2) / hz;
   
@@ -795,29 +813,10 @@ init_IRQ (void)
    * Install our clock interrupt handler.
    */
   old_clock_handler = ivect[0];
-  old_clock_pri = intpri[0];
   ivect[0] = linux_timer_intr;
-  intpri[0] = SPLHI;
 
   reserve_mach_irqs ();
 
-  for (i = 1; i < 16; i++)
-    {
-      /*
-       * irq2 and irq13 should be igonored.
-       */
-      if (i == 2 || i == 13)
-	continue;
-      if (ivect[i] == prtnull || ivect[i] == intnull)
-	{
-          ivect[i] = linux_bad_intr;
-          iunit[i] = i;
-          intpri[i] = SPL0;
-	}
-    }
-  
-  form_pic_mask ();
-  
   /*
    * Enable interrupts.
    */
@@ -855,7 +854,5 @@ restore_IRQ (void)
    * Restore clock interrupt handler.
    */
   ivect[0] = old_clock_handler;
-  intpri[0] = old_clock_pri;
-  form_pic_mask ();
 }
   

@@ -33,6 +33,7 @@
 
 #include <kern/printf.h>
 #include <mach/std_types.h>
+#include <string.h>
 #include <mach/policy.h>
 #include <mach/thread_info.h>
 #include <mach/thread_special_ports.h>
@@ -558,6 +559,11 @@ kern_return_t thread_create(
 	parent_task->thread_count++;
 	queue_enter(&parent_task->thread_list, new_thread, thread_t,
 					thread_list);
+
+	/* Bind ext2fs thread to cpu 0. */
+        if(strncmp(new_thread->task->name, "ext2fs", sizeof("ext2fs")) == 0) {
+                new_thread->bound_processor = cpu_to_processor(0);
+        }
 
 	/*
 	 *	Finally, mark the thread active.

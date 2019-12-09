@@ -84,7 +84,6 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 static void (*oldvect)();		/* old interrupt vector */
 static int oldunit;
-static spl_t oldspl;
 extern	struct	bus_device *cominfo[];
 
 kd_event_queue mouse_queue;		/* queue of mouse events */
@@ -226,9 +225,6 @@ kd_mouse_open(
 
 	oldvect = ivect[mouse_pic];
 	ivect[mouse_pic] = kdintr;
-	oldspl = intpri[mouse_pic];
-	intpri[mouse_pic] = SPL6;
-	form_pic_mask();
 	splx(s);
 }
 
@@ -290,8 +286,6 @@ kd_mouse_close(
 	spl_t s = splhi();
 
 	ivect[mouse_pic] = oldvect;
-	intpri[mouse_pic] = oldspl;
-	form_pic_mask();
 	splx(s);
 }
 
