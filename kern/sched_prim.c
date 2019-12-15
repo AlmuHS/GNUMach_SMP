@@ -1327,21 +1327,44 @@ void thread_setrun(
 #endif	/* HW_FOOTPRINT */
 
 	    if (pset->idle_count > 0) {
+
+                printf("pset idle count set to %d in pset %d\n", pset->idle_count, pset);
+
 		simple_lock(&pset->idle_lock);
+		printf("idle lock set in %d\n", pset);
+
 		if (pset->idle_count > 0) {
+                    printf("pset idle count set to %d in pset %d\n", pset->idle_count, pset);
+
 		    processor = (processor_t) queue_first(&pset->idle_queue);
+                    printf("cpu %s first in idle queue of pset %d\n", processor->slot_num, pset);
+
 		    queue_remove(&(pset->idle_queue), processor, processor_t,
 				processor_queue);
+                    printf("cpu %d removed from idle queue in pset %d\n", processor->slot_num, pset);
+
 		    pset->idle_count--;
+		    printf("current idle count in pset %d: %d", pset, pset->idle_count);
+
 		    processor->next_thread = th;
+                    printf("thread %s enter in cpu %d\n", processor->next_thread->task->name, processor->slot_num);
+
 		    processor->state = PROCESSOR_DISPATCHING;
+                    printf("cpu %d status changed to dispatching\n", processor->slot_num);
+
 		    simple_unlock(&pset->idle_lock);
+                    printf("pset %d idle lock unlocked\n", pset);
+
 		    return;
 		}
 		simple_unlock(&pset->idle_lock);
+		printf("pset %d idle lock unlocked\n", pset);
 	    }
 	    rq = &(pset->runq);
+	    printf("new runqueue set to %d in pset %d\n", rq, pset);
+
 	    run_queue_enqueue(rq,th);
+	    printf("thread %d added to runqueue %d\n", th->task->name, rq);
 	    /*
 	     * Preempt check
 	     */
@@ -1354,8 +1377,9 @@ void thread_setrun(
 			 *	Turn off first_quantum to allow csw.
 			 */
 			current_processor()->first_quantum = FALSE;
-			ast_on(cpu_number(), AST_BLOCK);
+			printf("turned off first quantum in cpu %d\n", current_processor());
 
+			ast_on(cpu_number(), AST_BLOCK);
 			printf("ast set to on in cpu %d\n", cpu_number());
 	    }
 	}
@@ -1406,7 +1430,10 @@ void thread_setrun(
 		printf("cpu %d unlocked\n", processor->slot_num);
 	    }
 	    rq = &(processor->runq);
+	    printf("new runqueue set to %d\n", rq);
+
 	    run_queue_enqueue(rq,th);
+            printf("thread %s queued in runqueue %d\n", th->task->name);
 
 	    /*
 	     *	Cause ast on processor if processor is on line.
