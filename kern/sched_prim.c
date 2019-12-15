@@ -1265,16 +1265,23 @@ void thread_setrun(
 	    /*
 	     *	Not bound, any processor in the processor set is ok.
 	     */
-            //printf("bound processor set to NULL\n");
+            printf("bound processor set to NULL\n");
 	    pset = th->processor_set;
+	    printf("pset from task %s , set to %d\n", th->task->name, pset);
+
 #if	HW_FOOTPRINT
 	    /*
 	     *	But first check the last processor it ran on.
 	     */
 	    processor = th->last_processor;
+	    printf("thread %s assigned to processor %d\n", th->task->name, processor->slot_num);
 	    if (processor->state == PROCESSOR_IDLE) {
+                printf("processor %d in idle state\n", processor->slot_num);
+
 		    simple_lock(&processor->lock);
+		    printf("processor %d locked\n", processor->slot_num);
 		    simple_lock(&pset->idle_lock);
+		    printf("pset %d locked\n", pset);
 		    if ((processor->state == PROCESSOR_IDLE)
 #if	MACH_HOST
 			&& (processor->processor_set == pset)
@@ -1283,14 +1290,39 @@ void thread_setrun(
 			    queue_remove(&pset->idle_queue, processor,
 			        processor_t, processor_queue);
 			    pset->idle_count--;
+
+                            printf("processor %d removed from idle queue %d in pset %d\n", processor->slot_num, processor_queue, pset);
+                            printf("current idle count in pset %d: %d\n", pset->idle_count, pset);
+
 			    processor->next_thread = th;
+
+			    printf("thread %s enter in processor %d\n", thread->task->name, processor->slot_num);
+
 			    processor->state = PROCESSOR_DISPATCHING;
+
+			    printf("processor %d state set to dispaching\n", processor->slot_num);
+
 			    simple_unlock(&pset->idle_lock);
+
+			    printf("pset %d unlocked from idle\n", pset);
+
 			    simple_unlock(&processor->lock);
+
+                            printf("processor %d unlocked from idle\n", processor->slot_num);
+
+                            printf("processor %d exiting from idle case\n", processor->slot_num);
+
 		            return;
 		    }
+
+
 		    simple_unlock(&pset->idle_lock);
+
+		    printf("processor %d unlocked from idle")
+
 		    simple_unlock(&processor->lock);
+
+		    printf("processor %d unlocked from idle\n", processor->slot_num);
 	    }
 #endif	/* HW_FOOTPRINT */
 
