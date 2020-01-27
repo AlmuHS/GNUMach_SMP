@@ -5648,7 +5648,9 @@ mapped-time interface:
 do 
   @{
     secs = mtime->seconds;
+    __sync_synchronize();
     usecs = mtime->microseconds;
+    __sync_synchronize();
   @}
 while (secs != mtime->check_seconds);
 @end example
