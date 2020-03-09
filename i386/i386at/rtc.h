@@ -137,7 +137,7 @@ struct rtc_st {
 	} \
 }	
 
-extern int readtodc(u_int *tp);
+extern int readtodc(uint64_t *tp);
 extern int writetodc(void);
 
 #endif /* _RTC_H_ */

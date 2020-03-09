@@ -110,14 +110,11 @@ static void hypclock_intr(int unit, int old_ipl, void *ret_addr, struct i386_int
 #endif
 }
 
-extern struct timeval time;
-
 int
-readtodc(tp)
-	u_int	*tp;
+readtodc(uint64_t *tp)
 {
 	uint64_t t = hyp_get_time();
-	u_int n = t / 1000000000;
+	uint64_t n = t / 1000000000;
 
 	*tp = n;
 

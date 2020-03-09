@@ -669,11 +669,11 @@ void
 inittodr(void)
 {
 	time_value_t	new_time;
+	uint64_t	newsecs;
 
-	new_time.seconds = 0;
+	(void) readtodc(&newsecs);
+	new_time.seconds = newsecs;
 	new_time.microseconds = 0;
-
-	(void) readtodc((u_int *)&new_time.seconds);
 
 	{
 	    spl_t	s = splhigh();
