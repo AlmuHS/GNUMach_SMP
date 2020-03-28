@@ -130,8 +130,8 @@ ENTRY(splx)
 	/* First make sure that if we're exitting from ipl7, IF is still cleared */
 	cmpl	$SPL7,EXT(curr_ipl)	/* from ipl7? */
 	jne	0f
-	pushfl
-	popl	%eax
+	pushfq
+	popq	%rax
 	testl	$0x200,%eax		/* IF? */
 	jz	0f
 	int3				/* Oops, interrupts got enabled?! */
@@ -210,8 +210,8 @@ spl:
 	/* First make sure that if we're exitting from ipl7, IF is still cleared */
 	cmpl	$SPL7,EXT(curr_ipl)	/* from ipl7? */
 	jne	0f
-	pushfl
-	popl	%eax
+	pushfq
+	popq	%rax
 	testl	$0x200,%eax		/* IF? */
 	jz	0f
 	int3				/* Oops, interrupts got enabled?! */
