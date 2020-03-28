@@ -58,7 +58,7 @@ case $host_platform:$host_cpu in
   default:x86_64)]
     AC_MSG_WARN([Platform set to Xen by default, this can not boot on non-Xen systems, you currently need a 32bit build for that.])
     [host_platform=xen;;
-  at:i?86 | xen:i?86 | xen:x86_64)
+  at:i?86 | xen:i?86 | at:x86_64 | xen:x86_64)
     :;;
   *)]
     AC_MSG_ERROR([unsupported combination of cpu type `$host_cpu' and platform

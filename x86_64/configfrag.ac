@@ -39,6 +39,25 @@ case $host_platform in
   *)]
     AM_CONDITIONAL([PLATFORM_at], [false])[;;
 esac]
+
+ncom=0
+nlpr=0
+[case $host_platform:$host_cpu in
+  at:x86_64)]
+    ncom=4
+    nlpr=1
+    AC_DEFINE([ATX86_64], [1], [ATX86_64])[;;
+  xen:x86_64)]
+    AC_DEFINE([ATX86_64], [1], [ATX86_64])[;;
+  *)
+    :;;
+esac]
+
+# i386/bogus/com.h
+AC_DEFINE_UNQUOTED([NCOM], [$ncom], [NCOM])
+
+# i386/bogus/lpr.h
+AC_DEFINE_UNQUOTED([NLPR], [$nlpr], [NLPR])
 
 AC_DEFINE([PAE], [1], [PAE support])
 AM_CONDITIONAL([enable_pae], [true])
