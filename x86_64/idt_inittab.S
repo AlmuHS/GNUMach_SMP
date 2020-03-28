@@ -50,12 +50,12 @@ ENTRY(idt_inittab)
 	.quad	entry		;\
 	.text
 #else	/* MACH_PV_DESCRIPTORS */
-#error TODO
 #define	IDT_ENTRY(n,entry,type) \
 	.data	2		;\
-	.long	entry		;\
+	.quad	entry		;\
 	.word	n		;\
 	.word	type		;\
+	.long	0	/*pad*/	;\
 	.text
 #endif	/* MACH_PV_DESCRIPTORS */
 
