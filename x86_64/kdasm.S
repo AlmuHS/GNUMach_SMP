@@ -96,13 +96,13 @@ ENTRY(kd_slmwd)
 
 #define from  B_ARG0
 #define to    B_ARG1
-#define count %dx	// B_ARG2
+#define count %edx	// B_ARG2
 ENTRY(kd_slmscu)
 	pushq	%rbp
 	movq	%rsp, %rbp
 
 	xchgq	%rsi, %rdi
-	movq	count, %rcx
+	movl	count, %ecx
 	cmpq	%rdi, %rsi
 	cld
 	rep
@@ -119,7 +119,7 @@ ENTRY(kd_slmscd)
 	movq	%rsp, %rbp
 
 	xchgq	%rsi, %rdi
-	movq	count, %rcx
+	movl	count, %ecx
 	cmpq	%rdi, %rsi
 	std
 	rep
