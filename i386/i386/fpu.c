@@ -874,7 +874,7 @@ fp_state_alloc(void)
 	}
 }
 
-#if	AT386 && !defined(MACH_XEN)
+#if	(defined(AT386) || defined(ATX86_64)) && !defined(MACH_XEN)
 /*
  *	Handle a coprocessor error interrupt on the AT386.
  *	This comes in on line 5 of the slave PIC at SPL1.

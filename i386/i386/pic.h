@@ -59,7 +59,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ** The following are definitions used to locate the PICs in the system
 */
 
-#if	defined(AT386)
+#if	defined(AT386) || defined(ATX86_64)
 #define ADDR_PIC_BASE		0x20
 #define OFF_ICW			0x00
 #define OFF_OCW			0x01
@@ -95,7 +95,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 **	ICW2
 */
 
-#if	defined(AT386)
+#if	defined(AT386) || defined(ATX86_64)
 #define	PICM_VECTBASE		0x40
 #define PICS_VECTBASE		PICM_VECTBASE + 0x08
 #endif	/* defined(AT386) */
