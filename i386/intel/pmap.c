@@ -659,7 +659,9 @@ void pmap_bootstrap(void)
 	kernel_pmap->l4base = (pt_entry_t*)phystokv(pmap_grab_page());
 	memset(kernel_pmap->l4base, 0, INTEL_PGBYTES);
 	WRITE_PTE(&kernel_pmap->l4base[0], pa_to_pte(_kvtophys(kernel_pmap->pdpbase)) | INTEL_PTE_VALID | INTEL_PTE_WRITE);
+#ifdef	MACH_PV_PAGETABLES
 	pmap_set_page_readonly_init(kernel_pmap->l4base);
+#endif
 #endif	/* x86_64 */
 #else	/* PAE */
 	kernel_pmap->dirbase = kernel_page_dir = (pt_entry_t*)phystokv(pmap_grab_page());
