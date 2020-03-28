@@ -71,21 +71,19 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #define start B_ARG0
 #define count B_ARG1
-#define value B_ARG2
+#define value %dx	// B_ARG2
 
 ENTRY(kd_slmwd)
-	pushl	%ebp
-	movl	%esp, %ebp
-	pushl	%edi
+	pushq	%rbp
+	movq	%rsp, %rbp
 
-	movl	start, %edi
-	movl	count, %ecx
+	# start already in %rdi
+	movq	count, %rcx
 	movw	value, %ax
 	cld
 	rep
 	stosw
 
-	popl	%edi
 	leave
 	ret
 #undef start
@@ -98,23 +96,18 @@ ENTRY(kd_slmwd)
 
 #define from  B_ARG0
 #define to    B_ARG1
-#define count B_ARG2
+#define count %dx	// B_ARG2
 ENTRY(kd_slmscu)
-	pushl	%ebp
-	movl	%esp, %ebp
-	pushl	%esi
-	pushl	%edi
+	pushq	%rbp
+	movq	%rsp, %rbp
 
-	movl	from, %esi
-	movl	to, %edi
-	movl	count, %ecx
-	cmpl	%edi, %esi
+	xchgq	%rsi, %rdi
+	movq	count, %rcx
+	cmpq	%rdi, %rsi
 	cld
 	rep
 	movsw
 
-	popl	%edi
-	popl	%esi
 	leave
 	ret
 
@@ -122,22 +115,17 @@ ENTRY(kd_slmscu)
  * "slam down"
  */
 ENTRY(kd_slmscd)
-	pushl	%ebp
-	movl	%esp, %ebp
-	pushl	%esi
-	pushl	%edi
+	pushq	%rbp
+	movq	%rsp, %rbp
 
-	movl	from, %esi
-	movl	to, %edi
-	movl	count, %ecx
-	cmpl	%edi, %esi
+	xchgq	%rsi, %rdi
+	movq	count, %rcx
+	cmpq	%rdi, %rsi
 	std
 	rep
 	movsw
 	cld
 
-	popl	%edi
-	popl	%esi
 	leave
 	ret
 #undef from
