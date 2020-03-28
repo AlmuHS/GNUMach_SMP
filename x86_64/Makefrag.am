@@ -205,6 +205,12 @@ nodist_libkernel_a_SOURCES += \
 
 EXTRA_DIST += \
 	x86_64/ldscript
+if PLATFORM_at
+gnumach_LINKFLAGS += \
+	--defsym _START_MAP=$(_START_MAP) \
+	--defsym _START=_START_MAP+0xC0000000 \
+	-T '$(srcdir)'/x86_64/ldscript
+endif
 
 AM_CPPFLAGS += \
 	-I$(top_srcdir)/i386 \
