@@ -33,7 +33,7 @@ typedef	struct jmp_buf {
 #ifdef __i386__
 	int	jmp_buf[6];	/* ebx, esi, edi, ebp, esp, eip */
 #else
-       long    jmp_buf[8];     /* rbx, rbp, r12, r13, r14, r15, rsp, rip */
+	long	jmp_buf[8];	/* rbx, rbp, r12, r13, r14, r15, rsp, rip */
 #endif
 } jmp_buf_t;
 

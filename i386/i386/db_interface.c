@@ -388,8 +388,8 @@ kdb_kentry(
 	    ddb_regs.edi = int_regs->edi;
 #endif
 #ifdef __x86_64__
-           ddb_regs.esi = is->rsi;
-           ddb_regs.edi = is->rdi;
+	    ddb_regs.esi = is->rsi;
+	    ddb_regs.edi = is->rdi;
 #endif
 	    ddb_regs.ds  = is->ds;
 	    ddb_regs.es  = is->es;
@@ -417,8 +417,8 @@ kdb_kentry(
 	    int_regs->edi = ddb_regs.edi;
 #endif
 #ifdef __x86_64__
-           is->rsi = ddb_regs.esi;
-           is->rdi = ddb_regs.edi;
+	    is->rsi = ddb_regs.esi;
+	    is->rdi = ddb_regs.edi;
 #endif
 	    is->ds  = ddb_regs.ds & 0xffff;
 	    is->es  = ddb_regs.es & 0xffff;

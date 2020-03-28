@@ -37,7 +37,7 @@
 #define	CX(addr, reg)	addr(,reg,4)
 #endif
 #ifdef __x86_64__
-#define        CX(addr, reg)   addr(,reg,8)
+#define	CX(addr, reg)	addr(,reg,8)
 #endif
 
 #else	/* NCPUS == 1 */

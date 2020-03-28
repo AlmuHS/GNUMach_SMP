@@ -105,10 +105,10 @@ struct i386_kregs {
 	{ "esi", (long)(&((struct i386_kernel_state *)0)->k_esi) },
 #endif
 #ifdef __x86_64__
-       { "r12", (long)(&((struct i386_kernel_state *)0)->k_r12) },
-       { "r13", (long)(&((struct i386_kernel_state *)0)->k_r13) },
-       { "r14", (long)(&((struct i386_kernel_state *)0)->k_r14) },
-       { "r15", (long)(&((struct i386_kernel_state *)0)->k_r15) },
+	{ "r12", (long)(&((struct i386_kernel_state *)0)->k_r12) },
+	{ "r13", (long)(&((struct i386_kernel_state *)0)->k_r13) },
+	{ "r14", (long)(&((struct i386_kernel_state *)0)->k_r14) },
+	{ "r15", (long)(&((struct i386_kernel_state *)0)->k_r15) },
 #endif
 	{ "eip", (long)(&((struct i386_kernel_state *)0)->k_eip) },
 	{ 0 },
