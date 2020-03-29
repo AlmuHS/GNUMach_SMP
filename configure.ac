@@ -134,6 +134,9 @@ esac]
 # PC AT.
 # TODO.  Currently handled in `i386/configfrag.ac'.
 
+# General options.
+m4_include([configfrag-first.ac])
+
 # Xen.
 m4_include([xen/configfrag.ac])
 

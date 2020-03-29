@@ -44,8 +44,6 @@ esac
 # Formerly in `i386/bogus/'.
 #
 
-ncom=0
-nlpr=0
 case $host_platform:$host_cpu in
   at:i?86)
     ncom=4
@@ -62,12 +60,6 @@ case $host_platform:$host_cpu in
   *)
     :;;
 esac]
-
-# i386/bogus/com.h
-AC_DEFINE_UNQUOTED([NCOM], [$ncom], [NCOM])
-
-# i386/bogus/lpr.h
-AC_DEFINE_UNQUOTED([NLPR], [$nlpr], [NLPR])
 
 #
 # Options.
@@ -100,9 +92,6 @@ if [ x"$enable_lpr" = xyes ]; then]
 [fi]
 
 
-AC_ARG_ENABLE([pae],
-  AS_HELP_STRING([--enable-pae], [PAE support (ix86-only); on ix86-at disabled
-    by default, on ix86-xen enabled by default]))
 [case $host_platform:$host_cpu in
   xen:i?86)
     enable_pae=${enable_pae-yes};;
@@ -112,13 +101,7 @@ AC_ARG_ENABLE([pae],
     if [ x"$enable_pae" = xyes ]; then]
       AC_MSG_ERROR([can only enable the `PAE' feature on ix86.])
     [fi;;
-esac
-if [ x"$enable_pae" = xyes ]; then]
-  AC_DEFINE([PAE], [1], [PAE support])
-  AM_CONDITIONAL([enable_pae], [true])
-[else]
-  AM_CONDITIONAL([enable_pae], [false])
-[fi]
+esac]
 
 AC_ARG_WITH([_START_MAP],
   AS_HELP_STRING([--with-_START_MAP=0x1000000], [specify kernel mapping start address]),
