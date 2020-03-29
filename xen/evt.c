@@ -106,7 +106,7 @@ void hyp_intrinit() {
 
 void hyp_evt_handler(evtchn_port_t port, void (*handler)(), int unit, spl_t spl) {
 	if (port > NEVNT)
-		panic("event channel port %d > %d not supported\n", port, NEVNT);
+		panic("event channel port %d > %d not supported\n", port, (int) NEVNT);
 	intpri[port] = spl;
 	iunit[port] = unit;
 	form_int_mask();

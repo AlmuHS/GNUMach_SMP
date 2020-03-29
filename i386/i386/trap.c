@@ -573,10 +573,10 @@ int user_trap(struct i386_saved_state *regs)
 void
 i386_astintr(void)
 {
-	int	mycpu = cpu_number();
-
 	(void) splsched();	/* block interrupts to check reasons */
 #ifndef	MACH_RING1
+	int	mycpu = cpu_number();
+
 	if (need_ast[mycpu] & AST_I386_FP) {
 	    /*
 	     * AST was for delayed floating-point exception -

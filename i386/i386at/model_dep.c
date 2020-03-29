@@ -340,8 +340,7 @@ i386at_init(void)
 {
 	/* XXX move to intel/pmap.h */
 	extern pt_entry_t *kernel_page_dir;
-	int nb_direct, i;
-	vm_offset_t addr, delta;
+	int i;
 
 	/*
 	 * Initialize the PIC prior to any possible call to an spl.
@@ -365,6 +364,8 @@ i386at_init(void)
 #ifdef MACH_XEN
 	kernel_cmdline = (char*) boot_info.cmd_line;
 #else	/* MACH_XEN */
+	vm_offset_t addr;
+
 	/* Copy content pointed by boot_info before losing access to it when it
 	 * is too far in physical memory.
 	 * Also avoids leaving them in precious areas such as DMA memory.  */
@@ -428,10 +429,10 @@ i386at_init(void)
 	 * until we start using our new kernel segment descriptors.
 	 */
 #if INIT_VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
-	delta = INIT_VM_MIN_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS;
+	vm_offset_t delta = INIT_VM_MIN_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS;
 	if ((vm_offset_t)(-delta) < delta)
 		delta = (vm_offset_t)(-delta);
-	nb_direct = delta >> PDESHIFT;
+	int nb_direct = delta >> PDESHIFT;
 	for (i = 0; i < nb_direct; i++)
 		kernel_page_dir[lin2pdenum_cont(INIT_VM_MIN_KERNEL_ADDRESS) + i] =
 			kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS) + i];

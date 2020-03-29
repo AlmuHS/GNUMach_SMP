@@ -50,4 +50,9 @@ extern void halt_cpu (void) __attribute__ ((noreturn));
  */
 extern void halt_all_cpus (boolean_t reboot) __attribute__ ((noreturn));
 
+/*
+ * Make cpu pause a bit.
+ */
+extern void machine_relax (void);
+
 #endif /* _I386AT_MODEL_DEP_H_ */

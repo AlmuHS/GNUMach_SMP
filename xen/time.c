@@ -25,6 +25,7 @@
 #include <machine/ipl.h>
 #include <mach/machine/eflags.h>
 #include <xen/evt.h>
+#include "xen.h"
 #include "time.h"
 #include "store.h"
 
