@@ -43,6 +43,9 @@
  * User descriptors for Mach - 32-bit flat address space
  */
 #define	USER_SCALL	0x07		/* system call gate */
+#ifdef __x86_64__
+/* Call gate needs two entries */
+#endif
 #define	USER_CS		0x17		/* user code segment */
 #define	USER_DS		0x1f		/* user data segment */
 

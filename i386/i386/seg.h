@@ -65,6 +65,10 @@ struct real_gate {
 			word_count:8,
 			access:8,
 			offset_high:16;	/* offset 16..31 */
+#ifdef __x86_64__
+	unsigned int	offset_ext:32,	/* offset 32..63 */
+			reserved:32;
+#endif
 };
 
 #endif /* !__ASSEMBLER__ */
@@ -195,6 +199,10 @@ fill_gate(struct real_gate *gate, unsigned offset, unsigned short selector,
 	gate->word_count = word_count;
 	gate->access = access | ACC_P;
 	gate->offset_high = (offset >> 16) & 0xffff;
+#ifdef __x86_64__
+	gate->offset_ext = offset >> 32;
+	gate->reserved = 0;
+#endif
 }
 
 #endif /* !__ASSEMBLER__ */
