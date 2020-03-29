@@ -48,6 +48,9 @@
  * a port in user space as an integer and
  * in kernel space as a pointer.
  */
+#ifdef __x86_64__
+// unsigned long ?
+#endif
 typedef unsigned int	natural_t;
 
 /*
@@ -80,7 +83,7 @@ typedef unsigned long phys_addr_t;
  * expressing the difference between two
  * vm_offset_t entities.
  */
-typedef	natural_t	vm_size_t;
+typedef	unsigned long	vm_size_t;
 
 #endif	/* __ASSEMBLER__ */
 

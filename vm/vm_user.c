@@ -242,7 +242,7 @@ kern_return_t vm_read(
 	vm_address_t	address,
 	vm_size_t	size,
 	pointer_t	*data,
-	vm_size_t	*data_size)
+	mach_msg_type_number_t	*data_size)
 {
 	kern_return_t	error;
 	vm_map_copy_t	ipc_address;
@@ -265,7 +265,7 @@ kern_return_t vm_write(
 	vm_map_t	map,
 	vm_address_t	address,
 	pointer_t	data,
-	vm_size_t	size)
+	mach_msg_type_number_t	size)
 {
 	if (map == VM_MAP_NULL)
 		return KERN_INVALID_ARGUMENT;

@@ -574,7 +574,7 @@ void c_boot_entry(vm_offset_t bi)
 		strtab_size = (vm_offset_t)phystokv(boot_info.syms.a.strsize);
 		kern_sym_end = kern_sym_start + 4 + symtab_size + strtab_size;
 
-		printf("kernel symbol table at %08lx-%08lx (%d,%d)\n",
+		printf("kernel symbol table at %08lx-%08lx (%ld,%ld)\n",
 		       kern_sym_start, kern_sym_end,
 		       symtab_size, strtab_size);
 	}
