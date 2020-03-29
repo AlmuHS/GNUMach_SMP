@@ -56,12 +56,12 @@
 
 extern struct real_descriptor ldt[LDTSZ];
 
-/* Fill a segment descriptor in the LDT.  */
+/* Fill a 32bit segment descriptor in the LDT.  */
 #define fill_ldt_descriptor(selector, base, limit, access, sizebits) \
-	fill_descriptor(&ldt[selector/8], base, limit, access, sizebits)
+	fill_descriptor(&ldt[sel_idx(selector)], base, limit, access, sizebits)
 
 #define fill_ldt_gate(selector, offset, dest_selector, access, word_count) \
-	fill_gate((struct real_gate*)&ldt[selector/8], \
+	fill_gate((struct real_gate*)&ldt[sel_idx(selector)], \
 		  offset, dest_selector, access, word_count)
 
 void ldt_init(void);

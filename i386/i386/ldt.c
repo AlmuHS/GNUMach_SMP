@@ -47,22 +47,18 @@ struct real_descriptor ldt[LDTSZ];
 void
 ldt_init(void)
 {
-#ifdef __x86_64__
-#warning FIXME
-#endif
-
 #ifdef	MACH_PV_DESCRIPTORS
 #ifdef	MACH_PV_PAGETABLES
 	pmap_set_page_readwrite(ldt);
 #endif	/* MACH_PV_PAGETABLES */
 #else	/* MACH_PV_DESCRIPTORS */
 	/* Initialize the master LDT descriptor in the GDT.  */
-	fill_gdt_descriptor(KERNEL_LDT,
-			    kvtolin(&ldt), sizeof(ldt)-1,
-			    ACC_PL_K|ACC_LDT, 0);
+	fill_gdt_sys_descriptor(KERNEL_LDT,
+			        kvtolin(&ldt), sizeof(ldt)-1,
+			        ACC_PL_K|ACC_LDT, 0);
 #endif	/* MACH_PV_DESCRIPTORS */
 
-	/* Initialize the LDT descriptors.  */
+	/* Initialize the 32bit LDT descriptors.  */
 	fill_ldt_gate(USER_SCALL,
 		      (vm_offset_t)&syscall, KERNEL_CS,
 		      ACC_PL_U|ACC_CALL_GATE, 0);

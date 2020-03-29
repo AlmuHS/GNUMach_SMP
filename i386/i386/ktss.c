@@ -51,14 +51,10 @@ ktss_init(void)
 	if (hyp_stack_switch(KERNEL_DS, (unsigned long)(exception_stack+1024)))
 		panic("couldn't register exception stack\n");
 #else	/* MACH_RING1 */
-
-#ifdef __x86_64__
-#warning FIXME
-#endif
 	/* Initialize the master TSS descriptor.  */
-	fill_gdt_descriptor(KERNEL_TSS,
-			    kvtolin(&ktss), sizeof(struct task_tss) - 1,
-			    ACC_PL_K|ACC_TSS, 0);
+	fill_gdt_sys_descriptor(KERNEL_TSS,
+				kvtolin(&ktss), sizeof(struct task_tss) - 1,
+				ACC_PL_K|ACC_TSS, 0);
 
 	/* Initialize the master TSS.  */
 	ktss.tss.ss0 = KERNEL_DS;
