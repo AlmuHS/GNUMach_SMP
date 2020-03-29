@@ -125,7 +125,7 @@ kern_return_t db_set_debug_state(
 
 struct	 i386_saved_state *i386_last_saved_statep;
 struct	 i386_saved_state i386_nested_saved_state;
-unsigned i386_last_kdb_sp;
+uintptr_t i386_last_kdb_sp;
 
 extern	thread_t db_default_thread;
 
@@ -289,7 +289,7 @@ kdb_trap(
 #endif	/* NCPUS > 1 */
 	{
 	    i386_last_saved_statep = regs;
-	    i386_last_kdb_sp = (unsigned) &type;
+	    i386_last_kdb_sp = (uintptr_t) &type;
 
 	    /* XXX Should switch to ddb`s own stack here. */
 
@@ -298,7 +298,7 @@ kdb_trap(
 		/*
 		 * Kernel mode - esp and ss not saved
 		 */
-		ddb_regs.uesp = (int)&regs->uesp;   /* kernel stack pointer */
+		ddb_regs.uesp = (uintptr_t)&regs->uesp;   /* kernel stack pointer */
 		ddb_regs.ss   = KERNEL_DS;
 	    }
 
@@ -368,12 +368,12 @@ kdb_kentry(
 #endif	/* NCPUS > 1 */
 	{
 	    if ((is->cs & 0x3) != KERNEL_RING) {
-		ddb_regs.uesp = ((int *)(is+1))[0];
-		ddb_regs.ss   = ((int *)(is+1))[1];
+		ddb_regs.uesp = *(uintptr_t *)(is+1);
+		ddb_regs.ss   = *(int *)((uintptr_t *)(is+1)+1);
 	    }
 	    else {
 		ddb_regs.ss  = KERNEL_DS;
-		ddb_regs.uesp= (int)(is+1);
+		ddb_regs.uesp= (uintptr_t)(is+1);
 	    }
 	    ddb_regs.efl = is->efl;
 	    ddb_regs.cs  = is->cs;
