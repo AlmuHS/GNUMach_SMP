@@ -146,6 +146,9 @@ mp_desc_init(int mycpu)
 #ifdef	MACH_RING1
 		panic("TODO %s:%d\n",__FILE__,__LINE__);
 #else	/* MACH_RING1 */
+#ifdef __x86_64__
+#warning FIXME
+#endif
 		fill_descriptor(&mpt->gdt[sel_idx(KERNEL_LDT)],
 			(unsigned)&mpt->ldt,
 			LDTSZ * sizeof(struct real_descriptor) - 1,

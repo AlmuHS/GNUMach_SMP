@@ -33,6 +33,7 @@
 #include <mach/machine/vm_types.h>
 #include <mach/xen.h>
 
+#include <kern/assert.h>
 #include <intel/pmap.h>
 
 #include "vm_param.h"
@@ -49,6 +50,14 @@ void
 gdt_init(void)
 {
 	/* Initialize the kernel code and data segment descriptors.  */
+#ifdef __x86_64__
+	assert(LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS == 0);
+	fill_gdt_descriptor(KERNEL_CS, 0, 0, ACC_PL_K|ACC_CODE_R, SZ_64);
+	fill_gdt_descriptor(KERNEL_DS, 0, 0, ACC_PL_K|ACC_DATA_W, SZ_64);
+#ifndef	MACH_PV_DESCRIPTORS
+	fill_gdt_descriptor(LINEAR_DS, 0, 0, ACC_PL_K|ACC_DATA_W, SZ_64);
+#endif	/* MACH_PV_DESCRIPTORS */
+#else
 	fill_gdt_descriptor(KERNEL_CS,
 			    LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS,
 			    LINEAR_MAX_KERNEL_ADDRESS - (LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS) - 1,
@@ -63,6 +72,7 @@ gdt_init(void)
 			    0xffffffff,
 			    ACC_PL_K|ACC_DATA_W, SZ_32);
 #endif	/* MACH_PV_DESCRIPTORS */
+#endif
 
 #ifdef	MACH_PV_DESCRIPTORS
 	unsigned long frame = kv_to_mfn(gdt);

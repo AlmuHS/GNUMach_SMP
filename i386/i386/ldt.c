@@ -47,6 +47,10 @@ struct real_descriptor ldt[LDTSZ];
 void
 ldt_init(void)
 {
+#ifdef __x86_64__
+#warning FIXME
+#endif
+
 #ifdef	MACH_PV_DESCRIPTORS
 #ifdef	MACH_PV_PAGETABLES
 	pmap_set_page_readwrite(ldt);
