@@ -47,7 +47,7 @@
 /* Hypervisor part */
 
 #define ADDRESS_SIZE 6
-#define WINDOW __RING_SIZE((netif_rx_sring_t*)0, PAGE_SIZE)
+#define WINDOW __CONST_RING_SIZE(netif_rx, PAGE_SIZE)
 
 struct net_data {
 	struct device	device;
