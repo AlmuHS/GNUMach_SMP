@@ -241,7 +241,7 @@ fill_descriptor64(struct real_descriptor64 *_desc, unsigned long base, unsigned 
 
 /* Fill a gate with particular values.  */
 MACH_INLINE void
-fill_gate(struct real_gate *gate, unsigned offset, unsigned short selector,
+fill_gate(struct real_gate *gate, unsigned long offset, unsigned short selector,
 	  unsigned char access, unsigned char word_count)
 {
 	gate->offset_low = offset & 0xffff;
