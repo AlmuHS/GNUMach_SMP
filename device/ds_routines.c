@@ -132,6 +132,7 @@ static struct device_emulation_ops *emulation_list[] =
 
 static struct vm_map	device_io_map_store;
 vm_map_t		device_io_map = &device_io_map_store;
+struct kmem_cache	io_inband_cache;
 
 #define NUM_EMULATION (sizeof (emulation_list) / sizeof (emulation_list[0]))
 

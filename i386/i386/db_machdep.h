@@ -41,7 +41,7 @@ typedef	vm_offset_t	db_addr_t;	/* address - unsigned */
 typedef	long		db_expr_t;	/* expression - signed */
 
 typedef struct i386_saved_state db_regs_t;
-db_regs_t	ddb_regs;	/* register state */
+extern db_regs_t	ddb_regs;	/* register state */
 #define	DDB_REGS	(&ddb_regs)
 #define	SAVE_DDB_REGS		DB_SAVE(db_regs_t, ddb_regs)
 #define	RESTORE_DDB_REGS	DB_RESTORE(ddb_regs)

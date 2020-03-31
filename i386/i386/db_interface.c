@@ -66,6 +66,8 @@ static boolean_t kernel_dr;
 /* Whether the current debug registers are zero.  */
 static boolean_t zero_dr;
 
+db_regs_t	ddb_regs;
+
 void db_load_context(pcb_t pcb)
 {
 #if MACH_KDB

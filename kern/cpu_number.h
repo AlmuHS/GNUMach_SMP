@@ -31,7 +31,7 @@
  *	Definitions for cpu identification in multi-processors.
  */
 
-int	master_cpu;	/* 'master' processor - keeps time */
+extern int	master_cpu;	/* 'master' processor - keeps time */
 
 #if	(NCPUS == 1)
 	/* cpu number is always 0 on a single processor system */
