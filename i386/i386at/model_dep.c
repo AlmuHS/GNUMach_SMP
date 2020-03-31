@@ -577,7 +577,7 @@ void c_boot_entry(vm_offset_t bi)
 
 		printf("kernel symbol table at %08lx-%08lx (%ld,%ld)\n",
 		       kern_sym_start, kern_sym_end,
-		       symtab_size, strtab_size);
+		       (unsigned long) symtab_size, (unsigned long) strtab_size);
 	}
 
 	if ((boot_info.flags & MULTIBOOT_ELF_SHDR)

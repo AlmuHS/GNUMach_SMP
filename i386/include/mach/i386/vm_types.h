@@ -83,7 +83,11 @@ typedef unsigned long phys_addr_t;
  * expressing the difference between two
  * vm_offset_t entities.
  */
+#ifdef __x86_64__
 typedef	unsigned long	vm_size_t;
+#else
+typedef	natural_t	vm_size_t;
+#endif
 
 #endif	/* __ASSEMBLER__ */
 
