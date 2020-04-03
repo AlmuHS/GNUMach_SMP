@@ -79,10 +79,11 @@ typedef phys_addr_t pt_entry_t;
 #ifdef __x86_64__
 /* Enough for 8GiB addressing space. */
 #define PDPNUM		8	/* number of page directory pointers */
+#define PDPMASK		0x1ff	/* mask for page directory pointer index */
 #else
 #define PDPNUM		4	/* number of page directory pointers */
+#define PDPMASK		3	/* mask for page directory pointer index */
 #endif
-#define PDPMASK		0x1ff	/* mask for page directory pointer index */
 #define PDESHIFT	21	/* page descriptor shift */
 #define PDEMASK		0x1ff	/* mask for page descriptor index */
 #define PTESHIFT	12	/* page table shift */
