@@ -649,7 +649,11 @@ void pmap_bootstrap(void)
 			WRITE_PTE(&kernel_pmap->pdpbase[i],
 				  pa_to_pte(_kvtophys((void *) kernel_page_dir
 						      + i * INTEL_PGBYTES))
-				  | INTEL_PTE_VALID | INTEL_PTE_WRITE);
+				  | INTEL_PTE_VALID
+#ifdef	MACH_PV_PAGETABLES
+				  | INTEL_PTE_WRITE
+#endif
+				  );
 	}
 #ifdef __x86_64__
 #ifdef MACH_HYP
@@ -1289,7 +1293,11 @@ pmap_t pmap_create(vm_size_t size)
 		for (i = 0; i < PDPNUM; i++)
 			WRITE_PTE(&p->pdpbase[i],
 				  pa_to_pte(kvtophys((vm_offset_t) page_dir[i]))
-				  | INTEL_PTE_VALID | INTEL_PTE_WRITE);
+				  | INTEL_PTE_VALID
+#ifdef	MACH_PV_PAGETABLES
+				  | INTEL_PTE_WRITE
+#endif
+				  );
 	}
 #ifdef __x86_64__
 	// FIXME: use kmem_cache_alloc instead
