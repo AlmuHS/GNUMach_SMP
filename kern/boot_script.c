@@ -172,7 +172,7 @@ add_list (void *ptr, void ***ptr_list, int *alloc, int *index, int incr)
 /* Create an argument with TEXT, value type TYPE, and value VAL.
    Add the argument to the argument list of CMD.  */
 static struct arg *
-add_arg (struct cmd *cmd, char *text, int type, int val)
+add_arg (struct cmd *cmd, char *text, int type, long val)
 {
   struct arg *arg;
 
