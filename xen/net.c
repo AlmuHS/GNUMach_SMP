@@ -184,7 +184,7 @@ static void hyp_net_intr(int unit) {
 
 	simple_lock(&nd->lock);
 	if ((nd->rx.sring->rsp_prod - nd->rx.rsp_cons) >= (WINDOW*3)/4)
-		printf("window %ld a bit small!\n", WINDOW);
+		printf("window %ld a bit small!\n", (long) WINDOW);
 
 	more = RING_HAS_UNCONSUMED_RESPONSES(&nd->rx);
 	while (more) {
