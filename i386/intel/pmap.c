@@ -693,10 +693,10 @@ void pmap_bootstrap(void)
 #endif
 	pt_entry_t *l1_map[NSUP_L1];
 	{
-		pt_entry_t *base = (pt_entry_t*) boot_info.pt_base;
 		vm_offset_t la;
 		int n_l1map;
 		for (n_l1map = 0, la = VM_MIN_KERNEL_ADDRESS; la >= VM_MIN_KERNEL_ADDRESS; la += NPTES * PAGE_SIZE) {
+			pt_entry_t *base = (pt_entry_t*) boot_info.pt_base;
 #ifdef	PAE
 #ifdef __x86_64__
 			base = (pt_entry_t*) ptetokv(base[0]);
