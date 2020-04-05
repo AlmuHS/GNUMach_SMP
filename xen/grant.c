@@ -16,7 +16,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <model_dep.h>
+#include <machine/model_dep.h>
 #include <sys/types.h>
 #include <mach/vm_param.h>
 #include <machine/spl.h>
