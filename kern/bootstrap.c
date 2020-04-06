@@ -898,6 +898,7 @@ boot_script_insert_right (struct cmd *cmd, mach_port_t port, mach_port_t *name)
 int
 boot_script_insert_task_port (struct cmd *cmd, task_t task, mach_port_t *name)
 {
-  *name = task_insert_send_right (cmd->task, task->itk_sself);
+  *name = task_insert_send_right (cmd->task,
+				  ipc_port_make_send(task->itk_sself));
   return 0;
 }
