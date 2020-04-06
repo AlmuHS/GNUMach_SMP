@@ -1075,7 +1075,7 @@ syscall_native:
 	movb	$0xf,%dh
 	movw	%dx,0xb800c
 #endif
-	shll	$4,%eax			/* manual indexing */
+	shll	$4,%eax			/* manual indexing of mach_trap_t */
 	movl	EXT(mach_trap_table)(%eax),%ecx
 					/* get number of arguments */
 	jecxz	mach_call_call		/* skip argument copy if none */

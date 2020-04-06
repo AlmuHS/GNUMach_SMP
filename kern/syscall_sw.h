@@ -31,6 +31,8 @@
  *	mach_trap_stack indicates the trap may discard
  *	its kernel stack.  Some architectures may need
  *	to save more state in the pcb for these traps.
+ *
+ *	Note: this is indexed manually by locore.S!
  */
 
 typedef struct {
@@ -38,9 +40,6 @@ typedef struct {
 	int		(*mach_trap_function)();
 	boolean_t	mach_trap_stack;
 	const char	*mach_trap_name;
-#ifdef __x86_64__
-	long		unused;
-#endif
 } mach_trap_t;
 
 extern mach_trap_t	mach_trap_table[];
