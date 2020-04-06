@@ -1396,6 +1396,9 @@ void pmap_destroy(pmap_t p)
 	    page_dir = p->dirbase;
 #endif
 
+#ifdef __x86_64__
+#warning FIXME 64bit need to free l3
+#endif
 	    /*
 	     *	Free the memory maps, then the
 	     *	pmap structure.
