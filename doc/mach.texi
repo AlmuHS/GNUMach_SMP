@@ -6793,6 +6793,9 @@ look at by half words(16 bits)
 @item l
 look at by long words(32 bits)
 
+@item q
+look at by quad words(64 bits)
+
 @item a
 print the location being displayed
 

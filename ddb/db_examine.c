@@ -130,20 +130,24 @@ db_examine(addr, fmt, count, task)
 	db_examine_prev_addr = addr;
 	while (--count >= 0) {
 	    fp = fmt;
-	    size = sizeof(int);
+	    size = 4;
 	    width = 4*size;
 	    while ((c = *fp++) != 0) {
 		switch (c) {
 		    case 'b':
-			size = sizeof(char);
+			size = 1;
 			width = 4*size;
 			break;
 		    case 'h':
-			size = sizeof(short);
+			size = 2;
 			width = 4*size;
 			break;
 		    case 'l':
-			size = sizeof(long);
+			size = 4;
+			width = 4*size;
+			break;
+		    case 'q':
+			size = 8;
 			width = 4*size;
 			break;
 		    case 'a':	/* address */
