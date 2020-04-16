@@ -374,7 +374,7 @@ IPC, currently not available in GNU Mach).
 
 @item it exists
 The Mach microkernel is real software that works Right Now.
-It is not a research or a proposal.  You don't have to wait at all
+It is not a research project or a proposal.  You don't have to wait at all
 before you can start using and developing it.  Mach has been used in
 many operating systems in the past, usually as the base for a single
 UNIX server.  In the GNU system, Mach is the base of a functional
