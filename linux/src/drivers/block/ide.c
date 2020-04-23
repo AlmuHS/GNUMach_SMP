@@ -395,6 +395,7 @@ static void init_hwif_data (unsigned int index)
 	/* fill in any non-zero initial values */
 	hwif->index     = index;
 	hwif->io_base	= default_io_base[index];
+	hwif->irq	= default_irqs[index];
 	hwif->ctl_port	= hwif->io_base ? hwif->io_base+0x206 : 0x000;
 #ifdef CONFIG_BLK_DEV_HD
 	if (hwif->io_base == HD_DATA)
@@ -2702,6 +2703,8 @@ static int try_to_identify (ide_drive_t *drive, byte cmd)
 	int irq_off;
 
 	if (!HWIF(drive)->irq) {		/* already got an IRQ? */
+		printk("%s: Not probing legacy IRQs)\n", drive->name);
+		return 2;
 		probe_irq_off(probe_irq_on());	/* clear dangling irqs */
 		irqs_on = probe_irq_on();	/* start monitoring irqs */
 		OUT_BYTE(drive->ctl,IDE_CONTROL_REG);	/* enable device irq */

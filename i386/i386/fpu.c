@@ -492,7 +492,7 @@ ASSERT_IPL(SPL0);
  *	divide by zero
  *	overflow
  *
- * Use 53-bit precision.
+ * Use 64-bit precision.
  */
 static void fpinit(thread_t thread)
 {
@@ -508,7 +508,7 @@ ASSERT_IPL(SPL0);
 	{
 		fnstcw(&control);
 		control &= ~(FPC_PC|FPC_RC); /* Clear precision & rounding control */
-		control |= (FPC_PC_53 |		/* Set precision */ 
+		control |= (FPC_PC_64 |		/* Set precision */ 
 				FPC_RC_RN | 	/* round-to-nearest */
 				FPC_ZE |	/* Suppress zero-divide */
 				FPC_OE |	/*  and overflow */
@@ -860,7 +860,7 @@ fp_state_alloc(void)
 	if (fp_kind == FP_387X) {
 		ifps->xfp_save_state.fp_control = (0x037f
 				& ~(FPC_IM|FPC_ZM|FPC_OM|FPC_PC))
-				| (FPC_PC_53|FPC_IC_AFF);
+				| (FPC_PC_64|FPC_IC_AFF);
 		ifps->xfp_save_state.fp_status = 0;
 		ifps->xfp_save_state.fp_tag = 0xffff;	/* all empty */
 		if (CPU_HAS_FEATURE(CPU_FEATURE_SSE))
@@ -868,7 +868,7 @@ fp_state_alloc(void)
 	} else {
 		ifps->fp_save_state.fp_control = (0x037f
 				& ~(FPC_IM|FPC_ZM|FPC_OM|FPC_PC))
-				| (FPC_PC_53|FPC_IC_AFF);
+				| (FPC_PC_64|FPC_IC_AFF);
 		ifps->fp_save_state.fp_status = 0;
 		ifps->fp_save_state.fp_tag = 0xffff;	/* all empty */
 	}
