@@ -282,7 +282,70 @@ void db_reset_cpu(void)
 static void
 register_boot_data(const struct multiboot_raw_info *mbi)
 {
+<<<<<<< HEAD
 
+=======
+<<<<<<< HEAD
+    struct multiboot_raw_module *mod;
+    struct elf_shdr *shdr;
+    unsigned long tmp;
+    unsigned int i;
+
+    extern char _start[], _end[];
+
+    biosmem_register_boot_data(_kvtophys(&_start), _kvtophys(&_end), FALSE);
+
+    /* cmdline and modules are moved to a safe place by i386at_init.  */
+
+    if ((mbi->flags & MULTIBOOT_LOADER_CMDLINE) && (mbi->cmdline != 0))
+        {
+            biosmem_register_boot_data(mbi->cmdline,
+                                       mbi->cmdline
+                                       + strlen((void *)phystokv(mbi->cmdline)) + 1, TRUE);
+        }
+
+    if (mbi->flags & MULTIBOOT_LOADER_MODULES)
+        {
+            i = mbi->mods_count * sizeof(struct multiboot_raw_module);
+            biosmem_register_boot_data(mbi->mods_addr, mbi->mods_addr + i, TRUE);
+
+            tmp = phystokv(mbi->mods_addr);
+
+            for (i = 0; i < mbi->mods_count; i++)
+                {
+                    mod = (struct multiboot_raw_module *)tmp + i;
+                    biosmem_register_boot_data(mod->mod_start, mod->mod_end, TRUE);
+
+                    if (mod->string != 0)
+                        {
+                            biosmem_register_boot_data(mod->string,
+                                                       mod->string
+                                                       + strlen((void *)phystokv(mod->string)) + 1,
+                                                       TRUE);
+                        }
+                }
+        }
+
+    if (mbi->flags & MULTIBOOT_LOADER_SHDR)
+        {
+            tmp = mbi->shdr_num * mbi->shdr_size;
+            biosmem_register_boot_data(mbi->shdr_addr, mbi->shdr_addr + tmp, FALSE);
+
+            tmp = phystokv(mbi->shdr_addr);
+
+            for (i = 0; i < mbi->shdr_num; i++)
+                {
+                    shdr = (struct elf_shdr *)(tmp + (i * mbi->shdr_size));
+
+                    if ((shdr->type != ELF_SHT_SYMTAB)
+                            && (shdr->type != ELF_SHT_STRTAB))
+                        continue;
+
+                    biosmem_register_boot_data(shdr->addr, shdr->addr + shdr->size, FALSE);
+                }
+        }
+=======
+>>>>>>> master
 	struct multiboot_raw_module *mod;
 	struct elf_shdr *shdr;
 	unsigned long tmp;
@@ -416,6 +479,10 @@ i386at_init(void)
 			m[i].string = addr;
 		}
 	}
+<<<<<<< HEAD
+=======
+>>>>>>> fd616c866c22883362886a497311fa7582d3664d
+>>>>>>> master
 #endif	/* MACH_XEN */
 
 
