@@ -702,9 +702,9 @@ static int ahci_identify(const volatile struct ahci_host *ahci_host, const volat
 			}
 		}
 		if (port->capacity/2048 >= 10240)
-			printk("sd%u: %s, %uGB w/%dkB Cache\n", port - ports, id.model, (unsigned) (port->capacity/(2048*1024)), id.buf_size/2);
+			printk("sd%u: %s, %uGB w/%dkB Cache\n", (unsigned) (port - ports), id.model, (unsigned) (port->capacity/(2048*1024)), id.buf_size/2);
 		else
-			printk("sd%u: %s, %uMB w/%dkB Cache\n", port - ports, id.model, (unsigned) (port->capacity/2048), id.buf_size/2);
+			printk("sd%u: %s, %uMB w/%dkB Cache\n", (unsigned) (port - ports), id.model, (unsigned) (port->capacity/2048), id.buf_size/2);
 	}
 	port->identify = 0;
 
@@ -755,7 +755,7 @@ static void ahci_probe_port(const volatile struct ahci_host *ahci_host, const vo
 	timeout = jiffies + WAIT_MAX;
 	while (readl(&ahci_port->cmd) & PORT_CMD_LIST_ON)
 		if (jiffies > timeout) {
-			printk("sd%u: timeout waiting for list completion\n", port-ports);
+			printk("sd%u: timeout waiting for list completion\n", (unsigned) (port-ports));
 			port->ahci_host = NULL;
 			port->ahci_port = NULL;
 			return;
@@ -765,7 +765,7 @@ static void ahci_probe_port(const volatile struct ahci_host *ahci_host, const vo
 	timeout = jiffies + WAIT_MAX;
 	while (readl(&ahci_port->cmd) & PORT_CMD_FIS_ON)
 		if (jiffies > timeout) {
-			printk("sd%u: timeout waiting for FIS completion\n", port-ports);
+			printk("sd%u: timeout waiting for FIS completion\n", (unsigned) (port-ports));
 			port->ahci_host = NULL;
 			port->ahci_port = NULL;
 			return;
@@ -796,7 +796,7 @@ static void ahci_probe_port(const volatile struct ahci_host *ahci_host, const vo
 	timeout = jiffies + WAIT_MAX;
 	while (readl(&ahci_port->cmd) & PORT_CMD_LIST_ON)
 		if (jiffies > timeout) {
-			printk("sd%u: timeout waiting for list completion\n", port-ports);
+			printk("sd%u: timeout waiting for list completion\n", (unsigned) (port-ports));
 			port->ahci_host = NULL;
 			port->ahci_port = NULL;
 			return;
@@ -829,6 +829,8 @@ static void ahci_probe_dev(unsigned char bus, unsigned char device)
 		printk("ahci: %02x:%02x.%x: Can not read configuration", bus, dev, fun);
 		return;
 	}
+	/* Ignore multifunction bit */
+	hdrtype &= ~0x80;
 
 	if (hdrtype != 0) {
 		printk("ahci: %02x:%02x.%x: Unknown hdrtype %d\n", bus, dev, fun, hdrtype);

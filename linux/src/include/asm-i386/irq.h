@@ -16,6 +16,8 @@
 
 #define TIMER_IRQ 0
 
+extern void __disable_irq(unsigned int);
+extern void __enable_irq(unsigned int);
 extern void disable_irq(unsigned int);
 extern void enable_irq(unsigned int);
 

@@ -1580,8 +1580,11 @@ kern_return_t thread_info(
 	else if (flavor == THREAD_SCHED_INFO) {
 	    thread_sched_info_t	sched_info;
 
-	    if (*thread_info_count < THREAD_SCHED_INFO_COUNT) {
-		return KERN_INVALID_ARGUMENT;
+	    /* Allow *thread_info_count to be one smaller than the
+	       usual amount, because last_processor is a
+	       new member that some callers might not know about. */
+	    if (*thread_info_count < THREAD_SCHED_INFO_COUNT -1) {
+		    return KERN_INVALID_ARGUMENT;
 	    }
 
 	    sched_info = (thread_sched_info_t) thread_info_out;
@@ -1608,6 +1611,12 @@ kern_return_t thread_info(
 	    
 	    sched_info->depressed = (thread->depress_priority >= 0);
 	    sched_info->depress_priority = thread->depress_priority;
+
+#if NCPUS > 1
+	    sched_info->last_processor = thread->last_processor;
+#else
+	    sched_info->last_processor = 0;
+#endif
 
 	    thread_unlock(thread);
 	    splx(s);

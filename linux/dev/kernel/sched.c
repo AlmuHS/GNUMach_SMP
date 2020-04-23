@@ -622,6 +622,6 @@ linux_timer_intr (void)
     mark_bh (TQUEUE_BH);
 #if 0
   if (linux_timer_print)
-    printf ("linux_timer_intr: pic_mask[0] %x\n", pic_mask[0]);
+    printf ("linux_timer_intr: hello\n");
 #endif
 }
