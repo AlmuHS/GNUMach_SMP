@@ -5,6 +5,8 @@
 
 unsigned int master_cpu = 0;	/* 'master' processor - keeps time */
 
+#if NCPUS > 1
+
 int
 cpu_number()
 {
@@ -16,3 +18,5 @@ cpu_number()
 
 	}
 }
+
+#endif

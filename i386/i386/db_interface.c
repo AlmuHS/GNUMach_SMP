@@ -95,6 +95,11 @@ void db_load_context(pcb_t pcb)
 #endif
 }
 
+
+void cpu_interrupt_to_db(int i){
+
+}
+
 void db_get_debug_state(
 	pcb_t pcb,
 	struct i386_debug_state *state)
@@ -228,7 +233,7 @@ db_clear_hw_watchpoint(
  */
 void
 kdbprinttrap(
-	int	type, 
+	int	type,
 	int	code)
 {
 	printf("kernel: %s (%d), code=%x\n",
