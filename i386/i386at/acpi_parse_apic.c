@@ -35,30 +35,18 @@ int acpi_rsdt_n;
 struct acpi_apic *apic;
 
 static int acpi_get_rsdp();
-
 static int acpi_check_rsdt(struct acpi_rsdt *);
 static int acpi_get_rsdt();
-
 static int acpi_apic_setup();
-
-extern struct machine_slot	machine_slot[NCPUS];
-int apic2kernel[256];
+static void apic_print_info();
 
 /*TODO: Implement ioapic support*/
 struct ioapic ioapics[16];
 
-
-int
+int cpu_to_lapic[NCPUS];
 
 acpi_setup()
 {
-    int j;
-
-    for(j = 0; j < 256; j++)
-        {
-            apic2kernel[j] = -1;
-        }
-
     //Try to get rsdp pointer
     if(acpi_get_rsdp() || rsdp==0)
         return -1;
@@ -85,11 +73,10 @@ acpi_setup()
 
     acpi_print_info();
 
-    #if 0
     if(acpi_apic_setup())
         return -1;
 
-    #endif
+    apic_print_info();
 
     return 0;
 }
@@ -267,12 +254,8 @@ acpi_apic_setup(){
                 //If cpu flag is correct, and the maximum number of CPUs is not reached
                 if((lapic_entry->flags & 0x1) && ncpu < NCPUS){
 
-                    #if 0
                     //Enumerate CPU and add It to cpu/apic vector
-                    machine_slot[ncpu].apic_id = lapic_entry->apic_id;
-                    machine_slot[ncpu].is_cpu = TRUE;
-                    apic2kernel[lapic_entry->apic_id] = ncpu;
-                    #endif
+                    cpu_to_lapic[ncpu] = lapic_entry->apic_id;
 
                     //Increase number of CPU
                     ncpu++;
@@ -305,6 +288,24 @@ acpi_apic_setup(){
         return -1;
 
     return 0;
+}
+
+static
+void apic_print_info(){
+    int i;
+
+    printf("CPUS\n");
+    printf("-------------------------------------------------\n");
+    for(i = 0; i < ncpu; i++){
+        printf("CPU %d - APIC ID %x\n", i, cpu_to_lapic[i]);
+    }
+    
+    printf("IOAPICS\n");
+    printf("-------------------------------------------------\n");
+    
+    for(i = 0; i < nioapic; i++){
+        printf("IOAPIC %d - APIC ID %x", i, ioapics[i].apic_id);
+    }
 }
 
 #if 0
