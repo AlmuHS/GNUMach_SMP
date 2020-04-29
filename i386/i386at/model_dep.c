@@ -72,6 +72,8 @@
 #include <i386at/kd.h>
 #include <i386at/rtc.h>
 #include <i386at/model_dep.h>
+#include <i386at/acpi_parse_apic.h>
+
 #ifdef	MACH_XEN
 #include <xen/console.h>
 #include <xen/store.h>
@@ -491,6 +493,8 @@ i386at_init(void)
 #endif	/* MACH_HYP */
 	ldt_init();
 	ktss_init();
+
+	acpi_setup();
 
 #if INIT_VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
 	/* Get rid of the temporary direct mapping and flush it out of the TLB.  */
