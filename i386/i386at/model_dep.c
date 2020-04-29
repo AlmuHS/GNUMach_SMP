@@ -479,10 +479,6 @@ i386at_init(void)
 			m[i].string = addr;
 		}
 	}
-<<<<<<< HEAD
-=======
->>>>>>> fd616c866c22883362886a497311fa7582d3664d
->>>>>>> master
 #endif	/* MACH_XEN */
 
 
