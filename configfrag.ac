@@ -47,8 +47,11 @@ AC_DEFINE([BOOTSTRAP_SYMBOLS], [0], [BOOTSTRAP_SYMBOLS])
 AH_TEMPLATE([MULTIPROCESSOR], [set things up for a uniprocessor])
 mach_ncpus=1
 AC_DEFINE_UNQUOTED([NCPUS], [$mach_ncpus], [number of CPUs])
+
+AC_DEFINE_UNQUOTED([NCPUS], [$mach_ncpus], [number of CPUs])
 [if [ $mach_ncpus -gt 1 ]; then]
   AC_DEFINE([MULTIPROCESSOR], [1], [set things up for a multiprocessor])
+  AC_DEFINE_UNQUOTED([NCPUS], [255], [number of CPUs])
 [fi]
 
 # Restartable Atomic Sequences to get a really fast test-n-set.  Can't be
