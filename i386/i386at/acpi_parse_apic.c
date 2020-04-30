@@ -33,7 +33,7 @@ int nioapic = 0;
 static struct acpi_rsdp* acpi_get_rsdp();
 static int acpi_check_rsdt(struct acpi_rsdt *);
 static struct acpi_rsdt* acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n);
-static int acpi_get_apic(struct acpi_rsdt *rsdt, struct acpi_apic *apic, int acpi_rsdt_n);
+static struct acpi_apic* acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n);
 static int acpi_apic_setup(struct acpi_apic *apic);
 static void apic_print_info();
 
@@ -52,15 +52,16 @@ acpi_setup()
 
     //Try to get rsdp pointer
     rsdp = acpi_get_rsdp();
-    if(rsdp==0)
+    if(rsdp == 0)
         return -1;
 
     //Try to get rsdt pointer
     rsdt = acpi_get_rsdt(rsdp, &acpi_rsdt_n);
-    if(rsdt==0)
+    if(rsdt == 0)
         return -1;
 
-    if(acpi_get_apic(rsdt, apic, acpi_rsdt_n) == -1) 
+    apic = acpi_get_apic(rsdt, apic, acpi_rsdt_n);
+    if(apic == 0) 
         return -1;
     
     acpi_print_info(rsdp, rsdt, acpi_rsdt_n);
@@ -155,7 +156,7 @@ acpi_get_rsdp(){
     uint16_t *start = 0x0;
     uint32_t base = 0x0;
 
-
+    
     //EDBA start address
     start = (uint16_t*) 0x040e;
     base = *start;
@@ -166,7 +167,7 @@ acpi_get_rsdp(){
 
         //Search RSDP in first 1024 bytes from EDBA
         if(acpi_search_rsdp((void*)base,1024, rsdp) == 0)
-            return 0;
+            return (struct acpi_rsdp*) rsdp;
     }
 
     //If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh
@@ -193,7 +194,7 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n){
     //Check is rsdt signature is equals to ACPI RSDT signature
     if(memcmp(rsdt->header.signature, ACPI_RSDT_SIG,
                 sizeof(rsdt->header.signature)) != 0)
-        return -1;
+        return (struct acpi_rsdt*) 0;
 
     //Check if rsdt is correct
     if(acpi_check_rsdt(rsdt))
@@ -207,8 +208,10 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n){
     return rsdt;
 }
 
-static int
-acpi_get_apic(struct acpi_rsdt *rsdt, struct acpi_apic *apic, int acpi_rsdt_n){
+static struct acpi_apic
+acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n){
+     struct acpi_apic *apic;
+
     //Search APIC entries in rsdt array
     int i;
     struct acpi_dhdr *descr_header;
@@ -223,8 +226,8 @@ acpi_get_apic(struct acpi_rsdt *rsdt, struct acpi_apic *apic, int acpi_rsdt_n){
             apic = (struct acpi_apic*) rsdt->entry[i];
         }
     }
-    if(apic != 0) return 0;
-    else return -1;
+    if(apic != 0) return apic;
+    else return (struct acpi_apic*) 0;
 }
 
 static int
