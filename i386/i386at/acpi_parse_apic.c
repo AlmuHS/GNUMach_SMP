@@ -54,11 +54,15 @@ acpi_setup()
     rsdp = acpi_get_rsdp();
     if(rsdp == 0)
         return -1;
+        
+    printf("rsdp address %x\n", rsdp);
 
     //Try to get rsdt pointer
     rsdt = acpi_get_rsdt(rsdp, &acpi_rsdt_n);
     if(rsdt == 0)
         return -1;
+
+    printf("rsdt address %x\n", rsdt);
 
     apic = acpi_get_apic(rsdt, acpi_rsdt_n);
     if(apic == 0) 
@@ -189,11 +193,15 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n){
 
     //Get rsdt address from rsdp
     rsdt = (struct acpi_rsdt*) phystokv(rsdp->rsdt_addr);
+    
+    printf("found rsdt in address %x\n", rsdt);
 
     //Check is rsdt signature is equals to ACPI RSDT signature
     if(memcmp(rsdt->header.signature, ACPI_RSDT_SIG,
                 sizeof(rsdt->header.signature)) != 0)
         return (struct acpi_rsdt*) 0;
+
+    printf("rsdt address checked\n");
 
     //Check if rsdt is correct
     if(acpi_check_rsdt(rsdt))
