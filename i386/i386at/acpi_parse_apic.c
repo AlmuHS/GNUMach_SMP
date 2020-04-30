@@ -25,6 +25,8 @@
 #include <kern/debug.h>
 #include <intel/pmap.h>
 
+#define INTEL_PTE_R(p) (INTEL_PTE_VALID | INTEL_PTE_REF | pa_to_pte(p))
+
 volatile ApicLocalUnit* lapic = (void*) 0;
 uint32_t lapic_addr = 0;
 int ncpu = 1;
@@ -195,16 +197,17 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n){
 
     //Get rsdt address from rsdp
     rsdt_phys = rsdp->rsdt_addr;
-    rsdt = (struct acpi_rsdt*) pmap_get_mapwindow(pa_to_pte(rsdt_phys))->vaddr;
+    rsdt = (struct acpi_rsdt*) pmap_get_mapwindow(INTEL_PTE_R(rsdt_phys))->vaddr;
     
     printf("found rsdt in address %x\n", rsdt);
 
     //Check is rsdt signature is equals to ACPI RSDT signature
     if(memcmp(rsdt->header.signature, ACPI_RSDT_SIG,
-                sizeof(rsdt->header.signature)) != 0)
+                sizeof(rsdt->header.signature)) != 0){
+        printf("rsdt address checking failed\n");
         return (struct acpi_rsdt*) 0;
-
-    printf("rsdt address checked\n");
+    }
+    printf("rsdt address check finished\n");    
 
     //Check if rsdt is correct
     if(acpi_check_rsdt(rsdt))
