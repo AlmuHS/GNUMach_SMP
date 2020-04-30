@@ -40,6 +40,8 @@ static struct acpi_apic* acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n);
 static int acpi_apic_setup(struct acpi_apic *apic);
 static void apic_print_info();
 
+extern vm_offset_t kernel_virtual_end;
+
 /*TODO: Implement ioapic support*/
 struct ioapic ioapics[16];
 
@@ -52,6 +54,8 @@ acpi_setup()
     struct acpi_rsdt *rsdt = 0;
     int acpi_rsdt_n;
     struct acpi_apic *apic = 0;
+
+    printf("The kernel virtual end is %x\n", kernel_virtual_end);
 
     //Try to get rsdp pointer
     rsdp = acpi_get_rsdp();
