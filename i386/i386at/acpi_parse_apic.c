@@ -59,14 +59,14 @@ acpi_setup()
     int i;
     struct acpi_dhdr *descr_header;
     for(i = 0;i < acpi_rsdt_n; i++){
-        descr_header = (struct acpi_dhdr*) phystokv(rsdt->entry[i]);
+        descr_header = (struct acpi_dhdr*) rsdt->entry[i];
 
         //Check if the entry contains an APIC
         if(memcmp(descr_header->signature, ACPI_APIC_SIG,
                     sizeof(descr_header->signature)) == 0){
 
             //If yes, store the entry in apic
-            apic = (struct acpi_apic*) phystokv(rsdt->entry[i]);
+            apic = (struct acpi_apic*) rsdt->entry[i];
 
         }
     }
@@ -85,16 +85,16 @@ void
 acpi_print_info(){
 
     printf("ACPI:\n");
-    printf(" rsdp = %x; rsdp->rsdt_addr = %x\n", rsdp, phystokv(rsdp->rsdt_addr));
+    printf(" rsdp = %x; rsdp->rsdt_addr = %x\n", rsdp, rsdp->rsdt_addr);
     printf(" rsdt = %x; rsdt->length = %x (n = %x)\n", rsdt, rsdt->header.length,
            acpi_rsdt_n);
     int i;
     struct acpi_dhdr *descr_header;
     for(i = 0; i < acpi_rsdt_n; i++){
-        descr_header = (struct acpi_dhdr*) phystokv(rsdt->entry[i]);
+        descr_header = (struct acpi_dhdr*) rsdt->entry[i];
         printf("  %x: %c%c%c%c (%x)\n", i, descr_header->signature[0],
                 descr_header->signature[1], descr_header->signature[2],
-                descr_header->signature[3], phystokv(rsdt->entry[i]));
+                descr_header->signature[3], rsdt->entry[i]);
     }
 
 }
@@ -165,7 +165,7 @@ acpi_get_rsdp(){
 
 
     //EDBA start address
-    start = (uint16_t*) phystokv(0x040e);
+    start = (uint16_t*) 0x040e;
     base = *start;
 
     if(base != 0){  //Memory check
@@ -173,12 +173,12 @@ acpi_get_rsdp(){
         base <<= 4; //base = base * 16
 
         //Search RSDP in first 1024 bytes from EDBA
-        if(acpi_search_rsdp((void*)phystokv(base),1024) == 0)
+        if(acpi_search_rsdp((void*)base,1024) == 0)
             return 0;
     }
 
     //If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh
-    if(acpi_search_rsdp((void*) phystokv(0x0e0000), 0x100000 - 0x0e0000) == 0)
+    if(acpi_search_rsdp((void*) 0x0e0000, 0x100000 - 0x0e0000) == 0)
         return 0;
 
     return -1;
@@ -195,7 +195,7 @@ static int
 acpi_get_rsdt(){
 
     //Get rsdt address from rsdp
-    rsdt = (struct acpi_rsdt*) phystokv(rsdp->rsdt_addr);
+    rsdt = (struct acpi_rsdt*) rsdp->rsdt_addr;
 
     //Check is rsdt signature is equals to ACPI RSDT signature
     if(memcmp(rsdt->header.signature, ACPI_RSDT_SIG,
