@@ -194,7 +194,7 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n){
     struct acpi_rsdt *rsdt = (struct acpi_rsdt*) 0;
 
     //Get rsdt address from rsdp
-    rsdt_phys = phystokv(rsdp->rsdt_addr);
+    rsdt_phys = rsdp->rsdt_addr;
     rsdt = (struct acpi_rsdt*) pmap_get_mapwindow(pa_to_pte(rsdt_phys))->vaddr;
     
     printf("found rsdt in address %x\n", rsdt);
