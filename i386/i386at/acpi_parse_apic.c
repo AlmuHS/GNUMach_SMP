@@ -190,7 +190,7 @@ acpi_check_rsdt(struct acpi_rsdt *rsdt){
 
 static struct acpi_rsdt*
 acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n){
-    int rsdt_phys;
+    phys_addr_t rsdt_phys;
     struct acpi_rsdt *rsdt = (struct acpi_rsdt*) 0;
 
     //Get rsdt address from rsdp
