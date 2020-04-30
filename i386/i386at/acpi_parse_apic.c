@@ -24,6 +24,7 @@
 //#include <vm/vm_map_physical.h>
 #include <kern/debug.h>
 #include <intel/pmap.h>
+#include <vm/vm_kern.h>
 
 #define INTEL_PTE_R(p) (INTEL_PTE_VALID | INTEL_PTE_REF | pa_to_pte(p))
 
@@ -46,6 +47,29 @@ extern vm_offset_t kernel_virtual_end;
 struct ioapic ioapics[16];
 
 int cpu_to_lapic[NCPUS];
+
+void*
+pmap_hack (unsigned long offset, unsigned long size)
+{
+  vm_offset_t addr;
+  kern_return_t ret;
+  uintptr_t into_page = offset % PAGE_SIZE;
+  uintptr_t nearest_page = (uintptr_t)trunc_page(offset);
+  
+  size += into_page;
+
+  ret = kmem_alloc_wired (kernel_map, &addr, round_page (size));
+  if (ret != KERN_SUCCESS)
+    return NULL;
+
+  (void) pmap_map_bd (addr, nearest_page, nearest_page + round_page (size),
+                      VM_PROT_READ | VM_PROT_WRITE);
+
+  /* XXX remember mapping somewhere so we can free it? */
+
+  return (void *) (addr + into_page);
+}
+
 
 int
 acpi_setup()
@@ -201,7 +225,8 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n){
 
     //Get rsdt address from rsdp
     rsdt_phys = rsdp->rsdt_addr;
-    rsdt = (struct acpi_rsdt*) pmap_get_mapwindow(INTEL_PTE_R(rsdt_phys))->vaddr;
+    //rsdt = (struct acpi_rsdt*) pmap_get_mapwindow(INTEL_PTE_R(rsdt_phys))->vaddr;
+    rsdt = pmap_hack (rsdt_phys, sizeof(struct acpi_rsdt));
     
     printf("found rsdt in address %x\n", rsdt);
 
