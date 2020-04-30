@@ -32,11 +32,12 @@ int nioapic = 0;
 struct acpi_rsdp *rsdp;
 struct acpi_rsdt *rsdt;
 int acpi_rsdt_n;
-struct acpi_apic *apic;
+struct acpi_apic *apic = 0;
 
 static int acpi_get_rsdp();
 static int acpi_check_rsdt(struct acpi_rsdt *);
 static int acpi_get_rsdt();
+static int acpi_get_apic();
 static int acpi_apic_setup();
 static void apic_print_info();
 
@@ -55,22 +56,9 @@ acpi_setup()
     if(acpi_get_rsdt() || rsdt==0)
         return -1;
 
-    //Search APIC entries in rsdt array
-    int i;
-    struct acpi_dhdr *descr_header;
-    for(i = 0;i < acpi_rsdt_n; i++){
-        descr_header = (struct acpi_dhdr*) rsdt->entry[i];
-
-        //Check if the entry contains an APIC
-        if(memcmp(descr_header->signature, ACPI_APIC_SIG,
-                    sizeof(descr_header->signature)) == 0){
-
-            //If yes, store the entry in apic
-            apic = (struct acpi_apic*) rsdt->entry[i];
-
-        }
-    }
-
+    if(acpi_get_apic() == -1) 
+        return -1;
+    
     acpi_print_info();
 
     if(acpi_apic_setup())
@@ -195,7 +183,7 @@ static int
 acpi_get_rsdt(){
 
     //Get rsdt address from rsdp
-    rsdt = (struct acpi_rsdt*) rsdp->rsdt_addr;
+    rsdt = (struct acpi_rsdt*) phystokv(rsdp->rsdt_addr);
 
     //Check is rsdt signature is equals to ACPI RSDT signature
     if(memcmp(rsdt->header.signature, ACPI_RSDT_SIG,
@@ -212,6 +200,26 @@ acpi_get_rsdt(){
 
 
     return 0;
+}
+
+static int
+acpi_get_apic(){
+    //Search APIC entries in rsdt array
+    int i;
+    struct acpi_dhdr *descr_header;
+    for(i = 0;i < acpi_rsdt_n; i++){
+        descr_header = (struct acpi_dhdr*) rsdt->entry[i];
+
+        //Check if the entry contains an APIC
+        if(memcmp(descr_header->signature, ACPI_APIC_SIG,
+                    sizeof(descr_header->signature)) == 0){
+
+            //If yes, store the entry in apic
+            apic = (struct acpi_apic*) rsdt->entry[i];
+        }
+    }
+    if(apic != 0) return 0;
+    else return -1;
 }
 
 static int
