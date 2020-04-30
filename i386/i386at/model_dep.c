@@ -494,8 +494,6 @@ i386at_init(void)
 	ldt_init();
 	ktss_init();
 
-	acpi_setup();
-
 #if INIT_VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
 	/* Get rid of the temporary direct mapping and flush it out of the TLB.  */
 	for (i = 0 ; i < nb_direct; i++) {
@@ -603,6 +601,8 @@ void c_boot_entry(vm_offset_t bi)
 	 * Do basic VM initialization
 	 */
 	i386at_init();
+
+	acpi_setup();
 
 #if	MACH_KDB
 	/*
