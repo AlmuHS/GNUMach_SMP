@@ -163,7 +163,7 @@ acpi_get_rsdp(){
 
     
     //EDBA start address
-    start = (uint16_t*) 0x040e;
+    start = (uint16_t*) phystokv(0x040e);
     base = *start;
 
     if(base != 0){  //Memory check
