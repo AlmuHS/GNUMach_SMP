@@ -125,13 +125,14 @@ acpi_check_rsdp(struct acpi_rsdp *rsdp){
 }
 
 
-static int
-acpi_search_rsdp(void *addr, uint32_t length, struct acpi_rsdp *rsdp){
+static struct acpi_rsdp*
+acpi_search_rsdp(void *addr, uint32_t length){
+    struct acpi_rsdp *rsdp;
 
     void *end;
     /* check alignment */
     if((uint32_t)addr & (ACPI_RSDP_ALIGN-1))
-        return -1;
+        return (struct acpi_rsdp *) 0;
 
     //Search RDSP in memory space between addr and addr+lenght
     for(end = addr+length; addr < end; addr += ACPI_RSDP_ALIGN){
@@ -141,13 +142,11 @@ acpi_search_rsdp(void *addr, uint32_t length, struct acpi_rsdp *rsdp){
 
             //If yes, store RSDP address
             rsdp = (struct acpi_rsdp*) addr;
-            return 0;
+            return rsdp;
         }
-
     }
-
-
-    return -1;
+    
+    return (struct acpi_rsdp *) 0;
 }
 
 struct acpi_rsdp*
@@ -166,12 +165,15 @@ acpi_get_rsdp(){
         base <<= 4; //base = base * 16
 
         //Search RSDP in first 1024 bytes from EDBA
-        if(acpi_search_rsdp((void*)base,1024, rsdp) == 0)
+        rsdp = acpi_search_rsdp((void*)base,1024);
+        
+        if(rsdp != 0)
             return (struct acpi_rsdp*) rsdp;
     }
 
     //If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh
-    if(acpi_search_rsdp((void*) 0x0e0000, 0x100000 - 0x0e0000, rsdp) == 0)
+    rsdp = acpi_search_rsdp((void*) 0x0e0000, 0x100000 - 0x0e0000);
+    if(rsdp != 0)
         return rsdp;
 
     return (struct acpi_rsdp*) 0;
@@ -201,7 +203,7 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n){
         return (struct acpi_rsdt*) 0;
 
     //Calculated number of elements stored in rsdt
-    acpi_rsdt_n = (rsdt->header.length - sizeof(rsdt->header))
+    *acpi_rsdt_n = (rsdt->header.length - sizeof(rsdt->header))
         / sizeof(rsdt->entry[0]);
 
 
