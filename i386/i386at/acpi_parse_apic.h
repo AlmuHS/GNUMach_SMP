@@ -126,7 +126,7 @@ struct acpi_apic_ioapic
 
 
 int acpi_setup();
-void acpi_print_info();
+void acpi_print_info(struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n);
 
 /* extra_setup() function:  
  *
