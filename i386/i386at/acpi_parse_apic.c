@@ -32,7 +32,7 @@ int nioapic = 0;
 
 static struct acpi_rsdp* acpi_get_rsdp();
 static int acpi_check_rsdt(struct acpi_rsdt *);
-static struct acpi_rsdt* acpi_get_rsdt(struct acpi_rsdp *rsdp, int acpi_rsdt_n);
+static struct acpi_rsdt* acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n);
 static int acpi_get_apic(struct acpi_rsdt *rsdt, struct acpi_apic *apic, int acpi_rsdt_n);
 static int acpi_apic_setup(struct acpi_apic *apic);
 static void apic_print_info();
@@ -56,7 +56,7 @@ acpi_setup()
         return -1;
 
     //Try to get rsdt pointer
-    rsdt = acpi_get_rsdt(rsdp, acpi_rsdt_n);
+    rsdt = acpi_get_rsdt(rsdp, &acpi_rsdt_n);
     if(rsdt==0)
         return -1;
 
@@ -184,7 +184,7 @@ acpi_check_rsdt(struct acpi_rsdt *rsdt){
 }
 
 static struct acpi_rsdt*
-acpi_get_rsdt(struct acpi_rsdp *rsdp, int acpi_rsdt_n){
+acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n){
     struct acpi_rsdt *rsdt;
 
     //Get rsdt address from rsdp
