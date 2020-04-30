@@ -60,7 +60,7 @@ acpi_setup()
     if(rsdt == 0)
         return -1;
 
-    apic = acpi_get_apic(rsdt, apic, acpi_rsdt_n);
+    apic = acpi_get_apic(rsdt, acpi_rsdt_n);
     if(apic == 0) 
         return -1;
     
