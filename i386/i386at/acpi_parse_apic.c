@@ -30,9 +30,9 @@ int ncpu = 1;
 int nioapic = 0;
 
 
-static int acpi_get_rsdp(struct acpi_rsdp *rsdp);
+static struct acpi_rsdp* acpi_get_rsdp();
 static int acpi_check_rsdt(struct acpi_rsdt *);
-static int acpi_get_rsdt(struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n);
+static struct acpi_rsdt* acpi_get_rsdt(struct acpi_rsdp *rsdp, int acpi_rsdt_n);
 static int acpi_get_apic(struct acpi_rsdt *rsdt, struct acpi_apic *apic, int acpi_rsdt_n);
 static int acpi_apic_setup(struct acpi_apic *apic);
 static void apic_print_info();
@@ -45,20 +45,19 @@ int cpu_to_lapic[NCPUS];
 int
 acpi_setup()
 {
-    struct acpi_rsdp *rsdp;
-    struct acpi_rsdt *rsdt;
+    struct acpi_rsdp *rsdp = 0;
+    struct acpi_rsdt *rsdt = 0;
     int acpi_rsdt_n;
     struct acpi_apic *apic = 0;
-    int get_rsdp, get_rsdt;
 
     //Try to get rsdp pointer
-    get_rsdp = acpi_get_rsdp(rsdp);
-    if(get_rsdp == -1 || rsdp==0)
+    rsdp = acpi_get_rsdp();
+    if(rsdp==0)
         return -1;
 
     //Try to get rsdt pointer
-    get_rsdt = acpi_get_rsdt(rsdp, rsdt, acpi_rsdt_n);
-    if(get_rsdt == -1 || rsdt==0)
+    rsdt = acpi_get_rsdt(rsdp, acpi_rsdt_n);
+    if(rsdt==0)
         return -1;
 
     if(acpi_get_apic(rsdt, apic, acpi_rsdt_n) == -1) 
@@ -150,9 +149,9 @@ acpi_search_rsdp(void *addr, uint32_t length, struct acpi_rsdp *rsdp){
     return -1;
 }
 
-static int
-acpi_get_rsdp(struct acpi_rsdp *rsdp){
-
+struct acpi_rsdp*
+acpi_get_rsdp(){
+    struct acpi_rsdp *rsdp;
     uint16_t *start = 0x0;
     uint32_t base = 0x0;
 
@@ -172,9 +171,9 @@ acpi_get_rsdp(struct acpi_rsdp *rsdp){
 
     //If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh
     if(acpi_search_rsdp((void*) 0x0e0000, 0x100000 - 0x0e0000, rsdp) == 0)
-        return 0;
+        return rsdp;
 
-    return -1;
+    return (struct acpi_rsdp*) 0;
 }
 
 
@@ -184,8 +183,9 @@ acpi_check_rsdt(struct acpi_rsdt *rsdt){
     return acpi_checksum(rsdt, rsdt->header.length);
 }
 
-static int
-acpi_get_rsdt(struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n){
+static struct acpi_rsdt*
+acpi_get_rsdt(struct acpi_rsdp *rsdp, int acpi_rsdt_n){
+    struct acpi_rsdt *rsdt;
 
     //Get rsdt address from rsdp
     rsdt = (struct acpi_rsdt*) phystokv(rsdp->rsdt_addr);
@@ -197,14 +197,14 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n){
 
     //Check if rsdt is correct
     if(acpi_check_rsdt(rsdt))
-        return -1;
+        return (struct acpi_rsdt*) 0;
 
     //Calculated number of elements stored in rsdt
     acpi_rsdt_n = (rsdt->header.length - sizeof(rsdt->header))
         / sizeof(rsdt->entry[0]);
 
 
-    return 0;
+    return rsdt;
 }
 
 static int
