@@ -208,7 +208,7 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n){
     return rsdt;
 }
 
-static struct acpi_apic
+static struct acpi_apic*
 acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n){
      struct acpi_apic *apic;
 
