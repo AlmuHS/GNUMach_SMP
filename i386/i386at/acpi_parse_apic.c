@@ -29,16 +29,12 @@ uint32_t lapic_addr = 0;
 int ncpu = 1;
 int nioapic = 0;
 
-struct acpi_rsdp *rsdp;
-struct acpi_rsdt *rsdt;
-int acpi_rsdt_n;
-struct acpi_apic *apic = 0;
 
-static int acpi_get_rsdp();
+static int acpi_get_rsdp(struct acpi_rsdp *rsdp);
 static int acpi_check_rsdt(struct acpi_rsdt *);
-static int acpi_get_rsdt();
-static int acpi_get_apic();
-static int acpi_apic_setup();
+static int acpi_get_rsdt(struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n);
+static int acpi_get_apic(struct acpi_rsdt *rsdt, struct acpi_apic *apic, int acpi_rsdt_n);
+static int acpi_apic_setup(struct acpi_apic *apic);
 static void apic_print_info();
 
 /*TODO: Implement ioapic support*/
@@ -46,22 +42,31 @@ struct ioapic ioapics[16];
 
 int cpu_to_lapic[NCPUS];
 
+int
 acpi_setup()
 {
+    struct acpi_rsdp *rsdp;
+    struct acpi_rsdt *rsdt;
+    int acpi_rsdt_n;
+    struct acpi_apic *apic = 0;
+    int get_rsdp, get_rsdt;
+
     //Try to get rsdp pointer
-    if(acpi_get_rsdp() || rsdp==0)
+    get_rsdp = acpi_get_rsdp(rsdp);
+    if(get_rsdp == -1 || rsdp==0)
         return -1;
 
     //Try to get rsdt pointer
-    if(acpi_get_rsdt() || rsdt==0)
+    get_rsdt = acpi_get_rsdt(rsdp, rsdt, acpi_rsdt_n);
+    if(get_rsdt == -1 || rsdt==0)
         return -1;
 
-    if(acpi_get_apic() == -1) 
+    if(acpi_get_apic(rsdt, apic, acpi_rsdt_n) == -1) 
         return -1;
     
-    acpi_print_info();
+    acpi_print_info(rsdp, rsdt, acpi_rsdt_n);
 
-    if(acpi_apic_setup())
+    if(acpi_apic_setup(apic))
         return -1;
 
     apic_print_info();
@@ -70,7 +75,7 @@ acpi_setup()
 }
 
 void
-acpi_print_info(){
+acpi_print_info(struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n){
 
     printf("ACPI:\n");
     printf(" rsdp = %x; rsdp->rsdt_addr = %x\n", rsdp, rsdp->rsdt_addr);
@@ -121,7 +126,7 @@ acpi_check_rsdp(struct acpi_rsdp *rsdp){
 
 
 static int
-acpi_search_rsdp(void *addr, uint32_t length){
+acpi_search_rsdp(void *addr, uint32_t length, struct acpi_rsdp *rsdp){
 
     void *end;
     /* check alignment */
@@ -146,7 +151,7 @@ acpi_search_rsdp(void *addr, uint32_t length){
 }
 
 static int
-acpi_get_rsdp(){
+acpi_get_rsdp(struct acpi_rsdp *rsdp){
 
     uint16_t *start = 0x0;
     uint32_t base = 0x0;
@@ -161,12 +166,12 @@ acpi_get_rsdp(){
         base <<= 4; //base = base * 16
 
         //Search RSDP in first 1024 bytes from EDBA
-        if(acpi_search_rsdp((void*)base,1024) == 0)
+        if(acpi_search_rsdp((void*)base,1024, rsdp) == 0)
             return 0;
     }
 
     //If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh
-    if(acpi_search_rsdp((void*) 0x0e0000, 0x100000 - 0x0e0000) == 0)
+    if(acpi_search_rsdp((void*) 0x0e0000, 0x100000 - 0x0e0000, rsdp) == 0)
         return 0;
 
     return -1;
@@ -180,7 +185,7 @@ acpi_check_rsdt(struct acpi_rsdt *rsdt){
 }
 
 static int
-acpi_get_rsdt(){
+acpi_get_rsdt(struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n){
 
     //Get rsdt address from rsdp
     rsdt = (struct acpi_rsdt*) phystokv(rsdp->rsdt_addr);
@@ -203,7 +208,7 @@ acpi_get_rsdt(){
 }
 
 static int
-acpi_get_apic(){
+acpi_get_apic(struct acpi_rsdt *rsdt, struct acpi_apic *apic, int acpi_rsdt_n){
     //Search APIC entries in rsdt array
     int i;
     struct acpi_dhdr *descr_header;
@@ -223,7 +228,7 @@ acpi_get_apic(){
 }
 
 static int
-acpi_apic_setup(){
+acpi_apic_setup(struct acpi_apic *apic){
 
     if(apic == 0)
         return -1;
