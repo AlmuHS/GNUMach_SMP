@@ -127,7 +127,7 @@ acpi_check_rsdp(struct acpi_rsdp *rsdp){
 
 static struct acpi_rsdp*
 acpi_search_rsdp(void *addr, uint32_t length){
-    struct acpi_rsdp *rsdp;
+    struct acpi_rsdp *rsdp = (struct acpi_rsdp *) 0;
 
     void *end;
     /* check alignment */
@@ -142,16 +142,15 @@ acpi_search_rsdp(void *addr, uint32_t length){
 
             //If yes, store RSDP address
             rsdp = (struct acpi_rsdp*) addr;
-            return rsdp;
         }
     }
     
-    return (struct acpi_rsdp *) 0;
+    return rsdp;
 }
 
 struct acpi_rsdp*
 acpi_get_rsdp(){
-    struct acpi_rsdp *rsdp;
+    struct acpi_rsdp *rsdp = (struct acpi_rsdp*) 0;
     uint16_t *start = 0x0;
     uint32_t base = 0x0;
 
@@ -173,10 +172,8 @@ acpi_get_rsdp(){
 
     //If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh
     rsdp = acpi_search_rsdp((void*) 0x0e0000, 0x100000 - 0x0e0000);
-    if(rsdp != 0)
-        return rsdp;
-
-    return (struct acpi_rsdp*) 0;
+    
+    return rsdp;
 }
 
 
@@ -212,7 +209,7 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n){
 
 static struct acpi_apic*
 acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n){
-     struct acpi_apic *apic;
+     struct acpi_apic *apic = (struct acpi_apic*) 0;
 
     //Search APIC entries in rsdt array
     int i;
@@ -228,8 +225,7 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n){
             apic = (struct acpi_apic*) rsdt->entry[i];
         }
     }
-    if(apic != 0) return apic;
-    else return (struct acpi_apic*) 0;
+    return apic;
 }
 
 static int
