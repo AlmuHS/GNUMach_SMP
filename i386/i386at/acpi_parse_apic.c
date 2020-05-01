@@ -277,7 +277,7 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n){
             printf("descr_header check finished");
 
             //If yes, store the entry in apic
-            apic = (struct acpi_apic*) pmap_aligned_table(descr_header, sizeof(struct acpi_apic_dhdr));
+            apic = (struct acpi_apic*) pmap_aligned_table(rsdt->entry[i], sizeof(struct acpi_apic_dhdr));
             
             printf("found apic in address %x\n", apic);
         }
@@ -297,7 +297,7 @@ acpi_apic_setup(struct acpi_apic *apic){
     if(acpi_checksum(apic, apic->header.length))
         return -1;
 
-    printf("acpi checksum successfull\n");
+    printf("apic checksum successfull\n");
 
     ncpu = 0;
     nioapic = 0;
@@ -333,8 +333,11 @@ acpi_apic_setup(struct acpi_apic *apic){
                     //Enumerate CPU and add It to cpu/apic vector
                     cpu_to_lapic[ncpu] = lapic_entry->apic_id;
 
+                    printf("new cpu found with apic id %x\n", lapic_entry->apic_id);
+    
                     //Increase number of CPU
-                    ncpu++;
+                    ncpu++;                    
+                    
                 }
                 break;
 
@@ -348,6 +351,8 @@ acpi_apic_setup(struct acpi_apic *apic){
                 ioapics[nioapic].apic_id = ioapic_entry->apic_id;
                 ioapics[nioapic].addr = ioapic_entry->addr;
                 ioapics[nioapic].base = ioapic_entry->base;
+
+                printf("new ioapic found with apic id %x\n", ioapics[nioapic].apic_id);
 
                 //Increase number of ioapic
                 nioapic++;
