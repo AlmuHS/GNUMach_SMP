@@ -1,5 +1,5 @@
 /*Copyright 2018 Juan Bosco Garcia
- *Copyright 2018 2019 Almudena Garcia Jurado-Centurion
+ *Copyright 2018 2019 2020 Almudena Garcia Jurado-Centurion
  *This file is part of Min_SMP.
  *Min_SMP is free software: you can redistribute it and/or modify
  *it under the terms of the GNU General Public License as published by
