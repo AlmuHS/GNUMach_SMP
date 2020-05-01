@@ -271,7 +271,7 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n){
     int i;
     struct acpi_dhdr *descr_header;
     for(i = 0;i < acpi_rsdt_n; i++){
-        descr_header = (struct acpi_dhdr*) rsdt->entry[i];
+        descr_header = (struct acpi_dhdr*) phystokv(rsdt->entry[i]);
         
         printf("descr_header found in address %x\n", descr_header);
 
