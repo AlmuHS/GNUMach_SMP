@@ -114,8 +114,12 @@ acpi_setup()
     
     acpi_print_info(rsdp, rsdt, acpi_rsdt_n);
 
+    printf("starting apic setup\n");
+
     if(acpi_apic_setup(apic))
         return -1;
+        
+    printf("apic setup finished\n");
 
     apic_print_info();
 
@@ -129,15 +133,6 @@ acpi_print_info(struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n)
     printf(" rsdp = %x; rsdp->rsdt_addr = %x\n", rsdp, rsdp->rsdt_addr);
     printf(" rsdt = %x; rsdt->length = %x (n = %x)\n", rsdt, rsdt->header.length,
            acpi_rsdt_n);
-    int i;
-    struct acpi_dhdr *descr_header;
-    for(i = 0; i < acpi_rsdt_n; i++){
-        descr_header = (struct acpi_dhdr*) rsdt->entry[i];
-        printf("  %x: %c%c%c%c (%x)\n", i, descr_header->signature[0],
-                descr_header->signature[1], descr_header->signature[2],
-                descr_header->signature[3], rsdt->entry[i]);
-    }
-
 }
 
 
@@ -282,7 +277,7 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n){
             printf("descr_header check finished");
 
             //If yes, store the entry in apic
-            apic = (struct acpi_apic*) descr_header;
+            apic = (struct acpi_apic*) pmap_aligned_table(descr_header, sizeof(struct acpi_apic_dhdr));
             
             printf("found apic in address %x\n", apic);
         }
@@ -296,19 +291,24 @@ acpi_apic_setup(struct acpi_apic *apic){
     if(apic == 0)
         return -1;
 
+    printf("checking apic checksum\n");
+
     //Check the checksum of the APIC
     if(acpi_checksum(apic, apic->header.length))
         return -1;
 
+    printf("acpi checksum successfull\n");
+
     ncpu = 0;
     nioapic = 0;
-
 
     /*
      * save lapic_addr in order to use it later for updating lapic,
      * in extra_setup()
      */
     lapic_addr = apic->lapic_addr;
+
+    printf("lapic found in address %x\n", lapic_addr);
 
     struct acpi_apic_dhdr *apic_entry = apic->entry;
     uint32_t end = (uint32_t) apic + apic->header.length;
