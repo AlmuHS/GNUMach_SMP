@@ -64,7 +64,7 @@ pmap_aligned_table (unsigned long offset, unsigned long size)
 
   ret = kmem_alloc_wired (kernel_map, &addr, round_page (size));
   
-  printf("virtual address: &x\n", addr);
+  printf("virtual address: %x\n", addr);
   
   if (ret != KERN_SUCCESS)
     return NULL;
