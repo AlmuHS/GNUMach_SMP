@@ -110,6 +110,8 @@ acpi_setup()
     if(apic == 0) 
         return -1;
     
+    printf("apic address %x\n", apic);
+    
     acpi_print_info(rsdp, rsdt, acpi_rsdt_n);
 
     if(acpi_apic_setup(apic))
@@ -270,6 +272,8 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n){
     struct acpi_dhdr *descr_header;
     for(i = 0;i < acpi_rsdt_n; i++){
         descr_header = (struct acpi_dhdr*) rsdt->entry[i];
+        
+        printf("descr_header found in address %x\n", descr_header);
 
         //Check if the entry contains an APIC
         if(memcmp(descr_header->signature, ACPI_APIC_SIG,
@@ -277,6 +281,8 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n){
 
             //If yes, store the entry in apic
             apic = (struct acpi_apic*) rsdt->entry[i];
+            
+            printf("found apic in address %x\n", apic);
         }
     }
     return apic;
