@@ -280,7 +280,7 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n){
                     sizeof(descr_header->signature)) == 0){
 
             //If yes, store the entry in apic
-            apic = (struct acpi_apic*) rsdt->entry[i];
+            apic = (struct acpi_apic*) descr_header;
             
             printf("found apic in address %x\n", apic);
         }
