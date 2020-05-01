@@ -574,8 +574,10 @@ vremap (unsigned long offset, unsigned long size)
 {
   vm_offset_t addr;
   kern_return_t ret;
+
+  assert(page_aligned(offset));
   
-  ret = kmem_alloc_wired (kernel_map, &addr, round_page (size));
+  ret = kmem_valloc (kernel_map, &addr, round_page (size));
   if (ret != KERN_SUCCESS)
     return NULL;
   

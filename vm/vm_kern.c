@@ -432,17 +432,14 @@ retry:
 }
 
 /*
- *	kmem_alloc_wired:
+ *	kmem_valloc:
  *
- *	Allocate wired-down memory in the kernel's address map
- *	or a submap.  The memory is not zero-filled.
- *
- *	The memory is allocated in the kernel_object.
- *	It may not be copied with vm_map_copy.
+ *	Allocate addressing space in the kernel's address map
+ *	or a submap.  The adressing space does not map anything.
  */
 
 kern_return_t
-kmem_alloc_wired(
+kmem_valloc(
 	vm_map_t 	map,
 	vm_offset_t 	*addrp,
 	vm_size_t 	size)
@@ -476,7 +473,7 @@ retry:
 			goto retry;
 		}
 
-		printf_once("no more room for kmem_alloc_wired in %p (%s)\n",
+		printf_once("no more room for kmem_valloc in %p (%s)\n",
 			    map, map->name);
 		return kr;
 	}
@@ -502,6 +499,39 @@ retry:
 	 *	it is safe to unlock the map.
 	 */
 	vm_map_unlock(map);
+
+	/*
+	 *	Return the memory, not mapped.
+	 */
+	*addrp = addr;
+	return KERN_SUCCESS;
+}
+
+/*
+ *	kmem_alloc_wired:
+ *
+ *	Allocate wired-down memory in the kernel's address map
+ *	or a submap.  The memory is not zero-filled.
+ *
+ *	The memory is allocated in the kernel_object.
+ *	It may not be copied with vm_map_copy.
+ */
+
+kern_return_t
+kmem_alloc_wired(
+	vm_map_t 	map,
+	vm_offset_t 	*addrp,
+	vm_size_t 	size)
+{
+	vm_offset_t offset;
+	vm_offset_t addr;
+	kern_return_t kr;
+
+	kr = kmem_valloc(map, &addr, size);
+	if (kr != KERN_SUCCESS)
+		return kr;
+
+	offset = addr - VM_MIN_KERNEL_ADDRESS;
 
 	/*
 	 *	Allocate wired-down memory in the kernel_object,
