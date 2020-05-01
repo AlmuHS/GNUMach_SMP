@@ -501,7 +501,7 @@ retry:
 	vm_map_unlock(map);
 
 	/*
-	 *	Return the memory, not zeroed.
+	 *	Return the memory, not mapped.
 	 */
 	*addrp = addr;
 	return KERN_SUCCESS;
@@ -523,61 +523,15 @@ kmem_alloc_wired(
 	vm_offset_t 	*addrp,
 	vm_size_t 	size)
 {
-	vm_map_entry_t entry;
 	vm_offset_t offset;
 	vm_offset_t addr;
-	unsigned int attempts;
 	kern_return_t kr;
 
-	/*
-	 *	Use the kernel object for wired-down kernel pages.
-	 *	Assume that no region of the kernel object is
-	 *	referenced more than once.  We want vm_map_find_entry
-	 *	to extend an existing entry if possible.
-	 */
-
-	size = round_page(size);
-	attempts = 0;
-
-retry:
-	vm_map_lock(map);
-	kr = vm_map_find_entry(map, &addr, size, (vm_offset_t) 0,
-			       kernel_object, &entry);
-	if (kr != KERN_SUCCESS) {
-		vm_map_unlock(map);
-
-		if (attempts == 0) {
-			attempts++;
-			slab_collect();
-			goto retry;
-		}
-
-		printf_once("no more room for kmem_alloc_wired in %p (%s)\n",
-			    map, map->name);
+	kr = kmem_valloc(map, &addr, size);
+	if (kr != KERN_SUCCESS)
 		return kr;
-	}
-
-	/*
-	 *	Since we didn't know where the new region would
-	 *	start, we couldn't supply the correct offset into
-	 *	the kernel object.  We only initialize the entry
-	 *	if we aren't extending an existing entry.
-	 */
 
 	offset = addr - VM_MIN_KERNEL_ADDRESS;
-
-	if (entry->object.vm_object == VM_OBJECT_NULL) {
-		vm_object_reference(kernel_object);
-
-		entry->object.vm_object = kernel_object;
-		entry->offset = offset;
-	}
-
-	/*
-	 *	Since we have not given out this address yet,
-	 *	it is safe to unlock the map.
-	 */
-	vm_map_unlock(map);
 
 	/*
 	 *	Allocate wired-down memory in the kernel_object,
