@@ -171,6 +171,7 @@ void machine_init(void)
 	 */
 	linux_init();
 #endif
+	acpi_setup();
 
 	/*
 	 * Find the devices
@@ -601,8 +602,6 @@ void c_boot_entry(vm_offset_t bi)
 	 * Do basic VM initialization
 	 */
 	i386at_init();
-
-	acpi_setup();
 
 #if	MACH_KDB
 	/*
