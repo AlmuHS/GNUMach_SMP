@@ -49,7 +49,7 @@ struct ioapic ioapics[16];
 int cpu_to_lapic[NCPUS];
 
 void*
-pmap_hack (unsigned long offset, unsigned long size)
+pmap_aligned_table (unsigned long offset, unsigned long size)
 {
   vm_offset_t addr;
   kern_return_t ret;
@@ -237,7 +237,7 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n){
     //Get rsdt address from rsdp
     rsdt_phys = rsdp->rsdt_addr;
     //rsdt = (struct acpi_rsdt*) pmap_get_mapwindow(INTEL_PTE_R(rsdt_phys))->vaddr;
-    rsdt = (struct acpi_rsdt*) pmap_hack(rsdt_phys, sizeof(struct acpi_rsdt));
+    rsdt = (struct acpi_rsdt*) pmap_aligned_table(rsdt_phys, sizeof(struct acpi_rsdt));
     
     printf("found rsdt in address %x\n", rsdt);
 
