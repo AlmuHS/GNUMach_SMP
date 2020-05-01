@@ -56,14 +56,25 @@ pmap_hack (unsigned long offset, unsigned long size)
   uintptr_t into_page = offset % PAGE_SIZE;
   uintptr_t nearest_page = (uintptr_t)trunc_page(offset);
   
+  printf("into page %x, nearest page %x\n", into_page, nearest_page);
+  
   size += into_page;
+  
+  printf("page size %x\n", size);
 
   ret = kmem_alloc_wired (kernel_map, &addr, round_page (size));
+  
+  printf("virtual address: &x\n", addr);
+  
   if (ret != KERN_SUCCESS)
     return NULL;
+    
+  printf("alloc success\n");
 
   (void) pmap_map_bd (addr, nearest_page, nearest_page + round_page (size),
                       VM_PROT_READ | VM_PROT_WRITE);
+                      
+  printf("new address: %x\n", addr);
 
   /* XXX remember mapping somewhere so we can free it? */
 
@@ -226,7 +237,7 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n){
     //Get rsdt address from rsdp
     rsdt_phys = rsdp->rsdt_addr;
     //rsdt = (struct acpi_rsdt*) pmap_get_mapwindow(INTEL_PTE_R(rsdt_phys))->vaddr;
-    rsdt = pmap_hack (rsdt_phys, sizeof(struct acpi_rsdt));
+    rsdt = (struct acpi_rsdt*) pmap_hack(rsdt_phys, sizeof(struct acpi_rsdt));
     
     printf("found rsdt in address %x\n", rsdt);
 
