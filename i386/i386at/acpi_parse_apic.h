@@ -32,13 +32,13 @@ struct acpi_rsdp
 } __attribute__((__packed__));
 
 
-/* RSDT Entry Header 
- * 
+/* RSDT Entry Header
+ *
  * Header which stores the descriptors of tables pointed from RDSP's Entry Field
  * Includes the signature of the table, to identify each table
- * 
+ *
  * In MADT, the signature is 'APIC'
- */ 
+ */
 struct acpi_dhdr
 {
     uint8_t signature[4];
@@ -68,7 +68,7 @@ struct acpi_rsdt
 #define ACPI_APIC_ENTRY_LAPIC  0
 #define ACPI_APIC_ENTRY_IOAPIC 1
 
-/* APIC descriptor header 
+/* APIC descriptor header
  * Define the type of the structure (Local APIC, I/O APIC or others)
  * Type: Local APIC (0), I/O APIC (1)
  */
@@ -83,7 +83,7 @@ struct acpi_apic_dhdr
  *
  * Describes the APIC structures which exist in the machine
  * Includes the common address where Local APIC is mapped in main memory
- * 
+ *
  * Entry field stores the descriptors of APIC structures
  */
 struct acpi_apic
@@ -91,7 +91,7 @@ struct acpi_apic
     struct acpi_dhdr header; //Header, which stores the descriptor for RDST's Entry field
     uint32_t lapic_addr; //Local Interrupt Controller Address
     uint32_t flags;
-    struct acpi_apic_dhdr entry[0]; //Interrupt Controller Structure 
+    struct acpi_apic_dhdr entry[0]; //Interrupt Controller Structure
 } __attribute__((__packed__));
 
 /* Processor Local APIC Structure
@@ -108,7 +108,7 @@ struct acpi_apic_lapic
 } __attribute__((__packed__));
 
 
-/* I/O APIC Structure 
+/* I/O APIC Structure
  *
  * Stores information about APIC ID, and I/O APIC tables
  */
@@ -125,10 +125,10 @@ struct acpi_apic_ioapic
 
 
 
-int acpi_setup();
+int acpi_find_cpus();
 void acpi_print_info(struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n);
 
-/* extra_setup() function:  
+/* extra_setup() function:
  *
  * Must be executed after configure paging
  * Reserve Local APIC common pointer in a physical page
