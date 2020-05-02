@@ -21,7 +21,6 @@
 #include <include/stdint.h> //uint16_t, uint32_t...
 #include <mach/machine.h> //machine_slot
 #include <i386/vm_param.h> //phystokv
-//#include <vm/vm_map_physical.h>
 #include <kern/debug.h>
 #include <intel/pmap.h>
 #include <vm/vm_kern.h>
