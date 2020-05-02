@@ -288,6 +288,8 @@ acpi_apic_setup(struct acpi_apic *apic){
     //map common lapic address
     lapic = pmap_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit));
     printf("lapic mapped in address %x\n", lapic);
+    
+    printf("the lapic id of current cpu is %x\n", lapic->apic_id);
 
     struct acpi_apic_dhdr *apic_entry = apic->entry;
     uint32_t end = (uint32_t) apic + apic->header.length;
