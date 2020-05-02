@@ -313,6 +313,8 @@ acpi_apic_setup(struct acpi_apic *apic){
     struct acpi_apic_dhdr *apic_entry = apic->entry;
     uint32_t end = (uint32_t) apic + apic->header.length;
 
+    printf("apic table end in address %x\n", end);
+
     //Search in APIC entry
     while((uint32_t)apic_entry < end){
         struct acpi_apic_lapic *lapic_entry;
@@ -328,7 +330,7 @@ acpi_apic_setup(struct acpi_apic *apic){
                 lapic_entry = (struct acpi_apic_lapic*) apic_entry;
 
                 //If cpu flag is correct, and the maximum number of CPUs is not reached
-                if((lapic_entry->flags & 0x1) && ncpu < NCPUS){
+                if((lapic_entry->flags & 0x1)){
 
                     //Enumerate CPU and add It to cpu/apic vector
                     cpu_to_lapic[ncpu] = lapic_entry->apic_id;
@@ -357,6 +359,10 @@ acpi_apic_setup(struct acpi_apic *apic){
                 //Increase number of ioapic
                 nioapic++;
                 break;
+                
+             default:
+                printf("no lapic or ioapic found\n");
+                break;
         }
 
         //Get next APIC entry
@@ -367,6 +373,8 @@ acpi_apic_setup(struct acpi_apic *apic){
 
     if(ncpu == 0 || nioapic == 0)
         return -1;
+
+    printf("%d cpus found. %d ioapics found\n", ncpu, nioapic);
 
     return 0;
 }
@@ -385,7 +393,7 @@ void apic_print_info(){
     printf("-------------------------------------------------\n");
     
     for(i = 0; i < nioapic; i++){
-        printf("IOAPIC %d - APIC ID %x", i, ioapics[i].apic_id);
+        printf("IOAPIC %d - APIC ID %x\n", i, ioapics[i].apic_id);
     }
 }
 
