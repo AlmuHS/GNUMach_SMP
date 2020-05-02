@@ -28,7 +28,6 @@
 
 volatile ApicLocalUnit* lapic = NULL;
 struct acpi_apic *apic_madt = NULL;
-uint32_t lapic_addr = 0;
 int ncpu = 1;
 int nioapic = 0;
 
