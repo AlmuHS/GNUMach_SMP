@@ -286,13 +286,9 @@ acpi_apic_setup(struct acpi_apic *apic){
     ncpu = 0;
     nioapic = 0;
 
-    /*
-     * save lapic_addr in order to use it later for updating lapic,
-     * in extra_setup()
-     */
-    lapic_addr = apic->lapic_addr;
-
-    printf("lapic found in address %x\n", lapic_addr);
+    //map common lapic address
+    lapic = pmap_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit));
+    printf("lapic mapped in address %x\n", lapic);
 
     struct acpi_apic_dhdr *apic_entry = apic->entry;
     uint32_t end = (uint32_t) apic + apic->header.length;
