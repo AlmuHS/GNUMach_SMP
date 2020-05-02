@@ -144,8 +144,7 @@ extern volatile ApicLocalUnit* lapic;
 
 /* Address at which the local unit is mapped in kernel virtual memory.
  *   Must be constant.  
- * TODO: Get real address from ACPI tables
-*/
+ */
 
 #define APIC_LOCAL_VA	lapic
 
