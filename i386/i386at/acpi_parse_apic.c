@@ -28,6 +28,7 @@
 
 
 volatile ApicLocalUnit* lapic = (void*) 0;
+struct acpi_apic *apic_madt = 0;
 uint32_t lapic_addr = 0;
 int ncpu = 1;
 int nioapic = 0;
@@ -79,7 +80,7 @@ acpi_setup()
     struct acpi_rsdp *rsdp = 0;
     struct acpi_rsdt *rsdt = 0;
     int acpi_rsdt_n;
-    struct acpi_apic *apic = 0;
+    
 
     printf("The kernel virtual end is %x\n", kernel_virtual_end);
 
@@ -97,17 +98,17 @@ acpi_setup()
 
     printf("rsdt address %x\n", rsdt);
 
-    apic = acpi_get_apic(rsdt, acpi_rsdt_n);
-    if(apic == 0) 
+    apic_madt = acpi_get_apic(rsdt, acpi_rsdt_n);
+    if(apic_madt == 0) 
         return -1;
     
-    printf("apic address %x\n", apic);
+    printf("apic address %x\n", apic_madt);
     
     acpi_print_info(rsdp, rsdt, acpi_rsdt_n);
 
     printf("starting apic setup\n");
 
-    if(acpi_apic_setup(apic))
+    if(acpi_apic_setup(apic_madt))
         return -1;
         
     printf("apic setup finished\n");
