@@ -377,31 +377,3 @@ void apic_print_info(){
         printf("IOAPIC %d - APIC ID %x\n", i, ioapics[i].apic_id);
     }
 }
-
-#if 0
-int extra_setup()
-{
-  if (lapic_addr == 0)
-  {
-    printf("LAPIC mapping skipped\n");
-    return 1;
-  }
-  vm_offset_t virt = 0;
-  // TODO: FIX: it might be desirable to map LAPIC memory with attribute PCD
-  //            (Page Cache Disable)
-  long ret = vm_map_physical(&virt, lapic_addr, sizeof(ApicLocalUnit), 0);
-  if (ret)
-  {
-    panic("Could not map LAPIC");
-    return -1;
-  }
-  else
-  {
-    lapic = (ApicLocalUnit*)virt;
-    printf("LAPIC mapped: physical: 0x%lx virtual: 0x%lx version: 0x%x\n",
-           (unsigned long)lapic_addr, (unsigned long)virt,
-           (unsigned)lapic->version.r);
-    return 0;
-  }
-}
-#endif
