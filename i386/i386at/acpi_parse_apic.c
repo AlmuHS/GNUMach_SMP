@@ -46,7 +46,8 @@ extern vm_offset_t kernel_virtual_end;
 /*TODO: Implement ioapic support*/
 struct ioapic ioapics[16];
 
-int cpu_to_lapic[NCPUS];
+//int cpu_to_lapic[NCPUS];
+int cpu_to_lapic[255];
 
 void*
 pmap_aligned_table (unsigned long offset, unsigned long size)
@@ -389,7 +390,7 @@ void apic_print_info(){
         printf("CPU %d - APIC ID %x\n", i, cpu_to_lapic[i]);
     }
     
-    printf("IOAPICS\n");
+    printf("\nIOAPICS\n");
     printf("-------------------------------------------------\n");
     
     for(i = 0; i < nioapic; i++){
