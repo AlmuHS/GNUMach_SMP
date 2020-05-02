@@ -26,8 +26,8 @@
 #include <vm/vm_kern.h>
 
 
-volatile ApicLocalUnit* lapic = (void*) 0;
-struct acpi_apic *apic_madt = 0;
+volatile ApicLocalUnit* lapic = NULL;
+struct acpi_apic *apic_madt = NULL;
 uint32_t lapic_addr = 0;
 int ncpu = 1;
 int nioapic = 0;
@@ -85,32 +85,29 @@ acpi_setup()
 
     //Try to get rsdp pointer
     rsdp = acpi_get_rsdp();
-    if(rsdp == 0)
+    if(rsdp == NULL)
         return -1;
         
     printf("rsdp address %x\n", rsdp);
 
     //Try to get rsdt pointer
     rsdt = acpi_get_rsdt(rsdp, &acpi_rsdt_n);
-    if(rsdt == 0)
+    if(rsdt == NULL)
         return -1;
 
     printf("rsdt address %x\n", rsdt);
 
     apic_madt = acpi_get_apic(rsdt, acpi_rsdt_n);
-    if(apic_madt == 0) 
+    if(apic_madt == NULL) 
         return -1;
     
     printf("apic address %x\n", apic_madt);
     
     acpi_print_info(rsdp, rsdt, acpi_rsdt_n);
 
-    printf("starting apic setup\n");
 
     if(acpi_apic_setup(apic_madt))
         return -1;
-        
-    printf("apic setup finished\n");
 
     apic_print_info();
 
@@ -161,12 +158,12 @@ acpi_check_rsdp(struct acpi_rsdp *rsdp){
 
 static struct acpi_rsdp*
 acpi_search_rsdp(void *addr, uint32_t length){
-    struct acpi_rsdp *rsdp = (struct acpi_rsdp *) 0;
+    struct acpi_rsdp *rsdp = NULL;
 
     void *end;
     /* check alignment */
     if((uint32_t)addr & (ACPI_RSDP_ALIGN-1))
-        return (struct acpi_rsdp *) 0;
+        return NULL;
 
     //Search RDSP in memory space between addr and addr+lenght
     for(end = addr+length; addr < end; addr += ACPI_RSDP_ALIGN){
@@ -176,6 +173,7 @@ acpi_search_rsdp(void *addr, uint32_t length){
 
             //If yes, store RSDP address
             rsdp = (struct acpi_rsdp*) addr;
+            break;
         }
     }
     
@@ -184,7 +182,7 @@ acpi_search_rsdp(void *addr, uint32_t length){
 
 struct acpi_rsdp*
 acpi_get_rsdp(){
-    struct acpi_rsdp *rsdp = (struct acpi_rsdp*) 0;
+    struct acpi_rsdp *rsdp = NULL;
     uint16_t *start = 0x0;
     uint32_t base = 0x0;
 
@@ -200,7 +198,7 @@ acpi_get_rsdp(){
         //Search RSDP in first 1024 bytes from EDBA
         rsdp = acpi_search_rsdp((void*)base,1024);
         
-        if(rsdp != 0)
+        if(rsdp != NULL)
             return (struct acpi_rsdp*) rsdp;
     }
 
@@ -220,7 +218,7 @@ acpi_check_rsdt(struct acpi_rsdt *rsdt){
 static struct acpi_rsdt*
 acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n){
     phys_addr_t rsdt_phys;
-    struct acpi_rsdt *rsdt = (struct acpi_rsdt*) 0;
+    struct acpi_rsdt *rsdt = NULL;
 
     //Get rsdt address from rsdp
     rsdt_phys = rsdp->rsdt_addr;
@@ -232,13 +230,12 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n){
     if(memcmp(rsdt->header.signature, ACPI_RSDT_SIG,
                 sizeof(rsdt->header.signature)) != 0){
         printf("rsdt address checking failed\n");
-        return (struct acpi_rsdt*) 0;
+        return NULL;
     }
-    printf("rsdt address check finished\n");    
 
     //Check if rsdt is correct
     if(acpi_check_rsdt(rsdt))
-        return (struct acpi_rsdt*) 0;
+        return NULL;
 
     //Calculated number of elements stored in rsdt
     *acpi_rsdt_n = (rsdt->header.length - sizeof(rsdt->header))
@@ -250,7 +247,7 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n){
 
 static struct acpi_apic*
 acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n){
-     struct acpi_apic *apic = (struct acpi_apic*) 0;
+     struct acpi_apic *apic = NULL;
 
     //Search APIC entries in rsdt array
     int i;
