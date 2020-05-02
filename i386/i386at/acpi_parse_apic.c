@@ -258,19 +258,16 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n){
     struct acpi_dhdr *descr_header;
     for(i = 0;i < acpi_rsdt_n; i++){
         descr_header = (struct acpi_dhdr*) pmap_aligned_table(rsdt->entry[i], sizeof(struct acpi_dhdr));
-        
-        printf("descr_header found in address %x\n", descr_header);
 
         //Check if the entry contains an APIC
         if(memcmp(descr_header->signature, ACPI_APIC_SIG,
                     sizeof(descr_header->signature)) == 0){
 
-            printf("descr_header check finished");
-
             //If yes, store the entry in apic
             apic = (struct acpi_apic*) pmap_aligned_table(rsdt->entry[i], sizeof(struct acpi_apic));
             
             printf("found apic in address %x\n", apic);
+            break;
         }
     }
     return apic;
