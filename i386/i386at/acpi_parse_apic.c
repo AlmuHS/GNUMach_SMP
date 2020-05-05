@@ -128,8 +128,11 @@ acpi_find_cpus()
     return 0;
 }
 
-/* acpi_print_info: shows the ACPI's rsdp and rsdt virtual address
- *    and the number of entries stored in rsdt table
+/* acpi_print_info: shows by screen the ACPI's rsdp and rsdt virtual address
+ *    and the number of entries stored in RSDT table
+ *
+ * Receives as input the references of RSDP and RSDT tables,
+ *    and the number of entries stored in RSDT
  */
 
 void
@@ -169,6 +172,8 @@ acpi_checksum(void *addr, uint32_t length)
  * Compare the table signature with the ACPI signature for this table
  *   and check is the checksum is correct
  *
+ * Receives as input the reference of RSDT table
+ *
  * Returns 0 if correct, -1 is failure
  */
 
@@ -191,6 +196,7 @@ acpi_check_rsdp(struct acpi_rsdp *rsdp)
 }
 
 /* acpi_search_rsdp: search the rsdp table in a memory range
+ *
  * Receives as input the initial virtual address, and the lenght
  *   of memory range
  *
