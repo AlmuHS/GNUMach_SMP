@@ -47,6 +47,15 @@ struct ioapic ioapics[16];
 //int cpu_to_lapic[NCPUS];
 int cpu_to_lapic[255];
 
+/* pmap_aligned_table: map a table in a virtual memory page
+ * Align the table initial address with the page initial address
+ *
+ * Parameters:
+ * offset: physical address
+ * size: size of the table
+ * mode: access mode. VM_PROT_READ for read, VM_PROT_WRITE for write
+ */
+
 void*
 pmap_aligned_table (unsigned long offset, unsigned long size, int mode)
 {
@@ -69,6 +78,12 @@ pmap_aligned_table (unsigned long offset, unsigned long size, int mode)
     return (void *) (addr + into_page);
 }
 
+/* acpi_find_cpus: find the MADT/APIC table in ACPI tables
+ *  and parses It to find Local APIC and IOAPIC structures
+ *  Each Local APIC stores the info and control structores for a cpu
+ *
+ * Returns 0 if success, -1 if error
+ */
 
 int
 acpi_find_cpus()
@@ -108,6 +123,10 @@ acpi_find_cpus()
     return 0;
 }
 
+/* acpi_print_info: shows the ACPI's rsdp and rsdt virtual address
+ *    and the number of entries stored in rsdt table
+ */
+
 void
 acpi_print_info(struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n)
 {
@@ -118,7 +137,11 @@ acpi_print_info(struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n)
            acpi_rsdt_n);
 }
 
-
+/* acpi_checksum: calculates the checksum of an ACPI table
+ * Receives as input the virtual address of the table
+ *
+ * Returns 0 if success, other value if error
+ */
 static int
 acpi_checksum(void *addr, uint32_t length)
 {
@@ -134,6 +157,15 @@ acpi_checksum(void *addr, uint32_t length)
 
     return checksum & 0xff;
 }
+
+/* acpi_check_rsdp:
+ * check if the RDST "candidate" table is the real RSDT table
+ *
+ * Compare the table signature with the ACPI signature for this table
+ *   and check is the checksum is correct
+ *
+ * Returns 0 if correct, -1 is failure
+ */
 
 static int
 acpi_check_rsdp(struct acpi_rsdp *rsdp)
@@ -153,6 +185,12 @@ acpi_check_rsdp(struct acpi_rsdp *rsdp)
     return 0;
 }
 
+/* acpi_search_rsdp: search the rsdp table in a memory range
+ * Receives as input the initial virtual address, and the lenght
+ *   of memory range
+ *
+ * Returns the reference to rsdp structure if success, NULL if failure
+ */
 
 static struct acpi_rsdp*
 acpi_search_rsdp(void *addr, uint32_t length)
@@ -180,6 +218,12 @@ acpi_search_rsdp(void *addr, uint32_t length)
 
     return rsdp;
 }
+
+/* acpi_get_rsdp: tries to find the RSDP table,
+ *    searching It in many memory ranges, following ACPI docs
+ *
+ *  Returns the reference to RDSP structure if success, NULL if failure
+ */
 
 struct acpi_rsdp*
 acpi_get_rsdp()
@@ -211,6 +255,12 @@ acpi_get_rsdp()
     return rsdp;
 }
 
+/* acpi_check_rsdt: check if the RSDT initial address is correct
+ *   checking its checksum
+ *
+ * Receives as input a reference for the RSDT "candidate" table
+ * Returns 0 if success
+ */
 
 static int
 acpi_check_rsdt(struct acpi_rsdt *rsdt)
@@ -218,6 +268,14 @@ acpi_check_rsdt(struct acpi_rsdt *rsdt)
 
     return acpi_checksum(rsdt, rsdt->header.length);
 }
+
+/* acpi_get_rsdt: Get RSDT table reference from RSDP entries
+ *
+ * Receives as input a reference for RSDP table
+ *   and a reference to store the number of entries of RSDT
+ *
+ * Returns the reference to RSDT table if success, NULL if error
+ */
 
 static struct acpi_rsdt*
 acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n)
@@ -251,6 +309,14 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n)
     return rsdt;
 }
 
+/* acpi_get_apic: get MADT/APIC table from RSDT entries
+ *
+ * Receives as input the RSDT initial address,
+ *   and the number of entries of RSDT table
+ *
+ * Returns a reference to APIC/MADT table if success, NULL if failure
+ */
+
 static struct acpi_apic*
 acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n)
 {
@@ -277,6 +343,18 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n)
         }
     return apic;
 }
+
+/* acpi_apic_setup: parses the APIC/MADT table.
+ *    to find the Local APIC and IOAPIC structures
+ *    and the common address for Local APIC
+ *
+ *  Receives as input a reference for APIC/MADT table
+ *  Returns 0 if success, -1 if error
+ *
+ * Fill the cpu_to_lapic and ioapics array, indexed by Kernel ID
+ *   with a relationship between Kernel ID and APIC ID
+ */
+
 
 static int
 acpi_apic_setup(struct acpi_apic *apic)
@@ -370,6 +448,11 @@ acpi_apic_setup(struct acpi_apic *apic)
 
     return 0;
 }
+
+/* apic_print_info: shows the list of Local APIC and IOAPIC
+ *
+ * Shows each CPU and IOAPIC, with Its Kernel ID and APIC ID
+ */
 
 static
 void apic_print_info()
