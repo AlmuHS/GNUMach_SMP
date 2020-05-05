@@ -45,37 +45,42 @@ extern vm_offset_t kernel_virtual_end;
 struct ioapic ioapics[16];
 
 //int cpu_to_lapic[NCPUS];
-int cpu_to_lapic[255];
 
-/* pmap_aligned_table: map a table in a virtual memory page
+#if NCPUS == 1
+int cpu_to_lapic[255];
+#else
+int cpu_to_lapic[NCPUS];
+#endif // NCPUS
+
+/* pmap_aligned_table: map a table or structure in a virtual memory page
  * Align the table initial address with the page initial address
  *
  * Parameters:
- * offset: physical address
+ * phys_address: physical address, the start address of the table
  * size: size of the table
  * mode: access mode. VM_PROT_READ for read, VM_PROT_WRITE for write
  */
 
 void*
-pmap_aligned_table (unsigned long offset, unsigned long size, int mode)
+pmap_aligned_table (unsigned long phys_address, unsigned long size, int mode)
 {
-    vm_offset_t addr;
+    vm_offset_t virt_addr;
     kern_return_t ret;
-    uintptr_t into_page = offset % PAGE_SIZE;
-    uintptr_t nearest_page = (uintptr_t)trunc_page(offset);
+    uintptr_t into_page = phys_address % PAGE_SIZE;
+    uintptr_t nearest_page = (uintptr_t)trunc_page(phys_address);
 
     size += into_page;
 
-    ret = kmem_alloc_wired (kernel_map, &addr, round_page (size));
+    ret = kmem_alloc_wired (kernel_map, &virt_addr, round_page (size));
 
     if (ret != KERN_SUCCESS)
         return NULL;
 
-    (void) pmap_map_bd (addr, nearest_page, nearest_page + round_page (size), mode);
+    (void) pmap_map_bd (virt_addr, nearest_page, nearest_page + round_page (size), mode);
 
     /* XXX remember mapping somewhere so we can free it? */
 
-    return (void *) (addr + into_page);
+    return (void *) (virt_addr + into_page);
 }
 
 /* acpi_find_cpus: find the MADT/APIC table in ACPI tables
