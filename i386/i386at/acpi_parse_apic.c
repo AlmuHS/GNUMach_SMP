@@ -364,8 +364,9 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n)
  *  Receives as input a reference for APIC/MADT table
  *  Returns 0 if success, -1 if error
  *
- * Fill the cpu_to_lapic and ioapics array, indexed by Kernel ID
- *   with a relationship between Kernel ID and APIC ID
+ * Fills the cpu_to_lapic and ioapics array, indexed by Kernel ID
+ *   with a relationship between Kernel ID and APIC ID,
+ *   and map the Local APIC common address, to fill the lapic reference
  */
 
 
