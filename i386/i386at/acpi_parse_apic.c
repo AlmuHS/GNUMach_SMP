@@ -59,6 +59,8 @@ int cpu_to_lapic[NCPUS];
  * phys_address: physical address, the start address of the table
  * size: size of the table
  * mode: access mode. VM_PROT_READ for read, VM_PROT_WRITE for write
+ *
+ * Returns a reference to the virtual address if success, NULL if failure
  */
 
 void*
