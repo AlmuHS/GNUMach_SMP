@@ -25,6 +25,10 @@
 #include <intel/pmap.h>
 #include <vm/vm_kern.h>
 
+#define BAD_CHECKSUM -1
+#define NO_RSDP -2
+#define NO_RSDT -2
+#define BAD_SIGNATURE -3
 
 volatile ApicLocalUnit* lapic = NULL;
 struct acpi_apic *apic_madt = NULL;
@@ -182,19 +186,37 @@ acpi_checksum(void *addr, uint32_t length)
 static int
 acpi_check_rsdp(struct acpi_rsdp *rsdp)
 {
-
-    //Check is rsdp signature is equals to ACPI RSDP signature
-    if(memcmp(rsdp->signature, ACPI_RSDP_SIG, sizeof(rsdp->signature)) != 0)
-        return -1;
-
-    //If yes, calculates rdsp checksum and check It
     uint32_t checksum;
-    checksum = acpi_checksum(rsdp, sizeof(*rsdp));
+    int is_rsdp;
+    int ret_value = 0;
 
-    if(checksum != 0)
-        return -1;
+    //Check the integrity of RSDP
+    if(rsdp == NULL)
+        {
+            ret_value = NO_RSDP;
+        }
+    else
+        {
+            //Check is rsdp signature is equals to ACPI RSDP signature
+            is_rsdp = memcmp(rsdp->signature, ACPI_RSDP_SIG, sizeof(rsdp->signature));
 
-    return 0;
+            if(is_rsdp == 0)
+                {
+                    //If yes, calculates rdsp checksum and check It
+                    checksum = acpi_checksum(rsdp, sizeof(struct acpi_rsdp));
+
+                    if(checksum != 0)
+                        {
+                            ret_value = BAD_CHECKSUM;
+                        }
+                }
+            else
+                {
+                    ret_value = BAD_SIGNATURE;
+                }
+        }
+
+    return ret_value;
 }
 
 /* acpi_search_rsdp: search the rsdp table in a memory range
@@ -222,7 +244,6 @@ acpi_search_rsdp(void *addr, uint32_t length)
             //Check if the current memory block store the RDSP
             if(acpi_check_rsdp(addr) == 0)
                 {
-
                     //If yes, store RSDP address
                     rsdp = (struct acpi_rsdp*) addr;
                     break;
@@ -278,8 +299,24 @@ acpi_get_rsdp(void)
 static int
 acpi_check_rsdt(struct acpi_rsdt *rsdt)
 {
+    uint32_t checksum;
+    int ret_value = 0;
 
-    return acpi_checksum(rsdt, rsdt->header.length);
+    if(rsdt == NULL)
+        {
+            ret_value = NO_RSDT;
+        }
+    else
+        {
+            checksum = acpi_checksum(rsdt, rsdt->header.length);
+
+            if (checksum != 0)
+                {
+                    ret_value = BAD_CHECKSUM;
+                }
+        }
+
+    return ret_value;
 }
 
 /* acpi_get_rsdt: Get RSDT table reference from RSDP entries
@@ -295,29 +332,40 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n)
 {
     phys_addr_t rsdt_phys;
     struct acpi_rsdt *rsdt = NULL;
+    int acpi_check;
+    int signature_check;
 
-    //Get rsdt address from rsdp
-    rsdt_phys = rsdp->rsdt_addr;
-    rsdt = (struct acpi_rsdt*) pmap_aligned_table(rsdt_phys, sizeof(struct acpi_rsdt), VM_PROT_READ);
-
-    printf("found rsdt in address %x\n", rsdt);
-
-    //Check is rsdt signature is equals to ACPI RSDT signature
-    if(memcmp(rsdt->header.signature, ACPI_RSDT_SIG,
-              sizeof(rsdt->header.signature)) != 0)
+    if(rsdp != NULL)
         {
-            printf("rsdt address checking failed\n");
-            return NULL;
+            //Get rsdt address from rsdp
+            rsdt_phys = rsdp->rsdt_addr;
+            rsdt = (struct acpi_rsdt*) pmap_aligned_table(rsdt_phys, sizeof(struct acpi_rsdt), VM_PROT_READ);
+
+            printf("found rsdt in address %x\n", rsdt);
+
+            //Check is rsdt signature is equals to ACPI RSDT signature
+            signature_check = memcmp(rsdt->header.signature, ACPI_RSDT_SIG,
+                                     sizeof(rsdt->header.signature));
+
+            if(signature_check == 0)
+                {
+                    //Check if rsdt is correct
+                    acpi_check = acpi_check_rsdt(rsdt);
+
+                    if(acpi_check == 0)
+                        {
+                            //Calculated number of elements stored in rsdt
+                            *acpi_rsdt_n = (rsdt->header.length - sizeof(rsdt->header))
+                                           / sizeof(rsdt->entry[0]);
+
+                        }
+                }
+
+            if (signature_check != 0 || acpi_check != 0)
+                {
+                    rsdt = NULL;
+                }
         }
-
-    //Check if rsdt is correct
-    if(acpi_check_rsdt(rsdt))
-        return NULL;
-
-    //Calculated number of elements stored in rsdt
-    *acpi_rsdt_n = (rsdt->header.length - sizeof(rsdt->header))
-                   / sizeof(rsdt->entry[0]);
-
 
     return rsdt;
 }
@@ -334,28 +382,162 @@ static struct acpi_apic*
 acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n)
 {
     struct acpi_apic *apic = NULL;
-
-    //Search APIC entries in rsdt array
-    int i;
     struct acpi_dhdr *descr_header;
-    for(i = 0; i < acpi_rsdt_n; i++)
+    int check_signature;
+
+    int i;
+
+    if(rsdt != NULL)
         {
-            descr_header = (struct acpi_dhdr*) pmap_aligned_table(rsdt->entry[i], sizeof(struct acpi_dhdr), VM_PROT_READ);
-
-            //Check if the entry contains an APIC
-            if(memcmp(descr_header->signature, ACPI_APIC_SIG,
-                      sizeof(descr_header->signature)) == 0)
+            //Search APIC entries in rsdt array
+            for(i = 0; i < acpi_rsdt_n; i++)
                 {
+                    descr_header = (struct acpi_dhdr*) pmap_aligned_table(rsdt->entry[i], sizeof(struct acpi_dhdr), VM_PROT_READ);
 
-                    //If yes, store the entry in apic
-                    apic = (struct acpi_apic*) pmap_aligned_table(rsdt->entry[i], sizeof(struct acpi_apic), VM_PROT_READ | VM_PROT_WRITE);
+                    //Check if the entry contains an APIC
+                    check_signature = memcmp(descr_header->signature, ACPI_APIC_SIG, sizeof(descr_header->signature));
 
-                    printf("found apic in address %x\n", apic);
-                    break;
+                    if(check_signature == 0)
+                        {
+                            //If yes, store the entry in apic
+                            apic = (struct acpi_apic*) pmap_aligned_table(rsdt->entry[i], sizeof(struct acpi_apic), VM_PROT_READ | VM_PROT_WRITE);
+
+                            printf("found apic in address %x\n", apic);
+                            break;
+                        }
                 }
         }
+
     return apic;
 }
+
+/* acpi_add_lapic: add a new Local APIC to cpu_to_lapic array
+ *    and increase the number of cpus
+ *
+ *  Receives as input the Local APIC entry in MADT/APIC table
+ */
+
+
+static int
+apic_add_lapic(struct acpi_apic_lapic *lapic_entry)
+{
+    int ret_value = 0;
+
+    if(lapic_entry == NULL)
+        {
+            ret_value = -1;
+        }
+    else
+        {
+            //If cpu flag is correct
+            if(lapic_entry->flags & 0x1)
+                {
+                    //Enumerate CPU and add It to cpu/apic vector
+                    cpu_to_lapic[ncpu] = lapic_entry->apic_id;
+
+                    printf("new cpu found with apic id %x\n", lapic_entry->apic_id);
+
+                    //Increase number of CPU
+                    ncpu++;
+                }
+        }
+
+    return ret_value;
+}
+
+/* apic_add_ioapic: add a new IOAPIC to IOAPICS array
+ *   and increase the number of IOAPIC
+ *
+ * Receives as input the IOAPIC entry in MADT/APIC table
+ */
+
+static int
+apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry)
+{
+    int ret_value = 0;
+
+    if(ioapic_entry == NULL)
+        {
+            ret_value = -1;
+        }
+    else
+        {
+            /*Insert ioapic in ioapics array*/
+            ioapics[nioapic].apic_id = ioapic_entry->apic_id;
+            ioapics[nioapic].addr = ioapic_entry->addr;
+            ioapics[nioapic].base = ioapic_entry->base;
+
+            printf("new ioapic found with apic id %x\n", ioapics[nioapic].apic_id);
+
+            //Increase number of ioapic
+            nioapic++;
+        }
+
+    return ret_value;
+}
+
+/* apic_parse_table: parse the MADT/APIC table
+ *   Read the APIC/MADT table entry to entry,
+ *      registering the Local APIC or IOAPIC entries
+ */
+
+static int
+apic_parse_table(struct acpi_apic *apic)
+{
+    int ret_value = 0;
+    struct acpi_apic_dhdr *apic_entry = NULL;
+    uint32_t end = 0;
+
+    if(apic != NULL)
+        {
+            apic_entry = apic->entry;
+            end = (uint32_t) apic + apic->header.length;
+
+            //Search in APIC entry
+            while((uint32_t)apic_entry < end)
+                {
+                    struct acpi_apic_lapic *lapic_entry;
+                    struct acpi_apic_ioapic *ioapic_entry;
+
+                    //Check entry type
+                    switch(apic_entry->type)
+                        {
+
+                        //If APIC entry is a CPU lapic
+                        case ACPI_APIC_ENTRY_LAPIC:
+
+                            //Store lapic
+                            lapic_entry = (struct acpi_apic_lapic*) apic_entry;
+
+                            apic_add_lapic(lapic_entry);
+
+                            break;
+
+                        //If APIC entry is an IOAPIC
+                        case ACPI_APIC_ENTRY_IOAPIC:
+
+                            //Store ioapic
+                            ioapic_entry = (struct acpi_apic_ioapic*) apic_entry;
+
+                            apic_add_ioapic(ioapic_entry);
+
+                            break;
+
+                        }
+
+                    //Get next APIC entry
+                    apic_entry = (struct acpi_apic_dhdr*)((uint32_t) apic_entry
+                                                          + apic_entry->length);
+                }
+        }
+    else //apic == NULL
+        {
+            ret_value = -1;
+        }
+
+    return ret_value;
+}
+
 
 /* acpi_apic_setup: parses the APIC/MADT table.
  *    to find the Local APIC and IOAPIC structures
@@ -369,98 +551,49 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n)
  *   and map the Local APIC common address, to fill the lapic reference
  */
 
-
 static int
 acpi_apic_setup(struct acpi_apic *apic)
 {
+    int apic_checksum;
+    int ret_value = 0;
 
-    if(apic == 0)
-        return -1;
-
-    printf("checking apic checksum\n");
-
-    //Check the checksum of the APIC
-    if(acpi_checksum(apic, apic->header.length))
-        return -1;
-
-    printf("apic checksum successfull\n");
-
-    ncpu = 0;
-    nioapic = 0;
-
-    //map common lapic address
-    lapic = pmap_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit), VM_PROT_READ);
-    printf("lapic mapped in address %x\n", lapic);
-
-    printf("the lapic id of current cpu is %x\n", lapic->apic_id);
-
-    struct acpi_apic_dhdr *apic_entry = apic->entry;
-    uint32_t end = (uint32_t) apic + apic->header.length;
-
-    printf("apic table end in address %x\n", end);
-
-    //Search in APIC entry
-    while((uint32_t)apic_entry < end)
+    if(apic != NULL)
         {
-            struct acpi_apic_lapic *lapic_entry;
-            struct acpi_apic_ioapic *ioapic_entry;
 
-            //Check entry type
-            switch(apic_entry->type)
+            //Check the checksum of the APIC
+            apic_checksum = acpi_checksum(apic, apic->header.length);
+
+            if(apic_checksum != 0)
                 {
-
-                //If APIC entry is a CPU lapic
-                case ACPI_APIC_ENTRY_LAPIC:
-
-                    //Store lapic
-                    lapic_entry = (struct acpi_apic_lapic*) apic_entry;
-
-                    //If cpu flag is correct, and the maximum number of CPUs is not reached
-                    if((lapic_entry->flags & 0x1))
-                        {
-
-                            //Enumerate CPU and add It to cpu/apic vector
-                            cpu_to_lapic[ncpu] = lapic_entry->apic_id;
-
-                            printf("new cpu found with apic id %x\n", lapic_entry->apic_id);
-
-                            //Increase number of CPU
-                            ncpu++;
-
-                        }
-                    break;
-
-                //If APIC entry is an IOAPIC
-                case ACPI_APIC_ENTRY_IOAPIC:
-
-                    //Store ioapic
-                    ioapic_entry = (struct acpi_apic_ioapic*) apic_entry;
-
-                    /*Insert ioapic in ioapics array*/
-                    ioapics[nioapic].apic_id = ioapic_entry->apic_id;
-                    ioapics[nioapic].addr = ioapic_entry->addr;
-                    ioapics[nioapic].base = ioapic_entry->base;
-
-                    printf("new ioapic found with apic id %x\n", ioapics[nioapic].apic_id);
-
-                    //Increase number of ioapic
-                    nioapic++;
-                    break;
-
+                    ret_value = -1;
                 }
+            else
+                {
+                    ncpu = 0;
+                    nioapic = 0;
 
-            //Get next APIC entry
-            apic_entry = (struct acpi_apic_dhdr*)((uint32_t) apic_entry
-                                                  + apic_entry->length);
+                    //map common lapic address
+                    lapic = pmap_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit), VM_PROT_READ);
+                    printf("lapic mapped in address %x\n", lapic);
+
+                    apic_parse_table(apic);
+
+                    if(ncpu == 0 || nioapic == 0)
+                        {
+                            ret_value = -1;
+                        }
+                    else
+                        {
+                            printf("%d cpus found. %d ioapics found\n", ncpu, nioapic);
+                        }
+                }
+        }
+    else /* apic == NULL */
+        {
+            ret_value = -1;
         }
 
-
-    if(ncpu == 0 || nioapic == 0)
-        return -1;
-
-    printf("%d cpus found. %d ioapics found\n", ncpu, nioapic);
-
-    return 0;
+    return ret_value;
 }
 
 /* apic_print_info: shows the list of Local APIC and IOAPIC
