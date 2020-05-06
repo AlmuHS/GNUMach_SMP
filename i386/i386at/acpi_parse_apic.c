@@ -29,6 +29,7 @@
 #define NO_RSDP -2
 #define NO_RSDT -2
 #define BAD_SIGNATURE -3
+#define NO_APIC -4
 
 volatile ApicLocalUnit* lapic = NULL;
 struct acpi_apic *apic_madt = NULL;
@@ -102,32 +103,43 @@ acpi_find_cpus(void)
     struct acpi_rsdp *rsdp = 0;
     struct acpi_rsdt *rsdt = 0;
     int acpi_rsdt_n;
+    int ret_acpi_setup;
+
 
     //Try to get rsdp pointer
     rsdp = acpi_get_rsdp();
     if(rsdp == NULL)
-        return -1;
+        {
+            return NO_RSDP;
+        }
 
     printf("rsdp address %x\n", rsdp);
 
     //Try to get rsdt pointer
     rsdt = acpi_get_rsdt(rsdp, &acpi_rsdt_n);
     if(rsdt == NULL)
-        return -1;
+        {
+            return NO_RSDT;
+        }
 
     printf("rsdt address %x\n", rsdt);
 
     apic_madt = acpi_get_apic(rsdt, acpi_rsdt_n);
     if(apic_madt == NULL)
-        return -1;
+        {
+            return NO_APIC;
+        }
 
     printf("apic address %x\n", apic_madt);
 
     acpi_print_info(rsdp, rsdt, acpi_rsdt_n);
 
+    ret_acpi_setup = acpi_apic_setup(apic_madt);
 
-    if(acpi_apic_setup(apic_madt))
-        return -1;
+    if(ret_acpi_setup != 0)
+        {
+            return NO_APIC;
+        }
 
     apic_print_info();
 
@@ -590,7 +602,7 @@ acpi_apic_setup(struct acpi_apic *apic)
         }
     else /* apic == NULL */
         {
-            ret_value = -1;
+            ret_value = NO_APIC;
         }
 
     return ret_value;
