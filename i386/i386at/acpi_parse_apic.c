@@ -278,7 +278,6 @@ acpi_get_rsdp(void)
     uint16_t *start = 0x0;
     uint32_t base = 0x0;
 
-
     //EDBA start address
     start = (uint16_t*) phystokv(0x040e);
     base = *start;
@@ -290,13 +289,13 @@ acpi_get_rsdp(void)
 
             //Search RSDP in first 1024 bytes from EDBA
             rsdp = acpi_search_rsdp((void*)base,1024);
-
-            if(rsdp != NULL)
-                return (struct acpi_rsdp*) rsdp;
         }
 
-    //If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh
-    rsdp = acpi_search_rsdp((void*) 0x0e0000, 0x100000 - 0x0e0000);
+    if(rsdp == NULL)
+            {
+                //If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh
+                rsdp = acpi_search_rsdp((void*) 0x0e0000, 0x100000 - 0x0e0000);
+            }
 
     return rsdp;
 }
