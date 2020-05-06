@@ -125,15 +125,8 @@ struct acpi_apic_ioapic
 
 
 
-int acpi_find_cpus();
+int acpi_find_cpus(void);
 void acpi_print_info(struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n);
-
-/* extra_setup() function:
- *
- * Must be executed after configure paging
- * Reserve Local APIC common pointer in a physical page
- */
-int extra_setup();
 
 
 #endif /* __ACPI_H__ */
