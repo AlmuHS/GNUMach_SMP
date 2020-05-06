@@ -32,12 +32,12 @@ int ncpu = 1;
 int nioapic = 0;
 
 
-static struct acpi_rsdp* acpi_get_rsdp();
+static struct acpi_rsdp* acpi_get_rsdp(void);
 static int acpi_check_rsdt(struct acpi_rsdt *);
 static struct acpi_rsdt* acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n);
 static struct acpi_apic* acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n);
 static int acpi_apic_setup(struct acpi_apic *apic);
-static void apic_print_info();
+static void apic_print_info(void);
 
 extern vm_offset_t kernel_virtual_end;
 
@@ -93,7 +93,7 @@ pmap_aligned_table (unsigned long phys_address, unsigned long size, int mode)
  */
 
 int
-acpi_find_cpus()
+acpi_find_cpus(void)
 {
     struct acpi_rsdp *rsdp = 0;
     struct acpi_rsdt *rsdt = 0;
@@ -239,7 +239,7 @@ acpi_search_rsdp(void *addr, uint32_t length)
  */
 
 struct acpi_rsdp*
-acpi_get_rsdp()
+acpi_get_rsdp(void)
 {
     struct acpi_rsdp *rsdp = NULL;
     uint16_t *start = 0x0;
@@ -469,7 +469,7 @@ acpi_apic_setup(struct acpi_apic *apic)
  */
 
 static
-void apic_print_info()
+void apic_print_info(void)
 {
     int i;
 
