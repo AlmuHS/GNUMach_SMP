@@ -140,7 +140,7 @@ acpi_find_cpus(void)
 
     if(ret_acpi_setup != 0)
         {
-            return NO_APIC;
+            return ret_acpi_setup;
         }
 
     apic_print_info();
@@ -194,7 +194,7 @@ acpi_checksum(void *addr, uint32_t length)
  *
  * Receives as input the reference of RSDT table
  *
- * Returns 0 if correct, -1 is failure
+ * Returns 0 if correct
  */
 
 static int
@@ -557,7 +557,7 @@ apic_parse_table(struct acpi_apic *apic)
  *    and the common address for Local APIC
  *
  *  Receives as input a reference for APIC/MADT table
- *  Returns 0 if success, -1 if error
+ *  Returns 0 if success
  *
  * Fills the cpu_to_lapic and ioapics array, indexed by Kernel ID
  *   with a relationship between Kernel ID and APIC ID,
@@ -578,7 +578,7 @@ acpi_apic_setup(struct acpi_apic *apic)
 
             if(apic_checksum != 0)
                 {
-                    ret_value = -1;
+                    ret_value = BAD_CHECKSUM;
                 }
             else
                 {
