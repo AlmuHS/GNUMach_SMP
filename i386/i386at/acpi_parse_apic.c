@@ -16,7 +16,7 @@
 #include <i386at/acpi_parse_apic.h>
 #include <string.h> //memcmp, memcpy...
 
-#include <imps/apic.h> //lapic, ioapic...
+#include <i386/apic.h> //lapic, ioapic...
 #include <kern/printf.h> //printf
 #include <include/stdint.h> //uint16_t, uint32_t...
 #include <mach/machine.h> //machine_slot
@@ -52,11 +52,11 @@ static struct acpi_rsdp* acpi_get_rsdp(void);
 static int acpi_check_rsdt(struct acpi_rsdt *);
 static struct acpi_rsdt* acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n);
 static struct acpi_apic* acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n);
-static int apic_add_ioapic(struct acpi_apic_ioapic)
 static int acpi_apic_setup(struct acpi_apic *apic);
 static int apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry);
 static int apic_add_lapic(struct acpi_apic_lapic *lapic_entry);
 static int apic_parse_table(struct acpi_apic *apic);
+static void apic_print_info(void);
 
 
 /* pmap_aligned_table: map a table or structure in a virtual memory page
