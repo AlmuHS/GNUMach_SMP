@@ -39,8 +39,6 @@ int nioapic = 0;
 /*TODO: Implement ioapic support*/
 struct ioapic ioapics[16];
 
-//int cpu_to_lapic[NCPUS];
-
 #if NCPUS == 1
 int cpu_to_lapic[255];
 #else
