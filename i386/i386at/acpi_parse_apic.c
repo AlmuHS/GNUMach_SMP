@@ -486,7 +486,7 @@ static int
 apic_add_irq_override(struct acpi_apic_irq_override* irq_override)
 {
     int ret_value = 0;
-    struct irq_override irq_over;
+    struct irq_override_data irq_over;
 
 
     if(irq_override == NULL)
@@ -672,12 +672,12 @@ void apic_print_info(void)
             printf("CPU %d - APIC ID %x\n", i, lapic_id);
         }
 
-//    printf("\nIOAPICS\n");
-//    printf("-------------------------------------------------\n");
-//
-//    for(i = 0; i < nioapics; i++)
-//        {
-//            ioapic_data = get_ioapic(i);
-//            printf("IOAPIC %d - APIC ID %x\n", i, ioapic_data.apic_id);
-//        }
+    printf("\nIOAPICS\n");
+    printf("-------------------------------------------------\n");
+
+    for(i = 0; i < nioapics; i++)
+        {
+            ioapic = get_ioapic(i);
+            printf("IOAPIC %d - APIC ID %x\n", i, ioapic.apic_id);
+        }
 }
