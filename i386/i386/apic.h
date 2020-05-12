@@ -136,10 +136,10 @@ struct irq_override
 
 struct smp_info
 {
-	uint16_t nlapics;
+	uint16_t ncpus;
 	uint16_t nioapics;
-	uint16_t* lapic_list;
-	uint16_t* ioapic_list;
+	uint16_t lapic_list[256];
+	struct ioapic ioapic_list[16];
 };
 
 //extern int nioapic;
