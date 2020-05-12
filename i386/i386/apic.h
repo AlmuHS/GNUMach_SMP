@@ -120,7 +120,7 @@ typedef struct ApicLocalUnit
     ApicReg reserved3f;
 } ApicLocalUnit;
 
-struct ioapic {
+struct ioapic_data {
     uint8_t apic_id;
     uint32_t addr;
     uint32_t base;
@@ -139,15 +139,19 @@ struct smp_info
 	uint16_t ncpus;
 	uint16_t nioapics;
 	uint16_t lapic_list[256];
-	struct ioapic ioapic_list[16];
+	struct ioapic_data ioapic_list[16];
 };
 
-//extern int nioapic;
-//extern struct ioapic ioapics[16];
-
-
-//extern volatile ApicLocalUnit* lapic;
-
+void smp_data_init(void);
+void add_cpu(uint16_t apic_id);
+void set_lapic(ApicLocalUnit* lapic_ptr);
+void add_ioapic(struct ioapic_data);
+void add_irq_override(struct irq_override irq_over);
+uint16_t get_cpu_apic_id(int kernel_id);
+ApicLocalUnit* get_lapic(void);
+struct ioapic_data get_ioapic(int kernel_id);
+int get_numcpus(void);
+int get_num_ioapics(void);
 
 #endif
 
