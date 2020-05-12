@@ -31,22 +31,7 @@
 #define BAD_SIGNATURE -3
 #define NO_APIC -4
 
-volatile ApicLocalUnit* lapic = NULL;
 struct acpi_apic *apic_madt = NULL;
-int ncpu = 1;
-int nioapic = 0;
-int nirqoverride = 0;
-
-/*TODO: Implement ioapic support*/
-struct ioapic ioapics[16];
-struct irq_override irq_override_list[24];
-
-#if NCPUS == 1
-int cpu_to_lapic[255];
-#else
-int cpu_to_lapic[NCPUS];
-#endif // NCPUS
-
 
 static struct acpi_rsdp* acpi_get_rsdp(void);
 static int acpi_check_rsdt(struct acpi_rsdt *);
@@ -435,6 +420,8 @@ static int
 apic_add_lapic(struct acpi_apic_lapic *lapic_entry)
 {
     int ret_value = 0;
+    int lapic_id;
+
 
     if(lapic_entry == NULL)
         {
@@ -446,12 +433,11 @@ apic_add_lapic(struct acpi_apic_lapic *lapic_entry)
             if(lapic_entry->flags & 0x1)
                 {
                     //Enumerate CPU and add It to cpu/apic vector
-                    cpu_to_lapic[ncpu] = lapic_entry->apic_id;
+                    lapic_id = lapic_entry->apic_id;
 
-                    printf("new cpu found with apic id %x\n", lapic_entry->apic_id);
+                    add_cpu(lapic_id);
 
-                    //Increase number of CPU
-                    ncpu++;
+                    printf("new cpu found with apic id %x\n", lapic_entry->apic_id);;
                 }
         }
 
@@ -468,6 +454,7 @@ static int
 apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry)
 {
     int ret_value = 0;
+    struct ioapic_data io_apic;
 
     if(ioapic_entry == NULL)
         {
@@ -476,14 +463,13 @@ apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry)
     else
         {
             /*Insert ioapic in ioapics array*/
-            ioapics[nioapic].apic_id = ioapic_entry->apic_id;
-            ioapics[nioapic].addr = ioapic_entry->addr;
-            ioapics[nioapic].base = ioapic_entry->base;
+            io_apic.apic_id = ioapic_entry->apic_id;
+            io_apic.addr = ioapic_entry->addr;
+            io_apic.base = ioapic_entry->base;
 
-            printf("new ioapic found with apic id %x\n", ioapics[nioapic].apic_id);
+            add_ioapic(io_apic);
 
-            //Increase number of ioapic
-            nioapic++;
+            printf("new ioapic found with apic id %x\n", io_apic.apic_id);
         }
 
     return ret_value;
@@ -500,6 +486,8 @@ static int
 apic_add_irq_override(struct acpi_apic_irq_override* irq_override)
 {
     int ret_value = 0;
+    struct irq_override irq_over;
+
 
     if(irq_override == NULL)
         {
@@ -508,13 +496,12 @@ apic_add_irq_override(struct acpi_apic_irq_override* irq_override)
     else
         {
             /*Insert ioapic in ioapics array*/
-            irq_override_list[nirqoverride].bus = irq_override->bus;
-            irq_override_list[nirqoverride].irq = irq_override->irq;
-            irq_override_list[nirqoverride].gsr = irq_override->gsr;
-            irq_override_list[nirqoverride].flags = irq_override->flags;
+            irq_over.bus = irq_override->bus;
+            irq_over.irq = irq_override->irq;
+            irq_over.gsr = irq_override->gsr;
+            irq_over.flags = irq_override->flags;
 
-            //Increase number of ioapic
-            nirqoverride++;
+            add_irq_override(irq_over);
         }
 
     return ret_value;
@@ -610,6 +597,10 @@ acpi_apic_setup(struct acpi_apic *apic)
     int apic_checksum;
     int ret_value = 0;
 
+    int ncpus, nioapics;
+    ApicLocalUnit* lapic;
+
+
     if(apic != NULL)
         {
 
@@ -622,22 +613,26 @@ acpi_apic_setup(struct acpi_apic *apic)
                 }
             else
                 {
-                    ncpu = 0;
-                    nioapic = 0;
+                    smp_data_init();
 
                     //map common lapic address
                     lapic = pmap_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit), VM_PROT_READ);
+                    set_lapic(lapic);
+
                     printf("lapic mapped in address %x\n", lapic);
 
                     apic_parse_table(apic);
 
-                    if(ncpu == 0 || nioapic == 0)
+                    ncpus = get_numcpus();
+                    nioapics = get_num_ioapics();
+
+                    if(ncpus == 0 || nioapics == 0)
                         {
                             ret_value = -1;
                         }
                     else
                         {
-                            printf("%d cpus found. %d ioapics found\n", ncpu, nioapic);
+                            printf("%d cpus found. %d ioapics found\n", ncpus, nioapics);
                         }
                 }
         }
@@ -658,19 +653,31 @@ static
 void apic_print_info(void)
 {
     int i;
+    int ncpus, nioapics;
+
+    ncpus = get_numcpus();
+    nioapics = get_num_ioapics();
+
+    uint16_t lapic_id;
+    uint16_t ioapic_id;
+
+    struct ioapic_data ioapic;
 
     printf("CPUS\n");
     printf("-------------------------------------------------\n");
-    for(i = 0; i < ncpu; i++)
+    for(i = 0; i < ncpus; i++)
         {
-            printf("CPU %d - APIC ID %x\n", i, cpu_to_lapic[i]);
+            lapic_id = get_cpu_apic_id(i);
+
+            printf("CPU %d - APIC ID %x\n", i, lapic_id);
         }
 
-    printf("\nIOAPICS\n");
-    printf("-------------------------------------------------\n");
-
-    for(i = 0; i < nioapic; i++)
-        {
-            printf("IOAPIC %d - APIC ID %x\n", i, ioapics[i].apic_id);
-        }
+//    printf("\nIOAPICS\n");
+//    printf("-------------------------------------------------\n");
+//
+//    for(i = 0; i < nioapics; i++)
+//        {
+//            ioapic_data = get_ioapic(i);
+//            printf("IOAPIC %d - APIC ID %x\n", i, ioapic_data.apic_id);
+//        }
 }

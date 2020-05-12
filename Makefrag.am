@@ -128,7 +128,9 @@ EXTRA_DIST += \
 
 libkernel_a_SOURCES += \
 	i386/i386at/acpi_parse_apic.h \
-	i386/i386at/acpi_parse_apic.c
+	i386/i386at/acpi_parse_apic.c \
+	i386/i386/apic.h \
+	i386/i386/apic.c
 
 #
 # `kernel' implementation (tasks, threads, trivia, etc.).
