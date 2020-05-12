@@ -19,7 +19,7 @@ void
 add_cpu(uint16_t apic_id)
     {
         int numcpus = smp_data.ncpus;
-        smp_data.lapic_list[numcpus] = apic_id;
+        smp_data.cpu_lapic_list[numcpus] = apic_id;
         smp_data.ncpus++;
     }
 
@@ -57,7 +57,7 @@ get_cpu_apic_id(int kernel_id)
 
         if(kernel_id < 256)
             {
-                apic_id = smp_data.lapic_list[kernel_id];
+                apic_id = smp_data.cpu_lapic_list[kernel_id];
             }
         else
             {

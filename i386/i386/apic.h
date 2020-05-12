@@ -140,7 +140,7 @@ struct smp_info
 	uint16_t nioapics;
 
 #if NCPUS == 1
-	uint16_t lapic_list[256];
+	uint16_t cpu_lapic_list[256];
 #else
     uint16_t lapic_list[NCPUS];
 #endif // NCPUS
