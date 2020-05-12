@@ -70,10 +70,6 @@ struct acpi_rsdt
 #define ACPI_APIC_IRQ_OVERRIDE 2
 #define ACPI_APIC_ENTRY_NONMASK_IRQ 4
 
-#define ACPI_APIC_IRQ_OVERRIDE_ACTIVE_LOW 2
-#define ACPI_APIC_IRQ_OVERRIDE_LEVEL_TRIGGERED 8
-
-
 /* APIC descriptor header
  * Define the type of the structure (Local APIC, I/O APIC or others)
  * Type: Local APIC (0), I/O APIC (1)
