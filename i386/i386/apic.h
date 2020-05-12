@@ -126,7 +126,7 @@ struct ioapic_data {
     uint32_t base;
 };
 
-struct irq_override
+struct irq_override_data
 {
     uint8_t bus;
     uint8_t irq;
@@ -146,7 +146,7 @@ void smp_data_init(void);
 void add_cpu(uint16_t apic_id);
 void set_lapic(ApicLocalUnit* lapic_ptr);
 void add_ioapic(struct ioapic_data);
-void add_irq_override(struct irq_override irq_over);
+void add_irq_override(struct irq_override_data irq_over);
 uint16_t get_cpu_apic_id(int kernel_id);
 ApicLocalUnit* get_lapic(void);
 struct ioapic_data get_ioapic(int kernel_id);

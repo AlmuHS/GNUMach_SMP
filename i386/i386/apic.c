@@ -4,7 +4,7 @@
 volatile ApicLocalUnit* lapic = NULL;
 
 int nirqoverride = 0;
-struct irq_override irq_override_list[24];
+struct irq_override_data irq_override_list[24];
 
 struct smp_info smp_data;
 
@@ -42,7 +42,7 @@ add_ioapic(struct ioapic_data ioapic)
 
 
 void
-add_irq_override(struct irq_override irq_over)
+add_irq_override(struct irq_override_data irq_over)
     {
         int nirq = nirqoverride;
 
