@@ -67,6 +67,12 @@ struct acpi_rsdt
 //Types value for Local APIC and I/O APIC ACPI's structures
 #define ACPI_APIC_ENTRY_LAPIC  0
 #define ACPI_APIC_ENTRY_IOAPIC 1
+#define ACPI_APIC_IRQ_OVERRIDE 2
+#define ACPI_APIC_ENTRY_NONMASK_IRQ 4
+
+#define ACPI_APIC_IRQ_OVERRIDE_ACTIVE_LOW 2
+#define ACPI_APIC_IRQ_OVERRIDE_LEVEL_TRIGGERED 8
+
 
 /* APIC descriptor header
  * Define the type of the structure (Local APIC, I/O APIC or others)
@@ -123,7 +129,14 @@ struct acpi_apic_ioapic
 } __attribute__((__packed__));
 
 
-
+struct acpi_apic_irq_override
+{
+    struct acpi_apic_dhdr header;
+    uint8_t bus;
+    uint8_t irq;
+    uint32_t gsr;
+    uint16_t flags;
+} __attribute__((__packed__));
 
 int acpi_find_cpus(void);
 void acpi_print_info(struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n);
