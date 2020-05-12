@@ -35,9 +35,11 @@ volatile ApicLocalUnit* lapic = NULL;
 struct acpi_apic *apic_madt = NULL;
 int ncpu = 1;
 int nioapic = 0;
+int nirqoverride = 0;
 
 /*TODO: Implement ioapic support*/
 struct ioapic ioapics[16];
+struct irq_override irq_override_list[24];
 
 #if NCPUS == 1
 int cpu_to_lapic[255];
@@ -487,6 +489,38 @@ apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry)
     return ret_value;
 }
 
+
+/* apic_add_ioapic: add a new IOAPIC to IOAPICS array
+ *   and increase the number of IOAPIC
+ *
+ * Receives as input the IOAPIC entry in MADT/APIC table
+ */
+
+static int
+apic_add_irq_override(struct acpi_apic_irq_override* irq_override)
+{
+    int ret_value = 0;
+
+    if(irq_override == NULL)
+        {
+            ret_value = -1;
+        }
+    else
+        {
+            /*Insert ioapic in ioapics array*/
+            irq_override_list[nirqoverride].bus = irq_override->bus;
+            irq_override_list[nirqoverride].irq = irq_override->irq;
+            irq_override_list[nirqoverride].gsr = irq_override->gsr;
+            irq_override_list[nirqoverride].flags = irq_override->flags;
+
+            //Increase number of ioapic
+            nirqoverride++;
+        }
+
+    return ret_value;
+}
+
+
 /* apic_parse_table: parse the MADT/APIC table
  *   Read the APIC/MADT table entry to entry,
  *      registering the Local APIC or IOAPIC entries
@@ -509,6 +543,7 @@ apic_parse_table(struct acpi_apic *apic)
                 {
                     struct acpi_apic_lapic *lapic_entry;
                     struct acpi_apic_ioapic *ioapic_entry;
+                    struct acpi_apic_irq_override *irq_override_entry;
 
                     //Check entry type
                     switch(apic_entry->type)
@@ -533,6 +568,13 @@ apic_parse_table(struct acpi_apic *apic)
                             apic_add_ioapic(ioapic_entry);
 
                             break;
+
+                        //TODO: Parse IRQ OVERRIDE entry
+                        case ACPI_APIC_IRQ_OVERRIDE:
+                             irq_override_entry = (struct acpi_apic_irq_override*) apic_entry;
+
+                             apic_add_irq_override(irq_override_entry);
+                             break;
 
                         }
 

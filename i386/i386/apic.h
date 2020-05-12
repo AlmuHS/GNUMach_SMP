@@ -1,4 +1,4 @@
-/* 
+/*
  * Copyright (c) 1994 The University of Utah and
  * the Computer Systems Laboratory at the University of Utah (CSL).
  * All rights reserved.
@@ -39,15 +39,6 @@ typedef struct ApicIoUnit
 	ApicReg window;
 } ApicIoUnit;
 
-
-struct ioapic {
-    uint8_t apic_id;
-    uint32_t addr;
-    uint32_t base;
-};
-
-extern int nioapic;
-extern struct ioapic ioapics[16];
 
 typedef struct ApicLocalUnit
 {
@@ -129,10 +120,33 @@ typedef struct ApicLocalUnit
     ApicReg reserved3f;
 } ApicLocalUnit;
 
+struct ioapic {
+    uint8_t apic_id;
+    uint32_t addr;
+    uint32_t base;
+};
 
-extern volatile ApicLocalUnit* lapic;
+struct irq_override
+{
+    uint8_t bus;
+    uint8_t irq;
+    uint32_t gsr;
+    uint16_t flags;
+};
+
+struct smp_info
+{
+	uint16_t nlapics;
+	uint16_t nioapics;
+	uint16_t* lapic_list;
+	uint16_t* ioapic_list;
+};
+
+//extern int nioapic;
+//extern struct ioapic ioapics[16];
 
 
+//extern volatile ApicLocalUnit* lapic;
 
 
 #endif
@@ -143,7 +157,7 @@ extern volatile ApicLocalUnit* lapic;
 #define APIC_IO_REDIR_HIGH(int_pin)	(0x11+(int_pin)*2)
 
 /* Address at which the local unit is mapped in kernel virtual memory.
- *   Must be constant.  
+ *   Must be constant.
  */
 
 #define APIC_LOCAL_VA	lapic
