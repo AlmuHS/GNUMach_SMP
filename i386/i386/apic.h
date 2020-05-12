@@ -138,7 +138,12 @@ struct smp_info
 {
 	uint16_t ncpus;
 	uint16_t nioapics;
+
+#if NCPUS == 1
 	uint16_t lapic_list[256];
+#else
+    uint16_t lapic_list[NCPUS];
+#endif // NCPUS
 	struct ioapic_data ioapic_list[16];
 };
 
