@@ -27,9 +27,6 @@
 
 #include <stdint.h>
 
-#define APIC_IRQ_OVERRIDE_ACTIVE_LOW 2
-#define APIC_IRQ_OVERRIDE_LEVEL_TRIGGERED 8
-
 typedef struct ApicReg
 {
     unsigned r;	/* the actual register */
@@ -129,6 +126,9 @@ struct ioapic_data
     uint32_t addr;
     uint32_t base;
 };
+
+#define APIC_IRQ_OVERRIDE_ACTIVE_LOW 2
+#define APIC_IRQ_OVERRIDE_LEVEL_TRIGGERED 8
 
 struct irq_override_data
 {
