@@ -152,15 +152,15 @@ struct smp_info
 };
 
 void smp_data_init(void);
-void add_cpu(uint16_t apic_id);
-void set_lapic(ApicLocalUnit* lapic_ptr);
-void add_ioapic(struct ioapic_data);
-void add_irq_override(struct irq_override_data irq_over);
-uint16_t get_cpu_apic_id(int kernel_id);
-ApicLocalUnit* get_lapic(void);
-struct ioapic_data get_ioapic(int kernel_id);
-int get_numcpus(void);
-int get_num_ioapics(void);
+void apic_add_cpu(uint16_t apic_id);
+void apic_lapic_init(ApicLocalUnit* lapic_ptr);
+void apic_add_ioapic(struct ioapic_data);
+void apic_add_irq_override(struct irq_override_data irq_over);
+uint16_t apic_get_cpu_apic_id(int kernel_id);
+ApicLocalUnit* apic_get_lapic(void);
+struct ioapic_data apic_get_ioapic(int kernel_id);
+int apic_get_numcpus(void);
+int apic_get_num_ioapics(void);
 void apic_print_info(void);
 
 

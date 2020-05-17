@@ -434,7 +434,7 @@ acpi_apic_add_lapic(struct acpi_apic_lapic *lapic_entry)
                     //Enumerate CPU and add It to cpu/apic vector
                     lapic_id = lapic_entry->apic_id;
 
-                    add_cpu(lapic_id);
+                    apic_add_cpu(lapic_id);
 
                     printf("new cpu found with apic id %x\n", lapic_entry->apic_id);;
                 }
@@ -466,7 +466,7 @@ acpi_apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry)
             io_apic.addr = ioapic_entry->addr;
             io_apic.base = ioapic_entry->base;
 
-            add_ioapic(io_apic);
+            apic_add_ioapic(io_apic);
 
             printf("new ioapic found with apic id %x\n", io_apic.apic_id);
         }
@@ -500,7 +500,7 @@ acpi_apic_add_irq_override(struct acpi_apic_irq_override* irq_override)
             irq_over.gsi = irq_override->gsi;
             irq_over.flags = irq_override->flags;
 
-            add_irq_override(irq_over);
+            apic_add_irq_override(irq_over);
         }
 
     return ret_value;
@@ -616,14 +616,14 @@ acpi_apic_setup(struct acpi_apic *apic)
 
                     //map common lapic address
                     lapic = pmap_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit), VM_PROT_READ);
-                    set_lapic(lapic);
+                    apic_lapic_init(lapic);
 
                     printf("lapic mapped in address %x\n", lapic);
 
                     apic_parse_table(apic);
 
-                    ncpus = get_numcpus();
-                    nioapics = get_num_ioapics();
+                    ncpus = apic_get_numcpus();
+                    nioapics = apic_get_num_ioapics();
 
                     if(ncpus == 0 || nioapics == 0)
                         {
