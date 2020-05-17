@@ -38,9 +38,9 @@ static int acpi_check_rsdt(struct acpi_rsdt *);
 static struct acpi_rsdt* acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n);
 static struct acpi_apic* acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n);
 static int acpi_apic_setup(struct acpi_apic *apic);
-static int apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry);
-static int apic_add_lapic(struct acpi_apic_lapic *lapic_entry);
-static int apic_parse_table(struct acpi_apic *apic);
+static int acpi_apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry);
+static int acpi_apic_add_lapic(struct acpi_apic_lapic *lapic_entry);
+static int acpi_apic_parse_table(struct acpi_apic *apic);
 
 
 /* pmap_aligned_table: map a table or structure in a virtual memory page
@@ -416,7 +416,7 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n)
 
 
 static int
-apic_add_lapic(struct acpi_apic_lapic *lapic_entry)
+acpi_apic_add_lapic(struct acpi_apic_lapic *lapic_entry)
 {
     int ret_value = 0;
     int lapic_id;
@@ -450,7 +450,7 @@ apic_add_lapic(struct acpi_apic_lapic *lapic_entry)
  */
 
 static int
-apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry)
+acpi_apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry)
 {
     int ret_value = 0;
     struct ioapic_data io_apic;
@@ -482,7 +482,7 @@ apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry)
  */
 
 static int
-apic_add_irq_override(struct acpi_apic_irq_override* irq_override)
+acpi_apic_add_irq_override(struct acpi_apic_irq_override* irq_override)
 {
     int ret_value = 0;
     struct irq_override_data irq_over;
@@ -541,7 +541,7 @@ apic_parse_table(struct acpi_apic *apic)
                             //Store lapic
                             lapic_entry = (struct acpi_apic_lapic*) apic_entry;
 
-                            apic_add_lapic(lapic_entry);
+                            acpi_apic_add_lapic(lapic_entry);
 
                             break;
 
@@ -551,7 +551,7 @@ apic_parse_table(struct acpi_apic *apic)
                             //Store ioapic
                             ioapic_entry = (struct acpi_apic_ioapic*) apic_entry;
 
-                            apic_add_ioapic(ioapic_entry);
+                            acpi_apic_add_ioapic(ioapic_entry);
 
                             break;
 
@@ -559,7 +559,7 @@ apic_parse_table(struct acpi_apic *apic)
                         case ACPI_APIC_IRQ_OVERRIDE:
                              irq_override_entry = (struct acpi_apic_irq_override*) apic_entry;
 
-                             apic_add_irq_override(irq_override_entry);
+                             acpi_apic_add_irq_override(irq_override_entry);
                              break;
 
                         }
