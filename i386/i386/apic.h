@@ -161,6 +161,8 @@ ApicLocalUnit* get_lapic(void);
 struct ioapic_data get_ioapic(int kernel_id);
 int get_numcpus(void);
 int get_num_ioapics(void);
+void apic_print_info(void);
+
 
 #endif
 

@@ -41,7 +41,6 @@ static int acpi_apic_setup(struct acpi_apic *apic);
 static int apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry);
 static int apic_add_lapic(struct acpi_apic_lapic *lapic_entry);
 static int apic_parse_table(struct acpi_apic *apic);
-static void apic_print_info(void);
 
 
 /* pmap_aligned_table: map a table or structure in a virtual memory page
@@ -644,40 +643,3 @@ acpi_apic_setup(struct acpi_apic *apic)
     return ret_value;
 }
 
-/* apic_print_info: shows the list of Local APIC and IOAPIC
- *
- * Shows each CPU and IOAPIC, with Its Kernel ID and APIC ID
- */
-
-static
-void apic_print_info(void)
-{
-    int i;
-    int ncpus, nioapics;
-
-    ncpus = get_numcpus();
-    nioapics = get_num_ioapics();
-
-    uint16_t lapic_id;
-    uint16_t ioapic_id;
-
-    struct ioapic_data ioapic;
-
-    printf("CPUS\n");
-    printf("-------------------------------------------------\n");
-    for(i = 0; i < ncpus; i++)
-        {
-            lapic_id = get_cpu_apic_id(i);
-
-            printf("CPU %d - APIC ID %x\n", i, lapic_id);
-        }
-
-    printf("\nIOAPICS\n");
-    printf("-------------------------------------------------\n");
-
-    for(i = 0; i < nioapics; i++)
-        {
-            ioapic = get_ioapic(i);
-            printf("IOAPIC %d - APIC ID %x\n", i, ioapic.apic_id);
-        }
-}
