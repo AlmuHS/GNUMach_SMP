@@ -498,7 +498,7 @@ apic_add_irq_override(struct acpi_apic_irq_override* irq_override)
             /*Insert ioapic in ioapics array*/
             irq_over.bus = irq_override->bus;
             irq_over.irq = irq_override->irq;
-            irq_over.gsr = irq_override->gsr;
+            irq_over.gsi = irq_override->gsi;
             irq_over.flags = irq_override->flags;
 
             add_irq_override(irq_over);
