@@ -16,7 +16,7 @@ smp_data_init(void)
     }
 
 void
-add_cpu(uint16_t apic_id)
+apic_add_cpu(uint16_t apic_id)
     {
         int numcpus = smp_data.ncpus;
         smp_data.cpu_lapic_list[numcpus] = apic_id;
@@ -25,13 +25,13 @@ add_cpu(uint16_t apic_id)
 
 
 void
-set_lapic(ApicLocalUnit* lapic_ptr)
+apic_lapic_init(ApicLocalUnit* lapic_ptr)
     {
         lapic = lapic_ptr;
     }
 
 void
-add_ioapic(struct ioapic_data ioapic)
+apic_add_ioapic(struct ioapic_data ioapic)
     {
         int nioapic = smp_data.nioapics;
 
@@ -42,7 +42,7 @@ add_ioapic(struct ioapic_data ioapic)
 
 
 void
-add_irq_override(struct irq_override_data irq_over)
+apic_add_irq_override(struct irq_override_data irq_over)
     {
         int nirq = nirqoverride;
 
@@ -51,7 +51,7 @@ add_irq_override(struct irq_override_data irq_over)
     }
 
 uint16_t
-get_cpu_apic_id(int kernel_id)
+apic_get_cpu_apic_id(int kernel_id)
     {
         uint16_t apic_id;
 
@@ -68,14 +68,14 @@ get_cpu_apic_id(int kernel_id)
     }
 
 ApicLocalUnit*
-get_lapic(void)
+apic_get_lapic(void)
     {
         return lapic;
     }
 
 
 struct ioapic_data
-get_ioapic(int kernel_id)
+apic_get_ioapic(int kernel_id)
     {
         struct ioapic_data io_apic;
 
@@ -88,13 +88,13 @@ get_ioapic(int kernel_id)
     }
 
 int
-get_numcpus(void)
+apic_get_numcpus(void)
     {
         return smp_data.ncpus;
     }
 
 int
-get_num_ioapics(void)
+apic_get_num_ioapics(void)
     {
         return smp_data.nioapics;
     }
@@ -109,8 +109,8 @@ void apic_print_info(void)
     int i;
     int ncpus, nioapics;
 
-    ncpus = get_numcpus();
-    nioapics = get_num_ioapics();
+    ncpus = apic_get_numcpus();
+    nioapics = apic_get_num_ioapics();
 
     uint16_t lapic_id;
     uint16_t ioapic_id;
@@ -121,7 +121,7 @@ void apic_print_info(void)
     printf("-------------------------------------------------\n");
     for(i = 0; i < ncpus; i++)
         {
-            lapic_id = get_cpu_apic_id(i);
+            lapic_id = apic_get_cpu_apic_id(i);
 
             printf("CPU %d - APIC ID %x\n", i, lapic_id);
         }
@@ -131,7 +131,7 @@ void apic_print_info(void)
 
     for(i = 0; i < nioapics; i++)
         {
-            ioapic = get_ioapic(i);
+            ioapic = apic_get_ioapic(i);
             printf("IOAPIC %d - APIC ID %x\n", i, ioapic.apic_id);
         }
 }
