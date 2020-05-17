@@ -171,7 +171,7 @@ void machine_init(void)
 	 */
 	linux_init();
 #endif
-	acpi_find_cpus();
+	acpi_apic_init();
 
 	/*
 	 * Find the devices

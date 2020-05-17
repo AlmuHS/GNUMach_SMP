@@ -85,7 +85,7 @@ pmap_aligned_table (unsigned long phys_address, unsigned long size, int mode)
  */
 
 int
-acpi_find_cpus(void)
+acpi_apic_init(void)
 {
     struct acpi_rsdp *rsdp = 0;
     struct acpi_rsdt *rsdt = 0;
