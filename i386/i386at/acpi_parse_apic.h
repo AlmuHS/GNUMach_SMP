@@ -130,7 +130,7 @@ struct acpi_apic_irq_override
     struct acpi_apic_dhdr header;
     uint8_t bus;
     uint8_t irq;
-    uint32_t gsr;
+    uint32_t gsi;
     uint16_t flags;
 } __attribute__((__packed__));
 

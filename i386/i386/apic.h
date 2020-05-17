@@ -134,7 +134,7 @@ struct irq_override_data
 {
     uint8_t bus;
     uint8_t irq;
-    uint32_t gsr;
+    uint32_t gsi;
     uint16_t flags;
 };
 
