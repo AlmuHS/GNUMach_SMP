@@ -246,6 +246,8 @@
 #undef	CONFIG_BSD_DISKLABEL
 #undef	CONFIG_SMD_DISKLABEL
 
+#define CONFIG_GPT_DISKLABEL 1
+
 /*
  * Character devices
  */
