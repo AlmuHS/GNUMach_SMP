@@ -64,7 +64,7 @@ struct acpi_rsdt
 //APIC table signature
 #define ACPI_APIC_SIG "APIC"
 
-//Types value for Local APIC and I/O APIC ACPI's structures
+//Types value for MADT entries: Local APIC, IOAPIC and IRQ Override
 #define ACPI_APIC_ENTRY_LAPIC  0
 #define ACPI_APIC_ENTRY_IOAPIC 1
 #define ACPI_APIC_IRQ_OVERRIDE 2

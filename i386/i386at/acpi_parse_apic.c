@@ -598,6 +598,7 @@ acpi_apic_setup(struct acpi_apic *apic)
 
     int ncpus, nioapics;
     ApicLocalUnit* lapic;
+    int init_success = 0;
 
 
     if(apic != NULL)
@@ -612,26 +613,33 @@ acpi_apic_setup(struct acpi_apic *apic)
                 }
             else
                 {
-                    smp_data_init();
-
-                    //map common lapic address
-                    lapic = pmap_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit), VM_PROT_READ);
-                    apic_lapic_init(lapic);
-
-                    printf("lapic mapped in address %x\n", lapic);
-
-                    apic_parse_table(apic);
-
-                    ncpus = apic_get_numcpus();
-                    nioapics = apic_get_num_ioapics();
-
-                    if(ncpus == 0 || nioapics == 0)
+                    init_success = smp_data_init();
+                    if(init_success == 0)
                         {
-                            ret_value = -1;
+
+                            //map common lapic address
+                            lapic = pmap_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit), VM_PROT_READ);
+                            apic_lapic_init(lapic);
+
+                            printf("lapic mapped in address %x\n", lapic);
+
+                            apic_parse_table(apic);
+
+                            ncpus = apic_get_numcpus();
+                            nioapics = apic_get_num_ioapics();
+
+                            if(ncpus == 0 || nioapics == 0)
+                                {
+                                    ret_value = -1;
+                                }
+                            else
+                                {
+                                    apic_refill_cpulist();
+                                    printf("%d cpus found. %d ioapics found\n", ncpus, nioapics);
+                                }
                         }
-                    else
-                        {
-                            printf("%d cpus found. %d ioapics found\n", ncpus, nioapics);
+                        else{
+                            ret_value = -1;
                         }
                 }
         }
