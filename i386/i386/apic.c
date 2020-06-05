@@ -1,6 +1,8 @@
 #include <i386/apic.h>
 #include <string.h>
 
+#define MAX_CPUS 256
+
 volatile ApicLocalUnit* lapic = NULL;
 
 int nirqoverride = 0;
@@ -8,11 +10,22 @@ struct irq_override_data irq_override_list[24];
 
 struct smp_info smp_data;
 
-void
+int
 smp_data_init(void)
     {
+        int success = 0;
+
+        smp_data.cpu_lapic_list = NULL;
         smp_data.ncpus = 0;
         smp_data.nioapics = 0;
+        smp_data.cpu_lapic_list = (uint16_t*) kalloc(MAX_CPUS*sizeof(uint16_t));
+
+        if(smp_data.cpu_lapic_list == NULL)
+            {
+                success = -1;
+            }
+
+        return success;
     }
 
 void
@@ -97,6 +110,30 @@ int
 apic_get_num_ioapics(void)
     {
         return smp_data.nioapics;
+    }
+
+int apic_refill_cpulist(void)
+    {
+        uint16_t* old_list = smp_data.cpu_lapic_list;
+        uint16_t* new_list = (uint16_t*) kalloc(smp_data.ncpus*sizeof(uint16_t));
+        int i = 0;
+        int success = 0;
+
+
+        if(new_list != NULL && old_list != NULL){
+            for(i = 0; i < smp_data.ncpus; i++)
+            {
+                new_list[i] = old_list[i];
+            }
+
+            smp_data.cpu_lapic_list = new_list;
+            kfree(old_list);
+        }
+        else{
+            success = -1;
+        }
+
+        return success;
     }
 
 /* apic_print_info: shows the list of Local APIC and IOAPIC

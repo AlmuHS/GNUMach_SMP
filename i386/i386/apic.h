@@ -143,15 +143,11 @@ struct smp_info
     uint16_t ncpus;
     uint16_t nioapics;
 
-#if NCPUS == 1
-    uint16_t cpu_lapic_list[256];
-#else
-    uint16_t cpu_lapic_list[NCPUS];
-#endif // NCPUS
+    uint16_t* cpu_lapic_list;
     struct ioapic_data ioapic_list[16];
 };
 
-void smp_data_init(void);
+int smp_data_init(void);
 void apic_add_cpu(uint16_t apic_id);
 void apic_lapic_init(ApicLocalUnit* lapic_ptr);
 void apic_add_ioapic(struct ioapic_data);
