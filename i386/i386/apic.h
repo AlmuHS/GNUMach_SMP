@@ -160,7 +160,7 @@ struct ioapic_data apic_get_ioapic(int kernel_id);
 int apic_get_numcpus(void);
 int apic_get_num_ioapics(void);
 void apic_print_info(void);
-
+int apic_refill_cpulist(void);
 
 #endif
 
