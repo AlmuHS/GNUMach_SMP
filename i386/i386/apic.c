@@ -5,22 +5,20 @@
 
 volatile ApicLocalUnit* lapic = NULL;
 
-int nirqoverride = 0;
-struct irq_override_data irq_override_list[24];
-
-struct smp_info smp_data;
+struct apic_info apic_data;
 
 int
-smp_data_init(void)
+apic_data_init(void)
     {
         int success = 0;
 
-        smp_data.cpu_lapic_list = NULL;
-        smp_data.ncpus = 0;
-        smp_data.nioapics = 0;
-        smp_data.cpu_lapic_list = (uint16_t*) kalloc(MAX_CPUS*sizeof(uint16_t));
+        apic_data.cpu_lapic_list = NULL;
+        apic_data.ncpus = 0;
+        apic_data.nioapics = 0;
+        apic_data.cpu_lapic_list = (uint16_t*) kalloc(MAX_CPUS*sizeof(uint16_t));
+        apic_data.nirqoverride = 0;
 
-        if(smp_data.cpu_lapic_list == NULL)
+        if(apic_data.cpu_lapic_list == NULL)
             {
                 success = -1;
             }
@@ -31,9 +29,9 @@ smp_data_init(void)
 void
 apic_add_cpu(uint16_t apic_id)
     {
-        int numcpus = smp_data.ncpus;
-        smp_data.cpu_lapic_list[numcpus] = apic_id;
-        smp_data.ncpus++;
+        int numcpus = apic_data.ncpus;
+        apic_data.cpu_lapic_list[numcpus] = apic_id;
+        apic_data.ncpus++;
     }
 
 
@@ -46,21 +44,21 @@ apic_lapic_init(ApicLocalUnit* lapic_ptr)
 void
 apic_add_ioapic(struct ioapic_data ioapic)
     {
-        int nioapic = smp_data.nioapics;
+        int nioapic = apic_data.nioapics;
 
-        smp_data.ioapic_list[nioapic] = ioapic;
+        apic_data.ioapic_list[nioapic] = ioapic;
 
-        smp_data.nioapics++;
+        apic_data.nioapics++;
     }
 
 
 void
 apic_add_irq_override(struct irq_override_data irq_over)
     {
-        int nirq = nirqoverride;
+        int nirq = apic_data.nirqoverride;
 
-        irq_override_list[nirq] = irq_over;
-        nirqoverride++;
+        apic_data.irq_override_list[nirq] = irq_over;
+        apic_data.nirqoverride++;
     }
 
 uint16_t
@@ -70,7 +68,7 @@ apic_get_cpu_apic_id(int kernel_id)
 
         if(kernel_id < 256)
             {
-                apic_id = smp_data.cpu_lapic_list[kernel_id];
+                apic_id = apic_data.cpu_lapic_list[kernel_id];
             }
         else
             {
@@ -94,7 +92,7 @@ apic_get_ioapic(int kernel_id)
 
         if(kernel_id < 16)
             {
-                io_apic = smp_data.ioapic_list[kernel_id];
+                io_apic = apic_data.ioapic_list[kernel_id];
             }
 
         return io_apic;
@@ -103,30 +101,30 @@ apic_get_ioapic(int kernel_id)
 int
 apic_get_numcpus(void)
     {
-        return smp_data.ncpus;
+        return apic_data.ncpus;
     }
 
 int
 apic_get_num_ioapics(void)
     {
-        return smp_data.nioapics;
+        return apic_data.nioapics;
     }
 
 int apic_refill_cpulist(void)
     {
-        uint16_t* old_list = smp_data.cpu_lapic_list;
-        uint16_t* new_list = (uint16_t*) kalloc(smp_data.ncpus*sizeof(uint16_t));
+        uint16_t* old_list = apic_data.cpu_lapic_list;
+        uint16_t* new_list = (uint16_t*) kalloc(apic_data.ncpus*sizeof(uint16_t));
         int i = 0;
         int success = 0;
 
 
         if(new_list != NULL && old_list != NULL){
-            for(i = 0; i < smp_data.ncpus; i++)
+            for(i = 0; i < apic_data.ncpus; i++)
             {
                 new_list[i] = old_list[i];
             }
 
-            smp_data.cpu_lapic_list = new_list;
+            apic_data.cpu_lapic_list = new_list;
             kfree(old_list);
         }
         else{

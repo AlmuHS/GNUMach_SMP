@@ -613,7 +613,7 @@ acpi_apic_setup(struct acpi_apic *apic)
                 }
             else
                 {
-                    init_success = smp_data_init();
+                    init_success = apic_data_init();
                     if(init_success == 0)
                         {
 
