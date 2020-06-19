@@ -22,7 +22,6 @@
 #include <mach/machine.h> //machine_slot
 #include <i386/vm_param.h> //phystokv
 #include <kern/debug.h>
-#include <intel/pmap.h>
 #include <vm/vm_kern.h>
 
 #define BAD_CHECKSUM -1
@@ -43,40 +42,7 @@ static int acpi_apic_add_lapic(struct acpi_apic_lapic *lapic_entry);
 static int acpi_apic_parse_table(struct acpi_apic *apic);
 
 
-/* pmap_aligned_table: map a table or structure in a virtual memory page
- * Align the table initial address with the page initial address
- *
- * Parameters:
- * phys_address: physical address, the start address of the table
- * size: size of the table
- * mode: access mode. VM_PROT_READ for read, VM_PROT_WRITE for write
- *
- * Returns a reference to the virtual address if success, NULL if failure
- */
-
-void*
-pmap_aligned_table (unsigned long phys_address, unsigned long size, int mode)
-{
-    vm_offset_t virt_addr;
-    kern_return_t ret;
-    uintptr_t into_page = phys_address % PAGE_SIZE;
-    uintptr_t nearest_page = (uintptr_t)trunc_page(phys_address);
-
-    size += into_page;
-
-    ret = kmem_alloc_wired (kernel_map, &virt_addr, round_page (size));
-
-    if (ret != KERN_SUCCESS)
-        return NULL;
-
-    (void) pmap_map_bd (virt_addr, nearest_page, nearest_page + round_page (size), mode);
-
-    /* XXX remember mapping somewhere so we can free it? */
-
-    return (void *) (virt_addr + into_page);
-}
-
-/* acpi_find_cpus: find the MADT/APIC table in ACPI tables
+/* acpi_apic_init: find the MADT/APIC table in ACPI tables
  *  and parses It to find Local APIC and IOAPIC structures
  *  Each Local APIC stores the info and control structores for a cpu
  *
@@ -336,7 +302,7 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n)
         {
             //Get rsdt address from rsdp
             rsdt_phys = rsdp->rsdt_addr;
-            rsdt = (struct acpi_rsdt*) pmap_aligned_table(rsdt_phys, sizeof(struct acpi_rsdt), VM_PROT_READ);
+            rsdt = (struct acpi_rsdt*) kmem_map_aligned_table(rsdt_phys, sizeof(struct acpi_rsdt), VM_PROT_READ);
 
             printf("found rsdt in address %x\n", rsdt);
 
@@ -389,7 +355,7 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n)
             //Search APIC entries in rsdt array
             for(i = 0; i < acpi_rsdt_n; i++)
                 {
-                    descr_header = (struct acpi_dhdr*) pmap_aligned_table(rsdt->entry[i], sizeof(struct acpi_dhdr), VM_PROT_READ);
+                    descr_header = (struct acpi_dhdr*) kmem_map_aligned_table(rsdt->entry[i], sizeof(struct acpi_dhdr), VM_PROT_READ);
 
                     //Check if the entry contains an APIC
                     check_signature = memcmp(descr_header->signature, ACPI_APIC_SIG, sizeof(descr_header->signature));
@@ -397,7 +363,7 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n)
                     if(check_signature == 0)
                         {
                             //If yes, store the entry in apic
-                            apic = (struct acpi_apic*) pmap_aligned_table(rsdt->entry[i], sizeof(struct acpi_apic), VM_PROT_READ | VM_PROT_WRITE);
+                            apic = (struct acpi_apic*) kmem_map_aligned_table(rsdt->entry[i], sizeof(struct acpi_apic), VM_PROT_READ | VM_PROT_WRITE);
 
                             printf("found apic in address %x\n", apic);
                             break;
@@ -618,7 +584,7 @@ acpi_apic_setup(struct acpi_apic *apic)
                         {
 
                             //map common lapic address
-                            lapic = pmap_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit), VM_PROT_READ);
+                            lapic = kmem_map_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit), VM_PROT_READ);
                             apic_lapic_init(lapic);
 
                             printf("lapic mapped in address %x\n", lapic);
