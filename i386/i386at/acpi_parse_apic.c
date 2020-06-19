@@ -584,10 +584,10 @@ acpi_apic_setup(struct acpi_apic *apic)
                         {
 
                             //map common lapic address
-                            lapic = kmem_map_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit), VM_PROT_READ);
-                            apic_lapic_init(lapic);
-
-                            printf("lapic mapped in address %x\n", lapic);
+                            lapic = apic_map_lapic(apic->lapic_addr);
+                            if(lapic != NULL){
+                                printf("lapic mapped in address %x\n", lapic);
+                            }
 
                             apic_parse_table(apic);
 

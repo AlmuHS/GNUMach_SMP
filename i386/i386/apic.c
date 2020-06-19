@@ -1,5 +1,7 @@
 #include <i386/apic.h>
 #include <string.h>
+#include <vm/vm_kern.h>
+
 
 #define MAX_CPUS 256
 
@@ -26,19 +28,17 @@ apic_data_init(void)
         return success;
     }
 
+ApicLocalUnit* apic_map_lapic(uint32_t phys_addr){
+    lapic = kmem_map_aligned_table(phys_addr, sizeof(ApicLocalUnit), VM_PROT_READ);
+    return lapic;
+}
+
 void
 apic_add_cpu(uint16_t apic_id)
     {
         int numcpus = apic_data.ncpus;
         apic_data.cpu_lapic_list[numcpus] = apic_id;
         apic_data.ncpus++;
-    }
-
-
-void
-apic_lapic_init(ApicLocalUnit* lapic_ptr)
-    {
-        lapic = lapic_ptr;
     }
 
 void
@@ -133,6 +133,7 @@ int apic_refill_cpulist(void)
 
         return success;
     }
+
 
 /* apic_print_info: shows the list of Local APIC and IOAPIC
  *
