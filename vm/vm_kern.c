@@ -635,7 +635,7 @@ retry:
 	return KERN_SUCCESS;
 }
 
-/* pmap_aligned_table: map a table or structure in a virtual memory page
+/* kmem_map_aligned_table: map a table or structure in a virtual memory page
  * Align the table initial address with the page initial address
  *
  * Parameters:
@@ -656,7 +656,7 @@ kmem_map_aligned_table (unsigned long phys_address, unsigned long size, int mode
 
     size += into_page;
 
-    ret = kmem_alloc_aligned(kernel_map, &virt_addr, round_page (size));
+    ret = kmem_alloc_wired(kernel_map, &virt_addr, round_page (size));
 
     if (ret != KERN_SUCCESS)
         return NULL;

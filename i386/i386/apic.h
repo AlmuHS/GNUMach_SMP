@@ -152,6 +152,7 @@ struct apic_info
 int smp_data_init(void);
 void apic_add_cpu(uint16_t apic_id);
 void apic_lapic_init(ApicLocalUnit* lapic_ptr);
+ApicLocalUnit* apic_map_lapic(uint32_t phys_addr);
 void apic_add_ioapic(struct ioapic_data);
 void apic_add_irq_override(struct irq_override_data irq_over);
 uint16_t apic_get_cpu_apic_id(int kernel_id);
