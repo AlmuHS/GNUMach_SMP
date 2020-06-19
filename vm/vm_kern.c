@@ -66,14 +66,14 @@ vm_map_t	kernel_pageable_map;
 /*
  *	projected_buffer_allocate
  *
- *	Allocate a wired-down buffer shared between kernel and user task.  
+ *	Allocate a wired-down buffer shared between kernel and user task.
  *      Fresh, zero-filled memory is allocated.
  *      If persistence is false, this buffer can only be deallocated from
- *      user task using projected_buffer_deallocate, and deallocation 
+ *      user task using projected_buffer_deallocate, and deallocation
  *      from user task also deallocates the buffer from the kernel map.
  *      projected_buffer_collect is called from vm_map_deallocate to
  *      automatically deallocate projected buffers on task_deallocate.
- *      Sharing with more than one user task is achieved by using 
+ *      Sharing with more than one user task is achieved by using
  *      projected_buffer_map for the second and subsequent tasks.
  *      The user is precluded from manipulating the VM entry of this buffer
  *      (i.e. changing protection, inheritance or machine attributes).
@@ -99,7 +99,7 @@ projected_buffer_allocate(
 	  return(KERN_INVALID_ARGUMENT);
 
 	/*
-	 *	Allocate a new object. 
+	 *	Allocate a new object.
 	 */
 
 	size = round_page(size);
@@ -191,7 +191,7 @@ projected_buffer_map(
 	kern_return_t kr;
 
 	/*
-	 *	Find entry in kernel map 
+	 *	Find entry in kernel map
 	 */
 
 	size = round_page(size);
@@ -252,7 +252,7 @@ projected_buffer_map(
 kern_return_t
 projected_buffer_deallocate(
      vm_map_t 		map,
-     vm_offset_t 	start, 
+     vm_offset_t 	start,
      vm_offset_t	end)
 {
 	vm_map_entry_t entry, k_entry;
@@ -281,7 +281,7 @@ projected_buffer_deallocate(
 	vm_map_entry_delete(map, entry);
 	vm_map_unlock(map);
 
-	/*Check if the buffer is not persistent and only the 
+	/*Check if the buffer is not persistent and only the
           kernel mapping remains, and if so delete it*/
 	vm_map_lock(kernel_map);
 	if (k_entry->projected_on == (vm_map_entry_t) -1 &&
@@ -324,14 +324,14 @@ projected_buffer_collect(vm_map_t map)
 /*
  *	projected_buffer_in_range
  *
- *	Verifies whether a projected buffer exists in the address range 
+ *	Verifies whether a projected buffer exists in the address range
  *      given.
  */
 
 boolean_t
 projected_buffer_in_range(
        vm_map_t 	map,
-       vm_offset_t 	start, 
+       vm_offset_t 	start,
 	vm_offset_t	end)
 {
         vm_map_entry_t entry;
@@ -635,6 +635,39 @@ retry:
 	return KERN_SUCCESS;
 }
 
+/* pmap_aligned_table: map a table or structure in a virtual memory page
+ * Align the table initial address with the page initial address
+ *
+ * Parameters:
+ * phys_address: physical address, the start address of the table
+ * size: size of the table
+ * mode: access mode. VM_PROT_READ for read, VM_PROT_WRITE for write
+ *
+ * Returns a reference to the virtual address if success, NULL if failure
+ */
+
+void*
+kmem_map_aligned_table (unsigned long phys_address, unsigned long size, int mode)
+{
+    vm_offset_t virt_addr;
+    kern_return_t ret;
+    uintptr_t into_page = phys_address % PAGE_SIZE;
+    uintptr_t nearest_page = (uintptr_t)trunc_page(phys_address);
+
+    size += into_page;
+
+    ret = kmem_alloc_aligned(kernel_map, &virt_addr, round_page (size));
+
+    if (ret != KERN_SUCCESS)
+        return NULL;
+
+    (void) pmap_map_bd (virt_addr, nearest_page, nearest_page + round_page (size), mode);
+
+    /* XXX remember mapping somewhere so we can free it? */
+
+    return (void *) (virt_addr + into_page);
+}
+
 /*
  *	kmem_alloc_pageable:
  *
@@ -695,7 +728,7 @@ void
 kmem_alloc_pages(
 	vm_object_t	object,
 	vm_offset_t	offset,
-	vm_offset_t	start, 
+	vm_offset_t	start,
 	vm_offset_t	end,
 	vm_prot_t	protection)
 {
@@ -751,7 +784,7 @@ void
 kmem_remap_pages(
 	vm_object_t	object,
 	vm_offset_t	offset,
-	vm_offset_t	start, 
+	vm_offset_t	start,
 	vm_offset_t	end,
 	vm_prot_t	protection)
 {
@@ -808,9 +841,9 @@ kmem_remap_pages(
 
 void
 kmem_submap(
-	vm_map_t 	map, 
+	vm_map_t 	map,
 	vm_map_t 	parent,
-	vm_offset_t 	*min, 
+	vm_offset_t 	*min,
 	vm_offset_t 	*max,
 	vm_size_t 	size)
 {
@@ -915,7 +948,7 @@ kmem_io_map_copyout(
 	/*
 	 *	If total size is larger than one page list and
 	 *	we don't have to do more than one page list, then
-	 *	only do one page list.  
+	 *	only do one page list.
 	 *
 	 * XXX	Could be much smarter about this ... like trimming length
 	 * XXX	if we need more than one page list but not all of them.
@@ -962,7 +995,7 @@ kmem_io_map_copyout(
 
 		/*
 		 *	Onward to the next page_list.  The extend_cont
-		 *	leaves the current page list's pages alone; 
+		 *	leaves the current page list's pages alone;
 		 *	they'll be cleaned up at discard.  Reset this
 		 *	copy's continuation to discard the next one.
 		 */
@@ -998,7 +1031,7 @@ kmem_io_map_deallocate(
 	/*
 	 *	Remove the mappings.  The pmap_remove is needed.
 	 */
-	
+
 	pmap_remove(vm_map_pmap(map), addr, addr + size);
 	vm_map_remove(map, addr, addr + size);
 }
@@ -1014,7 +1047,7 @@ kmem_io_map_deallocate(
 
 int copyinmap(
 	vm_map_t 	map,
-	char 		*fromaddr, 
+	char 		*fromaddr,
 	char		*toaddr,
 	int 		length)
 {
@@ -1041,7 +1074,7 @@ int copyinmap(
 
 int copyoutmap(
 	vm_map_t map,
-	char 	*fromaddr, 
+	char 	*fromaddr,
 	char	*toaddr,
 	int 	length)
 {

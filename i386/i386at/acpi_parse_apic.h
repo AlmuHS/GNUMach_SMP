@@ -134,7 +134,7 @@ struct acpi_apic_irq_override
     uint16_t flags;
 } __attribute__((__packed__));
 
-int acpi_find_cpus(void);
+int acpi_apic_init(void);
 void acpi_print_info(struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n);
 
 
