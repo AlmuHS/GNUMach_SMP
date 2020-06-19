@@ -600,7 +600,7 @@ acpi_apic_setup(struct acpi_apic *apic)
                                 }
                             else
                                 {
-                                    apic_refill_cpulist();
+                                    apic_refit_cpulist();
                                     printf("%d cpus found. %d ioapics found\n", ncpus, nioapics);
                                 }
                         }
