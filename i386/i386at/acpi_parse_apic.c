@@ -95,6 +95,8 @@ acpi_apic_init(void)
 
     apic_print_info();
 
+    printf("apic setup finished\n");
+
     return 0;
 }
 
@@ -563,7 +565,6 @@ acpi_apic_setup(struct acpi_apic *apic)
     int ret_value = 0;
 
     int ncpus, nioapics;
-    ApicLocalUnit* lapic;
     int init_success = 0;
 
 
@@ -584,10 +585,7 @@ acpi_apic_setup(struct acpi_apic *apic)
                         {
 
                             //map common lapic address
-                            lapic = apic_map_lapic(apic->lapic_addr);
-                            if(lapic != NULL){
-                                printf("lapic mapped in address %x\n", lapic);
-                            }
+                            apic_map_lapic(apic->lapic_addr);
 
                             apic_parse_table(apic);
 

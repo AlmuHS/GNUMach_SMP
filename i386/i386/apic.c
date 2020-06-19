@@ -40,6 +40,11 @@ apic_data_init(void)
 ApicLocalUnit* apic_map_lapic(uint32_t phys_addr)
 {
     lapic = kmem_map_aligned_table(phys_addr, sizeof(ApicLocalUnit), VM_PROT_READ);
+    if(lapic != NULL)
+        {
+            printf("lapic mapped in address %x\n", lapic);
+        }
+
     return lapic;
 }
 
