@@ -563,7 +563,7 @@ acpi_apic_setup(struct acpi_apic *apic)
 {
     int apic_checksum;
     int ret_value = 0;
-
+    ApicLocalUnit* lapic;
     int ncpus, nioapics;
     int init_success = 0;
 
@@ -584,8 +584,14 @@ acpi_apic_setup(struct acpi_apic *apic)
                     if(init_success == 0)
                         {
 
+                            printf("lapic found in address %x\n", apic->lapic_addr);
                             //map common lapic address
-                            apic_map_lapic(apic->lapic_addr);
+                            lapic = kmem_map_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit), VM_PROT_READ);
+
+                            if(lapic != NULL){
+                                printf("lapic mapped in address %x\n", lapic);
+                                apic_lapic_init(lapic);
+                            }
 
                             apic_parse_table(apic);
 
