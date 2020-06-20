@@ -33,20 +33,15 @@ apic_data_init(void)
     return success;
 }
 
-/* apic_map_lapic: map the lapic common register in a virtual page
- *  returns a ApicLocalUnit reference if success, NULL if error
+/* apic_lapic_init: initialize lapic pointer to the memory common address
+ *    Receives as input a pointer to the virtual memory address, previously mapped in a page
  */
 
-ApicLocalUnit* apic_map_lapic(uint32_t phys_addr)
-{
-    lapic = kmem_map_aligned_table(phys_addr, sizeof(ApicLocalUnit), VM_PROT_READ);
-    if(lapic != NULL)
-        {
-            printf("lapic mapped in address %x\n", lapic);
-        }
-
-    return lapic;
-}
+void
+apic_lapic_init(ApicLocalUnit* lapic_ptr)
+    {
+        lapic = lapic_ptr;
+    }
 
 /* apic_add_cpu: add a new lapic/cpu entry to the cpu_lapic list
  *   Receives as input the lapic's APIC ID
