@@ -3056,6 +3056,30 @@ specified and @code{KERN_NO_SPACE} if there was not enough space left to
 satisfy the request.
 @end deftypefun
 
+@deftypefun kern_return_t vm_allocate_contiguous (@w{host_priv_t @var{host_priv}}, @w{vm_task_t @var{target_task}}, @w{vm_address_t *@var{vaddr}}, @w{phys_addr_t *@var{paddr}}, @w{vm_size_t @var{size}}, @w{phys_addr_t @var{pmin}}, @w{phys_addr_t @var{pmax}}, @w{phys_addr_t @var{palign}})
+The function @code{vm_allocate} allocates a region of physical memory,
+placing virtual mapping of the physical pages in the specified @var{task}'s
+address space.
+
+The virtual space will be allocated wherever it is available. The virtual
+address at which the physical memory was mapped will be returned in
+@var{vaddr}. The physical address of the start of the allocated physical
+memory will be returned in @var{paddr}.
+
+@var{size} is the number of bytes to allocate (rounded by the system in
+a machine dependent way to an integral number of virtual pages).
+
+Constraints can be set on the physical address, to cope with hardware physical
+memory access constraints, e.g. DMAs.  @var{pmin} is the minimum physical address
+at which the allocated memory should start.  @var{pmax} is the maximum physical
+address at which the allocated memory should end.  @var{palign} is the alignment
+restriction, which has to be a power of two.
+
+The function returns @code{KERN_SUCCESS} if the memory was successfully
+allocated, @code{KERN_RESOURCE_SHORTAGE} if there was not enough physical memory
+left to satisfy the request, and @code{KERN_NO_SPACE} if there was not enough
+virtual space left to satisfy the request.
+@end deftypefun
 
 @node Memory Deallocation
 @section Memory Deallocation
