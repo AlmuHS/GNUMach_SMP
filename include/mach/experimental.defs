@@ -1,0 +1,15 @@
+subsystem
+#if	KERNEL_USER
+	  KernelUser
+#endif	/* KERNEL_USER */
+#if	KERNEL_SERVER
+	  KernelServer
+#endif	/* KERNEL_SERVER */
+		experimental 424242;
+
+#include <mach/std_types.defs>
+#include <mach/mach_types.defs>
+
+serverprefix experimental_;
+
+/* This is free for experimenting RPCs, with no backward compatibility guarantees.  */
