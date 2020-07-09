@@ -50,6 +50,8 @@
 #include <linux/dev/glue/glue.h>
 #include <machine/machspl.h>
 
+#include <device/intr.h>
+
 #if 0
 /* XXX: This is the way it's done in linux 2.2. GNU Mach currently uses intr_count. It should be made using local_{bh/irq}_count instead (through hardirq_enter/exit) for SMP support. */
 unsigned int local_bh_count[NR_CPUS];
@@ -76,6 +78,7 @@ struct linux_action
   void *dev_id;
   struct linux_action *next;
   unsigned long flags;
+  user_intr_t *user_intr;
 };
 
 static struct linux_action *irq_action[16] =
@@ -95,6 +98,7 @@ linux_intr (int irq)
 {
   struct pt_regs regs;
   struct linux_action *action = *(irq_action + irq);
+  struct linux_action **prev = &irq_action[irq];
   unsigned long flags;
 
   kstat.interrupts[irq]++;
@@ -106,93 +110,35 @@ linux_intr (int irq)
 
   while (action)
     {
-      action->handler (irq, action->dev_id, &regs);
+      // TODO I might need to check whether the interrupt belongs to
+      // the current device. But I don't do it for now.
+      if (action->user_intr)
+	{
+	  if (!deliver_user_intr(&irqtab, irq, action->user_intr))
+	  {
+	    *prev = action->next;
+	    linux_kfree(action);
+	    action = *prev;
+	    continue;
+	  }
+	}
+      else if (action->handler)
+	action->handler (irq, action->dev_id, &regs);
+      prev = &action->next;
       action = action->next;
+    }
+
+  if (!irq_action[irq])
+    {
+      /* No handler any more, disable interrupt */
+      mask_irq (irq);
+      ivect[irq] = intnull;
+      iunit[irq] = irq;
     }
 
   restore_flags (flags);
 
   intr_count--;
-}
-
-/*
- * Mask an IRQ.
- */
-static inline void
-mask_irq (unsigned int irq_nr)
-{
-  int new_pic_mask = curr_pic_mask | 1 << irq_nr;
-
-  if (curr_pic_mask != new_pic_mask)
-    {
-      curr_pic_mask = new_pic_mask;
-      if (irq_nr < 8)
-       outb (curr_pic_mask & 0xff, PIC_MASTER_OCW);
-      else
-       outb (curr_pic_mask >> 8, PIC_SLAVE_OCW);
-    }
-}
-
-/*
- * Unmask an IRQ.
- */
-static inline void
-unmask_irq (unsigned int irq_nr)
-{
-  int mask;
-  int new_pic_mask;
-
-  mask = 1 << irq_nr;
-  if (irq_nr >= 8)
-    mask |= 1 << 2;
-
-  new_pic_mask = curr_pic_mask & ~mask;
-
-  if (curr_pic_mask != new_pic_mask)
-    {
-      curr_pic_mask = new_pic_mask;
-      if (irq_nr < 8)
-	outb (curr_pic_mask & 0xff, PIC_MASTER_OCW);
-      else
-	outb (curr_pic_mask >> 8, PIC_SLAVE_OCW);
-    }
-}
-
-/* Count how many subsystems requested to disable each IRQ */
-static unsigned ndisabled_irq[NR_IRQS];
-
-/* These disable/enable IRQs for real after counting how many subsystems
- * requested that */
-void
-__disable_irq (unsigned int irq_nr)
-{
-  unsigned long flags;
-
-  assert (irq_nr < NR_IRQS);
-
-  save_flags (flags);
-  cli ();
-  ndisabled_irq[irq_nr]++;
-  assert (ndisabled_irq[irq_nr] > 0);
-  if (ndisabled_irq[irq_nr] == 1)
-    mask_irq (irq_nr);
-  restore_flags (flags);
-}
-
-void
-__enable_irq (unsigned int irq_nr)
-{
-  unsigned long flags;
-
-  assert (irq_nr < NR_IRQS);
-
-  save_flags (flags);
-  cli ();
-  assert (ndisabled_irq[irq_nr] > 0);
-  ndisabled_irq[irq_nr]--;
-  if (ndisabled_irq[irq_nr] == 0)
-    unmask_irq (irq_nr);
-  restore_flags (flags);
 }
 
 /* IRQ mask according to Linux drivers */
@@ -273,6 +219,53 @@ setup_x86_irq (int irq, struct linux_action *new)
   return 0;
 }
 
+int
+install_user_intr_handler (struct irqdev *dev, int id, unsigned long flags,
+			  user_intr_t *user_intr)
+{
+  struct linux_action *action;
+  struct linux_action *old;
+  int retval;
+
+  unsigned int irq = dev->irq[id];
+
+  assert (irq < 16);
+
+  /* Test whether the irq handler has been set */
+  // TODO I need to protect the array when iterating it.
+  old = irq_action[irq];
+  while (old)
+    {
+      if (old->user_intr && old->user_intr->dst_port == user_intr->dst_port)
+	{
+	  printk ("The interrupt handler has already been installed on line %d", irq);
+	  return linux_to_mach_error (-EAGAIN);
+	}
+      old = old->next;
+    }
+
+  /*
+   * Hmm... Should I use `kalloc()' ?
+   * By OKUJI Yoshinori.
+   */
+  action = (struct linux_action *)
+    linux_kmalloc (sizeof (struct linux_action), GFP_KERNEL);
+  if (action == NULL)
+    return linux_to_mach_error (-ENOMEM);
+  
+  action->handler = NULL;
+  action->next = NULL;
+  action->dev_id = NULL;
+  action->flags = SA_SHIRQ;
+  action->user_intr = user_intr;
+  
+  retval = setup_x86_irq (irq, action);
+  if (retval)
+    linux_kfree (action);
+  
+  return linux_to_mach_error (retval);
+}
+
 /*
  * Attach a handler to an IRQ.
  */
@@ -301,6 +294,7 @@ request_irq (unsigned int irq, void (*handler) (int, void *, struct pt_regs *),
   action->next = NULL;
   action->dev_id = dev_id;
   action->flags = flags;
+  action->user_intr = NULL;
   
   retval = setup_x86_irq (irq, action);
   if (retval)

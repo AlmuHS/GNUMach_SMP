@@ -49,6 +49,24 @@ OTHER TORTIOUS ACTION, ARISING OUR OF OR IN CONNECTION
 WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+/*
+ * Copyright (C) 1995 Shantanu Goel.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2, or (at your option)
+ * any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, write to the Free Software
+ * Foundation, 675 Mass Ave, Cambridge, MA 02139, USA.
+ */
+
 #include <sys/types.h>
 #include <kern/printf.h>
 #include <i386/ipl.h>
@@ -185,3 +203,57 @@ intnull(int unit_dev)
 	}
 
 }
+
+/*
+ * Mask a PIC IRQ.
+ */
+inline void
+mask_irq (unsigned int irq_nr)
+{
+	int new_pic_mask = curr_pic_mask | 1 << irq_nr;
+
+	if (curr_pic_mask != new_pic_mask)
+	{
+		curr_pic_mask = new_pic_mask;
+		if (irq_nr < 8)
+		{
+			outb (PIC_MASTER_OCW, curr_pic_mask & 0xff);
+		}
+		else
+		{
+			outb (PIC_SLAVE_OCW, curr_pic_mask >> 8);
+		}
+	}
+}
+
+/*
+ * Unmask a PIC IRQ.
+ */
+inline void
+unmask_irq (unsigned int irq_nr)
+{
+	int mask;
+	int new_pic_mask;
+
+	mask = 1 << irq_nr;
+	if (irq_nr >= 8)
+	{
+		mask |= 1 << 2;
+	}
+
+	new_pic_mask = curr_pic_mask & ~mask;
+
+	if (curr_pic_mask != new_pic_mask)
+	{
+		curr_pic_mask = new_pic_mask;
+		if (irq_nr < 8)
+		{
+			outb (PIC_MASTER_OCW, curr_pic_mask & 0xff);
+		}
+		else
+		{
+			outb (PIC_SLAVE_OCW, curr_pic_mask >> 8);
+		}
+	}
+}
+

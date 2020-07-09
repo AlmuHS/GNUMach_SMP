@@ -63,6 +63,7 @@
 #include <machine/model_dep.h>
 #include <mach/version.h>
 #include <device/device_init.h>
+#include <device/intr.h>
 
 #if MACH_KDB
 #include <device/cons.h>
@@ -228,6 +229,9 @@ void start_kernel_threads(void)
 	(void) kernel_thread(kernel_task, reaper_thread, (char *) 0);
 	(void) kernel_thread(kernel_task, swapin_thread, (char *) 0);
 	(void) kernel_thread(kernel_task, sched_thread, (char *) 0);
+#ifndef MACH_XEN
+	(void) kernel_thread(kernel_task, intr_thread, (char *)0);
+#endif	/* MACH_XEN */
 
 #if	NCPUS > 1
 	/*

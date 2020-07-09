@@ -146,4 +146,13 @@ extern void dev_set_indirection(
     dev_ops_t   ops,
     int     	unit);
 
+/*
+ * compare device name
+ */
+extern boolean_t __attribute__ ((pure))
+name_equal(
+    const char  *src,
+    int         len,
+    const char  *target);
+
 #endif	/* _DEVICE_DEV_HDR_H_ */
