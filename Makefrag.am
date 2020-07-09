@@ -314,6 +314,8 @@ libkernel_a_SOURCES += \
 	device/ds_routines.h \
 	device/if_ether.h \
 	device/if_hdr.h \
+	device/intr.c \
+	device/intr.h \
 	device/io_req.h \
 	device/net_io.c \
 	device/net_io.h \
@@ -361,6 +363,8 @@ include_device_HEADERS = \
 	include/device/device_types.h \
 	include/device/disk_status.h \
 	include/device/net_status.h \
+	include/device/notify.defs \
+	include/device/notify.h \
 	include/device/tape_status.h \
 	include/device/tty_status.h
 

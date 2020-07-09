@@ -286,6 +286,7 @@ Device Interface
 * Device Map::                    Mapping devices into virtual memory.
 * Device Status::                 Querying and manipulating a device.
 * Device Filter::                 Filtering packets arriving on a device.
+* Device Interrupt::              Getting hardware interrupt notifications.
 
 Kernel Debugger
 
@@ -6305,6 +6306,7 @@ All constants and functions in this chapter are defined in
 * Device Map::                    Mapping devices into virtual memory.
 * Device Status::                 Querying and manipulating a device.
 * Device Filter::                 Filtering packets arriving on a device.
+* Device Interrupt::              Getting hardware interrupt notifications.
 @end menu
 
 
@@ -6696,6 +6698,26 @@ The function returns @code{D_SUCCESS} if some data was successfully
 written, @code{D_INVALID_OPERATION} if @var{receive_port} is not a valid
 send right, and @code{D_NO_SUCH_DEVICE} if @var{device} does not denote
 a device port or the device is dead or not completely open.
+@end deftypefun
+
+
+@node Device Interrupt
+@section Device Interrupt
+
+@deftypefun kern_return_t device_intr_register (@w{device_t @var{device}}, @w{int @var{id}}, @w{int @var{flags}}, @w{mach_port_t @var{receive_port}})
+The function @code{device_intr_register} registers for receiving hardware
+interrupt events through @var{device_intr_notify} notifications.  The hardware
+interrupt identifier is specified by @var{id}.  @var{flags} must be set to 0.  The
+notifications will be sent on the @var{receive_port} send right.
+@code{device_intr_register} is only available on the dedicated @code{irq} device.
+@end deftypefun
+
+@deftypefun kern_return_t device_intr_ack (@w{device_t @var{device}}, @w{mach_port_t @var{receive_port}})
+On a hardware interrupt, the kernel disables the interrupt line before sending
+notifications.  To prevent from interrupt losses, the interrupt is kept disabled
+until @code{device_intr_ack} is called to acknowledge the interrupt.
+@var{receive_port} is the send right on which the interrupt notification was
+received.
 @end deftypefun
 
 
