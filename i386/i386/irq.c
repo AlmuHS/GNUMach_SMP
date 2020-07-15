@@ -21,6 +21,7 @@
 #include <device/intr.h>
 #include <mach/kern_return.h>
 #include <kern/queue.h>
+#include <kern/assert.h>
 #include <machine/machspl.h>
 
 extern queue_head_t main_intr_queue;
