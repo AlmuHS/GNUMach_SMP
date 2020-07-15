@@ -102,8 +102,6 @@ libkernel_a_SOURCES += \
 	i386/i386/io_perm.c \
 	i386/i386/io_perm.h \
 	i386/i386/ipl.h \
-	i386/i386/irq.c \
-	i386/i386/irq.h \
 	i386/i386/ktss.c \
 	i386/i386/ktss.h \
 	i386/i386/kttd_interface.c \
@@ -157,6 +155,8 @@ libkernel_a_SOURCES += \
 	i386/i386/hardclock.c \
 	i386/i386/hardclock.h \
 	i386/i386/io_map.c \
+	i386/i386/irq.c \
+	i386/i386/irq.h \
 	i386/i386/pic.c \
 	i386/i386/pic.h \
 	i386/i386/pit.c \

@@ -325,6 +325,9 @@ io_return_t
 ds_device_intr_register (device_t dev, int id,
                          int flags, ipc_port_t receive_port)
 {
+#ifdef MACH_XEN
+  return D_INVALID_OPERATION;
+#else /* MACH_XEN */
   kern_return_t err;
   mach_device_t mdev = dev->emul_data;
 
@@ -355,11 +358,15 @@ ds_device_intr_register (device_t dev, int id,
       ip_reference (receive_port);
     }
   return err;
+#endif /* MACH_XEN */
 }
 
 kern_return_t
 ds_device_intr_ack (device_t dev, ipc_port_t receive_port)
 {
+#ifdef MACH_XEN
+  return D_INVALID_OPERATION;
+#else /* MACH_XEN */
   mach_device_t mdev = dev->emul_data;
 
   /* Refuse if device is dead or not completely open.  */
@@ -371,6 +378,7 @@ ds_device_intr_ack (device_t dev, ipc_port_t receive_port)
     return D_INVALID_OPERATION;
 
   return irq_acknowledge(receive_port);
+#endif /* MACH_XEN */
 }
 
 boolean_t
