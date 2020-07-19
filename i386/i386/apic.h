@@ -27,21 +27,18 @@
 
 #include <stdint.h>
 
-typedef struct ApicReg
-{
+typedef struct ApicReg {
     unsigned r;	/* the actual register */
     unsigned p[3];	/* pad to the next 128-bit boundary */
 } ApicReg;
 
-typedef struct ApicIoUnit
-{
+typedef struct ApicIoUnit {
     ApicReg select;
     ApicReg window;
 } ApicIoUnit;
 
 
-typedef struct ApicLocalUnit
-{
+typedef struct ApicLocalUnit {
     /* 0x000 */
     ApicReg reserved0;
     /* 0x010 */
@@ -120,8 +117,7 @@ typedef struct ApicLocalUnit
     ApicReg reserved3f;
 } ApicLocalUnit;
 
-struct ioapic_data
-{
+struct ioapic_data {
     uint8_t apic_id;
     uint32_t addr;
     uint32_t base;
@@ -130,16 +126,14 @@ struct ioapic_data
 #define APIC_IRQ_OVERRIDE_ACTIVE_LOW 2
 #define APIC_IRQ_OVERRIDE_LEVEL_TRIGGERED 8
 
-struct irq_override_data
-{
+struct irq_override_data {
     uint8_t bus;
     uint8_t irq;
     uint32_t gsi;
     uint16_t flags;
 };
 
-struct apic_info
-{
+struct apic_info {
     uint16_t ncpus;
     uint16_t nioapics;
     int nirqoverride;

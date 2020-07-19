@@ -47,10 +47,9 @@ apic_data_init(void)
     apic_data.cpu_lapic_list = (uint16_t*) kalloc(MAX_CPUS*sizeof(uint16_t));
     apic_data.nirqoverride = 0;
 
-    if(apic_data.cpu_lapic_list == NULL)
-        {
-            success = -1;
-        }
+    if(apic_data.cpu_lapic_list == NULL) {
+        success = -1;
+    }
 
     return success;
 }
@@ -113,14 +112,11 @@ apic_get_cpu_apic_id(int kernel_id)
 {
     uint16_t apic_id;
 
-    if(kernel_id < MAX_CPUS)
-        {
-            apic_id = apic_data.cpu_lapic_list[kernel_id];
-        }
-    else
-        {
-            apic_id = -1;
-        }
+    if(kernel_id < MAX_CPUS) {
+        apic_id = apic_data.cpu_lapic_list[kernel_id];
+    } else {
+        apic_id = -1;
+    }
 
     return apic_id;
 }
@@ -143,10 +139,9 @@ apic_get_ioapic(int kernel_id)
 {
     struct ioapic_data io_apic;
 
-    if(kernel_id < 16)
-        {
-            io_apic = apic_data.ioapic_list[kernel_id];
-        }
+    if(kernel_id < 16) {
+        io_apic = apic_data.ioapic_list[kernel_id];
+    }
 
     return io_apic;
 }
@@ -174,14 +169,11 @@ apic_get_current_cpu(void)
 {
     uint16_t apic_id;
 
-    if(lapic == NULL)
-        {
-            apic_id = 0;
-        }
-    else
-        {
-            apic_id = lapic->apic_id.r;
-        }
+    if(lapic == NULL) {
+        apic_id = 0;
+    } else {
+        apic_id = lapic->apic_id.r;
+    }
     return apic_id;
 }
 
@@ -200,20 +192,16 @@ int apic_refit_cpulist(void)
     int success = 0;
 
 
-    if(new_list != NULL && old_list != NULL)
-        {
-            for(i = 0; i < apic_data.ncpus; i++)
-                {
-                    new_list[i] = old_list[i];
-                }
+    if(new_list != NULL && old_list != NULL) {
+        for(i = 0; i < apic_data.ncpus; i++) {
+            new_list[i] = old_list[i];
+        }
 
-            apic_data.cpu_lapic_list = new_list;
-            kfree(old_list);
-        }
-    else
-        {
-            success = -1;
-        }
+        apic_data.cpu_lapic_list = new_list;
+        kfree(old_list);
+    } else {
+        success = -1;
+    }
 
     return success;
 }
@@ -238,20 +226,18 @@ void apic_print_info(void)
 
     printf("CPUS\n");
     printf("-------------------------------------------------\n");
-    for(i = 0; i < ncpus; i++)
-        {
-            lapic_id = apic_get_cpu_apic_id(i);
+    for(i = 0; i < ncpus; i++) {
+        lapic_id = apic_get_cpu_apic_id(i);
 
-            printf("CPU %d - APIC ID %x\n", i, lapic_id);
-        }
+        printf("CPU %d - APIC ID %x\n", i, lapic_id);
+    }
 
     printf("\nIOAPICS\n");
     printf("-------------------------------------------------\n");
 
-    for(i = 0; i < nioapics; i++)
-        {
-            ioapic = apic_get_ioapic(i);
-            ioapic_id = ioapic.apic_id;
-            printf("IOAPIC %d - APIC ID %x\n", i, ioapic_id);
-        }
+    for(i = 0; i < nioapics; i++) {
+        ioapic = apic_get_ioapic(i);
+        ioapic_id = ioapic.apic_id;
+        printf("IOAPIC %d - APIC ID %x\n", i, ioapic_id);
+    }
 }
