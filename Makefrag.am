@@ -130,7 +130,9 @@ libkernel_a_SOURCES += \
 	i386/i386at/acpi_parse_apic.h \
 	i386/i386at/acpi_parse_apic.c \
 	i386/i386/apic.h \
-	i386/i386/apic.c
+	i386/i386/apic.c \
+	kern/smp.h \
+	kern/smp.c
 
 #
 # `kernel' implementation (tasks, threads, trivia, etc.).
