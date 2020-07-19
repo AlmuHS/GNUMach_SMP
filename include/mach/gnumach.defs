@@ -165,3 +165,27 @@ routine vm_msync(
 		address		: vm_address_t;
 		size		: vm_size_t;
 		sync_flags	: vm_sync_t);
+
+/*
+ *	This routine is created for allocating DMA buffers.
+ *	We are going to get a contiguous physical memory
+ *	and its physical address in addition to the virtual address.
+ *	We can specify physical memory range limits and alignment.
+ *	NB:
+ *	  pmax is defined as the byte after the maximum address,
+ *	  eg 0x100000000 for 4GiB limit.
+ */
+/* XXX
+ * Future work: the RPC should return a special
+ * memory object (similar to device_map() ), which can then be mapped into
+ * the process address space with vm_map() like any other memory object.
+ */
+routine vm_allocate_contiguous(
+		host_priv	: host_priv_t;
+		target_task	: vm_task_t;
+	out	vaddr		: vm_address_t;
+	out	paddr		: rpc_phys_addr_t;
+		size		: vm_size_t;
+		pmin		: rpc_phys_addr_t;
+		pmax		: rpc_phys_addr_t;
+		palign		: rpc_phys_addr_t);
