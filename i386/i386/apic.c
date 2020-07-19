@@ -1,6 +1,7 @@
 #include <i386/apic.h>
 #include <string.h>
 #include <vm/vm_kern.h>
+#include <kern/printf.h> //printf
 
 
 #define MAX_CPUS 256
@@ -145,6 +146,25 @@ apic_get_num_ioapics(void)
     return apic_data.nioapics;
 }
 
+/* apic_get_current_cpu: returns the apic_id of current cpu */
+
+uint16_t
+apic_get_current_cpu(void)
+{
+    uint16_t apic_id;
+
+    if(lapic == NULL)
+        {
+            apic_id = 0;
+        }
+    else
+        {
+            apic_id = lapic->apic_id.r;
+        }
+    return apic_id;
+}
+
+
 /* apic_refit_cpulist: adjust the size of cpu_lapic array to fit the real number of cpus
  *   instead the maximum number
  *
@@ -176,7 +196,6 @@ int apic_refit_cpulist(void)
 
     return success;
 }
-
 
 /* apic_print_info: shows the list of Local APIC and IOAPIC
  *
@@ -211,6 +230,7 @@ void apic_print_info(void)
     for(i = 0; i < nioapics; i++)
         {
             ioapic = apic_get_ioapic(i);
-            printf("IOAPIC %d - APIC ID %x\n", i, ioapic.apic_id);
+            ioapic_id = ioapic.apic_id;
+            printf("IOAPIC %d - APIC ID %x\n", i, ioapic_id);
         }
 }
