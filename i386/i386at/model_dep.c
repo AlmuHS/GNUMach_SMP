@@ -173,8 +173,11 @@ void machine_init(void)
 #endif
 
 #if NCPUS > 1
-	smp_init();
+	int smp_success = smp_init();
 
+	if(smp_success != 0) {
+        printf("Error: no SMP found");
+    }
 #endif // NCPUS > 1
 
 	/*
