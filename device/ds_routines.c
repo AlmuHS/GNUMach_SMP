@@ -367,6 +367,7 @@ ds_device_intr_ack (device_t dev, ipc_port_t receive_port)
   return D_INVALID_OPERATION;
 #else /* MACH_XEN || __x86_64__ */
   mach_device_t mdev = dev->emul_data;
+  kern_return_t ret;
 
   /* Refuse if device is dead or not completely open.  */
   if (dev == DEVICE_NULL)
@@ -376,7 +377,12 @@ ds_device_intr_ack (device_t dev, ipc_port_t receive_port)
   if (! name_equal(mdev->dev_ops->d_name, 3, "irq"))
     return D_INVALID_OPERATION;
 
-  return irq_acknowledge(receive_port);
+  ret = irq_acknowledge(receive_port);
+
+  if (ret == D_SUCCESS)
+    ipc_port_release_send(receive_port);
+
+  return ret;
 #endif /* MACH_XEN || __x86_64__ */
 }
 
