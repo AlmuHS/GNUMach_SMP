@@ -60,27 +60,24 @@ acpi_apic_init(void)
 
     /* Try to get rsdp pointer */
     rsdp = acpi_get_rsdp();
-    if(rsdp == NULL)
-        {
-            return NO_RSDP;
-        }
+    if(rsdp == NULL) {
+        return NO_RSDP;
+    }
 
     printf("rsdp address %x\n", rsdp);
 
     /* Try to get rsdt pointer */
     rsdt = acpi_get_rsdt(rsdp, &acpi_rsdt_n);
-    if(rsdt == NULL)
-        {
-            return NO_RSDT;
-        }
+    if(rsdt == NULL) {
+        return NO_RSDT;
+    }
 
     printf("rsdt address %x\n", rsdt);
 
     apic_madt = acpi_get_apic(rsdt, acpi_rsdt_n);
-    if(apic_madt == NULL)
-        {
-            return NO_APIC;
-        }
+    if(apic_madt == NULL) {
+        return NO_APIC;
+    }
 
     printf("apic address %x\n", apic_madt);
 
@@ -88,10 +85,9 @@ acpi_apic_init(void)
 
     ret_acpi_setup = acpi_apic_setup(apic_madt);
 
-    if(ret_acpi_setup != 0)
-        {
-            return ret_acpi_setup;
-        }
+    if(ret_acpi_setup != 0) {
+        return ret_acpi_setup;
+    }
 
     apic_print_info();
 
@@ -130,10 +126,9 @@ acpi_checksum(void *addr, uint32_t length)
     unsigned int i;
 
     /* Sum all bytes of addr */
-    for(i = 0; i < length; i++)
-        {
-            checksum += bytes[i];
-        }
+    for(i = 0; i < length; i++) {
+        checksum += bytes[i];
+    }
 
     return checksum & 0xff;
 }
@@ -157,30 +152,23 @@ acpi_check_rsdp(struct acpi_rsdp *rsdp)
     int ret_value = 0;
 
     /* Check the integrity of RSDP */
-    if(rsdp == NULL)
-        {
-            ret_value = NO_RSDP;
-        }
-    else
-        {
-            /* Check is rsdp signature is equals to ACPI RSDP signature */
-            is_rsdp = memcmp(rsdp->signature, ACPI_RSDP_SIG, sizeof(rsdp->signature));
+    if(rsdp == NULL) {
+        ret_value = NO_RSDP;
+    } else {
+        /* Check is rsdp signature is equals to ACPI RSDP signature */
+        is_rsdp = memcmp(rsdp->signature, ACPI_RSDP_SIG, sizeof(rsdp->signature));
 
-            if(is_rsdp == 0)
-                {
-                    /* If yes, calculates rdsp checksum and check It */
-                    checksum = acpi_checksum(rsdp, sizeof(struct acpi_rsdp));
+        if(is_rsdp == 0) {
+            /* If yes, calculates rdsp checksum and check It */
+            checksum = acpi_checksum(rsdp, sizeof(struct acpi_rsdp));
 
-                    if(checksum != 0)
-                        {
-                            ret_value = BAD_CHECKSUM;
-                        }
-                }
-            else
-                {
-                    ret_value = BAD_SIGNATURE;
-                }
+            if(checksum != 0) {
+                ret_value = BAD_CHECKSUM;
+            }
+        } else {
+            ret_value = BAD_SIGNATURE;
         }
+    }
 
     return ret_value;
 }
@@ -204,17 +192,15 @@ acpi_search_rsdp(void *addr, uint32_t length)
         return NULL;
 
     /* Search RDSP in memory space between addr and addr+lenght */
-    for(end = addr+length; addr < end; addr += ACPI_RSDP_ALIGN)
-        {
+    for(end = addr+length; addr < end; addr += ACPI_RSDP_ALIGN) {
 
-            //Check if the current memory block store the RDSP
-            if(acpi_check_rsdp(addr) == 0)
-                {
-                    /* If yes, store RSDP address */
-                    rsdp = (struct acpi_rsdp*) addr;
-                    break;
-                }
+        //Check if the current memory block store the RDSP
+        if(acpi_check_rsdp(addr) == 0) {
+            /* If yes, store RSDP address */
+            rsdp = (struct acpi_rsdp*) addr;
+            break;
         }
+    }
 
     return rsdp;
 }
@@ -236,20 +222,18 @@ acpi_get_rsdp(void)
     start = (uint16_t*) phystokv(0x040e);
     base = *start;
 
-    if(base != 0)   /* Memory check */
-        {
+    if(base != 0) { /* Memory check */
 
-            base <<= 4; //base = base * 16
+        base <<= 4; //base = base * 16
 
-            /* Search RSDP in first 1024 bytes from EDBA */
-            rsdp = acpi_search_rsdp((void*)base,1024);
-        }
+        /* Search RSDP in first 1024 bytes from EDBA */
+        rsdp = acpi_search_rsdp((void*)base,1024);
+    }
 
-    if(rsdp == NULL)
-            {
-                /* If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh */
-                rsdp = acpi_search_rsdp((void*) 0x0e0000, 0x100000 - 0x0e0000);
-            }
+    if(rsdp == NULL) {
+        /* If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh */
+        rsdp = acpi_search_rsdp((void*) 0x0e0000, 0x100000 - 0x0e0000);
+    }
 
     return rsdp;
 }
@@ -267,19 +251,15 @@ acpi_check_rsdt(struct acpi_rsdt *rsdt)
     uint32_t checksum;
     int ret_value = 0;
 
-    if(rsdt == NULL)
-        {
-            ret_value = NO_RSDT;
-        }
-    else
-        {
-            checksum = acpi_checksum(rsdt, rsdt->header.length);
+    if(rsdt == NULL) {
+        ret_value = NO_RSDT;
+    } else {
+        checksum = acpi_checksum(rsdt, rsdt->header.length);
 
-            if (checksum != 0)
-                {
-                    ret_value = BAD_CHECKSUM;
-                }
+        if (checksum != 0) {
+            ret_value = BAD_CHECKSUM;
         }
+    }
 
     return ret_value;
 }
@@ -300,37 +280,33 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n)
     int acpi_check;
     int signature_check;
 
-    if(rsdp != NULL)
-        {
-            /* Get rsdt address from rsdp */
-            rsdt_phys = rsdp->rsdt_addr;
-            rsdt = (struct acpi_rsdt*) kmem_map_aligned_table(rsdt_phys, sizeof(struct acpi_rsdt), VM_PROT_READ);
+    if(rsdp != NULL) {
+        /* Get rsdt address from rsdp */
+        rsdt_phys = rsdp->rsdt_addr;
+        rsdt = (struct acpi_rsdt*) kmem_map_aligned_table(rsdt_phys, sizeof(struct acpi_rsdt), VM_PROT_READ);
 
-            printf("found rsdt in address %x\n", rsdt);
+        printf("found rsdt in address %x\n", rsdt);
 
-            /* Check is rsdt signature is equals to ACPI RSDT signature */
-            signature_check = memcmp(rsdt->header.signature, ACPI_RSDT_SIG,
-                                     sizeof(rsdt->header.signature));
+        /* Check is rsdt signature is equals to ACPI RSDT signature */
+        signature_check = memcmp(rsdt->header.signature, ACPI_RSDT_SIG,
+                                 sizeof(rsdt->header.signature));
 
-            if(signature_check == 0)
-                {
-                    /* Check if rsdt is correct */
-                    acpi_check = acpi_check_rsdt(rsdt);
+        if(signature_check == 0) {
+            /* Check if rsdt is correct */
+            acpi_check = acpi_check_rsdt(rsdt);
 
-                    if(acpi_check == 0)
-                        {
-                            /* Calculated number of elements stored in rsdt */
-                            *acpi_rsdt_n = (rsdt->header.length - sizeof(rsdt->header))
-                                           / sizeof(rsdt->entry[0]);
+            if(acpi_check == 0) {
+                /* Calculated number of elements stored in rsdt */
+                *acpi_rsdt_n = (rsdt->header.length - sizeof(rsdt->header))
+                               / sizeof(rsdt->entry[0]);
 
-                        }
-                }
-
-            if (signature_check != 0 || acpi_check != 0)
-                {
-                    rsdt = NULL;
-                }
+            }
         }
+
+        if (signature_check != 0 || acpi_check != 0) {
+            rsdt = NULL;
+        }
+    }
 
     return rsdt;
 }
@@ -352,26 +328,23 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n)
 
     int i;
 
-    if(rsdt != NULL)
-        {
-            /* Search APIC entries in rsdt array */
-            for(i = 0; i < acpi_rsdt_n; i++)
-                {
-                    descr_header = (struct acpi_dhdr*) kmem_map_aligned_table(rsdt->entry[i], sizeof(struct acpi_dhdr), VM_PROT_READ);
+    if(rsdt != NULL) {
+        /* Search APIC entries in rsdt array */
+        for(i = 0; i < acpi_rsdt_n; i++) {
+            descr_header = (struct acpi_dhdr*) kmem_map_aligned_table(rsdt->entry[i], sizeof(struct acpi_dhdr), VM_PROT_READ);
 
-                    /* Check if the entry contains an APIC */
-                    check_signature = memcmp(descr_header->signature, ACPI_APIC_SIG, sizeof(descr_header->signature));
+            /* Check if the entry contains an APIC */
+            check_signature = memcmp(descr_header->signature, ACPI_APIC_SIG, sizeof(descr_header->signature));
 
-                    if(check_signature == 0)
-                        {
-                            /* If yes, store the entry in apic */
-                            apic = (struct acpi_apic*) kmem_map_aligned_table(rsdt->entry[i], sizeof(struct acpi_apic), VM_PROT_READ | VM_PROT_WRITE);
+            if(check_signature == 0) {
+                /* If yes, store the entry in apic */
+                apic = (struct acpi_apic*) kmem_map_aligned_table(rsdt->entry[i], sizeof(struct acpi_apic), VM_PROT_READ | VM_PROT_WRITE);
 
-                            printf("found apic in address %x\n", apic);
-                            break;
-                        }
-                }
+                printf("found apic in address %x\n", apic);
+                break;
+            }
         }
+    }
 
     return apic;
 }
@@ -390,23 +363,19 @@ acpi_apic_add_lapic(struct acpi_apic_lapic *lapic_entry)
     int lapic_id;
 
 
-    if(lapic_entry == NULL)
-        {
-            ret_value = -1;
-        }
-    else
-        {
-            /* If cpu flag is correct */
-            if(lapic_entry->flags & 0x1)
-                {
-                    /* Enumerate CPU and add It to cpu/apic vector */
-                    lapic_id = lapic_entry->apic_id;
+    if(lapic_entry == NULL) {
+        ret_value = -1;
+    } else {
+        /* If cpu flag is correct */
+        if(lapic_entry->flags & 0x1) {
+            /* Enumerate CPU and add It to cpu/apic vector */
+            lapic_id = lapic_entry->apic_id;
 
-                    apic_add_cpu(lapic_id);
+            apic_add_cpu(lapic_id);
 
-                    printf("new cpu found with apic id %x\n", lapic_entry->apic_id);;
-                }
+            printf("new cpu found with apic id %x\n", lapic_entry->apic_id);;
         }
+    }
 
     return ret_value;
 }
@@ -423,21 +392,18 @@ acpi_apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry)
     int ret_value = 0;
     struct ioapic_data io_apic;
 
-    if(ioapic_entry == NULL)
-        {
-            ret_value = -1;
-        }
-    else
-        {
-            /* Insert ioapic in ioapics array */
-            io_apic.apic_id = ioapic_entry->apic_id;
-            io_apic.addr = ioapic_entry->addr;
-            io_apic.base = ioapic_entry->base;
+    if(ioapic_entry == NULL) {
+        ret_value = -1;
+    } else {
+        /* Insert ioapic in ioapics array */
+        io_apic.apic_id = ioapic_entry->apic_id;
+        io_apic.addr = ioapic_entry->addr;
+        io_apic.base = ioapic_entry->base;
 
-            apic_add_ioapic(io_apic);
+        apic_add_ioapic(io_apic);
 
-            printf("new ioapic found with apic id %x\n", io_apic.apic_id);
-        }
+        printf("new ioapic found with apic id %x\n", io_apic.apic_id);
+    }
 
     return ret_value;
 }
@@ -456,20 +422,17 @@ acpi_apic_add_irq_override(struct acpi_apic_irq_override* irq_override)
     struct irq_override_data irq_over;
 
 
-    if(irq_override == NULL)
-        {
-            ret_value = -1;
-        }
-    else
-        {
-            /* Insert ioapic in ioapics array */
-            irq_over.bus = irq_override->bus;
-            irq_over.irq = irq_override->irq;
-            irq_over.gsi = irq_override->gsi;
-            irq_over.flags = irq_override->flags;
+    if(irq_override == NULL) {
+        ret_value = -1;
+    } else {
+        /* Insert ioapic in ioapics array */
+        irq_over.bus = irq_override->bus;
+        irq_over.irq = irq_override->irq;
+        irq_over.gsi = irq_override->gsi;
+        irq_over.flags = irq_override->flags;
 
-            apic_add_irq_override(irq_over);
-        }
+        apic_add_irq_override(irq_over);
+    }
 
     return ret_value;
 }
@@ -487,60 +450,55 @@ apic_parse_table(struct acpi_apic *apic)
     struct acpi_apic_dhdr *apic_entry = NULL;
     uint32_t end = 0;
 
-    if(apic != NULL)
-        {
-            apic_entry = apic->entry;
-            end = (uint32_t) apic + apic->header.length;
+    if(apic != NULL) {
+        apic_entry = apic->entry;
+        end = (uint32_t) apic + apic->header.length;
 
-            /* Search in APIC entry */
-            while((uint32_t)apic_entry < end)
-                {
-                    struct acpi_apic_lapic *lapic_entry;
-                    struct acpi_apic_ioapic *ioapic_entry;
-                    struct acpi_apic_irq_override *irq_override_entry;
+        /* Search in APIC entry */
+        while((uint32_t)apic_entry < end) {
+            struct acpi_apic_lapic *lapic_entry;
+            struct acpi_apic_ioapic *ioapic_entry;
+            struct acpi_apic_irq_override *irq_override_entry;
 
-                    /* Check entry type */
-                    switch(apic_entry->type)
-                        {
+            /* Check entry type */
+            switch(apic_entry->type) {
 
-                        /* If APIC entry is a CPU lapic */
-                        case ACPI_APIC_ENTRY_LAPIC:
+            /* If APIC entry is a CPU lapic */
+            case ACPI_APIC_ENTRY_LAPIC:
 
-                            /* Store lapic */
-                            lapic_entry = (struct acpi_apic_lapic*) apic_entry;
+                /* Store lapic */
+                lapic_entry = (struct acpi_apic_lapic*) apic_entry;
 
-                            acpi_apic_add_lapic(lapic_entry);
+                acpi_apic_add_lapic(lapic_entry);
 
-                            break;
+                break;
 
-                        /* If APIC entry is an IOAPIC */
-                        case ACPI_APIC_ENTRY_IOAPIC:
+            /* If APIC entry is an IOAPIC */
+            case ACPI_APIC_ENTRY_IOAPIC:
 
-                            /* Store ioapic */
-                            ioapic_entry = (struct acpi_apic_ioapic*) apic_entry;
+                /* Store ioapic */
+                ioapic_entry = (struct acpi_apic_ioapic*) apic_entry;
 
-                            acpi_apic_add_ioapic(ioapic_entry);
+                acpi_apic_add_ioapic(ioapic_entry);
 
-                            break;
+                break;
 
-                        /* If APIC entry is a IRQ */
-                        case ACPI_APIC_IRQ_OVERRIDE:
-                             irq_override_entry = (struct acpi_apic_irq_override*) apic_entry;
+            /* If APIC entry is a IRQ */
+            case ACPI_APIC_IRQ_OVERRIDE:
+                irq_override_entry = (struct acpi_apic_irq_override*) apic_entry;
 
-                             acpi_apic_add_irq_override(irq_override_entry);
-                             break;
+                acpi_apic_add_irq_override(irq_override_entry);
+                break;
 
-                        }
+            }
 
-                    /* Get next APIC entry */
-                    apic_entry = (struct acpi_apic_dhdr*)((uint32_t) apic_entry
-                                                          + apic_entry->length);
-                }
+            /* Get next APIC entry */
+            apic_entry = (struct acpi_apic_dhdr*)((uint32_t) apic_entry
+                                                  + apic_entry->length);
         }
-    else /* apic == NULL */
-        {
-            ret_value = -1;
-        }
+    } else { /* apic == NULL */
+        ret_value = -1;
+    }
 
     return ret_value;
 }
@@ -568,56 +526,45 @@ acpi_apic_setup(struct acpi_apic *apic)
     int init_success = 0;
 
 
-    if(apic != NULL)
-        {
+    if(apic != NULL) {
 
-            /* Check the checksum of the APIC */
-            apic_checksum = acpi_checksum(apic, apic->header.length);
+        /* Check the checksum of the APIC */
+        apic_checksum = acpi_checksum(apic, apic->header.length);
 
-            if(apic_checksum != 0)
-                {
-                    ret_value = BAD_CHECKSUM;
+        if(apic_checksum != 0) {
+            ret_value = BAD_CHECKSUM;
+        } else {
+            init_success = apic_data_init();
+            if(init_success == 0) {
+
+                printf("lapic found in address %x\n", apic->lapic_addr);
+
+                /* map common lapic address */
+                lapic = kmem_map_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit), VM_PROT_READ);
+
+                if(lapic != NULL) {
+                    printf("lapic mapped in address %x\n", lapic);
+                    apic_lapic_init(lapic);
                 }
-            else
-                {
-                    init_success = apic_data_init();
-                    if(init_success == 0)
-                        {
 
-                            printf("lapic found in address %x\n", apic->lapic_addr);
+                apic_parse_table(apic);
 
-                            /* map common lapic address */
-                            lapic = kmem_map_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit), VM_PROT_READ);
+                ncpus = apic_get_numcpus();
+                nioapics = apic_get_num_ioapics();
 
-                            if(lapic != NULL){
-                                printf("lapic mapped in address %x\n", lapic);
-                                apic_lapic_init(lapic);
-                            }
-
-                            apic_parse_table(apic);
-
-                            ncpus = apic_get_numcpus();
-                            nioapics = apic_get_num_ioapics();
-
-                            if(ncpus == 0 || nioapics == 0)
-                                {
-                                    ret_value = -1;
-                                }
-                            else
-                                {
-                                    apic_refit_cpulist();
-                                    printf("%d cpus found. %d ioapics found\n", ncpus, nioapics);
-                                }
-                        }
-                        else{
-                            ret_value = -1;
-                        }
+                if(ncpus == 0 || nioapics == 0) {
+                    ret_value = -1;
+                } else {
+                    apic_refit_cpulist();
+                    printf("%d cpus found. %d ioapics found\n", ncpus, nioapics);
                 }
+            } else {
+                ret_value = -1;
+            }
         }
-    else /* apic == NULL */
-        {
-            ret_value = NO_APIC;
-        }
+    } else { /* apic == NULL */
+        ret_value = NO_APIC;
+    }
 
     return ret_value;
 }

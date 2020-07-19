@@ -58,10 +58,9 @@ int smp_init(void)
     int apic_success;
 
     apic_success = acpi_apic_init();
-    if (apic_success)
-        {
-            smp_data_init();
-        }
+    if (apic_success) {
+        smp_data_init();
+    }
 
     return apic_success;
 }
