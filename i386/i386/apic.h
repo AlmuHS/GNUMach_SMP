@@ -149,7 +149,7 @@ struct apic_info
     struct irq_override_data irq_override_list[24];
 };
 
-int smp_data_init(void);
+int apic_data_init(void);
 void apic_add_cpu(uint16_t apic_id);
 void apic_lapic_init(ApicLocalUnit* lapic_ptr);
 void apic_add_ioapic(struct ioapic_data);
@@ -159,6 +159,7 @@ ApicLocalUnit* apic_get_lapic(void);
 struct ioapic_data apic_get_ioapic(int kernel_id);
 int apic_get_numcpus(void);
 int apic_get_num_ioapics(void);
+uint16_t apic_get_current_cpu(void);
 void apic_print_info(void);
 int apic_refit_cpulist(void);
 

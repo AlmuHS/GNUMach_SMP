@@ -72,7 +72,7 @@
 #include <i386at/kd.h>
 #include <i386at/rtc.h>
 #include <i386at/model_dep.h>
-#include <i386at/acpi_parse_apic.h>
+#include <kern/smp.h>
 
 #ifdef	MACH_XEN
 #include <xen/console.h>
@@ -171,7 +171,11 @@ void machine_init(void)
 	 */
 	linux_init();
 #endif
-	acpi_apic_init();
+
+#if NCPUS > 1
+	smp_init();
+
+#endif // NCPUS > 1
 
 	/*
 	 * Find the devices
