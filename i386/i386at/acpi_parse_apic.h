@@ -61,10 +61,10 @@ struct acpi_rsdt
     uint32_t entry[0];
 } __attribute__((__packed__));
 
-//APIC table signature
+/* APIC table signature */
 #define ACPI_APIC_SIG "APIC"
 
-//Types value for MADT entries: Local APIC, IOAPIC and IRQ Override
+/* Types value for MADT entries: Local APIC, IOAPIC and IRQ Override */
 #define ACPI_APIC_ENTRY_LAPIC  0
 #define ACPI_APIC_ENTRY_IOAPIC 1
 #define ACPI_APIC_IRQ_OVERRIDE 2

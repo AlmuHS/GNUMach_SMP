@@ -58,7 +58,7 @@ acpi_apic_init(void)
     int ret_acpi_setup;
 
 
-    //Try to get rsdp pointer
+    /* Try to get rsdp pointer */
     rsdp = acpi_get_rsdp();
     if(rsdp == NULL)
         {
@@ -67,7 +67,7 @@ acpi_apic_init(void)
 
     printf("rsdp address %x\n", rsdp);
 
-    //Try to get rsdt pointer
+    /* Try to get rsdt pointer */
     rsdt = acpi_get_rsdt(rsdp, &acpi_rsdt_n);
     if(rsdt == NULL)
         {
@@ -129,7 +129,7 @@ acpi_checksum(void *addr, uint32_t length)
     int checksum = 0;
     unsigned int i;
 
-    //Sum all bytes of addr
+    /* Sum all bytes of addr */
     for(i = 0; i < length; i++)
         {
             checksum += bytes[i];
@@ -156,19 +156,19 @@ acpi_check_rsdp(struct acpi_rsdp *rsdp)
     int is_rsdp;
     int ret_value = 0;
 
-    //Check the integrity of RSDP
+    /* Check the integrity of RSDP */
     if(rsdp == NULL)
         {
             ret_value = NO_RSDP;
         }
     else
         {
-            //Check is rsdp signature is equals to ACPI RSDP signature
+            /* Check is rsdp signature is equals to ACPI RSDP signature */
             is_rsdp = memcmp(rsdp->signature, ACPI_RSDP_SIG, sizeof(rsdp->signature));
 
             if(is_rsdp == 0)
                 {
-                    //If yes, calculates rdsp checksum and check It
+                    /* If yes, calculates rdsp checksum and check It */
                     checksum = acpi_checksum(rsdp, sizeof(struct acpi_rsdp));
 
                     if(checksum != 0)
@@ -203,14 +203,14 @@ acpi_search_rsdp(void *addr, uint32_t length)
     if((uint32_t)addr & (ACPI_RSDP_ALIGN-1))
         return NULL;
 
-    //Search RDSP in memory space between addr and addr+lenght
+    /* Search RDSP in memory space between addr and addr+lenght */
     for(end = addr+length; addr < end; addr += ACPI_RSDP_ALIGN)
         {
 
             //Check if the current memory block store the RDSP
             if(acpi_check_rsdp(addr) == 0)
                 {
-                    //If yes, store RSDP address
+                    /* If yes, store RSDP address */
                     rsdp = (struct acpi_rsdp*) addr;
                     break;
                 }
@@ -232,22 +232,22 @@ acpi_get_rsdp(void)
     uint16_t *start = 0x0;
     uint32_t base = 0x0;
 
-    //EDBA start address
+    /* EDBA start address */
     start = (uint16_t*) phystokv(0x040e);
     base = *start;
 
-    if(base != 0)   //Memory check
+    if(base != 0)   /* Memory check */
         {
 
             base <<= 4; //base = base * 16
 
-            //Search RSDP in first 1024 bytes from EDBA
+            /* Search RSDP in first 1024 bytes from EDBA */
             rsdp = acpi_search_rsdp((void*)base,1024);
         }
 
     if(rsdp == NULL)
             {
-                //If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh
+                /* If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh */
                 rsdp = acpi_search_rsdp((void*) 0x0e0000, 0x100000 - 0x0e0000);
             }
 
@@ -302,24 +302,24 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n)
 
     if(rsdp != NULL)
         {
-            //Get rsdt address from rsdp
+            /* Get rsdt address from rsdp */
             rsdt_phys = rsdp->rsdt_addr;
             rsdt = (struct acpi_rsdt*) kmem_map_aligned_table(rsdt_phys, sizeof(struct acpi_rsdt), VM_PROT_READ);
 
             printf("found rsdt in address %x\n", rsdt);
 
-            //Check is rsdt signature is equals to ACPI RSDT signature
+            /* Check is rsdt signature is equals to ACPI RSDT signature */
             signature_check = memcmp(rsdt->header.signature, ACPI_RSDT_SIG,
                                      sizeof(rsdt->header.signature));
 
             if(signature_check == 0)
                 {
-                    //Check if rsdt is correct
+                    /* Check if rsdt is correct */
                     acpi_check = acpi_check_rsdt(rsdt);
 
                     if(acpi_check == 0)
                         {
-                            //Calculated number of elements stored in rsdt
+                            /* Calculated number of elements stored in rsdt */
                             *acpi_rsdt_n = (rsdt->header.length - sizeof(rsdt->header))
                                            / sizeof(rsdt->entry[0]);
 
@@ -354,17 +354,17 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n)
 
     if(rsdt != NULL)
         {
-            //Search APIC entries in rsdt array
+            /* Search APIC entries in rsdt array */
             for(i = 0; i < acpi_rsdt_n; i++)
                 {
                     descr_header = (struct acpi_dhdr*) kmem_map_aligned_table(rsdt->entry[i], sizeof(struct acpi_dhdr), VM_PROT_READ);
 
-                    //Check if the entry contains an APIC
+                    /* Check if the entry contains an APIC */
                     check_signature = memcmp(descr_header->signature, ACPI_APIC_SIG, sizeof(descr_header->signature));
 
                     if(check_signature == 0)
                         {
-                            //If yes, store the entry in apic
+                            /* If yes, store the entry in apic */
                             apic = (struct acpi_apic*) kmem_map_aligned_table(rsdt->entry[i], sizeof(struct acpi_apic), VM_PROT_READ | VM_PROT_WRITE);
 
                             printf("found apic in address %x\n", apic);
@@ -396,10 +396,10 @@ acpi_apic_add_lapic(struct acpi_apic_lapic *lapic_entry)
         }
     else
         {
-            //If cpu flag is correct
+            /* If cpu flag is correct */
             if(lapic_entry->flags & 0x1)
                 {
-                    //Enumerate CPU and add It to cpu/apic vector
+                    /* Enumerate CPU and add It to cpu/apic vector */
                     lapic_id = lapic_entry->apic_id;
 
                     apic_add_cpu(lapic_id);
@@ -429,7 +429,7 @@ acpi_apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry)
         }
     else
         {
-            /*Insert ioapic in ioapics array*/
+            /* Insert ioapic in ioapics array */
             io_apic.apic_id = ioapic_entry->apic_id;
             io_apic.addr = ioapic_entry->addr;
             io_apic.base = ioapic_entry->base;
@@ -462,7 +462,7 @@ acpi_apic_add_irq_override(struct acpi_apic_irq_override* irq_override)
         }
     else
         {
-            /*Insert ioapic in ioapics array*/
+            /* Insert ioapic in ioapics array */
             irq_over.bus = irq_override->bus;
             irq_over.irq = irq_override->irq;
             irq_over.gsi = irq_override->gsi;
@@ -492,38 +492,38 @@ apic_parse_table(struct acpi_apic *apic)
             apic_entry = apic->entry;
             end = (uint32_t) apic + apic->header.length;
 
-            //Search in APIC entry
+            /* Search in APIC entry */
             while((uint32_t)apic_entry < end)
                 {
                     struct acpi_apic_lapic *lapic_entry;
                     struct acpi_apic_ioapic *ioapic_entry;
                     struct acpi_apic_irq_override *irq_override_entry;
 
-                    //Check entry type
+                    /* Check entry type */
                     switch(apic_entry->type)
                         {
 
-                        //If APIC entry is a CPU lapic
+                        /* If APIC entry is a CPU lapic */
                         case ACPI_APIC_ENTRY_LAPIC:
 
-                            //Store lapic
+                            /* Store lapic */
                             lapic_entry = (struct acpi_apic_lapic*) apic_entry;
 
                             acpi_apic_add_lapic(lapic_entry);
 
                             break;
 
-                        //If APIC entry is an IOAPIC
+                        /* If APIC entry is an IOAPIC */
                         case ACPI_APIC_ENTRY_IOAPIC:
 
-                            //Store ioapic
+                            /* Store ioapic */
                             ioapic_entry = (struct acpi_apic_ioapic*) apic_entry;
 
                             acpi_apic_add_ioapic(ioapic_entry);
 
                             break;
 
-                        //TODO: Parse IRQ OVERRIDE entry
+                        /* If APIC entry is a IRQ */
                         case ACPI_APIC_IRQ_OVERRIDE:
                              irq_override_entry = (struct acpi_apic_irq_override*) apic_entry;
 
@@ -532,12 +532,12 @@ apic_parse_table(struct acpi_apic *apic)
 
                         }
 
-                    //Get next APIC entry
+                    /* Get next APIC entry */
                     apic_entry = (struct acpi_apic_dhdr*)((uint32_t) apic_entry
                                                           + apic_entry->length);
                 }
         }
-    else //apic == NULL
+    else /* apic == NULL */
         {
             ret_value = -1;
         }
@@ -571,7 +571,7 @@ acpi_apic_setup(struct acpi_apic *apic)
     if(apic != NULL)
         {
 
-            //Check the checksum of the APIC
+            /* Check the checksum of the APIC */
             apic_checksum = acpi_checksum(apic, apic->header.length);
 
             if(apic_checksum != 0)
@@ -585,7 +585,8 @@ acpi_apic_setup(struct acpi_apic *apic)
                         {
 
                             printf("lapic found in address %x\n", apic->lapic_addr);
-                            //map common lapic address
+
+                            /* map common lapic address */
                             lapic = kmem_map_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit), VM_PROT_READ);
 
                             if(lapic != NULL){

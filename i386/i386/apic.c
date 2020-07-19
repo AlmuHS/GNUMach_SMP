@@ -61,9 +61,9 @@ apic_data_init(void)
 
 void
 apic_lapic_init(ApicLocalUnit* lapic_ptr)
-    {
-        lapic = lapic_ptr;
-    }
+{
+    lapic = lapic_ptr;
+}
 
 /* apic_add_cpu: add a new lapic/cpu entry to the cpu_lapic list
  *   Receives as input the lapic's APIC ID
