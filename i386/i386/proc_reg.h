@@ -81,22 +81,14 @@ static inline unsigned long
 get_eflags(void)
 {
 	unsigned long eflags;
-#ifdef __x86_64__
-	asm("pushfq; pop %0" : "=r" (eflags));
-#else
 	asm("pushfd; pop %0" : "=r" (eflags));
-#endif
 	return eflags;
 }
 
 static inline void
 set_eflags(unsigned long eflags)
 {
-#ifdef __x86_64__
-	asm volatile("push %0; popfq" : : "r" (eflags));
-#else
 	asm volatile("push %0; popfd" : : "r" (eflags));
-#endif
 }
 
 #define get_esp() \
@@ -105,21 +97,12 @@ set_eflags(unsigned long eflags)
 	_temp__; \
     })
 
-#ifdef __x86_64__
 #define get_eflags() \
     ({ \
 	register unsigned long _temp__; \
-	asm("pushfq; pop %0" : "=r" (_temp__)); \
+	asm("pushf; pop %0" : "=r" (_temp__)); \
 	_temp__; \
     })
-#else
-#define get_eflags() \
-    ({ \
-	register unsigned long _temp__; \
-	asm("pushfd; pop %0" : "=r" (_temp__)); \
-	_temp__; \
-    })
-#endif
 
 #define	get_cr0() \
     ({ \
@@ -257,7 +240,7 @@ extern unsigned long cr3;
 #define	get_dr0() \
     ({ \
 	register unsigned long _temp__; \
-	asm volatile("mov %%dr0, %0" : "=r" (_temp__)); \
+	asm volatile("movl %%dr0, %0" : "=r" (_temp__)); \
 	_temp__; \
     })
 #endif
@@ -268,7 +251,7 @@ extern unsigned long cr3;
 #define	set_dr0(value) \
     ({ \
 	register unsigned long _temp__ = (value); \
-	asm volatile("mov %0,%%dr0" : : "r" (_temp__)); \
+	asm volatile("movl %0,%%dr0" : : "r" (_temp__)); \
     })
 #endif
 
@@ -278,7 +261,7 @@ extern unsigned long cr3;
 #define	get_dr1() \
     ({ \
 	register unsigned long _temp__; \
-	asm volatile("mov %%dr1, %0" : "=r" (_temp__)); \
+	asm volatile("movl %%dr1, %0" : "=r" (_temp__)); \
 	_temp__; \
     })
 #endif
@@ -289,7 +272,7 @@ extern unsigned long cr3;
 #define	set_dr1(value) \
     ({ \
 	register unsigned long _temp__ = (value); \
-	asm volatile("mov %0,%%dr1" : : "r" (_temp__)); \
+	asm volatile("movl %0,%%dr1" : : "r" (_temp__)); \
     })
 #endif
 
@@ -299,7 +282,7 @@ extern unsigned long cr3;
 #define	get_dr2() \
     ({ \
 	register unsigned long _temp__; \
-	asm volatile("mov %%dr2, %0" : "=r" (_temp__)); \
+	asm volatile("movl %%dr2, %0" : "=r" (_temp__)); \
 	_temp__; \
     })
 #endif
@@ -310,7 +293,7 @@ extern unsigned long cr3;
 #define	set_dr2(value) \
     ({ \
 	register unsigned long _temp__ = (value); \
-	asm volatile("mov %0,%%dr2" : : "r" (_temp__)); \
+	asm volatile("movl %0,%%dr2" : : "r" (_temp__)); \
     })
 #endif
 
@@ -320,7 +303,7 @@ extern unsigned long cr3;
 #define	get_dr3() \
     ({ \
 	register unsigned long _temp__; \
-	asm volatile("mov %%dr3, %0" : "=r" (_temp__)); \
+	asm volatile("movl %%dr3, %0" : "=r" (_temp__)); \
 	_temp__; \
     })
 #endif
@@ -331,7 +314,7 @@ extern unsigned long cr3;
 #define	set_dr3(value) \
     ({ \
 	register unsigned long _temp__ = (value); \
-	asm volatile("mov %0,%%dr3" : : "r" (_temp__)); \
+	asm volatile("movl %0,%%dr3" : : "r" (_temp__)); \
     })
 #endif
 
@@ -341,7 +324,7 @@ extern unsigned long cr3;
 #define	get_dr6() \
     ({ \
 	register unsigned long _temp__; \
-	asm volatile("mov %%dr6, %0" : "=r" (_temp__)); \
+	asm volatile("movl %%dr6, %0" : "=r" (_temp__)); \
 	_temp__; \
     })
 #endif
@@ -352,7 +335,7 @@ extern unsigned long cr3;
 #define	set_dr6(value) \
     ({ \
 	register unsigned long _temp__ = (value); \
-	asm volatile("mov %0,%%dr6" : : "r" (_temp__)); \
+	asm volatile("movl %0,%%dr6" : : "r" (_temp__)); \
     })
 #endif
 
@@ -362,7 +345,7 @@ extern unsigned long cr3;
 #define	get_dr7() \
     ({ \
 	register unsigned long _temp__; \
-	asm volatile("mov %%dr7, %0" : "=r" (_temp__)); \
+	asm volatile("movl %%dr7, %0" : "=r" (_temp__)); \
 	_temp__; \
     })
 #endif
@@ -373,7 +356,7 @@ extern unsigned long cr3;
 #define	set_dr7(value) \
     ({ \
 	register unsigned long _temp__ = (value); \
-	asm volatile("mov %0,%%dr7" : : "r" (_temp__)); \
+	asm volatile("movl %0,%%dr7" : : "r" (_temp__)); \
     })
 #endif
 

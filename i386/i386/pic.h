@@ -59,7 +59,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 ** The following are definitions used to locate the PICs in the system
 */
 
-#if	defined(AT386) || defined(ATX86_64)
+#if	defined(AT386)
 #define ADDR_PIC_BASE		0x20
 #define OFF_ICW			0x00
 #define OFF_OCW			0x01
@@ -95,7 +95,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 **	ICW2
 */
 
-#if	defined(AT386) || defined(ATX86_64)
+#if	defined(AT386)
 #define	PICM_VECTBASE		0x40
 #define PICS_VECTBASE		PICM_VECTBASE + 0x08
 #endif	/* defined(AT386) */
@@ -145,13 +145,13 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 #define NON_SPEC_EOI		0x20
-#define SPECIFIC_EOI		0x60
-#define ROT_NON_SPEC		0xA0
-#define SET_ROT_AEOI		0x80
+#define SPECIFIC_EOI		0x30
+#define ROT_NON_SPEC		0x50
+#define SET_ROT_AEOI		0x40
 #define RSET_ROTAEOI		0x00
-#define ROT_SPEC_EOI		0xE0
-#define SET_PRIORITY		0xC0
-#define NO_OPERATION		0x40
+#define ROT_SPEC_EOI		0x70
+#define SET_PRIORITY		0x60
+#define NO_OPERATION		0x20
 
 #define SEND_EOI_IR0		0x00
 #define SEND_EOI_IR1		0x01
@@ -177,11 +177,12 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define READ_IS_ONRD		0x01
 
 #ifndef __ASSEMBLER__
+extern void form_pic_mask (void);
 extern void picinit (void);
 extern int curr_pic_mask;
+extern int pic_mask[];
+extern void prtnull(int unit);
 extern void intnull(int unit);
-extern inline void mask_irq (unsigned int irq_nr);
-extern inline void unmask_irq (unsigned int irq_nr);
 #endif /* __ASSEMBLER__ */
 
 #endif	/* _I386_PIC_H_ */

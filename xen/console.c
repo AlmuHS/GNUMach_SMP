@@ -16,7 +16,6 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <i386at/kd.h>
 #include <sys/types.h>
 #include <device/tty.h>
 #include <device/cons.h>

@@ -33,7 +33,7 @@ extern int apic2kernel[256];
  *	Definitions for cpu identification in multi-processors.
  */
 
-extern int	master_cpu;	/* 'master' processor - keeps time */
+extern unsigned int master_cpu;	/* 'master' processor - keeps time */
 
 #if	(NCPUS == 1)
 /* cpu number is always 0 on a single processor system */

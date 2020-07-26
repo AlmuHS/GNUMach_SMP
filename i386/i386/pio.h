@@ -32,7 +32,7 @@
 #endif	/* __GNUC__ */
 
 #define inl(y) \
-({ unsigned int _tmp__; \
+({ unsigned long _tmp__; \
 	asm volatile("inl %1, %0" : "=a" (_tmp__) : "d" ((unsigned short)(y))); \
 	_tmp__; })
 

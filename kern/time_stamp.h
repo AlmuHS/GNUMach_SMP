@@ -52,7 +52,7 @@ struct tsval {
 #define	TS_FORMAT	1
 
 #if	KERNEL
-extern unsigned	ts_tick_count;
+unsigned	ts_tick_count;
 #endif	/* KERNEL */
 #endif	/* TS_FORMAT */
 

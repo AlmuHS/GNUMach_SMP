@@ -55,8 +55,6 @@ struct kmem_cache pset_cache;
 /*
  *	Exported variables.
  */
-int	master_cpu;
-
 struct processor_set default_pset;
 struct processor processor_array[NCPUS];
 

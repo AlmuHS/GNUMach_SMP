@@ -92,7 +92,6 @@
 #include <device/device_port.h>
 #include <device/device_reply.user.h>
 #include <device/device_emul.h>
-#include <device/intr.h>
 
 #include <machine/machspl.h>
 
@@ -133,7 +132,6 @@ static struct device_emulation_ops *emulation_list[] =
 
 static struct vm_map	device_io_map_store;
 vm_map_t		device_io_map = &device_io_map_store;
-struct kmem_cache	io_inband_cache;
 
 #define NUM_EMULATION (sizeof (emulation_list) / sizeof (emulation_list[0]))
 
@@ -318,72 +316,6 @@ ds_device_map (device_t dev, vm_prot_t prot, vm_offset_t offset,
 
   return (*dev->emul_ops->map) (dev->emul_data, prot,
 				offset, size, pager, unmap);
-}
-
-/* TODO: missing deregister support */
-io_return_t
-ds_device_intr_register (device_t dev, int id,
-                         int flags, ipc_port_t receive_port)
-{
-#if defined(MACH_XEN) || defined(__x86_64__)
-  return D_INVALID_OPERATION;
-#else /* MACH_XEN || __x86_64__ */
-  kern_return_t err;
-  mach_device_t mdev = dev->emul_data;
-
-  /* Refuse if device is dead or not completely open.  */
-  if (dev == DEVICE_NULL)
-    return D_NO_SUCH_DEVICE;
-
-  /* No flag is defined for now */
-  if (flags != 0)
-    return D_INVALID_OPERATION;
-
-  /* Must be called on the irq device only */
-  if (! name_equal(mdev->dev_ops->d_name, 3, "irq"))
-    return D_INVALID_OPERATION;
-
-  user_intr_t *e = insert_intr_entry (&irqtab, id, receive_port);
-  if (!e)
-    return D_NO_MEMORY;
-
-  // TODO detect when the port get destroyed because the driver crashes and
-  // restart, to replace it when the same device driver calls it again.
-  err = install_user_intr_handler (&irqtab, id, flags, e);
-  if (err == D_SUCCESS)
-    {
-      /* If the port is installed successfully, increase its reference by 1.
-       * Thus, the port won't be destroyed after its task is terminated. */
-      ip_reference (receive_port);
-    }
-  return err;
-#endif /* MACH_XEN || __x86_64__ */
-}
-
-kern_return_t
-ds_device_intr_ack (device_t dev, ipc_port_t receive_port)
-{
-#if defined(MACH_XEN) || defined(__x86_64__)
-  return D_INVALID_OPERATION;
-#else /* MACH_XEN || __x86_64__ */
-  mach_device_t mdev = dev->emul_data;
-  kern_return_t ret;
-
-  /* Refuse if device is dead or not completely open.  */
-  if (dev == DEVICE_NULL)
-    return D_NO_SUCH_DEVICE;
-
-  /* Must be called on the irq device only */
-  if (! name_equal(mdev->dev_ops->d_name, 3, "irq"))
-    return D_INVALID_OPERATION;
-
-  ret = irq_acknowledge(receive_port);
-
-  if (ret == D_SUCCESS)
-    ipc_port_release_send(receive_port);
-
-  return ret;
-#endif /* MACH_XEN || __x86_64__ */
 }
 
 boolean_t

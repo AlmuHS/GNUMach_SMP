@@ -146,7 +146,7 @@ dectohexdec(int n)
 }
 
 int
-readtodc(uint64_t *tp)
+readtodc(u_int *tp)
 {
 	struct rtc_st rtclk;
 	time_t n;

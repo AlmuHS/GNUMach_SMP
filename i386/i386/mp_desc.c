@@ -211,18 +211,18 @@ mp_desc_init(int mycpu)
 #ifdef	MACH_RING1
             panic("TODO %s:%d\n",__FILE__,__LINE__);
 #else	/* MACH_RING1 */
-		_fill_gdt_sys_descriptor(mpt->gdt, KERNEL_LDT,
-			(unsigned)&mpt->ldt,
-			LDTSZ * sizeof(struct real_descriptor) - 1,
-			ACC_P|ACC_PL_K|ACC_LDT, 0);
-		_fill_gdt_sys_descriptor(mpt->gdt, KERNEL_TSS,
-			(unsigned)&mpt->ktss,
-			sizeof(struct task_tss) - 1,
-			ACC_P|ACC_PL_K|ACC_TSS, 0);
+            fill_descriptor(&mpt->gdt[sel_idx(KERNEL_LDT)],
+                            (unsigned)&mpt->ldt,
+                            LDTSZ * sizeof(struct real_descriptor) - 1,
+                            ACC_P|ACC_PL_K|ACC_LDT, 0);
+            fill_descriptor(&mpt->gdt[sel_idx(KERNEL_TSS)],
+                            (unsigned)&mpt->ktss,
+                            sizeof(struct task_tss) - 1,
+                            ACC_P|ACC_PL_K|ACC_TSS, 0);
 
-		mpt->ktss.tss.ss0 = KERNEL_DS;
-		mpt->ktss.tss.io_bit_map_offset = IOPB_INVAL;
-		mpt->ktss.barrier = 0xFF;
+            mpt->ktss.tss.ss0 = KERNEL_DS;
+            mpt->ktss.tss.io_bit_map_offset = IOPB_INVAL;
+            mpt->ktss.barrier = 0xFF;
 #endif	/* MACH_RING1 */
 
             return mpt;

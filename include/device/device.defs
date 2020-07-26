@@ -142,21 +142,3 @@ routine device_set_filter(
 	in	filter		: filter_array_t
 	);
 
-routine device_intr_register(
-		device		: device_t;
-	in	id		: int;
-	in	flags		: int;
-	in	receive_port	: mach_port_send_t
-	);
-
-/*
- *	Acknowledge the specified interrupt notification.
- */
-/*
- * When an IRQ happens and an intr notification is thus sent, the IRQ line
- * is kept disabled until the notification is acknowledged with this RPC
- */
-routine device_intr_ack(
-		device		: device_t;
-	in	receive_port	: mach_port_send_t);
-

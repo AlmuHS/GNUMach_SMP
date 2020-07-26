@@ -151,6 +151,7 @@ linux_init (void)
   linux_net_emulation_init ();
 #endif
 
+  cli ();
   device_setup ();
 
 #ifdef CONFIG_PCMCIA

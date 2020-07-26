@@ -207,7 +207,7 @@ gsync_find_key (const struct list *entries,
 static inline vm_offset_t
 temp_mapping (struct vm_args *vap, vm_offset_t addr, vm_prot_t prot)
 {
-  vm_offset_t paddr = VM_MIN_KERNEL_ADDRESS;
+  vm_offset_t paddr;
   /* Adjust the offset for addresses that aren't page-aligned. */
   vm_offset_t off = vap->off - (addr - trunc_page (addr));
 

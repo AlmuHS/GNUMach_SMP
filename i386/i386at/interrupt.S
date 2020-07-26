@@ -30,7 +30,8 @@ ENTRY(interrupt)
 	pushl	%eax			/* save irq number */
 	movl	%eax,%ecx		/* copy irq number */
 	shll	$2,%ecx			/* irq * 4 */
-	call	spl7			/* set ipl */
+	movl	EXT(intpri)(%ecx),%edx	/* get new ipl */
+	call	spl			/* set ipl */
 	movl	EXT(iunit)(%ecx),%edx	/* get device unit number */
 	pushl	%eax			/* push previous ipl */
 	pushl	%edx			/* push unit number */
@@ -38,44 +39,14 @@ ENTRY(interrupt)
 	addl	$4,%esp			/* pop unit number */
 	call	splx_cli		/* restore previous ipl */
 	addl	$4,%esp			/* pop previous ipl */
-
 	cli				/* XXX no more nested interrupts */
-	popl	%ecx			/* restore irq number */
-
-	movl	$1,%eax
-	shll	%cl,%eax		/* get corresponding IRQ mask */
-	orl	EXT(curr_pic_mask),%eax /* add current mask */
-
+	popl	%eax			/* restore irq number */
+	movl	%eax,%ecx		/* copy irq number */
+	movb	$(NON_SPEC_EOI),%al	/* non-specific EOI */
+	outb	%al,$(PIC_MASTER_ICW)	/* ack interrupt to master */
 	cmpl	$8,%ecx			/* do we need to ack slave? */
-	jl	1f			/* no, only master */
-
-	/* EOI on slave */
-	movb	%ah,%al
-	outb	%al,$(PIC_SLAVE_OCW)	/* mask slave out */
-
-	movb	$(SPECIFIC_EOI),%al	/* specific EOI for this irq */
-	andb	$7,%cl			/* irq number for the slave */
-	orb	%cl,%al			/* combine them */
-	outb	%al,$(PIC_SLAVE_ICW)	/* ack interrupt to slave */
-
-	movb	$(SPECIFIC_EOI + I_AM_SLAVE_2),%al	/* specific master EOI for cascaded slave */
-	outb	%al,$(PIC_MASTER_ICW)	/* ack interrupt to master */
-
-	movl	EXT(curr_pic_mask),%eax /* restore original mask */
-	movb	%ah,%al
-	outb	%al,$(PIC_SLAVE_OCW)	/* unmask slave */
-	jmp	2f
-
+	jl	1f			/* no, skip it */
+	outb	%al,$(PIC_SLAVE_ICW)
 1:
-	/* EOI on master */
-	outb	%al,$(PIC_MASTER_OCW)	/* mask master out */
-
-	movb	$(SPECIFIC_EOI),%al	/* specific EOI for this irq */
-	orb	%cl,%al			/* combine with irq number */
-	outb	%al,$(PIC_MASTER_ICW)	/* ack interrupt to master */
-
-	movl	EXT(curr_pic_mask),%eax /* restore original mask */
-	outb	%al,$(PIC_MASTER_OCW)	/* unmask master */
-2:
-	ret
+	ret				/* return */
 END(interrupt)

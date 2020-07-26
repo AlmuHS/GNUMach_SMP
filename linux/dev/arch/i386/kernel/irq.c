@@ -50,10 +50,7 @@
 #include <linux/dev/glue/glue.h>
 #include <machine/machspl.h>
 
-#include <device/intr.h>
-
-#if 0
-
+/*#if 0*/
 /* XXX: This is the way it's done in linux 2.2. GNU Mach currently uses intr_count. It should be made using local_{bh/irq}_count instead (through hardirq_enter/exit) for SMP support. */
 unsigned int local_bh_count[NR_CPUS];
 unsigned int local_irq_count[NR_CPUS];
@@ -64,6 +61,13 @@ unsigned int local_irq_count[NR_CPUS];
  * Set if the machine has an EISA bus.
  */
 int EISA_bus = 0;
+
+/*
+ * Priority at which a Linux handler should be called.
+ * This is used at the time of an IRQ allocation.  It is
+ * set by emulation routines for each class of device.
+ */
+spl_t linux_intr_pri;
 
 /*
  * Flag indicating an interrupt is being handled.
@@ -79,7 +83,6 @@ struct linux_action
   void *dev_id;
   struct linux_action *next;
   unsigned long flags;
-  user_intr_t *user_intr;
 };
 
 static struct linux_action *irq_action[16] =
@@ -99,7 +102,6 @@ linux_intr (int irq)
 {
   struct pt_regs regs;
   struct linux_action *action = *(irq_action + irq);
-  struct linux_action **prev = &irq_action[irq];
   unsigned long flags;
 
   kstat.interrupts[irq]++;
@@ -111,30 +113,8 @@ linux_intr (int irq)
 
   while (action)
     {
-      // TODO I might need to check whether the interrupt belongs to
-      // the current device. But I don't do it for now.
-      if (action->user_intr)
-	{
-	  if (!deliver_user_intr(&irqtab, irq, action->user_intr))
-	  {
-	    *prev = action->next;
-	    linux_kfree(action);
-	    action = *prev;
-	    continue;
-	  }
-	}
-      else if (action->handler)
-	action->handler (irq, action->dev_id, &regs);
-      prev = &action->next;
+      action->handler (irq, action->dev_id, &regs);
       action = action->next;
-    }
-
-  if (!irq_action[irq])
-    {
-      /* No handler any more, disable interrupt */
-      mask_irq (irq);
-      ivect[irq] = intnull;
-      iunit[irq] = irq;
     }
 
   restore_flags (flags);
@@ -142,23 +122,62 @@ linux_intr (int irq)
   intr_count--;
 }
 
-/* IRQ mask according to Linux drivers */
-static unsigned linux_pic_mask;
+/*
+ * Mask an IRQ.
+ */
+static inline void
+mask_irq (unsigned int irq_nr)
+{
+  int i;
 
-/* These only record that Linux requested to mask IRQs */
+  for (i = 0; i < intpri[irq_nr]; i++)
+    pic_mask[i] |= 1 << irq_nr;
+
+  if (curr_pic_mask != pic_mask[curr_ipl])
+    {
+      curr_pic_mask = pic_mask[curr_ipl];
+      if (irq_nr < 8)
+	outb (curr_pic_mask & 0xff, PIC_MASTER_OCW);
+      else
+	outb (curr_pic_mask >> 8, PIC_SLAVE_OCW);
+    }
+}
+
+/*
+ * Unmask an IRQ.
+ */
+static inline void
+unmask_irq (unsigned int irq_nr)
+{
+  int mask, i;
+
+  mask = 1 << irq_nr;
+  if (irq_nr >= 8)
+    mask |= 1 << 2;
+
+  for (i = 0; i < intpri[irq_nr]; i++)
+    pic_mask[i] &= ~mask;
+
+  if (curr_pic_mask != pic_mask[curr_ipl])
+    {
+      curr_pic_mask = pic_mask[curr_ipl];
+      if (irq_nr < 8)
+	outb (curr_pic_mask & 0xff, PIC_MASTER_OCW);
+      else
+	outb (curr_pic_mask >> 8, PIC_SLAVE_OCW);
+    }
+}
+
 void
 disable_irq (unsigned int irq_nr)
 {
   unsigned long flags;
-  unsigned mask = 1U << irq_nr;
+
+  assert (irq_nr < NR_IRQS);
 
   save_flags (flags);
   cli ();
-  if (!(linux_pic_mask & mask))
-  {
-    linux_pic_mask |= mask;
-    __disable_irq(irq_nr);
-  }
+  mask_irq (irq_nr);
   restore_flags (flags);
 }
 
@@ -166,16 +185,22 @@ void
 enable_irq (unsigned int irq_nr)
 {
   unsigned long flags;
-  unsigned mask = 1U << irq_nr;
+
+  assert (irq_nr < NR_IRQS);
 
   save_flags (flags);
   cli ();
-  if (linux_pic_mask & mask)
-  {
-    linux_pic_mask &= ~mask;
-    __enable_irq(irq_nr);
-  }
+  unmask_irq (irq_nr);
   restore_flags (flags);
+}
+
+/*
+ * Default interrupt handler for Linux.
+ */
+void
+linux_bad_intr (int irq)
+{
+  mask_irq (irq);
 }
 
 static int
@@ -196,6 +221,10 @@ setup_x86_irq (int irq, struct linux_action *new)
       if ((old->flags ^ new->flags) & SA_INTERRUPT)
 	return (-EBUSY);
 
+      /* Can't share at different levels */
+      if (intpri[irq] && linux_intr_pri != intpri[irq])
+	return (-EBUSY);
+
       /* add new interrupt at end of irq queue */
       do
 	{
@@ -214,57 +243,11 @@ setup_x86_irq (int irq, struct linux_action *new)
     {
       ivect[irq] = linux_intr;
       iunit[irq] = irq;
+      intpri[irq] = linux_intr_pri;
       unmask_irq (irq);
     }
   restore_flags (flags);
   return 0;
-}
-
-int
-install_user_intr_handler (struct irqdev *dev, int id, unsigned long flags,
-			  user_intr_t *user_intr)
-{
-  struct linux_action *action;
-  struct linux_action *old;
-  int retval;
-
-  unsigned int irq = dev->irq[id];
-
-  assert (irq < 16);
-
-  /* Test whether the irq handler has been set */
-  // TODO I need to protect the array when iterating it.
-  old = irq_action[irq];
-  while (old)
-    {
-      if (old->user_intr && old->user_intr->dst_port == user_intr->dst_port)
-	{
-	  printk ("The interrupt handler has already been installed on line %d", irq);
-	  return linux_to_mach_error (-EAGAIN);
-	}
-      old = old->next;
-    }
-
-  /*
-   * Hmm... Should I use `kalloc()' ?
-   * By OKUJI Yoshinori.
-   */
-  action = (struct linux_action *)
-    linux_kmalloc (sizeof (struct linux_action), GFP_KERNEL);
-  if (action == NULL)
-    return linux_to_mach_error (-ENOMEM);
-  
-  action->handler = NULL;
-  action->next = NULL;
-  action->dev_id = NULL;
-  action->flags = SA_SHIRQ;
-  action->user_intr = user_intr;
-  
-  retval = setup_x86_irq (irq, action);
-  if (retval)
-    linux_kfree (action);
-  
-  return linux_to_mach_error (retval);
 }
 
 /*
@@ -295,7 +278,6 @@ request_irq (unsigned int irq, void (*handler) (int, void *, struct pt_regs *),
   action->next = NULL;
   action->dev_id = dev_id;
   action->flags = flags;
-  action->user_intr = NULL;
   
   retval = setup_x86_irq (irq, action);
   if (retval)
@@ -327,8 +309,9 @@ free_irq (unsigned int irq, void *dev_id)
       if (!irq_action[irq])
 	{
 	  mask_irq (irq);
-	  ivect[irq] = intnull;
+	  ivect[irq] = linux_bad_intr;
 	  iunit[irq] = irq;
+	  intpri[irq] = SPL0;
 	}
       restore_flags (flags);
       linux_kfree (action);
@@ -354,8 +337,9 @@ probe_irq_on (void)
    */
   for (i = 15; i > 0; i--)
     {
-      if (!irq_action[i] && ivect[i] == intnull)
+      if (!irq_action[i] && ivect[i] == linux_bad_intr)
 	{
+	  intpri[i] = linux_intr_pri;
 	  enable_irq (i);
 	  irqs |= 1 << i;
 	}
@@ -387,9 +371,10 @@ probe_irq_off (unsigned long irqs)
    */
   for (i = 15; i > 0; i--)
     {
-      if (!irq_action[i] && ivect[i] == intnull)
+      if (!irq_action[i] && ivect[i] == linux_bad_intr)
 	{
 	  disable_irq (i);
+	  intpri[i] = SPL0;
 	}
     }
   
@@ -427,7 +412,7 @@ reserve_mach_irqs (void)
 
   for (i = 0; i < 16; i++)
     {
-      if (ivect[i] != intnull)
+      if (ivect[i] != prtnull && ivect[i] != intnull)
 	/* This dummy action does not specify SA_SHIRQ, so
 	   setup_x86_irq will not try to add a handler to this
 	   slot.  Therefore, the cast is safe.  */
@@ -706,10 +691,12 @@ void __global_restore_flags(unsigned long flags)
 #endif
 
 static void (*old_clock_handler) ();
+static int old_clock_pri;
 
 void
 init_IRQ (void)
 {
+  int i;
   char *p;
   int latch = (CLKNUM + hz / 2) / hz;
   
@@ -729,10 +716,29 @@ init_IRQ (void)
    * Install our clock interrupt handler.
    */
   old_clock_handler = ivect[0];
+  old_clock_pri = intpri[0];
   ivect[0] = linux_timer_intr;
+  intpri[0] = SPLHI;
 
   reserve_mach_irqs ();
 
+  for (i = 1; i < 16; i++)
+    {
+      /*
+       * irq2 and irq13 should be igonored.
+       */
+      if (i == 2 || i == 13)
+	continue;
+      if (ivect[i] == prtnull || ivect[i] == intnull)
+	{
+          ivect[i] = linux_bad_intr;
+          iunit[i] = i;
+          intpri[i] = SPL0;
+	}
+    }
+  
+  form_pic_mask ();
+  
   /*
    * Enable interrupts.
    */
@@ -770,5 +776,7 @@ restore_IRQ (void)
    * Restore clock interrupt handler.
    */
   ivect[0] = old_clock_handler;
+  intpri[0] = old_clock_pri;
+  form_pic_mask ();
 }
   

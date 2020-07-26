@@ -35,11 +35,7 @@
 /* This can be changed freely to separate kernel addresses from user addresses
  * for better trace support in kdb; the _START symbol has to be offset by the
  * same amount. */
-#ifdef __x86_64__
-#define VM_MIN_KERNEL_ADDRESS	0x40000000UL
-#else
 #define VM_MIN_KERNEL_ADDRESS	0xC0000000UL
-#endif
 
 #ifdef	MACH_XEN
 /* PV kernels can be loaded directly to the target virtual address */
@@ -50,15 +46,11 @@
 #endif	/* MACH_XEN */
 
 #ifdef	MACH_PV_PAGETABLES
-#ifdef __i386__
 #if	PAE
 #define HYP_VIRT_START	HYPERVISOR_VIRT_START_PAE
 #else	/* PAE */
 #define HYP_VIRT_START	HYPERVISOR_VIRT_START_NONPAE
 #endif	/* PAE */
-#else
-#define HYP_VIRT_START	HYPERVISOR_VIRT_START
-#endif
 #define VM_MAX_KERNEL_ADDRESS	(HYP_VIRT_START - LINEAR_MIN_KERNEL_ADDRESS + VM_MIN_KERNEL_ADDRESS)
 #else	/* MACH_PV_PAGETABLES */
 #define VM_MAX_KERNEL_ADDRESS	(LINEAR_MAX_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS + VM_MIN_KERNEL_ADDRESS)
@@ -70,16 +62,11 @@
  */
 #define VM_KERNEL_MAP_SIZE (152 * 1024 * 1024)
 
-/* This is the kernel address range in linear addresses.  */
-#ifdef __x86_64__
-#define LINEAR_MIN_KERNEL_ADDRESS	VM_MIN_KERNEL_ADDRESS
-#define LINEAR_MAX_KERNEL_ADDRESS	(0x00007fffffffffffUL)
-#else
-/* On x86, the kernel virtual address space is actually located
-   at high linear addresses. */
+/* The kernel virtual address space is actually located
+   at high linear addresses.
+   This is the kernel address range in linear addresses.  */
 #define LINEAR_MIN_KERNEL_ADDRESS	(VM_MAX_ADDRESS)
 #define LINEAR_MAX_KERNEL_ADDRESS	(0xffffffffUL)
-#endif
 
 #ifdef	MACH_PV_PAGETABLES
 /* need room for mmu updates (2*8bytes) */
@@ -124,18 +111,11 @@
 
 #ifdef MACH_XEN
 /* TODO Completely check Xen physical/virtual layout */
-#ifdef __LP64__
-#define VM_PAGE_MAX_SEGS 4
-#define VM_PAGE_DMA32_LIMIT     DECL_CONST(0x100000000, UL)
-#define VM_PAGE_DIRECTMAP_LIMIT DECL_CONST(0x400000000000, UL)
-#define VM_PAGE_HIGHMEM_LIMIT   DECL_CONST(0x10000000000000, ULL)
-#else
 #define VM_PAGE_MAX_SEGS 3
 #define VM_PAGE_DIRECTMAP_LIMIT (VM_MAX_KERNEL_ADDRESS \
 				 - VM_MIN_KERNEL_ADDRESS \
 				 - VM_KERNEL_MAP_SIZE)
 #define VM_PAGE_HIGHMEM_LIMIT   DECL_CONST(0x10000000000000, ULL)
-#endif
 #else /* MACH_XEN */
 #ifdef __LP64__
 #define VM_PAGE_MAX_SEGS 4

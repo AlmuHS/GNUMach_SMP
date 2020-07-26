@@ -16,7 +16,6 @@
  */
 
 #include <string.h>
-#include <inttypes.h>
 #include <i386/model_dep.h>
 #include <i386at/biosmem.h>
 #include <kern/assert.h>
@@ -830,7 +829,7 @@ biosmem_map_show(void)
     for (entry = biosmem_map, end = entry + biosmem_map_size;
          entry < end;
          entry++)
-        printf("biosmem: %018"PRIx64":%018"PRIx64", %s\n", entry->base_addr,
+        printf("biosmem: %018llx:%018llx, %s\n", entry->base_addr,
                entry->base_addr + entry->length,
                biosmem_type_desc(entry->type));
 
@@ -858,7 +857,7 @@ biosmem_load_segment(struct biosmem_segment *seg, uint64_t max_phys_end)
             return;
         }
 
-        printf("biosmem: warning: segment %s truncated to %#"PRIx64"\n",
+        printf("biosmem: warning: segment %s truncated to %#llx\n",
                vm_page_seg_name(seg_index), max_phys_end);
         phys_end = max_phys_end;
     }

@@ -202,7 +202,7 @@ task_create_kernel(
 			  new_task);
 	else
 		snprintf (new_task->name, sizeof new_task->name, "(%.*s)",
-			  (int) (sizeof new_task->name - 3), parent_task->name);
+			  sizeof new_task->name - 3, parent_task->name);
 
 	if (new_task_notification != NULL) {
 		task_reference (new_task);

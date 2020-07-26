@@ -16,7 +16,6 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
-#include <machine/model_dep.h>
 #include <sys/types.h>
 #include <mach/vm_param.h>
 #include <machine/spl.h>
@@ -100,7 +99,7 @@ void hyp_grant_takeback(grant_ref_t grant) {
 	simple_lock(&lock);
 
 	if (grants[grant].flags & (GTF_reading|GTF_writing))
-		panic("grant %d still in use (%x)\n", grant, grants[grant].flags);
+		panic("grant %d still in use (%lx)\n", grant, grants[grant].flags);
 
 	/* Note: this is not safe, a cmpxchg is needed, see grant_table.h */
 	grants[grant].flags = 0;
@@ -129,7 +128,7 @@ void hyp_grant_init(void) {
 
 	ret = hyp_grant_table_op(GNTTABOP_setup_table, kvtolin(&setup), 1);
 	if (ret)
-		panic("setup grant table error %ld", ret);
+		panic("setup grant table error %d", ret);
 	if (setup.status)
 		panic("setup grant table: %d\n", setup.status);
 	

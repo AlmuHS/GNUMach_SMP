@@ -24,6 +24,4 @@ void hyp_dev_init(void);
 void hyp_idle(void);
 void hyp_p2m_init(void);
 
-void hypclock_machine_intr(int old_ipl, void *ret_addr, struct i386_interrupt_state *regs, uint64_t delta);
-
 #endif /* XEN_XEN_H */

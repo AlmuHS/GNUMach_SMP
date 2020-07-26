@@ -69,9 +69,9 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
 
-#define start B_ARG0
-#define count B_ARG1
-#define value B_ARG2
+#define start 0x08(%ebp)
+#define count 0x0c(%ebp)
+#define value 0x10(%ebp)
 
 ENTRY(kd_slmwd)
 	pushl	%ebp
@@ -96,9 +96,9 @@ ENTRY(kd_slmwd)
  * "slam up"
  */
 
-#define from  B_ARG0
-#define to    B_ARG1
-#define count B_ARG2
+#define from  0x08(%ebp)
+#define to    0x0c(%ebp)
+#define count 0x10(%ebp)
 ENTRY(kd_slmscu)
 	pushl	%ebp
 	movl	%esp, %ebp

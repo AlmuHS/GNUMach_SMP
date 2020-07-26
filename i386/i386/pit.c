@@ -54,7 +54,6 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <i386/pic.h>
 #include <i386/pit.h>
 #include <i386/pio.h>
-#include <kern/cpu_number.h>
 
 int pitctl_port  = PITCTL_PORT;		/* For 386/20 Board */
 int pitctr0_port = PITCTR0_PORT;	/* For 386/20 Board */
@@ -71,9 +70,8 @@ clkstart(void)
 	unsigned char	byte;
 	unsigned long s;
 
-	if (cpu_number() != 0)
-		/* Only one PIT initialization is needed */
-		return;
+	intpri[0] = SPLHI;
+	form_pic_mask();
 
 	s = sploff();         /* disable interrupts */
 

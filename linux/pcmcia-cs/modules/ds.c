@@ -940,7 +940,7 @@ int __init init_pcmcia_ds(void)
 	return -EINVAL;
     }
     if (serv.Count == 0) {
-	printk(KERN_NOTICE "ds: no socket drivers\n");
+	printk(KERN_NOTICE "ds: no socket drivers loaded!\n");
 	return -1;
     }
     

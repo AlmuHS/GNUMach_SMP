@@ -34,14 +34,8 @@
 
 #if	NCPUS > 1
 
-/* More-specific code must define cpu_number() and CPU_NUMBER.  */
-#ifdef __i386__
-#define	CX(addr, reg)	addr(,reg,4)
-#endif
-#ifdef __x86_64__
-#define	CX(addr, reg)	addr(,reg,8)
-#endif
-
+	/* More-specific code must define cpu_number() and CPU_NUMBER.  */
+	#define	CX(addr, reg)	addr(,reg,4)
 
 #else	/* NCPUS == 1 */
 	#define	CX(addr,reg)	addr

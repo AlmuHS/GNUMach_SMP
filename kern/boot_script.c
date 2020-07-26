@@ -4,7 +4,6 @@
 
 #include <mach/mach_types.h>
 #include <string.h>
-#include <kern/printf.h>
 #include "boot_script.h"
 
 
@@ -173,7 +172,7 @@ add_list (void *ptr, void ***ptr_list, int *alloc, int *index, int incr)
 /* Create an argument with TEXT, value type TYPE, and value VAL.
    Add the argument to the argument list of CMD.  */
 static struct arg *
-add_arg (struct cmd *cmd, char *text, int type, long val)
+add_arg (struct cmd *cmd, char *text, int type, int val)
 {
   struct arg *arg;
 
@@ -559,7 +558,6 @@ boot_script_exec (void)
 		  if (sym->type == VAL_NONE)
 		    {
 		      error = BOOT_SCRIPT_UNDEF_SYM;
-		      printf("bootstrap script missing symbol '%s'\n", sym->name);
 		      goto done;
 		    }
 		  arg->type = sym->type;
