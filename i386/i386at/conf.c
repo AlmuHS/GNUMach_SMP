@@ -68,6 +68,9 @@
 #define hypcnname		"hyp"
 #endif	/* MACH_HYP */
 
+#include <device/intr.h>
+#define irqname			"irq"
+
 /*
  * List of devices - console must be at slot 0
  */
@@ -148,6 +151,11 @@ struct dev_ops	dev_name_list[] =
 	  nodev,	nulldev,	hypcnportdeath,	0,
 	  nodev },
 #endif	/* MACH_HYP */
+
+        { irqname,      nulldev_open,   nulldev_close,    nulldev_read,
+          nulldev_write,nulldev_getstat,nulldev_setstat,  nomap,
+          nodev,        nulldev,        nulldev_portdeath,0,
+          nodev },
 
 };
 int	dev_name_count = sizeof(dev_name_list)/sizeof(dev_name_list[0]);

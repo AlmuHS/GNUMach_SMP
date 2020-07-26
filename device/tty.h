@@ -125,7 +125,7 @@ extern void ttychars(
 
 #define	TTMINBUF	90
 
-short	tthiwat[NSPEEDS], ttlowat[NSPEEDS];
+extern short	tthiwat[NSPEEDS], ttlowat[NSPEEDS];
 #define	TTHIWAT(tp)	tthiwat[(tp)->t_ospeed]
 #define	TTLOWAT(tp)	ttlowat[(tp)->t_ospeed]
 

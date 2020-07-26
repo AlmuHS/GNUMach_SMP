@@ -126,13 +126,11 @@ void take_dev_irq(
 {
 	int pic = (int)dev->sysdep1;
 
-	if (intpri[pic] == 0) {
+	if (ivect[pic] == intnull) {
 		iunit[pic] = dev->unit;
 		ivect[pic] = dev->intr;
-		intpri[pic] = (int)dev->sysdep;
-		form_pic_mask();
 	} else {
-		printf("The device below will clobber IRQ %d.\n", pic);
+		printf("The device below will clobber IRQ %d (%p).\n", pic, ivect[pic]);
 		printf("You have two devices at the same IRQ.\n");
 		printf("This won't work.  Reconfigure your hardware and try again.\n");
 		printf("%s%d: port = %lx, spl = %ld, pic = %d.\n",
@@ -147,13 +145,11 @@ void take_ctlr_irq(
 	const struct bus_ctlr *ctlr)
 {
 	int pic = ctlr->sysdep1;
-	if (intpri[pic] == 0) {
+	if (ivect[pic] == intnull) {
 		iunit[pic] = ctlr->unit;
 		ivect[pic] = ctlr->intr;
-		intpri[pic] = (int)ctlr->sysdep;
-		form_pic_mask();
 	} else {
-		printf("The device below will clobber IRQ %d.\n", pic);
+		printf("The device below will clobber IRQ %d (%p).\n", pic, ivect[pic]);
 		printf("You have two devices at the same IRQ.  This won't work.\n");
 		printf("Reconfigure your hardware and try again.\n");
 		while (1);

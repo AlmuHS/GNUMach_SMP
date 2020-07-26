@@ -1,0 +1,29 @@
+dnl Configure fragment for general options.
+
+dnl Copyright (C) 2020 Free Software Foundation, Inc.
+
+dnl Permission to use, copy, modify and distribute this software and its
+dnl documentation is hereby granted, provided that both the copyright
+dnl notice and this permission notice appear in all copies of the
+dnl software, derivative works or modified versions, and any portions
+dnl thereof, and that both notices appear in supporting documentation.
+dnl
+dnl THE FREE SOFTWARE FOUNDATION ALLOWS FREE USE OF THIS SOFTWARE IN ITS
+dnl "AS IS" CONDITION.  THE FREE SOFTWARE FOUNDATION DISCLAIMS ANY
+dnl LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
+dnl USE OF THIS SOFTWARE.
+
+#
+# Common options
+#
+
+ncom=0
+nlpr=0
+
+AC_ARG_ENABLE([pae],
+  AS_HELP_STRING([--enable-pae], [PAE support (ix86-only); on i386-at disabled
+    by default, otherwise enabled by default]))
+
+dnl Local Variables:
+dnl mode: autoconf
+dnl End:

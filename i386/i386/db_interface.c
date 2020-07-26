@@ -66,6 +66,8 @@ static boolean_t kernel_dr;
 /* Whether the current debug registers are zero.  */
 static boolean_t zero_dr;
 
+db_regs_t	ddb_regs;
+
 void db_load_context(pcb_t pcb)
 {
 #if MACH_KDB
@@ -125,7 +127,7 @@ kern_return_t db_set_debug_state(
 
 struct	 i386_saved_state *i386_last_saved_statep;
 struct	 i386_saved_state i386_nested_saved_state;
-unsigned i386_last_kdb_sp;
+uintptr_t i386_last_kdb_sp;
 
 extern	thread_t db_default_thread;
 
@@ -289,7 +291,7 @@ kdb_trap(
 #endif	/* NCPUS > 1 */
 	{
 	    i386_last_saved_statep = regs;
-	    i386_last_kdb_sp = (unsigned) &type;
+	    i386_last_kdb_sp = (uintptr_t) &type;
 
 	    /* XXX Should switch to ddb`s own stack here. */
 
@@ -298,7 +300,7 @@ kdb_trap(
 		/*
 		 * Kernel mode - esp and ss not saved
 		 */
-		ddb_regs.uesp = (int)&regs->uesp;   /* kernel stack pointer */
+		ddb_regs.uesp = (uintptr_t)&regs->uesp;   /* kernel stack pointer */
 		ddb_regs.ss   = KERNEL_DS;
 	    }
 
@@ -347,8 +349,10 @@ kdb_trap(
  *	instead of those at its call to KDB.
  */
 struct int_regs {
+#ifdef __i386__
 	long	edi;
 	long	esi;
+#endif
 	long	ebp;
 	long	ebx;
 	struct i386_interrupt_state *is;
@@ -366,12 +370,12 @@ kdb_kentry(
 #endif	/* NCPUS > 1 */
 	{
 	    if ((is->cs & 0x3) != KERNEL_RING) {
-		ddb_regs.uesp = ((int *)(is+1))[0];
-		ddb_regs.ss   = ((int *)(is+1))[1];
+		ddb_regs.uesp = *(uintptr_t *)(is+1);
+		ddb_regs.ss   = *(int *)((uintptr_t *)(is+1)+1);
 	    }
 	    else {
 		ddb_regs.ss  = KERNEL_DS;
-		ddb_regs.uesp= (int)(is+1);
+		ddb_regs.uesp= (uintptr_t)(is+1);
 	    }
 	    ddb_regs.efl = is->efl;
 	    ddb_regs.cs  = is->cs;
@@ -381,8 +385,14 @@ kdb_kentry(
 	    ddb_regs.edx = is->edx;
 	    ddb_regs.ebx = int_regs->ebx;
 	    ddb_regs.ebp = int_regs->ebp;
+#ifdef __i386__
 	    ddb_regs.esi = int_regs->esi;
 	    ddb_regs.edi = int_regs->edi;
+#endif
+#ifdef __x86_64__
+	    ddb_regs.esi = is->rsi;
+	    ddb_regs.edi = is->rdi;
+#endif
 	    ddb_regs.ds  = is->ds;
 	    ddb_regs.es  = is->es;
 	    ddb_regs.fs  = is->fs;
@@ -404,8 +414,14 @@ kdb_kentry(
 	    is->edx = ddb_regs.edx;
 	    int_regs->ebx = ddb_regs.ebx;
 	    int_regs->ebp = ddb_regs.ebp;
+#ifdef __i386__
 	    int_regs->esi = ddb_regs.esi;
 	    int_regs->edi = ddb_regs.edi;
+#endif
+#ifdef __x86_64__
+	    is->rsi = ddb_regs.esi;
+	    is->rdi = ddb_regs.edi;
+#endif
 	    is->ds  = ddb_regs.ds & 0xffff;
 	    is->es  = ddb_regs.es & 0xffff;
 	    is->fs  = ddb_regs.fs & 0xffff;

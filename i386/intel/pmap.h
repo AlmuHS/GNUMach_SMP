@@ -48,7 +48,7 @@
  *	Define the generic in terms of the specific
  */
 
-#if defined(__i386__)
+#if defined(__i386__) || defined(__x86_64__)
 #define	INTEL_PGBYTES		I386_PGBYTES
 #define INTEL_PGSHIFT		I386_PGSHIFT
 #define	intel_btop(x)		i386_btop(x)
@@ -71,9 +71,19 @@ typedef phys_addr_t pt_entry_t;
 
 #define INTEL_OFFMASK	0xfff	/* offset within page */
 #if PAE
+#ifdef __x86_64__
+#define L4SHIFT		39	/* L4 shift */
+#define L4MASK		0x1ff	/* mask for L4 index */
+#endif
 #define PDPSHIFT	30	/* page directory pointer */
+#ifdef __x86_64__
+/* Enough for 8GiB addressing space. */
+#define PDPNUM		8	/* number of page directory pointers */
+#define PDPMASK		0x1ff	/* mask for page directory pointer index */
+#else
 #define PDPNUM		4	/* number of page directory pointers */
 #define PDPMASK		3	/* mask for page directory pointer index */
+#endif
 #define PDESHIFT	21	/* page descriptor shift */
 #define PDEMASK		0x1ff	/* mask for page descriptor index */
 #define PTESHIFT	12	/* page table shift */
@@ -85,6 +95,13 @@ typedef phys_addr_t pt_entry_t;
 #define PTESHIFT	12	/* page table shift */
 #define PTEMASK		0x3ff	/* mask for page table index */
 #endif	/* PAE */
+
+/*
+ *	Convert linear offset to L4 pointer index
+ */
+#ifdef __x86_64__
+#define lin2l4num(a)	(((a) >> L4SHIFT) & L4MASK)
+#endif
 
 /*
  *	Convert linear offset to page descriptor index
@@ -167,6 +184,13 @@ struct pmap {
 #else
 	pt_entry_t	*pdpbase;	/* page directory pointer table */
 #endif	/* ! PAE */
+#ifdef __x86_64__
+	pt_entry_t	*l4base;	/* l4 table */
+#ifdef MACH_HYP
+	pt_entry_t	*user_l4base;	/* Userland l4 table */
+	pt_entry_t	*user_pdpbase;	/* Userland l4 table */
+#endif	/* MACH_HYP */
+#endif	/* x86_64 */
 	int		ref_count;	/* reference count */
 	decl_simple_lock_data(,lock)
 					/* lock on map */
@@ -187,7 +211,21 @@ extern void pmap_clear_bootstrap_pagetable(pt_entry_t *addr);
 #endif	/* MACH_PV_PAGETABLES */
 
 #if PAE
+#ifdef __x86_64__
+#ifdef MACH_HYP
+#define	set_pmap(pmap)	\
+	MACRO_BEGIN					\
+		set_cr3(kvtophys((vm_offset_t)(pmap)->l4base)); \
+		if (pmap->user_l4base) \
+			if (!hyp_set_user_cr3(kvtophys((vm_offset_t)(pmap)->user_l4base))) \
+				panic("set_user_cr3"); \
+	MACRO_END
+#else	/* MACH_HYP */
+#define	set_pmap(pmap)	set_cr3(kvtophys((vm_offset_t)(pmap)->l4base))
+#endif	/* MACH_HYP */
+#else	/* x86_64 */
 #define	set_pmap(pmap)	set_cr3(kvtophys((vm_offset_t)(pmap)->pdpbase))
+#endif	/* x86_64 */
 #else	/* PAE */
 #define	set_pmap(pmap)	set_cr3(kvtophys((vm_offset_t)(pmap)->dirbase))
 #endif	/* PAE */

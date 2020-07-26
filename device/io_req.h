@@ -137,6 +137,6 @@ void	iodone(io_req_t);
 	(kfree((vm_offset_t)(ior), sizeof(struct io_req)))
 
 
-struct kmem_cache io_inband_cache; /* for inband reads */
+extern struct kmem_cache io_inband_cache; /* for inband reads */
 
 #endif	/* _IO_REQ_ */

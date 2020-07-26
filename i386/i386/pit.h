@@ -45,7 +45,7 @@ NEGLIGENCE, OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
-#if	defined(AT386)
+#if	defined(AT386) || defined(ATX86_64)
 /* Definitions for 8254 Programmable Interrupt Timer ports on AT 386 */
 #define PITCTR0_PORT	0x40		/* counter 0 port */
 #define PITCTR1_PORT	0x41		/* counter 1 port */
@@ -74,7 +74,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * Clock speed for the timer in hz divided by the constant HZ
  * (defined in param.h)
  */
-#if	AT386
+#if	defined(AT386) || defined(ATX86_64)
 #define CLKNUM		1193167
 #endif	/* AT386 */
 

@@ -55,7 +55,10 @@ AC_ARG_ENABLE([platform],
 case $host_platform:$host_cpu in
   default:i?86)
     host_platform=at;;
-  at:i?86 | xen:i?86)
+  default:x86_64)]
+    AC_MSG_WARN([Platform set to Xen by default, this can not boot on non-Xen systems, you currently need a 32bit build for that.])
+    [host_platform=xen;;
+  at:i?86 | xen:i?86 | at:x86_64 | xen:x86_64)
     :;;
   *)]
     AC_MSG_ERROR([unsupported combination of cpu type `$host_cpu' and platform
@@ -131,6 +134,9 @@ esac]
 # PC AT.
 # TODO.  Currently handled in `i386/configfrag.ac'.
 
+# General options.
+m4_include([configfrag-first.ac])
+
 # Xen.
 m4_include([xen/configfrag.ac])
 
@@ -138,6 +144,9 @@ m4_include([xen/configfrag.ac])
 
 # ix86.
 m4_include([i386/configfrag.ac])
+
+# x86_64
+m4_include([x86_64/configfrag.ac])
 
 # General options.
 m4_include([configfrag.ac])

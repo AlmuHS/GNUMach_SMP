@@ -1,4 +1,5 @@
 \input texinfo                  @c -*- Texinfo -*-
+@documentencoding ISO-8859-1
 @setfilename mach.info
 @settitle The GNU Mach Reference Manual
 @setchapternewpage odd
@@ -285,6 +286,7 @@ Device Interface
 * Device Map::                    Mapping devices into virtual memory.
 * Device Status::                 Querying and manipulating a device.
 * Device Filter::                 Filtering packets arriving on a device.
+* Device Interrupt::              Getting hardware interrupt notifications.
 
 Kernel Debugger
 
@@ -373,7 +375,7 @@ IPC, currently not available in GNU Mach).
 
 @item it exists
 The Mach microkernel is real software that works Right Now.
-It is not a research or a proposal.  You don't have to wait at all
+It is not a research project or a proposal.  You don't have to wait at all
 before you can start using and developing it.  Mach has been used in
 many operating systems in the past, usually as the base for a single
 UNIX server.  In the GNU system, Mach is the base of a functional
@@ -3055,6 +3057,30 @@ specified and @code{KERN_NO_SPACE} if there was not enough space left to
 satisfy the request.
 @end deftypefun
 
+@deftypefun kern_return_t vm_allocate_contiguous (@w{host_priv_t @var{host_priv}}, @w{vm_task_t @var{target_task}}, @w{vm_address_t *@var{vaddr}}, @w{phys_addr_t *@var{paddr}}, @w{vm_size_t @var{size}}, @w{phys_addr_t @var{pmin}}, @w{phys_addr_t @var{pmax}}, @w{phys_addr_t @var{palign}})
+The function @code{vm_allocate} allocates a region of physical memory,
+placing virtual mapping of the physical pages in the specified @var{task}'s
+address space.
+
+The virtual space will be allocated wherever it is available. The virtual
+address at which the physical memory was mapped will be returned in
+@var{vaddr}. The physical address of the start of the allocated physical
+memory will be returned in @var{paddr}.
+
+@var{size} is the number of bytes to allocate (rounded by the system in
+a machine dependent way to an integral number of virtual pages).
+
+Constraints can be set on the physical address, to cope with hardware physical
+memory access constraints, e.g. DMAs.  @var{pmin} is the minimum physical address
+at which the allocated memory should start.  @var{pmax} is the maximum physical
+address at which the allocated memory should end.  @var{palign} is the alignment
+restriction, which has to be a power of two.
+
+The function returns @code{KERN_SUCCESS} if the memory was successfully
+allocated, @code{KERN_RESOURCE_SHORTAGE} if there was not enough physical memory
+left to satisfy the request, and @code{KERN_NO_SPACE} if there was not enough
+virtual space left to satisfy the request.
+@end deftypefun
 
 @node Memory Deallocation
 @section Memory Deallocation
@@ -5647,7 +5673,9 @@ mapped-time interface:
 do 
   @{
     secs = mtime->seconds;
+    __sync_synchronize();
     usecs = mtime->microseconds;
+    __sync_synchronize();
   @}
 while (secs != mtime->check_seconds);
 @end example
@@ -6278,6 +6306,7 @@ All constants and functions in this chapter are defined in
 * Device Map::                    Mapping devices into virtual memory.
 * Device Status::                 Querying and manipulating a device.
 * Device Filter::                 Filtering packets arriving on a device.
+* Device Interrupt::              Getting hardware interrupt notifications.
 @end menu
 
 
@@ -6672,6 +6701,26 @@ a device port or the device is dead or not completely open.
 @end deftypefun
 
 
+@node Device Interrupt
+@section Device Interrupt
+
+@deftypefun kern_return_t device_intr_register (@w{device_t @var{device}}, @w{int @var{id}}, @w{int @var{flags}}, @w{mach_port_t @var{receive_port}})
+The function @code{device_intr_register} registers for receiving hardware
+interrupt events through @var{device_intr_notify} notifications.  The hardware
+interrupt identifier is specified by @var{id}.  @var{flags} must be set to 0.  The
+notifications will be sent on the @var{receive_port} send right.
+@code{device_intr_register} is only available on the dedicated @code{irq} device.
+@end deftypefun
+
+@deftypefun kern_return_t device_intr_ack (@w{device_t @var{device}}, @w{mach_port_t @var{receive_port}})
+On a hardware interrupt, the kernel disables the interrupt line before sending
+notifications.  To prevent from interrupt losses, the interrupt is kept disabled
+until @code{device_intr_ack} is called to acknowledge the interrupt.
+@var{receive_port} is the send right on which the interrupt notification was
+received.
+@end deftypefun
+
+
 @node Kernel Debugger
 @chapter Kernel Debugger
 
@@ -6789,6 +6838,9 @@ look at by half words(16 bits)
 
 @item l
 look at by long words(32 bits)
+
+@item q
+look at by quad words(64 bits)
 
 @item a
 print the location being displayed

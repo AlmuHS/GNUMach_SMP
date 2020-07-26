@@ -170,11 +170,11 @@ noinst_PROGRAMS += \
 # This is the list of routines we decide is OK to steal from the C library.
 clib_routines := htonl htons ntohl ntohs			\
 		 udivdi3 __udivdi3 __udivmoddi4 __umoddi3	\
-		 __divdi3 					\
+		 __divdi3 __moddi3				\
 		 __rel_iplt_start __rel_iplt_end		\
-		 __ffsdi2					\
+		 __ffsdi2 ffs			\
 		 ffs cpu_number intel_startCPU local_bh_count local_irq_count \
-		_START _start etext _edata end _end # actually ld magic, not libc.							    
+		_START _start etext _edata end _end # actually ld magic, not libc. \
 
 gnumach-undef: gnumach.$(OBJEXT)
 	$(NM_V) $(NM) -u $< | sed 's/  *U  *//' | sort -u > $@

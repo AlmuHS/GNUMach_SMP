@@ -169,7 +169,8 @@ void switch_ktss(pcb_t pcb)
 #ifdef	MACH_PV_DESCRIPTORS
 	    hyp_set_ldt(&ldt, LDTSZ);
 #else	/* MACH_PV_DESCRIPTORS */
-	    set_ldt(KERNEL_LDT);
+	    if (get_ldt() != KERNEL_LDT)
+		set_ldt(KERNEL_LDT);
 #endif	/* MACH_PV_DESCRIPTORS */
 	}
 	else {

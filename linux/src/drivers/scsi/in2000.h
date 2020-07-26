@@ -406,7 +406,7 @@ int in2000_queuecommand(Scsi_Cmnd *, void (*done)(Scsi_Cmnd *));
 int in2000_abort(Scsi_Cmnd *);
 void in2000_setup(char *, int *) in2000__INIT;
 int in2000_proc_info(char *, char **, off_t, int, int, int);
-struct proc_dir_entry proc_scsi_in2000;
+extern struct proc_dir_entry proc_scsi_in2000;
 int in2000_biosparam(struct scsi_disk *, kdev_t, int *);
 int in2000_reset(Scsi_Cmnd *, unsigned int);
 

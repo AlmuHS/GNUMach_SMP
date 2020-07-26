@@ -95,13 +95,18 @@ void hyp_intrinit() {
 	form_int_mask();
 	curr_ipl = SPLHI;
 	hyp_shared_info.evtchn_mask[0] = int_mask[SPLHI];
+#ifdef __i386__
 	hyp_set_callbacks(KERNEL_CS, hyp_callback,
 			  KERNEL_CS, hyp_failsafe_callback);
+#endif
+#ifdef __x86_64__
+	hyp_set_callbacks(hyp_callback, hyp_failsafe_callback, NULL);
+#endif
 }
 
 void hyp_evt_handler(evtchn_port_t port, void (*handler)(), int unit, spl_t spl) {
 	if (port > NEVNT)
-		panic("event channel port %d > %d not supported\n", port, NEVNT);
+		panic("event channel port %d > %d not supported\n", port, (int) NEVNT);
 	intpri[port] = spl;
 	iunit[port] = unit;
 	form_int_mask();

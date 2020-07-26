@@ -26,6 +26,19 @@ AC_DEFINE([KERNEL], [1], [KERNEL])
 # Formerly in `bogus/'.
 #
 
+# i386/bogus/com.h
+AC_DEFINE_UNQUOTED([NCOM], [$ncom], [NCOM])
+
+# i386/bogus/lpr.h
+AC_DEFINE_UNQUOTED([NLPR], [$nlpr], [NLPR])
+
+[if [ x"$enable_pae" = xyes ]; then]
+  AC_DEFINE([PAE], [1], [PAE support])
+  AM_CONDITIONAL([enable_pae], [true])
+[else]
+  AM_CONDITIONAL([enable_pae], [false])
+[fi]
+
 # When set, the bootstrap task symbols are preserved by the kernel debugger.
 # Used in `kern/bootstrap.c'.
 AC_DEFINE([BOOTSTRAP_SYMBOLS], [0], [BOOTSTRAP_SYMBOLS])

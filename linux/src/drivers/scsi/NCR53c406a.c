@@ -525,7 +525,7 @@ NCR53c406a_detect(Scsi_Host_Template * tpnt){
     
 #ifndef IRQ_LEV
     if (irq_level < 0) {		/* LILO override if >= 0*/
-        irq_level=irq_probe();
+        irq_level = -1; // XXX No probing irq_probe();
         if (irq_level < 0) {		/* Trouble */
             printk("NCR53c406a: IRQ problem, irq_level=%d, giving up\n", irq_level);
             return 0;

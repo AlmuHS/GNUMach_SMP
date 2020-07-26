@@ -55,6 +55,16 @@ struct i386_saved_state {
 	unsigned long	fs;
 	unsigned long	es;
 	unsigned long	ds;
+#ifdef __x86_64__
+	unsigned long	r15;
+	unsigned long	r14;
+	unsigned long	r13;
+	unsigned long	r12;
+	unsigned long	r11;
+	unsigned long	r10;
+	unsigned long	r9;
+	unsigned long	r8;
+#endif
 	unsigned long	edi;
 	unsigned long	esi;
 	unsigned long	ebp;
@@ -100,9 +110,17 @@ struct i386_kernel_state {
 	long			k_ebx;	/* kernel context */
 	long			k_esp;
 	long			k_ebp;
+#ifdef __i386__
 	long			k_edi;
 	long			k_esi;
+#endif
 	long			k_eip;
+#ifdef __x86_64__
+	long			k_r12;
+	long			k_r13;
+	long			k_r14;
+	long			k_r15;
+#endif
 };
 
 /*
@@ -148,6 +166,14 @@ struct i386_interrupt_state {
 	long	fs;
 	long	es;
 	long	ds;
+#ifdef __x86_64__
+	long	r11;
+	long	r10;
+	long	r9;
+	long	r8;
+	long	rdi;
+	long	rsi;
+#endif
 	long	edx;
 	long	ecx;
 	long	eax;
