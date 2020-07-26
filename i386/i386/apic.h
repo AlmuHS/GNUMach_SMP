@@ -164,15 +164,6 @@ int apic_refit_cpulist(void);
 #define APIC_IO_REDIR_LOW(int_pin)	(0x10+(int_pin)*2)
 #define APIC_IO_REDIR_HIGH(int_pin)	(0x11+(int_pin)*2)
 
-/* Address at which the local unit is mapped in kernel virtual memory.
- *   Must be constant.
- */
-
-#define APIC_LOCAL_VA	lapic
-
-#define apic_local_unit (*((volatile ApicLocalUnit*)APIC_LOCAL_VA))
-
-
 /* Set or clear a bit in a 255-bit APIC mask register.
    These registers are spread through eight 32-bit registers.  */
 #define APIC_SET_MASK_BIT(reg, bit) \
