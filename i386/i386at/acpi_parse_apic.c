@@ -52,7 +52,7 @@ static int acpi_apic_parse_table(struct acpi_apic *apic);
  * Returns 0 if success, -1 if error.
  */
 int
-acpi_apic_init (void)
+acpi_apic_init(void)
 {
     struct acpi_rsdp *rsdp = 0;
     struct acpi_rsdt *rsdt = 0;
@@ -99,7 +99,7 @@ acpi_apic_init (void)
  * and the number of entries stored in RSDT.
  */
 void
-acpi_print_info (struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n)
+acpi_print_info(struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n)
 {
 
     printf("ACPI:\n");
@@ -115,7 +115,7 @@ acpi_print_info (struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n
  * Returns 0 if success, other value if error.
  */
 static int
-acpi_checksum (void *addr, uint32_t length)
+acpi_checksum(void *addr, uint32_t length)
 {
     char *bytes = addr;
     int checksum = 0;
@@ -140,7 +140,7 @@ acpi_checksum (void *addr, uint32_t length)
  * Returns 0 if correct.
  */
 static int
-acpi_check_rsdp (struct acpi_rsdp *rsdp)
+acpi_check_rsdp(struct acpi_rsdp *rsdp)
 {
     uint32_t checksum;
     int is_rsdp;
@@ -176,7 +176,7 @@ acpi_check_rsdp (struct acpi_rsdp *rsdp)
  * Returns the reference to rsdp structure if success, NULL if failure.
  */
 static struct acpi_rsdp*
-acpi_search_rsdp (void *addr, uint32_t length)
+acpi_search_rsdp(void *addr, uint32_t length)
 {
     struct acpi_rsdp *rsdp = NULL;
     void *end;
@@ -206,7 +206,7 @@ acpi_search_rsdp (void *addr, uint32_t length)
  * Returns the reference to RDSP structure if success, NULL if failure.
  */
 struct acpi_rsdp*
-acpi_get_rsdp (void)
+acpi_get_rsdp(void)
 {
     struct acpi_rsdp *rsdp = NULL;
     uint16_t *start = 0x0;
@@ -240,7 +240,7 @@ acpi_get_rsdp (void)
  * Returns 0 if success.
  */
 static int
-acpi_check_rsdt (struct acpi_rsdt *rsdt)
+acpi_check_rsdt(struct acpi_rsdt *rsdt)
 {
     uint32_t checksum;
     int ret_value = 0;
@@ -266,7 +266,7 @@ acpi_check_rsdt (struct acpi_rsdt *rsdt)
  * Returns the reference to RSDT table if success, NULL if error.
  */
 static struct acpi_rsdt*
-acpi_get_rsdt (struct acpi_rsdp *rsdp, int* acpi_rsdt_n)
+acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n)
 {
     phys_addr_t rsdt_phys;
     struct acpi_rsdt *rsdt = NULL;
@@ -310,7 +310,7 @@ acpi_get_rsdt (struct acpi_rsdp *rsdp, int* acpi_rsdt_n)
  * Returns a reference to APIC/MADT table if success, NULL if failure.
  */
 static struct acpi_apic*
-acpi_get_apic (struct acpi_rsdt *rsdt, int acpi_rsdt_n)
+acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n)
 {
     struct acpi_apic *apic = NULL;
     struct acpi_dhdr *descr_header;
@@ -346,7 +346,7 @@ acpi_get_apic (struct acpi_rsdt *rsdt, int acpi_rsdt_n)
  * Receives as input the Local APIC entry in MADT/APIC table.
  */
 static int
-acpi_apic_add_lapic (struct acpi_apic_lapic *lapic_entry)
+acpi_apic_add_lapic(struct acpi_apic_lapic *lapic_entry)
 {
     int ret_value = 0;
     int lapic_id;
@@ -377,7 +377,7 @@ acpi_apic_add_lapic (struct acpi_apic_lapic *lapic_entry)
  */
 
 static int
-acpi_apic_add_ioapic (struct acpi_apic_ioapic *ioapic_entry)
+acpi_apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry)
 {
     int ret_value = 0;
     struct ioapic_data io_apic;
@@ -408,7 +408,7 @@ acpi_apic_add_ioapic (struct acpi_apic_ioapic *ioapic_entry)
  */
 
 static int
-acpi_apic_add_irq_override (struct acpi_apic_irq_override* irq_override)
+acpi_apic_add_irq_override(struct acpi_apic_irq_override* irq_override)
 {
     int ret_value = 0;
     struct irq_override_data irq_over;
@@ -438,7 +438,7 @@ acpi_apic_add_irq_override (struct acpi_apic_irq_override* irq_override)
  */
 
 static int
-apic_parse_table (struct acpi_apic *apic)
+apic_parse_table(struct acpi_apic *apic)
 {
     int ret_value = 0;
     struct acpi_apic_dhdr *apic_entry = NULL;
@@ -513,7 +513,7 @@ apic_parse_table (struct acpi_apic *apic)
  */
 
 static int
-acpi_apic_setup (struct acpi_apic *apic)
+acpi_apic_setup(struct acpi_apic *apic)
 {
     int apic_checksum;
     int ret_value = 0;

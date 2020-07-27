@@ -134,13 +134,12 @@ struct irq_override_data {
 };
 
 struct apic_info {
-    uint16_t ncpus;
-    uint16_t nioapics;
-    int nirqoverride;
-
-    uint16_t* cpu_lapic_list;
-    struct ioapic_data ioapic_list[16];
-    struct irq_override_data irq_override_list[24];
+    uint16_t    ncpus;
+    uint16_t    nioapics;
+    int         nirqoverride;
+    uint16_t*   cpu_lapic_list;
+    struct      ioapic_data ioapic_list[16];
+    struct      irq_override_data irq_override_list[24];
 };
 
 int apic_data_init(void);
