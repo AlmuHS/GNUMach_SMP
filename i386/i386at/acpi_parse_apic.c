@@ -492,7 +492,8 @@ apic_parse_table (struct acpi_apic *apic)
             apic_entry = (struct acpi_apic_dhdr*)((uint32_t) apic_entry
                                                   + apic_entry->length);
         }
-    } else /* apic == NULL. */
+    }
+    else /* apic == NULL. */
         ret_value = -1;
 
     return ret_value;
@@ -553,10 +554,12 @@ acpi_apic_setup (struct acpi_apic *apic)
                     apic_refit_cpulist();
                     printf("%d cpus found. %d ioapics found\n", ncpus, nioapics);
                 }
-            } else
+            }
+            else
                 ret_value = -1;
         }
-    } else /* apic == NULL */
+    }
+    else /* apic == NULL */
         ret_value = NO_APIC;
 
     return ret_value;
