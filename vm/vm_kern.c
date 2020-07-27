@@ -637,14 +637,14 @@ retry:
 
 /*
  * kmem_map_aligned_table: map a table or structure in a virtual memory page
- * Align the table initial address with the page initial address
+ * Align the table initial address with the page initial address.
  *
  * Parameters:
- * phys_address: physical address, the start address of the table
- * size: size of the table
- * mode: access mode. VM_PROT_READ for read, VM_PROT_WRITE for write
+ * phys_address: physical address, the start address of the table.
+ * size: size of the table.
+ * mode: access mode. VM_PROT_READ for read, VM_PROT_WRITE for write.
  *
- * Returns a reference to the virtual address if success, NULL if failure
+ * Returns a reference to the virtual address if success, NULL if failure.
  */
 
 void*

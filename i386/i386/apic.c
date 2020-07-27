@@ -31,7 +31,7 @@
 
 volatile ApicLocalUnit* lapic = NULL;
 
-struct apic_info apic_data;
+ApicInfo apic_data;
 
 /*
  * apic_data_init: initialize the apic_data structures to preliminary values.
@@ -85,7 +85,7 @@ apic_add_cpu(uint16_t apic_id)
  * Receives as input an ioapic_data structure, filled with the IOAPIC entry's data.
  */
 void
-apic_add_ioapic(struct ioapic_data ioapic)
+apic_add_ioapic(IoApicData ioapic)
 {
     int nioapic = apic_data.nioapics;
 
@@ -98,7 +98,7 @@ apic_add_ioapic(struct ioapic_data ioapic)
  * Receives as input an irq_override_data structure, filled with the IRQ entry's data.
  */
 void
-apic_add_irq_override(struct irq_override_data irq_over)
+apic_add_irq_override(IrqOverrideData irq_over)
 {
     int nirq = apic_data.nirqoverride;
 
@@ -135,10 +135,10 @@ apic_get_lapic(void)
  * Receives as input the IOAPIC's Kernel ID.
  * Returns a ioapic_data structure with the IOAPIC's data.
  */
-struct ioapic_data
+struct IoApicData
 apic_get_ioapic(int kernel_id)
 {
-    struct ioapic_data io_apic;
+    IoApicData io_apic;
 
     if (kernel_id < MAX_IOAPICS)
         io_apic = apic_data.ioapic_list[kernel_id];
@@ -217,7 +217,7 @@ void apic_print_info(void)
     uint16_t lapic_id;
     uint16_t ioapic_id;
 
-    struct ioapic_data ioapic;
+    IoApicData ioapic;
 
     printf("CPUS\n");
     printf("-------------------------------------------------\n");
