@@ -28,128 +28,128 @@
 #include <stdint.h>
 
 typedef struct ApicReg {
-    unsigned r;	/* the actual register */
-    unsigned p[3];	/* pad to the next 128-bit boundary */
+        unsigned r;	/* the actual register */
+        unsigned p[3];	/* pad to the next 128-bit boundary */
 } ApicReg;
 
 typedef struct ApicIoUnit {
-    ApicReg select;
-    ApicReg window;
+        ApicReg select;
+        ApicReg window;
 } ApicIoUnit;
 
 
 typedef struct ApicLocalUnit {
-    /* 0x000 */
-    ApicReg reserved0;
-    /* 0x010 */
-    ApicReg reserved1;
-    /* 0x020 */
-    ApicReg apic_id;
-    /* 0x030 */
-    ApicReg version;
-    /* 0x040 */
-    ApicReg reserved4;
-    /* 0x050 */
-    ApicReg reserved5;
-    /* 0x060 */
-    ApicReg reserved6;
-    /* 0x070 */
-    ApicReg reserved7;
-    /* 0x080 */
-    ApicReg task_pri;
-    /* 0x090 */
-    ApicReg arbitration_pri;
-    /* 0x0a0 */
-    ApicReg processor_pri;
-    /* 0x0b0 */
-    ApicReg eoi;
-    /* 0x0c0 */
-    ApicReg remote;
-    /* 0x0d0 */
-    ApicReg logical_dest;
-    /* 0x0e0 */
-    ApicReg dest_format;
-    /* 0x0f0 */
-    ApicReg spurious_vector;
-    /* 0x100 */
-    ApicReg isr[8];
-    /* 0x180 */
-    ApicReg tmr[8];
-    /* 0x200 */
-    ApicReg irr[8];
-    /* 0x280 */
-    ApicReg error_status;
-    /* 0x290 */
-    ApicReg reserved28[6];
-    /* 0x2f0 */
-    ApicReg lvt_cmci;
-    /* 0x300 */
-    ApicReg icr_low;
-    /* 0x310 */
-    ApicReg icr_high;
-    /* 0x320 */
-    ApicReg lvt_timer;
-    /* 0x330 */
-    ApicReg lvt_thermal;
-    /* 0x340 */
-    ApicReg lvt_performance_monitor;
-    /* 0x350 */
-    ApicReg lvt_lint0;
-    /* 0x360 */
-    ApicReg lvt_lint1;
-    /* 0x370 */
-    ApicReg lvt_error;
-    /* 0x380 */
-    ApicReg init_count;
-    /* 0x390 */
-    ApicReg cur_count;
-    /* 0x3a0 */
-    ApicReg reserved3a;
-    /* 0x3b0 */
-    ApicReg reserved3b;
-    /* 0x3c0 */
-    ApicReg reserved3c;
-    /* 0x3d0 */
-    ApicReg reserved3d;
-    /* 0x3e0 */
-    ApicReg divider_config;
-    /* 0x3f0 */
-    ApicReg reserved3f;
+        /* 0x000 */
+        ApicReg reserved0;
+        /* 0x010 */
+        ApicReg reserved1;
+        /* 0x020 */
+        ApicReg apic_id;
+        /* 0x030 */
+        ApicReg version;
+        /* 0x040 */
+        ApicReg reserved4;
+        /* 0x050 */
+        ApicReg reserved5;
+        /* 0x060 */
+        ApicReg reserved6;
+        /* 0x070 */
+        ApicReg reserved7;
+        /* 0x080 */
+        ApicReg task_pri;
+        /* 0x090 */
+        ApicReg arbitration_pri;
+        /* 0x0a0 */
+        ApicReg processor_pri;
+        /* 0x0b0 */
+        ApicReg eoi;
+        /* 0x0c0 */
+        ApicReg remote;
+        /* 0x0d0 */
+        ApicReg logical_dest;
+        /* 0x0e0 */
+        ApicReg dest_format;
+        /* 0x0f0 */
+        ApicReg spurious_vector;
+        /* 0x100 */
+        ApicReg isr[8];
+        /* 0x180 */
+        ApicReg tmr[8];
+        /* 0x200 */
+        ApicReg irr[8];
+        /* 0x280 */
+        ApicReg error_status;
+        /* 0x290 */
+        ApicReg reserved28[6];
+        /* 0x2f0 */
+        ApicReg lvt_cmci;
+        /* 0x300 */
+        ApicReg icr_low;
+        /* 0x310 */
+        ApicReg icr_high;
+        /* 0x320 */
+        ApicReg lvt_timer;
+        /* 0x330 */
+        ApicReg lvt_thermal;
+        /* 0x340 */
+        ApicReg lvt_performance_monitor;
+        /* 0x350 */
+        ApicReg lvt_lint0;
+        /* 0x360 */
+        ApicReg lvt_lint1;
+        /* 0x370 */
+        ApicReg lvt_error;
+        /* 0x380 */
+        ApicReg init_count;
+        /* 0x390 */
+        ApicReg cur_count;
+        /* 0x3a0 */
+        ApicReg reserved3a;
+        /* 0x3b0 */
+        ApicReg reserved3b;
+        /* 0x3c0 */
+        ApicReg reserved3c;
+        /* 0x3d0 */
+        ApicReg reserved3d;
+        /* 0x3e0 */
+        ApicReg divider_config;
+        /* 0x3f0 */
+        ApicReg reserved3f;
 } ApicLocalUnit;
 
-struct ioapic_data {
-    uint8_t apic_id;
-    uint32_t addr;
-    uint32_t base;
-};
+typedef struct IoApicData {
+        uint8_t apic_id;
+        uint32_t addr;
+        uint32_t base;
+} IoApicData;
 
 #define APIC_IRQ_OVERRIDE_ACTIVE_LOW 2
 #define APIC_IRQ_OVERRIDE_LEVEL_TRIGGERED 8
 
-struct irq_override_data {
-    uint8_t bus;
-    uint8_t irq;
-    uint32_t gsi;
-    uint16_t flags;
-};
+typedef struct IrqOverrideData {
+        uint8_t  bus;
+        uint8_t  irq;
+        uint32_t gsi;
+        uint16_t flags;
+} IrqOverrideData;
 
-struct apic_info {
-    uint16_t    ncpus;
-    uint16_t    nioapics;
-    int         nirqoverride;
-    uint16_t*   cpu_lapic_list;
-    struct      ioapic_data ioapic_list[16];
-    struct      irq_override_data irq_override_list[24];
-};
+typedef struct ApicInfo {
+        uint16_t  ncpus;
+        uint16_t  nioapics;
+        int       nirqoverride;
+        uint16_t* cpu_lapic_list;
+        struct    IoApicData ioapic_list[16];
+        struct    IrqOverrideData irq_override_list[24];
+} ApicInfo;
 
 int apic_data_init(void);
 void apic_add_cpu(uint16_t apic_id);
 void apic_lapic_init(ApicLocalUnit* lapic_ptr);
-void apic_add_ioapic(struct ioapic_data);
-void apic_add_irq_override(struct irq_override_data irq_over);
+void apic_add_ioapic(struct IoApicData);
+void apic_add_irq_override(struct IrqOverrideData irq_over);
 uint16_t apic_get_cpu_apic_id(int kernel_id);
 ApicLocalUnit* apic_get_lapic(void);
-struct ioapic_data apic_get_ioapic(int kernel_id);
+struct IoApicData apic_get_ioapic(int kernel_id);
 int apic_get_numcpus(void);
 int apic_get_num_ioapics(void);
 uint16_t apic_get_current_cpu(void);

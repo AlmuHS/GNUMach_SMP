@@ -380,7 +380,7 @@ static int
 acpi_apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry)
 {
     int ret_value = 0;
-    struct ioapic_data io_apic;
+    IoApicData io_apic;
 
     if (ioapic_entry == NULL)
         ret_value = -1;
@@ -411,7 +411,7 @@ static int
 acpi_apic_add_irq_override(struct acpi_apic_irq_override* irq_override)
 {
     int ret_value = 0;
-    struct irq_override_data irq_over;
+    IrqOverrideData irq_over;
 
     if (irq_override == NULL)
         ret_value = -1;
