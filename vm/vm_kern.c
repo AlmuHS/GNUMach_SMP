@@ -649,29 +649,29 @@ retry:
 
 void*
 kmem_map_aligned_table(
-    unsigned long   phys_address,
-    unsigned long   size,
-    int     mode)
+	phys_addr_t		phys_address,
+	vm_size_t	size,
+	int		mode)
 {
-    vm_offset_t virt_addr;
-    kern_return_t ret;
-    uintptr_t into_page = phys_address % PAGE_SIZE;
-    uintptr_t nearest_page = (uintptr_t)trunc_page(phys_address);
+	vm_offset_t virt_addr;
+	kern_return_t ret;
+	uintptr_t into_page = phys_address % PAGE_SIZE;
+	uintptr_t nearest_page = (uintptr_t)trunc_page(phys_address);
 
-    size += into_page;
+	size += into_page;
 
-    ret = kmem_alloc_wired(kernel_map, &virt_addr,
-                round_page(size));
+	ret = kmem_alloc_wired(kernel_map, &virt_addr,
+				round_page(size));
 
-    if (ret != KERN_SUCCESS)
-        return NULL;
+	if (ret != KERN_SUCCESS)
+		return NULL;
 
-    (void) pmap_map_bd(virt_addr, nearest_page,
-                nearest_page + round_page(size), mode);
+	(void) pmap_map_bd(virt_addr, nearest_page,
+				nearest_page + round_page(size), mode);
 
-    /* XXX remember mapping somewhere so we can free it? */
+	/* XXX remember mapping somewhere so we can free it? */
 
-    return (void *) (virt_addr + into_page);
+	return (void *) (virt_addr + into_page);
 }
 
 /*

@@ -166,9 +166,9 @@ int apic_refit_cpulist(void);
 /* Set or clear a bit in a 255-bit APIC mask register.
    These registers are spread through eight 32-bit registers.  */
 #define APIC_SET_MASK_BIT(reg, bit) \
-	((reg)[(bit) >> 5].r |= 1 << ((bit) & 0x1f))
+        ((reg)[(bit) >> 5].r |= 1 << ((bit) & 0x1f))
 #define APIC_CLEAR_MASK_BIT(reg, bit) \
-	((reg)[(bit) >> 5].r &= ~(1 << ((bit) & 0x1f)))
+        ((reg)[(bit) >> 5].r &= ~(1 << ((bit) & 0x1f)))
 
 #endif /*_IMPS_APIC_*/
 

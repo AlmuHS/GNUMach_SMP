@@ -1,4 +1,4 @@
-/* smp.c - Template for generic SMP controller for Mach.
+/* smp.h - Template for generic SMP controller for Mach. Header file
    Copyright (C) 2020 Free Software Foundation, Inc.
    Written by Almudena Garcia Jurado-Centurion
 
@@ -18,9 +18,8 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA. */
 
-#include <kern/smp.h>
-#include <machine/smp.h>
-
-
-
+void smp_data_init(void);
+int smp_get_current_cpu(void);
+int smp_init(void);
+int smp_get_numcpus(void);
 

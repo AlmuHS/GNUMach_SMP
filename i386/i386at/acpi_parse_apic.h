@@ -1,26 +1,41 @@
-/*
- * Copyright 2018 Juan Bosco Garcia
- * This file is part of Min_SMP.
- * Min_SMP is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or
- * (at your option) any later version.
- * Min_SMP is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with Min_SMP.  If not, see <http://www.gnu.org/licenses/>.
- */
+/* acpi_parse_apic.h - ACPI-MADT table parser. Header file
+   Copyright (C) 2018 Juan Bosco Garcia
+   Copyright (C) 2019 2020 Almudena Garcia Jurado-Centurion
+   Written by Juan Bosco Garcia and Almudena Garcia Jurado-Centurion
+
+   This file is part of Min_SMP.
+
+   Min_SMP is free software; you can redistribute it and/or modify it
+   under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2, or (at your option)
+   any later version.
+
+   Min_SMP is distributed in the hope that it will be useful, but
+   WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+   General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA. */
 
 #ifndef __ACPI_H__
 #define __ACPI_H__
 
 #include <include/stdint.h>
 
+enum ACPI_RETURN {
+    ACPI_BAD_CHECKSUM = -1,
+    ACPI_NO_RSDP = -2,
+    ACPI_NO_RSDT = -3,
+    ACPI_BAD_SIGNATURE = -4,
+    ACPI_NO_APIC = -5,
+    ACPI_NO_LAPIC = -6,
+    ACPI_SUCCESS = 0
+};
+
 #define ACPI_RSDP_ALIGN 16
 #define ACPI_RSDP_SIG "RSD PTR "
-
 
 struct acpi_rsdp {
     uint8_t  	signature[8];
@@ -63,10 +78,12 @@ struct acpi_rsdt {
 #define ACPI_APIC_SIG "APIC"
 
 /* Types value for MADT entries: Local APIC, IOAPIC and IRQ Override. */
-#define ACPI_APIC_ENTRY_LAPIC  0
-#define ACPI_APIC_ENTRY_IOAPIC 1
-#define ACPI_APIC_IRQ_OVERRIDE 2
-#define ACPI_APIC_ENTRY_NONMASK_IRQ 4
+enum ACPI_APIC_TYPE {
+    ACPI_APIC_ENTRY_LAPIC = 0,
+    ACPI_APIC_ENTRY_IOAPIC = 1,
+    ACPI_APIC_ENTRY_IRQ_OVERRIDE  = 2,
+    ACPI_APIC_ENTRY_NONMASK_IRQ = 4
+};
 
 /*
  * APIC descriptor header

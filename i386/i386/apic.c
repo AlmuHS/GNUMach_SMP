@@ -41,8 +41,6 @@ ApicInfo apic_data;
 int
 apic_data_init(void)
 {
-    int success = 0;
-
     apic_data.cpu_lapic_list = NULL;
     apic_data.ncpus = 0;
     apic_data.nioapics = 0;
@@ -53,9 +51,9 @@ apic_data_init(void)
 
     /* If the memory reserve fails, return -1 to advice about the error. */
     if (apic_data.cpu_lapic_list == NULL)
-        success = -1;
+        return -1;
 
-    return success;
+    return 0;
 }
 
 /*
@@ -75,8 +73,7 @@ apic_lapic_init(ApicLocalUnit* lapic_ptr)
 void
 apic_add_cpu(uint16_t apic_id)
 {
-    int numcpus = apic_data.ncpus;
-    apic_data.cpu_lapic_list[numcpus] = apic_id;
+    apic_data.cpu_lapic_list[apic_data.ncpus] = apic_id;
     apic_data.ncpus++;
 }
 
@@ -87,9 +84,7 @@ apic_add_cpu(uint16_t apic_id)
 void
 apic_add_ioapic(IoApicData ioapic)
 {
-    int nioapic = apic_data.nioapics;
-
-    apic_data.ioapic_list[nioapic] = ioapic;
+    apic_data.ioapic_list[apic_data.nioapics] = ioapic;
     apic_data.nioapics++;
 }
 
@@ -100,9 +95,7 @@ apic_add_ioapic(IoApicData ioapic)
 void
 apic_add_irq_override(IrqOverrideData irq_over)
 {
-    int nirq = apic_data.nirqoverride;
-
-    apic_data.irq_override_list[nirq] = irq_over;
+    apic_data.irq_override_list[apic_data.nirqoverride] = irq_over;
     apic_data.nirqoverride++;
 }
 
@@ -113,14 +106,10 @@ apic_add_irq_override(IrqOverrideData irq_over)
 uint16_t
 apic_get_cpu_apic_id(int kernel_id)
 {
-    uint16_t apic_id;
+    if (kernel_id >= MAX_CPUS)
+        return -1;
 
-    if (kernel_id < MAX_CPUS)
-        apic_id = apic_data.cpu_lapic_list[kernel_id];
-    else
-        apic_id = -1;
-
-    return apic_id;
+    return apic_data.cpu_lapic_list[kernel_id];
 }
 
 /* apic_get_lapic: returns a reference to the common memory address for Local APIC. */
@@ -138,7 +127,7 @@ apic_get_lapic(void)
 struct IoApicData
 apic_get_ioapic(int kernel_id)
 {
-    IoApicData io_apic;
+    IoApicData io_apic = {};
 
     if (kernel_id < MAX_IOAPICS)
         io_apic = apic_data.ioapic_list[kernel_id];
@@ -185,21 +174,23 @@ apic_get_current_cpu(void)
 int apic_refit_cpulist(void)
 {
     uint16_t* old_list = apic_data.cpu_lapic_list;
-    uint16_t* new_list = (uint16_t*) kalloc(apic_data.ncpus*sizeof(uint16_t));
-    int i = 0;
-    int success = 0;
+    uint16_t* new_list = NULL;
 
-    if (new_list != NULL && old_list != NULL) {
-        for (i = 0; i < apic_data.ncpus; i++)
-            new_list[i] = old_list[i];
+    if (old_list == NULL)
+        return -1;
 
-        apic_data.cpu_lapic_list = new_list;
-        kfree(old_list);
-    }
-    else
-        success = -1;
+    new_list = (uint16_t*) kalloc(apic_data.ncpus*sizeof(uint16_t));
 
-    return success;
+    if (new_list == NULL)
+        return -1;
+
+    for (int i = 0; i < apic_data.ncpus; i++)
+        new_list[i] = old_list[i];
+
+    apic_data.cpu_lapic_list = new_list;
+    kfree(old_list);
+
+    return 0;
 }
 
 /*
