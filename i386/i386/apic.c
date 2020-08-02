@@ -24,7 +24,7 @@
 #include <string.h>
 #include <vm/vm_kern.h>
 #include <kern/printf.h>
-
+#include <kern/kalloc.h>
 
 #define MAX_CPUS 256
 #define MAX_IOAPICS 16
@@ -188,7 +188,7 @@ int apic_refit_cpulist(void)
         new_list[i] = old_list[i];
 
     apic_data.cpu_lapic_list = new_list;
-    kfree(old_list);
+    kfree((vm_offset_t) old_list, MAX_CPUS*sizeof(uint16_t));
 
     return 0;
 }
