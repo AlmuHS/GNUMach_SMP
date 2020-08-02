@@ -26,12 +26,14 @@
 
 enum ACPI_RETURN {
     ACPI_BAD_CHECKSUM = -1,
-    ACPI_NO_RSDP = -2,
-    ACPI_NO_RSDT = -3,
-    ACPI_BAD_SIGNATURE = -4,
-    ACPI_NO_APIC = -5,
-    ACPI_NO_LAPIC = -6,
-    ACPI_SUCCESS = 0
+    ACPI_BAD_ALIGN = -2,
+    ACPI_NO_RSDP = -3,
+    ACPI_NO_RSDT = -4,
+    ACPI_BAD_SIGNATURE = -5,
+    ACPI_NO_APIC = -6,
+    ACPI_NO_LAPIC = -7,
+    ACPI_APIC_FAILURE = -8,
+    ACPI_SUCCESS = 0,
 };
 
 #define ACPI_RSDP_ALIGN 16
