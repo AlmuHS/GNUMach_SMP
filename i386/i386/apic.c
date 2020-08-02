@@ -211,16 +211,12 @@ void apic_print_info(void)
     IoApicData ioapic;
 
     printf("CPUS\n");
-    printf("-------------------------------------------------\n");
     for (i = 0; i < ncpus; i++) {
         lapic_id = apic_get_cpu_apic_id(i);
-
         printf("CPU %d - APIC ID %x\n", i, lapic_id);
     }
 
     printf("\nIOAPICS\n");
-    printf("-------------------------------------------------\n");
-
     for (i = 0; i < nioapics; i++) {
         ioapic = apic_get_ioapic(i);
         ioapic_id = ioapic.apic_id;
