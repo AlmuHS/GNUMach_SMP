@@ -213,13 +213,13 @@ void apic_print_info(void)
     printf("CPUS:\n");
     for (i = 0; i < ncpus; i++) {
         lapic_id = apic_get_cpu_apic_id(i);
-        printf("\tCPU %d - APIC ID %x\n", i, lapic_id);
+        printf(" CPU %d - APIC ID %x\n", i, lapic_id);
     }
 
     printf("IOAPICS:\n");
     for (i = 0; i < nioapics; i++) {
         ioapic = apic_get_ioapic(i);
         ioapic_id = ioapic.apic_id;
-        printf("\tIOAPIC %d - APIC ID %x\n", i, ioapic_id);
+        printf(" IOAPIC %d - APIC ID %x\n", i, ioapic_id);
     }
 }
