@@ -216,7 +216,7 @@ void apic_print_info(void)
         printf("CPU %d - APIC ID %x\n", i, lapic_id);
     }
 
-    printf("\nIOAPICS:\n");
+    printf("IOAPICS:\n");
     for (i = 0; i < nioapics; i++) {
         ioapic = apic_get_ioapic(i);
         ioapic_id = ioapic.apic_id;
