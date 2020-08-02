@@ -134,8 +134,8 @@ typedef struct IrqOverrideData {
 } IrqOverrideData;
 
 typedef struct ApicInfo {
-        uint16_t  ncpus;
-        uint16_t  nioapics;
+        uint8_t  ncpus;
+        uint8_t  nioapics;
         int       nirqoverride;
         uint16_t* cpu_lapic_list;
         struct    IoApicData ioapic_list[16];
@@ -150,8 +150,8 @@ void apic_add_irq_override(struct IrqOverrideData irq_over);
 uint16_t apic_get_cpu_apic_id(int kernel_id);
 ApicLocalUnit* apic_get_lapic(void);
 struct IoApicData apic_get_ioapic(int kernel_id);
-int apic_get_numcpus(void);
-int apic_get_num_ioapics(void);
+uint8_t apic_get_numcpus(void);
+uint8_t apic_get_num_ioapics(void);
 uint16_t apic_get_current_cpu(void);
 void apic_print_info(void);
 int apic_refit_cpulist(void);

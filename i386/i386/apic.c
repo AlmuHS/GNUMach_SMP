@@ -135,14 +135,14 @@ apic_get_ioapic(int kernel_id)
 }
 
 /* apic_get_numcpus: returns the current number of cpus. */
-int
+uint8_t
 apic_get_numcpus(void)
 {
     return apic_data.ncpus;
 }
 
 /* apic_get_num_ioapics: returns the current number of ioapics. */
-int
+uint8_t
 apic_get_num_ioapics(void)
 {
     return apic_data.nioapics;
