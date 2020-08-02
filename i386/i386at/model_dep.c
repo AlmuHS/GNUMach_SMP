@@ -172,13 +172,13 @@ void machine_init(void)
 	linux_init();
 #endif
 
-//#if NCPUS > 1
+#if NCPUS > 1
 	int smp_success = smp_init();
 
 	if(smp_success != 0) {
 		printf("Error: no SMP found");
 	}
-//#endif /* NCPUS > 1 */
+#endif /* NCPUS > 1 */
 
 	/*
 	 * Find the devices
