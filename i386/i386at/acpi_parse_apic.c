@@ -141,10 +141,11 @@ acpi_search_rsdp(void *addr, uint32_t length)
     /* Search RDSP in memory space between addr and addr+lenght. */
     for (end = addr+length; addr < end; addr += ACPI_RSDP_ALIGN) {
 
-		/* Check if the current memory block stores the RDSP. */
-		if ((addr != NULL) && (acpi_check_rsdp(addr) == ACPI_SUCCESS))
-			/* If yes, return RSDP address */
-			return (struct acpi_rsdp*) addr;
+        /* Check if the current memory block stores the RDSP. */
+        if ((addr != NULL) && (acpi_check_rsdp(addr) == ACPI_SUCCESS)) {
+            /* If yes, return RSDP address */
+            return (struct acpi_rsdp*) addr;
+        }
     }
 
     return NULL;
@@ -276,7 +277,7 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n)
         if (check_signature == 0) {
             /* If yes, store the entry in apic. */
             return (struct acpi_apic*) kmem_map_aligned_table(rsdt->entry[i], sizeof(struct acpi_apic), \
-																VM_PROT_READ | VM_PROT_WRITE);
+                                                                VM_PROT_READ | VM_PROT_WRITE);
         }
     }
 
