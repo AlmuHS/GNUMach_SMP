@@ -77,11 +77,11 @@ acpi_checksum(void *addr, uint32_t length)
  * Receive as parameter both signatures: table signature, the signature which needs to check,
  * and real signature, the genuine signature of the table.
  *
- * Return 0 if success, other if error
+ * Return 0 if success, other if error.
  */
 
 static int
-acpi_check_signature(uint8_t *table_signature, uint8_t *real_signature, uint8_t length)
+acpi_check_signature(uint8_t table_signature[], uint8_t real_signature[], uint8_t length)
 {
     return memcmp(table_signature, real_signature, length);
 }
@@ -96,7 +96,7 @@ acpi_check_signature(uint8_t *table_signature, uint8_t *real_signature, uint8_t 
  *
  * Receives as input the reference of RSDT table.
  *
- * Preconditions: RSDP pointer must not be NULL
+ * Preconditions: RSDP pointer must not be NULL.
  *
  * Returns 0 if correct.
  */
@@ -109,15 +109,14 @@ acpi_check_rsdp(struct acpi_rsdp *rsdp)
     /* Check if rsdp signature match with the ACPI RSDP signature. */
     is_rsdp = acpi_check_signature(rsdp->signature, ACPI_RSDP_SIG, 8*sizeof(uint8_t));
 
-    if (is_rsdp == ACPI_SUCCESS) {
-        /* If match, calculates rdsp checksum and check It. */
-        checksum = acpi_checksum(rsdp, sizeof(struct acpi_rsdp));
-
-        if (checksum != 0)
-            return ACPI_BAD_CHECKSUM;
-    }
-    else
+    if (is_rsdp != ACPI_SUCCESS)
         return ACPI_BAD_SIGNATURE;
+
+    /* If match, calculates rdsp checksum and check It. */
+    checksum = acpi_checksum(rsdp, sizeof(struct acpi_rsdp));
+
+    if (checksum != 0)
+        return ACPI_BAD_CHECKSUM;
 
     return ACPI_SUCCESS;
 }
@@ -145,7 +144,7 @@ acpi_check_rsdp_align(void *addr)
  * Receives as input the initial virtual address, and the lenght
  * of memory range.
  *
- * Preconditions: The start address (addr) must be aligned
+ * Preconditions: The start address (addr) must be aligned.
  *
  * Returns the reference to rsdp structure if success, NULL if failure.
  */
@@ -211,7 +210,7 @@ acpi_get_rsdp(void)
  * Receives as input a reference for the RSDT "candidate" table.
  * Returns 0 if success.
  *
- * Preconditions: rsdp must not be NULL
+ * Preconditions: rsdp must not be NULL.
  *
  */
 static int
