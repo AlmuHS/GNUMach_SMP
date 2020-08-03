@@ -80,7 +80,7 @@ acpi_checksum(void *addr, uint32_t length)
  * Return 0 if success, other if error
  */
 
-int
+static int
 acpi_check_signature(uint8_t *table_signature, uint8_t *real_signature, uint8_t length)
 {
     return memcmp(table_signature, real_signature, length);
@@ -210,14 +210,14 @@ acpi_get_rsdp(void)
  *
  * Receives as input a reference for the RSDT "candidate" table.
  * Returns 0 if success.
+ *
+ * Preconditions: rsdp must not be NULL
+ *
  */
 static int
 acpi_check_rsdt(struct acpi_rsdt *rsdt)
 {
     uint8_t checksum;
-
-    if (rsdt == NULL)
-        return ACPI_NO_RSDT;
 
     checksum = acpi_checksum(rsdt, rsdt->header.length);
 
@@ -247,24 +247,26 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n)
     rsdt_phys = rsdp->rsdt_addr;
     rsdt = (struct acpi_rsdt*) kmem_map_aligned_table(rsdt_phys, sizeof(struct acpi_rsdt), VM_PROT_READ);
 
+    /* Check if the RSDT mapping is fine. */
+    if (rsdt == NULL)
+        return NULL;
+
     /* Check is rsdt signature is equals to ACPI RSDT signature. */
     signature_check = acpi_check_signature(rsdt->header.signature, ACPI_RSDT_SIG,
                                            4*sizeof(uint8_t));
 
-    if (signature_check == ACPI_SUCCESS) {
-        /* Check if rsdt is correct. */
-        acpi_check = acpi_check_rsdt(rsdt);
+    if (signature_check != ACPI_SUCCESS)
+        return NULL;
 
-        if (acpi_check == ACPI_SUCCESS) {
-            /* Calculated number of elements stored in rsdt. */
-            *acpi_rsdt_n = (rsdt->header.length - sizeof(rsdt->header))
-                           / sizeof(rsdt->entry[0]);
+    /* Check if rsdt is correct. */
+    acpi_check = acpi_check_rsdt(rsdt);
 
-        }
-    }
+    if (acpi_check != ACPI_SUCCESS)
+        return NULL;
 
-    if (signature_check != ACPI_SUCCESS || acpi_check != ACPI_SUCCESS)
-        rsdt = NULL;
+    /* Calculated number of elements stored in rsdt. */
+    *acpi_rsdt_n = (rsdt->header.length - sizeof(rsdt->header))
+                   / sizeof(rsdt->entry[0]);
 
     return rsdt;
 }
@@ -285,15 +287,15 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n)
 
     /* Search APIC entries in rsdt table. */
     for (int i = 0; i < acpi_rsdt_n; i++) {
-        descr_header = (struct acpi_dhdr*) kmem_map_aligned_table(rsdt->entry[i], sizeof(struct acpi_dhdr), VM_PROT_READ);
+        descr_header = (struct acpi_dhdr*) kmem_map_aligned_table(rsdt->entry[i], sizeof(struct acpi_dhdr),
+                                                                  VM_PROT_READ | VM_PROT_WRITE);
 
         /* Check if the entry contains an APIC. */
         check_signature = acpi_check_signature(descr_header->signature, ACPI_APIC_SIG, 4*sizeof(uint8_t));
 
         if (check_signature == ACPI_SUCCESS) {
-            /* If yes, store the entry in apic. */
-            return (struct acpi_apic*) kmem_map_aligned_table(rsdt->entry[i], sizeof(struct acpi_apic), \
-                                                                VM_PROT_READ | VM_PROT_WRITE);
+            /* If yes, return the APIC. */
+            return (struct acpi_apic*) descr_header;
         }
     }
 
