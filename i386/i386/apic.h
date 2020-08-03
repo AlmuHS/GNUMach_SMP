@@ -118,7 +118,7 @@ typedef struct ApicLocalUnit {
 } ApicLocalUnit;
 
 typedef struct IoApicData {
-        uint8_t apic_id;
+        uint8_t  apic_id;
         uint32_t addr;
         uint32_t base;
 } IoApicData;
@@ -134,8 +134,8 @@ typedef struct IrqOverrideData {
 } IrqOverrideData;
 
 typedef struct ApicInfo {
-        uint8_t  ncpus;
-        uint8_t  nioapics;
+        uint8_t   ncpus;
+        uint8_t   nioapics;
         int       nirqoverride;
         uint16_t* cpu_lapic_list;
         struct    IoApicData ioapic_list[16];

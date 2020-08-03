@@ -130,7 +130,7 @@ apic_get_ioapic(int kernel_id)
     IoApicData io_apic = {};
 
     if (kernel_id < MAX_IOAPICS)
-        io_apic = apic_data.ioapic_list[kernel_id];
+        return apic_data.ioapic_list[kernel_id];
     return io_apic;
 }
 
