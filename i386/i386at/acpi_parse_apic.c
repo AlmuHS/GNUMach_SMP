@@ -72,6 +72,22 @@ acpi_checksum(void *addr, uint32_t length)
 }
 
 /*
+ * acpi_check_signature: check if a signature match with the signature of its table.
+ *
+ * Receive as parameter both signatures: table signature, the signature which needs to check,
+ * and real signature, the genuine signature of the table.
+ *
+ * Return 0 if success, other if error
+ */
+
+int
+acpi_check_signature(uint8_t *table_signature, uint8_t *real_signature, uint8_t length)
+{
+    return memcmp(table_signature, real_signature, length);
+}
+
+
+/*
  * acpi_check_rsdp:
  * check if the RDSP "candidate" table is the real RSDP table.
  *
@@ -91,7 +107,7 @@ acpi_check_rsdp(struct acpi_rsdp *rsdp)
     int is_rsdp;
 
     /* Check if rsdp signature match with the ACPI RSDP signature. */
-    is_rsdp = memcmp(rsdp->signature, ACPI_RSDP_SIG, sizeof(rsdp->signature));
+    is_rsdp = acpi_check_signature(rsdp->signature, ACPI_RSDP_SIG, 8*sizeof(uint8_t));
 
     if (is_rsdp == ACPI_SUCCESS) {
         /* If match, calculates rdsp checksum and check It. */
@@ -232,14 +248,14 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n)
     rsdt = (struct acpi_rsdt*) kmem_map_aligned_table(rsdt_phys, sizeof(struct acpi_rsdt), VM_PROT_READ);
 
     /* Check is rsdt signature is equals to ACPI RSDT signature. */
-    signature_check = memcmp(rsdt->header.signature, ACPI_RSDT_SIG,
-                             sizeof(rsdt->header.signature));
+    signature_check = acpi_check_signature(rsdt->header.signature, ACPI_RSDT_SIG,
+                                           4*sizeof(uint8_t));
 
-    if (signature_check == 0) {
+    if (signature_check == ACPI_SUCCESS) {
         /* Check if rsdt is correct. */
         acpi_check = acpi_check_rsdt(rsdt);
 
-        if (acpi_check == 0) {
+        if (acpi_check == ACPI_SUCCESS) {
             /* Calculated number of elements stored in rsdt. */
             *acpi_rsdt_n = (rsdt->header.length - sizeof(rsdt->header))
                            / sizeof(rsdt->entry[0]);
@@ -247,7 +263,7 @@ acpi_get_rsdt(struct acpi_rsdp *rsdp, int* acpi_rsdt_n)
         }
     }
 
-    if (signature_check != 0 || acpi_check != 0)
+    if (signature_check != ACPI_SUCCESS || acpi_check != ACPI_SUCCESS)
         rsdt = NULL;
 
     return rsdt;
@@ -272,9 +288,9 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n)
         descr_header = (struct acpi_dhdr*) kmem_map_aligned_table(rsdt->entry[i], sizeof(struct acpi_dhdr), VM_PROT_READ);
 
         /* Check if the entry contains an APIC. */
-        check_signature = memcmp(descr_header->signature, ACPI_APIC_SIG, sizeof(descr_header->signature));
+        check_signature = acpi_check_signature(descr_header->signature, ACPI_APIC_SIG, 4*sizeof(uint8_t));
 
-        if (check_signature == 0) {
+        if (check_signature == ACPI_SUCCESS) {
             /* If yes, store the entry in apic. */
             return (struct acpi_apic*) kmem_map_aligned_table(rsdt->entry[i], sizeof(struct acpi_apic), \
                                                                 VM_PROT_READ | VM_PROT_WRITE);
