@@ -80,7 +80,7 @@ struct acpi_rsdt {
 #define ACPI_APIC_SIG "APIC"
 
 /* Types value for MADT entries: Local APIC, IOAPIC and IRQ Override. */
-enum ACPI_APIC_TYPE {
+enum ACPI_APIC_ENTRY_TYPE {
     ACPI_APIC_ENTRY_LAPIC = 0,
     ACPI_APIC_ENTRY_IOAPIC = 1,
     ACPI_APIC_ENTRY_IRQ_OVERRIDE  = 2,
