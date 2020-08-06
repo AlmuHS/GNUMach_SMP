@@ -126,14 +126,32 @@ void bootstrap_create(void)
   int compat;
   unsigned n = 0;
 #ifdef	MACH_XEN
-  struct multiboot_module *bmods = ((struct multiboot_module *)
-                                   boot_info.mod_start);
+#ifdef __x86_64__ // 32_ON_64 actually
+  struct multiboot32_module *bmods32 = (struct multiboot32_module *)
+                                       boot_info.mod_start;
+  struct multiboot_module *bmods;
+  if (bmods32) {
+    int i;
+    for (n = 0; bmods32[n].mod_start; n++)
+      ;
+    bmods = alloca(n * sizeof(*bmods));
+    for (i = 0; i < n ; i++)
+    {
+      bmods[i].mod_start = kvtophys(bmods32[i].mod_start + (vm_offset_t) bmods32);
+      bmods[i].mod_end = kvtophys(bmods32[i].mod_end + (vm_offset_t) bmods32);
+      bmods[i].string = kvtophys(bmods32[i].string + (vm_offset_t) bmods32);
+    }
+  }
+#else
+  struct multiboot_module *bmods = (struct multiboot_module *)
+                                   boot_info.mod_start;
   if (bmods)
     for (n = 0; bmods[n].mod_start; n++) {
       bmods[n].mod_start = kvtophys(bmods[n].mod_start + (vm_offset_t) bmods);
       bmods[n].mod_end = kvtophys(bmods[n].mod_end + (vm_offset_t) bmods);
       bmods[n].string = kvtophys(bmods[n].string + (vm_offset_t) bmods);
     }
+#endif
   boot_info.mods_count = n;
   boot_info.flags |= MULTIBOOT_MODS;
 #else	/* MACH_XEN */
@@ -880,6 +898,7 @@ boot_script_insert_right (struct cmd *cmd, mach_port_t port, mach_port_t *name)
 int
 boot_script_insert_task_port (struct cmd *cmd, task_t task, mach_port_t *name)
 {
-  *name = task_insert_send_right (cmd->task, task->itk_sself);
+  *name = task_insert_send_right (cmd->task,
+				  ipc_port_make_send(task->itk_sself));
   return 0;
 }

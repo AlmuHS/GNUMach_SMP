@@ -1,0 +1,58 @@
+dnl Configure fragment for x86_64.
+
+dnl Copyright (C) 1999, 2004, 2006, 2007, 2008 Free Software Foundation, Inc.
+
+dnl Permission to use, copy, modify and distribute this software and its
+dnl documentation is hereby granted, provided that both the copyright
+dnl notice and this permission notice appear in all copies of the
+dnl software, derivative works or modified versions, and any portions
+dnl thereof, and that both notices appear in supporting documentation.
+dnl
+dnl THE FREE SOFTWARE FOUNDATION ALLOWS FREE USE OF THIS SOFTWARE IN ITS
+dnl "AS IS" CONDITION.  THE FREE SOFTWARE FOUNDATION DISCLAIMS ANY
+dnl LIABILITY OF ANY KIND FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE
+dnl USE OF THIS SOFTWARE.
+
+#
+# Definitions.
+#
+
+[case $host_cpu in
+  x86_64)]
+    AM_CONDITIONAL([HOST_x86_64], [true])
+
+    # Some of the x86_64-specific code checks for these.
+    AC_DEFINE([__ELF__], [1], [__ELF__])
+
+    # Determines the size of the CPU cache line.
+    AC_DEFINE([CPU_L1_SHIFT], [6], [CPU_L1_SHIFT])
+
+    [# Does the architecture provide machine-specific interfaces?
+    mach_machine_routines=1
+
+    enable_pae=yes;;
+  *)]
+    AM_CONDITIONAL([HOST_x86_64], [false])[;;
+esac
+
+case $host_platform in
+  at)]
+    AM_CONDITIONAL([PLATFORM_at], [true])[;;
+  *)]
+    AM_CONDITIONAL([PLATFORM_at], [false])[;;
+esac]
+
+[case $host_platform:$host_cpu in
+  at:x86_64)]
+    ncom=4
+    nlpr=1
+    AC_DEFINE([ATX86_64], [1], [ATX86_64])[;;
+  xen:x86_64)]
+    AC_DEFINE([ATX86_64], [1], [ATX86_64])[;;
+  *)
+    :;;
+esac]
+
+dnl Local Variables:
+dnl mode: autoconf
+dnl End:

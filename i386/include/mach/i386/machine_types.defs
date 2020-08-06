@@ -58,4 +58,9 @@ type natural_t = uint32_t;
  */
 type integer_t = int32_t;
 
+/*
+ * Physical address size
+ */
+type rpc_phys_addr_t = uint64_t;
+
 #endif	/* _MACHINE_MACHINE_TYPES_DEFS_ */

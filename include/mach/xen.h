@@ -48,10 +48,14 @@ extern unsigned long la_shift;
 #define la_to_kv(a)		phystokv(la_to_pa(a))
 
 #ifdef	MACH_PSEUDO_PHYS
+#ifdef __i386__
 #if PAE
 #define PFN_LIST MACH2PHYS_VIRT_START_PAE
 #else
 #define PFN_LIST MACH2PHYS_VIRT_START_NONPAE
+#endif
+#else
+#define PFN_LIST MACH2PHYS_VIRT_START
 #endif
 #if VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
 extern unsigned long *pfn_list;

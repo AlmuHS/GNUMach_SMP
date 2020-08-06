@@ -100,8 +100,16 @@ struct i386_kregs {
 	{ "ebx", (long)(&((struct i386_kernel_state *)0)->k_ebx) },
 	{ "esp", (long)(&((struct i386_kernel_state *)0)->k_esp) },
 	{ "ebp", (long)(&((struct i386_kernel_state *)0)->k_ebp) },
+#ifdef __i386__
 	{ "edi", (long)(&((struct i386_kernel_state *)0)->k_edi) },
 	{ "esi", (long)(&((struct i386_kernel_state *)0)->k_esi) },
+#endif
+#ifdef __x86_64__
+	{ "r12", (long)(&((struct i386_kernel_state *)0)->k_r12) },
+	{ "r13", (long)(&((struct i386_kernel_state *)0)->k_r13) },
+	{ "r14", (long)(&((struct i386_kernel_state *)0)->k_r14) },
+	{ "r15", (long)(&((struct i386_kernel_state *)0)->k_r15) },
+#endif
 	{ "eip", (long)(&((struct i386_kernel_state *)0)->k_eip) },
 	{ 0 },
 };

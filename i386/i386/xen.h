@@ -46,13 +46,29 @@ MACH_INLINE unsigned long xchgl(volatile unsigned long *ptr, unsigned long x)
 #define _TOSTR(x) #x
 #define TOSTR(x) _TOSTR (x)
 
+#ifdef __i386__
+#define _hypcall_ret "=a"
+#define _hypcall_arg1 "ebx"
+#define _hypcall_arg2 "ecx"
+#define _hypcall_arg3 "edx"
+#define _hypcall_arg4 "esi"
+#define _hypcall_arg5 "edi"
+#endif
+#ifdef __x86_64__
+#define _hypcall_ret "=a"
+#define _hypcall_arg1 "rdi"
+#define _hypcall_arg2 "rsi"
+#define _hypcall_arg3 "rdx"
+#define _hypcall_arg4 "r10"
+#define _hypcall_arg5 "r8"
+#endif
 
 
 /* x86-specific hypercall interface.  */
 #define _hypcall0(type, name) \
 MACH_INLINE type hyp_##name(void) \
 { \
-	long __ret; \
+	unsigned long __ret; \
 	asm volatile ("call hypcalls+("TOSTR(__HYPERVISOR_##name)"*32)" \
 		: "=a" (__ret) \
 		: : "memory"); \
@@ -62,85 +78,80 @@ MACH_INLINE type hyp_##name(void) \
 #define _hypcall1(type, name, type1, arg1) \
 MACH_INLINE type hyp_##name(type1 arg1) \
 { \
-	long __ret; \
-	long foo1; \
+	unsigned long __ret; \
+	register unsigned long __arg1 asm(_hypcall_arg1) = (unsigned long) arg1; \
 	asm volatile ("call hypcalls+("TOSTR(__HYPERVISOR_##name)"*32)" \
 		: "=a" (__ret), \
-		  "=b" (foo1) \
-		: "1" ((long)arg1) \
-		: "memory"); \
+		  "+r" (__arg1) \
+		: : "memory"); \
 	return __ret; \
 }
 
 #define _hypcall2(type, name, type1, arg1, type2, arg2) \
 MACH_INLINE type hyp_##name(type1 arg1, type2 arg2) \
 { \
-	long __ret; \
-	long foo1, foo2; \
+	unsigned long __ret; \
+	register unsigned long __arg1 asm(_hypcall_arg1) = (unsigned long) arg1; \
+	register unsigned long __arg2 asm(_hypcall_arg2) = (unsigned long) arg2; \
 	asm volatile ("call hypcalls+("TOSTR(__HYPERVISOR_##name)"*32)" \
 		: "=a" (__ret), \
-		  "=b" (foo1), \
-		  "=c" (foo2) \
-		: "1" ((long)arg1), \
-		  "2" ((long)arg2) \
-		: "memory"); \
+		  "+r" (__arg1), \
+		  "+r" (__arg2) \
+		: : "memory"); \
 	return __ret; \
 }
 
 #define _hypcall3(type, name, type1, arg1, type2, arg2, type3, arg3) \
 MACH_INLINE type hyp_##name(type1 arg1, type2 arg2, type3 arg3) \
 { \
-	long __ret; \
-	long foo1, foo2, foo3; \
+	unsigned long __ret; \
+	register unsigned long __arg1 asm(_hypcall_arg1) = (unsigned long) arg1; \
+	register unsigned long __arg2 asm(_hypcall_arg2) = (unsigned long) arg2; \
+	register unsigned long __arg3 asm(_hypcall_arg3) = (unsigned long) arg3; \
 	asm volatile ("call hypcalls+("TOSTR(__HYPERVISOR_##name)"*32)" \
 		: "=a" (__ret), \
-		  "=b" (foo1), \
-		  "=c" (foo2), \
-		  "=d" (foo3) \
-		: "1" ((long)arg1), \
-		  "2" ((long)arg2), \
-		  "3" ((long)arg3) \
-		: "memory"); \
+		  "+r" (__arg1), \
+		  "+r" (__arg2), \
+		  "+r" (__arg3) \
+		: : "memory"); \
 	return __ret; \
 }
 
 #define _hypcall4(type, name, type1, arg1, type2, arg2, type3, arg3, type4, arg4) \
 MACH_INLINE type hyp_##name(type1 arg1, type2 arg2, type3 arg3, type4 arg4) \
 { \
-	long __ret; \
-	long foo1, foo2, foo3, foo4; \
+	unsigned long __ret; \
+	register unsigned long __arg1 asm(_hypcall_arg1) = (unsigned long) arg1; \
+	register unsigned long __arg2 asm(_hypcall_arg2) = (unsigned long) arg2; \
+	register unsigned long __arg3 asm(_hypcall_arg3) = (unsigned long) arg3; \
+	register unsigned long __arg4 asm(_hypcall_arg4) = (unsigned long) arg4; \
 	asm volatile ("call hypcalls+("TOSTR(__HYPERVISOR_##name)"*32)" \
 		: "=a" (__ret), \
-		  "=b" (foo1), \
-		  "=c" (foo2), \
-		  "=d" (foo3), \
-		  "=S" (foo4) \
-		: "1" ((long)arg1), \
-		  "2" ((long)arg2), \
-		  "3" ((long)arg3), \
-		  "4" ((long)arg4) \
-		: "memory"); \
+		  "+r" (__arg1), \
+		  "+r" (__arg2), \
+		  "+r" (__arg3), \
+		  "+r" (__arg4) \
+		: : "memory"); \
 	return __ret; \
 }
 
 #define _hypcall5(type, name, type1, arg1, type2, arg2, type3, arg3, type4, arg4, type5, arg5) \
 MACH_INLINE type hyp_##name(type1 arg1, type2 arg2, type3 arg3, type4 arg4, type5 arg5) \
 { \
-	long __ret; \
-	long foo1, foo2, foo3, foo4, foo5; \
+	unsigned long __ret; \
+	register unsigned long __arg1 asm(_hypcall_arg1) = (unsigned long) arg1; \
+	register unsigned long __arg2 asm(_hypcall_arg2) = (unsigned long) arg2; \
+	register unsigned long __arg3 asm(_hypcall_arg3) = (unsigned long) arg3; \
+	register unsigned long __arg4 asm(_hypcall_arg4) = (unsigned long) arg4; \
+	register unsigned long __arg5 asm(_hypcall_arg5) = (unsigned long) arg5; \
 	asm volatile ("call hypcalls+("TOSTR(__HYPERVISOR_##name)"*32)" \
 		: "=a" (__ret), \
-		  "=b" (foo1), \
-		  "=c" (foo2), \
-		  "=d" (foo3), \
-		  "=S" (foo4), \
-		  "=D" (foo5) \
-		: "1" ((long)arg1), \
-		  "2" ((long)arg2), \
-		  "3" ((long)arg3), \
-		  "4" ((long)arg4), \
-		  "5" ((long)arg5) \
-		: "memory"); \
+		  "+r" (__arg1), \
+		  "+r" (__arg2), \
+		  "+r" (__arg3), \
+		  "+r" (__arg4), \
+		  "+r" (__arg5) \
+		: : "memory"); \
 	return __ret; \
 }
 
@@ -177,8 +188,13 @@ _hypcall2(long, set_gdt, vm_offset_t /* unsigned long * */, frame_list, unsigned
 
 _hypcall2(long, stack_switch, unsigned long, ss, unsigned long, esp);
 
+#ifdef __i386__
 _hypcall4(long, set_callbacks,  unsigned long, es,  void *, ea,
 				unsigned long, fss, void *, fsa);
+#endif
+#ifdef __x86_64__
+_hypcall3(long, set_callbacks,  void *, ea, void *, fsa, void *, sc);
+#endif
 _hypcall1(long, fpu_taskswitch, int, set);
 
 #ifdef PAE
@@ -186,12 +202,22 @@ _hypcall1(long, fpu_taskswitch, int, set);
 #else
 #define hyp_high(pte) 0
 #endif
+#ifdef __i386__
 _hypcall4(long, update_descriptor, unsigned long, ma_lo, unsigned long, ma_hi, unsigned long, desc_lo, unsigned long, desc_hi);
 #define hyp_do_update_descriptor(ma, desc) ({ \
 	pt_entry_t __ma = (ma); \
 	uint64_t __desc = (desc); \
 	hyp_update_descriptor(__ma & 0xffffffffU, hyp_high(__ma), __desc & 0xffffffffU, __desc >> 32); \
 })
+#endif
+#ifdef __x86_64__
+_hypcall2(long, update_descriptor, unsigned long, ma, unsigned long, desc);
+#define hyp_do_update_descriptor(ma, desc) hyp_update_descriptor(ma, desc)
+#endif
+
+#ifdef __x86_64__
+_hypcall2(long, set_segment_base, int, reg, unsigned long, value);
+#endif
 
 #include <xen/public/memory.h>
 _hypcall2(long, memory_op, unsigned long, cmd, vm_offset_t /* void * */, arg);
@@ -207,11 +233,17 @@ MACH_INLINE void hyp_free_mfn(unsigned long mfn)
 		panic("couldn't free page %lu\n", mfn);
 }
 
+#ifdef __i386__
 _hypcall4(int, update_va_mapping, unsigned long, va, unsigned long, val_lo, unsigned long, val_hi, unsigned long, flags);
 #define hyp_do_update_va_mapping(va, val, flags) ({ \
 	pt_entry_t __val = (val); \
 	hyp_update_va_mapping(va, __val & 0xffffffffU, hyp_high(__val), flags); \
 })
+#endif
+#ifdef __x86_64__
+_hypcall3(int, update_va_mapping, unsigned long, va, unsigned long, val, unsigned long, flags);
+#define hyp_do_update_va_mapping(va, val, flags) hyp_update_va_mapping(va, val, flags)
+#endif
 
 MACH_INLINE void hyp_free_page(unsigned long pfn, void *va)
 {
@@ -270,6 +302,7 @@ MACH_INLINE void hyp_set_ldt(void *ldt, unsigned long nbentries) {
 		panic("couldn't set LDT\n");
 }
 #define hyp_set_cr3(value) hyp_mmuext_op_mfn(MMUEXT_NEW_BASEPTR, pa_to_mfn(value))
+#define hyp_set_user_cr3(value) hyp_mmuext_op_mfn(MMUEXT_NEW_USER_BASEPTR, pa_to_mfn(value))
 MACH_INLINE void hyp_invlpg(vm_offset_t lin) {
 	struct mmuext_op ops;
 	int n;
@@ -281,11 +314,17 @@ MACH_INLINE void hyp_invlpg(vm_offset_t lin) {
 }
 #endif
 
+#ifdef __i386__
 _hypcall2(long, set_timer_op, unsigned long, absolute_lo, unsigned long, absolute_hi);
 #define hyp_do_set_timer_op(absolute_nsec) ({ \
 	uint64_t __absolute = (absolute_nsec); \
 	hyp_set_timer_op(__absolute & 0xffffffffU, __absolute >> 32); \
 })
+#endif
+#ifdef __x86_64__
+_hypcall1(long, set_timer_op, unsigned long, absolute);
+#define hyp_do_set_timer_op(absolute_nsec) hyp_set_timer_op(absolute_nsec)
+#endif
 
 #include <xen/public/event_channel.h>
 _hypcall1(int, event_channel_op, vm_offset_t /* evtchn_op_t * */, op);
@@ -357,15 +396,16 @@ _hypcall1(unsigned long, get_debugreg, int, reg);
 
 /* x86-specific */
 MACH_INLINE uint64_t hyp_cpu_clock(void) {
-	uint64_t tsc;
-	asm volatile("rdtsc":"=A"(tsc));
-	return tsc;
+	uint32_t hi, lo;
+	asm volatile("rdtsc" : "=d"(hi), "=a"(lo));
+	return (((uint64_t) hi) << 32) | lo;
 }
 
 #else	/* __ASSEMBLER__ */
 /* TODO: SMP */
 #define cli movb $0xff,hyp_shared_info+CPU_CLI
 #define sti call hyp_sti
+#define iretq jmp hyp_iretq
 #endif	/* ASSEMBLER */
 #endif	/* MACH_XEN */
 

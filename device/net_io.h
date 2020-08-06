@@ -109,6 +109,14 @@ net_do_filter(
 	unsigned int	data_count,
 	const char *	header); /* CSPF */
 
+io_return_t
+net_set_filter(
+	struct ifnet	*ifp,
+	ipc_port_t	rcv_port,
+	int		priority,
+	filter_t	*filter,
+	unsigned int	filter_count);
+
 extern int
 bpf_do_filter(
 	net_rcv_port_t		infp,
@@ -148,5 +156,7 @@ int bpf_match (
 	const unsigned int 	*keys,
 	net_hash_entry_t 	**hash_headpp,
 	net_hash_entry_t 	*entpp);
+
+boolean_t ethernet_priority(const ipc_kmsg_t kmsg);
 
 #endif	/* _DEVICE_NET_IO_H_ */

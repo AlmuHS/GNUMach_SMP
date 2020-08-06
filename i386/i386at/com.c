@@ -368,7 +368,7 @@ io_return_t comopen(
 /*rvb	tp->t_state |= TS_WOPEN; */
 	if ((tp->t_state & TS_ISOPEN) == 0)
 		comparam(unit);
-	addr = (int)tp->t_addr;
+	addr = (uintptr_t)tp->t_addr;
 
 	s = spltty();
 	if (!comcarrier[unit])	/* not originating */
@@ -405,7 +405,7 @@ dev_t dev;
 int flag;
 {
 	struct tty	*tp = &com_tty[minor(dev)];
-	u_short		addr = (int)tp->t_addr;
+	u_short		addr = (uintptr_t)tp->t_addr;
 
 	ttyclose(tp);
 	if (tp->t_state&TS_HUPCLS || (tp->t_state&TS_ISOPEN)==0) { 
@@ -572,7 +572,7 @@ static void
 comparam(int unit)
 {
 	struct tty	*tp = &com_tty[unit];
-	u_short		addr = (int)tp->t_addr;
+	u_short		addr = (uintptr_t)tp->t_addr;
 	spl_t		s = spltty();
 	int		mode;
 
@@ -672,7 +672,7 @@ comst_3++;
 comst_4++;
 		    return(0);
 		}
-		outb(TXRX((int)tp->t_addr), nch);
+		outb(TXRX((uintptr_t)tp->t_addr), nch);
 	}
 #else
 	nch = getc(&tp->t_outq);
@@ -684,7 +684,7 @@ comst_4++;
 comst_4++;
 	    return;
 	}
-	outb(TXRX((int)tp->t_addr), nch);
+	outb(TXRX((uintptr_t)tp->t_addr), nch);
 	tp->t_state |= TS_BUSY;
 #endif
 }
@@ -709,7 +709,7 @@ comtimer(void * param)
 		/* Its stuck */
 printf("Tty %p was stuck\n", tp);
 		nch = getc(&tp->t_outq);
-		outb(TXRX((int)tp->t_addr), nch);
+		outb(TXRX((uintptr_t)tp->t_addr), nch);
 	}
 
 	splx(s);

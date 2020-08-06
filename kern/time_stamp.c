@@ -29,6 +29,8 @@
 #include <sys/time.h>
 #include <kern/time_stamp.h>
 
+unsigned	ts_tick_count;
+
 /*
  *	ts.c - kern_timestamp system call.
  */

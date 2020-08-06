@@ -62,7 +62,7 @@ static void store_put(hyp_store_transaction_t t, uint32_t type, struct store_req
 	totlen += sizeof(head);
 
 	if (totlen > sizeof(store->req) - 1)
-		panic("too big store message %d, max %d", totlen, sizeof(store->req));
+		panic("too big store message %d, max %d", totlen, (int) sizeof(store->req));
 
 	while (hyp_ring_available(store->req, store->req_prod, store->req_cons) < totlen)
 		hyp_yield();

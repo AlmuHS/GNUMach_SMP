@@ -162,7 +162,8 @@ AC_Linux_DRIVER_nodef([53c78xx],
   [SCSI controller NCR 53C7,8xx],
   [CONFIG_SCSI_NCR53C7xx],
   [scsi])
-AC_Linux_DRIVER([AM53C974],
+# Disabled by default.
+AC_Linux_DRIVER_nodef([AM53C974],
   [SCSI controller AM53/79C974 (am53c974, am79c974)],
   [CONFIG_SCSI_AM53C974],
   [scsi])
@@ -189,7 +190,8 @@ AC_Linux_DRIVER([aha152x],
   [SCSI controller Adaptec AHA-152x/2825 (aha152x, aha2825)],
   [CONFIG_SCSI_AHA152X],
   [scsi])
-AC_Linux_DRIVER([aha1542],
+# Disabled by default.
+AC_Linux_DRIVER_nodef([aha1542],
   [SCSI controller Adaptec AHA-1542],
   [CONFIG_SCSI_AHA1542],
   [scsi])
@@ -206,7 +208,8 @@ AC_Linux_DRIVER([dtc],
   [SCSI controller DTC3180/3280 (dtc3180, dtc3280)],
   [CONFIG_SCSI_DTC3280],
   [scsi])
-AC_Linux_DRIVER([eata],
+# Disabled by default.
+AC_Linux_DRIVER_nodef([eata],
   [SCSI controller EATA ISA/EISA/PCI
     (DPT and generic EATA/DMA-compliant boards)],
   [CONFIG_SCSI_EATA],
@@ -216,7 +219,8 @@ AC_Linux_DRIVER_nodef([eata_dma],
   [SCSI controller EATA-DMA (DPT, NEC, AT&T, SNI, AST, Olivetti, Alphatronix)],
   [CONFIG_SCSI_EATA_DMA],
   [scsi])
-AC_Linux_DRIVER([eata_pio],
+# Disabled by default.
+AC_Linux_DRIVER_nodef([eata_pio],
   [SCSI controller EATA-PIO (old DPT PM2001, PM2012A)],
   [CONFIG_SCSI_EATA_PIO],
   [scsi])
@@ -246,7 +250,8 @@ AC_Linux_DRIVER([pas16],
   [SCSI controller PAS16],
   [CONFIG_SCSI_PASS16],
   [scsi])
-AC_Linux_DRIVER([ppa],
+# Disabled by default.
+AC_Linux_DRIVER_nodef([ppa],
   [IOMEGA Parallel Port ZIP drive],
   [CONFIG_SCSI_PPA],
   [scsi])
@@ -282,7 +287,8 @@ AC_Linux_DRIVER([ultrastor],
   [SCSI controller UltraStor],
   [CONFIG_SCSI_ULTRASTOR],
   [scsi])
-AC_Linux_DRIVER([wd7000],
+# Disabled by default.
+AC_Linux_DRIVER_nodef([wd7000],
   [SCSI controller WD 7000],
   [CONFIG_SCSI_7000FASST],
   [scsi])
@@ -316,7 +322,8 @@ AC_Linux_DRIVER([3c59x],
     "Vortex/Boomerang"],
   [CONFIG_VORTEX],
   [net])
-AC_Linux_DRIVER([3c515],
+# Disabled by default.
+AC_Linux_DRIVER_nodef([3c515],
   [Ethernet controller 3Com 515 ISA Fast EtherLink],
   [CONFIG_3C515],
   [net])
@@ -344,11 +351,13 @@ AC_Linux_DRIVER([de4x5],
   [Ethernet controller DE4x5 (de4x5, de425, de434, de435, de450, de500)],
   [CONFIG_DE4X5],
   [net])
-AC_Linux_DRIVER([de600],
+# Disabled by default.
+AC_Linux_DRIVER_nodef([de600],
   [Ethernet controller D-Link DE-600],
   [CONFIG_DE600],
   [net])
-AC_Linux_DRIVER([de620],
+# Disabled by default.
+AC_Linux_DRIVER_nodef([de620],
   [Ethernet controller D-Link DE-620],
   [CONFIG_DE620],
   [net])

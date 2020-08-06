@@ -30,7 +30,7 @@ struct real_gate idt[IDTSZ];
 
 struct idt_init_entry
 {
-	unsigned entrypoint;
+	unsigned long entrypoint;
 	unsigned short vector;
 	unsigned short type;
 };

@@ -54,7 +54,7 @@ typedef	char *		caddr_t;	/* address of a (signed) char */
 
 #ifndef _TIME_T
 #define	_TIME_T
-typedef	unsigned int	time_t;
+typedef	unsigned long long	time_t;
 #endif
 
 #define RAND_MAX	0x7fffffff

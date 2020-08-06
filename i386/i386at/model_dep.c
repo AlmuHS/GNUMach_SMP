@@ -282,64 +282,61 @@ void db_reset_cpu(void)
 static void
 register_boot_data(const struct multiboot_raw_info *mbi)
 {
-    struct multiboot_raw_module *mod;
-    struct elf_shdr *shdr;
-    unsigned long tmp;
-    unsigned int i;
+	struct multiboot_raw_module *mod;
+	struct elf_shdr *shdr;
+	unsigned long tmp;
+	unsigned int i;
 
-    extern char _start[], _end[];
+	extern char _start[], _end[];
 
-    biosmem_register_boot_data(_kvtophys(&_start), _kvtophys(&_end), FALSE);
+	biosmem_register_boot_data(_kvtophys(&_start), _kvtophys(&_end), FALSE);
 
-    /* cmdline and modules are moved to a safe place by i386at_init.  */
+	/* cmdline and modules are moved to a safe place by i386at_init.  */
 
-    if ((mbi->flags & MULTIBOOT_LOADER_CMDLINE) && (mbi->cmdline != 0))
-        {
-            biosmem_register_boot_data(mbi->cmdline,
-                                       mbi->cmdline
-                                       + strlen((void *)phystokv(mbi->cmdline)) + 1, TRUE);
-        }
+	if ((mbi->flags & MULTIBOOT_LOADER_CMDLINE) && (mbi->cmdline != 0)) {
+		biosmem_register_boot_data(mbi->cmdline,
+					   mbi->cmdline
+					   + strlen((void *)phystokv(mbi->cmdline)) + 1, TRUE);
+	}
 
-    if (mbi->flags & MULTIBOOT_LOADER_MODULES)
-        {
-            i = mbi->mods_count * sizeof(struct multiboot_raw_module);
-            biosmem_register_boot_data(mbi->mods_addr, mbi->mods_addr + i, TRUE);
+	if (mbi->flags & MULTIBOOT_LOADER_MODULES && mbi->mods_count) {
+		i = mbi->mods_count * sizeof(struct multiboot_raw_module);
+		biosmem_register_boot_data(mbi->mods_addr, mbi->mods_addr + i, TRUE);
 
-            tmp = phystokv(mbi->mods_addr);
+		tmp = phystokv(mbi->mods_addr);
 
-            for (i = 0; i < mbi->mods_count; i++)
-                {
-                    mod = (struct multiboot_raw_module *)tmp + i;
-                    biosmem_register_boot_data(mod->mod_start, mod->mod_end, TRUE);
+		for (i = 0; i < mbi->mods_count; i++) {
+			mod = (struct multiboot_raw_module *)tmp + i;
+			if (mod->mod_end != mod->mod_start)
+				biosmem_register_boot_data(mod->mod_start, mod->mod_end, TRUE);
 
-                    if (mod->string != 0)
-                        {
-                            biosmem_register_boot_data(mod->string,
-                                                       mod->string
-                                                       + strlen((void *)phystokv(mod->string)) + 1,
-                                                       TRUE);
-                        }
-                }
-        }
+			if (mod->string != 0) {
+				biosmem_register_boot_data(mod->string,
+							   mod->string
+							   + strlen((void *)phystokv(mod->string)) + 1,
+							   TRUE);
+			}
+		}
+	}
 
-    if (mbi->flags & MULTIBOOT_LOADER_SHDR)
-        {
-            tmp = mbi->shdr_num * mbi->shdr_size;
-            biosmem_register_boot_data(mbi->shdr_addr, mbi->shdr_addr + tmp, FALSE);
+	if (mbi->flags & MULTIBOOT_LOADER_SHDR) {
+		tmp = mbi->shdr_num * mbi->shdr_size;
+		if (tmp != 0)
+			biosmem_register_boot_data(mbi->shdr_addr, mbi->shdr_addr + tmp, FALSE);
 
-            tmp = phystokv(mbi->shdr_addr);
+		tmp = phystokv(mbi->shdr_addr);
 
-            for (i = 0; i < mbi->shdr_num; i++)
-                {
-                    shdr = (struct elf_shdr *)(tmp + (i * mbi->shdr_size));
+		for (i = 0; i < mbi->shdr_num; i++) {
+			shdr = (struct elf_shdr *)(tmp + (i * mbi->shdr_size));
 
-                    if ((shdr->type != ELF_SHT_SYMTAB)
-                            && (shdr->type != ELF_SHT_STRTAB))
-                        continue;
+			if ((shdr->type != ELF_SHT_SYMTAB)
+			    && (shdr->type != ELF_SHT_STRTAB))
+				continue;
 
-                    biosmem_register_boot_data(shdr->addr, shdr->addr + shdr->size, FALSE);
-                }
-        }
+			if (shdr->size != 0)
+				biosmem_register_boot_data(shdr->addr, shdr->addr + shdr->size, FALSE);
+		}
+	}
 }
 
 #endif /* MACH_HYP */
@@ -359,6 +356,7 @@ i386at_init(void)
     /*
      * Initialize the PIC prior to any possible call to an spl.
      */
+
 #ifndef	MACH_HYP
     picinit();
 #else	/* MACH_HYP */
@@ -378,49 +376,48 @@ i386at_init(void)
 #ifdef MACH_XEN
     kernel_cmdline = (char*) boot_info.cmd_line;
 #else	/* MACH_XEN */
-    /* Copy content pointed by boot_info before losing access to it when it
-     * is too far in physical memory.
-     * Also avoids leaving them in precious areas such as DMA memory.  */
-    if (boot_info.flags & MULTIBOOT_CMDLINE)
-        {
-            int len = strlen ((char*)phystokv(boot_info.cmdline)) + 1;
-            if (! init_alloc_aligned(round_page(len), &addr))
-                panic("could not allocate memory for multiboot command line");
-            kernel_cmdline = (char*) phystokv(addr);
-            memcpy(kernel_cmdline, (void *)phystokv(boot_info.cmdline), len);
-            boot_info.cmdline = addr;
-        }
+	vm_offset_t addr;
 
-    if (boot_info.flags & MULTIBOOT_MODS)
-        {
-            struct multiboot_module *m;
-            int i;
+	/* Copy content pointed by boot_info before losing access to it when it
+	 * is too far in physical memory.
+	 * Also avoids leaving them in precious areas such as DMA memory.  */
+	if (boot_info.flags & MULTIBOOT_CMDLINE) {
+		int len = strlen ((char*)phystokv(boot_info.cmdline)) + 1;
+		if (! init_alloc_aligned(round_page(len), &addr))
+		  panic("could not allocate memory for multiboot command line");
+		kernel_cmdline = (char*) phystokv(addr);
+		memcpy(kernel_cmdline, (void *)phystokv(boot_info.cmdline), len);
+		boot_info.cmdline = addr;
+	}
 
-            if (! init_alloc_aligned(
-                        round_page(boot_info.mods_count * sizeof(*m)), &addr))
-                panic("could not allocate memory for multiboot modules");
-            m = (void*) phystokv(addr);
-            memcpy(m, (void*) phystokv(boot_info.mods_addr), boot_info.mods_count * sizeof(*m));
-            boot_info.mods_addr = addr;
+	if (boot_info.flags & MULTIBOOT_MODS && boot_info.mods_count) {
+		struct multiboot_module *m;
+		int i;
 
-            for (i = 0; i < boot_info.mods_count; i++)
-                {
-                    vm_size_t size = m[i].mod_end - m[i].mod_start;
-                    if (! init_alloc_aligned(round_page(size), &addr))
-                        panic("could not allocate memory for multiboot "
-                              "module %d", i);
-                    memcpy((void*) phystokv(addr), (void*) phystokv(m[i].mod_start), size);
-                    m[i].mod_start = addr;
-                    m[i].mod_end = addr + size;
+		if (! init_alloc_aligned(
+			round_page(boot_info.mods_count * sizeof(*m)), &addr))
+		  panic("could not allocate memory for multiboot modules");
+		m = (void*) phystokv(addr);
+		memcpy(m, (void*) phystokv(boot_info.mods_addr), boot_info.mods_count * sizeof(*m));
+		boot_info.mods_addr = addr;
 
-                    size = strlen((char*) phystokv(m[i].string)) + 1;
-                    if (! init_alloc_aligned(round_page(size), &addr))
-                        panic("could not allocate memory for multiboot "
-                              "module command line %d", i);
-                    memcpy((void*) phystokv(addr), (void*) phystokv(m[i].string), size);
-                    m[i].string = addr;
-                }
-        }
+		for (i = 0; i < boot_info.mods_count; i++) {
+			vm_size_t size = m[i].mod_end - m[i].mod_start;
+			if (! init_alloc_aligned(round_page(size), &addr))
+			  panic("could not allocate memory for multiboot "
+				"module %d", i);
+			memcpy((void*) phystokv(addr), (void*) phystokv(m[i].mod_start), size);
+			m[i].mod_start = addr;
+			m[i].mod_end = addr + size;
+
+			size = strlen((char*) phystokv(m[i].string)) + 1;
+			if (! init_alloc_aligned(round_page(size), &addr))
+			  panic("could not allocate memory for multiboot "
+				"module command line %d", i);
+			memcpy((void*) phystokv(addr), (void*) phystokv(m[i].string), size);
+			m[i].string = addr;
+		}
+	}
 #endif	/* MACH_XEN */
 
 
@@ -483,8 +480,14 @@ i386at_init(void)
 #endif	/* PAE */
 #endif	/* MACH_PV_PAGETABLES */
 #if PAE
-    pdpbase_addr = (unsigned)_kvtophys(kernel_pmap->pdpbase);
-    set_cr3(pdpbase_addr);
+
+#ifdef __x86_64__
+	set_cr3((unsigned long)_kvtophys(kernel_pmap->l4base));
+#else
+	pdpbase_addr = (unsigned)_kvtophys(kernel_pmap->pdpbase);
+    	set_cr3(pdpbase_addr);
+#endif
+
 #ifndef	MACH_HYP
     if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
         panic("CPU doesn't have support for PAE.");
@@ -493,6 +496,7 @@ i386at_init(void)
 #else
     kernel_page_dir_addr = (unsigned)_kvtophys(kernel_page_dir);
     set_cr3(kernel_page_dir_addr);
+
 #endif	/* PAE */
 #ifndef	MACH_HYP
     /* Turn paging on.
@@ -572,7 +576,7 @@ if(ncpu == 1){
 
 /*
  *	C boot entrypoint - called by boot_entry in boothdr.S.
- *	Running in 32-bit flat mode, but without paging yet.
+ *	Running in flat mode, but without paging yet.
  */
 void c_boot_entry(vm_offset_t bi)
 {
@@ -600,36 +604,36 @@ void c_boot_entry(vm_offset_t bi)
 #else	/* MACH_XEN */
 
 #if	MACH_KDB
-    /*
-     * Locate the kernel's symbol table, if the boot loader provided it.
-     * We need to do this before i386at_init()
-     * so that the symbol table's memory won't be stomped on.
-     */
-    if ((boot_info.flags & MULTIBOOT_AOUT_SYMS)
-            && boot_info.syms.a.addr)
-        {
-            vm_size_t symtab_size, strtab_size;
+	/*
+	 * Locate the kernel's symbol table, if the boot loader provided it.
+	 * We need to do this before i386at_init()
+	 * so that the symbol table's memory won't be stomped on.
+	 */
+	if ((boot_info.flags & MULTIBOOT_AOUT_SYMS)
+	    && boot_info.syms.a.addr)
+	{
+		vm_size_t symtab_size, strtab_size;
 
-            kern_sym_start = (vm_offset_t)phystokv(boot_info.syms.a.addr);
-            symtab_size = (vm_offset_t)phystokv(boot_info.syms.a.tabsize);
-            strtab_size = (vm_offset_t)phystokv(boot_info.syms.a.strsize);
-            kern_sym_end = kern_sym_start + 4 + symtab_size + strtab_size;
+		kern_sym_start = (vm_offset_t)phystokv(boot_info.syms.a.addr);
+		symtab_size = (vm_offset_t)phystokv(boot_info.syms.a.tabsize);
+		strtab_size = (vm_offset_t)phystokv(boot_info.syms.a.strsize);
+		kern_sym_end = kern_sym_start + 4 + symtab_size + strtab_size;
 
-            printf("kernel symbol table at %08lx-%08lx (%d,%d)\n",
-                   kern_sym_start, kern_sym_end,
-                   symtab_size, strtab_size);
-        }
+		printf("kernel symbol table at %08lx-%08lx (%ld,%ld)\n",
+		       kern_sym_start, kern_sym_end,
+		       (unsigned long) symtab_size, (unsigned long) strtab_size);
+	}
 
-    if ((boot_info.flags & MULTIBOOT_ELF_SHDR)
-            && boot_info.syms.e.num)
-        {
-            elf_shdr_num = boot_info.syms.e.num;
-            elf_shdr_size = boot_info.syms.e.size;
-            elf_shdr_addr = (vm_offset_t)phystokv(boot_info.syms.e.addr);
-            elf_shdr_shndx = boot_info.syms.e.shndx;
+	if ((boot_info.flags & MULTIBOOT_ELF_SHDR)
+	    && boot_info.syms.e.num)
+	{
+		elf_shdr_num = boot_info.syms.e.num;
+		elf_shdr_size = boot_info.syms.e.size;
+		elf_shdr_addr = (vm_offset_t)phystokv(boot_info.syms.e.addr);
+		elf_shdr_shndx = boot_info.syms.e.shndx;
 
-            printf("ELF section header table at %08lx\n", elf_shdr_addr);
-        }
+		printf("ELF section header table at %08lx\n", elf_shdr_addr);
+	}
 #endif	/* MACH_KDB */
 #endif	/* MACH_XEN */
 
@@ -715,18 +719,18 @@ startrtclock(void)
 void
 inittodr(void)
 {
-    time_value_t	new_time;
+	time_value_t	new_time;
+	uint64_t	newsecs;
 
-    new_time.seconds = 0;
-    new_time.microseconds = 0;
+	(void) readtodc(&newsecs);
+	new_time.seconds = newsecs;
+	new_time.microseconds = 0;
 
-    (void) readtodc((u_int *)&new_time.seconds);
-
-    {
-        spl_t	s = splhigh();
-        time = new_time;
-        splx(s);
-    }
+	{
+	    spl_t	s = splhigh();
+	    time = new_time;
+	    splx(s);
+	}
 }
 
 void

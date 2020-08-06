@@ -42,7 +42,7 @@ void (*ivect[NINTR])() = {
 	/* 04 */	intnull,	/* comintr, ... */
 	/* 05 */	intnull,	/* comintr, wtintr, ... */
 	/* 06 */	intnull,	/* fdintr, ... */
-	/* 07 */	prtnull,	/* qdintr, ... */
+	/* 07 */	intnull,	/* qdintr, ... */
 
 	/* 08 */	intnull,
 	/* 09 */	intnull,	/* ether */
@@ -53,11 +53,4 @@ void (*ivect[NINTR])() = {
 	/* 13 */	fpintr,		/* always */
 	/* 14 */	intnull,	/* hdintr, ... */
 	/* 15 */	intnull,	/* ??? */
-};
-
-int intpri[NINTR] = {
-	/* 00 */   	0,	SPL6,	0,	0,
-	/* 04 */	0,	0,	0,	0,
-	/* 08 */	0,	0,	0,	0,
-	/* 12 */	0,	SPL1,	0,	0,
 };

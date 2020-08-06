@@ -242,7 +242,7 @@ kern_return_t vm_read(
 	vm_address_t	address,
 	vm_size_t	size,
 	pointer_t	*data,
-	vm_size_t	*data_size)
+	mach_msg_type_number_t	*data_size)
 {
 	kern_return_t	error;
 	vm_map_copy_t	ipc_address;
@@ -265,7 +265,7 @@ kern_return_t vm_write(
 	vm_map_t	map,
 	vm_address_t	address,
 	pointer_t	data,
-	vm_size_t	size)
+	mach_msg_type_number_t	size)
 {
 	if (map == VM_MAP_NULL)
 		return KERN_INVALID_ARGUMENT;
@@ -345,14 +345,16 @@ kern_return_t vm_map(
 		object = VM_OBJECT_NULL;
 		offset = 0;
 		copy = FALSE;
-	} else if ((object = vm_object_enter(memory_object, size, FALSE))
-			== VM_OBJECT_NULL)
+	} else if ((object = vm_object_lookup_name (memory_object)) == VM_OBJECT_NULL &&
+		   (object = vm_object_enter(memory_object, size, FALSE)) == VM_OBJECT_NULL)
 	  {
 	    ipc_port_t real_memobj;
 	    vm_prot_t prot;
+
 	    result = memory_object_proxy_lookup (memory_object, &real_memobj,
 						 &prot);
 	    if (result != KERN_SUCCESS)
+	      /* Really no luck */
 	      return result;
 
 	    /* Reduce the allowed access to the memory object.  */
@@ -530,4 +532,130 @@ kern_return_t vm_msync(
 		return KERN_INVALID_ARGUMENT;
 
 	return vm_map_msync(map, (vm_offset_t) address, size, sync_flags);
+}
+
+/*
+ *	vm_allocate_contiguous allocates "zero fill" physical memory and maps
+ *	it into in the specfied map.
+ */
+/* TODO: respect physical alignment (palign)
+ *       and minimum physical address (pmin)
+ */
+kern_return_t vm_allocate_contiguous(
+	host_t			host_priv,
+	vm_map_t		map,
+	vm_address_t		*result_vaddr,
+	rpc_phys_addr_t		*result_paddr,
+	vm_size_t		size,
+	rpc_phys_addr_t		pmin,
+	rpc_phys_addr_t		pmax,
+	rpc_phys_addr_t		palign)
+{
+	vm_size_t		alloc_size;
+	unsigned int		npages;
+	unsigned int		i;
+	unsigned int		order;
+	unsigned int		selector;
+	vm_page_t		pages;
+	vm_object_t		object;
+	kern_return_t		kr;
+	vm_address_t		vaddr;
+
+	if (host_priv == HOST_NULL)
+		return KERN_INVALID_HOST;
+
+	if (map == VM_MAP_NULL)
+		return KERN_INVALID_TASK;
+
+	/* FIXME */
+	if (pmin != 0)
+		return KERN_INVALID_ARGUMENT;
+
+	if (palign == 0)
+		palign = PAGE_SIZE;
+
+	/* FIXME */
+	if (palign != PAGE_SIZE)
+		return KERN_INVALID_ARGUMENT;
+
+	selector = VM_PAGE_SEL_DMA;
+	if (pmax > VM_PAGE_DMA_LIMIT)
+#ifdef VM_PAGE_DMA32_LIMIT
+		selector = VM_PAGE_SEL_DMA32;
+	if (pmax > VM_PAGE_DMA32_LIMIT)
+#endif
+		selector = VM_PAGE_SEL_DIRECTMAP;
+	if (pmax > VM_PAGE_DIRECTMAP_LIMIT)
+		selector = VM_PAGE_SEL_HIGHMEM;
+
+	size = vm_page_round(size);
+
+	if (size == 0)
+		return KERN_INVALID_ARGUMENT;
+
+	object = vm_object_allocate(size);
+
+	if (object == NULL)
+		return KERN_RESOURCE_SHORTAGE;
+
+	/*
+	 * XXX The page allocator returns blocks with a power-of-two size.
+	 * The requested size may not be a power-of-two, requiring some
+	 * work to release back the pages that aren't needed.
+	 */
+	order = vm_page_order(size);
+	alloc_size = (1 << (order + PAGE_SHIFT));
+	npages = vm_page_atop(alloc_size);
+
+	pages = vm_page_grab_contig(alloc_size, selector);
+
+	if (pages == NULL) {
+		vm_object_deallocate(object);
+		return KERN_RESOURCE_SHORTAGE;
+	}
+
+	vm_object_lock(object);
+	vm_page_lock_queues();
+
+	for (i = 0; i < vm_page_atop(size); i++) {
+		/*
+		 * XXX We can safely handle contiguous pages as an array,
+		 * but this relies on knowing the implementation of the
+		 * page allocator.
+		 */
+		pages[i].busy = FALSE;
+		vm_page_insert(&pages[i], object, vm_page_ptoa(i));
+		vm_page_wire(&pages[i]);
+	}
+
+	vm_page_unlock_queues();
+	vm_object_unlock(object);
+
+	for (i = vm_page_atop(size); i < npages; i++) {
+		vm_page_release(&pages[i], FALSE, FALSE);
+	}
+
+	vaddr = 0;
+	kr = vm_map_enter(map, &vaddr, size, 0, TRUE, object, 0, FALSE,
+			  VM_PROT_READ | VM_PROT_WRITE,
+			  VM_PROT_READ | VM_PROT_WRITE, VM_INHERIT_DEFAULT);
+
+	if (kr != KERN_SUCCESS) {
+		vm_object_deallocate(object);
+		return kr;
+	}
+
+	kr = vm_map_pageable(map, vaddr, vaddr + size,
+			     VM_PROT_READ | VM_PROT_WRITE,
+			     TRUE, TRUE);
+
+	if (kr != KERN_SUCCESS) {
+		vm_map_remove(map, vaddr, vaddr + size);
+		return kr;
+	}
+
+	*result_vaddr = vaddr;
+	*result_paddr = pages->phys_addr;
+
+	return KERN_SUCCESS;
 }

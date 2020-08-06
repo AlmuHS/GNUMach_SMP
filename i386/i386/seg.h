@@ -59,12 +59,32 @@ struct real_descriptor {
 			base_high:8;	/* base 24..31 */
 };
 
+#ifdef __x86_64__
+struct real_descriptor64 {
+	unsigned int	limit_low:16,	/* limit 0..15 */
+			base_low:16,	/* base  0..15 */
+			base_med:8,	/* base  16..23 */
+			access:8,	/* access byte */
+			limit_high:4,	/* limit 16..19 */
+			granularity:4,	/* granularity */
+			base_high:8,	/* base 24..31 */
+			base_ext:32,	/* base 32..63 */
+			reserved1:8,
+			zero:5,
+			reserved2:19;
+};
+#endif
+
 struct real_gate {
 	unsigned int	offset_low:16,	/* offset 0..15 */
 			selector:16,
 			word_count:8,
 			access:8,
 			offset_high:16;	/* offset 16..31 */
+#ifdef __x86_64__
+	unsigned int	offset_ext:32,	/* offset 32..63 */
+			reserved:32;
+#endif
 };
 
 #endif /* !__ASSEMBLER__ */
@@ -185,9 +205,43 @@ fill_descriptor(struct real_descriptor *_desc, unsigned base, unsigned limit,
 #endif	/* MACH_PV_DESCRIPTORS */
 }
 
+#ifdef __x86_64__
+MACH_INLINE void
+fill_descriptor64(struct real_descriptor64 *_desc, unsigned long base, unsigned limit,
+		  unsigned char access, unsigned char sizebits)
+{
+	/* TODO: when !MACH_PV_DESCRIPTORS, setting desc and just memcpy isn't simpler actually */
+#ifdef	MACH_PV_DESCRIPTORS
+	struct real_descriptor64 __desc, *desc = &__desc;
+#else	/* MACH_PV_DESCRIPTORS */
+	struct real_descriptor64 *desc = _desc;
+#endif	/* MACH_PV_DESCRIPTORS */
+	if (limit > 0xfffff)
+	{
+		limit >>= 12;
+		sizebits |= SZ_G;
+	}
+	desc->limit_low = limit & 0xffff;
+	desc->base_low = base & 0xffff;
+	desc->base_med = (base >> 16) & 0xff;
+	desc->access = access | ACC_P;
+	desc->limit_high = limit >> 16;
+	desc->granularity = sizebits;
+	desc->base_high = base >> 24;
+	desc->base_ext = base >> 32;
+	desc->reserved1 = 0;
+	desc->zero = 0;
+	desc->reserved2 = 0;
+#ifdef	MACH_PV_DESCRIPTORS
+	if (hyp_do_update_descriptor(kv_to_ma(_desc), *(uint64_t*)desc))
+		panic("couldn't update descriptor(%lu to %08lx%08lx)\n", (vm_offset_t) kv_to_ma(_desc), *(((unsigned long*)desc)+1), *(unsigned long *)desc);
+#endif	/* MACH_PV_DESCRIPTORS */
+}
+#endif
+
 /* Fill a gate with particular values.  */
 MACH_INLINE void
-fill_gate(struct real_gate *gate, unsigned offset, unsigned short selector,
+fill_gate(struct real_gate *gate, unsigned long offset, unsigned short selector,
 	  unsigned char access, unsigned char word_count)
 {
 	gate->offset_low = offset & 0xffff;
@@ -195,6 +249,10 @@ fill_gate(struct real_gate *gate, unsigned offset, unsigned short selector,
 	gate->word_count = word_count;
 	gate->access = access | ACC_P;
 	gate->offset_high = (offset >> 16) & 0xffff;
+#ifdef __x86_64__
+	gate->offset_ext = offset >> 32;
+	gate->reserved = 0;
+#endif
 }
 
 #endif /* !__ASSEMBLER__ */

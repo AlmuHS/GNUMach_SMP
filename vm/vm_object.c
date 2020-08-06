@@ -1368,6 +1368,7 @@ kern_return_t vm_object_copy_call(
 	 */
 
 	new_object = vm_object_enter(new_memory_object, size, FALSE);
+	assert(new_object);
 	new_object->shadow = src_object;
 	new_object->shadow_offset = src_offset;
 

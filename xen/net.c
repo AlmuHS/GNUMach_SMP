@@ -30,6 +30,7 @@
 #include <device/device_reply.user.h>
 #include <device/device_emul.h>
 #include <device/ds_routines.h>
+#include <device/subrs.h>
 #include <intel/pmap.h>
 #include <xen/public/io/netif.h>
 #include <xen/public/memory.h>
@@ -46,10 +47,7 @@
 /* Hypervisor part */
 
 #define ADDRESS_SIZE 6
-#define WINDOW __RING_SIZE((netif_rx_sring_t*)0, PAGE_SIZE)
-
-/* Are we paranoid enough to not leak anything to backend? */
-static const int paranoia = 0;
+#define WINDOW __CONST_RING_SIZE(netif_rx, PAGE_SIZE)
 
 struct net_data {
 	struct device	device;
@@ -186,7 +184,7 @@ static void hyp_net_intr(int unit) {
 
 	simple_lock(&nd->lock);
 	if ((nd->rx.sring->rsp_prod - nd->rx.rsp_cons) >= (WINDOW*3)/4)
-		printf("window %ld a bit small!\n", WINDOW);
+		printf("window %ld a bit small!\n", (long) WINDOW);
 
 	more = RING_HAS_UNCONSUMED_RESPONSES(&nd->rx);
 	while (more) {
@@ -458,7 +456,7 @@ void hyp_net_init(void) {
 
 		c = hyp_store_write(0, hyp_store_state_connected, 5, VIF_PATH, "/", nd->vif, "/", "state");
 		if (!c)
-			panic("couldn't store state for eth%d (%s)", nd - vif_data, hyp_store_error);
+			panic("couldn't store state for eth%d (%s)", (int) (nd - vif_data), hyp_store_error);
 		kfree((vm_offset_t) c, strlen(c)+1);
 
 		while(1) {
@@ -478,7 +476,7 @@ void hyp_net_init(void) {
 			nd->rx_buf_pfn[i] = atop(addr);
 			if (!nd->rx_copy) {
 				if (hyp_do_update_va_mapping(kvtolin(nd->rx_buf[i]), 0, UVMF_INVLPG|UVMF_ALL))
-					panic("eth: couldn't clear rx kv buf %d at %p", i, addr);
+					panic("eth: couldn't clear rx kv buf %d at %lx", i, addr);
 			}
 			/* and enqueue it to backend.  */
 			enqueue_rx_buf(nd, i);
@@ -526,8 +524,8 @@ device_close(void *devp)
 {
 	struct net_data *nd = devp;
 	if (--nd->open_count < 0)
-		panic("too many closes on eth%d", nd - vif_data);
-	printf("close, eth%d count %d\n",nd-vif_data,nd->open_count);
+		panic("too many closes on eth%d", (int) (nd - vif_data));
+	printf("close, eth%d count %d\n", (int) (nd - vif_data), nd->open_count);
 	if (nd->open_count)
 		return 0;
 	ipc_kobject_set(nd->port, IKO_NULL, IKOT_NONE);
@@ -560,12 +558,12 @@ device_open (ipc_port_t reply_port, mach_msg_type_name_t reply_port_type,
 	if (nd->open_count >= 0) {
 		*devp = &nd->device ;
 		nd->open_count++ ;
-		printf("re-open, eth%d count %d\n",nd-vif_data,nd->open_count);
+		printf("re-open, eth%d count %d\n", (int) (nd - vif_data), nd->open_count);
 		return D_SUCCESS;
 	}
 
 	nd->open_count = 1;
-	printf("eth%d count %d\n",nd-vif_data,nd->open_count);
+	printf("eth%d count %d\n", (int) (nd - vif_data), nd->open_count);
 
 	port = ipc_port_alloc_kernel();
 	if (port == IP_NULL) {

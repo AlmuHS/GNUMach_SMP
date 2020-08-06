@@ -35,7 +35,7 @@
 #include <kern/mach_clock.h>
 #include <i386/thread.h>
 
-#if	defined(AT386)
+#if	defined(AT386) || defined(ATX86_64)
 #include <i386/ipl.h>
 #endif
 

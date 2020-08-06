@@ -328,8 +328,8 @@ kern_return_t	device_pager_data_request(
 	dev_pager_t	ds;
 
 	if (device_pager_debug)
-		printf("(device_pager)data_request: pager=%p, offset=0x%lx, length=0x%x\n",
-			pager, offset, length);
+		printf("(device_pager)data_request: pager=%p, offset=0x%lx, length=0x%lx\n",
+			pager, (unsigned long) offset, (unsigned long) length);
 
 	ds = dev_pager_hash_lookup(pager);
 	if (ds == DEV_PAGER_NULL)
