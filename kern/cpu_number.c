@@ -3,7 +3,7 @@
 #include <imps/apic.h>
 #include <mach/machine.h>
 
-unsigned int master_cpu = 0;	/* 'master' processor - keeps time */
+//unsigned int master_cpu = 0;	/* 'master' processor - keeps time */
 
 int
 cpu_number()

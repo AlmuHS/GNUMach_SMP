@@ -52,7 +52,7 @@
 
 #include <device/intr.h>
 
-#if 0
+/*#if 0*/
 
 /* XXX: This is the way it's done in linux 2.2. GNU Mach currently uses intr_count. It should be made using local_{bh/irq}_count instead (through hardirq_enter/exit) for SMP support. */
 unsigned int local_bh_count[NR_CPUS];
@@ -771,4 +771,3 @@ restore_IRQ (void)
    */
   ivect[0] = old_clock_handler;
 }
-  

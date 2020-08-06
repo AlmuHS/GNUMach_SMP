@@ -152,7 +152,7 @@ include Makefrag.am
 include tests/Makefrag.am
 
 # Documentation.
-include doc/Makefrag.am
+#include doc/Makefrag.am
 
 #
 # Kernel Image
@@ -174,7 +174,7 @@ clib_routines := htonl htons ntohl ntohs			\
 		 __rel_iplt_start __rel_iplt_end		\
 		 __ffsdi2 ffs			\
 		 ffs cpu_number intel_startCPU local_bh_count local_irq_count \
-		_START _start etext _edata end _end # actually ld magic, not libc. \
+		_START _start etext _edata end _end # actually ld magic, not libc.
 
 gnumach-undef: gnumach.$(OBJEXT)
 	$(NM_V) $(NM) -u $< | sed 's/  *U  *//' | sort -u > $@

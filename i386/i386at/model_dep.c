@@ -376,8 +376,6 @@ i386at_init(void)
 #ifdef MACH_XEN
     kernel_cmdline = (char*) boot_info.cmd_line;
 #else	/* MACH_XEN */
-	vm_offset_t addr;
-
 	/* Copy content pointed by boot_info before losing access to it when it
 	 * is too far in physical memory.
 	 * Also avoids leaving them in precious areas such as DMA memory.  */
