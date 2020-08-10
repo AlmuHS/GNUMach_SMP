@@ -111,7 +111,7 @@ apic_get_cpu_apic_id(int kernel_id)
 }
 
 /* apic_get_lapic: returns a reference to the common memory address for Local APIC. */
-ApicLocalUnit*
+volatile ApicLocalUnit*
 apic_get_lapic(void)
 {
     return lapic;
