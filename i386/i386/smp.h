@@ -1,4 +1,4 @@
-/* smp.h - Template for generic SMP controller for Mach. Header file
+/* smp.h - i386 SMP controller for Mach. Header file
    Copyright (C) 2020 Free Software Foundation, Inc.
    Written by Almudena Garcia Jurado-Centurion
 
