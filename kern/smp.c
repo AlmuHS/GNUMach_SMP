@@ -27,7 +27,7 @@ struct smp_data smp_info;
 /*
  * smp_get_numcpus: returns the number of cpus existing in the machine
  */
-int smp_get_numcpus(void)
+uint8_t smp_get_numcpus(void)
 {
    uint8_t numcpus = smp_info.num_cpus;
 

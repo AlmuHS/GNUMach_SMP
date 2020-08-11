@@ -18,10 +18,12 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA. */
 
+#include <stdint.h>
+
 struct smp_data {
     int num_cpus;
 };
 
 extern struct smp_data smp_info;
 
-int smp_get_numcpus(void);
+uint8_t smp_get_numcpus(void);
