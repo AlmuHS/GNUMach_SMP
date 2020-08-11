@@ -176,7 +176,7 @@ void machine_init(void)
 	int smp_success = smp_init();
 
 	if(smp_success != 0) {
-		printf("Error: no SMP found");
+		printf("Error in processors detection");
 	}
 #endif /* NCPUS > 1 */
 
