@@ -32,7 +32,7 @@ int smp_get_numcpus(void)
    uint8_t numcpus = smp_info.num_cpus;
 
    if (numcpus == 0)
-      return 1; /* Although SMP doesn't find cpus, always there are almost one. */
+      return 1; /* Although SMP doesn't find cpus, always there are at least one. */
    else
       return numcpus;
 }
