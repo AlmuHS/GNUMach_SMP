@@ -175,18 +175,16 @@ int apic_refit_cpulist(void)
     if (old_list == NULL)
         return -1;
 
-    if(apic_data.ncpus < NCPUS) {
-        new_list = (uint16_t*) kalloc(apic_data.ncpus*sizeof(uint16_t));
+    new_list = (uint16_t*) kalloc(apic_data.ncpus*sizeof(uint16_t));
 
-        if (new_list == NULL)
-            return -1;
+    if (new_list == NULL)
+        return -1;
 
-        for (int i = 0; i < apic_data.ncpus; i++)
-            new_list[i] = old_list[i];
+    for (int i = 0; i < apic_data.ncpus; i++)
+        new_list[i] = old_list[i];
 
-        apic_data.cpu_lapic_list = new_list;
-        kfree((vm_offset_t) old_list, NCPUS*sizeof(uint16_t));
-    }
+    apic_data.cpu_lapic_list = new_list;
+    kfree((vm_offset_t) old_list, NCPUS*sizeof(uint16_t));
 
     return 0;
 }

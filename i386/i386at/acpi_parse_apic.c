@@ -457,7 +457,6 @@ acpi_apic_setup(struct acpi_apic *apic)
     int apic_checksum;
     ApicLocalUnit* lapic;
     uint8_t ncpus, nioapics;
-    int refit = 0;
 
     /* Check the checksum of the APIC */
     apic_checksum = acpi_checksum(apic, apic->header.length);
@@ -481,9 +480,11 @@ acpi_apic_setup(struct acpi_apic *apic)
         return ACPI_APIC_FAILURE;
 
     /* Refit the apic-cpu array. */
-    refit = apic_refit_cpulist();
-    if (refit != -0)
-        return ACPI_FIT_FAILURE;
+    if(ncpus < NCPUS) {
+        int refit = apic_refit_cpulist();
+        if (refit != -0)
+            return ACPI_FIT_FAILURE;
+    }
 
     return ACPI_SUCCESS;
 }
