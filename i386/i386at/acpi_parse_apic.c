@@ -389,7 +389,7 @@ acpi_apic_parse_table(struct acpi_apic *apic)
     numcpus = apic_get_numcpus();
 
     /* Search in APIC entry. */
-    while ((uint32_t)apic_entry < end && numcpus < NCPUS) {
+    while ((uint32_t)apic_entry < end) {
         struct acpi_apic_lapic *lapic_entry;
         struct acpi_apic_ioapic *ioapic_entry;
         struct acpi_apic_irq_override *irq_override_entry;
@@ -399,11 +399,11 @@ acpi_apic_parse_table(struct acpi_apic *apic)
 
         /* If APIC entry is a CPU's Local APIC. */
         case ACPI_APIC_ENTRY_LAPIC:
-
-            /* Store Local APIC data. */
-            lapic_entry = (struct acpi_apic_lapic*) apic_entry;
-            acpi_apic_add_lapic(lapic_entry);
-
+            if(numcpus < MAX_CPUS) {
+                /* Store Local APIC data. */
+                lapic_entry = (struct acpi_apic_lapic*) apic_entry;
+                acpi_apic_add_lapic(lapic_entry);
+            }
             break;
 
         /* If APIC entry is an IOAPIC. */
@@ -476,7 +476,7 @@ acpi_apic_setup(struct acpi_apic *apic)
     ncpus = apic_get_numcpus();
     nioapics = apic_get_num_ioapics();
 
-    if(ncpus == 0 || nioapics == 0)
+    if(ncpus == 0 || nioapics == 0 || ncpus > MAX_CPUS)
         return ACPI_APIC_FAILURE;
 
     /* Refit the apic-cpu array. */

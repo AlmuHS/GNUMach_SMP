@@ -97,6 +97,7 @@ typedef struct IrqOverrideData {
 
 #define MAX_IOAPICS 16
 #define MAX_IRQ_OVERRIDE 24
+#define MAX_CPUS NCPUS /*Ease the test. We can change its value to another to test numcpus > 1 without compile errors */
 
 typedef struct ApicInfo {
         uint8_t   ncpus;
