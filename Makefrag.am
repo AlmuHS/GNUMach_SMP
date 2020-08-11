@@ -124,18 +124,7 @@ EXTRA_DIST += \
 
 #
 # SMP implementation (APIC, ACPI, etc)
-#
-
-libkernel_a_SOURCES += \
-	i386/i386at/acpi_parse_apic.h \
-	i386/i386at/acpi_parse_apic.c
-	
-libkernel_a_SOURCES += \
-	i386/i386/apic.h \
-	i386/i386/apic.c \
-	i386/i386/smp.h \
-	i386/i386/smp.c
-	
+#	
 libkernel_a_SOURCES += \
 	kern/smp.h \
 	kern/smp.c

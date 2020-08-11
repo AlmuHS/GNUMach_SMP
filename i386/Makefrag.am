@@ -143,10 +143,13 @@ libkernel_a_SOURCES += \
 	i386/i386/user_ldt.h \
 	i386/i386/vm_param.h \
 	i386/i386/xpr.h \
+	i386/i386/smp.h \
+	i386/i386/smp.c \
 	i386/intel/pmap.c \
 	i386/intel/pmap.h \
 	i386/intel/read_fault.c \
 	i386/intel/read_fault.h
+	
 EXTRA_DIST += \
 	i386/i386/mach_i386.srv
 
@@ -160,7 +163,11 @@ libkernel_a_SOURCES += \
 	i386/i386/pic.c \
 	i386/i386/pic.h \
 	i386/i386/pit.c \
-	i386/i386/pit.h
+	i386/i386/pit.h \
+	i386/i386/apic.h \
+	i386/i386/apic.c \
+	i386/i386at/acpi_parse_apic.h \
+	i386/i386at/acpi_parse_apic.c
 endif
 
 #
