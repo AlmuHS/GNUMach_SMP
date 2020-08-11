@@ -25,7 +25,6 @@
 #include <kern/kalloc.h>
 
 #define MAX_CPUS 256
-#define MAX_IOAPICS 16
 
 volatile ApicLocalUnit* lapic = NULL;
 

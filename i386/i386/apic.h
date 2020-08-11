@@ -95,13 +95,16 @@ typedef struct IrqOverrideData {
         uint16_t flags;
 } IrqOverrideData;
 
+#define MAX_IOAPICS 16
+#define MAX_IRQ_OVERRIDE 24
+
 typedef struct ApicInfo {
         uint8_t   ncpus;
         uint8_t   nioapics;
         int       nirqoverride;
         uint16_t* cpu_lapic_list;
-        struct    IoApicData ioapic_list[16];
-        struct    IrqOverrideData irq_override_list[24];
+        struct    IoApicData ioapic_list[MAX_IOAPICS];
+        struct    IrqOverrideData irq_override_list[MAX_IRQ_OVERRIDE];
 } ApicInfo;
 
 int apic_data_init(void);
