@@ -33,6 +33,7 @@ enum ACPI_RETURN {
     ACPI_NO_APIC = -6,
     ACPI_NO_LAPIC = -7,
     ACPI_APIC_FAILURE = -8,
+    ACPI_FIT_FAILURE = -9,
     ACPI_SUCCESS = 0,
 };
 

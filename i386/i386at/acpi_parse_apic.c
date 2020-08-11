@@ -399,7 +399,7 @@ acpi_apic_parse_table(struct acpi_apic *apic)
 
         /* If APIC entry is a CPU's Local APIC. */
         case ACPI_APIC_ENTRY_LAPIC:
-            if(numcpus < MAX_CPUS) {
+            if(numcpus < NCPUS) {
                 /* Store Local APIC data. */
                 lapic_entry = (struct acpi_apic_lapic*) apic_entry;
                 acpi_apic_add_lapic(lapic_entry);
@@ -457,6 +457,7 @@ acpi_apic_setup(struct acpi_apic *apic)
     int apic_checksum;
     ApicLocalUnit* lapic;
     uint8_t ncpus, nioapics;
+    int refit = 0;
 
     /* Check the checksum of the APIC */
     apic_checksum = acpi_checksum(apic, apic->header.length);
@@ -476,11 +477,13 @@ acpi_apic_setup(struct acpi_apic *apic)
     ncpus = apic_get_numcpus();
     nioapics = apic_get_num_ioapics();
 
-    if(ncpus == 0 || nioapics == 0 || ncpus > MAX_CPUS)
+    if (ncpus == 0 || nioapics == 0 || ncpus > NCPUS)
         return ACPI_APIC_FAILURE;
 
     /* Refit the apic-cpu array. */
-    apic_refit_cpulist();
+    refit = apic_refit_cpulist();
+    if (refit != -0)
+        return ACPI_FIT_FAILURE;
 
     return ACPI_SUCCESS;
 }
