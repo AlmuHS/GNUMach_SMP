@@ -21,6 +21,15 @@
 #include <kern/smp.h>
 #include <machine/smp.h>
 
+struct smp_data smp_info;
+
+/*
+ * smp_get_numcpus: returns the number of cpus existing in the machine
+ */
+int smp_get_numcpus(void)
+{
+    return smp_info.num_cpus;
+}
 
 
 

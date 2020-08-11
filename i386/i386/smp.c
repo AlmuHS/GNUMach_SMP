@@ -24,14 +24,13 @@
 
 #include <kern/smp.h>
 
-struct smp_data smp_info;
 
 /*
  * smp_data_init: initialize smp_data structure
  * Must be called after smp_init(), once all APIC structures
  * has been initialized
  */
-void smp_data_init(void)
+static void smp_data_init(void)
 {
     smp_info.num_cpus = apic_get_numcpus();
 }
@@ -61,10 +60,3 @@ int smp_init(void)
     return apic_success;
 }
 
-/*
- * smp_get_numcpus: returns the number of cpus existing in the machine
- */
-int smp_get_numcpus(void)
-{
-    return smp_info.num_cpus;
-}

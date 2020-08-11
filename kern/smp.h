@@ -22,3 +22,6 @@ struct smp_data {
     int num_cpus;
 };
 
+extern struct smp_data smp_info;
+
+int smp_get_numcpus(void);
