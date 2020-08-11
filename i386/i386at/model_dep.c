@@ -176,9 +176,9 @@ void machine_init(void)
 	int smp_success = smp_init();
 
 	if(smp_success != 0) {
-		printf("Error in processors detection");
+		printf("Error in processors detection\n");
 	}
-#endif /* NCPUS > 1 */
+#endif /* MAX_CPUS > 1 */
 
 	/*
 	 * Find the devices
