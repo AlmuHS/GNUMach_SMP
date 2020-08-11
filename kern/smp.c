@@ -20,6 +20,7 @@
 
 #include <kern/smp.h>
 #include <machine/smp.h>
+#include <stdint.h>
 
 struct smp_data smp_info;
 
