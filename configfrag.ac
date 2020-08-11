@@ -49,7 +49,7 @@ mach_ncpus=1
 
 AC_DEFINE_UNQUOTED([NCPUS], [$mach_ncpus], [number of CPUs])
 [if [ $mach_ncpus -gt 1 ]; then]
-  AC_DEFINE([MULTIPROCESSOR], [1], [set things up for a multiprocessor])
+  AC_DEFINE([MULTIPROCESSOR], [1], [set things up for a multiprocessor])  
 [fi]
 
 # Restartable Atomic Sequences to get a really fast test-n-set.  Can't be
