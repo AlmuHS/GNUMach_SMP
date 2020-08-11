@@ -45,7 +45,7 @@ apic_data_init(void)
     apic_data.nirqoverride = 0;
 
     /* Reserve the vector memory for the maximum number of processors. */
-    apic_data.cpu_lapic_list = (uint16_t*) kalloc(MAX_CPUS*sizeof(uint16_t));
+    apic_data.cpu_lapic_list = (uint16_t*) kalloc(NCPUS*sizeof(uint16_t));
 
     /* If the memory reserve fails, return -1 to advice about the error. */
     if (apic_data.cpu_lapic_list == NULL)
@@ -104,7 +104,7 @@ apic_add_irq_override(IrqOverrideData irq_over)
 uint16_t
 apic_get_cpu_apic_id(int kernel_id)
 {
-    if (kernel_id >= MAX_CPUS)
+    if (kernel_id >= NCPUS)
         return -1;
 
     return apic_data.cpu_lapic_list[kernel_id];
@@ -186,7 +186,7 @@ int apic_refit_cpulist(void)
         new_list[i] = old_list[i];
 
     apic_data.cpu_lapic_list = new_list;
-    kfree((vm_offset_t) old_list, MAX_CPUS*sizeof(uint16_t));
+    kfree((vm_offset_t) old_list, NCPUS*sizeof(uint16_t));
 
     return 0;
 }

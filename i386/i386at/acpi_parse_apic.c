@@ -377,6 +377,7 @@ acpi_apic_parse_table(struct acpi_apic *apic)
     int ret_value = 0;
     struct acpi_apic_dhdr *apic_entry = NULL;
     uint32_t end = 0;
+    uint8_t numcpus = 1;
 
     /* Get the address of first APIC entry */
     apic_entry = (struct acpi_apic_dhdr*) apic->entry;
@@ -384,8 +385,11 @@ acpi_apic_parse_table(struct acpi_apic *apic)
     /* Get the end address of APIC table */
     end = (uint32_t) apic + apic->header.length;
 
+    /* Initialize number of cpus */
+    numcpus = apic_get_numcpus();
+
     /* Search in APIC entry. */
-    while ((uint32_t)apic_entry < end) {
+    while ((uint32_t)apic_entry < end && numcpus < NCPUS) {
         struct acpi_apic_lapic *lapic_entry;
         struct acpi_apic_ioapic *ioapic_entry;
         struct acpi_apic_irq_override *irq_override_entry;
@@ -424,6 +428,9 @@ acpi_apic_parse_table(struct acpi_apic *apic)
         /* Get next APIC entry. */
         apic_entry = (struct acpi_apic_dhdr*)((uint32_t) apic_entry
                                               + apic_entry->length);
+
+        /* Update number of cpus. */
+        numcpus = apic_get_numcpus();
     }
 
     return ACPI_SUCCESS;

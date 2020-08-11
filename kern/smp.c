@@ -28,7 +28,12 @@ struct smp_data smp_info;
  */
 int smp_get_numcpus(void)
 {
-    return smp_info.num_cpus;
+   uint8_t numcpus = smp_info.num_cpus;
+
+   if (numcpus == 0)
+      return 1;
+   else
+      return numcpus;
 }
 
 
