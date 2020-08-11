@@ -35,14 +35,6 @@ static void smp_data_init(void)
     smp_info.num_cpus = apic_get_numcpus();
 }
 
-/*
- * smp_get_current_cpu: return the hardware identifier (APIC ID in x86)
- * of current CPU
- */
-int smp_get_current_cpu(void)
-{
-    return apic_get_current_cpu();
-}
 
 /*
  * smp_init: initialize the SMP support, starting the cpus searching
