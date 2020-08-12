@@ -26,6 +26,10 @@ struct smp_data {
     uint8_t num_cpus;
 } smp_info;
 
+/*
+ * smp_set_numcpus: initialize the number of cpus in smp_info structure
+ */
+
 void smp_set_numcpus(uint8_t numcpus)
 {
    smp_info.num_cpus = numcpus;
@@ -43,6 +47,3 @@ uint8_t smp_get_numcpus(void)
    else
       return numcpus;
 }
-
-
-
