@@ -45,7 +45,7 @@ int smp_init(void)
     int apic_success;
 
     apic_success = acpi_apic_init();
-    if (apic_success) {
+    if (apic_success == ACPI_SUCCESS) {
         smp_data_init();
     }
 
