@@ -22,7 +22,14 @@
 #include <machine/smp.h>
 #include <stdint.h>
 
-struct smp_data smp_info;
+struct smp_data {
+    uint8_t num_cpus;
+} smp_info;
+
+void smp_set_numcpus(uint8_t numcpus)
+{
+   smp_info.num_cpus = numcpus;
+}
 
 /*
  * smp_get_numcpus: returns the number of cpus existing in the machine

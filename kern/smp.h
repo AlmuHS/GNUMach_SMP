@@ -20,10 +20,5 @@
 
 #include <stdint.h>
 
-struct smp_data {
-    int num_cpus;
-};
-
-extern struct smp_data smp_info;
-
+void smp_set_numcpus(uint8_t numcpus)
 uint8_t smp_get_numcpus(void);

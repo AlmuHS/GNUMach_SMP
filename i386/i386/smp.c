@@ -32,9 +32,9 @@
  */
 static void smp_data_init(void)
 {
-    smp_info.num_cpus = apic_get_numcpus();
+    uint8_t numcpus = apic_get_numcpus();
+    smp_set_numcpus(numcpus);
 }
-
 
 /*
  * smp_init: initialize the SMP support, starting the cpus searching
