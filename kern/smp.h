@@ -20,5 +20,5 @@
 
 #include <stdint.h>
 
-void smp_set_numcpus(uint8_t numcpus)
+void smp_set_numcpus(uint8_t numcpus);
 uint8_t smp_get_numcpus(void);
