@@ -636,6 +636,45 @@ retry:
 }
 
 /*
+ * kmem_map_aligned_table: map a table or structure in a virtual memory page
+ * Align the table initial address with the page initial address.
+ *
+ * Parameters:
+ * phys_address: physical address, the start address of the table.
+ * size: size of the table.
+ * mode: access mode. VM_PROT_READ for read, VM_PROT_WRITE for write.
+ *
+ * Returns a reference to the virtual address if success, NULL if failure.
+ */
+
+void*
+kmem_map_aligned_table(
+	phys_addr_t	phys_address,
+	vm_size_t	size,
+	int		mode)
+{
+	vm_offset_t virt_addr;
+	kern_return_t ret;
+	phys_addr_t into_page = phys_address % PAGE_SIZE;
+	phys_addr_t nearest_page = phys_address - into_page;
+
+	size += into_page;
+
+	ret = kmem_alloc_wired(kernel_map, &virt_addr,
+				round_page(size));
+
+	if (ret != KERN_SUCCESS)
+		return NULL;
+
+	(void) pmap_map_bd(virt_addr, nearest_page,
+				nearest_page + round_page(size), mode);
+
+	/* XXX remember mapping somewhere so we can free it? */
+
+	return (void *) (virt_addr + into_page);
+}
+
+/*
  *	kmem_alloc_pageable:
  *
  *	Allocate pageable memory in the kernel's address map.
