@@ -121,13 +121,6 @@ EXTRA_DIST += \
 	ipc/mach_port.srv \
 	ipc/notify.defs
 
-
-#
-# SMP implementation (APIC, ACPI, etc)
-#	
-libkernel_a_SOURCES += \
-	kern/smp.h \
-	kern/smp.c
 	
 #
 # `kernel' implementation (tasks, threads, trivia, etc.).
@@ -202,6 +195,8 @@ libkernel_a_SOURCES += \
 	kern/refcount.h \
 	kern/slab.c \
 	kern/slab.h \
+	kern/smp.h \
+	kern/smp.c \
 	kern/sched.h \
 	kern/sched_prim.c \
 	kern/sched_prim.h \
