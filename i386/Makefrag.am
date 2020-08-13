@@ -132,6 +132,8 @@ libkernel_a_SOURCES += \
 	i386/i386/seg.c \
 	i386/i386/seg.h \
 	i386/i386/setjmp.h \
+	i386/i386/smp.h \
+	i386/i386/smp.c \
 	i386/i386/spl.S \
 	i386/i386/spl.h \
 	i386/i386/strings.c \
