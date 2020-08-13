@@ -42,7 +42,6 @@
 #include <mach/machine/multiboot.h>
 #include <mach/xen.h>
 
-#include <i386/vm_param.h>
 #include <kern/assert.h>
 #include <kern/cpu_number.h>
 #include <kern/debug.h>
@@ -50,6 +49,7 @@
 #include <kern/macros.h>
 #include <kern/printf.h>
 #include <kern/startup.h>
+#include <kern/smp.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <vm/vm_page.h>
@@ -62,6 +62,7 @@
 #include <i386/pit.h>
 #include <i386/pmap.h>
 #include <i386/proc_reg.h>
+#include <i386/vm_param.h>
 #include <i386/locore.h>
 #include <i386/model_dep.h>
 #include <i386at/autoconf.h>
@@ -72,6 +73,7 @@
 #include <i386at/kd.h>
 #include <i386at/rtc.h>
 #include <i386at/model_dep.h>
+
 #ifdef	MACH_XEN
 #include <xen/console.h>
 #include <xen/store.h>
@@ -169,6 +171,10 @@ void machine_init(void)
 	 */
 	linux_init();
 #endif
+
+#if NCPUS > 1
+	smp_init();
+#endif /* NCPUS > 1 */
 
 	/*
 	 * Find the devices
