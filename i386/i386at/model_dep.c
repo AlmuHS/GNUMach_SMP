@@ -173,11 +173,7 @@ void machine_init(void)
 #endif
 
 #if NCPUS > 1
-	int smp_success = smp_init();
-
-	if(smp_success != 0) {
-		printf("Error in processors detection\n");
-	}
+	smp_init();
 #endif /* NCPUS > 1 */
 
 	/*
