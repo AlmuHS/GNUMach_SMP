@@ -55,7 +55,8 @@ extern kern_return_t	kmem_alloc_pageable(vm_map_t, vm_offset_t *,
 extern kern_return_t	kmem_valloc(vm_map_t, vm_offset_t *, vm_size_t);
 extern kern_return_t	kmem_alloc_wired(vm_map_t, vm_offset_t *, vm_size_t);
 extern kern_return_t	kmem_alloc_aligned(vm_map_t, vm_offset_t *, vm_size_t);
-extern void*            kmem_map_aligned_table(phys_addr_t, vm_size_t, int);
+
+extern void*		kmem_map_aligned_table(phys_addr_t, vm_size_t, int);
 
 extern void		kmem_free(vm_map_t, vm_offset_t, vm_size_t);
 

@@ -649,14 +649,14 @@ retry:
 
 void*
 kmem_map_aligned_table(
-	phys_addr_t		phys_address,
+	phys_addr_t	phys_address,
 	vm_size_t	size,
 	int		mode)
 {
 	vm_offset_t virt_addr;
 	kern_return_t ret;
 	phys_addr_t into_page = phys_address % PAGE_SIZE;
-	phys_addr_t nearest_page = (uintptr_t)trunc_page(phys_address);
+	phys_addr_t nearest_page = phys_address - into_page;
 
 	size += into_page;
 
