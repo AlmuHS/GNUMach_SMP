@@ -240,6 +240,7 @@ dev_pager_t dev_pager_hash_lookup(const ipc_port_t name_port)
 	return (DEV_PAGER_NULL);
 }
 
+/* FIXME: This is not recording offset! */
 kern_return_t	device_pager_setup(
 	const mach_device_t	device,
 	int			prot,
