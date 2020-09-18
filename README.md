@@ -4,23 +4,23 @@
   The objective of this project is to fix and complete SMP support (multiprocessing) in GNU/Hurd. This support must be implemented in GNU/Hurd's microkernel (aka GNU Mach)
 
 ### Original status:
- GNU/Hurd includes a tiny SMP support, as this [FAQ](https://www.gnu.org/software/hurd/faq/smp.html) explain.  
- The GNU Mach source code includes many special cases for multiprocessor, controlled by `#if NCPUS > 1` macro. 
+ GNU/Hurd includes some SMP support, as this [FAQ](https://www.gnu.org/software/hurd/faq/smp.html) explains.  
+ The GNU Mach source code includes many special cases for multiprocessing, controlled by `#if NCPUS > 1` macro. 
  
  But this support is very limited:
 
-   - GNU Mach don't detect CPUs in runtime: The number of CPUs must be hardcoded in compilation time.  
-    The number of cpus is set in `mach_ncpus` configuration variable, set to 1 by default, in `configfrag.ac` file.
-    This variable will generate `NCPUS` macro, used by gnumach to control the special cases for multiprocessor.  
+   - GNU Mach cannot detect CPUs at runtime: The number of CPUs must be hardcoded at compilation time.  
+    The number of cpus is set in `mach_ncpus` configuration variable, and set to 1 by default, in the `configfrag.ac` file.
+    This variable will generate the `NCPUS` macro, used by gnumach to control the special cases for multiprocessing.  
     If `NCPUS > 1`, gnumach will enable multiprocessor support, with the number of cpus set by the user in `mach_ncpus` variable.
-    In other case, this support will be unabled. 
+    In other cases, this support will be disabled. 
 
-   - The special cases to multicore in gnumach source code have never been tested, so these can contain many errors.
-  Furthermore, these special case are incomplete: many functions, as `cpu_number()` or `intel_startCPU()` aren't written. 
+   - The special cases for multicore processing in gnumach source code have never been tested, so these can contain many errors.
+  Furthermore, these special case are incomplete: many functions, such as `cpu_number()` or `intel_startCPU()` are not yet written. 
 
-   -  GNU Mach doesn't initialize the processor with the properly options to multiprocessing. By this reason, the current support is only multithread, not real multiprocessor
+   -  GNU Mach doesn't initialize the processor with the proper options for multiprocessing. For this reason, the current support is only for multithreading, not real multiprocessing.
 
-  Added to this, there are other problem: Many drivers included in Hurd aren't thread-safe, and these could crash in a SMP environment. So, It's necessary to isolate this drivers, to avoid concurrency problems
+  In addition to this, there are other problems: many drivers included in the Hurd aren't thread-safe, and these could crash in an SMP environment. So, it's necessary to isolate these drivers, to avoid concurrency problems.
 
 
 ### Solution
@@ -37,7 +37,7 @@ is the hardware driver for SMP: enumeration and initialization." - Samuel Thibau
 
 
    The current necessary functions are `cpu_number()` (in kern/cpu_number.h) and `intel_startCPU()`.
-   Another not-implemented function, but don't critical, is `cpu_control()` [*Reference*](https://www.gnu.org/software/hurd/gnumach-doc/Processor-Control.html#Processor-Control)
+   Another not-implemented function, but not as critical, is `cpu_control()` [*Reference*](https://www.gnu.org/software/hurd/gnumach-doc/Processor-Control.html#Processor-Control)
    
    Other interesting files are `pmap.c` and `sched_prim.c`
  
@@ -60,11 +60,11 @@ To test the software you will need:
 	+ You can follow this guide to learn how to install Debian GNU/Hurd  
 	     [*Install Debian GNU/Hurd in real hardware*](https://gist.github.com/AlmuHS/f0c036631881756e817504d28217a910)
 
-	+ If you prefer to use a virtual machine as Qemu, you can use this script: [*qemu_hurd script*](https://gist.github.com/AlmuHS/73bae6dadf19b0482a34eaab567bfdfa). 
+	+ If you prefer to use a virtual machine such as Qemu, you can use this script: [*qemu_hurd script*](https://gist.github.com/AlmuHS/73bae6dadf19b0482a34eaab567bfdfa). 
 		-  Also, you can install It in VirtualBox!! ;)
 		
 
-- **Compile the sources**: From Debian GNU/Hurd, follow this steps:
+- **Compile the sources**: In a Debian GNU/Hurd environment, follow these steps:
 
 	1. Clone the repository:  
 	
@@ -106,13 +106,13 @@ To test the software you will need:
 
 More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/building.html>
 
-## Task done
+## Completed tasks
 
 - Recovered and updated old APIC headers from Mach 4
 - Modified `configfrag.ac`
 	+ Now, if `mach_ncpus > 1`, `NCPUS` will be set to 255
 - Integrated cpu detection and enumeration from acpi tables
-- Solved memory mapping for `*lapic`. Now It's possible to read the Local APIC of the current processsor.
+- Solved memory mapping for `*lapic`. Now It's possible to read the Local APIC of the current processor.
 - Implemented `cpu_number()` function
 - Solved ioapic enumeration: changed linked list to array
 - Initialized *master_cpu* variable to 0
@@ -133,15 +133,15 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - In the [Min_SMP](https://github.com/AlmuHS/Min_SMP/) test environment, the cpus are detected and started correctly
 	+ I need to implement APIC configuration
 - In *gnumach*, the number of cpus and its lapic structures are detected and enumerated correctly
-- ioapic enumeration feels to work correctly
+- ioapic enumeration fails to work correctly
 	+ Mach use PIC 8259 controller, so ioapic is not necessary. Migrate Mach to ioapic is a future TODO
 - *gnumach* enable all cpus during the boot successfully
 - The cpus are added successfully to the kernel
 - *gnumach* boots with 2 cpu
-	+ It fails with more than 2 cpu, and with a only cpu. TODO: fix It
-- Some Hurd servers fails
+	+ It fails with more than 2 cpus, and with only one cpu. TODO: fix It
+- Some Hurd servers fail
 	+ DHCP client crash during the boot
-	+ Login screen don't receive keyboard touch
+	+ Login screen does not receive keyboard input
 
 ## Implementation 
 
@@ -160,7 +160,7 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - 	Function [`start_other_cpus()`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/i386/i386/mp_desc.c#L351) was modified, to change `NCPUS` macro to `ncpu` variable
 - 	The memory mapping is implemented in [`vm_map_physical.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/vm/vm_map_physical.c) and [`vm_map_physical.h`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/vm/vm_map_physical.h)
 	+ 	The lapic mapping is in [`extra_setup()`](https://github.com/AlmuHS/GNUMach_SMP/blob/0d31cc80e8f1e4f041568508b6b165b0174b4334/i386/i386at/acpi_rsdp.c#L297)
-	+ 	This call require that pagging is configured, so the call is added in [`kern/startup.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/0d31cc80e8f1e4f041568508b6b165b0174b4334/kern/startup.c#L133), after pagging configuration
+	+ 	This call requires that pagging is configured, so the call is added in [`kern/startup.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/0d31cc80e8f1e4f041568508b6b165b0174b4334/kern/startup.c#L133), after pagging configuration
 - 	The cpus enabling is implemented in [`mp_desc.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/mp_desc.c)
 	+ 	The routine to switch the cpus to protected mode is [`cpuboot.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/cpuboot.S	)
 - 	[`cpu_number()`](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/kern/cpu_number.c#L9) has been refactorized, replacing the while loop with the array [`apic2kernel[]`](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/i386/i386at/acpi_rsdp.c#L45), indexed by apic_id
@@ -187,13 +187,13 @@ In this step, we find the Local APIC and IOAPIC registers in the ACPI tables, an
 
 The implementation of this step is based in [Min_SMP acpi.c](https://github.com/AlmuHS/Min_SMP/blob/master/acpi.c) implementation. The main function is `acpi_setup()`, who call to other functions to go across ACPI tables. 
 
-To adapt the code to *gnumach*, It was necessary some changes:
+To adapt the code to *gnumach*, it was necessary to make some changes:
 
 - **Copy and rename files**
 
 	The [`acpi.c`](https://github.com/AlmuHS/Min_SMP/blob/master/acpi.c) and [`acpi.h`](https://github.com/AlmuHS/Min_SMP/blob/master/acpi.h) files were renamed to [`acpi_rsdp.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.c) and [`acpi_rsdp.h`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.h)  
 	  
-	These files were copied in `i386/i386at/..` directory
+	These files were copied in `i386/i386at/..` directory.
 
 - **Change headers and move variables**
   
@@ -208,38 +208,38 @@ To adapt the code to *gnumach*, It was necessary some changes:
    
 - **Replace physical address with logical address**
 
-	The most important modification is to replace the physical address with the equivalent logical address. To ease this task, this function is called before configure pagging.
+	The most important modification is to replace the physical address with the equivalent logical address. To ease this task, this function is called before  pagging is configured.
 	
 	The memory address below 0xc0000000 are mapped directly by the kernel, and their logical address can be got using the macro [`phystokv(address)`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/vm_param.h). This way is used to get the logical address of ACPI tables pointers. 
 	
-	But the lapic pointer is sitted in a high memory position, up to 0xf0000000, so It must be mapped manually. To map this address, we need to use pagging, which is not configured yet. To solve this, we split the process in two steps:
+	But the lapic pointer is placed in a high memory position, up to 0xf0000000, so It must be mapped manually. To map this address, we need to use pagging, which is not configured yet. To solve this, we split the process into two steps:
 	
 	- In APIC enumeration step, we store the lapic address in a temporary variable: `lapic_addr`
-	- After pagging is configured, we [call](https://github.com/AlmuHS/GNUMach_SMP/blob/434cf68e9daacdc3bb2b6e1d37c895c5045f8eb5/kern/startup.c#L133) to function [`extra_setup()`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.c) which reserve the memory address to the lapic pointer and initialize the real pointer, `*lapic`.
+	- After pagging is configured, we [call](https://github.com/AlmuHS/GNUMach_SMP/blob/434cf68e9daacdc3bb2b6e1d37c895c5045f8eb5/kern/startup.c#L133) to function [`extra_setup()`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.c) which reserves the memory address to the lapic pointer and initialize the real pointer, `*lapic`.
 
 ### Implementation of `cpu_number()` function
 
-Once get the lapic pointer, we could use this pointer to access to the Local APIC of the current processor. Using this, we have implemented `cpu_number()` function, which search in `machine_slot[]` array the apic_id of the current processor, and return the index as kernel ID. 
+Once get the lapic pointer, we could use this pointer to access to the Local APIC of the current processor. Using this, we have implemented `cpu_number()` function, which searches in `machine_slot[]` array for the apic_id of the current processor, and returns the index as kernel ID. 
 
-A newer implementation get the Kernel ID from the `apic2kernel[]` array, using the apic_id as index.
+A newer implementation gets the Kernel ID from the `apic2kernel[]` array, using the apic_id as index.
 
-This function will be used later to get the cpu currently working.
+This function will be used later to get the cpu to work.
 
 ### CPU enabling using StartUp IPI
 
-In this step, we enable the cpus using the StartUp IPI. To do this, we need to write the ICR register in the Local APIC of the processor who raise the IPI (in this case, the BSP raise the IPI to each processor).
+In this step, we enable the cpus using the StartUp IPI. To do this, we need to write the ICR register in the Local APIC of the processor who raised the IPI (in this case, the BSP raises the IPI to each processor).
 
 To implement this step, we have been inspired in Min_SMP [`mp.c`](https://github.com/AlmuHS/Min_SMP/blob/master/mp.c) and [`cpu.c`](https://github.com/AlmuHS/Min_SMP/blob/master/cpu.c) files, and based in the existent work in [`i386/i386/mp_desc.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/mp_desc.c)
 
-We have split this task in some steps:
+We have split this task into several steps:
 
 - **Modify `start_other_cpus()`**
 
   The `start_other_cpus()` function calls to `cpu_start(cpu)` for each cpu, to enable It.
   We have modified this function to change the `NCPUS` macro to `ncpu` variable, reserve
-  memory to the cpu stack, and initialize the `machine_slot[]` to indicate cpu is unabled.  
+  memory to the cpu stack, and then initialize the `machine_slot[]` to indicate cpu is enabled.  
     
-  Furthermore, we have added some printf to show the number of cpus and the kernel ID of current cpu. 
+  Furthermore, we have added some printfs to show the number of cpus and the kernel ID of current cpu. 
   
   - **Reserve memory for cpu stack**
 	  
@@ -250,41 +250,41 @@ We have split this task in some steps:
 	- `cpu_stack[]` store the pointer to the stack
 	- `_cpu_stack_top[]` store the address of stack top
 	
-	All stack use a single memory reserve. In this way, we only reserve a single memory block, which will be splited to each cpu stack. To reserve the memory, we call to `init_alloc_aligned()`, which reserve memory from the BIOS area. This function return the initial address of the memory block, which is stored in `stack_start`.
+	All stack use a single memory reserve. In this way, we only reserve a single memory block, which will be split between each cpu stack. To reserve the memory, we call to `init_alloc_aligned()`, which reserves memory from the BIOS area. This function returns the initial address of the memory block, which is stored in `stack_start`.
 	
-	All stack have the same size, which is stored in `STACK_SIZE` macro.
+	All stacks have the same size, which is stored in the `STACK_SIZE` macro.
 	
-	Once reserved the memory, we assing the slides to each cpu using `stack_start` as base address. In each step, we assign `stack_start` to `cpu_stack[cpu]`, `stack_start+STACK_SIZE` to `_cpu_stack_top[cpu]`, and increase `stack_size` with `STACK_SIZE`
+	Once the memory is reserved, we assign the slides to each cpu using `stack_start` as the base address. In each step, we assign `stack_start` to `cpu_stack[cpu]`, `stack_start+STACK_SIZE` to `_cpu_stack_top[cpu]`, and increase `stack_size` with `STACK_SIZE`
 
 	To ease the stack loading to each cpu, we have added a unique stack pointer, called `stack_ptr`. Before enable each cpu, this pointer is updated to the `cpu_stack` of the current cpu. This pointer will be used in the `cpuboot.S` assembly routine to load the stack in the current cpu.
 	
 	  
 - **Complete `intel_startCPU()`**
   
-  The `intel_startCPU()` function has the purpose of enable the cpu indicated by parameter, calling to `startup_cpu()` to raise the Startup IPI, and check if the cpu has been enabled correctly.
+  The `intel_startCPU()` function has the purpose of enabling the cpu indicated by parameter, calling to `startup_cpu()` to raise the Startup IPI, and check if the cpu has been enabled correctly.
   
-  To write this function, we have based in [XNU's `intel_startCPU()` function](https://github.com/nneonneo/osx-10.9-opensource/blob/f5a0b24e4d98574462c8f5e5dfcf0d37ef7e0764/xnu-2422.1.72/osfmk/i386/mp.c#L423), replacing its calls to the *gnumach* equivalent, and removing garbage code blocks.
+  This function is based on [XNU's `intel_startCPU()` function](https://github.com/nneonneo/osx-10.9-opensource/blob/f5a0b24e4d98574462c8f5e5dfcf0d37ef7e0764/xnu-2422.1.72/osfmk/i386/mp.c#L423), replacing its calls to the *gnumach* equivalent, and removing garbage code blocks.
   
 - **Raise Startup IPI and initialize cpu**
 
-  *gnumach* doesn't include any function to raise the Startup IPI, so we have implemented this functions based in Min_SMP [`cpu.c`](https://github.com/AlmuHS/Min_SMP/blob/master/cpu.c) and [`mp.c`](https://github.com/AlmuHS/Min_SMP/blob/master/mp.c )functions: 
-  - `startup_cpu()`: This function is called by `intel_startCPU()` to start the Startup IPI sequence in the cpu. 
+  *gnumach* doesn't include any function to raise the Startup IPI, so we have implemented these functionalities in Min_SMP [`cpu.c`](https://github.com/AlmuHS/Min_SMP/blob/master/cpu.c) and [`mp.c`](https://github.com/AlmuHS/Min_SMP/blob/master/mp.c ): 
+  - `startup_cpu()`: This function is called by `intel_startCPU()` to begin the Startup IPI sequence in the cpu. 
   - `send_ipi()`: function to write the IPI fields in the ICR register of the current cpu
   - `cpu_ap_main()`: The first function executed by the new cpu after startup. Calls to `cpu_setup()` and check errors.
   - `cpu_setup()`: Initialize the `machine_slot` fields of the cpu
   
-  This functions has been added to [`i386/i386/mp_desc.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/mp_desc.c)
+  These functions has been added to [`i386/i386/mp_desc.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/mp_desc.c)
   
 - **Implement assembly routine to switch the cpu to protected mode**
 
-	After raise Startup IPI to the cpu, the cpu starts in real mode, so we need to add a routine to switch the cpu to protected mode. Because the real mode is 16 bit, we can't use C instructions (32 bit), so this routine must be written in assembly.
+	After Startup IPI is raised the cpu starts in real mode, so we need to add a routine to switch the cpu to protected mode. Because real mode is 16 bit, we can't use C instructions (32 bit), so this routine must be written in assembly.
 	
-	This routine load the GDT and IDT registers in the cpu, and call to `cpu_ap_main()` to initialize the `machine_slot` of the cpu.
+	This routine loads the GDT and IDT registers in the cpu, and calls to `cpu_ap_main()` to initialize the `machine_slot` of the cpu.
 	
-	To write the routine, we has taken the Min_SMP [`boot.S`](https://github.com/AlmuHS/Min_SMP/blob/master/boot.S) as base, with a few modifications:
+	To write the routine, we have taken Min_SMP [`boot.S`](https://github.com/AlmuHS/Min_SMP/blob/master/boot.S) as a base, with a few modifications:
 	
-	- The GDT descriptor are replaced with *gnumach* GDT descriptor (`boot_gdt:` and `boot_gdt_descr:`), taken from [`boothdr.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/boothdr.S).
-	We also copied the register initialization after GDT loading
+	- The GDT descriptors are replaced with *gnumach* GDT descriptors (`boot_gdt:` and `boot_gdt_descr:`), taken from [`boothdr.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/boothdr.S).
+	We also copied the register initialization after GDT loading.
 	
 	- The `_start` routine is unnecessary and has been removed 
 	- The physical address has been replaced with their equivalent logical address, using the same shift used in `boothdr.S`
@@ -294,38 +294,38 @@ We have split this task in some steps:
 
 ### Add interrupt stack to cpus
   
-  To allow cpus execute interrupt handlers, It's needed a interrupt stack.
+  To allow cpus to execute interrupt handlers an interrupt stack is needed.
   Each cpu has its own interrupt stack. 
   
   To get this, we've added a call to `interrupt_stack_alloc()` to initialize the cpus interrupt stack array before call to `mp_desc_init()`.
  
-  This step don't shows any new effect yet.
+  This step has shown any noticeable changes yet.
 
 ### Enable paging in the cpus (WIP)
 
-Before add the cpus to the kernel, we need to configure paging in them, to allow fully access to the memory.
+Before we can add the cpus to the kernel we need to configure paging  to fully allow access to memory.
 
-To enable paging, we need to initialize CR0, CR3 and CR4 registers. in a similar way to [this](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/model_dep.c#L477-L500).
+To enable paging, we need to initialize CR0, CR3 and CR4 registers. In a similar way to [this](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/model_dep.c#L477-L500).
 
-This code has been copied in `paging_setup()` function, in `mp_desc.c`. The processor, at starts, isn't capable to read the content from a pointer, so we copied the memory address of `kernel_page_dir` and `pdpbase` in two temporary integer variables: `kernel_page_dir_addr`, and `pdpbase_addr`.
+This code has been copied in `paging_setup()` function, in `mp_desc.c`. The processor, at startup, isn't capable of reading the content from a pointer, so we copied the memory address of `kernel_page_dir` and `pdpbase` into two temporary integer variables: `kernel_page_dir_addr`, and `pdpbase_addr`.
 
 The paging initialization also requires a temporary mapping in some low memory address.
-We keep the temporary mapping done in BSP processor until all AP will be enabled.
+We keep the temporary mapping done in BSP processor until all APs have be enabled.
 
 ## Add AP processors to the kernel
 
-Once paging is enabled, each cpu will can to read its own Local APIC, using the `*lapic` pointer. It also allows to execute `cpu_number()` function, which is necessary to execute the [`slave_main()`](https://github.com/AlmuHS/GNUMach_SMP/blob/eb8b0bbf6299a0c19fca12ab71b810447f0d47f5/kern/startup.c#L282) function to add the cpu to the kernel.
+Once paging is enabled, each cpu will can to read its own Local APIC, using the `*lapic` pointer. It also allows for the execution of `cpu_number()`, which is necessary to execute the [`slave_main()`](https://github.com/AlmuHS/GNUMach_SMP/blob/eb8b0bbf6299a0c19fca12ab71b810447f0d47f5/kern/startup.c#L282) function to add the cpu to the kernel.
 
-Before call to `slave_main()`, we need to load the final GDT and IDT, to get the same value than BSP processor, and be able to load correctly the LDT entries.
+Before call to `slave_main()`, we need to load the final GDT and IDT, to get the same value than BSP processor, and be able to correctly load the LDT entries.
 
-To do this, we call to `gdt_init()` and `idt_init()` in `cpu_setup()`, just before call to `slave_main()`.
+To do this, we call to `gdt_init()` and `idt_init()` in `cpu_setup()`, just before we call `slave_main()`.
 
-Once final GDT and IDT are loaded, `slave_main()` finish successfully, and the AP processors are added to the kernel.
+Once final GDT and IDT are loaded, and `slave_main()` finishes successfully, the AP processors are added to the kernel.
 
 
 ## Gratitude
 
-- [Bosco García](https://github.com/jbgg): Development guidance, original [MinSMP](https://github.com/jbgg/MinSMP) developer, explainations and documentation about MultiProcessor architecture, helpful with *gnumach* development. 
+- [Bosco García](https://github.com/jbgg): Development guidance, original [MinSMP](https://github.com/jbgg/MinSMP) developer, explanations and documentation about MultiProcessor architecture, helpful with *gnumach* development. 
 
 - Guillermo Bernaldo de Quiros Maraver: Helpful in original development, first full compilation, and find original SMP problem (SMP without APIC support)
 
