@@ -37,9 +37,9 @@ is the hardware driver for SMP: enumeration and initialization." - Samuel Thibau
 
 
    The current necessary functions are `cpu_number()` (in kern/cpu_number.h) and `intel_startCPU()`.
-   Another not-implemented function, but not as critical, is `cpu_control()` [*Reference*](https://www.gnu.org/software/hurd/gnumach-doc/Processor-Control.html#Processor-Control)
+   Another not-implemented function, but not as critical, is `cpu_control()` [*Reference*](https://www.gnu.org/software/hurd/gnumach-doc/Processor-Control.html#Processor-Control).
    
-   Other interesting files are `pmap.c` and `sched_prim.c`
+   Other interesting files are `pmap.c` and `sched_prim.c`.
  
    Added to this, we have to build an isolated environment to execute the non-thread-safe drivers.
 
@@ -48,7 +48,7 @@ is the hardware driver for SMP: enumeration and initialization." - Samuel Thibau
   
 ## Project draft  
   
-  You can read the full project draft in [*Hurd SMP Project draft*](https://gitlab.com/snippets/1756024)
+  You can read the full project draft in [*Hurd SMP Project draft*](https://gitlab.com/snippets/1756024).
   
       
 ## How to test
@@ -61,7 +61,7 @@ To test the software you will need:
 	     [*Install Debian GNU/Hurd in real hardware*](https://gist.github.com/AlmuHS/f0c036631881756e817504d28217a910)
 
 	+ If you prefer to use a virtual machine such as Qemu, you can use this script: [*qemu_hurd script*](https://gist.github.com/AlmuHS/73bae6dadf19b0482a34eaab567bfdfa). 
-		-  Also, you can install It in VirtualBox!! ;)
+		-  Also, you can install it in VirtualBox!! ;)
 		
 
 - **Compile the sources**: In a Debian GNU/Hurd environment, follow these steps:
@@ -102,9 +102,9 @@ To test the software you will need:
 	   
 	        reboot
 	 
-	 	After reboot, you must to select gnumach-smp.gz in GRUB menu
+	 	After reboot, you must to select gnumach-smp.gz in GRUB menu.
 
-More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/building.html>
+More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/building.html>.
 
 ## Completed tasks
 
@@ -148,26 +148,26 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 ### Summary
 
 - The cpu detection and enumeration are implemented in [`acpi_rdsp.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.c) and [`acpi_rdsp.h`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.h).  
-	+ The main function [`acpi_setup()`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/i386/i386at/acpi_rsdp.c#L47) is called from [`model_dep.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/i386/i386at/model_dep.c#L411)
+	+ The main function [`acpi_setup()`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/i386/i386at/acpi_rsdp.c#L47) is called from [`model_dep.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/i386/i386at/model_dep.c#L411).
 	+ This function generates some structures:
 		* 	[`*lapic`](https://github.com/AlmuHS/GNUMach_SMP/blob/43f56f0ad67f3c27a15778f311579c91f0b0775c/i386/i386at/acpi_rsdp.c#L27): pointer to the local apic of the current processor. Store the registers of the local apic.  
-		* [	`ncpu`](https://github.com/AlmuHS/GNUMach_SMP/blob/43f56f0ad67f3c27a15778f311579c91f0b0775c/i386/i386at/acpi_rsdp.c#L29): variable which store the number of cpus 
-	+ 	The `apic_id` is stored in [`machine_slot`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/include/mach/machine.h#L75)
+		* [	`ncpu`](https://github.com/AlmuHS/GNUMach_SMP/blob/43f56f0ad67f3c27a15778f311579c91f0b0775c/i386/i386at/acpi_rsdp.c#L29): variable which store the number of cpus.
+	+ 	The `apic_id` is stored in [`machine_slot`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/include/mach/machine.h#L75).
 		
 - 	The APIC structures, recovered from old *gnumach* code, are stored in [`apic.h`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/imps/apic.h)
 - 	[`cpu_number()`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/kern/cpu_number.h#L46) C implementation was added to `kern/cpu_number()`.
-- 	The [`CPU_NUMBER()`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/i386/i386/cpu_number.h#L48) assembly implementation was added to `i386/i386/cpu_number.h`
-- 	Function [`start_other_cpus()`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/i386/i386/mp_desc.c#L351) was modified, to change `NCPUS` macro to `ncpu` variable
-- 	The memory mapping is implemented in [`vm_map_physical.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/vm/vm_map_physical.c) and [`vm_map_physical.h`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/vm/vm_map_physical.h)
-	+ 	The lapic mapping is in [`extra_setup()`](https://github.com/AlmuHS/GNUMach_SMP/blob/0d31cc80e8f1e4f041568508b6b165b0174b4334/i386/i386at/acpi_rsdp.c#L297)
-	+ 	This call requires that paging is configured, so the call is added in [`kern/startup.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/0d31cc80e8f1e4f041568508b6b165b0174b4334/kern/startup.c#L133), after paging configuration
-- 	The cpus enabling is implemented in [`mp_desc.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/mp_desc.c)
-	+ 	The routine to switch the cpus to protected mode is [`cpuboot.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/cpuboot.S	)
-- 	[`cpu_number()`](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/kern/cpu_number.c#L9) has been refactorized, replacing the while loop with the array [`apic2kernel[]`](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/i386/i386at/acpi_rsdp.c#L45), indexed by apic_id
-- 	[`CPU_NUMBER() `](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/i386/i386/cpu_number.h#L48) assembly function has been implemented using `apic2kernel[]` array
+- 	The [`CPU_NUMBER()`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/i386/i386/cpu_number.h#L48) assembly implementation was added to `i386/i386/cpu_number.h`.
+- 	Function [`start_other_cpus()`](https://github.com/AlmuHS/GNUMach_SMP/blob/444206e0cd7ddc13bbf785382700c64db2e76f7c/i386/i386/mp_desc.c#L351) was modified, to change `NCPUS` macro to `ncpu` variable.
+- 	The memory mapping is implemented in [`vm_map_physical.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/vm/vm_map_physical.c) and [`vm_map_physical.h`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/vm/vm_map_physical.h).
+	+ 	The lapic mapping is in [`extra_setup()`](https://github.com/AlmuHS/GNUMach_SMP/blob/0d31cc80e8f1e4f041568508b6b165b0174b4334/i386/i386at/acpi_rsdp.c#L297).
+	+ 	This call requires that paging is configured, so the call is added in [`kern/startup.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/0d31cc80e8f1e4f041568508b6b165b0174b4334/kern/startup.c#L133), after paging configuration.
+- 	The cpus enabling is implemented in [`mp_desc.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/mp_desc.c).
+	+ 	The routine to switch the cpus to protected mode is [`cpuboot.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/cpuboot.S	).
+- 	[`cpu_number()`](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/kern/cpu_number.c#L9) has been refactorized, replacing the while loop with the array [`apic2kernel[]`](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/i386/i386at/acpi_rsdp.c#L45), indexed by apic_id.
+- 	[`CPU_NUMBER() `](https://github.com/AlmuHS/GNUMach_SMP/blob/44c79ab18042c94996114ebeb233b8bd0033411d/i386/i386/cpu_number.h#L48) assembly function has been implemented using `apic2kernel[]` array.
 - 	Added call to `interrupt_stack_alloc()` before `mp_desc_init()`
 - 	Added paging configuration in [`cpuboot.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/cpuboot.S	)
-- 	Added calls to `gdt_init()` and `idt_init()` before call to `slave_main()`, to load final GDT and IDT.
+- 	Added calls to `gdt_init()` and `idt_init()` before call to `slave_main()`, to load final GDT and IDT
 - 	Enabled call to `slave_main()`, to add AP processors to the kernel
 - 	Moved paging configuration to `paging_setup()` function
 - 	Solved little problem with AP stack: now each AP has their own stack
@@ -191,7 +191,7 @@ To adapt the code to *gnumach* it was necessary to make some changes:
 
 - **Copy and rename files**
 
-	The [`acpi.c`](https://github.com/AlmuHS/Min_SMP/blob/master/acpi.c) and [`acpi.h`](https://github.com/AlmuHS/Min_SMP/blob/master/acpi.h) files were renamed to [`acpi_rsdp.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.c) and [`acpi_rsdp.h`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.h)  
+	The [`acpi.c`](https://github.com/AlmuHS/Min_SMP/blob/master/acpi.c) and [`acpi.h`](https://github.com/AlmuHS/Min_SMP/blob/master/acpi.h) files were renamed to [`acpi_rsdp.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.c) and [`acpi_rsdp.h`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386at/acpi_rsdp.h).
 	  
 	These files were copied in `i386/i386at/..` directory.
 
@@ -229,7 +229,7 @@ This function will be used later to get the cpu working.
 
 In this step, we enable the cpus using the StartUp IPI. To do this, we need to write the ICR register in the Local APIC of the processor who raised the IPI (in this case, the BSP raises the IPI to each processor).
 
-To implement this step, we have been inspired in Min_SMP [`mp.c`](https://github.com/AlmuHS/Min_SMP/blob/master/mp.c) and [`cpu.c`](https://github.com/AlmuHS/Min_SMP/blob/master/cpu.c) files, and based in the existent work in [`i386/i386/mp_desc.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/mp_desc.c)
+To implement this step, we have been inspired in Min_SMP [`mp.c`](https://github.com/AlmuHS/Min_SMP/blob/master/mp.c) and [`cpu.c`](https://github.com/AlmuHS/Min_SMP/blob/master/cpu.c) files, and based in the existent work in [`i386/i386/mp_desc.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/mp_desc.c).
 
 We have split this task into several steps:
 
@@ -254,7 +254,7 @@ We have split this task into several steps:
 	
 	All stacks have the same size, which is defined in the `STACK_SIZE` macro.
 	
-	Once the memory is reserved, we assign the slides to each cpu using `stack_start` as the base address. In each step, we assign `stack_start` to `cpu_stack[cpu]`, `stack_start+STACK_SIZE` to `_cpu_stack_top[cpu]`, and increase `stack_size` with `STACK_SIZE`
+	Once the memory is reserved, we assign the slides to each cpu using `stack_start` as the base address. In each step, we assign `stack_start` to `cpu_stack[cpu]`, `stack_start+STACK_SIZE` to `_cpu_stack_top[cpu]`, and increase `stack_size` with `STACK_SIZE`.
 
 	To ease the stack loading to each cpu, we have added a unique stack pointer, called `stack_ptr`. Before enable each cpu, this pointer is updated to the `cpu_stack` of the current cpu. This pointer will be used in the `cpuboot.S` assembly routine to load the stack in the current cpu.
 	
@@ -290,7 +290,7 @@ We have split this task into several steps:
 	- The physical address has been replaced with their equivalent logical address, using the same shift used in `boothdr.S`
 	- We have removed the `hlt` instruction after `call cpu_ap_main`
 	
-   The final code is stored in [`i386/i386/cpuboot.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/cpuboot.S)
+   The final code is stored in [`i386/i386/cpuboot.S`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/cpuboot.S).
 
 ### Add interrupt stack to cpus
   
