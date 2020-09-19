@@ -381,6 +381,11 @@ typedef	struct pmap_update_list	*pmap_update_list_t;
 
 struct pmap_update_list	cpu_update_list[NCPUS];
 
+cpu_set		cpus_active;
+cpu_set		cpus_idle;
+volatile
+boolean_t	cpu_update_needed[NCPUS];
+
 #endif	/* NCPUS > 1 */
 
 /*

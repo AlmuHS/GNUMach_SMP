@@ -56,6 +56,9 @@
 /* XXX: This is the way it's done in linux 2.2. GNU Mach currently uses intr_count. It should be made using local_{bh/irq}_count instead (through hardirq_enter/exit) for SMP support. */
 unsigned int local_bh_count[NR_CPUS];
 unsigned int local_irq_count[NR_CPUS];
+#else
+#define local_bh_count (&intr_count)
+#define local_irq_count (&intr_count)
 #endif
 
 /*

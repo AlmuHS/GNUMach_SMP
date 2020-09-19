@@ -52,6 +52,7 @@
  */
 vm_offset_t	interrupt_stack[NCPUS];
 vm_offset_t	int_stack_top[NCPUS];
+vm_offset_t	int_stack_base[NCPUS];
 
 /*
  * Barrier address.
@@ -164,6 +165,10 @@ mp_desc_init(int mycpu)
 	}
 }
 
+kern_return_t intel_startCPU(int slot_num)
+{
+	printf("TODO: intel_startCPU\n");
+}
 
 /*
  * Called after all CPUs have been found, but before the VM system

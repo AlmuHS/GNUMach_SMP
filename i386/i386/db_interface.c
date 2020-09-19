@@ -97,6 +97,10 @@ void db_load_context(pcb_t pcb)
 #endif
 }
 
+void cpu_interrupt_to_db(int i){
+	printf("TODO: cpu_interrupt_to_db\n");
+}
+
 void db_get_debug_state(
 	pcb_t pcb,
 	struct i386_debug_state *state)

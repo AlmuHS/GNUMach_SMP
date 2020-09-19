@@ -65,6 +65,7 @@
 #include <i386/vm_param.h>
 #include <i386/locore.h>
 #include <i386/model_dep.h>
+#include <i386/smp.h>
 #include <i386at/autoconf.h>
 #include <i386at/biosmem.h>
 #include <i386at/elf.h>
@@ -133,7 +134,9 @@ boolean_t	rebootflag = FALSE;	/* exported to kdintr */
 
 /* Interrupt stack.  */
 static char int_stack[KERNEL_STACK_SIZE] __aligned(KERNEL_STACK_SIZE);
-vm_offset_t int_stack_top, int_stack_base;
+#if NCPUS <= 1
+vm_offset_t int_stack_top[1], int_stack_base[1];
+#endif
 
 #ifdef LINUX_DEV
 extern void linux_init(void);
@@ -532,8 +535,8 @@ i386at_init(void)
 	hyp_p2m_init();
 #endif	/* MACH_XEN */
 
-	int_stack_base = (vm_offset_t)&int_stack;
-	int_stack_top = int_stack_base + KERNEL_STACK_SIZE - 4;
+	int_stack_base[0] = (vm_offset_t)&int_stack;
+	int_stack_top[0] = int_stack_base[0] + KERNEL_STACK_SIZE - 4;
 }
 
 /*
