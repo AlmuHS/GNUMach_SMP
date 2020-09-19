@@ -46,8 +46,8 @@ acpi_print_info(struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n)
 {
 
     printf("ACPI:\n");
-    printf(" rsdp = %x; rsdp->rsdt_addr = %x\n", rsdp, rsdp->rsdt_addr);
-    printf(" rsdt = %x; rsdt->length = %x (n = %x)\n", rsdt, rsdt->header.length,
+    printf(" rsdp = %p; rsdp->rsdt_addr = %x\n", rsdp, rsdp->rsdt_addr);
+    printf(" rsdt = %p; rsdt->length = %x (n = %x)\n", rsdt, rsdt->header.length,
            acpi_rsdt_n);
 }
 
@@ -81,7 +81,7 @@ acpi_checksum(void *addr, uint32_t length)
  */
 
 static int
-acpi_check_signature(uint8_t table_signature[], uint8_t real_signature[], uint8_t length)
+acpi_check_signature(const uint8_t table_signature[], const char *real_signature, uint8_t length)
 {
     return memcmp(table_signature, real_signature, length);
 }
@@ -129,10 +129,10 @@ acpi_check_rsdp(struct acpi_rsdp *rsdp)
  */
 
 static int8_t
-acpi_check_rsdp_align(void *addr)
+acpi_check_rsdp_align(uint32_t addr)
 {
     /* check alignment. */
-    if ((uint32_t)addr & (ACPI_RSDP_ALIGN-1))
+    if (addr & (ACPI_RSDP_ALIGN-1))
         return ACPI_BAD_ALIGN;
 
     return ACPI_SUCCESS;
@@ -328,7 +328,6 @@ acpi_apic_add_lapic(struct acpi_apic_lapic *lapic_entry)
 static void
 acpi_apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry)
 {
-    int ret_value = 0;
     IoApicData io_apic;
 
     /* Fill IOAPIC structure with its main fields */
@@ -374,7 +373,6 @@ acpi_apic_add_irq_override(struct acpi_apic_irq_override* irq_override)
 static int
 acpi_apic_parse_table(struct acpi_apic *apic)
 {
-    int ret_value = 0;
     struct acpi_apic_dhdr *apic_entry = NULL;
     uint32_t end = 0;
     uint8_t numcpus = 1;
