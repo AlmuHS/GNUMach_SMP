@@ -133,8 +133,6 @@ More info in: <https://www.gnu.org/software/hurd/microkernel/mach/gnumach/buildi
 - In the [Min_SMP](https://github.com/AlmuHS/Min_SMP/) test environment, the cpus are detected and started correctly
 	+ I need to implement APIC configuration
 - In *gnumach*, the number of cpus and its lapic structures are detected and enumerated correctly
-- ioapic enumeration fails
-	+ Mach use PIC 8259 controller, so ioapic is not necessary. Migrate Mach to ioapic is a future TODO
 - *gnumach* enable all cpus during the boot successfully
 - The cpus are added successfully to the kernel
 - *gnumach* boots with 2 cpu
@@ -185,7 +183,7 @@ We have recovered the [`apic.h`](http://git.savannah.gnu.org/cgit/hurd/gnumach.g
 
 In this step, we find the Local APIC and IOAPIC registers in the ACPI tables, and enumerate them.
 
-The implementation of this step is based in [Min_SMP acpi.c](https://github.com/AlmuHS/Min_SMP/blob/master/acpi.c) implementation. The main function is `acpi_setup()`, who call to other functions to go across ACPI tables. 
+The implementation of this step is based on [Min_SMP acpi.c](https://github.com/AlmuHS/Min_SMP/blob/master/acpi.c)'s implementation. The main function is `acpi_setup()`, which is called to other functions to go across ACPI tables. 
 
 To adapt the code to *gnumach* it was necessary to make some changes:
 
@@ -229,7 +227,7 @@ This function will be used later to get the cpu working.
 
 In this step, we enable the cpus using the StartUp IPI. To do this, we need to write the ICR register in the Local APIC of the processor who raised the IPI (in this case, the BSP raises the IPI to each processor).
 
-To implement this step, we have been inspired in Min_SMP [`mp.c`](https://github.com/AlmuHS/Min_SMP/blob/master/mp.c) and [`cpu.c`](https://github.com/AlmuHS/Min_SMP/blob/master/cpu.c) files, and based in the existent work in [`i386/i386/mp_desc.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/mp_desc.c).
+To implement this step, we have been inspired by Min_SMP's [`mp.c`](https://github.com/AlmuHS/Min_SMP/blob/master/mp.c) and [`cpu.c`](https://github.com/AlmuHS/Min_SMP/blob/master/cpu.c) files, and based in the existent work in [`i386/i386/mp_desc.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/mp_desc.c).
 
 We have split this task into several steps:
 
@@ -256,7 +254,7 @@ We have split this task into several steps:
 	
 	Once the memory is reserved, we assign the slides to each cpu using `stack_start` as the base address. In each step, we assign `stack_start` to `cpu_stack[cpu]`, `stack_start+STACK_SIZE` to `_cpu_stack_top[cpu]`, and increase `stack_size` with `STACK_SIZE`.
 
-	To ease the stack loading to each cpu, we have added a unique stack pointer, called `stack_ptr`. Before enable each cpu, this pointer is updated to the `cpu_stack` of the current cpu. This pointer will be used in the `cpuboot.S` assembly routine to load the stack in the current cpu.
+ 	To ease the stack loading to each cpu, we have added a unique stack pointer, called `stack_ptr`. Before enable each cpu, this pointer is updated to the `cpu_stack` of the current cpu. This pointer will be used in the `cpuboot.S` assembly routine to load the stack in the current cpu.
 	
 	  
 - **Complete `intel_startCPU()`**
@@ -267,13 +265,13 @@ We have split this task into several steps:
   
 - **Raise Startup IPI and initialize cpu**
 
-  *gnumach* doesn't include any function to raise the Startup IPI, so we have implemented these functionalities in Min_SMP [`cpu.c`](https://github.com/AlmuHS/Min_SMP/blob/master/cpu.c) and [`mp.c`](https://github.com/AlmuHS/Min_SMP/blob/master/mp.c ): 
+  *gnumach* doesn't include a function to raise the Startup IPI, so we have implemented it ourselves based on Min_SMP's [`cpu.c`](https://github.com/AlmuHS/Min_SMP/blob/master/cpu.c) and [`mp.c`](https://github.com/AlmuHS/Min_SMP/blob/master/mp.c ): 
   - `startup_cpu()`: This function is called by `intel_startCPU()` to begin the Startup IPI sequence in the cpu. 
   - `send_ipi()`: function to write the IPI fields in the ICR register of the current cpu
   - `cpu_ap_main()`: The first function executed by the new cpu after startup. Calls to `cpu_setup()` and check errors.
   - `cpu_setup()`: Initialize the `machine_slot` fields of the cpu
   
-  These functions has been added to [`i386/i386/mp_desc.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/mp_desc.c)
+  These functions has been added to [`i386/i386/mp_desc.c`](https://github.com/AlmuHS/GNUMach_SMP/blob/smp/i386/i386/mp_desc.c).
   
 - **Implement assembly routine to switch the cpu to protected mode**
 
