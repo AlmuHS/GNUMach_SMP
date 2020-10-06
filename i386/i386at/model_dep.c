@@ -58,6 +58,7 @@
 #include <i386/ktss.h>
 #include <i386/ldt.h>
 #include <i386/machspl.h>
+#include <i386/mp_desc.h>
 #include <i386/pic.h>
 #include <i386/pit.h>
 #include <i386/pmap.h>
@@ -500,6 +501,13 @@ i386at_init(void)
 #endif	/* MACH_HYP */
 	ldt_init();
 	ktss_init();
+
+/*
+ * Initialize SMP structures in the master processor
+ */
+#if NCPUS > 1
+	mp_desc_init(master_cpu);
+#endif // NCPUS
 
 #if INIT_VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
 	/* Get rid of the temporary direct mapping and flush it out of the TLB.  */
