@@ -503,6 +503,7 @@ i386at_init(void)
 	ktss_init();
 
 #if NCPUS > 1
+	/* Initialize SMP structures in the master processor */
 	mp_desc_init(0);
 #endif // NCPUS
 
