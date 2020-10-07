@@ -570,7 +570,7 @@ build_args_and_stack(struct exec_info *boot_exec_info,
 	char *		zero = (char *)0;
 	int i;
 
-#define	STACK_SIZE	(64*1024)
+#define	STACK_SIZE	(2*64*1024)
 
 	/*
 	 * Calculate the size of the argument list.
