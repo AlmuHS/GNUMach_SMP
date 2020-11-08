@@ -33,6 +33,7 @@
 
 #include <kern/macros.h>
 
+#if !(__i486__ || __i586__ || __i686__)
 /*
  *	Expansion of vm_fault for read fault in kernel mode.
  *	Must enter the mapping as writable, since the i386
@@ -174,3 +175,4 @@ intel_read_fault(
 
 	return (KERN_SUCCESS);
 }
+#endif

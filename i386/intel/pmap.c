@@ -1879,17 +1879,17 @@ void pmap_protect(
 		return;
 	}
 
+#if !(__i486__ || __i586__ || __i686__)
 	/*
 	 * If write-protecting in the kernel pmap,
 	 * remove the mappings; the i386 ignores
 	 * the write-permission bit in kernel mode.
-	 *
-	 * XXX should be #if'd for i386
 	 */
 	if (map == kernel_pmap) {
 	    pmap_remove(map, s, e);
 	    return;
 	}
+#endif
 
 	SPLVM(spl);
 	simple_lock(&map->lock);
@@ -1981,14 +1981,13 @@ void pmap_enter(
 	if (pmap == kernel_pmap && (v < kernel_virtual_start || v >= kernel_virtual_end))
 		panic("pmap_enter(%lx, %llx) falls in physical memory area!\n", v, (unsigned long long) pa);
 #endif
+#if !(__i486__ || __i586__ || __i686__)
 	if (pmap == kernel_pmap && (prot & VM_PROT_WRITE) == 0
 	    && !wired /* hack for io_wire */ ) {
 	    /*
 	     *	Because the 386 ignores write protection in kernel mode,
 	     *	we cannot enter a read-only kernel mapping, and must
 	     *	remove an existing mapping if changing it.
-	     *
-	     *  XXX should be #if'd for i386
 	     */
 	    PMAP_READ_LOCK(pmap, spl);
 
@@ -2005,6 +2004,7 @@ void pmap_enter(
 	    PMAP_READ_UNLOCK(pmap, spl);
 	    return;
 	}
+#endif
 
 	/*
 	 *	Must allocate a new pvlist entry while we're unlocked;
