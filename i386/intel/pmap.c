@@ -1973,7 +1973,7 @@ void pmap_enter(
 	phys_addr_t		old_pa;
 
 	assert(pa != vm_page_fictitious_addr);
-	if (pmap_debug) printf("pmap(%lx, %llx)\n", v, pa);
+	if (pmap_debug) printf("pmap(%lx, %llx)\n", v, (unsigned long long) pa);
 	if (pmap == PMAP_NULL)
 		return;
 
