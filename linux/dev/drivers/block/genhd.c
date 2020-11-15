@@ -1021,10 +1021,12 @@ static void setup_dev(struct gendisk *dev)
 void device_setup(void)
 {
 	extern void console_map_init(void);
-	extern char *kernel_cmdline;
-	char *c, *param, *white;
 	struct gendisk *p;
 	int nr=0;
+
+#ifdef CONFIG_BLK_DEV_IDE
+	extern char *kernel_cmdline;
+	char *c, *param, *white;
 
 	for (c = kernel_cmdline; c; )
 	{
@@ -1048,6 +1050,7 @@ void device_setup(void)
 			}
 		}
 	}
+#endif
 #ifndef MACH
 	chr_dev_init();
 #endif
