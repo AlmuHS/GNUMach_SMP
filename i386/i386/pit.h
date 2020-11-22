@@ -45,6 +45,9 @@ NEGLIGENCE, OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION
 WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#ifndef	_I386_PIT_H_
+#define	_I386_PIT_H_
+
 #if	defined(AT386) || defined(ATX86_64)
 /* Definitions for 8254 Programmable Interrupt Timer ports on AT 386 */
 #define PITCTR0_PORT	0x40		/* counter 0 port */
@@ -79,3 +82,5 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #endif	/* AT386 */
 
 extern void clkstart(void);
+
+#endif /* _I386_PIT_H_ */
