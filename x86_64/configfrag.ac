@@ -44,7 +44,8 @@ esac]
 
 [case $host_platform:$host_cpu in
   at:x86_64)]
-    ncom=4
+    # should be 4, but we do not support shared IRQ for these
+    ncom=2
     nlpr=1
     AC_DEFINE([ATX86_64], [1], [ATX86_64])[;;
   xen:x86_64)]

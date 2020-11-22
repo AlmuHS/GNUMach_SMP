@@ -46,7 +46,8 @@ esac
 
 case $host_platform:$host_cpu in
   at:i?86)
-    ncom=4
+    # should be 4, but we do not support shared IRQ for these
+    ncom=2
     nlpr=1
 
     # i386/bogus/platforms.h]
