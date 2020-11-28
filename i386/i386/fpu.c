@@ -162,7 +162,6 @@ init_fpu(void)
 		    ecx = 0x0;
 		    cpuid(eax, ebx, ecx, edx);
 		    fp_xsave_support = eax + (((uint64_t) edx) << 32);
-		    fp_xsave_support &= CPU_XCR0_SUPPORTED;
 
 #ifndef MACH_RING1
 		    set_cr4(get_cr4() | CR4_OSFXSR | CR4_OSXSAVE);

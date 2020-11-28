@@ -107,9 +107,6 @@ static inline void set_xcr0(uint64_t value) {
 #define CPU_FEATURE_XGETBV1	(1 << 2)
 #define CPU_FEATURE_XSAVES	(1 << 3)
 
-/* This is the set we support for now in our struct i386_xfp_save */
-#define CPU_XCR0_SUPPORTED (CPU_XCR0_X87 | CPU_XCR0_SSE | CPU_XCR0_AVX)
-
 #define	xsave(state) \
 	asm volatile("xsave %0" \
 			: "=m" (*state) \
