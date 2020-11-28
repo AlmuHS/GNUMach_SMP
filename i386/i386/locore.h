@@ -58,7 +58,7 @@ extern void cpu_shutdown (void);
 
 extern int syscall (void);
 
-extern unsigned int cpu_features[1];
+extern unsigned int cpu_features[2];
 
 #define CPU_FEATURE_FPU		 0
 #define CPU_FEATURE_VME		 1
@@ -89,6 +89,7 @@ extern unsigned int cpu_features[1];
 #define CPU_FEATURE_HTT		28
 #define CPU_FEATURE_TM		29
 #define CPU_FEATURE_PBE		31
+#define CPU_FEATURE_XSAVE	(1*32 + 26)
 
 #define CPU_HAS_FEATURE(feature) (cpu_features[(feature) / 32] & (1 << ((feature) % 32)))
 

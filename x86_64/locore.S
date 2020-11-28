@@ -1259,6 +1259,9 @@ syscall_addr:
 
 	.data
 DATA(cpu_features)
+DATA(cpu_features_edx)
+	.long	0
+DATA(cpu_features_ecx)
 	.long	0
 	.text
 
@@ -1271,7 +1274,8 @@ ENTRY(discover_x86_cpu_type)
 	   use it to find out what we are. */
 	movl	$1,%eax			/* Fetch CPU type info ... */
 	cpuid				/*  ... into eax */
-	movl	%edx,cpu_features	/* Keep a copy */
+	movl	%ecx,cpu_features_ecx	/* Keep a copy */
+	movl	%edx,cpu_features_edx	/* Keep a copy */
 	shrl	$8,%eax			/* Slide family bits down */
 	andl	$15,%eax		/* And select them */
 	ret				/* And return */

@@ -73,6 +73,35 @@
 #define	fxrstor(state) \
 	asm volatile("fxrstor %0" : : "m" (state))
 
+static inline uint64_t xgetbv(uint32_t n) {
+	uint32_t eax, edx;
+	asm volatile("xgetbv" : "=a" (eax), "=d" (edx) : "c" (n));
+	return eax + ((uint64_t) edx << 32);
+}
+
+static inline uint64_t get_xcr0(void) {
+	return xgetbv(0);
+}
+
+static inline void xsetbv(uint32_t n, uint64_t value) {
+	uint32_t eax, edx;
+
+	eax = value;
+	edx = value >> 32;
+
+	asm volatile("xsetbv" : : "c" (n), "a" (eax), "d" (edx));
+}
+
+static inline void set_xcr0(uint64_t value) {
+	xsetbv(0, value);
+}
+
+#define	xsave(state) \
+	asm volatile("xsave %0" : "=m" (*state))
+
+#define	xrstor(state) \
+	asm volatile("xrstor %0" : : "m" (state))
+
 #define fwait() \
     	asm("fwait");
 

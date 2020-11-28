@@ -68,6 +68,8 @@
 					 * and FXRSTOR instructions */
 #define	CR4_OSXMMEXCPT	0x0400		/* Operating System Support for Unmasked
 					 * SIMD Floating-Point Exceptions */
+#define	CR4_OSXSAVE	0x40000		/* Operating System Support for XSAVE
+					 * and XRSTOR instructions */
 
 #ifndef	__ASSEMBLER__
 #ifdef	__GNUC__
