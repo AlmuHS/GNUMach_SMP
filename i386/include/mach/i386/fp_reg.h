@@ -26,6 +26,9 @@
 
 #ifndef	_MACH_I386_FP_REG_H_
 #define	_MACH_I386_FP_REG_H_
+
+#include <stdint.h>
+
 /*
  *	Floating point registers and status, as saved
  *	and restored by FP save/restore instructions.
@@ -50,17 +53,24 @@ struct i386_fp_regs {
 					/* space for 8 80-bit FP registers */
 };
 
+struct i386_xfp_xstate_header {
+	uint64_t	xfp_features;
+	uint64_t	xcomp_bv;
+	uint64_t	reserved[6];
+} __attribute__((packed, aligned(64)));
+_Static_assert(sizeof(struct i386_xfp_xstate_header) == 8*8);
+
 struct i386_xfp_save {
 	unsigned short	fp_control;	/* control */
 	unsigned short	fp_status;	/* status */
 	unsigned short	fp_tag;		/* register tags */
 	unsigned short	fp_opcode;	/* opcode of failed instruction */
 	unsigned int	fp_eip;		/* eip at failed instruction */
-	unsigned short	fp_cs;		/* cs at failed instruction */
-	unsigned short	fp_unused_1;
+	unsigned short	fp_cs;		/* cs at failed instruction / eip high */
+	unsigned short	fp_eip3;	/* eip higher */
 	unsigned int	fp_dp;		/* data address */
-	unsigned short	fp_ds;		/* data segment */
-	unsigned short	fp_unused_2;
+	unsigned short	fp_ds;		/* data segment / dp high */
+	unsigned short	fp_dp3;		/* dp higher */
 	unsigned int	fp_mxcsr;	/* MXCSR */
 	unsigned int	fp_mxcsr_mask;	/* MXCSR_MASK */
 	unsigned char	fp_reg_word[8][16];
@@ -68,8 +78,13 @@ struct i386_xfp_save {
 	unsigned char	fp_xreg_word[16][16];
 					/* space for 16 128-bit XMM registers */
 	unsigned int	padding[24];
-} __attribute__((aligned(16)));
-_Static_assert(sizeof(struct i386_xfp_save) == 512);
+	struct i386_xfp_xstate_header header;
+
+	unsigned char	fp_yreg_word[16][16];
+					/* space for the high part of the
+					 * 16 256-bit YMM registers */
+} __attribute__((packed, aligned(64)));
+_Static_assert(sizeof(struct i386_xfp_save) == 512 + 8*8 + 16*16);
 
 /*
  * Control register

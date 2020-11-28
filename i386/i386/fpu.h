@@ -96,8 +96,20 @@ static inline void set_xcr0(uint64_t value) {
 	xsetbv(0, value);
 }
 
+#define CPU_XCR0_X87	(1 << 0)
+#define CPU_XCR0_SSE	(1 << 1)
+#define CPU_XCR0_AVX	(1 << 2)
+#define CPU_XCR0_MPX	(3 << 3)
+#define CPU_XCR0_AVX512	(7 << 5)
+
+/* This is the set we support for now in our struct i386_xfp_save */
+#define CPU_XCR0_SUPPORTED (CPU_XCR0_X87 | CPU_XCR0_SSE | CPU_XCR0_AVX)
+
 #define	xsave(state) \
-	asm volatile("xsave %0" : "=m" (*state))
+	asm volatile("xsave %0" \
+			: "=m" (*state) \
+			: "a" ((unsigned) fp_xsave_support) \
+			, "d" ((unsigned) (fp_xsave_support >> 32))) \
 
 #define	xrstor(state) \
 	asm volatile("xrstor %0" : : "m" (state))
@@ -121,7 +133,9 @@ static inline void set_xcr0(uint64_t value) {
 	if (ifps != 0 && !ifps->fp_valid) { \
 	    /* registers are in FPU - save to memory */ \
 	    ifps->fp_valid = TRUE; \
-	    if (fp_kind == FP_387FX) \
+	    if (fp_kind == FP_387X) \
+		xsave(&ifps->xfp_save_state); \
+	    else if (fp_kind == FP_387FX) \
 		fxsave(&ifps->xfp_save_state); \
 	    else \
 		fnsave(&ifps->fp_save_state); \
@@ -138,6 +152,7 @@ static inline void set_xcr0(uint64_t value) {
 #endif	/* NCPUS == 1 */
 
 extern int	fp_kind;
+extern uint64_t	fp_xsave_support;
 extern void fp_save(thread_t thread);
 extern void fp_load(thread_t thread);
 extern void fp_free(struct i386_fpsave_state *fps);

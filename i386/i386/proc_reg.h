@@ -379,6 +379,28 @@ extern unsigned long cr3;
     })
 #endif
 
+/* Note: gcc might want to use bx or the stack for %1 addressing, so we can't
+ * use them :/ */
+#ifdef __x86_64__
+#define cpuid(eax, ebx, ecx, edx) \
+{ \
+	uint64_t sav_rbx; \
+	asm(	"mov %%rbx,%2\n\t" \
+		"cpuid\n\t" \
+		"xchg %2,%%rbx\n\t" \
+		"movl %k2,%1\n\t" \
+		: "+a" (eax), "=m" (ebx), "=&r" (sav_rbx), "+c" (ecx), "=&d" (edx)); \
+}
+#else
+#define cpuid(eax, ebx, ecx, edx) \
+{ \
+	asm (	"mov %%ebx,%1\n\t" \
+		"cpuid\n\t" \
+		"xchg %%ebx,%1\n\t" \
+		: "+a" (eax), "=&SD" (ebx), "+c" (ecx), "=&d" (edx)); \
+}
+#endif
+
 #endif	/* __GNUC__ */
 #endif	/* __ASSEMBLER__ */
 

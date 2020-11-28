@@ -29,6 +29,7 @@ extern int  have_cpuid;		/* We have a CPUID */
 
 extern unsigned long cpu_hz;	/* CPU clock frequency from time.c */
 
+#if 0
 /*
  *	Detection of CPU model (CPUID).
  */
@@ -42,6 +43,7 @@ extern inline void cpuid(int op, int *eax, int *ebx, int *ecx, int *edx)
 		: "a" (op)
 		: "cc");
 }
+#endif
 
 /*
  * Cyrix CPU register indexes (use special macros to access these)
