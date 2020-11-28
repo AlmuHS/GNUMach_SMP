@@ -102,6 +102,11 @@ static inline void set_xcr0(uint64_t value) {
 #define CPU_XCR0_MPX	(3 << 3)
 #define CPU_XCR0_AVX512	(7 << 5)
 
+#define CPU_FEATURE_XSAVEOPT	(1 << 0)
+#define CPU_FEATURE_XSAVEC	(1 << 1)
+#define CPU_FEATURE_XGETBV1	(1 << 2)
+#define CPU_FEATURE_XSAVES	(1 << 3)
+
 /* This is the set we support for now in our struct i386_xfp_save */
 #define CPU_XCR0_SUPPORTED (CPU_XCR0_X87 | CPU_XCR0_SSE | CPU_XCR0_AVX)
 
@@ -111,8 +116,29 @@ static inline void set_xcr0(uint64_t value) {
 			: "a" ((unsigned) fp_xsave_support) \
 			, "d" ((unsigned) (fp_xsave_support >> 32))) \
 
+#define	xsaveopt(state) \
+	asm volatile("xsaveopt %0" \
+			: "=m" (*state) \
+			: "a" ((unsigned) fp_xsave_support) \
+			, "d" ((unsigned) (fp_xsave_support >> 32))) \
+
+#define	xsavec(state) \
+	asm volatile("xsavec %0" \
+			: "=m" (*state) \
+			: "a" ((unsigned) fp_xsave_support) \
+			, "d" ((unsigned) (fp_xsave_support >> 32))) \
+
+#define	xsaves(state) \
+	asm volatile("xsaves %0" \
+			: "=m" (*state) \
+			: "a" ((unsigned) fp_xsave_support) \
+			, "d" ((unsigned) (fp_xsave_support >> 32))) \
+
 #define	xrstor(state) \
 	asm volatile("xrstor %0" : : "m" (state))
+
+#define	xrstors(state) \
+	asm volatile("xrstors %0" : : "m" (state))
 
 #define fwait() \
     	asm("fwait");
@@ -133,12 +159,26 @@ static inline void set_xcr0(uint64_t value) {
 	if (ifps != 0 && !ifps->fp_valid) { \
 	    /* registers are in FPU - save to memory */ \
 	    ifps->fp_valid = TRUE; \
-	    if (fp_kind == FP_387X) \
-		xsave(&ifps->xfp_save_state); \
-	    else if (fp_kind == FP_387FX) \
-		fxsave(&ifps->xfp_save_state); \
-	    else \
-		fnsave(&ifps->fp_save_state); \
+	    switch (fp_save_kind) { \
+		case FP_XSAVE: \
+		    xsave(&ifps->xfp_save_state); \
+		    break; \
+		case FP_XSAVEOPT: \
+		    xsaveopt(&ifps->xfp_save_state); \
+		    break; \
+		case FP_XSAVEC: \
+		    xsavec(&ifps->xfp_save_state); \
+		    break; \
+		case FP_XSAVES: \
+		    xsaves(&ifps->xfp_save_state); \
+		    break; \
+		case FP_FXSAVE: \
+		    fxsave(&ifps->xfp_save_state); \
+		    break; \
+		case FP_FNSAVE: \
+		    fnsave(&ifps->fp_save_state); \
+		    break; \
+	    } \
 	    set_ts(); \
 	} \
     }
@@ -151,7 +191,16 @@ static inline void set_xcr0(uint64_t value) {
 
 #endif	/* NCPUS == 1 */
 
+enum fp_save_kind {
+	FP_FNSAVE,
+	FP_FXSAVE,
+	FP_XSAVE,
+	FP_XSAVEOPT,
+	FP_XSAVEC,
+	FP_XSAVES,
+};
 extern int	fp_kind;
+extern enum fp_save_kind	fp_save_kind;
 extern uint64_t	fp_xsave_support;
 extern void fp_save(thread_t thread);
 extern void fp_load(thread_t thread);

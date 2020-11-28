@@ -70,6 +70,7 @@
 #endif
 
 int		fp_kind = FP_387;	/* 80387 present */
+enum fp_save_kind	fp_save_kind = FP_FNSAVE;	/* Which instruction we use to save/restore FPU state */
 uint64_t	fp_xsave_support;	/* Bitmap of supported XSAVE save areas */
 unsigned	fp_xsave_size = sizeof(struct i386_fpsave_state);
 struct kmem_cache	ifps_cache;	/* cache for FPU save area */
@@ -144,6 +145,7 @@ init_fpu(void)
 		 * We have an 80287.
 		 */
 		fp_kind = FP_287;
+		fp_save_kind = FP_FNSAVE;
 		asm volatile(".byte 0xdb; .byte 0xe4");	/* fnsetpm */
 	    }
 	    else {
@@ -151,6 +153,7 @@ init_fpu(void)
 		 * We have a 387.
 		 */
 		fp_kind = FP_387;
+		fp_save_kind = FP_FNSAVE;
 
 		if (CPU_HAS_FEATURE(CPU_FEATURE_XSAVE)) {
 		    unsigned eax, ebx, ecx, edx;
@@ -158,18 +161,34 @@ init_fpu(void)
 		    eax = 0xd;
 		    ecx = 0x0;
 		    cpuid(eax, ebx, ecx, edx);
-
 		    fp_xsave_support = eax + (((uint64_t) edx) << 32);
 		    fp_xsave_support &= CPU_XCR0_SUPPORTED;
+
 #ifndef MACH_RING1
 		    set_cr4(get_cr4() | CR4_OSFXSR | CR4_OSXSAVE);
 		    set_xcr0(fp_xsave_support);
 #endif /* MACH_RING1 */
 
 		    eax = 0xd;
-		    ecx = 0x0;
+		    ecx = 0x1;
 		    cpuid(eax, ebx, ecx, edx);
-		    fp_xsave_size = offsetof(struct i386_fpsave_state, xfp_save_state) + ebx;
+		    if (eax & CPU_FEATURE_XSAVES) {
+			fp_xsave_size = offsetof(struct i386_fpsave_state, xfp_save_state) + ebx;
+
+			fp_save_kind = FP_XSAVES;
+		    } else {
+			eax = 0xd;
+			ecx = 0x0;
+			cpuid(eax, ebx, ecx, edx);
+			fp_xsave_size = offsetof(struct i386_fpsave_state, xfp_save_state) + ebx;
+
+			if (eax & CPU_FEATURE_XSAVEOPT)
+			    fp_save_kind = FP_XSAVEOPT;
+			else if (eax & CPU_FEATURE_XSAVEC)
+			    fp_save_kind = FP_XSAVEC;
+			else
+			    fp_save_kind = FP_XSAVE;
+		    }
 
 		    fp_kind = FP_387X;
 		}
@@ -179,9 +198,10 @@ init_fpu(void)
 		    set_cr4(get_cr4() | CR4_OSFXSR);
 #endif /* MACH_RING1 */
 		    fp_kind = FP_387FX;
+		    fp_save_kind = FP_FXSAVE;
 		}
 
-		if (fp_kind == FP_387X || fp_kind == FP_387FX) {
+		if (fp_save_kind != FP_FNSAVE) {
 		    /* Compute mxcsr_feature_mask.  */
 		    static /* because we _need_ alignment */
 		    struct i386_xfp_save save;
@@ -391,7 +411,7 @@ ASSERT_IPL(SPL0);
 	     */
 	    memset(ifps, 0, fp_xsave_size);
 
-	    if (fp_kind == FP_387X || fp_kind == FP_387FX) {
+	    if (fp_save_kind != FP_FNSAVE) {
 		int i;
 
 		ifps->xfp_save_state.fp_control = user_fp_state->fp_control;
@@ -484,7 +504,7 @@ ASSERT_IPL(SPL0);
 	     */
 	    memset(user_fp_state,  0, sizeof(struct i386_fp_save));
 
-	    if (fp_kind == FP_387X || fp_kind == FP_387FX) {
+	    if (fp_save_kind != FP_FNSAVE) {
 		int i;
 
 		user_fp_state->fp_control = ifps->xfp_save_state.fp_control;
@@ -727,7 +747,7 @@ fpexterrflt(void)
 	 */
 	i386_exception(EXC_ARITHMETIC,
 		       EXC_I386_EXTERR,
-		       fp_kind == FP_387X || fp_kind == FP_387FX ?
+		       fp_save_kind != FP_FNSAVE ?
 		           thread->pcb->ims.ifps->xfp_save_state.fp_status :
 		           thread->pcb->ims.ifps->fp_save_state.fp_status);
 	/*NOTREACHED*/
@@ -785,7 +805,7 @@ ASSERT_IPL(SPL0);
 	 */
 	i386_exception(EXC_ARITHMETIC,
 		       EXC_I386_EXTERR,
-		       fp_kind == FP_387X || fp_kind == FP_387FX ?
+		       fp_save_kind != FP_FNSAVE ?
 		           thread->pcb->ims.ifps->xfp_save_state.fp_status :
 		           thread->pcb->ims.ifps->fp_save_state.fp_status);
 	/*NOTREACHED*/
@@ -809,12 +829,26 @@ fp_save(thread_t thread)
 	if (ifps != 0 && !ifps->fp_valid) {
 	    /* registers are in FPU */
 	    ifps->fp_valid = TRUE;
-	    if (fp_kind == FP_387X)
-		xsave(&ifps->xfp_save_state);
-	    else if (fp_kind == FP_387FX)
-		fxsave(&ifps->xfp_save_state);
-	    else
-		fnsave(&ifps->fp_save_state);
+	    switch (fp_save_kind) {
+		case FP_XSAVE:
+		    xsave(&ifps->xfp_save_state);
+		    break;
+		case FP_XSAVEOPT:
+		    xsaveopt(&ifps->xfp_save_state);
+		    break;
+		case FP_XSAVEC:
+		    xsavec(&ifps->xfp_save_state);
+		    break;
+		case FP_XSAVES:
+		    xsaves(&ifps->xfp_save_state);
+		    break;
+		case FP_FXSAVE:
+		    fxsave(&ifps->xfp_save_state);
+		    break;
+		case FP_FNSAVE:
+		    fnsave(&ifps->fp_save_state);
+		    break;
+	    }
 	}
 }
 
@@ -854,7 +888,7 @@ ASSERT_IPL(SPL0);
 		 */
 		i386_exception(EXC_ARITHMETIC,
 			       EXC_I386_EXTERR,
-			       fp_kind == FP_387X || fp_kind == FP_387FX ?
+			       fp_save_kind != FP_FNSAVE ?
 			           thread->pcb->ims.ifps->xfp_save_state.fp_status :
 			           thread->pcb->ims.ifps->fp_save_state.fp_status);
 		/*NOTREACHED*/
@@ -863,12 +897,22 @@ ASSERT_IPL(SPL0);
 		printf("fp_load: invalid FPU state!\n");
 		fninit ();
 	} else {
-	    if (fp_kind == FP_387X)
-		xrstor(ifps->xfp_save_state);
-	    else if (fp_kind == FP_387FX)
-		fxrstor(ifps->xfp_save_state);
-	    else
-		frstor(ifps->fp_save_state);
+	    switch (fp_save_kind) {
+		case FP_XSAVE:
+		case FP_XSAVEOPT:
+		case FP_XSAVEC:
+		    xrstor(ifps->xfp_save_state);
+		    break;
+		case FP_XSAVES:
+		    xrstors(ifps->xfp_save_state);
+		    break;
+		case FP_FXSAVE:
+		    fxrstor(ifps->xfp_save_state);
+		    break;
+		case FP_FNSAVE:
+		    frstor(ifps->fp_save_state);
+		    break;
+	    }
 	}
 	ifps->fp_valid = FALSE;		/* in FPU */
 }
@@ -891,7 +935,7 @@ fp_state_alloc(void)
 
 	ifps->fp_valid = TRUE;
 
-	if (fp_kind == FP_387X || fp_kind == FP_387FX) {
+	if (fp_save_kind != FP_FNSAVE) {
 		ifps->xfp_save_state.fp_control = (0x037f
 				& ~(FPC_IM|FPC_ZM|FPC_OM|FPC_PC))
 				| (FPC_PC_64|FPC_IC_AFF);
