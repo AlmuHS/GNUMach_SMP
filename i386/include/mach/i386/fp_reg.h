@@ -65,10 +65,11 @@ struct i386_xfp_save {
 	unsigned int	fp_mxcsr_mask;	/* MXCSR_MASK */
 	unsigned char	fp_reg_word[8][16];
 					/* space for 8 128-bit FP registers */
-	unsigned char	fp_xreg_word[8][16];
-					/* space for 8 128-bit XMM registers */
-	unsigned int	padding[56];
+	unsigned char	fp_xreg_word[16][16];
+					/* space for 16 128-bit XMM registers */
+	unsigned int	padding[24];
 } __attribute__((aligned(16)));
+_Static_assert(sizeof(struct i386_xfp_save) == 512);
 
 /*
  * Control register
