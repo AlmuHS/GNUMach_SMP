@@ -71,6 +71,7 @@
 
 int		fp_kind = FP_387;	/* 80387 present */
 uint64_t	fp_xsave_support;	/* Bitmap of supported XSAVE save areas */
+unsigned	fp_xsave_size = sizeof(struct i386_fpsave_state);
 struct kmem_cache	ifps_cache;	/* cache for FPU save area */
 static unsigned long	mxcsr_feature_mask = 0xffffffff;	/* Always AND user-provided mxcsr with this security mask */
 
@@ -168,22 +169,12 @@ init_fpu(void)
 		    eax = 0xd;
 		    ecx = 0x0;
 		    cpuid(eax, ebx, ecx, edx);
+		    fp_xsave_size = offsetof(struct i386_fpsave_state, xfp_save_state) + ebx;
 
-		    if (ebx > sizeof(struct i386_xfp_save)) {
-			    /* TODO: rather make struct unbound and set size
-			     * in fpu_module_init */
-			    printf("XSAVE area size %u larger than provisioned "
-				   "%u, not enabling XSAVE\n",
-				   ebx, sizeof(struct i386_xfp_save));
-#ifndef MACH_RING1
-			    set_cr4(get_cr4() & ~(CR4_OSFXSR | CR4_OSXSAVE));
-#endif /* MACH_RING1 */
-		    } else {
-			    fp_kind = FP_387X;
-		    }
+		    fp_kind = FP_387X;
 		}
 
-		if (fp_kind == FP_387 && CPU_HAS_FEATURE(CPU_FEATURE_FXSR)) {
+		else if (CPU_HAS_FEATURE(CPU_FEATURE_FXSR)) {
 #ifndef MACH_RING1
 		    set_cr4(get_cr4() | CR4_OSFXSR);
 #endif /* MACH_RING1 */
@@ -226,7 +217,7 @@ void
 fpu_module_init(void)
 {
 	kmem_cache_init(&ifps_cache, "i386_fpsave_state",
-			sizeof(struct i386_fpsave_state),
+			fp_xsave_size,
 			alignof(struct i386_fpsave_state),
 			NULL, 0);
 }
@@ -398,7 +389,7 @@ ASSERT_IPL(SPL0);
 	    /*
 	     * Ensure that reserved parts of the environment are 0.
 	     */
-	    memset(ifps, 0, sizeof(*ifps));
+	    memset(ifps, 0, fp_xsave_size);
 
 	    if (fp_kind == FP_387X || fp_kind == FP_387FX) {
 		int i;
@@ -842,7 +833,7 @@ ASSERT_IPL(SPL0);
 	ifps = pcb->ims.ifps;
 	if (ifps == 0) {
 	    ifps = (struct i386_fpsave_state *) kmem_cache_alloc(&ifps_cache);
-	    memset(ifps, 0, sizeof *ifps);
+	    memset(ifps, 0, fp_xsave_size);
 	    pcb->ims.ifps = ifps;
 	    fpinit(thread);
 #if 1
@@ -895,7 +886,7 @@ fp_state_alloc(void)
 	struct i386_fpsave_state *ifps;
 
 	ifps = (struct i386_fpsave_state *)kmem_cache_alloc(&ifps_cache);
-	memset(ifps, 0, sizeof *ifps);
+	memset(ifps, 0, fp_xsave_size);
 	pcb->ims.ifps = ifps;
 
 	ifps->fp_valid = TRUE;

@@ -79,12 +79,9 @@ struct i386_xfp_save {
 					/* space for 16 128-bit XMM registers */
 	unsigned int	padding[24];
 	struct i386_xfp_xstate_header header;
-
-	unsigned char	fp_yreg_word[16][16];
-					/* space for the high part of the
-					 * 16 256-bit YMM registers */
+	unsigned char	extended[0];	/* Extended region */
 } __attribute__((packed, aligned(64)));
-_Static_assert(sizeof(struct i386_xfp_save) == 512 + 8*8 + 16*16);
+_Static_assert(sizeof(struct i386_xfp_save) == 512 + 8*8);
 
 /*
  * Control register
