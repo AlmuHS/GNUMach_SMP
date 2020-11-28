@@ -152,7 +152,7 @@ init_fpu(void)
 		    static /* because we _need_ alignment */
 		    struct i386_xfp_save save;
 		    unsigned long mask;
-		    fp_kind = FP_387X;
+		    fp_kind = FP_387FX;
 #ifndef MACH_RING1
 		    set_cr4(get_cr4() | CR4_OSFXSR);
 #endif /* MACH_RING1 */
@@ -361,7 +361,7 @@ ASSERT_IPL(SPL0);
 	     */
 	    memset(&ifps->fp_save_state, 0, sizeof(struct i386_fp_save));
 
-	    if (fp_kind == FP_387X) {
+	    if (fp_kind == FP_387FX) {
 		int i;
 
 		ifps->xfp_save_state.fp_control = user_fp_state->fp_control;
@@ -454,7 +454,7 @@ ASSERT_IPL(SPL0);
 	     */
 	    memset(user_fp_state,  0, sizeof(struct i386_fp_save));
 
-	    if (fp_kind == FP_387X) {
+	    if (fp_kind == FP_387FX) {
 		int i;
 
 		user_fp_state->fp_control = ifps->xfp_save_state.fp_control;
@@ -697,7 +697,7 @@ fpexterrflt(void)
 	 */
 	i386_exception(EXC_ARITHMETIC,
 		       EXC_I386_EXTERR,
-		       fp_kind == FP_387X ?
+		       fp_kind == FP_387FX ?
 		           thread->pcb->ims.ifps->xfp_save_state.fp_status :
 		           thread->pcb->ims.ifps->fp_save_state.fp_status);
 	/*NOTREACHED*/
@@ -755,7 +755,7 @@ ASSERT_IPL(SPL0);
 	 */
 	i386_exception(EXC_ARITHMETIC,
 		       EXC_I386_EXTERR,
-		       fp_kind == FP_387X ?
+		       fp_kind == FP_387FX ?
 		           thread->pcb->ims.ifps->xfp_save_state.fp_status :
 		           thread->pcb->ims.ifps->fp_save_state.fp_status);
 	/*NOTREACHED*/
@@ -779,7 +779,7 @@ fp_save(thread_t thread)
 	if (ifps != 0 && !ifps->fp_valid) {
 	    /* registers are in FPU */
 	    ifps->fp_valid = TRUE;
-	    if (fp_kind == FP_387X)
+	    if (fp_kind == FP_387FX)
 	    	fxsave(&ifps->xfp_save_state);
 	    else
 	    	fnsave(&ifps->fp_save_state);
@@ -822,7 +822,7 @@ ASSERT_IPL(SPL0);
 		 */
 		i386_exception(EXC_ARITHMETIC,
 			       EXC_I386_EXTERR,
-			       fp_kind == FP_387X ?
+			       fp_kind == FP_387FX ?
 			           thread->pcb->ims.ifps->xfp_save_state.fp_status :
 			           thread->pcb->ims.ifps->fp_save_state.fp_status);
 		/*NOTREACHED*/
@@ -831,7 +831,7 @@ ASSERT_IPL(SPL0);
 		printf("fp_load: invalid FPU state!\n");
 		fninit ();
 	} else {
-	    if (fp_kind == FP_387X)
+	    if (fp_kind == FP_387FX)
 		fxrstor(ifps->xfp_save_state);
 	    else
 		frstor(ifps->fp_save_state);
@@ -857,7 +857,7 @@ fp_state_alloc(void)
 
 	ifps->fp_valid = TRUE;
 
-	if (fp_kind == FP_387X) {
+	if (fp_kind == FP_387FX) {
 		ifps->xfp_save_state.fp_control = (0x037f
 				& ~(FPC_IM|FPC_ZM|FPC_OM|FPC_PC))
 				| (FPC_PC_64|FPC_IC_AFF);

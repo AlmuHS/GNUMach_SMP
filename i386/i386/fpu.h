@@ -121,7 +121,7 @@ static inline void set_xcr0(uint64_t value) {
 	if (ifps != 0 && !ifps->fp_valid) { \
 	    /* registers are in FPU - save to memory */ \
 	    ifps->fp_valid = TRUE; \
-	    if (fp_kind == FP_387X) \
+	    if (fp_kind == FP_387FX) \
 		fxsave(&ifps->xfp_save_state); \
 	    else \
 		fnsave(&ifps->fp_save_state); \

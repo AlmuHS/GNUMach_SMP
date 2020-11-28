@@ -125,6 +125,7 @@ _Static_assert(sizeof(struct i386_xfp_save) == 512);
 #define	FP_SOFT		1		/* software FP emulator */
 #define	FP_287		2		/* 80287 */
 #define	FP_387		3		/* 80387 or 80486 */
-#define	FP_387X		4		/* FXSAVE/RSTOR-capable */
+#define	FP_387FX	4		/* FXSAVE/RSTOR-capable */
+#define	FP_387X		5		/* XSAVE/RSTOR-capable */
 
 #endif	/* _MACH_I386_FP_REG_H_ */
