@@ -581,6 +581,7 @@ static void fpinit(thread_t thread)
 
 ASSERT_IPL(SPL0);
 	clear_ts();
+	fninit();
 	fpu_rstor(fp_default_state);
 
 	control = thread->pcb->init_control;
