@@ -77,17 +77,6 @@ struct i386_fpsave_state *fp_default_state;
 struct kmem_cache	ifps_cache;	/* cache for FPU save area */
 static unsigned long	mxcsr_feature_mask = 0xffffffff;	/* Always AND user-provided mxcsr with this security mask */
 
-/* Default FPU configuration */
-#define MXCSR_DEFAULT	0x1f80
-#define CWD_DEFAULT	(FPC_PC_64 |	/* 64bit precision */ \
-			 FPC_RC_RN |	/* round-to-nearest */ \
-			 FPC_ZE |	/* Suppress zero-divide */ \
-			 FPC_OE |	/*  and overflow */ \
-			 FPC_UE |	/*  underflow */ \
-			 FPC_IE |	/* Allow NaNQs and +-INF */ \
-			 FPC_DE |	/* Allow denorms as operands */ \
-			 FPC_PE)	/* No trap for precision loss */ \
-
 #if	NCPUS == 1
 volatile thread_t	fp_thread = THREAD_NULL;
 					/* thread whose state is in FPU */
@@ -265,6 +254,9 @@ fpu_module_init(void)
 	fp_default_state = (struct i386_fpsave_state *) kmem_cache_alloc(&ifps_cache);
 	memset(fp_default_state, 0, fp_xsave_size);
 
+	/* Get default state from CPU.  */
+	clear_ts();
+	fninit();
 	switch (fp_save_kind) {
 	    case FP_XSAVEC:
 	    case FP_XSAVES:
@@ -274,18 +266,13 @@ fpu_module_init(void)
 	    case FP_XSAVE:
 	    case FP_XSAVEOPT:
 	    case FP_FXSAVE:
-		fp_default_state->xfp_save_state.fp_control = CWD_DEFAULT;
-		fp_default_state->xfp_save_state.fp_status = 0;
-		fp_default_state->xfp_save_state.fp_tag = 0xffff;	/* all empty */
-		if (CPU_HAS_FEATURE(CPU_FEATURE_SSE))
-		    fp_default_state->xfp_save_state.fp_mxcsr = MXCSR_DEFAULT;
+		fxsave(&fp_default_state->xfp_save_state);
 		break;
 	    case FP_FNSAVE:
-		fp_default_state->fp_save_state.fp_control = CWD_DEFAULT;
-		fp_default_state->fp_save_state.fp_status = 0;
-		fp_default_state->fp_save_state.fp_tag = 0xffff;	/* all empty */
+		fnsave(&fp_default_state->fp_save_state);
 		break;
 	}
+	set_ts();
 
 	fp_default_state->fp_valid = TRUE;
 }
@@ -591,7 +578,6 @@ static void fpinit(thread_t thread)
 
 ASSERT_IPL(SPL0);
 	clear_ts();
-	fninit();
 	fpu_rstor(fp_default_state);
 
 	control = thread->pcb->init_control;
