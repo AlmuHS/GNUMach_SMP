@@ -825,30 +825,9 @@ fp_save(thread_t thread)
 	pcb_t pcb = thread->pcb;
 	struct i386_fpsave_state *ifps = pcb->ims.ifps;
 
-	if (ifps != 0 && !ifps->fp_valid) {
+	if (ifps != 0 && !ifps->fp_valid)
 	    /* registers are in FPU */
-	    ifps->fp_valid = TRUE;
-	    switch (fp_save_kind) {
-		case FP_XSAVE:
-		    xsave(&ifps->xfp_save_state);
-		    break;
-		case FP_XSAVEOPT:
-		    xsaveopt(&ifps->xfp_save_state);
-		    break;
-		case FP_XSAVEC:
-		    xsavec(&ifps->xfp_save_state);
-		    break;
-		case FP_XSAVES:
-		    xsaves(&ifps->xfp_save_state);
-		    break;
-		case FP_FXSAVE:
-		    fxsave(&ifps->xfp_save_state);
-		    break;
-		case FP_FNSAVE:
-		    fnsave(&ifps->fp_save_state);
-		    break;
-	    }
-	}
+	    fpu_save(ifps);
 }
 
 /*
@@ -896,22 +875,7 @@ ASSERT_IPL(SPL0);
 		printf("fp_load: invalid FPU state!\n");
 		fninit ();
 	} else {
-	    switch (fp_save_kind) {
-		case FP_XSAVE:
-		case FP_XSAVEOPT:
-		case FP_XSAVEC:
-		    xrstor(ifps->xfp_save_state);
-		    break;
-		case FP_XSAVES:
-		    xrstors(ifps->xfp_save_state);
-		    break;
-		case FP_FXSAVE:
-		    fxrstor(ifps->xfp_save_state);
-		    break;
-		case FP_FNSAVE:
-		    frstor(ifps->fp_save_state);
-		    break;
-	    }
+		fpu_rstor(ifps);
 	}
 	ifps->fp_valid = FALSE;		/* in FPU */
 }

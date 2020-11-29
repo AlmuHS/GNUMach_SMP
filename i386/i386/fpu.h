@@ -142,6 +142,51 @@ static inline void set_xcr0(uint64_t value) {
 
 #define	fpu_load_context(pcb)
 
+#define fpu_save(ifps) \
+    do { \
+	switch (fp_save_kind) { \
+	    case FP_XSAVE: \
+		xsave(&(ifps)->xfp_save_state); \
+		break; \
+	    case FP_XSAVEOPT: \
+		xsaveopt(&(ifps)->xfp_save_state); \
+		break; \
+	    case FP_XSAVEC: \
+		xsavec(&(ifps)->xfp_save_state); \
+		break; \
+	    case FP_XSAVES: \
+		xsaves(&(ifps)->xfp_save_state); \
+		break; \
+	    case FP_FXSAVE: \
+		fxsave(&(ifps)->xfp_save_state); \
+		break; \
+	    case FP_FNSAVE: \
+		fnsave(&(ifps)->fp_save_state); \
+		break; \
+	} \
+	(ifps)->fp_valid = TRUE; \
+    } while (0)
+
+#define fpu_rstor(ifps) \
+    do { \
+	switch (fp_save_kind) { \
+	    case FP_XSAVE: \
+	    case FP_XSAVEOPT: \
+	    case FP_XSAVEC: \
+		xrstor((ifps)->xfp_save_state); \
+		break; \
+	    case FP_XSAVES: \
+		xrstors((ifps)->xfp_save_state); \
+		break; \
+	    case FP_FXSAVE: \
+		fxrstor((ifps)->xfp_save_state); \
+		break; \
+	    case FP_FNSAVE: \
+		frstor((ifps)->fp_save_state); \
+		break; \
+	} \
+    } while (0)
+
 /*
  * Save thread`s FPU context.
  * If only one CPU, we just set the task-switched bit,
@@ -155,27 +200,7 @@ static inline void set_xcr0(uint64_t value) {
 	ifps = (thread)->pcb->ims.ifps; \
 	if (ifps != 0 && !ifps->fp_valid) { \
 	    /* registers are in FPU - save to memory */ \
-	    ifps->fp_valid = TRUE; \
-	    switch (fp_save_kind) { \
-		case FP_XSAVE: \
-		    xsave(&ifps->xfp_save_state); \
-		    break; \
-		case FP_XSAVEOPT: \
-		    xsaveopt(&ifps->xfp_save_state); \
-		    break; \
-		case FP_XSAVEC: \
-		    xsavec(&ifps->xfp_save_state); \
-		    break; \
-		case FP_XSAVES: \
-		    xsaves(&ifps->xfp_save_state); \
-		    break; \
-		case FP_FXSAVE: \
-		    fxsave(&ifps->xfp_save_state); \
-		    break; \
-		case FP_FNSAVE: \
-		    fnsave(&ifps->fp_save_state); \
-		    break; \
-	    } \
+	    fpu_save(ifps); \
 	    set_ts(); \
 	} \
     }
