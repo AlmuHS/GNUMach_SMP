@@ -223,6 +223,7 @@ enum fp_save_kind {
 };
 extern int	fp_kind;
 extern enum fp_save_kind	fp_save_kind;
+extern struct i386_fpsave_state *fp_default_state;
 extern uint64_t	fp_xsave_support;
 extern void fp_save(thread_t thread);
 extern void fp_load(thread_t thread);

@@ -53,6 +53,7 @@ struct i386_fp_regs {
 					/* space for 8 80-bit FP registers */
 };
 
+#define XSAVE_XCOMP_BV_COMPACT (((uint64_t)1) << 63)
 struct i386_xfp_xstate_header {
 	uint64_t	xfp_features;
 	uint64_t	xcomp_bv;

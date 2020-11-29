@@ -69,12 +69,19 @@
 #define ASSERT_IPL(L)
 #endif
 
-int		fp_kind = FP_387;	/* 80387 present */
+int			fp_kind = FP_387;	/* 80387 present */
 enum fp_save_kind	fp_save_kind = FP_FNSAVE;	/* Which instruction we use to save/restore FPU state */
-uint64_t	fp_xsave_support;	/* Bitmap of supported XSAVE save areas */
-unsigned	fp_xsave_size = sizeof(struct i386_fpsave_state);
+uint64_t		fp_xsave_support;	/* Bitmap of supported XSAVE save areas */
+unsigned		fp_xsave_size = sizeof(struct i386_fpsave_state);
+struct i386_fpsave_state *fp_default_state;
 struct kmem_cache	ifps_cache;	/* cache for FPU save area */
 static unsigned long	mxcsr_feature_mask = 0xffffffff;	/* Always AND user-provided mxcsr with this security mask */
+
+/* Default FPU configuration */
+#define MXCSR_DEFAULT	0x1f80
+#define CWD_DEFAULT	((0x037f \
+				& ~(FPC_IM|FPC_ZM|FPC_OM|FPC_PC)) \
+				| (FPC_PC_64|FPC_IC_AFF))
 
 #if	NCPUS == 1
 volatile thread_t	fp_thread = THREAD_NULL;
@@ -239,6 +246,33 @@ fpu_module_init(void)
 			fp_xsave_size,
 			alignof(struct i386_fpsave_state),
 			NULL, 0);
+
+	fp_default_state = (struct i386_fpsave_state *) kmem_cache_alloc(&ifps_cache);
+	memset(fp_default_state, 0, fp_xsave_size);
+
+	switch (fp_save_kind) {
+	    case FP_XSAVEC:
+	    case FP_XSAVES:
+		/* XRSTORS requires compact format, a bit faster anyway */
+		fp_default_state->xfp_save_state.header.xcomp_bv = XSAVE_XCOMP_BV_COMPACT;
+		/* Fallthrough */
+	    case FP_XSAVE:
+	    case FP_XSAVEOPT:
+	    case FP_FXSAVE:
+		fp_default_state->xfp_save_state.fp_control = CWD_DEFAULT;
+		fp_default_state->xfp_save_state.fp_status = 0;
+		fp_default_state->xfp_save_state.fp_tag = 0xffff;	/* all empty */
+		if (CPU_HAS_FEATURE(CPU_FEATURE_SSE))
+		    fp_default_state->xfp_save_state.fp_mxcsr = MXCSR_DEFAULT;
+		break;
+	    case FP_FNSAVE:
+		fp_default_state->fp_save_state.fp_control = CWD_DEFAULT;
+		fp_default_state->fp_save_state.fp_status = 0;
+		fp_default_state->fp_save_state.fp_tag = 0xffff;	/* all empty */
+		break;
+	}
+
+	fp_default_state->fp_valid = TRUE;
 }
 
 /*
@@ -534,14 +568,7 @@ ASSERT_IPL(SPL0);
 }
 
 /*
- * Initialize FPU.
- *
- * Raise exceptions for:
- *	invalid operation
- *	divide by zero
- *	overflow
- *
- * Use 64-bit precision.
+ * Initialize FPU for an already-running thread.
  */
 static void fpinit(thread_t thread)
 {
@@ -549,24 +576,11 @@ static void fpinit(thread_t thread)
 
 ASSERT_IPL(SPL0);
 	clear_ts();
-	fninit();
-	if (thread->pcb->init_control) {
-		control = thread->pcb->init_control;
-	}
-	else
-	{
-		fnstcw(&control);
-		control &= ~(FPC_PC|FPC_RC); /* Clear precision & rounding control */
-		control |= (FPC_PC_64 |		/* Set precision */ 
-				FPC_RC_RN | 	/* round-to-nearest */
-				FPC_ZE |	/* Suppress zero-divide */
-				FPC_OE |	/*  and overflow */
-				FPC_UE |	/*  underflow */
-				FPC_IE |	/* Allow NaNQs and +-INF */
-				FPC_DE |	/* Allow denorms as operands  */
-				FPC_PE);	/* No trap for precision loss */
-	}
-	fldcw(control);
+	fpu_rstor(fp_default_state);
+
+	control = thread->pcb->init_control;
+	if (control)
+		fldcw(control);
 }
 
 /*
@@ -845,7 +859,7 @@ ASSERT_IPL(SPL0);
 	ifps = pcb->ims.ifps;
 	if (ifps == 0) {
 	    ifps = (struct i386_fpsave_state *) kmem_cache_alloc(&ifps_cache);
-	    memset(ifps, 0, fp_xsave_size);
+	    memcpy(ifps, fp_default_state, fp_xsave_size);
 	    pcb->ims.ifps = ifps;
 	    fpinit(thread);
 #if 1
@@ -893,26 +907,8 @@ fp_state_alloc(void)
 	struct i386_fpsave_state *ifps;
 
 	ifps = (struct i386_fpsave_state *)kmem_cache_alloc(&ifps_cache);
-	memset(ifps, 0, fp_xsave_size);
+	memcpy(ifps, fp_default_state, fp_xsave_size);
 	pcb->ims.ifps = ifps;
-
-	ifps->fp_valid = TRUE;
-
-	if (fp_save_kind != FP_FNSAVE) {
-		ifps->xfp_save_state.fp_control = (0x037f
-				& ~(FPC_IM|FPC_ZM|FPC_OM|FPC_PC))
-				| (FPC_PC_64|FPC_IC_AFF);
-		ifps->xfp_save_state.fp_status = 0;
-		ifps->xfp_save_state.fp_tag = 0xffff;	/* all empty */
-		if (CPU_HAS_FEATURE(CPU_FEATURE_SSE))
-			ifps->xfp_save_state.fp_mxcsr = 0x1f80;
-	} else {
-		ifps->fp_save_state.fp_control = (0x037f
-				& ~(FPC_IM|FPC_ZM|FPC_OM|FPC_PC))
-				| (FPC_PC_64|FPC_IC_AFF);
-		ifps->fp_save_state.fp_status = 0;
-		ifps->fp_save_state.fp_tag = 0xffff;	/* all empty */
-	}
 }
 
 #if	(defined(AT386) || defined(ATX86_64)) && !defined(MACH_XEN)
