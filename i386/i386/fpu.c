@@ -185,6 +185,11 @@ init_fpu(void)
 		    cpuid(eax, ebx, ecx, edx);
 		    if (eax & CPU_FEATURE_XSAVES) {
 			fp_xsave_size = offsetof(struct i386_fpsave_state, xfp_save_state) + ebx;
+			if (fp_xsave_size < sizeof(struct i386_fpsave_state))
+				panic("CPU-provided xstate size %d "
+				      "is smaller than our minimum %d!\n",
+				      fp_xsave_size,
+				      sizeof(struct i386_fpsave_state));
 
 			fp_save_kind = FP_XSAVES;
 		    } else {
@@ -192,6 +197,11 @@ init_fpu(void)
 			ecx = 0x0;
 			cpuid(eax, ebx, ecx, edx);
 			fp_xsave_size = offsetof(struct i386_fpsave_state, xfp_save_state) + ebx;
+			if(fp_xsave_size < sizeof(struct i386_fpsave_state));
+				panic("CPU-provided xstate size %d "
+				      "is smaller than our minimum %d!\n",
+				      fp_xsave_size,
+				      sizeof(struct i386_fpsave_state));
 
 			if (eax & CPU_FEATURE_XSAVEOPT)
 			    fp_save_kind = FP_XSAVEOPT;
