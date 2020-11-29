@@ -79,9 +79,14 @@ static unsigned long	mxcsr_feature_mask = 0xffffffff;	/* Always AND user-provide
 
 /* Default FPU configuration */
 #define MXCSR_DEFAULT	0x1f80
-#define CWD_DEFAULT	((0x037f \
-				& ~(FPC_IM|FPC_ZM|FPC_OM|FPC_PC)) \
-				| (FPC_PC_64|FPC_IC_AFF))
+#define CWD_DEFAULT	(FPC_PC_64 |	/* 64bit precision */ \
+			 FPC_RC_RN |	/* round-to-nearest */ \
+			 FPC_ZE |	/* Suppress zero-divide */ \
+			 FPC_OE |	/*  and overflow */ \
+			 FPC_UE |	/*  underflow */ \
+			 FPC_IE |	/* Allow NaNQs and +-INF */ \
+			 FPC_DE |	/* Allow denorms as operands */ \
+			 FPC_PE)	/* No trap for precision loss */ \
 
 #if	NCPUS == 1
 volatile thread_t	fp_thread = THREAD_NULL;
