@@ -98,7 +98,7 @@ routine register_new_task_notification(
  * - GSYNC_TIMED: The call only blocks for MSEC milliseconds. */
 routine gsync_wait(
   task : task_t;
-  addr : vm_offset_t;
+  addr : vm_address_t;
   val1 : unsigned;
   val2 : unsigned;
   msec : natural_t;
@@ -117,7 +117,7 @@ routine gsync_wait(
  * and because the return value rarely matters. */
 simpleroutine gsync_wake(
   task : task_t;
-  addr : vm_offset_t;
+  addr : vm_address_t;
   val : unsigned;
   flags : int);
 
@@ -133,8 +133,8 @@ simpleroutine gsync_wake(
  * with 'gsync_wake'. */
 simpleroutine gsync_requeue(
   task : task_t;
-  src_addr : vm_offset_t;
-  dst_addr : vm_offset_t;
+  src_addr : vm_address_t;
+  dst_addr : vm_address_t;
   wake_one : boolean_t;
   flags : int);
 
