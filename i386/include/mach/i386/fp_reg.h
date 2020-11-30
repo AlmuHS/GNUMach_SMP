@@ -27,8 +27,6 @@
 #ifndef	_MACH_I386_FP_REG_H_
 #define	_MACH_I386_FP_REG_H_
 
-#include <stdint.h>
-
 /*
  *	Floating point registers and status, as saved
  *	and restored by FP save/restore instructions.
@@ -53,11 +51,11 @@ struct i386_fp_regs {
 					/* space for 8 80-bit FP registers */
 };
 
-#define XSAVE_XCOMP_BV_COMPACT (((uint64_t)1) << 63)
+#define XSAVE_XCOMP_BV_COMPACT (((unsigned long long)1) << 63)
 struct i386_xfp_xstate_header {
-	uint64_t	xfp_features;
-	uint64_t	xcomp_bv;
-	uint64_t	reserved[6];
+	unsigned long long	xfp_features;
+	unsigned long long	xcomp_bv;
+	unsigned long long	reserved[6];
 } __attribute__((packed, aligned(64)));
 _Static_assert(sizeof(struct i386_xfp_xstate_header) == 8*8);
 
