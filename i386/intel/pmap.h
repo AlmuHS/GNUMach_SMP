@@ -212,6 +212,7 @@ extern void pmap_clear_bootstrap_pagetable(pt_entry_t *addr);
 
 #if PAE
 #ifdef __x86_64__
+/* TODO: support PCID */
 #ifdef MACH_HYP
 #define	set_pmap(pmap)	\
 	MACRO_BEGIN					\
