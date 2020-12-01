@@ -57,7 +57,6 @@ struct i386_xfp_xstate_header {
 	unsigned long long	xcomp_bv;
 	unsigned long long	reserved[6];
 } __attribute__((packed, aligned(64)));
-_Static_assert(sizeof(struct i386_xfp_xstate_header) == 8*8);
 
 struct i386_xfp_save {
 	unsigned short	fp_control;	/* control */
@@ -80,7 +79,6 @@ struct i386_xfp_save {
 	struct i386_xfp_xstate_header header;
 	unsigned char	extended[0];	/* Extended region */
 } __attribute__((packed, aligned(64)));
-_Static_assert(sizeof(struct i386_xfp_save) == 512 + 8*8);
 
 /*
  * Control register
