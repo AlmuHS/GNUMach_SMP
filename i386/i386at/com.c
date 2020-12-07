@@ -224,6 +224,11 @@ comattach(struct bus_device *dev)
 	u_char	unit = dev->unit;
 	u_short	addr = dev->address;
 
+	if (unit >= NCOM) {
+		printf(", disabled by NCOM configuration\n");
+		return;
+	}
+
 	take_dev_irq(dev);
 	printf(", port = %lx, spl = %ld, pic = %d. (DOS COM%d)",
 	       dev->address, dev->sysdep, dev->sysdep1, unit+1);
