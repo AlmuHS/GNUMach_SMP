@@ -54,6 +54,7 @@
 #include <vm/vm_resident.h>
 #include <vm/vm_kern.h>
 #include <ipc/ipc_port.h>
+#include <string.h>
 
 #if	MACH_KDB
 #include <ddb/db_output.h>
@@ -672,8 +673,29 @@ vm_map_find_entry_anywhere(struct vm_map *map,
 	struct rbtree_node *node;
 	vm_size_t max_size;
 	vm_offset_t start, end;
+	vm_offset_t max;
 
 	assert(size != 0);
+
+	max = map->max_offset;
+	if (((mask + 1) & mask) != 0) {
+		/* We have high bits in addition to the low bits */
+
+		int first0 = ffs(~mask);		/* First zero after low bits */
+		vm_offset_t lowmask = (1UL << (first0-1)) - 1;		/* low bits */
+		vm_offset_t himask = mask - lowmask;			/* high bits */
+		int second1 = ffs(himask);		/* First one after low bits */
+
+		max = 1UL << (second1-1);
+
+		if (himask + max != 0) {
+			/* high bits do not continue up to the end */
+			printf("invalid mask %lx\n", mask);
+			return NULL;
+		}
+
+		mask = lowmask;
+	}
 
 	if (!map_locked) {
 		vm_map_lock(map);
@@ -685,7 +707,7 @@ restart:
 		start = (map->min_offset + mask) & ~mask;
 		end = start + size;
 
-		if ((start < map->min_offset) || (end <= start) || (end > map->max_offset)) {
+		if ((start < map->min_offset) || (end <= start) || (end > max)) {
 			goto error;
 		}
 
@@ -701,7 +723,7 @@ restart:
 
 		if ((start >= entry->vme_end)
 		    && (end > start)
-		    && (end <= map->max_offset)
+		    && (end <= max)
 		    && (end <= (entry->vme_end + entry->gap_size))) {
 			*startp = start;
 			return entry;
@@ -743,6 +765,11 @@ restart:
 	end = start + size;
 	assert(end > start);
 	assert(end <= (entry->vme_end + entry->gap_size));
+	if (end > max) {
+		/* Does not respect the allowed maximum */
+		printf("%lx does not respect %lx\n", end, max);
+		return NULL;
+	}
 	*startp = start;
 	return entry;
 
