@@ -69,8 +69,10 @@
 #define ASSERT_IPL(L)
 #endif
 
-_Static_assert(sizeof(struct i386_xfp_xstate_header) == 8*8);
-_Static_assert(sizeof(struct i386_xfp_save) == 512 + 8*8);
+_Static_assert(sizeof(struct i386_xfp_xstate_header) == 8*8,
+	       "struct i386_xfp_xstate_header size");
+_Static_assert(sizeof(struct i386_xfp_save) == 512 + 8*8,
+	       "struct i386_xfp_save size");
 
 int			fp_kind = FP_387;	/* 80387 present */
 enum fp_save_kind	fp_save_kind = FP_FNSAVE;	/* Which instruction we use to save/restore FPU state */
