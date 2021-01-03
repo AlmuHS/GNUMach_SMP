@@ -733,6 +733,8 @@ restart:
 	max_size = size + mask;
 
 	if (max_size < size) {
+		printf("max_size %x got smaller than size %x with mask %lx\n",
+		       max_size, size, mask);
 		goto error;
 	}
 
