@@ -481,12 +481,12 @@ vm_map_gap_remove(struct vm_map_header *hdr, struct vm_map_entry *entry)
  *	before using these macros.
  */
 #define vm_map_entry_link(map, after_where, entry)	\
-	_vm_map_entry_link(&(map)->hdr, after_where, entry)
+	_vm_map_entry_link(&(map)->hdr, after_where, entry, 1)
 
 #define vm_map_copy_entry_link(copy, after_where, entry)	\
-	_vm_map_entry_link(&(copy)->cpy_hdr, after_where, entry)
+	_vm_map_entry_link(&(copy)->cpy_hdr, after_where, entry, 0)
 
-#define _vm_map_entry_link(hdr, after_where, entry)	\
+#define _vm_map_entry_link(hdr, after_where, entry, link_gap)	\
 	MACRO_BEGIN					\
 	(hdr)->nentries++;				\
 	(entry)->vme_prev = (after_where);		\
@@ -495,22 +495,24 @@ vm_map_gap_remove(struct vm_map_header *hdr, struct vm_map_entry *entry)
 	 (entry)->vme_next->vme_prev = (entry);		\
 	rbtree_insert(&(hdr)->tree, &(entry)->tree_node,	\
 		      vm_map_entry_cmp_insert);		\
-	vm_map_gap_insert((hdr), (entry));		\
+	if (link_gap)					\
+		vm_map_gap_insert((hdr), (entry));	\
 	MACRO_END
 
 #define vm_map_entry_unlink(map, entry)			\
-	_vm_map_entry_unlink(&(map)->hdr, entry)
+	_vm_map_entry_unlink(&(map)->hdr, entry, 1)
 
 #define vm_map_copy_entry_unlink(copy, entry)			\
-	_vm_map_entry_unlink(&(copy)->cpy_hdr, entry)
+	_vm_map_entry_unlink(&(copy)->cpy_hdr, entry, 0)
 
-#define _vm_map_entry_unlink(hdr, entry)		\
+#define _vm_map_entry_unlink(hdr, entry, unlink_gap)	\
 	MACRO_BEGIN					\
 	(hdr)->nentries--;				\
 	(entry)->vme_next->vme_prev = (entry)->vme_prev; \
 	(entry)->vme_prev->vme_next = (entry)->vme_next; \
 	rbtree_remove(&(hdr)->tree, &(entry)->tree_node);	\
-	vm_map_gap_remove((hdr), (entry));		\
+	if (unlink_gap)					\
+		vm_map_gap_remove((hdr), (entry));	\
 	MACRO_END
 
 /*
@@ -1181,13 +1183,13 @@ kern_return_t vm_map_enter(
 #define vm_map_clip_start(map, entry, startaddr) \
 	MACRO_BEGIN \
 	if ((startaddr) > (entry)->vme_start) \
-		_vm_map_clip_start(&(map)->hdr,(entry),(startaddr)); \
+		_vm_map_clip_start(&(map)->hdr,(entry),(startaddr),1); \
 	MACRO_END
 
 #define vm_map_copy_clip_start(copy, entry, startaddr) \
 	MACRO_BEGIN \
 	if ((startaddr) > (entry)->vme_start) \
-		_vm_map_clip_start(&(copy)->cpy_hdr,(entry),(startaddr)); \
+		_vm_map_clip_start(&(copy)->cpy_hdr,(entry),(startaddr),0); \
 	MACRO_END
 
 /*
@@ -1197,7 +1199,8 @@ kern_return_t vm_map_enter(
 void _vm_map_clip_start(
 	struct vm_map_header 	*map_header,
 	vm_map_entry_t		entry,
-	vm_offset_t		start)
+	vm_offset_t		start,
+	boolean_t		link_gap)
 {
 	vm_map_entry_t	new_entry;
 
@@ -1216,7 +1219,7 @@ void _vm_map_clip_start(
 	entry->offset += (start - entry->vme_start);
 	entry->vme_start = start;
 
-	_vm_map_entry_link(map_header, entry->vme_prev, new_entry);
+	_vm_map_entry_link(map_header, entry->vme_prev, new_entry, link_gap);
 
 	if (entry->is_sub_map)
 	 	vm_map_reference(new_entry->object.sub_map);
@@ -1234,13 +1237,13 @@ void _vm_map_clip_start(
 #define vm_map_clip_end(map, entry, endaddr) \
 	MACRO_BEGIN \
 	if ((endaddr) < (entry)->vme_end) \
-		_vm_map_clip_end(&(map)->hdr,(entry),(endaddr)); \
+		_vm_map_clip_end(&(map)->hdr,(entry),(endaddr),1); \
 	MACRO_END
 
 #define vm_map_copy_clip_end(copy, entry, endaddr) \
 	MACRO_BEGIN \
 	if ((endaddr) < (entry)->vme_end) \
-		_vm_map_clip_end(&(copy)->cpy_hdr,(entry),(endaddr)); \
+		_vm_map_clip_end(&(copy)->cpy_hdr,(entry),(endaddr),0); \
 	MACRO_END
 
 /*
@@ -1250,7 +1253,8 @@ void _vm_map_clip_start(
 void _vm_map_clip_end(
 	struct vm_map_header 	*map_header,
 	vm_map_entry_t		entry,
-	vm_offset_t		end)
+	vm_offset_t		end,
+	boolean_t		link_gap)
 {
 	vm_map_entry_t	new_entry;
 
@@ -1265,7 +1269,7 @@ void _vm_map_clip_end(
 	new_entry->vme_start = entry->vme_end = end;
 	new_entry->offset += (end - entry->vme_start);
 
-	_vm_map_entry_link(map_header, entry, new_entry);
+	_vm_map_entry_link(map_header, entry, new_entry, link_gap);
 
 	if (entry->is_sub_map)
 	 	vm_map_reference(new_entry->object.sub_map);
