@@ -52,6 +52,9 @@ NEGLIGENCE, OR OTHER TORTIOUS ACTION, ARISING OUR OF OR IN CONNECTION
 WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
+#ifndef	_COMREG_H_
+#define	_COMREG_H_
+
 #define TXRX(addr)	(addr + 0)
 #define BAUD_LSB(addr)	(addr + 0)
 #define BAUD_MSB(addr)	(addr + 1)
@@ -132,3 +135,5 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define		iFIFO4CH	0x40	/* Receive fifo trigger level 4 chars*/
 #define		iFIFO8CH	0x80	/* Receive fifo trigger level 8 chars*/
 #define		iFIFO14CH	0xc0	/* Receive fifo trigger level 14 chars*/
+
+#endif /* _COMREG_H_ */
