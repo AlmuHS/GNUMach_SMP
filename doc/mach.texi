@@ -4399,6 +4399,9 @@ The current scheduling priority of the thread.
 
 @item int depress_priority
 The priority the thread was depressed from.
+
+@item int last_processor
+The last processor used by the thread.
 @end table
 @end deftp
 
