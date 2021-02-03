@@ -101,7 +101,7 @@ comprobe_general(struct bus_device *dev, int noisy)
 	char    *type = "8250";
 	int     i;
 
-	if ((unit < 0) || (unit > NCOM)) {
+	if ((unit < 0) || (unit >= NCOM)) {
 		printf("com %d out of range\n", unit);
 		return(0);
 	}
