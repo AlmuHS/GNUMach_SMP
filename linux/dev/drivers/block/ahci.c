@@ -895,7 +895,7 @@ static void ahci_probe_dev(unsigned char bus, unsigned char device)
 
 	for (i = 0; i < AHCI_MAX_PORTS; i++) {
 		u32 ssts;
-		u8 spd, ipm;
+               u8 det, ipm;
 
 		if (!(port_map & (1U << i)))
 			continue;
@@ -903,8 +903,8 @@ static void ahci_probe_dev(unsigned char bus, unsigned char device)
 		ahci_port = &ahci_host->ports[i];
 
 		ssts = readl(&ahci_port->ssts);
-		spd = ssts & 0xf;
-		switch (spd)
+               det = ssts & 0xf;
+               switch (det)
 		{
 			case 0x0:
 				/* Device not present */
@@ -919,7 +919,7 @@ static void ahci_probe_dev(unsigned char bus, unsigned char device)
 				printk("ahci: %02x:%02x.%x: Port %u phy offline?!\n", bus, dev, fun, i);
 				continue;
 			default:
-				printk("ahci: %02x:%02x.%x: Unknown port %u SPD %x\n", bus, dev, fun, i, spd);
+                               printk("ahci: %02x:%02x.%x: Unknown port %u DET %x\n", bus, dev, fun, i, det);
 				continue;
 		}
 
