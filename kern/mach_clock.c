@@ -152,7 +152,9 @@ void clock_interrupt(
 	    timer_bump(&thread->user_timer, usec);
 	}
 	else {
-	    timer_bump(&thread->system_timer, usec);
+	    /* Only bump timer if threads are initialized */
+	    if (thread)
+		timer_bump(&thread->system_timer, usec);
 	}
 #endif	/* STAT_TIME */
 
@@ -189,6 +191,7 @@ void clock_interrupt(
 	if (usermode)
 #endif
 	{
+	    if (thread)
 		take_pc_sample_macro(thread, SAMPLED_PC_PERIODIC, usermode, pc);
 	}
 #endif /* MACH_PCSAMPLE */
