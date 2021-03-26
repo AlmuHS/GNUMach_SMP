@@ -743,7 +743,7 @@ init_IRQ (void)
   /*
    * Check if the machine has an EISA bus.
    */
-  p = (char *) 0x0FFFD9;
+  p = (char *) phystokv(0x0FFFD9);
   if (*p++ == 'E' && *p++ == 'I' && *p++ == 'S' && *p == 'A')
     EISA_bus = 1;
   
