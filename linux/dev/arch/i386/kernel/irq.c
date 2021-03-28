@@ -29,7 +29,7 @@
 #include <kern/assert.h>
 
 #include <i386/spl.h>
-#include <i386/pic.h>
+#include <i386/irq.h>
 #include <i386/pit.h>
 
 #define MACH_INCLUDE
@@ -84,13 +84,7 @@ struct linux_action
   user_intr_t *user_intr;
 };
 
-static struct linux_action *irq_action[16] =
-{
-  NULL, NULL, NULL, NULL,
-  NULL, NULL, NULL, NULL,
-  NULL, NULL, NULL, NULL,
-  NULL, NULL, NULL, NULL
-};
+static struct linux_action *irq_action[NINTR] = {0};
 
 /*
  * Generic interrupt handler for Linux devices.
@@ -232,7 +226,7 @@ install_user_intr_handler (struct irqdev *dev, int id, unsigned long flags,
 
   unsigned int irq = dev->irq[id];
 
-  assert (irq < 16);
+  assert (irq < NINTR);
 
   /* Test whether the irq handler has been set */
   // TODO I need to protect the array when iterating it.
@@ -279,7 +273,7 @@ request_irq (unsigned int irq, void (*handler) (int, void *, struct pt_regs *),
   struct linux_action *action;
   int retval;
 
-  assert (irq < 16);
+  assert (irq < NINTR);
 
   if (!handler)
     return -EINVAL;
@@ -315,7 +309,7 @@ free_irq (unsigned int irq, void *dev_id)
   struct linux_action *action, **p;
   unsigned long flags;
 
-  if (irq > 15)
+  if (irq >= NINTR)
     panic ("free_irq: bad irq number");
 
   for (p = irq_action + irq; (action = *p) != NULL; p = &action->next)
@@ -354,7 +348,7 @@ probe_irq_on (void)
   /*
    * Allocate all available IRQs.
    */
-  for (i = 15; i > 0; i--)
+  for (i = NINTR - 1; i > 0; i--)
     {
       if (!irq_action[i] && ivect[i] == intnull)
 	{
@@ -387,7 +381,7 @@ probe_irq_off (unsigned long irqs)
   /*
    * Disable unnecessary IRQs.
    */
-  for (i = 15; i > 0; i--)
+  for (i = NINTR - 1; i > 0; i--)
     {
       if (!irq_action[i] && ivect[i] == intnull)
 	{
@@ -427,7 +421,7 @@ reserve_mach_irqs (void)
 {
   unsigned int i;
 
-  for (i = 0; i < 16; i++)
+  for (i = 0; i < NINTR; i++)
     {
       if (ivect[i] != intnull)
 	/* This dummy action does not specify SA_SHIRQ, so
