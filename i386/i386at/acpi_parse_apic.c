@@ -129,10 +129,10 @@ acpi_check_rsdp(struct acpi_rsdp *rsdp)
  */
 
 static int8_t
-acpi_check_rsdp_align(uint32_t addr)
+acpi_check_rsdp_align(void *addr)
 {
     /* check alignment. */
-    if (addr & (ACPI_RSDP_ALIGN-1))
+    if ((uintptr_t)addr & (ACPI_RSDP_ALIGN-1))
         return ACPI_BAD_ALIGN;
 
     return ACPI_SUCCESS;
@@ -175,29 +175,22 @@ acpi_search_rsdp(void *addr, uint32_t length)
 struct acpi_rsdp*
 acpi_get_rsdp(void)
 {
+    uint16_t *start = 0;
+    phys_addr_t base = 0;
     struct acpi_rsdp *rsdp = NULL;
-    uint16_t *start = 0x0;
-    uint32_t base = 0x0;
 
     /* EDBA start address. */
     start = (uint16_t*) phystokv(0x040e);
-    base = *start;
+    base = phystokv((*start) << 4); /* address = paragraph number * 16 */
 
-    if (base != 0) { /* Memory check. */
-
-        base <<= 4; /* base = base * 16 */
-
-        /* check alignment. */
-        if (acpi_check_rsdp_align(base) == ACPI_BAD_ALIGN)
-            return NULL;
-
-        /* Search the RSDP in first 1024 bytes from EDBA. */
-        rsdp = acpi_search_rsdp((void*)base,1024);
-    }
+    /* check alignment. */
+    if (acpi_check_rsdp_align((void *)base) == ACPI_BAD_ALIGN)
+        return NULL;
+    rsdp = acpi_search_rsdp((void *)base, 1024);
 
     if (rsdp == NULL) {
         /* If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh */
-        rsdp = acpi_search_rsdp((void*) 0x0e0000, 0x100000 - 0x0e0000);
+        rsdp = acpi_search_rsdp((void *)phystokv(0xe0000), 0x100000 - 0x0e0000);
     }
 
     return rsdp;
@@ -421,6 +414,7 @@ acpi_apic_parse_table(struct acpi_apic *apic)
             acpi_apic_add_irq_override(irq_override_entry);
             break;
 
+        /* FIXME: There is another unhandled case */
         }
 
         /* Get next APIC entry. */
@@ -480,7 +474,7 @@ acpi_apic_setup(struct acpi_apic *apic)
     /* Refit the apic-cpu array. */
     if(ncpus < NCPUS) {
         int refit = apic_refit_cpulist();
-        if (refit != -0)
+        if (refit != 0)
             return ACPI_FIT_FAILURE;
     }
 
