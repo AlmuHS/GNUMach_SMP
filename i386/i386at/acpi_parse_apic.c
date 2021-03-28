@@ -280,7 +280,7 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n)
     /* Search APIC entries in rsdt table. */
     for (int i = 0; i < acpi_rsdt_n; i++) {
         descr_header = (struct acpi_dhdr*) kmem_map_aligned_table(rsdt->entry[i], sizeof(struct acpi_dhdr),
-                                                                  VM_PROT_READ | VM_PROT_WRITE);
+                                                                  VM_PROT_READ);
 
         /* Check if the entry contains an APIC. */
         check_signature = acpi_check_signature(descr_header->signature, ACPI_APIC_SIG, 4*sizeof(uint8_t));
