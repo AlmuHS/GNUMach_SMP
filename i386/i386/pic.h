@@ -96,7 +96,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 #if	defined(AT386) || defined(ATX86_64)
-#define	PICM_VECTBASE		0x40
+#define	PICM_VECTBASE		0x20
 #define PICS_VECTBASE		PICM_VECTBASE + 0x08
 #endif	/* defined(AT386) */
 

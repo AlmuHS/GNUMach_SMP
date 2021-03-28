@@ -26,11 +26,9 @@
 
 /* On a standard PC, we only need 16 interrupt vectors,
    because that's all the PIC hardware supports.  */
-/* XX But for some reason we program the PIC
-   to use vectors 0x40-0x4f rather than 0x20-0x2f.  Fix.  */
-#define IDTSZ (0x20+0x20+0x10)
+#define IDTSZ (0x20+0x10)
 
-#define PIC_INT_BASE 0x40
+#define PIC_INT_BASE 0x20
 
 #include <i386/idt-gen.h>
 
