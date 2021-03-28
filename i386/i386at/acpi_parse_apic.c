@@ -326,8 +326,10 @@ acpi_apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry)
     /* Fill IOAPIC structure with its main fields */
     io_apic.apic_id = ioapic_entry->apic_id;
     io_apic.addr = ioapic_entry->addr;
-    io_apic.base = ioapic_entry->base;
-
+    io_apic.gsi_base = ioapic_entry->gsi_base;
+    io_apic.ioapic = (ApicIoUnit *)kmem_map_aligned_table(ioapic_entry->addr,
+                                                          sizeof(ApicIoUnit),
+                                                          VM_PROT_READ | VM_PROT_WRITE);
     /* Insert IOAPIC in the list. */
     apic_add_ioapic(io_apic);
 }
@@ -447,7 +449,7 @@ static int
 acpi_apic_setup(struct acpi_apic *apic)
 {
     int apic_checksum;
-    ApicLocalUnit* lapic;
+    ApicLocalUnit* lapic_unit;
     uint8_t ncpus, nioapics;
 
     /* Check the checksum of the APIC */
@@ -457,12 +459,13 @@ acpi_apic_setup(struct acpi_apic *apic)
         return ACPI_BAD_CHECKSUM;
 
     /* map common lapic address */
-    lapic = kmem_map_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit), VM_PROT_READ);
+    lapic_unit = kmem_map_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit),
+                                        VM_PROT_READ | VM_PROT_WRITE);
 
-    if (lapic == NULL)
+    if (lapic_unit == NULL)
         return ACPI_NO_LAPIC;
 
-    apic_lapic_init(lapic);
+    apic_lapic_init(lapic_unit);
     acpi_apic_parse_table(apic);
 
     ncpus = apic_get_numcpus();

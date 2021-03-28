@@ -95,6 +95,19 @@ apic_add_irq_override(IrqOverrideData irq_over)
     apic_data.nirqoverride++;
 }
 
+IrqOverrideData *
+acpi_get_irq_override(uint8_t pin)
+{
+    int i;
+
+    for (i = 0; i < apic_data.nirqoverride; i++) {
+        if (apic_data.irq_override_list[i].irq == pin) {
+            return &apic_data.irq_override_list[i];
+        }
+    }
+    return NULL;
+}
+
 /*
  * apic_get_cpu_apic_id: returns the apic_id of a cpu.
  * Receives as input the kernel ID of a CPU.
@@ -118,16 +131,14 @@ apic_get_lapic(void)
 /*
  * apic_get_ioapic: returns the IOAPIC identified by its kernel ID.
  * Receives as input the IOAPIC's Kernel ID.
- * Returns a ioapic_data structure with the IOAPIC's data.
+ * Returns a ioapic_data structure pointer with the IOAPIC's data.
  */
-struct IoApicData
+struct IoApicData *
 apic_get_ioapic(int kernel_id)
 {
-    IoApicData io_apic = {};
-
     if (kernel_id < MAX_IOAPICS)
-        return apic_data.ioapic_list[kernel_id];
-    return io_apic;
+        return &apic_data.ioapic_list[kernel_id];
+    return NULL;
 }
 
 /* apic_get_numcpus: returns the current number of cpus. */
@@ -204,18 +215,22 @@ void apic_print_info(void)
     uint16_t lapic_id;
     uint16_t ioapic_id;
 
-    IoApicData ioapic;
+    IoApicData *ioapic;
 
     printf("CPUS:\n");
     for (i = 0; i < ncpus; i++) {
         lapic_id = apic_get_cpu_apic_id(i);
-        printf(" CPU %d - APIC ID %x\n", i, lapic_id);
+        printf(" CPU %d - APIC ID %x - addr=0x%p\n", i, lapic_id, apic_get_lapic());
     }
 
     printf("IOAPICS:\n");
     for (i = 0; i < nioapics; i++) {
         ioapic = apic_get_ioapic(i);
-        ioapic_id = ioapic.apic_id;
-        printf(" IOAPIC %d - APIC ID %x\n", i, ioapic_id);
+        if (!ioapic) {
+            printf("ERROR: invalid IOAPIC ID %x\n", i);
+        } else {
+            ioapic_id = ioapic->apic_id;
+            printf(" IOAPIC %d - APIC ID %x - addr=0x%p\n", i, ioapic_id, ioapic->ioapic);
+        }
     }
 }

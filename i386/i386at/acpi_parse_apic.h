@@ -139,7 +139,7 @@ struct acpi_apic_ioapic {
     uint8_t     apic_id;
     uint8_t     reserved;
     uint32_t    addr;
-    uint32_t    base;
+    uint32_t    gsi_base;
 } __attribute__((__packed__));
 
 /*
