@@ -107,10 +107,10 @@ typedef struct IoApicData {
         ApicIoUnit *ioapic;
 } IoApicData;
 
-#define APIC_IRQ_OVERRIDE_ACTIVE_LOW 2
 #define APIC_IRQ_OVERRIDE_POLARITY_MASK 1
-#define APIC_IRQ_OVERRIDE_LEVEL_TRIGGERED 8
+#define APIC_IRQ_OVERRIDE_ACTIVE_LOW 2
 #define APIC_IRQ_OVERRIDE_TRIGGER_MASK 4
+#define APIC_IRQ_OVERRIDE_LEVEL_TRIGGERED 8
 
 typedef struct IrqOverrideData {
         uint8_t  bus;
