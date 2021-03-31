@@ -193,6 +193,8 @@ install_user_intr_handler (struct irqdev *dev, int id, unsigned long flags,
   struct intr_list *new, *old = *head;
   spl_t s;
 
+  flags |= SA_SHIRQ;
+
   assert (irq < NINTR);
 
   /* Don't allow overriding hardclock/kdintr etc */
