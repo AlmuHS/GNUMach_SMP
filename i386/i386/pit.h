@@ -58,6 +58,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 /* bits used in auxiliary control port for timer 2 */
 #define PITAUX_GATE2	0x01		/* aux port, PIT gate 2 input */
 #define PITAUX_OUT2	0x02		/* aux port, PIT clock out 2 enable */
+#define PITAUX_VAL	0x20		/* aux port, output */
 #endif	/* defined(AT386) */
 
 /* Following are used for Timer 0 */
@@ -65,13 +66,17 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define PIT_LOADMODE	0x30		/* load least significant byte followed
 					 * by most significant byte */
 #define PIT_NDIVMODE	0x04		/*divide by N counter */
-#define PIT_SQUAREMODE	0x06		/* square-wave mode */
 
 /* Used for Timer 1. Used for delay calculations in countdown mode */
 #define PIT_C1          0x40            /* select counter 1 */
 #define PIT_READMODE	0x30		/* read or load least significant byte
 					 * followed by most significant byte */
-#define PIT_RATEMODE	0x06		/* square-wave mode for USART */
+
+#define PIT_SQUAREMODE	0x06		/* square-wave mode */
+#define PIT_RATEMODE	0x02		/* rate generator mode */
+
+/* Used for Timer 2. */
+#define PIT_C2		0x80            /* select counter 2 */
 
 /*
  * Clock speed for the timer in hz divided by the constant HZ
