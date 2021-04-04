@@ -927,7 +927,9 @@ void
 fpintr(int unit)
 {
 	spl_t	s;
+#if	NCPUS == 1
 	thread_t thread = current_thread();
+#endif	/* NCPUS == 1 */
 
 ASSERT_IPL(SPL1);
 	/*

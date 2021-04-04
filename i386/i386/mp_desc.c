@@ -30,12 +30,14 @@
 
 #include <kern/cpu_number.h>
 #include <kern/debug.h>
+#include <kern/printf.h>
 #include <mach/machine.h>
 #include <mach/xen.h>
 #include <vm/vm_kern.h>
 
 #include <i386/mp_desc.h>
 #include <i386/lock.h>
+#include <i386at/model_dep.h>
 #include <machine/ktss.h>
 #include <machine/tss.h>
 #include <machine/io_perm.h>

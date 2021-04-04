@@ -56,6 +56,7 @@
 #include <ddb/db_task_thread.h>
 #include <ddb/db_trap.h>
 #include <ddb/db_watch.h>
+#include <ddb/db_mp.h>
 #include <machine/db_interface.h>
 #include <machine/machspl.h>
 

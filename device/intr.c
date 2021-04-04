@@ -200,7 +200,7 @@ install_user_intr_handler (struct irqdev *dev, int id, unsigned long flags,
   /* Don't allow overriding hardclock/kdintr etc */
   if ((ivect[irq] != user_irq_handler) && (ivect[irq] != intnull))
     {
-      mach_print("You can't have this interrupt\n");
+      printf("You can't have this interrupt\n");
       return D_ALREADY_OPEN;
     }
 
@@ -208,7 +208,7 @@ install_user_intr_handler (struct irqdev *dev, int id, unsigned long flags,
     {
       if (!(old->flags & flags & SA_SHIRQ))
         {
-          mach_print ("Cannot share irq\n");
+          printf ("Cannot share irq\n");
           return D_ALREADY_OPEN;
         }
     }

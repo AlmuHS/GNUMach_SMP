@@ -133,6 +133,7 @@ extern void ast_init (void);
 extern void ast_check (void);
 
 #if	NCPUS > 1
+extern void init_ast_check(const processor_t processor);
 extern void cause_ast_check(const processor_t processor);
 #endif
 

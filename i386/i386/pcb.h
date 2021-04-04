@@ -79,6 +79,10 @@ extern thread_t Load_context (thread_t new);
 
 extern thread_t Switch_context (thread_t old, void (*continuation)(), thread_t new);
 
+extern void switch_to_shutdown_context(thread_t thread,
+				   void (*routine)(processor_t),
+				   processor_t processor);
+
 extern void Thread_continue (void);
 
 extern void pcb_module_init (void);

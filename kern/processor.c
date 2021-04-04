@@ -39,12 +39,14 @@
 #include <kern/lock.h>
 #include <kern/host.h>
 #include <kern/ipc_tt.h>
+#include <kern/machine.h>
 #include <kern/processor.h>
 #include <kern/sched.h>
 #include <kern/task.h>
 #include <kern/thread.h>
 #include <kern/ipc_host.h>
 #include <ipc/ipc_port.h>
+#include <machine/mp_desc.h>
 
 #if	MACH_HOST
 #include <kern/slab.h>
