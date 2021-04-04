@@ -16,7 +16,11 @@
 #include <mach/machine/asm.h>
 
 #include <i386/ipl.h>
-#include <i386/pic.h>
+#ifdef APIC
+# include <i386/apic.h>
+#else
+# include <i386/pic.h>
+#endif
 #include <i386/i386asm.h>
 
 #define READ_ISR	(OCW_TEMPLATE|READ_NEXT_RD|READ_IS_ONRD)
@@ -27,6 +31,10 @@
  * On entry, %rax contains the irq number.
  */
 ENTRY(interrupt)
+#ifdef APIC
+	cmpl	$255,%eax		/* was this a spurious intr? */
+	je	_null_eoi		/* if so, null eoi handler */
+#endif
 	pushq	%rax			/* save irq number */
 	call	spl7			/* set ipl */
 	pushq	%rax			/* save previous ipl */
@@ -45,6 +53,7 @@ ENTRY(interrupt)
 	cli				/* XXX no more nested interrupts */
 	popq	%rcx			/* restore irq number */
 
+#ifndef APIC
 	movl	$1,%eax
 	shll	%cl,%eax		/* get corresponding IRQ mask */
 	orl	EXT(curr_pic_mask),%eax /* add current mask */
@@ -81,4 +90,17 @@ ENTRY(interrupt)
 	outb	%al,$(PIC_MASTER_OCW)	/* unmask master */
 2:
 	ret
+#else
+	cmpl    $16,%ecx		/* was this a low ISA intr? */
+	jl      _isa_eoi		/* no, must be PCI */
+	ret				/* NB: let irq_acknowledge handle pci EOI */
+_isa_eoi:
+	movl	%ecx,%edi		/* load irq number as 1st arg */
+	call	EXT(ioapic_irq_eoi)	/* ioapic irq specific EOI */
+	call	EXT(lapic_eoi)		/* lapic broadcast EOI */
+	ret
+_null_eoi:
+	call	EXT(lapic_eoi)		/* lapic broadcast EOI */
+	ret
+#endif
 END(interrupt)

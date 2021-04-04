@@ -78,6 +78,8 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 /* Used for Timer 2. */
 #define PIT_C2		0x80            /* select counter 2 */
 
+#define POST_PORT	0x80		/* used for tiny i/o delay */
+
 /*
  * Clock speed for the timer in hz divided by the constant HZ
  * (defined in param.h)
@@ -87,5 +89,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #endif	/* AT386 */
 
 extern void clkstart(void);
+extern void pit_prepare_sleep(int hz);
+extern void pit_sleep(void);
 
 #endif /* _I386_PIT_H_ */

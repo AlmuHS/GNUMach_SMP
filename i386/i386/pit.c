@@ -51,7 +51,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include <kern/mach_clock.h>
 #include <i386/ipl.h>
-#include <i386/pic.h>
+#include <machine/irq.h>
 #include <i386/pit.h>
 #include <i386/pio.h>
 #include <kern/cpu_number.h>
@@ -66,14 +66,47 @@ int pit0_mode = PIT_C0|PIT_SQUAREMODE|PIT_READMODE ;
 unsigned int clknumb = CLKNUM;		/* interrupt interval for timer 0 */
 
 void
+pit_prepare_sleep(int hz)
+{
+    /* Prepare to sleep for 1/hz seconds */
+    int val = 0;
+    int lsb, msb;
+
+    val = inb(PITAUX_PORT);
+    val &= ~PITAUX_OUT2;
+    val |= PITAUX_GATE2;
+    outb (PITAUX_PORT, val);
+    outb (PITCTL_PORT, PIT_C2 | PIT_LOADMODE | PIT_RATEMODE);
+    val = CLKNUM / hz;
+    lsb = val & 0xff;
+    msb = val >> 8;
+    outb (PITCTR2_PORT, lsb);
+    val = inb(POST_PORT); /* ~1us i/o delay */
+    outb (PITCTR2_PORT, msb);
+
+    /* Start counting down */
+    val = inb(PITAUX_PORT);
+    val &= ~PITAUX_GATE2;
+    outb (PITAUX_PORT, val); /* Gate low */
+    val |= PITAUX_GATE2;
+    outb (PITAUX_PORT, val); /* Gate high */
+}
+
+void
+pit_sleep(void)
+{
+    /* Wait until counter reaches zero */
+    while ((inb(PITAUX_PORT) & PITAUX_VAL) == 0);
+}
+
+void
 clkstart(void)
 {
-	unsigned char	byte;
-	unsigned long s;
-
 	if (cpu_number() != 0)
 		/* Only one PIT initialization is needed */
 		return;
+	unsigned char	byte;
+	unsigned long s;
 
 	s = sploff();         /* disable interrupts */
 

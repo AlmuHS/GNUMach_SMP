@@ -26,7 +26,7 @@
 
 #include <kern/printf.h>
 #include <mach/std_types.h>
-#include <i386/pic.h>
+#include <i386/irq.h>
 #include <i386/ipl.h>
 #include <chips/busses.h>
 

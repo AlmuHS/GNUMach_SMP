@@ -30,10 +30,21 @@ extern vm_offset_t int_entry_table[];
 void int_init(void)
 {
 	int i;
-
-	for (i = 0; i < 16; i++)
+#ifndef APIC
+	for (i = 0; i < 16; i++) {
 		fill_idt_gate(PIC_INT_BASE + i,
 			      int_entry_table[i], KERNEL_CS,
 			      ACC_PL_K|ACC_INTR_GATE, 0);
+	}
+#else
+	for (i = 0; i < 24; i++) {
+		fill_idt_gate(IOAPIC_INT_BASE + i,
+			      int_entry_table[i], KERNEL_CS,
+			      ACC_PL_K|ACC_INTR_GATE, 0);
+	}
+	fill_idt_gate(IOAPIC_SPURIOUS_BASE,
+			      int_entry_table[24], KERNEL_CS,
+			      ACC_PL_K|ACC_INTR_GATE, 0);
+#endif
 }
 

@@ -57,7 +57,6 @@ libkernel_a_SOURCES += \
 	i386/i386at/kdsoft.h \
 	i386/i386at/mem.c \
 	i386/i386at/mem.h \
-	i386/i386at/pic_isa.c \
 	i386/i386at/rtc.c \
 	i386/i386at/rtc.h
 endif
@@ -163,10 +162,18 @@ libkernel_a_SOURCES += \
 	i386/i386/io_map.c \
 	i386/i386/irq.c \
 	i386/i386/irq.h \
-	i386/i386/pic.c \
-	i386/i386/pic.h \
 	i386/i386/pit.c \
 	i386/i386/pit.h
+
+if enable_apic
+libkernel_a_SOURCES += \
+	i386/i386at/ioapic.c
+else
+libkernel_a_SOURCES += \
+	i386/i386/pic.c \
+	i386/i386/pic.h \
+	i386/i386at/pic_isa.c
+endif
 endif
 
 #

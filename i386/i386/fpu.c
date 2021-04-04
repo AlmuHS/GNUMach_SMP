@@ -51,7 +51,7 @@
 #include <i386/thread.h>
 #include <i386/fpu.h>
 #include <i386/pio.h>
-#include <i386/pic.h>
+#include <i386/irq.h>
 #include <i386/locore.h>
 #include <i386/trap.h>
 #include "cpu_number.h"

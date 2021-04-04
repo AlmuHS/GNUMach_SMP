@@ -59,7 +59,6 @@
 #include <i386/ldt.h>
 #include <i386/machspl.h>
 #include <i386/mp_desc.h>
-#include <i386/pic.h>
 #include <i386/pit.h>
 #include <i386/pmap.h>
 #include <i386/proc_reg.h>
@@ -75,6 +74,7 @@
 #include <i386at/kd.h>
 #include <i386at/rtc.h>
 #include <i386at/model_dep.h>
+#include <machine/irq.h>
 
 #ifdef	MACH_XEN
 #include <xen/console.h>
@@ -169,17 +169,20 @@ void machine_init(void)
 #ifdef MACH_HYP
 	hyp_init();
 #else	/* MACH_HYP */
+
+#if (NCPUS > 1) && defined(APIC)
+	smp_init();
+	ioapic_configure();
+	lapic_enable_timer();
+	unmask_irq(1);
+#endif /* NCPUS > 1 */
+
 #ifdef LINUX_DEV
 	/*
 	 * Initialize Linux drivers.
 	 */
 	linux_init();
 #endif
-
-#if NCPUS > 1
-	smp_init();
-#endif /* NCPUS > 1 */
-
 	/*
 	 * Find the devices
 	 */
@@ -356,7 +359,11 @@ i386at_init(void)
 	 * Initialize the PIC prior to any possible call to an spl.
 	 */
 #ifndef	MACH_HYP
+# ifdef APIC
+	picdisable();
+# else
 	picinit();
+# endif
 #else	/* MACH_HYP */
 	hyp_intrinit();
 #endif	/* MACH_HYP */
@@ -678,7 +685,9 @@ timemmap(dev, off, prot)
 void
 startrtclock(void)
 {
+#ifndef APIC
 	clkstart();
+#endif
 }
 
 void
