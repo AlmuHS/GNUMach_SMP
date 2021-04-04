@@ -92,6 +92,7 @@ iplt_done:
 	call	EXT(c_boot_entry)
 
 	.comm	_intstack,INTSTACK_SIZE
+	.comm	_eintstack,0
 
 .align 16
 	.word 0

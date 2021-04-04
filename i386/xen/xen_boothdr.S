@@ -204,4 +204,5 @@ ldt:
 stack:
 	.long	_intstack+INTSTACK_SIZE,0xe021
 	.comm	_intstack,INTSTACK_SIZE
+	.comm	_eintstack,0
 

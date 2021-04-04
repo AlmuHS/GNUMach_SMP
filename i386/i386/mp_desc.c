@@ -62,8 +62,8 @@ vm_offset_t	int_stack_high;
 /*
  * First cpu`s interrupt stack.
  */
-char		intstack[];	/* bottom */
-char		eintstack[];	/* top */
+extern char		_intstack[];	/* bottom */
+extern char		_eintstack[];	/* top */
 
 /*
  * Multiprocessor i386/i486 systems use a separate copy of the
@@ -202,8 +202,8 @@ interrupt_stack_alloc(void)
 	 */
 	for (i = 0; i < NCPUS; i++) {
 	    if (i == master_cpu) {
-		interrupt_stack[i] = (vm_offset_t) intstack;
-		int_stack_top[i]   = (vm_offset_t) eintstack;
+		interrupt_stack[i] = (vm_offset_t) _intstack;
+		int_stack_top[i]   = (vm_offset_t) _eintstack;
 	    }
 	    else if (machine_slot[i].is_cpu) {
 		interrupt_stack[i] = stack_start;
