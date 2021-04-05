@@ -173,6 +173,7 @@ extern inline void unmask_irq (unsigned int irq_nr);
 # define IMCR_USE_APIC 1
 
 #define LAPIC_ENABLE                   0x100
+#define LAPIC_FOCUS                    0x200
 #define LAPIC_NMI                      0x400
 #define LAPIC_DISABLE                  0x10000
 #define LAPIC_TIMER_PERIODIC           0x20000

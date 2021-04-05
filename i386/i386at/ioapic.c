@@ -378,6 +378,9 @@ ioapic_configure(void)
 
     global_enable_apic();
 
+    /* Enable IOAPIC processor focus */
+    lapic->spurious_vector.r |= LAPIC_FOCUS;
+
     /* Enable IOAPIC interrupts */
     lapic->spurious_vector.r |= LAPIC_ENABLE;
 
