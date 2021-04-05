@@ -31,6 +31,7 @@
 #include <mach/machine.h>
 #include <kern/printf.h>
 
+static int has_irq_specific_eoi = 1; /* FIXME: Assume all machines have this */
 static int timer_gsi;
 int timer_pin;
 
@@ -244,16 +245,23 @@ ioapic_irq_eoi(int pin)
     int apic = 0;
     union ioapic_route_entry_union oldentry, entry;
 
-    /* Workaround for old IOAPICs with no specific EOI */
+    if (!has_irq_specific_eoi) {
+        /* Workaround for old IOAPICs with no specific EOI */
 
-    /* Mask the pin and change to edge triggered */
-    oldentry.both = entry.both = ioapic_read_entry(apic, pin);
-    entry.both.mask = IOAPIC_MASK_DISABLED;
-    entry.both.trigger = IOAPIC_EDGE_TRIGGERED;
-    ioapic_write_entry(apic, pin, entry.both);
+        /* Mask the pin and change to edge triggered */
+        oldentry.both = entry.both = ioapic_read_entry(apic, pin);
+        entry.both.mask = IOAPIC_MASK_DISABLED;
+        entry.both.trigger = IOAPIC_EDGE_TRIGGERED;
+        ioapic_write_entry(apic, pin, entry.both);
 
-    /* Restore level entry */
-    ioapic_write_entry(apic, pin, oldentry.both);
+        /* Restore level entry */
+        ioapic_write_entry(apic, pin, oldentry.both);
+    } else {
+        volatile ApicIoUnit *ioapic = apic_get_ioapic(apic)->ioapic;
+
+        entry.both = ioapic_read_entry(apic, pin);
+        ioapic->eoi.r = entry.both.vector;
+    }
 }
 
 void
@@ -381,6 +389,12 @@ ioapic_configure(void)
 
     /* Enable IOAPIC processor focus */
     lapic->spurious_vector.r |= LAPIC_FOCUS;
+
+    /* Enable directed EOI if applicable */
+    if (has_irq_specific_eoi || lapic->version.r & LAPIC_HAS_DIRECTED_EOI) {
+        has_irq_specific_eoi = 1;
+        lapic->spurious_vector.r |= LAPIC_ENABLE_DIRECTED_EOI;
+    }
 
     /* Enable IOAPIC interrupts */
     lapic->spurious_vector.r |= LAPIC_ENABLE;

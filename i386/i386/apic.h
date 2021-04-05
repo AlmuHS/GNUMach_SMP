@@ -35,6 +35,8 @@ typedef struct ApicReg {
 typedef struct ApicIoUnit {
         ApicReg select;
         ApicReg window;
+        ApicReg unused[2];
+        ApicReg eoi; /* write the vector you wish to EOI to this reg */
 } ApicIoUnit;
 
 struct ioapic_route_entry {
@@ -175,6 +177,7 @@ extern inline void unmask_irq (unsigned int irq_nr);
 #define LAPIC_ENABLE                   0x100
 #define LAPIC_FOCUS                    0x200
 #define LAPIC_NMI                      0x400
+#define LAPIC_ENABLE_DIRECTED_EOI      0x1000
 #define LAPIC_DISABLE                  0x10000
 #define LAPIC_TIMER_PERIODIC           0x20000
 #define LAPIC_TIMER_DIVIDE_2           0
@@ -182,6 +185,7 @@ extern inline void unmask_irq (unsigned int irq_nr);
 #define LAPIC_TIMER_DIVIDE_8           2
 #define LAPIC_TIMER_DIVIDE_16          3
 #define LAPIC_TIMER_BASEDIV            0x100000
+#define LAPIC_HAS_DIRECTED_EOI         0x1000000
 
 #define NINTR                          24
 #define IOAPIC_FIXED                   0
