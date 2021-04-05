@@ -31,7 +31,6 @@ irq_eoi (struct irqdev *dev, int id)
 {
 #ifdef APIC
   ioapic_irq_eoi (dev->irq[id]);
-  lapic_eoi ();
 #endif
 }
 

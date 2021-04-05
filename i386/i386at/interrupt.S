@@ -92,7 +92,6 @@ _isa_eoi:
 	pushl	%ecx			/* push irq number */
 	call	EXT(ioapic_irq_eoi)	/* ioapic irq specific EOI */
 	addl	$4,%esp			/* pop irq number */
-	call	EXT(lapic_eoi)		/* lapic broadcast EOI */
 _no_eoi:
 	ret
 #endif

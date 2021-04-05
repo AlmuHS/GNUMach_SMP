@@ -96,7 +96,6 @@ ENTRY(interrupt)
 _isa_eoi:
 	movl	%ecx,%edi		/* load irq number as 1st arg */
 	call	EXT(ioapic_irq_eoi)	/* ioapic irq specific EOI */
-	call	EXT(lapic_eoi)		/* lapic broadcast EOI */
 _no_eoi:
 	ret
 #endif

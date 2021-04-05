@@ -262,6 +262,8 @@ ioapic_irq_eoi(int pin)
         entry.both = ioapic_read_entry(apic, pin);
         ioapic->eoi.r = entry.both.vector;
     }
+
+    lapic_eoi ();
 }
 
 void
