@@ -331,8 +331,9 @@ Once final GDT and IDT are loaded, `slave_main()` finish successfully, and the A
 
 - [Samuel Thibault](https://github.com/sthibaul): Hurd core dev. Clarifications about SMP status in gnumach, helpful with gnumach questions.  
 
-- [Distribu D](https://github.com/neutru): Helpful with debugging and memory addressing
+- [Rodrigo V. G.](https://github.com/rodri): Helpful with debugging and memory addressing
 
+- [Damien Zammit](https://github.com/zamaudio): Helpful with IOAPIC, I/O Management and memory mapping
   
 ## References
 
