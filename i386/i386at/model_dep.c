@@ -174,7 +174,14 @@ void machine_init(void)
 	smp_init();
 	ioapic_configure();
 	lapic_enable_timer();
+
+#warning FIXME: Rather unmask them from their respective drivers
+	/* kd */
 	unmask_irq(1);
+	/* com0 */
+	unmask_irq(4);
+	/* com1 */
+	unmask_irq(3);
 #endif /* NCPUS > 1 */
 
 #ifdef LINUX_DEV
