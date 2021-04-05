@@ -49,6 +49,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <sys/types.h>
 #include <sys/time.h>
 #include <kern/mach_clock.h>
+#include <kern/printf.h>
 #include <i386/machspl.h>
 #include <i386/pio.h>
 #include <i386at/rtc.h>
@@ -171,6 +172,12 @@ readtodc(uint64_t *tp)
 		yr+CENTURY_START-CENTURY_START%100+100 :
 		yr+CENTURY_START-CENTURY_START%100;
 
+	if (yr >= CENTURY_START+90) {
+		printf("FIXME: we are approaching %u, update CENTURY_START\n", CENTURY_START);
+	}
+
+	printf("RTC time is %04u-%02u-%02u %02u:%02u:%02u\n", yr, mon, dom, hr, min, sec);
+
 	n = sec + 60 * min + 3600 * hr;
 	n += (dom - 1) * 3600 * 24;
 
@@ -219,7 +226,7 @@ writetodc(void)
 	for (j = 1970, i = yeartoday(j); n >= i; j++, i = yeartoday(j))
 		n -= i;
 
-	rtclk.rtc_yr = dectohexdec(j - 1900);
+	rtclk.rtc_yr = dectohexdec(j % 100);
 
 	if (i == 366)
 		month[1] = 29;
@@ -229,6 +236,14 @@ writetodc(void)
 	rtclk.rtc_mon = dectohexdec(++i);
 
 	rtclk.rtc_dom = dectohexdec(++n);
+
+	printf("Setting RTC time to %02u-%02u-%02u %02u:%02u:%02u\n",
+		hexdectodec(rtclk.rtc_yr),
+		hexdectodec(rtclk.rtc_mon),
+		hexdectodec(rtclk.rtc_dom),
+		hexdectodec(rtclk.rtc_hr),
+		hexdectodec(rtclk.rtc_min),
+		hexdectodec(rtclk.rtc_sec));
 
 	ospl = splclock();
 	rtcput(&rtclk);
