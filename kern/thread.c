@@ -1613,7 +1613,7 @@ kern_return_t thread_info(
 	    sched_info->depress_priority = thread->depress_priority;
 
 #if NCPUS > 1
-	    sched_info->last_processor = thread->last_processor;
+	    sched_info->last_processor = thread->last_processor->slot_num;
 #else
 	    sched_info->last_processor = 0;
 #endif
