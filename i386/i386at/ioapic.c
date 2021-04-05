@@ -368,8 +368,9 @@ ioapic_configure(void)
     }
 
     /* Start the IO APIC receiving interrupts */
+    lapic->apic_id.r = apic_get_cpu_apic_id(bsp);
     lapic->dest_format.r = 0xffffffff;	/* flat model */
-    lapic->logical_dest.r = 0x00000000;	/* default, but we use physical */
+    lapic->logical_dest.r = 0x01000000;	/* target bsp */
     lapic->lvt_timer.r = LAPIC_DISABLE;
     lapic->lvt_performance_monitor.r = LAPIC_NMI;
     lapic->lvt_lint0.r = LAPIC_DISABLE;
