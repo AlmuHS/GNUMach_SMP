@@ -114,15 +114,15 @@ ioapic_write(uint8_t id, uint8_t reg, uint32_t value)
     ioapic->window.r = value;
 }
 
-static struct ioapic_route_entry
-ioapic_read_entry(int apic, int pin)
+static void
+ioapic_read_entry(int apic, int pin, struct ioapic_route_entry *e)
 {
     union ioapic_route_entry_union entry;
 
     entry.lo = ioapic_read(apic, APIC_IO_REDIR_LOW(pin));
     entry.hi = ioapic_read(apic, APIC_IO_REDIR_HIGH(pin));
 
-    return entry.both;
+    *e = entry.both;
 }
 
 /* Write the high word first because mask bit is in low word */
@@ -142,7 +142,7 @@ ioapic_toggle_entry(int apic, int pin, int mask)
 {
     union ioapic_route_entry_union entry;
 
-    entry.both = ioapic_read_entry(apic, pin);
+    ioapic_read_entry(apic, pin, &entry.both);
     entry.both.mask = mask & 0x1;
     ioapic_write(apic, APIC_IO_REDIR_LOW(pin), entry.lo);
 }
@@ -249,7 +249,8 @@ ioapic_irq_eoi(int pin)
         /* Workaround for old IOAPICs with no specific EOI */
 
         /* Mask the pin and change to edge triggered */
-        oldentry.both = entry.both = ioapic_read_entry(apic, pin);
+        ioapic_read_entry(apic, pin, &entry.both);
+        oldentry = entry;
         entry.both.mask = IOAPIC_MASK_DISABLED;
         entry.both.trigger = IOAPIC_EDGE_TRIGGERED;
         ioapic_write_entry(apic, pin, entry.both);
@@ -259,7 +260,7 @@ ioapic_irq_eoi(int pin)
     } else {
         volatile ApicIoUnit *ioapic = apic_get_ioapic(apic)->ioapic;
 
-        entry.both = ioapic_read_entry(apic, pin);
+        ioapic_read_entry(apic, pin, &entry.both);
         ioapic->eoi.r = entry.both.vector;
     }
 
