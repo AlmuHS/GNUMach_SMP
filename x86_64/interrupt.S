@@ -33,7 +33,7 @@
 ENTRY(interrupt)
 #ifdef APIC
 	cmpl	$255,%eax		/* was this a spurious intr? */
-	je	_null_eoi		/* if so, null eoi handler */
+	je	_no_eoi			/* if so, just return */
 #endif
 	pushq	%rax			/* save irq number */
 	call	spl7			/* set ipl */
@@ -92,15 +92,12 @@ ENTRY(interrupt)
 	ret
 #else
 	cmpl    $16,%ecx		/* was this a low ISA intr? */
-	jl      _isa_eoi		/* no, must be PCI */
-	ret				/* NB: let irq_acknowledge handle pci EOI */
+	jge      _no_eoi		/* no, must be PCI (let irq_ack handle EOI) */
 _isa_eoi:
 	movl	%ecx,%edi		/* load irq number as 1st arg */
 	call	EXT(ioapic_irq_eoi)	/* ioapic irq specific EOI */
 	call	EXT(lapic_eoi)		/* lapic broadcast EOI */
-	ret
-_null_eoi:
-	call	EXT(lapic_eoi)		/* lapic broadcast EOI */
+_no_eoi:
 	ret
 #endif
 END(interrupt)
