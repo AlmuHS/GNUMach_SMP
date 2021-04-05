@@ -53,6 +53,8 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef _CRAM_H_
 #define _CRAM_H_
 
+/* XXX: this conflicts with read/writing the RTC */
+
 /* 
  * outb(CMOS_ADDR, addr);
  * result = inb(CMOS_DATA);

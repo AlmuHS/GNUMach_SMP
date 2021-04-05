@@ -2489,8 +2489,12 @@ void
 kd_xga_init(void)
 {
 	csrpos_t	xga_getpos();
-	unsigned char	screen;
 	unsigned char	start, stop;
+
+#if 0
+	unsigned char	screen;
+
+	/* XXX: this conflicts with read/writing the RTC */
 
 	outb(CMOS_ADDR, CMOS_EB);
 	screen = inb(CMOS_DATA) & CM_SCRMSK;
@@ -2499,6 +2503,7 @@ kd_xga_init(void)
 		printf("kd: unknown screen type, defaulting to EGA\n");
 		/* FALLTHROUGH */
 	case CM_EGA_VGA:
+#endif
 		/*
 		 * Here we'll want to query to bios on the card
 		 * itself, because then we can figure out what
@@ -2522,8 +2527,8 @@ kd_xga_init(void)
 		    for (i = 0; i < 200; i++)
 			addr[i] = 0x00;
 		}
-		break;
 #if 0
+		break;
 	/* XXX: some buggy BIOSes report these...  */
 	case CM_CGA_40:
 		vid_start = (u_char *)phystokv(CGA_START);
@@ -2546,8 +2551,8 @@ kd_xga_init(void)
 		kd_lines = 25;
 		kd_cols = 80;
 		break;
-#endif
 	}
+#endif
 
 	outb(kd_index_reg, C_START);
 	start = inb(kd_io_reg);
