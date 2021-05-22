@@ -357,9 +357,18 @@ kern_return_t vm_map(
 	      /* Really no luck */
 	      return result;
 
-	    /* Reduce the allowed access to the memory object.  */
-	    max_protection &= prot;
-	    cur_protection &= prot;
+           if (!copy)
+             {
+               /* Disallow protection beyond proxy's own limits.  */
+               if ((cur_protection & ~prot) || (max_protection & ~prot))
+                 return KERN_PROTECTION_FAILURE;
+             }
+           else
+             {
+               /* Disallow making a copy unless the proxy allows reading.  */
+               if (!(prot & VM_PROT_READ))
+                 return KERN_PROTECTION_FAILURE;
+             }
 
 	    if ((object = vm_object_enter(real_memobj, size, FALSE))
 		== VM_OBJECT_NULL)
