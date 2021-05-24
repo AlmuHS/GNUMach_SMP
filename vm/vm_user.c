@@ -345,16 +345,14 @@ kern_return_t vm_map(
 		object = VM_OBJECT_NULL;
 		offset = 0;
 		copy = FALSE;
-	} else if ((object = vm_object_lookup_name (memory_object)) == VM_OBJECT_NULL &&
-		   (object = vm_object_enter(memory_object, size, FALSE)) == VM_OBJECT_NULL)
+	} else if ((object = vm_object_enter(memory_object, size, FALSE))
+			== VM_OBJECT_NULL)
 	  {
 	    ipc_port_t real_memobj;
 	    vm_prot_t prot;
-
 	    result = memory_object_proxy_lookup (memory_object, &real_memobj,
 						 &prot);
 	    if (result != KERN_SUCCESS)
-	      /* Really no luck */
 	      return result;
 
            if (!copy)
