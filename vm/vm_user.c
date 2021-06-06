@@ -357,9 +357,9 @@ kern_return_t vm_map(
 
            if (!copy)
              {
-               /* Disallow protection beyond proxy's own limits.  */
-               if ((cur_protection & ~prot) || (max_protection & ~prot))
-                 return KERN_PROTECTION_FAILURE;
+		/* Reduce the allowed access to the memory object.  */
+		max_protection &= prot;
+		cur_protection &= prot;
              }
            else
              {
