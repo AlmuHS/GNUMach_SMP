@@ -55,6 +55,7 @@ struct memory_object_proxy
   struct ipc_port *port;
 
   ipc_port_t object;
+  ipc_port_t notify;
   vm_prot_t max_protection;
   vm_offset_t start;
   vm_offset_t len;
@@ -99,14 +100,20 @@ memory_object_proxy_notify (mach_msg_header_t *msg)
       mach_no_senders_notification_t *ns;
 
       ns = (mach_no_senders_notification_t *) msg;
-      proxy = memory_object_proxy_port_lookup
-	((ipc_port_t) ns->not_header.msgh_remote_port);
-      assert (proxy);
+
+      proxy = (memory_object_proxy_t)
+	      ((ipc_port_t) ns->not_header.msgh_remote_port)->ip_kobject;
+      if (!proxy)
+	return FALSE;
+      if ((ipc_port_t) ns->not_header.msgh_remote_port != proxy->notify)
+	return FALSE;
 
       ipc_port_release_send (proxy->object);
 
       ipc_kobject_set (proxy->port, IKO_NULL, IKOT_NONE);
       ipc_port_dealloc_kernel (proxy->port);
+      ipc_kobject_set (proxy->notify, IKO_NULL, IKOT_NONE);
+      ipc_port_dealloc_kernel (proxy->notify);
 
       kmem_cache_free (&memory_object_proxy_cache, (vm_offset_t) proxy);
 
@@ -167,7 +174,9 @@ memory_object_create_proxy (const ipc_space_t space, vm_prot_t max_protection,
   ipc_kobject_set (proxy->port, (ipc_kobject_t) proxy, IKOT_PAGER_PROXY);
 
   /* Request no-senders notifications on the port.  */
-  notify = ipc_port_make_sonce (proxy->port);
+  proxy->notify = ipc_port_alloc_kernel ();
+  ipc_kobject_set (proxy->notify, (ipc_kobject_t) proxy, IKOT_PAGER_PROXY);
+  notify = ipc_port_make_sonce (proxy->notify);
   ip_lock (proxy->port);
   ipc_port_nsrequest (proxy->port, 1, notify, &notify);
   assert (notify == IP_NULL);
