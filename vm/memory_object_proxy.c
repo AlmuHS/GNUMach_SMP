@@ -102,6 +102,12 @@ memory_object_proxy_notify (mach_msg_header_t *msg)
       assert (proxy);
 
       ipc_port_release_send (proxy->object);
+
+      ipc_kobject_set (proxy->port, IKO_NULL, IKOT_NONE);
+      ipc_port_dealloc_kernel (proxy->port);
+
+      kmem_cache_free (&memory_object_proxy_cache, (vm_offset_t) proxy);
+
       return TRUE;
     }
 
