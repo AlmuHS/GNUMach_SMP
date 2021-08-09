@@ -172,7 +172,8 @@ memory_object_create_proxy (const ipc_space_t space, vm_prot_t max_protection,
   ipc_port_nsrequest (proxy->port, 1, notify, &notify);
   assert (notify == IP_NULL);
 
-  proxy->object = ipc_port_copy_send (object[0]);
+  /* Consumes the port right */
+  proxy->object = object[0];
   proxy->max_protection = max_protection;
   proxy->start = start[0];
   proxy->len = len[0];
