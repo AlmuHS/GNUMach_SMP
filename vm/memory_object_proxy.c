@@ -151,6 +151,9 @@ memory_object_create_proxy (const ipc_space_t space, vm_prot_t max_protection,
   if (offset[0] != 0)
     return KERN_INVALID_ARGUMENT;
 
+  if (start[0] + len[0] < start[0])
+    return KERN_INVALID_ARGUMENT;
+
   proxy = (memory_object_proxy_t) kmem_cache_alloc (&memory_object_proxy_cache);
 
   /* Allocate port, keeping a reference for it.  */
@@ -197,11 +200,15 @@ memory_object_proxy_lookup (ipc_port_t port, ipc_port_t *object,
 
   *max_protection = proxy->max_protection;
   *start = 0;
-  *len = proxy->len;
+  *len = (vm_offset_t) ~0;
 
   do
     {
       *object = proxy->object;
+      if (proxy->len <= *start)
+	*len = 0;
+      else
+	*len = MIN(*len, proxy->len - *start);
       *start += proxy->start;
     }
   while ((proxy = memory_object_proxy_port_lookup (proxy->object)));
