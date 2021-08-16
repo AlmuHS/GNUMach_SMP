@@ -288,7 +288,7 @@ static void ahci_end_request(int uptodate)
 }
 
 /* Push the request to the controler port */
-static void ahci_do_port_request(struct port *port, unsigned long long sector, struct request *rq)
+static int ahci_do_port_request(struct port *port, unsigned long long sector, struct request *rq)
 {
 	struct ahci_command *command = port->command;
 	struct ahci_cmd_tbl *prdtl = port->prdtl;
@@ -305,16 +305,25 @@ static void ahci_do_port_request(struct port *port, unsigned long long sector, s
 	fis_h2d = (void*) &prdtl[slot].cfis;
 	fis_h2d->fis_type = FIS_TYPE_REG_H2D;
 	fis_h2d->flags = 128;
-	if (port->lba48)
+	if (port->lba48) {
+		if (sector >= 1ULL << 48) {
+			printk("sector %llu beyond LBA48\n", sector);
+			return -EOVERFLOW;
+		}
 		if (rq->cmd == READ)
 			fis_h2d->command = WIN_READDMA_EXT;
 		else
 			fis_h2d->command = WIN_WRITEDMA_EXT;
-	else
+	} else {
+		if (sector >= 1ULL << 28) {
+			printk("sector %llu beyond LBA28\n", sector);
+			return -EOVERFLOW;
+		}
 		if (rq->cmd == READ)
 			fis_h2d->command = WIN_READDMA;
 		else
 			fis_h2d->command = WIN_WRITEDMA;
+	}
 
 	fis_h2d->device = 1<<6;	/* LBA */
 
@@ -353,6 +362,7 @@ static void ahci_do_port_request(struct port *port, unsigned long long sector, s
 	writel(1 << slot, &port->ahci_port->ci);
 
 	/* TODO: IRQ timeout handler */
+	return 0;
 }
 
 /* Called by block core to push a request */
@@ -409,7 +419,8 @@ static void ahci_do_request()	/* invoked with cli() */
 	}
 
 	/* Push this to the port */
-	ahci_do_port_request(port, block, rq);
+	if (ahci_do_port_request(port, block, rq))
+		goto kill_rq;
 	return;
 
 kill_rq:

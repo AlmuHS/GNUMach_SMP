@@ -442,6 +442,22 @@ enqueue_request (struct request *req)
   sti ();
 }
 
+int
+check_rw_block (int nr, struct buffer_head **bh)
+{
+  int i, bshift, bsize;
+  get_block_size (bh[0]->b_dev, &bsize, &bshift);
+  loff_t sectorl = bh[0]->b_blocknr << (bshift - 9);
+
+  for (i = 0; i < nr; i++)
+    {
+      sectorl += bh[i]->b_size >> 9;
+      unsigned long sector = sectorl;
+      if (sector != sectorl)
+	return -EOVERFLOW;
+    }
+}
+
 /* Perform the I/O operation RW on the buffer list BH
    containing NR buffers.  */
 void
@@ -506,11 +522,15 @@ rdwr_partial (int rw, kdev_t dev, loff_t *off,
   long sect, nsect;
   struct buffer_head bhead, *bh = &bhead;
   struct gendisk *gd;
+  loff_t blkl;
 
   memset (bh, 0, sizeof (struct buffer_head));
   bh->b_state = 1 << BH_Lock;
   bh->b_dev = dev;
-  bh->b_blocknr = *off >> bshift;
+  blkl = *off >> bshift;
+  bh->b_blocknr = blkl;
+  if (bh->b_blocknr != blkl)
+    return -EOVERFLOW;
   bh->b_size = BSIZE;
 
   /* Check if this device has non even number of blocks.  */
@@ -522,7 +542,9 @@ rdwr_partial (int rw, kdev_t dev, loff_t *off,
       }
   if (nsect > 0)
     {
-      sect = bh->b_blocknr << (bshift - 9);
+      loff_t sectl;
+      sectl = bh->b_blocknr << (bshift - 9);
+      sect = sectl;
       assert ((nsect - sect) > 0);
       if (nsect - sect < (BSIZE >> 9))
 	bh->b_size = (nsect - sect) << 9;
@@ -530,6 +552,9 @@ rdwr_partial (int rw, kdev_t dev, loff_t *off,
   bh->b_data = alloc_buffer (bh->b_size);
   if (! bh->b_data)
     return -ENOMEM;
+  err = check_rw_block (1, &bh);
+  if (err)
+    goto out;
   ll_rw_block (READ, 1, &bh, 0);
   wait_on_buffer (bh);
   if (buffer_uptodate (bh))
@@ -544,6 +569,9 @@ rdwr_partial (int rw, kdev_t dev, loff_t *off,
 	{
 	  memcpy (bh->b_data + o, *buf, c);
 	  bh->b_state = (1 << BH_Dirty) | (1 << BH_Lock);
+	  err = check_rw_block (1, &bh);
+	  if (err)
+	    goto out;
 	  ll_rw_block (WRITE, 1, &bh, 0);
 	  wait_on_buffer (bh);
 	  if (! buffer_uptodate (bh))
@@ -576,14 +604,18 @@ static int
 rdwr_full (int rw, kdev_t dev, loff_t *off, char **buf, int *resid, int bshift)
 {
   int cc, err = 0, i, j, nb, nbuf;
-  long blk;
+  loff_t blkl;
+  long blk, newblk;
   struct buffer_head bhead[MAX_BUF], *bh, *bhp[MAX_BUF];
   phys_addr_t pa;
 
   assert ((*off & BMASK) == 0);
 
   nbuf = *resid >> bshift;
-  blk = *off >> bshift;
+  blkl = *off >> bshift;
+  blk = blkl;
+  if (blk != blkl)
+    return -EOVERFLOW;
   for (i = nb = 0, bh = bhead; nb < nbuf; bh++)
     {
       memset (bh, 0, sizeof (*bh));
@@ -621,10 +653,18 @@ rdwr_full (int rw, kdev_t dev, loff_t *off, char **buf, int *resid, int bshift)
       bh->b_size = cc;
       bhp[i] = bh;
       nb += cc >> bshift;
-      blk += cc >> bshift;
+      newblk = blk + (cc >> bshift);
+      if (newblk < blk)
+	{
+	  err = -EOVERFLOW;
+	  break;
+	}
+      blk = newblk;
       if (++i == MAX_BUF)
 	break;
     }
+  if (! err)
+    err = check_rw_block (i, bhp);
   if (! err)
     {
       assert (i > 0);
