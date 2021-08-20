@@ -62,6 +62,7 @@
 #include <ipc/ipc_port.h> /* 4proto */
 
 #include <vm/vm_print.h>
+#include <vm/vm_page.h>
 #include <ipc/ipc_print.h>
 #include <ipc/mach_port.h>
 #include <kern/lock.h>
@@ -330,6 +331,7 @@ struct db_command db_show_cmds[] = {
 	{ "msg",	ipc_msg_print,		0,	0 },
 	{ "ipc_port",	db_show_port_id,	0,	0 },
 	{ "slabinfo",	db_show_slab_info,	0,	0 },
+	{ "vmstat",	db_show_vmstat,		0,	0 },
 	{ (char *)0, }
 };
 

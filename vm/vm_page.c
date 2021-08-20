@@ -2086,3 +2086,46 @@ vm_page_wait(void (*continuation)(void))
         thread_block((void (*)(void)) 0);
     }
 }
+
+#if MACH_KDB
+#include <ddb/db_output.h>
+#define PAGES_PER_MB ((1<<20) / PAGE_SIZE)
+void db_show_vmstat(void)
+{
+	integer_t free_count = vm_page_mem_free();
+
+	db_printf("%-20s %10uM\n", "size:",
+		(free_count + vm_page_active_count +
+		  vm_page_inactive_count + vm_page_wire_count)
+		 / PAGES_PER_MB);
+
+	db_printf("%-20s %10uM\n", "free:",
+		free_count / PAGES_PER_MB);
+	db_printf("%-20s %10uM\n", "active:",
+		vm_page_active_count / PAGES_PER_MB);
+	db_printf("%-20s %10uM\n", "inactive:",
+		vm_page_inactive_count / PAGES_PER_MB);
+	db_printf("%-20s %10uM\n", "wired:",
+		vm_page_wire_count / PAGES_PER_MB);
+
+	db_printf("%-20s %10uM\n", "zero filled:",
+		vm_stat.zero_fill_count / PAGES_PER_MB);
+	db_printf("%-20s %10uM\n", "reactivated:",
+		vm_stat.reactivations / PAGES_PER_MB);
+	db_printf("%-20s %10uM\n", "pageins:",
+		vm_stat.pageins / PAGES_PER_MB);
+	db_printf("%-20s %10uM\n", "pageouts:",
+		vm_stat.pageouts / PAGES_PER_MB);
+	db_printf("%-20s %10uM\n", "page faults:",
+		vm_stat.faults / PAGES_PER_MB);
+	db_printf("%-20s %10uM\n", "cow faults:",
+		vm_stat.cow_faults / PAGES_PER_MB);
+	db_printf("%-20s %10u%\n", "memobj hit ratio:",
+		(vm_stat.hits * 100) / vm_stat.lookups);
+
+	db_printf("%-20s %10u%\n", "cached_memobjs",
+		vm_object_external_count);
+	db_printf("%-20s %10uM\n", "cache",
+		vm_object_external_pages / PAGES_PER_MB);
+}
+#endif /* MACH_KDB */

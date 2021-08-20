@@ -532,4 +532,9 @@ boolean_t vm_page_evict(boolean_t *should_wait);
  */
 void vm_page_refill_inactive(void);
 
+/*
+ * Print vmstat information
+ */
+void db_show_vmstat(void);
+
 #endif	/* _VM_VM_PAGE_H_ */
