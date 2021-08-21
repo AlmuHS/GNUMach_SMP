@@ -2129,9 +2129,6 @@ void db_show_vmstat(void)
 	db_printf("%-20s %10uM\n", "cache",
 		vm_object_external_pages / PAGES_PER_MB);
 
-	db_printf("%-20s %10uM\n", "cache",
-		vm_object_external_pages / PAGES_PER_MB);
-
 	for (i = 0; i < vm_page_segs_size; i++)
 	{
 		db_printf("\nSegment %d:\n", i);
