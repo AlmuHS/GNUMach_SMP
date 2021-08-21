@@ -98,7 +98,7 @@ routine	device_read(
 	in	mode		: dev_mode_t;
 	in	recnum		: recnum_t;
 	in	bytes_wanted	: int;
-	out	data		: io_buf_ptr_t
+	out	data		: io_buf_ptr_t, dealloc
 	);
 
 routine	device_read_inband(
