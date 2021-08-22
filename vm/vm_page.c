@@ -2132,6 +2132,8 @@ void db_show_vmstat(void)
 	for (i = 0; i < vm_page_segs_size; i++)
 	{
 		db_printf("\nSegment %d:\n", i);
+		db_printf("%-20s %10uM\n", "size:",
+			vm_page_seg_size(&vm_page_segs[i]) >> 20);
 		db_printf("%-20s %10uM\n", "free:",
 			vm_page_segs[i].nr_free_pages / PAGES_PER_MB);
 		db_printf("%-20s %10uM\n", "min_free:",
