@@ -303,7 +303,7 @@ alloc_buffer (int size)
 
   if (! linux_auto_config)
     {
-      while ((m = vm_page_grab ()) == 0)
+      while ((m = vm_page_grab (VM_PAGE_DMA32)) == 0)
 	VM_PAGE_WAIT (0);
       d = current_thread ()->pcb->data;
       assert (d);
@@ -1523,7 +1523,7 @@ device_read (void *d, ipc_port_t reply_port,
       /* Allocate and map pages.  */
       while (alloc_offset < trunc_page (offset) + len)
 	{
-	  while ((m = vm_page_grab ()) == 0)
+	  while ((m = vm_page_grab (VM_PAGE_DMA32)) == 0)
 	    VM_PAGE_WAIT (0);
 	  assert (! m->active && ! m->inactive);
 	  m->busy = TRUE;

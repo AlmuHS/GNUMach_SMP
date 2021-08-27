@@ -370,7 +370,7 @@ kmem_pagealloc_physmem(vm_size_t size)
     assert(size == PAGE_SIZE);
 
     for (;;) {
-        page = vm_page_grab();
+        page = vm_page_grab(VM_PAGE_DIRECTMAP);
 
         if (page != NULL)
             break;

@@ -1127,7 +1127,7 @@ pmap_page_table_page_alloc(void)
 	/*
 	 *	Allocate a VM page for the level 2 page table entries.
 	 */
-	while ((m = vm_page_grab()) == VM_PAGE_NULL)
+	while ((m = vm_page_grab(VM_PAGE_DIRECTMAP)) == VM_PAGE_NULL)
 		VM_PAGE_WAIT((void (*)()) 0);
 
 	/*

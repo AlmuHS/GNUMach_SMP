@@ -735,7 +735,7 @@ boolean_t vm_page_convert(struct vm_page **mp)
 	assert(!fict_m->active);
 	assert(!fict_m->inactive);
 
-	real_m = vm_page_grab();
+	real_m = vm_page_grab(VM_PAGE_HIGHMEM);
 	if (real_m == VM_PAGE_NULL)
 		return FALSE;
 
@@ -764,11 +764,24 @@ boolean_t vm_page_convert(struct vm_page **mp)
  *
  *	Remove a page from the free list.
  *	Returns VM_PAGE_NULL if the free list is too small.
+ *
+ *	FLAGS specify which constraint should be enforced for the allocated
+ *	addresses.
  */
 
-vm_page_t vm_page_grab(void)
+vm_page_t vm_page_grab(unsigned flags)
 {
+	unsigned selector;
 	vm_page_t	mem;
+
+	if (flags & VM_PAGE_HIGHMEM)
+		selector = VM_PAGE_SEL_HIGHMEM;
+	else if (flags & VM_PAGE_DIRECTMAP)
+		selector = VM_PAGE_SEL_DIRECTMAP;
+	else if (flags & VM_PAGE_DMA32)
+		selector = VM_PAGE_SEL_DMA32;
+	else
+		selector = VM_PAGE_SEL_DMA;
 
 	simple_lock(&vm_page_queue_free_lock);
 
@@ -781,7 +794,7 @@ vm_page_t vm_page_grab(void)
 	 * explicit VM calls. The strategy is then to let memory
 	 * pressure balance the physical segments with pageable pages.
 	 */
-	mem = vm_page_alloc_pa(0, VM_PAGE_SEL_DIRECTMAP, VM_PT_KERNEL);
+	mem = vm_page_alloc_pa(0, selector, VM_PT_KERNEL);
 
 	if (mem == NULL) {
 		simple_unlock(&vm_page_queue_free_lock);
@@ -796,7 +809,7 @@ vm_page_t vm_page_grab(void)
 
 phys_addr_t vm_page_grab_phys_addr(void)
 {
-	vm_page_t p = vm_page_grab();
+	vm_page_t p = vm_page_grab(VM_PAGE_DIRECTMAP);
 	if (p == VM_PAGE_NULL)
 		return -1;
 	else
@@ -924,7 +937,7 @@ vm_page_t vm_page_alloc(
 {
 	vm_page_t	mem;
 
-	mem = vm_page_grab();
+	mem = vm_page_grab(VM_PAGE_HIGHMEM);
 	if (mem == VM_PAGE_NULL)
 		return VM_PAGE_NULL;
 
