@@ -456,6 +456,8 @@ check_rw_block (int nr, struct buffer_head **bh)
       if (sector != sectorl)
 	return -EOVERFLOW;
     }
+
+  return 0;
 }
 
 /* Perform the I/O operation RW on the buffer list BH
