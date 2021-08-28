@@ -114,6 +114,7 @@ struct dev_pager {
 	ipc_port_t	pager_request;	/* Known request port */
 	ipc_port_t	pager_name;	/* Known name port */
 	mach_device_t	device;		/* Device handle */
+	vm_offset_t	offset;		/* offset within the pager, in bytes*/
 	int		type;		/* to distinguish */
 #define DEV_PAGER_TYPE	0
 #define CHAR_PAGER_TYPE	1
@@ -159,10 +160,31 @@ struct dev_pager_entry {
 };
 typedef struct dev_pager_entry *dev_pager_entry_t;
 
+/*
+ * Indexed by port name, each element contains a queue of all dev_pager_entry_t
+ * which name shares the same hash
+ */
 queue_head_t	dev_pager_hashtable[DEV_PAGER_HASH_COUNT];
 struct kmem_cache	dev_pager_hash_cache;
 decl_simple_lock_data(,
 		dev_pager_hash_lock)
+
+struct dev_device_entry {
+	queue_chain_t	links;
+	mach_device_t	device;
+	vm_offset_t	offset;
+	dev_pager_t	pager_rec;
+};
+typedef struct dev_device_entry *dev_device_entry_t;
+
+/*
+ * Indexed by device + offset, each element contains a queue of all
+ * dev_device_entry_t which device + offset shares the same hash
+ */
+queue_head_t	dev_device_hashtable[DEV_PAGER_HASH_COUNT];
+struct kmem_cache	dev_device_hash_cache;
+decl_simple_lock_data(,
+		dev_device_hash_lock)
 
 #define	dev_pager_hash(name_port) \
 		(((vm_offset_t)(name_port) & 0xffffff) % DEV_PAGER_HASH_COUNT)
@@ -240,7 +262,86 @@ dev_pager_t dev_pager_hash_lookup(const ipc_port_t name_port)
 	return (DEV_PAGER_NULL);
 }
 
-/* FIXME: This is not recording offset! */
+void dev_device_hash_init(void)
+{
+	int		i;
+	vm_size_t	size;
+
+	size = sizeof(struct dev_device_entry);
+	kmem_cache_init(&dev_device_hash_cache, "dev_device_entry", size, 0,
+			NULL, 0);
+	for (i = 0; i < DEV_PAGER_HASH_COUNT; i++) {
+	    queue_init(&dev_device_hashtable[i]);
+	}
+	simple_lock_init(&dev_device_hash_lock);
+}
+
+void dev_device_hash_insert(
+	const mach_device_t	device,
+	const vm_offset_t	offset,
+	const dev_pager_t	rec)
+{
+	dev_device_entry_t new_entry;
+
+	new_entry = (dev_device_entry_t) kmem_cache_alloc(&dev_device_hash_cache);
+	new_entry->device = device;
+	new_entry->offset = offset;
+	new_entry->pager_rec = rec;
+
+	simple_lock(&dev_device_hash_lock);
+	queue_enter(&dev_device_hashtable[dev_pager_hash(device + offset)],
+			new_entry, dev_device_entry_t, links);
+	simple_unlock(&dev_device_hash_lock);
+}
+
+void dev_device_hash_delete(
+	const mach_device_t	device,
+	const vm_offset_t	offset)
+{
+	queue_t			bucket;
+	dev_device_entry_t	entry;
+
+	bucket = &dev_device_hashtable[dev_pager_hash(device + offset)];
+
+	simple_lock(&dev_device_hash_lock);
+	for (entry = (dev_device_entry_t)queue_first(bucket);
+	     !queue_end(bucket, &entry->links);
+	     entry = (dev_device_entry_t)queue_next(&entry->links)) {
+	    if (entry->device == device && entry->offset == offset) {
+		queue_remove(bucket, entry, dev_device_entry_t, links);
+		break;
+	    }
+	}
+	simple_unlock(&dev_device_hash_lock);
+	if (entry)
+	    kmem_cache_free(&dev_device_hash_cache, (vm_offset_t)entry);
+}
+
+dev_pager_t dev_device_hash_lookup(
+	const mach_device_t	device,
+	const vm_offset_t	offset)
+{
+	queue_t			bucket;
+	dev_device_entry_t	entry;
+	dev_pager_t		pager;
+
+	bucket = &dev_device_hashtable[dev_pager_hash(device + offset)];
+
+	simple_lock(&dev_device_hash_lock);
+	for (entry = (dev_device_entry_t)queue_first(bucket);
+	     !queue_end(bucket, &entry->links);
+	     entry = (dev_device_entry_t)queue_next(&entry->links)) {
+	    if (entry->device == device && entry->offset == offset) {
+		pager = entry->pager_rec;
+		dev_pager_reference(pager);
+		simple_unlock(&dev_device_hash_lock);
+		return (pager);
+	    }
+	}
+	simple_unlock(&dev_device_hash_lock);
+	return (DEV_PAGER_NULL);
+}
+
 kern_return_t	device_pager_setup(
 	const mach_device_t	device,
 	int			prot,
@@ -261,7 +362,7 @@ kern_return_t	device_pager_setup(
 	 *	and port to represent this object.
 	 */
 
-	d = dev_pager_hash_lookup((ipc_port_t)device);	/* HACK */
+	d = dev_device_hash_lookup(device, offset);
 	if (d != DEV_PAGER_NULL) {
 		*pager = (mach_port_t) ipc_port_make_send(d->pager);
 		dev_pager_deallocate(d);
@@ -289,6 +390,7 @@ kern_return_t	device_pager_setup(
 	d->pager_name = IP_NULL;
 	d->device = device;
 	mach_device_reference(device);
+	d->offset = offset;
 	d->prot = prot;
 	d->size = round_page(size);
 	if (device->dev_ops->d_mmap == block_io_mmap) {
@@ -298,7 +400,7 @@ kern_return_t	device_pager_setup(
 	}
 
 	dev_pager_hash_insert(d->pager, d);
-	dev_pager_hash_insert((ipc_port_t)device, d);	/* HACK */
+	dev_device_hash_insert(d->device, d->offset, d);
 
 	*pager = (mach_port_t) ipc_port_make_send(d->pager);
 	return (KERN_SUCCESS);
@@ -424,7 +526,9 @@ vm_offset_t device_map_page(
 
 	return pmap_phys_address(
 		   (*(ds->device->dev_ops->d_mmap))
-			(ds->device->dev_number, offset, ds->prot));
+			(ds->device->dev_number,
+			ds->offset + offset,
+			ds->prot));
 }
 
 kern_return_t device_pager_init_pager(
@@ -494,7 +598,7 @@ kern_return_t device_pager_terminate(
 	assert(ds->pager_name == pager_name);
 
 	dev_pager_hash_delete(ds->pager);
-	dev_pager_hash_delete((ipc_port_t)ds->device);	/* HACK */
+	dev_device_hash_delete(ds->device, ds->offset);
 	mach_device_deallocate(ds->device);
 
 	/* release the send rights we have saved from the init call */
@@ -554,4 +658,5 @@ void device_pager_init(void)
 	 *	Initialize the name port hashing stuff.
 	 */
 	dev_pager_hash_init();
+	dev_device_hash_init();
 }
