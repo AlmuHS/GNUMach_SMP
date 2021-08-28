@@ -26,6 +26,7 @@
  */
 
 #include <machine/vm_param.h>
+#include <intel/pmap.h>
 
 #ifdef SLOW_IO_BY_JUMPING
 #define __SLOW_DOWN_IO __asm__ __volatile__("jmp 1f\n1:\tjmp 1f\n1:")
@@ -47,7 +48,7 @@
  */
 static inline unsigned long virt_to_phys(volatile void * address)
 {
-	return (unsigned long) _kvtophys(address);
+	return (unsigned long) kvtophys((vm_offset_t) address);
 }
 
 static inline void * phys_to_virt(unsigned long address)
