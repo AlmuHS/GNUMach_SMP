@@ -151,7 +151,7 @@ void dev_pager_deallocate(dev_pager_t	ds)
  * A hash table of ports for device_pager backed objects.
  */
 
-#define	DEV_PAGER_HASH_COUNT		127
+#define	DEV_HASH_COUNT		127
 
 struct dev_pager_entry {
 	queue_chain_t	links;
@@ -164,7 +164,7 @@ typedef struct dev_pager_entry *dev_pager_entry_t;
  * Indexed by port name, each element contains a queue of all dev_pager_entry_t
  * which name shares the same hash
  */
-queue_head_t	dev_pager_hashtable[DEV_PAGER_HASH_COUNT];
+queue_head_t	dev_pager_hashtable[DEV_HASH_COUNT];
 struct kmem_cache	dev_pager_hash_cache;
 decl_simple_lock_data(,
 		dev_pager_hash_lock)
@@ -181,13 +181,13 @@ typedef struct dev_device_entry *dev_device_entry_t;
  * Indexed by device + offset, each element contains a queue of all
  * dev_device_entry_t which device + offset shares the same hash
  */
-queue_head_t	dev_device_hashtable[DEV_PAGER_HASH_COUNT];
+queue_head_t	dev_device_hashtable[DEV_HASH_COUNT];
 struct kmem_cache	dev_device_hash_cache;
 decl_simple_lock_data(,
 		dev_device_hash_lock)
 
-#define	dev_pager_hash(name_port) \
-		(((vm_offset_t)(name_port) & 0xffffff) % DEV_PAGER_HASH_COUNT)
+#define	dev_hash(name_port) \
+		(((vm_offset_t)(name_port) & 0xffffff) % DEV_HASH_COUNT)
 
 void dev_pager_hash_init(void)
 {
@@ -197,7 +197,7 @@ void dev_pager_hash_init(void)
 	size = sizeof(struct dev_pager_entry);
 	kmem_cache_init(&dev_pager_hash_cache, "dev_pager_entry", size, 0,
 			NULL, 0);
-	for (i = 0; i < DEV_PAGER_HASH_COUNT; i++)
+	for (i = 0; i < DEV_HASH_COUNT; i++)
 	    queue_init(&dev_pager_hashtable[i]);
 	simple_lock_init(&dev_pager_hash_lock);
 }
@@ -213,7 +213,7 @@ void dev_pager_hash_insert(
 	new_entry->pager_rec = rec;
 
 	simple_lock(&dev_pager_hash_lock);
-	queue_enter(&dev_pager_hashtable[dev_pager_hash(name_port)],
+	queue_enter(&dev_pager_hashtable[dev_hash(name_port)],
 			new_entry, dev_pager_entry_t, links);
 	simple_unlock(&dev_pager_hash_lock);
 }
@@ -223,7 +223,7 @@ void dev_pager_hash_delete(const ipc_port_t name_port)
 	queue_t			bucket;
 	dev_pager_entry_t	entry;
 
-	bucket = &dev_pager_hashtable[dev_pager_hash(name_port)];
+	bucket = &dev_pager_hashtable[dev_hash(name_port)];
 
 	simple_lock(&dev_pager_hash_lock);
 	for (entry = (dev_pager_entry_t)queue_first(bucket);
@@ -245,7 +245,7 @@ dev_pager_t dev_pager_hash_lookup(const ipc_port_t name_port)
 	dev_pager_entry_t	entry;
 	dev_pager_t		pager;
 
-	bucket = &dev_pager_hashtable[dev_pager_hash(name_port)];
+	bucket = &dev_pager_hashtable[dev_hash(name_port)];
 
 	simple_lock(&dev_pager_hash_lock);
 	for (entry = (dev_pager_entry_t)queue_first(bucket);
@@ -270,7 +270,7 @@ void dev_device_hash_init(void)
 	size = sizeof(struct dev_device_entry);
 	kmem_cache_init(&dev_device_hash_cache, "dev_device_entry", size, 0,
 			NULL, 0);
-	for (i = 0; i < DEV_PAGER_HASH_COUNT; i++) {
+	for (i = 0; i < DEV_HASH_COUNT; i++) {
 	    queue_init(&dev_device_hashtable[i]);
 	}
 	simple_lock_init(&dev_device_hash_lock);
@@ -289,7 +289,7 @@ void dev_device_hash_insert(
 	new_entry->pager_rec = rec;
 
 	simple_lock(&dev_device_hash_lock);
-	queue_enter(&dev_device_hashtable[dev_pager_hash(device + offset)],
+	queue_enter(&dev_device_hashtable[dev_hash(device + offset)],
 			new_entry, dev_device_entry_t, links);
 	simple_unlock(&dev_device_hash_lock);
 }
@@ -301,7 +301,7 @@ void dev_device_hash_delete(
 	queue_t			bucket;
 	dev_device_entry_t	entry;
 
-	bucket = &dev_device_hashtable[dev_pager_hash(device + offset)];
+	bucket = &dev_device_hashtable[dev_hash(device + offset)];
 
 	simple_lock(&dev_device_hash_lock);
 	for (entry = (dev_device_entry_t)queue_first(bucket);
@@ -325,7 +325,7 @@ dev_pager_t dev_device_hash_lookup(
 	dev_device_entry_t	entry;
 	dev_pager_t		pager;
 
-	bucket = &dev_device_hashtable[dev_pager_hash(device + offset)];
+	bucket = &dev_device_hashtable[dev_hash(device + offset)];
 
 	simple_lock(&dev_device_hash_lock);
 	for (entry = (dev_device_entry_t)queue_first(bucket);
