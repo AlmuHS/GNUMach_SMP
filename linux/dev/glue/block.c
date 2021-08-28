@@ -84,6 +84,13 @@
 
 #include <linux/dev/glue/glue.h>
 
+#ifdef PAE
+#warning TODO: make DMA32 between DIRECTMAP and HIGHMEM
+#define VM_PAGE_LINUX VM_PAGE_DMA32
+#else
+#define VM_PAGE_LINUX VM_PAGE_HIGHMEM
+#endif
+
 /* This task queue is not used in Mach: just for fixing undefined symbols. */
 DECLARE_TASK_QUEUE (tq_disk);
 
@@ -1525,7 +1532,7 @@ device_read (void *d, ipc_port_t reply_port,
       /* Allocate and map pages.  */
       while (alloc_offset < trunc_page (offset) + len)
 	{
-	  while ((m = vm_page_grab (VM_PAGE_DMA32)) == 0)
+	  while ((m = vm_page_grab (VM_PAGE_LINUX)) == 0)
 	    VM_PAGE_WAIT (0);
 	  assert (! m->active && ! m->inactive);
 	  m->busy = TRUE;
