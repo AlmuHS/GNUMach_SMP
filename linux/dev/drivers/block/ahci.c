@@ -645,7 +645,7 @@ static int ahci_identify(const volatile struct ahci_host *ahci_host, const volat
 	add_timer(&identify_timer);
 	while (!port->status) {
 		if (jiffies >= timeout) {
-			printk("sd%u: timeout waiting for ready\n", port-ports);
+                       printk("sd%u: timeout waiting for identify\n", port-ports);
 			port->ahci_host = NULL;
 			port->ahci_port = NULL;
 			del_timer(&identify_timer);
