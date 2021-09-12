@@ -815,9 +815,10 @@ static void ahci_probe_port(const volatile struct ahci_host *ahci_host, const vo
 
 	writel(readl(&ahci_port->cmd) | PORT_CMD_FIS_RX | PORT_CMD_START, &ahci_port->cmd);
 
-	if (ahci_identify(ahci_host, ahci_port, port, WIN_IDENTIFY) >= 2)
-		/* Try ATAPI */
-		ahci_identify(ahci_host, ahci_port, port, WIN_PIDENTIFY);
+       /* if PxCMD.ATAPI is set, try ATAPI identify; otherwise try AHCI, then ATAPI */
+       if (readl(&ahci_port->cmd) & PORT_CMD_ATAPI ||
+              ahci_identify(ahci_host, ahci_port, port, WIN_IDENTIFY) >= 2)
+                ahci_identify(ahci_host, ahci_port, port, WIN_PIDENTIFY);
 }
 
 /* Probe one AHCI PCI device */
