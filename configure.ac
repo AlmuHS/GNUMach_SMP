@@ -190,7 +190,7 @@ AM_CONDITIONAL([disable_smashing_stack_protector],
 # Output.
 #
 
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile version.c])
 
 #
