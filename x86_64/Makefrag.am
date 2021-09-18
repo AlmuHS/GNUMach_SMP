@@ -231,8 +231,8 @@ AM_CFLAGS += \
 # Installation.
 #
 
-include_mach_i386dir = $(includedir)/mach/i386
-include_mach_i386_HEADERS = \
+include_mach_x86_64dir = $(includedir)/mach/x86_64
+include_mach_x86_64_HEADERS = \
 	i386/include/mach/i386/asm.h \
 	i386/include/mach/i386/boolean.h \
 	i386/include/mach/i386/eflags.h \
