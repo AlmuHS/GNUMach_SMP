@@ -132,10 +132,14 @@ static inline void set_xcr0(uint64_t value) {
 			, "d" ((unsigned) (fp_xsave_support >> 32)))
 
 #define	xrstor(state) \
-	asm volatile("xrstor %0" : : "m" (state))
+	asm volatile("xrstor %0" : : "m" (state) \
+			, "a" ((unsigned) fp_xsave_support) \
+			, "d" ((unsigned) (fp_xsave_support >> 32)))
 
 #define	xrstors(state) \
-	asm volatile("xrstors %0" : : "m" (state))
+	asm volatile("xrstors %0" : : "m" (state) \
+			, "a" ((unsigned) fp_xsave_support) \
+			, "d" ((unsigned) (fp_xsave_support >> 32)))
 
 #define fwait() \
     	asm("fwait");
