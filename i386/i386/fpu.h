@@ -111,25 +111,25 @@ static inline void set_xcr0(uint64_t value) {
 	asm volatile("xsave %0" \
 			: "=m" (*state) \
 			: "a" ((unsigned) fp_xsave_support) \
-			, "d" ((unsigned) (fp_xsave_support >> 32))) \
+			, "d" ((unsigned) (fp_xsave_support >> 32)))
 
 #define	xsaveopt(state) \
 	asm volatile("xsaveopt %0" \
 			: "=m" (*state) \
 			: "a" ((unsigned) fp_xsave_support) \
-			, "d" ((unsigned) (fp_xsave_support >> 32))) \
+			, "d" ((unsigned) (fp_xsave_support >> 32)))
 
 #define	xsavec(state) \
 	asm volatile("xsavec %0" \
 			: "=m" (*state) \
 			: "a" ((unsigned) fp_xsave_support) \
-			, "d" ((unsigned) (fp_xsave_support >> 32))) \
+			, "d" ((unsigned) (fp_xsave_support >> 32)))
 
 #define	xsaves(state) \
 	asm volatile("xsaves %0" \
 			: "=m" (*state) \
 			: "a" ((unsigned) fp_xsave_support) \
-			, "d" ((unsigned) (fp_xsave_support >> 32))) \
+			, "d" ((unsigned) (fp_xsave_support >> 32)))
 
 #define	xrstor(state) \
 	asm volatile("xrstor %0" : : "m" (state))
