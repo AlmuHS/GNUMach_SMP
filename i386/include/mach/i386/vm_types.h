@@ -93,6 +93,7 @@ typedef	unsigned long	vm_size_t;
 #else
 typedef	natural_t	vm_size_t;
 #endif
+typedef	vm_size_t *	vm_size_array_t;
 
 #endif	/* __ASSEMBLER__ */
 

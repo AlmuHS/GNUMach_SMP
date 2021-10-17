@@ -134,7 +134,7 @@ memory_object_create_proxy (const ipc_space_t space, vm_prot_t max_protection,
 			    ipc_port_t *object, natural_t object_count,
 			    const vm_offset_t *offset, natural_t offset_count,
 			    const vm_offset_t *start, natural_t start_count,
-			    const vm_offset_t *len, natural_t len_count,
+			    const vm_size_t *len, natural_t len_count,
 			    ipc_port_t *port)
 {
   memory_object_proxy_t proxy;
