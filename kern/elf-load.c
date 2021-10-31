@@ -36,6 +36,7 @@ int exec_load(exec_read_func_t *read, exec_read_exec_func_t *read_exec,
 	vm_size_t phsize;
 	int i;
 	int result;
+	vm_offset_t loadbase = 0;
 
 	/* Read the ELF header.  */
 	if ((result = (*read)(handle, 0, &x, sizeof(x), &actual)) != 0)
@@ -55,8 +56,13 @@ int exec_load(exec_read_func_t *read, exec_read_exec_func_t *read_exec,
 	    (x.e_machine != MY_E_MACHINE))
 		return EX_WRONG_ARCH;
 
+	/* Leave room for mmaps etc. before PIE binaries.
+	 * Could add address randomization here.  */
+	if (x.e_type == ET_DYN || x.e_type == ET_REL)
+		loadbase = 128 << 20;
+
 	/* XXX others */
-	out_info->entry = (vm_offset_t) x.e_entry;
+	out_info->entry = (vm_offset_t) x.e_entry + loadbase;
 
 	phsize = x.e_phnum * x.e_phentsize;
 	phdr = (Elf32_Phdr *)alloca(phsize);
@@ -77,9 +83,10 @@ int exec_load(exec_read_func_t *read, exec_read_exec_func_t *read_exec,
 			if (ph->p_flags & PF_R) type |= EXEC_SECTYPE_READ;
 			if (ph->p_flags & PF_W) type |= EXEC_SECTYPE_WRITE;
 			if (ph->p_flags & PF_X) type |= EXEC_SECTYPE_EXECUTE;
+
 			result = (*read_exec)(handle,
 					      ph->p_offset, ph->p_filesz,
-					      ph->p_vaddr, ph->p_memsz, type);
+					      ph->p_vaddr + loadbase, ph->p_memsz, type);
 			if (result)
 				return result;
 		}

@@ -212,6 +212,7 @@ extern void pmap_clear_bootstrap_pagetable(pt_entry_t *addr);
 
 #if PAE
 #ifdef __x86_64__
+/* TODO: support PCID */
 #ifdef MACH_HYP
 #define	set_pmap(pmap)	\
 	MACRO_BEGIN					\
@@ -247,18 +248,18 @@ extern void pmap_put_mapwindow(pmap_mapwindow_t *map);
  *	Update operations must still be queued to cpus not in this
  *	list.
  */
-cpu_set		cpus_active;
+extern cpu_set		cpus_active;
 
 /*
  *	List of cpus that are idle, but still operating, and will want
  *	to see any kernel pmap updates when they become active.
  */
-cpu_set		cpus_idle;
+extern cpu_set		cpus_idle;
 
 /*
  *	Quick test for pmap update requests.
  */
-volatile
+extern volatile
 boolean_t	cpu_update_needed[NCPUS];
 
 /*

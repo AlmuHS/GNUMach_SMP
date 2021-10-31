@@ -94,6 +94,11 @@ void lprattach(struct bus_device *dev)
 	u_char		unit = dev->unit;
 	u_short		addr = (u_short) dev->address;
 
+	if (unit >= NLPR) {
+		printf(", disabled by NLPR configuration\n");
+		return;
+	}
+
 	take_dev_irq(dev);
 	printf(", port = %lx, spl = %ld, pic = %d.",
 	       dev->address, dev->sysdep, dev->sysdep1);

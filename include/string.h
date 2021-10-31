@@ -54,4 +54,6 @@ extern size_t strlen (const char *s) __attribute__ ((pure));
 
 extern char *strstr(const char *haystack, const char *needle);
 
+extern int ffs(int i);
+
 #endif /* _MACH_SA_SYS_STRING_H_ */

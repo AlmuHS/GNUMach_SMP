@@ -54,6 +54,7 @@
 #include <vm/vm_resident.h>
 #include <vm/vm_kern.h>
 #include <ipc/ipc_port.h>
+#include <string.h>
 
 #if	MACH_KDB
 #include <ddb/db_output.h>
@@ -480,12 +481,12 @@ vm_map_gap_remove(struct vm_map_header *hdr, struct vm_map_entry *entry)
  *	before using these macros.
  */
 #define vm_map_entry_link(map, after_where, entry)	\
-	_vm_map_entry_link(&(map)->hdr, after_where, entry)
+	_vm_map_entry_link(&(map)->hdr, after_where, entry, 1)
 
 #define vm_map_copy_entry_link(copy, after_where, entry)	\
-	_vm_map_entry_link(&(copy)->cpy_hdr, after_where, entry)
+	_vm_map_entry_link(&(copy)->cpy_hdr, after_where, entry, 0)
 
-#define _vm_map_entry_link(hdr, after_where, entry)	\
+#define _vm_map_entry_link(hdr, after_where, entry, link_gap)	\
 	MACRO_BEGIN					\
 	(hdr)->nentries++;				\
 	(entry)->vme_prev = (after_where);		\
@@ -494,22 +495,24 @@ vm_map_gap_remove(struct vm_map_header *hdr, struct vm_map_entry *entry)
 	 (entry)->vme_next->vme_prev = (entry);		\
 	rbtree_insert(&(hdr)->tree, &(entry)->tree_node,	\
 		      vm_map_entry_cmp_insert);		\
-	vm_map_gap_insert((hdr), (entry));		\
+	if (link_gap)					\
+		vm_map_gap_insert((hdr), (entry));	\
 	MACRO_END
 
 #define vm_map_entry_unlink(map, entry)			\
-	_vm_map_entry_unlink(&(map)->hdr, entry)
+	_vm_map_entry_unlink(&(map)->hdr, entry, 1)
 
 #define vm_map_copy_entry_unlink(copy, entry)			\
-	_vm_map_entry_unlink(&(copy)->cpy_hdr, entry)
+	_vm_map_entry_unlink(&(copy)->cpy_hdr, entry, 0)
 
-#define _vm_map_entry_unlink(hdr, entry)		\
+#define _vm_map_entry_unlink(hdr, entry, unlink_gap)	\
 	MACRO_BEGIN					\
 	(hdr)->nentries--;				\
 	(entry)->vme_next->vme_prev = (entry)->vme_prev; \
 	(entry)->vme_prev->vme_next = (entry)->vme_next; \
 	rbtree_remove(&(hdr)->tree, &(entry)->tree_node);	\
-	vm_map_gap_remove((hdr), (entry));		\
+	if (unlink_gap)					\
+		vm_map_gap_remove((hdr), (entry));	\
 	MACRO_END
 
 /*
@@ -672,8 +675,29 @@ vm_map_find_entry_anywhere(struct vm_map *map,
 	struct rbtree_node *node;
 	vm_size_t max_size;
 	vm_offset_t start, end;
+	vm_offset_t max;
 
 	assert(size != 0);
+
+	max = map->max_offset;
+	if (((mask + 1) & mask) != 0) {
+		/* We have high bits in addition to the low bits */
+
+		int first0 = ffs(~mask);		/* First zero after low bits */
+		vm_offset_t lowmask = (1UL << (first0-1)) - 1;		/* low bits */
+		vm_offset_t himask = mask - lowmask;			/* high bits */
+		int second1 = ffs(himask);		/* First one after low bits */
+
+		max = 1UL << (second1-1);
+
+		if (himask + max != 0) {
+			/* high bits do not continue up to the end */
+			printf("invalid mask %lx\n", mask);
+			return NULL;
+		}
+
+		mask = lowmask;
+	}
 
 	if (!map_locked) {
 		vm_map_lock(map);
@@ -685,7 +709,7 @@ restart:
 		start = (map->min_offset + mask) & ~mask;
 		end = start + size;
 
-		if ((start < map->min_offset) || (end <= start) || (end > map->max_offset)) {
+		if ((start < map->min_offset) || (end <= start) || (end > max)) {
 			goto error;
 		}
 
@@ -701,7 +725,7 @@ restart:
 
 		if ((start >= entry->vme_end)
 		    && (end > start)
-		    && (end <= map->max_offset)
+		    && (end <= max)
 		    && (end <= (entry->vme_end + entry->gap_size))) {
 			*startp = start;
 			return entry;
@@ -711,6 +735,8 @@ restart:
 	max_size = size + mask;
 
 	if (max_size < size) {
+		printf("max_size %x got smaller than size %x with mask %lx\n",
+		       max_size, size, mask);
 		goto error;
 	}
 
@@ -743,6 +769,11 @@ restart:
 	end = start + size;
 	assert(end > start);
 	assert(end <= (entry->vme_end + entry->gap_size));
+	if (end > max) {
+		/* Does not respect the allowed maximum */
+		printf("%lx does not respect %lx\n", end, max);
+		return NULL;
+	}
 	*startp = start;
 	return entry;
 
@@ -1152,13 +1183,13 @@ kern_return_t vm_map_enter(
 #define vm_map_clip_start(map, entry, startaddr) \
 	MACRO_BEGIN \
 	if ((startaddr) > (entry)->vme_start) \
-		_vm_map_clip_start(&(map)->hdr,(entry),(startaddr)); \
+		_vm_map_clip_start(&(map)->hdr,(entry),(startaddr),1); \
 	MACRO_END
 
 #define vm_map_copy_clip_start(copy, entry, startaddr) \
 	MACRO_BEGIN \
 	if ((startaddr) > (entry)->vme_start) \
-		_vm_map_clip_start(&(copy)->cpy_hdr,(entry),(startaddr)); \
+		_vm_map_clip_start(&(copy)->cpy_hdr,(entry),(startaddr),0); \
 	MACRO_END
 
 /*
@@ -1168,7 +1199,8 @@ kern_return_t vm_map_enter(
 void _vm_map_clip_start(
 	struct vm_map_header 	*map_header,
 	vm_map_entry_t		entry,
-	vm_offset_t		start)
+	vm_offset_t		start,
+	boolean_t		link_gap)
 {
 	vm_map_entry_t	new_entry;
 
@@ -1187,7 +1219,7 @@ void _vm_map_clip_start(
 	entry->offset += (start - entry->vme_start);
 	entry->vme_start = start;
 
-	_vm_map_entry_link(map_header, entry->vme_prev, new_entry);
+	_vm_map_entry_link(map_header, entry->vme_prev, new_entry, link_gap);
 
 	if (entry->is_sub_map)
 	 	vm_map_reference(new_entry->object.sub_map);
@@ -1205,13 +1237,13 @@ void _vm_map_clip_start(
 #define vm_map_clip_end(map, entry, endaddr) \
 	MACRO_BEGIN \
 	if ((endaddr) < (entry)->vme_end) \
-		_vm_map_clip_end(&(map)->hdr,(entry),(endaddr)); \
+		_vm_map_clip_end(&(map)->hdr,(entry),(endaddr),1); \
 	MACRO_END
 
 #define vm_map_copy_clip_end(copy, entry, endaddr) \
 	MACRO_BEGIN \
 	if ((endaddr) < (entry)->vme_end) \
-		_vm_map_clip_end(&(copy)->cpy_hdr,(entry),(endaddr)); \
+		_vm_map_clip_end(&(copy)->cpy_hdr,(entry),(endaddr),0); \
 	MACRO_END
 
 /*
@@ -1221,7 +1253,8 @@ void _vm_map_clip_start(
 void _vm_map_clip_end(
 	struct vm_map_header 	*map_header,
 	vm_map_entry_t		entry,
-	vm_offset_t		end)
+	vm_offset_t		end,
+	boolean_t		link_gap)
 {
 	vm_map_entry_t	new_entry;
 
@@ -1236,7 +1269,7 @@ void _vm_map_clip_end(
 	new_entry->vme_start = entry->vme_end = end;
 	new_entry->offset += (end - entry->vme_start);
 
-	_vm_map_entry_link(map_header, entry, new_entry);
+	_vm_map_entry_link(map_header, entry, new_entry, link_gap);
 
 	if (entry->is_sub_map)
 	 	vm_map_reference(new_entry->object.sub_map);
@@ -2033,7 +2066,7 @@ vm_map_copy_steal_pages(vm_map_copy_t copy)
 		 *	Page was not stolen,  get a new
 		 *	one and do the copy now.
 		 */
-		while ((new_m = vm_page_grab()) == VM_PAGE_NULL) {
+		while ((new_m = vm_page_grab(VM_PAGE_HIGHMEM)) == VM_PAGE_NULL) {
 			VM_PAGE_WAIT((void(*)()) 0);
 		}
 

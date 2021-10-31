@@ -423,7 +423,7 @@ vm_fault_return_t vm_fault_page(
 					 * need to allocate a real page.
 					 */
 
-					real_m = vm_page_grab();
+					real_m = vm_page_grab(VM_PAGE_HIGHMEM);
 					if (real_m == VM_PAGE_NULL) {
 						vm_fault_cleanup(object, first_m);
 						return(VM_FAULT_MEMORY_SHORTAGE);
@@ -810,7 +810,7 @@ vm_fault_return_t vm_fault_page(
 			/*
 			 *	Allocate a page for the copy
 			 */
-			copy_m = vm_page_grab();
+			copy_m = vm_page_grab(VM_PAGE_HIGHMEM);
 			if (copy_m == VM_PAGE_NULL) {
 				RELEASE_PAGE(m);
 				vm_fault_cleanup(object, first_m);

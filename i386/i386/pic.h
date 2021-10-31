@@ -52,7 +52,9 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef	_I386_PIC_H_
 #define	_I386_PIC_H_
 
+#ifndef APIC
 #define NINTR	0x10
+#endif
 #define	NPICS	0x02
 
 /*
@@ -96,7 +98,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 #if	defined(AT386) || defined(ATX86_64)
-#define	PICM_VECTBASE		0x40
+#define	PICM_VECTBASE		0x20
 #define PICS_VECTBASE		PICM_VECTBASE + 0x08
 #endif	/* defined(AT386) */
 
@@ -176,7 +178,9 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define READ_IR_ONRD		0x00
 #define READ_IS_ONRD		0x01
 
-#ifndef __ASSEMBLER__
+#define PIC_MASK_ZERO		0x00
+
+#if !defined(__ASSEMBLER__) && !defined(APIC)
 extern void picinit (void);
 extern int curr_pic_mask;
 extern void intnull(int unit);

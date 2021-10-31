@@ -28,15 +28,38 @@
 #include <stdint.h>
 
 typedef struct ApicReg {
-        unsigned r;	/* the actual register */
-        unsigned p[3];	/* pad to the next 128-bit boundary */
+        uint32_t r;	/* the actual register */
+        uint32_t p[3];	/* pad to the next 128-bit boundary */
 } ApicReg;
 
 typedef struct ApicIoUnit {
         ApicReg select;
         ApicReg window;
+        ApicReg unused[2];
+        ApicReg eoi; /* write the vector you wish to EOI to this reg */
 } ApicIoUnit;
 
+struct ioapic_route_entry {
+    uint32_t vector      : 8,
+            delvmode    : 3, /* 000=fixed 001=lowest 111=ExtInt */
+            destmode    : 1, /* 0=physical 1=logical */
+            delvstatus  : 1,
+            polarity    : 1, /* 0=activehigh 1=activelow */
+            irr         : 1,
+            trigger     : 1, /* 0=edge 1=level */
+            mask        : 1, /* 0=enabled 1=disabled */
+            reserved1   : 15;
+    uint32_t reserved2   : 24,
+            dest        : 8;
+} __attribute__ ((packed));
+
+union ioapic_route_entry_union {
+    struct {
+       uint32_t lo;
+       uint32_t hi;
+    };
+    struct ioapic_route_entry both;
+};
 
 typedef struct ApicLocalUnit {
         ApicReg reserved0;               /* 0x000 */
@@ -82,10 +105,13 @@ typedef struct ApicLocalUnit {
 typedef struct IoApicData {
         uint8_t  apic_id;
         uint32_t addr;
-        uint32_t base;
+        uint32_t gsi_base;
+        ApicIoUnit *ioapic;
 } IoApicData;
 
+#define APIC_IRQ_OVERRIDE_POLARITY_MASK 1
 #define APIC_IRQ_OVERRIDE_ACTIVE_LOW 2
+#define APIC_IRQ_OVERRIDE_TRIGGER_MASK 4
 #define APIC_IRQ_OVERRIDE_LEVEL_TRIGGERED 8
 
 typedef struct IrqOverrideData {
@@ -112,14 +138,28 @@ void apic_add_cpu(uint16_t apic_id);
 void apic_lapic_init(ApicLocalUnit* lapic_ptr);
 void apic_add_ioapic(struct IoApicData);
 void apic_add_irq_override(struct IrqOverrideData irq_over);
+IrqOverrideData *acpi_get_irq_override(uint8_t gsi);
 uint16_t apic_get_cpu_apic_id(int kernel_id);
 volatile ApicLocalUnit* apic_get_lapic(void);
-struct IoApicData apic_get_ioapic(int kernel_id);
+struct IoApicData *apic_get_ioapic(int kernel_id);
 uint8_t apic_get_numcpus(void);
 uint8_t apic_get_num_ioapics(void);
 uint16_t apic_get_current_cpu(void);
 void apic_print_info(void);
 int apic_refit_cpulist(void);
+void picdisable(void);
+void lapic_eoi(void);
+void ioapic_irq_eoi(int pin);
+void lapic_enable_timer(void);
+void ioapic_mask_irqs(void);
+void ioapic_toggle(int pin, int mask);
+void ioapic_configure(void);
+
+extern int timer_pin;
+extern void intnull(int unit);
+extern volatile ApicLocalUnit* lapic;
+extern inline void mask_irq (unsigned int irq_nr);
+extern inline void unmask_irq (unsigned int irq_nr);
 
 #endif
 
@@ -127,6 +167,38 @@ int apic_refit_cpulist(void);
 #define APIC_IO_VERSION			0x01
 #define APIC_IO_REDIR_LOW(int_pin)	(0x10+(int_pin)*2)
 #define APIC_IO_REDIR_HIGH(int_pin)	(0x11+(int_pin)*2)
+
+#define IMCR_SELECT    0x22
+#define IMCR_DATA      0x23
+#define MODE_IMCR      0x70
+# define IMCR_USE_PIC  0
+# define IMCR_USE_APIC 1
+
+#define LAPIC_ENABLE                   0x100
+#define LAPIC_FOCUS                    0x200
+#define LAPIC_NMI                      0x400
+#define LAPIC_ENABLE_DIRECTED_EOI      0x1000
+#define LAPIC_DISABLE                  0x10000
+#define LAPIC_TIMER_PERIODIC           0x20000
+#define LAPIC_TIMER_DIVIDE_2           0
+#define LAPIC_TIMER_DIVIDE_4           1
+#define LAPIC_TIMER_DIVIDE_8           2
+#define LAPIC_TIMER_DIVIDE_16          3
+#define LAPIC_TIMER_BASEDIV            0x100000
+#define LAPIC_HAS_DIRECTED_EOI         0x1000000
+
+#define NINTR                          24
+#define IOAPIC_FIXED                   0
+#define IOAPIC_PHYSICAL                0
+#define IOAPIC_LOGICAL                 1
+#define IOAPIC_NMI                     4
+#define IOAPIC_EXTINT                  7
+#define IOAPIC_ACTIVE_HIGH             0
+#define IOAPIC_ACTIVE_LOW              1
+#define IOAPIC_EDGE_TRIGGERED          0
+#define IOAPIC_LEVEL_TRIGGERED         1
+#define IOAPIC_MASK_ENABLED            0
+#define IOAPIC_MASK_DISABLED           1
 
 /* Set or clear a bit in a 255-bit APIC mask register.
    These registers are spread through eight 32-bit registers.  */

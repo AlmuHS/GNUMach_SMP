@@ -45,8 +45,10 @@ AC_DEFINE([BOOTSTRAP_SYMBOLS], [0], [BOOTSTRAP_SYMBOLS])
 
 # Multiprocessor support is still broken.
 AH_TEMPLATE([MULTIPROCESSOR], [set things up for a uniprocessor])
-mach_ncpus=1
-
+AC_ARG_ENABLE([ncpus],
+  AS_HELP_STRING([--enable-ncpus=N], [specify the maximum number of cpus to be supported]),
+  [mach_ncpus=$enable_ncpus],
+  [mach_ncpus=1])
 AC_DEFINE_UNQUOTED([NCPUS], [$mach_ncpus], [number of CPUs])
 [if [ $mach_ncpus -gt 1 ]; then]
   AC_DEFINE([MULTIPROCESSOR], [1], [set things up for a multiprocessor])  

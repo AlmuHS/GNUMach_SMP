@@ -381,6 +381,11 @@ typedef	struct pmap_update_list	*pmap_update_list_t;
 
 struct pmap_update_list	cpu_update_list[NCPUS];
 
+cpu_set		cpus_active;
+cpu_set		cpus_idle;
+volatile
+boolean_t	cpu_update_needed[NCPUS];
+
 #endif	/* NCPUS > 1 */
 
 /*
@@ -1122,7 +1127,7 @@ pmap_page_table_page_alloc(void)
 	/*
 	 *	Allocate a VM page for the level 2 page table entries.
 	 */
-	while ((m = vm_page_grab()) == VM_PAGE_NULL)
+	while ((m = vm_page_grab(VM_PAGE_DIRECTMAP)) == VM_PAGE_NULL)
 		VM_PAGE_WAIT((void (*)()) 0);
 
 	/*
@@ -1259,7 +1264,6 @@ pmap_t pmap_create(vm_size_t size)
 		       INTEL_PGBYTES);
 	}
 
-#ifdef LINUX_DEV
 #if VM_MIN_KERNEL_ADDRESS != 0
 	/* Do not map BIOS in user tasks */
 	page_dir
@@ -1270,7 +1274,6 @@ pmap_t pmap_create(vm_size_t size)
 #endif
 		[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS)]
 		= 0;
-#endif
 #endif
 #ifdef	MACH_PV_PAGETABLES
 	{
@@ -1874,17 +1877,17 @@ void pmap_protect(
 		return;
 	}
 
+#if !(__i486__ || __i586__ || __i686__)
 	/*
 	 * If write-protecting in the kernel pmap,
 	 * remove the mappings; the i386 ignores
 	 * the write-permission bit in kernel mode.
-	 *
-	 * XXX should be #if'd for i386
 	 */
 	if (map == kernel_pmap) {
 	    pmap_remove(map, s, e);
 	    return;
 	}
+#endif
 
 	SPLVM(spl);
 	simple_lock(&map->lock);
@@ -1968,7 +1971,7 @@ void pmap_enter(
 	phys_addr_t		old_pa;
 
 	assert(pa != vm_page_fictitious_addr);
-	if (pmap_debug) printf("pmap(%lx, %llx)\n", v, pa);
+	if (pmap_debug) printf("pmap(%lx, %llx)\n", v, (unsigned long long) pa);
 	if (pmap == PMAP_NULL)
 		return;
 
@@ -1976,14 +1979,13 @@ void pmap_enter(
 	if (pmap == kernel_pmap && (v < kernel_virtual_start || v >= kernel_virtual_end))
 		panic("pmap_enter(%lx, %llx) falls in physical memory area!\n", v, (unsigned long long) pa);
 #endif
+#if !(__i486__ || __i586__ || __i686__)
 	if (pmap == kernel_pmap && (prot & VM_PROT_WRITE) == 0
 	    && !wired /* hack for io_wire */ ) {
 	    /*
 	     *	Because the 386 ignores write protection in kernel mode,
 	     *	we cannot enter a read-only kernel mapping, and must
 	     *	remove an existing mapping if changing it.
-	     *
-	     *  XXX should be #if'd for i386
 	     */
 	    PMAP_READ_LOCK(pmap, spl);
 
@@ -2000,6 +2002,7 @@ void pmap_enter(
 	    PMAP_READ_UNLOCK(pmap, spl);
 	    return;
 	}
+#endif
 
 	/*
 	 *	Must allocate a new pvlist entry while we're unlocked;

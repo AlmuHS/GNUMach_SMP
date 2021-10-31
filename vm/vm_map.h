@@ -560,7 +560,8 @@ extern kern_return_t vm_map_submap(
 extern void _vm_map_clip_start(
         struct vm_map_header *map_header,
         vm_map_entry_t entry,
-        vm_offset_t start);
+        vm_offset_t	start,
+        boolean_t	link_gap);
 
 /*
  *      vm_map_clip_end:        [ internal use only ]
@@ -572,6 +573,7 @@ extern void _vm_map_clip_start(
 void _vm_map_clip_end(
 	struct vm_map_header 	*map_header,
 	vm_map_entry_t		entry,
-	vm_offset_t		end);
+	vm_offset_t		end,
+	boolean_t		link_gap);
 
 #endif	/* _VM_VM_MAP_H_ */

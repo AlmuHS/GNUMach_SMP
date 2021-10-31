@@ -2086,3 +2086,68 @@ vm_page_wait(void (*continuation)(void))
         thread_block((void (*)(void)) 0);
     }
 }
+
+#if MACH_KDB
+#include <ddb/db_output.h>
+#define PAGES_PER_MB ((1<<20) / PAGE_SIZE)
+void db_show_vmstat(void)
+{
+	integer_t free_count = vm_page_mem_free();
+	unsigned i;
+
+	db_printf("%-20s %10uM\n", "size:",
+		(free_count + vm_page_active_count +
+		  vm_page_inactive_count + vm_page_wire_count)
+		 / PAGES_PER_MB);
+
+	db_printf("%-20s %10uM\n", "free:",
+		free_count / PAGES_PER_MB);
+	db_printf("%-20s %10uM\n", "active:",
+		vm_page_active_count / PAGES_PER_MB);
+	db_printf("%-20s %10uM\n", "inactive:",
+		vm_page_inactive_count / PAGES_PER_MB);
+	db_printf("%-20s %10uM\n", "wired:",
+		vm_page_wire_count / PAGES_PER_MB);
+
+	db_printf("%-20s %10uM\n", "zero filled:",
+		vm_stat.zero_fill_count / PAGES_PER_MB);
+	db_printf("%-20s %10uM\n", "reactivated:",
+		vm_stat.reactivations / PAGES_PER_MB);
+	db_printf("%-20s %10uM\n", "pageins:",
+		vm_stat.pageins / PAGES_PER_MB);
+	db_printf("%-20s %10uM\n", "pageouts:",
+		vm_stat.pageouts / PAGES_PER_MB);
+	db_printf("%-20s %10uM\n", "page faults:",
+		vm_stat.faults / PAGES_PER_MB);
+	db_printf("%-20s %10uM\n", "cow faults:",
+		vm_stat.cow_faults / PAGES_PER_MB);
+	db_printf("%-20s %10u%\n", "memobj hit ratio:",
+		(vm_stat.hits * 100) / vm_stat.lookups);
+
+	db_printf("%-20s %10u%\n", "cached_memobjs",
+		vm_object_external_count);
+	db_printf("%-20s %10uM\n", "cache",
+		vm_object_external_pages / PAGES_PER_MB);
+
+	for (i = 0; i < vm_page_segs_size; i++)
+	{
+		db_printf("\nSegment %s:\n", vm_page_seg_name(i));
+		db_printf("%-20s %10uM\n", "size:",
+			vm_page_seg_size(&vm_page_segs[i]) >> 20);
+		db_printf("%-20s %10uM\n", "free:",
+			vm_page_segs[i].nr_free_pages / PAGES_PER_MB);
+		db_printf("%-20s %10uM\n", "min_free:",
+			vm_page_segs[i].min_free_pages / PAGES_PER_MB);
+		db_printf("%-20s %10uM\n", "low_free:",
+			vm_page_segs[i].low_free_pages / PAGES_PER_MB);
+		db_printf("%-20s %10uM\n", "high_free:",
+			vm_page_segs[i].high_free_pages / PAGES_PER_MB);
+		db_printf("%-20s %10uM\n", "active:",
+			vm_page_segs[i].nr_active_pages / PAGES_PER_MB);
+		db_printf("%-20s %10uM\n", "high active:",
+			vm_page_segs[i].high_active_pages / PAGES_PER_MB);
+		db_printf("%-20s %10uM\n", "inactive:",
+			vm_page_segs[i].nr_inactive_pages / PAGES_PER_MB);
+	}
+}
+#endif /* MACH_KDB */

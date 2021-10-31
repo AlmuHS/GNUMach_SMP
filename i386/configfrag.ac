@@ -46,7 +46,8 @@ esac
 
 case $host_platform:$host_cpu in
   at:i?86)
-    ncom=4
+    # should be 4, but we do not support shared IRQ for these
+    ncom=2
     nlpr=1
 
     # i386/bogus/platforms.h]
@@ -91,6 +92,14 @@ if [ x"$enable_lpr" = xyes ]; then]
   AM_CONDITIONAL([enable_lpr], [false])
 [fi]
 
+AC_ARG_ENABLE([apic],
+  AS_HELP_STRING([--enable-apic], [LAPIC/IOAPIC support]))
+[if [ x"$enable_apic" = xyes ]; then]
+  AC_DEFINE([APIC], [1], [APIC support])
+  AM_CONDITIONAL([enable_apic], [true])
+[else]
+  AM_CONDITIONAL([enable_apic], [false])
+[fi]
 
 [case $host_platform:$host_cpu in
   xen:i?86)

@@ -607,6 +607,7 @@ ENTRY(call_continuation)
 	jmp	*%eax				/* goto continuation */
 
 
+/* IOAPIC has 24 interrupts, put spurious in the same array */
 
 #define INTERRUPT(n)				\
 	.data	2				;\
@@ -621,6 +622,7 @@ ENTRY(call_continuation)
 	.data	2
 DATA(int_entry_table)
 	.text
+/* Legacy APIC interrupts or PIC interrupts */
 INTERRUPT(0)
 INTERRUPT(1)
 INTERRUPT(2)
@@ -637,6 +639,19 @@ INTERRUPT(12)
 INTERRUPT(13)
 INTERRUPT(14)
 INTERRUPT(15)
+#ifdef APIC
+/* APIC PCI interrupts PIRQ A-H */
+INTERRUPT(16)
+INTERRUPT(17)
+INTERRUPT(18)
+INTERRUPT(19)
+INTERRUPT(20)
+INTERRUPT(21)
+INTERRUPT(22)
+INTERRUPT(23)
+/* Spurious interrupt, set irq number to vect number */
+INTERRUPT(255)
+#endif
 
 /* XXX handle NMI - at least print a warning like Linux does.  */
 
@@ -1177,6 +1192,9 @@ syscall_addr:
 
 	.data
 DATA(cpu_features)
+DATA(cpu_features_edx)
+	.long	0
+DATA(cpu_features_ecx)
 	.long	0
 	.text
 
@@ -1226,7 +1244,8 @@ ENTRY(discover_x86_cpu_type)
 	   use it to find out what we are. */
 0:	movl	$1,%eax			/* Fetch CPU type info ... */
 	cpuid				/*  ... into eax */
-	movl	%edx,cpu_features	/* Keep a copy */
+	movl	%ecx,cpu_features_ecx	/* Keep a copy */
+	movl	%edx,cpu_features_edx	/* Keep a copy */
 	shrl	$8,%eax			/* Slide family bits down */
 	andl	$15,%eax		/* And select them */
 

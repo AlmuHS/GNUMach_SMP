@@ -3434,8 +3434,8 @@ exception.
 @var{address}.  If the @var{anywhere} option is used, this address is
 ignored.  The address actually allocated will be returned in
 @var{address}. @var{size} is the number of bytes to allocate (rounded by
-the system in a machine dependent way).  The alignment restriction is
-specified by @var{mask}.  Bits asserted in this mask must not be
+the system in a machine dependent way).  The alignment and maximum address
+restrictions are specified by @var{mask}.  Bits asserted in this mask must not be
 asserted in the address returned.  If @var{anywhere} is set, the kernel
 should find and allocate any region of the specified size, and return
 the address of the resulting region in @var{address}.
@@ -4399,6 +4399,9 @@ The current scheduling priority of the thread.
 
 @item int depress_priority
 The priority the thread was depressed from.
+
+@item int last_processor
+The last processor used by the thread.
 @end table
 @end deftp
 

@@ -34,6 +34,8 @@ libkernel_a_SOURCES += \
 
 if PLATFORM_at
 libkernel_a_SOURCES += \
+	i386/i386at/acpi_parse_apic.h \
+	i386/i386at/acpi_parse_apic.c \
 	i386/i386at/boothdr.S \
 	i386/i386at/com.c \
 	i386/i386at/com.h \
@@ -57,7 +59,6 @@ libkernel_a_SOURCES += \
 	i386/i386at/kdsoft.h \
 	i386/i386at/mem.c \
 	i386/i386at/mem.h \
-	i386/i386at/pic_isa.c \
 	i386/i386at/rtc.c \
 	i386/i386at/rtc.h
 endif
@@ -132,6 +133,8 @@ libkernel_a_SOURCES += \
 	i386/i386/seg.c \
 	i386/i386/seg.h \
 	i386/i386/setjmp.h \
+	i386/i386/smp.h \
+	i386/i386/smp.c \
 	i386/i386/spl.S \
 	i386/i386/spl.h \
 	i386/i386/strings.c \
@@ -164,12 +167,18 @@ libkernel_a_SOURCES += \
 	i386/i386/io_map.c \
 	i386/i386/irq.c \
 	i386/i386/irq.h \
+	i386/i386/pit.c \
+	i386/i386/pit.h
+
+if enable_apic
+libkernel_a_SOURCES += \
+	i386/i386at/ioapic.c
+else
+libkernel_a_SOURCES += \
 	i386/i386/pic.c \
 	i386/i386/pic.h \
-	i386/i386/pit.c \
-	i386/i386/pit.h \
-	i386/i386/apic.h \
-	i386/i386/apic.c
+	i386/i386at/pic_isa.c
+endif
 endif
 
 #

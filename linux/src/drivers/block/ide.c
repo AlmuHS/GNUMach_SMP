@@ -1475,6 +1475,11 @@ static inline void do_rw_disk (ide_drive_t *drive, struct request *rq, unsigned 
 #else /* !CONFIG_BLK_DEV_PROMISE */
 	if (drive->select.b.lba) {
 #endif /* CONFIG_BLK_DEV_PROMISE */
+		if (block >= 1UL << 28) {
+			printk("block %lu beyond LBA28\n", block);
+			ide_end_request(0, hwif->hwgroup);
+			return;
+		}
 #ifdef DEBUG
 		printk("%s: %sing: LBAsect=%ld, sectors=%ld, buffer=0x%08lx\n",
 			drive->name, (rq->cmd==READ)?"read":"writ",
@@ -1491,6 +1496,13 @@ static inline void do_rw_disk (ide_drive_t *drive, struct request *rq, unsigned 
 		OUT_BYTE(sect,io_base+IDE_SECTOR_OFFSET);
 		head  = track % drive->head;
 		cyl   = track / drive->head;
+
+		if (cyl >= 1 << 16) {
+			printk("block %lu cylinder %u beyond CHS\n", block, cyl);
+			ide_end_request(0, hwif->hwgroup);
+			return;
+		}
+
 		OUT_BYTE(cyl,io_base+IDE_LCYL_OFFSET);
 		OUT_BYTE(cyl>>8,io_base+IDE_HCYL_OFFSET);
 		OUT_BYTE(head|drive->select.all,io_base+IDE_SELECT_OFFSET);

@@ -29,7 +29,7 @@
 #include <kern/assert.h>
 
 #include <i386/spl.h>
-#include <i386/pic.h>
+#include <i386/irq.h>
 #include <i386/pit.h>
 
 #define MACH_INCLUDE
@@ -56,6 +56,9 @@
 /* XXX: This is the way it's done in linux 2.2. GNU Mach currently uses intr_count. It should be made using local_{bh/irq}_count instead (through hardirq_enter/exit) for SMP support. */
 unsigned int local_bh_count[NR_CPUS];
 unsigned int local_irq_count[NR_CPUS];
+#else
+#define local_bh_count (&intr_count)
+#define local_irq_count (&intr_count)
 #endif
 
 /*
@@ -81,13 +84,7 @@ struct linux_action
   user_intr_t *user_intr;
 };
 
-static struct linux_action *irq_action[16] =
-{
-  NULL, NULL, NULL, NULL,
-  NULL, NULL, NULL, NULL,
-  NULL, NULL, NULL, NULL,
-  NULL, NULL, NULL, NULL
-};
+static struct linux_action *irq_action[NINTR] = {0};
 
 /*
  * Generic interrupt handler for Linux devices.
@@ -229,7 +226,7 @@ install_user_intr_handler (struct irqdev *dev, int id, unsigned long flags,
 
   unsigned int irq = dev->irq[id];
 
-  assert (irq < 16);
+  assert (irq < NINTR);
 
   /* Test whether the irq handler has been set */
   // TODO I need to protect the array when iterating it.
@@ -276,7 +273,7 @@ request_irq (unsigned int irq, void (*handler) (int, void *, struct pt_regs *),
   struct linux_action *action;
   int retval;
 
-  assert (irq < 16);
+  assert (irq < NINTR);
 
   if (!handler)
     return -EINVAL;
@@ -312,7 +309,7 @@ free_irq (unsigned int irq, void *dev_id)
   struct linux_action *action, **p;
   unsigned long flags;
 
-  if (irq > 15)
+  if (irq >= NINTR)
     panic ("free_irq: bad irq number");
 
   for (p = irq_action + irq; (action = *p) != NULL; p = &action->next)
@@ -351,7 +348,7 @@ probe_irq_on (void)
   /*
    * Allocate all available IRQs.
    */
-  for (i = 15; i > 0; i--)
+  for (i = NINTR - 1; i > 0; i--)
     {
       if (!irq_action[i] && ivect[i] == intnull)
 	{
@@ -384,7 +381,7 @@ probe_irq_off (unsigned long irqs)
   /*
    * Disable unnecessary IRQs.
    */
-  for (i = 15; i > 0; i--)
+  for (i = NINTR - 1; i > 0; i--)
     {
       if (!irq_action[i] && ivect[i] == intnull)
 	{
@@ -424,7 +421,7 @@ reserve_mach_irqs (void)
 {
   unsigned int i;
 
-  for (i = 0; i < 16; i++)
+  for (i = 0; i < NINTR; i++)
     {
       if (ivect[i] != intnull)
 	/* This dummy action does not specify SA_SHIRQ, so
@@ -717,13 +714,15 @@ init_IRQ (void)
    */
   (void) splhigh ();
   
+#ifndef APIC
   /*
    * Program counter 0 of 8253 to interrupt hz times per second.
    */
   outb_p (PIT_C0 | PIT_SQUAREMODE | PIT_READMODE, PITCTL_PORT);
   outb_p (latch & 0xff, PITCTR0_PORT);
   outb (latch >> 8, PITCTR0_PORT);
-  
+#endif
+
   /*
    * Install our clock interrupt handler.
    */
@@ -740,7 +739,7 @@ init_IRQ (void)
   /*
    * Check if the machine has an EISA bus.
    */
-  p = (char *) 0x0FFFD9;
+  p = (char *) phystokv(0x0FFFD9);
   if (*p++ == 'E' && *p++ == 'I' && *p++ == 'S' && *p == 'A')
     EISA_bus = 1;
   

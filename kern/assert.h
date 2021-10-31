@@ -40,7 +40,7 @@ extern void Assert(const char *exp, const char *filename, int line,
 		   const char *fun) __attribute__ ((noreturn));
 
 #define assert(ex)							\
-	((ex)								\
+	(likely(ex)							\
 	 ? (void) (0)							\
 	 : Assert (#ex, __FILE__, __LINE__, __FUNCTION__))
 

@@ -68,6 +68,8 @@
 					 * and FXRSTOR instructions */
 #define	CR4_OSXMMEXCPT	0x0400		/* Operating System Support for Unmasked
 					 * SIMD Floating-Point Exceptions */
+#define	CR4_OSXSAVE	0x40000		/* Operating System Support for XSAVE
+					 * and XRSTOR instructions */
 
 #ifndef	__ASSEMBLER__
 #ifdef	__GNUC__
@@ -375,6 +377,28 @@ extern unsigned long cr3;
 	register unsigned long _temp__ = (value); \
 	asm volatile("mov %0,%%dr7" : : "r" (_temp__)); \
     })
+#endif
+
+/* Note: gcc might want to use bx or the stack for %1 addressing, so we can't
+ * use them :/ */
+#ifdef __x86_64__
+#define cpuid(eax, ebx, ecx, edx) \
+{ \
+	uint64_t sav_rbx; \
+	asm(	"mov %%rbx,%2\n\t" \
+		"cpuid\n\t" \
+		"xchg %2,%%rbx\n\t" \
+		"movl %k2,%1\n\t" \
+		: "+a" (eax), "=m" (ebx), "=&r" (sav_rbx), "+c" (ecx), "=&d" (edx)); \
+}
+#else
+#define cpuid(eax, ebx, ecx, edx) \
+{ \
+	asm (	"mov %%ebx,%1\n\t" \
+		"cpuid\n\t" \
+		"xchg %%ebx,%1\n\t" \
+		: "+a" (eax), "=&SD" (ebx), "+c" (ecx), "=&d" (edx)); \
+}
 #endif
 
 #endif	/* __GNUC__ */

@@ -46,8 +46,8 @@ acpi_print_info(struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n)
 {
 
     printf("ACPI:\n");
-    printf(" rsdp = %x; rsdp->rsdt_addr = %x\n", rsdp, rsdp->rsdt_addr);
-    printf(" rsdt = %x; rsdt->length = %x (n = %x)\n", rsdt, rsdt->header.length,
+    printf(" rsdp = %p; rsdp->rsdt_addr = %x\n", rsdp, rsdp->rsdt_addr);
+    printf(" rsdt = %p; rsdt->length = %x (n = %x)\n", rsdt, rsdt->header.length,
            acpi_rsdt_n);
 }
 
@@ -81,7 +81,7 @@ acpi_checksum(void *addr, uint32_t length)
  */
 
 static int
-acpi_check_signature(uint8_t table_signature[], uint8_t real_signature[], uint8_t length)
+acpi_check_signature(const uint8_t table_signature[], const char *real_signature, uint8_t length)
 {
     return memcmp(table_signature, real_signature, length);
 }
@@ -132,7 +132,7 @@ static int8_t
 acpi_check_rsdp_align(void *addr)
 {
     /* check alignment. */
-    if ((uint32_t)addr & (ACPI_RSDP_ALIGN-1))
+    if ((uintptr_t)addr & (ACPI_RSDP_ALIGN-1))
         return ACPI_BAD_ALIGN;
 
     return ACPI_SUCCESS;
@@ -175,29 +175,22 @@ acpi_search_rsdp(void *addr, uint32_t length)
 struct acpi_rsdp*
 acpi_get_rsdp(void)
 {
+    uint16_t *start = 0;
+    phys_addr_t base = 0;
     struct acpi_rsdp *rsdp = NULL;
-    uint16_t *start = 0x0;
-    uint32_t base = 0x0;
 
     /* EDBA start address. */
     start = (uint16_t*) phystokv(0x040e);
-    base = *start;
+    base = phystokv((*start) << 4); /* address = paragraph number * 16 */
 
-    if (base != 0) { /* Memory check. */
-
-        base <<= 4; /* base = base * 16 */
-
-        /* check alignment. */
-        if (acpi_check_rsdp_align(base) == ACPI_BAD_ALIGN)
-            return NULL;
-
-        /* Search the RSDP in first 1024 bytes from EDBA. */
-        rsdp = acpi_search_rsdp((void*)base,1024);
-    }
+    /* check alignment. */
+    if (acpi_check_rsdp_align((void *)base) == ACPI_BAD_ALIGN)
+        return NULL;
+    rsdp = acpi_search_rsdp((void *)base, 1024);
 
     if (rsdp == NULL) {
         /* If RSDP isn't in EDBA, search in the BIOS read-only memory space between 0E0000h and 0FFFFFh */
-        rsdp = acpi_search_rsdp((void*) 0x0e0000, 0x100000 - 0x0e0000);
+        rsdp = acpi_search_rsdp((void *)phystokv(0xe0000), 0x100000 - 0x0e0000);
     }
 
     return rsdp;
@@ -287,8 +280,7 @@ acpi_get_apic(struct acpi_rsdt *rsdt, int acpi_rsdt_n)
     /* Search APIC entries in rsdt table. */
     for (int i = 0; i < acpi_rsdt_n; i++) {
         descr_header = (struct acpi_dhdr*) kmem_map_aligned_table(rsdt->entry[i], sizeof(struct acpi_dhdr),
-                                                                  VM_PROT_READ | VM_PROT_WRITE);
-
+                                                                  VM_PROT_READ);
         /* Check if the entry contains an APIC. */
         check_signature = acpi_check_signature(descr_header->signature, ACPI_APIC_SIG, 4*sizeof(uint8_t));
 
@@ -328,14 +320,16 @@ acpi_apic_add_lapic(struct acpi_apic_lapic *lapic_entry)
 static void
 acpi_apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry)
 {
-    int ret_value = 0;
     IoApicData io_apic;
 
     /* Fill IOAPIC structure with its main fields */
     io_apic.apic_id = ioapic_entry->apic_id;
     io_apic.addr = ioapic_entry->addr;
-    io_apic.base = ioapic_entry->base;
 
+    io_apic.gsi_base = ioapic_entry->gsi_base;
+    io_apic.ioapic = (ApicIoUnit *)kmem_map_aligned_table(ioapic_entry->addr,
+                                                          sizeof(ApicIoUnit),
+                                                          VM_PROT_READ | VM_PROT_WRITE);
     /* Insert IOAPIC in the list. */
     apic_add_ioapic(io_apic);
 }
@@ -374,7 +368,6 @@ acpi_apic_add_irq_override(struct acpi_apic_irq_override* irq_override)
 static int
 acpi_apic_parse_table(struct acpi_apic *apic)
 {
-    int ret_value = 0;
     struct acpi_apic_dhdr *apic_entry = NULL;
     uint32_t end = 0;
     uint8_t numcpus = 1;
@@ -423,6 +416,7 @@ acpi_apic_parse_table(struct acpi_apic *apic)
             acpi_apic_add_irq_override(irq_override_entry);
             break;
 
+        /* FIXME: There is another unhandled case */
         }
 
         /* Get next APIC entry. */
@@ -455,7 +449,8 @@ static int
 acpi_apic_setup(struct acpi_apic *apic)
 {
     int apic_checksum;
-    ApicLocalUnit* lapic;
+    
+    ApicLocalUnit* lapic_unit;
     uint8_t ncpus, nioapics;
 
     /* Check the checksum of the APIC */
@@ -465,12 +460,14 @@ acpi_apic_setup(struct acpi_apic *apic)
         return ACPI_BAD_CHECKSUM;
 
     /* map common lapic address */
-    lapic = kmem_map_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit), VM_PROT_READ);
 
-    if (lapic == NULL)
+    lapic_unit = kmem_map_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit),
+                                        VM_PROT_READ | VM_PROT_WRITE);
+
+    if (lapic_unit == NULL)
         return ACPI_NO_LAPIC;
 
-    apic_lapic_init(lapic);
+    apic_lapic_init(lapic_unit);
     acpi_apic_parse_table(apic);
 
     ncpus = apic_get_numcpus();
@@ -482,7 +479,7 @@ acpi_apic_setup(struct acpi_apic *apic)
     /* Refit the apic-cpu array. */
     if(ncpus < NCPUS) {
         int refit = apic_refit_cpulist();
-        if (refit != -0)
+        if (refit != 0)
             return ACPI_FIT_FAILURE;
     }
 

@@ -50,8 +50,10 @@
 #include <kern/sched.h>
 #include <kern/task.h>
 #include <kern/thread.h>
+#include <kern/printf.h>
 #include <machine/machspl.h>	/* for splsched */
 #include <machine/model_dep.h>
+#include <machine/pcb.h>
 #include <sys/reboot.h>
 
 
@@ -358,7 +360,7 @@ processor_shutdown(processor_t processor)
 /*
  *	action_thread() shuts down processors or changes their assignment.
  */
-void action_thread_continue(void)
+void __attribute__((noreturn)) action_thread_continue(void)
 {
 	processor_t	processor;
 	spl_t		s;
@@ -589,7 +591,9 @@ Restart_pset:
 	s = splsched();
 	processor_lock(processor);
 
+#if	MACH_HOST
     shutdown:
+#endif	/* MACH_HOST */
 	pset_remove_processor(pset, processor);
 	processor_unlock(processor);
 	pset_unlock(pset);

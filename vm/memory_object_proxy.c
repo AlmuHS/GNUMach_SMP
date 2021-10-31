@@ -55,7 +55,10 @@ struct memory_object_proxy
   struct ipc_port *port;
 
   ipc_port_t object;
+  ipc_port_t notify;
   vm_prot_t max_protection;
+  vm_offset_t start;
+  vm_offset_t len;
 };
 typedef struct memory_object_proxy *memory_object_proxy_t;
 
@@ -66,7 +69,7 @@ memory_object_proxy_init (void)
   kmem_cache_init (&memory_object_proxy_cache, "memory_object_proxy",
 		   sizeof (struct memory_object_proxy), 0, NULL, 0);
 }
-  
+
 /* Lookup a proxy memory object by its port.  */
 static memory_object_proxy_t
 memory_object_proxy_port_lookup (ipc_port_t port)
@@ -97,11 +100,23 @@ memory_object_proxy_notify (mach_msg_header_t *msg)
       mach_no_senders_notification_t *ns;
 
       ns = (mach_no_senders_notification_t *) msg;
-      proxy = memory_object_proxy_port_lookup
-	((ipc_port_t) ns->not_header.msgh_remote_port);
-      assert (proxy);
+
+      proxy = (memory_object_proxy_t)
+	      ((ipc_port_t) ns->not_header.msgh_remote_port)->ip_kobject;
+      if (!proxy)
+	return FALSE;
+      if ((ipc_port_t) ns->not_header.msgh_remote_port != proxy->notify)
+	return FALSE;
 
       ipc_port_release_send (proxy->object);
+
+      ipc_kobject_set (proxy->port, IKO_NULL, IKOT_NONE);
+      ipc_port_dealloc_kernel (proxy->port);
+      ipc_kobject_set (proxy->notify, IKO_NULL, IKOT_NONE);
+      ipc_port_dealloc_kernel (proxy->notify);
+
+      kmem_cache_free (&memory_object_proxy_cache, (vm_offset_t) proxy);
+
       return TRUE;
     }
 
@@ -119,7 +134,7 @@ memory_object_create_proxy (const ipc_space_t space, vm_prot_t max_protection,
 			    ipc_port_t *object, natural_t object_count,
 			    const vm_offset_t *offset, natural_t offset_count,
 			    const vm_offset_t *start, natural_t start_count,
-			    const vm_offset_t *len, natural_t len_count,
+			    const vm_size_t *len, natural_t len_count,
 			    ipc_port_t *port)
 {
   memory_object_proxy_t proxy;
@@ -143,8 +158,7 @@ memory_object_create_proxy (const ipc_space_t space, vm_prot_t max_protection,
   if (offset[0] != 0)
     return KERN_INVALID_ARGUMENT;
 
-  /* FIXME: Support a different range from total.  */
-  if (start[0] != 0 || len[0] != (vm_offset_t) ~0)
+  if (start[0] + len[0] < start[0])
     return KERN_INVALID_ARGUMENT;
 
   proxy = (memory_object_proxy_t) kmem_cache_alloc (&memory_object_proxy_cache);
@@ -160,18 +174,22 @@ memory_object_create_proxy (const ipc_space_t space, vm_prot_t max_protection,
   ipc_kobject_set (proxy->port, (ipc_kobject_t) proxy, IKOT_PAGER_PROXY);
 
   /* Request no-senders notifications on the port.  */
-  notify = ipc_port_make_sonce (proxy->port);
+  proxy->notify = ipc_port_alloc_kernel ();
+  ipc_kobject_set (proxy->notify, (ipc_kobject_t) proxy, IKOT_PAGER_PROXY);
+  notify = ipc_port_make_sonce (proxy->notify);
   ip_lock (proxy->port);
   ipc_port_nsrequest (proxy->port, 1, notify, &notify);
   assert (notify == IP_NULL);
 
-  proxy->object = ipc_port_copy_send (object[0]);
+  /* Consumes the port right */
+  proxy->object = object[0];
   proxy->max_protection = max_protection;
+  proxy->start = start[0];
+  proxy->len = len[0];
 
   *port = ipc_port_make_send (proxy->port);
   return KERN_SUCCESS;
 }
-
 
 /* Lookup the real memory object and maximum protection for the proxy
    memory object port PORT, for which the caller holds a reference.
@@ -181,7 +199,8 @@ memory_object_create_proxy (const ipc_space_t space, vm_prot_t max_protection,
    KERN_INVALID_ARGUMENT.  */
 kern_return_t
 memory_object_proxy_lookup (ipc_port_t port, ipc_port_t *object,
-			    vm_prot_t *max_protection)
+			    vm_prot_t *max_protection, vm_offset_t *start,
+			    vm_offset_t *len)
 {
   memory_object_proxy_t proxy;
 
@@ -189,8 +208,20 @@ memory_object_proxy_lookup (ipc_port_t port, ipc_port_t *object,
   if (!proxy)
     return KERN_INVALID_ARGUMENT;
 
-   *object = proxy->object;
-   *max_protection = proxy->max_protection;
+  *max_protection = proxy->max_protection;
+  *start = 0;
+  *len = (vm_offset_t) ~0;
+
+  do
+    {
+      *object = proxy->object;
+      if (proxy->len <= *start)
+	*len = 0;
+      else
+	*len = MIN(*len, proxy->len - *start);
+      *start += proxy->start;
+    }
+  while ((proxy = memory_object_proxy_port_lookup (proxy->object)));
 
   return KERN_SUCCESS;
 }

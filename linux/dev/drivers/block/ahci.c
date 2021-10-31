@@ -288,7 +288,7 @@ static void ahci_end_request(int uptodate)
 }
 
 /* Push the request to the controler port */
-static void ahci_do_port_request(struct port *port, unsigned long long sector, struct request *rq)
+static int ahci_do_port_request(struct port *port, unsigned long long sector, struct request *rq)
 {
 	struct ahci_command *command = port->command;
 	struct ahci_cmd_tbl *prdtl = port->prdtl;
@@ -305,16 +305,25 @@ static void ahci_do_port_request(struct port *port, unsigned long long sector, s
 	fis_h2d = (void*) &prdtl[slot].cfis;
 	fis_h2d->fis_type = FIS_TYPE_REG_H2D;
 	fis_h2d->flags = 128;
-	if (port->lba48)
+	if (port->lba48) {
+		if (sector >= 1ULL << 48) {
+			printk("sector %llu beyond LBA48\n", sector);
+			return -EOVERFLOW;
+		}
 		if (rq->cmd == READ)
 			fis_h2d->command = WIN_READDMA_EXT;
 		else
 			fis_h2d->command = WIN_WRITEDMA_EXT;
-	else
+	} else {
+		if (sector >= 1ULL << 28) {
+			printk("sector %llu beyond LBA28\n", sector);
+			return -EOVERFLOW;
+		}
 		if (rq->cmd == READ)
 			fis_h2d->command = WIN_READDMA;
 		else
 			fis_h2d->command = WIN_WRITEDMA;
+	}
 
 	fis_h2d->device = 1<<6;	/* LBA */
 
@@ -353,6 +362,7 @@ static void ahci_do_port_request(struct port *port, unsigned long long sector, s
 	writel(1 << slot, &port->ahci_port->ci);
 
 	/* TODO: IRQ timeout handler */
+	return 0;
 }
 
 /* Called by block core to push a request */
@@ -409,7 +419,8 @@ static void ahci_do_request()	/* invoked with cli() */
 	}
 
 	/* Push this to the port */
-	ahci_do_port_request(port, block, rq);
+	if (ahci_do_port_request(port, block, rq))
+		goto kill_rq;
 	return;
 
 kill_rq:
@@ -634,7 +645,7 @@ static int ahci_identify(const volatile struct ahci_host *ahci_host, const volat
 	add_timer(&identify_timer);
 	while (!port->status) {
 		if (jiffies >= timeout) {
-			printk("sd%u: timeout waiting for ready\n", port-ports);
+                       printk("sd%u: timeout waiting for identify\n", port-ports);
 			port->ahci_host = NULL;
 			port->ahci_port = NULL;
 			del_timer(&identify_timer);
@@ -804,9 +815,10 @@ static void ahci_probe_port(const volatile struct ahci_host *ahci_host, const vo
 
 	writel(readl(&ahci_port->cmd) | PORT_CMD_FIS_RX | PORT_CMD_START, &ahci_port->cmd);
 
-	if (ahci_identify(ahci_host, ahci_port, port, WIN_IDENTIFY) >= 2)
-		/* Try ATAPI */
-		ahci_identify(ahci_host, ahci_port, port, WIN_PIDENTIFY);
+       /* if PxCMD.ATAPI is set, try ATAPI identify; otherwise try AHCI, then ATAPI */
+       if (readl(&ahci_port->cmd) & PORT_CMD_ATAPI ||
+              ahci_identify(ahci_host, ahci_port, port, WIN_IDENTIFY) >= 2)
+                ahci_identify(ahci_host, ahci_port, port, WIN_PIDENTIFY);
 }
 
 /* Probe one AHCI PCI device */
@@ -895,7 +907,7 @@ static void ahci_probe_dev(unsigned char bus, unsigned char device)
 
 	for (i = 0; i < AHCI_MAX_PORTS; i++) {
 		u32 ssts;
-		u8 spd, ipm;
+               u8 det, ipm;
 
 		if (!(port_map & (1U << i)))
 			continue;
@@ -903,8 +915,8 @@ static void ahci_probe_dev(unsigned char bus, unsigned char device)
 		ahci_port = &ahci_host->ports[i];
 
 		ssts = readl(&ahci_port->ssts);
-		spd = ssts & 0xf;
-		switch (spd)
+               det = ssts & 0xf;
+               switch (det)
 		{
 			case 0x0:
 				/* Device not present */
@@ -919,7 +931,7 @@ static void ahci_probe_dev(unsigned char bus, unsigned char device)
 				printk("ahci: %02x:%02x.%x: Port %u phy offline?!\n", bus, dev, fun, i);
 				continue;
 			default:
-				printk("ahci: %02x:%02x.%x: Unknown port %u SPD %x\n", bus, dev, fun, i, spd);
+                               printk("ahci: %02x:%02x.%x: Unknown port %u DET %x\n", bus, dev, fun, i, det);
 				continue;
 		}
 

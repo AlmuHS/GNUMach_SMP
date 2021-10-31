@@ -84,4 +84,8 @@ extern void interrupt_processor(int cpu);
 
 extern void start_other_cpus(void);
 
+extern kern_return_t cpu_start(int cpu);
+
+extern kern_return_t cpu_control(int cpu, const int *info, unsigned int count);
+
 #endif	/* _I386_MP_DESC_H_ */

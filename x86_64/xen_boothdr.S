@@ -186,4 +186,5 @@ ldt:
 
 stack:
 	.comm	_intstack,INTSTACK_SIZE
+	.comm	_eintstack,0
 

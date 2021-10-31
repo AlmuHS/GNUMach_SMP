@@ -155,6 +155,11 @@ void vm_page_check(const struct vm_page *page);
  *		ordered, in LRU-like fashion.
  */
 
+#define VM_PAGE_DMA		0x01
+#define VM_PAGE_DMA32		0x02
+#define VM_PAGE_DIRECTMAP	0x04
+#define VM_PAGE_HIGHMEM		0x08
+
 extern
 int	vm_page_fictitious_count;/* How many fictitious pages are free? */
 extern
@@ -187,7 +192,7 @@ extern vm_page_t	vm_page_lookup(
 extern vm_page_t	vm_page_grab_fictitious(void);
 extern boolean_t	vm_page_convert(vm_page_t *);
 extern void		vm_page_more_fictitious(void);
-extern vm_page_t	vm_page_grab(void);
+extern vm_page_t	vm_page_grab(unsigned flags);
 extern void		vm_page_release(vm_page_t, boolean_t, boolean_t);
 extern phys_addr_t	vm_page_grab_phys_addr(void);
 extern vm_page_t	vm_page_grab_contig(vm_size_t, unsigned int);
@@ -531,5 +536,10 @@ boolean_t vm_page_evict(boolean_t *should_wait);
  * frequent refills.
  */
 void vm_page_refill_inactive(void);
+
+/*
+ * Print vmstat information
+ */
+void db_show_vmstat(void);
 
 #endif	/* _VM_VM_PAGE_H_ */

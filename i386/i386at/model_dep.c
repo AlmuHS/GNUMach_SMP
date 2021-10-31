@@ -58,13 +58,14 @@
 #include <i386/ktss.h>
 #include <i386/ldt.h>
 #include <i386/machspl.h>
-#include <i386/pic.h>
+#include <i386/mp_desc.h>
 #include <i386/pit.h>
 #include <i386/pmap.h>
 #include <i386/proc_reg.h>
 #include <i386/vm_param.h>
 #include <i386/locore.h>
 #include <i386/model_dep.h>
+#include <i386/smp.h>
 #include <i386at/autoconf.h>
 #include <i386at/biosmem.h>
 #include <i386at/elf.h>
@@ -73,6 +74,7 @@
 #include <i386at/kd.h>
 #include <i386at/rtc.h>
 #include <i386at/model_dep.h>
+#include <machine/irq.h>
 
 #ifdef	MACH_XEN
 #include <xen/console.h>
@@ -133,7 +135,9 @@ boolean_t	rebootflag = FALSE;	/* exported to kdintr */
 
 /* Interrupt stack.  */
 static char int_stack[KERNEL_STACK_SIZE] __aligned(KERNEL_STACK_SIZE);
-vm_offset_t int_stack_top, int_stack_base;
+#if NCPUS <= 1
+vm_offset_t int_stack_top[1], int_stack_base[1];
+#endif
 
 #ifdef LINUX_DEV
 extern void linux_init(void);
@@ -165,6 +169,21 @@ void machine_init(void)
 #ifdef MACH_HYP
 	hyp_init();
 #else	/* MACH_HYP */
+
+#if (NCPUS > 1) && defined(APIC)
+	smp_init();
+	ioapic_configure();
+	lapic_enable_timer();
+
+#warning FIXME: Rather unmask them from their respective drivers
+	/* kd */
+	unmask_irq(1);
+	/* com0 */
+	unmask_irq(4);
+	/* com1 */
+	unmask_irq(3);
+#endif /* NCPUS > 1 */
+
 #ifdef LINUX_DEV
 	/*
 	 * Initialize Linux drivers.
@@ -352,7 +371,11 @@ i386at_init(void)
 	 * Initialize the PIC prior to any possible call to an spl.
 	 */
 #ifndef	MACH_HYP
+# ifdef APIC
+	picdisable();
+# else
 	picinit();
+# endif
 #else	/* MACH_HYP */
 	hyp_intrinit();
 #endif	/* MACH_HYP */
@@ -443,12 +466,10 @@ i386at_init(void)
 		kernel_page_dir[lin2pdenum_cont(INIT_VM_MIN_KERNEL_ADDRESS) + i] =
 			kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS) + i];
 #endif
-	/* We need BIOS memory mapped at 0xc0000 & co for Linux drivers */
-#ifdef LINUX_DEV
+	/* We need BIOS memory mapped at 0xc0000 & co for BIOS accesses */
 #if VM_MIN_KERNEL_ADDRESS != 0
 	kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS)] =
 		kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS)];
-#endif
 #endif
 
 #ifdef	MACH_PV_PAGETABLES
@@ -498,6 +519,11 @@ i386at_init(void)
 	ldt_init();
 	ktss_init();
 
+#if NCPUS > 1
+	/* Initialize SMP structures in the master processor */
+	mp_desc_init(0);
+#endif // NCPUS
+
 #if INIT_VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
 	/* Get rid of the temporary direct mapping and flush it out of the TLB.  */
 	for (i = 0 ; i < nb_direct; i++) {
@@ -514,11 +540,9 @@ i386at_init(void)
 	}
 #endif
 	/* Keep BIOS memory mapped */
-#ifdef LINUX_DEV
 #if VM_MIN_KERNEL_ADDRESS != 0
 	kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS)] =
 		kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS)];
-#endif
 #endif
 
 	/* Not used after boot, better give it back.  */
@@ -532,8 +556,8 @@ i386at_init(void)
 	hyp_p2m_init();
 #endif	/* MACH_XEN */
 
-	int_stack_base = (vm_offset_t)&int_stack;
-	int_stack_top = int_stack_base + KERNEL_STACK_SIZE - 4;
+	int_stack_base[0] = (vm_offset_t)&int_stack;
+	int_stack_top[0] = int_stack_base[0] + KERNEL_STACK_SIZE - 4;
 }
 
 /*
@@ -673,7 +697,9 @@ timemmap(dev, off, prot)
 void
 startrtclock(void)
 {
+#ifndef APIC
 	clkstart();
+#endif
 }
 
 void

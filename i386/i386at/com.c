@@ -101,7 +101,7 @@ comprobe_general(struct bus_device *dev, int noisy)
 	char    *type = "8250";
 	int     i;
 
-	if ((unit < 0) || (unit > NCOM)) {
+	if ((unit < 0) || (unit >= NCOM)) {
 		printf("com %d out of range\n", unit);
 		return(0);
 	}
@@ -223,6 +223,11 @@ comattach(struct bus_device *dev)
 {
 	u_char	unit = dev->unit;
 	u_short	addr = dev->address;
+
+	if (unit >= NCOM) {
+		printf(", disabled by NCOM configuration\n");
+		return;
+	}
 
 	take_dev_irq(dev);
 	printf(", port = %lx, spl = %ld, pic = %d. (DOS COM%d)",

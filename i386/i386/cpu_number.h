@@ -40,6 +40,10 @@
 #define	CX(addr, reg)	addr(,reg,8)
 #endif
 
+/* XXX For now */
+#define	CPU_NUMBER(reg)	movl $0,reg
+#define cpu_number() 0
+
 #else	/* NCPUS == 1 */
 
 #define	CPU_NUMBER(reg)

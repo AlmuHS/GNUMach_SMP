@@ -12,6 +12,7 @@
  * FOR ANY DAMAGES WHATSOEVER RESULTING FROM THE USE OF THIS SOFTWARE.
  */
 
+#include <kern/assert.h>
 #include <device/intr.h>
 #include <device/device_types.h>
 #include <device/device_port.h>
@@ -25,6 +26,17 @@
 
 queue_head_t main_intr_queue;
 static boolean_t deliver_intr (int id, ipc_port_t dst_port);
+
+#ifndef LINUX_DEV
+#define SA_SHIRQ 0x04000000
+
+struct intr_list {
+  user_intr_t *user_intr;
+  unsigned long flags;
+  struct intr_list *next;
+};
+static struct intr_list *user_intr_handlers[NINTR];
+#endif
 
 static user_intr_t *
 search_intr (struct irqdev *dev, ipc_port_t dst_port)
@@ -146,6 +158,76 @@ out:
     kfree ((vm_offset_t) new, sizeof (*new));
   return ret;
 }
+
+#ifndef LINUX_DEV
+
+static void
+user_irq_handler (int id)
+{
+  struct intr_list *handler;
+  struct intr_list **prev = &user_intr_handlers[id];
+  user_intr_t *e;
+  spl_t s;
+
+  s = splhigh();
+
+  for (handler = *prev; handler; handler = handler->next)
+    {
+      e = handler->user_intr;
+      if (!deliver_user_intr(&irqtab, id, e))
+        {
+          /* We failed to deliver this interrupt, remove handler from list */
+	  *prev = handler->next;
+        }
+      prev = &handler->next;
+    }
+  splx(s);
+}
+
+int
+install_user_intr_handler (struct irqdev *dev, int id, unsigned long flags,
+			  user_intr_t *user_intr)
+{
+  unsigned int irq = dev->irq[id];
+  struct intr_list **head = &user_intr_handlers[id];
+  struct intr_list *new, *old = *head;
+  spl_t s;
+
+  flags |= SA_SHIRQ;
+
+  assert (irq < NINTR);
+
+  /* Don't allow overriding hardclock/kdintr etc */
+  if ((ivect[irq] != user_irq_handler) && (ivect[irq] != intnull))
+    {
+      printf("You can't have this interrupt\n");
+      return D_ALREADY_OPEN;
+    }
+
+  if (old)
+    {
+      if (!(old->flags & flags & SA_SHIRQ))
+        {
+          printf ("Cannot share irq\n");
+          return D_ALREADY_OPEN;
+        }
+    }
+
+  new = (struct intr_list *)kalloc (sizeof (struct intr_list));
+  new->user_intr = user_intr;
+  new->flags = flags;
+
+  s = splhigh();
+  new->next = *head;
+  *head = new;
+  ivect[irq] = user_irq_handler;
+  iunit[irq] = (int)irq;
+  unmask_irq (irq);
+  splx(s);
+
+  return D_SUCCESS;
+}
+#endif
 
 void
 intr_thread (void)

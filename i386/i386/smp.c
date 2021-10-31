@@ -51,4 +51,3 @@ int smp_init(void)
 
     return apic_success;
 }
-

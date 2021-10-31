@@ -16,7 +16,11 @@
 #include <mach/machine/asm.h>
 
 #include <i386/ipl.h>
-#include <i386/pic.h>
+#ifdef APIC
+# include <i386/apic.h>
+#else
+# include <i386/pic.h>
+#endif
 #include <i386/i386asm.h>
 
 #define READ_ISR	(OCW_TEMPLATE|READ_NEXT_RD|READ_IS_ONRD)
@@ -27,6 +31,10 @@
  * On entry, %eax contains the irq number.
  */
 ENTRY(interrupt)
+#ifdef APIC
+	cmpl	$255,%eax		/* was this a spurious intr? */
+	je	_no_eoi			/* if so, just return */
+#endif
 	pushl	%eax			/* save irq number */
 	movl	%eax,%ecx		/* copy irq number */
 	shll	$2,%ecx			/* irq * 4 */
@@ -38,10 +46,9 @@ ENTRY(interrupt)
 	addl	$4,%esp			/* pop unit number */
 	call	splx_cli		/* restore previous ipl */
 	addl	$4,%esp			/* pop previous ipl */
-
 	cli				/* XXX no more nested interrupts */
 	popl	%ecx			/* restore irq number */
-
+#ifndef APIC
 	movl	$1,%eax
 	shll	%cl,%eax		/* get corresponding IRQ mask */
 	orl	EXT(curr_pic_mask),%eax /* add current mask */
@@ -78,4 +85,14 @@ ENTRY(interrupt)
 	outb	%al,$(PIC_MASTER_OCW)	/* unmask master */
 2:
 	ret
+#else
+	cmpl    $16,%ecx		/* was this a low ISA intr? */
+	jge     _no_eoi			/* no, must be PCI (let irq_ack handle EOI) */
+_isa_eoi:
+	pushl	%ecx			/* push irq number */
+	call	EXT(ioapic_irq_eoi)	/* ioapic irq specific EOI */
+	addl	$4,%esp			/* pop irq number */
+_no_eoi:
+	ret
+#endif
 END(interrupt)

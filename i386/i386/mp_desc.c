@@ -30,12 +30,14 @@
 
 #include <kern/cpu_number.h>
 #include <kern/debug.h>
+#include <kern/printf.h>
 #include <mach/machine.h>
 #include <mach/xen.h>
 #include <vm/vm_kern.h>
 
 #include <i386/mp_desc.h>
 #include <i386/lock.h>
+#include <i386at/model_dep.h>
 #include <machine/ktss.h>
 #include <machine/tss.h>
 #include <machine/io_perm.h>
@@ -52,6 +54,7 @@
  */
 vm_offset_t	interrupt_stack[NCPUS];
 vm_offset_t	int_stack_top[NCPUS];
+vm_offset_t	int_stack_base[NCPUS];
 
 /*
  * Barrier address.
@@ -61,8 +64,8 @@ vm_offset_t	int_stack_high;
 /*
  * First cpu`s interrupt stack.
  */
-char		intstack[];	/* bottom */
-char		eintstack[];	/* top */
+extern char		_intstack[];	/* bottom */
+extern char		_eintstack[];	/* top */
 
 /*
  * Multiprocessor i386/i486 systems use a separate copy of the
@@ -164,6 +167,10 @@ mp_desc_init(int mycpu)
 	}
 }
 
+kern_return_t intel_startCPU(int slot_num)
+{
+	printf("TODO: intel_startCPU\n");
+}
 
 /*
  * Called after all CPUs have been found, but before the VM system
@@ -197,8 +204,8 @@ interrupt_stack_alloc(void)
 	 */
 	for (i = 0; i < NCPUS; i++) {
 	    if (i == master_cpu) {
-		interrupt_stack[i] = (vm_offset_t) intstack;
-		int_stack_top[i]   = (vm_offset_t) eintstack;
+		interrupt_stack[i] = (vm_offset_t) _intstack;
+		int_stack_top[i]   = (vm_offset_t) _eintstack;
 	    }
 	    else if (machine_slot[i].is_cpu) {
 		interrupt_stack[i] = stack_start;

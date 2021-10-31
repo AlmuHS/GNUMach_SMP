@@ -129,6 +129,8 @@ struct i386_kernel_state {
  */
 
 struct i386_fpsave_state {
+	boolean_t		fp_valid;
+
 	union {
 		struct {
 			struct i386_fp_save	fp_save_state;
@@ -136,7 +138,6 @@ struct i386_fpsave_state {
 		};
 		struct i386_xfp_save	xfp_save_state;
 	};
-	boolean_t		fp_valid;
 };
 
 /*

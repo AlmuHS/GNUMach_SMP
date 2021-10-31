@@ -271,9 +271,9 @@ projected_buffer_deallocate(
 
 	/*Prepare for deallocation*/
 	if (entry->vme_start < start)
-	  _vm_map_clip_start(&map->hdr, entry, start);
+	  _vm_map_clip_start(&map->hdr, entry, start, 1);
 	if (entry->vme_end > end)
-	  _vm_map_clip_end(&map->hdr, entry, end);
+	  _vm_map_clip_end(&map->hdr, entry, end, 1);
       	if (map->first_free == entry)   /*Adjust first_free hint*/
 	  map->first_free = entry->vme_prev;
 	entry->projected_on = 0;        /*Needed to allow deletion*/

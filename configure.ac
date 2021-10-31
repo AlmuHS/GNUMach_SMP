@@ -89,7 +89,14 @@ AC_CHECK_TOOL([AR], [ar])
 AC_CHECK_TOOL([LD], [ld])
 AC_CHECK_TOOL([NM], [nm])
 
-AC_CHECK_TOOL([MIG], [mig], [mig])
+AC_CHECK_TOOL([MIG], [mig], [no])
+AC_ARG_VAR([MIG], [Path to the mig tool])
+
+if test x$MIG = xno
+then
+    AC_MSG_WARN([mig was not found, we will not be able to build a kernel, only install headers. Install or build mig against them, and run configure again. If you already did so, perhaps you need to specify the path with MIG=])
+    MIG=mig
+fi
 
 dnl Needed for the Automake option `subdir-objects'.
 AM_PROG_CC_C_O
@@ -183,7 +190,7 @@ AM_CONDITIONAL([disable_smashing_stack_protector],
 # Output.
 #
 
-AC_CONFIG_HEADER([config.h])
+AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_FILES([Makefile version.c])
 
 #

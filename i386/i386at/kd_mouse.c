@@ -72,7 +72,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <device/io_req.h>
 #include <device/subrs.h>
 #include <i386/ipl.h>
-#include <i386/pic.h>
+#include <i386/irq.h>
 #include <i386/pio.h>
 #include <chips/busses.h>
 #include <i386at/com.h>

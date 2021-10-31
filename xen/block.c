@@ -457,7 +457,7 @@ device_read (void *d, ipc_port_t reply_port,
       /* Allocate pages.  */
       while (alloc_offset < offset + len)
 	{
-	  while ((m = vm_page_grab ()) == 0)
+	  while ((m = vm_page_grab (VM_PAGE_DIRECTMAP)) == 0)
 	    VM_PAGE_WAIT (0);
 	  assert (! m->active && ! m->inactive);
 	  m->busy = TRUE;

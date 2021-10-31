@@ -56,6 +56,7 @@
 #include <ddb/db_task_thread.h>
 #include <ddb/db_trap.h>
 #include <ddb/db_watch.h>
+#include <ddb/db_mp.h>
 #include <machine/db_interface.h>
 #include <machine/machspl.h>
 
@@ -95,6 +96,10 @@ void db_load_context(pcb_t pcb)
 #if MACH_KDB
 	splx(s);
 #endif
+}
+
+void cpu_interrupt_to_db(int i){
+	printf("TODO: cpu_interrupt_to_db\n");
 }
 
 void db_get_debug_state(

@@ -26,6 +26,7 @@
 
 #ifndef	_MACH_I386_FP_REG_H_
 #define	_MACH_I386_FP_REG_H_
+
 /*
  *	Floating point registers and status, as saved
  *	and restored by FP save/restore instructions.
@@ -50,25 +51,34 @@ struct i386_fp_regs {
 					/* space for 8 80-bit FP registers */
 };
 
+#define XSAVE_XCOMP_BV_COMPACT (((unsigned long long)1) << 63)
+struct i386_xfp_xstate_header {
+	unsigned long long	xfp_features;
+	unsigned long long	xcomp_bv;
+	unsigned long long	reserved[6];
+} __attribute__((packed, aligned(64)));
+
 struct i386_xfp_save {
 	unsigned short	fp_control;	/* control */
 	unsigned short	fp_status;	/* status */
 	unsigned short	fp_tag;		/* register tags */
 	unsigned short	fp_opcode;	/* opcode of failed instruction */
 	unsigned int	fp_eip;		/* eip at failed instruction */
-	unsigned short	fp_cs;		/* cs at failed instruction */
-	unsigned short	fp_unused_1;
+	unsigned short	fp_cs;		/* cs at failed instruction / eip high */
+	unsigned short	fp_eip3;	/* eip higher */
 	unsigned int	fp_dp;		/* data address */
-	unsigned short	fp_ds;		/* data segment */
-	unsigned short	fp_unused_2;
+	unsigned short	fp_ds;		/* data segment / dp high */
+	unsigned short	fp_dp3;		/* dp higher */
 	unsigned int	fp_mxcsr;	/* MXCSR */
 	unsigned int	fp_mxcsr_mask;	/* MXCSR_MASK */
 	unsigned char	fp_reg_word[8][16];
 					/* space for 8 128-bit FP registers */
-	unsigned char	fp_xreg_word[8][16];
-					/* space for 8 128-bit XMM registers */
-	unsigned int	padding[56];
-} __attribute__((aligned(16)));
+	unsigned char	fp_xreg_word[16][16];
+					/* space for 16 128-bit XMM registers */
+	unsigned int	padding[24];
+	struct i386_xfp_xstate_header header;
+	unsigned char	extended[0];	/* Extended region */
+} __attribute__((packed, aligned(64)));
 
 /*
  * Control register
@@ -124,6 +134,7 @@ struct i386_xfp_save {
 #define	FP_SOFT		1		/* software FP emulator */
 #define	FP_287		2		/* 80287 */
 #define	FP_387		3		/* 80387 or 80486 */
-#define	FP_387X		4		/* FXSAVE/RSTOR-capable */
+#define	FP_387FX	4		/* FXSAVE/RSTOR-capable */
+#define	FP_387X		5		/* XSAVE/RSTOR-capable */
 
 #endif	/* _MACH_I386_FP_REG_H_ */
