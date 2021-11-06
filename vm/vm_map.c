@@ -46,6 +46,7 @@
 #include <kern/list.h>
 #include <kern/rbtree.h>
 #include <kern/slab.h>
+#include <kern/mach4.server.h>
 #include <vm/pmap.h>
 #include <vm/vm_fault.h>
 #include <vm/vm_map.h>
@@ -53,6 +54,7 @@
 #include <vm/vm_page.h>
 #include <vm/vm_resident.h>
 #include <vm/vm_kern.h>
+#include <vm/memory_object_proxy.h>
 #include <ipc/ipc_port.h>
 #include <string.h>
 
@@ -4804,6 +4806,60 @@ kern_return_t	vm_region(
 	vm_map_unlock_read(map);
 
 	return(KERN_SUCCESS);
+}
+
+/*
+ *	vm_region_get_proxy:
+ *
+ *	Gets a proxy to the region that ADDRESS belongs to, starting at the
+ *	region start, with MAX_PROTECTION and LEN limited by the region ones,
+ *	and returns it in *PORT.
+ */
+kern_return_t
+vm_region_get_proxy (task_t task, vm_address_t address,
+		     vm_prot_t max_protection, vm_size_t len,
+		     ipc_port_t *port)
+{
+  kern_return_t ret;
+  vm_map_entry_t entry, tmp_entry;
+  vm_offset_t offset, start;
+  ipc_port_t pager;
+
+  if (task == TASK_NULL)
+    return(KERN_INVALID_ARGUMENT);
+
+  vm_map_lock_read(task->map);
+  if (!vm_map_lookup_entry(task->map, address, &tmp_entry)) {
+    if ((entry = tmp_entry->vme_next) == vm_map_to_entry(task->map)) {
+      vm_map_unlock_read(task->map);
+      return(KERN_NO_SPACE);
+    }
+  } else {
+    entry = tmp_entry;
+  }
+
+  /* Limit the allowed protection and range to the entry ones */
+  if (len > entry->vme_end - entry->vme_start) {
+    vm_map_unlock_read(task->map);
+    return(KERN_INVALID_ARGUMENT);
+  }
+
+  max_protection &= entry->max_protection;
+  pager = ipc_port_copy_send(entry->object.vm_object->pager);
+  offset = entry->offset;
+  start = 0;
+
+  vm_map_unlock_read(task->map);
+
+  ret = memory_object_create_proxy(task->itk_space, max_protection,
+				    &pager, 1,
+				    &offset, 1,
+				    &start, 1,
+				    &len, 1, port);
+  if (ret)
+    ipc_port_release_send(pager);
+
+  return ret;
 }
 
 /*

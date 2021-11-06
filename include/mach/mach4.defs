@@ -111,3 +111,13 @@ routine memory_object_create_proxy(
 		start		: vm_offset_array_t;
 		len		: vm_size_array_t;
 		out proxy	: mach_port_t);
+
+/* Gets a proxy to the region that ADDRESS belongs to, starting at the region
+   start, with MAX_PROTECTION and LEN limited by the region ones, and returns
+   it in *PORT.  */
+routine vm_region_get_proxy(
+		task		: task_t;
+		address		: vm_address_t;
+		max_protection	: vm_prot_t;
+		len		: vm_size_t;
+		out proxy	: mach_port_t);
