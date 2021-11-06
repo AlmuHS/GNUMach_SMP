@@ -4822,6 +4822,7 @@ vm_region_get_proxy (task_t task, vm_address_t address,
 {
   kern_return_t ret;
   vm_map_entry_t entry, tmp_entry;
+  vm_object_t object;
   vm_offset_t offset, start;
   ipc_port_t pager;
 
@@ -4838,16 +4839,28 @@ vm_region_get_proxy (task_t task, vm_address_t address,
     entry = tmp_entry;
   }
 
+  if (entry->is_sub_map) {
+    vm_map_unlock_read(task->map);
+    return(KERN_INVALID_ARGUMENT);
+  }
+
   /* Limit the allowed protection and range to the entry ones */
   if (len > entry->vme_end - entry->vme_start) {
     vm_map_unlock_read(task->map);
     return(KERN_INVALID_ARGUMENT);
   }
-
   max_protection &= entry->max_protection;
-  pager = ipc_port_copy_send(entry->object.vm_object->pager);
-  offset = entry->offset;
-  start = 0;
+
+  object = entry->object.vm_object;
+  vm_object_lock(object);
+  /* Create a pager in case this is an internal object that does
+     not yet have one. */
+  vm_object_pager_create(object);
+  pager = ipc_port_copy_send(object->pager);
+  vm_object_unlock(object);
+
+  start = (address - entry->vme_start) + entry->offset;
+  offset = 0;
 
   vm_map_unlock_read(task->map);
 
