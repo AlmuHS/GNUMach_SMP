@@ -406,19 +406,6 @@ kern_return_t	device_pager_setup(
 	return (KERN_SUCCESS);
 }
 
-/*
- *	Routine:	device_pager_release
- *	Purpose:
- *		Relinquish any references or rights that were
- *		associated with the result of a call to
- *		device_pager_setup.
- */
-void	device_pager_release(memory_object_t	object)
-{
-	if (MACH_PORT_VALID(object))
-		ipc_port_release_send((ipc_port_t) object);
-}
-
 boolean_t	device_pager_debug = FALSE;
 
 kern_return_t	device_pager_data_request(
