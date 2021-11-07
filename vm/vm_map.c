@@ -4809,16 +4809,16 @@ kern_return_t	vm_region(
 }
 
 /*
- *	vm_region_get_proxy:
+ *	vm_region_create_proxy:
  *
  *	Gets a proxy to the region that ADDRESS belongs to, starting at the
  *	region start, with MAX_PROTECTION and LEN limited by the region ones,
  *	and returns it in *PORT.
  */
 kern_return_t
-vm_region_get_proxy (task_t task, vm_address_t address,
-		     vm_prot_t max_protection, vm_size_t len,
-		     ipc_port_t *port)
+vm_region_create_proxy (task_t task, vm_address_t address,
+			vm_prot_t max_protection, vm_size_t len,
+			ipc_port_t *port)
 {
   kern_return_t ret;
   vm_map_entry_t entry, tmp_entry;
