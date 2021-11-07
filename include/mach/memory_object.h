@@ -40,14 +40,18 @@
 
 #include <mach/port.h>
 
+#ifdef	MACH_KERNEL
+#include <ipc/ipc_types.h>
+typedef	ipc_port_t	memory_object_t;
+#else
 typedef	mach_port_t	memory_object_t;
+#endif
 					/* Represents a memory object ... */
 					/*  Used by user programs to specify */
 					/*  the object to map; used by the */
 					/*  kernel to retrieve or store data */
 
-typedef	mach_port_t *	memory_object_array_t;
-					/* should be memory_object_t * */
+typedef	memory_object_t *memory_object_array_t;
 
 typedef	mach_port_t	memory_object_control_t;
 					/* Provided to a memory manager; ... */
