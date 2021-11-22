@@ -61,10 +61,93 @@ union ioapic_route_entry_union {
     struct ioapic_route_entry both;
 };
 
+
+typedef enum e_icr_dest_shorthand
+{
+        NO_SHORTHAND = 0,
+        SELF = 1,
+        ALL_INCLUDING_SELF = 2,
+        ALL_EXCLUDING_SELF = 3
+} icr_dest_shorthand;
+
+typedef enum e_icr_deliv_mode
+{
+        FIXED = 0,
+        LOWEST_PRIORITY = 1,
+        SMI = 2,
+        NMI = 4,
+        INIT = 5,
+        STARTUP = 6,
+} icr_deliv_mode;
+
+typedef enum e_icr_dest_mode
+{
+        PHYSICAL = 0,
+        LOGICAL = 1
+} icr_dest_mode;
+
+typedef enum e_icr_deliv_status
+{
+        IDLE = 0,
+        SEND_PENDING = 1
+} icr_deliv_status;
+
+typedef enum e_icr_level
+{
+        DE_ASSERT = 0,
+        ASSERT = 1
+} icr_level;
+
+typedef enum e_irc_trigger_mode
+{
+        EDGE = 0,
+        LEVEL = 1
+} irc_trigger_mode;
+
+/* Grateful to trasterlabs for this snippet */
+
+typedef union u_icr
+{
+    uint64_t value[4];
+    struct
+    {
+        uint32_t low;  // FEE0 0300H - 4 bytes
+        unsigned :32;  // FEE0 0304H
+        unsigned :32;  // FEE0 0308H
+        unsigned :32;  // FEE0 030CH
+        uint32_t high; // FEE0 0310H - 4 bytes
+        unsigned :32;  // FEE0 0314H
+        unsigned :32;  // FEE0 0318H
+        unsigned :32;  // FEE0 031CH
+    };
+    struct
+    {
+        unsigned vector: 7; /* Memory address of interrupt routine */
+        unsigned delivery_mode : 3;
+        unsigned destination_mode: 1;
+        unsigned delivery_status: 1;
+        unsigned :1;
+        unsigned level: 1;
+        unsigned trigger_mode: 1;
+        unsigned :2;
+        unsigned destination_shorthand: 2;
+    };
+    struct
+    {
+        unsigned :32; // FEE0 0300H - 4 bytes
+        unsigned :32;
+        unsigned :32;
+        unsigned :32;
+        unsigned :24; // FEE0 0310H - 4 bytes
+        unsigned destination_field :8;
+
+    };
+} IcrReg;
+
 typedef struct ApicLocalUnit {
         ApicReg reserved0;               /* 0x000 */
         ApicReg reserved1;               /* 0x010 */
-        ApicReg apic_id;                 /* 0x020 */
+        ApicReg apic_id;                 /* 0x020. Hardware ID of current processor */
         ApicReg version;                 /* 0x030 */
         ApicReg reserved4;               /* 0x040 */
         ApicReg reserved5;               /* 0x050 */
@@ -84,8 +167,7 @@ typedef struct ApicLocalUnit {
         ApicReg error_status;            /* 0x280 */
         ApicReg reserved28[6];           /* 0x290 */
         ApicReg lvt_cmci;                /* 0x2f0 */
-        ApicReg icr_low;                 /* 0x300 */
-        ApicReg icr_high;                /* 0x310 */
+        IcrReg  icr;                     /* 0x300. Store the information to send an IPI (Inter-processor Interrupt) */
         ApicReg lvt_timer;               /* 0x320 */
         ApicReg lvt_thermal;             /* 0x330 */
         ApicReg lvt_performance_monitor; /* 0x340 */
