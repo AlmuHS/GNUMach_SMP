@@ -122,7 +122,7 @@ typedef union u_icr
     };
     struct
     {
-        unsigned vector: 7; /* Memory address of interrupt routine */
+        unsigned vector: 8; /* Vector number of interrupt */
         unsigned delivery_mode : 3;
         unsigned destination_mode: 1;
         unsigned delivery_status: 1;
@@ -220,6 +220,7 @@ void apic_add_cpu(uint16_t apic_id);
 void apic_lapic_init(ApicLocalUnit* lapic_ptr);
 void apic_add_ioapic(struct IoApicData);
 void apic_add_irq_override(struct IrqOverrideData irq_over);
+void apic_send_ipi(unsigned dest_shorthand, unsigned deliv_mode, unsigned dest_mode, unsigned level, unsigned trig_mode, unsigned vector, unsigned dest_id);
 IrqOverrideData *acpi_get_irq_override(uint8_t gsi);
 uint16_t apic_get_cpu_apic_id(int kernel_id);
 volatile ApicLocalUnit* apic_get_lapic(void);
@@ -236,6 +237,8 @@ void lapic_enable_timer(void);
 void ioapic_mask_irqs(void);
 void ioapic_toggle(int pin, int mask);
 void ioapic_configure(void);
+
+
 
 extern int timer_pin;
 extern void intnull(int unit);
