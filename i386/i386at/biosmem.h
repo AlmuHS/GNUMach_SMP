@@ -100,4 +100,10 @@ void biosmem_setup(void);
  */
 void biosmem_free_usable(void);
 
+/*
+ * Tell whether this address is marked as available in the biosmem and thus used
+ * for usable memory.
+ */
+boolean_t biosmem_addr_available(phys_addr_t addr);
+
 #endif /* _X86_BIOSMEM_H */

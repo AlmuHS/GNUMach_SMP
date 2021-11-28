@@ -36,24 +36,8 @@ dev_t		dev;
 vm_offset_t	off;
 vm_prot_t	prot;
 {
-	struct vm_page *p;
-
-	if (off == 0)
-		return 0;
-
-	/*
-	 * The legacy device mappings are included in the page tables and
-	 * need their own test.
-	 */
-	if (off >= 0xa0000 && off < 0x100000)
-		goto out;
-
-	p = vm_page_lookup_pa(off);
-
-	if (p != NULL) {
+	if (biosmem_addr_available(off))
 		return -1;
-	}
 
-out:
 	return i386_btop(off);
 }
