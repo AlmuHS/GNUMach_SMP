@@ -234,3 +234,18 @@ void apic_print_info(void)
         }
     }
 }
+
+void apic_send_ipi(unsigned dest_shorthand, unsigned deliv_mode, unsigned dest_mode, unsigned level, unsigned trig_mode, unsigned vector, unsigned dest_id)
+{
+    IcrReg icr_values;
+    
+    icr_values.destination_shorthand = dest_shorthand;
+    icr_values.delivery_mode = deliv_mode;
+    icr_values.destination_mode = dest_mode;
+    icr_values.level = level;
+    icr_values.trigger_mode = trig_mode;
+    icr_values.vector = vector;
+    icr_values.destination_field = dest_id;
+    
+    lapic->icr = icr_values;
+}

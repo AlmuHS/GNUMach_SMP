@@ -122,7 +122,7 @@ typedef union u_icr
     };
     struct
     {
-        unsigned vector: 8; /* Vector number of interrupt */
+        unsigned vector: 8; /* Vector of interrupt. Lowest 8 bits of routine address */
         unsigned delivery_mode : 3;
         unsigned destination_mode: 1;
         unsigned delivery_status: 1;
@@ -139,7 +139,7 @@ typedef union u_icr
         unsigned :32;
         unsigned :32;
         unsigned :24; // FEE0 0310H - 4 bytes
-        unsigned destination_field :8;
+        unsigned destination_field :8; /* APIC ID (in physical mode) or MDA (in logical) of destination processor */
 
     };
 } IcrReg;
