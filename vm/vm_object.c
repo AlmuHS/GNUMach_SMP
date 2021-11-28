@@ -2816,7 +2816,7 @@ ipc_port_t	vm_object_name(
  *	The mapping function and its private data are used to obtain the
  *	physical addresses for each page to be mapped.
  */
-void
+kern_return_t
 vm_object_page_map(
 	vm_object_t	object,
 	vm_offset_t	offset,
@@ -2835,6 +2835,8 @@ vm_object_page_map(
 	for (i = 0; i < num_pages; i++, offset += PAGE_SIZE) {
 
 	    addr = (*map_fn)(map_fn_data, offset);
+	    if (addr == vm_page_fictitious_addr)
+		return KERN_NO_ACCESS;
 
 	    while ((m = vm_page_grab_fictitious()) == VM_PAGE_NULL)
 		vm_page_more_fictitious();
@@ -2857,6 +2859,7 @@ vm_object_page_map(
 	    PAGE_WAKEUP_DONE(m);
 	    vm_object_unlock(object);
 	}
+	return KERN_SUCCESS;
 }
 
 
