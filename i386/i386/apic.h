@@ -40,7 +40,7 @@ typedef struct ApicIoUnit {
 } ApicIoUnit;
 
 struct ioapic_route_entry {
-    uint32_t vector      : 8,
+    uint32_t vector     : 8,
             delvmode    : 3, /* 000=fixed 001=lowest 111=ExtInt */
             destmode    : 1, /* 0=physical 1=logical */
             delvstatus  : 1,
@@ -60,6 +60,52 @@ union ioapic_route_entry_union {
     };
     struct ioapic_route_entry both;
 };
+
+
+/* Grateful to trasterlabs for this snippet */
+
+typedef union u_icr_low
+{
+    uint32_t value[4];
+    struct
+    {
+        uint32_t r;    // FEE0 0300H - 4 bytes
+        unsigned :32;  // FEE0 0304H
+        unsigned :32;  // FEE0 0308H
+        unsigned :32;  // FEE0 030CH
+    };
+    struct
+    {
+        unsigned vector: 8; /* Vector of interrupt. Lowest 8 bits of routine address */
+        unsigned delivery_mode : 3;
+        unsigned destination_mode: 1;
+        unsigned delivery_status: 1;
+        unsigned :1;
+        unsigned level: 1;
+        unsigned trigger_mode: 1;
+        unsigned :2;
+        unsigned destination_shorthand: 2;
+        unsigned :12;
+    };
+        
+} IcrLReg;
+
+typedef union u_icr_high
+{
+    uint32_t value[4];
+    struct
+    {
+        uint32_t r; // FEE0 0310H - 4 bytes
+        unsigned :32;  // FEE0 0314H
+        unsigned :32;  // FEE0 0318H
+        unsigned :32;  // FEE0 031CH
+    };
+    struct
+    {
+        unsigned :24; // FEE0 0310H - 4 bytes
+        unsigned destination_field :8; /* APIC ID (in physical mode) or MDA (in logical) of destination processor */
+    };
+} IcrHReg;
 
 
 typedef enum e_icr_dest_shorthand
@@ -104,45 +150,6 @@ typedef enum e_irc_trigger_mode
         LEVEL = 1
 } irc_trigger_mode;
 
-/* Grateful to trasterlabs for this snippet */
-
-typedef union u_icr
-{
-    uint64_t value[4];
-    struct
-    {
-        uint32_t low;  // FEE0 0300H - 4 bytes
-        unsigned :32;  // FEE0 0304H
-        unsigned :32;  // FEE0 0308H
-        unsigned :32;  // FEE0 030CH
-        uint32_t high; // FEE0 0310H - 4 bytes
-        unsigned :32;  // FEE0 0314H
-        unsigned :32;  // FEE0 0318H
-        unsigned :32;  // FEE0 031CH
-    };
-    struct
-    {
-        unsigned vector: 8; /* Vector of interrupt. Lowest 8 bits of routine address */
-        unsigned delivery_mode : 3;
-        unsigned destination_mode: 1;
-        unsigned delivery_status: 1;
-        unsigned :1;
-        unsigned level: 1;
-        unsigned trigger_mode: 1;
-        unsigned :2;
-        unsigned destination_shorthand: 2;
-    };
-    struct
-    {
-        unsigned :32; // FEE0 0300H - 4 bytes
-        unsigned :32;
-        unsigned :32;
-        unsigned :32;
-        unsigned :24; // FEE0 0310H - 4 bytes
-        unsigned destination_field :8; /* APIC ID (in physical mode) or MDA (in logical) of destination processor */
-
-    };
-} IcrReg;
 
 typedef struct ApicLocalUnit {
         ApicReg reserved0;               /* 0x000 */
@@ -167,7 +174,8 @@ typedef struct ApicLocalUnit {
         ApicReg error_status;            /* 0x280 */
         ApicReg reserved28[6];           /* 0x290 */
         ApicReg lvt_cmci;                /* 0x2f0 */
-        IcrReg  icr;                     /* 0x300. Store the information to send an IPI (Inter-processor Interrupt) */
+        IcrLReg icr_low;                 /* 0x300. Store the information to send an IPI (Inter-processor Interrupt) */
+        IcrHReg icr_high;                /* 0x310. Store the IPI destination  */
         ApicReg lvt_timer;               /* 0x320 */
         ApicReg lvt_thermal;             /* 0x330 */
         ApicReg lvt_performance_monitor; /* 0x340 */

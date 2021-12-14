@@ -1,5 +1,5 @@
 /* apic.c - APIC controller management for Mach.
-   Copyright (C) 2020 Free Software Foundation, Inc.
+   Copyright (C) 2021 Free Software Foundation, Inc.
    Written by Almudena Garcia Jurado-Centurion
 
    This file is part of GNU Mach.
@@ -237,15 +237,17 @@ void apic_print_info(void)
 
 void apic_send_ipi(unsigned dest_shorthand, unsigned deliv_mode, unsigned dest_mode, unsigned level, unsigned trig_mode, unsigned vector, unsigned dest_id)
 {
-    IcrReg icr_values;
+    IcrLReg icrl_values;
+    IcrHReg icrh_values;
     
-    icr_values.destination_shorthand = dest_shorthand;
-    icr_values.delivery_mode = deliv_mode;
-    icr_values.destination_mode = dest_mode;
-    icr_values.level = level;
-    icr_values.trigger_mode = trig_mode;
-    icr_values.vector = vector;
-    icr_values.destination_field = dest_id;
+    icrl_values.destination_shorthand = dest_shorthand;
+    icrl_values.delivery_mode = deliv_mode;
+    icrl_values.destination_mode = dest_mode;
+    icrl_values.level = level;
+    icrl_values.trigger_mode = trig_mode;
+    icrl_values.vector = vector;
+    icrh_values.destination_field = dest_id;
     
-    lapic->icr = icr_values;
+    lapic->icr_high = icrh_values;
+    lapic->icr_low = icrl_values;
 }

@@ -36,6 +36,26 @@ static void smp_data_init(void)
     smp_set_numcpus(numcpus);
 }
 
+void smp_startup_cpu(int apic_id, int vector)
+{    
+    /* First INIT IPI */	    
+    apic_send_ipi(NO_SHORTHAND, INIT, PHYSICAL, ASSERT, LEVEL, 0 , apic_id);
+    //dummyf(lapic->apic_id.r);	
+
+    /* Second INIT IPI */
+    apic_send_ipi(NO_SHORTHAND, INIT, PHYSICAL, ASSERT, LEVEL, 0 , apic_id);
+    //dummyf(lapic->apic_id.r);	
+
+    /* First StartUp IPI */
+    apic_send_ipi(NO_SHORTHAND, STARTUP, PHYSICAL, ASSERT, LEVEL, vector >>12 , apic_id);
+    //dummyf(lapic->apic_id.r);
+
+    /* Second StartUp IPI */
+    apic_send_ipi(NO_SHORTHAND, STARTUP, PHYSICAL, ASSERT, LEVEL, vector >>12 , apic_id);
+    //dummyf(lapic->apic_id.r);
+}
+
+
 /*
  * smp_init: initialize the SMP support, starting the cpus searching
  * and enumeration.
