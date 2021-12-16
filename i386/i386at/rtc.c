@@ -237,14 +237,6 @@ writetodc(void)
 
 	rtclk.rtc_dom = dectohexdec(++n);
 
-	printf("Setting RTC time to %02u-%02u-%02u %02u:%02u:%02u\n",
-		hexdectodec(rtclk.rtc_yr),
-		hexdectodec(rtclk.rtc_mon),
-		hexdectodec(rtclk.rtc_dom),
-		hexdectodec(rtclk.rtc_hr),
-		hexdectodec(rtclk.rtc_min),
-		hexdectodec(rtclk.rtc_sec));
-
 	ospl = splclock();
 	rtcput(&rtclk);
 	splx(ospl);
