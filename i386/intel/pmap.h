@@ -494,6 +494,29 @@ extern void pmap_zero_page (phys_addr_t);
 extern void pmap_copy_page (phys_addr_t, phys_addr_t);
 
 /*
+ *	copy_to_phys(src_addr_v, dst_addr_p, count)
+ *
+ *	Copy virtual memory to physical memory
+ */
+extern void
+copy_to_phys(
+	vm_offset_t 	src_addr_v, 
+	phys_addr_t 	dst_addr_p,
+	int 		count);
+
+/*
+ *	copy_from_phys(src_addr_p, dst_addr_v, count)
+ *
+ *	Copy physical memory to virtual memory.  The virtual memory
+ *	is assumed to be present (e.g. the buffer pool).
+ */
+extern void
+copy_from_phys(
+	phys_addr_t 	src_addr_p, 
+	vm_offset_t 	dst_addr_v,
+	int 		count);
+
+/*
  *  kvtophys(addr)
  *
  *  Convert a kernel virtual address to a physical address
