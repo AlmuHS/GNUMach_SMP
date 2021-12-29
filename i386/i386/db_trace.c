@@ -333,7 +333,7 @@ db_stack_trace_cmd(
 {
 	boolean_t	trace_thread = FALSE;
 	struct i386_frame *frame;
-	db_addr_t	callpc;
+	db_addr_t	callpc, sp;
 	int		flags = 0;
 	thread_t	th;
 
@@ -351,6 +351,7 @@ db_stack_trace_cmd(
 
 	if (!have_addr && !trace_thread) {
 	    frame = (struct i386_frame *)ddb_regs.ebp;
+	    sp = (db_addr_t)ddb_regs.uesp;
 	    callpc = (db_addr_t)ddb_regs.eip;
 	    th = current_thread();
 	} else if (trace_thread) {
@@ -369,6 +370,7 @@ db_stack_trace_cmd(
 	    }
 	    if (th == current_thread()) {
 	        frame = (struct i386_frame *)ddb_regs.ebp;
+	        sp = (db_addr_t)ddb_regs.uesp;
 	        callpc = (db_addr_t)ddb_regs.eip;
 	    } else {
 		if (th->pcb == 0) {
@@ -385,23 +387,26 @@ db_stack_trace_cmd(
 		    db_printf("\n");
 
 		    frame = (struct i386_frame *) (iss->ebp);
+		    sp = (db_addr_t) (iss->uesp);
 		    callpc = (db_addr_t) (iss->eip);
 		} else {
 		    struct i386_kernel_state *iks;
 		    iks = STACK_IKS(th->kernel_stack);
 		    frame = (struct i386_frame *) (iks->k_ebp);
+		    sp = (db_addr_t) (iks->k_esp);
 		    callpc = (db_addr_t) (iks->k_eip);
 	        }
 	    }
 	} else {
 	    frame = (struct i386_frame *)addr;
+	    sp = (db_addr_t)addr;
 	    th = (db_default_thread)? db_default_thread: current_thread();
 	    callpc = (db_addr_t)db_get_task_value((long)&frame->f_retaddr, sizeof(long),
 						  FALSE,
 						  (th == THREAD_NULL) ? TASK_NULL : th->task);
 	}
 
-	db_i386_stack_trace( th, frame, callpc, count, flags );
+	db_i386_stack_trace( th, frame, sp, callpc, count, flags );
 }
 
 
@@ -409,6 +414,7 @@ void
 db_i386_stack_trace(
 	const thread_t	th,
 	struct i386_frame *frame,
+	db_addr_t	sp,
 	db_addr_t	callpc,
 	db_expr_t	count,
 	int		flags)
@@ -489,9 +495,23 @@ db_i386_stack_trace(
 	        db_printf("%s(", name);
 
 	    if (!frame) {
-	        db_printf(")\n");
+		db_printf(")\n");
+	    }
+
+	    if (sp) {
+		unsigned char inst = db_get_task_value(callpc, sizeof(char), FALSE, task);
+		if (inst == 0xc3) {
+		    /* RET, unwind this directly */
+		    callpc = db_get_task_value(sp, sizeof(callpc), FALSE, task);
+		    sp += sizeof(callpc);
+		    continue;
+		}
+	    }
+
+	    if (!frame) {
 		break;
 	    }
+
 	    argp = &frame->f_arg0;
 	    while (narg > 0) {
 		db_printf("%x", db_get_task_value((long)argp,sizeof(long),FALSE,task));
@@ -595,7 +615,7 @@ void db_trace_cproc(
 	jmp_buf_t	db_jmpbuf;
 	jmp_buf_t	*prev = db_recover;
 	task_t		task;
-	db_addr_t	pc, fp;
+	db_addr_t	pc, fp, sp;
 
 	task = (thread == THREAD_NULL)? TASK_NULL: thread->task;
 
@@ -619,6 +639,7 @@ void db_trace_cproc(
 		if ((s != 0) && (c != 0)) {
 			pc = db_get_task_value(c + db_cprocsw_pc_offset, 4, FALSE, task);
 			fp = c + db_cprocsw_framep_offset;
+			sp = 0; // TODO
 		} else {
 			db_addr_t sb;
 			vm_size_t ss;
@@ -633,12 +654,14 @@ void db_trace_cproc(
 			if (thread != THREAD_NULL) {
 			    pc = thread->pcb->iss.eip;
 			    fp = thread->pcb->iss.ebp;
-			} else
+			    sp = thread->pcb->iss.uesp;
+			} else {
 			    fp = -1;
+			}
 		}
 
 		if (fp != -1)
-			db_i386_stack_trace(thread, (struct i386_frame*)fp, pc,
+			db_i386_stack_trace(thread, (struct i386_frame*)fp, sp, pc,
 						-1, F_USER_TRACE);
 	}
 
