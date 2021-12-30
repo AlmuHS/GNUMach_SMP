@@ -224,10 +224,7 @@ boolean_t dev_name_lookup(
  * Change an entry in the indirection list.
  */
 void
-dev_set_indirection(name, ops, unit)
-	const char	*name;
-	dev_ops_t	ops;
-	int		unit;
+dev_set_indirection(const char *name, dev_ops_t ops, int unit)
 {
 	dev_indirect_t di;
 
@@ -240,10 +237,7 @@ dev_set_indirection(name, ops, unit)
 	}
 }
 
-boolean_t dev_change_indirect(iname, dname, unit)
-	const char 	*iname;
-	const char	*dname;
-	int 		unit;
+boolean_t dev_change_indirect(const char *iname, const char *dname, int unit)
 {
     struct dev_ops *dp;
     struct dev_indirect *di;
