@@ -1632,6 +1632,7 @@ kern_return_t	thread_abort(
 	/*
 	 *
 	 *	clear it of an event wait
+	 */
 
 	evc_notify_abort(thread);
 
