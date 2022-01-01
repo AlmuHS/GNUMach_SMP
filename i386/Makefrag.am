@@ -85,6 +85,7 @@ libkernel_a_SOURCES += \
 	i386/i386/cpu.h \
 	i386/i386/cpu_number.h \
 	i386/i386/cswitch.S \
+	i386/i386/cpuboot.S \
 	i386/i386/db_disasm.c \
 	i386/i386/db_interface.c \
 	i386/i386/db_interface.h \
