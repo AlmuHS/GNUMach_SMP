@@ -1,17 +1,9 @@
-#include <mach/machine/asm.h>
 #include <i386/i386asm.h>
-
-#ifndef __ASSEMBLER__
-        #include <i386/locore.h>
-        #include <i386/proc_reg.h>
-#endif
 
 #define STACK_SIZE (4096 * 2)
 
     .section .boot, "awx"
-
     .align 0x10
-
     .text
 
 idt_descr:
@@ -89,7 +81,7 @@ _apboot:
 	movw	%ax,%ss
 
 	/* Load cpu stack */
-	movl (_eintstack), %esp
+	movl (stack_ptr), %esp
 	addl $STACK_SIZE, %esp
 
 	/* Reset EFLAGS to a known state.  */
@@ -103,16 +95,16 @@ _apboot:
 	cli
 
 	/* Finish the cpu configuration */
-	//call cpu_ap_main
+	call cpu_ap_main
 
 	/*if the processor is not added to the kernel, stop it*/
-	sti
-	nop
-halt:
-	hlt
+//	sti
+//	nop
+//halt:
+//	hlt
 
 	/*if the processor continues, returns to halt*/	
-	jmp halt
+//	jmp halt
 
     .align 0x10
 gdt_descr_tmp:

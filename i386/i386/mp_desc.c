@@ -37,8 +37,11 @@
 
 #include <i386/mp_desc.h>
 #include <i386/lock.h>
+#include <i386/apic.h>
+
 #include <i386at/model_dep.h>
 #include <machine/ktss.h>
+#include <machine/smp.h>
 #include <machine/tss.h>
 #include <machine/io_perm.h>
 #include <machine/vm_param.h>
@@ -57,6 +60,12 @@ vm_offset_t	int_stack_top[NCPUS];
 vm_offset_t	int_stack_base[NCPUS];
 
 /*
+ * Addresses of bottom and top of cpu main stacks.
+ */
+vm_offset_t cpu_stack[NCPUS];
+vm_offset_t _cpu_stack_top[NCPUS];
+
+/*
  * Barrier address.
  */
 vm_offset_t	int_stack_high;
@@ -66,6 +75,12 @@ vm_offset_t	int_stack_high;
  */
 extern char		_intstack[];	/* bottom */
 extern char		_eintstack[];	/* top */
+
+extern void *apboot, *apbootend;
+void* stack_ptr = 0;
+
+#define AP_BOOT_ADDR (0x7000)
+#define STACK_SIZE (4096 * 2)
 
 /*
  * Multiprocessor i386/i486 systems use a separate copy of the
@@ -170,6 +185,7 @@ mp_desc_init(int mycpu)
 kern_return_t intel_startCPU(int slot_num)
 {
 	printf("TODO: intel_startCPU\n");
+	mp_desc_init(slot_num);
 }
 
 /*
@@ -257,22 +273,112 @@ interrupt_processor(int cpu)
 	printf("interrupt cpu %d\n",cpu);
 }
 
+int
+cpu_ap_main()
+{
+    if(cpu_setup()) return -1;
+    return 0;
+}
+
+
+int
+cpu_setup()
+{
+
+    int i = 1;
+    int kernel_id = 0;
+    int ncpus = apic_get_numcpus();
+
+
+    while(i < ncpus && (machine_slot[i].running == TRUE)) i++;
+
+    /* assume Pentium 4, Xeon, or later processors */
+    unsigned apic_id = apic_get_current_cpu();
+
+    /* panic? */
+    if(i >= ncpus)
+        return -1;
+
+    /*TODO: Move this code to a separate function*/
+
+    /* Initialize machine_slot fields with the cpu data */
+    machine_slot[i].running = TRUE;
+    machine_slot[i].cpu_subtype = CPU_SUBTYPE_AT386;
+
+    int cpu_type = discover_x86_cpu_type ();
+
+    switch (cpu_type)
+        {
+        default:
+            printf("warning: unknown cpu type %d, assuming i386\n", cpu_type);
+
+        case 3:
+            machine_slot[i].cpu_type = CPU_TYPE_I386;
+            break;
+
+        case 4:
+            machine_slot[i].cpu_type = CPU_TYPE_I486;
+            break;
+
+        case 5:
+            machine_slot[i].cpu_type = CPU_TYPE_PENTIUM;
+            break;
+        case 6:
+        case 15:
+            machine_slot[i].cpu_type = CPU_TYPE_PENTIUMPRO;
+            break;
+        }
+
+    /*
+     * Initialize and activate the real i386 protected-mode structures.
+     */
+    gdt_init();
+    idt_init();
+    ldt_init();
+    ktss_init();
+
+    /* Add cpu to the kernel */
+    //slave_main();
+
+    return 0;
+}
+
 kern_return_t
 cpu_start(int cpu)
 {
 	if (machine_slot[cpu].running)
 		return KERN_FAILURE;
 
+	int apic_id = apic_get_cpu_apic_id(cpu);
+	smp_startup_cpu(apic_id, AP_BOOT_ADDR);
+
 	return intel_startCPU(cpu);
 }
 
 void
 start_other_cpus(void)
-{
+{              
+	vm_offset_t	stack_start;
+	int ncpus = apic_get_numcpus();
+
+	memcpy((void*)phystokv(AP_BOOT_ADDR), (void*) &apboot, (uint32_t)&apbootend - (uint32_t)&apboot);
+	interrupt_stack_alloc();
+
+	//Reserve memory for cpu stack
+	if (!init_alloc_aligned(STACK_SIZE*(ncpus-1), &stack_start))
+	panic("not enough memory for cpu stacks");
+	stack_start = phystokv(stack_start);
+
+
 	int cpu;
-	for (cpu = 0; cpu < NCPUS; cpu++)
-		if (cpu != cpu_number())
-			cpu_start(cpu);
+	for (cpu = 1; cpu < ncpus; cpu++){
+        cpu_stack[cpu-1] = stack_start;
+        _cpu_stack_top[cpu-1] = stack_start + STACK_SIZE - 1;
+
+        stack_ptr = cpu_stack[cpu-1];
+		cpu_start(cpu);
+	}
+		
 }
 
 #endif	/* NCPUS > 1 */

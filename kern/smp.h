@@ -22,3 +22,4 @@
 
 void smp_set_numcpus(uint8_t numcpus);
 uint8_t smp_get_numcpus(void);
+void smp_startup_cpu(int apic_id, int vector);
