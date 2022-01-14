@@ -199,14 +199,8 @@ interrupt_stack_alloc(void)
 	int		cpu_count;
 	vm_offset_t	stack_start;
 
-	/*
-	 * Count the number of CPUs.
-	 */
-	cpu_count = 0;
-	for (i = 0; i < NCPUS; i++)
-	    if (machine_slot[i].is_cpu)
-		cpu_count++;
-
+	cpu_count = apic_get_numcpus();
+	
 	/*
 	 * Allocate an interrupt stack for each CPU except for
 	 * the master CPU (which uses the bootstrap stack)
@@ -218,7 +212,7 @@ interrupt_stack_alloc(void)
 	/*
 	 * Set up pointers to the top of the interrupt stack.
 	 */
-	for (i = 0; i < NCPUS; i++) {
+	for (i = 0; i < cpu_count; i++) {
 	    if (i == master_cpu) {
 		interrupt_stack[i] = (vm_offset_t) _intstack;
 		int_stack_top[i]   = (vm_offset_t) _eintstack;
@@ -366,9 +360,9 @@ start_other_cpus(void)
 	memcpy((void*)phystokv(AP_BOOT_ADDR), (void*) &apboot, (uint32_t)&apbootend - (uint32_t)&apboot);
 	printf("Assembly routine copied\n");
 	
-	//printf("Reserving interrupt stack\n");
-	//interrupt_stack_alloc();
-	//printf("Interrupt stack reserved\n");
+	printf("Reserving interrupt stack\n");
+	interrupt_stack_alloc();
+	printf("Interrupt stack reserved\n");
 
 
         printf("Reserving memory for cpu stack\n");
