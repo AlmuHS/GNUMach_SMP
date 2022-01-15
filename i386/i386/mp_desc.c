@@ -349,6 +349,20 @@ cpu_start(int cpu)
 	return intel_startCPU(cpu);
 }
 
+vm_offset_t
+cpus_stack_alloc(void)
+{
+        vm_offset_t stack_start;
+        int ncpus = apic_get_numcpus();
+        
+        if (!init_alloc_aligned(STACK_SIZE*(ncpus-1), &stack_start))
+	        panic("not enough memory for cpu stacks");
+	stack_start = phystokv(stack_start);
+	
+	return stack_start;
+}
+
+
 void
 start_other_cpus(void)
 {              
@@ -356,15 +370,13 @@ start_other_cpus(void)
 	int ncpus = apic_get_numcpus();
 
         //Copy cpus initialization assembly routine
-	memcpy((void*)phystokv(AP_BOOT_ADDR), (void*) &apboot, (uint32_t)&apbootend - (uint32_t)&apboot)
+	memcpy((void*)phystokv(AP_BOOT_ADDR), (void*) &apboot, (uint32_t)&apbootend - (uint32_t)&apboot);
 	
 	//Reserve memory for interrupt stacks
 	interrupt_stack_alloc();
 
 	//Reserve memory for cpu stack
-	if (!init_alloc_aligned(STACK_SIZE*(ncpus-1), &stack_start))
-	        panic("not enough memory for cpu stacks");
-	stack_start = phystokv(stack_start);
+	stack_start = cpus_stack_alloc();
         printf("cpu stacks reserved\n");
 
 
