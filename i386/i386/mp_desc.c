@@ -355,20 +355,15 @@ start_other_cpus(void)
 	vm_offset_t	stack_start;
 	int ncpus = apic_get_numcpus();
 
-
-        printf("Copying assembly routine\n");
-	memcpy((void*)phystokv(AP_BOOT_ADDR), (void*) &apboot, (uint32_t)&apbootend - (uint32_t)&apboot);
-	printf("Assembly routine copied\n");
+        //Copy cpus initialization assembly routine
+	memcpy((void*)phystokv(AP_BOOT_ADDR), (void*) &apboot, (uint32_t)&apbootend - (uint32_t)&apboot)
 	
-	printf("Reserving interrupt stack\n");
+	//Reserve memory for interrupt stacks
 	interrupt_stack_alloc();
-	printf("Interrupt stack reserved\n");
 
-
-        printf("Reserving memory for cpu stack\n");
 	//Reserve memory for cpu stack
 	if (!init_alloc_aligned(STACK_SIZE*(ncpus-1), &stack_start))
-	panic("not enough memory for cpu stacks");
+	        panic("not enough memory for cpu stacks");
 	stack_start = phystokv(stack_start);
         printf("cpu stacks reserved\n");
 
@@ -377,13 +372,12 @@ start_other_cpus(void)
 	int cpu;
 	for (cpu = 1; cpu < ncpus; cpu++){
 	
-	        printf("assigning cpu stack for cpu %d\n", cpu);
+	        //Initialize stack pointer for current cpu
                 cpu_stack[cpu-1] = stack_start;
                 _cpu_stack_top[cpu-1] = stack_start + STACK_SIZE - 1;
-                
-                printf("increasing cpu stack pointer\n");
                 stack_ptr = cpu_stack[cpu-1];
 	        
+	        //Start cpu
 	        printf("starting cpu %d\n", cpu);
 	        cpu_start(cpu);
 	        printf("started cpu %d\n", cpu);
