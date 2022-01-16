@@ -54,6 +54,7 @@ typedef	mach_port_t	device_t;
  * Device name string
  */
 typedef	char	dev_name_t[128];	/* must match device_types.defs */
+typedef	const char	*const_dev_name_t;
 
 /*
  * Mode for open/read/write
