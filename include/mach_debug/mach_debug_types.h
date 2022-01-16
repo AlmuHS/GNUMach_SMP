@@ -36,6 +36,7 @@
 #include <mach_debug/hash_info.h>
 
 typedef	char	symtab_name_t[32];
+typedef	const char	*symtab_name_t;
 
 /*
  *	A fixed-length string data type intended for names given to
