@@ -176,7 +176,7 @@ extern kern_return_t	task_assign_default(
 	boolean_t	assign_threads);
 extern kern_return_t	task_set_name(
 	task_t			task,
-	kernel_debug_name_t	name);
+	const_kernel_debug_name_t	name);
 extern void consider_task_collect(void);
 
 /*
