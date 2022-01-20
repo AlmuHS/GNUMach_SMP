@@ -31,10 +31,7 @@
 
 /*ARGSUSED*/
 vm_offset_t
-memmmap(dev, off, prot)
-dev_t		dev;
-vm_offset_t	off;
-vm_prot_t	prot;
+memmmap(dev_t dev, vm_offset_t off, vm_prot_t prot)
 {
 	if (biosmem_addr_available(off))
 		return -1;

@@ -405,9 +405,7 @@ io_return_t comopen(
 	return result;
 }
 
-void comclose(dev, flag)
-dev_t dev;
-int flag;
+void comclose(dev_t dev, int flag)
 {
 	struct tty	*tp = &com_tty[minor(dev)];
 	u_short		addr = (uintptr_t)tp->t_addr;
@@ -424,33 +422,28 @@ int flag;
 	return;
 }
 
-io_return_t comread(dev, ior)
-dev_t	dev;
-io_req_t ior;
+io_return_t comread(dev_t dev, io_req_t ior)
 {
 	return char_read(&com_tty[minor(dev)], ior);
 }
 
-io_return_t comwrite(dev, ior)
-dev_t	dev;
-io_req_t ior;
+io_return_t comwrite(dev_t dev, io_req_t ior)
 {
 	return char_write(&com_tty[minor(dev)], ior);
 }
 
-io_return_t comportdeath(dev, port)
-dev_t		dev;
-mach_port_t	port;
+io_return_t comportdeath(dev_t dev, mach_port_t port)
 {
 	return (tty_portdeath(&com_tty[minor(dev)], (ipc_port_t)port));
 }
 
 io_return_t
-comgetstat(dev, flavor, data, count)
-dev_t		dev;
-dev_flavor_t	flavor;
-dev_status_t	data;		/* pointer to OUT array */
-mach_msg_type_number_t	*count;		/* out */
+comgetstat(
+  dev_t dev,
+  dev_flavor_t flavor,
+  dev_status_t data, /* pointer to OUT array */
+  mach_msg_type_number_t *count /* out */
+  )
 {
 	io_return_t	result = D_SUCCESS;
 	int		unit = minor(dev);
