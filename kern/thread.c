@@ -869,6 +869,9 @@ kern_return_t thread_terminate_release(
 	if (task == NULL)
 		return KERN_INVALID_ARGUMENT;
 
+	if (thread == NULL)
+		return KERN_INVALID_ARGUMENT;
+
 	mach_port_deallocate(task->itk_space, thread_name);
 
 	if (reply_port != MACH_PORT_NULL)
