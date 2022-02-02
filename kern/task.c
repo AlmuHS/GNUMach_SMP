@@ -1149,7 +1149,7 @@ task_priority(
 kern_return_t
 task_set_name(
 	task_t			task,
-	kernel_debug_name_t	name)
+	const_kernel_debug_name_t	name)
 {
 	strncpy(task->name, name, sizeof task->name - 1);
 	task->name[sizeof task->name - 1] = '\0';

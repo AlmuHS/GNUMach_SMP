@@ -416,6 +416,7 @@ kern_return_t	device_pager_data_request(
 	vm_prot_t		protection_required)
 {
 	dev_pager_t	ds;
+	kern_return_t	ret;
 
 	if (device_pager_debug)
 		printf("(device_pager)data_request: pager=%p, offset=0x%lx, length=0x%lx\n",
@@ -440,9 +441,18 @@ kern_return_t	device_pager_data_request(
 		    return (KERN_SUCCESS);
 	    }
 
-	    vm_object_page_map(object,
-			       offset, length,
-			       device_map_page, (void *)ds);
+	    ret = vm_object_page_map(object,
+				     offset, length,
+				     device_map_page, (void *)ds);
+
+	    if (ret != KERN_SUCCESS) {
+		    (void) r_memory_object_data_error(pager_request,
+						      offset, length,
+						      ret);
+		    vm_object_deallocate(object);
+		    dev_pager_deallocate(ds);
+		    return (KERN_SUCCESS);
+	    }
 
 	    vm_object_deallocate(object);
 	}
@@ -510,12 +520,16 @@ vm_offset_t device_map_page(
 	vm_offset_t	offset)
 {
 	dev_pager_t	ds = (dev_pager_t) dsp;
-
-	return pmap_phys_address(
+	vm_offset_t	pagenum =
 		   (*(ds->device->dev_ops->d_mmap))
 			(ds->device->dev_number,
 			ds->offset + offset,
-			ds->prot));
+			ds->prot);
+
+	if (pagenum == -1)
+		return vm_page_fictitious_addr;
+
+	return pmap_phys_address(pagenum);
 }
 
 kern_return_t device_pager_init_pager(

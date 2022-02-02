@@ -54,6 +54,7 @@ typedef	mach_port_t	device_t;
  * Device name string
  */
 typedef	char	dev_name_t[128];	/* must match device_types.defs */
+typedef	const char	*const_dev_name_t;
 
 /*
  * Mode for open/read/write
@@ -68,12 +69,14 @@ typedef unsigned int	dev_mode_t;
  * IO buffer - out-of-line array of characters.
  */
 typedef char *	io_buf_ptr_t;
+typedef const char *	const_io_buf_ptr_t;
 
 /*
  * IO buffer - in-line array of characters.
  */
 #define IO_INBAND_MAX (128)		/* must match device_types.defs */
 typedef char 	io_buf_ptr_inband_t[IO_INBAND_MAX];
+typedef const char 	*const_io_buf_ptr_inband_t;
 
 /*
  * IO buffer vector - for scatter/gather IO.

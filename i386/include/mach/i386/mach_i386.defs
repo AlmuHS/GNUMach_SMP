@@ -36,6 +36,10 @@ subsystem
 #include <mach/std_types.defs>
 #include <mach/mach_types.defs>
 
+#ifdef	MACH_I386_IMPORTS
+MACH_I386_IMPORTS
+#endif
+
 type	descriptor_t	= 	struct[2] of int;
 type	descriptor_list_t =	array[*] of descriptor_t;
 

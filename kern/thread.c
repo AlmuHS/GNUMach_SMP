@@ -838,9 +838,8 @@ kern_return_t thread_terminate(
 	 *	Reassign thread to default pset if needed.
 	 */
 	thread_freeze(thread);
-	if (thread->processor_set != &default_pset) {
+	if (thread->processor_set != &default_pset)
 		thread_doassign(thread, &default_pset, FALSE);
-	}
 #endif	/* MACH_HOST */
 
 	/*
@@ -868,6 +867,9 @@ kern_return_t thread_terminate_release(
 	vm_size_t size)
 {
 	if (task == NULL)
+		return KERN_INVALID_ARGUMENT;
+
+	if (thread == NULL)
 		return KERN_INVALID_ARGUMENT;
 
 	mach_port_deallocate(task->itk_space, thread_name);
@@ -1075,9 +1077,8 @@ kern_return_t thread_halt(
 		 *	If the thread's at a clean point, we're done.
 		 *	Don't need a lock because it really is stopped.
 		 */
-		if (thread->state & TH_HALTED) {
+		if (thread->state & TH_HALTED)
 			return KERN_SUCCESS;
-		}
 
 		/*
 		 *	If the thread is at a nice continuation,
@@ -1442,9 +1443,8 @@ kern_return_t thread_get_state(
 		return thread_getstatus(thread, flavor, old_state, old_state_count);
 #endif
 
-	if (thread == THREAD_NULL || thread == current_thread()) {
+	if (thread == THREAD_NULL || thread == current_thread())
 		return KERN_INVALID_ARGUMENT;
-	}
 
 	thread_hold(thread);
 	(void) thread_dowait(thread, TRUE);
@@ -1472,9 +1472,8 @@ kern_return_t thread_set_state(
 		return thread_setstatus(thread, flavor, new_state, new_state_count);
 #endif
 
-	if (thread == THREAD_NULL || thread == current_thread()) {
+	if (thread == THREAD_NULL || thread == current_thread())
 		return KERN_INVALID_ARGUMENT;
-	}
 
 	thread_hold(thread);
 	(void) thread_dowait(thread, TRUE);
@@ -1504,9 +1503,8 @@ kern_return_t thread_info(
 	       usual amount, because creation_time is a new member
 	       that some callers might not know about. */
 
-	    if (*thread_info_count < THREAD_BASIC_INFO_COUNT - 1) {
+	    if (*thread_info_count < THREAD_BASIC_INFO_COUNT - 1)
 		return KERN_INVALID_ARGUMENT;
-	    }
 
 	    basic_info = (thread_basic_info_t) thread_info_out;
 
@@ -1583,9 +1581,8 @@ kern_return_t thread_info(
 	    /* Allow *thread_info_count to be one smaller than the
 	       usual amount, because last_processor is a
 	       new member that some callers might not know about. */
-	    if (*thread_info_count < THREAD_SCHED_INFO_COUNT -1) {
+	    if (*thread_info_count < THREAD_SCHED_INFO_COUNT -1)
 		    return KERN_INVALID_ARGUMENT;
-	    }
 
 	    sched_info = (thread_sched_info_t) thread_info_out;
 
@@ -1594,12 +1591,11 @@ kern_return_t thread_info(
 
 #if	MACH_FIXPRI
 	    sched_info->policy = thread->policy;
-	    if (thread->policy == POLICY_FIXEDPRI) {
+	    if (thread->policy == POLICY_FIXEDPRI)
 		sched_info->data = (thread->sched_data * tick)/1000;
-	    }
-	    else {
+	    else
 		sched_info->data = 0;
-	    }
+
 #else	/* MACH_FIXPRI */
 	    sched_info->policy = POLICY_TIMESHARE;
 	    sched_info->data = 0;
@@ -1608,7 +1604,7 @@ kern_return_t thread_info(
 	    sched_info->base_priority = thread->priority;
 	    sched_info->max_priority = thread->max_priority;
 	    sched_info->cur_priority = thread->sched_pri;
-	    
+
 	    sched_info->depressed = (thread->depress_priority >= 0);
 	    sched_info->depress_priority = thread->depress_priority;
 
@@ -1638,8 +1634,9 @@ kern_return_t	thread_abort(
 
 	/*
 	 *
-         *	clear it of an event wait 
-         */
+	 *	clear it of an event wait
+	 */
+
 	evc_notify_abort(thread);
 
 	/*
@@ -1771,9 +1768,8 @@ void reaper_thread(void)
  */
 
 kern_return_t
-thread_assign(
-	thread_t	thread,
-	processor_set_t	new_pset)
+thread_assign(thread_t thread,
+	      processor_set_t new_pset)
 {
 	if (thread == THREAD_NULL || new_pset == PROCESSOR_SET_NULL) {
 		return KERN_INVALID_ARGUMENT;
@@ -1792,8 +1788,7 @@ thread_assign(
  *	Only one freeze may be held per thread.  
  */
 void
-thread_freeze(
-	thread_t	thread)
+thread_freeze(thread_t thread)
 {
 	spl_t	s;
 	/*
@@ -1810,7 +1805,6 @@ thread_freeze(
 	thread->may_assign = FALSE;
 	thread_unlock(thread);
 	(void) splx(s);
-
 }
 
 /*
@@ -2037,17 +2031,16 @@ thread_priority(
     /*
      *	Check for violation of max priority
      */
-    if (priority < thread->max_priority) {
+    if (priority < thread->max_priority)
 	ret = KERN_FAILURE;
-    }
     else {
 	/*
 	 *	Set priorities.  If a depression is in progress,
 	 *	change the priority to restore.
 	 */
-	if (thread->depress_priority >= 0) {
+	if (thread->depress_priority >= 0)
 	    thread->depress_priority = priority;
-	}
+
 	else {
 	    thread->priority = priority;
 	    compute_priority(thread, TRUE);
@@ -2102,7 +2095,7 @@ thread_max_priority(
     kern_return_t	ret = KERN_SUCCESS;
 
     if ((thread == THREAD_NULL) || (pset == PROCESSOR_SET_NULL) ||
-    	invalid_pri(max_priority))
+	invalid_pri(max_priority))
 	    return KERN_INVALID_ARGUMENT;
 
     s = splsched();
@@ -2112,9 +2105,9 @@ thread_max_priority(
     /*
      *	Check for wrong processor set.
      */
-    if (pset != thread->processor_set) {
+    if (pset != thread->processor_set)
 	ret = KERN_FAILURE;
-    }
+
     else {
 #endif	/* MACH_HOST */
 	thread->max_priority = max_priority;
@@ -2186,9 +2179,8 @@ thread_policy(
 	    /*
 	     *	Changing policy.  Check if new policy is allowed.
 	     */
-	    if ((thread->processor_set->policies & policy) == 0) {
+	    if ((thread->processor_set->policies & policy) == 0)
 		    ret = KERN_FAILURE;
-	    }
 	    else {
 		/*
 		 *	Changing policy.  Save data and calculate new

@@ -995,3 +995,21 @@ biosmem_free_usable(void)
         biosmem_free_usable_entry(start, end);
     }
 }
+
+boolean_t
+biosmem_addr_available(phys_addr_t addr)
+{
+    struct biosmem_map_entry *entry;
+    unsigned i;
+
+    if (addr < BIOSMEM_BASE)
+        return FALSE;
+
+    for (i = 0; i < biosmem_map_size; i++) {
+        entry = &biosmem_map[i];
+
+        if (addr >= entry->base_addr && addr < entry->base_addr + entry->length)
+            return entry->type == BIOSMEM_TYPE_AVAILABLE;
+    }
+    return FALSE;
+}

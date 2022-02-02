@@ -23,7 +23,7 @@ void hardclock(
 	int 				iunit,
 	int 				old_ipl,
 	int 				irq,
-	char 				*ret_addr,
+	const char			*ret_addr,
 	struct i386_interrupt_state 	*regs);
 
 #endif /* _I386_HARDCLOCK_H_ */

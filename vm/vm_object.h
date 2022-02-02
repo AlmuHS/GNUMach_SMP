@@ -232,10 +232,10 @@ extern void		vm_object_pager_create(
 extern void		vm_object_destroy(
 	struct ipc_port	*pager);
 
-extern void vm_object_page_map(
+extern kern_return_t vm_object_page_map(
 	vm_object_t,
-        vm_offset_t,
-        vm_size_t,
+	vm_offset_t,
+	vm_size_t,
 	vm_offset_t	(*)(void *, vm_offset_t),
 	void *);
 

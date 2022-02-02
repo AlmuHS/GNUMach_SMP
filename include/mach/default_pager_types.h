@@ -54,5 +54,6 @@ typedef struct default_pager_page {
 typedef default_pager_page_t *default_pager_page_array_t;
 
 typedef char default_pager_filename_t[256];
+typedef const char *const_default_pager_filename_t;
 
 #endif	/* _MACH_DEFAULT_PAGER_TYPES_H_ */

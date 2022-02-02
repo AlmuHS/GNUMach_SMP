@@ -62,9 +62,7 @@ struct tty	lpr_tty[NLPR];
 int lpr_alive[NLPR];
 
 int
-lprprobe(port, dev)
-vm_offset_t port;
-struct bus_ctlr *dev;
+lprprobe(vm_offset_t port, struct bus_ctlr *dev)
 {
 	u_short	addr = (u_short) dev->address;
 	int	unit = dev->unit;
@@ -141,9 +139,7 @@ lpropen(dev_t dev, int flag, io_req_t ior)
 }
 
 void
-lprclose(dev, flag)
-dev_t dev;
-int flag;
+lprclose(dev_t dev, int flag)
 {
 int 		unit = minor(dev);
 struct	tty	*tp = &lpr_tty[unit];
@@ -157,35 +153,30 @@ u_short		addr = 	(u_short) lprinfo[unit]->address;
 }
 
 int
-lprread(dev, ior)
-dev_t	dev;
-io_req_t ior;
+lprread(dev_t dev, io_req_t ior)
 {
 	return char_read(&lpr_tty[minor(dev)], ior);
 }
 
 int
-lprwrite(dev, ior)
-dev_t	dev;
-io_req_t ior;
+lprwrite(dev_t dev, io_req_t ior)
 {
 	return char_write(&lpr_tty[minor(dev)], ior);
 }
 
 int
-lprportdeath(dev, port)
-dev_t		dev;
-mach_port_t	port;
+lprportdeath(dev_t dev, mach_port_t port)
 {
 	return (tty_portdeath(&lpr_tty[minor(dev)], (ipc_port_t)port));
 }
 
 io_return_t
-lprgetstat(dev, flavor, data, count)
-dev_t		dev;
-dev_flavor_t	flavor;
-dev_status_t	data;		/* pointer to OUT array */
-mach_msg_type_number_t	*count;		/* out */
+lprgetstat(
+  dev_t dev,
+  dev_flavor_t flavor,
+  dev_status_t data, /* pointer to OUT array */
+  mach_msg_type_number_t *count /* out */
+  )
 {
 	io_return_t	result = D_SUCCESS;
 	int		unit = minor(dev);
