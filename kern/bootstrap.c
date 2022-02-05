@@ -70,7 +70,7 @@
 #include <mach/xen.h>
 extern struct start_info boot_info;	/* XXX put this in a header! */
 #else	/* MACH_XEN */
-extern struct multiboot_info boot_info;	/* XXX put this in a header! */
+extern struct multiboot_raw_info boot_info;	/* XXX put this in a header! */
 #endif	/* MACH_XEN */
 #endif
 
@@ -155,9 +155,25 @@ void bootstrap_create(void)
   boot_info.mods_count = n;
   boot_info.flags |= MULTIBOOT_MODS;
 #else	/* MACH_XEN */
+#ifdef __x86_64__
+  struct multiboot_raw_module *bmods32 = ((struct multiboot_raw_module *)
+                                          phystokv(boot_info.mods_addr));
+  struct multiboot_module *bmods=NULL;
+  if (bmods32)
+    {
+      int i;
+      bmods = alloca(boot_info.mods_count * sizeof(*bmods));
+      for (i=0; i<boot_info.mods_count; i++)
+        {
+          bmods[i].mod_start = bmods32[i].mod_start;
+          bmods[i].mod_end = bmods32[i].mod_end;
+          bmods[i].string = bmods32[i].string;
+        }
+    }
+#else
   struct multiboot_module *bmods = ((struct multiboot_module *)
 				    phystokv(boot_info.mods_addr));
-
+#endif
 #endif	/* MACH_XEN */
   if (!(boot_info.flags & MULTIBOOT_MODS)
       || (boot_info.mods_count == 0))
