@@ -153,7 +153,11 @@ void switch_ktss(pcb_t pcb)
 	if (hyp_stack_switch(KERNEL_DS, pcb_stack_top))
 		panic("stack_switch");
 #else	/* MACH_RING1 */
+#ifdef __x86_64__
+	curr_ktss(mycpu)->tss.rsp0 = pcb_stack_top;
+#else /* __x86_64__ */
 	curr_ktss(mycpu)->tss.esp0 = pcb_stack_top;
+#endif /* __x86_64__ */
 #endif	/* MACH_RING1 */
     }
 

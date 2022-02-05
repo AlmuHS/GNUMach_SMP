@@ -95,8 +95,12 @@ offset	i386_interrupt_state	i	eip
 offset	i386_interrupt_state	i	cs
 offset	i386_interrupt_state	i	efl
 
+#ifdef __x86_64__
+offset	i386_tss		tss	rsp0
+#else
 offset	i386_tss		tss	esp0
 offset	i386_tss		tss	ss0
+#endif
 
 offset	machine_slot		sub_type	cpu_type
 
