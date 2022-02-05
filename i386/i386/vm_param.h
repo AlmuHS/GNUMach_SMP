@@ -36,7 +36,7 @@
  * for better trace support in kdb; the _START symbol has to be offset by the
  * same amount. */
 #ifdef __x86_64__
-#define VM_MIN_KERNEL_ADDRESS	0x40000000UL
+#define VM_MIN_KERNEL_ADDRESS	KERNEL_MAP_BASE
 #else
 #define VM_MIN_KERNEL_ADDRESS	0xC0000000UL
 #endif
