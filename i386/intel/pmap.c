@@ -1299,7 +1299,7 @@ pmap_t pmap_create(vm_size_t size)
 				  pa_to_pte(kvtophys((vm_offset_t) page_dir[i]))
 				  | INTEL_PTE_VALID
 #if !defined(MACH_HYP) || defined(MACH_PV_PAGETABLES)
-				  | INTEL_PTE_WRITE
+				  | INTEL_PTE_WRITE | INTEL_PTE_USER
 #endif
 				  );
 	}
@@ -1310,7 +1310,7 @@ pmap_t pmap_create(vm_size_t size)
 							!= KERN_SUCCESS)
 		panic("pmap_create");
 	memset(p->l4base, 0, INTEL_PGBYTES);
-	WRITE_PTE(&p->l4base[0], pa_to_pte(kvtophys((vm_offset_t) p->pdpbase)) | INTEL_PTE_VALID | INTEL_PTE_WRITE);
+	WRITE_PTE(&p->l4base[0], pa_to_pte(kvtophys((vm_offset_t) p->pdpbase)) | INTEL_PTE_VALID | INTEL_PTE_WRITE | INTEL_PTE_USER);
 #ifdef	MACH_PV_PAGETABLES
 	// FIXME: use kmem_cache_alloc instead
 	if (kmem_alloc_wired(kernel_map,
