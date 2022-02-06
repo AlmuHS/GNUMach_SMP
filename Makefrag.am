@@ -610,11 +610,7 @@ endif
 #
 
 # ix86.
-if HOST_ix86
 include i386/Makefrag.am
-endif
 
 # x86_64.
-if HOST_x86_64
 include x86_64/Makefrag.am
-endif
