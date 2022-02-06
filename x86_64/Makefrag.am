@@ -260,6 +260,10 @@ EXTRA_DIST += \
 # Instead of listing each file individually...
 EXTRA_DIST += \
 	i386/include
+
+# Ship symlink
+EXTRA_DIST += \
+	x86_64/x86_64
 
 #
 # Platform specific parts.
