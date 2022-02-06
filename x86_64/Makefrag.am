@@ -17,7 +17,9 @@
 # Building a distribution.
 #
 EXTRA_DIST += \
-	x86_64/ldscript
+	x86_64/ldscript \
+	x86_64/x86_64 \
+	x86_64/include/mach/x86_64
 
 if HOST_x86_64
 
