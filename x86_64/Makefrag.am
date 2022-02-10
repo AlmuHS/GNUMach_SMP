@@ -14,6 +14,16 @@
 # USE OF THIS SOFTWARE.
 
 #
+# Building a distribution.
+#
+EXTRA_DIST += \
+	x86_64/ldscript \
+	x86_64/x86_64 \
+	x86_64/include/mach/x86_64
+
+if HOST_x86_64
+
+#
 # Source files for any x86_64 kernel.
 #
 
@@ -147,8 +157,6 @@ libkernel_a_SOURCES += \
 	i386/intel/pmap.h \
 	i386/intel/read_fault.c \
 	i386/intel/read_fault.h
-EXTRA_DIST += \
-	i386/i386/mach_i386.srv
 
 if PLATFORM_at
 libkernel_a_SOURCES += \
@@ -196,8 +204,6 @@ nodist_libkernel_a_SOURCES += \
 	i386/i386/mach_i386.server.msgids
 #	i386/i386/mach_i386.server.defs
 
-EXTRA_DIST += \
-	i386/i386/i386asm.sym
 nodist_libkernel_a_SOURCES += \
 	i386/i386/i386asm.h
 
@@ -205,8 +211,6 @@ nodist_libkernel_a_SOURCES += \
 # Architecture specialities.
 #
 
-EXTRA_DIST += \
-	x86_64/ldscript
 if PLATFORM_at
 gnumach_LINKFLAGS += \
 	--defsym _START_MAP=$(_START_MAP) \
@@ -251,17 +255,6 @@ include_mach_x86_64_HEADERS = \
 	i386/include/mach/i386/vm_types.h
 
 #
-# Building a distribution.
-#
-
-EXTRA_DIST += \
-	i386/README-Drivers
-
-# Instead of listing each file individually...
-EXTRA_DIST += \
-	i386/include
-
-#
 # Platform specific parts.
 #
 
@@ -277,3 +270,5 @@ gnumach_LINKFLAGS += \
 	--defsym _START_MAP=0x40000000 \
 	-T '$(srcdir)'/x86_64/ldscript
 endif
+
+endif # HOST_x86_64
