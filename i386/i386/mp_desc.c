@@ -205,15 +205,17 @@ interrupt_stack_alloc(void)
 	 * Allocate an interrupt stack for each CPU except for
 	 * the master CPU (which uses the bootstrap stack)
 	 */
-	if (!init_alloc_aligned(INTSTACK_SIZE*(cpu_count-1), &stack_start))
-		panic("not enough memory for interrupt stacks");
-	stack_start = phystokv(stack_start);
-
+	if(cpu_count > 1){
+	        if (!init_alloc_aligned(INTSTACK_SIZE*(cpu_count-1), &stack_start))
+		        panic("not enough memory for interrupt stacks");
+	        stack_start = phystokv(stack_start);
+        }
 	/*
 	 * Set up pointers to the top of the interrupt stack.
 	 */
-	for (i = 0; i < cpu_count; i++) {
-	    if (i == master_cpu) {
+	 
+	for (i = master_cpu; i < cpu_count; i++) {
+	    if (i == 0) {
 		interrupt_stack[i] = (vm_offset_t) _intstack;
 		int_stack_top[i]   = (vm_offset_t) _eintstack;
 	    }
@@ -229,7 +231,7 @@ interrupt_stack_alloc(void)
 	 * Set up the barrier address.  All thread stacks MUST
 	 * be above this address.
 	 */
-	int_stack_high = stack_start;
+	if(cpu_count > 1) int_stack_high = stack_start;
 }
 
 /* XXX should be adjusted per CPU speed */
@@ -355,10 +357,12 @@ cpus_stack_alloc(void)
         vm_offset_t stack_start;
         int ncpus = apic_get_numcpus();
         
-        if (!init_alloc_aligned(STACK_SIZE*(ncpus-1), &stack_start))
-	        panic("not enough memory for cpu stacks");
-	stack_start = phystokv(stack_start);
-	
+        if(ncpus > 1){
+                if (!init_alloc_aligned(STACK_SIZE*(ncpus-1), &stack_start))
+                        panic("not enough memory for cpu stacks");
+                stack_start = phystokv(stack_start);
+        }
+
 	return stack_start;
 }
 
@@ -375,24 +379,24 @@ start_other_cpus(void)
 	//Reserve memory for interrupt stacks
 	interrupt_stack_alloc();
 
-	//Reserve memory for cpu stack
-	stack_start = cpus_stack_alloc();
+        //Reserve memory for cpu stack
+        
+        stack_start = cpus_stack_alloc();
         printf("cpu stacks reserved\n");
 
 
         printf("starting cpus\n");
 	int cpu;
 	for (cpu = 1; cpu < ncpus; cpu++){
-	
-	        //Initialize stack pointer for current cpu
+                //Initialize stack pointer for current cpu
                 cpu_stack[cpu-1] = stack_start;
                 _cpu_stack_top[cpu-1] = stack_start + STACK_SIZE - 1;
                 stack_ptr = cpu_stack[cpu-1];
-	        
-	        //Start cpu
-	        printf("starting cpu %d\n", cpu);
-	        cpu_start(cpu);
-	        printf("started cpu %d\n", cpu);
+                
+                //Start cpu
+                printf("starting cpu %d\n", cpu);
+                cpu_start(cpu);
+                printf("started cpu %d\n", cpu);
 	}
 		
 }
