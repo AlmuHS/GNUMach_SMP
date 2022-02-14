@@ -42,26 +42,26 @@ void smp_startup_cpu(int apic_id, int vector)
     /* First INIT IPI */	    
     apic_send_ipi(NO_SHORTHAND, INIT, PHYSICAL, ASSERT, LEVEL, 0 , apic_id);
     
-    //Wait 10 ms based in a 3 GHz cpu
-    for(int i = 0; i < 30000000; i++);     
+    //Wait 100 ms based in a 3 GHz cpu
+    for(int i = 0; i < 300000000; i++);     
 
     /* Second INIT IPI */
     apic_send_ipi(NO_SHORTHAND, INIT, PHYSICAL, ASSERT, LEVEL, 0 , apic_id);
     
-    //Wait 10 ms based in a 3 GHz cpu
-    for(int i = 0; i < 30000000; i++); 
+    //Wait 100 ms based in a 3 GHz cpu
+    for(int i = 0; i < 300000000; i++); 
 
     /* First StartUp IPI */
     apic_send_ipi(NO_SHORTHAND, STARTUP, PHYSICAL, ASSERT, LEVEL, vector >>12 , apic_id);
     
-    //Wait 10 ms based in a 3 GHz cpu
-    for(int i = 0; i < 30000000; i++); 
+    //Wait 100 ms based in a 3 GHz cpu
+    for(int i = 0; i < 300000000; i++); 
 
     /* Second StartUp IPI */
     apic_send_ipi(NO_SHORTHAND, STARTUP, PHYSICAL, ASSERT, LEVEL, vector >>12 , apic_id);
     
-    //Wait 10 ms based in a 3 GHz cpu
-    for(int i = 0; i < 30000000; i++); 
+    //Wait 100 ms based in a 3 GHz cpu
+    for(int i = 0; i < 300000000; i++); 
 }
 
 
