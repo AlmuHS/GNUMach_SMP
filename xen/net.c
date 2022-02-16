@@ -313,7 +313,7 @@ void hyp_net_init(void) {
 	domid_t domid;
 	evtchn_port_t evt;
 	hyp_store_transaction_t t;
-	vm_offset_t addr;
+	phys_addr_t addr;
 	struct net_data *nd;
 	struct ifnet *ifp;
 	netif_tx_sring_t *tx_ring;

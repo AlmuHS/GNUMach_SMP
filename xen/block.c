@@ -108,7 +108,7 @@ void hyp_block_init(void) {
 	domid_t domid;
 	evtchn_port_t evt;
 	hyp_store_transaction_t t;
-	vm_offset_t addr;
+	phys_addr_t addr;
 	struct block_data *bd;
 	blkif_sring_t	*ring;
 
@@ -573,7 +573,7 @@ device_write(void *d, ipc_port_t reply_port,
   vm_offset_t map_addr;
   vm_size_t map_size;
   unsigned copy_npages = atop(round_page(count));
-  vm_offset_t phys_addrs[copy_npages];
+  phys_addr_t phys_addrs[copy_npages];
   struct block_data *bd = d;
   blkif_request_t *req;
   grant_ref_t gref[BLKIF_MAX_SEGMENTS_PER_REQUEST];

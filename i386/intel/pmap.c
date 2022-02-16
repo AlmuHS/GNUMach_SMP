@@ -842,7 +842,7 @@ void pmap_bootstrap(void)
 /* Set back a page read write */
 void pmap_set_page_readwrite(void *_vaddr) {
 	vm_offset_t vaddr = (vm_offset_t) _vaddr;
-	vm_offset_t paddr = kvtophys(vaddr);
+	phys_addr_t paddr = kvtophys(vaddr);
 	vm_offset_t canon_vaddr = phystokv(paddr);
 	if (hyp_do_update_va_mapping (kvtolin(vaddr), pa_to_pte (pa_to_ma(paddr)) | INTEL_PTE_VALID | INTEL_PTE_WRITE, UVMF_NONE))
 		panic("couldn't set hiMMU readwrite for addr %lx(%lx)\n", vaddr, (vm_offset_t) pa_to_ma (paddr));
@@ -854,7 +854,7 @@ void pmap_set_page_readwrite(void *_vaddr) {
 /* Set a page read only (so as to pin it for instance) */
 void pmap_set_page_readonly(void *_vaddr) {
 	vm_offset_t vaddr = (vm_offset_t) _vaddr;
-	vm_offset_t paddr = kvtophys(vaddr);
+	phys_addr_t paddr = kvtophys(vaddr);
 	vm_offset_t canon_vaddr = phystokv(paddr);
 	if (*pmap_pde(kernel_pmap, vaddr) & INTEL_PTE_VALID) {
 		if (hyp_do_update_va_mapping (kvtolin(vaddr), pa_to_pte (pa_to_ma(paddr)) | INTEL_PTE_VALID, UVMF_NONE))
