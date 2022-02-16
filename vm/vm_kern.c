@@ -92,6 +92,7 @@ projected_buffer_allocate(
 	vm_object_t object;
 	vm_map_entry_t u_entry, k_entry;
 	vm_offset_t addr;
+	phys_addr_t physical_addr;
 	vm_size_t r_size;
 	kern_return_t kr;
 
@@ -159,8 +160,8 @@ projected_buffer_allocate(
 
 	pmap_pageable(map->pmap, *user_p, *user_p + size, FALSE);
 	for (r_size = 0; r_size < size; r_size += PAGE_SIZE) {
-	  addr = pmap_extract(kernel_pmap, *kernel_p + r_size);
-	  pmap_enter(map->pmap, *user_p + r_size, addr,
+	  physical_addr = pmap_extract(kernel_pmap, *kernel_p + r_size);
+	  pmap_enter(map->pmap, *user_p + r_size, physical_addr,
 		     protection, TRUE);
 	}
 
@@ -186,7 +187,8 @@ projected_buffer_map(
        vm_inherit_t 	inheritance)  /*Currently only VM_INHERIT_NONE supported*/
 {
 	vm_map_entry_t u_entry, k_entry;
-	vm_offset_t physical_addr, user_addr;
+	vm_offset_t user_addr;
+	phys_addr_t physical_addr;
 	vm_size_t r_size;
 	kern_return_t kr;
 
