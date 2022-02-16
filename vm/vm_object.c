@@ -2821,14 +2821,14 @@ vm_object_page_map(
 	vm_object_t	object,
 	vm_offset_t	offset,
 	vm_size_t	size,
-	vm_offset_t	(*map_fn)(void *, vm_offset_t),
+	phys_addr_t	(*map_fn)(void *, vm_offset_t),
 	void *		map_fn_data)	/* private to map_fn */
 {
 	int	num_pages;
 	int	i;
 	vm_page_t	m;
 	vm_page_t	old_page;
-	vm_offset_t	addr;
+	phys_addr_t	addr;
 
 	num_pages = atop(size);
 

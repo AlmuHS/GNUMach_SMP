@@ -467,7 +467,7 @@ pt_entry_t *pmap_pte(const pmap_t pmap, vm_offset_t addr);
 
 #define	pmap_kernel()			(kernel_pmap)
 #define pmap_resident_count(pmap)	((pmap)->stats.resident_count)
-#define pmap_phys_address(frame)	((vm_offset_t) (intel_ptob(frame)))
+#define pmap_phys_address(frame)	((phys_addr_t) (intel_ptob(frame)))
 #define pmap_phys_to_frame(phys)	((int) (intel_btop(phys)))
 #define	pmap_copy(dst_pmap,src_pmap,dst_addr,len,src_addr)
 #define	pmap_attribute(pmap,addr,size,attr,value) \
