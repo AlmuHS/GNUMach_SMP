@@ -446,7 +446,7 @@ int
 db_user_to_phys_address(
 	const task_t	task,
 	vm_offset_t	addr,
-	vm_offset_t	*paddr,
+	phys_addr_t	*paddr,
 	int		flag)
 {
 	pt_entry_t *ptp;
@@ -483,13 +483,13 @@ db_user_to_kernel_address(
 	vm_offset_t	*kaddr,
 	int		flag)
 {
-	vm_offset_t paddr;
+	phys_addr_t paddr;
 
 	if (db_user_to_phys_address(task, addr, &paddr, flag) < 0)
 	    return(-1);
 
 	if (paddr >= biosmem_directmap_end()) {
-	    db_printf("\naddr %08x is stored in highmem at physical %016llx, accessing it is not supported yet\n", addr, (unsigned long long) paddr);
+	    db_printf("\naddr %016llx is stored in highmem at physical %016llx, accessing it is not supported yet\n", (unsigned long long) addr, (unsigned long long) paddr);
 	    return(-1);
 	}
 
@@ -510,7 +510,7 @@ db_read_bytes(
 {
 	char		*src;
 	int		n;
-	vm_offset_t	phys_addr;
+	phys_addr_t	phys_addr;
 
 	src = (char *)addr;
 	if ((addr >= VM_MIN_KERNEL_ADDRESS && addr < VM_MAX_KERNEL_ADDRESS) || task == TASK_NULL) {
@@ -618,7 +618,7 @@ db_write_bytes_user_space(
 	task_t		task)
 {
 	int		n;
-	vm_offset_t	phys_addr;
+	phys_addr_t	phys_addr;
 
 	while (size > 0) {
 	    if (db_user_to_phys_address(task, addr, &phys_addr, 1) < 0)
@@ -639,7 +639,7 @@ db_check_access(
 	task_t		task)
 {
 	int	n;
-	vm_offset_t	phys_addr;
+	phys_addr_t	phys_addr;
 
 	if (addr >= VM_MIN_KERNEL_ADDRESS) {
 	    if (kernel_task == TASK_NULL)
@@ -669,7 +669,7 @@ db_phys_eq(
 	const task_t	task2,
 	vm_offset_t	addr2)
 {
-	vm_offset_t	phys_addr1, phys_addr2;
+	phys_addr_t	phys_addr1, phys_addr2;
 
 	if (addr1 >= VM_MIN_KERNEL_ADDRESS || addr2 >= VM_MIN_KERNEL_ADDRESS)
 	    return FALSE;
