@@ -1112,7 +1112,7 @@ vm_offset_t
 pmap_page_table_page_alloc(void)
 {
 	vm_page_t	m;
-	vm_offset_t	pa;
+	phys_addr_t	pa;
 
 	check_simple_locks();
 
@@ -1135,6 +1135,7 @@ pmap_page_table_page_alloc(void)
 	 *	can be found later.
 	 */
 	pa = m->phys_addr;
+	assert(pa == (vm_offset_t) pa);
 	vm_object_lock(pmap_object);
 	vm_page_insert(m, pmap_object, pa);
 	vm_page_lock_queues();
@@ -1413,6 +1414,7 @@ void pmap_destroy(pmap_t p)
 		 pdep += ptes_per_vm_page) {
 		if (*pdep & INTEL_PTE_VALID) {
 		    pa = pte_to_pa(*pdep);
+		    assert(pa == (vm_offset_t) pa);
 		    vm_object_lock(pmap_object);
 		    m = vm_page_lookup(pmap_object, pa);
 		    if (m == VM_PAGE_NULL)
@@ -2466,6 +2468,7 @@ void pmap_collect(pmap_t p)
 			    vm_page_t m;
 
 			    vm_object_lock(pmap_object);
+			    assert(pa == (vm_offset_t) pa);
 			    m = vm_page_lookup(pmap_object, pa);
 			    if (m == VM_PAGE_NULL)
 				panic("pmap_collect: pte page not in object");
