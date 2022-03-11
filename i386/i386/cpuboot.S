@@ -98,13 +98,13 @@ _apboot:
 	call cpu_ap_main
 
 	/*if the processor is not added to the kernel, stop it*/
-	sti
+/*	sti
 	nop
 halt:
-	hlt
+	hlt*/
 
 	/*if the processor continues, returns to halt*/	
-	jmp halt
+	//jmp halt
 
     .align 0x10
 gdt_descr_tmp:
