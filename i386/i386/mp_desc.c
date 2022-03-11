@@ -332,6 +332,10 @@ cpu_setup()
     idt_init();
     ldt_init();
     ktss_init();
+    
+    intel_startCPU(i);
+
+    printf("started cpu %d\n", i);
 
     /* Add cpu to the kernel */
     //slave_main();
@@ -348,7 +352,7 @@ cpu_start(int cpu)
 	int apic_id = apic_get_cpu_apic_id(cpu);
 	smp_startup_cpu(apic_id, AP_BOOT_ADDR);
 
-	return intel_startCPU(cpu);
+	return 0;
 }
 
 vm_offset_t
@@ -396,9 +400,7 @@ start_other_cpus(void)
                 //Start cpu
                 printf("starting cpu %d\n", cpu);
                 cpu_start(cpu);
-                printf("started cpu %d\n", cpu);
-	}
-		
+	}	
 }
 
 #endif	/* NCPUS > 1 */
