@@ -388,7 +388,6 @@ start_other_cpus(void)
         stack_start = cpus_stack_alloc();
         printf("cpu stacks reserved\n");
 
-
         printf("starting cpus\n");
 	int cpu;
 	for (cpu = 1; cpu < ncpus; cpu++){
@@ -400,6 +399,8 @@ start_other_cpus(void)
                 //Start cpu
                 printf("starting cpu %d\n", cpu);
                 cpu_start(cpu);
+                
+                while(machine_slot[cpu].running != TRUE);
 	}	
 }
 
