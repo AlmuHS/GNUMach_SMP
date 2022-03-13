@@ -73,7 +73,7 @@ irq_acknowledge (ipc_port_t receive_port)
   if (ret)
     return ret;
 
-  if (irqtab.irqdev_ack)
+  if (e && irqtab.irqdev_ack)
     (*(irqtab.irqdev_ack)) (&irqtab, e->id);
 
   __enable_irq (irqtab.irq[e->id]);
