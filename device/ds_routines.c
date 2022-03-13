@@ -329,11 +329,13 @@ ds_device_intr_register (device_t dev, int id,
   return D_INVALID_OPERATION;
 #else /* MACH_XEN || __x86_64__ */
   kern_return_t err;
-  mach_device_t mdev = dev->emul_data;
+  mach_device_t mdev;
 
   /* Refuse if device is dead or not completely open.  */
   if (dev == DEVICE_NULL)
     return D_NO_SUCH_DEVICE;
+
+  mdev = dev->emul_data;
 
   /* No flag is defined for now */
   if (flags != 0)
@@ -366,12 +368,14 @@ ds_device_intr_ack (device_t dev, ipc_port_t receive_port)
 #if defined(MACH_XEN) || defined(__x86_64__)
   return D_INVALID_OPERATION;
 #else /* MACH_XEN || __x86_64__ */
-  mach_device_t mdev = dev->emul_data;
+  mach_device_t mdev;
   kern_return_t ret;
 
   /* Refuse if device is dead or not completely open.  */
   if (dev == DEVICE_NULL)
     return D_NO_SUCH_DEVICE;
+
+  mdev = dev->emul_data;
 
   /* Must be called on the irq device only */
   if (! name_equal(mdev->dev_ops->d_name, 3, "irq"))
