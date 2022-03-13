@@ -656,7 +656,7 @@ ds_open_done(const io_req_t ior)
 					    ior->io_reply_port_type,
 					    result,
 					    mach_convert_device_to_port(device));
-	} else
+	} else if (device)
 		mach_device_deallocate(device);
 
 	return (TRUE);
