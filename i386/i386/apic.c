@@ -248,10 +248,6 @@ void apic_send_ipi(unsigned dest_shorthand, unsigned deliv_mode, unsigned dest_m
     icrl_values.vector = vector;
     icrh_values.destination_field = dest_id;
     
-    //Write values in ICR register
     lapic->icr_high = icrh_values;
     lapic->icr_low = icrl_values;
-    
-    //Wait until IPI is sent
-    while(lapic->icr_low.delivery_status == SEND_PENDING);
 }

@@ -77,6 +77,7 @@ extern char		_intstack[];	/* bottom */
 extern char		_eintstack[];	/* top */
 
 extern void *apboot, *apbootend;
+//extern unsigned stop;
 void* stack_ptr = 0;
 
 #define AP_BOOT_ADDR (0x7000)
@@ -361,11 +362,11 @@ cpus_stack_alloc(void)
         vm_offset_t stack_start;
         int ncpus = apic_get_numcpus();
         
-        if(ncpus > 1){
+        //if(ncpus > 1){
                 if (!init_alloc_aligned(STACK_SIZE*(ncpus-1), &stack_start))
                         panic("not enough memory for cpu stacks");
                 stack_start = phystokv(stack_start);
-        }
+        //}
 
 	return stack_start;
 }
@@ -384,7 +385,6 @@ start_other_cpus(void)
 	interrupt_stack_alloc();
 
         //Reserve memory for cpu stack
-        
         stack_start = cpus_stack_alloc();
         printf("cpu stacks reserved\n");
 
@@ -399,6 +399,9 @@ start_other_cpus(void)
                 //Start cpu
                 printf("starting cpu %d\n", cpu);
                 cpu_start(cpu);
+                
+                //unsigned * cont = (unsigned *) phystokv(AP_BOOT_ADDR + (unsigned)&stop - (unsigned)&apboot);
+                //printf("stop point %x\n", *cont);
                 
                 while(machine_slot[cpu].running != TRUE);
 	}	

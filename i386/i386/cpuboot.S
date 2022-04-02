@@ -41,7 +41,10 @@ boot_gdt:
 #define M(addr) (addr - apboot + 0x7000)
 
     .text
-    .globl apboot, apbootend
+    .globl apboot, apbootend//, stop
+    /*.data
+        stop: 
+        .long 0x0*/
     .align 0x10
     .code16
 
@@ -52,6 +55,8 @@ _apboot:
     mov %ax, %ds
     mov %ax, %es
     mov %ax, %ss
+
+    //incw M(stop)
 
     lgdt M(gdt_descr_tmp)
 
