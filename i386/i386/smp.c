@@ -38,7 +38,9 @@ static void smp_data_init(void)
 }
 
 void smp_startup_cpu(unsigned apic_id, unsigned vector)
-{     
+{
+    printf("Sending IPI to APIC ID %u\n", apic_id);
+     
     /* First INIT IPI */	    
     apic_send_ipi(NO_SHORTHAND, INIT, PHYSICAL, ASSERT, LEVEL, 0 , apic_id);  
 
