@@ -53,8 +53,7 @@ subsystem
 routine mach_port_names(
 		task		: ipc_space_t;
 	out	names		: mach_port_name_array_t =
-					^array[] of mach_port_name_t
-					ctype: mach_port_array_t;
+					^array[] of mach_port_name_t;
 	out	types		: mach_port_type_array_t =
 					^array[] of mach_port_type_t);
 
@@ -209,8 +208,7 @@ routine mach_port_get_set_status(
 		task		: ipc_space_t;
 		name		: mach_port_name_t;
 	out	members		: mach_port_name_array_t =
-					^array[] of mach_port_name_t
-					ctype: mach_port_array_t);
+					^array[] of mach_port_name_t);
 
 /*
  *	Puts the member port (the task must have receive rights)
