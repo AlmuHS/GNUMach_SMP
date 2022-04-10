@@ -1,9 +1,13 @@
+#include <mach/machine/asm.h>
 #include <i386/i386asm.h>
+#include <i386/proc_reg.h>
 
 #define STACK_SIZE (4096 * 2)
 
     .section .boot, "awx"
+
     .align 0x10
+
     .text
 
 idt_descr:
@@ -41,10 +45,7 @@ boot_gdt:
 #define M(addr) (addr - apboot + 0x7000)
 
     .text
-    .globl apboot, apbootend//, stop
-    /*.data
-        stop: 
-        .long 0x0*/
+    .globl apboot, apbootend
     .align 0x10
     .code16
 
@@ -55,8 +56,6 @@ _apboot:
     mov %ax, %ds
     mov %ax, %es
     mov %ax, %ss
-
-    //incw M(stop)
 
     lgdt M(gdt_descr_tmp)
 
@@ -103,13 +102,13 @@ _apboot:
 	call cpu_ap_main
 
 	/*if the processor is not added to the kernel, stop it*/
-/*	sti
+	sti
 	nop
 halt:
-	hlt*/
+	hlt
 
 	/*if the processor continues, returns to halt*/	
-	//jmp halt
+	jmp halt
 
     .align 0x10
 gdt_descr_tmp:
