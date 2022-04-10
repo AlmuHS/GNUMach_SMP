@@ -35,6 +35,11 @@ static void smp_data_init(void)
 {
     uint8_t numcpus = apic_get_numcpus();
     smp_set_numcpus(numcpus);
+    
+    for(int i = 0; i < numcpus; i++){
+            machine_slot[i].is_cpu = TRUE;
+    }
+    
 }
 
 void smp_startup_cpu(unsigned apic_id, unsigned vector)
