@@ -26,8 +26,6 @@
 
 #if	NCPUS > 1
 
-#include <string.h> 
-
 #include <kern/cpu_number.h>
 #include <kern/debug.h>
 #include <kern/printf.h>
@@ -202,15 +200,6 @@ mp_desc_init(int mycpu)
 	}
 }
 
-/*kern_return_t intel_startCPU(int slot_num)
-{
-	printf("TODO: intel_startCPU\n");
-	mp_desc_init(slot_num);
-	
-	return 0;
-}*/
-
-
 kern_return_t intel_startCPU(int cpu)
 {
     /*TODO: Get local APIC from cpu*/
@@ -252,7 +241,7 @@ kern_return_t intel_startCPU(int cpu)
     mp_desc_init(cpu);
 
     /*if (!cpu_datap(slot_num)->cpu_running) {*/
-    if(!machine_slot[cpu].running)
+    if(machine_slot[cpu].running == FALSE)
         {
             printf("Failed to start CPU %02d, rebooting...\n", cpu);
             halt_cpu();
@@ -354,13 +343,14 @@ cpu_setup()
 
     int i = 0;
     int ncpus = smp_get_numcpus();
-    unsigned cpu = apic_get_current_cpu();
+    //unsigned cpu = apic_get_current_cpu();
+    unsigned cpu = lapic->apic_id.r;
 
     printf("Starting cpu %d setup\n", cpu);
 
     while(i < ncpus && (machine_slot[i].running == TRUE)) i++;
     
-    printf("Starting cpu %d setup\n", i);
+    //printf("Starting cpu %d setup\n", i);
 
     /* assume Pentium 4, Xeon, or later processors */
 
@@ -371,7 +361,6 @@ cpu_setup()
     /*TODO: Move this code to a separate function*/
 
     /* Initialize machine_slot fields with the cpu data */
-    machine_slot[i].running = TRUE;
     machine_slot[i].cpu_subtype = CPU_SUBTYPE_AT386;
 
     int cpu_type = discover_x86_cpu_type ();
@@ -415,6 +404,8 @@ cpu_setup()
     ktss_init();
     printf("KTSS configured\n");
     printf("Configured GDT and IDT\n");
+
+    machine_slot[i].running = TRUE;
     
     printf("started cpu %d\n", i);
 
@@ -495,16 +486,17 @@ start_other_cpus(void)
 	//Reserve memory for interrupt stacks
 	interrupt_stack_alloc();
 
-
         //Reserve memory for cpu stack
         cpus_stack_alloc();
         printf("cpu stacks reserved\n");
 
         printf("starting cpus\n");
-	int cpu;
+	unsigned cpu;
 	for (cpu = 1; cpu < ncpus; cpu++){
                 //Initialize stack pointer for current cpu
-                stack_ptr = cpu_stack[cpu-1];
+                stack_ptr = cpu_stack[cpu];
+              
+                machine_slot[cpu].running = FALSE;
                 
                 //Start cpu
                 printf("starting cpu %d\n", cpu);
