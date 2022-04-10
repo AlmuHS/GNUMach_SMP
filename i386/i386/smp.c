@@ -21,6 +21,8 @@
 #include <i386/i386/apic.h>
 #include <i386/i386/smp.h>
 #include <i386/i386at/acpi_parse_apic.h>
+#include <kern/printf.h>
+#include <mach/machine.h>
 
 #include <kern/smp.h>
 
