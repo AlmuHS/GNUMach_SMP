@@ -427,7 +427,7 @@ cpu_setup()
 int
 cpu_ap_main()
 {
-    printf("Enabling cpu %08x\n", lapic->apic_id.r);
+    printf("Enabling cpu %d\n", lapic->apic_id.r);
 
     if(cpu_setup()) return -1;
     return 0;
