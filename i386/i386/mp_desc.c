@@ -455,7 +455,7 @@ cpus_stack_alloc(void)
                      cpu_stack[i] = (vm_offset_t) _cpustack;
                      _cpu_stack_top[i] = (vm_offset_t) _cpustack + STACK_SIZE;
                 }
-            else //if (machine_slot[i].is_cpu)
+            else if (machine_slot[i].is_cpu)
                 {
                     cpu_stack[i] = stack_start;
                     _cpu_stack_top[i]  = stack_start + STACK_SIZE;
