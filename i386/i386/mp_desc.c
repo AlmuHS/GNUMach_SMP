@@ -74,6 +74,7 @@ vm_offset_t _cpu_stack_top[NCPUS];
  * Barrier address.
  */
 vm_offset_t	int_stack_high;
+vm_offset_t     cpu_stack_high;
 
 /*
  * First cpu`s interrupt stack.
@@ -81,10 +82,17 @@ vm_offset_t	int_stack_high;
 extern char		_intstack[];	/* bottom */
 extern char		_eintstack[];	/* top */
 
+/*
+ * First cpu`s stack.
+ */
+
+char		_cpustack[];	/* bottom */
+char		_ecpustack[];	/* top */
+
+
 extern void *apboot, *apbootend;
 extern volatile ApicLocalUnit* lapic;
 //extern unsigned stop;
-void* stack_ptr = 0;
 
 #define AP_BOOT_ADDR (0x7000)
 //#define STACK_SIZE (4096 * 2)
@@ -131,6 +139,8 @@ struct mp_desc_table *
 mp_desc_init(int mycpu)
 {
 	struct mp_desc_table *mpt;
+
+        const int master_cpu = 0;
 
 	if (mycpu == master_cpu) {
 		/*
@@ -192,12 +202,68 @@ mp_desc_init(int mycpu)
 	}
 }
 
-kern_return_t intel_startCPU(int slot_num)
+/*kern_return_t intel_startCPU(int slot_num)
 {
 	printf("TODO: intel_startCPU\n");
 	mp_desc_init(slot_num);
 	
 	return 0;
+}*/
+
+
+kern_return_t intel_startCPU(int cpu)
+{
+    /*TODO: Get local APIC from cpu*/
+    unsigned apic_id = apic_get_cpu_apic_id(cpu);
+    unsigned long eFlagsRegister;
+
+    kmutex_init(&mp_cpu_boot_lock);
+    printf("Trying to enable: %d\n", apic_id);
+
+    /* Serialize use of the slave boot stack, etc. */
+    kmutex_lock(&mp_cpu_boot_lock, FALSE);
+
+    /*istate = ml_set_interrupts_enabled(FALSE);*/
+    cpu_intr_save(&eFlagsRegister);
+    if (cpu == cpu_number())
+        {
+            cpu_intr_restore(eFlagsRegister);
+            kmutex_unlock(&mp_cpu_boot_lock);
+            return KERN_SUCCESS;
+        }
+
+    /*
+     * Perform the processor startup sequence with all running
+     * processors rendezvous'ed. This is required during periods when
+     * the cache-disable bit is set for MTRR/PAT initialization.
+     */
+    /*mp_rendezvous_no_intrs(start_cpu, (void *) &start_info);*/
+    smp_startup_cpu(apic_id, AP_BOOT_ADDR);
+
+    cpu_intr_restore(eFlagsRegister);
+    kmutex_unlock(&mp_cpu_boot_lock);
+
+    delay(1000000);
+
+    /*
+     * Initialize (or re-initialize) the descriptor tables for this cpu.
+     * Propagate processor mode to slave.
+     */
+    mp_desc_init(cpu);
+
+    /*if (!cpu_datap(slot_num)->cpu_running) {*/
+    if(!machine_slot[cpu].running)
+        {
+            printf("Failed to start CPU %02d, rebooting...\n", cpu);
+            halt_cpu();
+            return KERN_SUCCESS;
+        }
+    else
+        {
+            printf("Started cpu %d (lapic id %08x)\n", cpu, apic_id);
+            return KERN_SUCCESS;
+        }
+
 }
 
 /*
@@ -288,11 +354,13 @@ cpu_setup()
 
     int i = 0;
     int ncpus = smp_get_numcpus();
-    unsigned cpu = lapic->apic_id.r;
+    unsigned cpu = apic_get_current_cpu();
 
-    printf("Starting cpu %08x setup\n", lapic->apic_id.r);
+    printf("Starting cpu %d setup\n", cpu);
 
     while(i < ncpus && (machine_slot[i].running == TRUE)) i++;
+    
+    printf("Starting cpu %d setup\n", i);
 
     /* assume Pentium 4, Xeon, or later processors */
 
@@ -329,21 +397,25 @@ cpu_setup()
             machine_slot[i].cpu_type = CPU_TYPE_PENTIUMPRO;
             break;
         }
-
+        
    printf("Configuring GDT and IDT\n");
 
     /*
      * Initialize and activate the real i386 protected-mode structures.
      */
     gdt_init();
-    idt_init();
-    ldt_init();
-    ktss_init();
+    printf("GDT configured\n");
     
+    idt_init();
+    printf("IDT configured\n");
+    
+    ldt_init();
+    printf("LDT configured\n");
+    
+    ktss_init();
+    printf("KTSS configured\n");
     printf("Configured GDT and IDT\n");
     
-    intel_startCPU(i);
-
     printf("started cpu %d\n", i);
 
     /* Add cpu to the kernel */
@@ -364,53 +436,12 @@ cpu_ap_main()
 kern_return_t
 cpu_start(int cpu)
 {
-	if (machine_slot[cpu].running)
-		return KERN_FAILURE;
-		
-	unsigned apic_id = apic_get_cpu_apic_id(cpu);
-        unsigned long eFlagsRegister;
+    if (machine_slot[cpu].running == TRUE)
+        return KERN_FAILURE;
 
-        kmutex_init(&mp_cpu_boot_lock);
-        printf("Trying to enable: %d\n", apic_id);
-
-
-       /* Serialize use of the slave boot stack, etc. */
-       kmutex_lock(&mp_cpu_boot_lock, FALSE);
-
-        /*istate = ml_set_interrupts_enabled(FALSE);*/
-        cpu_intr_save(&eFlagsRegister);
-        if (cpu == cpu_number())
-        {
-            /*ml_set_interrupts_enabled(istate);*/
-            cpu_intr_restore(eFlagsRegister);
-            /*lck_mtx_unlock(&mp_cpu_boot_lock);*/
-            kmutex_unlock(&mp_cpu_boot_lock);
-            return KERN_SUCCESS;
-        }
-
-	printf("cpu %d 's apic id is %u\n", cpu, apic_id);
-	
-	smp_startup_cpu(apic_id, AP_BOOT_ADDR);
-	
-	cpu_intr_restore(eFlagsRegister);
-        /*lck_mtx_unlock(&mp_cpu_boot_lock);*/
-        kmutex_unlock(&mp_cpu_boot_lock);
-
-
-        if(!machine_slot[cpu].running)
-        {
-            printf("Failed to start CPU %02d, rebooting...\n", cpu);
-            halt_cpu();
-            return KERN_SUCCESS;
-        }
-        else
-        {
-            printf("Started cpu %d (lapic id %08x)\n", cpu, apic_id);
-            return KERN_SUCCESS;
-        }
-
-	return 0;
+    return intel_startCPU(cpu);
 }
+
 
 vm_offset_t
 cpus_stack_alloc(void)
@@ -419,17 +450,41 @@ cpus_stack_alloc(void)
         int ncpus = smp_get_numcpus();
         
         
-        if (!init_alloc_aligned(STACK_SIZE*(ncpus-1), &stack_start))
-                panic("not enough memory for cpu stacks");
+        if(ncpus > 1){
+                if (!init_alloc_aligned(STACK_SIZE*(ncpus-1), &stack_start))
+                        panic("not enough memory for cpu stacks");
+                stack_start = phystokv(stack_start);
+        }
+        
+        
+        for (int i = 0; i < ncpus; i++)
+        {
+            if (i == master_cpu)
+                {
+                     cpu_stack[i] = (vm_offset_t) _cpustack;
+                     _cpu_stack_top[i] = (vm_offset_t) _cpustack + STACK_SIZE;
+                }
+            else //if (machine_slot[i].is_cpu)
+                {
+                    cpu_stack[i] = stack_start;
+                    _cpu_stack_top[i]  = stack_start + STACK_SIZE;
 
-	return phystokv(stack_start);
+                    stack_start += STACK_SIZE;
+                }
+        }
+
+    /*
+     * Set up the barrier address.  All thread stacks MUST
+     * be above this address.
+     */
+    if(ncpus > 1) cpu_stack_high = stack_start;
 }
 
+vm_offset_t stack_ptr = 0;
 
 void
 start_other_cpus(void)
 {              
-	vm_offset_t	stack_start;
 	int ncpus = smp_get_numcpus();
 
         machine_slot[0].running = TRUE;
@@ -441,25 +496,19 @@ start_other_cpus(void)
 	interrupt_stack_alloc();
 
 
-        if(ncpus > 1){
-                //Reserve memory for cpu stack
-                stack_start = cpus_stack_alloc();
-                printf("cpu stacks reserved\n");
-        }
+        //Reserve memory for cpu stack
+        cpus_stack_alloc();
+        printf("cpu stacks reserved\n");
 
         printf("starting cpus\n");
 	int cpu;
 	for (cpu = 1; cpu < ncpus; cpu++){
                 //Initialize stack pointer for current cpu
-                cpu_stack[cpu-1] = stack_start;
-                _cpu_stack_top[cpu-1] = stack_start + STACK_SIZE - 1;
                 stack_ptr = cpu_stack[cpu-1];
                 
                 //Start cpu
                 printf("starting cpu %d\n", cpu);
                 cpu_start(cpu);
-                
-                stack_start += STACK_SIZE;
                 
                 while(machine_slot[cpu].running != TRUE);
 	}	
