@@ -90,9 +90,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  *
  */
 int
-mach_atoi(cp, nump)
-const u_char	*cp;
-int		*nump;
+mach_atoi(const u_char *cp, int *nump)
 {
 	int		number;
 	const u_char	*original;
