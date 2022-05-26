@@ -829,11 +829,10 @@ user_stack_low(vm_size_t stack_size)
  * Allocate argument area and set registers for first user thread.
  */
 vm_offset_t
-set_user_regs(stack_base, stack_size, exec_info, arg_size)
-	vm_offset_t	stack_base;	/* low address */
-	vm_offset_t	stack_size;
-	const struct exec_info *exec_info;
-	vm_size_t	arg_size;
+set_user_regs(vm_offset_t stack_base, /* low address */
+	      vm_offset_t stack_size,
+	      const struct exec_info *exec_info,
+	      vm_size_t arg_size)
 {
 	vm_offset_t	arg_addr;
 	struct i386_saved_state *saved_state;

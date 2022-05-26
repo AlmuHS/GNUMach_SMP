@@ -180,8 +180,7 @@ printf("profile_thread: mach_msg failed returned %x\n",(int)mr);
 #include <mach/message.h>
 
 void
-send_last_sample_buf(th)
-thread_t th;
+send_last_sample_buf(thread_t th)
 {
         spl_t s;
         buf_to_send_t buf_entry;
@@ -290,10 +289,9 @@ profile(pc) {
    MiG, even though it is not used in the function itself. */
 
 kern_return_t
-mach_sample_thread (task, reply, cur_thread)
-ipc_space_t	task;
-ipc_object_t 	reply;
-thread_t	cur_thread;
+mach_sample_thread (ipc_space_t task,
+		    ipc_object_t reply,
+		    thread_t cur_thread)
 {
 /*
  * This routine is called every time that a new thread has made
@@ -349,10 +347,7 @@ printf("ERROR:mach_sample_thread:cannot set pbuf_nb\n");
 }
 
 kern_return_t
-mach_sample_task (task, reply, cur_task)
-ipc_space_t	task;
-ipc_object_t 	reply;
-task_t		cur_task;
+mach_sample_task (ipc_space_t task, ipc_object_t reply, task_t cur_task)
 {
 	prof_data_t	pbuf=cur_task->profil_buffer;
 	vm_offset_t     vmpbuf;

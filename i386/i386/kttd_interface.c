@@ -499,8 +499,7 @@ struct int_regs {
 };
 
 void
-kttd_netentry(int_regs)
-	struct int_regs	*int_regs;
+kttd_netentry(struct int_regs *int_regs)
 {
 	struct i386_interrupt_state *is = int_regs->is;
 	int	s;

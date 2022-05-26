@@ -643,8 +643,7 @@ i386_exception(
  * return saved state for interrupted user thread
  */
 unsigned
-interrupted_pc(t)
-	const thread_t t;
+interrupted_pc(const thread_t t)
 {
 	struct i386_saved_state *iss;
 

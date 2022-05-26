@@ -2347,12 +2347,12 @@ phys_addr_t pmap_extract(
  *	This routine is only advisory and need not do anything.
  */
 #if	0
-void pmap_copy(dst_pmap, src_pmap, dst_addr, len, src_addr)
-	pmap_t		dst_pmap;
-	pmap_t		src_pmap;
-	vm_offset_t	dst_addr;
-	vm_size_t	len;
-	vm_offset_t	src_addr;
+void pmap_copy(
+	pmap_t		dst_pmap,
+	pmap_t		src_pmap,
+	vm_offset_t	dst_addr,
+	vm_size_t	len,
+	vm_offset_t	src_addr)
 {
 }
 #endif	/* 0 */
@@ -2500,10 +2500,7 @@ void pmap_collect(pmap_t p)
  *		processor, and returns a hardware map description.
  */
 #if	0
-void pmap_activate(my_pmap, th, my_cpu)
-	pmap_t	my_pmap;
-	thread_t	th;
-	int		my_cpu;
+void pmap_activate(pmap_t my_pmap, thread_t th, int my_cpu)
 {
 	PMAP_ACTIVATE(my_pmap, th, my_cpu);
 }
@@ -2517,10 +2514,7 @@ void pmap_activate(my_pmap, th, my_cpu)
  *		in pmap.h)
  */
 #if	0
-void pmap_deactivate(pmap, th, which_cpu)
-	pmap_t		pmap;
-	thread_t	th;
-	int		which_cpu;
+void pmap_deactivate(pmap_t pmap, thread_t th, int which_cpu)
 {
 	PMAP_DEACTIVATE(pmap, th, which_cpu);
 }
@@ -2543,8 +2537,7 @@ pmap_t pmap_kernel()
  *	See machine/phys.c or machine/phys.s for implementation.
  */
 #if	0
-pmap_zero_page(phys)
-	vm_offset_t	phys;
+pmap_zero_page(vm_offset_t phys)
 {
 	int	i;
 
@@ -2562,8 +2555,7 @@ pmap_zero_page(phys)
  *	See machine/phys.c or machine/phys.s for implementation.
  */
 #if	0
-pmap_copy_page(src, dst)
-	vm_offset_t	src, dst;
+pmap_copy_page(vm_offset_t src, vm_offset_t dst)
 {
 	int	i;
 

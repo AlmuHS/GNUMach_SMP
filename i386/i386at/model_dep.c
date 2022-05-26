@@ -677,10 +677,7 @@ void c_boot_entry(vm_offset_t bi)
 #include <mach/time_value.h>
 
 vm_offset_t
-timemmap(dev, off, prot)
-	dev_t dev;
-	vm_offset_t off;
-	vm_prot_t prot;
+timemmap(dev_t dev, vm_offset_t off, vm_prot_t prot)
 {
 	extern time_value_t *mtime;
 
