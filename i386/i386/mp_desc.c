@@ -344,7 +344,9 @@ cpu_setup()
     int i = 0;
     int ncpus = smp_get_numcpus();
     //unsigned cpu = apic_get_current_cpu();
-    unsigned cpu = lapic->apic_id.r;
+    //unsigned cpu = lapic->apic_id.r;
+    unsigned lapic_addr = apic_madt->lapic_addr;
+    unsigned cpu = (((ApicLocalUnit*)phystokv(lapic_addr))->apic_id.r >> 24) & 0xff;
 
     printf("Starting cpu %d setup\n", cpu);
 
@@ -357,6 +359,9 @@ cpu_setup()
     /* panic? */
     if(i >= ncpus)
         return -1;
+
+	unsigned mslot_addr = &(machine_slot[i]);
+	phystokv(mslot_addr)->running = TRUE;
 
     /*TODO: Move this code to a separate function*/
 
@@ -405,7 +410,7 @@ cpu_setup()
     printf("KTSS configured\n");
     printf("Configured GDT and IDT\n");
 
-    machine_slot[i].running = TRUE;
+    
     
     printf("started cpu %d\n", i);
 
@@ -418,7 +423,9 @@ cpu_setup()
 int
 cpu_ap_main()
 {
-    printf("Enabling cpu %d\n", lapic->apic_id.r);
+    unsigned lapic_addr = apic_madt->lapic_addr;
+    unsigned cpu = (((ApicLocalUnit*)phystokv(lapic_addr))->apic_id.r >> 24) & 0xff;
+    printf("Enabling cpu %d\n", cpu);
 
     if(cpu_setup()) return -1;
     return 0;
