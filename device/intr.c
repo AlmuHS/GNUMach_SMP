@@ -60,7 +60,10 @@ irq_acknowledge (ipc_port_t receive_port)
   e = search_intr (&irqtab, receive_port);
 
   if (!e)
-    printf("didn't find user intr for interrupt !?\n");
+    {
+      printf("didn't find user intr for interrupt !?\n");
+      ret = KERN_INVALID_ARGUMENT;
+    }
   else
     {
       if (!e->n_unacked)
@@ -73,8 +76,7 @@ irq_acknowledge (ipc_port_t receive_port)
   if (ret)
     return ret;
 
-  if (irqtab.irqdev_ack)
-    (*(irqtab.irqdev_ack)) (&irqtab, e->id);
+  (*(irqtab.irqdev_ack)) (&irqtab, e->id);
 
   __enable_irq (irqtab.irq[e->id]);
 

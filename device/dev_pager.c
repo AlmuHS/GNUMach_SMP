@@ -515,7 +515,7 @@ device_pager_change_completed(
  *	that into something that the pmap module will
  *	accept later.
  */
-vm_offset_t device_map_page(
+phys_addr_t device_map_page(
 	void		*dsp,
 	vm_offset_t	offset)
 {

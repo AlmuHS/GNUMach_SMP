@@ -236,7 +236,7 @@ extern kern_return_t vm_object_page_map(
 	vm_object_t,
 	vm_offset_t,
 	vm_size_t,
-	vm_offset_t	(*)(void *, vm_offset_t),
+	phys_addr_t	(*)(void *, vm_offset_t),
 	void *);
 
 extern vm_object_t	vm_object_request_object(struct ipc_port *);

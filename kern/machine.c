@@ -125,9 +125,7 @@ void cpu_down(int cpu)
 }
 
 kern_return_t
-host_reboot(host, options)
-	const host_t	host;
-	int		options;
+host_reboot(const host_t host, int options)
 {
 	if (host == HOST_NULL)
 		return (KERN_INVALID_HOST);
@@ -623,8 +621,7 @@ Restart_pset:
  *	running on the processor's shutdown stack.
  */
 
-void processor_doshutdown(processor)
-processor_t	processor;
+void processor_doshutdown(processor_t processor)
 {
 	int		cpu = processor->slot_num;
 
