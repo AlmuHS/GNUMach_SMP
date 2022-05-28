@@ -248,6 +248,11 @@ void apic_send_ipi(unsigned dest_shorthand, unsigned deliv_mode, unsigned dest_m
     icrl_values.vector = vector;
     icrh_values.destination_field = dest_id;
     
+    //printf("ICR Low: %08x\n", icrl_values.r);
+    //printf("ICR High: %08x\n", icrh_values.r);
+    
     lapic->icr_high = icrh_values;
     lapic->icr_low = icrl_values;
+
+   while(lapic->icr_low.delivery_status == SEND_PENDING);
 }
