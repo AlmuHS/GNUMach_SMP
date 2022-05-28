@@ -49,17 +49,17 @@ void smp_startup_cpu(unsigned apic_id, unsigned vector)
     printf("Sending IPI to APIC ID %u\n", apic_id);
      
     /* First INIT IPI */	    
-    apic_send_ipi(NO_SHORTHAND, INIT, PHYSICAL, ASSERT, LEVEL, 0 , apic_id);  
+    apic_send_ipi(NO_SHORTHAND, INIT, PHYSICAL, ASSERT, EDGE, 0 , apic_id);  
 
     for(int i = 0; i < 10000000; i++);
 
     /* Second INIT IPI */
-    apic_send_ipi(NO_SHORTHAND, INIT, PHYSICAL, ASSERT, LEVEL, 0 , apic_id);
+    apic_send_ipi(NO_SHORTHAND, INIT, PHYSICAL, DE_ASSERT, LEVEL, 0 , apic_id);
 
     for(int i = 0; i < 10000000; i++);
 
     /* First StartUp IPI */
-    apic_send_ipi(NO_SHORTHAND, STARTUP, PHYSICAL, ASSERT, LEVEL, vector >> 12, apic_id);
+    apic_send_ipi(NO_SHORTHAND, STARTUP, PHYSICAL, ASSERT, EDGE, vector >> 12, apic_id);
 
     for(int i = 0; i < 10000000; i++);
 
