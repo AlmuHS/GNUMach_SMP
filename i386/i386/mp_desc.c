@@ -49,6 +49,9 @@
 #include <machine/io_perm.h>
 #include <machine/vm_param.h>
 
+#include <i386at/acpi_parse_apic.h>
+#include <string.h>
+
 /*
  * The i386 needs an interrupt stack to keep the PCB stack from being
  * overrun by interrupts.  All interrupt stacks MUST lie at lower addresses
@@ -232,7 +235,7 @@ kern_return_t intel_startCPU(int cpu)
     cpu_intr_restore(eFlagsRegister);
     kmutex_unlock(&mp_cpu_boot_lock);
 
-    delay(1000000);
+    delay(1000000000000000);
 
     /*
      * Initialize (or re-initialize) the descriptor tables for this cpu.
@@ -343,10 +346,12 @@ cpu_setup()
 
     int i = 0;
     int ncpus = smp_get_numcpus();
-    //unsigned cpu = apic_get_current_cpu();
-    unsigned cpu = lapic->apic_id.r;
 
-    printf("Starting cpu %d setup\n", cpu);
+    //unsigned apic_id = apic_get_current_cpu();
+    unsigned apic_id = (((ApicLocalUnit*)phystokv(lapic_addr))->apic_id.r >> 24) & 0xff;
+    printf("Starting cpu with APIC ID %u setup\n", apic_id);
+    
+    printf("ncpus = %d\n", ncpus);
 
     while(i < ncpus && (machine_slot[i].running == TRUE)) i++;
     
@@ -358,6 +363,9 @@ cpu_setup()
     if(i >= ncpus)
         return -1;
 
+
+        
+    machine_slot[i].running = TRUE;
     /*TODO: Move this code to a separate function*/
 
     /* Initialize machine_slot fields with the cpu data */
@@ -405,7 +413,7 @@ cpu_setup()
     printf("KTSS configured\n");
     printf("Configured GDT and IDT\n");
 
-    machine_slot[i].running = TRUE;
+    
     
     printf("started cpu %d\n", i);
 

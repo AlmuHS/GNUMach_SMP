@@ -159,5 +159,6 @@ struct acpi_apic_irq_override {
 int acpi_apic_init(void);
 void acpi_print_info(struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n);
 
+extern unsigned lapic_addr;
 
 #endif /* __ACPI_H__ */
