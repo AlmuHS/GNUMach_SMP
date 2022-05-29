@@ -96,8 +96,8 @@ extern volatile ApicLocalUnit* lapic;
 //extern unsigned stop;
 
 #define AP_BOOT_ADDR (0x7000)
-//#define STACK_SIZE (4096 * 2)
-#define STACK_SIZE (2*I386_PGBYTES)
+#define STACK_SIZE (4096 * 2)
+//#define STACK_SIZE (2*I386_PGBYTES)
 
 /*
  * Multiprocessor i386/i486 systems use a separate copy of the
@@ -442,7 +442,8 @@ cpu_start(int cpu)
 }
 
 
-vm_offset_t
+
+void
 cpus_stack_alloc(void)
 {
         vm_offset_t stack_start;
@@ -456,14 +457,14 @@ cpus_stack_alloc(void)
         }
         
         
-        for (int i = 0; i < ncpus; i++)
+        for (int i = 1; i < ncpus; i++)
         {
             if (i == master_cpu)
                 {
                      cpu_stack[i] = (vm_offset_t) _cpustack;
                      _cpu_stack_top[i] = (vm_offset_t) _cpustack + STACK_SIZE;
                 }
-            else if (machine_slot[i].is_cpu)
+            else
                 {
                     cpu_stack[i] = stack_start;
                     _cpu_stack_top[i]  = stack_start + STACK_SIZE;
@@ -479,7 +480,7 @@ cpus_stack_alloc(void)
     if(ncpus > 1) cpu_stack_high = stack_start;
 }
 
-vm_offset_t stack_ptr = 0;
+extern vm_offset_t* *stack_ptr;
 
 void
 start_other_cpus(void)
@@ -502,7 +503,7 @@ start_other_cpus(void)
 	unsigned cpu;
 	for (cpu = 1; cpu < ncpus; cpu++){
                 //Initialize stack pointer for current cpu
-                stack_ptr = cpu_stack[cpu];
+                *stack_ptr = (vm_offset_t*) cpu_stack[cpu];
               
                 machine_slot[cpu].running = FALSE;
                 

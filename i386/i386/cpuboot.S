@@ -45,7 +45,7 @@ boot_gdt:
 #define M(addr) (addr - apboot + 0x7000)
 
     .text
-    .globl apboot, apbootend
+    .globl apboot, apbootend, stack_ptr
     .align 0x10
     .code16
 
@@ -110,6 +110,9 @@ halt:
 	/*if the processor continues, returns to halt*/	
 	//jmp halt
 
+stack_ptr:
+    .long 0x0
+    
     .align 0x10
 gdt_descr_tmp:
     .short 0x8*3 - 1
