@@ -270,7 +270,7 @@ ipc_kmsg_copyout_object(ipc_space_t, ipc_object_t,
 			mach_msg_type_name_t, mach_port_t *);
 
 extern mach_msg_return_t
-ipc_kmsg_copyout_body(vm_offset_t, vm_offset_t, ipc_space_t, vm_map_t);
+ipc_kmsg_copyout_body(ipc_kmsg_t, ipc_space_t, vm_map_t);
 
 extern mach_msg_return_t
 ipc_kmsg_copyout(ipc_kmsg_t, ipc_space_t, vm_map_t, mach_port_t);

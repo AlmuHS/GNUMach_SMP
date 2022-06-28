@@ -2336,13 +2336,17 @@ ipc_kmsg_copyout_object(
 
 mach_msg_return_t
 ipc_kmsg_copyout_body(
-	vm_offset_t 	saddr, 
-	vm_offset_t 	eaddr,
+	ipc_kmsg_t kmsg,
 	ipc_space_t 	space,
 	vm_map_t 	map)
 {
 	mach_msg_return_t mr = MACH_MSG_SUCCESS;
 	kern_return_t kr;
+	vm_offset_t saddr, eaddr;
+
+	saddr = (vm_offset_t) (&kmsg->ikm_header + 1);
+	eaddr = (vm_offset_t) &kmsg->ikm_header +
+	    kmsg->ikm_header.msgh_size;
 
 	while (saddr < eaddr) {
 		vm_offset_t taddr = saddr;
@@ -2502,13 +2506,7 @@ ipc_kmsg_copyout(
 		return mr;
 
 	if (mbits & MACH_MSGH_BITS_COMPLEX) {
-		vm_offset_t saddr, eaddr;
-
-		saddr = (vm_offset_t) (&kmsg->ikm_header + 1);
-		eaddr = (vm_offset_t) &kmsg->ikm_header +
-				kmsg->ikm_header.msgh_size;
-
-		mr = ipc_kmsg_copyout_body(saddr, eaddr, space, map);
+		mr = ipc_kmsg_copyout_body(kmsg, space, map);
 		if (mr != MACH_MSG_SUCCESS)
 			mr |= MACH_RCV_BODY_ERROR;
 	}
@@ -2560,13 +2558,7 @@ ipc_kmsg_copyout_pseudo(
 	kmsg->ikm_header.msgh_local_port = reply_name;
 
 	if (mbits & MACH_MSGH_BITS_COMPLEX) {
-		vm_offset_t saddr, eaddr;
-
-		saddr = (vm_offset_t) (&kmsg->ikm_header + 1);
-		eaddr = (vm_offset_t) &kmsg->ikm_header +
-				kmsg->ikm_header.msgh_size;
-
-		mr |= ipc_kmsg_copyout_body(saddr, eaddr, space, map);
+		mr |= ipc_kmsg_copyout_body(kmsg, space, map);
 	}
 
 	return mr;
