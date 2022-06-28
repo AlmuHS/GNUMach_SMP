@@ -338,6 +338,11 @@ kern_return_t vm_map(
 	if (size == 0)
 		return KERN_INVALID_ARGUMENT;
 
+#ifdef USER32
+        if (mask & 0x80000000)
+            mask |= 0xffffffff00000000;
+#endif
+
 	*address = trunc_page(*address);
 	size = round_page(size);
 
