@@ -612,7 +612,7 @@ build_args_and_stack(struct exec_info *boot_exec_info,
 	 *	and align to integer boundary
 	 */
 	arg_len += (sizeof(integer_t)
-		    + (arg_count + 1 + envc + 1) * sizeof(char *));
+		    + (arg_count + 1 + envc + 1) * sizeof(rpc_vm_offset_t));
 	arg_len = (arg_len + sizeof(integer_t) - 1) & ~(sizeof(integer_t)-1);
 
 	/*
@@ -633,7 +633,7 @@ build_args_and_stack(struct exec_info *boot_exec_info,
 	 */
 	string_pos = (arg_pos
 		      + sizeof(integer_t)
-		      + (arg_count + 1 + envc + 1) * sizeof(char *));
+		      + (arg_count + 1 + envc + 1) * sizeof(rpc_vm_offset_t));
 
 	/*
 	 * first the argument count
@@ -651,10 +651,8 @@ build_args_and_stack(struct exec_info *boot_exec_info,
 	    arg_item_len = strlen(arg_ptr) + 1; /* include trailing 0 */
 
 	    /* set string pointer */
-	    (void) copyout(&string_pos,
-			arg_pos,
-			sizeof (char *));
-	    arg_pos += sizeof(char *);
+            (void) copyout(&string_pos, arg_pos, sizeof (rpc_vm_offset_t));
+	    arg_pos += sizeof(rpc_vm_offset_t);
 
 	    /* copy string */
 	    (void) copyout(arg_ptr, string_pos, arg_item_len);
@@ -664,8 +662,8 @@ build_args_and_stack(struct exec_info *boot_exec_info,
 	/*
 	 * Null terminator for argv.
 	 */
-	(void) copyout(&zero, arg_pos, sizeof(char *));
-	arg_pos += sizeof(char *);
+	(void) copyout(&zero, arg_pos, sizeof(rpc_vm_offset_t));
+	arg_pos += sizeof(rpc_vm_offset_t);
 
 	/*
 	 * Then the strings and string pointers for each environment variable
@@ -675,10 +673,8 @@ build_args_and_stack(struct exec_info *boot_exec_info,
 	    arg_item_len = strlen(arg_ptr) + 1; /* include trailing 0 */
 
 	    /* set string pointer */
-	    (void) copyout(&string_pos,
-			arg_pos,
-			sizeof (char *));
-	    arg_pos += sizeof(char *);
+            (void) copyout(&string_pos, arg_pos, sizeof (rpc_vm_offset_t));
+	    arg_pos += sizeof(rpc_vm_offset_t);
 
 	    /* copy string */
 	    (void) copyout(arg_ptr, string_pos, arg_item_len);
@@ -688,7 +684,7 @@ build_args_and_stack(struct exec_info *boot_exec_info,
 	/*
 	 * Null terminator for envp.
 	 */
-	(void) copyout(&zero, arg_pos, sizeof(char *));
+	(void) copyout(&zero, arg_pos, sizeof(rpc_vm_offset_t));
 }
 
 
