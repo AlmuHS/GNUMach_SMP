@@ -27,18 +27,12 @@
 #ifndef _IPC_IPC_MACHDEP_H_
 #define _IPC_IPC_MACHDEP_H_
 
+#include <mach/message.h>
+
 /*
  * At times, we need to know the size of a port in bits
  */
 
-/* 64 bit machines */
-#if	defined(__alpha)
-#define	PORT_T_SIZE_IN_BITS	64
-#endif
-
-/* default, 32 bit machines */
-#if	!defined(PORT_T_SIZE_IN_BITS)
-#define	PORT_T_SIZE_IN_BITS	32
-#endif
+#define PORT_T_SIZE_IN_BITS (sizeof(mach_port_t)*8)
 
 #endif /* _IPC_IPC_MACHDEP_H_ */
