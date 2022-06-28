@@ -116,12 +116,12 @@
  *		(compatibility)
  */
 
+#include <stdarg.h>
 #include <string.h>
 #include <device/cons.h>
 #include <kern/printf.h>
 #include <mach/boolean.h>
-#include <kern/lock.h>
-#include <stdarg.h>
+
 
 #define isdigit(d) ((d) >= '0' && (d) <= '9')
 #define Ctod(c) ((c) - '0')
