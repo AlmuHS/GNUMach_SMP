@@ -6,6 +6,7 @@
 #include <string.h>
 #include <kern/printf.h>
 #include "boot_script.h"
+#include "bootstrap.h"
 
 
 /* This structure describes a symbol.  */

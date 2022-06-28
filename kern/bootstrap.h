@@ -19,6 +19,8 @@
 #ifndef _KERN_BOOTSTRAP_H_
 #define _KERN_BOOTSTRAP_H_
 
-extern void bootstrap_create(void);
+#include <kern/boot_script.h>
+
+void bootstrap_create(void);
 
 #endif /* _KERN_BOOTSTRAP_H_ */

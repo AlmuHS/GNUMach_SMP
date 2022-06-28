@@ -48,6 +48,7 @@
 #include <vm/vm_object.h>
 #include <kern/task.h>
 #include <kern/host.h>
+#include <kern/printf.h>
 #include <ipc/ipc_port.h>
 
 

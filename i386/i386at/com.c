@@ -191,7 +191,7 @@ comcnprobe(struct consdev *cp)
 
 	if (strncmp(kernel_cmdline, CONSOLE_PARAMETER + 1,
 		    strlen(CONSOLE_PARAMETER) - 1) == 0)
-		mach_atoi(kernel_cmdline + strlen(CONSOLE_PARAMETER) - 1,
+            mach_atoi((u_char*)kernel_cmdline + strlen(CONSOLE_PARAMETER) - 1,
 			  &rcline);
 
 	maj = 0;
