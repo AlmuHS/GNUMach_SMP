@@ -590,6 +590,10 @@ kern_return_t vm_allocate_contiguous(
 	if (palign == 0)
 		palign = PAGE_SIZE;
 
+	/* FIXME: Allows some small alignments less than page size */
+	if ((palign < PAGE_SIZE) && (PAGE_SIZE % palign == 0))
+		palign = PAGE_SIZE;
+
 	/* FIXME */
 	if (palign != PAGE_SIZE)
 		return KERN_INVALID_ARGUMENT;
