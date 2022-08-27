@@ -25,11 +25,13 @@
 	 * This section will be put first into .boot.  See also	x86_64/ldscript.
 	 */
 	.section .boot.text,"ax"
-	.globl boot_start
-
 	/* We should never be entered this way.	 */
-	.code32
+	.globl	_start
+_start:
+	.globl	boot_start
 boot_start:
+
+	.code32
 	jmp	boot_entry
 
 	/* MultiBoot header - see multiboot.h.	*/
@@ -164,10 +166,6 @@ switch64:
 	ljmp	$8,$boot_entry64
 
 	.code64
-
-	/* why do we need this? it seems overwritten by linker */
-       .globl  _start
-_start:
 
 boot_entry64:
 	/* Switch to our own interrupt stack.  */
