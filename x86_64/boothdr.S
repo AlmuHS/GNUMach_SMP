@@ -26,8 +26,6 @@
 	 */
 	.section .boot.text,"ax"
 	/* We should never be entered this way.	 */
-	.globl	_start
-_start:
 	.globl	boot_start
 boot_start:
 
@@ -36,11 +34,7 @@ boot_start:
 
 	/* MultiBoot header - see multiboot.h.	*/
 #define	MULTIBOOT_MAGIC		0x1BADB002
-#ifdef __ELF__
 #define MULTIBOOT_FLAGS		0x00000003
-#else  /* __ELF__ */
-#define MULTIBOOT_FLAGS		0x00010003
-#endif /* __ELF__ */
 	P2ALIGN(2)
 boot_hdr:
 	.long	MULTIBOOT_MAGIC
@@ -50,14 +44,9 @@ boot_hdr:
 	* XX this works OK until we need at least the 30th bit.
 	*/
 	.long	- (MULTIBOOT_MAGIC+MULTIBOOT_FLAGS)
-#ifndef __ELF__	/* a.out kludge */
-	.long	boot_hdr	/* header_addr */
-	.long	_start		/* load_addr */
-	.long	_edata		/* load_end_addr */
-	.long	_end		/* bss_end_addr */
-	.long	boot_entry	/* entry */
-#endif /* __ELF__ */
 
+	.global _start
+_start:
 boot_entry:
 	/*
 	 * Prepare minimal page mapping to jump to 64 bit and to C code.

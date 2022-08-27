@@ -211,28 +211,6 @@ nodist_libkernel_a_SOURCES += \
 # Architecture specialities.
 #
 
-if PLATFORM_at
-# This should probably be 0xffffffff80000000 for mcmodel=kernel, but let's try
-# to stay in the first 8G first, otherwise we have to fix the pmap module to
-# actually use the l4 page level
-#KERNEL_MAP_BASE=0x100000000
-# but for nor try with < 4G, otherwise we have linker errors
-KERNEL_MAP_BASE=0x40000000
-gnumach_LINKFLAGS += \
-	--defsym _START_MAP=$(_START_MAP) \
-	--defsym _START=_START_MAP \
-	--defsym KERNEL_MAP_BASE=$(KERNEL_MAP_BASE) \
-	-T '$(srcdir)'/x86_64/ldscript
-
-AM_CFLAGS += -D_START_MAP=$(_START_MAP) \
-	-DKERNEL_MAP_BASE=$(KERNEL_MAP_BASE)
-AM_CCASFLAGS += -D_START_MAP=$(_START_MAP) \
-	-DKERNEL_MAP_BASE=$(KERNEL_MAP_BASE)
-
-AM_CCASFLAGS += \
-	-Ii386
-endif
-
 AM_CPPFLAGS += \
 	-I$(top_srcdir)/i386 \
 	-I$(top_srcdir)/i386/i386 \
@@ -273,7 +251,26 @@ include_mach_x86_64_HEADERS = \
 # Platform specific parts.
 #
 
+if PLATFORM_at
+# This should probably be 0xffffffff80000000 for mcmodel=kernel, but let's try
+# to stay in the first 8G first, otherwise we have to fix the pmap module to
+# actually use the l4 page level
+#KERNEL_MAP_BASE=0x100000000
+# but for nor try with < 4G, otherwise we have linker errors
+KERNEL_MAP_BASE=0x40000000
+gnumach_LINKFLAGS += \
+	--defsym _START_MAP=$(_START_MAP) \
+	--defsym _START=$(_START_MAP) \
+	--defsym KERNEL_MAP_SHIFT=$(KERNEL_MAP_BASE) \
+	-T '$(srcdir)'/x86_64/ldscript
+
+AM_CCASFLAGS += \
+	-Ii386
+endif
+
 if PLATFORM_xen
+KERNEL_MAP_BASE=0x40000000
+
 libkernel_a_SOURCES += \
 	x86_64/xen_locore.S \
 	x86_64/xen_boothdr.S \
@@ -281,9 +278,15 @@ libkernel_a_SOURCES += \
 	i386/i386/xen.h
 
 gnumach_LINKFLAGS += \
-	--defsym _START=0x40000000 \
-	--defsym _START_MAP=0x40000000 \
+	--defsym _START_MAP=$(KERNEL_MAP_BASE) \
+	--defsym _START=$(KERNEL_MAP_BASE) \
+	--defsym KERNEL_MAP_SHIFT=0 \
 	-T '$(srcdir)'/x86_64/ldscript
 endif
+
+AM_CFLAGS += -D_START_MAP=$(_START_MAP) \
+	-DKERNEL_MAP_BASE=$(KERNEL_MAP_BASE)
+AM_CCASFLAGS += -D_START_MAP=$(_START_MAP) \
+	-DKERNEL_MAP_BASE=$(KERNEL_MAP_BASE)
 
 endif # HOST_x86_64
