@@ -43,6 +43,7 @@
  */
 typedef unsigned int mach_port_name_t;
 typedef mach_port_name_t *mach_port_name_array_t;
+typedef const mach_port_name_t *const_mach_port_name_array_t;
 
 /*
  * A port is represented
