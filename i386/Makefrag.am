@@ -257,6 +257,7 @@ include_mach_i386_HEADERS = \
 	i386/include/mach/i386/machine_types.defs \
 	i386/include/mach/i386/multiboot.h \
 	i386/include/mach/i386/syscall_sw.h \
+	i386/include/mach/i386/stdint.h \
 	i386/include/mach/i386/thread_status.h \
 	i386/include/mach/i386/trap.h \
 	i386/include/mach/i386/vm_param.h \

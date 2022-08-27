@@ -37,7 +37,7 @@
 #ifdef	__ASSEMBLER__
 #else	/* __ASSEMBLER__ */
 
-#include <stdint.h>
+#include <mach/machine/stdint.h>
 
 #ifdef MACH_KERNEL
 #include <kern/assert.h>
@@ -104,17 +104,17 @@ typedef	vm_size_t *	vm_size_array_t;
  * functions.
  */
 #if defined(MACH_KERNEL) && defined(USER32)
-typedef uint32_t	rpc_vm_address_t;
-typedef uint32_t	rpc_vm_offset_t;
-typedef uint32_t	rpc_vm_size_t;
-static inline uint64_t convert_vm_from_user(uint32_t uaddr)
+typedef __mach_uint32_t	rpc_vm_address_t;
+typedef __mach_uint32_t	rpc_vm_offset_t;
+typedef __mach_uint32_t	rpc_vm_size_t;
+static inline __mach_uint64_t convert_vm_from_user(__mach_uint32_t uaddr)
 {
-    return (uint64_t)uaddr;
+    return (__mach_uint64_t)uaddr;
 }
-static inline uint32_t convert_vm_to_user(uint64_t kaddr)
+static inline __mach_uint32_t convert_vm_to_user(__mach_uint64_t kaddr)
 {
     assert(kaddr <= 0xFFFFFFFF);
-    return (uint32_t)kaddr;
+    return (__mach_uint32_t)kaddr;
 }
 #else /* MACH_KERNEL */
 typedef vm_offset_t	rpc_vm_address_t;
