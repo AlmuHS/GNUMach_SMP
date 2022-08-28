@@ -69,9 +69,11 @@
 #endif
 
 /* msg body is always aligned to 4 bytes */
-#define msg_is_misaligned(x)	( ((vm_offset_t)(x)) & (sizeof(uint32_t)-1) )
+typedef uint32_t msg_align_t;
+
+#define msg_is_misaligned(x)	( ((vm_offset_t)(x)) & (sizeof(msg_align_t)-1) )
 #define msg_align(x)	\
-	( ( ((vm_offset_t)(x)) + (sizeof(uint32_t)-1) ) & ~(sizeof(uint32_t)-1) )
+	( ( ((vm_offset_t)(x)) + (sizeof(msg_align_t)-1) ) & ~(sizeof(msg_align_t)-1) )
 
 ipc_kmsg_t ipc_kmsg_cache[NCPUS];
 
@@ -1377,6 +1379,9 @@ ipc_kmsg_copyin_body(
 		} else {
 			vm_offset_t addr;
 
+			if (sizeof(msg_align_t) > sizeof(mach_msg_type_t))
+				saddr = msg_align(saddr);
+
 			if ((eaddr - saddr) < sizeof(vm_offset_t)) {
 				ipc_kmsg_clean_partial(kmsg, taddr, FALSE, 0);
 				return MACH_SEND_MSG_TOO_SMALL;
@@ -2423,6 +2428,9 @@ ipc_kmsg_copyout_body(
 			saddr += (length + 3) &~ 3;
 		} else {
 			vm_offset_t data;
+
+			if (sizeof(msg_align_t) > sizeof(mach_msg_type_t))
+				saddr = msg_align(saddr);
 
 			data = * (vm_offset_t *) saddr;
 
