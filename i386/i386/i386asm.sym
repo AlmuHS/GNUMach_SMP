@@ -171,3 +171,5 @@ offset	shared_info		si	evtchn_mask	EVTMASK
 offset	shared_info		si	vcpu_info[0].arch.cr2	CR2
 #endif	/* MACH_PV_PAGETABLES */
 #endif	/* MACH_XEN */
+
+offset	mach_msg_header		msgh	msgh_size

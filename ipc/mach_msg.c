@@ -464,8 +464,6 @@ mach_msg_trap(
 			goto slow_get;
 		}
 
-		kmsg->ikm_header.msgh_size = send_size;
-
 	    fast_copyin:
 		/*
 		 *	optimized ipc_kmsg_copyin/ipc_mqueue_copyin

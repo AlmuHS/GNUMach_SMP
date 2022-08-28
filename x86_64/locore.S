@@ -1318,6 +1318,7 @@ copyin_fail:
  */
 ENTRY(copyinmsg)
 	xchgq   %rsi,%rdi		/* Get user source and kernel destination */
+	movl	%edx,MSGH_MSGH_SIZE(%rdi)	/* set msgh_size already */
 
 /* 32 on 64 conversion */
 	subq	$32,%rdx
@@ -1330,8 +1331,9 @@ ENTRY(copyinmsg)
 	/* Copy msgh_size */
 	RECOVER(copyin_fail)
 	lodsl
-	addl	$8,%eax
-	stosl
+        /* But don't actually store it: we have already set it above to what we
+           really copy */
+	addl	$4,%rdi
 
 	xorq	%rax,%rax
 	/* Copy msgh_remote_port */

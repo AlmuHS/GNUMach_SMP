@@ -531,7 +531,6 @@ ipc_kmsg_get(
 		return MACH_SEND_INVALID_DATA;
 	}
 
-	kmsg->ikm_header.msgh_size = size;
 	*kmsgp = kmsg;
 	return MACH_MSG_SUCCESS;
 }
