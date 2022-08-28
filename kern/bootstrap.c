@@ -583,7 +583,7 @@ build_args_and_stack(struct exec_info *boot_exec_info,
 	char *		arg_pos;
 	int		arg_item_len;
 	char *		string_pos;
-	char *		zero = (char *)0;
+	rpc_vm_offset_t	zero = 0;
 	int i;
 
 #define	STACK_SIZE	(2*64*1024)
@@ -647,11 +647,12 @@ build_args_and_stack(struct exec_info *boot_exec_info,
 	 * Then the strings and string pointers for each argument
 	 */
 	for (i = 0; i < arg_count; ++i) {
+	    rpc_vm_offset_t pos = convert_vm_to_user((vm_offset_t) string_pos);
 	    arg_ptr = argv[i];
 	    arg_item_len = strlen(arg_ptr) + 1; /* include trailing 0 */
 
 	    /* set string pointer */
-            (void) copyout(&string_pos, arg_pos, sizeof (rpc_vm_offset_t));
+            (void) copyout(&pos, arg_pos, sizeof (rpc_vm_offset_t));
 	    arg_pos += sizeof(rpc_vm_offset_t);
 
 	    /* copy string */
@@ -669,11 +670,12 @@ build_args_and_stack(struct exec_info *boot_exec_info,
 	 * Then the strings and string pointers for each environment variable
 	 */
 	for (i = 0; i < envc; ++i) {
+	    rpc_vm_offset_t pos = convert_vm_to_user((vm_offset_t) string_pos);
 	    arg_ptr = envp[i];
 	    arg_item_len = strlen(arg_ptr) + 1; /* include trailing 0 */
 
 	    /* set string pointer */
-            (void) copyout(&string_pos, arg_pos, sizeof (rpc_vm_offset_t));
+            (void) copyout(&pos, arg_pos, sizeof (rpc_vm_offset_t));
 	    arg_pos += sizeof(rpc_vm_offset_t);
 
 	    /* copy string */
