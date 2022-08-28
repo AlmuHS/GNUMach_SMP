@@ -361,6 +361,10 @@ int user_trap(struct i386_saved_state *regs)
 	int	type;
 	thread_t thread = current_thread();
 
+#ifdef __x86_64__
+	assert(regs == &thread->pcb->iss);
+#endif
+
 	type = regs->trapno;
 	code = 0;
 	subcode = 0;
@@ -643,8 +647,7 @@ i386_exception(
  * return saved state for interrupted user thread
  */
 unsigned
-interrupted_pc(t)
-	const thread_t t;
+interrupted_pc(const thread_t t)
 {
 	struct i386_saved_state *iss;
 

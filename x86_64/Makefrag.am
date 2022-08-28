@@ -211,13 +211,6 @@ nodist_libkernel_a_SOURCES += \
 # Architecture specialities.
 #
 
-if PLATFORM_at
-gnumach_LINKFLAGS += \
-	--defsym _START_MAP=$(_START_MAP) \
-	--defsym _START=_START_MAP+0x40000000 \
-	-T '$(srcdir)'/x86_64/ldscript
-endif
-
 AM_CPPFLAGS += \
 	-I$(top_srcdir)/i386 \
 	-I$(top_srcdir)/i386/i386 \
@@ -237,28 +230,48 @@ AM_CFLAGS += \
 
 include_mach_x86_64dir = $(includedir)/mach/x86_64
 include_mach_x86_64_HEADERS = \
-	i386/include/mach/i386/asm.h \
-	i386/include/mach/i386/boolean.h \
-	i386/include/mach/i386/eflags.h \
-	i386/include/mach/i386/exception.h \
-	i386/include/mach/i386/fp_reg.h \
-	i386/include/mach/i386/ioccom.h \
-	i386/include/mach/i386/kern_return.h \
-	i386/include/mach/i386/mach_i386.defs \
-	i386/include/mach/i386/mach_i386_types.h \
-	i386/include/mach/i386/machine_types.defs \
-	i386/include/mach/i386/multiboot.h \
-	i386/include/mach/i386/syscall_sw.h \
-	i386/include/mach/i386/thread_status.h \
-	i386/include/mach/i386/trap.h \
-	i386/include/mach/i386/vm_param.h \
-	i386/include/mach/i386/vm_types.h
+	x86_64/include/mach/x86_64/asm.h \
+	x86_64/include/mach/x86_64/boolean.h \
+	x86_64/include/mach/x86_64/eflags.h \
+	x86_64/include/mach/x86_64/exception.h \
+	x86_64/include/mach/x86_64/fp_reg.h \
+	x86_64/include/mach/x86_64/ioccom.h \
+	x86_64/include/mach/x86_64/kern_return.h \
+	x86_64/include/mach/x86_64/mach_i386.defs \
+	x86_64/include/mach/x86_64/mach_i386_types.h \
+	x86_64/include/mach/x86_64/machine_types.defs \
+	x86_64/include/mach/x86_64/multiboot.h \
+	x86_64/include/mach/x86_64/syscall_sw.h \
+	x86_64/include/mach/x86_64/stdint.h \
+	x86_64/include/mach/x86_64/thread_status.h \
+	x86_64/include/mach/x86_64/trap.h \
+	x86_64/include/mach/x86_64/vm_param.h \
+	x86_64/include/mach/x86_64/vm_types.h
 
 #
 # Platform specific parts.
 #
 
+if PLATFORM_at
+# This should probably be 0xffffffff80000000 for mcmodel=kernel, but let's try
+# to stay in the first 8G first, otherwise we have to fix the pmap module to
+# actually use the l4 page level
+#KERNEL_MAP_BASE=0x100000000
+# but for nor try with < 4G, otherwise we have linker errors
+KERNEL_MAP_BASE=0x40000000
+gnumach_LINKFLAGS += \
+	--defsym _START_MAP=$(_START_MAP) \
+	--defsym _START=$(_START_MAP) \
+	--defsym KERNEL_MAP_SHIFT=$(KERNEL_MAP_BASE) \
+	-T '$(srcdir)'/x86_64/ldscript
+
+AM_CCASFLAGS += \
+	-Ii386
+endif
+
 if PLATFORM_xen
+KERNEL_MAP_BASE=0x40000000
+
 libkernel_a_SOURCES += \
 	x86_64/xen_locore.S \
 	x86_64/xen_boothdr.S \
@@ -266,9 +279,15 @@ libkernel_a_SOURCES += \
 	i386/i386/xen.h
 
 gnumach_LINKFLAGS += \
-	--defsym _START=0x40000000 \
-	--defsym _START_MAP=0x40000000 \
+	--defsym _START_MAP=$(KERNEL_MAP_BASE) \
+	--defsym _START=$(KERNEL_MAP_BASE) \
+	--defsym KERNEL_MAP_SHIFT=0 \
 	-T '$(srcdir)'/x86_64/ldscript
 endif
+
+AM_CFLAGS += -D_START_MAP=$(_START_MAP) \
+	-DKERNEL_MAP_BASE=$(KERNEL_MAP_BASE)
+AM_CCASFLAGS += -D_START_MAP=$(_START_MAP) \
+	-DKERNEL_MAP_BASE=$(KERNEL_MAP_BASE)
 
 endif # HOST_x86_64

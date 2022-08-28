@@ -110,10 +110,7 @@ kbdinit(void)
 
 /*ARGSUSED*/
 int
-kbdopen(dev, flags, ior)
-	dev_t dev;
-	int flags;
-	io_req_t ior;
+kbdopen(dev_t dev, int flags, io_req_t ior)
 {
 	spl_t o_pri = spltty();
 	kdinit();
@@ -308,8 +305,7 @@ u_int X_kdb_enter_str[512], X_kdb_exit_str[512];
 int   X_kdb_enter_len = 0,  X_kdb_exit_len = 0;
 
 void
-kdb_in_out(p)
-const u_int *p;
+kdb_in_out(const u_int *p)
 {
 	int t = p[0];
 

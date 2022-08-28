@@ -51,10 +51,10 @@ void
 cb_check(struct cirbuf *cb)
 {
 	if (!(cb->c_cf >= cb->c_start && cb->c_cf < cb->c_end))
-	    panic("cf %x out of range [%x..%x)",
+	    panic("cf %p out of range [%p..%p)",
 		cb->c_cf, cb->c_start, cb->c_end);
 	if (!(cb->c_cl >= cb->c_start && cb->c_cl < cb->c_end))
-	    panic("cl %x out of range [%x..%x)",
+	    panic("cl %p out of range [%p..%p)",
 		cb->c_cl, cb->c_start, cb->c_end);
 	if (cb->c_cf <= cb->c_cl) {
 	    if (!(cb->c_cc == cb->c_cl - cb->c_cf))

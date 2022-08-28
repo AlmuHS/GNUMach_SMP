@@ -38,7 +38,7 @@ extern vm_offset_t kernel_virtual_start;
  */
 vm_offset_t
 io_map(
-	vm_offset_t	phys_addr,
+	phys_addr_t	phys_addr,
 	vm_size_t	size)
 {
 	vm_offset_t	start;
@@ -72,10 +72,10 @@ io_map(
  */
 vm_offset_t
 io_map_cached(
-	vm_offset_t	phys_addr,
+	phys_addr_t	phys_addr,
 	vm_size_t	size)
 {
-  static vm_offset_t base;
+  static phys_addr_t base;
   static vm_size_t length;
   static vm_offset_t map;
 
@@ -83,8 +83,8 @@ io_map_cached(
       || (phys_addr < base)
       || (base + length < phys_addr + size))
     {
-      base = trunc_page(phys_addr);
-      length = round_page(phys_addr - base + size);
+      base = trunc_phys(phys_addr);
+      length = round_phys(phys_addr - base + size);
       map = io_map(base, length);
     }
 

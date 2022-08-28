@@ -148,6 +148,7 @@ typedef phys_addr_t pt_entry_t;
 #define INTEL_PTE_NCACHE 	0x00000010
 #define INTEL_PTE_REF		0x00000020
 #define INTEL_PTE_MOD		0x00000040
+#define INTEL_PTE_PS		0x00000080
 #ifdef	MACH_PV_PAGETABLES
 /* Not supported */
 #define INTEL_PTE_GLOBAL	0x00000000
@@ -467,7 +468,7 @@ pt_entry_t *pmap_pte(const pmap_t pmap, vm_offset_t addr);
 
 #define	pmap_kernel()			(kernel_pmap)
 #define pmap_resident_count(pmap)	((pmap)->stats.resident_count)
-#define pmap_phys_address(frame)	((vm_offset_t) (intel_ptob(frame)))
+#define pmap_phys_address(frame)	((phys_addr_t) (intel_ptob(frame)))
 #define pmap_phys_to_frame(phys)	((int) (intel_btop(phys)))
 #define	pmap_copy(dst_pmap,src_pmap,dst_addr,len,src_addr)
 #define	pmap_attribute(pmap,addr,size,attr,value) \

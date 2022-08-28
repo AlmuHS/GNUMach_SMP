@@ -60,7 +60,7 @@ typedef char	kernel_boot_info_t[KERNEL_BOOT_INFO_MAX];
 struct host_basic_info {
 	integer_t	max_cpus;	/* max number of cpus possible */
 	integer_t	avail_cpus;	/* number of cpus now available */
-	vm_size_t	memory_size;	/* size of memory in bytes */
+	rpc_vm_size_t	memory_size;	/* size of memory in bytes */
 	cpu_type_t	cpu_type;	/* cpu type */
 	cpu_subtype_t	cpu_subtype;	/* cpu subtype */
 };

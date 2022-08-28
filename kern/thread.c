@@ -861,8 +861,8 @@ kern_return_t thread_terminate(
 kern_return_t thread_terminate_release(
 	thread_t thread,
 	task_t task,
-	mach_port_t thread_name,
-	mach_port_t reply_port,
+	mach_port_name_t thread_name,
+	mach_port_name_t reply_port,
 	vm_offset_t address,
 	vm_size_t size)
 {

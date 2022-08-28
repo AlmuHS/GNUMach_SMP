@@ -88,11 +88,15 @@
 #define round_page(x)	((vm_offset_t)((((vm_offset_t)(x)) + PAGE_MASK) & ~PAGE_MASK))
 #define trunc_page(x)	((vm_offset_t)(((vm_offset_t)(x)) & ~PAGE_MASK))
 
+#define round_phys(x)	((phys_addr_t)((((phys_addr_t)(x)) + PAGE_MASK) & ~PAGE_MASK))
+#define trunc_phys(x)	((phys_addr_t)(((phys_addr_t)(x)) & ~PAGE_MASK))
+
 /*
  *	Determine whether an address is page-aligned, or a count is
  *	an exact page multiple.
  */
 
 #define	page_aligned(x)	((((vm_offset_t) (x)) & PAGE_MASK) == 0)
+#define	phys_aligned(x)	((((phys_addr_t) (x)) & PAGE_MASK) == 0)
 
 #endif	/* _MACH_VM_PARAM_H_ */

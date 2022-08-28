@@ -1314,6 +1314,7 @@ ENTRY(copyinmsg)
 	movl	8+S_ARG0,%esi		/* get user start address */
 	movl	8+S_ARG1,%edi		/* get kernel destination address */
 	movl	8+S_ARG2,%ecx		/* get count */
+	movl	%ecx,%edx		/* save count */
 
 	movl	$USER_DS,%eax		/* use user data segment for accesses */
 	mov	%ax,%ds
@@ -1324,6 +1325,9 @@ ENTRY(copyinmsg)
 	rep
 	movsl				/* move longwords */
 	xorl	%eax,%eax		/* return 0 for success */
+
+	movl	8+S_ARG1,%edi
+	movl	%edx,%es:MSGH_MSGH_SIZE(%edi)	/* set msgh_size */
 
 copyinmsg_ret:
 	mov	%ss,%di			/* restore DS to kernel segment */

@@ -655,7 +655,7 @@ void pmap_bootstrap(void)
 				  pa_to_pte(_kvtophys((void *) kernel_page_dir
 						      + i * INTEL_PGBYTES))
 				  | INTEL_PTE_VALID
-#ifdef	MACH_PV_PAGETABLES
+#if !defined(MACH_HYP) || defined(MACH_PV_PAGETABLES)
 				  | INTEL_PTE_WRITE
 #endif
 				  );
@@ -842,7 +842,7 @@ void pmap_bootstrap(void)
 /* Set back a page read write */
 void pmap_set_page_readwrite(void *_vaddr) {
 	vm_offset_t vaddr = (vm_offset_t) _vaddr;
-	vm_offset_t paddr = kvtophys(vaddr);
+	phys_addr_t paddr = kvtophys(vaddr);
 	vm_offset_t canon_vaddr = phystokv(paddr);
 	if (hyp_do_update_va_mapping (kvtolin(vaddr), pa_to_pte (pa_to_ma(paddr)) | INTEL_PTE_VALID | INTEL_PTE_WRITE, UVMF_NONE))
 		panic("couldn't set hiMMU readwrite for addr %lx(%lx)\n", vaddr, (vm_offset_t) pa_to_ma (paddr));
@@ -854,7 +854,7 @@ void pmap_set_page_readwrite(void *_vaddr) {
 /* Set a page read only (so as to pin it for instance) */
 void pmap_set_page_readonly(void *_vaddr) {
 	vm_offset_t vaddr = (vm_offset_t) _vaddr;
-	vm_offset_t paddr = kvtophys(vaddr);
+	phys_addr_t paddr = kvtophys(vaddr);
 	vm_offset_t canon_vaddr = phystokv(paddr);
 	if (*pmap_pde(kernel_pmap, vaddr) & INTEL_PTE_VALID) {
 		if (hyp_do_update_va_mapping (kvtolin(vaddr), pa_to_pte (pa_to_ma(paddr)) | INTEL_PTE_VALID, UVMF_NONE))
@@ -1112,7 +1112,7 @@ vm_offset_t
 pmap_page_table_page_alloc(void)
 {
 	vm_page_t	m;
-	vm_offset_t	pa;
+	phys_addr_t	pa;
 
 	check_simple_locks();
 
@@ -1135,6 +1135,7 @@ pmap_page_table_page_alloc(void)
 	 *	can be found later.
 	 */
 	pa = m->phys_addr;
+	assert(pa == (vm_offset_t) pa);
 	vm_object_lock(pmap_object);
 	vm_page_insert(m, pmap_object, pa);
 	vm_page_lock_queues();
@@ -1297,8 +1298,8 @@ pmap_t pmap_create(vm_size_t size)
 			WRITE_PTE(&p->pdpbase[i],
 				  pa_to_pte(kvtophys((vm_offset_t) page_dir[i]))
 				  | INTEL_PTE_VALID
-#ifdef	MACH_PV_PAGETABLES
-				  | INTEL_PTE_WRITE
+#if !defined(MACH_HYP) || defined(MACH_PV_PAGETABLES)
+				  | INTEL_PTE_WRITE | INTEL_PTE_USER
 #endif
 				  );
 	}
@@ -1309,7 +1310,7 @@ pmap_t pmap_create(vm_size_t size)
 							!= KERN_SUCCESS)
 		panic("pmap_create");
 	memset(p->l4base, 0, INTEL_PGBYTES);
-	WRITE_PTE(&p->l4base[0], pa_to_pte(kvtophys((vm_offset_t) p->pdpbase)) | INTEL_PTE_VALID | INTEL_PTE_WRITE);
+	WRITE_PTE(&p->l4base[0], pa_to_pte(kvtophys((vm_offset_t) p->pdpbase)) | INTEL_PTE_VALID | INTEL_PTE_WRITE | INTEL_PTE_USER);
 #ifdef	MACH_PV_PAGETABLES
 	// FIXME: use kmem_cache_alloc instead
 	if (kmem_alloc_wired(kernel_map,
@@ -1413,6 +1414,7 @@ void pmap_destroy(pmap_t p)
 		 pdep += ptes_per_vm_page) {
 		if (*pdep & INTEL_PTE_VALID) {
 		    pa = pte_to_pa(*pdep);
+		    assert(pa == (vm_offset_t) pa);
 		    vm_object_lock(pmap_object);
 		    m = vm_page_lookup(pmap_object, pa);
 		    if (m == VM_PAGE_NULL)
@@ -2345,12 +2347,12 @@ phys_addr_t pmap_extract(
  *	This routine is only advisory and need not do anything.
  */
 #if	0
-void pmap_copy(dst_pmap, src_pmap, dst_addr, len, src_addr)
-	pmap_t		dst_pmap;
-	pmap_t		src_pmap;
-	vm_offset_t	dst_addr;
-	vm_size_t	len;
-	vm_offset_t	src_addr;
+void pmap_copy(
+	pmap_t		dst_pmap,
+	pmap_t		src_pmap,
+	vm_offset_t	dst_addr,
+	vm_size_t	len,
+	vm_offset_t	src_addr)
 {
 }
 #endif	/* 0 */
@@ -2466,6 +2468,7 @@ void pmap_collect(pmap_t p)
 			    vm_page_t m;
 
 			    vm_object_lock(pmap_object);
+			    assert(pa == (vm_offset_t) pa);
 			    m = vm_page_lookup(pmap_object, pa);
 			    if (m == VM_PAGE_NULL)
 				panic("pmap_collect: pte page not in object");
@@ -2497,10 +2500,7 @@ void pmap_collect(pmap_t p)
  *		processor, and returns a hardware map description.
  */
 #if	0
-void pmap_activate(my_pmap, th, my_cpu)
-	pmap_t	my_pmap;
-	thread_t	th;
-	int		my_cpu;
+void pmap_activate(pmap_t my_pmap, thread_t th, int my_cpu)
 {
 	PMAP_ACTIVATE(my_pmap, th, my_cpu);
 }
@@ -2514,10 +2514,7 @@ void pmap_activate(my_pmap, th, my_cpu)
  *		in pmap.h)
  */
 #if	0
-void pmap_deactivate(pmap, th, which_cpu)
-	pmap_t		pmap;
-	thread_t	th;
-	int		which_cpu;
+void pmap_deactivate(pmap_t pmap, thread_t th, int which_cpu)
 {
 	PMAP_DEACTIVATE(pmap, th, which_cpu);
 }
@@ -2540,8 +2537,7 @@ pmap_t pmap_kernel()
  *	See machine/phys.c or machine/phys.s for implementation.
  */
 #if	0
-pmap_zero_page(phys)
-	vm_offset_t	phys;
+pmap_zero_page(vm_offset_t phys)
 {
 	int	i;
 
@@ -2559,8 +2555,7 @@ pmap_zero_page(phys)
  *	See machine/phys.c or machine/phys.s for implementation.
  */
 #if	0
-pmap_copy_page(src, dst)
-	vm_offset_t	src, dst;
+pmap_copy_page(vm_offset_t src, vm_offset_t dst)
 {
 	int	i;
 

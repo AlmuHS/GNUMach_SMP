@@ -38,15 +38,15 @@ ENTRY(interrupt)
 	pushq	%rax			/* save irq number */
 	call	spl7			/* set ipl */
 	pushq	%rax			/* save previous ipl */
-	movl	8(%esp),%edx		/* set irq number as 3rd arg */
-	movl	%edx,%ebx		/* copy irq number */
-	shll	$2,%ebx			/* irq * 4 */
-	movl	EXT(iunit)(%ebx),%edi	/* get device unit number as 1st arg */
 	movl	%eax, %esi		/* previous ipl as 2nd arg */
+	movl	8(%esp),%edx		/* set irq number as 3rd arg */
+	movl	%edx,%eax		/* copy irq number */
+	shll	$2,%eax			/* irq * 4 */
+	movl	EXT(iunit)(%eax),%edi	/* get device unit number as 1st arg */
 	movq	16(%esp), %rcx		/* return address as 4th arg */
 	movq	24(%esp), %r8		/* address of interrupted registers as 5th arg */
-	shll	$1,%ebx			/* irq * 8 */
-	call	*EXT(ivect)(%ebx)	/* call interrupt handler */
+	shll	$1,%eax			/* irq * 8 */
+	call	*EXT(ivect)(%eax)	/* call interrupt handler */
 	popq	%rdi			/* restore previous ipl */
 	call	splx_cli		/* restore previous ipl */
 

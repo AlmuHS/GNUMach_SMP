@@ -380,9 +380,8 @@ twd_fxsr_to_i387 (struct i386_xfp_save *fxsave)
  * concurrent fpu_set_state or fpu_get_state.
  */
 kern_return_t
-fpu_set_state(thread, state)
-	const thread_t		thread;
-	struct i386_float_state *state;
+fpu_set_state(const thread_t thread,
+	      struct i386_float_state *state)
 {
 	pcb_t pcb = thread->pcb;
 	struct i386_fpsave_state *ifps;
@@ -491,9 +490,8 @@ ASSERT_IPL(SPL0);
  * concurrent fpu_set_state or fpu_get_state.
  */
 kern_return_t
-fpu_get_state(thread, state)
-	const thread_t		thread;
-	struct i386_float_state *state;
+fpu_get_state(const thread_t thread,
+	      struct i386_float_state *state)
 {
 	pcb_t pcb = thread->pcb;
 	struct i386_fpsave_state *ifps;

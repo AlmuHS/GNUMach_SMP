@@ -25,31 +25,6 @@
 
 #include <mach/machine/vm_types.h>
 
-/* For a.out kernel boot images, the following header must appear
-   somewhere in the first 8192 bytes of the kernel image file.  */
-struct multiboot_header
-{
-	/* Must be MULTIBOOT_MAGIC */
-	unsigned		magic;
-
-	/* Feature flags - see below.  */
-	unsigned		flags;
-
-	/*
-	 * Checksum
-	 *
-	 * The above fields plus this one must equal 0 mod 2^32.
-	 */
-	unsigned		checksum;
-
-	/* These are only valid if MULTIBOOT_AOUT_KLUDGE is set.  */
-	vm_offset_t		header_addr;
-	vm_offset_t		load_addr;
-	vm_offset_t		load_end_addr;
-	vm_offset_t		bss_end_addr;
-	vm_offset_t		entry;
-};
-
 /* The entire multiboot_header must be contained
    within the first MULTIBOOT_SEARCH bytes of the kernel image.  */
 #define MULTIBOOT_SEARCH	8192
@@ -65,7 +40,7 @@ struct multiboot_header
 /* Align all boot modules on page (4KB) boundaries.  */
 #define MULTIBOOT_PAGE_ALIGN	0x00000001
 
-/* Must be provided memory information in multiboot_info structure */
+/* Must be provided memory information in multiboot_raw_info structure */
 #define MULTIBOOT_MEMORY_INFO	0x00000002
 
 /* Use the load address fields above instead of the ones in the a.out header
@@ -78,61 +53,7 @@ struct multiboot_header
    that the multiboot method is being used */
 #define MULTIBOOT_VALID         0x2badb002
 
-/* The boot loader passes this data structure to the kernel in
-   register EBX on entry.  */
-struct multiboot_info
-{
-	/* These flags indicate which parts of the multiboot_info are valid;
-	   see below for the actual flag bit definitions.  */
-	unsigned		flags;
 
-	/* Lower/Upper memory installed in the machine.
-	   Valid only if MULTIBOOT_MEMORY is set in flags word above.  */
-	vm_size_t		mem_lower;
-	vm_size_t		mem_upper;
-
-	/* BIOS disk device the kernel was loaded from.
-	   Valid only if MULTIBOOT_BOOT_DEVICE is set in flags word above.  */
-	unsigned char		boot_device[4];
-
-	/* Command-line for the OS kernel: a null-terminated ASCII string.
-	   Valid only if MULTIBOOT_CMDLINE is set in flags word above.  */
-	vm_offset_t		cmdline;
-
-	/* List of boot modules loaded with the kernel.
-	   Valid only if MULTIBOOT_MODS is set in flags word above.  */
-	unsigned		mods_count;
-	vm_offset_t		mods_addr;
-
-	/* Symbol information for a.out or ELF executables. */
-	union
-	{
-	  struct
-	  {
-	    /* a.out symbol information valid only if MULTIBOOT_AOUT_SYMS
-	       is set in flags word above.  */
-	    vm_size_t		tabsize;
-	    vm_size_t		strsize;
-	    vm_offset_t		addr;
-	    unsigned		reserved;
-	  } a;
-
-	  struct
-	  {
-	    /* ELF section header information valid only if
-	       MULTIBOOT_ELF_SHDR is set in flags word above.  */
-	    unsigned		num;
-	    vm_size_t		size;
-	    vm_offset_t		addr;
-	    unsigned		shndx;
-	  } e;
-	} syms;
-
-	/* Memory map buffer.
-	   Valid only if MULTIBOOT_MEM_MAP is set in flags word above.  */
-	vm_size_t		mmap_count;
-	vm_offset_t		mmap_addr;
-};
 
 #define MULTIBOOT_MEMORY	0x00000001
 #define MULTIBOOT_BOOT_DEVICE	0x00000002
@@ -174,33 +95,6 @@ struct multiboot32_module
 	unsigned		reserved;
 };
 #endif
-
-
-/* The mmap_addr field above contains the physical address of the first
-   of the AddrRangeDesc structure.  "size" represents the size of the
-   rest of the structure and optional padding.  The offset to the beginning
-   of the next structure is therefore "size + 4".  */
-struct AddrRangeDesc
-{
-  unsigned long size;
-  unsigned long BaseAddrLow;
-  unsigned long BaseAddrHigh;
-  unsigned long LengthLow;
-  unsigned long LengthHigh;
-  unsigned long Type;
-
-  /* unspecified optional padding... */
-};
-
-struct multiboot_mmap
-{
-  unsigned long size;
-  unsigned long long BaseAddr;
-  unsigned long long Length;
-  unsigned long Type;
-
-  /* unspecified optional padding... */
-};
 
 /* usable memory "Type", all others are reserved.  */
 #define MB_ARD_MEMORY       1

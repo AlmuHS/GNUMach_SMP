@@ -38,8 +38,25 @@
 #include <mach/boolean.h>
 #include <mach/machine/vm_types.h>
 
+/*
+ * Port names are the type used by userspace, they are always 32-bit wide.
+ */
+typedef unsigned int mach_port_name_t;
+typedef mach_port_name_t *mach_port_name_array_t;
+typedef const mach_port_name_t *const_mach_port_name_array_t;
 
+/*
+ * A port is represented
+ * - by a port name in userspace
+ * - by a pointer in kernel space
+ * While in userspace mach_port_name_t and mach_port_name are interchangable,
+ * in kernelspace they need to be different and appropriately converted.
+ */
+#ifdef KERNEL
 typedef vm_offset_t mach_port_t;
+#else /* KERNEL */
+typedef mach_port_name_t mach_port_t;
+#endif
 typedef mach_port_t *mach_port_array_t;
 typedef const mach_port_t *const_mach_port_array_t;
 typedef int *rpc_signature_info_t;
@@ -121,7 +138,7 @@ typedef unsigned int mach_port_msgcount_t;	/* number of msgs */
 typedef unsigned int mach_port_rights_t;	/* number of rights */
 
 typedef struct mach_port_status {
-	mach_port_t		mps_pset;	/* containing port set */
+	mach_port_name_t	mps_pset;	/* containing port set */
 	mach_port_seqno_t	mps_seqno;	/* sequence number */
 /*mach_port_mscount_t*/natural_t mps_mscount;	/* make-send count */
 /*mach_port_msgcount_t*/natural_t mps_qlimit;	/* queue limit */
@@ -134,23 +151,5 @@ typedef struct mach_port_status {
 
 #define MACH_PORT_QLIMIT_DEFAULT	((mach_port_msgcount_t) 5)
 #define MACH_PORT_QLIMIT_MAX		((mach_port_msgcount_t) 16)
-
-/*
- *  Compatibility definitions, for code written
- *  before there was an mps_seqno field.
- *
- *  XXX: Remove this before releasing Gnumach 1.6.
- */
-
-typedef struct old_mach_port_status {
-	mach_port_t		mps_pset;	/* containing port set */
-/*mach_port_mscount_t*/natural_t mps_mscount;	/* make-send count */
-/*mach_port_msgcount_t*/natural_t mps_qlimit;	/* queue limit */
-/*mach_port_msgcount_t*/natural_t mps_msgcount;	/* number in the queue */
-/*mach_port_rights_t*/natural_t	mps_sorights;	/* how many send-once rights */
-/*boolean_t*/natural_t		mps_srights;	/* do send rights exist? */
-/*boolean_t*/natural_t		mps_pdrequest;	/* port-deleted requested? */
-/*boolean_t*/natural_t		mps_nsrequest;	/* no-senders requested? */
-} old_mach_port_status_t;
 
 #endif	/* _MACH_PORT_H_ */

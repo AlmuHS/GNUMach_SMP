@@ -147,13 +147,20 @@ void switch_ktss(pcb_t pcb)
 	pcb_stack_top = (pcb->iss.efl & EFL_VM)
 			? (long) (&pcb->iss + 1)
 			: (long) (&pcb->iss.v86_segs);
+#ifdef __x86_64__
+	assert((pcb_stack_top & 0xF) == 0);
+#endif
 
 #ifdef	MACH_RING1
 	/* No IO mask here */
 	if (hyp_stack_switch(KERNEL_DS, pcb_stack_top))
 		panic("stack_switch");
 #else	/* MACH_RING1 */
+#ifdef __x86_64__
+	curr_ktss(mycpu)->tss.rsp0 = pcb_stack_top;
+#else /* __x86_64__ */
 	curr_ktss(mycpu)->tss.esp0 = pcb_stack_top;
+#endif /* __x86_64__ */
 #endif	/* MACH_RING1 */
     }
 
@@ -371,7 +378,12 @@ thread_t switch_context(
 
 void pcb_module_init(void)
 {
-	kmem_cache_init(&pcb_cache, "pcb", sizeof(struct pcb), 0,
+	kmem_cache_init(&pcb_cache, "pcb", sizeof(struct pcb),
+#ifdef __x86_64__
+			16,
+#else
+			0,
+#endif
 			NULL, 0);
 
 	fpu_module_init();
@@ -829,11 +841,10 @@ user_stack_low(vm_size_t stack_size)
  * Allocate argument area and set registers for first user thread.
  */
 vm_offset_t
-set_user_regs(stack_base, stack_size, exec_info, arg_size)
-	vm_offset_t	stack_base;	/* low address */
-	vm_offset_t	stack_size;
-	const struct exec_info *exec_info;
-	vm_size_t	arg_size;
+set_user_regs(vm_offset_t stack_base, /* low address */
+	      vm_offset_t stack_size,
+	      const struct exec_info *exec_info,
+	      vm_size_t arg_size)
 {
 	vm_offset_t	arg_addr;
 	struct i386_saved_state *saved_state;

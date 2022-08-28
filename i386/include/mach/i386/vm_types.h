@@ -37,6 +37,12 @@
 #ifdef	__ASSEMBLER__
 #else	/* __ASSEMBLER__ */
 
+#include <mach/machine/stdint.h>
+
+#ifdef MACH_KERNEL
+#include <kern/assert.h>
+#endif
+
 /*
  * A natural_t is the type for the native
  * integer type, e.g. 32 or 64 or.. whatever
@@ -88,12 +94,35 @@ typedef unsigned long long rpc_phys_addr_t;
  * expressing the difference between two
  * vm_offset_t entities.
  */
-#ifdef __x86_64__
 typedef	unsigned long	vm_size_t;
-#else
-typedef	natural_t	vm_size_t;
-#endif
 typedef	vm_size_t *	vm_size_array_t;
+
+/*
+ * rpc_types are for user/kernel interfaces. On kernel side they may differ from
+ * the native types, while on user space they shall be the same.
+ * These three types are always of the same size, so we can reuse the conversion
+ * functions.
+ */
+#if defined(MACH_KERNEL) && defined(USER32)
+typedef __mach_uint32_t	rpc_vm_address_t;
+typedef __mach_uint32_t	rpc_vm_offset_t;
+typedef __mach_uint32_t	rpc_vm_size_t;
+static inline __mach_uint64_t convert_vm_from_user(__mach_uint32_t uaddr)
+{
+    return (__mach_uint64_t)uaddr;
+}
+static inline __mach_uint32_t convert_vm_to_user(__mach_uint64_t kaddr)
+{
+    assert(kaddr <= 0xFFFFFFFF);
+    return (__mach_uint32_t)kaddr;
+}
+#else /* MACH_KERNEL */
+typedef vm_offset_t	rpc_vm_address_t;
+typedef vm_offset_t	rpc_vm_offset_t;
+typedef vm_size_t	rpc_vm_size_t;
+#define convert_vm_to_user null_conversion
+#define convert_vm_from_user null_conversion
+#endif /* MACH_KERNEL */
 
 #endif	/* __ASSEMBLER__ */
 

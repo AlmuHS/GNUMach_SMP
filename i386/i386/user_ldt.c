@@ -253,12 +253,12 @@ i386_set_ldt(
 }
 
 kern_return_t
-i386_get_ldt(thread, first_selector, selector_count, desc_list, count)
-	const thread_t	thread;
-	int		first_selector;
-	int		selector_count;		/* number wanted */
-	struct real_descriptor **desc_list;	/* in/out */
-	unsigned int	*count;			/* in/out */
+i386_get_ldt(const thread_t thread,
+	     int first_selector,
+	     int selector_count,                 /* number wanted */
+	     struct real_descriptor **desc_list, /* in/out */
+	     unsigned int *count                /* in/out */
+	)
 {
 	struct user_ldt *user_ldt;
 	pcb_t		pcb;

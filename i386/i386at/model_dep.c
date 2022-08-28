@@ -122,7 +122,7 @@ unsigned long *pfn_list = (void*) PFN_LIST;
 unsigned long la_shift = VM_MIN_KERNEL_ADDRESS;
 #endif
 #else	/* MACH_XEN */
-struct multiboot_info boot_info;
+struct multiboot_raw_info boot_info;
 #endif	/* MACH_XEN */
 
 /* Command line supplied to kernel.  */
@@ -408,7 +408,7 @@ i386at_init(void)
 	}
 
 	if (boot_info.flags & MULTIBOOT_MODS && boot_info.mods_count) {
-		struct multiboot_module *m;
+		struct multiboot_raw_module *m;
 		int i;
 
 		if (! init_alloc_aligned(
@@ -596,13 +596,14 @@ void c_boot_entry(vm_offset_t bi)
 	 * so that the symbol table's memory won't be stomped on.
 	 */
 	if ((boot_info.flags & MULTIBOOT_AOUT_SYMS)
-	    && boot_info.syms.a.addr)
+	    && boot_info.shdr_addr)
 	{
 		vm_size_t symtab_size, strtab_size;
 
-		kern_sym_start = (vm_offset_t)phystokv(boot_info.syms.a.addr);
-		symtab_size = (vm_offset_t)phystokv(boot_info.syms.a.tabsize);
-		strtab_size = (vm_offset_t)phystokv(boot_info.syms.a.strsize);
+                /* For simplicity we just use a simple boot_info_raw structure for elf */
+		kern_sym_start = (vm_offset_t)phystokv(boot_info.shdr_addr);
+		symtab_size = (vm_offset_t)phystokv(boot_info.shdr_num);
+		strtab_size = (vm_offset_t)phystokv(boot_info.shdr_size);
 		kern_sym_end = kern_sym_start + 4 + symtab_size + strtab_size;
 
 		printf("kernel symbol table at %08lx-%08lx (%ld,%ld)\n",
@@ -611,12 +612,12 @@ void c_boot_entry(vm_offset_t bi)
 	}
 
 	if ((boot_info.flags & MULTIBOOT_ELF_SHDR)
-	    && boot_info.syms.e.num)
+	    && boot_info.shdr_num)
 	{
-		elf_shdr_num = boot_info.syms.e.num;
-		elf_shdr_size = boot_info.syms.e.size;
-		elf_shdr_addr = (vm_offset_t)phystokv(boot_info.syms.e.addr);
-		elf_shdr_shndx = boot_info.syms.e.shndx;
+		elf_shdr_num = boot_info.shdr_num;
+		elf_shdr_size = boot_info.shdr_size;
+		elf_shdr_addr = (vm_offset_t)phystokv(boot_info.shdr_addr);
+		elf_shdr_shndx = boot_info.shdr_strndx;
 
 		printf("ELF section header table at %08lx\n", elf_shdr_addr);
 	}
@@ -682,10 +683,7 @@ void c_boot_entry(vm_offset_t bi)
 #include <mach/time_value.h>
 
 vm_offset_t
-timemmap(dev, off, prot)
-	dev_t dev;
-	vm_offset_t off;
-	vm_prot_t prot;
+timemmap(dev_t dev, vm_offset_t off, vm_prot_t prot)
 {
 	extern time_value_t *mtime;
 

@@ -26,6 +26,7 @@
 #include "thread.h"
 #include "trap.h"
 #include "debug.h"
+#include "spl.h"
 
 void dump_ss(const struct i386_saved_state *st)
 {
