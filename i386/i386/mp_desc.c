@@ -49,6 +49,9 @@
 #include <machine/io_perm.h>
 #include <machine/vm_param.h>
 
+#include <i386at/acpi_parse_apic.h>
+#include <string.h>
+
 /*
  * The i386 needs an interrupt stack to keep the PCB stack from being
  * overrun by interrupts.  All interrupt stacks MUST lie at lower addresses
@@ -93,8 +96,8 @@ extern volatile ApicLocalUnit* lapic;
 //extern unsigned stop;
 
 #define AP_BOOT_ADDR (0x7000)
-//#define STACK_SIZE (4096 * 2)
-#define STACK_SIZE (2*I386_PGBYTES)
+#define STACK_SIZE (4096 * 2)
+//#define STACK_SIZE (2*I386_PGBYTES)
 
 /*
  * Multiprocessor i386/i486 systems use a separate copy of the
@@ -232,7 +235,7 @@ kern_return_t intel_startCPU(int cpu)
     cpu_intr_restore(eFlagsRegister);
     kmutex_unlock(&mp_cpu_boot_lock);
 
-    delay(1000000);
+    delay(1000000000000000);
 
     /*
      * Initialize (or re-initialize) the descriptor tables for this cpu.
@@ -343,12 +346,12 @@ cpu_setup()
 
     int i = 0;
     int ncpus = smp_get_numcpus();
-    //unsigned cpu = apic_get_current_cpu();
-    //unsigned cpu = lapic->apic_id.r;
-    unsigned lapic_addr = apic_madt->lapic_addr;
-    unsigned cpu = (((ApicLocalUnit*)phystokv(lapic_addr))->apic_id.r >> 24) & 0xff;
 
-    printf("Starting cpu %d setup\n", cpu);
+    //unsigned apic_id = apic_get_current_cpu();
+    unsigned apic_id = (((ApicLocalUnit*)phystokv(lapic_addr))->apic_id.r >> 24) & 0xff;
+    printf("Starting cpu with APIC ID %u setup\n", apic_id);
+    
+    printf("ncpus = %d\n", ncpus);
 
     while(i < ncpus && (machine_slot[i].running == TRUE)) i++;
     
@@ -360,8 +363,7 @@ cpu_setup()
     if(i >= ncpus)
         return -1;
 
-	unsigned mslot_addr = &(machine_slot[i]);
-	phystokv(mslot_addr)->running = TRUE;
+    machine_slot[i].running = TRUE;
 
     /*TODO: Move this code to a separate function*/
 
@@ -441,7 +443,8 @@ cpu_start(int cpu)
 }
 
 
-vm_offset_t
+
+void
 cpus_stack_alloc(void)
 {
         vm_offset_t stack_start;
@@ -455,14 +458,14 @@ cpus_stack_alloc(void)
         }
         
         
-        for (int i = 0; i < ncpus; i++)
+        for (int i = 1; i < ncpus; i++)
         {
             if (i == master_cpu)
                 {
                      cpu_stack[i] = (vm_offset_t) _cpustack;
                      _cpu_stack_top[i] = (vm_offset_t) _cpustack + STACK_SIZE;
                 }
-            else if (machine_slot[i].is_cpu)
+            else
                 {
                     cpu_stack[i] = stack_start;
                     _cpu_stack_top[i]  = stack_start + STACK_SIZE;
@@ -478,7 +481,7 @@ cpus_stack_alloc(void)
     if(ncpus > 1) cpu_stack_high = stack_start;
 }
 
-vm_offset_t stack_ptr = 0;
+extern vm_offset_t* *stack_ptr;
 
 void
 start_other_cpus(void)
@@ -501,7 +504,7 @@ start_other_cpus(void)
 	unsigned cpu;
 	for (cpu = 1; cpu < ncpus; cpu++){
                 //Initialize stack pointer for current cpu
-                stack_ptr = cpu_stack[cpu];
+                *stack_ptr = (vm_offset_t*) cpu_stack[cpu];
               
                 machine_slot[cpu].running = FALSE;
                 
