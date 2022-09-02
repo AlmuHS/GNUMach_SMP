@@ -362,13 +362,13 @@ cpu_setup()
     /* panic? */
     if(i >= ncpus)
         return -1;
-
     machine_slot[i].running = TRUE;
 
     /*TODO: Move this code to a separate function*/
 
     /* Initialize machine_slot fields with the cpu data */
     machine_slot[i].cpu_subtype = CPU_SUBTYPE_AT386;
+	machine_slot[i].running = TRUE;
 
     int cpu_type = discover_x86_cpu_type ();
 
