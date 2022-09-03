@@ -27,12 +27,22 @@ dnl USE OF THIS SOFTWARE.
     # Determines the size of the CPU cache line.
     AC_DEFINE([CPU_L1_SHIFT], [6], [CPU_L1_SHIFT])
 
+    AC_ARG_ENABLE([user32],
+      AS_HELP_STRING([--disable-user32], [disable 32-bit user on 64-bit kernel]))
+    [if [ x"$enable_user32" != xno ]; then]
+      AC_DEFINE([USER32], [], [enable 32-bit user on 64-bit kernel])
+      AM_CONDITIONAL([enable_user32], [true])
+    [else]
+      AM_CONDITIONAL([enable_user32], [false])
+    [fi]
+
     [# Does the architecture provide machine-specific interfaces?
     mach_machine_routines=1
 
     enable_pae=yes;;
   *)]
-    AM_CONDITIONAL([HOST_x86_64], [false])[;;
+    AM_CONDITIONAL([HOST_x86_64], [false])
+    AM_CONDITIONAL([enable_user32], [true])[;;
 esac
 
 case $host_platform in

@@ -57,9 +57,14 @@ ktss_init(void)
 				ACC_PL_K|ACC_TSS, 0);
 
 	/* Initialize the master TSS.  */
+#ifdef __x86_64__
+	ktss.tss.rsp0 = (unsigned long)(exception_stack+1024);
+#else /* ! __x86_64__ */
 	ktss.tss.ss0 = KERNEL_DS;
 	ktss.tss.esp0 = (unsigned long)(exception_stack+1024);
-	ktss.tss.io_bit_map_offset = IOPB_INVAL;                                                                                                
+#endif /* __x86_64__ */
+
+	ktss.tss.io_bit_map_offset = IOPB_INVAL;
 	/* Set the last byte in the I/O bitmap to all 1's.  */
 	ktss.barrier = 0xff;
 

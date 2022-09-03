@@ -26,6 +26,7 @@
 
 #include <device/io_req.h>
 #include <i386/model_dep.h>
+#include <i386at/biosmem.h>
 
 /* This provides access to any memory that is not main RAM */
 

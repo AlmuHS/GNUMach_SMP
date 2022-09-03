@@ -200,6 +200,9 @@ struct i386_machine_state {
 
 typedef struct pcb {
 	struct i386_interrupt_state iis[2];	/* interrupt and NMI */
+#ifdef __x86_64__
+	unsigned long pad;         /* ensure exception stack is aligned to 16 */
+#endif
 	struct i386_saved_state iss;
 	struct i386_machine_state ims;
 	decl_simple_lock_data(, lock)

@@ -338,6 +338,11 @@ kern_return_t vm_map(
 	if (size == 0)
 		return KERN_INVALID_ARGUMENT;
 
+#ifdef USER32
+        if (mask & 0x80000000)
+            mask |= 0xffffffff00000000;
+#endif
+
 	*address = trunc_page(*address);
 	size = round_page(size);
 
@@ -588,6 +593,10 @@ kern_return_t vm_allocate_contiguous(
 		return KERN_INVALID_ARGUMENT;
 
 	if (palign == 0)
+		palign = PAGE_SIZE;
+
+	/* FIXME: Allows some small alignments less than page size */
+	if ((palign < PAGE_SIZE) && (PAGE_SIZE % palign == 0))
 		palign = PAGE_SIZE;
 
 	/* FIXME */

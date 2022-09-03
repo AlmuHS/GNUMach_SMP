@@ -235,7 +235,7 @@ void dev_pager_hash_delete(const ipc_port_t name_port)
 	    }
 	}
 	simple_unlock(&dev_pager_hash_lock);
-	if (entry)
+	if (!queue_end(bucket, &entry->links))
 	    kmem_cache_free(&dev_pager_hash_cache, (vm_offset_t)entry);
 }
 
@@ -313,7 +313,7 @@ void dev_device_hash_delete(
 	    }
 	}
 	simple_unlock(&dev_device_hash_lock);
-	if (entry)
+	if (!queue_end(bucket, &entry->links))
 	    kmem_cache_free(&dev_device_hash_cache, (vm_offset_t)entry);
 }
 

@@ -80,7 +80,7 @@ endif
 
 # We do not support or need position-independent
 AM_CFLAGS += \
-	-no-pie -fno-pic
+	-no-pie -fno-PIE -fno-pie -fno-pic
 
 #
 # Silent build support.

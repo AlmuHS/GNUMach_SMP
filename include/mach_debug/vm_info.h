@@ -46,8 +46,8 @@
  */
 
 typedef struct vm_region_info {
-	vm_offset_t vri_start;		/* start of region */
-	vm_offset_t vri_end;		/* end of region */
+	rpc_vm_offset_t vri_start;		/* start of region */
+	rpc_vm_offset_t vri_end;		/* end of region */
 
 /*vm_prot_t*/natural_t vri_protection;	/* protection code */
 /*vm_prot_t*/natural_t vri_max_protection;	/* maximum protection */
@@ -55,8 +55,8 @@ typedef struct vm_region_info {
 	natural_t vri_wired_count;	/* number of times wired */
 	natural_t vri_user_wired_count; /* number of times user has wired */
 
-	vm_offset_t vri_object;		/* the mapped object */
-	vm_offset_t vri_offset;		/* offset into object */
+	rpc_vm_offset_t vri_object;		/* the mapped object */
+	rpc_vm_offset_t vri_offset;		/* offset into object */
 /*boolean_t*/integer_t vri_needs_copy;	/* does object need to be copied? */
 	natural_t vri_sharing;	/* share map references */
 } vm_region_info_t;
@@ -77,19 +77,19 @@ typedef natural_t vm_object_info_state_t;
 #define VOI_STATE_LOCK_RESTART		0x00000100
 
 typedef struct vm_object_info {
-	vm_offset_t voi_object;		/* this object */
-	vm_size_t voi_pagesize;		/* object's page size */
-	vm_size_t voi_size;		/* object size (valid if internal) */
+	rpc_vm_offset_t voi_object;		/* this object */
+	rpc_vm_size_t voi_pagesize;		/* object's page size */
+	rpc_vm_size_t voi_size;		/* object size (valid if internal) */
 	natural_t voi_ref_count;	/* number of references */
 	natural_t voi_resident_page_count; /* number of resident pages */
 	natural_t voi_absent_count;	/* number requested but not filled */
-	vm_offset_t voi_copy;		/* copy object */
-	vm_offset_t voi_shadow;		/* shadow object */
-	vm_offset_t voi_shadow_offset;	/* offset into shadow object */
-	vm_offset_t voi_paging_offset;	/* offset into memory object */
+	rpc_vm_offset_t voi_copy;		/* copy object */
+	rpc_vm_offset_t voi_shadow;		/* shadow object */
+	rpc_vm_offset_t voi_shadow_offset;	/* offset into shadow object */
+	rpc_vm_offset_t voi_paging_offset;	/* offset into memory object */
 /*memory_object_copy_strategy_t*/integer_t voi_copy_strategy;
 					/* how to handle data copy */
-	vm_offset_t voi_last_alloc;	/* offset of last allocation */
+	rpc_vm_offset_t voi_last_alloc;	/* offset of last allocation */
 	natural_t voi_paging_in_progress; /* paging references */
 	vm_object_info_state_t voi_state; /* random state bits */
 } vm_object_info_t;

@@ -74,7 +74,7 @@ mach_port_names_helper(
 	ipc_port_timestamp_t	timestamp,
 	ipc_entry_t		entry,
 	mach_port_t		name,
-	mach_port_t		*names,
+	mach_port_name_t	*names,
 	mach_port_type_t	*types,
 	ipc_entry_num_t		*actualp)
 {
@@ -145,14 +145,14 @@ mach_port_names_helper(
 kern_return_t
 mach_port_names(
 	ipc_space_t		space,
-	mach_port_t		**namesp,
+	mach_port_name_t	**namesp,
 	mach_msg_type_number_t	*namesCnt,
 	mach_port_type_t	**typesp,
 	mach_msg_type_number_t	*typesCnt)
 {
 	ipc_entry_num_t actual;	/* this many names */
 	ipc_port_timestamp_t timestamp;	/* logical time of this operation */
-	mach_port_t *names;
+	mach_port_name_t *names;
 	mach_port_type_t *types;
 	kern_return_t kr;
 
@@ -163,7 +163,7 @@ mach_port_names(
 	vm_map_copy_t memory2;	/* copied-in memory, for types */
 
 	/* safe simplifying assumption */
-	assert_static(sizeof(mach_port_t) == sizeof(mach_port_type_t));
+	assert_static(sizeof(mach_port_name_t) == sizeof(mach_port_type_t));
 
 	if (space == IS_NULL)
 		return KERN_INVALID_TASK;
@@ -225,7 +225,7 @@ mach_port_names(
 	}
 	/* space is read-locked and active */
 
-	names = (mach_port_t *) addr1;
+	names = (mach_port_name_t *) addr1;
 	types = (mach_port_type_t *) addr2;
 	actual = 0;
 
@@ -287,7 +287,7 @@ mach_port_names(
 		}
 	}
 
-	*namesp = (mach_port_t *) memory1;
+	*namesp = (mach_port_name_t *) memory1;
 	*namesCnt = actual;
 	*typesp = (mach_port_type_t *) memory2;
 	*typesCnt = actual;

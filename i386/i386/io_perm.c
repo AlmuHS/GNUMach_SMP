@@ -70,12 +70,9 @@
 
 #define PCI_CFG1_START	0xcf8
 #define PCI_CFG1_END	0xcff
-#define PCI_CFG2_START	0xc000
-#define PCI_CFG2_END	0xcfff
 
 #define CONTAINS_PCI_CFG(from, to) \
-  ( ( ( from <= PCI_CFG1_END ) && ( to >= PCI_CFG1_START ) ) || \
-    ( ( from <= PCI_CFG2_END ) && ( to >= PCI_CFG2_START ) ) )
+  ( ( from <= PCI_CFG1_END ) && ( to >= PCI_CFG1_START ) )
 
 
 /* Our device emulation ops.  See below, at the bottom of this file.  */

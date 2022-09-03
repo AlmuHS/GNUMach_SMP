@@ -132,7 +132,7 @@ typedef	unsigned int mach_msg_size_t;
 typedef natural_t mach_msg_seqno_t;
 typedef integer_t mach_msg_id_t;
 
-typedef	struct {
+typedef	struct mach_msg_header {
     mach_msg_bits_t	msgh_bits;
     mach_msg_size_t	msgh_size;
     mach_port_t		msgh_remote_port;

@@ -464,8 +464,6 @@ mach_msg_trap(
 			goto slow_get;
 		}
 
-		kmsg->ikm_header.msgh_size = send_size;
-
 	    fast_copyin:
 		/*
 		 *	optimized ipc_kmsg_copyin/ipc_mqueue_copyin
@@ -1148,9 +1146,7 @@ mach_msg_trap(
 			kmsg->ikm_header.msgh_remote_port = MACH_PORT_NULL;
 
 			mr = ipc_kmsg_copyout_body(
-				(vm_offset_t) (&kmsg->ikm_header + 1),
-				(vm_offset_t) &kmsg->ikm_header
-					+ kmsg->ikm_header.msgh_size,
+                            kmsg,
 				space,
 				current_map());
 

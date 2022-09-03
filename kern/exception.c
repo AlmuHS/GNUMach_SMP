@@ -45,6 +45,7 @@
 #include <kern/task.h>
 #include <kern/thread.h>
 #include <kern/processor.h>
+#include <kern/printf.h>
 #include <kern/sched.h>
 #include <kern/sched_prim.h>
 #include <kern/exception.h>
