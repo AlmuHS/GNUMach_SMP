@@ -1333,7 +1333,7 @@ ENTRY(copyinmsg)
 	lodsl
         /* But don't actually store it: we have already set it above to what we
            really copy */
-	addl	$4,%rdi
+	addq	$4,%rdi
 
 	xorq	%rax,%rax
 	/* Copy msgh_remote_port */
