@@ -28,6 +28,8 @@
 
 #include <sys/types.h>
 
+#define MOUSEBUFSIZE	5		/* num bytes def'd by protocol */
+
 extern void mouse_button (kev_type which, u_char direction);
 
 extern void mouse_enqueue (kd_event *ev);
@@ -48,11 +50,11 @@ extern void ibm_ps2_mouse_open (dev_t dev);
 
 extern void ibm_ps2_mouse_close (dev_t dev);
 
-extern void mouse_packet_microsoft_mouse (u_char *mousebuf);
+extern void mouse_packet_microsoft_mouse (u_char mousebuf[MOUSEBUFSIZE]);
 
-extern void mouse_packet_mouse_system_mouse (u_char *mousebuf);
+extern void mouse_packet_mouse_system_mouse (u_char mousebuf[MOUSEBUFSIZE]);
 
-extern void mouse_packet_ibm_ps2_mouse (u_char *mousebuf);
+extern void mouse_packet_ibm_ps2_mouse (u_char mousebuf[MOUSEBUFSIZE]);
 
 extern int mouseopen(dev_t dev, int flags, io_req_t ior);
 extern void mouseclose(dev_t dev, int flags);
