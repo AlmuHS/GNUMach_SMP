@@ -42,7 +42,7 @@
 
 /* XXX For now */
 #define	CPU_NUMBER(reg)	movl $0,reg
-#define cpu_number() 0
+//#define cpu_number() 0
 
 #else	/* NCPUS == 1 */
 
@@ -53,6 +53,7 @@
 
 #ifndef __ASSEMBLER__
 #include "kern/cpu_number.h"
+int cpu_number();
 #endif
 
 #endif	/* _I386_CPU_NUMBER_H_ */

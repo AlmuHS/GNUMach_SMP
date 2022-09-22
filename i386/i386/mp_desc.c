@@ -215,8 +215,8 @@ kern_return_t intel_startCPU(int cpu)
     /* Serialize use of the slave boot stack, etc. */
     kmutex_lock(&mp_cpu_boot_lock, FALSE);
 
-    /*istate = ml_set_interrupts_enabled(FALSE);*/
     cpu_intr_save(&eFlagsRegister);
+    printf("cpu_number: %d\n", cpu_number());
     if (cpu == cpu_number())
         {
             cpu_intr_restore(eFlagsRegister);
@@ -229,22 +229,27 @@ kern_return_t intel_startCPU(int cpu)
      * processors rendezvous'ed. This is required during periods when
      * the cache-disable bit is set for MTRR/PAT initialization.
      */
-    /*mp_rendezvous_no_intrs(start_cpu, (void *) &start_info);*/
     smp_startup_cpu(apic_id, AP_BOOT_ADDR);
 
     cpu_intr_restore(eFlagsRegister);
     kmutex_unlock(&mp_cpu_boot_lock);
 
-    delay(1000000000000000);
+    int j = 0;
+    for(int i = 0; i < 10000000; i++){
+        j = i;
+    }
 
     /*
      * Initialize (or re-initialize) the descriptor tables for this cpu.
      * Propagate processor mode to slave.
      */
-    mp_desc_init(cpu);
+    //
 
-    /*if (!cpu_datap(slot_num)->cpu_running) {*/
-    if(machine_slot[cpu].running == FALSE)
+    while(!machine_slot[cpu].running);
+    printf("cpu %d running\n", cpu);
+    
+    mp_desc_init(cpu);
+    if(!machine_slot[cpu].running)
         {
             printf("Failed to start CPU %02d, rebooting...\n", cpu);
             //halt_cpu();
@@ -255,7 +260,6 @@ kern_return_t intel_startCPU(int cpu)
             printf("Started cpu %d (lapic id %08x)\n", cpu, apic_id);
             return KERN_SUCCESS;
         }
-
 }
 
 /*
@@ -345,7 +349,7 @@ cpu_setup()
 {
 
     int i = 0;
-    int ncpus = smp_get_numcpus();
+    int ncpus = apic_get_numcpus();
 
     //unsigned apic_id = apic_get_current_cpu();
     unsigned apic_id = (((ApicLocalUnit*)phystokv(lapic_addr))->apic_id.r >> 24) & 0xff;
@@ -356,6 +360,7 @@ cpu_setup()
     int cpu = apic_get_cpu_kernel_id(apic_id);
     machine_slot[cpu].running = TRUE;
 
+    printf("machine slot (%d) running: %d\n",i, machine_slot[i].running);
     /*TODO: Move this code to a separate function*/
 
     /* Initialize machine_slot fields with the cpu data */
@@ -403,7 +408,7 @@ cpu_setup()
     printf("KTSS configured\n");
     printf("Configured GDT and IDT\n");
 
-    
+    machine_slot[i].running = TRUE;
     
     printf("started cpu %d\n", i);
 
@@ -502,8 +507,6 @@ start_other_cpus(void)
                 //Start cpu
                 printf("starting cpu %d\n", cpu);
                 cpu_start(cpu);
-                
-                while(machine_slot[cpu].running != TRUE);
 	}	
 }
 
