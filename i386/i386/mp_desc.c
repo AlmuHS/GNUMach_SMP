@@ -247,7 +247,7 @@ kern_return_t intel_startCPU(int cpu)
     if(machine_slot[cpu].running == FALSE)
         {
             printf("Failed to start CPU %02d, rebooting...\n", cpu);
-            halt_cpu();
+            //halt_cpu();
             return KERN_SUCCESS;
         }
     else
@@ -352,24 +352,14 @@ cpu_setup()
     printf("Starting cpu with APIC ID %u setup\n", apic_id);
     
     printf("ncpus = %d\n", ncpus);
-
-    while(i < ncpus && (machine_slot[i].running == TRUE)) i++;
     
-    //printf("Starting cpu %d setup\n", i);
+    int cpu = apic_get_cpu_kernel_id(apic_id);
+    machine_slot[cpu].running = TRUE;
 
-    /* assume Pentium 4, Xeon, or later processors */
-
-    /* panic? */
-    if(i >= ncpus)
-        return -1;
-
-
-        
-    machine_slot[i].running = TRUE;
     /*TODO: Move this code to a separate function*/
 
     /* Initialize machine_slot fields with the cpu data */
-    machine_slot[i].cpu_subtype = CPU_SUBTYPE_AT386;
+    machine_slot[cpu].cpu_subtype = CPU_SUBTYPE_AT386;
 
     int cpu_type = discover_x86_cpu_type ();
 
@@ -379,19 +369,19 @@ cpu_setup()
             printf("warning: unknown cpu type %d, assuming i386\n", cpu_type);
 
         case 3:
-            machine_slot[i].cpu_type = CPU_TYPE_I386;
+            machine_slot[cpu].cpu_type = CPU_TYPE_I386;
             break;
 
         case 4:
-            machine_slot[i].cpu_type = CPU_TYPE_I486;
+            machine_slot[cpu].cpu_type = CPU_TYPE_I486;
             break;
 
         case 5:
-            machine_slot[i].cpu_type = CPU_TYPE_PENTIUM;
+            machine_slot[cpu].cpu_type = CPU_TYPE_PENTIUM;
             break;
         case 6:
         case 15:
-            machine_slot[i].cpu_type = CPU_TYPE_PENTIUMPRO;
+            machine_slot[cpu].cpu_type = CPU_TYPE_PENTIUMPRO;
             break;
         }
         
@@ -426,7 +416,9 @@ cpu_setup()
 int
 cpu_ap_main()
 {
-    printf("Enabling cpu %d\n", lapic->apic_id.r);
+    //unsigned lapic_addr = apic_madt->lapic_addr;
+    unsigned cpu = (((ApicLocalUnit*)phystokv(lapic_addr))->apic_id.r >> 24) & 0xff;
+    printf("Enabling cpu %d\n", cpu);
 
     if(cpu_setup()) return -1;
     return 0;

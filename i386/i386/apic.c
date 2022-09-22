@@ -121,6 +121,23 @@ apic_get_cpu_apic_id(int kernel_id)
     return apic_data.cpu_lapic_list[kernel_id];
 }
 
+
+/*
+ * apic_get_cpu_kernel_id: returns the kernel_id of a cpu.
+ * Receives as input the APIC ID of a CPU.
+ */
+uint16_t
+apic_get_cpu_kernel_id(int apic_id)
+{
+	int i = 0;
+	while(apic_data.cpu_lapic_list[i] != apic_id && i < apic_data.ncpus) i++;
+	
+	int kernel_id = -1;
+	if(i < apic_data.ncpus) kernel_id = i;
+
+    return kernel_id;
+}
+
 /* apic_get_lapic: returns a reference to the common memory address for Local APIC. */
 volatile ApicLocalUnit*
 apic_get_lapic(void)
