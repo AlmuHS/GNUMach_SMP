@@ -66,6 +66,7 @@
 #include <i386/locore.h>
 #include <i386/model_dep.h>
 #include <i386/smp.h>
+#include <i386at/acpi_parse_apic.h>
 #include <i386at/autoconf.h>
 #include <i386at/biosmem.h>
 #include <i386at/elf.h>
@@ -170,10 +171,14 @@ void machine_init(void)
 	hyp_init();
 #else	/* MACH_HYP */
 
-#if (NCPUS > 1) && defined(APIC)
-	smp_init();
+#if defined(APIC)
+	if (acpi_apic_init() != ACPI_SUCCESS) {
+		panic("APIC not found, unable to boot");
+	}
 	ioapic_configure();
 	lapic_enable_timer();
+#if (NCPUS > 1)
+	smp_init();
 
 #warning FIXME: Rather unmask them from their respective drivers
 	/* kd */
@@ -183,6 +188,7 @@ void machine_init(void)
 	/* com1 */
 	unmask_irq(3);
 #endif /* NCPUS > 1 */
+#endif /* APIC */
 
 #ifdef LINUX_DEV
 	/*

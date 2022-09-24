@@ -20,7 +20,6 @@
 
 #include <i386/i386/apic.h>
 #include <i386/i386/smp.h>
-#include <i386/i386at/acpi_parse_apic.h>
 
 #include <kern/smp.h>
 
@@ -42,12 +41,7 @@ static void smp_data_init(void)
  */
 int smp_init(void)
 {
-    int apic_success;
+    smp_data_init();
 
-    apic_success = acpi_apic_init();
-    if (apic_success == ACPI_SUCCESS) {
-        smp_data_init();
-    }
-
-    return apic_success;
+    return 0;
 }
