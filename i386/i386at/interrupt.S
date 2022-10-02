@@ -30,24 +30,48 @@
  *
  * On entry, %eax contains the irq number.
  */
+
+#define S_REGS 32(%esp)
+#define S_RET 28(%esp)
+#define S_IRQ 24(%esp)
+#define S_IPL 20(%esp)
+
 ENTRY(interrupt)
 #ifdef APIC
 	cmpl	$255,%eax		/* was this a spurious intr? */
 	je	_no_eoi			/* if so, just return */
 #endif
-	pushl	%eax			/* save irq number */
-	movl	%eax,%ecx		/* copy irq number */
-	shll	$2,%ecx			/* irq * 4 */
+	subl	$28,%esp		/* Two local variables + 5 parameters */
+	movl	%eax,S_IRQ		/* save irq number */
 	call	spl7			/* set ipl */
-	movl	EXT(iunit)(%ecx),%edx	/* get device unit number */
-	pushl	%eax			/* push previous ipl */
-	pushl	%edx			/* push unit number */
-	call	*EXT(ivect)(%ecx)	/* call interrupt handler */
-	addl	$4,%esp			/* pop unit number */
+	movl	%eax,S_IPL		/* save previous ipl */
+
+	movl	S_IPL,%eax
+	movl	%eax,4(%esp)		/* previous ipl as 2nd arg */
+
+	movl	S_IRQ,%eax
+	movl	%eax,8(%esp)		/* irq number as 3rd arg */
+
+	movl	S_RET,%eax
+	movl	%eax,12(%esp)		/* return address as 4th arg */
+
+	movl	S_REGS,%eax
+	movl	%eax,16(%esp)		/* address of interrupted registers as 5th arg */
+
+	movl	S_IRQ,%eax		/* copy irq number */
+	shll	$2,%eax			/* irq * 4 */
+	movl	EXT(iunit)(%eax),%edx	/* get device unit number */
+	movl	%edx,(%esp)		/* unit number as 1st arg */
+
+	call	*EXT(ivect)(%eax)	/* call interrupt handler */
+
+	movl	S_IPL,%eax		/* restore previous ipl */
+	movl	%eax,S_ARG0
 	call	splx_cli		/* restore previous ipl */
-	addl	$4,%esp			/* pop previous ipl */
 	cli				/* XXX no more nested interrupts */
-	popl	%ecx			/* restore irq number */
+
+	movl	S_IRQ,%ecx		/* restore irq number */
+
 #ifndef APIC
 	movl	$1,%eax
 	shll	%cl,%eax		/* get corresponding IRQ mask */
@@ -84,15 +108,14 @@ ENTRY(interrupt)
 	movl	EXT(curr_pic_mask),%eax /* restore original mask */
 	outb	%al,$(PIC_MASTER_OCW)	/* unmask master */
 2:
-	ret
 #else
 	cmpl    $16,%ecx		/* was this a low ISA intr? */
 	jge     _no_eoi			/* no, must be PCI (let irq_ack handle EOI) */
 _isa_eoi:
-	pushl	%ecx			/* push irq number */
+	movl	%ecx,S_ARG0		/* load irq number as 1st arg */
 	call	EXT(ioapic_irq_eoi)	/* ioapic irq specific EOI */
-	addl	$4,%esp			/* pop irq number */
+#endif
+	addl	$28,%esp		/* pop local variables */
 _no_eoi:
 	ret
-#endif
 END(interrupt)

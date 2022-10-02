@@ -493,6 +493,7 @@ int user_trap(struct i386_saved_state *regs)
 			opcode = inst_fetch(regs->eip, regs->cs);
 			for (i = 0; i < 4; i++)
 				addr[i] = inst_fetch(regs->eip+i+1, regs->cs);
+			(void) addr;
 			for (i = 0; i < 2; i++)
 				seg[i] = inst_fetch(regs->eip+i+5, regs->cs);
 			if (opcode == 0x9a && seg[0] == 0x7 && seg[1] == 0) {

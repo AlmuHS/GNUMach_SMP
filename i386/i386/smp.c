@@ -20,11 +20,8 @@
 
 #include <i386/i386/apic.h>
 #include <i386/i386/smp.h>
-#include <i386/i386at/acpi_parse_apic.h>
 #include <kern/printf.h>
 #include <mach/machine.h>
-
-#include <kern/smp.h>
 
 #define AP_BOOT_ADDR (0x7000)
 
@@ -74,12 +71,7 @@ void smp_startup_cpu(unsigned apic_id, unsigned vector)
  */
 int smp_init(void)
 {
-    int apic_success;
+    smp_data_init();
 
-    apic_success = acpi_apic_init();
-    if (apic_success == ACPI_SUCCESS) {
-        smp_data_init();
-    }
-
-    return apic_success;
+    return 0;
 }

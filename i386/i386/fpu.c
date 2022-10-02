@@ -183,7 +183,7 @@ init_fpu(void)
 				panic("CPU-provided xstate size %d "
 				      "is smaller than our minimum %d!\n",
 				      fp_xsave_size,
-				      sizeof(struct i386_fpsave_state));
+				      (int) sizeof(struct i386_fpsave_state));
 
 			fp_save_kind = FP_XSAVES;
 		    } else {
@@ -195,7 +195,7 @@ init_fpu(void)
 				panic("CPU-provided xstate size %d "
 				      "is smaller than our minimum %d!\n",
 				      fp_xsave_size,
-				      sizeof(struct i386_fpsave_state));
+				      (int) sizeof(struct i386_fpsave_state));
 
 			if (eax & CPU_FEATURE_XSAVEOPT)
 			    fp_save_kind = FP_XSAVEOPT;

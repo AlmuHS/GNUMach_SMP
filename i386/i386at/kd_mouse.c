@@ -427,7 +427,6 @@ int lastgitech = 0x40;		/* figure whether the first 3 bytes imply */
 int fourthgitech = 0;		/* look for the 4th byte; we must process it */
 int middlegitech = 0;		/* what should the middle button be */
 
-#define MOUSEBUFSIZE	5		/* num bytes def'd by protocol */
 static u_char mousebuf[MOUSEBUFSIZE];	/* 5-byte packet from mouse */
 
 void
