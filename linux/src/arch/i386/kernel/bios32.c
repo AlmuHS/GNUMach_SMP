@@ -877,8 +877,8 @@ unsigned long pcibios_init(unsigned long memory_start, unsigned long memory_end)
 	 *
 	 */
 
-	for (check = (union bios32 *) 0xe0000;
-	     check <= (union bios32 *) 0xffff0;
+	for (check = (union bios32 *) phystokv(0xe0000);
+	     check <= (union bios32 *) phystokv(0xffff0);
 	     ++check) {
 		if (check->fields.signature != BIOS32_SIGNATURE)
 			continue;
@@ -891,11 +891,11 @@ unsigned long pcibios_init(unsigned long memory_start, unsigned long memory_end)
 		if (sum != 0)
 			continue;
 		if (check->fields.revision != 0) {
-			printk("pcibios_init : unsupported revision %d at 0x%p, mail drew@colorado.edu\n",
-				check->fields.revision, check);
+			printk("pcibios_init : unsupported revision %d at 0x%lx, mail drew@colorado.edu\n",
+				check->fields.revision, _kvtophys(check));
 			continue;
 		}
-		printk ("pcibios_init : BIOS32 Service Directory structure at 0x%p\n", check);
+		printk ("pcibios_init : BIOS32 Service Directory structure at 0x%lx\n", _kvtophys(check));
 		if (!bios32_entry) {
 			if (check->fields.entry >= 0x100000) {
 				printk("pcibios_init: entry in high memory, trying direct PCI access\n");
