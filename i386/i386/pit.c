@@ -83,6 +83,12 @@ pit_prepare_sleep(int hz)
     outb (PITCTR2_PORT, lsb);
     val = inb(POST_PORT); /* ~1us i/o delay */
     outb (PITCTR2_PORT, msb);
+}
+
+void
+pit_sleep(void)
+{
+    int val;
 
     /* Start counting down */
     val = inb(PITAUX_PORT);
@@ -90,13 +96,23 @@ pit_prepare_sleep(int hz)
     outb (PITAUX_PORT, val); /* Gate low */
     val |= PITAUX_GATE2;
     outb (PITAUX_PORT, val); /* Gate high */
+
+    /* Wait until counter reaches zero */
+    while ((inb(PITAUX_PORT) & PITAUX_VAL) == 0);
 }
 
 void
-pit_sleep(void)
+pit_udelay(int usec)
 {
-    /* Wait until counter reaches zero */
-    while ((inb(PITAUX_PORT) & PITAUX_VAL) == 0);
+    pit_prepare_sleep(1000000 / usec);
+    pit_sleep();
+}
+
+void
+pit_mdelay(int msec)
+{
+    pit_prepare_sleep(1000 / msec);
+    pit_sleep();
 }
 
 void
@@ -115,7 +131,7 @@ clkstart(void)
 	 * timers you do not use
 	 */
 	outb(pitctl_port, pit0_mode);
-	clknumb = CLKNUM/hz;
+	clknumb = (CLKNUM + hz / 2) / hz;
 	byte = clknumb;
 	outb(pitctr0_port, byte);
 	byte = clknumb>>8;

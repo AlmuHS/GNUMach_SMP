@@ -91,5 +91,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 extern void clkstart(void);
 extern void pit_prepare_sleep(int hz);
 extern void pit_sleep(void);
+extern void pit_udelay(int usec);
+extern void pit_mdelay(int msec);
 
 #endif /* _I386_PIT_H_ */
