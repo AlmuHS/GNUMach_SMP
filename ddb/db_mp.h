@@ -22,6 +22,7 @@
 void	remote_db(void);
 void	lock_db(void);
 void	unlock_db(void);
+void	db_on(int i);
 
 #if CONSOLE_ON_MASTER
 void db_console(void);

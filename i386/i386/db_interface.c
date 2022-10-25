@@ -100,7 +100,9 @@ void db_load_context(pcb_t pcb)
 }
 
 void cpu_interrupt_to_db(int i){
-	printf("TODO: cpu_interrupt_to_db\n");
+#if NCPUS > 1
+	db_on(i);
+#endif
 }
 
 void db_get_debug_state(
