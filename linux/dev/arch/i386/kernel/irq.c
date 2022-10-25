@@ -363,7 +363,7 @@ probe_irq_on (void)
   for (delay = jiffies + HZ / 10; delay > jiffies;)
     ;
 
-  return (irqs & ~curr_pic_mask);
+  return (irqs & ~linux_pic_mask);
 }
 
 /*
@@ -376,7 +376,7 @@ probe_irq_off (unsigned long irqs)
 
   assert (curr_ipl == 0);
 
-  irqs &= curr_pic_mask;
+  irqs &= linux_pic_mask;
 
   /*
    * Disable unnecessary IRQs.
