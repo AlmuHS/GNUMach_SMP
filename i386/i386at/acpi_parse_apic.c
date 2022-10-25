@@ -33,6 +33,7 @@
 #include <vm/vm_kern.h>
 
 static struct acpi_apic *apic_madt = NULL;
+unsigned lapic_addr;
 
 /*
  * acpi_print_info: shows by screen the ACPI's rsdp and rsdt virtual address
@@ -459,6 +460,7 @@ acpi_apic_setup(struct acpi_apic *apic)
         return ACPI_BAD_CHECKSUM;
 
     /* map common lapic address */
+    lapic_addr = apic->lapic_addr;
     lapic_unit = kmem_map_aligned_table(apic->lapic_addr, sizeof(ApicLocalUnit),
                                         VM_PROT_READ | VM_PROT_WRITE);
 
