@@ -84,9 +84,9 @@ get_eflags(void)
 {
 	unsigned long eflags;
 #ifdef __x86_64__
-	asm("pushfq; pop %0" : "=r" (eflags));
+	asm("pushfq; popq %0" : "=r" (eflags));
 #else
-	asm("pushfd; pop %0" : "=r" (eflags));
+	asm("pushfl; popl %0" : "=r" (eflags));
 #endif
 	return eflags;
 }
@@ -95,9 +95,9 @@ static inline void
 set_eflags(unsigned long eflags)
 {
 #ifdef __x86_64__
-	asm volatile("push %0; popfq" : : "r" (eflags));
+	asm volatile("pushq %0; popfq" : : "r" (eflags));
 #else
-	asm volatile("push %0; popfd" : : "r" (eflags));
+	asm volatile("pushl %0; popfl" : : "r" (eflags));
 #endif
 }
 
@@ -111,14 +111,14 @@ set_eflags(unsigned long eflags)
 #define get_eflags() \
     ({ \
 	register unsigned long _temp__; \
-	asm("pushfq; pop %0" : "=r" (_temp__)); \
+	asm("pushfq; popq %0" : "=r" (_temp__)); \
 	_temp__; \
     })
 #else
 #define get_eflags() \
     ({ \
 	register unsigned long _temp__; \
-	asm("pushfd; pop %0" : "=r" (_temp__)); \
+	asm("pushfl; popl %0" : "=r" (_temp__)); \
 	_temp__; \
     })
 #endif
