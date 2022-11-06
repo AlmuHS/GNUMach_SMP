@@ -7122,9 +7122,15 @@ information about the individual threads.
 Display the information of a task specified by @var{addr}.  If
 @var{addr} is omitted, current task information is displayed.
 
+@code{show task $taskxx} can notably be used to show task number
+@var{xx}
+
 @item show thread [ @var{addr} ]
 Display the information of a thread specified by @var{addr}.  If
 @var{addr} is omitted, current thread information is displayed.
+
+@code{show thread $taskxx.yy} can notably be used to show thread
+number @var{yy} of task number @var{xx}.
 
 @item show registers[/tu [ @var{thread} ]]
 Display the register set.  Target thread can be specified with @code{t}
@@ -7136,6 +7142,9 @@ machine.  If not supported, incorrect information will be displayed.
 
 @item show map @var{addr}
 Prints the @code{vm_map} at @var{addr}.
+
+@code{show map $mapxx} can notably be used to show the map of task
+number @var{xx}.
 
 @item show object @var{addr}
 Prints the @code{vm_object} at @var{addr}.
