@@ -152,14 +152,8 @@ type vm_machine_attribute_val_t = int;
 type vm_sync_t = int;
 
 type thread_info_t		= array[*:1024] of integer_t;
-type thread_basic_info_data_t	= struct[11] of integer_t;
-type thread_sched_info_data_t	= struct[7] of integer_t;
 
 type task_info_t		= array[*:1024] of integer_t;
-type task_basic_info_data_t	= struct[8] of integer_t;
-type task_events_info		= struct[7] of natural_t;
-type task_thread_times_info_data_t = struct[4] of integer_t;
-
 
 type memory_object_t = mach_port_t
 		ctype: mach_port_t
@@ -199,9 +193,6 @@ type memory_object_name_t = mach_port_t
 type memory_object_copy_strategy_t = int;
 type memory_object_return_t = int;
 
-type machine_info_data_t = struct[5] of integer_t;
-type machine_slot_data_t = struct[8] of integer_t;
-
 type host_t = mach_port_t
 		ctype: mach_port_t
 #if	KERNEL_SERVER
@@ -218,10 +209,6 @@ type host_priv_t = mach_port_t
 		;
 
 type host_info_t 			= array[*:1024] of integer_t;
-type host_basic_info_data_t		= struct[5] of integer_t;
-type host_sched_info_data_t		= struct[2] of integer_t;
-type host_load_info_data_t		= struct[6] of integer_t;
-
 
 type processor_t = mach_port_t
 		ctype: mach_port_t
@@ -233,8 +220,6 @@ type processor_t = mach_port_t
 
 type processor_array_t 		= ^array[] of processor_t;
 type processor_info_t		= array[*:1024] of integer_t;
-type processor_basic_info_data_t = struct[5] of integer_t;
-
 
 type processor_set_t = mach_port_t
 		ctype: mach_port_t
@@ -259,9 +244,6 @@ type processor_set_name_t = mach_port_t
 type processor_set_name_array_t = ^array[] of processor_set_name_t;
 
 type processor_set_info_t	= array[*:1024] of integer_t;
-type processor_set_basic_info_data_t = struct[5] of integer_t;
-type processor_set_sched_info_data_t = struct[2] of integer_t;
-
 
 type kernel_version_t		= (MACH_MSG_TYPE_STRING, 512*8);
 
