@@ -66,7 +66,7 @@ ENTRY(interrupt)
 	call	*EXT(ivect)(%eax)	/* call interrupt handler */
 
 	movl	S_IPL,%eax		/* restore previous ipl */
-	movl	%eax,S_ARG0
+	movl	%eax,(%esp)
 	call	splx_cli		/* restore previous ipl */
 	cli				/* XXX no more nested interrupts */
 
@@ -112,7 +112,7 @@ ENTRY(interrupt)
 	cmpl    $16,%ecx		/* was this a low ISA intr? */
 	jge     _no_eoi			/* no, must be PCI (let irq_ack handle EOI) */
 _isa_eoi:
-	movl	%ecx,S_ARG0		/* load irq number as 1st arg */
+	movl	%ecx,(%esp)		/* load irq number as 1st arg */
 	call	EXT(ioapic_irq_eoi)	/* ioapic irq specific EOI */
 #endif
 	addl	$28,%esp		/* pop local variables */
