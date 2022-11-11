@@ -29,12 +29,21 @@
 
 #include <mach/std_types.defs>
 
-type default_pager_info_t = struct[3] of natural_t;
+type default_pager_info_t = struct {
+   vm_size_t dpi_total_space;
+   vm_size_t dpi_free_space;
+   vm_size_t dpi_page_size;
+};
 
-type default_pager_object_t = struct[2] of natural_t;
+type default_pager_object_t = struct {
+   vm_offset_t dpo_object;
+   vm_size_t dpo_size;
+};
 type default_pager_object_array_t = array[] of default_pager_object_t;
 
-type default_pager_page_t = struct[1] of natural_t;
+type default_pager_page_t = struct {
+   vm_offset_t dpp_offset;
+};
 type default_pager_page_array_t = array[] of default_pager_page_t;
 
 type default_pager_filename_t = (MACH_MSG_TYPE_STRING_C, 8*256);
