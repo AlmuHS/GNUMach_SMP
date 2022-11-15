@@ -618,6 +618,7 @@ ENTRY(call_continuation)
 	pushq	$0				/* Dummy return address */
 	jmp	*%rax				/* goto continuation */
 
+/* IOAPIC has 24 interrupts, put spurious in the same array */
 
 #define INTERRUPT(n)				\
 	.data	2				;\
@@ -633,6 +634,7 @@ ENTRY(call_continuation)
 	.data	2
 DATA(int_entry_table)
 	.text
+/* Legacy APIC interrupts or PIC interrupts */
 INTERRUPT(0)
 INTERRUPT(1)
 INTERRUPT(2)
@@ -649,6 +651,19 @@ INTERRUPT(12)
 INTERRUPT(13)
 INTERRUPT(14)
 INTERRUPT(15)
+#ifdef APIC
+/* APIC PCI interrupts PIRQ A-H */
+INTERRUPT(16)
+INTERRUPT(17)
+INTERRUPT(18)
+INTERRUPT(19)
+INTERRUPT(20)
+INTERRUPT(21)
+INTERRUPT(22)
+INTERRUPT(23)
+/* Spurious interrupt, set irq number to vect number */
+INTERRUPT(255)
+#endif
 
 /* XXX handle NMI - at least print a warning like Linux does.  */
 
