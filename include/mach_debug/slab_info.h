@@ -38,16 +38,16 @@
 
 typedef struct cache_info {
 	int flags;
-	size_t cpu_pool_size;
-	size_t obj_size;
-	size_t align;
-	size_t buf_size;
-	size_t slab_size;
-	unsigned long bufs_per_slab;
-	unsigned long nr_objs;
-	unsigned long nr_bufs;
-	unsigned long nr_slabs;
-	unsigned long nr_free_slabs;
+	rpc_vm_size_t cpu_pool_size;
+	rpc_vm_size_t obj_size;
+	rpc_vm_size_t align;
+	rpc_vm_size_t buf_size;
+	rpc_vm_size_t slab_size;
+	rpc_unsigned_long bufs_per_slab;
+	rpc_unsigned_long nr_objs;
+	rpc_unsigned_long nr_bufs;
+	rpc_unsigned_long nr_slabs;
+	rpc_unsigned_long nr_free_slabs;
 	char name[CACHE_NAME_MAX_LEN];
 } cache_info_t;
 

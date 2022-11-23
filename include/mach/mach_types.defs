@@ -120,6 +120,8 @@ type rpc_vm_size_t = uint32_t;
 #endif /* __x86_64__ */
 #endif /* KERNEL_SERVER and USER32 */
 
+type rpc_vm_offset_t = rpc_vm_size_t;
+
 type vm_address_t = rpc_vm_size_t
 #if defined(KERNEL_SERVER)
     intran: vm_address_t convert_vm_from_user(rpc_vm_address_t)
@@ -128,7 +130,7 @@ type vm_address_t = rpc_vm_size_t
     ctype: rpc_vm_address_t
 #endif
     ;
-type vm_offset_t = rpc_vm_size_t
+type vm_offset_t = rpc_vm_offset_t
 #if defined(KERNEL_SERVER)
     intran: vm_offset_t convert_vm_from_user(rpc_vm_offset_t)
     outtran: rpc_vm_offset_t convert_vm_to_user(vm_offset_t)

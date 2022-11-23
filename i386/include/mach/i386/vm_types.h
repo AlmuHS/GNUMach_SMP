@@ -116,12 +116,14 @@ static inline __mach_uint32_t convert_vm_to_user(__mach_uint64_t kaddr)
     assert(kaddr <= 0xFFFFFFFF);
     return (__mach_uint32_t)kaddr;
 }
+typedef __mach_uint32_t rpc_unsigned_long;
 #else /* MACH_KERNEL */
 typedef vm_offset_t	rpc_vm_address_t;
 typedef vm_offset_t	rpc_vm_offset_t;
 typedef vm_size_t	rpc_vm_size_t;
 #define convert_vm_to_user null_conversion
 #define convert_vm_from_user null_conversion
+typedef unsigned long rpc_unsigned_long;
 #endif /* MACH_KERNEL */
 
 #endif	/* __ASSEMBLER__ */

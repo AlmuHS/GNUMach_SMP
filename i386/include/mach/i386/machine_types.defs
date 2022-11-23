@@ -59,6 +59,20 @@ type natural_t = uint32_t;
 type integer_t = int32_t;
 
 /*
+ * unsigned long for kernel <-> userland interfaces size depends on the architecture
+ * of both kernel and userland.
+ */
+#if defined(KERNEL) && defined(USER32)
+type rpc_unsigned_long = uint32_t;
+#else /* KERNEL and USER32 */
+#if defined(__x86_64__)
+type rpc_unsigned_long = uint64_t;
+#else /* __x86_64__ */
+type rpc_unsigned_long = uint32_t;
+#endif /* __x86_64__ */
+#endif /* KERNEL_SERVER and USER32 */
+
+/*
  * Physical address size
  */
 type rpc_phys_addr_t = uint64_t;

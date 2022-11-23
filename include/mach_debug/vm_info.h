@@ -39,6 +39,7 @@
 #include <mach/vm_inherit.h>
 #include <mach/vm_prot.h>
 #include <mach/memory_object.h>
+#include <stdint.h>
 
 /*
  *	Remember to update the mig type definitions
@@ -49,22 +50,22 @@ typedef struct vm_region_info {
 	rpc_vm_offset_t vri_start;		/* start of region */
 	rpc_vm_offset_t vri_end;		/* end of region */
 
-/*vm_prot_t*/natural_t vri_protection;	/* protection code */
-/*vm_prot_t*/natural_t vri_max_protection;	/* maximum protection */
-/*vm_inherit_t*/natural_t vri_inheritance;	/* inheritance */
-	natural_t vri_wired_count;	/* number of times wired */
-	natural_t vri_user_wired_count; /* number of times user has wired */
+	vm_prot_t vri_protection;	/* protection code */
+	vm_prot_t vri_max_protection;	/* maximum protection */
+	vm_inherit_t vri_inheritance;	/* inheritance */
+	unsigned int vri_wired_count;	/* number of times wired */
+	unsigned int vri_user_wired_count; /* number of times user has wired */
 
 	rpc_vm_offset_t vri_object;		/* the mapped object */
 	rpc_vm_offset_t vri_offset;		/* offset into object */
 /*boolean_t*/integer_t vri_needs_copy;	/* does object need to be copied? */
-	natural_t vri_sharing;	/* share map references */
+	unsigned int vri_sharing;	/* share map references */
 } vm_region_info_t;
 
 typedef vm_region_info_t *vm_region_info_array_t;
 
 
-typedef natural_t vm_object_info_state_t;
+typedef uint32_t vm_object_info_state_t;
 
 #define VOI_STATE_PAGER_CREATED		0x00000001
 #define VOI_STATE_PAGER_INITIALIZED	0x00000002
@@ -80,24 +81,23 @@ typedef struct vm_object_info {
 	rpc_vm_offset_t voi_object;		/* this object */
 	rpc_vm_size_t voi_pagesize;		/* object's page size */
 	rpc_vm_size_t voi_size;		/* object size (valid if internal) */
-	natural_t voi_ref_count;	/* number of references */
-	natural_t voi_resident_page_count; /* number of resident pages */
-	natural_t voi_absent_count;	/* number requested but not filled */
+	unsigned int voi_ref_count;	/* number of references */
+	unsigned int voi_resident_page_count; /* number of resident pages */
+	unsigned int voi_absent_count;	/* number requested but not filled */
 	rpc_vm_offset_t voi_copy;		/* copy object */
 	rpc_vm_offset_t voi_shadow;		/* shadow object */
 	rpc_vm_offset_t voi_shadow_offset;	/* offset into shadow object */
 	rpc_vm_offset_t voi_paging_offset;	/* offset into memory object */
-/*memory_object_copy_strategy_t*/integer_t voi_copy_strategy;
+	memory_object_copy_strategy_t voi_copy_strategy;
 					/* how to handle data copy */
 	rpc_vm_offset_t voi_last_alloc;	/* offset of last allocation */
-	natural_t voi_paging_in_progress; /* paging references */
+	unsigned int voi_paging_in_progress; /* paging references */
 	vm_object_info_state_t voi_state; /* random state bits */
 } vm_object_info_t;
 
 typedef vm_object_info_t *vm_object_info_array_t;
 
-
-typedef natural_t vm_page_info_state_t;
+typedef uint32_t vm_page_info_state_t;
 
 #define VPI_STATE_BUSY		0x00000001
 #define VPI_STATE_WANTED	0x00000002
@@ -118,11 +118,11 @@ typedef natural_t vm_page_info_state_t;
 #define VPI_STATE_PAGER		0x80000000	/* pager has the page */
 
 typedef struct vm_page_info {
-	vm_offset_t vpi_offset;		/* offset in object */
-	vm_offset_t vpi_phys_addr;	/* physical address */
-	natural_t vpi_wire_count;	/* number of times wired */
-/*vm_prot_t*/natural_t vpi_page_lock;	/* XP access restrictions */
-/*vm_prot_t*/natural_t vpi_unlock_request;	/* outstanding unlock requests */
+	rpc_vm_offset_t vpi_offset;	/* offset in object */
+	rpc_vm_offset_t vpi_phys_addr;	/* physical address */
+	unsigned int vpi_wire_count;	/* number of times wired */
+	vm_prot_t vpi_page_lock;	/* XP access restrictions */
+	vm_prot_t vpi_unlock_request;	/* outstanding unlock requests */
 	vm_page_info_state_t vpi_state;	/* random state bits */
 } vm_page_info_t;
 

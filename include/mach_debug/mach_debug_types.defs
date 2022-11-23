@@ -32,19 +32,74 @@
 
 #include <mach/std_types.defs>
 
-type cache_info_t = struct[19] of integer_t;
+#define CACHE_NAME_MAX_LEN 32
+type cache_name_t = struct[CACHE_NAME_MAX_LEN] of char;
+#undef CACHE_NAME_MAX_LEN
+type cache_info_t = struct {
+   integer_t flags;
+   rpc_vm_size_t cpu_pool_size;
+   rpc_vm_size_t obj_size;
+   rpc_vm_size_t align;
+   rpc_vm_size_t buf_size;
+   rpc_vm_size_t slab_size;
+   rpc_unsigned_long bufs_per_slab;
+   rpc_unsigned_long nr_objs;
+   rpc_unsigned_long nr_bufs;
+   rpc_unsigned_long nr_slabs;
+   rpc_unsigned_long nr_free_slabs;
+   cache_name_t name;
+};
 type cache_info_array_t = array[] of cache_info_t;
 
-type hash_info_bucket_t = struct[1] of natural_t;
+type hash_info_bucket_t = struct {
+   unsigned hib_count;
+};
 type hash_info_bucket_array_t = array[] of hash_info_bucket_t;
 
-type vm_region_info_t = struct[11] of natural_t;
+type vm_region_info_t = struct {
+   rpc_vm_offset_t vri_start;
+   rpc_vm_offset_t vri_end;
+   vm_prot_t vri_protection;
+   vm_prot_t vri_max_protection;
+   vm_inherit_t vri_inheritance;
+   unsigned vri_wired_count;
+   unsigned vri_user_wired_count;
+   rpc_vm_offset_t vri_object;
+   rpc_vm_offset_t vri_offset;
+   integer_t vri_needs_copy;
+   unsigned vri_sharing;
+};
 type vm_region_info_array_t = array[] of vm_region_info_t;
 
-type vm_object_info_t = struct[14] of natural_t;
+type vm_object_info_state_t = uint32_t;
+type vm_object_info_t = struct {
+    rpc_vm_offset_t voi_object;
+    rpc_vm_size_t voi_pagesize;
+    rpc_vm_size_t voi_size;
+    unsigned voi_ref_count;
+    unsigned voi_resident_page_count;
+    unsigned voi_absent_count;
+    rpc_vm_offset_t voi_copy;
+    rpc_vm_offset_t voi_shadow;
+    rpc_vm_offset_t voi_shadow_offset;
+    rpc_vm_offset_t voi_paging_offset;
+    memory_object_copy_strategy_t voi_copy_strategy;
+    rpc_vm_offset_t voi_last_alloc;
+    unsigned voi_paging_in_progress;
+    vm_object_info_state_t voi_state;
+};
 type vm_object_info_array_t = array[] of vm_object_info_t;
 
-type vm_page_info_t = struct[6] of natural_t;
+type vm_page_info_state_t = uint32_t;
+
+type vm_page_info_t = struct {
+   rpc_vm_offset_t vpi_offset;
+   rpc_vm_offset_t vpi_phys_addr;
+   unsigned vpi_wire_count;
+   vm_prot_t vpi_page_lock;
+   vm_prot_t vpi_unlock_request;
+   vm_page_info_state_t vpi_state;
+};
 type vm_page_info_array_t = array[] of vm_page_info_t;
 
 type symtab_name_t = (MACH_MSG_TYPE_STRING_C, 8*32);
