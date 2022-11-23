@@ -30,7 +30,6 @@
 #ifndef	_MACH_DEBUG_MACH_DEBUG_TYPES_H_
 #define _MACH_DEBUG_MACH_DEBUG_TYPES_H_
 
-#include <mach_debug/ipc_info.h>
 #include <mach_debug/vm_info.h>
 #include <mach_debug/slab_info.h>
 #include <mach_debug/hash_info.h>

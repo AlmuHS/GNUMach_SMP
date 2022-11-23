@@ -444,7 +444,6 @@ include_mach_debugdir = $(includedir)/mach_debug
 include_mach_debug_HEADERS = \
 	$(addprefix include/mach_debug/, \
 		hash_info.h \
-		ipc_info.h \
 		mach_debug.defs	\
 		mach_debug_types.defs \
 		mach_debug_types.h \

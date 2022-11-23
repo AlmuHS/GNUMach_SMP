@@ -39,7 +39,6 @@
 #include <mach/port.h>
 #include <mach/machine/vm_types.h>
 #include <mach/vm_param.h>
-#include <mach_debug/ipc_info.h>
 #include <mach_debug/hash_info.h>
 #include <kern/host.h>
 #include <vm/vm_map.h>
