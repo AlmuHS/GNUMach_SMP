@@ -894,7 +894,7 @@ ENTRY(kdb_kintr)
 	cmpq	RET_OFFSET(%rax),%rdx	/* interrupt handler (2)? */
 	je	2f			/* if not: */
 	movq	(%rax),%rax		/* try next frame */
-	testl	%rax,%rax
+	testq	%rax,%rax
 	jnz	0b
 	ud2				/* oops, didn't find frame, fix me :/ */
 
