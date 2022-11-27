@@ -1632,7 +1632,8 @@ kern_return_t vm_map_protect(
 		 */
 
 		if ((current->protection != VM_PROT_NONE) &&
-		    (current->wired_access != VM_PROT_NONE)) {
+		    (current->wired_access != VM_PROT_NONE ||
+		     map->wiring_required)) {
 			current->wired_access = current->protection;
 		}
 
