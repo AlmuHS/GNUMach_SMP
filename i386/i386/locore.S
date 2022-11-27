@@ -793,9 +793,13 @@ ast_from_interrupt:
  * frame->	saved %ebp
  *		return address in interrupt handler
  * #ifndef MACH_XEN
- *		iunit
+ *		1st parameter iunit
+ *		2nd parameter saved SPL
+ *		3rd parameter irq
+ *		4th parameter return address
+ *		5th parameter registers
  *		saved SPL
- *		irq
+ *		saved IRQ
  * #endif
  *		return address == return_to_iret_i
  *		saved %edx
@@ -834,7 +838,7 @@ ast_from_interrupt:
 #ifdef	MACH_XEN
 #define	RET_OFFSET	8
 #else	/* MACH_XEN */
-#define	RET_OFFSET	20
+#define	RET_OFFSET	36
 #endif	/* MACH_XEN */
 
 ENTRY(kdb_kintr)
@@ -848,7 +852,9 @@ ENTRY(kdb_kintr)
 	cmpl	RET_OFFSET(%eax),%edx	/* interrupt handler (2)? */
 	je	2f			/* if not: */
 	movl	(%eax),%eax		/* try next frame */
-	jmp	0b
+	testl	%eax,%eax
+	jnz	0b
+	ud2				/* oops, didn't find frame, fix me :/ */
 
 1:	movl	$kdb_from_iret,RET_OFFSET(%eax)
 	ret				/* returns to kernel/user stack */

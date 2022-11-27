@@ -839,6 +839,8 @@ ast_from_interrupt:
  *
  * frame->	saved %rbp
  *		return address in interrupt handler
+ *		saved SPL
+ *		saved IRQ
  *		return address == return_to_iret_i
  *		saved %r11
  *		saved %r10
@@ -878,7 +880,7 @@ ast_from_interrupt:
  * Call kdb, passing it that register save area.
  */
 
-#define	RET_OFFSET	16
+#define	RET_OFFSET	32
 
 
 ENTRY(kdb_kintr)
@@ -892,7 +894,9 @@ ENTRY(kdb_kintr)
 	cmpq	RET_OFFSET(%rax),%rdx	/* interrupt handler (2)? */
 	je	2f			/* if not: */
 	movq	(%rax),%rax		/* try next frame */
-	jmp	0b
+	testl	%rax,%rax
+	jnz	0b
+	ud2				/* oops, didn't find frame, fix me :/ */
 
 1:	movq	$kdb_from_iret,RET_OFFSET(%rax)
 	ret				/* returns to kernel/user stack */
