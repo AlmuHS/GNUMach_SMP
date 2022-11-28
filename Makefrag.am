@@ -447,7 +447,6 @@ include_mach_debug_HEADERS = \
 		mach_debug.defs	\
 		mach_debug_types.defs \
 		mach_debug_types.h \
-		pc_info.h \
 		vm_info.h \
 		slab_info.h \
 	)
