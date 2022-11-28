@@ -60,8 +60,8 @@ void take_pc_sample(
 
     cp->seqno++;
     sample = &((sampled_pc_t *)cp->buffer)[cp->seqno % MAX_PC_SAMPLES];
-    sample->id = (vm_offset_t)t;
-    sample->pc = pc;
+    sample->id = (rpc_vm_offset_t)t;
+    sample->pc = (rpc_vm_offset_t)pc;
     sample->sampletype = flavor;
 }
 

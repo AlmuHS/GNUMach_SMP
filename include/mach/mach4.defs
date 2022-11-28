@@ -41,10 +41,16 @@ subsystem
 
 
 #ifdef MACH_PCSAMPLE
-type sampled_pc_t 	= struct[3]    of natural_t;
+type sampled_pc_flavor_t = unsigned;
+
+type sampled_pc_t 	= struct {
+   rpc_vm_offset_t id;
+   rpc_vm_offset_t pc;
+   sampled_pc_flavor_t sampletype;
+};
+
 type sampled_pc_array_t = array[*:512] of sampled_pc_t;
 type sampled_pc_seqno_t = unsigned;
-type sampled_pc_flavor_t = natural_t;
 
 routine task_enable_pc_sampling(
 		host          : task_t;

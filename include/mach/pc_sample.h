@@ -29,7 +29,7 @@
 
 #include <mach/machine/vm_types.h>
 
-typedef natural_t	sampled_pc_flavor_t;
+typedef unsigned int	sampled_pc_flavor_t;
 
 
 #define SAMPLED_PC_PERIODIC			0x1	/* default */
@@ -54,8 +54,8 @@ typedef natural_t	sampled_pc_flavor_t;
  */
 
 typedef struct sampled_pc {
-    natural_t		id;
-    vm_offset_t		pc;
+    rpc_vm_offset_t		id;  /* task_t address */
+    rpc_vm_offset_t		pc;  /* program counter */
     sampled_pc_flavor_t sampletype;
 } sampled_pc_t;
 
