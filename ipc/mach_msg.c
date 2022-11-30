@@ -93,7 +93,7 @@ mach_msg_send(
 	mach_msg_option_t 	option,
 	mach_msg_size_t 	send_size,
 	mach_msg_timeout_t 	time_out,
-	mach_port_t 		notify)
+	mach_port_name_t 	notify)
 {
 	ipc_space_t space = current_space();
 	vm_map_t map = current_map();
@@ -174,9 +174,9 @@ mach_msg_receive(
 	mach_msg_header_t 	*msg,
 	mach_msg_option_t 	option,
 	mach_msg_size_t 	rcv_size,
-	mach_port_t 		rcv_name,
+	mach_port_name_t 	rcv_name,
 	mach_msg_timeout_t 	time_out,
-	mach_port_t 		notify)
+	mach_port_name_t 	notify)
 {
 	ipc_thread_t self = current_thread();
 	ipc_space_t space = current_space();
@@ -384,9 +384,9 @@ mach_msg_trap(
 	mach_msg_option_t 	option,
 	mach_msg_size_t 	send_size,
 	mach_msg_size_t 	rcv_size,
-	mach_port_t 		rcv_name,
+	mach_port_name_t 	rcv_name,
 	mach_msg_timeout_t 	time_out,
-	mach_port_t 		notify)
+	mach_port_name_t 	notify)
 {
 	mach_msg_return_t mr;
 
@@ -482,7 +482,7 @@ mach_msg_trap(
 					MACH_MSG_TYPE_MAKE_SEND_ONCE): {
 			ipc_port_t reply_port;
 		    {
-			mach_port_t reply_name =
+			mach_port_name_t reply_name =
 				kmsg->ikm_header.msgh_local_port;
 
 			if (reply_name != rcv_name)
@@ -500,7 +500,7 @@ mach_msg_trap(
 		    }
 
 		    {
-			mach_port_t dest_name =
+			mach_port_name_t dest_name =
 				kmsg->ikm_header.msgh_remote_port;
 
 			ipc_entry_t entry;
@@ -602,7 +602,7 @@ mach_msg_trap(
 			/* sending a reply message */
 
 		    {
-			mach_port_t reply_name =
+			mach_port_name_t reply_name =
 				kmsg->ikm_header.msgh_local_port;
 
 			if (reply_name != MACH_PORT_NULL)
@@ -614,7 +614,7 @@ mach_msg_trap(
 
 		    {
 			ipc_entry_t entry;
-			mach_port_t dest_name =
+			mach_port_name_t dest_name =
 				kmsg->ikm_header.msgh_remote_port;
 
 			entry = ipc_entry_lookup (space, dest_name);
@@ -950,7 +950,7 @@ mach_msg_trap(
 					MACH_MSG_TYPE_PORT_SEND_ONCE): {
 			ipc_port_t reply_port =
 				(ipc_port_t) kmsg->ikm_header.msgh_local_port;
-			mach_port_t dest_name, reply_name;
+			mach_port_name_t dest_name, reply_name;
 			unsigned long payload;
 
 			/* receiving a request message */
@@ -1055,7 +1055,7 @@ mach_msg_trap(
 		    }
 
 		    case MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND_ONCE, 0): {
-			mach_port_t dest_name;
+			mach_port_name_t dest_name;
 			unsigned long payload;
 
 			/* receiving a reply message */
@@ -1100,7 +1100,7 @@ mach_msg_trap(
 
 		    case MACH_MSGH_BITS_COMPLEX|
 			 MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND_ONCE, 0): {
-			mach_port_t dest_name;
+			mach_port_name_t dest_name;
 			unsigned long payload;
 
 			/* receiving a complex reply message */

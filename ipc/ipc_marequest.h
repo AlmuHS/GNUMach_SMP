@@ -63,7 +63,7 @@
 
 typedef struct ipc_marequest {
 	struct ipc_space *imar_space;
-	mach_port_t imar_name;
+	mach_port_name_t imar_name;
 	struct ipc_port *imar_soright;
 	struct ipc_marequest *imar_next;
 } *ipc_marequest_t;
@@ -84,14 +84,14 @@ ipc_marequest_info(unsigned int *, hash_info_bucket_t *, unsigned int);
 
 extern mach_msg_return_t
 ipc_marequest_create(ipc_space_t space, ipc_port_t port,
-		     mach_port_t notify, ipc_marequest_t *marequestp);
+		     mach_port_name_t notify, ipc_marequest_t *marequestp);
 
 extern void
-ipc_marequest_cancel(ipc_space_t space, mach_port_t name);
+ipc_marequest_cancel(ipc_space_t space, mach_port_name_t name);
 
 extern void
 ipc_marequest_rename(ipc_space_t space,
-		     mach_port_t old, mach_port_t new);
+		     mach_port_name_t old, mach_port_name_t new);
 
 extern void
 ipc_marequest_destroy(ipc_marequest_t marequest);

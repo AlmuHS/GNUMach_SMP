@@ -34,35 +34,35 @@ extern kern_return_t
 mach_port_allocate_name (
     ipc_space_t space,
     mach_port_right_t right,
-    mach_port_t name);
+    mach_port_name_t name);
 
 extern kern_return_t
 mach_port_allocate (
     ipc_space_t space,
     mach_port_right_t right,
-    mach_port_t *namep);
+    mach_port_name_t *namep);
 
 extern kern_return_t
 mach_port_destroy(
     ipc_space_t space,
-    mach_port_t name);
+    mach_port_name_t name);
 
 extern kern_return_t
 mach_port_deallocate(
     ipc_space_t space,
-    mach_port_t name);
+    mach_port_name_t name);
 
 extern kern_return_t
 mach_port_insert_right(
     ipc_space_t     space,
-    mach_port_t     name,
+    mach_port_name_t     name,
     ipc_port_t      poly,
     mach_msg_type_name_t    polyPoly);
 
 kern_return_t
 mach_port_get_receive_status(
 	ipc_space_t 		space,
-	mach_port_t 		name,
+	mach_port_name_t 	name,
 	mach_port_status_t 	*statusp);
 
 #if	MACH_KDB

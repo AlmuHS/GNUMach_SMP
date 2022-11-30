@@ -26,7 +26,7 @@
 #include "ipc_target.h"
 
 void
-ipc_target_init(struct ipc_target *ipt, mach_port_t name)
+ipc_target_init(struct ipc_target *ipt, mach_port_name_t name)
 {
 	ipt->ipt_name = name;
 	ipc_mqueue_init(&ipt->ipt_messages);

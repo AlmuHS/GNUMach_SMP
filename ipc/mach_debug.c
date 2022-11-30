@@ -189,7 +189,7 @@ host_ipc_marequest_info(
 kern_return_t
 mach_port_dnrequest_info(
 	ipc_space_t	space,
-	mach_port_t	name,
+	mach_port_name_t	name,
 	unsigned int	*totalp,
 	unsigned int	*usedp)
 {
@@ -248,7 +248,7 @@ mach_port_dnrequest_info(
 kern_return_t
 mach_port_kernel_object(
 	ipc_space_t	space,
-	mach_port_t	name,
+	mach_port_name_t	name,
 	unsigned int	*typep,
 	vm_offset_t	*addrp)
 {

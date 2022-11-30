@@ -66,10 +66,10 @@ typedef struct ipc_pset {
 #define	ips_release(pset)	io_release(&(pset)->ips_object)
 
 extern kern_return_t
-ipc_pset_alloc(ipc_space_t, mach_port_t *, ipc_pset_t *);
+ipc_pset_alloc(ipc_space_t, mach_port_name_t *, ipc_pset_t *);
 
 extern kern_return_t
-ipc_pset_alloc_name(ipc_space_t, mach_port_t, ipc_pset_t *);
+ipc_pset_alloc_name(ipc_space_t, mach_port_name_t, ipc_pset_t *);
 
 extern void
 ipc_pset_add(ipc_pset_t, ipc_port_t);

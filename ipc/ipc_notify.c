@@ -253,15 +253,15 @@ ipc_notify_init(void)
 
 void
 ipc_notify_port_deleted(
-	ipc_port_t 	port,
-	mach_port_t 	name)
+	ipc_port_t 		port,
+	mach_port_name_t 	name)
 {
 	ipc_kmsg_t kmsg;
 	mach_port_deleted_notification_t *n;
 
 	kmsg = ikm_alloc(sizeof *n);
 	if (kmsg == IKM_NULL) {
-		printf("dropped port-deleted (0x%p, 0x%lx)\n", port, name);
+		printf("dropped port-deleted (0x%p, 0x%x)\n", port, name);
 		ipc_port_release_sonce(port);
 		return;
 	}
@@ -287,15 +287,15 @@ ipc_notify_port_deleted(
 
 void
 ipc_notify_msg_accepted(
-	ipc_port_t 	port,
-	mach_port_t 	name)
+	ipc_port_t 		port,
+	mach_port_name_t 	name)
 {
 	ipc_kmsg_t kmsg;
 	mach_msg_accepted_notification_t *n;
 
 	kmsg = ikm_alloc(sizeof *n);
 	if (kmsg == IKM_NULL) {
-		printf("dropped msg-accepted (0x%p, 0x%lx)\n", port, name);
+		printf("dropped msg-accepted (0x%p, 0x%x)\n", port, name);
 		ipc_port_release_sonce(port);
 		return;
 	}
@@ -425,15 +425,15 @@ ipc_notify_send_once(ipc_port_t port)
 
 void
 ipc_notify_dead_name(
-	ipc_port_t 	port,
-	mach_port_t 	name)
+	ipc_port_t 		port,
+	mach_port_name_t 	name)
 {
 	ipc_kmsg_t kmsg;
 	mach_dead_name_notification_t *n;
 
 	kmsg = ikm_alloc(sizeof *n);
 	if (kmsg == IKM_NULL) {
-		printf("dropped dead-name (0x%p, 0x%lx)\n", port, name);
+		printf("dropped dead-name (0x%p, 0x%x)\n", port, name);
 		ipc_port_release_sonce(port);
 		return;
 	}

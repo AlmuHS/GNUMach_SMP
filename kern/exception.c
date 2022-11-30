@@ -269,9 +269,9 @@ exception_no_server(void)
 struct mach_exception {
 	mach_msg_header_t	Head;
 	mach_msg_type_t		threadType;
-	mach_port_t		thread;
+	mach_port_name_t	thread;
 	mach_msg_type_t		taskType;
-	mach_port_t		task;
+	mach_port_name_t	task;
 	mach_msg_type_t		exceptionType;
 	integer_t		exception;
 	mach_msg_type_t		codeType;
@@ -607,10 +607,12 @@ exception_raise(
     {
 	kern_return_t kr;
 	ipc_entry_t entry;
+	mach_port_name_t port_name;
 
-	kr = ipc_entry_get (space, &exc->Head.msgh_remote_port, &entry);
+	kr = ipc_entry_get (space, &port_name, &entry);
 	if (kr)
 		goto abort_copyout;
+	exc->Head.msgh_remote_port = (mach_port_t) port_name;
     {
 	mach_port_gen_t gen;
 

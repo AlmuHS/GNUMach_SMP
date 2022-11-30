@@ -65,9 +65,9 @@
 
 kern_return_t
 ipc_right_lookup_write(
-	ipc_space_t	space,
-	mach_port_t	name,
-	ipc_entry_t	*entryp)
+	ipc_space_t		space,
+	mach_port_name_t	name,
+	ipc_entry_t		*entryp)
 {
 	ipc_entry_t entry;
 
@@ -105,11 +105,11 @@ boolean_t
 ipc_right_reverse(
 	ipc_space_t	space,
 	ipc_object_t	object,
-	mach_port_t	*namep,
+	mach_port_name_t	*namep,
 	ipc_entry_t	*entryp)
 {
 	ipc_port_t port;
-	mach_port_t name;
+	mach_port_name_t name;
 	ipc_entry_t entry;
 
 	/* would switch on io_otype to handle multiple types of object */
@@ -184,11 +184,11 @@ ipc_right_reverse(
 
 kern_return_t
 ipc_right_dnrequest(
-	ipc_space_t	space,
-	mach_port_t	name,
-	boolean_t	immediate,
-	ipc_port_t	notify,
-	ipc_port_t	*previousp)
+	ipc_space_t		space,
+	mach_port_name_t	name,
+	boolean_t		immediate,
+	ipc_port_t		notify,
+	ipc_port_t		*previousp)
 {
 	ipc_port_t previous;
 
@@ -304,10 +304,10 @@ ipc_right_dnrequest(
 
 ipc_port_t
 ipc_right_dncancel(
-	ipc_space_t	space,
-	ipc_port_t	port,
-	mach_port_t	name,
-	ipc_entry_t	entry)
+	ipc_space_t		space,
+	ipc_port_t		port,
+	mach_port_name_t	name,
+	ipc_entry_t		entry)
 {
 	ipc_port_t dnrequest;
 
@@ -333,7 +333,7 @@ ipc_right_dncancel(
 boolean_t
 ipc_right_inuse(
 	ipc_space_t space,
-	mach_port_t name,
+	mach_port_name_t name,
 	ipc_entry_t entry)
 {
 	ipc_entry_bits_t bits = entry->ie_bits;
@@ -362,7 +362,7 @@ boolean_t
 ipc_right_check(
 	ipc_space_t 	space,
 	ipc_port_t 	port,
-	mach_port_t 	name,
+	mach_port_name_t 	name,
 	ipc_entry_t 	entry)
 {
 	ipc_entry_bits_t bits;
@@ -431,7 +431,7 @@ ipc_right_check(
 void
 ipc_right_clean(
 	ipc_space_t	space,
-	mach_port_t	name,
+	mach_port_name_t	name,
 	ipc_entry_t	entry)
 {
 	ipc_entry_bits_t bits = entry->ie_bits;
@@ -555,9 +555,9 @@ ipc_right_clean(
 
 kern_return_t
 ipc_right_destroy(
-	ipc_space_t	space,
-	mach_port_t	name,
-	ipc_entry_t	entry)
+	ipc_space_t		space,
+	mach_port_name_t	name,
+	ipc_entry_t		entry)
 {
 	ipc_entry_bits_t bits = entry->ie_bits;
 	mach_port_type_t type = IE_BITS_TYPE(bits);
@@ -698,7 +698,7 @@ ipc_right_destroy(
 kern_return_t
 ipc_right_dealloc(
 	ipc_space_t space,
-	mach_port_t name,
+	mach_port_name_t name,
 	ipc_entry_t entry)
 {
 	ipc_entry_bits_t bits = entry->ie_bits;
@@ -874,7 +874,7 @@ ipc_right_dealloc(
 kern_return_t
 ipc_right_delta(
 	ipc_space_t 		space,
-	mach_port_t 		name,
+	mach_port_name_t 	name,
 	ipc_entry_t 		entry,
 	mach_port_right_t 	right,
 	mach_port_delta_t 	delta)
@@ -1196,7 +1196,7 @@ ipc_right_delta(
 kern_return_t
 ipc_right_info(
 	ipc_space_t		space,
-	mach_port_t		name,
+	mach_port_name_t	name,
 	ipc_entry_t		entry,
 	mach_port_type_t	*typep,
 	mach_port_urefs_t	*urefsp)
@@ -1239,7 +1239,7 @@ ipc_right_info(
 boolean_t
 ipc_right_copyin_check(
 	ipc_space_t		space,
-	mach_port_t		name,
+	mach_port_name_t	name,
 	ipc_entry_t		entry,
 	mach_msg_type_name_t	msgt_name)
 {
@@ -1327,7 +1327,7 @@ ipc_right_copyin_check(
 kern_return_t
 ipc_right_copyin(
 	ipc_space_t		space,
-	mach_port_t		name,
+	mach_port_name_t	name,
 	ipc_entry_t		entry,
 	mach_msg_type_name_t	msgt_name,
 	boolean_t		deadok,
@@ -1660,7 +1660,7 @@ ipc_right_copyin(
 void
 ipc_right_copyin_undo(
 	ipc_space_t		space,
-	mach_port_t		name,
+	mach_port_name_t	name,
 	ipc_entry_t		entry,
 	mach_msg_type_name_t	msgt_name,
 	ipc_object_t		object,
@@ -1746,11 +1746,11 @@ ipc_right_copyin_undo(
 
 kern_return_t
 ipc_right_copyin_two(
-	ipc_space_t	space,
-	mach_port_t	name,
-	ipc_entry_t	entry,
-	ipc_object_t	*objectp,
-	ipc_port_t	*sorightp)
+	ipc_space_t		space,
+	mach_port_name_t	name,
+	ipc_entry_t		entry,
+	ipc_object_t		*objectp,
+	ipc_port_t		*sorightp)
 {
 	ipc_entry_bits_t bits = entry->ie_bits;
 	mach_port_urefs_t urefs;
@@ -1846,7 +1846,7 @@ ipc_right_copyin_two(
 kern_return_t
 ipc_right_copyout(
 	ipc_space_t		space,
-	mach_port_t		name,
+	mach_port_name_t	name,
 	ipc_entry_t		entry,
 	mach_msg_type_name_t	msgt_name,
 	boolean_t		overflow,
@@ -2028,11 +2028,11 @@ ipc_right_copyout_multiname(space, name, entry, object)
 
 kern_return_t
 ipc_right_rename(
-	ipc_space_t	space,
-	mach_port_t	oname,
-	ipc_entry_t	oentry,
-	mach_port_t	nname,
-	ipc_entry_t	nentry)
+	ipc_space_t		space,
+	mach_port_name_t	oname,
+	ipc_entry_t		oentry,
+	mach_port_name_t	nname,
+	ipc_entry_t		nentry)
 {
 	ipc_entry_bits_t bits = oentry->ie_bits;
 	ipc_port_request_index_t request = oentry->ie_request;

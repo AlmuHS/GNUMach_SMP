@@ -47,7 +47,7 @@ extern void		mig_dealloc_reply_port(mach_port_t);
 
 extern void		mig_put_reply_port(mach_port_t);
 
-extern mach_port_t	mig_get_reply_port(void);
+extern mach_port_name_t	mig_get_reply_port(void);
 
 extern void		mig_reply_setup(const mach_msg_header_t *_request,
 					mach_msg_header_t *reply);

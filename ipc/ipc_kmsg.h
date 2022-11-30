@@ -254,26 +254,26 @@ extern void
 ipc_kmsg_put_to_kernel(mach_msg_header_t *, ipc_kmsg_t, mach_msg_size_t);
 
 extern mach_msg_return_t
-ipc_kmsg_copyin_header(mach_msg_header_t *, ipc_space_t, mach_port_t);
+ipc_kmsg_copyin_header(mach_msg_header_t *, ipc_space_t, mach_port_name_t);
 
 extern mach_msg_return_t
-ipc_kmsg_copyin(ipc_kmsg_t, ipc_space_t, vm_map_t, mach_port_t);
+ipc_kmsg_copyin(ipc_kmsg_t, ipc_space_t, vm_map_t, mach_port_name_t);
 
 extern void
 ipc_kmsg_copyin_from_kernel(ipc_kmsg_t);
 
 extern mach_msg_return_t
-ipc_kmsg_copyout_header(mach_msg_header_t *, ipc_space_t, mach_port_t);
+ipc_kmsg_copyout_header(mach_msg_header_t *, ipc_space_t, mach_port_name_t);
 
 extern mach_msg_return_t
 ipc_kmsg_copyout_object(ipc_space_t, ipc_object_t,
-			mach_msg_type_name_t, mach_port_t *);
+			mach_msg_type_name_t, mach_port_name_t *);
 
 extern mach_msg_return_t
 ipc_kmsg_copyout_body(ipc_kmsg_t, ipc_space_t, vm_map_t);
 
 extern mach_msg_return_t
-ipc_kmsg_copyout(ipc_kmsg_t, ipc_space_t, vm_map_t, mach_port_t);
+ipc_kmsg_copyout(ipc_kmsg_t, ipc_space_t, vm_map_t, mach_port_name_t);
 
 extern mach_msg_return_t
 ipc_kmsg_copyout_pseudo(ipc_kmsg_t, ipc_space_t, vm_map_t);

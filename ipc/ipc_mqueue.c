@@ -399,7 +399,7 @@ ipc_mqueue_send(
 mach_msg_return_t
 ipc_mqueue_copyin(
 	ipc_space_t	space,
-	mach_port_t	name,
+	mach_port_name_t	name,
 	ipc_mqueue_t	*mqueuep,
 	ipc_object_t	*objectp)
 {

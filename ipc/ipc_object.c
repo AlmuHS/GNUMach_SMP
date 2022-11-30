@@ -106,7 +106,7 @@ ipc_object_release(
 kern_return_t
 ipc_object_translate(
 	ipc_space_t		space,
-	mach_port_t		name,
+	mach_port_name_t	name,
 	mach_port_right_t	right,
 	ipc_object_t		*objectp)
 {
@@ -150,7 +150,7 @@ ipc_object_translate(
 kern_return_t
 ipc_object_alloc_dead(
 	ipc_space_t	space,
-	mach_port_t	*namep)
+	mach_port_name_t	*namep)
 {
 	ipc_entry_t entry;
 	kern_return_t kr;
@@ -187,7 +187,7 @@ ipc_object_alloc_dead(
 kern_return_t
 ipc_object_alloc_dead_name(
 	ipc_space_t	space,
-	mach_port_t	name)
+	mach_port_name_t	name)
 {
 	ipc_entry_t entry;
 	kern_return_t kr;
@@ -231,7 +231,7 @@ ipc_object_alloc(
 	ipc_object_type_t	otype,
 	mach_port_type_t	type,
 	mach_port_urefs_t	urefs,
-	mach_port_t		*namep,
+	mach_port_name_t	*namep,
 	ipc_object_t		*objectp)
 {
 	ipc_object_t object;
@@ -298,7 +298,7 @@ ipc_object_alloc_name(
 	ipc_object_type_t	otype,
 	mach_port_type_t	type,
 	mach_port_urefs_t	urefs,
-	mach_port_t		name,
+	mach_port_name_t	name,
 	ipc_object_t		*objectp)
 {
 	ipc_object_t object;
@@ -405,7 +405,7 @@ ipc_object_copyin_type(
 kern_return_t
 ipc_object_copyin(
 	ipc_space_t		space,
-	mach_port_t		name,
+	mach_port_name_t	name,
 	mach_msg_type_name_t	msgt_name,
 	ipc_object_t		*objectp)
 {
@@ -608,9 +608,9 @@ ipc_object_copyout(
 	ipc_object_t		object,
 	mach_msg_type_name_t	msgt_name,
 	boolean_t		overflow,
-	mach_port_t		*namep)
+	mach_port_name_t	*namep)
 {
-	mach_port_t name;
+	mach_port_name_t name;
 	ipc_entry_t entry;
 	kern_return_t kr;
 
@@ -747,9 +747,9 @@ ipc_object_copyout_name(
 	ipc_object_t		object,
 	mach_msg_type_name_t	msgt_name,
 	boolean_t		overflow,
-	mach_port_t		name)
+	mach_port_name_t	name)
 {
-	mach_port_t oname;
+	mach_port_name_t oname;
 	ipc_entry_t oentry;
 	ipc_entry_t entry;
 	kern_return_t kr;
@@ -826,9 +826,9 @@ ipc_object_copyout_dest(
 	ipc_space_t		space,
 	ipc_object_t		object,
 	mach_msg_type_name_t	msgt_name,
-	mach_port_t		*namep)
+	mach_port_name_t	*namep)
 {
-	mach_port_t name;
+	mach_port_name_t name;
 
 	assert(IO_VALID(object));
 	assert(io_active(object));
@@ -930,8 +930,8 @@ ipc_object_copyout_dest(
 kern_return_t
 ipc_object_rename(
 	ipc_space_t	space,
-	mach_port_t	oname,
-	mach_port_t	nname)
+	mach_port_name_t	oname,
+	mach_port_name_t	nname)
 {
 	ipc_entry_t oentry, nentry;
 	kern_return_t kr;

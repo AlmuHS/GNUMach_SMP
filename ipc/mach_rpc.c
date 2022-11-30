@@ -105,7 +105,7 @@ mach_port_rpc_copy(
 
 	tname = ipc_object_copyin_type(portp->msgt_name);
 	if (!IO_VALID(iname)) {
-		portp->name = (mach_port_t) iname;
+		portp->name = (mach_port_name_t) iname;
 		portp->msgt_name = tname;
 #ifdef DEBUG_MPRC
 		printf("iport %x invalid\n", iname);
@@ -114,7 +114,7 @@ mach_port_rpc_copy(
 	}
 
 	if (ISKERNELACT(dact)) {
-		portp->name = (mach_port_t) iname;
+		portp->name = (mach_port_name_t) iname;
 		kr = KERN_SUCCESS;
 	} else {
 		kr = ipc_object_copyout(dspace, iname, tname, TRUE,

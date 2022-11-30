@@ -554,11 +554,11 @@ mach_thread_self(void)
  *		or other errors.
  */
 
-mach_port_t
+mach_port_name_t
 mach_reply_port(void)
 {
 	ipc_port_t port;
-	mach_port_t name;
+	mach_port_name_t name;
 	kern_return_t kr;
 
 	kr = ipc_port_alloc(current_task()->itk_space, &name, &port);

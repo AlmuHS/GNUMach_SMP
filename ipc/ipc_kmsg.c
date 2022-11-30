@@ -674,11 +674,21 @@ mach_msg_return_t
 ipc_kmsg_copyin_header(
 	mach_msg_header_t 	*msg,
 	ipc_space_t 		space,
-	mach_port_t 		notify)
+	mach_port_name_t 	notify)
 {
 	mach_msg_bits_t mbits = msg->msgh_bits &~ MACH_MSGH_BITS_CIRCULAR;
-	mach_port_t dest_name = msg->msgh_remote_port;
-	mach_port_t reply_name = msg->msgh_local_port;
+	/*
+	 * TODO: For 64 bits, msgh_remote_port as written by user space
+	 * is 4 bytes long but here we assume it is the same size as a pointer.
+	 * When copying the message to the kernel, we need to perform the
+	 * conversion so that port names are parsed correctly.
+	 *
+	 * When copying the message out of the kernel to user space, we also need
+	 * to be careful with the reverse translation.
+	 */
+
+	mach_port_name_t dest_name = (mach_port_name_t)msg->msgh_remote_port;
+	mach_port_name_t reply_name = (mach_port_name_t)msg->msgh_local_port;
 	kern_return_t kr;
 
 #ifndef MIGRATING_THREADS
@@ -916,7 +926,7 @@ ipc_kmsg_copyin_header(
 
 	if (dest_name == reply_name) {
 		ipc_entry_t entry;
-		mach_port_t name = dest_name;
+		mach_port_name_t name = dest_name;
 
 		/*
 		 *	Destination and reply ports are the same!
@@ -1443,7 +1453,7 @@ ipc_kmsg_copyin_body(
 				((mach_msg_type_t*)type)->msgt_name = newname;
 
 			for (i = 0; i < number; i++) {
-				mach_port_t port = (mach_port_t) objects[i];
+				mach_port_name_t port = (mach_port_name_t) objects[i];
 				ipc_object_t object;
 
 				if (!MACH_PORT_VALID(port))
@@ -1464,6 +1474,9 @@ ipc_kmsg_copyin_body(
 					kmsg->ikm_header.msgh_bits |=
 						MACH_MSGH_BITS_CIRCULAR;
 
+				/* TODO: revisit this for 64 bits since the size of
+				 * mach_port_name_t is not the same as a pointer size.
+				 */
 				objects[i] = object;
 			}
 
@@ -1507,7 +1520,7 @@ ipc_kmsg_copyin(
 	ipc_kmsg_t 	kmsg,
 	ipc_space_t 	space,
 	vm_map_t 	map,
-	mach_port_t 	notify)
+	mach_port_name_t notify)
 {
 	mach_msg_return_t mr;
 
@@ -1700,7 +1713,7 @@ mach_msg_return_t
 ipc_kmsg_copyout_header(
 	mach_msg_header_t 	*msg,
 	ipc_space_t 		space,
-	mach_port_t 		notify)
+	mach_port_name_t 		notify)
 {
 	mach_msg_bits_t mbits = msg->msgh_bits;
 	ipc_port_t dest = (ipc_port_t) msg->msgh_remote_port;
@@ -1712,7 +1725,7 @@ ipc_kmsg_copyout_header(
 
 	if (notify == MACH_PORT_NULL) switch (MACH_MSGH_BITS_PORTS(mbits)) {
 	    case MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND, 0): {
-		mach_port_t dest_name;
+		mach_port_name_t dest_name;
 		ipc_port_t nsrequest;
 		unsigned long payload;
 
@@ -1765,7 +1778,7 @@ ipc_kmsg_copyout_header(
 				MACH_MSG_TYPE_PORT_SEND_ONCE): {
 		ipc_entry_t entry;
 		ipc_port_t reply = (ipc_port_t) msg->msgh_local_port;
-		mach_port_t dest_name, reply_name;
+		mach_port_name_t dest_name, reply_name;
 		ipc_port_t nsrequest;
 		unsigned long payload;
 
@@ -1868,7 +1881,7 @@ ipc_kmsg_copyout_header(
 	    }
 
 	    case MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND_ONCE, 0): {
-		mach_port_t dest_name;
+		mach_port_name_t dest_name;
 		unsigned long payload;
 
 		/* receiving a reply message */
@@ -1922,7 +1935,7 @@ ipc_kmsg_copyout_header(
 	mach_msg_type_name_t dest_type = MACH_MSGH_BITS_REMOTE(mbits);
 	mach_msg_type_name_t reply_type = MACH_MSGH_BITS_LOCAL(mbits);
 	ipc_port_t reply = (ipc_port_t) msg->msgh_local_port;
-	mach_port_t dest_name, reply_name;
+	mach_port_name_t dest_name, reply_name;
 	unsigned long payload;
 
 	if (IP_VALID(reply)) {
@@ -2111,7 +2124,7 @@ ipc_kmsg_copyout_header(
 		ip_lock(dest);
 		is_read_unlock(space);
 
-		reply_name = (mach_port_t) reply;
+		reply_name = (mach_port_name_t) reply;
 	}
 
 	/*
@@ -2230,10 +2243,10 @@ ipc_kmsg_copyout_object(
 	ipc_space_t 		space,
 	ipc_object_t 		object,
 	mach_msg_type_name_t 	msgt_name,
-	mach_port_t 		*namep)
+	mach_port_name_t 	*namep)
 {
 	if (!IO_VALID(object)) {
-		*namep = (mach_port_t) object;
+		*namep = (mach_port_name_t) object;
 		return MACH_MSG_SUCCESS;
 	}
 
@@ -2393,7 +2406,7 @@ ipc_kmsg_copyout_body(
 		is_port = MACH_MSG_TYPE_PORT_ANY(name);
 
 		if (is_port) {
-			mach_port_t *objects;
+			ipc_object_t *objects;
 			mach_msg_type_number_t i;
 
 			if (!is_inline && (length != 0)) {
@@ -2406,7 +2419,7 @@ ipc_kmsg_copyout_body(
 				}
 			}
 
-			objects = (mach_port_t *)
+			objects = (ipc_object_t *)
 				(is_inline ? saddr : * (vm_offset_t *) saddr);
 
 			/* copyout port rights carried in the message */
@@ -2415,8 +2428,11 @@ ipc_kmsg_copyout_body(
 				ipc_object_t object =
 					(ipc_object_t) objects[i];
 
+				/* TODO: revisit this for 64 bits since the size of
+				 * mach_port_name_t is not the same as a pointer size.
+				 */
 				mr |= ipc_kmsg_copyout_object(space, object,
-							name, &objects[i]);
+							name, (mach_port_name_t *)&objects[i]);
 			}
 		}
 
@@ -2498,7 +2514,7 @@ ipc_kmsg_copyout(
 	ipc_kmsg_t 	kmsg,
 	ipc_space_t 	space,
 	vm_map_t 	map,
-	mach_port_t 	notify)
+	mach_port_name_t 	notify)
 {
 	mach_msg_bits_t mbits = kmsg->ikm_header.msgh_bits;
 	mach_msg_return_t mr;
@@ -2547,7 +2563,7 @@ ipc_kmsg_copyout_pseudo(
 	ipc_object_t reply = (ipc_object_t) kmsg->ikm_header.msgh_local_port;
 	mach_msg_type_name_t dest_type = MACH_MSGH_BITS_REMOTE(mbits);
 	mach_msg_type_name_t reply_type = MACH_MSGH_BITS_LOCAL(mbits);
-	mach_port_t dest_name, reply_name;
+	mach_port_name_t dest_name, reply_name;
 	mach_msg_return_t mr;
 
 	assert(IO_VALID(dest));
@@ -2585,7 +2601,7 @@ ipc_kmsg_copyout_dest(
 	ipc_object_t reply = (ipc_object_t) kmsg->ikm_header.msgh_local_port;
 	mach_msg_type_name_t dest_type = MACH_MSGH_BITS_REMOTE(mbits);
 	mach_msg_type_name_t reply_type = MACH_MSGH_BITS_LOCAL(mbits);
-	mach_port_t dest_name, reply_name;
+	mach_port_name_t dest_name, reply_name;
 
 	assert(IO_VALID(dest));
 
@@ -2603,7 +2619,7 @@ ipc_kmsg_copyout_dest(
 		ipc_object_destroy(reply, reply_type);
 		reply_name = MACH_PORT_NULL;
 	} else
-		reply_name = (mach_port_t) reply;
+		reply_name = (mach_port_name_t) reply;
 
 	kmsg->ikm_header.msgh_bits = (MACH_MSGH_BITS_OTHER(mbits) |
 				      MACH_MSGH_BITS(reply_type, dest_type));

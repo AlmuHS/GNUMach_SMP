@@ -142,7 +142,7 @@ void		ipc_space_destroy(struct ipc_space *);
 static inline ipc_entry_t
 ipc_entry_lookup(
 	ipc_space_t space,
-	mach_port_t name)
+	mach_port_name_t name)
 {
 	ipc_entry_t entry;
 
@@ -170,10 +170,10 @@ ipc_entry_lookup(
 static inline kern_return_t
 ipc_entry_get(
 	ipc_space_t space,
-	mach_port_t *namep,
+	mach_port_name_t *namep,
 	ipc_entry_t *entryp)
 {
-	mach_port_t new_name;
+	mach_port_name_t new_name;
 	ipc_entry_t free_entry;
 
 	assert(space->is_active);
@@ -229,7 +229,7 @@ ipc_entry_get(
 static inline void
 ipc_entry_dealloc(
 	ipc_space_t	space,
-	mach_port_t	name,
+	mach_port_name_t	name,
 	ipc_entry_t	entry)
 {
 	assert(space->is_active);

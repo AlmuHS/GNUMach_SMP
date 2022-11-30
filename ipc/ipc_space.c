@@ -194,7 +194,7 @@ ipc_space_destroy(
 		mach_port_type_t type = IE_BITS_TYPE(entry->ie_bits);
 
 		if (type != MACH_PORT_TYPE_NONE) {
-			mach_port_t name =
+			mach_port_name_t name =
 				MACH_PORT_MAKEB(entry->ie_name, entry->ie_bits);
 
 			ipc_right_clean(space, name, entry);

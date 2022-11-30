@@ -55,7 +55,7 @@ typedef unsigned int ipc_entry_bits_t;
 typedef ipc_table_elems_t ipc_entry_num_t;	/* number of entries */
 
 typedef struct ipc_entry {
-	mach_port_t ie_name;
+	mach_port_name_t ie_name;
 	ipc_entry_bits_t ie_bits;
 	struct ipc_object *ie_object;
 	union {
@@ -97,14 +97,14 @@ extern struct kmem_cache ipc_entry_cache;
 #define	ie_free(e)	kmem_cache_free(&ipc_entry_cache, (vm_offset_t) (e))
 
 extern kern_return_t
-ipc_entry_alloc(ipc_space_t space, mach_port_t *namep, ipc_entry_t *entryp);
+ipc_entry_alloc(ipc_space_t space, mach_port_name_t *namep, ipc_entry_t *entryp);
 
 extern kern_return_t
-ipc_entry_alloc_name(ipc_space_t space, mach_port_t name, ipc_entry_t *entryp);
+ipc_entry_alloc_name(ipc_space_t space, mach_port_name_t name, ipc_entry_t *entryp);
 
 ipc_entry_t
 db_ipc_object_by_name(
-	task_t		task,
-	mach_port_t	name);
+       task_t        	  task,
+       mach_port_name_t   name);
 
 #endif	/* _IPC_IPC_ENTRY_H_ */

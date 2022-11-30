@@ -161,12 +161,12 @@ ipc_marequest_init(void)
 
 mach_msg_return_t
 ipc_marequest_create(
-	ipc_space_t 	space,
-	ipc_port_t 	port,
-	mach_port_t 	notify,
-	ipc_marequest_t *marequestp)
+	ipc_space_t 		space,
+	ipc_port_t 		port,
+	mach_port_name_t 	notify,
+	ipc_marequest_t 	*marequestp)
 {
-	mach_port_t name;
+	mach_port_name_t name;
 	ipc_entry_t entry;
 	ipc_port_t soright;
 	ipc_marequest_t marequest;
@@ -258,7 +258,7 @@ ipc_marequest_create(
 void
 ipc_marequest_cancel(
 	ipc_space_t space,
-	mach_port_t name)
+	mach_port_name_t name)
 {
 	ipc_marequest_bucket_t bucket;
 	ipc_marequest_t marequest, *last;
@@ -294,8 +294,8 @@ ipc_marequest_cancel(
 void
 ipc_marequest_rename(
 	ipc_space_t space,
-	mach_port_t old, 
-	mach_port_t new)
+	mach_port_name_t old, 
+	mach_port_name_t new)
 {
 	ipc_marequest_bucket_t bucket;
 	ipc_marequest_t marequest, *last;
@@ -340,7 +340,7 @@ void
 ipc_marequest_destroy(ipc_marequest_t marequest)
 {
 	ipc_space_t space = marequest->imar_space;
-	mach_port_t name;
+	mach_port_name_t name;
 	ipc_port_t soright;
 
 	is_write_lock(space);

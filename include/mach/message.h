@@ -393,9 +393,9 @@ mach_msg_trap
     mach_msg_option_t option,
     mach_msg_size_t send_size,
     mach_msg_size_t rcv_size,
-    mach_port_t rcv_name,
+    mach_port_name_t rcv_name,
     mach_msg_timeout_t timeout,
-    mach_port_t notify);
+    mach_port_name_t notify);
 
 extern mach_msg_return_t
 mach_msg
@@ -403,9 +403,9 @@ mach_msg
     mach_msg_option_t option,
     mach_msg_size_t send_size,
     mach_msg_size_t rcv_size,
-    mach_port_t rcv_name,
+    mach_port_name_t rcv_name,
     mach_msg_timeout_t timeout,
-    mach_port_t notify);
+    mach_port_name_t notify);
 
 extern __typeof (mach_msg) __mach_msg;
 extern __typeof (mach_msg_trap) __mach_msg_trap;

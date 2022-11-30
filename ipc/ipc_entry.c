@@ -67,7 +67,7 @@ struct kmem_cache ipc_entry_cache;
 kern_return_t
 ipc_entry_alloc(
 	ipc_space_t	space,
-	mach_port_t	*namep,
+	mach_port_name_t	*namep,
 	ipc_entry_t	*entryp)
 {
 	kern_return_t kr;
@@ -97,10 +97,10 @@ ipc_entry_alloc(
 	entry->ie_bits = 0;
 	entry->ie_object = IO_NULL;
 	entry->ie_request = 0;
-	entry->ie_name = (mach_port_t) key;
+	entry->ie_name = (mach_port_name_t) key;
 
 	*entryp = entry;
-	*namep = (mach_port_t) key;
+	*namep = (mach_port_name_t) key;
 	return KERN_SUCCESS;
 }
 
@@ -121,7 +121,7 @@ ipc_entry_alloc(
 kern_return_t
 ipc_entry_alloc_name(
 	ipc_space_t	space,
-	mach_port_t	name,
+	mach_port_name_t	name,
 	ipc_entry_t	*entryp)
 {
 	kern_return_t kr;
@@ -198,11 +198,10 @@ ipc_entry_alloc_name(
 ipc_entry_t
 db_ipc_object_by_name(
 	const task_t	task,
-	mach_port_t	name)
+	mach_port_name_t	name)
 {
         ipc_space_t space = task->itk_space;
         ipc_entry_t entry;
- 
  
         entry = ipc_entry_lookup(space, name);
         if(entry != IE_NULL) {

@@ -172,7 +172,7 @@ struct thread {
 	struct ipc_port *ith_sself;	/* a send right */
 	struct ipc_port *ith_exception;	/* a send right */
 
-	mach_port_t ith_mig_reply;	/* reply port for mig */
+	mach_port_name_t ith_mig_reply;	/* reply port for mig */
 	struct ipc_port *ith_rpc_reply;	/* reply port for kernel RPCs */
 
 	/* State saved when thread's stack is discarded */
@@ -182,7 +182,7 @@ struct thread {
 			mach_msg_option_t option;
 			mach_msg_size_t rcv_size;
 			mach_msg_timeout_t timeout;
-			mach_port_t notify;
+			mach_port_name_t notify;
 			struct ipc_object *object;
 			struct ipc_mqueue *mqueue;
 		} receive;
