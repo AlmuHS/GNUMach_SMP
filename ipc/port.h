@@ -42,10 +42,10 @@
 #include <mach/port.h>
 
 /*
- *	mach_port_t must be an unsigned type.  Port values
+ *	mach_port_name_t must be an unsigned type.  Port values
  *	have two parts, a generation number and an index.
  *	These macros encapsulate all knowledge of how
- *	a mach_port_t is laid out.
+ *	a mach_port_name_t is laid out.
  *
  *	If the size of generation numbers changes,
  *	be sure to update IE_BITS_GEN_MASK and friends
@@ -67,11 +67,10 @@
 
 /*
  *	Typedefs for code cleanliness.  These must all have
- *	the same (unsigned) type as mach_port_t.
+ *	the same (unsigned) type as mach_port_name_t.
  */
 
-typedef mach_port_t mach_port_index_t;		/* index values */
-typedef mach_port_t mach_port_gen_t;		/* generation numbers */
+typedef mach_port_name_t mach_port_gen_t;	/* generation numbers */
 
 
 #define	MACH_PORT_UREFS_MAX	((mach_port_urefs_t) ((1 << 16) - 1))

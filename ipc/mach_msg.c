@@ -290,7 +290,7 @@ mach_msg_receive_continue(void)
 	mach_msg_option_t option = self->ith_option;
 	mach_msg_size_t rcv_size = self->ith_rcv_size;
 	mach_msg_timeout_t time_out = self->ith_timeout;
-	mach_port_t notify = self->ith_notify;
+	mach_port_name_t notify = self->ith_notify;
 	ipc_object_t object = self->ith_object;
 	ipc_mqueue_t mqueue = self->ith_mqueue;
 	ipc_kmsg_t kmsg;

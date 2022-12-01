@@ -69,7 +69,7 @@
 kern_return_t
 mach_port_get_srights(
 	ipc_space_t		space,
-	mach_port_t		name,
+	mach_port_name_t	name,
 	mach_port_rights_t	*srightsp)
 {
 	ipc_port_t port;

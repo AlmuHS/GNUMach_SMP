@@ -959,7 +959,7 @@ mach_port_get_set_status(
 		/* the port set must be active */
 
 		names = (mach_port_name_t *) addr;
-		maxnames = size / sizeof(mach_port_t);
+		maxnames = size / sizeof(mach_port_name_t);
 		actual = 0;
 
 		ipc_entry_t ientry;
@@ -1045,7 +1045,7 @@ kern_return_t
 mach_port_move_member(
 	ipc_space_t	space,
 	mach_port_name_t	member,
-	mach_port_t	after)
+	mach_port_name_t	after)
 {
 	ipc_entry_t entry;
 	ipc_port_t port;
@@ -1259,7 +1259,7 @@ mach_port_insert_right(
 kern_return_t
 mach_port_extract_right(
 	ipc_space_t		space,
-	mach_port_t		name,
+	mach_port_name_t	name,
 	mach_msg_type_name_t	msgt_name,
 	ipc_port_t		*poly,
 	mach_msg_type_name_t	*polyPoly)
