@@ -178,6 +178,7 @@ task_create_kernel(
 
 	new_task->may_assign = TRUE;
 	new_task->assign_active = FALSE;
+	new_task->essential = FALSE;
 
 #if	MACH_PCSAMPLE
 	new_task->pc_sample.buffer = 0;
@@ -1153,6 +1154,21 @@ task_set_name(
 {
 	strncpy(task->name, name, sizeof task->name - 1);
 	task->name[sizeof task->name - 1] = '\0';
+	return KERN_SUCCESS;
+}
+
+/*
+ *	task_set_essential
+ *
+ *	Set whether TASK is an essential task, i.e. the whole system will crash
+ *	if this task crashes.
+ */
+kern_return_t
+task_set_essential(
+	task_t			task,
+	boolean_t		essential)
+{
+	task->essential = !!essential;
 	return KERN_SUCCESS;
 }
 

@@ -5100,6 +5100,17 @@ printed by the kernel.
 The function returns @code{KERN_SUCCESS} if the call succeeded.
 @end deftypefun
 
+@deftypefun kern_return_t task_set_essential (@w{task_t @var{target_task}}, @w{boolean_t @var{essential}})
+
+The function @code{task_set_essential} sets whether @var{target_task} is
+essential for the system, i.e. the system will completely crash and reboot if
+that task crashes. This means that when the debugger is enabled, it should be
+triggered on the crash, so as to get the opportunity to debug the issue instead
+of just rebooting.
+
+The function returns @code{KERN_SUCCESS} if the call succeeded.
+@end deftypefun
+
 
 @node Task Execution
 @subsection Task Execution

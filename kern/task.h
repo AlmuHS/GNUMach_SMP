@@ -64,7 +64,8 @@ struct task {
 	/* Flags */
 	unsigned int	active:1,	/* Task has not been terminated */
 	/* boolean_t */ may_assign:1,	/* can assigned pset be changed? */
-			assign_active:1;	/* waiting for may_assign */
+			assign_active:1,	/* waiting for may_assign */
+			essential:1;	/* Is this task essential for the system? */
 
 	/* Miscellaneous */
 	vm_map_t	map;		/* Address space description */

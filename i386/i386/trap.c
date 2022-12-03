@@ -565,11 +565,12 @@ int user_trap(struct i386_saved_state *regs)
 	}
 
 #if	MACH_TTD
-	if (debug_all_traps_with_kttd && kttd_trap(type, regs->err, regs))
+	if ((debug_all_traps_with_kttd || thread->task->essential) &&
+	    kttd_trap(type, regs->err, regs))
 		return 0;
 #endif	/* MACH_TTD */
 #if	MACH_KDB
-	if (debug_all_traps_with_kdb &&
+	if ((debug_all_traps_with_kdb || thread->task->essential) &&
 	    kdb_trap(type, regs->err, regs))
 		return 0;
 #endif	/* MACH_KDB */

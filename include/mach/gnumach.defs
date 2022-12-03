@@ -189,3 +189,11 @@ routine vm_allocate_contiguous(
 		pmin		: rpc_phys_addr_t;
 		pmax		: rpc_phys_addr_t;
 		palign		: rpc_phys_addr_t);
+
+/*
+ *	Set whether TASK is an essential task, i.e. the whole system will crash
+ *	if this task crashes.
+ */
+simpleroutine task_set_essential(
+		task	: task_t;
+		essential	: boolean_t);
