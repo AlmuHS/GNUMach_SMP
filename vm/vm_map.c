@@ -694,7 +694,7 @@ vm_map_find_entry_anywhere(struct vm_map *map,
 
 		if (himask + max != 0) {
 			/* high bits do not continue up to the end */
-			printf("invalid mask %lx\n", mask);
+			printf("invalid mask %zx\n", mask);
 			return NULL;
 		}
 
@@ -737,7 +737,7 @@ restart:
 	max_size = size + mask;
 
 	if (max_size < size) {
-		printf("max_size %lx got smaller than size %lx with mask %lx\n",
+		printf("max_size %zd got smaller than size %zd with mask %zd\n",
 		       max_size, size, mask);
 		goto error;
 	}
@@ -773,7 +773,7 @@ restart:
 	assert(end <= (entry->vme_end + entry->gap_size));
 	if (end > max) {
 		/* Does not respect the allowed maximum */
-		printf("%lx does not respect %lx\n", end, max);
+		printf("%zx does not respect %zx\n", end, max);
 		return NULL;
 	}
 	*startp = start;
@@ -939,7 +939,7 @@ vm_map_pmap_enter(
 
 		if (vm_map_pmap_enter_print) {
 			printf("vm_map_pmap_enter:");
-			printf("map: %p, addr: %lx, object: %p, offset: %lx\n",
+			printf("map: %p, addr: %zx, object: %p, offset: %zx\n",
 				map, addr, object, offset);
 		}
 

@@ -70,7 +70,7 @@ typedef int *rpc_signature_info_t;
  *  that a port right was present, but it died.
  */
 
-#define MACH_PORT_NULL		((mach_port_t) 0)
+#define MACH_PORT_NULL		0 /* works with both user and kernel ports */
 #define MACH_PORT_DEAD		((mach_port_t) ~0)
 
 #define	MACH_PORT_VALID(name)	\

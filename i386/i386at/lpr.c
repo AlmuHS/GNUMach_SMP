@@ -98,7 +98,7 @@ void lprattach(struct bus_device *dev)
 	}
 
 	take_dev_irq(dev);
-	printf(", port = %lx, spl = %ld, pic = %d.",
+	printf(", port = %zx, spl = %zd, pic = %d.",
 	       dev->address, dev->sysdep, dev->sysdep1);
 	lprinfo[unit] = dev;
   

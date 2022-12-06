@@ -235,7 +235,7 @@ comattach(struct bus_device *dev)
 	}
 
 	take_dev_irq(dev);
-	printf(", port = %lx, spl = %ld, pic = %d. (DOS COM%d)",
+	printf(", port = %zx, spl = %zu, pic = %d. (DOS COM%d)",
 	       dev->address, dev->sysdep, dev->sysdep1, unit+1);
 
 /*	comcarrier[unit] = addr->flags;*/
@@ -861,11 +861,11 @@ void compr_addr(vm_offset_t addr)
 	/* The two line_stat prints may show different values, since
 	*  touching some of the registers constitutes changing them.
 	*/
-	printf("LINE_STAT(%lu) %x\n",
+	printf("LINE_STAT(%zu) %x\n",
 		LINE_STAT(addr), inb(LINE_STAT(addr)));
 
-	printf("TXRX(%lu) %x, INTR_ENAB(%lu) %x, INTR_ID(%lu) %x, LINE_CTL(%lu) %x,\n\
-MODEM_CTL(%lu) %x, LINE_STAT(%lu) %x, MODEM_STAT(%lu) %x\n",
+	printf("TXRX(%zu) %x, INTR_ENAB(%zu) %x, INTR_ID(%zu) %x, LINE_CTL(%zu) %x,\n\
+MODEM_CTL(%zu) %x, LINE_STAT(%zu) %x, MODEM_STAT(%zu) %x\n",
 	TXRX(addr), 	 inb(TXRX(addr)),
 	INTR_ENAB(addr), inb(INTR_ENAB(addr)),
 	INTR_ID(addr), 	 inb(INTR_ID(addr)),

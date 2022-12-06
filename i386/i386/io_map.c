@@ -49,7 +49,7 @@ io_map(
 	     */
 	    start = kernel_virtual_start;
 	    kernel_virtual_start += round_page(size);
-	    printf("stealing kernel virtual addresses %08lx-%08lx\n", start, kernel_virtual_start);
+	    printf("stealing kernel virtual addresses %08zx-%08zx\n", start, kernel_virtual_start);
 	}
 	else {
 	    (void) kmem_alloc_pageable(kernel_map, &start, round_page(size));

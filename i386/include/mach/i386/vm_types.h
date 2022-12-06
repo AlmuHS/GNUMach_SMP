@@ -72,7 +72,7 @@ typedef unsigned long long_natural_t;
  * A vm_offset_t is a type-neutral pointer,
  * e.g. an offset into a virtual memory space.
  */
-typedef	unsigned long	vm_offset_t;
+typedef	__mach_uintptr_t	vm_offset_t;
 typedef	vm_offset_t *	vm_offset_array_t;
 
 /*
@@ -94,7 +94,7 @@ typedef unsigned long long rpc_phys_addr_t;
  * expressing the difference between two
  * vm_offset_t entities.
  */
-typedef	unsigned long	vm_size_t;
+typedef __mach_uintptr_t vm_size_t;
 typedef	vm_size_t *	vm_size_array_t;
 
 /*

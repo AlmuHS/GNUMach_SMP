@@ -1973,13 +1973,13 @@ void pmap_enter(
 	phys_addr_t		old_pa;
 
 	assert(pa != vm_page_fictitious_addr);
-	if (pmap_debug) printf("pmap(%lx, %llx)\n", v, (unsigned long long) pa);
+	if (pmap_debug) printf("pmap(%zx, %llx)\n", v, (unsigned long long) pa);
 	if (pmap == PMAP_NULL)
 		return;
 
 #if !MACH_KDB
 	if (pmap == kernel_pmap && (v < kernel_virtual_start || v >= kernel_virtual_end))
-		panic("pmap_enter(%lx, %llx) falls in physical memory area!\n", v, (unsigned long long) pa);
+		panic("pmap_enter(%zx, %llx) falls in physical memory area!\n", v, (unsigned long long) pa);
 #endif
 #if !(__i486__ || __i586__ || __i686__)
 	if (pmap == kernel_pmap && (prot & VM_PROT_WRITE) == 0
@@ -2036,7 +2036,7 @@ Retry:
 		 * Would have to enter the new page-table page in
 		 * EVERY pmap.
 		 */
-		panic("pmap_expand kernel pmap to %#lx", v);
+		panic("pmap_expand kernel pmap to %#zx", v);
 	    }
 
 	    /*
