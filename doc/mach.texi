@@ -5011,10 +5011,10 @@ suspend count for task
 @item integer_t base_priority
 base scheduling priority
 
-@item vm_size_t virtual_size
+@item rpc_vm_size_t virtual_size
 number of virtual pages
 
-@item vm_size_t resident_size
+@item rpc_vm_size_t resident_size
 number of resident pages
 
 @item time_value_t user_time
@@ -5041,25 +5041,25 @@ provided it as the @var{task_info} parameter for the
 following members:
 
 @table @code
-@item natural_t faults
+@item rpc_long_natural_t faults
 number of page faults
 
-@item natural_t zero_fills
+@item rpc_long_natural_t zero_fills
 number of zero fill pages
 
-@item natural_t reactivations
+@item rpc_long_natural_t reactivations
 number of reactivated pages
 
-@item natural_t pageins
+@item rpc_long_natural_t pageins
 number of actual pageins
 
-@item natural_t cow_faults
+@item rpc_long_natural_t cow_faults
 number of copy-on-write faults
 
-@item natural_t messages_sent
+@item rpc_long_natural_t messages_sent
 number of messages sent
 
-@item natural_t messages_received
+@item rpc_long_natural_t messages_received
 number of messages received
 @end table
 @end deftp

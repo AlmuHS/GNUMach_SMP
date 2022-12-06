@@ -43,11 +43,11 @@ typedef struct cache_info {
 	rpc_vm_size_t align;
 	rpc_vm_size_t buf_size;
 	rpc_vm_size_t slab_size;
-	rpc_unsigned_long bufs_per_slab;
-	rpc_unsigned_long nr_objs;
-	rpc_unsigned_long nr_bufs;
-	rpc_unsigned_long nr_slabs;
-	rpc_unsigned_long nr_free_slabs;
+	rpc_long_natural_t bufs_per_slab;
+	rpc_long_natural_t nr_objs;
+	rpc_long_natural_t nr_bufs;
+	rpc_long_natural_t nr_slabs;
+	rpc_long_natural_t nr_free_slabs;
 	char name[CACHE_NAME_MAX_LEN];
 } cache_info_t;
 

@@ -38,14 +38,10 @@
 
 /*
  * A natural_t is the type for the native
- * integer type, e.g. 32 or 64 or.. whatever
- * register size the machine has.  Unsigned, it is
- * used for entities that might be either
- * unsigned integers or pointers, and for
- * type-casting between the two.
- * For instance, the IPC system represents
- * a port in user space as an integer and
- * in kernel space as a pointer.
+ * unsigned integer type, usually 32 bits. It is suitable for
+ * most counters with a small chance of overflow.
+ * While historically natural_t was meant to be the same
+ * as a pointer, that is not the case here.
  */
 type natural_t = uint32_t;
 
@@ -59,17 +55,24 @@ type natural_t = uint32_t;
 type integer_t = int32_t;
 
 /*
- * unsigned long for kernel <-> userland interfaces size depends on the architecture
- * of both kernel and userland.
+ * A long_natural_t is a possibly larger unsigned integer type than natural_t.
+ * Should be used instead of natural_t when we want the data to be less subject
+ * to overflows.
+ */
+#if defined(__x86_64__)
+type long_natural_t = uint64_t;
+#else
+type long_natural_t = uint32_t;
+#endif /* __x86_64__ */
+
+/*
+ * long_natural_t for kernel <-> userland interfaces as the size depends on the
+ * architecture of both kernel and userland.
  */
 #if defined(KERNEL) && defined(USER32)
-type rpc_unsigned_long = uint32_t;
+type rpc_long_natural_t = uint32_t;
 #else /* KERNEL and USER32 */
-#if defined(__x86_64__)
-type rpc_unsigned_long = uint64_t;
-#else /* __x86_64__ */
-type rpc_unsigned_long = uint32_t;
-#endif /* __x86_64__ */
+type rpc_long_natural_t = long_natural_t;
 #endif /* KERNEL_SERVER and USER32 */
 
 /*

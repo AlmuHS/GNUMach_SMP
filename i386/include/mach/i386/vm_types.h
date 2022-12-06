@@ -45,18 +45,11 @@
 
 /*
  * A natural_t is the type for the native
- * integer type, e.g. 32 or 64 or.. whatever
- * register size the machine has.  Unsigned, it is
- * used for entities that might be either
- * unsigned integers or pointers, and for
- * type-casting between the two.
- * For instance, the IPC system represents
- * a port in user space as an integer and
- * in kernel space as a pointer.
+ * unsigned integer type, usually 32 bits. It is suitable for
+ * most counters with a small chance of overflow.
+ * While historically natural_t was meant to be the same
+ * as a pointer, that is not the case here.
  */
-#ifdef __x86_64__
-// unsigned long ?
-#endif
 typedef unsigned int	natural_t;
 
 /*
@@ -67,6 +60,13 @@ typedef unsigned int	natural_t;
  * way.
  */
 typedef int		integer_t;
+
+/*
+ * A long_natural_t is a possibly larger unsigned integer type than natural_t.
+ * Should be used instead of natural_t when we want the data to be less subject
+ * to overflows.
+ */
+typedef unsigned long long_natural_t;
 
 /*
  * A vm_offset_t is a type-neutral pointer,
@@ -116,14 +116,14 @@ static inline __mach_uint32_t convert_vm_to_user(__mach_uint64_t kaddr)
     assert(kaddr <= 0xFFFFFFFF);
     return (__mach_uint32_t)kaddr;
 }
-typedef __mach_uint32_t rpc_unsigned_long;
+typedef __mach_uint32_t rpc_long_natural_t;
 #else /* MACH_KERNEL */
 typedef vm_offset_t	rpc_vm_address_t;
 typedef vm_offset_t	rpc_vm_offset_t;
 typedef vm_size_t	rpc_vm_size_t;
 #define convert_vm_to_user null_conversion
 #define convert_vm_from_user null_conversion
-typedef unsigned long rpc_unsigned_long;
+typedef long_natural_t rpc_long_natural_t;
 #endif /* MACH_KERNEL */
 
 #endif	/* __ASSEMBLER__ */
