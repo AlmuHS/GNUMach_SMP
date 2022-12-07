@@ -77,8 +77,8 @@ extern struct multiboot_raw_info boot_info;	/* XXX put this in a header! */
 #include "boot_script.h"
 
 
-static mach_port_t	boot_device_port;	/* local name */
-static mach_port_t	boot_host_port;		/* local name */
+static mach_port_name_t	boot_device_port;	/* local name */
+static mach_port_name_t	boot_host_port;		/* local name */
 
 extern char *kernel_cmdline;
 
@@ -87,12 +87,12 @@ static void user_bootstrap_compat(void);	/* forward */
 static void bootstrap_exec_compat(void *exec_data); /* forward */
 static void get_compat_strings(char *flags_str, char *root_str); /* forward */
 
-static mach_port_t
+static mach_port_name_t
 task_insert_send_right(
 	task_t task,
 	ipc_port_t port)
 {
-	mach_port_t name;
+	mach_port_name_t name;
 
 	for (name = 1;; name++) {
 		kern_return_t kr;
@@ -902,7 +902,7 @@ boot_script_free_task (task_t task, int aborting)
 }
 
 int
-boot_script_insert_right (struct cmd *cmd, mach_port_t port, mach_port_t *name)
+boot_script_insert_right (struct cmd *cmd, mach_port_t port, mach_port_name_t *name)
 {
   *name = task_insert_send_right (cmd->task,
 				  ipc_port_make_send((ipc_port_t) port));
@@ -910,7 +910,7 @@ boot_script_insert_right (struct cmd *cmd, mach_port_t port, mach_port_t *name)
 }
 
 int
-boot_script_insert_task_port (struct cmd *cmd, task_t task, mach_port_t *name)
+boot_script_insert_task_port (struct cmd *cmd, task_t task, mach_port_name_t *name)
 {
   *name = task_insert_send_right (cmd->task,
 				  ipc_port_make_send(task->itk_sself));

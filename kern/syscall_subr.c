@@ -152,8 +152,8 @@ void thread_switch_continue(void)
  *	even if that violates priority order.
  */
 kern_return_t thread_switch(
-	mach_port_t 		thread_name,
-	int 			option,
+	mach_port_name_t 	thread_name,
+	int					option,
 	mach_msg_timeout_t 	option_time)
 {
     thread_t			cur_thread = current_thread();

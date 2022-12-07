@@ -94,7 +94,7 @@ void ipc_host_init(void)
  *		or other errors.
  */
 
-mach_port_t
+mach_port_name_t
 mach_host_self(void)
 {
 	ipc_port_t sright;

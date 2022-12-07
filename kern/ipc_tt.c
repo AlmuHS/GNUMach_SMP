@@ -511,7 +511,7 @@ retrieve_thread_exception(thread)
  *		or other errors.
  */
 
-mach_port_t
+mach_port_name_t
 mach_task_self(void)
 {
 	task_t task = current_task();
@@ -532,7 +532,7 @@ mach_task_self(void)
  *		or other errors.
  */
 
-mach_port_t
+mach_port_name_t
 mach_thread_self(void)
 {
 	thread_t thread = current_thread();
