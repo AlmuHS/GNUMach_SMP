@@ -493,7 +493,7 @@ db_lookup_port(
 	    return(0);
 	if (id < 0)
 	    return(0);
-	entry = ipc_entry_lookup(thread->task->itk_space, (mach_port_t) id);
+	entry = ipc_entry_lookup(thread->task->itk_space, (mach_port_name_t) id);
 	if (entry && entry->ie_bits & MACH_PORT_TYPE_PORT_RIGHTS)
 	    return((ipc_port_t)entry->ie_object);
 	return(0);
