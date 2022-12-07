@@ -115,13 +115,13 @@ struct task {
 	machine_task_t	machine;
 
 	/* Statistics */
-	natural_t	faults;		/* page faults counter */
-	natural_t	zero_fills;	/* zero fill pages counter */
-	natural_t	reactivations;	/* reactivated pages counter */
-	natural_t	pageins;	/* actual pageins couter */
-	natural_t	cow_faults;	/* copy-on-write faults counter */
-	natural_t	messages_sent;	/* messages sent counter */
-	natural_t	messages_received; /* messages received counter */
+	long_natural_t	faults;		/* page faults counter */
+	long_natural_t	zero_fills;	/* zero fill pages counter */
+	long_natural_t	reactivations;	/* reactivated pages counter */
+	long_natural_t	pageins;	/* actual pageins couter */
+	long_natural_t	cow_faults;	/* copy-on-write faults counter */
+	long_natural_t	messages_sent;	/* messages sent counter */
+	long_natural_t	messages_received; /* messages received counter */
 
 	char	name[TASK_NAME_SIZE];
 };

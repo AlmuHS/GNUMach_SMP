@@ -171,9 +171,9 @@ struct kmem_cache {
     int flags;
     size_t bufctl_dist; /* Distance from buffer to bufctl   */
     size_t slab_size;
-    unsigned long bufs_per_slab;
-    unsigned long nr_objs;  /* Number of allocated objects */
-    unsigned long nr_free_slabs;
+    long_natural_t bufs_per_slab;
+    long_natural_t nr_objs;  /* Number of allocated objects */
+    long_natural_t nr_free_slabs;
     kmem_cache_ctor_t ctor;
     /* All fields below are cold  */
     size_t obj_size;    /* User-provided size */
@@ -182,8 +182,8 @@ struct kmem_cache {
     size_t buf_size;    /* Aligned object size  */
     size_t color;
     size_t color_max;
-    unsigned long nr_bufs;  /* Total number of buffers */
-    unsigned long nr_slabs;
+    long_natural_t nr_bufs;  /* Total number of buffers */
+    long_natural_t nr_slabs;
     char name[KMEM_CACHE_NAME_SIZE];
     size_t buftag_dist; /* Distance from buffer to buftag */
     size_t redzone_pad; /* Bytes from end of object to redzone word */
