@@ -1978,41 +1978,6 @@ ipc_right_copyout(
 	return KERN_SUCCESS;
 }
 
-#if 0
-/*XXX same, but allows multiple duplicate send rights */
-kern_return_t
-ipc_right_copyout_multiname(space, name, entry, object)
-	ipc_space_t space;
-	mach_port_t name;
-	ipc_entry_t entry;
-	ipc_object_t object;
-{
-	ipc_entry_bits_t bits = entry->ie_bits;
-	ipc_port_t port;
-
-	assert(IO_VALID(object));
-	assert(io_otype(object) == IOT_PORT);
-	assert(io_active(object));
-	assert(entry->ie_object == object);
-
-	port = (ipc_port_t) object;
-
-	assert(port->ip_srights > 0);
-
-	assert(IE_BITS_TYPE(bits) == MACH_PORT_TYPE_NONE);
-	assert(IE_BITS_UREFS(bits) == 0);
-
-	/* transfer send right and ref to entry */
-	ip_unlock(port);
-
-	/* entry is locked holding ref, so can use port */
-
-	entry->ie_bits = (bits | MACH_PORT_TYPE_SEND) + 1;
-
-	return KERN_SUCCESS;
-}
-#endif
-
 /*
  *	Routine:	ipc_right_rename
  *	Purpose:

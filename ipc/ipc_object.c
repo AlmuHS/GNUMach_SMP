@@ -666,62 +666,6 @@ ipc_object_copyout(
 	return kr;
 }
 
-#if 0
-/* XXX same, but don't check for already-existing send rights */
-kern_return_t
-ipc_object_copyout_multiname(space, object, namep)
-	ipc_space_t space;
-	ipc_object_t object;
-	mach_port_t *namep;
-{
-	mach_port_t name;
-	ipc_entry_t entry;
-	kern_return_t kr;
-
-	assert(IO_VALID(object));
-	assert(io_otype(object) == IOT_PORT);
-
-	is_write_lock(space);
-
-	for (;;) {
-		if (!space->is_active) {
-			is_write_unlock(space);
-			return KERN_INVALID_TASK;
-		}
-
-		kr = ipc_entry_alloc(space, &name, &entry);
-		if (kr != KERN_SUCCESS) {
-			is_write_unlock(space);
-			return kr; /* space is unlocked */
-		}
-
-		assert(IE_BITS_TYPE(entry->ie_bits) == MACH_PORT_TYPE_NONE);
-		assert(entry->ie_object == IO_NULL);
-
-		io_lock(object);
-		if (!io_active(object)) {
-			io_unlock(object);
-			ipc_entry_dealloc(space, name, entry);
-			is_write_unlock(space);
-			return KERN_INVALID_CAPABILITY;
-		}
-
-		entry->ie_object = object;
-		break;
-	}
-
-	/* space is write-locked and active, object is locked and active */
-
-	kr = ipc_right_copyout_multiname(space, name, entry, object);
-	/* object is unlocked */
-	is_write_unlock(space);
-
-	if (kr == KERN_SUCCESS)
-		*namep = name;
-	return kr;
-}
-#endif /* 0 */
-
 /*
  *	Routine:	ipc_object_copyout_name
  *	Purpose:
