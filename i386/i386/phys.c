@@ -128,7 +128,7 @@ copy_to_phys(
 	if (mapped)
 	{
 		dst_map = pmap_get_mapwindow(INTEL_PTE_W(dst_addr_p));
-		dst_addr_v = dst_map->vaddr;
+		dst_addr_v = dst_map->vaddr + (dst_addr_p & (INTEL_PGBYTES-1));
 	}
 	else
 		dst_addr_v = phystokv(dst_addr_p);
@@ -160,7 +160,7 @@ copy_from_phys(
 	if (mapped)
 	{
 		src_map = pmap_get_mapwindow(INTEL_PTE_R(src_addr_p));
-		src_addr_v = src_map->vaddr;
+		src_addr_v = src_map->vaddr + (src_addr_p & (INTEL_PGBYTES-1));
 	}
 	else
 		src_addr_v = phystokv(src_addr_p);
