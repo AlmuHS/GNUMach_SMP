@@ -139,8 +139,14 @@ db_delete_line(void)
 boolean_t
 db_inputchar(int c)
 {
+	static int escaped, csi;
+	int was_escaped = escaped, was_csi = csi;
+	escaped = 0;
+	csi = 0;
+
 	switch (c) {
 	    case CTRL('b'):
+	    left:
 		/* back up one character */
 		if (db_lc > db_lbuf_start) {
 		    cnputc(BACKUP);
@@ -148,6 +154,7 @@ db_inputchar(int c)
 		}
 		break;
 	    case CTRL('f'):
+	    right:
 		/* forward one character */
 		if (db_lc < db_le) {
 		    cnputc(*db_lc);
@@ -202,6 +209,7 @@ db_inputchar(int c)
 		break;
 #if DB_HISTORY_SIZE != 0
 	    case CTRL('p'):
+	    up:
 	        DEC_DB_CURR();
 	        while (db_history_curr != db_history_last) {
 			DEC_DB_CURR();
@@ -227,6 +235,7 @@ db_inputchar(int c)
 		db_putstring(db_lbuf_start, db_le - db_lbuf_start);
 		break;
 	    case CTRL('n'):
+	    down:
 	        while (db_history_curr != db_history_last) {
 			if (*db_history_curr == '\0')
 			    break;
@@ -306,7 +315,38 @@ db_inputchar(int c)
 #endif /* DB_HISTORY_SIZE */
 		*db_le++ = c;
 		return (TRUE);
+	    case '\033':
+		escaped = 1;
+		break;
+	    case '[':
+		if (was_escaped)
+		    csi = 1;
+		else
+		    goto plain;
+		break;
+	    case 'A':
+		if (was_csi)
+		    goto up;
+		else
+		    goto plain;
+	    case 'B':
+		if (was_csi)
+		    goto down;
+		else
+		    goto plain;
+	    case 'C':
+		if (was_csi)
+		    goto right;
+		else
+		    goto plain;
+	    case 'D':
+		if (was_csi)
+		    goto left;
+		else
+		    goto plain;
+
 	    default:
+	    plain:
 		if (db_le == db_lbuf_end) {
 		    cnputc('\007');
 		}
