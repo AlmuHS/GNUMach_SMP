@@ -564,47 +564,6 @@ port_name_to_space(mach_port_name_t name)
 }
 
 /*
- * Hack to translate a thread port to a thread pointer for calling
- * thread_get_state and thread_set_state.  This is only necessary
- * because the IPC message for these two operations overflows the
- * kernel stack.
- *
- * AARGH!
- */
-
-kern_return_t thread_get_state_KERNEL(
-	mach_port_name_t	thread_port,	/* port right for thread */
-	int		flavor,
-	thread_state_t	old_state,	/* pointer to OUT array */
-	natural_t	*old_state_count)	/* IN/OUT */
-{
-	thread_t	thread;
-	kern_return_t	result;
-
-	thread = port_name_to_thread(thread_port);
-	result = thread_get_state(thread, flavor, old_state, old_state_count);
-	thread_deallocate(thread);
-
-	return result;
-}
-
-kern_return_t thread_set_state_KERNEL(
-	mach_port_t	thread_port,	/* port right for thread */
-	int		flavor,
-	thread_state_t	new_state,
-	natural_t	new_state_count)
-{
-	thread_t	thread;
-	kern_return_t	result;
-
-	thread = port_name_to_thread(thread_port);
-	result = thread_set_state(thread, flavor, new_state, new_state_count);
-	thread_deallocate(thread);
-
-	return result;
-}
-
-/*
  *	Things to keep in mind:
  *
  *	The idea here is to duplicate the semantics of the true kernel RPC.
