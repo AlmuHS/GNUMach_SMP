@@ -162,7 +162,7 @@ struct inst db_inst_0f0x[] = {
 /*08*/	{ "invd",  FALSE, NONE,  0,	      0 },
 /*09*/	{ "wbinvd",FALSE, NONE,  0,	      0 },
 /*0a*/	{ "",      FALSE, NONE,  0,	      0 },
-/*0b*/	{ "",      FALSE, NONE,  0,	      0 },
+/*0b*/	{ "ud2",   FALSE, NONE,  0,	      0 },
 /*0c*/	{ "",      FALSE, NONE,  0,	      0 },
 /*0d*/	{ "",      FALSE, NONE,  0,	      0 },
 /*0e*/	{ "",      FALSE, NONE,  0,	      0 },
