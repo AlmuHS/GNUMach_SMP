@@ -537,6 +537,7 @@ db_read_bytes(
 	    size -= n;
 	    addr += n;
 	    copy_from_phys(phys_addr, (vm_offset_t) data, n);
+	    data += n;
 	}
 	return TRUE;
 }
