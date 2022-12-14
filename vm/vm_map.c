@@ -685,10 +685,10 @@ vm_map_find_entry_anywhere(struct vm_map *map,
 	if (((mask + 1) & mask) != 0) {
 		/* We have high bits in addition to the low bits */
 
-		int first0 = ffs(~mask);		/* First zero after low bits */
+		int first0 = __builtin_ffs(~mask);		/* First zero after low bits */
 		vm_offset_t lowmask = (1UL << (first0-1)) - 1;		/* low bits */
 		vm_offset_t himask = mask - lowmask;			/* high bits */
-		int second1 = ffs(himask);		/* First one after low bits */
+		int second1 = __builtin_ffs(himask);		/* First one after low bits */
 
 		max = 1UL << (second1-1);
 

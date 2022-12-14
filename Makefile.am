@@ -167,13 +167,13 @@ gnumach_o_LINK = $(LD) $(LDFLAGS) -u _start -r -o $@
 noinst_PROGRAMS += \
 	gnumach.o
 
-# This is the list of routines we decide is OK to steal from the C library.
+# This is the list of routines we decide is OK to steal from the C library or libgcc.
 clib_routines := htonl htons ntohl ntohs			\
 		 udivdi3 __udivdi3 __udivmoddi4 __umoddi3	\
 		 __divdi3 __moddi3				\
 		 __rel_iplt_start __rel_iplt_end		\
 		 __rela_iplt_start __rela_iplt_end		\
-		 __ffsdi2 ffs					\
+		 __ffsdi2 					\
 		 _START _start etext _edata end _end # actually ld magic, not libc.
 gnumach-undef: gnumach.$(OBJEXT)
 	$(NM_V) $(NM) -u $< | sed 's/  *U  *//' | sort -u > $@
