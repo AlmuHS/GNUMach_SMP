@@ -158,8 +158,6 @@ void ioapic_configure(void);
 extern int timer_pin;
 extern void intnull(int unit);
 extern volatile ApicLocalUnit* lapic;
-extern inline void mask_irq (unsigned int irq_nr);
-extern inline void unmask_irq (unsigned int irq_nr);
 
 #endif
 
@@ -206,6 +204,18 @@ extern inline void unmask_irq (unsigned int irq_nr);
         ((reg)[(bit) >> 5].r |= 1 << ((bit) & 0x1f))
 #define APIC_CLEAR_MASK_BIT(reg, bit) \
         ((reg)[(bit) >> 5].r &= ~(1 << ((bit) & 0x1f)))
+
+#ifndef __ASSEMBLER__
+
+static inline void mask_irq (unsigned int irq_nr) {
+    ioapic_toggle(irq_nr, IOAPIC_MASK_DISABLED);
+}
+
+static inline void unmask_irq (unsigned int irq_nr) {
+    ioapic_toggle(irq_nr, IOAPIC_MASK_ENABLED);
+}
+
+#endif  /* !__ASSEMBLER__ */
 
 #endif /*_IMPS_APIC_*/
 

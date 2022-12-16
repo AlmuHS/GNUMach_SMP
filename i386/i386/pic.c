@@ -207,7 +207,7 @@ intnull(int unit_dev)
 /*
  * Mask a PIC IRQ.
  */
-inline void
+void
 mask_irq (unsigned int irq_nr)
 {
 	int new_pic_mask = curr_pic_mask | 1 << irq_nr;
@@ -229,7 +229,7 @@ mask_irq (unsigned int irq_nr)
 /*
  * Unmask a PIC IRQ.
  */
-inline void
+void
 unmask_irq (unsigned int irq_nr)
 {
 	int mask;

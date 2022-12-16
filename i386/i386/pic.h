@@ -184,8 +184,8 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 extern void picinit (void);
 extern int curr_pic_mask;
 extern void intnull(int unit);
-extern inline void mask_irq (unsigned int irq_nr);
-extern inline void unmask_irq (unsigned int irq_nr);
+extern void mask_irq (unsigned int irq_nr);
+extern void unmask_irq (unsigned int irq_nr);
 #endif /* __ASSEMBLER__ */
 
 #endif	/* _I386_PIC_H_ */

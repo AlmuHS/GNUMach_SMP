@@ -267,18 +267,6 @@ ioapic_irq_eoi(int pin)
     lapic_eoi ();
 }
 
-void
-unmask_irq(unsigned int irq)
-{
-    ioapic_toggle(irq, IOAPIC_MASK_ENABLED);
-}
-
-void
-mask_irq(unsigned int irq)
-{
-    ioapic_toggle(irq, IOAPIC_MASK_DISABLED);
-}
-
 static unsigned int
 override_irq(IrqOverrideData *override, union ioapic_route_entry_union *entry)
 {
