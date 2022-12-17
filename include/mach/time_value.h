@@ -33,11 +33,36 @@
  *	Time value returned by kernel.
  */
 
+struct rpc_time_value {
+	/* TODO: this should be 64 bits regardless of the arch to be Y2038 proof. */
+	rpc_long_integer_t seconds;
+	integer_t microseconds;
+};
+typedef struct rpc_time_value rpc_time_value_t;
+
+/*
+ *	Time value used by kernel.
+ */
 struct time_value {
-	integer_t	seconds;
+	long_integer_t	seconds;
 	integer_t	microseconds;
 };
 typedef	struct time_value	time_value_t;
+
+/**
+ * Functions used by Mig to perform user to kernel conversion and vice-versa.
+ * We only do this because we may run a 64 bit kernel with a 32 bit user space.
+ */
+static inline rpc_time_value_t convert_time_value_to_user(time_value_t tv)
+{
+	rpc_time_value_t user = {.seconds = tv.seconds, .microseconds = tv.microseconds};
+	return user;
+}
+static inline time_value_t convert_time_value_from_user(rpc_time_value_t tv)
+{
+	time_value_t kernel = {.seconds = tv.seconds, .microseconds = tv.microseconds};
+	return kernel;
+}
 
 /*
  *	Macros to manipulate time values.  Assume that time values

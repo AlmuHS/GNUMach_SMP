@@ -69,6 +69,12 @@ typedef int		integer_t;
 typedef unsigned long long_natural_t;
 
 /*
+ * Larger version of integer_t. Only used when we want to hold possibly larger
+ * values than what is possible with integer_t.
+ */
+typedef long long_integer_t;
+
+/*
  * A vm_offset_t is a type-neutral pointer,
  * e.g. an offset into a virtual memory space.
  */
@@ -117,6 +123,7 @@ static inline __mach_uint32_t convert_vm_to_user(__mach_uint64_t kaddr)
     return (__mach_uint32_t)kaddr;
 }
 typedef __mach_uint32_t rpc_long_natural_t;
+typedef __mach_int32_t rpc_long_integer_t;
 #else /* MACH_KERNEL */
 typedef vm_offset_t	rpc_vm_address_t;
 typedef vm_offset_t	rpc_vm_offset_t;
@@ -124,6 +131,7 @@ typedef vm_size_t	rpc_vm_size_t;
 #define convert_vm_to_user null_conversion
 #define convert_vm_from_user null_conversion
 typedef long_natural_t rpc_long_natural_t;
+typedef long_integer_t rpc_long_integer_t;
 #endif /* MACH_KERNEL */
 
 #endif	/* __ASSEMBLER__ */

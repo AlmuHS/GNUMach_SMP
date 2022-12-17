@@ -261,7 +261,18 @@ type kernel_version_t		= (MACH_MSG_TYPE_STRING, 512*8);
 
 type kernel_boot_info_t		= (MACH_MSG_TYPE_STRING, 4096*8);
 
-type time_value_t		= struct[2] of integer_t;
+type rpc_time_value_t		= struct {
+  rpc_long_integer_t seconds;
+  integer_t microseconds;
+};
+type time_value_t = rpc_time_value_t
+#if defined(KERNEL_SERVER)
+    intran: time_value_t convert_time_value_from_user(rpc_time_value_t)
+    outtran: rpc_time_value_t convert_time_value_to_user(time_value_t)
+#elif defined(KERNEL_USER)
+    ctype: rpc_time_value_t
+#endif
+    ;
 
 type emulation_vector_t		= ^array[] of vm_offset_t;
 
