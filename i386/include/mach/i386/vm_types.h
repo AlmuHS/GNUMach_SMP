@@ -113,6 +113,7 @@ typedef	vm_size_t *	vm_size_array_t;
 typedef __mach_uint32_t	rpc_vm_address_t;
 typedef __mach_uint32_t	rpc_vm_offset_t;
 typedef __mach_uint32_t	rpc_vm_size_t;
+
 static inline __mach_uint64_t convert_vm_from_user(__mach_uint32_t uaddr)
 {
     return (__mach_uint64_t)uaddr;
@@ -122,17 +123,36 @@ static inline __mach_uint32_t convert_vm_to_user(__mach_uint64_t kaddr)
     assert(kaddr <= 0xFFFFFFFF);
     return (__mach_uint32_t)kaddr;
 }
+
 typedef __mach_uint32_t rpc_long_natural_t;
 typedef __mach_int32_t rpc_long_integer_t;
+
+static inline __mach_int64_t convert_long_integer_from_user(__mach_int32_t i)
+{
+	return (__mach_int64_t)i;
+}
+static inline __mach_int32_t convert_long_integer_to_user(__mach_int64_t i)
+{
+    assert(i <= 0x7FFFFFFF);
+	return (__mach_int32_t)i;
+}
 #else /* MACH_KERNEL */
 typedef vm_offset_t	rpc_vm_address_t;
 typedef vm_offset_t	rpc_vm_offset_t;
 typedef vm_size_t	rpc_vm_size_t;
+
 #define convert_vm_to_user null_conversion
 #define convert_vm_from_user null_conversion
+
 typedef long_natural_t rpc_long_natural_t;
 typedef long_integer_t rpc_long_integer_t;
+
+#define convert_long_integer_to_user null_conversion
+#define convert_long_integer_from_user null_conversion
 #endif /* MACH_KERNEL */
+
+#define convert_long_natural_to_user convert_vm_to_user
+#define convert_long_natural_from_user convert_vm_from_user
 
 #endif	/* __ASSEMBLER__ */
 

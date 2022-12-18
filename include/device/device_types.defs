@@ -43,7 +43,16 @@
 DEVICE_IMPORTS
 #endif
 
-type recnum_t		= uint32_t;
+type rpc_recnum_t	= rpc_long_natural_t;
+type recnum_t		= rpc_recnum_t
+#if defined(KERNEL_SERVER)
+	intran: recnum_t convert_long_natural_from_user(rpc_recnum_t)
+	outtran: rpc_recnum_t convert_long_natural_to_user(recnum_t)
+#elif defined(KERNEL_USER)
+	ctype: rpc_recnum_t
+#endif
+	;
+
 type dev_mode_t		= uint32_t;
 type dev_flavor_t	= uint32_t;
 type dev_name_t		= (MACH_MSG_TYPE_STRING_C, 8*128);

@@ -42,7 +42,7 @@
  */
 void harderr(const io_req_t ior, const char *cp)
 {
-	printf("%s%d%c: hard error sn%d ",
+	printf("%s%d%c: hard error sn%lu ",
 	       cp,
 	       minor(ior->io_unit) >> 3,
 	       'a' + (minor(ior->io_unit) & 0x7),

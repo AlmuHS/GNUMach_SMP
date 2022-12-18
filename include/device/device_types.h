@@ -89,7 +89,8 @@ typedef struct {
 /*
  * Record number for random-access devices
  */
-typedef	unsigned int	recnum_t;
+typedef	long_natural_t recnum_t;
+typedef rpc_long_natural_t rpc_recnum_t;
 
 /*
  * Flavors of set/get statuses
