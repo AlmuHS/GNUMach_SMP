@@ -41,8 +41,9 @@ AM_LDFLAGS =
 # Compilation flags
 #
 
+GCC_INSTALL = $(shell LANG=C gcc -print-search-dirs | sed -n -e 's/install: \(.*\)/\1/p')
 AM_CPPFLAGS += \
-	-ffreestanding -nostdinc -imacros config.h
+	-ffreestanding -nostdinc -imacros config.h -I $(GCC_INSTALL)/include
 
 AM_CPPFLAGS += \
 	-I$(systype) \

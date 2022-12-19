@@ -21,7 +21,7 @@
 
 #include <string.h>         /* memcmp, memcpy... */
 
-#include <include/stdint.h> /* uint16_t, uint32_t... */
+#include <stdint.h> /* uint16_t, uint32_t... */
 
 #include <mach/machine.h>   /* machine_slot */
 

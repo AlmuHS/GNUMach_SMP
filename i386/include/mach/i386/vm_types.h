@@ -37,7 +37,7 @@
 #ifdef	__ASSEMBLER__
 #else	/* __ASSEMBLER__ */
 
-#include <mach/machine/stdint.h>
+#include <stdint.h>
 
 #ifdef MACH_KERNEL
 #include <kern/assert.h>
@@ -78,7 +78,7 @@ typedef long long_integer_t;
  * A vm_offset_t is a type-neutral pointer,
  * e.g. an offset into a virtual memory space.
  */
-typedef	__mach_uintptr_t	vm_offset_t;
+typedef	uintptr_t	vm_offset_t;
 typedef	vm_offset_t *	vm_offset_array_t;
 
 /*
@@ -100,7 +100,7 @@ typedef unsigned long long rpc_phys_addr_t;
  * expressing the difference between two
  * vm_offset_t entities.
  */
-typedef __mach_uintptr_t vm_size_t;
+typedef uintptr_t vm_size_t;
 typedef	vm_size_t *	vm_size_array_t;
 
 /*
@@ -110,32 +110,34 @@ typedef	vm_size_t *	vm_size_array_t;
  * functions.
  */
 #if defined(MACH_KERNEL) && defined(USER32)
-typedef __mach_uint32_t	rpc_vm_address_t;
-typedef __mach_uint32_t	rpc_vm_offset_t;
-typedef __mach_uint32_t	rpc_vm_size_t;
+typedef uint32_t	rpc_vm_address_t;
+typedef uint32_t	rpc_vm_offset_t;
+typedef uint32_t	rpc_vm_size_t;
 
-static inline __mach_uint64_t convert_vm_from_user(__mach_uint32_t uaddr)
+static inline uint64_t convert_vm_from_user(uint32_t uaddr)
 {
-    return (__mach_uint64_t)uaddr;
+    return (uint64_t)uaddr;
 }
-static inline __mach_uint32_t convert_vm_to_user(__mach_uint64_t kaddr)
+static inline uint32_t convert_vm_to_user(uint64_t kaddr)
 {
     assert(kaddr <= 0xFFFFFFFF);
-    return (__mach_uint32_t)kaddr;
+    return (uint32_t)kaddr;
 }
 
-typedef __mach_uint32_t rpc_long_natural_t;
-typedef __mach_int32_t rpc_long_integer_t;
+typedef uint32_t rpc_long_natural_t;
+typedef int32_t rpc_long_integer_t;
 
-static inline __mach_int64_t convert_long_integer_from_user(__mach_int32_t i)
+static inline int64_t convert_long_integer_from_user(int32_t i)
 {
-	return (__mach_int64_t)i;
+	return (int64_t)i;
 }
-static inline __mach_int32_t convert_long_integer_to_user(__mach_int64_t i)
+static inline int32_t convert_long_integer_to_user(int64_t i)
 {
     assert(i <= 0x7FFFFFFF);
-	return (__mach_int32_t)i;
+	return (int32_t)i;
 }
+typedef uint32_t rpc_long_natural_t;
+typedef int32_t rpc_long_integer_t;
 #else /* MACH_KERNEL */
 typedef vm_offset_t	rpc_vm_address_t;
 typedef vm_offset_t	rpc_vm_offset_t;

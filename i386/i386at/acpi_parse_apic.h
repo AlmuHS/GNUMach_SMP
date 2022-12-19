@@ -22,7 +22,7 @@
 #ifndef __ACPI_H__
 #define __ACPI_H__
 
-#include <include/stdint.h>
+#include <stdint.h>
 
 enum ACPI_RETURN {
     ACPI_BAD_CHECKSUM = -1,
