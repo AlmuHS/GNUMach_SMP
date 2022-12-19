@@ -53,12 +53,12 @@ typedef	struct time_value	time_value_t;
  * Functions used by Mig to perform user to kernel conversion and vice-versa.
  * We only do this because we may run a 64 bit kernel with a 32 bit user space.
  */
-static inline rpc_time_value_t convert_time_value_to_user(time_value_t tv)
+static __inline__ rpc_time_value_t convert_time_value_to_user(time_value_t tv)
 {
 	rpc_time_value_t user = {.seconds = tv.seconds, .microseconds = tv.microseconds};
 	return user;
 }
-static inline time_value_t convert_time_value_from_user(rpc_time_value_t tv)
+static __inline__ time_value_t convert_time_value_from_user(rpc_time_value_t tv)
 {
 	time_value_t kernel = {.seconds = tv.seconds, .microseconds = tv.microseconds};
 	return kernel;
