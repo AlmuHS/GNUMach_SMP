@@ -789,7 +789,7 @@ mach_msg_trap(
 		self->ith_object = rcv_object;
 		self->ith_mqueue = rcv_mqueue;
 
-		if ((receiver->swap_func == (void (*)()) mach_msg_continue) &&
+		if ((receiver->swap_func == mach_msg_continue) &&
 		    thread_handoff(self, mach_msg_continue, receiver)) {
 			assert(current_thread() == receiver);
 
@@ -798,7 +798,7 @@ mach_msg_trap(
 			 *	because the receiver is using no options.
 			 */
 		} else if ((receiver->swap_func ==
-				(void (*)()) exception_raise_continue) &&
+				exception_raise_continue) &&
 			   thread_handoff(self, mach_msg_continue, receiver)) {
 			counter(c_mach_msg_trap_block_exc++);
 			assert(current_thread() == receiver);
@@ -830,7 +830,7 @@ mach_msg_trap(
 			assert(current_thread() == receiver);
 
 			if ((receiver->swap_func ==
-				(void (*)()) mach_msg_receive_continue) &&
+				mach_msg_receive_continue) &&
 			    ((receiver->ith_option & MACH_RCV_NOTIFY) == 0)) {
 				/*
 				 *	We can still use the optimized code.
@@ -1669,8 +1669,8 @@ mach_msg_interrupt(thread_t thread)
 {
 	ipc_mqueue_t mqueue;
 
-	assert((thread->swap_func == (void (*)()) mach_msg_continue) ||
-	       (thread->swap_func == (void (*)()) mach_msg_receive_continue));
+	assert((thread->swap_func == mach_msg_continue) ||
+	       (thread->swap_func == mach_msg_receive_continue));
 
 	mqueue = thread->ith_mqueue;
 	imq_lock(mqueue);

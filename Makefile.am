@@ -61,7 +61,7 @@ AM_CCASFLAGS += \
 # Yes, this makes the eyes hurt.  But perhaps someone will finally take care of
 # all that scruffy Mach code...  Also see <http://savannah.gnu.org/task/?5726>.
 AM_CFLAGS += \
-	-Wall
+	-Wall -Wstrict-prototypes
 
 # We need the GNU-style inline
 AM_CFLAGS += \

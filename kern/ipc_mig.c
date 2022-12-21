@@ -285,10 +285,7 @@ mig_put_reply_port(
  *     len - Length of destination buffer.
  */
 vm_size_t
-mig_strncpy(dest, src, len)
-	char *dest;
-	const char *src;
-	int len;
+mig_strncpy(char *dest, const char *src, int len)
 {
 	char *dest_ = dest;
 	int i;

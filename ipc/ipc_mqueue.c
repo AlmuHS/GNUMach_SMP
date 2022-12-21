@@ -259,7 +259,7 @@ ipc_mqueue_send(
 
 	 	ip_unlock(port);
 		counter(c_ipc_mqueue_send_block++);
-		thread_block((void (*)(void)) 0);
+		thread_block(thread_no_continuation);
 		ip_lock(port);
 
 		/* why did we wake up? */
@@ -520,7 +520,7 @@ ipc_mqueue_receive(
 	mach_msg_size_t		max_size,
 	mach_msg_timeout_t	time_out,
 	boolean_t		resume,
-	void			(*continuation)(void),
+	continuation_t		continuation,
 	ipc_kmsg_t		*kmsgp,
 	mach_port_seqno_t	*seqnop)
 {

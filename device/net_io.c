@@ -1437,7 +1437,7 @@ printf ("net_getstat: count: %d, addr_int_count: %d\n",
 io_return_t
 net_write(
 	struct 		ifnet *ifp,
-	int		(*start)(),
+	net_write_start_device_fn	start,
 	io_req_t	ior)
 {
 	spl_t	s;

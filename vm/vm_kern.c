@@ -1014,7 +1014,7 @@ kmem_io_map_copyout(
 			return(ret);
 		}
 		copy->cpy_cont = vm_map_copy_discard_cont;
-		copy->cpy_cont_args = (char *) new_copy;
+		copy->cpy_cont_args = (vm_map_copyin_args_t)new_copy;
 		copy = new_copy;
 		page_list = &copy->cpy_page_list[0];
 	}

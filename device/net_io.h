@@ -79,7 +79,9 @@ extern void net_packet(struct ifnet *, ipc_kmsg_t, unsigned int, boolean_t);
 extern void net_filter(ipc_kmsg_t, ipc_kmsg_queue_t);
 extern io_return_t net_getstat(struct ifnet *, dev_flavor_t, dev_status_t,
 			       mach_msg_type_number_t *);
-extern io_return_t net_write(struct ifnet *, int (*)(), io_req_t);
+
+typedef int (*net_write_start_device_fn)(short);
+extern io_return_t net_write(struct ifnet *, net_write_start_device_fn, io_req_t);
 
 /*
  * Non-interrupt code may allocate and free net_kmsgs with these functions.

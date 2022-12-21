@@ -73,7 +73,7 @@ struct bus_ctlr {
 	struct bus_driver  *driver;	/* myself, as a device */
 	char		   *name;	/* readability */
 	int		    unit;	/* index in driver */
-	void		  (*intr)();	/* interrupt handler(s) */
+	void		  (*intr)(int);	/* interrupt handler(s) */
 	vm_offset_t	    address;	/* device virtual address */
 	int		    am;		/* address modifier */
 	vm_offset_t	    phys_address;/* device phys address */
@@ -93,7 +93,7 @@ struct bus_device {
 	struct bus_driver  *driver;	/* autoconf info */
 	char		   *name;	/* my name */
 	int		    unit;
-	void		  (*intr)();
+	void		  (*intr)(int);
 	vm_offset_t	    address;	/* device address */
 	int		    am;		/* address modifier */
 	vm_offset_t	    phys_address;/* device phys address */
@@ -131,7 +131,7 @@ struct bus_driver {
 			vm_offset_t);
 	void	(*attach)(		/* setup driver after probe */
 			struct bus_device *);
-	int	(*dgo)();		/* start transfer */
+	int	(*dgo)(struct bus_device *);		/* start transfer */
 	vm_offset_t *addr;		/* device csr addresses */
 	char	*dname;			/* name of a device */
 	struct	bus_device **dinfo;	/* backpointers to init structs */

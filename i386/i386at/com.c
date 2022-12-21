@@ -49,7 +49,7 @@
 
 #include <device/cons.h>
 
-static void comparam();
+static void comparam(int);
 
 static vm_offset_t com_std[NCOM] = { 0 };
 struct bus_device *cominfo[NCOM];

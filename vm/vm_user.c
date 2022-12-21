@@ -430,12 +430,11 @@ kern_return_t vm_map(
  *
  *	[ To unwire the pages, specify VM_PROT_NONE. ]
  */
-kern_return_t vm_wire(port, map, start, size, access)
-	const ipc_port_t	port;
-	vm_map_t		map;
-	vm_offset_t		start;
-	vm_size_t		size;
-	vm_prot_t		access;
+kern_return_t vm_wire(const ipc_port_t port,
+		vm_map_t map,
+		vm_offset_t start,
+		vm_size_t size,
+		vm_prot_t access)
 {
 	boolean_t priv;
 

@@ -36,6 +36,7 @@
 #include <mach/port.h>
 #include <mach/vm_prot.h>
 #include <device/device_types.h>
+#include <device/net_status.h>
 
 struct io_req;
 typedef struct io_req *io_req_t;
@@ -54,20 +55,20 @@ struct dev_ops {
 	int		(*d_getstat)(dev_t, dev_flavor_t, dev_status_t, mach_msg_type_number_t *);	/* get status/control */
 	int		(*d_setstat)(dev_t, dev_flavor_t, dev_status_t, mach_msg_type_number_t);	/* set status/control */
 	vm_offset_t	(*d_mmap)(dev_t, vm_offset_t, vm_prot_t);	/* map memory */
-	int		(*d_async_in)();		/* asynchronous input setup */
-	int		(*d_reset)();			/* reset device */
+	int		(*d_async_in)(dev_t, const ipc_port_t, int, filter_t*, unsigned int);		/* asynchronous input setup */
+	int		(*d_reset)(dev_t);		/* reset device */
 	int		(*d_port_death)(dev_t, mach_port_t);
 					/* clean up reply ports */
 	int		d_subdev;	/* number of sub-devices per
 					   unit */
-	int		(*d_dev_info)(); /* driver info for kernel */
+	int		(*d_dev_info)(dev_t, int, int*); /* driver info for kernel */
 };
 typedef struct dev_ops *dev_ops_t;
 
 /*
  * Routines for null entries.
  */
-extern int	nulldev(void);		/* no operation - OK */
+extern int	nulldev_reset(dev_t dev);
 extern int	nulldev_open(dev_t dev, int flag, io_req_t ior);
 extern void	nulldev_close(dev_t dev, int flags);
 extern int	nulldev_read(dev_t dev, io_req_t ior);
@@ -75,7 +76,8 @@ extern int	nulldev_write(dev_t dev, io_req_t ior);
 extern io_return_t	nulldev_getstat(dev_t dev, dev_flavor_t flavor, dev_status_t data, mach_msg_type_number_t *count);
 extern io_return_t	nulldev_setstat(dev_t dev, dev_flavor_t flavor, dev_status_t data, mach_msg_type_number_t count);
 extern io_return_t	nulldev_portdeath(dev_t dev, mach_port_t port);
-extern int	nodev(void);		/* no operation - error */
+extern int nodev_async_in(dev_t, const ipc_port_t, int, filter_t*, unsigned int); /* no operation - error */
+extern int nodev_info(dev_t, int, int*); /* no operation - error */
 extern vm_offset_t	nomap(dev_t dev, vm_offset_t off, int prot);		/* no operation - error */
 
 /*

@@ -976,9 +976,9 @@ kern_return_t	memory_object_get_attributes(
 /*
  *	If successful, consumes the supplied naked send right.
  */
-kern_return_t	vm_set_default_memory_manager(host, default_manager)
-	const host_t	host;
-	ipc_port_t	*default_manager;
+kern_return_t	vm_set_default_memory_manager(
+		const host_t host,
+		ipc_port_t *default_manager)
 {
 	ipc_port_t current_manager;
 	ipc_port_t new_manager;

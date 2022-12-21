@@ -255,6 +255,10 @@ typedef struct vm_map_version {
 
 #define VM_MAP_COPY_PAGE_LIST_MAX	64
 
+struct vm_map_copy;
+struct vm_map_copyin_args_data;
+typedef kern_return_t (*vm_map_copy_cont_fn)(struct vm_map_copyin_args_data*, struct vm_map_copy**);
+
 typedef struct vm_map_copy {
 	int			type;
 #define VM_MAP_COPY_ENTRY_LIST	1
@@ -270,8 +274,8 @@ typedef struct vm_map_copy {
 	    struct {				/* PAGE_LIST */
 		vm_page_t		page_list[VM_MAP_COPY_PAGE_LIST_MAX];
 		int			npages;
-		kern_return_t		(*cont)();
-		char			*cont_args;
+		vm_map_copy_cont_fn cont;
+		struct vm_map_copyin_args_data* cont_args;
 	    } c_p;
 	} c_u;
 } *vm_map_copy_t;
@@ -323,7 +327,7 @@ MACRO_BEGIN								\
 	(*((old_copy)->cpy_cont))((old_copy)->cpy_cont_args,		\
 				  (vm_map_copy_t *) 0);			\
 	(old_copy)->cpy_cont = (kern_return_t (*)()) 0;			\
-  	(old_copy)->cpy_cont_args = (char *) 0;				\
+	(old_copy)->cpy_cont_args = VM_MAP_COPYIN_ARGS_NULL;		\
 MACRO_END
 
 #define vm_map_copy_has_cont(copy)					\
@@ -333,14 +337,14 @@ MACRO_END
  *	Continuation structures for vm_map_copyin_page_list.
  */
 
-typedef	struct {
+typedef	struct vm_map_copyin_args_data {
 	vm_map_t	map;
 	vm_offset_t	src_addr;
 	vm_size_t	src_len;
 	vm_offset_t	destroy_addr;
 	vm_size_t	destroy_len;
 	boolean_t	steal_pages;
-}  vm_map_copyin_args_data_t, *vm_map_copyin_args_t;
+} vm_map_copyin_args_data_t, *vm_map_copyin_args_t;
 
 #define	VM_MAP_COPYIN_ARGS_NULL	((vm_map_copyin_args_t) 0)
 

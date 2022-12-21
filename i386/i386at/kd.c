@@ -107,20 +107,24 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 struct tty       kd_tty;
 extern boolean_t rebootflag;
 
-static void charput(), charmvup(), charmvdown(), charclear(), charsetcursor();
+static void charput(csrpos_t pos, char ch, char chattr);
+static void charmvup(csrpos_t from, csrpos_t to, int count);
+static void charmvdown(csrpos_t from, csrpos_t to, int count);
+static void charclear(csrpos_t to, int count, char chattr);
+static void charsetcursor(csrpos_t newpos);
 static void kd_noopreset(void);
 
 /*
  * These routines define the interface to the device-specific layer.
  * See kdsoft.h for a more complete description of what each routine does.
  */
-void	(*kd_dput)()	= charput;	/* put attributed char */
-void	(*kd_dmvup)()	= charmvup;	/* block move up */
-void	(*kd_dmvdown)()	= charmvdown;	/* block move down */
-void	(*kd_dclear)()	= charclear;	/* block clear */
-void	(*kd_dsetcursor)() = charsetcursor;
+void	(*kd_dput)(csrpos_t, char, char) = charput;	/* put attributed char */
+void	(*kd_dmvup)(csrpos_t, csrpos_t, int)	= charmvup;	/* block move up */
+void	(*kd_dmvdown)(csrpos_t, csrpos_t, int)	= charmvdown;	/* block move down */
+void	(*kd_dclear)(csrpos_t, int, char)	= charclear;	/* block clear */
+void	(*kd_dsetcursor)(csrpos_t) = charsetcursor;
 				/* set cursor position on displayed page */
-void	(*kd_dreset)() = kd_noopreset;	/* prepare for reboot */
+void	(*kd_dreset)(void) = kd_noopreset;	/* prepare for reboot */
 
 /*
  * Globals used for both character-based controllers and bitmap-based
@@ -2488,7 +2492,7 @@ int new_button = 0;
 void
 kd_xga_init(void)
 {
-	csrpos_t	xga_getpos();
+	csrpos_t	xga_getpos(void);
 	unsigned char	start, stop;
 
 #if 0
@@ -2610,10 +2614,7 @@ xga_getpos(void)
  *	Put attributed character for EGA/CGA/etc.
  */
 static void
-charput(pos, ch, chattr)
-csrpos_t pos;				/* where to put it */
-char	ch;				/* the character */
-char	chattr;				/* its attribute */
+charput(csrpos_t pos, char ch, char chattr)
 {
 	*(vid_start + pos) = ch;
 	*(vid_start + pos + 1) = chattr;
@@ -2626,8 +2627,7 @@ char	chattr;				/* its attribute */
  *	Set hardware cursor position for EGA/CGA/etc.
  */
 static void
-charsetcursor(newpos)
-csrpos_t newpos;
+charsetcursor(csrpos_t newpos)
 {
 	short curpos;		/* position, not scaled for attribute byte */
 
@@ -2647,9 +2647,7 @@ csrpos_t newpos;
  *	Block move up for EGA/CGA/etc.
  */
 static void
-charmvup(from, to, count)
-csrpos_t from, to;
-int count;
+charmvup(csrpos_t from, csrpos_t to, int count)
 {
 	kd_slmscu(vid_start+from, vid_start+to, count);
 }
@@ -2661,9 +2659,7 @@ int count;
  *	Block move down for EGA/CGA/etc.
  */
 static void
-charmvdown(from, to, count)
-csrpos_t from, to;
-int count;
+charmvdown(csrpos_t from, csrpos_t to, int count)
 {
 	kd_slmscd(vid_start+from, vid_start+to, count);
 }
@@ -2675,10 +2671,7 @@ int count;
  *	Fast clear for CGA/EGA/etc.
  */
 static void
-charclear(to, count, chattr)
-csrpos_t to;
-int	count;
-char	chattr;
+charclear(csrpos_t to, int count, char chattr)
 {
 	kd_slmwd(vid_start+to, count, ((unsigned short)chattr<<8)+K_SPACE);
 }

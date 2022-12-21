@@ -70,7 +70,7 @@ typedef struct vm_fault_state {
 	vm_offset_t vmf_vaddr;
 	vm_prot_t vmf_fault_type;
 	boolean_t vmf_change_wiring;
-	void (*vmf_continuation)();
+	vm_fault_continuation_t vmf_continuation;
 	vm_map_version_t vmf_version;
 	boolean_t vmf_wired;
 	struct vm_object *vmf_object;
@@ -218,7 +218,7 @@ vm_fault_return_t vm_fault_page(
 					 */
  /* More arguments: */
 	boolean_t	resume,		/* We are restarting. */
-	void		(*continuation)()) /* Continuation for blocking. */
+	continuation_t	continuation) 	/* Continuation for blocking. */
 {
 	vm_page_t	m;
 	vm_object_t	object;
@@ -347,7 +347,7 @@ vm_fault_return_t vm_fault_page(
 
 				PAGE_ASSERT_WAIT(m, interruptible);
 				vm_object_unlock(object);
-				if (continuation != (void (*)()) 0) {
+				if (continuation != thread_no_continuation) {
 					vm_fault_state_t *state =
 						(vm_fault_state_t *) current_thread()->ith_other;
 
@@ -1082,7 +1082,7 @@ vm_fault_return_t vm_fault_page(
     block_and_backoff:
 	vm_fault_cleanup(object, first_m);
 
-	if (continuation != (void (*)()) 0) {
+	if (continuation != thread_no_continuation) {
 		vm_fault_state_t *state =
 			(vm_fault_state_t *) current_thread()->ith_other;
 
@@ -1149,7 +1149,7 @@ kern_return_t vm_fault(
 	vm_prot_t	fault_type,
 	boolean_t	change_wiring,
 	boolean_t	resume,
-	void		(*continuation)())
+	vm_fault_continuation_t	continuation)
 {
 	vm_map_version_t	version;	/* Map version for verificiation */
 	boolean_t		wired;		/* Should mapping be wired down? */
@@ -1187,7 +1187,7 @@ kern_return_t vm_fault(
 		goto after_vm_fault_page;
 	}
 
-	if (continuation != (void (*)()) 0) {
+	if (continuation != vm_fault_no_continuation) {
 		/*
 		 *	We will probably need to save state.
 		 */
@@ -1239,7 +1239,7 @@ kern_return_t vm_fault(
 	object->ref_count++;
 	vm_object_paging_begin(object);
 
-	if (continuation != (void (*)()) 0) {
+	if (continuation != vm_fault_no_continuation) {
 		vm_fault_state_t *state =
 			(vm_fault_state_t *) current_thread()->ith_other;
 
@@ -1293,7 +1293,7 @@ kern_return_t vm_fault(
 			kr = KERN_SUCCESS;
 			goto done;
 		case VM_FAULT_MEMORY_SHORTAGE:
-			if (continuation != (void (*)()) 0) {
+			if (continuation != vm_fault_no_continuation) {
 				vm_fault_state_t *state =
 					(vm_fault_state_t *) current_thread()->ith_other;
 
@@ -1476,7 +1476,7 @@ kern_return_t vm_fault(
 #undef	RELEASE_PAGE
 
     done:
-	if (continuation != (void (*)()) 0) {
+	if (continuation != vm_fault_no_continuation) {
 		vm_fault_state_t *state =
 			(vm_fault_state_t *) current_thread()->ith_other;
 

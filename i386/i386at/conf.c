@@ -86,76 +86,76 @@ struct dev_ops	dev_name_list[] =
 	   indirect list */
 	{ "cn",		nulldev_open,	nulldev_close,	nulldev_read,
 	  nulldev_write,	nulldev_getstat,	nulldev_setstat,	nomap,
-	  nodev,	nulldev,	nulldev_portdeath,	0,
-	  nodev },
+	  nodev_async_in,	nulldev_reset,	nulldev_portdeath,	0,
+	  nodev_info},
 
 #ifndef	MACH_HYP
 #if	ENABLE_IMMEDIATE_CONSOLE
 	{ "immc",	nulldev_open,	nulldev_close,	nulldev_read,
 	  nulldev_write,	nulldev_getstat,	nulldev_setstat,
-	  nomap,	nodev,	nulldev,	nulldev_portdeath,	0,
-	  nodev },
+	  nomap,	nodev_async_in,	nulldev_reset,	nulldev_portdeath,	0,
+	  nodev_info },
 #endif	/* ENABLE_IMMEDIATE_CONSOLE */
 	{ kdname,	kdopen,		kdclose,	kdread,
 	  kdwrite,	kdgetstat,	kdsetstat,	kdmmap,
-	  nodev,	nulldev,	kdportdeath,	0,
-	  nodev },
+	  nodev_async_in,	nulldev_reset,	kdportdeath,	0,
+	  nodev_info },
 #endif	/* MACH_HYP */
 
 	{ timename,	timeopen,	timeclose,	nulldev_read,
 	  nulldev_write,	nulldev_getstat,	nulldev_setstat,	timemmap,
-	  nodev,	nulldev,	nulldev_portdeath,	0,
-	  nodev },
+	  nodev_async_in,	nulldev_reset,	nulldev_portdeath,	0,
+	  nodev_info },
 
 #ifndef	MACH_HYP
 #if	NCOM > 0
 	{ comname,	comopen,	comclose,	comread,
 	  comwrite,	comgetstat,	comsetstat,	nomap,
-	  nodev,	nulldev,	comportdeath,	0,
-	  nodev },
+	  nodev_async_in,	nulldev_reset,	comportdeath,	0,
+	  nodev_info },
 #endif
 
 #ifdef MACH_LPR
 	{ lprname,	lpropen,	lprclose,	lprread,
 	  lprwrite,	lprgetstat,	lprsetstat,	nomap,
-	  nodev,	nulldev,	lprportdeath,	0,
-	  nodev },
+	  nodev_async_in,	nulldev_reset,	lprportdeath,	0,
+	  nodev_info },
 #endif
 
 	{ mousename,	mouseopen,	mouseclose,	mouseread,
 	  nulldev_write,	mousegetstat,	nulldev_setstat,	nomap,
-	  nodev,	nulldev,	nulldev_portdeath,	0,
-	  nodev },
+	  nodev_async_in,	nulldev_reset,	nulldev_portdeath,	0,
+	  nodev_info },
 
 	{ kbdname,	kbdopen,	kbdclose,	kbdread,
 	  nulldev_write,	kbdgetstat,	kbdsetstat,	nomap,
-	  nodev,	nulldev,	nulldev_portdeath,	0,
-	  nodev },
+	  nodev_async_in,	nulldev_reset,	nulldev_portdeath,	0,
+	  nodev_info },
 
 	{ memname,	nulldev_open,	nulldev_close,	nulldev_read,
 	  nulldev_write,	nulldev_getstat,	nulldev_setstat,		memmmap,
-	  nodev,	nulldev,	nulldev_portdeath,	0,
-	  nodev },
+	  nodev_async_in,	nulldev_reset,	nulldev_portdeath,	0,
+	  nodev_info },
 #endif	/* MACH_HYP */
 
 #ifdef	MACH_KMSG
         { kmsgname,     kmsgopen,       kmsgclose,       kmsgread,
           nulldev_write,        kmsggetstat,    nulldev_setstat,           nomap,
-          nodev,        nulldev,        nulldev_portdeath,         0,
-          nodev },
+          nodev_async_in,        nulldev_reset,        nulldev_portdeath,         0,
+          nodev_info },
 #endif
 
 #ifdef	MACH_HYP
 	{ hypcnname,	hypcnopen,	hypcnclose,	hypcnread,
 	  hypcnwrite,	hypcngetstat,	hypcnsetstat,	nomap,
-	  nodev,	nulldev,	hypcnportdeath,	0,
-	  nodev },
+	  nodev_async_in,	nulldev_reset,	hypcnportdeath,	0,
+	  nodev_info },
 #endif	/* MACH_HYP */
 
         { irqname,      nulldev_open,   nulldev_close,    nulldev_read,
           nulldev_write,nulldev_getstat,nulldev_setstat,  nomap,
-          nodev,        nulldev,        nulldev_portdeath,0,
-          nodev },
+          nodev_async_in,        nulldev_reset,        nulldev_portdeath,0,
+          nodev_info },
 
 };
 int	dev_name_count = sizeof(dev_name_list)/sizeof(dev_name_list[0]);

@@ -433,10 +433,8 @@ mach_vm_object_pages(
  */
 
 kern_return_t
-host_virtual_physical_table_info(host, infop, countp)
-	const host_t host;
-	hash_info_bucket_array_t *infop;
-	natural_t *countp;
+host_virtual_physical_table_info(const host_t host,
+		hash_info_bucket_array_t *infop, natural_t *countp)
 {
 	vm_offset_t addr;
 	vm_size_t size = 0;/* '=0' to quiet gcc warnings */

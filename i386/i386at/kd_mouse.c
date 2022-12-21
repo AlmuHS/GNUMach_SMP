@@ -82,7 +82,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #include "kd_mouse.h"
 
-static void (*oldvect)();		/* old interrupt vector */
+static interrupt_handler_fn oldvect;	/* old interrupt vector */
 static int oldunit;
 extern	struct	bus_device *cominfo[];
 

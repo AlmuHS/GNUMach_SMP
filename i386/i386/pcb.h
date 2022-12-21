@@ -77,7 +77,7 @@ extern void update_ktss_iopb (unsigned char *new_iopb, io_port_t size);
 
 extern thread_t Load_context (thread_t new);
 
-extern thread_t Switch_context (thread_t old, void (*continuation)(), thread_t new);
+extern thread_t Switch_context (thread_t old, continuation_t continuation, thread_t new);
 
 extern void switch_to_shutdown_context(thread_t thread,
 				   void (*routine)(processor_t),

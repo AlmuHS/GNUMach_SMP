@@ -119,10 +119,12 @@ device_t	dev_port_lookup(ipc_port_t);
 void		dev_port_enter(mach_device_t);
 void		dev_port_remove(mach_device_t);
 
+typedef boolean_t (*dev_map_fn)(mach_device_t, mach_port_t);
+
 /*
  * To call a routine on each device
  */
-boolean_t	dev_map(boolean_t (*)(), mach_port_t);
+boolean_t	dev_map(dev_map_fn, mach_port_t);
 
 /*
  * To lock and unlock state and open-count

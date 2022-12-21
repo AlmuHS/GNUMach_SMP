@@ -145,13 +145,12 @@ extern void bmpmvdown(csrpos_t, csrpos_t, int);
 extern void bmpclear(csrpos_t, int, char);
 extern void bmpsetcursor(csrpos_t);
 
-extern void	(*kd_dput)();		/* put attributed char */
-extern void	(*kd_dmvup)();		/* block move up */
-extern void	(*kd_dmvdown)();	/* block move down */
-extern void	(*kd_dclear)();		/* block clear */
-extern void	(*kd_dsetcursor)();
-				/* set cursor position on displayed page */
-extern void	(*kd_dreset)();		/* prepare for reboot */
+extern void	(*kd_dput)(csrpos_t, char, char);	/* put attributed char */
+extern void	(*kd_dmvup)(csrpos_t, csrpos_t, int);	/* block move up */
+extern void	(*kd_dmvdown)(csrpos_t, csrpos_t, int);	/* block move down */
+extern void	(*kd_dclear)(csrpos_t, int, char);	/* block clear */
+extern void	(*kd_dsetcursor)(csrpos_t); 		/* set cursor position on displayed page */
+extern void	(*kd_dreset)(void);		/* prepare for reboot */
 
 
 /*

@@ -449,9 +449,8 @@ exception_raise(
 
 	receiver = ipc_thread_queue_first(&dest_mqueue->imq_threads);
 	if ((receiver == ITH_NULL) ||
-	    !((receiver->swap_func == (void (*)()) mach_msg_continue) ||
-	      ((receiver->swap_func ==
-				(void (*)()) mach_msg_receive_continue) &&
+	    !((receiver->swap_func == mach_msg_continue) ||
+	      ((receiver->swap_func == mach_msg_receive_continue) &&
 	       (sizeof(struct mach_exception) <= receiver->ith_msize) &&
 	       ((receiver->ith_option & MACH_RCV_NOTIFY) == 0))) ||
 	    !thread_handoff(self, exception_raise_continue, receiver)) {

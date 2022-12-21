@@ -27,7 +27,7 @@ BEGIN {
 /^[a-z]/ {
 	if (bogus_printed == "no")
 	{
-		print "void bogus() {";
+		print "void bogus(void) {";
 		bogus_printed = "yes";
 	}
 }

@@ -39,7 +39,7 @@
 /*
  * Routines placed in empty entries in the device tables
  */
-int nulldev(void)
+int nulldev_reset(dev_t)
 {
 	return (D_SUCCESS);
 }
@@ -78,7 +78,12 @@ int nulldev_portdeath(dev_t dev, mach_port_t port)
 	return (D_SUCCESS);
 }
 
-int nodev(void)
+int nodev_async_in(dev_t, const ipc_port_t, int, filter_t*, unsigned int)
+{
+	return (D_INVALID_OPERATION);
+}
+
+int nodev_info(dev_t, int, int*)
 {
 	return (D_INVALID_OPERATION);
 }

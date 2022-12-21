@@ -43,7 +43,7 @@ spl_t curr_ipl;
 int iunit[NINTR] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
                     16, 17, 18, 19, 20, 21, 22, 23};
 
-void (*ivect[NINTR])() = {
+interrupt_handler_fn ivect[NINTR] = {
     /* 00 */	intnull,	/* install timer later */
     /* 01 */	kdintr,		/* kdintr, ... */
     /* 02 */	intnull,
@@ -402,8 +402,8 @@ ioapic_configure(void)
 
     /* Install clock interrupt handler on both remapped timer pin and pin 0
      * since nobody knows how all x86 timers are wired up */
-    ivect[0] = hardclock;
-    ivect[timer_pin] = hardclock;
+    ivect[0] = (interrupt_handler_fn)hardclock;
+    ivect[timer_pin] = (interrupt_handler_fn)hardclock;
 
     printf("IOAPIC 0 configured\n");
 }

@@ -70,8 +70,7 @@ struct kmem_cache	dev_hdr_cache;
  * The number table lock must be held.
  */
 void
-dev_number_enter(device)
-	const mach_device_t	device;
+dev_number_enter(const mach_device_t device)
 {
 	queue_t	q;
 
@@ -84,8 +83,7 @@ dev_number_enter(device)
  * The device-number table lock must be held.
  */
 void
-dev_number_remove(device)
-	const mach_device_t	device;
+dev_number_remove(const mach_device_t device)
 {
 	queue_t	q;
 
@@ -98,9 +96,7 @@ dev_number_remove(device)
  * The number table lock must be held.
  */
 mach_device_t
-dev_number_lookup(ops, devnum)
-	const dev_ops_t	ops;
-	int		devnum;
+dev_number_lookup(const dev_ops_t ops, int devnum)
 {
 	queue_t	q;
 	mach_device_t	device;
@@ -316,7 +312,7 @@ convert_device_to_port(device)
  */
 boolean_t
 dev_map(
-	boolean_t	(*routine)(),
+	dev_map_fn	routine,
 	mach_port_t	port)
 {
 	int		i;

@@ -44,7 +44,6 @@
 
 #define	err_none		(mach_error_t)0
 #define ERR_SUCCESS		(mach_error_t)0
-#define	ERR_ROUTINE_NIL		(mach_error_fn_t)0
 
 
 #define	err_system(x)		(((x)&0x3f)<<26)
@@ -89,7 +88,6 @@
 
 #ifndef __ASSEMBLER__
 typedef	kern_return_t	mach_error_t;
-typedef mach_error_t	(* mach_error_fn_t)();
 #endif /* __ASSEMBLER__ */
 
 #endif	/* _MACH_ERROR_H_ */

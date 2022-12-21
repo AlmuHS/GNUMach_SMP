@@ -280,8 +280,7 @@ void vm_map_unlock(struct vm_map *map)
 #define	vm_map_copy_entry_create(copy) \
 	    _vm_map_entry_create(&(copy)->cpy_hdr)
 
-vm_map_entry_t _vm_map_entry_create(map_header)
-	const struct vm_map_header *map_header;
+vm_map_entry_t _vm_map_entry_create(const struct vm_map_header *map_header)
 {
 	vm_map_entry_t	entry;
 
@@ -303,9 +302,8 @@ vm_map_entry_t _vm_map_entry_create(map_header)
 #define	vm_map_copy_entry_dispose(map, entry) \
 	_vm_map_entry_dispose(&(copy)->cpy_hdr, (entry))
 
-void _vm_map_entry_dispose(map_header, entry)
-	const struct vm_map_header *map_header;
-	vm_map_entry_t	entry;
+void _vm_map_entry_dispose(const struct vm_map_header *map_header,
+		vm_map_entry_t entry)
 {
 	(void)map_header;
 
@@ -3810,7 +3808,7 @@ kern_return_t vm_map_copyin_page_list(
 	copy->offset = src_addr;
 	copy->size = len;
 	copy->cpy_cont = ((kern_return_t (*)()) 0);
-	copy->cpy_cont_args = (char *) VM_MAP_COPYIN_ARGS_NULL;
+	copy->cpy_cont_args = VM_MAP_COPYIN_ARGS_NULL;
 
 	/*
 	 *	Find the beginning of the region.
@@ -3900,7 +3898,7 @@ make_continuation:
 			    }
 			    cont_args->steal_pages = steal_pages;
 
-			    copy->cpy_cont_args = (char *) cont_args;
+			    copy->cpy_cont_args = cont_args;
 			    copy->cpy_cont = vm_map_copyin_page_list_cont;
 
 			    src_end = src_start;
@@ -4239,7 +4237,7 @@ retry:
 			cont_args->destroy_len = src_end - src_start;
 			cont_args->steal_pages = FALSE;
 
-			copy->cpy_cont_args = (char *) cont_args;
+			copy->cpy_cont_args = cont_args;
 			copy->cpy_cont = vm_map_copyin_page_list_cont;
 		}
 

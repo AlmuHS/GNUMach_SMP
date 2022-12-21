@@ -332,7 +332,7 @@ void load_context(thread_t new)
  */
 thread_t switch_context(
 	thread_t	old,
-	void 		(*continuation)(),
+	continuation_t	continuation,
 	thread_t	new)
 {
 	/*

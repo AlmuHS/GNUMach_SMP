@@ -37,50 +37,6 @@
 #include <device/ds_routines.h>
 
 
-
-io_return_t block_io(
-	void			(*strat)(),
-	void			(*max_count)(),
-	io_req_t		ior)
-{
-	kern_return_t		rc;
-	boolean_t		wait = FALSE;
-
-	/*
-	 * Make sure the size is not too large by letting max_count
-	 * change io_count.  If we are doing a write, then io_alloc_size
-	 * preserves the original io_count.
-	 */
-	(*max_count)(ior);
-
-	/*
-	 * If reading, allocate memory.  If writing, wire
-	 * down the incoming memory.
-	 */
-	if (ior->io_op & IO_READ)
-	    rc = device_read_alloc(ior, (vm_size_t)ior->io_count);
-	else
-	    rc = device_write_get(ior, &wait);
-
-	if (rc != KERN_SUCCESS)
-	    return (rc);
-
-	/*
-	 * Queue the operation for the device.
-	 */
-	(*strat)(ior);
-
-	/*
-	 * The io is now queued.  Wait for it if needed.
-	 */
-	if (wait) {
-		iowait(ior);
-		return(D_SUCCESS);
-	}
-
-	return (D_IO_QUEUED);
-}
-
 /*
  * 'standard' max_count routine.  VM continuations mean that this
  * code can cope with arbitrarily-sized write operations (they won't be

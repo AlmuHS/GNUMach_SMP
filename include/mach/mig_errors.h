@@ -68,7 +68,7 @@ typedef struct mig_symtab {
 #else
 	int
 #endif
-		(*ms_routine)();
+		(*ms_routine)(void);
 } mig_symtab_t;
 
 /*

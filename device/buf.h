@@ -83,12 +83,6 @@
 #define	B_MD1		IO_SPARE_START
 
 /*
- * Redefine physio routine
- */
-#define	physio(strat, xbuf, dev, ops, minphys, ior) \
-		block_io(strat, minphys, ior)
-
-/*
  * Export standard minphys routine.
  */
 extern void minphys(io_req_t);
