@@ -2040,7 +2040,15 @@ again:
          * TODO Find out what could cause this and how to deal with it.
          * This will likely require an out-of-memory killer.
          */
-        printf("vm_page warning: unable to recycle any page");
+
+        {
+            static boolean_t warned = FALSE;
+
+            if (!warned) {
+                printf("vm_page warning: unable to recycle any page\n");
+                warned = 1;
+            }
+        }
     }
 
     simple_unlock(&vm_page_queue_free_lock);

@@ -534,7 +534,7 @@ mach_port_allocate(
  *		KERN_INVALID_NAME	The name doesn't denote a right.
  */
 
-static volatile boolean_t mach_port_deallocate_debug = FALSE;
+static volatile boolean_t mach_port_deallocate_debug = TRUE;
 
 kern_return_t
 mach_port_destroy(
