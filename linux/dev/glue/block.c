@@ -207,10 +207,7 @@ int
 blk_dev_init ()
 {
 #ifdef CONFIG_BLK_DEV_IDE
-  extern char *kernel_cmdline;
-  if (strncmp(kernel_cmdline, "noide", 5) &&
-      !strstr(kernel_cmdline, " noide"))
-    ide_init ();
+  ide_init ();
 #endif
 #ifdef CONFIG_BLK_DEV_FD
   floppy_init ();

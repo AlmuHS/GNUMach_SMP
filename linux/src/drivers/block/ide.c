@@ -3725,10 +3725,7 @@ static void probe_for_hwifs (void)
 #ifdef CONFIG_BLK_DEV_PROMISE
 	init_dc4030();
 #endif
-	extern char *kernel_cmdline;
-	if (strncmp(kernel_cmdline, "noahci", 6) &&
-	    !strstr(kernel_cmdline, " noahci"))
-		ahci_probe_pci();
+	ahci_probe_pci();
 }
 
 static int hwif_init (int h)
