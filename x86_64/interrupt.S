@@ -52,13 +52,10 @@ ENTRY(interrupt)
 	movq	S_IPL,S_ARG1		/* previous ipl as 2nd arg */
 
 	;
-	movq	S_IRQ,S_ARG2		/* irq number as 3rd arg */
+	movq	S_RET,S_ARG2		/* return address as 3th arg */
 
 	;
-	movq	S_RET,S_ARG3		/* return address as 4th arg */
-
-	;
-	movq	S_REGS,S_ARG4		/* address of interrupted registers as 5th arg */
+	movq	S_REGS,S_ARG3		/* address of interrupted registers as 4th arg */
 
 	movl	S_IRQ,%eax		/* copy irq number */
 	shll	$2,%eax			/* irq * 4 */

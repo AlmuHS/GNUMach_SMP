@@ -795,9 +795,8 @@ ast_from_interrupt:
  * #ifndef MACH_XEN
  *		1st parameter iunit
  *		2nd parameter saved SPL
- *		3rd parameter irq
- *		4th parameter return address
- *		5th parameter registers
+ *		3th parameter return address
+ *		4th parameter registers
  *		saved SPL
  *		saved IRQ
  * #endif
@@ -838,7 +837,7 @@ ast_from_interrupt:
 #ifdef	MACH_XEN
 #define	RET_OFFSET	8
 #else	/* MACH_XEN */
-#define	RET_OFFSET	36
+#define	RET_OFFSET	32
 #endif	/* MACH_XEN */
 
 ENTRY(kdb_kintr)

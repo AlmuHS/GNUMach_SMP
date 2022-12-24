@@ -33,17 +33,17 @@
  * Note: kdb_kintr needs to know our stack usage
  */
 
-#define S_REGS 32(%esp)
-#define S_RET 28(%esp)
-#define S_IRQ 24(%esp)
-#define S_IPL 20(%esp)
+#define S_REGS 28(%esp)
+#define S_RET 24(%esp)
+#define S_IRQ 20(%esp)
+#define S_IPL 16(%esp)
 
 ENTRY(interrupt)
 #ifdef APIC
 	cmpl	$255,%eax		/* was this a spurious intr? */
 	je	_no_eoi			/* if so, just return */
 #endif
-	subl	$28,%esp		/* Two local variables + 5 parameters */
+	subl	$24,%esp		/* Two local variables + 4 parameters */
 	movl	%eax,S_IRQ		/* save irq number */
 	call	spl7			/* set ipl */
 	movl	%eax,S_IPL		/* save previous ipl */
@@ -51,14 +51,11 @@ ENTRY(interrupt)
 	movl	S_IPL,%eax
 	movl	%eax,4(%esp)		/* previous ipl as 2nd arg */
 
-	movl	S_IRQ,%eax
-	movl	%eax,8(%esp)		/* irq number as 3rd arg */
-
 	movl	S_RET,%eax
-	movl	%eax,12(%esp)		/* return address as 4th arg */
+	movl	%eax,8(%esp)		/* return address as 3rd arg */
 
 	movl	S_REGS,%eax
-	movl	%eax,16(%esp)		/* address of interrupted registers as 5th arg */
+	movl	%eax,12(%esp)		/* address of interrupted registers as 4th arg */
 
 	movl	S_IRQ,%eax		/* copy irq number */
 	shll	$2,%eax			/* irq * 4 */
@@ -117,7 +114,7 @@ _isa_eoi:
 	movl	%ecx,(%esp)		/* load irq number as 1st arg */
 	call	EXT(ioapic_irq_eoi)	/* ioapic irq specific EOI */
 #endif
-	addl	$28,%esp		/* pop local variables */
+	addl	$24,%esp		/* pop local variables */
 _no_eoi:
 	ret
 END(interrupt)
