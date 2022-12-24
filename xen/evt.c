@@ -30,7 +30,7 @@ int	int_mask[NSPL];
 
 spl_t curr_ipl;
 
-void (*ivect[NEVNT])();
+interrupt_handler_fn ivect[NEVNT];
 int intpri[NEVNT];
 int iunit[NEVNT];
 
@@ -63,7 +63,7 @@ void hyp_c_callback(void *ret_addr, void *regs)
 					if (ivect[n]) {
 						spl_t spl = splx(intpri[n]);
 						asm ("lock; and %1,%0":"=m"(hyp_shared_info.evtchn_pending[i]):"r"(~(1UL<<j)));
-						ivect[n](iunit[n], spl, ret_addr, regs);
+						((void(*)(int, int, const char*, struct i386_interrupt_state*))(ivect[n]))(iunit[n], spl, ret_addr, regs);
 						splx_cli(spl);
 					} else {
 						printf("warning: lost unbound event %d\n", n);
