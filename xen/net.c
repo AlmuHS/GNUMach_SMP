@@ -36,6 +36,7 @@
 #include <xen/public/memory.h>
 #include <string.h>
 #include <util/atoi.h>
+#include <util/byteorder.h>
 #include "evt.h"
 #include "store.h"
 #include "net.h"
