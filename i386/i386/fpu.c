@@ -899,23 +899,6 @@ ASSERT_IPL(SPL0);
 	ifps->fp_valid = FALSE;		/* in FPU */
 }
 
-/*
- * Allocate and initialize FP state for current thread.
- * Don't load state.
- *
- * Locking not needed; always called on the current thread.
- */
-void
-fp_state_alloc(void)
-{
-	pcb_t	pcb = current_thread()->pcb;
-	struct i386_fpsave_state *ifps;
-
-	ifps = (struct i386_fpsave_state *)kmem_cache_alloc(&ifps_cache);
-	memcpy(ifps, fp_default_state, fp_xsave_size);
-	pcb->ims.ifps = ifps;
-}
-
 #if	(defined(AT386) || defined(ATX86_64)) && !defined(MACH_XEN)
 /*
  *	Handle a coprocessor error interrupt on the AT386.

@@ -1136,7 +1136,7 @@ kern_return_t thread_halt(
 	}
 }
 
-void __attribute__((noreturn)) walking_zombie(void)
+static void __attribute__((noreturn)) walking_zombie(void)
 {
 	panic("the zombie walks!");
 }
@@ -1722,7 +1722,7 @@ thread_t kernel_thread(
  *	This kernel thread runs forever looking for threads to destroy
  *	(when they request that they be destroyed, of course).
  */
-void __attribute__((noreturn)) reaper_thread_continue(void)
+static void __attribute__((noreturn)) reaper_thread_continue(void)
 {
 	for (;;) {
 		thread_t thread;
@@ -2261,7 +2261,7 @@ thread_wire(
  *	pcb_collect doesn't do anything yet.
  */
 
-void thread_collect_scan(void)
+static void thread_collect_scan(void)
 {
 	thread_t	thread, prev_thread;
 	processor_set_t		pset, prev_pset;
@@ -2348,8 +2348,7 @@ void consider_thread_collect(void)
 
 #if	MACH_DEBUG
 
-vm_size_t stack_usage(
-	vm_offset_t stack)
+static vm_size_t stack_usage(vm_offset_t stack)
 {
 	unsigned i;
 

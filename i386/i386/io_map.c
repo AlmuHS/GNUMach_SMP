@@ -36,7 +36,7 @@ extern vm_offset_t kernel_virtual_start;
  * Allocate and map memory for devices that may need to be mapped before
  * Mach VM is running.
  */
-vm_offset_t
+static vm_offset_t
 io_map(
 	phys_addr_t	phys_addr,
 	vm_size_t	size)

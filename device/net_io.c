@@ -235,7 +235,7 @@ net_kmsg_collect(void)
 	(void) splx(s);
 }
 
-void
+static void
 net_kmsg_more(void)
 {
 	ipc_kmsg_t kmsg;
@@ -412,7 +412,7 @@ mach_msg_type_t packet_type = {
  *	Dequeues a message and delivers it at spl0.
  *	Returns FALSE if no messages.
  */
-boolean_t net_deliver(boolean_t nonblocking)
+static boolean_t net_deliver(boolean_t nonblocking)
 {
 	ipc_kmsg_t kmsg;
 	boolean_t high_priority;
@@ -549,7 +549,7 @@ void net_ast(void)
 	(void) splx(s);
 }
 
-void __attribute__ ((noreturn)) net_thread_continue(void)
+static void __attribute__ ((noreturn)) net_thread_continue(void)
 {
 	for (;;) {
 		spl_t s;
@@ -602,7 +602,7 @@ void net_thread(void)
 	/*NOTREACHED*/
 }
 
-void
+static void
 reorder_queue(
 	queue_t		first, 
 	queue_t		last)
@@ -1010,7 +1010,7 @@ net_do_filter(infp, data, data_count, header)
 /*
  * Check filter for invalid operations or stack over/under-flow.
  */
-boolean_t
+static boolean_t
 parse_net_filter(
 	filter_t		*filter,
 	unsigned int		count)
@@ -2100,7 +2100,7 @@ net_add_q_info(ipc_port_t rcv_port)
 	return (int)qlimit;
 }
 
-void
+static void
 net_del_q_info(int qlimit)
 {
 	simple_lock(&net_kmsg_total_lock);

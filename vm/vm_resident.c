@@ -52,6 +52,7 @@
 #include <vm/vm_page.h>
 #include <vm/vm_pageout.h>
 #include <vm/vm_kern.h>
+#include <vm/vm_resident.h>
 
 #if	MACH_VM_DEBUG
 #include <mach/kern_return.h>

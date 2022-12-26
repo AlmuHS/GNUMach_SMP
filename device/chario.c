@@ -230,7 +230,7 @@ boolean_t char_open_done(
 	return TRUE;
 }
 
-boolean_t tty_close_open_reply(
+static boolean_t tty_close_open_reply(
 	io_req_t	ior)
 {
 	ior->io_error = D_DEVICE_DOWN;
@@ -366,7 +366,7 @@ boolean_t char_write_done(
 	return TRUE;
 }
 
-boolean_t tty_close_write_reply(
+static boolean_t tty_close_write_reply(
 	io_req_t	ior)
 {
 	ior->io_residual = ior->io_count;
@@ -473,7 +473,7 @@ boolean_t char_read_done(
 	return TRUE;
 }
 
-boolean_t tty_close_read_reply(
+static boolean_t tty_close_read_reply(
 	io_req_t	ior)
 {
 	ior->io_residual = ior->io_count;
@@ -524,7 +524,7 @@ void ttyclose(
 /*
  * Port-death routine to clean up reply messages.
  */
-boolean_t
+static boolean_t
 tty_queue_clean(
 	queue_t			q,
 	const ipc_port_t	port,
@@ -882,8 +882,7 @@ void tty_output(
 /*
  * Send any buffered recvd chars up to user
  */
-void ttypush(
-	void * _tp)
+static void ttypush(void * _tp)
 {
 	struct tty	*tp = _tp;
 	spl_t	s = spltty();

@@ -40,6 +40,7 @@
 #include <machine/pcb.h>
 #include <ipc/ipc_port.h>
 #include <ipc/mach_port.h>
+#include <kern/bootstrap.h>
 #include <kern/debug.h>
 #include <kern/host.h>
 #include <kern/printf.h>

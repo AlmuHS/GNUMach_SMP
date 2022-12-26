@@ -67,7 +67,7 @@ char *  db_history_prev = (char *) 0;	/* start of previous line */
 #define	BLANK		' '
 #define	BACKUP		'\b'
 
-void
+static void
 db_putstring(s, count)
 	const char	*s;
 	int		count;
@@ -76,7 +76,7 @@ db_putstring(s, count)
 	    cnputc(*s++);
 }
 
-void
+static void
 db_putnchars(c, count)
 	int	c;
 	int	count;
@@ -90,7 +90,7 @@ db_putnchars(c, count)
  */
 #define	DEL_FWD		0
 #define	DEL_BWD		1
-void
+static void
 db_delete(
 	int	n,
 	int	bwd)
@@ -110,7 +110,7 @@ db_delete(
 	db_le -= n;
 }
 
-void
+static void
 db_delete_line(void)
 {
 	db_delete(db_le - db_lc, DEL_FWD);
@@ -136,7 +136,7 @@ db_delete_line(void)
 #endif /* DB_HISTORY_SIZE */
 
 /* returns TRUE at end-of-line */
-boolean_t
+static boolean_t
 db_inputchar(int c)
 {
 	static int escaped, csi;

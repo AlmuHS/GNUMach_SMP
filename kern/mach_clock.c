@@ -405,7 +405,7 @@ struct time_value clock_boottime_offset;
  * This function must be called when the real-time clock is updated.
  * This function must be called at SPLHIGH.
  */
-void
+static void
 clock_boottime_update(struct time_value *new_time)
 {
 	struct time_value delta = time;

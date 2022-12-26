@@ -42,6 +42,7 @@
 #include <kern/sched.h>
 #include <kern/sched_prim.h>
 #include <kern/thread.h>
+#include <kern/priority.h>
 #include <kern/processor.h>
 #include <kern/timer.h>
 #include <kern/time_stamp.h>

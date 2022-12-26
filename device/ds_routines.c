@@ -1680,7 +1680,7 @@ mach_device_trap_init(void)
  * Could have lists of different size caches.
  * Could call a device-specific routine.
  */
-io_req_t
+static io_req_t
 ds_trap_req_alloc(const mach_device_t device, vm_size_t data_size)
 {
 	return (io_req_t) kmem_cache_alloc(&io_trap_cache);
@@ -1689,7 +1689,7 @@ ds_trap_req_alloc(const mach_device_t device, vm_size_t data_size)
 /*
  * Called by iodone to release ior.
  */
-boolean_t
+static boolean_t
 ds_trap_write_done(const io_req_t ior)
 {
 	mach_device_t 	dev;

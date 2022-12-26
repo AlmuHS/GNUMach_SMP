@@ -69,7 +69,7 @@
  *		A helper function for mach_port_names.
  */
 
-void
+static void
 mach_port_names_helper(
 	ipc_port_timestamp_t	timestamp,
 	ipc_entry_t		entry,
@@ -856,7 +856,7 @@ mach_port_set_seqno(
  *		A helper function for mach_port_get_set_status.
  */
 
-void
+static void
 mach_port_gst_helper(
 	ipc_pset_t		pset,
 	ipc_port_t		port,

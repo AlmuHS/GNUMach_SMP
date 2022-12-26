@@ -119,13 +119,3 @@ void insque(
 	(pred->next)->prev = entry;
 	pred->next = entry;
 }
-
-struct queue_entry
-*remque(
-	struct queue_entry *elt)
-{
-	(elt->next)->prev = elt->prev;
-	(elt->prev)->next = elt->next;
-	return(elt);
-}
-

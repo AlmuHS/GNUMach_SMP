@@ -128,14 +128,14 @@ typedef struct dev_pager *dev_pager_t;
 
 struct kmem_cache	dev_pager_cache;
 
-void dev_pager_reference(dev_pager_t	ds)
+static void dev_pager_reference(dev_pager_t ds)
 {
 	simple_lock(&ds->lock);
 	ds->ref_count++;
 	simple_unlock(&ds->lock);
 }
 
-void dev_pager_deallocate(dev_pager_t	ds)
+static void dev_pager_deallocate(dev_pager_t ds)
 {
 	simple_lock(&ds->lock);
 	if (--ds->ref_count > 0) {
@@ -189,7 +189,7 @@ decl_simple_lock_data(,
 #define	dev_hash(name_port) \
 		(((vm_offset_t)(name_port) & 0xffffff) % DEV_HASH_COUNT)
 
-void dev_pager_hash_init(void)
+static void dev_pager_hash_init(void)
 {
 	int		i;
 	vm_size_t	size;
@@ -202,7 +202,7 @@ void dev_pager_hash_init(void)
 	simple_lock_init(&dev_pager_hash_lock);
 }
 
-void dev_pager_hash_insert(
+static void dev_pager_hash_insert(
 	const ipc_port_t	name_port,
 	const dev_pager_t	rec)
 {
@@ -218,7 +218,7 @@ void dev_pager_hash_insert(
 	simple_unlock(&dev_pager_hash_lock);
 }
 
-void dev_pager_hash_delete(const ipc_port_t name_port)
+static void dev_pager_hash_delete(const ipc_port_t name_port)
 {
 	queue_t			bucket;
 	dev_pager_entry_t	entry;
@@ -239,7 +239,7 @@ void dev_pager_hash_delete(const ipc_port_t name_port)
 	    kmem_cache_free(&dev_pager_hash_cache, (vm_offset_t)entry);
 }
 
-dev_pager_t dev_pager_hash_lookup(const ipc_port_t name_port)
+static dev_pager_t dev_pager_hash_lookup(const ipc_port_t name_port)
 {
 	queue_t			bucket;
 	dev_pager_entry_t	entry;
@@ -262,7 +262,7 @@ dev_pager_t dev_pager_hash_lookup(const ipc_port_t name_port)
 	return (DEV_PAGER_NULL);
 }
 
-void dev_device_hash_init(void)
+static void dev_device_hash_init(void)
 {
 	int		i;
 	vm_size_t	size;
@@ -276,7 +276,7 @@ void dev_device_hash_init(void)
 	simple_lock_init(&dev_device_hash_lock);
 }
 
-void dev_device_hash_insert(
+static void dev_device_hash_insert(
 	const mach_device_t	device,
 	const vm_offset_t	offset,
 	const dev_pager_t	rec)
@@ -294,7 +294,7 @@ void dev_device_hash_insert(
 	simple_unlock(&dev_device_hash_lock);
 }
 
-void dev_device_hash_delete(
+static void dev_device_hash_delete(
 	const mach_device_t	device,
 	const vm_offset_t	offset)
 {
@@ -317,7 +317,7 @@ void dev_device_hash_delete(
 	    kmem_cache_free(&dev_device_hash_cache, (vm_offset_t)entry);
 }
 
-dev_pager_t dev_device_hash_lookup(
+static dev_pager_t dev_device_hash_lookup(
 	const mach_device_t	device,
 	const vm_offset_t	offset)
 {

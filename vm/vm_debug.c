@@ -65,7 +65,7 @@
  *		or IP_NULL if the object or its name port is null.
  */
 
-ipc_port_t
+static ipc_port_t
 vm_object_real_name(vm_object_t object)
 {
 	ipc_port_t port = IP_NULL;

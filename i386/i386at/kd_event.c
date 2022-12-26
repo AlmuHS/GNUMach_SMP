@@ -90,7 +90,7 @@ static boolean_t initialized = FALSE;
  * kbdinit - set up event queue.
  */
 
-void
+static void
 kbdinit(void)
 {
 	spl_t s = SPLKD();
@@ -304,7 +304,7 @@ kbd_enqueue(kd_event *ev)
 u_int X_kdb_enter_str[512], X_kdb_exit_str[512];
 int   X_kdb_enter_len = 0,  X_kdb_exit_len = 0;
 
-void
+static void
 kdb_in_out(const u_int *p)
 {
 	int t = p[0];

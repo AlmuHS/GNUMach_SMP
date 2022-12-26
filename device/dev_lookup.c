@@ -69,7 +69,7 @@ struct kmem_cache	dev_hdr_cache;
  * Enter device in the number lookup table.
  * The number table lock must be held.
  */
-void
+static void
 dev_number_enter(const mach_device_t device)
 {
 	queue_t	q;
@@ -82,7 +82,7 @@ dev_number_enter(const mach_device_t device)
  * Remove device from the device-number lookup table.
  * The device-number table lock must be held.
  */
-void
+static void
 dev_number_remove(const mach_device_t device)
 {
 	queue_t	q;
@@ -95,7 +95,7 @@ dev_number_remove(const mach_device_t device)
  * Lookup a device by device operations and minor number.
  * The number table lock must be held.
  */
-mach_device_t
+static mach_device_t
 dev_number_lookup(const dev_ops_t ops, int devnum)
 {
 	queue_t	q;

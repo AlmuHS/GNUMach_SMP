@@ -236,7 +236,7 @@ db_clear_hw_watchpoint(
 /*
  * Print trap reason.
  */
-void
+static void
 kdbprinttrap(
 	int	type, 
 	int	code)
@@ -444,7 +444,7 @@ kdb_kentry(
 
 boolean_t db_no_vm_fault = TRUE;
 
-int
+static int
 db_user_to_phys_address(
 	const task_t	task,
 	vm_offset_t	addr,

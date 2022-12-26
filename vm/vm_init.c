@@ -38,6 +38,7 @@
 #include <kern/slab.h>
 #include <kern/kalloc.h>
 #include <vm/vm_fault.h>
+#include <vm/vm_init.h>
 #include <vm/vm_object.h>
 #include <vm/vm_map.h>
 #include <vm/vm_page.h>

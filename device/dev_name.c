@@ -241,26 +241,3 @@ dev_set_indirection(const char *name, dev_ops_t ops, int unit)
 	    }
 	}
 }
-
-boolean_t dev_change_indirect(const char *iname, const char *dname, int unit)
-{
-    struct dev_ops *dp;
-    struct dev_indirect *di;
-    boolean_t found = FALSE;
-
-    dev_search(dp) {
-	if (!strcmp(dp->d_name, dname)) {
-	    found = TRUE;
-	    break;
-	}
-    }
-    if (!found) return FALSE;
-    dev_indirect_search(di) {
-	if (!strcmp(di->d_name, iname)) {
-	    di->d_ops = dp;
-	    di->d_unit = unit;
-	    return TRUE;
-	}
-    }
-    return FALSE;
-}

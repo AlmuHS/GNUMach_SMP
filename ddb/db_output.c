@@ -178,7 +178,7 @@ db_putchar(int c)		/* character to output */
 	/* other characters are assumed non-printing */
 }
 
-void
+static void
 db_id_putc(char c, vm_offset_t dummy)
 {
   db_putchar(c);

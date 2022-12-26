@@ -116,7 +116,7 @@ void eml_task_deallocate(task)
  *   task_set_emulation_vector:  [Server Entry]
  *   set a list of emulated system calls for this task.
  */
-kern_return_t
+static kern_return_t
 task_set_emulation_vector_internal(
 	task_t 			task,
 	int			vector_start,

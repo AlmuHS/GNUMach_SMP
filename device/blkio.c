@@ -31,6 +31,8 @@
  */
 #include <mach/kern_return.h>
 
+#include <device/blkio.h>
+#include <device/buf.h>
 #include <device/param.h>
 #include <device/device_types.h>
 #include <device/io_req.h>

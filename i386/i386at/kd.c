@@ -1448,7 +1448,7 @@ kd_parseesc(void)
  */
 
 #define reverse_video_char(a)       (((a) & 0x88) | ((((a) >> 4) | ((a) << 4)) & 0x77))
-void
+static void
 kd_update_kd_attr(void)
 {
 	kd_attr = kd_color;
@@ -2721,7 +2721,7 @@ bmpput(
  * bmpcp1char: copy 1 char from one place in the frame buffer to
  * another.
  */
-void
+static void
 bmpcp1char(
 	csrpos_t from, 
 	csrpos_t to)

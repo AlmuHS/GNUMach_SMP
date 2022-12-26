@@ -114,7 +114,7 @@ struct i386_kregs {
 	{ 0 },
 };
 
-long *
+static long *
 db_lookup_i386_kreg(
 	const char *name,
 	const long *kregp)
@@ -182,7 +182,7 @@ db_i386_reg_value(
 	    *valuep = *dp;
 }
 
-void
+static void
 db_find_trace_symbols(void)
 {
 	db_expr_t	value;
@@ -210,7 +210,7 @@ db_find_trace_symbols(void)
  */
 const int db_numargs_default = 5;
 
-int
+static int
 db_numargs(
 	struct i386_frame *fp,
 	task_t task)
@@ -261,7 +261,7 @@ struct interrupt_frame {
  *   It might be possible to dig out from the next frame up the name
  *   of the function that faulted, but that could get hairy.
  */
-void
+static void
 db_nextframe(
 	struct i386_frame **lfp,	/* in/out */
 	struct i386_frame **fp,		/* in/out */
@@ -562,7 +562,7 @@ db_i386_stack_trace(
 
 #if	CTHREADS_SUPPORT
 
-thread_t
+static thread_t
 db_find_kthread(
 	vm_offset_t	ustack_base,
 	vm_size_t	ustack_top,
@@ -613,7 +613,7 @@ const int db_cprocsw_pc_offset = 4 * 4;
 
 extern jmp_buf_t *db_recover;
 
-void db_trace_cproc(
+static void db_trace_cproc(
 	vm_offset_t	cproc,
 	thread_t	thread)
 {

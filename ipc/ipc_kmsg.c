@@ -217,7 +217,7 @@ ipc_kmsg_destroy(
  *		No locks held.
  */
 
-void
+static void
 ipc_kmsg_clean_body(
 	vm_offset_t saddr,
 	vm_offset_t eaddr)
@@ -359,7 +359,7 @@ ipc_kmsg_clean(ipc_kmsg_t kmsg)
  *		Nothing locked.
  */
 
-void
+static void
 ipc_kmsg_clean_partial(
 	ipc_kmsg_t 		kmsg,
 	vm_offset_t 		eaddr,
@@ -1292,7 +1292,7 @@ ipc_kmsg_copyin_header(
 	return MACH_SEND_INVALID_REPLY;
 }
 
-mach_msg_return_t
+static mach_msg_return_t
 ipc_kmsg_copyin_body(
 	ipc_kmsg_t 	kmsg,
 	ipc_space_t 	space,
@@ -2639,7 +2639,7 @@ ipc_kmsg_copyout_dest(
 
 #if	MACH_KDB
 
-char *
+static char *
 ipc_type_name(
 	int 		type_name,
 	boolean_t 	received)
@@ -2707,7 +2707,7 @@ ipc_type_name(
 	}
 }
 
-void
+static void
 ipc_print_type_name(
 	int	type_name)
 {

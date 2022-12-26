@@ -134,7 +134,7 @@ decl_simple_lock_data(,	wait_lock[NUMQUEUES])
 #define wait_hash(event) \
 	((((long)(event) < 0) ? ~(long)(event) : (long)(event)) % NUMQUEUES)
 
-void wait_queue_init(void)
+static void wait_queue_init(void)
 {
 	int i;
 
@@ -162,7 +162,7 @@ void sched_init(void)
  *	Thread timeout routine, called when timer expires.
  *	Called at splsoftclock.
  */
-void thread_timeout(
+static void thread_timeout(
 	void *_thread)
 {
 	thread_t thread = _thread;
@@ -490,7 +490,7 @@ void thread_bind(
  *	Assumes splsched.
  */
 
-thread_t thread_select(
+static thread_t thread_select(
 	processor_t myprocessor)
 {
 	thread_t thread;
@@ -1604,7 +1604,7 @@ int	no_dispatch_count = 0;
  *	to execute.
  */
 
-void __attribute__((noreturn)) idle_thread_continue(void)
+static void __attribute__((noreturn)) idle_thread_continue(void)
 {
 	processor_t myprocessor;
 	volatile thread_t *threadp;
@@ -1795,7 +1795,7 @@ void idle_thread(void)
  *	we don't want to do at interrupt level.  This allows us to
  *	avoid blocking.
  */
-void sched_thread_continue(void)
+static void sched_thread_continue(void)
 {
     while (TRUE) {
 	(void) compute_mach_factor();
@@ -1860,7 +1860,7 @@ int			stuck_count = 0;
  *	it ran out of space.
  */
 
-boolean_t
+static boolean_t
 do_runq_scan(
 	run_queue_t	runq)
 {

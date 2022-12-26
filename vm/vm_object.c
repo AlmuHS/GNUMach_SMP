@@ -226,7 +226,7 @@ static void _vm_object_setup(
 	object->size = size;
 }
 
-vm_object_t _vm_object_allocate(
+static vm_object_t _vm_object_allocate(
 	vm_size_t		size)
 {
 	vm_object_t object;
@@ -725,7 +725,7 @@ void memory_object_release(
  *	In/out conditions:
  *		The object is locked on entry and exit.
  */
-void vm_object_abort_activity(
+static void vm_object_abort_activity(
 	vm_object_t	object)
 {
 	vm_page_t	p;
@@ -1288,7 +1288,7 @@ boolean_t vm_object_copy_temporary(
  *		If the return value indicates an error, this parameter
  *		is not valid.
  */
-kern_return_t vm_object_copy_call(
+static kern_return_t vm_object_copy_call(
 	vm_object_t	src_object,
 	vm_offset_t	src_offset,
 	vm_size_t	size,

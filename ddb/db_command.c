@@ -96,7 +96,7 @@ boolean_t	db_ed_style = TRUE;
 /*
  * Search for command prefix.
  */
-int
+static int
 db_cmd_search(name, table, cmdp)
 	const char *		name;
 	const struct db_command	*table;
@@ -143,7 +143,7 @@ db_cmd_search(name, table, cmdp)
 	return (result);
 }
 
-void
+static void
 db_cmd_list(table)
 	const struct db_command *table;
 {
@@ -155,7 +155,7 @@ db_cmd_list(table)
 	}
 }
 
-void
+static void
 db_command(
 	struct db_command	**last_cmdp,	/* IN_OUT */
 	struct db_command	*cmd_table)
@@ -295,7 +295,7 @@ db_command(
 	}
 }
 
-void
+static void
 db_command_list(
 	struct db_command	**last_cmdp,	/* IN_OUT */
 	struct db_command	*cmd_table)

@@ -862,7 +862,7 @@ int db_lengths[] = {
 /*
  * Read address at location and return updated location.
  */
-db_addr_t
+static db_addr_t
 db_read_address(
 	db_addr_t	loc,
 	int		short_addr,
@@ -948,7 +948,7 @@ db_read_address(
 	return loc;
 }
 
-void
+static void
 db_print_address(
 	const char *		seg,
 	int			size,
@@ -980,7 +980,7 @@ db_print_address(
  * Disassemble floating-point ("escape") instruction
  * and return updated location.
  */
-db_addr_t
+static db_addr_t
 db_disasm_esc(
 	db_addr_t	loc,
 	int		inst,

@@ -44,6 +44,7 @@
 #include <kern/debug.h>
 #include <kern/ipc_host.h>
 #include <kern/host.h>
+#include <kern/machine.h>
 #include <kern/lock.h>
 #include <kern/processor.h>
 #include <kern/queue.h>
@@ -103,7 +104,7 @@ void cpu_up(int cpu)
  *	Flag specified cpu as down.  Called when a processor is about to
  *	go offline.
  */
-void cpu_down(int cpu)
+static void cpu_down(int cpu)
 {
 	struct machine_slot	*ms;
 	processor_t		processor;

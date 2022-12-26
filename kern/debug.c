@@ -205,6 +205,8 @@ unsigned char __stack_chk_guard [ sizeof (vm_offset_t) ] =
 	[ sizeof (vm_offset_t) - 1 ] = 0xff,
 };
 
+void __stack_chk_fail (void);
+
 void
 __stack_chk_fail (void)
 {

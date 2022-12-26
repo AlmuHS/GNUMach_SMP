@@ -203,31 +203,6 @@ b_to_q( char	*cp,
 }
 
 /*
- * Return number of contiguous characters up to a character
- * that matches the mask.
- */
-int
-ndqb(	struct cirbuf *cb,
-	int	mask)
-{
-	char *cp, *lim;
-
-	if (cb->c_cl < cb->c_cf)
-	    lim = cb->c_end;
-	else
-	    lim = cb->c_cl;
-	if (mask == 0)
-	    return (lim - cb->c_cf);
-	cp = cb->c_cf;
-	while (cp < lim) {
-	    if (*cp & mask)
-		break;
-	    cp++;
-	}
-	return (cp - cb->c_cf);
-}
-
-/*
  * Flush characters from circular buffer.
  */
 void

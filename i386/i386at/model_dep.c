@@ -361,7 +361,7 @@ register_boot_data(const struct multiboot_raw_info *mbi)
  * Basic PC VM initialization.
  * Turns on paging and changes the kernel segments to use high linear addresses.
  */
-void
+static void
 i386at_init(void)
 {
 	/* XXX move to intel/pmap.h */

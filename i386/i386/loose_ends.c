@@ -26,6 +26,8 @@
 /*
  */
 
+#include <i386/i386/loose_ends.h>
+
 #ifndef NDEBUG
 #define MACH_ASSERT 1
 #else
@@ -45,17 +47,3 @@ delay(int n)
 {
 	DELAY(n);
 }
-
-#if	MACH_ASSERT
-
-/*
- * Machine-dependent routine to fill in an array with up to callstack_max
- * levels of return pc information.
- */
-void machine_callstack(
-	const unsigned long	*buf,
-	int			callstack_max)
-{
-}
-
-#endif	/* MACH_ASSERT */

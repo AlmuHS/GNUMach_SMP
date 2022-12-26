@@ -330,7 +330,7 @@ MACRO_BEGIN								\
 	is_read_unlock(space);						\
 MACRO_END
 
-device_t
+static device_t
 port_name_to_device(mach_port_name_t name)
 {
 	ipc_port_t port;
@@ -373,7 +373,7 @@ port_name_to_device(mach_port_name_t name)
     }
 }
 
-thread_t
+static thread_t
 port_name_to_thread(mach_port_name_t name)
 {
 	ipc_port_t port;
@@ -418,7 +418,7 @@ port_name_to_thread(mach_port_name_t name)
     }
 }
 
-task_t
+static task_t
 port_name_to_task(mach_port_name_t name)
 {
 	ipc_port_t port;
@@ -465,7 +465,7 @@ port_name_to_task(mach_port_name_t name)
     }
 }
 
-vm_map_t
+static vm_map_t
 port_name_to_map(
 	mach_port_name_t	name)
 {
@@ -513,7 +513,7 @@ port_name_to_map(
     }
 }
 
-ipc_space_t
+static ipc_space_t
 port_name_to_space(mach_port_name_t name)
 {
 	ipc_port_t port;

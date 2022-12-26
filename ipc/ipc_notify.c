@@ -58,7 +58,7 @@ mach_dead_name_notification_t		ipc_notify_dead_name_template;
  *		Initialize a template for port-deleted notifications.
  */
 
-void
+static void
 ipc_notify_init_port_deleted(mach_port_deleted_notification_t *n)
 {
 	mach_msg_header_t *m = &n->not_header;
@@ -88,7 +88,7 @@ ipc_notify_init_port_deleted(mach_port_deleted_notification_t *n)
  *		Initialize a template for msg-accepted notifications.
  */
 
-void
+static void
 ipc_notify_init_msg_accepted(mach_msg_accepted_notification_t *n)
 {
 	mach_msg_header_t *m = &n->not_header;
@@ -118,7 +118,7 @@ ipc_notify_init_msg_accepted(mach_msg_accepted_notification_t *n)
  *		Initialize a template for port-destroyed notifications.
  */
 
-void
+static void
 ipc_notify_init_port_destroyed(mach_port_destroyed_notification_t *n)
 {
 	mach_msg_header_t *m = &n->not_header;
@@ -149,7 +149,7 @@ ipc_notify_init_port_destroyed(mach_port_destroyed_notification_t *n)
  *		Initialize a template for no-senders notifications.
  */
 
-void
+static void
 ipc_notify_init_no_senders(
 	mach_no_senders_notification_t	*n)
 {
@@ -180,7 +180,7 @@ ipc_notify_init_no_senders(
  *		Initialize a template for send-once notifications.
  */
 
-void
+static void
 ipc_notify_init_send_once(
 	mach_send_once_notification_t	*n)
 {
@@ -200,7 +200,7 @@ ipc_notify_init_send_once(
  *		Initialize a template for dead-name notifications.
  */
 
-void
+static void
 ipc_notify_init_dead_name(
 	mach_dead_name_notification_t	*n)
 {

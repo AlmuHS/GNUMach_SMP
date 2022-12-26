@@ -1178,7 +1178,7 @@ task_set_essential(
  *	Attempt to free resources owned by tasks.
  */
 
-void task_collect_scan(void)
+static void task_collect_scan(void)
 {
 	task_t			task, prev_task;
 	processor_set_t		pset, prev_pset;

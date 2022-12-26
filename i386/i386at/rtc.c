@@ -60,7 +60,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 static boolean_t first_rtcopen_ever = TRUE;
 
-void
+static void
 rtcinit(void)
 {
 	outb(RTC_ADDR, RTC_A);
@@ -70,7 +70,7 @@ rtcinit(void)
 }
 
 
-int
+static int
 rtcget(struct rtc_st *st)
 {
 	unsigned char *regs = (unsigned char *)st;
@@ -87,7 +87,7 @@ rtcget(struct rtc_st *st)
 	return(0);
 }
 
-void
+static void
 rtcput(struct rtc_st *st)
 {
 	unsigned char *regs = (unsigned char *)st;
@@ -111,7 +111,7 @@ extern struct timeval time;
 
 static int month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
-int
+static int
 yeartoday(int year)
 {
 	if (year%4)
@@ -134,13 +134,13 @@ yeartoday(int year)
 	return 366;
 }
 
-int
+static int
 hexdectodec(char n)
 {
 	return(((n>>4)&0x0F)*10 + (n&0x0F));
 }
 
-char
+static char
 dectohexdec(int n)
 {
 	return((char)(((n/10)<<4)&0xF0) | ((n%10)&0x0F));

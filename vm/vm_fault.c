@@ -1129,7 +1129,7 @@ vm_fault_return_t vm_fault_page(
  *		and deallocated when leaving vm_fault.
  */
 
-void
+static void
 vm_fault_continue(void)
 {
 	vm_fault_state_t *state =
@@ -1767,7 +1767,7 @@ kern_return_t vm_fault_wire_fast(
  *		Release a page used by vm_fault_copy.
  */
 
-void	vm_fault_copy_cleanup(
+static void vm_fault_copy_cleanup(
 	vm_page_t	page,
 	vm_page_t	top_page)
 {

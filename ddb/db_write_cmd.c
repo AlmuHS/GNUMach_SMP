@@ -43,6 +43,7 @@
 #include <ddb/db_output.h>
 #include <ddb/db_sym.h>
 #include <ddb/db_task_thread.h>
+#include <ddb/db_write_cmd.h>
 
 
 

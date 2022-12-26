@@ -845,7 +845,7 @@ processor_set_policy_disable(
  *
  *	Common internals for processor_set_{threads,tasks}
  */
-kern_return_t
+static kern_return_t
 processor_set_things(
 	processor_set_t	pset,
 	mach_port_t	**thing_list,

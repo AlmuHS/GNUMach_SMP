@@ -34,6 +34,7 @@
 #include <device/buf.h>
 #include <device/if_hdr.h>
 #include <device/if_ether.h>
+#include <device/subrs.h>
 
 
 

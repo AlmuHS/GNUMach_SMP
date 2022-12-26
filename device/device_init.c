@@ -38,6 +38,7 @@
 #include <device/device_types.h>
 #include <device/device_port.h>
 #include <device/tty.h>
+#include <device/device_init.h>
 #include <device/ds_routines.h>
 #include <device/net_io.h>
 #include <device/chario.h>

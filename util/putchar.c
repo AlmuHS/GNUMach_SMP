@@ -22,6 +22,7 @@
  */
 
 #include <device/cons.h>
+#include <util/putchar.h>
 
 int putchar(int c)
 {

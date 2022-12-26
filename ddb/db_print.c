@@ -127,7 +127,7 @@ db_show_regs(
 #define db_thread_fp_used(thread)	FALSE
 #endif
 
-char *
+static char *
 db_thread_stat(thread, status)
 	const thread_t 	thread;
 	char	 	*status;
@@ -145,7 +145,7 @@ db_thread_stat(thread, status)
 	return(status);
 }
 
-void
+static void
 db_print_thread(
 	thread_t thread,
 	int	 thread_id,
@@ -244,7 +244,7 @@ db_print_thread(
 	}
 }
 
-void
+static void
 db_print_task(
 	task_t	task,
 	int	task_id,
@@ -466,7 +466,7 @@ db_show_one_task(addr, have_addr, count, modif)
 	db_print_task(task, task_id, flag);
 }
 
-int
+static int
 db_port_iterate(thread, func)
 	const thread_t thread;
 	void (*func)();

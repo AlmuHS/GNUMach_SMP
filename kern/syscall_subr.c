@@ -61,7 +61,7 @@
  *	returned, the thread should make one more check on the
  *	lock and then be a good citizen and really suspend.
  */
-void swtch_continue(void)
+static void swtch_continue(void)
 {
 	processor_t	myprocessor;
 
@@ -89,7 +89,7 @@ boolean_t swtch(void)
 	       myprocessor->processor_set->runq.count > 0);
 }
 
-void swtch_pri_continue(void)
+static void swtch_pri_continue(void)
 {
 	thread_t	thread = current_thread();
 	processor_t	myprocessor;
@@ -130,7 +130,7 @@ boolean_t  swtch_pri(int pri)
 	       myprocessor->processor_set->runq.count > 0);
 }
 
-void thread_switch_continue(void)
+static void thread_switch_continue(void)
 {
 	thread_t	cur_thread = current_thread();
 

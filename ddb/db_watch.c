@@ -64,7 +64,7 @@ db_watchpoint_t		db_watchpoint_list = 0;
 
 extern vm_map_t		kernel_map;
 
-db_watchpoint_t
+static db_watchpoint_t
 db_watchpoint_alloc(void)
 {
 	db_watchpoint_t	watch;
@@ -83,7 +83,7 @@ db_watchpoint_alloc(void)
 	return (watch);
 }
 
-void
+static void
 db_watchpoint_free(watch)
 	db_watchpoint_t	watch;
 {

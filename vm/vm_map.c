@@ -280,7 +280,8 @@ void vm_map_unlock(struct vm_map *map)
 #define	vm_map_copy_entry_create(copy) \
 	    _vm_map_entry_create(&(copy)->cpy_hdr)
 
-vm_map_entry_t _vm_map_entry_create(const struct vm_map_header *map_header)
+static vm_map_entry_t
+_vm_map_entry_create(const struct vm_map_header *map_header)
 {
 	vm_map_entry_t	entry;
 
@@ -302,7 +303,8 @@ vm_map_entry_t _vm_map_entry_create(const struct vm_map_header *map_header)
 #define	vm_map_copy_entry_dispose(map, entry) \
 	_vm_map_entry_dispose(&(copy)->cpy_hdr, (entry))
 
-void _vm_map_entry_dispose(const struct vm_map_header *map_header,
+static void
+_vm_map_entry_dispose(const struct vm_map_header *map_header,
 		vm_map_entry_t entry)
 {
 	(void)map_header;
@@ -633,27 +635,6 @@ boolean_t vm_map_lookup_entry(
 }
 
 /*
- *      Routine:     invalid_user_access
- *
- *	Verifies whether user access is valid.
- */
-
-boolean_t
-invalid_user_access(
-        vm_map_t 	map,
-        vm_offset_t 	start, 
-	vm_offset_t	end,
-        vm_prot_t 	prot)
-{
-        vm_map_entry_t entry;
-
-        return (map == VM_MAP_NULL || map == kernel_map ||
-		!vm_map_lookup_entry(map, start, &entry) ||
-		entry->vme_end < end ||
-		(prot & ~(entry->protection)));
-}
-
-/*
  * Find a range of available space from the specified map.
  *
  * If successful, this function returns the map entry immediately preceding
@@ -913,7 +894,7 @@ boolean_t vm_map_pmap_enter_enable = FALSE;
  *	In/out conditions:
  *		The source map should not be locked on entry.
  */
-void
+static void
 vm_map_pmap_enter(
 	vm_map_t	map,
 	vm_offset_t 	addr,
@@ -2047,7 +2028,7 @@ kern_return_t vm_map_remove(
  *	Steal all the pages from a vm_map_copy page_list by copying ones
  *	that have not already been stolen.
  */
-void
+static void
 vm_map_copy_steal_pages(vm_map_copy_t copy)
 {
 	vm_page_t	m, new_m;
@@ -3673,7 +3654,7 @@ kern_return_t vm_map_copyin_object(
  *	the scheduler.
  */
 
-kern_return_t	vm_map_copyin_page_list_cont(
+static kern_return_t	vm_map_copyin_page_list_cont(
 	vm_map_copyin_args_t	cont_args,
 	vm_map_copy_t		*copy_result)	/* OUT */
 {
@@ -4873,65 +4854,6 @@ vm_region_create_proxy (task_t task, vm_address_t address,
 
   return ret;
 }
-
-/*
- *	Routine:	vm_map_simplify
- *
- *	Description:
- *		Attempt to simplify the map representation in
- *		the vicinity of the given starting address.
- *	Note:
- *		This routine is intended primarily to keep the
- *		kernel maps more compact -- they generally don't
- *		benefit from the "expand a map entry" technology
- *		at allocation time because the adjacent entry
- *		is often wired down.
- */
-void vm_map_simplify(
-	vm_map_t	map,
-	vm_offset_t	start)
-{
-	vm_map_entry_t	this_entry;
-	vm_map_entry_t	prev_entry;
-
-	vm_map_lock(map);
-	if (
-		(vm_map_lookup_entry(map, start, &this_entry)) &&
-		((prev_entry = this_entry->vme_prev) != vm_map_to_entry(map)) &&
-
-		(prev_entry->vme_end == start) &&
-
-		(prev_entry->is_shared == FALSE) &&
-		(prev_entry->is_sub_map == FALSE) &&
-
-		(this_entry->is_shared == FALSE) &&
-		(this_entry->is_sub_map == FALSE) &&
-
-		(prev_entry->inheritance == this_entry->inheritance) &&
-		(prev_entry->protection == this_entry->protection) &&
-		(prev_entry->max_protection == this_entry->max_protection) &&
-		(prev_entry->wired_count == this_entry->wired_count) &&
-
-		(prev_entry->needs_copy == this_entry->needs_copy) &&
-
-		(prev_entry->object.vm_object == this_entry->object.vm_object) &&
-		((prev_entry->offset + (prev_entry->vme_end - prev_entry->vme_start))
-		     == this_entry->offset) &&
-	        (prev_entry->projected_on == 0) &&
-	        (this_entry->projected_on == 0)
-	) {
-		if (map->first_free == this_entry)
-			map->first_free = prev_entry;
-
-		SAVE_HINT(map, prev_entry);
-		prev_entry->vme_end = this_entry->vme_end;
-		vm_map_entry_unlink(map, this_entry);
-	 	vm_object_deallocate(this_entry->object.vm_object);
-		vm_map_entry_dispose(map, this_entry);
-	}
-	vm_map_unlock(map);
-}
-
 
 /*
  *	Routine:	vm_map_machine_attribute

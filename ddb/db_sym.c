@@ -264,7 +264,7 @@ out:
  */
 boolean_t db_qualify_ambiguous_names = FALSE;
 
-boolean_t
+static boolean_t
 db_name_is_ambiguous(char *sym_name)
 {
 	int		i;
@@ -507,8 +507,8 @@ void db_free_symbol(db_sym_t s)
  * Switch into symbol-table specific routines
  */
 
-void dummy_db_free_symbol(db_sym_t symbol) { }
-boolean_t dummy_db_sym_init(char *a, char *b, char *c, char *d) {
+static void dummy_db_free_symbol(db_sym_t symbol) { }
+static boolean_t dummy_db_sym_init(char *a, char *b, char *c, char *d) {
   return FALSE;
 }
 

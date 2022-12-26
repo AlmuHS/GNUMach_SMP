@@ -70,7 +70,7 @@ struct db_variable db_vars[] = {
 };
 struct db_variable *db_evars = db_vars + sizeof(db_vars)/sizeof(db_vars[0]);
 
-const char *
+static const char *
 db_get_suffix(suffix, suffix_value)
 	const char	*suffix;
 	short		*suffix_value;
@@ -116,7 +116,7 @@ db_cmp_variable_name(vp, name, ap)
 	return(TRUE);
 }
 
-int
+static int
 db_find_variable(
 	struct db_variable	**varp,
 	db_var_aux_param_t	ap)
