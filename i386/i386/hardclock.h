@@ -22,7 +22,6 @@
 void hardclock(
 	int 				iunit,
 	int 				old_ipl,
-	int 				irq,
 	const char			*ret_addr,
 	struct i386_interrupt_state 	*regs);
 
