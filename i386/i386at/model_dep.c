@@ -32,6 +32,7 @@
  *	Basic initialization for I386 - ISA bus machines.
  */
 
+#include <inttypes.h>
 #include <string.h>
 
 #include <device/cons.h>
@@ -607,7 +608,7 @@ void c_boot_entry(vm_offset_t bi)
 		strtab_size = (vm_offset_t)phystokv(boot_info.shdr_size);
 		kern_sym_end = kern_sym_start + 4 + symtab_size + strtab_size;
 
-		printf("kernel symbol table at %08lx-%08lx (%ld,%ld)\n",
+		printf("kernel symbol table at %08" PRIxPTR "-%08" PRIxPTR " (%ld,%ld)\n",
 		       kern_sym_start, kern_sym_end,
 		       (unsigned long) symtab_size, (unsigned long) strtab_size);
 	}
@@ -620,7 +621,7 @@ void c_boot_entry(vm_offset_t bi)
 		elf_shdr_addr = (vm_offset_t)phystokv(boot_info.shdr_addr);
 		elf_shdr_shndx = boot_info.shdr_strndx;
 
-		printf("ELF section header table at %08lx\n", elf_shdr_addr);
+		printf("ELF section header table at %08" PRIxPTR "\n", elf_shdr_addr);
 	}
 #endif	/* MACH_KDB */
 #endif	/* MACH_XEN */
