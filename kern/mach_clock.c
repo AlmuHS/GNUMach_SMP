@@ -52,7 +52,6 @@
 #include <kern/sched.h>
 #include <kern/sched_prim.h>
 #include <kern/thread.h>
-#include <kern/time_stamp.h>
 #include <kern/timer.h>
 #include <kern/priority.h>
 #include <vm/vm_kern.h>
@@ -206,12 +205,6 @@ void clock_interrupt(
 	    timer_elt_t	telt;
 	    boolean_t	needsoft = FALSE;
 
-#if	TS_FORMAT == 1
-	    /*
-	     *	Increment the tick count for the timestamping routine.
-	     */
-	    ts_tick_count++;
-#endif	/* TS_FORMAT == 1 */
 
 	    /*
 	     *	Update the tick count since bootup, and handle

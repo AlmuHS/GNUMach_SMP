@@ -45,7 +45,6 @@
 #include <mach/boolean.h>
 #include <kern/thread.h>
 #include <kern/lock.h>
-#include <kern/time_stamp.h>
 
 
 decl_simple_lock_data(extern , kdb_lock)

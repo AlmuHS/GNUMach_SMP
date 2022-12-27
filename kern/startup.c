@@ -49,7 +49,6 @@
 #include <kern/timer.h>
 #include <kern/xpr.h>
 #include <kern/bootstrap.h>
-#include <kern/time_stamp.h>
 #include <kern/startup.h>
 #include <vm/vm_kern.h>
 #include <vm/vm_map.h>
@@ -130,8 +129,6 @@ void setup_main(void)
 #if	XPR_DEBUG
 	xprbootstrap();
 #endif	/* XPR_DEBUG */
-
-	timestamp_init();
 
 	machine_init();
 

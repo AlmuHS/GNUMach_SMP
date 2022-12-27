@@ -216,8 +216,6 @@ libkernel_a_SOURCES += \
 	kern/thread.h \
 	kern/thread_swap.c \
 	kern/thread_swap.h \
-	kern/time_stamp.c \
-	kern/time_stamp.h \
 	kern/timer.c \
 	kern/timer.h \
 	kern/xpr.c \
