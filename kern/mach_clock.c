@@ -433,9 +433,7 @@ read_time_stamp (time_value_t *stamp, time_value_t *result)
  * Read the time.
  */
 kern_return_t
-host_get_time(host, current_time)
-	const host_t	host;
-	time_value_t	*current_time;	/* OUT */
+host_get_time(const host_t host, time_value_t *current_time)
 {
 	if (host == HOST_NULL)
 		return(KERN_INVALID_HOST);
@@ -448,9 +446,7 @@ host_get_time(host, current_time)
  * Set the time.  Only available to privileged users.
  */
 kern_return_t
-host_set_time(host, new_time)
-	const host_t	host;
-	time_value_t	new_time;
+host_set_time(const host_t host, time_value_t new_time)
 {
 	spl_t	s;
 
@@ -487,10 +483,10 @@ host_set_time(host, new_time)
  * Adjust the time gradually.
  */
 kern_return_t
-host_adjust_time(host, new_adjustment, old_adjustment)
-	const host_t	host;
-	time_value_t	new_adjustment;
-	time_value_t	*old_adjustment;	/* OUT */
+host_adjust_time(
+	const host_t	host,
+	time_value_t	new_adjustment,
+	time_value_t	*old_adjustment	/* OUT */)
 {
 	time_value_t	oadj;
 	unsigned int	ndelta;
@@ -598,9 +594,7 @@ void timeout(
  * Returns a boolean indicating whether the timeout element was found
  * and removed.
  */
-boolean_t untimeout(fcn, param)
-	void		(*fcn)( void * param );
-	const void *	param;
+boolean_t untimeout(void (*fcn)( void * param ), const void *param)
 {
 	spl_t	s;
 	timer_elt_t elt;
