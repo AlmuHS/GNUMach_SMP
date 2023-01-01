@@ -97,10 +97,10 @@ boolean_t	db_ed_style = TRUE;
  * Search for command prefix.
  */
 static int
-db_cmd_search(name, table, cmdp)
-	const char *		name;
-	const struct db_command	*table;
-	const struct db_command	**cmdp;	/* out */
+db_cmd_search(
+	const char *		name,
+	const struct db_command	*table,
+	const struct db_command	**cmdp	/* out */)
 {
 	const struct db_command	*cmd;
 	int		result = CMD_NONE;
@@ -144,8 +144,7 @@ db_cmd_search(name, table, cmdp)
 }
 
 static void
-db_cmd_list(table)
-	const struct db_command *table;
+db_cmd_list(const struct db_command *table)
 {
 	const struct db_command *cmd;
 
@@ -470,8 +469,7 @@ db_exec_cmd_nest(
 	return(db_cmd_loop_done == FALSE);
 }
 
-void db_error(s)
-	const char *s;
+void db_error(const char *s)
 {
 	extern int db_macro_level;
 
@@ -547,9 +545,9 @@ db_fncall(void)
 }
 
 boolean_t __attribute__ ((pure))
-db_option(modif, option)
-	const char	*modif;
-	int		option;
+db_option(
+	const char	*modif,
+	int		option)
 {
 	const char *p;
 

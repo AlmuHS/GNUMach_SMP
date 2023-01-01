@@ -58,11 +58,11 @@ thread_t	db_examine_thread = THREAD_NULL;
  */
 /*ARGSUSED*/
 void
-db_examine_cmd(addr, have_addr, count, modif)
-	db_expr_t	addr;
-	int		have_addr;
-	db_expr_t	count;
-	const char *	modif;
+db_examine_cmd(
+	db_expr_t	addr,
+	int		have_addr,
+	db_expr_t	count,
+	const char *	modif)
 {
 	thread_t	thread;
 
@@ -90,11 +90,11 @@ db_examine_cmd(addr, have_addr, count, modif)
 
 /* ARGSUSED */
 void
-db_examine_forward(addr, have_addr, count, modif)
-	db_expr_t	addr;
-	int		have_addr;
-	db_expr_t	count;
-	const char *	modif;
+db_examine_forward(
+	db_expr_t	addr,
+	int		have_addr,
+	db_expr_t	count,
+	const char *	modif)
 {
 	db_examine(db_next, db_examine_format, db_examine_count,
 				db_thread_to_task(db_examine_thread));
@@ -102,11 +102,11 @@ db_examine_forward(addr, have_addr, count, modif)
 
 /* ARGSUSED */
 void
-db_examine_backward(addr, have_addr, count, modif)
-	db_expr_t	addr;
-	int		have_addr;
-	db_expr_t	count;
-	const char *	modif;
+db_examine_backward(
+	db_expr_t	addr,
+	int		have_addr,
+	db_expr_t	count,
+	const char *	modif)
 {
 
 	db_examine(db_examine_prev_addr - (db_next - db_examine_prev_addr),
@@ -115,11 +115,11 @@ db_examine_backward(addr, have_addr, count, modif)
 }
 
 void
-db_examine(addr, fmt, count, task)
-	db_addr_t	addr;
-	const char *	fmt;	/* format string */
-	int		count;	/* repeat count */
-	task_t		task;
+db_examine(
+	db_addr_t	addr,
+	const char *	fmt,	/* format string */
+	int		count,	/* repeat count */
+	task_t		task)
 {
 	int		c;
 	db_expr_t	value;
@@ -335,9 +335,7 @@ db_print_loc_and_inst(
 }
 
 void
-db_strcpy(dst, src)
-	char *dst;
-	const char *src;
+db_strcpy(char *dst, const char *src)
 {
 	while ((*dst++ = *src++))
 	    ;

@@ -51,8 +51,7 @@ thread_t	db_default_thread;	/* default target thread */
  * search valid task queue, and return the queue position as the task id
  */
 int
-db_lookup_task(target_task)
-	const task_t target_task;
+db_lookup_task(const task_t target_task)
 {
 	task_t task;
 	int task_id;
@@ -81,9 +80,7 @@ db_lookup_task(target_task)
  * search thread queue of the task, and return the queue position
  */
 int
-db_lookup_task_thread(task, target_thread)
-	const task_t	 task;
-	const thread_t target_thread;
+db_lookup_task_thread(const task_t task, const thread_t target_thread)
 {
 	thread_t thread;
 	int thread_id;
@@ -105,8 +102,7 @@ db_lookup_task_thread(task, target_thread)
  * as the thread id.
  */
 int
-db_lookup_thread(target_thread)
-	const thread_t target_thread;
+db_lookup_thread(const thread_t target_thread)
 {
 	int thread_id;
 	task_t task;
@@ -138,8 +134,7 @@ db_lookup_thread(target_thread)
  * check the address is a valid thread address
  */
 boolean_t
-db_check_thread_address_valid(thread)
-	const thread_t thread;
+db_check_thread_address_valid(const thread_t thread)
 {
 	if (db_lookup_thread(thread) < 0) {
 	    db_printf("Bad thread address 0x%x\n", thread);
@@ -245,11 +240,11 @@ db_init_default_thread(void)
  */
 /* ARGSUSED */
 void
-db_set_default_thread(vp, valuep, flag, ap)
-	struct db_variable 	*vp;
-	db_expr_t		*valuep;
-	int			flag;
-	db_var_aux_param_t 	ap;
+db_set_default_thread(
+	struct db_variable 	*vp,
+	db_expr_t		*valuep,
+	int			flag,
+	db_var_aux_param_t 	ap)
 {
 	thread_t	thread;
 

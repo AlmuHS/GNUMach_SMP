@@ -91,9 +91,7 @@ db_add_symbol_table(
  *  overwritten by each call... but in practice this seems okay.
  */
 static char * __attribute__ ((pure))
-db_qualify(symname, symtabname)
-	const char	*symname;
-	const char	*symtabname;
+db_qualify(const char *symname, const char *symtabname)
 {
 	static char     tmp[256];
 	char		*s;
@@ -443,10 +441,10 @@ db_symbol_values(
 unsigned long	db_maxoff = 0x4000;
 
 void
-db_task_printsym(off, strategy, task)
-	db_addr_t	off;
-	db_strategy_t	strategy;
-	task_t		task;
+db_task_printsym(
+	db_addr_t	off,
+	db_strategy_t	strategy,
+	task_t		task)
 {
 	db_addr_t	d;
 	char 		*filename;
@@ -477,19 +475,19 @@ db_task_printsym(off, strategy, task)
 }
 
 void
-db_printsym(off, strategy)
-	db_expr_t	off;
-	db_strategy_t	strategy;
+db_printsym(
+	db_expr_t	off,
+	db_strategy_t	strategy)
 {
 	db_task_printsym(off, strategy, TASK_NULL);
 }
 
 boolean_t
-db_line_at_pc( sym, filename, linenum, pc)
-	db_sym_t	sym;
-	char		**filename;
-	int		*linenum;
-	db_addr_t	pc;
+db_line_at_pc(
+	db_sym_t	sym,
+	char		**filename,
+	int		*linenum,
+	db_addr_t	pc)
 {
 	return (db_last_symtab) ?
 		X_db_line_at_pc( db_last_symtab, sym, filename, linenum, pc) :

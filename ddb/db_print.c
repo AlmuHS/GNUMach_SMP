@@ -128,9 +128,9 @@ db_show_regs(
 #endif
 
 static char *
-db_thread_stat(thread, status)
-	const thread_t 	thread;
-	char	 	*status;
+db_thread_stat(
+	const thread_t 	thread,
+	char	 	*status)
 {
 	char *p = status;
 
@@ -331,11 +331,11 @@ db_show_all_tasks(db_expr_t addr,
 
 /*ARGSUSED*/
 void
-db_show_all_threads(addr, have_addr, count, modif)
-	db_expr_t	addr;
-	boolean_t	have_addr;
-	db_expr_t	count;
-	const char *	modif;
+db_show_all_threads(
+	db_expr_t	addr,
+	boolean_t	have_addr,
+	db_expr_t	count,
+	const char *	modif)
 {
 	task_t task;
 	int task_id;
@@ -384,11 +384,11 @@ db_task_from_space(
 
 /*ARGSUSED*/
 void
-db_show_one_thread(addr, have_addr, count, modif)
-	db_expr_t	addr;
-	boolean_t	have_addr;
-	db_expr_t	count;
-	const char *	modif;
+db_show_one_thread(
+	db_expr_t	addr,
+	boolean_t	have_addr,
+	db_expr_t	count,
+	const char *	modif)
 {
 	int		flag;
 	int		thread_id;
@@ -432,11 +432,11 @@ db_show_one_thread(addr, have_addr, count, modif)
 
 /*ARGSUSED*/
 void
-db_show_one_task(addr, have_addr, count, modif)
-	db_expr_t	addr;
-	boolean_t	have_addr;
-	db_expr_t	count;
-	const char *	modif;
+db_show_one_task(
+	db_expr_t	addr,
+	boolean_t	have_addr,
+	db_expr_t	count,
+	const char *	modif)
 {
 	int		flag;
 	int		task_id;
@@ -467,9 +467,7 @@ db_show_one_task(addr, have_addr, count, modif)
 }
 
 static int
-db_port_iterate(thread, func)
-	const thread_t thread;
-	void (*func)();
+db_port_iterate(const thread_t thread, void (*func)())
 {
 	ipc_entry_t entry;
 	int n = 0;
@@ -500,11 +498,7 @@ db_lookup_port(
 }
 
 static void
-db_print_port_id(id, port, bits, n)
-	int id;
-	const ipc_port_t port;
-	unsigned bits;
-	int n;
+db_print_port_id(int id, const ipc_port_t port, unsigned bits, int n)
 {
 	if (n != 0 && n % 3 == 0)
 	    db_printf("\n");
@@ -530,11 +524,11 @@ db_print_port_id_long(
 
 /* ARGSUSED */
 void
-db_show_port_id(addr, have_addr, count, modif)
-	db_expr_t	addr;
-	boolean_t	have_addr;
-	db_expr_t	count;
-	const char *	modif;
+db_show_port_id(
+	db_expr_t	addr,
+	boolean_t	have_addr,
+	db_expr_t	count,
+	const char *	modif)
 {
 	thread_t thread;
 

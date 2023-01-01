@@ -84,18 +84,17 @@ db_watchpoint_alloc(void)
 }
 
 static void
-db_watchpoint_free(watch)
-	db_watchpoint_t	watch;
+db_watchpoint_free(db_watchpoint_t watch)
 {
 	watch->link = db_free_watchpoints;
 	db_free_watchpoints = watch;
 }
 
 void
-db_set_watchpoint(task, addr, size)
-	const task_t	task;
-	db_addr_t	addr;
-	vm_size_t	size;
+db_set_watchpoint(
+	const task_t	task,
+	db_addr_t	addr,
+	vm_size_t	size)
 {
 	db_watchpoint_t	watch;
 
@@ -129,9 +128,7 @@ db_set_watchpoint(task, addr, size)
 }
 
 void
-db_delete_watchpoint(task, addr)
-	const task_t	task;
-	db_addr_t	addr;
+db_delete_watchpoint(const task_t task, db_addr_t addr)
 {
 	db_watchpoint_t	watch;
 	db_watchpoint_t	*prev;
@@ -178,10 +175,7 @@ db_list_watchpoints(void)
 }
 
 static int
-db_get_task(modif, taskp, addr)
-	const char	*modif;
-	task_t		*taskp;
-	db_addr_t	addr;
+db_get_task(const char *modif, task_t *taskp, db_addr_t addr)
 {
 	task_t		task = TASK_NULL;
 	db_expr_t	value;
@@ -217,11 +211,11 @@ db_get_task(modif, taskp, addr)
 /* Delete watchpoint */
 /*ARGSUSED*/
 void
-db_deletewatch_cmd(addr, have_addr, count, modif)
-	db_expr_t	addr;
-	int		have_addr;
-	db_expr_t	count;
-	const char *	modif;
+db_deletewatch_cmd(
+	db_expr_t	addr,
+	int		have_addr,
+	db_expr_t	count,
+	const char *	modif)
 {
 	task_t		task;
 
@@ -233,11 +227,11 @@ db_deletewatch_cmd(addr, have_addr, count, modif)
 /* Set watchpoint */
 /*ARGSUSED*/
 void
-db_watchpoint_cmd(addr, have_addr, count, modif)
-	db_expr_t	addr;
-	int		have_addr;
-	db_expr_t	count;
-	const char *	modif;
+db_watchpoint_cmd(
+	db_expr_t	addr,
+	int		have_addr,
+	db_expr_t	count,
+	const char *	modif)
 {
 	vm_size_t	size;
 	db_expr_t	value;

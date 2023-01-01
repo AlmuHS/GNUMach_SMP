@@ -250,9 +250,7 @@ db_breakpoint_t	db_not_taken_bkpt = 0;
 db_breakpoint_t	db_taken_bkpt = 0;
 
 db_breakpoint_t __attribute__ ((pure))
-db_find_temp_breakpoint(task, addr)
-	const task_t	task;
-	db_addr_t	addr;
+db_find_temp_breakpoint(const task_t task, db_addr_t addr)
 {
 	if (db_taken_bkpt && (db_taken_bkpt->address == addr) &&
 	    db_taken_bkpt->task == task)
@@ -309,9 +307,7 @@ db_set_task_single_step(
 }
 
 void
-db_clear_task_single_step(regs, task)
-	const db_regs_t *regs;
-	task_t	  	task;
+db_clear_task_single_step(const db_regs_t *regs, task_t task)
 {
 	if (db_taken_bkpt != 0) {
 	    db_delete_temp_breakpoint(task, db_taken_bkpt);
@@ -331,11 +327,11 @@ extern int	db_cmd_loop_done;
 /* single-step */
 /*ARGSUSED*/
 void
-db_single_step_cmd(addr, have_addr, count, modif)
-	db_expr_t	addr;
-	int		have_addr;
-	db_expr_t	count;
-	const char *	modif;
+db_single_step_cmd(
+	db_expr_t	addr,
+	int		have_addr,
+	db_expr_t	count,
+	const char *	modif)
 {
 	boolean_t	print = FALSE;
 
@@ -359,11 +355,11 @@ db_single_step_cmd(addr, have_addr, count, modif)
 /* trace and print until call/return */
 /*ARGSUSED*/
 void
-db_trace_until_call_cmd(addr, have_addr, count, modif)
-	db_expr_t	addr;
-	int		have_addr;
-	db_expr_t	count;
-	const char *	modif;
+db_trace_until_call_cmd(
+	db_expr_t	addr,
+	int		have_addr,
+	db_expr_t	count,
+	const char *	modif)
 {
 	boolean_t	print = FALSE;
 
@@ -382,11 +378,11 @@ db_trace_until_call_cmd(addr, have_addr, count, modif)
 
 /*ARGSUSED*/
 void
-db_trace_until_matching_cmd(addr, have_addr, count, modif)
-	db_expr_t	addr;
-	int		have_addr;
-	db_expr_t	count;
-	const char *	modif;
+db_trace_until_matching_cmd(
+	db_expr_t	addr,
+	int		have_addr,
+	db_expr_t	count,
+	const char *	modif)
 {
 	boolean_t	print = FALSE;
 
@@ -407,11 +403,11 @@ db_trace_until_matching_cmd(addr, have_addr, count, modif)
 /* continue */
 /*ARGSUSED*/
 void
-db_continue_cmd(addr, have_addr, count, modif)
-	db_expr_t	addr;
-	int		have_addr;
-	db_expr_t	count;
-	const char *	modif;
+db_continue_cmd(
+	db_expr_t	addr,
+	int		have_addr,
+	db_expr_t	count,
+	const char *	modif)
 {
 	if (modif[0] == 'c')
 	    db_run_mode = STEP_COUNT;

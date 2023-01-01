@@ -71,9 +71,9 @@ struct db_variable db_vars[] = {
 struct db_variable *db_evars = db_vars + sizeof(db_vars)/sizeof(db_vars[0]);
 
 static const char *
-db_get_suffix(suffix, suffix_value)
-	const char	*suffix;
-	short		*suffix_value;
+db_get_suffix(
+	const char	*suffix,
+	short		*suffix_value)
 {
 	int value;
 
@@ -89,10 +89,10 @@ db_get_suffix(suffix, suffix_value)
 }
 
 static boolean_t
-db_cmp_variable_name(vp, name, ap)
-	struct db_variable		*vp;
-	char				*name;
-	const db_var_aux_param_t	ap;
+db_cmp_variable_name(
+	struct db_variable		*vp,
+	char				*name,
+	const db_var_aux_param_t	ap)
 {
 	char *var_np;
 	const char *np;

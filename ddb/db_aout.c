@@ -133,8 +133,7 @@ aout_db_sym_init(
  * check file name or not (check xxxx.x pattern)
  */
 private boolean_t __attribute__ ((pure))
-aout_db_is_filename(name)
-	const char *name;
+aout_db_is_filename(const char *name)
 {
 	while (*name) {
 	    if (*name == '.') {
@@ -150,9 +149,7 @@ aout_db_is_filename(name)
  * special name comparison routine with a name in the symbol table entry
  */
 private boolean_t __attribute__ ((pure))
-aout_db_eq_name(sp, name)
-	const struct nlist *sp;
-	const char *name;
+aout_db_eq_name(const struct nlist *sp, const char * name)
 {
 	const char *s1, *s2;
 
@@ -185,12 +182,12 @@ aout_db_eq_name(sp, name)
  *	fp(in,out): last found text file name symbol entry
  */
 private struct nlist *
-aout_db_search_name(sp, ep, name, type, fp)
-	struct nlist 		*sp;
-	const struct nlist	*ep;
-	const char		*name;
-	int 			type;
-	struct nlist		**fp;
+aout_db_search_name(
+	struct nlist 		*sp,
+	const struct nlist	*ep,
+	const char		*name,
+	int 			type,
+	struct nlist		**fp)
 {
 	struct nlist	*file_sp = *fp;
 	struct nlist	*found_sp = 0;
@@ -231,11 +228,11 @@ aout_db_search_name(sp, ep, name, type, fp)
  * search a symbol with file, func and line qualification
  */
 private db_sym_t
-aout_db_qualified_search(stab, file, sym, line)
-	db_symtab_t	*stab;
-	const char	*file;
-	const char	*sym;
-	int 		line;
+aout_db_qualified_search(
+	db_symtab_t	*stab,
+	const char	*file,
+	const char	*sym,
+	int 		line)
 {
 	struct nlist *sp = (struct nlist *)stab->start;
 	struct nlist	*ep = (struct nlist *)stab->end;
@@ -395,13 +392,13 @@ aout_db_symbol_values(
  * search symbol by value
  */
 private boolean_t
-aout_db_search_by_addr(stab, addr, file, func, line, diff)
-	const db_symtab_t	*stab;
-	vm_offset_t 		addr;
-	char			**file;
-	char			**func;
-	int 	 		*line;
-	unsigned long		*diff;
+aout_db_search_by_addr(
+	const db_symtab_t	*stab,
+	vm_offset_t 		addr,
+	char			**file,
+	char			**func,
+	int 	 		*line,
+	unsigned long		*diff)
 {
 	struct nlist 	*sp;
 	struct nlist 	*line_sp, *func_sp, *file_sp, *line_func;
@@ -488,12 +485,12 @@ aout_db_search_by_addr(stab, addr, file, func, line, diff)
  * Find filename and lineno within, given the current pc.
  */
 boolean_t
-aout_db_line_at_pc(stab, sym, file, line, pc)
-	db_symtab_t	*stab;
-	db_sym_t	sym;
-	char		**file;
-	int		*line;
-	db_addr_t	pc;
+aout_db_line_at_pc(
+	db_symtab_t	*stab,
+	db_sym_t	sym,
+	char		**file,
+	int		*line,
+	db_addr_t	pc)
 {
 	char		*func;
 	unsigned long	diff;

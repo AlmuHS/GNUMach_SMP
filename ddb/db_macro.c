@@ -58,8 +58,7 @@ int		db_macro_level = 0;
 db_expr_t	db_macro_args[DB_MACRO_LEVEL][DB_NARGS];
 
 static struct db_user_macro *
-db_lookup_macro(name)
-	const char *name;
+db_lookup_macro(const char *name)
 {
 	struct db_user_macro *mp;
 
@@ -140,8 +139,7 @@ db_show_macro(void)
 }
 
 int
-db_exec_macro(name)
-	const char *name;
+db_exec_macro(const char *name)
 {
 	struct db_user_macro *mp;
 	int n;
