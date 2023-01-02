@@ -275,7 +275,9 @@ kd_enqsc(Scancode sc)
 	kd_event ev;
 
 	ev.type = KEYBD_EVENT;
-	ev.time = time;
+	/* Not used but we set it to avoid garbage */
+	ev.unused_time.seconds = 0;
+	ev.unused_time.microseconds = 0;
 	ev.value.sc = sc;
 	kbd_enqueue(&ev);
 }

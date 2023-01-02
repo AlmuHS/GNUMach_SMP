@@ -41,13 +41,24 @@ struct rpc_time_value {
 typedef struct rpc_time_value rpc_time_value_t;
 
 /*
- *	Time value used by kernel.
+ *	Time value used by kernel interfaces. Ideally they should be migrated
+ *	to use time_value64 below.
  */
 struct time_value {
 	long_integer_t	seconds;
 	integer_t	microseconds;
 };
 typedef	struct time_value	time_value_t;
+
+/*
+ * Time value used internally by the kernel that uses 64 bits to track seconds
+ * and nanoseconds. Note that the current resolution is only microseconds.
+ */
+struct time_value64 {
+	int64_t seconds;
+	int64_t nanoseconds;
+};
+typedef struct time_value64 time_value64_t;
 
 /**
  * Functions used by Mig to perform user to kernel conversion and vice-versa.
@@ -69,9 +80,13 @@ static __inline__ time_value_t convert_time_value_from_user(rpc_time_value_t tv)
  *	are normalized (microseconds <= 999999).
  */
 #define	TIME_MICROS_MAX	(1000000)
+#define	TIME_NANOS_MAX	(1000000000)
 
 #define time_value_assert(val)			\
   assert(0 <= (val)->microseconds && (val)->microseconds < TIME_MICROS_MAX);
+
+#define time_value64_assert(val)			\
+  assert(0 <= (val)->nanoseconds && (val)->nanoseconds < TIME_NANOS_MAX);
 
 #define	time_value_add_usec(val, micros)	{	\
 	time_value_assert(val);				\
@@ -81,6 +96,16 @@ static __inline__ time_value_t convert_time_value_from_user(rpc_time_value_t tv)
 	    (val)->seconds++;				\
 	}						\
 	time_value_assert(val);				\
+}
+
+#define	time_value64_add_usec(val, micros)	{	\
+	time_value64_assert(val);				\
+	if (((val)->nanoseconds += (micros) * 1000)		\
+		>= TIME_NANOS_MAX) {			\
+	    (val)->nanoseconds -= TIME_NANOS_MAX;	\
+	    (val)->seconds++;				\
+	}						\
+	time_value64_assert(val);				\
 }
 
 #define	time_value_sub_usec(val, micros)	{	\

@@ -40,6 +40,7 @@ extern unsigned long	elapsed_ticks;	/* number of ticks elapsed since bootup */
 extern int		hz;		/* number of ticks per second */
 extern int		tick;		/* number of usec per tick */
 
+extern time_value64_t	time; 		/* time since bootup (uncorrected) */
 
 typedef void timer_func_t(void *);
 

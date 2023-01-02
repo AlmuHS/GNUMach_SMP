@@ -74,7 +74,6 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <sys/ioctl.h>
 #include <mach/boolean.h>
 #include <sys/types.h>
-#include <sys/time.h>
 #include <device/cons.h>
 #include <device/io_req.h>
 #include <device/buf.h>
@@ -672,7 +671,12 @@ struct mouse_motion {
 
 typedef struct {
 	kev_type type;			/* see below */
-	struct timeval time;		/* timestamp */
+	/*
+	 * This is not used anymore but is kept for backwards compatibility.
+	 * Note the use of rpc_time_value to ensure compatibility for a 64 bit kernel and
+	 * 32 bit user land.
+	 */
+	struct rpc_time_value unused_time;	/* timestamp*/
 	union {				/* value associated with event */
 		boolean_t up;		/* MOUSE_LEFT .. MOUSE_RIGHT */
 		Scancode sc;		/* KEYBD_EVENT */

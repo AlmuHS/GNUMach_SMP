@@ -33,7 +33,6 @@
 #include <sys/types.h>
 #include <kern/printf.h>
 #include <kern/mach_clock.h>
-#include <sys/time.h>
 #include <device/conf.h>
 #include <device/device_types.h>
 #include <device/tty.h>

@@ -751,7 +751,9 @@ mouse_moved(struct mouse_motion where)
 	kd_event ev;
 
 	ev.type = MOUSE_MOTION;
-	ev.time = time;
+	/* Not used but we set it to avoid garbage */
+	ev.unused_time.seconds = 0;
+	ev.unused_time.microseconds = 0;
 	ev.value.mmotion = where;
 	mouse_enqueue(&ev);
 }
@@ -767,8 +769,10 @@ mouse_button(
 	kd_event ev;
 
 	ev.type = which;
-	ev.time = time;
 	ev.value.up = (direction == MOUSE_UP) ? TRUE : FALSE;
+	/* Not used but we set it to avoid garbage */
+	ev.unused_time.seconds = 0;
+	ev.unused_time.microseconds = 0;
 	mouse_enqueue(&ev);
 }
 

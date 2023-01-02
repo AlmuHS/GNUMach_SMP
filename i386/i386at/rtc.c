@@ -47,7 +47,6 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 */
 
 #include <sys/types.h>
-#include <sys/time.h>
 #include <kern/mach_clock.h>
 #include <kern/printf.h>
 #include <i386/machspl.h>
@@ -106,8 +105,6 @@ rtcput(struct rtc_st *st)
 	outb(RTC_DATA, x & ~RTC_SET);
 }
 
-
-extern struct timeval time;
 
 static int month[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
 
@@ -213,13 +210,13 @@ writetodc(void)
 	splx(ospl);
 
 	diff = 0;
-	n = (time.tv_sec - diff) % (3600 * 24);   /* hrs+mins+secs */
+	n = (time.seconds - diff) % (3600 * 24);   /* hrs+mins+secs */
 	rtclk.rtc_sec = dectohexdec(n%60);
 	n /= 60;
 	rtclk.rtc_min = dectohexdec(n%60);
 	rtclk.rtc_hr = dectohexdec(n/60);
 
-	n = (time.tv_sec - diff) / (3600 * 24);	/* days */
+	n = (time.seconds - diff) / (3600 * 24);	/* days */
 	rtclk.rtc_dow = (n + 4) % 7;  /* 1/1/70 is Thursday */
 
 	/* Epoch shall be 1970 January 1st */

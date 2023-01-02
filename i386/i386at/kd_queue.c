@@ -88,7 +88,7 @@ kdq_put(kd_event_queue *q, kd_event *ev)
 	kd_event *qp = q->events + q->firstfree;
 
 	qp->type = ev->type;
-	qp->time = ev->time;
+	qp->unused_time = ev->unused_time;
 	qp->value = ev->value;
 	q->firstfree = q_next(q->firstfree);
 }

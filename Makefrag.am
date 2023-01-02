@@ -453,7 +453,7 @@ include_mach_debug_HEADERS = \
 
 # Other headers for the distribution.  We don't install these, because the
 # GNU C library has correct versions for users to use.
-# other-sys-headers := types.h time.h reboot.h ioctl.h
+# other-sys-headers := types.h reboot.h ioctl.h
 # other-mach-headers := mig_support.h mach_traps.h error.h
 # other-headers := alloca.h
 

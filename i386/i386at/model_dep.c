@@ -51,7 +51,6 @@
 #include <kern/printf.h>
 #include <kern/startup.h>
 #include <kern/smp.h>
-#include <sys/time.h>
 #include <sys/types.h>
 #include <vm/vm_page.h>
 #include <i386/fpu.h>
@@ -705,12 +704,12 @@ startrtclock(void)
 void
 inittodr(void)
 {
-	time_value_t	new_time;
+	time_value64_t	new_time;
 	uint64_t	newsecs;
 
 	(void) readtodc(&newsecs);
 	new_time.seconds = newsecs;
-	new_time.microseconds = 0;
+	new_time.nanoseconds = 0;
 
 	{
 	    spl_t	s = splhigh();

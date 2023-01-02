@@ -55,7 +55,6 @@
 #include <kern/timer.h>
 #include <kern/priority.h>
 #include <vm/vm_kern.h>
-#include <sys/time.h>
 #include <machine/mach_param.h>	/* HZ */
 #include <machine/machspl.h>
 #include <machine/model_dep.h>
@@ -66,7 +65,7 @@
 
 int		hz = HZ;		/* number of ticks per second */
 int		tick = (1000000 / HZ);	/* number of usec per tick */
-time_value_t	time = { 0, 0 };	/* time since bootup (uncorrected) */
+time_value64_t	time = { 0, 0 };	/* time since bootup (uncorrected) */
 unsigned long	elapsed_ticks = 0;	/* ticks elapsed since bootup */
 
 int		timedelta = 0;
@@ -93,15 +92,15 @@ unsigned	bigadj = 1000000;	/* adjust 10*tickadj if adjustment
 
 volatile mapped_time_value_t *mtime = 0;
 
-#define update_mapped_time(time)				\
-MACRO_BEGIN							\
-	if (mtime != 0) {					\
-		mtime->check_seconds = (time)->seconds;		\
-		__sync_synchronize();				\
-		mtime->microseconds = (time)->microseconds;	\
-		__sync_synchronize();				\
-		mtime->seconds = (time)->seconds;		\
-	}							\
+#define update_mapped_time(time)					\
+MACRO_BEGIN								\
+	if (mtime != 0) {						\
+		mtime->check_seconds = (time)->seconds;			\
+		__sync_synchronize();					\
+		mtime->microseconds = (time)->nanoseconds / 1000;	\
+		__sync_synchronize();					\
+		mtime->seconds = (time)->seconds;			\
+	}								\
 MACRO_END
 
 #define read_mapped_time(time)					\
@@ -226,7 +225,7 @@ void clock_interrupt(
 	     *	Increment the time-of-day clock.
 	     */
 	    if (timedelta == 0) {
-		time_value_add_usec(&time, usec);
+		time_value64_add_usec(&time, usec);
 	    }
 	    else {
 		int	delta;
@@ -247,7 +246,7 @@ void clock_interrupt(
 		    delta = usec + tickdelta;
 		    timedelta -= tickdelta;
 		}
-		time_value_add_usec(&time, delta);
+		time_value64_add_usec(&time, delta);
 	    }
 	    update_mapped_time(&time);
 
@@ -401,7 +400,7 @@ struct time_value clock_boottime_offset;
 static void
 clock_boottime_update(struct time_value *new_time)
 {
-	struct time_value delta = time;
+	struct time_value delta = {.seconds = time.seconds, .microseconds = time.nanoseconds / 1000};
 	time_value_sub(&delta, new_time);
 	time_value_add(&clock_boottime_offset, &delta);
 }
@@ -464,7 +463,8 @@ host_set_time(const host_t host, time_value_t new_time)
 
 	s = splhigh();
 	clock_boottime_update(&new_time);
-	time = new_time;
+	time.seconds = new_time.seconds;
+	time.nanoseconds = new_time.microseconds * 1000;
 	update_mapped_time(&time);
 	resettodr();
 	splx(s);
