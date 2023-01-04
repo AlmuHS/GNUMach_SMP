@@ -88,9 +88,17 @@ extern db_breakpoint_t  db_set_breakpoint(const task_t task, db_addr_t addr,
 					  int count, const thread_t thread, 
 					  boolean_t task_bpt);
 
-void db_listbreak_cmd(void);
+void db_listbreak_cmd(
+	db_expr_t	addr,
+	boolean_t	have_addr,
+	db_expr_t	count,
+	const char	*modif);
 
-void db_delete_cmd(void);
+void db_delete_cmd(
+	db_expr_t	addr,
+	boolean_t	have_addr,
+	db_expr_t	count,
+	const char *	modif);
 
 void db_breakpoint_cmd(
 	db_expr_t	addr,

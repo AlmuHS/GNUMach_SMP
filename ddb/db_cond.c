@@ -121,7 +121,11 @@ db_cond_print(bkpt)
 }
 
 void
-db_cond_cmd(void)
+db_cond_cmd(
+	db_expr_t,
+	boolean_t,
+	db_expr_t,
+	const char *)
 {
 	int c;
 	struct db_cond *cp;

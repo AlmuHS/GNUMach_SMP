@@ -346,7 +346,11 @@ db_strcpy(char *dst, const char *src)
  * Syntax: search [/bhl] addr value [mask] [,count] [thread]
  */
 void
-db_search_cmd(void)
+db_search_cmd(
+	db_expr_t,
+	boolean_t,
+	db_expr_t,
+	const char *)
 {
 	int		t;
 	db_addr_t	addr;

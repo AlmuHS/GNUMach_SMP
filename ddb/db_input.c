@@ -68,18 +68,14 @@ char *  db_history_prev = (char *) 0;	/* start of previous line */
 #define	BACKUP		'\b'
 
 static void
-db_putstring(s, count)
-	const char	*s;
-	int		count;
+db_putstring(const char *s, int count)
 {
 	while (--count >= 0)
 	    cnputc(*s++);
 }
 
 static void
-db_putnchars(c, count)
-	int	c;
-	int	count;
+db_putnchars(int c, int count)
 {
 	while (--count >= 0)
 	    cnputc(c);

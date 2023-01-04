@@ -192,7 +192,7 @@ db_lookup(char *symstr)
  */
 db_sym_t
 db_sym_parse_and_lookup(
-	db_sym_t	(*func) (db_symtab_t *, char*, char*, int),
+	db_sym_t	(*func) (db_symtab_t *, const char*, const char*, int),
 	db_symtab_t	*symtab,
 	char		*symstr)
 {

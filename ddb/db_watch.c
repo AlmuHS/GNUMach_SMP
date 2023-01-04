@@ -248,7 +248,11 @@ db_watchpoint_cmd(
 
 /* list watchpoints */
 void
-db_listwatch_cmd(void)
+db_listwatch_cmd(
+	db_expr_t,
+	boolean_t,
+	db_expr_t,
+	const char *)
 {
 	db_list_watchpoints();
 }

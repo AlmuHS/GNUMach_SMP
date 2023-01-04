@@ -53,12 +53,14 @@ extern db_addr_t	db_next;	/* next address to be examined
 					   or written */
 extern jmp_buf_t *	db_recover;	/* error recovery */
 
+typedef void (*db_command_fun_t)(db_expr_t, boolean_t, db_expr_t, const char *);
+
 /*
  * Command table
  */
 struct db_command {
 	char *	name;		/* command name */
-	void	(*fcn)();	/* function to call */
+	db_command_fun_t fcn;	/* function to call */
 	int	flag;		/* extra info: */
 #define	CS_OWN		0x1	    /* non-standard syntax */
 #define	CS_MORE		0x2	    /* standard syntax, but may have other

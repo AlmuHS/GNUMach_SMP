@@ -58,6 +58,7 @@
 #include <kern/exception.h>
 
 #if MACH_KDB
+#include <ddb/db_break.h>
 #include <ddb/db_run.h>
 #include <ddb/db_watch.h>
 #endif
@@ -416,8 +417,6 @@ int user_trap(struct i386_saved_state *regs)
 #endif	/* MACH_TTD */
 #if	MACH_KDB
 	    {
-		boolean_t db_find_breakpoint_here();
-
 		if (db_find_breakpoint_here(
 			(current_thread())? current_thread()->task: TASK_NULL,
 			regs->eip - 1)) {

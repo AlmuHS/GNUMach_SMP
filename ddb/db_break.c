@@ -62,7 +62,7 @@ static boolean_t			db_thread_break_init = FALSE;
 static int				db_breakpoint_number = 0;
 
 static db_breakpoint_t
-db_breakpoint_alloc()
+db_breakpoint_alloc(void)
 {
 	db_breakpoint_t	bkpt;
 
@@ -597,7 +597,11 @@ db_list_breakpoints(void)
 /* Delete breakpoint */
 /*ARGSUSED*/
 void
-db_delete_cmd(void)
+db_delete_cmd(
+	db_expr_t,
+	boolean_t,
+	db_expr_t,
+	const char *)
 {
 	int n;
 	thread_t thread;
@@ -730,7 +734,11 @@ db_breakpoint_cmd(
 
 /* list breakpoints */
 void
-db_listbreak_cmd(void)
+db_listbreak_cmd(
+	db_expr_t,
+	boolean_t,
+	db_expr_t,
+	const char *)
 {
 	db_list_breakpoints();
 }

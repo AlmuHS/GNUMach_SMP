@@ -63,7 +63,11 @@ int db_xcdump(
 
 void db_print_cmd(void);
 
-void db_search_cmd(void);
+void db_search_cmd(
+	db_expr_t	addr,
+	boolean_t	have_addr,
+	db_expr_t	count,
+	const char *	modif);
 
 void db_search(
 	db_addr_t	addr,

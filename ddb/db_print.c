@@ -467,7 +467,7 @@ db_show_one_task(
 }
 
 static int
-db_port_iterate(const thread_t thread, void (*func)())
+db_port_iterate(const thread_t thread, void (*func)(int, const ipc_port_t, unsigned, int))
 {
 	ipc_entry_t entry;
 	int n = 0;

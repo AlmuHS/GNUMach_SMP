@@ -183,7 +183,7 @@ db_read_write_variable(
 	int 			rw_flag,
 	db_var_aux_param_t	ap)
 {
-	void	(*func)() = vp->fcn;
+	void	(*func)(struct db_variable *, db_expr_t *, int, db_var_aux_param_t) = vp->fcn;
 	struct  db_var_aux_param aux_param;
 
 	if (ap == 0) {

@@ -24,11 +24,23 @@
 #include <sys/types.h>
 #include <ddb/db_variables.h>
 
-extern void db_def_macro_cmd (void);
+extern void db_def_macro_cmd (
+	db_expr_t	addr,
+	boolean_t	have_addr,
+	db_expr_t	count,
+	const char *	modif);
 
-extern void db_del_macro_cmd (void);
+extern void db_del_macro_cmd (
+	db_expr_t	addr,
+	boolean_t	have_addr,
+	db_expr_t	count,
+	const char *	modif);
 
-extern void db_show_macro (void);
+extern void db_show_macro (
+	db_expr_t	addr,
+	boolean_t	have_addr,
+	db_expr_t	count,
+	const char *	modif);
 
 extern int db_exec_macro (const char *name);
 

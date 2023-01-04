@@ -72,7 +72,11 @@ db_lookup_macro(const char *name)
 }
 
 void
-db_def_macro_cmd(void)
+db_def_macro_cmd(
+	db_expr_t,
+	boolean_t,
+	db_expr_t,
+	const char *)
 {
 	char *p;
 	int c;
@@ -103,7 +107,11 @@ db_def_macro_cmd(void)
 }
 
 void
-db_del_macro_cmd(void)
+db_del_macro_cmd(
+	db_expr_t,
+	boolean_t,
+	db_expr_t,
+	const char *)
 {
 	struct db_user_macro *mp;
 
@@ -119,7 +127,11 @@ db_del_macro_cmd(void)
 }
 
 void
-db_show_macro(void)
+db_show_macro(
+	db_expr_t,
+	boolean_t,
+	db_expr_t,
+	const char *)
 {
 	struct db_user_macro *mp;
 	int  t;

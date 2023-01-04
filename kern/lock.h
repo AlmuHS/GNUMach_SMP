@@ -217,6 +217,8 @@ extern void		lock_clear_recursive(lock_t);
 #endif	/* MACH_LDEBUG */
 #define have_lock(l)		(have_read_lock(l) || have_write_lock(l))
 
-void db_show_all_slocks(void);
+#if	MACH_KDB
+extern void db_show_all_slocks(void);
+#endif	/* MACH_KDB */
 
 #endif	/* _KERN_LOCK_H_ */
