@@ -98,6 +98,27 @@ void cpu_up(int cpu)
 	pset_unlock(&default_pset);
 }
 
+kern_return_t
+host_reboot(const host_t host, int options)
+{
+	if (host == HOST_NULL)
+		return (KERN_INVALID_HOST);
+
+	if (options & RB_DEBUGGER) {
+		Debugger("Debugger");
+	} else {
+#ifdef parisc
+/* XXX this could be made common */
+		halt_all_cpus(options);
+#else
+		halt_all_cpus(!(options & RB_HALT));
+#endif
+	}
+	return (KERN_SUCCESS);
+}
+
+#if	NCPUS > 1
+
 /*
  *	cpu_down:
  *
@@ -125,26 +146,6 @@ static void cpu_down(int cpu)
 	splx(s);
 }
 
-kern_return_t
-host_reboot(const host_t host, int options)
-{
-	if (host == HOST_NULL)
-		return (KERN_INVALID_HOST);
-
-	if (options & RB_DEBUGGER) {
-		Debugger("Debugger");
-	} else {
-#ifdef parisc
-/* XXX this could be made common */
-		halt_all_cpus(options);
-#else
-		halt_all_cpus(!(options & RB_HALT));
-#endif
-	}
-	return (KERN_SUCCESS);
-}
-
-#if	NCPUS > 1
 /*
  *	processor_request_action - common internals of processor_assign
  *		and processor_shutdown.  If new_pset is null, this is
@@ -357,49 +358,11 @@ processor_shutdown(processor_t processor)
 }
 
 /*
- *	action_thread() shuts down processors or changes their assignment.
- */
-void __attribute__((noreturn)) action_thread_continue(void)
-{
-	processor_t	processor;
-	spl_t		s;
-
-	while (TRUE) {
-		s = splsched();
-		simple_lock(&action_lock);
-		while ( !queue_empty(&action_queue)) {
-			processor = (processor_t) queue_first(&action_queue);
-			queue_remove(&action_queue, processor, processor_t,
-				     processor_queue);
-			simple_unlock(&action_lock);
-			(void) splx(s);
-
-			processor_doaction(processor);
-
-			s = splsched();
-			simple_lock(&action_lock);
-		}
-
-		assert_wait((event_t) &action_queue, FALSE);
-		simple_unlock(&action_lock);
-		(void) splx(s);
-		counter(c_action_thread_block++);
-		thread_block(action_thread_continue);
-	}
-}
-
-void __attribute__((noreturn)) action_thread(void)
-{
-	action_thread_continue();
-	/*NOTREACHED*/
-}
-
-/*
  *	processor_doaction actually does the shutdown.  The trick here
  *	is to schedule ourselves onto a cpu and then save our
  *	context back into the runqs before taking out the cpu.
  */
-void processor_doaction(processor_t processor)
+static void processor_doaction(processor_t processor)
 {
 	thread_t			this_thread;
 	spl_t				s;
@@ -615,6 +578,44 @@ Restart_pset:
 				   processor_doshutdown,
 				   processor);
 
+}
+
+/*
+ *	action_thread() shuts down processors or changes their assignment.
+ */
+void __attribute__((noreturn)) action_thread_continue(void)
+{
+	processor_t	processor;
+	spl_t		s;
+
+	while (TRUE) {
+		s = splsched();
+		simple_lock(&action_lock);
+		while ( !queue_empty(&action_queue)) {
+			processor = (processor_t) queue_first(&action_queue);
+			queue_remove(&action_queue, processor, processor_t,
+				     processor_queue);
+			simple_unlock(&action_lock);
+			(void) splx(s);
+
+			processor_doaction(processor);
+
+			s = splsched();
+			simple_lock(&action_lock);
+		}
+
+		assert_wait((event_t) &action_queue, FALSE);
+		simple_unlock(&action_lock);
+		(void) splx(s);
+		counter(c_action_thread_block++);
+		thread_block(action_thread_continue);
+	}
+}
+
+void __attribute__((noreturn)) action_thread(void)
+{
+	action_thread_continue();
+	/*NOTREACHED*/
 }
 
 /*
