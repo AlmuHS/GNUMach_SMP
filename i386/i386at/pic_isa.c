@@ -33,8 +33,8 @@
 
 /* These interrupts are always present */
 
-void (*ivect[NINTR])() = {
-	/* 00 */	hardclock,	/* always */
+interrupt_handler_fn ivect[NINTR] = {
+	/* 00 */	(interrupt_handler_fn)hardclock,	/* always */
 	/* 01 */	kdintr,		/* kdintr, ... */
 	/* 02 */	intnull,
 	/* 03 */	intnull,	/* lnpoll, comintr, ... */
