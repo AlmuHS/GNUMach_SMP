@@ -20,7 +20,7 @@ dnl 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 # Tests.
 #
 
-AC_CONFIG_FILES([tests/test-mbchk], [chmod +x tests/test-mbchk])
+AC_CONFIG_FILES([tests/test-multiboot], [chmod +x tests/test-multiboot])
 
 dnl Local Variables:
 dnl mode: autoconf

@@ -2,7 +2,7 @@
 
 # Test if the kernel image complies with the multiboot specification.
 
-# Copyright (C) 2006, 2007 Free Software Foundation, Inc.
+# Copyright (C) 2023 Free Software Foundation, Inc.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the GNU General Public License as published by the
@@ -18,10 +18,10 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
-if mbchk --version > /dev/null 2>&1
-then mbchk gnumach
+if grub-file --help > /dev/null 2>&1
+then grub-file --is-x86-multiboot gnumach
 else
-  # `mbchk' is not available -- ignore this test.
+  # `grub-file' is not available -- ignore this test.
   exit 77
 fi
 

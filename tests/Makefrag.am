@@ -21,4 +21,4 @@
 #
 
 TESTS += \
-	tests/test-mbchk
+	tests/test-multiboot
