@@ -480,23 +480,6 @@ db_port_iterate(const thread_t thread, void (*func)(int, const ipc_port_t, unsig
 	return(n);
 }
 
-ipc_port_t
-db_lookup_port(
-	thread_t 	thread,
-	int 		id)
-{
-	ipc_entry_t entry;
-
-	if (thread == THREAD_NULL)
-	    return(0);
-	if (id < 0)
-	    return(0);
-	entry = ipc_entry_lookup(thread->task->itk_space, (mach_port_name_t) id);
-	if (entry && entry->ie_bits & MACH_PORT_TYPE_PORT_RIGHTS)
-	    return((ipc_port_t)entry->ie_object);
-	return(0);
-}
-
 static void
 db_print_port_id(int id, const ipc_port_t port, unsigned bits, int n)
 {
