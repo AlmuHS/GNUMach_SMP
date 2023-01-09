@@ -160,22 +160,6 @@ db_get_variable(db_expr_t *valuep)
 	return (1);
 }
 
-int
-db_set_variable(db_expr_t value)
-{
-	struct db_variable *vp;
-	struct db_var_aux_param aux_param;
-	char		modif[TOK_STRING_SIZE];
-
-	aux_param.modif = modif;
-	if (!db_find_variable(&vp, &aux_param))
-	    return (0);
-
-	db_read_write_variable(vp, &value, DB_VAR_SET, &aux_param);
-
-	return (1);
-}
-
 void
 db_read_write_variable(
 	struct db_variable	*vp,
