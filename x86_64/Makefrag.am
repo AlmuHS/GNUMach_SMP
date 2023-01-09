@@ -262,6 +262,7 @@ gnumach_LINKFLAGS += \
 	--defsym _START_MAP=$(_START_MAP) \
 	--defsym _START=$(_START_MAP) \
 	--defsym KERNEL_MAP_SHIFT=$(KERNEL_MAP_BASE) \
+	-z max-page-size=0x1000 \
 	-T '$(srcdir)'/x86_64/ldscript
 
 AM_CCASFLAGS += \
