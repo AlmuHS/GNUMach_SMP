@@ -71,7 +71,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #ifndef	_KD_H_
 #define _KD_H_
 
-#include <sys/ioctl.h>
+#include <device/input.h>
 #include <mach/boolean.h>
 #include <sys/types.h>
 #include <device/cons.h>
@@ -617,33 +617,9 @@ struct kbentry {
  * Ioctl's on /dev/kbd.
  */
 
-/*
- * KDSKBDMODE - When the console is in "ascii" mode, keyboard events are
- * converted to Ascii characters that are readable from /dev/console.
- * When the console is in "event" mode, keyboard events are
- * timestamped and queued up on /dev/kbd as kd_events.  When the last
- * close is done on /dev/kbd, the console automatically reverts to ascii
- * mode.
- * When /dev/mouse is opened, mouse events are timestamped and queued
- * on /dev/mouse, again as kd_events.
- *
- * KDGKBDTYPE - Returns the type of keyboard installed.  Currently
- * there is only one type, KB_VANILLAKB, which is your standard PC-AT
- * keyboard.
- */
-
 #ifdef	KERNEL
 extern	int	kb_mode;
 #endif
-
-#define KDSKBDMODE	_IOW('K', 1, int)	/* set keyboard mode */
-#define KB_EVENT	1
-#define KB_ASCII	2
-
-#define KDGKBDTYPE	_IOR('K', 2, int)	/* get keyboard type */
-#define KB_VANILLAKB	0
-
-#define KDSETLEDS	_IOW('K', 5, int)	/* set the keyboard ledstate */
 
 struct X_kdb {
 	u_int *ptr;
@@ -660,40 +636,6 @@ struct X_kdb {
 #define K_X_LONG	0x00040000
 #define K_X_TYPE	0x03070000
 #define K_X_PORT	0x0000ffff
-
-typedef u_short kev_type;		/* kd event type */
-
-/* (used for event records) */
-struct mouse_motion {		
-	short mm_deltaX;		/* units? */
-	short mm_deltaY;
-};
-
-typedef struct {
-	kev_type type;			/* see below */
-	/*
-	 * This is not used anymore but is kept for backwards compatibility.
-	 * Note the use of rpc_time_value to ensure compatibility for a 64 bit kernel and
-	 * 32 bit user land.
-	 */
-	struct rpc_time_value unused_time;	/* timestamp*/
-	union {				/* value associated with event */
-		boolean_t up;		/* MOUSE_LEFT .. MOUSE_RIGHT */
-		Scancode sc;		/* KEYBD_EVENT */
-		struct mouse_motion mmotion;	/* MOUSE_MOTION */
-	} value;
-} kd_event;
-#define m_deltaX	mmotion.mm_deltaX
-#define m_deltaY	mmotion.mm_deltaY
-
-/* 
- * kd_event ID's.
- */
-#define MOUSE_LEFT	1		/* mouse left button up/down */
-#define MOUSE_MIDDLE	2
-#define MOUSE_RIGHT	3
-#define MOUSE_MOTION	4		/* mouse motion */
-#define KEYBD_EVENT	5		/* key up/down */
 
 extern boolean_t kd_isupper (u_char);
 extern boolean_t kd_islower (u_char);
