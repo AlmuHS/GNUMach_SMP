@@ -35,6 +35,7 @@
 #include <vm/vm_kern.h>
 #include <vm/vm_user.h>
 #include <kern/host.h>
+#include <kern/mach_debug.h>
 #include <kern/task.h>
 #include <ddb/db_sym.h>
 

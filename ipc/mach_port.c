@@ -62,7 +62,6 @@
 #include <ipc/mach_port.h>
 
 
-
 /*
  *	Routine:	mach_port_names_helper
  *	Purpose:

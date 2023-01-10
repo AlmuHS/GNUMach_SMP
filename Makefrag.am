@@ -170,6 +170,7 @@ libkernel_a_SOURCES += \
 	kern/log2.h \
 	kern/mach_clock.c \
 	kern/mach_clock.h \
+	kern/mach_debug.h \
 	kern/mach_factor.c \
 	kern/mach_factor.h \
 	kern/machine.c \
