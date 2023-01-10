@@ -21,6 +21,9 @@ AC_INIT([AC_PACKAGE_NAME], [AC_PACKAGE_VERSION], [AC_PACKAGE_BUGREPORT],
   [AC_PACKAGE_TARNAME])
 AC_CONFIG_SRCDIR([kern/ipc_kobject.c])
 
+# We don't need glibc to compile gnumach.
+CFLAGS="$CFLAGS -ffreestanding -nostdlib"
+
 AC_CONFIG_AUX_DIR([build-aux])
 
 AM_INIT_AUTOMAKE(
@@ -79,7 +82,12 @@ AC_SUBST([systype])
 #
 
 AC_PROG_AWK
+# Temporarily force cross compiling mode to make sure the configure script
+# does not try to run compiled binaries.
+save_cross_compiling=$cross_compiling
+cross_compiling=yes
 AM_PROG_AS
+cross_compiling=$save_cross_compiling
 AC_PROG_CC
 AC_PROG_CPP
 AC_PROG_INSTALL
