@@ -431,7 +431,7 @@ ipc_port_set_seqno(
  */
 
 void
-ipc_port_set_protected_payload(ipc_port_t port, unsigned long payload)
+ipc_port_set_protected_payload(ipc_port_t port, rpc_uintptr_t payload)
 {
 	ipc_mqueue_t mqueue;
 

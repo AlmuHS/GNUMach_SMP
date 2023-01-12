@@ -951,7 +951,7 @@ mach_msg_trap(
 			ipc_port_t reply_port =
 				(ipc_port_t) kmsg->ikm_header.msgh_local_port;
 			mach_port_name_t dest_name, reply_name;
-			unsigned long payload;
+			rpc_uintptr_t payload;
 
 			/* receiving a request message */
 
@@ -1056,7 +1056,7 @@ mach_msg_trap(
 
 		    case MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND_ONCE, 0): {
 			mach_port_name_t dest_name;
-			unsigned long payload;
+			rpc_uintptr_t payload;
 
 			/* receiving a reply message */
 
@@ -1101,7 +1101,7 @@ mach_msg_trap(
 		    case MACH_MSGH_BITS_COMPLEX|
 			 MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND_ONCE, 0): {
 			mach_port_name_t dest_name;
-			unsigned long payload;
+			rpc_uintptr_t payload;
 
 			/* receiving a complex reply message */
 

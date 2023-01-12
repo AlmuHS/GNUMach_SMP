@@ -348,7 +348,7 @@ skip; /* mach_port_create_act */
 routine mach_port_set_protected_payload(
 		task		: ipc_space_t;
 		name		: mach_port_name_t;
-		payload		: natural_t);
+		payload		: rpc_uintptr_t);
 
 /*
  *	Only valid for receive rights.

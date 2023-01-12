@@ -97,7 +97,7 @@ struct ipc_port {
 	mach_port_msgcount_t ip_msgcount;
 	mach_port_msgcount_t ip_qlimit;
 	struct ipc_thread_queue ip_blocked;
-	unsigned long ip_protected_payload;
+	rpc_uintptr_t ip_protected_payload;
 };
 
 #define ip_object		ip_target.ipt_object
@@ -264,7 +264,7 @@ extern void
 ipc_port_set_seqno(ipc_port_t, mach_port_seqno_t);
 
 extern void
-ipc_port_set_protected_payload(ipc_port_t, unsigned long);
+ipc_port_set_protected_payload(ipc_port_t, rpc_uintptr_t);
 
 extern void
 ipc_port_clear_protected_payload(ipc_port_t);

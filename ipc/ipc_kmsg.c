@@ -1727,7 +1727,7 @@ ipc_kmsg_copyout_header(
 	    case MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND, 0): {
 		mach_port_name_t dest_name;
 		ipc_port_t nsrequest;
-		unsigned long payload;
+		rpc_uintptr_t payload;
 
 		/* receiving an asynchronous message */
 
@@ -1780,7 +1780,7 @@ ipc_kmsg_copyout_header(
 		ipc_port_t reply = (ipc_port_t) msg->msgh_local_port;
 		mach_port_name_t dest_name, reply_name;
 		ipc_port_t nsrequest;
-		unsigned long payload;
+		rpc_uintptr_t payload;
 
 		/* receiving a request message */
 
@@ -1882,7 +1882,7 @@ ipc_kmsg_copyout_header(
 
 	    case MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND_ONCE, 0): {
 		mach_port_name_t dest_name;
-		unsigned long payload;
+		rpc_uintptr_t payload;
 
 		/* receiving a reply message */
 
@@ -1936,7 +1936,7 @@ ipc_kmsg_copyout_header(
 	mach_msg_type_name_t reply_type = MACH_MSGH_BITS_LOCAL(mbits);
 	ipc_port_t reply = (ipc_port_t) msg->msgh_local_port;
 	mach_port_name_t dest_name, reply_name;
-	unsigned long payload;
+	rpc_uintptr_t payload;
 
 	if (IP_VALID(reply)) {
 		ipc_port_t notify_port;

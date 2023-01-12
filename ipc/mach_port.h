@@ -157,7 +157,7 @@ kern_return_t
 mach_port_set_protected_payload(
 	ipc_space_t		space,
 	mach_port_name_t	name,
-	unsigned long		payload);
+	rpc_uintptr_t		payload);
 
 kern_return_t
 mach_port_clear_protected_payload(

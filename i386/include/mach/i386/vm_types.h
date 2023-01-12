@@ -110,6 +110,7 @@ typedef	vm_size_t *	vm_size_array_t;
  * functions.
  */
 #if defined(MACH_KERNEL) && defined(USER32)
+typedef uint32_t	rpc_uintptr_t;
 typedef uint32_t	rpc_vm_address_t;
 typedef uint32_t	rpc_vm_offset_t;
 typedef uint32_t	rpc_vm_size_t;
@@ -139,6 +140,7 @@ static inline int32_t convert_long_integer_to_user(int64_t i)
 typedef uint32_t rpc_long_natural_t;
 typedef int32_t rpc_long_integer_t;
 #else /* MACH_KERNEL */
+typedef uintptr_t	rpc_uintptr_t;
 typedef vm_offset_t	rpc_vm_address_t;
 typedef vm_offset_t	rpc_vm_offset_t;
 typedef vm_size_t	rpc_vm_size_t;

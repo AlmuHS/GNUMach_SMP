@@ -121,8 +121,10 @@ type ipc_space_t = mach_port_t
 		;
 
 #if defined(KERNEL) && defined(USER32)
+type rpc_uintptr_t = uint32_t;
 type rpc_vm_size_t = uint32_t;
 #else /* KERNEL and USER32 */
+type rpc_uintptr_t = uintptr_t;
 type rpc_vm_size_t = uintptr_t;
 #endif /* KERNEL_SERVER and USER32 */
 
