@@ -35,6 +35,7 @@
 #include <mach/message.h>
 #include <kern/debug.h>
 #include <kern/host.h>
+#include <kern/mach_host.h>
 #include <kern/processor.h>
 #include <kern/task.h>
 #include <kern/thread.h>
@@ -42,6 +43,7 @@
 #include <kern/ipc_kobject.h>
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_space.h>
+#include <mach/mach_traps.h>
 
 #include <machine/machspl.h>	/* for spl */
 

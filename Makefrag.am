@@ -173,6 +173,8 @@ libkernel_a_SOURCES += \
 	kern/mach_debug.h \
 	kern/mach_factor.c \
 	kern/mach_factor.h \
+	kern/mach_host.h \
+	kern/mach4.h \
 	kern/machine.c \
 	kern/machine.h \
 	kern/macros.h \

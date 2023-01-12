@@ -139,4 +139,13 @@ io_return_t syscall_device_writev_request(
 			io_buf_vec_t	*iovec,
 			vm_size_t	iocount);
 
+mach_port_name_t mig_get_reply_port(void);
+
+void mig_dealloc_reply_port(mach_port_t reply_port);
+
+void mig_put_reply_port(mach_port_t reply_port);
+
+vm_size_t
+mig_strncpy(char *dest, const char *src, int len);
+
 #endif /* _IPC_MIG_H_ */

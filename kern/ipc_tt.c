@@ -32,6 +32,7 @@
 #include <mach/boolean.h>
 #include <mach/kern_return.h>
 #include <mach/mach_param.h>
+#include <mach/mach_traps.h>
 #include <mach/task_special_ports.h>
 #include <mach/thread_special_ports.h>
 #include <vm/vm_kern.h>

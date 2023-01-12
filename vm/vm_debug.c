@@ -46,6 +46,7 @@
 #include <vm/vm_map.h>
 #include <vm/vm_kern.h>
 #include <vm/vm_object.h>
+#include <kern/mach_debug.h>
 #include <kern/task.h>
 #include <kern/host.h>
 #include <kern/printf.h>

@@ -35,6 +35,7 @@
 #include <kern/host.h>
 #include <kern/thread.h>
 #include <kern/pc_sample.h>
+#include <kern/mach4.h>
 #include <kern/mach_clock.h>
 
 #if	MACH_PCSAMPLE

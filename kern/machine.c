@@ -45,6 +45,7 @@
 #include <kern/ipc_host.h>
 #include <kern/host.h>
 #include <kern/machine.h>
+#include <kern/mach_host.h>
 #include <kern/lock.h>
 #include <kern/processor.h>
 #include <kern/queue.h>
