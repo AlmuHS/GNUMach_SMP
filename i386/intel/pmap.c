@@ -2884,7 +2884,7 @@ void    signal_cpus(
 	int			which_cpu, j;
 	pmap_update_list_t	update_list_p;
 
-	while ((which_cpu = ffs(use_list)) != 0) {
+	while ((which_cpu = __builtin_ffs(use_list)) != 0) {
 	    which_cpu -= 1;	/* convert to 0 origin */
 
 	    update_list_p = &cpu_update_list[which_cpu];
