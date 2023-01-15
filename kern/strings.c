@@ -175,27 +175,6 @@ strlen(
 
 /*
  * Abstract:
- *	memset writes value "c" in the "n" bytes starting at address "s".
- *	The return value is a pointer to the "s" string.
- */
-
-#if 0
-void *
-memset(
-	void *_s, int c, size_t n)
-{
-	char *s = _s;
-	size_t i;
-
-	for (i = 0; i < n ; i++)
-		s[i] = c;
-
-	return _s;
-}
-#endif
-
-/*
- * Abstract:
  *	strchr returns a pointer to the first occurrence of the character
  *	"c" in the string "s". If "c" is not found, return NULL.
  */

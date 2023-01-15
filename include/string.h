@@ -42,8 +42,6 @@ extern char *strcpy (char *dest, const char *src);
 
 extern char *strncpy (char *dest, const char *src, size_t n);
 
-extern char *strrchr (const char *s, int c);
-
 extern char *strsep (char **strp, const char *delim);
 
 extern int strcmp (const char *s1, const char *s2) __attribute__ ((pure));
@@ -53,7 +51,5 @@ extern int strncmp (const char *s1, const char *s2, size_t n) __attribute__ ((pu
 extern size_t strlen (const char *s) __attribute__ ((pure));
 
 extern char *strstr(const char *haystack, const char *needle);
-
-extern int ffs(int i);
 
 #endif /* _MACH_SA_SYS_STRING_H_ */
