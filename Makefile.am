@@ -82,6 +82,9 @@ endif
 # We do not support or need position-independent
 AM_CFLAGS += \
 	-no-pie -fno-PIE -fno-pie -fno-pic
+
+# This must be the same size as port names, see e.g. ipc/ipc_entry.c
+AM_CFLAGS += -DRDXTREE_KEY_32
 
 #
 # Silent build support.
