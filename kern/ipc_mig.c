@@ -29,6 +29,7 @@
 #include <mach/message.h>
 #include <mach/thread_status.h>
 #include <machine/locore.h>
+#include <machine/copy_user.h>
 #include <kern/ast.h>
 #include <kern/debug.h>
 #include <kern/ipc_tt.h>
@@ -576,12 +577,12 @@ port_name_to_space(mach_port_name_t name)
 kern_return_t
 syscall_vm_map(
 	mach_port_name_t	target_map,
-	vm_offset_t	*address,
-	vm_size_t	size,
-	vm_offset_t	mask,
+	rpc_vm_offset_t	*address,
+	rpc_vm_size_t	size,
+	rpc_vm_offset_t	mask,
 	boolean_t	anywhere,
 	mach_port_name_t	memory_object,
-	vm_offset_t	offset,
+	rpc_vm_offset_t	offset,
 	boolean_t	copy,
 	vm_prot_t	cur_protection,
 	vm_prot_t	max_protection,
@@ -607,12 +608,12 @@ syscall_vm_map(
 	} else
 		port = (ipc_port_t) memory_object;
 
-	copyin(address, &addr, sizeof(vm_offset_t));
+	copyin_address(address, &addr);
 	result = vm_map(map, &addr, size, mask, anywhere,
 			port, offset, copy,
 			cur_protection, max_protection,	inheritance);
 	if (result == KERN_SUCCESS)
-		copyout(&addr, address, sizeof(vm_offset_t));
+		copyout_address(&addr, address);
 	if (IP_VALID(port))
 		ipc_port_release_send(port);
 	vm_map_deallocate(map);
@@ -621,9 +622,9 @@ syscall_vm_map(
 }
 
 kern_return_t syscall_vm_allocate(
-	mach_port_name_t		target_map,
-	vm_offset_t		*address,
-	vm_size_t		size,
+	mach_port_name_t	target_map,
+	rpc_vm_offset_t		*address,
+	rpc_vm_size_t		size,
 	boolean_t		anywhere)
 {
 	vm_map_t		map;
@@ -634,19 +635,19 @@ kern_return_t syscall_vm_allocate(
 	if (map == VM_MAP_NULL)
 		return MACH_SEND_INTERRUPTED;
 
-	copyin(address, &addr, sizeof(vm_offset_t));
+	copyin_address(address, &addr);
 	result = vm_allocate(map, &addr, size, anywhere);
 	if (result == KERN_SUCCESS)
-		copyout(&addr, address, sizeof(vm_offset_t));
+		copyout_address(&addr, address);
 	vm_map_deallocate(map);
 
 	return result;
 }
 
 kern_return_t syscall_vm_deallocate(
-	mach_port_name_t		target_map,
-	vm_offset_t		start,
-	vm_size_t		size)
+	mach_port_name_t       	target_map,
+	rpc_vm_offset_t		start,
+	rpc_vm_size_t		size)
 {
 	vm_map_t		map;
 	kern_return_t		result;
@@ -682,7 +683,7 @@ kern_return_t syscall_task_create(
 		(void) ipc_kmsg_copyout_object(current_space(),
 					       (ipc_object_t) port,
 					       MACH_MSG_TYPE_PORT_SEND, &name);
-		copyout(&name, child_task, sizeof(mach_port_name_t));
+		copyout_port(&name, child_task);
 	}
 	task_deallocate(t);
 
@@ -767,7 +768,9 @@ syscall_mach_port_allocate(
 
 	kr = mach_port_allocate(space, right, &name);
 	if (kr == KERN_SUCCESS)
-		copyout(&name, namep, sizeof(mach_port_name_t));
+	{
+		copyout_port(&name, namep);
+	}
 	is_release(space);
 
 	return kr;
@@ -873,8 +876,8 @@ syscall_device_write_request(mach_port_name_t	device_name,
 			     mach_port_name_t	reply_name,
 			     dev_mode_t		mode,
 			     recnum_t		recnum,
-			     vm_offset_t	data,
-			     vm_size_t		data_count)
+			     rpc_vm_offset_t	data,
+			     rpc_vm_size_t	data_count)
 {
 	device_t	dev;
 	/*ipc_port_t	reply_port;*/
@@ -925,7 +928,7 @@ syscall_device_writev_request(mach_port_name_t	device_name,
 			      dev_mode_t	mode,
 			      recnum_t		recnum,
 			      io_buf_vec_t	*iovec,
-			      vm_size_t		iocount)
+			      rpc_vm_size_t	iocount)
 {
 	device_t	dev;
 	/*ipc_port_t	reply_port;*/
