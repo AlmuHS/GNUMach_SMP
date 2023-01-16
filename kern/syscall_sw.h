@@ -27,6 +27,8 @@
 #ifndef	_KERN_SYSCALL_SW_H_
 #define	_KERN_SYSCALL_SW_H_
 
+#include <mach/boolean.h>
+
 /*
  *	mach_trap_stack indicates the trap may discard
  *	its kernel stack.  Some architectures may need
