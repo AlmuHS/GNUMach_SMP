@@ -875,7 +875,7 @@ io_return_t
 syscall_device_write_request(mach_port_name_t	device_name,
 			     mach_port_name_t	reply_name,
 			     dev_mode_t		mode,
-			     recnum_t		recnum,
+			     rpc_recnum_t	recnum,
 			     rpc_vm_offset_t	data,
 			     rpc_vm_size_t	data_count)
 {
@@ -926,8 +926,8 @@ io_return_t
 syscall_device_writev_request(mach_port_name_t	device_name,
 			      mach_port_name_t	reply_name,
 			      dev_mode_t	mode,
-			      recnum_t		recnum,
-			      io_buf_vec_t	*iovec,
+			      rpc_recnum_t	recnum,
+			      rpc_io_buf_vec_t	*iovec,
 			      rpc_vm_size_t	iocount)
 {
 	device_t	dev;

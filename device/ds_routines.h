@@ -72,15 +72,15 @@ extern void io_done_thread(void) __attribute__ ((noreturn));
 io_return_t ds_device_write_trap(
 	device_t 	dev,
 	dev_mode_t 	mode,
-	recnum_t 	recnum,
-	vm_offset_t 	data,
-	vm_size_t 	count);
+	rpc_recnum_t 	recnum,
+	rpc_vm_offset_t 	data,
+	rpc_vm_size_t 	count);
 
 io_return_t ds_device_writev_trap(
 	device_t 	dev,
 	dev_mode_t 	mode,
-	recnum_t 	recnum,
-	io_buf_vec_t 	*iovec,
-	vm_size_t 	count);
+	rpc_recnum_t 	recnum,
+	rpc_io_buf_vec_t 	*iovec,
+	rpc_vm_size_t 	count);
 
 #endif	/* DS_ROUTINES_H */

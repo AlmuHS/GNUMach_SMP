@@ -85,6 +85,10 @@ typedef struct {
 	vm_offset_t	data;
 	vm_size_t	count;
 } io_buf_vec_t;
+typedef struct {
+	rpc_vm_offset_t	data;
+	rpc_vm_size_t	count;
+} rpc_io_buf_vec_t;
 
 /*
  * Record number for random-access devices

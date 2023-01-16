@@ -412,7 +412,7 @@ ds_notify (mach_msg_header_t *msg)
 
 io_return_t
 ds_device_write_trap (device_t dev, dev_mode_t mode,
-		      recnum_t recnum, vm_offset_t data, vm_size_t count)
+		      rpc_recnum_t recnum, rpc_vm_offset_t data, rpc_vm_size_t count)
 {
   /* Refuse if device is dead or not completely open.  */
   if (dev == DEVICE_NULL)
@@ -427,7 +427,7 @@ ds_device_write_trap (device_t dev, dev_mode_t mode,
 
 io_return_t
 ds_device_writev_trap (device_t dev, dev_mode_t mode,
-		       recnum_t recnum, io_buf_vec_t *iovec, vm_size_t count)
+		       rpc_recnum_t recnum, rpc_io_buf_vec_t *iovec, rpc_vm_size_t count)
 {
   /* Refuse if device is dead or not completely open.  */
   if (dev == DEVICE_NULL)
@@ -1713,7 +1713,7 @@ ds_trap_write_done(const io_req_t ior)
  */
 static io_return_t
 device_write_trap (mach_device_t device, dev_mode_t mode,
-		   recnum_t recnum, vm_offset_t data, vm_size_t data_count)
+		   rpc_recnum_t recnum, rpc_vm_offset_t data, rpc_vm_size_t data_count)
 {
 	io_req_t ior;
 	io_return_t result;
@@ -1752,7 +1752,7 @@ device_write_trap (mach_device_t device, dev_mode_t mode,
 	 * Copy the data from user space.
 	 */
 	if (data_count > 0)
-		copyin((void *)data, ior->io_data, data_count);
+		copyin((void*)(vm_offset_t)data, ior->io_data, data_count);
 
 	/*
 	 * The ior keeps an extra reference for the device.
@@ -1781,7 +1781,7 @@ device_write_trap (mach_device_t device, dev_mode_t mode,
 
 static io_return_t
 device_writev_trap (mach_device_t device, dev_mode_t mode,
-		    recnum_t recnum, io_buf_vec_t *iovec, vm_size_t iocount)
+		    rpc_recnum_t recnum, rpc_io_buf_vec_t *iovec, rpc_vm_size_t iocount)
 {
 	io_req_t ior;
 	io_return_t result;
@@ -1799,11 +1799,15 @@ device_writev_trap (mach_device_t device, dev_mode_t mode,
 	 */
 	if (iocount > 16)
 		return KERN_INVALID_VALUE; /* lame */
-	copyin(iovec,
-	       stack_iovec,
-	       iocount * sizeof(io_buf_vec_t));
-	for (data_count = 0, i = 0; i < iocount; i++)
+
+	for (data_count = 0, i=0; i<iocount; i++) {
+		rpc_io_buf_vec_t riov;
+		if (copyin(iovec + i, &riov, sizeof(riov)))
+			return KERN_INVALID_ARGUMENT;
+		stack_iovec[i].data = riov.data;
+		stack_iovec[i].count = riov.count;
 		data_count += stack_iovec[i].count;
+	}
 
 	/*
 	 * Get a buffer to hold the ioreq.

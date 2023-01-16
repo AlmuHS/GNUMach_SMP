@@ -56,9 +56,9 @@ struct device_emulation_ops
 		      vm_size_t, ipc_port_t *, boolean_t);
   void (*no_senders) (mach_no_senders_notification_t *);
   io_return_t (*write_trap) (void *, dev_mode_t,
-			     recnum_t, vm_offset_t, vm_size_t);
+			     rpc_recnum_t, rpc_vm_offset_t, rpc_vm_size_t);
   io_return_t (*writev_trap) (void *, dev_mode_t,
-			      recnum_t, io_buf_vec_t *, vm_size_t);
+			      rpc_recnum_t, rpc_io_buf_vec_t *, rpc_vm_size_t);
 };
 
 #endif /* _I386AT_DEVICE_EMUL_H_ */
