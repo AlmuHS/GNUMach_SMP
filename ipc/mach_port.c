@@ -374,7 +374,7 @@ mach_port_rename(
 	if (space == IS_NULL)
 		return KERN_INVALID_TASK;
 
-	if (!MACH_PORT_VALID(nname))
+	if (!MACH_PORT_NAME_VALID(nname))
 		return KERN_INVALID_VALUE;
 
 	return ipc_object_rename(space, oname, nname);
@@ -422,7 +422,7 @@ mach_port_allocate_name(
 	if (space == IS_NULL)
 		return KERN_INVALID_TASK;
 
-	if (!MACH_PORT_VALID(name))
+	if (!MACH_PORT_NAME_VALID(name))
 		return KERN_INVALID_VALUE;
 
 	switch (right) {
@@ -548,7 +548,7 @@ mach_port_destroy(
 
 	kr = ipc_right_lookup_write(space, name, &entry);
 	if (kr != KERN_SUCCESS) {
-		if (MACH_PORT_VALID (name) && space == current_space()) {
+		if (MACH_PORT_NAME_VALID (name) && space == current_space()) {
 			printf("task %.*s destroying a bogus port %lu, most probably a bug.\n", (int) sizeof current_task()->name, current_task()->name, (unsigned long) name);
 			if (mach_port_deallocate_debug)
 				SoftDebugger("mach_port_deallocate");
@@ -592,7 +592,7 @@ mach_port_deallocate(
 
 	kr = ipc_right_lookup_write(space, name, &entry);
 	if (kr != KERN_SUCCESS) {
-		if (MACH_PORT_VALID (name) && space == current_space()) {
+		if (MACH_PORT_NAME_VALID (name) && space == current_space()) {
 			printf("task %.*s deallocating a bogus port %lu, most probably a bug.\n", (int) sizeof current_task()->name, current_task()->name, (unsigned long) name);
 			if (mach_port_deallocate_debug)
 				SoftDebugger("mach_port_deallocate");
@@ -714,7 +714,7 @@ mach_port_mod_refs(
 
 	kr = ipc_right_lookup_write(space, name, &entry);
 	if (kr != KERN_SUCCESS) {
-		if (MACH_PORT_VALID (name) && space == current_space()) {
+		if (MACH_PORT_NAME_VALID (name) && space == current_space()) {
 			printf("task %.*s %screasing a bogus port "
 			       "%u by %d, most probably a bug.\n",
 			       (int) (sizeof current_task()->name),
@@ -1228,7 +1228,7 @@ mach_port_insert_right(
 	if (space == IS_NULL)
 		return KERN_INVALID_TASK;
 
-	if (!MACH_PORT_VALID(name) ||
+	if (!MACH_PORT_NAME_VALID(name) ||
 	    !MACH_MSG_TYPE_PORT_ANY_RIGHT(polyPoly))
 		return KERN_INVALID_VALUE;
 
@@ -1323,7 +1323,7 @@ mach_port_get_receive_status(
 			statusp->mps_seqno = port->ip_seqno;
 			imq_unlock(&pset->ips_messages);
 			ips_unlock(pset);
-			assert(MACH_PORT_VALID(statusp->mps_pset));
+			assert(MACH_PORT_NAME_VALID(statusp->mps_pset));
 		}
 	} else {
 	    no_port_set:

@@ -597,7 +597,7 @@ syscall_vm_map(
 	if (map == VM_MAP_NULL)
 		return MACH_SEND_INTERRUPTED;
 
-	if (MACH_PORT_VALID(memory_object)) {
+	if (MACH_PORT_NAME_VALID(memory_object)) {
 		result = ipc_object_copyin(current_space(), memory_object,
 					   MACH_MSG_TYPE_COPY_SEND,
 					   (ipc_object_t *) &port);
@@ -606,7 +606,7 @@ syscall_vm_map(
 			return result;
 		}
 	} else
-		port = (ipc_port_t) memory_object;
+		port = (ipc_port_t)invalid_name_to_port(memory_object);
 
 	copyin_address(address, &addr);
 	result = vm_map(map, &addr, size, mask, anywhere,
@@ -683,7 +683,7 @@ kern_return_t syscall_task_create(
 		(void) ipc_kmsg_copyout_object(current_space(),
 					       (ipc_object_t) port,
 					       MACH_MSG_TYPE_PORT_SEND, &name);
-		copyout_port(&name, child_task);
+		copyout(&name, child_task, sizeof(mach_port_name_t));
 	}
 	task_deallocate(t);
 
@@ -733,7 +733,7 @@ kern_return_t syscall_task_set_special_port(
 	if (t == TASK_NULL)
 		return MACH_SEND_INTERRUPTED;
 
-	if (MACH_PORT_VALID(port_name)) {
+	if (MACH_PORT_NAME_VALID(port_name)) {
 		result = ipc_object_copyin(current_space(), port_name,
 					   MACH_MSG_TYPE_COPY_SEND,
 					   (ipc_object_t *) &port);
@@ -742,7 +742,7 @@ kern_return_t syscall_task_set_special_port(
 			return result;
 		}
 	} else
-		port = (ipc_port_t) port_name;
+		port = (ipc_port_t)invalid_name_to_port(port_name);
 
 	result = task_set_special_port(t, which_port, port);
 	if ((result != KERN_SUCCESS) && IP_VALID(port))
@@ -769,7 +769,7 @@ syscall_mach_port_allocate(
 	kr = mach_port_allocate(space, right, &name);
 	if (kr == KERN_SUCCESS)
 	{
-		copyout_port(&name, namep);
+		copyout(&name, namep, sizeof(mach_port_name_t));
 	}
 	is_release(space);
 
@@ -834,7 +834,7 @@ syscall_mach_port_insert_right(
 		return KERN_INVALID_VALUE;
 	}
 
-	if (MACH_PORT_VALID(right)) {
+	if (MACH_PORT_NAME_VALID(right)) {
 		kr = ipc_object_copyin(current_space(), right, rightType,
 				       &object);
 		if (kr != KERN_SUCCESS) {
@@ -842,7 +842,7 @@ syscall_mach_port_insert_right(
 			return kr;
 		}
 	} else
-		object = (ipc_object_t) right;
+		object = (ipc_object_t)invalid_name_to_port(right);
 	newtype = ipc_object_copyin_type(rightType);
 
 	kr = mach_port_insert_right(space, name, (ipc_port_t) object, newtype);

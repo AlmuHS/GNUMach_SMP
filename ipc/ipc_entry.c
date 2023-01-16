@@ -127,7 +127,7 @@ ipc_entry_alloc_name(
 	kern_return_t kr;
 	ipc_entry_t entry, e, *prevp;
 	void **slot;
-	assert(MACH_PORT_VALID(name));
+	assert(MACH_PORT_NAME_VALID(name));
 
 	if (!space->is_active) {
 		return KERN_INVALID_TASK;

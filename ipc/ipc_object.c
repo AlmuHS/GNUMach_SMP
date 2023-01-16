@@ -804,7 +804,7 @@ ipc_object_copyout_dest(
 		if (port->ip_receiver == space)
 			name = port->ip_receiver_name;
 		else
-			name = MACH_PORT_NULL;
+			name = MACH_PORT_NAME_NULL;
 
 		ip_unlock(port);
 
@@ -839,7 +839,7 @@ ipc_object_copyout_dest(
 			ip_unlock(port);
 
 			ipc_notify_send_once(port);
-			name = MACH_PORT_NULL;
+			name = MACH_PORT_NAME_NULL;
 		}
 
 		break;

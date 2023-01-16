@@ -208,7 +208,7 @@ ipc_entry_get(
 	 *	(See comment in ipc/ipc_table.h.)
 	 */
 
-	assert(MACH_PORT_VALID(new_name));
+	assert(MACH_PORT_NAME_VALID(new_name));
 	assert(free_entry->ie_object == IO_NULL);
 
 	space->is_size += 1;

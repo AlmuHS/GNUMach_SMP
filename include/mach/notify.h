@@ -58,13 +58,13 @@
 typedef struct {
     mach_msg_header_t	not_header;
     mach_msg_type_t	not_type;	/* MACH_MSG_TYPE_PORT_NAME */
-    mach_port_t		not_port;
+    mach_port_name_t	not_port;
 } mach_port_deleted_notification_t;
 
 typedef struct {
     mach_msg_header_t	not_header;
     mach_msg_type_t	not_type;	/* MACH_MSG_TYPE_PORT_NAME */
-    mach_port_t		not_port;
+    mach_port_name_t	not_port;
 } mach_msg_accepted_notification_t;
 
 typedef struct {
@@ -86,7 +86,7 @@ typedef struct {
 typedef struct {
     mach_msg_header_t	not_header;
     mach_msg_type_t	not_type;	/* MACH_MSG_TYPE_PORT_NAME */
-    mach_port_t		not_port;
+    mach_port_name_t	not_port;
 } mach_dead_name_notification_t;
 
 #endif	/* _MACH_NOTIFY_H_ */

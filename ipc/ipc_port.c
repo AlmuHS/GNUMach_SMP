@@ -1024,12 +1024,12 @@ ipc_port_copyout_send(
 			ipc_port_release_send(sright);
 
 			if (kr == KERN_INVALID_CAPABILITY)
-				name = MACH_PORT_DEAD;
+				name = MACH_PORT_NAME_DEAD;
 			else
-				name = MACH_PORT_NULL;
+				name = MACH_PORT_NAME_NULL;
 		}
 	} else
-		name = (mach_port_name_t) sright;
+            name = invalid_port_to_name((mach_port_t)sright);
 
 	return name;
 }

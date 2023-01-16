@@ -269,9 +269,9 @@ exception_no_server(void)
 struct mach_exception {
 	mach_msg_header_t	Head;
 	mach_msg_type_t		threadType;
-	mach_port_name_t	thread;
+	mach_port_t		thread;
 	mach_msg_type_t		taskType;
-	mach_port_name_t	task;
+	mach_port_t		task;
 	mach_msg_type_t		exceptionType;
 	integer_t		exception;
 	mach_msg_type_t		codeType;
@@ -658,10 +658,10 @@ exception_raise(
 	 *	to handle the two ports in the body.
 	 */
 
-	mr = (ipc_kmsg_copyout_object(space, (ipc_object_t) thread_port,
-				      MACH_MSG_TYPE_PORT_SEND, &exc->thread) |
-	      ipc_kmsg_copyout_object(space, (ipc_object_t) task_port,
-				      MACH_MSG_TYPE_PORT_SEND, &exc->task));
+	mr = (ipc_kmsg_copyout_object_to_port(space, (ipc_object_t) thread_port,
+                                              MACH_MSG_TYPE_PORT_SEND, &exc->thread) |
+	      ipc_kmsg_copyout_object_to_port(space, (ipc_object_t) task_port,
+                                              MACH_MSG_TYPE_PORT_SEND, &exc->task));
 	if (mr != MACH_MSG_SUCCESS) {
 		(void) ipc_kmsg_put(receiver->ith_msg, kmsg,
 				    kmsg->ikm_header.msgh_size);

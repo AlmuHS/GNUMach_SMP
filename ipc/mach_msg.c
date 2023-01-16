@@ -1002,7 +1002,7 @@ mach_msg_trap(
 			entry->ie_bits = gen | (MACH_PORT_TYPE_SEND_ONCE | 1);
 		    }
 
-			assert(MACH_PORT_VALID(reply_name));
+			assert(MACH_PORT_NAME_VALID(reply_name));
 			entry->ie_object = (ipc_object_t) reply_port;
 			is_write_unlock(space);
 		    }

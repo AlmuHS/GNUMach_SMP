@@ -279,7 +279,7 @@ ipc_marequest_cancel(
 	*last = marequest->imar_next;
 	imarb_unlock(bucket);
 
-	marequest->imar_name = MACH_PORT_NULL;
+	marequest->imar_name = MACH_PORT_NAME_NULL;
 }
 
 /*
@@ -377,7 +377,7 @@ ipc_marequest_destroy(ipc_marequest_t marequest)
 			entry->ie_bits &= ~IE_BITS_MAREQUEST;
 
 		} else
-			name = MACH_PORT_NULL;
+			name = MACH_PORT_NAME_NULL;
 	}
 
 	is_write_unlock(space);

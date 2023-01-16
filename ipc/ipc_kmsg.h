@@ -269,6 +269,17 @@ extern mach_msg_return_t
 ipc_kmsg_copyout_object(ipc_space_t, ipc_object_t,
 			mach_msg_type_name_t, mach_port_name_t *);
 
+static inline mach_msg_return_t
+ipc_kmsg_copyout_object_to_port(ipc_space_t space, ipc_object_t object,
+                                mach_msg_type_name_t msgt_name, mach_port_t *portp)
+{
+  mach_port_name_t name;;
+  mach_msg_return_t mr;
+  mr = ipc_kmsg_copyout_object(space, object, msgt_name, &name);
+  *portp = (mach_port_t)name;
+  return mr;
+}
+
 extern mach_msg_return_t
 ipc_kmsg_copyout_body(ipc_kmsg_t, ipc_space_t, vm_map_t);
 

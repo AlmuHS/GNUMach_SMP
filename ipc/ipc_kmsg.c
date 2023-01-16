@@ -44,6 +44,7 @@
 #include <machine/locore.h>
 #include <machine/copy_user.h>
 #include <kern/assert.h>
+#include <kern/debug.h>
 #include <kern/kalloc.h>
 #include <vm/vm_map.h>
 #include <vm/vm_object.h>
@@ -1078,7 +1079,7 @@ ipc_kmsg_copyin_header(
 				reply_soright = soright;
 			}
 		}
-	} else if (!MACH_PORT_VALID(reply_name)) {
+	} else if (!MACH_PORT_NAME_VALID(reply_name)) {
 		ipc_entry_t entry;
 
 		/*
@@ -1101,7 +1102,7 @@ ipc_kmsg_copyin_header(
 		if (IE_BITS_TYPE(entry->ie_bits) == MACH_PORT_TYPE_NONE)
 			ipc_entry_dealloc(space, dest_name, entry);
 
-		reply_port = (ipc_object_t) reply_name;
+		reply_port = (ipc_object_t) invalid_name_to_port(reply_name);
 		reply_soright = IP_NULL;
 	} else {
 		ipc_entry_t dest_entry, reply_entry;
@@ -1461,10 +1462,10 @@ ipc_kmsg_copyin_body(
 				((mach_msg_type_t*)type)->msgt_name = newname;
 
 			for (i = 0; i < number; i++) {
-				mach_port_name_t port = (mach_port_name_t) objects[i];
+				mach_port_name_t port = ((mach_port_t*)data)[i];
 				ipc_object_t object;
 
-				if (!MACH_PORT_VALID(port))
+				if (!MACH_PORT_NAME_VALID(port))
 					continue;
 
 				kr = ipc_object_copyin(space, port,
@@ -1846,7 +1847,7 @@ ipc_kmsg_copyout_header(
 		entry->ie_bits = gen | (MACH_PORT_TYPE_SEND_ONCE | 1);
 	    }
 
-		assert(MACH_PORT_VALID(reply_name));
+		assert(MACH_PORT_NAME_VALID(reply_name));
 		entry->ie_object = (ipc_object_t) reply;
 		is_write_unlock(space);
 
@@ -2021,7 +2022,7 @@ ipc_kmsg_copyout_header(
 				is_write_unlock(space);
 
 				reply = IP_DEAD;
-				reply_name = MACH_PORT_DEAD;
+				reply_name = MACH_PORT_NAME_DEAD;
 				goto copyout_dest;
 			}
 
@@ -2132,7 +2133,7 @@ ipc_kmsg_copyout_header(
 		ip_lock(dest);
 		is_read_unlock(space);
 
-		reply_name = (mach_port_name_t) reply;
+		reply_name = invalid_port_to_name(msg->msgh_local_port);
 	}
 
 	/*
@@ -2201,12 +2202,12 @@ ipc_kmsg_copyout_header(
 			if (ip_active(reply) ||
 			    IP_TIMESTAMP_ORDER(timestamp,
 					       reply->ip_timestamp))
-				dest_name = MACH_PORT_DEAD;
+				dest_name = MACH_PORT_NAME_DEAD;
 			else
-				dest_name = MACH_PORT_NULL;
+				dest_name = MACH_PORT_NAME_NULL;
 			ip_unlock(reply);
 		} else
-			dest_name = MACH_PORT_DEAD;
+			dest_name = MACH_PORT_NAME_DEAD;
 	}
 
 	if (IP_VALID(reply))
@@ -2254,7 +2255,7 @@ ipc_kmsg_copyout_object(
 	mach_port_name_t 	*namep)
 {
 	if (!IO_VALID(object)) {
-		*namep = (mach_port_name_t) object;
+		*namep = invalid_port_to_name((mach_port_t)object);
 		return MACH_MSG_SUCCESS;
 	}
 
@@ -2324,9 +2325,9 @@ ipc_kmsg_copyout_object(
 		ipc_object_destroy(object, msgt_name);
 
 		if (kr == KERN_INVALID_CAPABILITY)
-			*namep = MACH_PORT_DEAD;
+			*namep = MACH_PORT_NAME_DEAD;
 		else {
-			*namep = MACH_PORT_NULL;
+			*namep = MACH_PORT_NAME_NULL;
 
 			if (kr == KERN_RESOURCE_SHORTAGE)
 				return MACH_MSG_IPC_KERNEL;
@@ -2435,11 +2436,8 @@ ipc_kmsg_copyout_body(
 			for (i = 0; i < number; i++) {
 				ipc_object_t object = objects[i];
 
-				/* TODO: revisit this for 64 bits since the size of
-				 * mach_port_name_t is not the same as a pointer size.
-				 */
-				mr |= ipc_kmsg_copyout_object(space, object,
-							name, (mach_port_name_t *)&objects[i]);
+				mr |= ipc_kmsg_copyout_object_to_port(space, object,
+								      name, (mach_port_t *)&objects[i]);
 			}
 		}
 
@@ -2628,14 +2626,14 @@ ipc_kmsg_copyout_dest(
 	} else {
 		io_release(dest);
 		io_check_unlock(dest);
-		dest_name = MACH_PORT_DEAD;
+		dest_name = MACH_PORT_NAME_DEAD;
 	}
 
 	if (IO_VALID(reply)) {
 		ipc_object_destroy(reply, reply_type);
-		reply_name = MACH_PORT_NULL;
+		reply_name = MACH_PORT_NAME_NULL;
 	} else
-		reply_name = (mach_port_name_t) reply;
+		reply_name = invalid_port_to_name((mach_port_t)reply);
 
 	kmsg->ikm_header.msgh_bits = (MACH_MSGH_BITS_OTHER(mbits) |
 				      MACH_MSGH_BITS(reply_type, dest_type));
