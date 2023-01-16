@@ -347,10 +347,10 @@ db_strcpy(char *dst, const char *src)
  */
 void
 db_search_cmd(
-	db_expr_t,
-	boolean_t,
-	db_expr_t,
-	const char *)
+	db_expr_t e,
+	boolean_t b,
+	db_expr_t e2,
+	const char * cc)
 {
 	int		t;
 	db_addr_t	addr;

@@ -39,7 +39,7 @@
 /*
  * Routines placed in empty entries in the device tables
  */
-int nulldev_reset(dev_t)
+int nulldev_reset(dev_t dev)
 {
 	return (D_SUCCESS);
 }
@@ -78,12 +78,12 @@ int nulldev_portdeath(dev_t dev, mach_port_t port)
 	return (D_SUCCESS);
 }
 
-int nodev_async_in(dev_t, const ipc_port_t, int, filter_t*, unsigned int)
+int nodev_async_in(dev_t dev, const ipc_port_t port, int x, filter_t* filter, unsigned int j)
 {
 	return (D_INVALID_OPERATION);
 }
 
-int nodev_info(dev_t, int, int*)
+int nodev_info(dev_t dev, int a, int* b)
 {
 	return (D_INVALID_OPERATION);
 }

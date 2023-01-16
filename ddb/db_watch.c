@@ -249,10 +249,10 @@ db_watchpoint_cmd(
 /* list watchpoints */
 void
 db_listwatch_cmd(
-	db_expr_t,
-	boolean_t,
-	db_expr_t,
-	const char *)
+	db_expr_t	addr,
+	int		have_addr,
+	db_expr_t	count,
+	const char *	modif)
 {
 	db_list_watchpoints();
 }

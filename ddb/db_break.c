@@ -598,10 +598,10 @@ db_list_breakpoints(void)
 /*ARGSUSED*/
 void
 db_delete_cmd(
-	db_expr_t,
-	boolean_t,
-	db_expr_t,
-	const char *)
+	db_expr_t	addr_,
+	int		have_addr,
+	db_expr_t	count,
+	const char *	modif)
 {
 	int n;
 	thread_t thread;
@@ -735,10 +735,10 @@ db_breakpoint_cmd(
 /* list breakpoints */
 void
 db_listbreak_cmd(
-	db_expr_t,
-	boolean_t,
-	db_expr_t,
-	const char *)
+	db_expr_t	addr,
+	int		have_addr,
+	db_expr_t	count,
+	const char *	modif)
 {
 	db_list_breakpoints();
 }

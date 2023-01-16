@@ -122,10 +122,10 @@ db_cond_print(bkpt)
 
 void
 db_cond_cmd(
-	db_expr_t,
-	boolean_t,
-	db_expr_t,
-	const char *)
+	db_expr_t	addr,
+	int		have_addr,
+	db_expr_t	count,
+	const char *	modif)
 {
 	int c;
 	struct db_cond *cp;
