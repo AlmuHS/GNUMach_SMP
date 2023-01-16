@@ -39,6 +39,7 @@
 #include <mach/kern_return.h>
 #include <mach/port.h>
 #include <mach/message.h>
+#include <machine/copy_user.h>
 #include <kern/assert.h>
 #include <kern/counters.h>
 #include <kern/debug.h>
@@ -241,7 +242,7 @@ mach_msg_receive(
 			return mr;
 
 		kmsg->ikm_header.msgh_seqno = seqno;
-		if (kmsg->ikm_header.msgh_size > rcv_size) {
+		if (msg_usize(&kmsg->ikm_header) > rcv_size) {
 			ipc_kmsg_copyout_dest(kmsg, space);
 			(void) ipc_kmsg_put(msg, kmsg, sizeof *msg);
 			return MACH_RCV_TOO_LARGE;
@@ -321,7 +322,7 @@ mach_msg_receive_continue(void)
 		}
 
 		kmsg->ikm_header.msgh_seqno = seqno;
-		assert(kmsg->ikm_header.msgh_size <= rcv_size);
+		assert(msg_usize(&kmsg->ikm_header) <= rcv_size);
 	} else {
 		mr = ipc_mqueue_receive(mqueue, option & MACH_RCV_TIMEOUT,
 					MACH_MSG_SIZE_MAX, time_out,
@@ -335,7 +336,7 @@ mach_msg_receive_continue(void)
 		}
 
 		kmsg->ikm_header.msgh_seqno = seqno;
-		if (kmsg->ikm_header.msgh_size > rcv_size) {
+		if (msg_usize(&kmsg->ikm_header) > rcv_size) {
 			ipc_kmsg_copyout_dest(kmsg, space);
 			(void) ipc_kmsg_put(msg, kmsg, sizeof *msg);
 			thread_syscall_return(MACH_RCV_TOO_LARGE);
@@ -450,7 +451,7 @@ mach_msg_trap(
 		 */
 
 		if ((send_size > IKM_SAVED_MSG_SIZE) ||
-		    (send_size < sizeof(mach_msg_header_t)) ||
+		    (send_size < sizeof(mach_msg_user_header_t)) ||
 		    (send_size & 3) ||
 		    ((kmsg = ikm_cache()) == IKM_NULL))
 			goto slow_get;
@@ -940,7 +941,7 @@ mach_msg_trap(
 						== dest_port);
 
 		reply_size = kmsg->ikm_header.msgh_size;
-		if (rcv_size < reply_size)
+		if (rcv_size < msg_usize(&kmsg->ikm_header))
 			goto slow_copyout;
 
 		/* optimized ipc_kmsg_copyout/ipc_kmsg_copyout_header */
@@ -1450,7 +1451,7 @@ mach_msg_trap(
 		 */
 
 		reply_size = kmsg->ikm_header.msgh_size;
-		if (rcv_size < reply_size) {
+		if (rcv_size < msg_usize(&kmsg->ikm_header)) {
 			ipc_kmsg_copyout_dest(kmsg, space);
 			(void) ipc_kmsg_put(msg, kmsg, sizeof *msg);
 			thread_syscall_return(MACH_RCV_TOO_LARGE);
@@ -1544,7 +1545,7 @@ mach_msg_trap(
 			return mr;
 
 		kmsg->ikm_header.msgh_seqno = seqno;
-		if (rcv_size < kmsg->ikm_header.msgh_size) {
+		if (rcv_size < msg_usize(&kmsg->ikm_header)) {
 			ipc_kmsg_copyout_dest(kmsg, space);
 			(void) ipc_kmsg_put(msg, kmsg, sizeof *msg);
 			return MACH_RCV_TOO_LARGE;
@@ -1628,7 +1629,7 @@ mach_msg_continue(void)
 	}
 
 	kmsg->ikm_header.msgh_seqno = seqno;
-	if (kmsg->ikm_header.msgh_size > rcv_size) {
+	if (msg_usize(&kmsg->ikm_header) > rcv_size) {
 		ipc_kmsg_copyout_dest(kmsg, space);
 		(void) ipc_kmsg_put(msg, kmsg, sizeof *msg);
 		thread_syscall_return(MACH_RCV_TOO_LARGE);

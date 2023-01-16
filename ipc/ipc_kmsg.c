@@ -42,6 +42,7 @@
 #include <mach/message.h>
 #include <mach/port.h>
 #include <machine/locore.h>
+#include <machine/copy_user.h>
 #include <kern/assert.h>
 #include <kern/kalloc.h>
 #include <vm/vm_map.h>
@@ -68,12 +69,6 @@
 #include <ipc/ipc_print.h>
 #endif
 
-/* msg body is always aligned to 4 bytes */
-typedef uint32_t msg_align_t;
-
-#define msg_is_misaligned(x)	( ((vm_offset_t)(x)) & (sizeof(msg_align_t)-1) )
-#define msg_align(x)	\
-	( ( ((vm_offset_t)(x)) + (sizeof(msg_align_t)-1) ) & ~(sizeof(msg_align_t)-1) )
 
 ipc_kmsg_t ipc_kmsg_cache[NCPUS];
 
@@ -1388,7 +1383,7 @@ ipc_kmsg_copyin_body(
 		} else {
 			vm_offset_t addr;
 
-			if (sizeof(msg_align_t) > sizeof(mach_msg_type_t))
+			if (MACH_MSG_ALIGNMENT > sizeof(mach_msg_type_t))
 				saddr = msg_align(saddr);
 
 			if ((eaddr - saddr) < sizeof(vm_offset_t)) {
@@ -1407,14 +1402,27 @@ ipc_kmsg_copyin_body(
 				if (data == 0)
 					goto invalid_memory;
 
-				if (copyinmap(map, (char *) addr,
-					      (char *) data, length) ||
-				    (dealloc &&
-				     (vm_deallocate(map, addr, length) !=
-							KERN_SUCCESS))) {
+				if (sizeof(mach_port_name_t) != sizeof(mach_port_t))
+				{
+					mach_port_name_t *src = (mach_port_name_t*)addr;
+					mach_port_t *dst = (mach_port_t*)data;
+					for (int i=0; i<number; i++) {
+						if (copyin_port(src + i, dst + i)) {
+							kfree(data, length);
+							goto invalid_memory;
+						}
+					}
+				} else if (copyinmap(map, (char *) addr,
+					      (char *) data, length)) {
 					kfree(data, length);
 					goto invalid_memory;
 				}
+				if (dealloc &&
+				    (vm_deallocate(map, addr, length) != KERN_SUCCESS)) {
+					kfree(data, length);
+					goto invalid_memory;
+				}
+
 			} else {
 				vm_map_copy_t copy;
 
@@ -2443,7 +2451,7 @@ ipc_kmsg_copyout_body(
 		} else {
 			vm_offset_t data;
 
-			if (sizeof(msg_align_t) > sizeof(mach_msg_type_t))
+			if (MACH_MSG_ALIGNMENT > sizeof(mach_msg_type_t))
 				saddr = msg_align(saddr);
 
 			data = * (vm_offset_t *) saddr;
@@ -2456,8 +2464,17 @@ ipc_kmsg_copyout_body(
 			} else if (is_port) {
 				/* copyout to memory allocated above */
 
-				(void) copyoutmap(map, (char *) data,
-						  (char *) addr, length);
+				if (sizeof(mach_port_name_t) != sizeof(mach_port_t)) {
+					mach_port_t *src = (mach_port_t*)data;
+					mach_port_name_t *dst = (mach_port_name_t*)addr;
+					for (int i=0; i<number; i++) {
+						if (copyout_port(src + i, dst + i))
+							goto vm_copyout_failure;
+					}
+				} else {
+					(void) copyoutmap(map, (char *) data,
+							  (char *) addr, length);
+				}
 				kfree(data, length);
 			} else {
 				vm_map_copy_t copy = (vm_map_copy_t) data;

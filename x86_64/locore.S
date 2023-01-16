@@ -1329,48 +1329,6 @@ copyin_fail:
 	movq	$1,%rax			/* return 1 for failure */
 	jmp	copyin_ret		/* pop frame and return */
 
-/*
- * Copy from user address space - version for copying messages.
- * arg0:	user address
- * arg1:	kernel address
- * arg2:	byte count
- */
-ENTRY(copyinmsg)
-	xchgq   %rsi,%rdi		/* Get user source and kernel destination */
-	movl	%edx,MSGH_MSGH_SIZE(%rdi)	/* set msgh_size already */
-
-/* 32 on 64 conversion */
-	subq	$32,%rdx
-	js	bogus
-
-	/* Copy msgh_bits */
-	RECOVER(copyin_fail)
-	movsl
-
-	/* Copy msgh_size */
-	RECOVER(copyin_fail)
-	lodsl
-        /* But don't actually store it: we have already set it above to what we
-           really copy */
-	addq	$4,%rdi
-
-	xorq	%rax,%rax
-	/* Copy msgh_remote_port */
-	RECOVER(copyin_fail)
-	lodsl
-	stosq
-
-	/* Copy msgh_local_port */
-	RECOVER(copyin_fail)
-	lodsl
-	stosq
-
-	/* Copy msgh_seqno and msgh_id */
-	RECOVER(copyin_fail)
-	movsq
-
-	jmp	copyin_remainder
-
 bogus:
 	ud2
 
@@ -1398,45 +1356,6 @@ copyout_ret:
 copyout_fail:
 	movq	$1,%rax			/* return 1 for failure */
 	jmp	copyout_ret		/* pop frame and return */
-
-/*
- * Copy to user address space.
- * arg0:	kernel address
- * arg1:	user address
- * arg2:	byte count
- */
-ENTRY(copyoutmsg)
-	xchgq   %rsi,%rdi		/* Get user source and kernel destination */
-
-/* 32 on 64 conversion */
-	subq	$32,%rdx
-	js	bogus
-
-	/* Copy msgh_bits */
-	RECOVER(copyout_fail)
-	movsl
-
-	/* Copy msgh_size */
-	lodsl
-	subl	$8,%eax
-	RECOVER(copyout_fail)
-	stosl
-
-	/* Copy msgh_remote_port */
-	lodsq
-	RECOVER(copyout_fail)
-	stosl
-
-	/* Copy msgh_local_port */
-	lodsq
-	RECOVER(copyout_fail)
-	stosl
-
-	/* Copy msgh_seqno and msgh_id */
-	RECOVER(copyout_fail)
-	movsq
-
-	jmp	copyin_remainder
 
 /*
  * int inst_fetch(int eip, int cs);

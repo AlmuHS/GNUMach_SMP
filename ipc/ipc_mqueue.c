@@ -36,6 +36,7 @@
 
 #include <mach/port.h>
 #include <mach/message.h>
+#include <machine/copy_user.h>
 #include <kern/assert.h>
 #include <kern/counters.h>
 #include <kern/debug.h>
@@ -540,7 +541,7 @@ ipc_mqueue_receive(
 		if (kmsg != IKM_NULL) {
 			/* check space requirements */
 
-			if (kmsg->ikm_header.msgh_size > max_size) {
+			if (msg_usize(&kmsg->ikm_header) > max_size) {
 				* (mach_msg_size_t *) kmsgp =
 					kmsg->ikm_header.msgh_size;
 				imq_unlock(mqueue);
@@ -649,7 +650,7 @@ ipc_mqueue_receive(
 	/* we have a kmsg; unlock the msg queue */
 
 	imq_unlock(mqueue);
-	assert(kmsg->ikm_header.msgh_size <= max_size);
+	assert(msg_usize(&kmsg->ikm_header) <= max_size);
     }
 
     {

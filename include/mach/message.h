@@ -316,6 +316,19 @@ typedef integer_t mach_msg_option_t;
 
 #define MACH_SEND_ALWAYS	0x00010000	/* internal use only */
 
+/* This is the alignment of msg descriptors and the actual data.
+ *
+ * On x86 it is made equal to the default structure alignment on
+ * 32-bit, so we can easily maintain compatibility with 32-bit user
+ * space on a 64-bit kernel. Other architectures might have different
+ * needs, so this value might change in the future for differents
+ * architectures.
+ */
+#define MACH_MSG_ALIGNMENT 4
+
+#define msg_is_misaligned(x)	( ((vm_offset_t)(x)) & (MACH_MSG_ALIGNMENT-1) )
+#define msg_align(x)	\
+	( ( ((vm_offset_t)(x)) + (MACH_MSG_ALIGNMENT-1) ) & ~(MACH_MSG_ALIGNMENT-1) )
 
 /*
  *  Much code assumes that mach_msg_return_t == kern_return_t.
@@ -400,7 +413,6 @@ typedef kern_return_t mach_msg_return_t;
 		/* Error receiving message header.  See special bits. */
 #define	MACH_RCV_BODY_ERROR		0x1000400c
 		/* Error receiving message body.  See special bits. */
-
 
 extern mach_msg_return_t
 mach_msg_trap
