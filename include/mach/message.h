@@ -132,6 +132,7 @@ typedef	unsigned int mach_msg_size_t;
 typedef natural_t mach_msg_seqno_t;
 typedef integer_t mach_msg_id_t;
 
+/* full header structure, may have different size in user/kernel spaces */
 typedef	struct mach_msg_header {
     mach_msg_bits_t	msgh_bits;
     mach_msg_size_t	msgh_size;
@@ -143,6 +144,20 @@ typedef	struct mach_msg_header {
     mach_port_seqno_t	msgh_seqno;
     mach_msg_id_t	msgh_id;
 } mach_msg_header_t;
+
+#ifdef KERNEL
+/* user-side header format, needed in the kernel */
+typedef	struct {
+    mach_msg_bits_t	msgh_bits;
+    mach_msg_size_t	msgh_size;
+    mach_port_name_t	msgh_remote_port;
+    mach_port_name_t	msgh_local_port;
+    mach_port_seqno_t	msgh_seqno;
+    mach_msg_id_t	msgh_id;
+} mach_msg_user_header_t;
+#else
+typedef mach_msg_header_t mach_msg_user_header_t;
+#endif
 
 /*
  *  There is no fixed upper bound to the size of Mach messages.
@@ -389,7 +404,7 @@ typedef kern_return_t mach_msg_return_t;
 
 extern mach_msg_return_t
 mach_msg_trap
-   (mach_msg_header_t *msg,
+   (mach_msg_user_header_t *msg,
     mach_msg_option_t option,
     mach_msg_size_t send_size,
     mach_msg_size_t rcv_size,

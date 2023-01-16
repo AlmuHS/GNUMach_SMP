@@ -499,13 +499,13 @@ ipc_kmsg_free(ipc_kmsg_t kmsg)
 
 mach_msg_return_t
 ipc_kmsg_get(
-	mach_msg_header_t 	*msg,
+	mach_msg_user_header_t 	*msg,
 	mach_msg_size_t 	size,
 	ipc_kmsg_t 		*kmsgp)
 {
 	ipc_kmsg_t kmsg;
 
-	if ((size < sizeof(mach_msg_header_t)) || (size & 3))
+	if ((size < sizeof(mach_msg_user_header_t)) || (size & 3))
 		return MACH_SEND_MSG_TOO_SMALL;
 
 	if (size <= IKM_SAVED_MSG_SIZE) {
@@ -587,7 +587,7 @@ ipc_kmsg_get_from_kernel(
 
 mach_msg_return_t
 ipc_kmsg_put(
-	mach_msg_header_t 	*msg,
+	mach_msg_user_header_t 	*msg,
 	ipc_kmsg_t 		kmsg,
 	mach_msg_size_t 	size)
 {

@@ -242,13 +242,13 @@ extern void
 ipc_kmsg_free(ipc_kmsg_t);
 
 extern mach_msg_return_t
-ipc_kmsg_get(mach_msg_header_t *, mach_msg_size_t, ipc_kmsg_t *);
+ipc_kmsg_get(mach_msg_user_header_t *, mach_msg_size_t, ipc_kmsg_t *);
 
 extern mach_msg_return_t
 ipc_kmsg_get_from_kernel(mach_msg_header_t *, mach_msg_size_t, ipc_kmsg_t *);
 
 extern mach_msg_return_t
-ipc_kmsg_put(mach_msg_header_t *, ipc_kmsg_t, mach_msg_size_t);
+ipc_kmsg_put(mach_msg_user_header_t *, ipc_kmsg_t, mach_msg_size_t);
 
 extern void
 ipc_kmsg_put_to_kernel(mach_msg_header_t *, ipc_kmsg_t, mach_msg_size_t);

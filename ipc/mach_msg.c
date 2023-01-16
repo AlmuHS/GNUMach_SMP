@@ -89,7 +89,7 @@
 
 mach_msg_return_t
 mach_msg_send(
-	mach_msg_header_t 	*msg,
+	mach_msg_user_header_t 	*msg,
 	mach_msg_option_t 	option,
 	mach_msg_size_t 	send_size,
 	mach_msg_timeout_t 	time_out,
@@ -171,7 +171,7 @@ mach_msg_send(
 
 mach_msg_return_t
 mach_msg_receive(
-	mach_msg_header_t 	*msg,
+	mach_msg_user_header_t 	*msg,
 	mach_msg_option_t 	option,
 	mach_msg_size_t 	rcv_size,
 	mach_port_name_t 	rcv_name,
@@ -286,7 +286,7 @@ mach_msg_receive_continue(void)
 	ipc_thread_t self = current_thread();
 	ipc_space_t space = current_space();
 	vm_map_t map = current_map();
-	mach_msg_header_t *msg = self->ith_msg;
+	mach_msg_user_header_t *msg = self->ith_msg;
 	mach_msg_option_t option = self->ith_option;
 	mach_msg_size_t rcv_size = self->ith_rcv_size;
 	mach_msg_timeout_t time_out = self->ith_timeout;
@@ -380,7 +380,7 @@ mach_msg_receive_continue(void)
 
 mach_msg_return_t
 mach_msg_trap(
-	mach_msg_header_t 	*msg,
+	mach_msg_user_header_t 	*msg,
 	mach_msg_option_t 	option,
 	mach_msg_size_t 	send_size,
 	mach_msg_size_t 	rcv_size,
@@ -1609,7 +1609,7 @@ mach_msg_continue(void)
 	task_t task = thread->task;
 	ipc_space_t space = task->itk_space;
 	vm_map_t map = task->map;
-	mach_msg_header_t *msg = thread->ith_msg;
+	mach_msg_user_header_t *msg = thread->ith_msg;
 	mach_msg_size_t rcv_size = thread->ith_rcv_size;
 	ipc_object_t object = thread->ith_object;
 	ipc_mqueue_t mqueue = thread->ith_mqueue;

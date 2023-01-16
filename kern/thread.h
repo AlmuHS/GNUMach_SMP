@@ -178,7 +178,7 @@ struct thread {
 	/* State saved when thread's stack is discarded */
 	union {
 		struct {
-			mach_msg_header_t *msg;
+			mach_msg_user_header_t *msg;
 			mach_msg_option_t option;
 			mach_msg_size_t rcv_size;
 			mach_msg_timeout_t timeout;
