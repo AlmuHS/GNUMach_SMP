@@ -2425,8 +2425,7 @@ ipc_kmsg_copyout_body(
 			/* copyout port rights carried in the message */
 
 			for (i = 0; i < number; i++) {
-				ipc_object_t object =
-					(ipc_object_t) objects[i];
+				ipc_object_t object = objects[i];
 
 				/* TODO: revisit this for 64 bits since the size of
 				 * mach_port_name_t is not the same as a pointer size.

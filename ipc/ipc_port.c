@@ -1283,7 +1283,7 @@ ipc_port_print(port)
 	printf(", sndrs=0x%x", port->ip_blocked.ithq_base);
 	printf(", kobj=0x%x\n", port->ip_kobject);
 
-	iprintf("protected_payload=%p\n", (void *) port->ip_protected_payload);
+	iprintf("protected_payload=%p\n", (void *) (vm_offset_t) port->ip_protected_payload);
 
 	indent -= 2;
 }
