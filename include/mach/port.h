@@ -72,9 +72,13 @@ typedef int *rpc_signature_info_t;
 
 #define MACH_PORT_NULL		0 /* works with both user and kernel ports */
 #define MACH_PORT_DEAD		((mach_port_t) ~0)
+#define MACH_PORT_NAME_NULL	((mach_port_name_t) 0)
+#define MACH_PORT_NAME_DEAD	((mach_port_name_t) ~0)
 
-#define	MACH_PORT_VALID(name)	\
-		(((name) != MACH_PORT_NULL) && ((name) != MACH_PORT_DEAD))
+#define	MACH_PORT_VALID(port)	\
+		(((port) != MACH_PORT_NULL) && ((port) != MACH_PORT_DEAD))
+#define	MACH_PORT_NAME_VALID(name)	\
+		(((name) != MACH_PORT_NAME_NULL) && ((name) != MACH_PORT_NAME_DEAD))
 
 /*
  *  These are the different rights a task may have.

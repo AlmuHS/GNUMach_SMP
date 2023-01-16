@@ -39,6 +39,7 @@
 #ifndef	_IPC_PORT_H_
 #define _IPC_PORT_H_
 
+#include <kern/debug.h>
 #include <mach/port.h>
 
 /*
@@ -82,5 +83,24 @@ typedef mach_port_name_t mach_port_gen_t;	/* generation numbers */
 
 #define	MACH_PORT_UREFS_UNDERFLOW(urefs, delta)				\
 		(((delta) < 0) && (-(delta) > (urefs)))
+
+
+static inline mach_port_t invalid_name_to_port(mach_port_name_t name)
+{
+  if (name == MACH_PORT_NAME_NULL)
+    return MACH_PORT_NULL;
+  if (name == MACH_PORT_NAME_DEAD)
+    return MACH_PORT_DEAD;
+  panic("invalid_name_to_port() called with a valid port");
+}
+
+static inline mach_port_name_t invalid_port_to_name(mach_port_t port)
+{
+  if (port == MACH_PORT_NULL)
+    return MACH_PORT_NAME_NULL;
+  if (port == MACH_PORT_DEAD)
+    return MACH_PORT_NAME_DEAD;
+  panic("invalid_port_to_name() called with a valid name");
+}
 
 #endif	/* _IPC_PORT_H_ */
