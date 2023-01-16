@@ -114,7 +114,6 @@ libkernel_a_SOURCES += \
 	ipc/mach_msg.h \
 	ipc/mach_port.c \
 	ipc/mach_port.h \
-	ipc/mach_rpc.c \
 	ipc/mach_debug.c \
 	ipc/port.h
 EXTRA_DIST += \
