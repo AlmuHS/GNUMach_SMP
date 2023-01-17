@@ -240,9 +240,6 @@ EXTRA_DIST += \
 #
 
 libkernel_a_SOURCES += \
-	util/putchar.c \
-	util/putchar.h \
-	util/puts.c \
 	util/atoi.c \
 	util/atoi.h \
 	util/byteorder.h \
