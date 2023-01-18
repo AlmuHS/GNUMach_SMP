@@ -42,7 +42,7 @@
 #include <kern/processor.h>
 #include <kern/ipc_host.h>
 #include <kern/mach_clock.h>
-#include <kern/mach_host.h>
+#include <kern/mach_host.server.h>
 #include <mach/vm_param.h>
 
 host_data_t	realhost;

@@ -79,6 +79,7 @@
 #include <kern/slab.h>
 #include <kern/kalloc.h>
 #include <kern/cpu_number.h>
+#include <kern/mach_debug.server.h>
 #include <mach/vm_param.h>
 #include <mach/machine/vm_types.h>
 #include <vm/vm_kern.h>

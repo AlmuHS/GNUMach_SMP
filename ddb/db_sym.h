@@ -94,7 +94,7 @@ extern boolean_t	db_qualify_ambiguous_names;
 extern boolean_t	db_add_symbol_table( 	int type,
 						char * start,
 						char * end,
-						char *name,
+						const char *name,
 						char *ref,
 						char *map_pointer );
 
@@ -186,7 +186,7 @@ extern struct db_sym_switch {
 	boolean_t	(*init)(
 				char *start,
 				char *end,
-				char *name,
+				const char *name,
 				char *task_addr
 				);
 
@@ -241,7 +241,7 @@ extern boolean_t db_line_at_pc(
 extern boolean_t aout_db_sym_init(
 	char *symtab,
 	char *esymtab,
-	char *name,
+	const char *name,
 	char *task_addr);
 
 extern boolean_t elf_db_sym_init (

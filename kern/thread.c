@@ -45,8 +45,8 @@
 #include <kern/eventcount.h>
 #include <kern/ipc_mig.h>
 #include <kern/ipc_tt.h>
-#include <kern/mach_debug.h>
-#include <kern/mach_host.h>
+#include <kern/mach_debug.server.h>
+#include <kern/mach_host.server.h>
 #include <kern/processor.h>
 #include <kern/queue.h>
 #include <kern/sched.h>
@@ -63,7 +63,7 @@
 #include <ipc/ipc_kmsg.h>
 #include <ipc/ipc_port.h>
 #include <ipc/mach_msg.h>
-#include <ipc/mach_port.h>
+#include <ipc/mach_port.server.h>
 #include <machine/machspl.h>		/* for splsched */
 #include <machine/pcb.h>
 #include <machine/thread.h>		/* for MACHINE_STACK */

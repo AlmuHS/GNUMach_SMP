@@ -61,6 +61,7 @@
 #include <kern/debug.h>		/* For panic() */
 #include <kern/thread.h>		/* For current_thread() */
 #include <kern/host.h>
+#include <kern/mach.server.h>		/* For rpc prototypes */
 #include <vm/vm_kern.h>		/* For kernel_map, vm_move */
 #include <vm/vm_map.h>		/* For vm_map_pageable */
 #include <ipc/ipc_port.h>
@@ -85,7 +86,7 @@ decl_simple_lock_data(,memory_manager_default_lock)
 kern_return_t memory_object_data_supply(
        vm_object_t		object,
 	vm_offset_t		offset,
-	vm_map_copy_t		data_copy,
+	vm_offset_t		vm_data_copy,
 	unsigned int		data_cnt,
 	vm_prot_t		lock_value,
 	boolean_t		precious,
@@ -100,6 +101,7 @@ kern_return_t memory_object_data_supply(
 	vm_offset_t	original_offset;
 	vm_page_t	*page_list;
 	boolean_t	was_absent;
+	vm_map_copy_t data_copy = (vm_map_copy_t)vm_data_copy;
 	vm_map_copy_t	orig_copy = data_copy;
 
 	/*

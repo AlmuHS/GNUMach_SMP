@@ -44,7 +44,10 @@
 #include <kern/task.h>
 #include <kern/thread.h>
 #include <kern/slab.h>
+#include <kern/gnumach.server.h>
 #include <kern/kalloc.h>
+#include <kern/mach.server.h>
+#include <kern/mach_host.server.h>
 #include <kern/processor.h>
 #include <kern/printf.h>
 #include <kern/sched_prim.h>	/* for thread_wakeup */

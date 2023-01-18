@@ -39,7 +39,7 @@
 #include <machine/vm_param.h>
 #include <machine/pcb.h>
 #include <ipc/ipc_port.h>
-#include <ipc/mach_port.h>
+#include <ipc/mach_port.server.h>
 #include <kern/bootstrap.h>
 #include <kern/debug.h>
 #include <kern/host.h>

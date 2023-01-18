@@ -60,6 +60,7 @@
 #include <ipc/ipc_pset.h>
 #include <ipc/ipc_right.h>
 #include <ipc/mach_port.h>
+#include <ipc/mach_port.server.h>
 
 
 /*

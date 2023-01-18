@@ -31,6 +31,7 @@
 #include <kern/syscall_emulation.h>
 #include <kern/task.h>
 #include <kern/kalloc.h>
+#include <kern/mach.server.h>
 #include <vm/vm_kern.h>
 
 /* XXX */

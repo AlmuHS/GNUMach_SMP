@@ -42,6 +42,7 @@
 #include <kern/thread.h>
 #include <kern/ipc_kobject.h>
 #include <kern/ipc_tt.h>
+#include <kern/mach.server.h>
 #include <ipc/ipc_space.h>
 #include <ipc/ipc_table.h>
 #include <ipc/ipc_port.h>
@@ -888,7 +889,7 @@ mach_ports_register(
 kern_return_t
 mach_ports_lookup(
 	task_t 			task,
-	ipc_port_t 		**portsp,
+	mach_port_t 		**portsp,
 	mach_msg_type_number_t 	*portsCnt)
 {
 	vm_offset_t memory;
@@ -925,7 +926,7 @@ mach_ports_lookup(
 
 	itk_unlock(task);
 
-	*portsp = ports;
+	*portsp = (mach_port_t *)ports;
 	*portsCnt = TASK_PORT_REGISTER_MAX;
 	return KERN_SUCCESS;
 }

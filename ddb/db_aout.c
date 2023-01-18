@@ -75,7 +75,7 @@ aout_db_sym_init(
 	char *	esymtab,	/* pointer to end of string table,
 				   for checking - may be rounded up to
 				   integer boundary */
-	char *	name,
+	const char *	name,
 	char *	task_addr)	/* use for this task only */
 {
 	struct nlist	*sym_start, *sym_end;

@@ -60,7 +60,7 @@ db_add_symbol_table(
 	int  type,
 	char *start,
 	char *end,
-	char *name,
+	const char *name,
 	char *ref,
 	char *map_pointer)
 {
@@ -506,7 +506,7 @@ void db_free_symbol(db_sym_t s)
  */
 
 static void dummy_db_free_symbol(db_sym_t symbol) { }
-static boolean_t dummy_db_sym_init(char *a, char *b, char *c, char *d) {
+static boolean_t dummy_db_sym_init(char *a, char *b, const char *c, char *d) {
   return FALSE;
 }
 

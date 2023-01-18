@@ -43,6 +43,7 @@
 #include <kern/assert.h>
 #include <kern/debug.h>
 #include <kern/kalloc.h>
+#include <kern/mach.server.h>
 #include <kern/list.h>
 #include <kern/rbtree.h>
 #include <kern/slab.h>

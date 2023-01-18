@@ -35,7 +35,7 @@
 #include <kern/host.h>
 #include <kern/thread.h>
 #include <kern/pc_sample.h>
-#include <kern/mach4.h>
+#include <kern/mach4.server.h>
 #include <kern/mach_clock.h>
 
 #if	MACH_PCSAMPLE
@@ -159,7 +159,7 @@ get_sampled_pcs(
 	sample_control_t *cp,
 	sampled_pc_seqno_t *seqnop,
 	sampled_pc_array_t sampled_pcs_out,
-	int *sampled_pcs_cntp)
+	mach_msg_type_number_t *sampled_pcs_cntp)
 {
     int nsamples;
     sampled_pc_seqno_t seqidx1, seqidx2;
@@ -218,7 +218,7 @@ thread_get_sampled_pcs(
 	thread_t thread,
 	sampled_pc_seqno_t *seqnop,
 	sampled_pc_array_t sampled_pcs_out,
-	int *sampled_pcs_cntp)
+	mach_msg_type_number_t *sampled_pcs_cntp)
 {
     if (thread == THREAD_NULL)
     	return KERN_INVALID_ARGUMENT;
@@ -235,7 +235,7 @@ task_get_sampled_pcs(
 	task_t task,
 	sampled_pc_seqno_t *seqnop,
 	sampled_pc_array_t sampled_pcs_out,
-	int *sampled_pcs_cntp)
+	mach_msg_type_number_t *sampled_pcs_cntp)
 {
     if (task == TASK_NULL)
     	return KERN_INVALID_ARGUMENT;

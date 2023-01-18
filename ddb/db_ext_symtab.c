@@ -35,7 +35,7 @@
 #include <vm/vm_kern.h>
 #include <vm/vm_user.h>
 #include <kern/host.h>
-#include <kern/mach_debug.h>
+#include <kern/mach_debug.server.h>
 #include <kern/task.h>
 #include <ddb/db_sym.h>
 
@@ -50,7 +50,7 @@ kern_return_t
 host_load_symbol_table(
 	host_t		host,
 	task_t		task,
-	char *		name,
+	const char *	name,
 	pointer_t	symtab,
 	unsigned int	symtab_count)
 {

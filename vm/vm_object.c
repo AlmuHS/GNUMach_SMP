@@ -44,6 +44,7 @@
 #include <ipc/ipc_space.h>
 #include <kern/assert.h>
 #include <kern/debug.h>
+#include <kern/mach.server.h>
 #include <kern/lock.h>
 #include <kern/queue.h>
 #include <kern/xpr.h>

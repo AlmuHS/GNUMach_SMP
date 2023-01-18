@@ -35,7 +35,7 @@
 #include <mach/message.h>
 #include <kern/debug.h>
 #include <kern/host.h>
-#include <kern/mach_host.h>
+#include <kern/mach_host.server.h>
 #include <kern/processor.h>
 #include <kern/task.h>
 #include <kern/thread.h>

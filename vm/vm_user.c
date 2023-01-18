@@ -40,9 +40,11 @@
 #include <mach/vm_statistics.h>
 #include <mach/vm_cache_statistics.h>
 #include <mach/vm_sync.h>
+#include <kern/gnumach.server.h>
 #include <kern/host.h>
-#include <kern/task.h>
 #include <kern/mach.server.h>
+#include <kern/mach_host.server.h>
+#include <kern/task.h>
 #include <vm/vm_fault.h>
 #include <vm/vm_kern.h>
 #include <vm/vm_map.h>

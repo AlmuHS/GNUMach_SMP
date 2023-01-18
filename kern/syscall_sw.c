@@ -38,7 +38,7 @@
 #include <kern/syscall_subr.h>
 #include <kern/ipc_mig.h>
 #include <kern/eventcount.h>
-#include <ipc/mach_port.h>
+#include <ipc/mach_port.server.h>
 
 
 /*
