@@ -156,7 +156,7 @@ kern_return_t thread_doswapin(thread_t thread)
  *	This procedure executes as a kernel thread.  Threads that need to
  *	be swapped in are swapped in by this thread.
  */
-void __attribute__((noreturn)) swapin_thread_continue(void)
+static void __attribute__((noreturn)) swapin_thread_continue(void)
 {
 	for (;;) {
 		thread_t thread;

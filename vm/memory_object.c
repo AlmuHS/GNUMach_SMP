@@ -425,7 +425,7 @@ kern_return_t memory_object_data_unavailable(
 #define	MEMORY_OBJECT_LOCK_RESULT_MUST_CLEAN	2
 #define	MEMORY_OBJECT_LOCK_RESULT_MUST_RETURN	3
 
-memory_object_lock_result_t memory_object_lock_page(
+static memory_object_lock_result_t memory_object_lock_page(
 	vm_page_t		m,
 	memory_object_return_t	should_return,
 	boolean_t		should_flush,

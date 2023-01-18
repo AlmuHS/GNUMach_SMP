@@ -2403,7 +2403,7 @@ void stack_finalize(
  *	*maxusagep must be initialized by the caller.
  */
 
-void stack_statistics(
+static void stack_statistics(
 	natural_t *totalp,
 	vm_size_t *maxusagep)
 {
