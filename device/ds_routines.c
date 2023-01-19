@@ -84,6 +84,7 @@
 #include <vm/vm_user.h>
 
 #include <device/device_types.h>
+#include <device/device.server.h>
 #include <device/dev_hdr.h>
 #include <device/conf.h>
 #include <device/io_req.h>
@@ -140,7 +141,7 @@ struct kmem_cache	io_inband_cache;
 io_return_t
 ds_device_open (ipc_port_t open_port, ipc_port_t reply_port,
 		mach_msg_type_name_t reply_port_type, dev_mode_t mode,
-		char *name, device_t *devp)
+		const_dev_name_t name, device_t *devp)
 {
   unsigned i;
   io_return_t err;
@@ -206,7 +207,7 @@ io_return_t
 ds_device_write_inband (device_t dev, ipc_port_t reply_port,
 			mach_msg_type_name_t reply_port_type,
 			dev_mode_t mode, recnum_t recnum,
-			io_buf_ptr_inband_t data, unsigned count,
+			const io_buf_ptr_inband_t data, unsigned count,
 			int *bytes_written)
 {
   /* Refuse if device is dead or not completely open.  */
@@ -245,7 +246,7 @@ ds_device_read (device_t dev, ipc_port_t reply_port,
 io_return_t
 ds_device_read_inband (device_t dev, ipc_port_t reply_port,
 		       mach_msg_type_name_t reply_port_type, dev_mode_t mode,
-		       recnum_t recnum, int count, char *data,
+		       recnum_t recnum, int count, io_buf_ptr_inband_t data,
 		       unsigned *bytes_read)
 {
   /* Refuse if device is dead or not completely open.  */
@@ -492,7 +493,7 @@ static io_return_t
 device_open(const ipc_port_t	reply_port,
 	    mach_msg_type_name_t reply_port_type,
 	    dev_mode_t		mode,
-	    char *		name,
+	    const char *		name,
 	    device_t		*device_p)
 {
 	mach_device_t		device;
@@ -826,7 +827,7 @@ device_write_inband(void		*dev,
 		    mach_msg_type_name_t	reply_port_type,
 		    dev_mode_t		mode,
 		    recnum_t		recnum,
-		    io_buf_ptr_inband_t	data,
+		    const io_buf_ptr_inband_t	data,
 		    unsigned int	data_count,
 		    int			*bytes_written)
 {
@@ -849,7 +850,7 @@ device_write_inband(void		*dev,
 	ior->io_op		= IO_WRITE | IO_CALL | IO_INBAND;
 	ior->io_mode		= mode;
 	ior->io_recnum		= recnum;
-	ior->io_data		= data;
+	ior->io_data		= (io_buf_ptr_t)data;
 	ior->io_count		= data_count;
 	ior->io_total		= data_count;
 	ior->io_alloc_size	= 0;

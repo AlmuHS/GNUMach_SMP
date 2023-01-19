@@ -50,6 +50,7 @@
 #include <vm/vm_kern.h>
 #include <vm/vm_user.h>
 
+#include <device/device_pager.server.h>
 #include <device/device_types.h>
 #include <device/ds_routines.h>
 #include <device/dev_hdr.h>

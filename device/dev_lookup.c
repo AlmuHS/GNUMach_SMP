@@ -116,7 +116,7 @@ dev_number_lookup(const dev_ops_t ops, int devnum)
  * table.
  */
 mach_device_t
-device_lookup(char *name)
+device_lookup(const char *name)
 {
 	dev_ops_t	dev_ops;
 	int		dev_minor;

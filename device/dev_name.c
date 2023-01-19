@@ -118,7 +118,7 @@ name_equal(src, len, target)
  * device name lookup
  */
 boolean_t dev_name_lookup(
-	char 		*name,
+	const char 		*name,
 	dev_ops_t	*ops,	/* out */
 	int		*unit)	/* out */
 {
@@ -134,7 +134,7 @@ boolean_t dev_name_lookup(
 	 * <partition>		is a letter in [a-h] (disks only?)
 	 */
 
-	char 		*cp = name;
+	const char 		*cp = name;
 	int		len;
 	int		j = 0;
 	int		c;
