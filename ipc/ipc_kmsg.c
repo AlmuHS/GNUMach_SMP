@@ -231,8 +231,8 @@ ipc_kmsg_clean_body(
 		if (((mach_msg_type_t*)type)->msgt_longform) {
 			/* This must be aligned */
 			if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
-			    (msg_is_misaligned(type))) {
-				saddr = msg_align(saddr);
+			    (mach_msg_is_misaligned(type))) {
+				saddr = mach_msg_align(saddr);
 				continue;
 			}
 			name = type->msgtl_name;
@@ -249,7 +249,7 @@ ipc_kmsg_clean_body(
 		/* padding (ptrs and ports) ? */
 		if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
 		    ((size >> 3) == sizeof(natural_t)))
-			saddr = msg_align(saddr);
+			saddr = mach_msg_align(saddr);
 
 		/* calculate length of data in bytes, rounding up */
 
@@ -392,8 +392,8 @@ xxx:		type = (mach_msg_type_long_t *) eaddr;
 		if (((mach_msg_type_t*)type)->msgt_longform) {
 			/* This must be aligned */
 			if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
-			    (msg_is_misaligned(type))) {
-				eaddr = msg_align(eaddr);
+			    (mach_msg_is_misaligned(type))) {
+				eaddr = mach_msg_align(eaddr);
 				goto xxx;
 			}
 			name = type->msgtl_name;
@@ -410,7 +410,7 @@ xxx:		type = (mach_msg_type_long_t *) eaddr;
 		/* padding (ptrs and ports) ? */
 		if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
 		    ((size >> 3) == sizeof(natural_t)))
-			eaddr = msg_align(eaddr);
+			eaddr = mach_msg_align(eaddr);
 
 		/* calculate length of data in bytes, rounding up */
 
@@ -1332,8 +1332,8 @@ ipc_kmsg_copyin_body(
 		if (longform) {
 			/* This must be aligned */
 			if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
-			    (msg_is_misaligned(type))) {
-				saddr = msg_align(saddr);
+			    (mach_msg_is_misaligned(type))) {
+				saddr = mach_msg_align(saddr);
 				continue;
 			}
 			name = type->msgtl_name;
@@ -1362,7 +1362,7 @@ ipc_kmsg_copyin_body(
 		/* padding (ptrs and ports) ? */
 		if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
 		    ((size >> 3) == sizeof(natural_t)))
-			saddr = msg_align(saddr);
+			saddr = mach_msg_align(saddr);
 
 		/* calculate length of data in bytes, rounding up */
 
@@ -1385,7 +1385,7 @@ ipc_kmsg_copyin_body(
 			vm_offset_t addr;
 
 			if (MACH_MSG_ALIGNMENT > sizeof(mach_msg_type_t))
-				saddr = msg_align(saddr);
+				saddr = mach_msg_align(saddr);
 
 			if ((eaddr - saddr) < sizeof(vm_offset_t)) {
 				ipc_kmsg_clean_partial(kmsg, taddr, FALSE, 0);
@@ -1615,8 +1615,8 @@ ipc_kmsg_copyin_from_kernel(ipc_kmsg_t kmsg)
 		if (longform) {
 			/* This must be aligned */
 			if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
-			    (msg_is_misaligned(type))) {
-				saddr = msg_align(saddr);
+			    (mach_msg_is_misaligned(type))) {
+				saddr = mach_msg_align(saddr);
 				continue;
 			}
 			name = type->msgtl_name;
@@ -1633,7 +1633,7 @@ ipc_kmsg_copyin_from_kernel(ipc_kmsg_t kmsg)
 		/* padding (ptrs and ports) ? */
 		if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
 		    ((size >> 3) == sizeof(natural_t)))
-			saddr = msg_align(saddr);
+			saddr = mach_msg_align(saddr);
 
 		/* calculate length of data in bytes, rounding up */
 
@@ -2388,8 +2388,8 @@ ipc_kmsg_copyout_body(
 		if (longform) {
 			/* This must be aligned */
 			if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
-			    (msg_is_misaligned(type))) {
-				saddr = msg_align(saddr);
+			    (mach_msg_is_misaligned(type))) {
+				saddr = mach_msg_align(saddr);
 				continue;
 			}
 			name = type->msgtl_name;
@@ -2406,7 +2406,7 @@ ipc_kmsg_copyout_body(
 		/* padding (ptrs and ports) ? */
 		if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
 		    ((size >> 3) == sizeof(natural_t)))
-			saddr = msg_align(saddr);
+			saddr = mach_msg_align(saddr);
 
 		/* calculate length of data in bytes, rounding up */
 
@@ -2450,7 +2450,7 @@ ipc_kmsg_copyout_body(
 			vm_offset_t data;
 
 			if (MACH_MSG_ALIGNMENT > sizeof(mach_msg_type_t))
-				saddr = msg_align(saddr);
+				saddr = mach_msg_align(saddr);
 
 			data = * (vm_offset_t *) saddr;
 
@@ -2827,8 +2827,8 @@ ipc_msg_print(mach_msg_header_t *msgh)
 		if (longform) {
 			/* This must be aligned */
 			if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
-			    (msg_is_misaligned(type))) {
-				saddr = msg_align(saddr);
+			    (mach_msg_is_misaligned(type))) {
+				saddr = mach_msg_align(saddr);
 				continue;
 			}
 			name = type->msgtl_name;
@@ -2873,7 +2873,7 @@ ipc_msg_print(mach_msg_header_t *msgh)
 		/* padding (ptrs and ports) ? */
 		if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
 		    ((size >> 3) == sizeof(natural_t)))
-			saddr = msg_align(saddr);
+			saddr = mach_msg_align(saddr);
 
 		/* calculate length of data in bytes, rounding up */
 

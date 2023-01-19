@@ -326,8 +326,8 @@ typedef integer_t mach_msg_option_t;
  */
 #define MACH_MSG_ALIGNMENT 4
 
-#define msg_is_misaligned(x)	( ((vm_offset_t)(x)) & (MACH_MSG_ALIGNMENT-1) )
-#define msg_align(x)	\
+#define mach_msg_is_misaligned(x)	( ((vm_offset_t)(x)) & (MACH_MSG_ALIGNMENT-1) )
+#define mach_msg_align(x)	\
 	( ( ((vm_offset_t)(x)) + (MACH_MSG_ALIGNMENT-1) ) & ~(MACH_MSG_ALIGNMENT-1) )
 
 /*
