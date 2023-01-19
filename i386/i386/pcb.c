@@ -447,8 +447,7 @@ void pcb_terminate(thread_t thread)
  *	Attempt to free excess pcb memory.
  */
 
-void pcb_collect(thread)
-	const thread_t thread;
+void pcb_collect(__attribute__((unused)) const thread_t thread)
 {
 }
 

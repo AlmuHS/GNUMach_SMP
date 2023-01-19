@@ -140,8 +140,7 @@ cnmaygetc(void)
 }
 
 void
-cnputc(c)
-	char c;
+cnputc(char c)
 {
 	if (c == 0)
 		return;

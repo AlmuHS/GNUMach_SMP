@@ -92,10 +92,9 @@ mach_msg_send_from_kernel(
 }
 
 mach_msg_return_t
-mach_msg_rpc_from_kernel(msg, send_size, reply_size)
-	const mach_msg_header_t *msg;
-	mach_msg_size_t send_size;
-	mach_msg_size_t reply_size;
+mach_msg_rpc_from_kernel(const mach_msg_header_t *msg,
+	mach_msg_size_t send_size,
+	mach_msg_size_t reply_size)
 {
 	panic("mach_msg_rpc_from_kernel"); /*XXX*/
 }

@@ -95,8 +95,7 @@ void eml_task_reference(
  *	Cleans up after the emulation code when a process exits.
  */
  
-void eml_task_deallocate(task)
-	const task_t task;
+void eml_task_deallocate(const task_t task)
 {
 	eml_dispatch_t	eml;
 

@@ -66,8 +66,7 @@ Assert(const char *exp, const char *file, int line, const char *fun)
 	Debugger("assertion failure");
 }
 
-void SoftDebugger(message)
-	const char *message;
+void SoftDebugger(const char *message)
 {
 	printf("Debugger invoked: %s\n", message);
 
@@ -98,8 +97,7 @@ void SoftDebugger(message)
 #endif
 }
 
-void Debugger(message)
-	const char *message;
+void Debugger(const char *message)
 {
 #if	!MACH_KDB
 	panic("Debugger invoked, but there isn't one!");

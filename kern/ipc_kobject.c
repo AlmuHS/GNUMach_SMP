@@ -78,8 +78,7 @@
  */
 
 ipc_kmsg_t
-ipc_kobject_server(request)
-	ipc_kmsg_t request;
+ipc_kobject_server(ipc_kmsg_t request)
 {
 	mach_msg_size_t reply_size = ikm_less_overhead(8192);
 	ipc_kmsg_t reply;
@@ -286,10 +285,7 @@ ipc_kobject_server(request)
  */
 
 void
-ipc_kobject_set(port, kobject, type)
-	ipc_port_t port;
-	ipc_kobject_t kobject;
-	ipc_kobject_type_t type;
+ipc_kobject_set(ipc_port_t port, ipc_kobject_t kobject, ipc_kobject_type_t type)
 {
 	ip_lock(port);
 	assert(ip_active(port));
@@ -341,9 +337,8 @@ ipc_kobject_destroy(
  */
 
 boolean_t
-ipc_kobject_notify(request_header, reply_header)
-	mach_msg_header_t *request_header;
-	mach_msg_header_t *reply_header;
+ipc_kobject_notify(mach_msg_header_t *request_header,
+	mach_msg_header_t *reply_header)
 {
 	ipc_port_t port = (ipc_port_t) request_header->msgh_remote_port;
 

@@ -103,10 +103,9 @@ nomap(dev_t dev, vm_offset_t off, int prot)
  *   next character of target is 0 (end of string).
  */
 boolean_t __attribute__ ((pure))
-name_equal(src, len, target)
-	const char 	*src;
-	int		len;
-	const char 	*target;
+name_equal(const char 	*src,
+	int		len,
+	const char 	*target)
 {
 	while (--len >= 0)
 	    if (*src++ != *target++)

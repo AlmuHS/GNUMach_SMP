@@ -295,8 +295,7 @@ dev_port_lookup(ipc_port_t port)
  * Consumes a device reference; produces a naked send right.
  */
 ipc_port_t
-convert_device_to_port(device)
-	const device_t	device;
+convert_device_to_port(const device_t	device)
 {
 	if (device == DEVICE_NULL)
 	    return IP_NULL;

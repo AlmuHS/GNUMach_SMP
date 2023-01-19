@@ -92,10 +92,7 @@ db_term(db_expr_t *valuep)
 }
 
 int
-db_size_option(modif, u_option, t_option)
-	const char *modif;
-	boolean_t *u_option;
-	boolean_t *t_option;
+db_size_option(const char *modif, boolean_t *u_option, boolean_t *t_option)
 {
 	const char 	*p;
 	int		size = sizeof(int);

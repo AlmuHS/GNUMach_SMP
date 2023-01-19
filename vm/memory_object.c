@@ -1060,8 +1060,7 @@ ipc_port_t	memory_manager_default_reference(void)
  *		know when it should keep memory wired.
  */
 
-boolean_t	memory_manager_default_port(port)
-	const ipc_port_t port;
+boolean_t	memory_manager_default_port(const ipc_port_t port)
 {
 	ipc_port_t current;
 	boolean_t result;

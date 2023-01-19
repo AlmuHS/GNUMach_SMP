@@ -96,9 +96,8 @@ void		vm_external_destroy(vm_external_t e)
 	kmem_cache_free(&vm_external_cache, (vm_offset_t) e);
 }
 
-vm_external_state_t _vm_external_state_get(e, offset)
-	const vm_external_t	e;
-	vm_offset_t		offset;
+vm_external_state_t _vm_external_state_get(const vm_external_t	e,
+	vm_offset_t		offset)
 {
 	unsigned
 	int		bit, byte;

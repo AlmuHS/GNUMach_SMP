@@ -5000,8 +5000,7 @@ void vm_map_print(db_expr_t addr, boolean_t have_addr, db_expr_t count, const ch
  *		Pretty-print a copy object for ddb.
  */
 
-void vm_map_copy_print(copy)
-	const vm_map_copy_t copy;
+void vm_map_copy_print(const vm_map_copy_t copy)
 {
 	int i, npages;
 

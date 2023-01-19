@@ -368,8 +368,7 @@ decl_simple_lock_data(,net_hash_header_lock)
  *	Returns TRUE for high-priority packets.
  */
 
-boolean_t ethernet_priority(kmsg)
-	const ipc_kmsg_t kmsg;
+boolean_t ethernet_priority(const ipc_kmsg_t kmsg)
 {
 	unsigned char *addr =
 		(unsigned char *) net_kmsg(kmsg)->header;
@@ -690,9 +689,8 @@ int net_filter_queue_reorder = 0; /* non-zero to enable reordering */
  * We are *not* called at interrupt level.
  */
 void
-net_filter(kmsg, send_list)
-	const ipc_kmsg_t	kmsg;
-	ipc_kmsg_queue_t	send_list;
+net_filter(const ipc_kmsg_t	kmsg,
+	ipc_kmsg_queue_t	send_list)
 {
 	struct ifnet		*ifp;
 	net_rcv_port_t		infp, nextfp;
@@ -871,11 +869,10 @@ net_filter(kmsg, send_list)
 }
 
 boolean_t
-net_do_filter(infp, data, data_count, header)
-	net_rcv_port_t	infp;
-	const char *	data;
-	unsigned int	data_count;
-	const char *	header;
+net_do_filter(net_rcv_port_t	infp,
+	const char *	data,
+	unsigned int	data_count,
+	const char *	header)
 {
 	int		stack[NET_FILTER_STACK_DEPTH+1];
 	int		*sp;
@@ -1983,9 +1980,8 @@ bpf_eq(
 }
 
 unsigned int
-bpf_hash (n, keys)
-	int n;
-	const unsigned int *keys;
+bpf_hash (int n,
+	const unsigned int *keys)
 {
 	unsigned int hval = 0;
 	
@@ -1997,11 +1993,11 @@ bpf_hash (n, keys)
 
 
 int
-bpf_match (hash, n_keys, keys, hash_headpp, entpp)
-	net_hash_header_t hash;
-	int n_keys;
-	const unsigned int *keys;
-	net_hash_entry_t **hash_headpp, *entpp;
+bpf_match (net_hash_header_t hash,
+	int n_keys,
+	const unsigned int *keys,
+	net_hash_entry_t 	**hash_headpp,
+	net_hash_entry_t 	*entpp)
 {
 	net_hash_entry_t head, entp;
 	int i;

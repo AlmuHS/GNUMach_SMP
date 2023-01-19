@@ -1249,8 +1249,7 @@ ipc_port_dealloc_special(
  */
 
 void
-ipc_port_print(port)
-	const ipc_port_t port;
+ipc_port_print(const ipc_port_t port)
 {
 	printf("port 0x%x\n", port);
 

@@ -480,9 +480,7 @@ kdopen(
  */
 /*ARGSUSED*/
 void
-kdclose(dev, flag)
-dev_t	dev;
-int	flag;
+kdclose(dev_t dev, int flag)
 {
 	struct	tty	*tp;
 
@@ -512,9 +510,7 @@ int	flag;
  */
 /*ARGSUSED*/
 int
-kdread(dev, uio)
-dev_t	dev;
-io_req_t uio;
+kdread(dev_t dev, io_req_t uio)
 {
 	struct	tty	*tp;
 
@@ -537,9 +533,7 @@ io_req_t uio;
  */
 /*ARGSUSED*/
 int
-kdwrite(dev, uio)
-dev_t	dev;
-io_req_t uio;
+kdwrite(dev_t dev, io_req_t uio)
 {
 	return((*linesw[kd_tty.t_line].l_write)(&kd_tty, uio));
 }
@@ -550,10 +544,7 @@ io_req_t uio;
 
 /*ARGSUSED*/
 vm_offset_t
-kdmmap(dev, off, prot)
-	dev_t dev;
-	vm_offset_t off;
-	vm_prot_t prot;
+kdmmap(dev_t dev, vm_offset_t off, vm_prot_t prot)
 {
 	if (off >= (128*1024))
 		return(-1);
@@ -1019,9 +1010,8 @@ kdcheckmagic(Scancode scancode)
  *	corresponds to the given state.
  */
 unsigned int
-kdstate2idx(state, extended)
-unsigned int	state;			/* bit vector, not a state index */
-boolean_t	extended;
+kdstate2idx(unsigned int	state,			/* bit vector, not a state index */
+	boolean_t	extended)
 {
 	int state_idx = NORM_STATE;
 
