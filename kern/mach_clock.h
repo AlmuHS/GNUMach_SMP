@@ -98,7 +98,7 @@ extern void record_time_stamp (time_value_t *stamp);
  * Read a timestamp in STAMP into RESULT.  Returns values in the
  * real-time clock frame.
  */
-extern void read_time_stamp (time_value_t *stamp, time_value_t *result);
+extern void read_time_stamp (const time_value_t *stamp, time_value_t *result);
 
 extern kern_return_t host_get_time(
    host_t host,

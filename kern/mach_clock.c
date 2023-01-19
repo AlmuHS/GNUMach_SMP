@@ -96,21 +96,24 @@ volatile mapped_time_value_t *mtime = 0;
 MACRO_BEGIN								\
 	if (mtime != 0) {						\
 		mtime->check_seconds = (time)->seconds;			\
+		mtime->check_seconds64 = (time)->seconds;		\
 		__sync_synchronize();					\
 		mtime->microseconds = (time)->nanoseconds / 1000;	\
+		mtime->time_value.nanoseconds = (time)->nanoseconds;		\
 		__sync_synchronize();					\
 		mtime->seconds = (time)->seconds;			\
+		mtime->time_value.seconds = (time)->seconds;			\
 	}								\
 MACRO_END
 
-#define read_mapped_time(time)					\
-MACRO_BEGIN							\
-	do {							\
-		time->seconds = mtime->seconds;			\
-		__sync_synchronize();				\
-		time->microseconds = mtime->microseconds;	\
-		__sync_synchronize();				\
-	} while (time->seconds != mtime->check_seconds);	\
+#define read_mapped_time(time)						\
+MACRO_BEGIN								\
+	do {								\
+		(time)->seconds = mtime->time_value.seconds;		\
+		__sync_synchronize();					\
+		(time)->nanoseconds = mtime->time_value.nanoseconds;	\
+		__sync_synchronize();					\
+	} while ((time)->seconds != mtime->check_seconds64);	\
 MACRO_END
 
 decl_simple_lock_data(,	timer_lock)	/* lock for ... */
@@ -225,7 +228,7 @@ void clock_interrupt(
 	     *	Increment the time-of-day clock.
 	     */
 	    if (timedelta == 0) {
-		time_value64_add_usec(&time, usec);
+		time_value64_add_nanos(&time, usec * 1000);
 	    }
 	    else {
 		int	delta;
@@ -246,7 +249,7 @@ void clock_interrupt(
 		    delta = usec + tickdelta;
 		    timedelta -= tickdelta;
 		}
-		time_value64_add_usec(&time, delta);
+		time_value64_add_nanos(&time, delta * 1000);
 	    }
 	    update_mapped_time(&time);
 
@@ -390,7 +393,7 @@ void init_timeout(void)
  * the boot-time clock by storing the difference to the real-time
  * clock.
  */
-struct time_value clock_boottime_offset;
+struct time_value64 clock_boottime_offset;
 
 /*
  * Update the offset of the boot-time clock from the real-time clock.
@@ -398,11 +401,11 @@ struct time_value clock_boottime_offset;
  * This function must be called at SPLHIGH.
  */
 static void
-clock_boottime_update(struct time_value *new_time)
+clock_boottime_update(const struct time_value64 *new_time)
 {
-	struct time_value delta = {.seconds = time.seconds, .microseconds = time.nanoseconds / 1000};
-	time_value_sub(&delta, new_time);
-	time_value_add(&clock_boottime_offset, &delta);
+	struct time_value64 delta = time;
+	time_value64_sub(&delta, new_time);
+	time_value64_add(&clock_boottime_offset, &delta);
 }
 
 /*
@@ -410,10 +413,12 @@ clock_boottime_update(struct time_value *new_time)
  * frame.
  */
 void
-record_time_stamp (time_value_t *stamp)
+record_time_stamp(time_value_t *stamp)
 {
-	read_mapped_time(stamp);
-	time_value_add(stamp, &clock_boottime_offset);
+	time_value64_t stamp64;
+	read_mapped_time(&stamp64);
+	time_value64_add(&stamp64, &clock_boottime_offset);
+	TIME_VALUE64_TO_TIME_VALUE(&stamp64, stamp);
 }
 
 /*
@@ -421,18 +426,35 @@ record_time_stamp (time_value_t *stamp)
  * real-time clock frame.
  */
 void
-read_time_stamp (time_value_t *stamp, time_value_t *result)
+read_time_stamp (const time_value_t *stamp, time_value_t *result)
 {
-	*result = *stamp;
-	time_value_sub(result, &clock_boottime_offset);
+	time_value64_t result64;
+	TIME_VALUE_TO_TIME_VALUE64(stamp, &result64);
+	time_value64_sub(&result64, &clock_boottime_offset);
+	TIME_VALUE64_TO_TIME_VALUE(&result64, result);
 }
 
+
+/*
+ * Read the time (deprecated version).
+ */
+kern_return_t
+host_get_time(const host_t host, time_value_t *current_time)
+{
+	if (host == HOST_NULL)
+		return(KERN_INVALID_HOST);
+
+	time_value64_t current_time64;
+	read_mapped_time(&current_time64);
+	TIME_VALUE64_TO_TIME_VALUE(&current_time64, current_time);
+	return (KERN_SUCCESS);
+}
 
 /*
  * Read the time.
  */
 kern_return_t
-host_get_time(const host_t host, time_value_t *current_time)
+host_get_time64(const host_t host, time_value64_t *current_time)
 {
 	if (host == HOST_NULL)
 		return(KERN_INVALID_HOST);
@@ -462,9 +484,10 @@ host_set_time(const host_t host, time_value_t new_time)
 #endif	/* NCPUS > 1 */
 
 	s = splhigh();
-	clock_boottime_update(&new_time);
-	time.seconds = new_time.seconds;
-	time.nanoseconds = new_time.microseconds * 1000;
+	time_value64_t new_time64;
+	TIME_VALUE_TO_TIME_VALUE64(&new_time, &new_time64);
+	clock_boottime_update(&new_time64);
+	time = new_time64;
 	update_mapped_time(&time);
 	resettodr();
 	splx(s);

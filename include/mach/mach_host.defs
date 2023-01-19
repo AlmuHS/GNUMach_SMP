@@ -352,3 +352,11 @@ routine processor_control(
 routine host_get_boot_info(
 		host_priv	: host_priv_t;
 	out	boot_info	: kernel_boot_info_t);
+
+/*
+ *	Get the time on this host.
+ *	Available to all.
+ */
+routine	host_get_time64(
+		host		: host_t;
+	out	current_time	: time_value64_t);

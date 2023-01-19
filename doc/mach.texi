@@ -5612,39 +5612,39 @@ necessarily null-terminated.
 @node Host Time
 @section Host Time
 
-@deftp {Data type} time_value_t
+@deftp {Data type} time_value64_t
 This is the representation of a time in Mach.  It is a @code{struct
-time_value} and consists of the following members:
+time_value64} and consists of the following members:
 
 @table @code
-@item integer_t seconds
+@item int64_t seconds
 The number of seconds.
-@item integer_t microseconds
-The number of microseconds.
+@item int64_t nanoseconds
+The number of nanoseconds.
 @end table
 @end deftp
 
-The number of microseconds should always be smaller than
-@code{TIME_MICROS_MAX} (100000).  A time with this property is
+The number of nanoseconds should always be smaller than
+@code{TIME_NANOS_MAX} (100000000).  A time with this property is
 @dfn{normalized}.  Normalized time values can be manipulated with the
 following macros:
 
-@defmac time_value_add_usec (@w{time_value_t *@var{val}}, @w{integer_t *@var{micros}})
-Add @var{micros} microseconds to @var{val}.  If @var{val} is normalized
-and @var{micros} smaller than @code{TIME_MICROS_MAX}, @var{val} will be
+@defmac time_value64_add_nanos (@w{time_value64_t *@var{val}}, @w{int64_t *@var{nanos}})
+Add @var{nanos} nanoseconds to @var{val}.  If @var{val} is normalized
+and @var{nanos} smaller than @code{TIME_NANOS_MAX}, @var{val} will be
 normalized afterwards.
 @end defmac
 
-@defmac time_value_add (@w{time_value_t *@var{result}}, @w{time_value_t *@var{addend}})
+@defmac time_value64_add (@w{time_value64_t *@var{result}}, @w{time_value64_t *@var{addend}})
 Add the values in @var{addend} to @var{result}.  If both are normalized,
 @var{result} will be normalized afterwards.
 @end defmac
 
-A variable of type @code{time_value_t} can either represent a duration
+A variable of type @code{time_value64_t} can either represent a duration
 or a fixed point in time.  In the latter case, it shall be interpreted as
-the number of seconds and microseconds after the epoch 1. Jan 1970.
+the number of seconds and nanoseconds after the epoch 1. Jan 1970.
 
-@deftypefun kern_return_t host_get_time (@w{host_t @var{host}}, @w{time_value_t *@var{current_time}})
+@deftypefun kern_return_t host_get_time64 (@w{host_t @var{host}}, @w{time_value64_t *@var{current_time}})
 Get the current time as seen by @var{host}.  On success, the time passed
 since the epoch is returned in @var{current_time}.
 @end deftypefun
@@ -5675,6 +5675,14 @@ The number of microseconds.
 
 @item integer_t check_seconds
 This is a copy of the seconds value, which must be checked to protect
+against a race condition when reading out the two time values. This
+should only be used when getting the 32 bit version of @code{time_value64_t}.
+
+@item time_value64_t time_value
+The current time.
+
+@item int64_t check_seconds64
+This is a copy of the seconds value in @var{time_value}, which must be checked to protect
 against a race condition when reading out the two time values.
 @end table
 @end deftp
@@ -5686,12 +5694,12 @@ mapped-time interface:
 @example
 do 
   @{
-    secs = mtime->seconds;
+    secs = mtime->time_value.seconds;
     __sync_synchronize();
-    usecs = mtime->microseconds;
+    nanos = mtime->time_value.nanoseconds;
     __sync_synchronize();
   @}
-while (secs != mtime->check_seconds);
+while (secs != mtime->check_seconds64);
 @end example
 
 
