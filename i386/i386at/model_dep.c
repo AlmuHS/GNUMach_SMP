@@ -278,11 +278,6 @@ void halt_all_cpus(boolean_t reboot)
 	  machine_idle (cpu_number ());
 }
 
-void exit(int rc)
-{
-	halt_all_cpus(0);
-}
-
 void db_halt_cpu(void)
 {
 	halt_all_cpus(0);

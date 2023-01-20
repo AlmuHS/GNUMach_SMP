@@ -22,6 +22,7 @@
  */
 
 #include <i386at/idt.h>
+#include <i386at/int_init.h>
 #include <i386/gdt.h>
 
 /* defined in locore.S */

@@ -32,6 +32,10 @@ extern boolean_t kdb_trap (
 	int			code,
 	struct i386_saved_state *regs);
 
+struct int_regs;
+
+extern void kdb_kentry(struct int_regs	*int_regs);
+
 extern boolean_t db_read_bytes (
 	vm_offset_t	addr,
 	int		size,
@@ -110,6 +114,15 @@ db_i386_reg_value(
 	db_expr_t		*valuep,
 	int			flag,
 	struct db_var_aux_param	*ap);
+
+void feep(void);
+
+/*
+ * Put a debugging character on the screen.
+ * LOC=0 means put it in the bottom right corner, LOC=1 means put it
+ * one column to the left, etc.
+ */
+void kd_debug_put(int loc, char c);
 
 #endif
 

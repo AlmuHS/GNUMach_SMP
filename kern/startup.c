@@ -273,13 +273,6 @@ void start_kernel_threads(void)
 	/*NOTREACHED*/
 }
 
-#if	NCPUS > 1
-void slave_main(void)
-{
-	cpu_launch_first_thread(THREAD_NULL);
-}
-#endif	/* NCPUS > 1 */
-
 /*
  *	Start up the first thread on a CPU.
  *	First thread is specified for the master CPU.

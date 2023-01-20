@@ -85,6 +85,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <device/io_req.h>
 #include <device/buf.h>
 #include <vm/vm_kern.h>
+#include <i386/db_interface.h>
 #include <i386/locore.h>
 #include <i386/loose_ends.h>
 #include <i386/vm_param.h>
@@ -346,6 +347,15 @@ short	font_byte_width	= 0;		/* num bytes in 1 scan line of font */
 int	kd_pollc = 0;
 
 #ifdef	DEBUG
+static void
+pause(void)
+{
+	int i;
+
+	for (i = 0; i < 50000; ++i)
+		;
+}
+
 /*
  * feep:
  *
@@ -355,21 +365,9 @@ int	kd_pollc = 0;
 void
 feep(void)
 {
-	int i;
-
 	kd_bellon();
-	for (i = 0; i < 50000; ++i)
-		;
+	pause();
 	kd_belloff(NULL);
-}
-
-void
-pause(void)
-{
-	int i;
-
-	for (i = 0; i < 50000; ++i)
-		;
 }
 
 /*
@@ -2255,20 +2253,6 @@ kd_getdata(void)
 	return(inb(K_RDWR));
 }
 
-unsigned char
-kd_cmdreg_read(void)
-{
-int ch=KC_CMD_READ;
-
-	while (inb(K_STATUS) & K_IBUF_FUL)
-		;
-	outb(K_CMD, ch);
-
-	while ((inb(K_STATUS) & K_OBUF_FUL) == 0)
-		;
-	return(inb(K_RDWR));
-}
-
 void
 kd_cmdreg_write(int val)
 {
@@ -2473,6 +2457,33 @@ int new_button = 0;
  */
 #define	SLAMBPW	2			/* bytes per word for "slam" fcns */
 
+/*
+ * xga_getpos:
+ *
+ *	This function returns the current hardware cursor position on the
+ *	screen, scaled for compatibility with kd_curpos.
+ *
+ * input	: None
+ * output	: returns the value of cursor position on screen
+ *
+ */
+static csrpos_t
+xga_getpos(void)
+
+{
+	unsigned char	low;
+	unsigned char	high;
+	short pos;
+
+	outb(kd_index_reg, C_HIGH);
+	high = inb(kd_io_reg);
+	outb(kd_index_reg, C_LOW);
+	low = inb(kd_io_reg);
+	pos = (0xff&low) + ((unsigned short)high<<8);
+
+	return(ONE_SPACE * (csrpos_t)pos);
+}
+
 
 /*
  * kd_xga_init:
@@ -2482,7 +2493,6 @@ int new_button = 0;
 void
 kd_xga_init(void)
 {
-	csrpos_t	xga_getpos(void);
 	unsigned char	start, stop;
 
 #if 0
@@ -2567,34 +2577,6 @@ kd_xga_init(void)
 	}
 
 	kd_setpos(xga_getpos());
-}
-
-
-/*
- * xga_getpos:
- *
- *	This function returns the current hardware cursor position on the
- *	screen, scaled for compatibility with kd_curpos.
- *
- * input	: None
- * output	: returns the value of cursor position on screen
- *
- */
-csrpos_t
-xga_getpos(void)
-
-{
-	unsigned char	low;
-	unsigned char	high;
-	short pos;
-
-	outb(kd_index_reg, C_HIGH);
-	high = inb(kd_io_reg);
-	outb(kd_index_reg, C_LOW);
-	low = inb(kd_io_reg);
-	pos = (0xff&low) + ((unsigned short)high<<8);
-
-	return(ONE_SPACE * (csrpos_t)pos);
 }
 
 

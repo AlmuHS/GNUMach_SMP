@@ -273,12 +273,6 @@ lprstop(
 	if ((tp->t_state & TS_BUSY) && (tp->t_state & TS_TTSTOP) == 0)
 		tp->t_state |= TS_FLUSH;
 }
-int
-lprpr(int unit)
-{
-	lprpr_addr(lprinfo[unit]->address);
-	return 0;
-}
 
 void
 lprpr_addr(unsigned short addr)

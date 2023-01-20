@@ -410,6 +410,7 @@ extern void		thread_unfreeze(
 #if MACH_DEBUG
 void stack_init(vm_offset_t stack);
 void stack_finalize(vm_offset_t stack);
+void thread_stats(void);
 #endif /* MACH_DEBUG */
 
 #endif	/* _KERN_THREAD_H_ */

@@ -37,7 +37,7 @@
  */
 void probeio(void);
 
-extern void take_dev_irq (
-    struct bus_device *dev);
+void take_dev_irq(
+	const struct bus_device *dev);
 
 #endif /* _AUTOCONF_H_ */

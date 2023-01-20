@@ -91,7 +91,7 @@ u_short divisorreg[] = {
  * the relevant device is present today.
  *
  */
-int
+static int
 comprobe_general(struct bus_device *dev, int noisy)
 {
 	u_short	addr = dev->address;
@@ -298,7 +298,7 @@ comcninit(struct consdev *cp)
  *	Used to handle PCMCIA modems, which may appear
  *	at any time.
  */
-boolean_t com_reprobe(
+static boolean_t com_reprobe(
 	int	unit)
 {
 	struct bus_device	*device;
@@ -615,26 +615,6 @@ comparam(int unit)
 	outb(MODEM_CTL(addr), iDTR|iRTS|iOUT2);
 	commodem[unit] |= (TM_DTR|TM_RTS);
         splx(s);
-}
-
-void
-comparm(int unit, int baud, int intr, int mode, int modem)
-{
-	u_short addr = (u_short)(cominfo[unit]->address);
-	spl_t	s = spltty();
-
-	if (unit != 0 && unit != 1) {
-		printf("comparm(unit, baud, mode, intr, modem)\n");
-		splx(s);
-		return;
-	}
-	outb(LINE_CTL(addr), iDLAB);
-	outb(BAUD_LSB(addr), divisorreg[baud] & 0xff);
-	outb(BAUD_MSB(addr), divisorreg[baud] >> 8);
-	outb(LINE_CTL(addr), mode);
-	outb(INTR_ENAB(addr), intr);
-	outb(MODEM_CTL(addr), modem);
-	splx(s);
 }
 
 int comst_1, comst_2, comst_3, comst_4, comst_5 = 14;

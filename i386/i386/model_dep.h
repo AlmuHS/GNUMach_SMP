@@ -55,4 +55,9 @@ extern void halt_all_cpus (boolean_t reboot) __attribute__ ((noreturn));
  */
 extern void machine_relax (void);
 
+/*
+ * C boot entrypoint - called by boot_entry in boothdr.S.
+ */
+extern void c_boot_entry(vm_offset_t bi);
+
 #endif /* _I386AT_MODEL_DEP_H_ */

@@ -39,18 +39,6 @@
 
 
 /*
- * Print out disk name and block number for hard disk errors.
- */
-void harderr(const io_req_t ior, const char *cp)
-{
-	printf("%s%d%c: hard error sn%lu ",
-	       cp,
-	       minor(ior->io_unit) >> 3,
-	       'a' + (minor(ior->io_unit) & 0x7),
-	       ior->io_recnum);
-}
-
-/*
  * Convert Ethernet address to printable (loggable) representation.
  */
 char *
@@ -95,36 +83,4 @@ void sleep(vm_offset_t channel, int priority)
 void wakeup(vm_offset_t channel)
 {
 	thread_wakeup((event_t) channel);
-}
-
-io_req_t
-geteblk(int size)
-{
-	io_req_t	ior;
-
-	io_req_alloc(ior, 0);
-	ior->io_device = (mach_device_t)0;
-	ior->io_unit = 0;
-	ior->io_op = 0;
-	ior->io_mode = 0;
-	ior->io_recnum = 0;
-	ior->io_count = size;
-	ior->io_residual = 0;
-	ior->io_error = 0;
-
-	size = round_page(size);
-	ior->io_alloc_size = size;
-	if (kmem_alloc(kernel_map, (vm_offset_t *)&ior->io_data, size)
-		!= KERN_SUCCESS)
-		    panic("geteblk");
-
-	return (ior);
-}
-
-void brelse(io_req_t ior)
-{
-	(void) vm_deallocate(kernel_map,
-			(vm_offset_t) ior->io_data,
-			ior->io_alloc_size);
-	io_req_free(ior);
 }

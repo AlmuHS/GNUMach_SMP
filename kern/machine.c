@@ -153,7 +153,7 @@ static void cpu_down(int cpu)
  *		a shutdown, else it's an assign and caller must donate
  *		a reference.
  */
-void
+static void
 processor_request_action(
 	processor_t	processor,
 	processor_set_t	new_pset)

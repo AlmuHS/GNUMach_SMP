@@ -100,19 +100,6 @@ extern void record_time_stamp (time_value_t *stamp);
  */
 extern void read_time_stamp (const time_value_t *stamp, time_value_t *result);
 
-extern kern_return_t host_get_time(
-   host_t host,
-   time_value_t *current_time);
-
-extern kern_return_t host_set_time(
-   host_t host,
-   time_value_t new_time);
-
-extern kern_return_t host_adjust_time(
-   host_t host,
-   time_value_t new_adjustment,
-   time_value_t *old_adjustment);
-
 extern void mapable_time_init (void);
 
 /* For public timer elements.  */

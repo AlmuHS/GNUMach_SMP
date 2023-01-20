@@ -467,7 +467,7 @@ device_deallocate (device_t dev)
  * What follows is the interface for the native Mach devices.
  */
 
-ipc_port_t
+static ipc_port_t
 mach_convert_device_to_port (mach_device_t device)
 {
   ipc_port_t port;
@@ -1429,7 +1429,7 @@ device_set_status(
 					      status_count));
 }
 
-io_return_t
+static io_return_t
 mach_device_get_status(
 	void			*dev,
 	dev_flavor_t		flavor,
@@ -1545,7 +1545,7 @@ void iodone(io_req_t ior)
 	splx(s);
 }
 
-void  __attribute__ ((noreturn)) io_done_thread_continue(void)
+static void  __attribute__ ((noreturn)) io_done_thread_continue(void)
 {
 	for (;;) {
 	    spl_t		s;

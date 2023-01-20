@@ -54,6 +54,7 @@
 #include <mach/vm_param.h>
 #include <kern/thread.h>
 #include <kern/printf.h>
+#include <kern/mach_host.server.h>
 #include <vm/vm_map.h>
 #include <vm/vm_page.h>
 #include <device/device_types.h>

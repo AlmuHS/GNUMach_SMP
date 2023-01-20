@@ -33,6 +33,7 @@
 #include <machine/db_machdep.h>
 
 #include <ddb/db_access.h>
+#include <ddb/db_examine.h>
 #include <ddb/db_output.h>
 #include <ddb/db_sym.h>
 

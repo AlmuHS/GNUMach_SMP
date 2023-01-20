@@ -26,6 +26,7 @@
 
 #include <kern/printf.h>
 #include <mach/std_types.h>
+#include <i386at/autoconf.h>
 #include <i386/irq.h>
 #include <i386/ipl.h>
 #include <chips/busses.h>
@@ -139,19 +140,4 @@ void take_dev_irq(
 		while (1);
 	}
 
-}
-
-void take_ctlr_irq(
-	const struct bus_ctlr *ctlr)
-{
-	int pic = ctlr->sysdep1;
-	if (ivect[pic] == intnull) {
-		iunit[pic] = ctlr->unit;
-		ivect[pic] = ctlr->intr;
-	} else {
-		printf("The device below will clobber IRQ %d (%p).\n", pic, ivect[pic]);
-		printf("You have two devices at the same IRQ.  This won't work.\n");
-		printf("Reconfigure your hardware and try again.\n");
-		while (1);
-	}
 }

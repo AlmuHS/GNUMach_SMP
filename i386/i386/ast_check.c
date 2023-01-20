@@ -32,6 +32,7 @@
  * Initial i386 implementation does nothing.
  */
 
+#include <kern/ast.h>
 #include <kern/processor.h>
 
 /*

@@ -375,24 +375,6 @@ static void timer_grab(
 }
 
 /*
- *
- * 	Db_timer_grab(): used by db_thread_read_times. An nonblocking
- *      version of db_thread_get_times. Keep coherent with timer_grab
- *      above.
- *
- */
-void db_timer_grab(
-	timer_t		timer,
-	timer_save_t	save)
-{
-  /* Don't worry about coherency */
-
-  (save)->high = (timer)->high_bits;
-  (save)->low = (timer)->low_bits;
-}
-
-
-/*
  *	timer_read reads the value of a timer into a time_value_t.  If the
  *	timer was modified during the read, retry.  The value returned
  *	is accurate to the last update; time accumulated by a running
@@ -453,6 +435,25 @@ void	thread_read_times(
 	system_time_p->microseconds = temp.low % 1000000;
 }
 
+#if	MACH_DEBUG
+
+/*
+ *
+ * 	Db_timer_grab(): used by db_thread_read_times. An nonblocking
+ *      version of db_thread_get_times. Keep coherent with timer_grab
+ *      above.
+ *
+ */
+static void db_timer_grab(
+	timer_t		timer,
+	timer_save_t	save)
+{
+  /* Don't worry about coherency */
+
+  (save)->high = (timer)->high_bits;
+  (save)->low = (timer)->low_bits;
+}
+
 /*
  *      Db_thread_read_times: A version of thread_read_times that
  *      can be called by the debugger. This version does not call
@@ -486,6 +487,7 @@ void	db_thread_read_times(
 	system_time_p->seconds = temp.high + temp.low/1000000;
 	system_time_p->microseconds = temp.low % 1000000;
 }
+#endif  /* MACH_DEBUG */
 
 /*
  *	timer_delta takes the difference of a saved timer value

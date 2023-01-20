@@ -110,7 +110,7 @@ int		mouse_char_index;		/* mouse response */
 /*
  * init_mouse_hw - initialize the serial port.
  */
-void
+static void
 init_mouse_hw(dev_t unit, int mode)
 {
 	unsigned short base_addr  = cominfo[unit]->address;
@@ -594,7 +594,7 @@ mouse_packet_microsoft_mouse(u_char mousebuf[MOUSEBUFSIZE])
 /*
  *	Write character to mouse.  Called at spltty.
  */
-void kd_mouse_write(
+static void kd_mouse_write(
 	unsigned char	ch)
 {
 	while (inb(K_STATUS) & K_IBUF_FUL)
@@ -610,7 +610,7 @@ void kd_mouse_write(
  *	Read next character from mouse, waiting for interrupt
  *	to deliver it.  Called at spltty.
  */
-int kd_mouse_read(void)
+static int kd_mouse_read(void)
 {
 	int	ch;
 
@@ -633,7 +633,7 @@ int kd_mouse_read(void)
 /*
  *	Prepare buffer for receiving next packet from mouse.
  */
-void kd_mouse_read_reset(void)
+static void kd_mouse_read_reset(void)
 {
 	mousebufindex = 0;
 	mouse_char_index = 0;

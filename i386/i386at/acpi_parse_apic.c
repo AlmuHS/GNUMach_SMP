@@ -173,7 +173,7 @@ acpi_search_rsdp(void *addr, uint32_t length)
  *
  * Returns the reference to RDSP structure if success, NULL if failure.
  */
-struct acpi_rsdp*
+static struct acpi_rsdp*
 acpi_get_rsdp(void)
 {
     uint16_t *start = 0;
