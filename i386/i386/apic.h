@@ -207,6 +207,7 @@ extern volatile ApicLocalUnit* lapic;
 
 #ifndef __ASSEMBLER__
 
+#ifdef APIC
 static inline void mask_irq (unsigned int irq_nr) {
     ioapic_toggle(irq_nr, IOAPIC_MASK_DISABLED);
 }
@@ -214,6 +215,7 @@ static inline void mask_irq (unsigned int irq_nr) {
 static inline void unmask_irq (unsigned int irq_nr) {
     ioapic_toggle(irq_nr, IOAPIC_MASK_ENABLED);
 }
+#endif
 
 #endif  /* !__ASSEMBLER__ */
 
