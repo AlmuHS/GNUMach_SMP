@@ -21,6 +21,10 @@ AC_INIT([AC_PACKAGE_NAME], [AC_PACKAGE_VERSION], [AC_PACKAGE_BUGREPORT],
   [AC_PACKAGE_TARNAME])
 AC_CONFIG_SRCDIR([kern/ipc_kobject.c])
 
+if test -z "${CFLAGS+set}"; then
+  # Use these CFLAGS by default if nothing is set.
+  CFLAGS="-g -O2"
+fi
 # We don't need glibc to compile gnumach.
 CFLAGS="$CFLAGS -ffreestanding -nostdlib"
 
