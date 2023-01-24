@@ -494,7 +494,7 @@ device_pager_data_return(
 	const ipc_port_t	pager_request,
 	vm_offset_t		offset,
 	pointer_t		addr,
-	vm_size_t		data_cnt,
+	mach_msg_type_number_t	data_cnt,
 	boolean_t		dirty,
 	boolean_t		kernel_copy)
 {
