@@ -39,6 +39,7 @@
 #include <i386/seg.h>
 #include <i386/thread.h>
 #include <i386/user_ldt.h>
+#include <i386/i386/mach_i386.server.h>
 #include <stddef.h>
 #include "ldt.h"
 #include "vm_param.h"

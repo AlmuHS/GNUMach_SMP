@@ -100,7 +100,7 @@ struct task_tss
 
 
 /* Load the current task register.  */
-MACH_INLINE void
+static inline void
 ltr(unsigned short segment)
 {
 	__asm volatile("ltr %0" : : "r" (segment) : "memory");

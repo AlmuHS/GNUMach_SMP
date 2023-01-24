@@ -502,34 +502,9 @@ void ptep_check(ptep_t ptep)
 #endif	/* DEBUG_PTE_PAGE */
 
 /*
- *	Map memory at initialization.  The physical addresses being
- *	mapped are not managed and are never unmapped.
- *
- *	For now, VM is already on, we only need to map the
- *	specified memory.
- */
-vm_offset_t pmap_map(
-	vm_offset_t	virt,
-	phys_addr_t	start,
-	phys_addr_t	end,
-	int		prot)
-{
-	int		ps;
-
-	ps = PAGE_SIZE;
-	while (start < end) {
-		pmap_enter(kernel_pmap, virt, start, prot, FALSE);
-		virt += ps;
-		start += ps;
-	}
-	return(virt);
-}
-
-/*
  *	Back-door routine for mapping kernel VM at initialization.
  * 	Useful for mapping memory outside the range of direct mapped
  *	physical memory (i.e., devices).
- *	Otherwise like pmap_map.
  */
 vm_offset_t pmap_map_bd(
 	vm_offset_t	virt,
@@ -1108,7 +1083,7 @@ valid_page(phys_addr_t addr)
  *	Must be called with the pmap system and the pmap unlocked,
  *	since these must be unlocked to use vm_page_grab.
  */
-vm_offset_t
+static vm_offset_t
 pmap_page_table_page_alloc(void)
 {
 	vm_page_t	m;
@@ -1198,7 +1173,7 @@ void pmap_map_mfn(void *_addr, unsigned long mfn) {
  *	The page-table page must have all mappings removed,
  *	and be removed from its page directory.
  */
-void
+static void
 pmap_page_table_page_dealloc(vm_offset_t pa)
 {
 	vm_page_t	m;
@@ -2600,7 +2575,7 @@ pmap_pageable(
 /*
  *	Clear specified attribute bits.
  */
-void
+static void
 phys_attribute_clear(
 	phys_addr_t	phys,
 	int		bits)
@@ -2684,7 +2659,7 @@ phys_attribute_clear(
 /*
  *	Check specified attribute bits.
  */
-boolean_t
+static boolean_t
 phys_attribute_test(
 	phys_addr_t	phys,
 	int		bits)

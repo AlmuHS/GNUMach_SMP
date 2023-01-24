@@ -88,7 +88,7 @@ extern boolean_t kttd_enabled;
 boolean_t debug_all_traps_with_kttd = TRUE;
 #endif	/* MACH_TTD */
 
-void
+static void
 user_page_fault_continue(kern_return_t kr)
 {
 	thread_t thread = current_thread();

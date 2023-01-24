@@ -194,7 +194,6 @@ extern void pmap_pageable(
  *      Back-door routine for mapping kernel VM at initialization.
  *      Useful for mapping memory outside the range of direct mapped
  *      physical memory (i.e., devices).
- *      Otherwise like pmap_map.
  */
 extern vm_offset_t pmap_map_bd(
         vm_offset_t virt,

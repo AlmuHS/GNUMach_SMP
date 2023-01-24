@@ -40,8 +40,11 @@ subsystem
 MACH_I386_IMPORTS
 #endif
 
-type	descriptor_t	= 	struct[2] of int;
+type	descriptor_t	= 	struct[2] of uint32_t;
 type	descriptor_list_t =	array[*] of descriptor_t;
+
+type	real_descriptor_t	=	descriptor_t;
+type	real_descriptor_list_t 	=	array[*] of real_descriptor_t;
 
 import <mach/machine/mach_i386_types.h>;
 
@@ -66,13 +69,13 @@ skip;	/* i386_io_port_list */
 routine	i386_set_ldt(
 		target_thread	: thread_t;
 		first_selector	: int;
-		desc_list	: descriptor_list_t, serverCopy);
+		desc_list	: real_descriptor_list_t, serverCopy);
 
 routine	i386_get_ldt(
 		target_thread	: thread_t;
 		first_selector	: int;
 		selector_count	: int;
-	out	desc_list	: descriptor_list_t);
+	out	desc_list	: real_descriptor_list_t);
 
 /* Request a new port IO_PERM that represents the capability to access
    the I/O ports [FROM; TO] directly.  MASTER_PORT is the master device port.
@@ -104,10 +107,10 @@ routine	i386_io_perm_modify(
 routine	i386_set_gdt(
 		target_thread	: thread_t;
 	inout	selector	: int;
-		desc		: descriptor_t);
+		desc		: real_descriptor_t);
 
 /* Fetch a segment descriptor set with a prior i386_set_gdt call.  */
 routine	i386_get_gdt(
 		target_thread	: thread_t;
 		selector	: int;
-	out	desc		: descriptor_t);
+	out	desc		: real_descriptor_t);

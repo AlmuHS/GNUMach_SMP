@@ -32,6 +32,7 @@
 #define	_I386_SEG_H_
 
 #include <mach/inline.h>
+#include <mach/machine/mach_i386_types.h>
 
 /*
  * i386 segmentation.
@@ -45,35 +46,6 @@
 #endif	/* MACH_RING1 */
 
 #ifndef __ASSEMBLER__
-
-/*
- * Real segment descriptor.
- */
-struct real_descriptor {
-	unsigned int	limit_low:16,	/* limit 0..15 */
-			base_low:16,	/* base  0..15 */
-			base_med:8,	/* base  16..23 */
-			access:8,	/* access byte */
-			limit_high:4,	/* limit 16..19 */
-			granularity:4,	/* granularity */
-			base_high:8;	/* base 24..31 */
-};
-
-#ifdef __x86_64__
-struct real_descriptor64 {
-	unsigned int	limit_low:16,	/* limit 0..15 */
-			base_low:16,	/* base  0..15 */
-			base_med:8,	/* base  16..23 */
-			access:8,	/* access byte */
-			limit_high:4,	/* limit 16..19 */
-			granularity:4,	/* granularity */
-			base_high:8,	/* base 24..31 */
-			base_ext:32,	/* base 32..63 */
-			reserved1:8,
-			zero:5,
-			reserved2:19;
-};
-#endif
 
 struct real_gate {
 	unsigned int	offset_low:16,	/* offset 0..15 */
@@ -156,15 +128,15 @@ struct pseudo_descriptor
 
 
 /* Load the processor's IDT, GDT, or LDT pointers.  */
-MACH_INLINE void lgdt(struct pseudo_descriptor *pdesc)
+static inline void lgdt(struct pseudo_descriptor *pdesc)
 {
 	__asm volatile("lgdt %0" : : "m" (*pdesc));
 }
-MACH_INLINE void lidt(struct pseudo_descriptor *pdesc)
+static inline void lidt(struct pseudo_descriptor *pdesc)
 {
 	__asm volatile("lidt %0" : : "m" (*pdesc));
 }
-MACH_INLINE void lldt(unsigned short ldt_selector)
+static inline void lldt(unsigned short ldt_selector)
 {
 	__asm volatile("lldt %w0" : : "r" (ldt_selector) : "memory");
 }
@@ -177,7 +149,7 @@ MACH_INLINE void lldt(unsigned short ldt_selector)
 
 
 /* Fill a segment descriptor.  */
-MACH_INLINE void
+static inline void
 fill_descriptor(struct real_descriptor *_desc, unsigned base, unsigned limit,
 		unsigned char access, unsigned char sizebits)
 {
@@ -206,7 +178,7 @@ fill_descriptor(struct real_descriptor *_desc, unsigned base, unsigned limit,
 }
 
 #ifdef __x86_64__
-MACH_INLINE void
+static inline void
 fill_descriptor64(struct real_descriptor64 *_desc, unsigned long base, unsigned limit,
 		  unsigned char access, unsigned char sizebits)
 {
@@ -240,7 +212,7 @@ fill_descriptor64(struct real_descriptor64 *_desc, unsigned long base, unsigned 
 #endif
 
 /* Fill a gate with particular values.  */
-MACH_INLINE void
+static inline void
 fill_gate(struct real_gate *gate, unsigned long offset, unsigned short selector,
 	  unsigned char access, unsigned char word_count)
 {

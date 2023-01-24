@@ -167,59 +167,10 @@ mp_desc_init(int mycpu)
 	}
 }
 
-kern_return_t intel_startCPU(int slot_num)
+static kern_return_t intel_startCPU(int slot_num)
 {
 	printf("TODO: intel_startCPU\n");
-}
-
-/*
- * Called after all CPUs have been found, but before the VM system
- * is running.  The machine array must show which CPUs exist.
- */
-void
-interrupt_stack_alloc(void)
-{
-	int		i;
-	int		cpu_count;
-	vm_offset_t	stack_start;
-
-	/*
-	 * Count the number of CPUs.
-	 */
-	cpu_count = 0;
-	for (i = 0; i < NCPUS; i++)
-	    if (machine_slot[i].is_cpu)
-		cpu_count++;
-
-	/*
-	 * Allocate an interrupt stack for each CPU except for
-	 * the master CPU (which uses the bootstrap stack)
-	 */
-	if (!init_alloc_aligned(INTSTACK_SIZE*(cpu_count-1), &stack_start))
-		panic("not enough memory for interrupt stacks");
-	stack_start = phystokv(stack_start);
-
-	/*
-	 * Set up pointers to the top of the interrupt stack.
-	 */
-	for (i = 0; i < NCPUS; i++) {
-	    if (i == master_cpu) {
-		interrupt_stack[i] = (vm_offset_t) _intstack;
-		int_stack_top[i]   = (vm_offset_t) _eintstack;
-	    }
-	    else if (machine_slot[i].is_cpu) {
-		interrupt_stack[i] = stack_start;
-		int_stack_top[i]   = stack_start + INTSTACK_SIZE;
-
-		stack_start += INTSTACK_SIZE;
-	    }
-	}
-
-	/*
-	 * Set up the barrier address.  All thread stacks MUST
-	 * be above this address.
-	 */
-	int_stack_high = stack_start;
+	return KERN_FAILURE;
 }
 
 /* XXX should be adjusted per CPU speed */

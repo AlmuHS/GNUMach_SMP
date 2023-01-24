@@ -45,6 +45,26 @@ i386_exception(
 extern void
 thread_kdb_return(void);
 
+/*
+ * Trap from kernel mode.  Only page-fault errors are recoverable,
+ * and then only in special circumstances.  All other errors are
+ * fatal.
+ */
+void kernel_trap(struct i386_saved_state *regs);
+
+/*
+ *	Trap from user mode.
+ *	Return TRUE if from emulated system call.
+ */
+int user_trap(struct i386_saved_state *regs);
+
+/*
+ * Handle AST traps for i386.
+ * Check for delayed floating-point exception from
+ * AT-bus machines.
+ */
+void i386_astintr(void);
+
 #endif /* !__ASSEMBLER__ */
 
 #endif	/* _I386_TRAP_H_ */

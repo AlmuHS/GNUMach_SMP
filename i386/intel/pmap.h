@@ -268,10 +268,11 @@ boolean_t	cpu_update_needed[NCPUS];
  */
 
 void		process_pmap_updates(pmap_t);
-void		pmap_update_interrupt(void);
 extern	pmap_t	kernel_pmap;
 
 #endif	/* NCPUS > 1 */
+
+void		pmap_update_interrupt(void);
 
 /*
  *	Machine dependent routines that are used only for i386/i486.

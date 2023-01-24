@@ -64,6 +64,8 @@
 #include <device/device_emul.h>
 #include <device/device_port.h>
 
+#include <i386/i386/mach_i386.server.h>
+
 #include "io_perm.h"
 #include "gdt.h"
 #include "pcb.h"
