@@ -2466,8 +2466,10 @@ ipc_kmsg_copyout_body(
 					mach_port_t *src = (mach_port_t*)data;
 					mach_port_name_t *dst = (mach_port_name_t*)addr;
 					for (int i=0; i<number; i++) {
-						if (copyout_port(src + i, dst + i))
+						if (copyout_port(src + i, dst + i)) {
+							kr = KERN_FAILURE;
 							goto vm_copyout_failure;
+						}
 					}
 				} else {
 					(void) copyoutmap(map, (char *) data,
