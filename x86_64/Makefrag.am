@@ -86,78 +86,12 @@ endif
 #
 
 libkernel_a_SOURCES += \
-	i386/i386/ast.h \
-	i386/i386/ast_check.c \
-	i386/i386/ast_types.h \
-	i386/i386/cpu.h \
-	i386/i386/cpu_number.h \
 	x86_64/cswitch.S \
 	x86_64/copy_user.c \
-	i386/i386/db_disasm.c \
-	i386/i386/db_interface.c \
-	i386/i386/db_interface.h \
-	i386/i386/db_machdep.h \
-	i386/i386/db_trace.c \
-	i386/i386/db_trace.h \
-	i386/i386/debug.h \
-	i386/i386/debug_i386.c \
 	x86_64/debug_trace.S \
-	i386/i386/eflags.h \
-	i386/i386/fpu.c \
-	i386/i386/fpu.h \
-	i386/i386/gdt.c \
-	i386/i386/gdt.h \
-	i386/i386/idt-gen.h \
-	i386/i386/idt.c \
 	x86_64/idt_inittab.S \
-	i386/i386/io_perm.c \
-	i386/i386/io_perm.h \
-	i386/i386/ipl.h \
-	i386/i386/ktss.c \
-	i386/i386/ktss.h \
-	i386/i386/kttd_interface.c \
-	i386/i386/kttd_machdep.h \
-	i386/i386/ldt.c \
-	i386/i386/ldt.h \
-	i386/i386/lock.h \
 	x86_64/locore.S \
-	i386/i386/locore.h \
-	i386/i386/loose_ends.c \
-	i386/i386/loose_ends.h \
-	i386/i386/mach_param.h \
-	i386/i386/machine_routines.h \
-	i386/i386/machine_task.c \
-	i386/i386/machspl.h \
-	i386/i386/model_dep.h \
-	i386/i386/mp_desc.c \
-	i386/i386/mp_desc.h \
-	i386/i386/pcb.c \
-	i386/i386/pcb.h \
-	i386/i386/phys.c \
-	i386/i386/pio.h \
-	i386/i386/pmap.h \
-	i386/i386/proc_reg.h \
-	i386/i386/sched_param.h \
-	i386/i386/seg.c \
-	i386/i386/seg.h \
-	i386/i386/setjmp.h \
-	x86_64/spl.S \
-	i386/i386/spl.h \
-	i386/i386/strings.c \
-	i386/i386/task.h \
-	i386/i386/thread.h \
-	i386/i386/time_stamp.h \
-	i386/i386/trap.c \
-	i386/i386/trap.h \
-	i386/i386/tss.h \
-	i386/i386/user_ldt.c \
-	i386/i386/user_ldt.h \
-	i386/i386/vm_param.h \
-	i386/i386/xpr.h \
-	i386/intel/pmap.c \
-	i386/intel/pmap.h \
-	i386/intel/read_fault.c \
-	i386/intel/read_fault.h
+	x86_64/spl.S
 
 if PLATFORM_at
 libkernel_a_SOURCES += \

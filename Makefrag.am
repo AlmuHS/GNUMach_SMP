@@ -603,6 +603,13 @@ endif
 # Architecture specific parts.
 #
 
+if HOST_ix86
+include i386/Makefrag_x86.am
+endif
+if HOST_x86_64
+include i386/Makefrag_x86.am
+endif
+
 # ix86.
 include i386/Makefrag.am
 
