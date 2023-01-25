@@ -247,6 +247,17 @@ db_on(int cpu)
 }
 
 /*
+ * Called by interprocessor interrupt when one CPU is
+ * in kernel debugger and wants to stop other CPUs
+ */
+void
+remote_db_enter(void)
+{
+	db_slave[cpu_number()]++;
+	kdb_kintr();
+}
+
+/*
  * Acquire kernel debugger.
  * Conditional code for forwarding characters from slave to console
  * if console on master only.
