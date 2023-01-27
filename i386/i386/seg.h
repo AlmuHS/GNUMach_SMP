@@ -32,7 +32,6 @@
 #define	_I386_SEG_H_
 
 #include <mach/inline.h>
-#include <mach/machine/mach_i386_types.h>
 
 /*
  * i386 segmentation.
@@ -46,6 +45,38 @@
 #endif	/* MACH_RING1 */
 
 #ifndef __ASSEMBLER__
+
+/*
+ * Real segment descriptor.
+ */
+struct real_descriptor {
+	unsigned int	limit_low:16,	/* limit 0..15 */
+			base_low:16,	/* base  0..15 */
+			base_med:8,	/* base  16..23 */
+			access:8,	/* access byte */
+			limit_high:4,	/* limit 16..19 */
+			granularity:4,	/* granularity */
+			base_high:8;	/* base 24..31 */
+};
+typedef struct real_descriptor real_descriptor_t;
+typedef real_descriptor_t *real_descriptor_list_t;
+typedef const real_descriptor_list_t const_real_descriptor_list_t;
+
+#ifdef __x86_64__
+struct real_descriptor64 {
+	unsigned int	limit_low:16,	/* limit 0..15 */
+			base_low:16,	/* base  0..15 */
+			base_med:8,	/* base  16..23 */
+			access:8,	/* access byte */
+			limit_high:4,	/* limit 16..19 */
+			granularity:4,	/* granularity */
+			base_high:8,	/* base 24..31 */
+			base_ext:32,	/* base 32..63 */
+			reserved1:8,
+			zero:5,
+			reserved2:19;
+};
+#endif
 
 struct real_gate {
 	unsigned int	offset_low:16,	/* offset 0..15 */
