@@ -77,6 +77,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <device/cons.h>
 #include <device/io_req.h>
 #include <device/buf.h>
+#include <device/input.h>
 #include <device/tty.h>
 #include <i386at/kdsoft.h>
 
@@ -271,11 +272,6 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define KS_SHIFTED	0x10
 #define KS_CTLED	0x20
 
-
-/*
- * Scancode values, not to be confused with Ascii values.
- */
-typedef u_char Scancode;
 
 /* special codes */
 #define K_UP		0x80		/* OR'd in if key below is released */

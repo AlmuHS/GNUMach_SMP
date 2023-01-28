@@ -42,8 +42,8 @@
 #define	_IOW(g,n,t)	_IOC(IOC_IN,	(g), (n), sizeof(t))
 #define	_IOWR(g,n,t)	_IOC(IOC_INOUT,	(g), (n), sizeof(t))
 
-typedef u_char Scancode;
-typedef u_short kev_type;		/* kd event type */
+typedef uint8_t Scancode;
+typedef uint16_t kev_type;		/* kd event type */
 
 /* (used for event records) */
 struct mouse_motion {		
