@@ -360,3 +360,21 @@ routine host_get_boot_info(
 routine	host_get_time64(
 		host		: host_t;
 	out	current_time	: time_value64_t);
+
+/*
+ *	Set the time on this host.
+ *	Only available to privileged users.
+ */
+routine	host_set_time64(
+		host		: host_t;
+		new_time	: time_value64_t);
+
+/*
+ *	Arrange for the time on this host to be gradually changed
+ *	by an adjustment value, and return the old value.
+ *	Only available to privileged users.
+ */
+routine	host_adjust_time64(
+		host_priv	: host_priv_t;
+	in	new_adjustment	: time_value64_t;
+	out	old_adjustment	: time_value64_t);

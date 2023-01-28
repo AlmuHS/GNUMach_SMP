@@ -64,8 +64,10 @@
 #include <kern/pc_sample.h>
 #endif
 
+#define MICROSECONDS_IN_ONE_SECOND 1000000
+
 int		hz = HZ;		/* number of ticks per second */
-int		tick = (1000000 / HZ);	/* number of usec per tick */
+int		tick = (MICROSECONDS_IN_ONE_SECOND / HZ);	/* number of usec per tick */
 time_value64_t	time = { 0, 0 };	/* time since bootup (uncorrected) */
 unsigned long	elapsed_ticks = 0;	/* ticks elapsed since bootup */
 
@@ -470,6 +472,14 @@ host_get_time64(const host_t host, time_value64_t *current_time)
 kern_return_t
 host_set_time(const host_t host, time_value_t new_time)
 {
+	time_value64_t new_time64;
+	TIME_VALUE_TO_TIME_VALUE64(&new_time, &new_time64);
+	return host_set_time64(host, new_time64);
+}
+
+kern_return_t
+host_set_time64(const host_t host, time_value64_t new_time)
+{
 	spl_t	s;
 
 	if (host == HOST_NULL)
@@ -481,14 +491,12 @@ host_set_time(const host_t host, time_value_t new_time)
 	 */
 	thread_bind(current_thread(), master_processor);
 	if (current_processor() != master_processor)
-	    thread_block((void (*)) 0);
+	    thread_block(thread_no_continuation);
 #endif	/* NCPUS > 1 */
 
 	s = splhigh();
-	time_value64_t new_time64;
-	TIME_VALUE_TO_TIME_VALUE64(&new_time, &new_time64);
-	clock_boottime_update(&new_time64);
-	time = new_time64;
+	clock_boottime_update(&new_time);
+	time = new_time;
 	update_mapped_time(&time);
 	resettodr();
 	splx(s);
@@ -500,7 +508,7 @@ host_set_time(const host_t host, time_value_t new_time)
 	thread_bind(current_thread(), PROCESSOR_NULL);
 #endif	/* NCPUS > 1 */
 
-	return (KERN_SUCCESS);
+	return(KERN_SUCCESS);
 }
 
 /*
@@ -512,37 +520,60 @@ host_adjust_time(
 	time_value_t	new_adjustment,
 	time_value_t	*old_adjustment	/* OUT */)
 {
-	time_value_t	oadj;
-	unsigned int	ndelta;
+	time_value64_t	old_adjustment64;
+	time_value64_t new_adjustment64;
+	kern_return_t ret;
+
+	TIME_VALUE_TO_TIME_VALUE64(&new_adjustment, &new_adjustment64);
+	ret = host_adjust_time64(host, new_adjustment64, &old_adjustment64);
+	if (ret == KERN_SUCCESS) {
+		TIME_VALUE64_TO_TIME_VALUE(&old_adjustment64, old_adjustment);
+	}
+	return ret;
+}
+
+/*
+ * Adjust the time gradually.
+ */
+kern_return_t
+host_adjust_time64(
+	const host_t	host,
+	time_value64_t	new_adjustment,
+	time_value64_t	*old_adjustment	/* OUT */)
+{
+	time_value64_t	oadj;
+	uint64_t ndelta_microseconds;
 	spl_t		s;
 
 	if (host == HOST_NULL)
 		return (KERN_INVALID_HOST);
 
-	ndelta = new_adjustment.seconds * 1000000
-		+ new_adjustment.microseconds;
+	/* Note we only adjust up to microsecond precision */
+	ndelta_microseconds = new_adjustment.seconds * MICROSECONDS_IN_ONE_SECOND
+		+ new_adjustment.nanoseconds / 1000;
 
 #if	NCPUS > 1
 	thread_bind(current_thread(), master_processor);
 	if (current_processor() != master_processor)
-	    thread_block((void (*)) 0);
+	    thread_block(thread_no_continuation);
 #endif	/* NCPUS > 1 */
 
 	s = splclock();
 
-	oadj.seconds = timedelta / 1000000;
-	oadj.microseconds = timedelta % 1000000;
+	oadj.seconds = timedelta / MICROSECONDS_IN_ONE_SECOND;
+	oadj.nanoseconds = (timedelta % MICROSECONDS_IN_ONE_SECOND) * 1000;
 
 	if (timedelta == 0) {
-	    if (ndelta > bigadj)
+	    if (ndelta_microseconds > bigadj)
 		tickdelta = 10 * tickadj;
 	    else
 		tickdelta = tickadj;
 	}
-	if (ndelta % tickdelta)
-	    ndelta = ndelta / tickdelta * tickdelta;
+	/* Make ndelta_microseconds a multiple of tickdelta */
+	if (ndelta_microseconds % tickdelta)
+	    ndelta_microseconds = ndelta_microseconds / tickdelta * tickdelta;
 
-	timedelta = ndelta;
+	timedelta = ndelta_microseconds;
 
 	splx(s);
 #if	NCPUS > 1
