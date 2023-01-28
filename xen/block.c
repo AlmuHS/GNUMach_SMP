@@ -349,7 +349,7 @@ device_close(void *devp)
 
 static io_return_t
 device_open (ipc_port_t reply_port, mach_msg_type_name_t reply_port_type,
-	    dev_mode_t mode, char *name, device_t *devp /* out */)
+	    dev_mode_t mode, const char *name, device_t *devp /* out */)
 {
 	int i;
 	ipc_port_t port, notify;
@@ -666,7 +666,7 @@ device_write(void *d, ipc_port_t reply_port,
       hyp_grant_takeback(gref[j]);
 
     if (err) {
-      printf("error writing %u bytes at sector %d\n", count, bn);
+      printf("error writing %u bytes at sector %ld\n", count, bn);
       break;
     }
   }

@@ -25,7 +25,10 @@
 #include <device/cons.h>
 #include <device/io_req.h>
 
-#define hyp_console_write(str, len)	hyp_console_io (CONSOLEIO_write, (len), kvtolin(str))
+static inline void hyp_console_write(const char *str, int len)
+{
+	hyp_console_io (CONSOLEIO_write, len, kvtolin(str));
+}
 
 #define hyp_console_put(str) ({ \
 	const char *__str = (void*) (str); \

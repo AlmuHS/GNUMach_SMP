@@ -35,13 +35,7 @@ static struct xencons_interface *console;
 static int kd_pollc;
 int kb_mode;	/* XXX: actually don't care.  */
 
-#undef hyp_console_write
-void hyp_console_write(const char *str, int len)
-{
-	hyp_console_io (CONSOLEIO_write, len, kvtolin(str));
-}
-
-int hypputc(int c)
+static int hypputc(int c)
 {
 	if (!console) {
 		char d = c;
@@ -142,7 +136,7 @@ int hypcnwrite(dev_t dev, io_req_t ior)
 	return char_write(&hypcn_tty, ior);
 }
 
-void hypcnstart(struct tty *tp)
+static void hypcnstart(struct tty *tp)
 {
 	spl_t	o_pri;
 	int ch;
@@ -166,7 +160,7 @@ void hypcnstart(struct tty *tp)
 	}
 }
 
-void hypcnstop()
+static void hypcnstop(struct tty *t, int n)
 {
 }
 
@@ -235,6 +229,6 @@ int hypcninit(struct consdev *cp)
 #ifdef	MACH_PV_PAGETABLES
 	pmap_set_page_readwrite(console);
 #endif	/* MACH_PV_PAGETABLES */
-	hyp_evt_handler(boot_info.console_evtchn, hypcnintr, 0, SPL6);
+	hyp_evt_handler(boot_info.console_evtchn, (interrupt_handler_fn)hypcnintr, 0, SPL6);
 	return 0;
 }

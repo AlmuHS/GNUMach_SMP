@@ -123,17 +123,17 @@ readtodc(uint64_t *tp)
 }
 
 int
-writetodc()
+writetodc(void)
 {
 	/* Not allowed in Xen */
 	return(-1);
 }
 
 void
-clkstart()
+clkstart(void)
 {
 	evtchn_port_t port = hyp_event_channel_bind_virq(VIRQ_TIMER, 0);
-	hyp_evt_handler(port, hypclock_intr, 0, SPLHI);
+	hyp_evt_handler(port, (interrupt_handler_fn)hypclock_intr, 0, SPLHI);
 
 	/* first clock tick */
 	clock_interrupt(0, 0, 0, 0);

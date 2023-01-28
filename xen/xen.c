@@ -30,7 +30,7 @@
 #include "xen.h"
 #include "evt.h"
 
-void hyp_debug()
+static void hyp_debug(void)
 {
 	panic("debug");
 }
@@ -40,7 +40,7 @@ void hyp_init(void)
         hyp_grant_init(); 
         hyp_store_init(); 
 	evtchn_port_t port = hyp_event_channel_bind_virq(VIRQ_DEBUG, 0);
-	hyp_evt_handler(port, hyp_debug, 0, SPL7);
+	hyp_evt_handler(port, (interrupt_handler_fn)hyp_debug, 0, SPL7);
 } 
 
 void hyp_dev_init(void)
@@ -48,17 +48,6 @@ void hyp_dev_init(void)
 	/* these depend on hyp_init() and working threads */
 	hyp_block_init(); 
 	hyp_net_init(); 
-}
-
-void _hyp_halt(void)
-{
-	hyp_halt();
-}
-
-void _hyp_todo(unsigned long from)
-{
-	printf("TODO: at %lx\n",from);
-	hyp_halt();
 }
 
 extern int int_mask[];

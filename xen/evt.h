@@ -23,7 +23,7 @@
 
 void hyp_intrinit(void);
 void form_int_mask(void);
-void hyp_evt_handler(evtchn_port_t port, void (*handler)(), int unit, spl_t spl);
+void hyp_evt_handler(evtchn_port_t port, interrupt_handler_fn handler, int unit, spl_t spl);
 void hyp_c_callback(void *ret_addr, void *regs);
 
 #endif /* XEN_EVT_H */

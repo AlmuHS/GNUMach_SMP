@@ -23,20 +23,11 @@
 #include <mach/machine/eflags.h>
 #include <machine/thread.h>
 #include <machine/ipl.h>
-
 #include <machine/model_dep.h>
 
-unsigned long cr3;
+#include <xen/xen.h>
 
-struct failsafe_callback_regs {
-	unsigned int ds;
-	unsigned int es;
-	unsigned int fs;
-	unsigned int gs;
-	unsigned int ip;
-	unsigned int cs_and_mask;
-	unsigned int flags;
-};
+unsigned long cr3;
 
 void hyp_failsafe_c_callback(struct failsafe_callback_regs *regs) {
 	printf("Fail-Safe callback!\n");

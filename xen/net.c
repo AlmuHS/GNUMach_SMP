@@ -76,7 +76,7 @@ static struct net_data *vif_data;
 
 struct device_emulation_ops hyp_net_emulation_ops;
 
-int hextoi(char *cp, int *nump)
+static int hextoi(char *cp, int *nump)
 {
 	int	number;
 	char	*original;
@@ -477,7 +477,7 @@ void hyp_net_init(void) {
 			nd->rx_buf_pfn[i] = atop(addr);
 			if (!nd->rx_copy) {
 				if (hyp_do_update_va_mapping(kvtolin(nd->rx_buf[i]), 0, UVMF_INVLPG|UVMF_ALL))
-					panic("eth: couldn't clear rx kv buf %d at %lx", i, addr);
+					panic("eth: couldn't clear rx kv buf %d at %llx", i, addr);
 			}
 			/* and enqueue it to backend.  */
 			enqueue_rx_buf(nd, i);
@@ -536,7 +536,7 @@ device_close(void *devp)
 
 static io_return_t
 device_open (ipc_port_t reply_port, mach_msg_type_name_t reply_port_type,
-	    dev_mode_t mode, char *name, device_t *devp /* out */)
+	    dev_mode_t mode, const char *name, device_t *devp /* out */)
 {
 	int i, n;
 	ipc_port_t port, notify;

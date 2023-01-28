@@ -91,7 +91,7 @@ void form_int_mask(void)
 extern void hyp_callback(void);
 extern void hyp_failsafe_callback(void);
 
-void hyp_intrinit() {
+void hyp_intrinit(void) {
 	form_int_mask();
 	curr_ipl = SPLHI;
 	hyp_shared_info.evtchn_mask[0] = int_mask[SPLHI];
@@ -104,7 +104,7 @@ void hyp_intrinit() {
 #endif
 }
 
-void hyp_evt_handler(evtchn_port_t port, void (*handler)(), int unit, spl_t spl) {
+void hyp_evt_handler(evtchn_port_t port, interrupt_handler_fn handler, int unit, spl_t spl) {
 	if (port > NEVNT)
 		panic("event channel port %d > %d not supported\n", port, (int) NEVNT);
 	intpri[port] = spl;
