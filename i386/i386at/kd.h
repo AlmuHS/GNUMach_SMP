@@ -692,7 +692,7 @@ extern void kd_slmscd (void *from, void *to, int count);
 extern void kdintr(int vec);
 
 #if MACH_KDB
-extern void kdb_kintr(void);
+#include <ddb/db_input.h>
 #endif /* MACH_KDB */
 
 extern int kdopen(dev_t dev, int flag, io_req_t ior);

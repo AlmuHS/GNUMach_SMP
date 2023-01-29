@@ -23,6 +23,9 @@
 
 #include <sys/types.h>
 
+/* Needs to be implemented by each arch. */
+extern void kdb_kintr(void);
+
 extern int db_readline (char *lstart, int lsize);
 
 extern void db_check_interrupt(void);

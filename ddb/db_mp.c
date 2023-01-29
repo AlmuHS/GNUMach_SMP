@@ -38,6 +38,7 @@
 #include <machine/db_interface.h>
 
 #include <ddb/db_command.h>
+#include <ddb/db_input.h>
 #include <ddb/db_run.h>
 #include <ddb/db_mp.h>
 #include <ddb/db_output.h>

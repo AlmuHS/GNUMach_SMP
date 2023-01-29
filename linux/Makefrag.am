@@ -37,6 +37,10 @@ liblinux_a_CPPFLAGS = $(AM_CPPFLAGS) \
 # corresponding text segment definitions, we must always optimize.
 liblinux_a_CFLAGS = -O2 $(AM_CFLAGS)
 
+# Disable warnings that are applied to the core Mach code.
+liblinux_a_CFLAGS += -Wno-missing-prototypes -Wno-strict-prototypes \
+	-Wno-old-style-definition
+
 # See <http://lists.gnu.org/archive/html/bug-hurd/2006-01/msg00148.html>.
 liblinux_a_CFLAGS += \
 	-fno-strict-aliasing
