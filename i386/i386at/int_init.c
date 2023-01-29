@@ -23,29 +23,50 @@
 
 #include <i386at/idt.h>
 #include <i386at/int_init.h>
-#include <i386/gdt.h>
+#include <i386/mp_desc.h>
+#include <i386/i386asm.h>
 
 /* defined in locore.S */
 extern vm_offset_t int_entry_table[];
 
-void int_init(void)
+void
+int_fill(struct real_gate *myidt)
 {
 	int i;
 #ifndef APIC
-	for (i = 0; i < 16; i++) {
-		fill_idt_gate(PIC_INT_BASE + i,
-			      int_entry_table[i], KERNEL_CS,
-			      ACC_PL_K|ACC_INTR_GATE, 0);
-	}
+	int base = PIC_INT_BASE;
+	int nirq = 16;
 #else
-	for (i = 0; i < 24; i++) {
-		fill_idt_gate(IOAPIC_INT_BASE + i,
+	int base = IOAPIC_INT_BASE;
+	int nirq = 24;
+#endif
+
+	for (i = 0; i < nirq; i++) {
+		fill_idt_gate(myidt, base + i,
 			      int_entry_table[i], KERNEL_CS,
 			      ACC_PL_K|ACC_INTR_GATE, 0);
 	}
-	fill_idt_gate(IOAPIC_SPURIOUS_BASE,
-			      int_entry_table[24], KERNEL_CS,
+	fill_idt_gate(myidt, CALL_SINGLE_FUNCTION_BASE,
+			      int_entry_table[i], KERNEL_CS,
 			      ACC_PL_K|ACC_INTR_GATE, 0);
+	i++;
+#ifdef APIC
+	fill_idt_gate(myidt, IOAPIC_SPURIOUS_BASE,
+			      int_entry_table[i], KERNEL_CS,
+			      ACC_PL_K|ACC_INTR_GATE, 0);
+	i++;
 #endif
 }
 
+void
+int_init(void)
+{
+	int_fill(idt);
+}
+
+#if NCPUS > 1
+void ap_int_init(int cpu)
+{
+	int_fill(mp_desc_table[cpu]->idt);
+}
+#endif

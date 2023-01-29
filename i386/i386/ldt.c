@@ -37,6 +37,7 @@
 #include "gdt.h"
 #include "ldt.h"
 #include "locore.h"
+#include "mp_desc.h"
 
 #ifdef	MACH_PV_DESCRIPTORS
 /* It is actually defined in xen_boothdr.S */
@@ -45,37 +46,51 @@ extern
 struct real_descriptor ldt[LDTSZ];
 
 void
-ldt_init(void)
+ldt_fill(struct real_descriptor *myldt, struct real_descriptor *mygdt)
 {
 #ifdef	MACH_PV_DESCRIPTORS
 #ifdef	MACH_PV_PAGETABLES
-	pmap_set_page_readwrite(ldt);
+	pmap_set_page_readwrite(myldt);
 #endif	/* MACH_PV_PAGETABLES */
 #else	/* MACH_PV_DESCRIPTORS */
 	/* Initialize the master LDT descriptor in the GDT.  */
-	fill_gdt_sys_descriptor(KERNEL_LDT,
-			        kvtolin(&ldt), sizeof(ldt)-1,
+	_fill_gdt_sys_descriptor(mygdt, KERNEL_LDT,
+			        kvtolin(myldt), (LDTSZ * sizeof(struct real_descriptor))-1,
 			        ACC_PL_K|ACC_LDT, 0);
 #endif	/* MACH_PV_DESCRIPTORS */
 
 	/* Initialize the 32bit LDT descriptors.  */
-	fill_ldt_gate(USER_SCALL,
+	fill_ldt_gate(myldt, USER_SCALL,
 		      (vm_offset_t)&syscall, KERNEL_CS,
 		      ACC_PL_U|ACC_CALL_GATE, 0);
-	fill_ldt_descriptor(USER_CS,
+	fill_ldt_descriptor(myldt, USER_CS,
 			    VM_MIN_ADDRESS,
 			    VM_MAX_ADDRESS-VM_MIN_ADDRESS-4096,
 			    /* XXX LINEAR_... */
 			    ACC_PL_U|ACC_CODE_R, SZ_32);
-	fill_ldt_descriptor(USER_DS,
+	fill_ldt_descriptor(myldt, USER_DS,
 			    VM_MIN_ADDRESS,
 			    VM_MAX_ADDRESS-VM_MIN_ADDRESS-4096,
 			    ACC_PL_U|ACC_DATA_W, SZ_32);
 
 	/* Activate the LDT.  */
 #ifdef	MACH_PV_DESCRIPTORS
-	hyp_set_ldt(&ldt, LDTSZ);
+	hyp_set_ldt(myldt, LDTSZ);
 #else	/* MACH_PV_DESCRIPTORS */
 	lldt(KERNEL_LDT);
 #endif	/* MACH_PV_DESCRIPTORS */
 }
+
+void
+ldt_init(void)
+{
+	ldt_fill(ldt, gdt);
+}
+
+#if NCPUS > 1
+void
+ap_ldt_init(int cpu)
+{
+	ldt_fill(mp_desc_table[cpu]->ldt, mp_gdt[cpu]);
+}
+#endif

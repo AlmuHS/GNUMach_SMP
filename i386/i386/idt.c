@@ -25,6 +25,7 @@
 #include <i386/seg.h>
 #include <i386at/idt.h>
 #include <i386/gdt.h>
+#include <i386/mp_desc.h>
 
 struct real_gate idt[IDTSZ];
 
@@ -36,7 +37,8 @@ struct idt_init_entry
 };
 extern struct idt_init_entry idt_inittab[];
 
-void idt_init(void)
+static void
+idt_fill(struct real_gate *myidt)
 {
 #ifdef	MACH_PV_DESCRIPTORS
 	if (hyp_set_trap_table(kvtolin(idt_inittab)))
@@ -47,7 +49,7 @@ void idt_init(void)
 	/* Initialize the exception vectors from the idt_inittab.  */
 	while (iie->entrypoint)
 	{
-		fill_idt_gate(iie->vector, iie->entrypoint, KERNEL_CS, iie->type, 0);
+		fill_idt_gate(myidt, iie->vector, iie->entrypoint, KERNEL_CS, iie->type, 0);
 		iie++;
 	}
 
@@ -55,10 +57,21 @@ void idt_init(void)
 	{
 		struct pseudo_descriptor pdesc;
 
-		pdesc.limit = sizeof(idt)-1;
-		pdesc.linear_base = kvtolin(&idt);
+		pdesc.limit = (IDTSZ * sizeof(struct real_gate))-1;
+		pdesc.linear_base = kvtolin(myidt);
 		lidt(&pdesc);
 	}
 #endif	/* MACH_PV_DESCRIPTORS */
 }
 
+void idt_init(void)
+{
+	idt_fill(idt);
+}
+
+#if NCPUS > 1
+void ap_idt_init(int cpu)
+{
+	idt_fill(mp_desc_table[cpu]->idt);
+}
+#endif

@@ -47,6 +47,7 @@
 #include <i386/mp_desc.h>
 #include <i386/xen.h>
 
+expr	CALL_SINGLE_FUNCTION_BASE
 
 offset	thread			th	pcb
 offset	thread			th	task

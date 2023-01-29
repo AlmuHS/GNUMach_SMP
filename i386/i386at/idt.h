@@ -37,10 +37,14 @@
 /* IOAPIC spurious interrupt vector set to 0xff */
 #define IOAPIC_SPURIOUS_BASE 0xff
 
+/* Currently for TLB shootdowns */
+#define CALL_SINGLE_FUNCTION_BASE 0xfb
+
 #include <i386/idt-gen.h>
 
 #ifndef __ASSEMBLER__
 extern void idt_init (void);
+extern void ap_idt_init (int cpu);
 #endif /* __ASSEMBLER__ */
 
 #endif /* _I386AT_IDT_ */

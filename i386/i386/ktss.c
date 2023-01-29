@@ -35,14 +35,16 @@
 #include "seg.h"
 #include "gdt.h"
 #include "ktss.h"
+#include "mp_desc.h"
 
 /* A kernel TSS with a complete I/O bitmap.  */
 struct task_tss ktss;
 
 void
-ktss_init(void)
+ktss_fill(struct task_tss *myktss, struct real_descriptor *mygdt)
 {
 	/* XXX temporary exception stack */
+	/* FIXME: make it per-processor */
 	static int exception_stack[1024];
 
 #ifdef	MACH_RING1
@@ -52,24 +54,37 @@ ktss_init(void)
 		panic("couldn't register exception stack\n");
 #else	/* MACH_RING1 */
 	/* Initialize the master TSS descriptor.  */
-	fill_gdt_sys_descriptor(KERNEL_TSS,
-				kvtolin(&ktss), sizeof(struct task_tss) - 1,
+	_fill_gdt_sys_descriptor(mygdt, KERNEL_TSS,
+				kvtolin(myktss), sizeof(struct task_tss) - 1,
 				ACC_PL_K|ACC_TSS, 0);
 
 	/* Initialize the master TSS.  */
 #ifdef __x86_64__
-	ktss.tss.rsp0 = (unsigned long)(exception_stack+1024);
+	myktss->tss.rsp0 = (unsigned long)(exception_stack+1024);
 #else /* ! __x86_64__ */
-	ktss.tss.ss0 = KERNEL_DS;
-	ktss.tss.esp0 = (unsigned long)(exception_stack+1024);
+	myktss->tss.ss0 = KERNEL_DS;
+	myktss->tss.esp0 = (unsigned long)(exception_stack+1024);
 #endif /* __x86_64__ */
 
-	ktss.tss.io_bit_map_offset = IOPB_INVAL;
+	myktss->tss.io_bit_map_offset = IOPB_INVAL;
 	/* Set the last byte in the I/O bitmap to all 1's.  */
-	ktss.barrier = 0xff;
+	myktss->barrier = 0xff;
 
 	/* Load the TSS.  */
 	ltr(KERNEL_TSS);
 #endif	/* MACH_RING1 */
 }
 
+void
+ktss_init(void)
+{
+	ktss_fill(&ktss, gdt);
+}
+
+#if NCPUS > 1
+void
+ap_ktss_init(int cpu)
+{
+	ktss_fill(&mp_desc_table[cpu]->ktss, mp_gdt[cpu]);
+}
+#endif

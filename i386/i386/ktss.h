@@ -28,5 +28,6 @@
 extern struct task_tss ktss;
 
 extern void ktss_init(void);
+extern void ap_ktss_init(int cpu);
 
 #endif /* _I386_KTSS_ */

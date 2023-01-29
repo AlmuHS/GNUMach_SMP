@@ -115,5 +115,6 @@ extern struct real_descriptor gdt[GDTSZ];
 #endif
 
 extern void gdt_init(void);
+extern void ap_gdt_init(int cpu);
 
 #endif /* _I386_GDT_ */

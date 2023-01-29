@@ -41,7 +41,7 @@
 extern struct real_gate idt[IDTSZ];
 
 /* Fill a gate in the IDT.  */
-#define fill_idt_gate(int_num, entry, selector, access, dword_count) \
-	fill_gate(&idt[int_num], entry, selector, access, dword_count)
+#define fill_idt_gate(_idt, int_num, entry, selector, access, dword_count) \
+	fill_gate(&_idt[int_num], entry, selector, access, dword_count)
 
 #endif /* _I386_IDT_ */

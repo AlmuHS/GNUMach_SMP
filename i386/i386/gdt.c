@@ -39,6 +39,7 @@
 #include "vm_param.h"
 #include "seg.h"
 #include "gdt.h"
+#include "mp_desc.h"
 
 #ifdef	MACH_PV_DESCRIPTORS
 /* It is actually defined in xen_boothdr.S */
@@ -46,28 +47,28 @@ extern
 #endif	/* MACH_PV_DESCRIPTORS */
 struct real_descriptor gdt[GDTSZ];
 
-void
-gdt_init(void)
+static void
+gdt_fill(struct real_descriptor *mygdt)
 {
 	/* Initialize the kernel code and data segment descriptors.  */
 #ifdef __x86_64__
 	assert(LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS == 0);
-	fill_gdt_descriptor(KERNEL_CS, 0, 0, ACC_PL_K|ACC_CODE_R, SZ_64);
-	fill_gdt_descriptor(KERNEL_DS, 0, 0, ACC_PL_K|ACC_DATA_W, SZ_64);
+	_fill_gdt_descriptor(mygdt, KERNEL_CS, 0, 0, ACC_PL_K|ACC_CODE_R, SZ_64);
+	_fill_gdt_descriptor(mygdt, KERNEL_DS, 0, 0, ACC_PL_K|ACC_DATA_W, SZ_64);
 #ifndef	MACH_PV_DESCRIPTORS
-	fill_gdt_descriptor(LINEAR_DS, 0, 0, ACC_PL_K|ACC_DATA_W, SZ_64);
+	_fill_gdt_descriptor(mygdt, LINEAR_DS, 0, 0, ACC_PL_K|ACC_DATA_W, SZ_64);
 #endif	/* MACH_PV_DESCRIPTORS */
 #else
-	fill_gdt_descriptor(KERNEL_CS,
+	_fill_gdt_descriptor(mygdt, KERNEL_CS,
 			    LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS,
 			    LINEAR_MAX_KERNEL_ADDRESS - (LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS) - 1,
 			    ACC_PL_K|ACC_CODE_R, SZ_32);
-	fill_gdt_descriptor(KERNEL_DS,
+	_fill_gdt_descriptor(mygdt, KERNEL_DS,
 			    LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS,
 			    LINEAR_MAX_KERNEL_ADDRESS - (LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS) - 1,
 			    ACC_PL_K|ACC_DATA_W, SZ_32);
 #ifndef	MACH_PV_DESCRIPTORS
-	fill_gdt_descriptor(LINEAR_DS,
+	_fill_gdt_descriptor(mygdt, LINEAR_DS,
 			    0,
 			    0xffffffff,
 			    ACC_PL_K|ACC_DATA_W, SZ_32);
@@ -75,8 +76,8 @@ gdt_init(void)
 #endif
 
 #ifdef	MACH_PV_DESCRIPTORS
-	unsigned long frame = kv_to_mfn(gdt);
-	pmap_set_page_readonly(gdt);
+	unsigned long frame = kv_to_mfn(mygdt);
+	pmap_set_page_readonly(mygdt);
 	if (hyp_set_gdt(kv_to_la(&frame), GDTSZ))
 		panic("couldn't set gdt\n");
 #endif
@@ -94,12 +95,16 @@ gdt_init(void)
 	{
 		struct pseudo_descriptor pdesc;
 
-		pdesc.limit = sizeof(gdt)-1;
-		pdesc.linear_base = kvtolin(&gdt);
+		pdesc.limit = (GDTSZ * sizeof(struct real_descriptor))-1;
+		pdesc.linear_base = kvtolin(mygdt);
 		lgdt(&pdesc);
 	}
 #endif	/* MACH_PV_DESCRIPTORS */
+}
 
+static void
+reload_segs(void)
+{
 	/* Reload all the segment registers from the new GDT.
 	   We must load ds and es with 0 before loading them with KERNEL_DS
 	   because some processors will "optimize out" the loads
@@ -117,6 +122,15 @@ gdt_init(void)
 		     "movw	%w1,%%ss\n"
 		     : : "i" (KERNEL_CS), "r" (KERNEL_DS), "r" (0));
 #endif
+}
+
+void
+gdt_init(void)
+{
+	gdt_fill(gdt);
+
+	reload_segs();
+
 #ifdef	MACH_PV_PAGETABLES
 #if VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
 	/* things now get shifted */
@@ -128,3 +142,12 @@ gdt_init(void)
 #endif	/* MACH_PV_PAGETABLES */
 }
 
+#if NCPUS > 1
+void
+ap_gdt_init(int cpu)
+{
+	gdt_fill(mp_gdt[cpu]);
+
+	reload_segs();
+}
+#endif

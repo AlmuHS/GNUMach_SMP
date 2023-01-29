@@ -234,3 +234,9 @@ void apic_print_info(void)
         }
     }
 }
+
+void
+lapic_eoi(void)
+{
+    lapic->eoi.r = 0;
+}

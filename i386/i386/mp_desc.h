@@ -27,6 +27,8 @@
 #ifndef	_I386_MP_DESC_H_
 #define	_I386_MP_DESC_H_
 
+#include <mach/kern_return.h>
+
 #if MULTIPROCESSOR
 
 /*

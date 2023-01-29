@@ -234,12 +234,6 @@ ioapic_toggle(int pin, int mask)
 }
 
 void
-lapic_eoi(void)
-{
-    lapic->eoi.r = 0;
-}
-
-void
 ioapic_irq_eoi(int pin)
 {
     int apic = 0;

@@ -58,6 +58,9 @@ ENTRY(interrupt)
 	movl	%eax,12(%esp)		/* address of interrupted registers as 4th arg */
 
 	movl	S_IRQ,%eax		/* copy irq number */
+	cmpl	$CALL_SINGLE_FUNCTION_BASE,%eax		/* was this a SMP call single function request? */
+	je	_call_single
+
 	shll	$2,%eax			/* irq * 4 */
 	movl	EXT(iunit)(%eax),%edx	/* get device unit number */
 	movl	%edx,(%esp)		/* unit number as 1st arg */
@@ -116,5 +119,11 @@ _isa_eoi:
 #endif
 	addl	$24,%esp		/* pop local variables */
 _no_eoi:
+	ret
+
+_call_single:
+	call	EXT(pmap_update_interrupt) /* TODO: Allow other functions */
+	call	EXT(lapic_eoi)		/* lapic EOI */
+	addl	$24,%esp
 	ret
 END(interrupt)
