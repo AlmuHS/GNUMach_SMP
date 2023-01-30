@@ -41,7 +41,7 @@ AM_LDFLAGS =
 # Compilation flags
 #
 
-GCC_INSTALL = $(shell LANG=C gcc -print-search-dirs | sed -n -e 's/install: \(.*\)/\1/p')
+GCC_INSTALL = $(shell LANG=C $(CC) -print-search-dirs | sed -n -e 's/install: \(.*\)/\1/p')
 AM_CPPFLAGS += \
 	-imacros config.h -I $(GCC_INSTALL)/include
 
