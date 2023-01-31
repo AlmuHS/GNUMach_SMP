@@ -60,7 +60,11 @@ void smp_pmap_update(unsigned apic_id)
         pause_memory;
     } while(lapic->icr_low.delivery_status == SEND_PENDING);
 
-    printf("done\n");
+    apic_send_ipi(NO_SHORTHAND, FIXED, PHYSICAL, DE_ASSERT, EDGE, CALL_SINGLE_FUNCTION_BASE, apic_id);
+
+    do {
+        pause_memory;
+    } while(lapic->icr_low.delivery_status == SEND_PENDING);
 
     cpu_intr_restore(flags);
 }
