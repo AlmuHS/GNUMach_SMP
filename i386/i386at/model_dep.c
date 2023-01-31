@@ -135,7 +135,7 @@ extern char	version[];
 boolean_t	rebootflag = FALSE;	/* exported to kdintr */
 
 /* Interrupt stack.  */
-static char int_stack[KERNEL_STACK_SIZE] __aligned(KERNEL_STACK_SIZE);
+static char int_stack[INTSTACK_SIZE] __aligned(INTSTACK_SIZE);
 #if NCPUS <= 1
 vm_offset_t int_stack_top[1], int_stack_base[1];
 #endif
@@ -553,7 +553,7 @@ i386at_init(void)
 #endif	/* MACH_XEN */
 
 	int_stack_base[0] = (vm_offset_t)&int_stack;
-	int_stack_top[0] = int_stack_base[0] + KERNEL_STACK_SIZE - 4;
+	int_stack_top[0] = int_stack_base[0] + INTSTACK_SIZE - 4;
 }
 
 /*

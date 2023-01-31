@@ -556,7 +556,7 @@ trap_from_kernel:
 	movq	%rsp,%rbx		/* save current stack */
 
 	movq	%rsp,%rdx		/* on an interrupt stack? */
-	and	$(~(KERNEL_STACK_SIZE-1)),%rdx
+	and	$(~(INTSTACK_SIZE-1)),%rdx
 	cmpq	EXT(int_stack_base),%rdx
 	je	1f			/* OK if so */
 
@@ -683,7 +683,7 @@ ENTRY(all_intrs)
 	cld				/* clear direction flag */
 
 	movq	%rsp,%rdx		/* on an interrupt stack? */
-	and	$(~(KERNEL_STACK_SIZE-1)),%rdx
+	and	$(~(INTSTACK_SIZE-1)),%rdx
 	cmpq	%ss:EXT(int_stack_base),%rdx
 	je	int_from_intstack	/* if not: */
 
