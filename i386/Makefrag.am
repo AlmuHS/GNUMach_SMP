@@ -30,6 +30,8 @@ if HOST_ix86
 #
 
 libkernel_a_SOURCES += \
+	i386/i386at/acpi_parse_apic.h \
+	i386/i386at/acpi_parse_apic.c \
 	i386/i386at/autoconf.c \
 	i386/i386at/autoconf.h \
 	i386/i386at/biosmem.c \
@@ -94,8 +96,7 @@ libkernel_a_SOURCES += \
 	i386/i386/idt_inittab.S \
 	i386/i386/locore.S \
 	i386/i386/spl.S \
-	i386/i386/smp.h
-	i386/i386/smp.c
+	i386/i386/cpuboot.S
 
 if PLATFORM_at
 libkernel_a_SOURCES += \
