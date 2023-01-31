@@ -45,9 +45,12 @@
 #include <i386/gdt.h>
 #include <i386/ldt.h>
 #include <i386/mp_desc.h>
+#include <i386/apic.h>
 #include <i386/xen.h>
 
 expr	CALL_SINGLE_FUNCTION_BASE
+
+offset	ApicLocalUnit		lu	apic_id		APIC_ID
 
 offset	thread			th	pcb
 offset	thread			th	task

@@ -35,6 +35,13 @@
 /* More-specific code must define cpu_number() and CPU_NUMBER.  */
 #ifdef __i386__
 #define	CX(addr, reg)	addr(,reg,4)
+
+#define	CPU_NUMBER(reg)	\
+	movl	%cs:lapic, reg		;\
+	movl	%cs:APIC_ID(reg), reg	;\
+	shrl	$24, reg		;\
+
+
 #endif
 #ifdef __x86_64__
 #define	CX(addr, reg)	addr(,reg,8)

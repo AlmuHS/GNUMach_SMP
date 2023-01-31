@@ -541,13 +541,15 @@ _kret_iret:
 trap_from_kernel:
 #if	MACH_KDB || MACH_TTD
 	movl	%esp,%ebx		/* save current stack */
-
 	movl	%esp,%edx		/* on an interrupt stack? */
-	and	$(~(KERNEL_STACK_SIZE-1)),%edx
-	cmpl	EXT(int_stack_base),%edx
+
+	CPU_NUMBER(%ecx)
+	and	$(~(INTSTACK_SIZE-1)),%edx
+	cmpl	CX(EXT(int_stack_base),%ecx),%edx
 	je	1f			/* OK if so */
 
-	CPU_NUMBER(%edx)		/* get CPU number */
+	movl	%ecx,%edx
+
 	cmpl	CX(EXT(kernel_stack),%edx),%esp
 					/* already on kernel stack? */
 	ja	0f
@@ -668,9 +670,10 @@ ENTRY(all_intrs)
 	pushl	%edx
 	cld				/* clear direction flag */
 
+	CPU_NUMBER(%ecx)
 	movl	%esp,%edx		/* on an interrupt stack? */
-	and	$(~(KERNEL_STACK_SIZE-1)),%edx
-	cmpl	%ss:EXT(int_stack_base),%edx
+	and	$(~(INTSTACK_SIZE-1)),%edx
+	cmpl	%ss:CX(EXT(int_stack_base),%ecx),%edx
 	je	int_from_intstack	/* if not: */
 
 	pushl	%ds			/* save segment registers */
