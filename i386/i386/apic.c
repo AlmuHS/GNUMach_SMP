@@ -278,6 +278,11 @@ lapic_enable(void)
     cpu_intr_save(&flags);
 
     apic_id = apic_get_current_cpu();
+    if (apic_id < 0)
+      {
+        printf("apic_get_current_cpu() failed, assuming BSP\n");
+        apic_id = 0;
+      }
 
     dummy = lapic->dest_format.r;
     lapic->dest_format.r = 0xffffffff;		/* flat model */
