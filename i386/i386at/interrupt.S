@@ -122,8 +122,8 @@ _no_eoi:
 	ret
 
 _call_single:
+	call	EXT(lapic_eoi)		/* lapic EOI before the handler to allow extra update */
 	call	EXT(pmap_update_interrupt) /* TODO: Allow other functions */
-	call	EXT(lapic_eoi)		/* lapic EOI */
 	addl	$24,%esp
 	ret
 END(interrupt)
