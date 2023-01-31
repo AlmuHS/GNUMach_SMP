@@ -333,15 +333,6 @@ ioapic_configure(void)
     /* Start the IO APIC receiving interrupts */
     lapic_enable();
 
-    /* Enable IOAPIC processor focus */
-    lapic->spurious_vector.r |= LAPIC_FOCUS;
-
-    /* Enable directed EOI if applicable */
-    if (has_irq_specific_eoi || lapic->version.r & LAPIC_HAS_DIRECTED_EOI) {
-        has_irq_specific_eoi = 1;
-        lapic->spurious_vector.r |= LAPIC_ENABLE_DIRECTED_EOI;
-    }
-
     /* Set one-shot timer */
     lapic->divider_config.r = LAPIC_TIMER_DIVIDE_16;
     lapic->lvt_timer.r = IOAPIC_INT_BASE;

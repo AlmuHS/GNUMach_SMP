@@ -304,7 +304,9 @@ lapic_enable(void)
 
     /* Enable LAPIC to send or recieve IPI/SIPIs */
     dummy = lapic->spurious_vector.r;
-    lapic->spurious_vector.r = dummy | LAPIC_ENABLE;
+    lapic->spurious_vector.r = IOAPIC_SPURIOUS_BASE
+			     | LAPIC_ENABLE_DIRECTED_EOI
+			     | LAPIC_ENABLE;
 
     lapic->error_status.r = 0;
 
