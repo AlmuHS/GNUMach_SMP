@@ -158,6 +158,9 @@ typedef long_integer_t rpc_long_integer_t;
 #define convert_long_natural_to_user convert_vm_to_user
 #define convert_long_natural_from_user convert_vm_from_user
 
+typedef	rpc_vm_size_t *	rpc_vm_size_array_t;
+typedef	rpc_vm_offset_t *	rpc_vm_offset_array_t;
+
 #endif	/* __ASSEMBLER__ */
 
 /*

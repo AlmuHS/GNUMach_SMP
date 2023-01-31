@@ -108,14 +108,16 @@ skip	/* pc_sampling reserved 4*/;
    protection MAX_PROTECTION and return it in *PORT.  */
 type vm_offset_array_t = array[*:1024] of vm_offset_t;
 type vm_size_array_t = array[*:1024] of vm_size_t;
+type rpc_vm_size_array_t = array[*:1024] of rpc_vm_size_t;
+type rpc_vm_offset_array_t = array[*:1024] of rpc_vm_offset_t;
 routine memory_object_create_proxy(
 		task		: ipc_space_t;
 		max_protection	: vm_prot_t;
 		object		: memory_object_array_t =
 				  array[*:1024] of mach_port_send_t;
-		offset		: vm_offset_array_t;
-		start		: vm_offset_array_t;
-		len		: vm_size_array_t;
+		offset		: rpc_vm_offset_array_t;
+		start		: rpc_vm_offset_array_t;
+		len		: rpc_vm_size_array_t;
 		out proxy	: mach_port_t);
 
 /* Gets a proxy to the region that ADDRESS belongs to, starting at the region

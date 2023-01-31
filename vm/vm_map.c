@@ -4804,7 +4804,8 @@ vm_region_create_proxy (task_t task, vm_address_t address,
   kern_return_t ret;
   vm_map_entry_t entry, tmp_entry;
   vm_object_t object;
-  vm_offset_t offset, start;
+  rpc_vm_offset_t rpc_offset, rpc_start;
+  rpc_vm_size_t rpc_len = (rpc_vm_size_t) len;
   ipc_port_t pager;
 
   if (task == TASK_NULL)
@@ -4840,16 +4841,16 @@ vm_region_create_proxy (task_t task, vm_address_t address,
   pager = ipc_port_copy_send(object->pager);
   vm_object_unlock(object);
 
-  start = (address - entry->vme_start) + entry->offset;
-  offset = 0;
+  rpc_start = (address - entry->vme_start) + entry->offset;
+  rpc_offset = 0;
 
   vm_map_unlock_read(task->map);
 
   ret = memory_object_create_proxy(task->itk_space, max_protection,
 				    &pager, 1,
-				    &offset, 1,
-				    &start, 1,
-				    &len, 1, port);
+				    &rpc_offset, 1,
+				    &rpc_start, 1,
+				    &rpc_len, 1, port);
   if (ret)
     ipc_port_release_send(pager);
 

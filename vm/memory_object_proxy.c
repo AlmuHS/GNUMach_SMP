@@ -133,9 +133,9 @@ memory_object_proxy_notify (mach_msg_header_t *msg)
 kern_return_t
 memory_object_create_proxy (ipc_space_t space, vm_prot_t max_protection,
 			    ipc_port_t *object, natural_t object_count,
-			    vm_offset_t *offset, natural_t offset_count,
-			    vm_offset_t *start, natural_t start_count,
-			    vm_size_t *len, natural_t len_count,
+			    rpc_vm_offset_t *offset, natural_t offset_count,
+			    rpc_vm_offset_t *start, natural_t start_count,
+			    rpc_vm_size_t *len, natural_t len_count,
 			    ipc_port_t *port)
 {
   memory_object_proxy_t proxy;
