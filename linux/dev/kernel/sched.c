@@ -616,6 +616,9 @@ int linux_timer_print = 0;
 void
 linux_timer_intr (void)
 {
+  if (cpu_number() != master_cpu)
+    return;
+
   (*(unsigned long *) &jiffies)++;
   mark_bh (TIMER_BH);
   if (tq_timer)
