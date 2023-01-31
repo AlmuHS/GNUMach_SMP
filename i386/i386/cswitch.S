@@ -110,7 +110,7 @@ ENTRY(Thread_continue)
  */
 ENTRY(switch_to_shutdown_context)
 	CPU_NUMBER(%edx)
-	movl	EXT(active_stacks)(,%edx,4),%ecx	/* get old kernel stack */
+	movl	CX(EXT(active_stacks),%edx),%ecx	/* get old kernel stack */
 	movl	%ebx,KSS_EBX(%ecx)		/* save registers */
 	movl	%ebp,KSS_EBP(%ecx)
 	movl	%edi,KSS_EDI(%ecx)
@@ -124,8 +124,8 @@ ENTRY(switch_to_shutdown_context)
 	movl	4(%esp),%ebx			/* get routine to run next */
 	movl	8(%esp),%esi			/* get its argument */
 
-	movl	EXT(interrupt_stack)(,%edx,4),%ecx	/* point to its interrupt stack */
-	lea	INTSTACK_SIZE(%ecx),%esp	/* switch to it (top) */
+	movl	CX(EXT(int_stack_base),%edx),%ecx	/* point to its interrupt stack */
+	lea	-4+INTSTACK_SIZE(%ecx),%esp	/* switch to it (top) */
 
 	pushl	%eax				/* push thread */
 	call	EXT(thread_dispatch)		/* reschedule thread */

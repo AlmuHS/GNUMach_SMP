@@ -689,6 +689,7 @@ ENTRY(all_intrs)
 	CPU_NUMBER(%edx)
 
 	movl	CX(EXT(int_stack_top),%edx),%ecx
+
 	xchgl	%ecx,%esp		/* switch to interrupt stack */
 
 #if	STAT_TIME
@@ -733,7 +734,8 @@ LEXT(return_to_iret)			/* ( label for kdb_kintr and hardclock) */
 	iret				/* return to caller */
 
 int_from_intstack:
-	cmpl	EXT(int_stack_base),%esp	/* seemingly looping? */
+	CPU_NUMBER(%edx)
+	cmpl	CX(EXT(int_stack_base),%edx),%esp /* seemingly looping? */
 	jb	stack_overflowed	/* if not: */
 	call	EXT(interrupt)		/* call interrupt routine */
 _return_to_iret_i:			/* ( label for kdb_kintr) */

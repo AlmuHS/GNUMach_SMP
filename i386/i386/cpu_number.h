@@ -45,11 +45,14 @@
 #endif
 #ifdef __x86_64__
 #define	CX(addr, reg)	addr(,reg,8)
+#warning Missing CPU_NUMBER() for 64 bit
+#define CPU_NUMBER(reg)
 #endif
 
-/* XXX For now */
-#define	CPU_NUMBER(reg)	movl $0,reg
-#define cpu_number() 0
+#ifndef __ASSEMBLER__
+#include "kern/cpu_number.h"
+int cpu_number(void);
+#endif
 
 #else	/* NCPUS == 1 */
 
@@ -57,9 +60,5 @@
 #define	CX(addr,reg)	addr
 
 #endif	/* NCPUS == 1 */
-
-#ifndef __ASSEMBLER__
-#include "kern/cpu_number.h"
-#endif
 
 #endif	/* _I386_CPU_NUMBER_H_ */
