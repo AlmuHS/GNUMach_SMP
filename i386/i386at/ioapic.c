@@ -32,8 +32,7 @@
 #include <kern/printf.h>
 
 static int has_irq_specific_eoi = 1; /* FIXME: Assume all machines have this */
-static int timer_gsi;
-int timer_pin;
+int duplicate_pin;
 
 uint32_t lapic_timer_val = 0;
 uint32_t calibrated_ticks = 0;
@@ -78,6 +77,7 @@ void
 picdisable(void)
 {
     asm("cli");
+    curr_ipl = SPLHI;
 
     /*
     ** Disable PIC
@@ -147,40 +147,13 @@ ioapic_toggle_entry(int apic, int pin, int mask)
     ioapic_write(apic, APIC_IO_REDIR_LOW(pin), entry.lo);
 }
 
-static void
-cpu_rdmsr(uint32_t msr, uint32_t *lo, uint32_t *hi)
-{
-   __asm__ __volatile__("rdmsr" : "=a"(*lo), "=d"(*hi) : "c"(msr));
-}
-
-static void
-cpu_wrmsr(uint32_t msr, uint32_t lo, uint32_t hi)
-{
-   __asm__ __volatile__("wrmsr" : : "a"(lo), "d"(hi), "c"(msr));
-}
-
-static void
-global_enable_apic(void)
-{
-    uint32_t lo = 0;
-    uint32_t hi = 0;
-    uint32_t msr = 0x1b;
-
-    cpu_rdmsr(msr, &lo, &hi);
-
-    if (!(lo & (1 << 11))) {
-        lo |= (1 << 11);
-        cpu_wrmsr(msr, lo, hi);
-    }
-}
-
 static uint32_t
 pit_measure_apic_hz(void)
 {
     uint32_t start = 0xffffffff;
 
-    /* Prepare accurate delay for 1/100 seconds */
-    pit_prepare_sleep(100);
+    /* Prepare accurate delay for 1/hz seconds */
+    pit_prepare_sleep(hz);
 
     /* Set APIC timer */
     lapic->init_count.r = start;
@@ -189,7 +162,7 @@ pit_measure_apic_hz(void)
     pit_sleep();
 
     /* Stop APIC timer */
-    lapic->lvt_timer.r = LAPIC_DISABLE;
+    lapic->lvt_timer.r |= LAPIC_DISABLE;
 
     return start - lapic->cur_count.r;
 }
@@ -203,26 +176,18 @@ void lapic_update_timer(void)
 void
 lapic_enable_timer(void)
 {
-    spl_t s;
-
-    s = sploff();
-    asm("cli");
-
     /* Set up counter */
     lapic->init_count.r = calibrated_ticks;
     lapic->divider_config.r = LAPIC_TIMER_DIVIDE_16;
 
     /* Set the timer to interrupt periodically on remapped timer GSI */
-    lapic->lvt_timer.r = (IOAPIC_INT_BASE + timer_gsi) | LAPIC_TIMER_PERIODIC;
+    lapic->lvt_timer.r = IOAPIC_INT_BASE | LAPIC_TIMER_PERIODIC;
 
     /* Some buggy hardware requires this set again */
     lapic->divider_config.r = LAPIC_TIMER_DIVIDE_16;
 
-    /* Unmask the remapped timer pin and pin 0 always */
-    ioapic_toggle(0, IOAPIC_MASK_ENABLED);
-    ioapic_toggle(timer_pin, IOAPIC_MASK_ENABLED);
-
-    splon(s);
+    /* Enable interrupts for the first time on BSP */
+    asm("sti");
     printf("LAPIC timer configured\n");
 }
 
@@ -238,6 +203,9 @@ ioapic_irq_eoi(int pin)
 {
     int apic = 0;
     union ioapic_route_entry_union oldentry, entry;
+
+    if (pin == 0)
+        goto skip_specific_eoi;
 
     if (!has_irq_specific_eoi) {
         /* Workaround for old IOAPICs with no specific EOI */
@@ -258,6 +226,7 @@ ioapic_irq_eoi(int pin)
         ioapic->eoi.r = entry.both.vector;
     }
 
+skip_specific_eoi:
     lapic_eoi ();
 }
 
@@ -303,12 +272,12 @@ ioapic_configure(void)
     /* Assume first IO APIC maps to GSI base 0 */
     int gsi, apic = 0, bsp = 0, pin;
     IrqOverrideData *irq_over;
+    int timer_gsi;
 
     /* Disable IOAPIC interrupts and set spurious interrupt */
     lapic->spurious_vector.r = IOAPIC_SPURIOUS_BASE;
 
     union ioapic_route_entry_union entry = {{0, 0}};
-    union ioapic_route_entry_union timer_entry = {{0, 0}};
 
     entry.both.delvmode = IOAPIC_FIXED;
     entry.both.destmode = IOAPIC_PHYSICAL;
@@ -332,16 +301,17 @@ ioapic_configure(void)
         if (pin == 0) {
             /* Save timer info */
             timer_gsi = gsi;
-            timer_entry = entry;
         } else {
-            /* Get the actual timer pin by assuming that the pin
-             * with duplicated gsi from pin 0 maps to the timer pin */
+            /* Disable duplicated timer gsi */
             if (gsi == timer_gsi) {
-                timer_pin = pin;
-                /* Remap pin 0 interrupt vector to GSI base
+                duplicate_pin = pin;
+                /* Remap this interrupt pin to GSI base
                  * so we don't duplicate vectors */
-                timer_entry.both.vector = IOAPIC_INT_BASE;
-                ioapic_write_entry(apic, 0, timer_entry.both);
+                entry.both.vector = IOAPIC_INT_BASE;
+                ioapic_write_entry(apic, duplicate_pin, entry.both);
+                /* Mask the ioapic pin with deduplicated vector as
+		 * we will never use it, since timer is on another gsi */
+                mask_irq(duplicate_pin);
             }
         }
     }
@@ -361,16 +331,7 @@ ioapic_configure(void)
     }
 
     /* Start the IO APIC receiving interrupts */
-    lapic->apic_id.r = apic_get_cpu_apic_id(bsp);
-    lapic->dest_format.r = 0xffffffff;	/* flat model */
-    lapic->logical_dest.r = 0x01000000;	/* target bsp */
-    lapic->lvt_timer.r = LAPIC_DISABLE;
-    lapic->lvt_performance_monitor.r = LAPIC_NMI;
-    lapic->lvt_lint0.r = LAPIC_DISABLE;
-    lapic->lvt_lint1.r = LAPIC_DISABLE;
-    lapic->task_pri.r = 0;
-
-    global_enable_apic();
+    lapic_enable();
 
     /* Enable IOAPIC processor focus */
     lapic->spurious_vector.r |= LAPIC_FOCUS;
@@ -381,23 +342,19 @@ ioapic_configure(void)
         lapic->spurious_vector.r |= LAPIC_ENABLE_DIRECTED_EOI;
     }
 
-    /* Enable IOAPIC interrupts */
-    lapic->spurious_vector.r |= LAPIC_ENABLE;
-
     /* Set one-shot timer */
     lapic->divider_config.r = LAPIC_TIMER_DIVIDE_16;
-    lapic->lvt_timer.r = IOAPIC_INT_BASE + timer_gsi;
+    lapic->lvt_timer.r = IOAPIC_INT_BASE;
 
-    /* Measure number of APIC timer ticks in 10ms */
-    calibrated_ticks = pit_measure_apic_hz();
+    /* Measure number of APIC timer ticks in 1/hz seconds
+     * but calibrate the timer to expire at rate of hz */
+    calibrated_ticks = pit_measure_apic_hz() * hz;
 
     /* Set up counter later */
     lapic->lvt_timer.r = LAPIC_DISABLE;
 
-    /* Install clock interrupt handler on both remapped timer pin and pin 0
-     * since nobody knows how all x86 timers are wired up */
+    /* Install clock interrupt handler on pin 0 */
     ivect[0] = (interrupt_handler_fn)hardclock;
-    ivect[timer_pin] = (interrupt_handler_fn)hardclock;
 
     printf("IOAPIC 0 configured\n");
 }

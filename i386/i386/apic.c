@@ -19,6 +19,8 @@
    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA. */
 
 #include <i386/apic.h>
+#include <i386/cpu.h>
+#include <i386at/idt.h>
 #include <string.h>
 #include <vm/vm_kern.h>
 #include <kern/printf.h>
@@ -112,13 +114,31 @@ acpi_get_irq_override(uint8_t pin)
  * apic_get_cpu_apic_id: returns the apic_id of a cpu.
  * Receives as input the kernel ID of a CPU.
  */
-uint16_t
+int
 apic_get_cpu_apic_id(int kernel_id)
 {
     if (kernel_id >= NCPUS)
         return -1;
 
     return apic_data.cpu_lapic_list[kernel_id];
+}
+
+
+/*
+ * apic_get_cpu_kernel_id: returns the kernel_id of a cpu.
+ * Receives as input the APIC ID of a CPU.
+ */
+int
+apic_get_cpu_kernel_id(uint16_t apic_id)
+{
+    int i;
+
+    for (i = 0; i < apic_data.ncpus; i++) {
+        if (apic_data.cpu_lapic_list[i] == apic_id)
+            return i;
+    }
+
+    return -1;
 }
 
 /* apic_get_lapic: returns a reference to the common memory address for Local APIC. */
@@ -158,17 +178,13 @@ apic_get_num_ioapics(void)
 /*
  * apic_get_current_cpu: returns the apic_id of current cpu.
  */
-uint16_t
+int
 apic_get_current_cpu(void)
 {
-    uint16_t apic_id;
-
     if(lapic == NULL)
-        apic_id = 0;
-    else
-        apic_id = lapic->apic_id.r;
+        return -1;
 
-    return apic_id;
+    return (lapic->apic_id.r >> 24) & 0xff;
 }
 
 
@@ -233,6 +249,61 @@ void apic_print_info(void)
             printf(" IOAPIC %d - APIC ID %x - addr=0x%p\n", i, ioapic_id, ioapic->ioapic);
         }
     }
+}
+
+void apic_send_ipi(unsigned dest_shorthand, unsigned deliv_mode, unsigned dest_mode, unsigned level, unsigned trig_mode, unsigned vector, unsigned dest_id)
+{
+    IcrLReg icrl_values;
+    IcrHReg icrh_values;
+
+    icrl_values.destination_shorthand = dest_shorthand;
+    icrl_values.delivery_mode = deliv_mode;
+    icrl_values.destination_mode = dest_mode;
+    icrl_values.level = level;
+    icrl_values.trigger_mode = trig_mode;
+    icrl_values.vector = vector;
+    icrh_values.destination_field = dest_id;
+
+    lapic->icr_high = icrh_values;
+    lapic->icr_low = icrl_values;
+}
+
+void
+lapic_enable(void)
+{
+    unsigned long flags;
+    int apic_id;
+    volatile uint32_t dummy;
+
+    cpu_intr_save(&flags);
+
+    apic_id = apic_get_current_cpu();
+
+    dummy = lapic->dest_format.r;
+    lapic->dest_format.r = 0xffffffff;		/* flat model */
+    dummy = lapic->logical_dest.r;
+    lapic->logical_dest.r = lapic->apic_id.r;	/* target self */
+    dummy = lapic->lvt_lint0.r;
+    lapic->lvt_lint0.r = dummy | LAPIC_DISABLE;
+    dummy = lapic->lvt_lint1.r;
+    lapic->lvt_lint1.r = dummy | LAPIC_DISABLE;
+    dummy = lapic->lvt_performance_monitor.r;
+    lapic->lvt_performance_monitor.r = dummy | LAPIC_DISABLE;
+    if (apic_id != 0)
+      {
+        dummy = lapic->lvt_timer.r;
+        lapic->lvt_timer.r = dummy | LAPIC_DISABLE;
+      }
+    dummy = lapic->task_pri.r;
+    lapic->task_pri.r = 0;
+
+    /* Enable LAPIC to send or recieve IPI/SIPIs */
+    dummy = lapic->spurious_vector.r;
+    lapic->spurious_vector.r = dummy | LAPIC_ENABLE;
+
+    lapic->error_status.r = 0;
+
+    cpu_intr_restore(flags);
 }
 
 void

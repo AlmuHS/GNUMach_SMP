@@ -18,4 +18,11 @@
    along with this program; if not, write to the Free Software
    Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111, USA. */
 
+#ifndef _SMP_H_
+#define _SMP_H_
+
 int smp_init(void);
+void smp_pmap_update(unsigned apic_id);
+void smp_startup_cpu(unsigned apic_id, unsigned vector);
+
+#endif

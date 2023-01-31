@@ -61,10 +61,99 @@ union ioapic_route_entry_union {
     struct ioapic_route_entry both;
 };
 
+
+/* Grateful to trasterlabs for this snippet */
+
+typedef union u_icr_low
+{
+    uint32_t value[4];
+    struct
+    {
+        uint32_t r;    // FEE0 0300H - 4 bytes
+        unsigned :32;  // FEE0 0304H
+        unsigned :32;  // FEE0 0308H
+        unsigned :32;  // FEE0 030CH
+    };
+    struct
+    {
+        unsigned vector: 8; /* Vector of interrupt. Lowest 8 bits of routine address */
+        unsigned delivery_mode : 3;
+        unsigned destination_mode: 1;
+        unsigned delivery_status: 1;
+        unsigned :1;
+        unsigned level: 1;
+        unsigned trigger_mode: 1;
+        unsigned :2;
+        unsigned destination_shorthand: 2;
+        unsigned :12;
+    };
+} IcrLReg;
+
+typedef union u_icr_high
+{
+    uint32_t value[4];
+    struct
+    {
+        uint32_t r; // FEE0 0310H - 4 bytes
+        unsigned :32;  // FEE0 0314H
+        unsigned :32;  // FEE0 0318H
+        unsigned :32;  // FEE0 031CH
+    };
+    struct
+    {
+        unsigned :24; // FEE0 0310H - 4 bytes
+        unsigned destination_field :8; /* APIC ID (in physical mode) or MDA (in logical) of destination processor */
+    };
+} IcrHReg;
+
+
+typedef enum e_icr_dest_shorthand
+{
+        NO_SHORTHAND = 0,
+        SELF = 1,
+        ALL_INCLUDING_SELF = 2,
+        ALL_EXCLUDING_SELF = 3
+} icr_dest_shorthand;
+
+typedef enum e_icr_deliv_mode
+{
+        FIXED = 0,
+        LOWEST_PRIORITY = 1,
+        SMI = 2,
+        NMI = 4,
+        INIT = 5,
+        STARTUP = 6,
+} icr_deliv_mode;
+
+typedef enum e_icr_dest_mode
+{
+        PHYSICAL = 0,
+        LOGICAL = 1
+} icr_dest_mode;
+
+typedef enum e_icr_deliv_status
+{
+        IDLE = 0,
+        SEND_PENDING = 1
+} icr_deliv_status;
+
+typedef enum e_icr_level
+{
+        DE_ASSERT = 0,
+        ASSERT = 1
+} icr_level;
+
+typedef enum e_irc_trigger_mode
+{
+        EDGE = 0,
+        LEVEL = 1
+} irc_trigger_mode;
+
+
 typedef struct ApicLocalUnit {
         ApicReg reserved0;               /* 0x000 */
         ApicReg reserved1;               /* 0x010 */
-        ApicReg apic_id;                 /* 0x020 */
+        ApicReg apic_id;                 /* 0x020. Hardware ID of current processor */
         ApicReg version;                 /* 0x030 */
         ApicReg reserved4;               /* 0x040 */
         ApicReg reserved5;               /* 0x050 */
@@ -84,8 +173,8 @@ typedef struct ApicLocalUnit {
         ApicReg error_status;            /* 0x280 */
         ApicReg reserved28[6];           /* 0x290 */
         ApicReg lvt_cmci;                /* 0x2f0 */
-        ApicReg icr_low;                 /* 0x300 */
-        ApicReg icr_high;                /* 0x310 */
+        IcrLReg icr_low;                 /* 0x300. Store the information to send an IPI (Inter-processor Interrupt) */
+        IcrHReg icr_high;                /* 0x310. Store the IPI destination  */
         ApicReg lvt_timer;               /* 0x320 */
         ApicReg lvt_thermal;             /* 0x330 */
         ApicReg lvt_performance_monitor; /* 0x340 */
@@ -138,24 +227,27 @@ void apic_add_cpu(uint16_t apic_id);
 void apic_lapic_init(ApicLocalUnit* lapic_ptr);
 void apic_add_ioapic(struct IoApicData);
 void apic_add_irq_override(struct IrqOverrideData irq_over);
+void apic_send_ipi(unsigned dest_shorthand, unsigned deliv_mode, unsigned dest_mode, unsigned level, unsigned trig_mode, unsigned vector, unsigned dest_id);
 IrqOverrideData *acpi_get_irq_override(uint8_t gsi);
-uint16_t apic_get_cpu_apic_id(int kernel_id);
+int apic_get_cpu_apic_id(int kernel_id);
+int apic_get_cpu_kernel_id(uint16_t apic_id);
 volatile ApicLocalUnit* apic_get_lapic(void);
 struct IoApicData *apic_get_ioapic(int kernel_id);
 uint8_t apic_get_numcpus(void);
 uint8_t apic_get_num_ioapics(void);
-uint16_t apic_get_current_cpu(void);
+int apic_get_current_cpu(void);
 void apic_print_info(void);
 int apic_refit_cpulist(void);
 void picdisable(void);
 void lapic_eoi(void);
 void ioapic_irq_eoi(int pin);
+void lapic_enable(void);
 void lapic_enable_timer(void);
 void ioapic_mask_irqs(void);
 void ioapic_toggle(int pin, int mask);
 void ioapic_configure(void);
 
-extern int timer_pin;
+extern int duplicate_pin;
 extern void intnull(int unit);
 extern volatile ApicLocalUnit* lapic;
 
@@ -172,9 +264,13 @@ extern volatile ApicLocalUnit* lapic;
 # define IMCR_USE_PIC  0
 # define IMCR_USE_APIC 1
 
+#define LAPIC_LOW_PRIO                 0x100
+#define LAPIC_NMI                      0x400
+#define LAPIC_EXTINT                   0x700
+#define LAPIC_LEVEL_TRIGGERED          0x8000
+
 #define LAPIC_ENABLE                   0x100
 #define LAPIC_FOCUS                    0x200
-#define LAPIC_NMI                      0x400
 #define LAPIC_ENABLE_DIRECTED_EOI      0x1000
 #define LAPIC_DISABLE                  0x10000
 #define LAPIC_TIMER_PERIODIC           0x20000
@@ -197,6 +293,10 @@ extern volatile ApicLocalUnit* lapic;
 #define IOAPIC_LEVEL_TRIGGERED         1
 #define IOAPIC_MASK_ENABLED            0
 #define IOAPIC_MASK_DISABLED           1
+
+#define APIC_MSR                       0x1b
+#define APIC_MSR_BSP                   0x100 /* Processor is a BSP */
+#define APIC_MSR_ENABLE                0x800
 
 /* Set or clear a bit in a 255-bit APIC mask register.
    These registers are spread through eight 32-bit registers.  */
