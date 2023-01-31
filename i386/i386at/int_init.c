@@ -24,12 +24,11 @@
 #include <i386at/idt.h>
 #include <i386at/int_init.h>
 #include <i386/mp_desc.h>
-#include <i386/i386/i386asm.h>
 
 /* defined in locore.S */
 extern vm_offset_t int_entry_table[];
 
-void
+static void
 int_fill(struct real_gate *myidt)
 {
 	int i;
