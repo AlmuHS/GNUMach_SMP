@@ -37,6 +37,7 @@
 #include <machine/machspl.h>
 #include <machine/db_interface.h>
 #include <machine/db_trace.h>
+#include <machine/cpu_number.h>
 #include <i386at/model_dep.h>
 
 #include <ddb/db_access.h>
@@ -147,7 +148,7 @@ db_i386_reg_value(
 	    if (thread == current_thread()) {
 		if (ddb_regs.cs & 0x3)
 		    dp = vp->valuep;
-		else if (ON_INT_STACK(ddb_regs.ebp))
+		else if (ON_INT_STACK(ddb_regs.ebp, cpu_number()))
 		    db_error("cannot get/set user registers in nested interrupt\n");
 	    }
 	} else {

@@ -27,8 +27,8 @@
  */
 extern vm_offset_t int_stack_top[NCPUS], int_stack_base[NCPUS];
 
-/* Check whether P points to the interrupt stack.  */
-#define ON_INT_STACK(P)	(((P) & ~(INTSTACK_SIZE-1)) == int_stack_base[0])
+/* Check whether P points to the per-cpu interrupt stack.  */
+#define ON_INT_STACK(P, CPU)	(((P) & ~(INTSTACK_SIZE-1)) == int_stack_base[CPU])
 
 extern vm_offset_t timemmap(dev_t dev, vm_offset_t off, vm_prot_t prot);
 
