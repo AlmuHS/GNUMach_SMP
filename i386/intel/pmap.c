@@ -2928,6 +2928,7 @@ void pmap_update_interrupt(void)
 	int		s;
 
 	my_cpu = cpu_number();
+	printf("PMAP(%d)\n", my_cpu);
 
 	/*
 	 *	Exit now if we're idle.  We'll pick up the update request
