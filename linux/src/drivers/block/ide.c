@@ -2964,7 +2964,7 @@ static void probe_cmos_for_drives (ide_hwif_t *hwif)
 			unsigned char  head = *(BIOS+2);
 			unsigned char  sect = *(BIOS+14);
 			unsigned char  ctl  = *(BIOS+8);
-			if (cyl > 0 && head > 0 && sect > 0 && sect < 64) {
+			if (cyl > 0 && head > 0 && sect > 0 && sect < 64 && head < 255) {
 				drive->cyl   = drive->bios_cyl  = cyl;
 				drive->head  = drive->bios_head = head;
 				drive->sect  = drive->bios_sect = sect;
