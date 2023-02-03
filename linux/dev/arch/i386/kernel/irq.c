@@ -721,13 +721,13 @@ init_IRQ (void)
   outb_p (PIT_C0 | PIT_SQUAREMODE | PIT_READMODE, PITCTL_PORT);
   outb_p (latch & 0xff, PITCTR0_PORT);
   outb (latch >> 8, PITCTR0_PORT);
-#endif
 
   /*
    * Install our clock interrupt handler.
    */
   old_clock_handler = ivect[0];
   ivect[0] = linux_timer_intr;
+#endif
 
   reserve_mach_irqs ();
 
@@ -764,9 +764,11 @@ restore_IRQ (void)
    */
   (void) splhigh ();
   
+#ifndef APIC
   /*
    * Restore clock interrupt handler.
    */
   ivect[0] = old_clock_handler;
+#endif
 }
   
