@@ -475,6 +475,8 @@ pt_entry_t *pmap_pte(const pmap_t pmap, vm_offset_t addr);
 #define	pmap_attribute(pmap,addr,size,attr,value) \
 					(KERN_INVALID_ADDRESS)
 
+extern pt_entry_t *kernel_page_dir;
+
 /*
  *  Bootstrap the system enough to run with virtual memory.
  *  Allocate the kernel page directory and page tables,
@@ -482,6 +484,10 @@ pt_entry_t *pmap_pte(const pmap_t pmap, vm_offset_t addr);
  *  Called with mapping off.
  */
 extern void pmap_bootstrap(void);
+
+extern void pmap_set_page_dir(void);
+extern void pmap_make_temporary_mapping(void);
+extern void pmap_remove_temporary_mapping(void);
 
 extern void pmap_unmap_page_zero (void);
 

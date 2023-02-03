@@ -3009,3 +3009,96 @@ pmap_unmap_page_zero (void)
 #endif	/* MACH_PV_PAGETABLES */
 }
 #endif /* __i386__ */
+
+void
+pmap_make_temporary_mapping(void)
+{
+	int i;
+
+	/*
+	 * We'll have to temporarily install a direct mapping
+	 * between physical memory and low linear memory,
+	 * until we start using our new kernel segment descriptors.
+	 */
+#if INIT_VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
+	vm_offset_t delta = INIT_VM_MIN_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS;
+	if ((vm_offset_t)(-delta) < delta)
+		delta = (vm_offset_t)(-delta);
+	int nb_direct = delta >> PDESHIFT;
+	for (i = 0; i < nb_direct; i++)
+		kernel_page_dir[lin2pdenum_cont(INIT_VM_MIN_KERNEL_ADDRESS) + i] =
+			kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS) + i];
+#endif
+	/* We need BIOS memory mapped at 0xc0000 & co for BIOS accesses */
+#if VM_MIN_KERNEL_ADDRESS != 0
+	kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS)] =
+		kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS)];
+#endif
+
+#ifdef	MACH_PV_PAGETABLES
+	for (i = 0; i < PDPNUM; i++)
+		pmap_set_page_readonly_init((void*) kernel_page_dir + i * INTEL_PGBYTES);
+#if PAE
+	pmap_set_page_readonly_init(kernel_pmap->pdpbase);
+#endif	/* PAE */
+#endif	/* MACH_PV_PAGETABLES */
+
+	pmap_set_page_dir();
+}
+
+void
+pmap_set_page_dir(void)
+{
+#if PAE
+#ifdef __x86_64__
+	set_cr3((unsigned long)_kvtophys(kernel_pmap->l4base));
+#else
+	set_cr3((unsigned long)_kvtophys(kernel_pmap->pdpbase));
+#endif
+#ifndef	MACH_HYP
+	if (!CPU_HAS_FEATURE(CPU_FEATURE_PAE))
+		panic("CPU doesn't have support for PAE.");
+	set_cr4(get_cr4() | CR4_PAE);
+#endif	/* MACH_HYP */
+#else
+	set_cr3((unsigned long)_kvtophys(kernel_page_dir));
+#endif	/* PAE */
+}
+
+void
+pmap_remove_temporary_mapping(void)
+{
+	int i;
+
+#if INIT_VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
+	vm_offset_t delta = INIT_VM_MIN_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS;
+	if ((vm_offset_t)(-delta) < delta)
+		delta = (vm_offset_t)(-delta);
+	int nb_direct = delta >> PDESHIFT;
+	/* Get rid of the temporary direct mapping and flush it out of the TLB.  */
+	for (i = 0 ; i < nb_direct; i++) {
+#ifdef	MACH_XEN
+#ifdef	MACH_PSEUDO_PHYS
+		if (!hyp_mmu_update_pte(kv_to_ma(&kernel_page_dir[lin2pdenum_cont(VM_MIN_KERNEL_ADDRESS) + i]), 0))
+#else	/* MACH_PSEUDO_PHYS */
+		if (hyp_do_update_va_mapping(VM_MIN_KERNEL_ADDRESS + i * INTEL_PGBYTES, 0, UVMF_INVLPG | UVMF_ALL))
+#endif	/* MACH_PSEUDO_PHYS */
+			printf("couldn't unmap frame %d\n", i);
+#else	/* MACH_XEN */
+		kernel_page_dir[lin2pdenum_cont(INIT_VM_MIN_KERNEL_ADDRESS) + i] = 0;
+#endif	/* MACH_XEN */
+	}
+#endif
+	/* Keep BIOS memory mapped */
+#if VM_MIN_KERNEL_ADDRESS != 0
+	kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS)] =
+		kernel_page_dir[lin2pdenum_cont(LINEAR_MIN_KERNEL_ADDRESS)];
+#endif
+
+	/* Not used after boot, better give it back.  */
+#ifdef	MACH_XEN
+	hyp_free_page(0, (void*) VM_MIN_KERNEL_ADDRESS);
+#endif	/* MACH_XEN */
+
+	flush_tlb();
+}
