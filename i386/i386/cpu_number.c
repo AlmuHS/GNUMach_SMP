@@ -36,5 +36,7 @@ int cpu_number(void)
 		printf("apic_get_cpu_kernel_id() failed, assuming BSP\n");
 		kernel_id = 0;
 	}
+
+	return kernel_id;
 }
 #endif
