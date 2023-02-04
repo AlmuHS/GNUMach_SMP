@@ -19,12 +19,17 @@
 #include <i386/apic.h>
 #include <i386/smp.h>
 #include <i386/cpu.h>
+#include <i386/mp_desc.h>
 #include <kern/printf.h>
 
 #if NCPUS > 1
 int cpu_number(void)
 {
 	int kernel_id, apic_id;
+
+	if (bspdone == 0)
+		return 0;
+
 	apic_id = apic_get_current_cpu();
 	if (apic_id < 0) {
 		printf("apic_get_current_cpu() failed, assuming BSP\n");
