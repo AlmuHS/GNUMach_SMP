@@ -427,6 +427,7 @@ pt_entry_t *kernel_page_dir;
  * physical-to-physical transfers.
  */
 static pmap_mapwindow_t mapwindows[PMAP_NMAPWINDOWS];
+decl_simple_lock_data(static, pmapwindows_lock)
 
 static inline pt_entry_t *
 pmap_pde(const pmap_t pmap, vm_offset_t addr)
@@ -951,6 +952,7 @@ pmap_mapwindow_t *pmap_get_mapwindow(pt_entry_t entry)
 
 	assert(entry != 0);
 
+	simple_lock(&pmapwindows_lock);
 	/* Find an empty one.  */
 	for (map = &mapwindows[0]; map < &mapwindows[sizeof (mapwindows) / sizeof (*mapwindows)]; map++)
 		if (!(*map->entry))
@@ -963,6 +965,7 @@ pmap_mapwindow_t *pmap_get_mapwindow(pt_entry_t entry)
 #else /* MACH_PV_PAGETABLES */
 	WRITE_PTE(map->entry, entry);
 #endif /* MACH_PV_PAGETABLES */
+	simple_unlock(&pmapwindows_lock);
 	return map;
 }
 
@@ -971,12 +974,14 @@ pmap_mapwindow_t *pmap_get_mapwindow(pt_entry_t entry)
  */
 void pmap_put_mapwindow(pmap_mapwindow_t *map)
 {
+	simple_lock(&pmapwindows_lock);
 #ifdef MACH_PV_PAGETABLES
 	if (!hyp_mmu_update_pte(kv_to_ma(map->entry), 0))
 		panic("pmap_put_mapwindow");
 #else /* MACH_PV_PAGETABLES */
 	WRITE_PTE(map->entry, 0);
 #endif /* MACH_PV_PAGETABLES */
+	simple_unlock(&pmapwindows_lock);
 	PMAP_UPDATE_TLBS(kernel_pmap, map->vaddr, map->vaddr + PAGE_SIZE);
 }
 
