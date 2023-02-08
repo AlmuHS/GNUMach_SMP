@@ -68,6 +68,8 @@ typedef struct slock	*simple_lock_t;
 
 #define	decl_simple_lock_data(class,name) \
 class	simple_lock_data_t	name;
+#define	def_simple_lock_data(class,name) \
+class	simple_lock_data_t	name = SIMPLE_LOCK_INITIALIZER(&name);
 
 #define	simple_lock_addr(lock)	(simple_lock_assert(&(lock)),	\
 				 &(lock))
@@ -144,6 +146,7 @@ class struct simple_lock_data_empty name;
 
 
 #define decl_mutex_data(class,name)	decl_simple_lock_data(class,name)
+#define def_mutex_data(class,name)	def_simple_lock_data(class,name)
 #define	mutex_try(l)			simple_lock_try(l)
 #define	mutex_lock(l)			simple_lock(l)
 #define	mutex_unlock(l)			simple_unlock(l)

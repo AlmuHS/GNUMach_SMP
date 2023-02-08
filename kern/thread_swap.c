@@ -60,7 +60,7 @@
 
 
 queue_head_t		swapin_queue;
-decl_simple_lock_data(,	swapper_lock_data)
+def_simple_lock_data(static,	swapper_lock_data)
 
 #define swapper_lock()		simple_lock(&swapper_lock_data)
 #define swapper_unlock()	simple_unlock(&swapper_lock_data)

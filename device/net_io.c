@@ -86,7 +86,7 @@ int kttd_async_counter= 0;
  * Messages can be high priority or low priority.
  * The network thread processes high priority messages first.
  */
-decl_simple_lock_data(,net_queue_lock)
+def_simple_lock_data(static,net_queue_lock)
 boolean_t	net_thread_awake = FALSE;
 struct ipc_kmsg_queue	net_queue_high;
 int		net_queue_high_size = 0;
@@ -99,7 +99,7 @@ int		net_queue_low_max = 0;		/* for debugging */
  * List of net kmsgs that can be touched at interrupt level.
  * If it is empty, we will also steal low priority messages.
  */
-decl_simple_lock_data(,net_queue_free_lock)
+def_simple_lock_data(static,net_queue_free_lock)
 struct ipc_kmsg_queue	net_queue_free;
 int		net_queue_free_size = 0;	/* on free list */
 int		net_queue_free_max = 0;		/* for debugging */
@@ -125,7 +125,7 @@ int		net_kmsg_send_low_misses = 0;	/* for debugging */
 int		net_thread_awaken = 0;		/* for debugging */
 int		net_ast_taken = 0;		/* for debugging */
 
-decl_simple_lock_data(,net_kmsg_total_lock)
+def_simple_lock_data(static,net_kmsg_total_lock)
 int		net_kmsg_total = 0;		/* total allocated */
 int		net_kmsg_max;			/* initialized below */
 
@@ -337,7 +337,7 @@ struct net_hash_header {
         net_hash_entry_t table[NET_HASH_SIZE];
 } filter_hash_header[N_NET_HASH];
 
-decl_simple_lock_data(,net_hash_header_lock)
+def_simple_lock_data(static,net_hash_header_lock)
 
 #define HASH_ITERATE(head, elt) (elt) = (net_hash_entry_t) (head); do {
 #define HASH_ITERATE_END(head, elt) \

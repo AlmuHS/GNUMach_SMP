@@ -55,6 +55,9 @@
 #define	simple_lock_init(l) \
 	((l)->lock_data = 0)
 
+#define	SIMPLE_LOCK_INITIALIZER(l) \
+	{.lock_data = 0}
+
 #define	simple_lock(l) \
     ({ \
 	while(_simple_lock_xchg_(l, 1)) \

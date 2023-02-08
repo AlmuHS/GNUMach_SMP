@@ -167,8 +167,7 @@ typedef struct dev_pager_entry *dev_pager_entry_t;
  */
 queue_head_t	dev_pager_hashtable[DEV_HASH_COUNT];
 struct kmem_cache	dev_pager_hash_cache;
-decl_simple_lock_data(,
-		dev_pager_hash_lock)
+def_simple_lock_data(static, dev_pager_hash_lock)
 
 struct dev_device_entry {
 	queue_chain_t	links;
@@ -184,8 +183,7 @@ typedef struct dev_device_entry *dev_device_entry_t;
  */
 queue_head_t	dev_device_hashtable[DEV_HASH_COUNT];
 struct kmem_cache	dev_device_hash_cache;
-decl_simple_lock_data(,
-		dev_device_hash_lock)
+def_simple_lock_data(static, dev_device_hash_lock)
 
 #define	dev_hash(name_port) \
 		(((vm_offset_t)(name_port) & 0xffffff) % DEV_HASH_COUNT)

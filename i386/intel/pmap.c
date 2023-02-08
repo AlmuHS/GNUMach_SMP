@@ -123,7 +123,7 @@ pv_entry_t	pv_head_table;		/* array of entries, one per page */
  *	The list is refilled from the pv_list_cache if it becomes empty.
  */
 pv_entry_t	pv_free_list;		/* free list at SPLVM */
-decl_simple_lock_data(, pv_free_list_lock)
+def_simple_lock_data(static, pv_free_list_lock)
 
 #define	PV_ALLOC(pv_e) { \
 	simple_lock(&pv_free_list_lock); \
@@ -427,7 +427,7 @@ pt_entry_t *kernel_page_dir;
  * physical-to-physical transfers.
  */
 static pmap_mapwindow_t mapwindows[PMAP_NMAPWINDOWS];
-decl_simple_lock_data(static, pmapwindows_lock)
+def_simple_lock_data(static, pmapwindows_lock)
 
 static inline pt_entry_t *
 pmap_pde(const pmap_t pmap, vm_offset_t addr)

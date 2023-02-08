@@ -36,7 +36,7 @@
 
 /* Hypervisor part */
 
-decl_simple_lock_data(static, lock);
+def_simple_lock_data(static, lock);
 
 static struct xenstore_domain_interface *store;
 

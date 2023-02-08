@@ -60,8 +60,7 @@ queue_head_t	dev_number_hash_table[NDEVHASH];
  * Lock for device-number to device lookup.
  * Must be held before device-ref_count lock.
  */
-decl_simple_lock_data(,
-		dev_number_lock)
+def_simple_lock_data(static, dev_number_lock)
 
 struct kmem_cache	dev_hdr_cache;
 

@@ -68,7 +68,7 @@ struct machine_info	machine_info;
 struct machine_slot	machine_slot[NCPUS];
 
 queue_head_t	action_queue;	/* assign/shutdown queue */
-decl_simple_lock_data(,action_lock);
+def_simple_lock_data(,action_lock);
 
 /*
  *	cpu_up:

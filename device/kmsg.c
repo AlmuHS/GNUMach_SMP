@@ -44,7 +44,7 @@ static queue_head_t kmsg_read_queue;
 /* Used for exclusive access to the device */
 static boolean_t kmsg_in_use;
 /* Used for exclusive access to the routines */
-decl_simple_lock_data (static, kmsg_lock);
+def_simple_lock_data (static, kmsg_lock);
 /* If already initialized or not  */
 static boolean_t kmsg_init_done = FALSE;
 

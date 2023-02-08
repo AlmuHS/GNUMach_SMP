@@ -75,7 +75,7 @@ struct kmem_cache thread_cache;
 struct kmem_cache thread_stack_cache;
 
 queue_head_t		reaper_queue;
-decl_simple_lock_data(,	reaper_lock)
+def_simple_lock_data(static,	reaper_lock)
 
 /* private */
 struct thread	thread_template;
@@ -83,7 +83,7 @@ struct thread	thread_template;
 #if	MACH_DEBUG
 #define	STACK_MARKER	0xdeadbeefU
 boolean_t		stack_check_usage = FALSE;
-decl_simple_lock_data(,	stack_usage_lock)
+def_simple_lock_data(static,	stack_usage_lock)
 vm_size_t		stack_max_usage = 0;
 #endif	/* MACH_DEBUG */
 
@@ -119,7 +119,7 @@ vm_size_t		stack_max_usage = 0;
  *	because stack_alloc_try/thread_invoke operate at splsched.
  */
 
-decl_simple_lock_data(, stack_lock_data)/* splsched only */
+def_simple_lock_data(static, stack_lock_data)/* splsched only */
 #define stack_lock()	simple_lock(&stack_lock_data)
 #define stack_unlock()	simple_unlock(&stack_lock_data)
 

@@ -183,7 +183,7 @@ vm_object_t		kernel_object = &kernel_object_store;
  */
 queue_head_t	vm_object_cached_list;
 
-decl_simple_lock_data(,vm_object_cached_lock_data)
+def_simple_lock_data(static,vm_object_cached_lock_data)
 
 #define vm_object_cache_lock()		\
 		simple_lock(&vm_object_cached_lock_data)
@@ -199,7 +199,7 @@ decl_simple_lock_data(,vm_object_cached_lock_data)
  */
 int		vm_object_cached_pages;
 
-decl_simple_lock_data(,vm_object_cached_pages_lock_data)
+def_simple_lock_data(static,vm_object_cached_pages_lock_data)
 
 /*
  *	Virtual memory objects are initialized from

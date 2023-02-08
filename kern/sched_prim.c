@@ -128,7 +128,7 @@ timer_elt_data_t recompute_priorities_timer;
 #define NUMQUEUES	1031
 
 queue_head_t		wait_queue[NUMQUEUES];
-decl_simple_lock_data(,	wait_lock[NUMQUEUES])
+decl_simple_lock_data(static,	wait_lock[NUMQUEUES])
 
 /* NOTE: we want a small positive integer out of this */
 #define wait_hash(event) \

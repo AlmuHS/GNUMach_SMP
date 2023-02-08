@@ -112,8 +112,7 @@ void Debugger(const char *message)
    even before panic_init() gets called from the "normal" place in kern/startup.c.
    (panic_init() still needs to be called from there
    to make sure we get initialized before starting multiple processors.)  */
-boolean_t		panic_lock_initialized = FALSE;
-decl_simple_lock_data(,	panic_lock)
+def_simple_lock_data(static,	panic_lock)
 
 const char     		*panicstr;
 int			paniccpu;
@@ -121,11 +120,6 @@ int			paniccpu;
 void
 panic_init(void)
 {
-	if (!panic_lock_initialized)
-	{
-		panic_lock_initialized = TRUE;
-		simple_lock_init(&panic_lock);
-	}
 }
 
 #if ! MACH_KBD

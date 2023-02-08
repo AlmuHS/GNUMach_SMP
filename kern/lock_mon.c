@@ -47,8 +47,8 @@
 #include <kern/lock.h>
 
 
-decl_simple_lock_data(extern , kdb_lock)
-decl_simple_lock_data(extern , printf_lock)
+def_simple_lock_data(extern , kdb_lock)
+def_simple_lock_data(extern , printf_lock)
 
 #if	NCPUS > 1 && MACH_LOCK_MON
 

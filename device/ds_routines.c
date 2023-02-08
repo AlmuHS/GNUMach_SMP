@@ -1508,7 +1508,7 @@ ds_no_senders(mach_no_senders_notification_t *notification)
 }
 
 queue_head_t		io_done_list;
-decl_simple_lock_data(,	io_done_list_lock)
+def_simple_lock_data(static,	io_done_list_lock)
 
 #define	splio	splsched	/* XXX must block ALL io devices */
 

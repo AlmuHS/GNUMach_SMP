@@ -28,7 +28,7 @@
 #define NR_RESERVED_ENTRIES 8
 #define NR_GRANT_PAGES 8
 
-decl_simple_lock_data(static,lock);
+def_simple_lock_data(static,lock);
 static struct grant_entry *grants;
 static vm_map_entry_t grants_map_entry;
 static int last_grant = NR_RESERVED_ENTRIES;

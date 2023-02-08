@@ -29,8 +29,8 @@
 
 /* Hypervisor part */
 
-decl_simple_lock_data(static, outlock);
-decl_simple_lock_data(static, inlock);
+def_simple_lock_data(static, outlock);
+def_simple_lock_data(static, inlock);
 static struct xencons_interface *console;
 static int kd_pollc;
 int kb_mode;	/* XXX: actually don't care.  */

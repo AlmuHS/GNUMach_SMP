@@ -74,7 +74,7 @@ typedef	int		memory_object_lock_result_t; /* moved from below */
 
 
 ipc_port_t	memory_manager_default = IP_NULL;
-decl_simple_lock_data(,memory_manager_default_lock)
+def_simple_lock_data(static,memory_manager_default_lock)
 
 /*
  *	Important note:

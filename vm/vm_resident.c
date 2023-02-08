@@ -98,7 +98,7 @@ unsigned long	vm_page_bucket_count = 0;	/* How big is array? */
 unsigned long	vm_page_hash_mask;		/* Mask for hash function */
 
 static struct list	vm_page_queue_fictitious;
-decl_simple_lock_data(,vm_page_queue_free_lock)
+def_simple_lock_data(,vm_page_queue_free_lock)
 int		vm_page_fictitious_count;
 int		vm_object_external_count;
 int		vm_object_external_pages;
@@ -129,7 +129,7 @@ phys_addr_t vm_page_fictitious_addr = (phys_addr_t) -1;
  *	defined here, but are shared by the pageout
  *	module.
  */
-decl_simple_lock_data(,vm_page_queue_lock)
+def_simple_lock_data(,vm_page_queue_lock)
 int	vm_page_active_count;
 int	vm_page_inactive_count;
 int	vm_page_wire_count;

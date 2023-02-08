@@ -64,7 +64,7 @@ struct processor processor_array[NCPUS];
 
 queue_head_t		all_psets;
 int			all_psets_count;
-decl_simple_lock_data(, all_psets_lock);
+def_simple_lock_data(, all_psets_lock);
 
 processor_t	master_processor;
 processor_t	processor_ptr[NCPUS];

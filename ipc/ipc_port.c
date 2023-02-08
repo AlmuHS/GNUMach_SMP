@@ -57,9 +57,9 @@
 #endif	/* MACH_KDB */
 
 
-decl_simple_lock_data(, ipc_port_multiple_lock_data)
+def_simple_lock_data(, ipc_port_multiple_lock_data)
 
-decl_simple_lock_data(, ipc_port_timestamp_lock_data)
+def_simple_lock_data(, ipc_port_timestamp_lock_data)
 ipc_port_timestamp_t ipc_port_timestamp_data;
 
 /*

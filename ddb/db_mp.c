@@ -48,7 +48,7 @@
  * multiprocessors.
  */
 
-decl_simple_lock_data(,db_lock)		/* lock to enter debugger */
+def_simple_lock_data(static,db_lock)	/* lock to enter debugger */
 volatile int	db_cpu = -1;		/* CPU currently in debugger */
 					/* -1 if none */
 int	db_active[NCPUS] = { 0 };	/* count recursive entries
