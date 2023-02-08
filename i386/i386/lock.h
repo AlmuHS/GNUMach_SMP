@@ -59,7 +59,7 @@
     ({ \
 	while(_simple_lock_xchg_(l, 1)) \
 	    while (*(volatile int *)&(l)->lock_data) \
-		continue; \
+		__asm ("pause"); \
 	0; \
     })
 
