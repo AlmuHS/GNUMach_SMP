@@ -124,6 +124,8 @@ extern void		check_simple_locks_disable(void);
 struct simple_lock_data_empty { struct {} is_a_simple_lock; };
 #define	decl_simple_lock_data(class,name)	\
 class struct simple_lock_data_empty name;
+#define	def_simple_lock_data(class,name)	\
+class struct simple_lock_data_empty name;
 #define	simple_lock_addr(lock)		(simple_lock_assert(&(lock)),	\
 					 (simple_lock_t)0)
 
