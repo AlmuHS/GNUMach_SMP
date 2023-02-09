@@ -23,8 +23,6 @@ if enable_kdb
 libkernel_a_SOURCES += \
 	ddb/db_access.c \
 	ddb/db_access.h \
-	ddb/db_aout.c \
-	ddb/db_aout.h \
 	ddb/db_elf.c \
 	ddb/db_elf.h \
 	ddb/db_break.c \

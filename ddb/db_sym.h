@@ -222,7 +222,7 @@ extern struct db_sym_switch {
 } x_db[];
 
 #ifndef	symtab_type
-#define	symtab_type(s)		SYMTAB_AOUT
+#define	symtab_type(s)		SYMTAB_ELF
 #endif
 
 #define	X_db_sym_init(s,e,n,t)		x_db[symtab_type(s)].init(s,e,n,t)
@@ -237,12 +237,6 @@ extern boolean_t db_line_at_pc(
 	char **filename,
 	int *linenum,
 	db_addr_t pc);
-
-extern boolean_t aout_db_sym_init(
-	char *symtab,
-	char *esymtab,
-	const char *name,
-	char *task_addr);
 
 extern boolean_t elf_db_sym_init (
 	unsigned shdr_num,

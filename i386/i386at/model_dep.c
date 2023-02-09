@@ -94,18 +94,12 @@
 #include <ddb/db_sym.h>
 #include <i386/db_interface.h>
 
-/* a.out symbol table */
-static vm_offset_t kern_sym_start, kern_sym_end;
-
 /* ELF section header */
 static unsigned elf_shdr_num;
 static vm_size_t elf_shdr_size;
 static vm_offset_t elf_shdr_addr;
 static unsigned elf_shdr_shndx;
 
-#else /* MACH_KDB */
-#define kern_sym_start	0
-#define kern_sym_end	0
 #endif /* MACH_KDB */
 
 #define RESERVED_BIOS 0x10000
@@ -522,22 +516,6 @@ void c_boot_entry(vm_offset_t bi)
 	 * We need to do this before i386at_init()
 	 * so that the symbol table's memory won't be stomped on.
 	 */
-	if ((boot_info.flags & MULTIBOOT_AOUT_SYMS)
-	    && boot_info.shdr_addr)
-	{
-		vm_size_t symtab_size, strtab_size;
-
-                /* For simplicity we just use a simple boot_info_raw structure for elf */
-		kern_sym_start = (vm_offset_t)phystokv(boot_info.shdr_addr);
-		symtab_size = (vm_offset_t)phystokv(boot_info.shdr_num);
-		strtab_size = (vm_offset_t)phystokv(boot_info.shdr_size);
-		kern_sym_end = kern_sym_start + 4 + symtab_size + strtab_size;
-
-		printf("kernel symbol table at %08" PRIxPTR "-%08" PRIxPTR " (%ld,%ld)\n",
-		       kern_sym_start, kern_sym_end,
-		       (unsigned long) symtab_size, (unsigned long) strtab_size);
-	}
-
 	if ((boot_info.flags & MULTIBOOT_ELF_SHDR)
 	    && boot_info.shdr_num)
 	{
@@ -562,11 +540,6 @@ void c_boot_entry(vm_offset_t bi)
 	/*
 	 * Initialize the kernel debugger's kernel symbol table.
 	 */
-	if (kern_sym_start)
-	{
-		aout_db_sym_init((char *)kern_sym_start, (char *)kern_sym_end, "mach", (char *)0);
-	}
-
 	if (elf_shdr_num)
 	{
 		elf_db_sym_init(elf_shdr_num,elf_shdr_size,
