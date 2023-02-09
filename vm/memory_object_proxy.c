@@ -155,13 +155,6 @@ memory_object_create_proxy (ipc_space_t space, vm_prot_t max_protection,
   if (!IP_VALID(object[0]))
     return KERN_INVALID_NAME;
 
-#ifdef USER32
-  /* FIXME: simplify RPC, fix mig, or add a new VM data type in message.h */
-  *offset &= 0xFFFFFFFFU;
-  *start &= 0xFFFFFFFFU;
-  *len &= 0xFFFFFFFFU;
-#endif
-
   /* FIXME: Support a different offset from 0.  */
   if (offset[0] != 0)
     return KERN_INVALID_ARGUMENT;
