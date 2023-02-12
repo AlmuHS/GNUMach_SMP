@@ -500,6 +500,25 @@ kern_return_t thread_setstatus(
 		/*
 		 * General registers
 		 */
+#if defined(__x86_64__) && !defined(USER32)
+		saved_state->r8 = state->r8;
+		saved_state->r9 = state->r9;
+		saved_state->r10 = state->r10;
+		saved_state->r11 = state->r11;
+		saved_state->r12 = state->r12;
+		saved_state->r13 = state->r13;
+		saved_state->r14 = state->r14;
+		saved_state->r15 = state->r15;
+		saved_state->edi = state->rdi;
+		saved_state->esi = state->rsi;
+		saved_state->ebp = state->rbp;
+		saved_state->uesp = state->ursp;
+		saved_state->ebx = state->rbx;
+		saved_state->edx = state->rdx;
+		saved_state->ecx = state->rcx;
+		saved_state->eax = state->rax;
+		saved_state->eip = state->rip;
+#else
 		saved_state->edi = state->edi;
 		saved_state->esi = state->esi;
 		saved_state->ebp = state->ebp;
@@ -509,6 +528,7 @@ kern_return_t thread_setstatus(
 		saved_state->ecx = state->ecx;
 		saved_state->eax = state->eax;
 		saved_state->eip = state->eip;
+#endif /* __x86_64__ && !USER32 */
 		saved_state->efl = (state->efl & ~EFL_USER_CLEAR)
 				    | EFL_USER_SET;
 
@@ -696,6 +716,26 @@ kern_return_t thread_getstatus(
 		/*
 		 * General registers.
 		 */
+#if defined(__x86_64__) && !defined(USER32)
+		state->r8 = saved_state->r8;
+		state->r9 = saved_state->r9;
+		state->r10 = saved_state->r10;
+		state->r11 = saved_state->r11;
+		state->r12 = saved_state->r12;
+		state->r13 = saved_state->r13;
+		state->r14 = saved_state->r14;
+		state->r15 = saved_state->r15;
+		state->rdi = saved_state->edi;
+		state->rsi = saved_state->esi;
+		state->rbp = saved_state->ebp;
+		state->rbx = saved_state->ebx;
+		state->rdx = saved_state->edx;
+		state->rcx = saved_state->ecx;
+		state->rax = saved_state->eax;
+		state->rip = saved_state->eip;
+		state->ursp = saved_state->uesp;
+		state->rsp = 0;	/* unused */
+#else
 		state->edi = saved_state->edi;
 		state->esi = saved_state->esi;
 		state->ebp = saved_state->ebp;
@@ -704,9 +744,10 @@ kern_return_t thread_getstatus(
 		state->ecx = saved_state->ecx;
 		state->eax = saved_state->eax;
 		state->eip = saved_state->eip;
-		state->efl = saved_state->efl;
 		state->uesp = saved_state->uesp;
-		state->esp = 0;	 /* unused */
+		state->esp = 0;	/* unused */
+#endif /* __x86_64__ && !USER32 */
+		state->efl = saved_state->efl;
 
 		state->cs = saved_state->cs;
 		state->ss = saved_state->ss;
