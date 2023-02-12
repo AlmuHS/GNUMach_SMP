@@ -397,13 +397,14 @@ boolean_t	cpu_update_needed[NCPUS];
 struct pmap	kernel_pmap_store;
 pmap_t		kernel_pmap;
 
-struct kmem_cache	pmap_cache;		/* cache of pmap structures */
-struct kmem_cache	pd_cache;		/* cache of page directories */
+struct kmem_cache pmap_cache;  /* cache of pmap structures */
+struct kmem_cache pd_cache;    /* cache of page directories */
 #if PAE
-struct kmem_cache	pdpt_cache;		/* cache of page
-						   directory pointer
-						   tables */
-#endif
+struct kmem_cache pdpt_cache;  /* cache of page directory pointer tables */
+#ifdef __x86_64__
+struct kmem_cache l4_cache;    /* cache of L4 tables */
+#endif /* __x86_64__ */
+#endif /* PAE */
 
 boolean_t		pmap_debug = FALSE;	/* flag for debugging prints */
 
@@ -1046,7 +1047,12 @@ void pmap_init(void)
 	kmem_cache_init(&pdpt_cache, "pdpt",
 			INTEL_PGBYTES, INTEL_PGBYTES, NULL,
 			KMEM_CACHE_PHYSMEM);
-#endif
+#ifdef __x86_64__
+	kmem_cache_init(&l4_cache, "L4",
+			INTEL_PGBYTES, INTEL_PGBYTES, NULL,
+			KMEM_CACHE_PHYSMEM);
+#endif /* __x86_64__ */
+#endif /* PAE */
 	s = (vm_size_t) sizeof(struct pv_entry);
 	kmem_cache_init(&pv_list_cache, "pv_entry", s, 0, NULL, 0);
 
@@ -1287,10 +1293,8 @@ pmap_t pmap_create(vm_size_t size)
 				  );
 	}
 #ifdef __x86_64__
-	// FIXME: use kmem_cache_alloc instead
-	if (kmem_alloc_wired(kernel_map,
-			     (vm_offset_t *)&p->l4base, INTEL_PGBYTES)
-							!= KERN_SUCCESS)
+	p->l4base = (pt_entry_t *) kmem_cache_alloc(&l4_cache);
+	if (p->l4base == NULL)
 		panic("pmap_create");
 	memset(p->l4base, 0, INTEL_PGBYTES);
 	WRITE_PTE(&p->l4base[0], pa_to_pte(kvtophys((vm_offset_t) p->pdpbase)) | INTEL_PTE_VALID | INTEL_PTE_WRITE | INTEL_PTE_USER);
@@ -1426,16 +1430,16 @@ void pmap_destroy(pmap_t p)
 	pmap_set_page_readwrite(p->l4base);
 	pmap_set_page_readwrite(p->user_l4base);
 	pmap_set_page_readwrite(p->user_pdpbase);
-#endif
+#endif /* __x86_64__ */
 	pmap_set_page_readwrite(p->pdpbase);
 #endif	/* MACH_PV_PAGETABLES */
 #ifdef __x86_64__
-	kmem_free(kernel_map, (vm_offset_t)p->l4base, INTEL_PGBYTES);
+	kmem_cache_free(&l4_cache, (vm_offset_t) p->l4base);
 #ifdef MACH_PV_PAGETABLES
 	kmem_free(kernel_map, (vm_offset_t)p->user_l4base, INTEL_PGBYTES);
 	kmem_free(kernel_map, (vm_offset_t)p->user_pdpbase, INTEL_PGBYTES);
-#endif
-#endif
+#endif /* MACH_PV_PAGETABLES */
+#endif /* __x86_64__ */
 	kmem_cache_free(&pdpt_cache, (vm_offset_t) p->pdpbase);
 #endif	/* PAE */
 	kmem_cache_free(&pmap_cache, (vm_offset_t) p);
