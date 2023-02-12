@@ -582,8 +582,46 @@ vm_offset_t pmap_map_bd(
 	return(virt);
 }
 
+#ifdef PAE
+static void pmap_bootstrap_pae(void)
+{
+	vm_offset_t addr;
+
+#ifdef __x86_64__
+#ifdef MACH_HYP
+	kernel_pmap->user_l4base = NULL;
+	kernel_pmap->user_pdpbase = NULL;
+#endif
+	kernel_pmap->l4base = (pt_entry_t*)phystokv(pmap_grab_page());
+	memset(kernel_pmap->l4base, 0, INTEL_PGBYTES);
+#endif	/* x86_64 */
+
+	init_alloc_aligned(PDPNUM * INTEL_PGBYTES, &addr);
+	kernel_page_dir = (pt_entry_t*)phystokv(addr);
+
+	kernel_pmap->pdpbase = (pt_entry_t*)phystokv(pmap_grab_page());
+	memset(kernel_pmap->pdpbase, 0, INTEL_PGBYTES);
+	for (int i = 0; i < PDPNUM; i++)
+		WRITE_PTE(&kernel_pmap->pdpbase[i],
+			  pa_to_pte(_kvtophys((void *) kernel_page_dir
+					      + i * INTEL_PGBYTES))
+			  | INTEL_PTE_VALID
+#if (defined(__x86_64__) && !defined(MACH_HYP)) || defined(MACH_PV_PAGETABLES)
+			  | INTEL_PTE_WRITE
+#endif
+			);
+
+#ifdef __x86_64__
+	WRITE_PTE(&kernel_pmap->l4base[0], pa_to_pte(_kvtophys(kernel_pmap->pdpbase)) | INTEL_PTE_VALID | INTEL_PTE_WRITE);
 #ifdef	MACH_PV_PAGETABLES
-void pmap_bootstrap_xen()
+	pmap_set_page_readonly_init(kernel_pmap->l4base);
+#endif
+#endif	/* x86_64 */
+}
+#endif /* PAE */
+
+#ifdef	MACH_PV_PAGETABLES
+static void pmap_bootstrap_xen(void)
 {
 	/* We don't actually deal with the CR3 register content at all */
 	hyp_vm_assist(VMASST_CMD_enable, VMASST_TYPE_pae_extended_cr3);
@@ -692,37 +730,7 @@ void pmap_bootstrap(void)
 	/* Note: initial Xen mapping holds at least 512kB free mapped page.
 	 * We use that for directly building our linear mapping. */
 #if PAE
-	{
-		vm_offset_t addr;
-		init_alloc_aligned(PDPNUM * INTEL_PGBYTES, &addr);
-		kernel_page_dir = (pt_entry_t*)phystokv(addr);
-	}
-	kernel_pmap->pdpbase = (pt_entry_t*)phystokv(pmap_grab_page());
-	memset(kernel_pmap->pdpbase, 0, INTEL_PGBYTES);
-	{
-		int i;
-		for (i = 0; i < PDPNUM; i++)
-			WRITE_PTE(&kernel_pmap->pdpbase[i],
-				  pa_to_pte(_kvtophys((void *) kernel_page_dir
-						      + i * INTEL_PGBYTES))
-				  | INTEL_PTE_VALID
-#if (defined(__x86_64__) && !defined(MACH_HYP)) || defined(MACH_PV_PAGETABLES)
-				  | INTEL_PTE_WRITE
-#endif
-				  );
-	}
-#ifdef __x86_64__
-#ifdef MACH_HYP
-	kernel_pmap->user_l4base = NULL;
-	kernel_pmap->user_pdpbase = NULL;
-#endif
-	kernel_pmap->l4base = (pt_entry_t*)phystokv(pmap_grab_page());
-	memset(kernel_pmap->l4base, 0, INTEL_PGBYTES);
-	WRITE_PTE(&kernel_pmap->l4base[0], pa_to_pte(_kvtophys(kernel_pmap->pdpbase)) | INTEL_PTE_VALID | INTEL_PTE_WRITE);
-#ifdef	MACH_PV_PAGETABLES
-	pmap_set_page_readonly_init(kernel_pmap->l4base);
-#endif
-#endif	/* x86_64 */
+	pmap_bootstrap_pae();
 #else	/* PAE */
 	kernel_pmap->dirbase = kernel_page_dir = (pt_entry_t*)phystokv(pmap_grab_page());
 #endif	/* PAE */
