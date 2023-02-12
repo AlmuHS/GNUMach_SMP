@@ -177,29 +177,24 @@ int copyinmsg (const void *userbuf, void *kernelbuf, const size_t usize)
   const mach_msg_user_header_t *umsg = userbuf;
   mach_msg_header_t *kmsg = kernelbuf;
 
+#ifdef USER32
   if (copyin(&umsg->msgh_bits, &kmsg->msgh_bits, sizeof(kmsg->msgh_bits)))
     return 1;
   /* kmsg->msgh_size is filled in later */
   if (copyin_port(&umsg->msgh_remote_port, &kmsg->msgh_remote_port))
     return 1;
-#ifdef USER32
-  /* This could contain a payload, but for 32 bits it will be the same size as a mach_port_name_t */
-  _Static_assert(sizeof(rpc_uintptr_t) == sizeof(mach_port_name_t),
-                 "rpc_uintptr_t and mach_port_name_t expected to have the same size");
   if (copyin_port(&umsg->msgh_local_port, &kmsg->msgh_local_port))
     return 1;
-#else
-  /* For pure 64 bits, the protected payload is as large as a port pointer. */
-  _Static_assert(sizeof(rpc_uintptr_t) == sizeof(mach_port_t),
-                 "rpc_uintptr_t and mach_port_t expected to have the same size");
-  if (copyin((char*)umsg + offsetof(mach_msg_user_header_t, msgh_local_port),
-              (char*)kmsg + offsetof(mach_msg_header_t, msgh_local_port),
-	      sizeof(rpc_uintptr_t)))
-    return 1;
-#endif
   if (copyin(&umsg->msgh_seqno, &kmsg->msgh_seqno,
              sizeof(kmsg->msgh_seqno) + sizeof(kmsg->msgh_id)))
     return 1;
+#else
+  /* The 64 bit interface ensures the header is the same size, so it does not need any resizing. */
+  _Static_assert(sizeof(mach_msg_header_t) == sizeof(mach_msg_user_header_t),
+		 "mach_msg_header_t and mach_msg_user_header_t expected to be of the same size");
+  if (copyin(&umsg, &kmsg, sizeof(mach_msg_header_t)))
+    return 1;
+#endif
 
   vm_offset_t usaddr, ueaddr, ksaddr;
   ksaddr = (vm_offset_t)(kmsg + 1);
@@ -283,25 +278,21 @@ int copyoutmsg (const void *kernelbuf, void *userbuf, const size_t ksize)
 {
   const mach_msg_header_t *kmsg = kernelbuf;
   mach_msg_user_header_t *umsg = userbuf;
-
+#ifdef USER32
   if (copyout(&kmsg->msgh_bits, &umsg->msgh_bits, sizeof(kmsg->msgh_bits)))
     return 1;
   /* umsg->msgh_size is filled in later */
   if (copyout_port(&kmsg->msgh_remote_port, &umsg->msgh_remote_port))
     return 1;
-#ifdef USER32
   if (copyout_port(&kmsg->msgh_local_port, &umsg->msgh_local_port))
     return 1;
-#else
-  /* Handle protected payloads correctly, same as copyinmsg. */
-  if (copyout((char*)kmsg + offsetof(mach_msg_header_t, msgh_local_port),
-              (char*)umsg + offsetof(mach_msg_user_header_t, msgh_local_port),
-	      sizeof(rpc_uintptr_t)))
-    return 1;
-#endif
   if (copyout(&kmsg->msgh_seqno, &umsg->msgh_seqno,
              sizeof(kmsg->msgh_seqno) + sizeof(kmsg->msgh_id)))
     return 1;
+#else
+  if (copyout(&kmsg, &umsg, sizeof(mach_msg_header_t)))
+    return 1;
+#endif  /* USER32 */
 
   vm_offset_t ksaddr, keaddr, usaddr;
   ksaddr = (vm_offset_t)(kmsg + 1);
