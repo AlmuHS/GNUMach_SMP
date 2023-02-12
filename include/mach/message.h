@@ -132,6 +132,9 @@ typedef	unsigned int mach_msg_size_t;
 typedef natural_t mach_msg_seqno_t;
 typedef integer_t mach_msg_id_t;
 
+/* Force 4-byte alignment to simplify how the kernel parses the messages */
+#pragma pack(push, 4)
+
 /* full header structure, may have different size in user/kernel spaces */
 typedef	struct mach_msg_header {
     mach_msg_bits_t	msgh_bits;
@@ -151,7 +154,10 @@ typedef	struct {
     mach_msg_bits_t	msgh_bits;
     mach_msg_size_t	msgh_size;
     mach_port_name_t	msgh_remote_port;
-    mach_port_name_t	msgh_local_port;
+    union {
+        mach_port_name_t	msgh_local_port;
+        rpc_uintptr_t msgh_protected_payload;
+    };
     mach_port_seqno_t	msgh_seqno;
     mach_msg_id_t	msgh_id;
 } mach_msg_user_header_t;
@@ -224,6 +230,7 @@ typedef	struct	{
     natural_t		msgtl_number;
 } mach_msg_type_long_t;
 
+#pragma pack(pop)
 
 /*
  *	Known values for the msgt_name field.

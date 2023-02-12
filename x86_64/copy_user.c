@@ -16,6 +16,7 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#include <stddef.h>
 #include <string.h>
 
 #include <kern/debug.h>
@@ -181,8 +182,21 @@ int copyinmsg (const void *userbuf, void *kernelbuf, const size_t usize)
   /* kmsg->msgh_size is filled in later */
   if (copyin_port(&umsg->msgh_remote_port, &kmsg->msgh_remote_port))
     return 1;
+#ifdef USER32
+  /* This could contain a payload, but for 32 bits it will be the same size as a mach_port_name_t */
+  _Static_assert(sizeof(rpc_uintptr_t) == sizeof(mach_port_name_t),
+                 "rpc_uintptr_t and mach_port_name_t expected to have the same size");
   if (copyin_port(&umsg->msgh_local_port, &kmsg->msgh_local_port))
     return 1;
+#else
+  /* For pure 64 bits, the protected payload is as large as a port pointer. */
+  _Static_assert(sizeof(rpc_uintptr_t) == sizeof(mach_port_t),
+                 "rpc_uintptr_t and mach_port_t expected to have the same size");
+  if (copyin((char*)umsg + offsetof(mach_msg_user_header_t, msgh_local_port),
+              (char*)kmsg + offsetof(mach_msg_header_t, msgh_local_port),
+	      sizeof(rpc_uintptr_t)))
+    return 1;
+#endif
   if (copyin(&umsg->msgh_seqno, &kmsg->msgh_seqno,
              sizeof(kmsg->msgh_seqno) + sizeof(kmsg->msgh_id)))
     return 1;
@@ -275,8 +289,16 @@ int copyoutmsg (const void *kernelbuf, void *userbuf, const size_t ksize)
   /* umsg->msgh_size is filled in later */
   if (copyout_port(&kmsg->msgh_remote_port, &umsg->msgh_remote_port))
     return 1;
+#ifdef USER32
   if (copyout_port(&kmsg->msgh_local_port, &umsg->msgh_local_port))
     return 1;
+#else
+  /* Handle protected payloads correctly, same as copyinmsg. */
+  if (copyout((char*)kmsg + offsetof(mach_msg_header_t, msgh_local_port),
+              (char*)umsg + offsetof(mach_msg_user_header_t, msgh_local_port),
+	      sizeof(rpc_uintptr_t)))
+    return 1;
+#endif
   if (copyout(&kmsg->msgh_seqno, &umsg->msgh_seqno,
              sizeof(kmsg->msgh_seqno) + sizeof(kmsg->msgh_id)))
     return 1;
