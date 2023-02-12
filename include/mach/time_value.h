@@ -38,7 +38,6 @@ struct rpc_time_value {
 	rpc_long_integer_t seconds;
 	integer_t microseconds;
 };
-typedef struct rpc_time_value rpc_time_value_t;
 
 /*
  *	Time value used by kernel interfaces. Ideally they should be migrated
@@ -49,6 +48,12 @@ struct time_value {
 	integer_t	microseconds;
 };
 typedef	struct time_value	time_value_t;
+
+#ifdef KERNEL
+typedef struct rpc_time_value rpc_time_value_t;
+#else
+typedef struct time_value rpc_time_value_t;
+#endif
 
 /*
  * Time value used internally by the kernel that uses 64 bits to track seconds
