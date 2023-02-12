@@ -437,10 +437,22 @@ pmap_pde(const pmap_t pmap, vm_offset_t addr)
 	if (pmap == kernel_pmap)
 		addr = kvtolin(addr);
 #if PAE
-	page_dir = (pt_entry_t *) ptetokv(pmap->pdpbase[lin2pdpnum(addr)]);
-#else
+	pt_entry_t *pdp_table, pdp, pde;
+#ifdef __x86_64__
+	pdp = pmap->l4base[lin2l4num(addr)];
+	if ((pdp & INTEL_PTE_VALID) == 0)
+		return PT_ENTRY_NULL;
+	pdp_table = (pt_entry_t *) ptetokv(pdp);
+#else /* __x86_64__ */
+	pdp_table = pmap->pdpbase;
+#endif /* __x86_64__ */
+	pde = pdp_table[lin2pdpnum(addr)];
+	if ((pde & INTEL_PTE_VALID) == 0)
+		return PT_ENTRY_NULL;
+	page_dir = (pt_entry_t *) ptetokv(pde);
+#else /* PAE */
 	page_dir = pmap->dirbase;
-#endif
+#endif /* PAE */
 	return &page_dir[lin2pdenum(addr)];
 }
 
@@ -457,14 +469,20 @@ pmap_pte(const pmap_t pmap, vm_offset_t addr)
 	pt_entry_t	*ptp;
 	pt_entry_t	pte;
 
-#if PAE
+#ifdef __x86_64__
+	if (pmap->l4base == 0)
+		return(PT_ENTRY_NULL);
+#elif PAE
 	if (pmap->pdpbase == 0)
 		return(PT_ENTRY_NULL);
 #else
 	if (pmap->dirbase == 0)
 		return(PT_ENTRY_NULL);
 #endif
-	pte = *pmap_pde(pmap, addr);
+	ptp = pmap_pde(pmap, addr);
+	if (ptp == 0)
+		return(PT_ENTRY_NULL);
+	pte = *ptp;
 	if ((pte & INTEL_PTE_VALID) == 0)
 		return(PT_ENTRY_NULL);
 	ptp = (pt_entry_t *)ptetokv(pte);
