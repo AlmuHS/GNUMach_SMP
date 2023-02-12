@@ -1075,9 +1075,6 @@ syscall_entry_2:
 	pushq	%rax			/* save system call number */
 	pushq	$0			/* clear trap number slot */
 
-// TODO: test it before dropping ud2
-	ud2
-
 	pusha				/* save the general registers */
 	movq	%ds,%rdx		/* and the segment registers */
 	pushq	%rdx
