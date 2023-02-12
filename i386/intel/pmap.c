@@ -430,6 +430,24 @@ pt_entry_t *kernel_page_dir;
 static pmap_mapwindow_t mapwindows[PMAP_NMAPWINDOWS];
 def_simple_lock_data(static, pmapwindows_lock)
 
+#ifdef PAE
+static inline pt_entry_t *
+pmap_ptp(const pmap_t pmap, vm_offset_t lin_addr)
+{
+	pt_entry_t *pdp_table;
+#ifdef __x86_64__
+	pt_entry_t pdp;
+	pdp = pmap->l4base[lin2l4num(lin_addr)];
+	if ((pdp & INTEL_PTE_VALID) == 0)
+		return PT_ENTRY_NULL;
+	pdp_table = (pt_entry_t *) ptetokv(pdp);
+#else /* __x86_64__ */
+	pdp_table = pmap->pdpbase;
+#endif /* __x86_64__ */
+	return pdp_table;
+}
+#endif
+
 static inline pt_entry_t *
 pmap_pde(const pmap_t pmap, vm_offset_t addr)
 {
@@ -438,15 +456,7 @@ pmap_pde(const pmap_t pmap, vm_offset_t addr)
 		addr = kvtolin(addr);
 #if PAE
 	pt_entry_t *pdp_table;
-#ifdef __x86_64__
-	pt_entry_t pdp;
-	pdp = pmap->l4base[lin2l4num(addr)];
-	if ((pdp & INTEL_PTE_VALID) == 0)
-		return PT_ENTRY_NULL;
-	pdp_table = (pt_entry_t *) ptetokv(pdp);
-#else /* __x86_64__ */
-	pdp_table = pmap->pdpbase;
-#endif /* __x86_64__ */
+	pdp_table = pmap_ptp(pmap, addr);
 	pt_entry_t pde = pdp_table[lin2pdpnum(addr)];
 	if ((pde & INTEL_PTE_VALID) == 0)
 		return PT_ENTRY_NULL;
@@ -586,6 +596,7 @@ vm_offset_t pmap_map_bd(
 static void pmap_bootstrap_pae(void)
 {
 	vm_offset_t addr;
+	pt_entry_t *pdp_kernel;
 
 #ifdef __x86_64__
 #ifdef MACH_HYP
@@ -596,13 +607,15 @@ static void pmap_bootstrap_pae(void)
 	memset(kernel_pmap->l4base, 0, INTEL_PGBYTES);
 #endif	/* x86_64 */
 
+	// TODO: allocate only the PDPTE for kernel virtual space
+	// this means all directmap and the stupid limit above it
 	init_alloc_aligned(PDPNUM * INTEL_PGBYTES, &addr);
 	kernel_page_dir = (pt_entry_t*)phystokv(addr);
 
-	kernel_pmap->pdpbase = (pt_entry_t*)phystokv(pmap_grab_page());
-	memset(kernel_pmap->pdpbase, 0, INTEL_PGBYTES);
+	pdp_kernel = (pt_entry_t*)phystokv(pmap_grab_page());
+	memset(pdp_kernel, 0, INTEL_PGBYTES);
 	for (int i = 0; i < PDPNUM; i++)
-		WRITE_PTE(&kernel_pmap->pdpbase[i],
+		WRITE_PTE(&pdp_kernel[i],
 			  pa_to_pte(_kvtophys((void *) kernel_page_dir
 					      + i * INTEL_PGBYTES))
 			  | INTEL_PTE_VALID
@@ -612,10 +625,14 @@ static void pmap_bootstrap_pae(void)
 			);
 
 #ifdef __x86_64__
-	WRITE_PTE(&kernel_pmap->l4base[0], pa_to_pte(_kvtophys(kernel_pmap->pdpbase)) | INTEL_PTE_VALID | INTEL_PTE_WRITE);
+        /* only fill the kernel pdpte during bootstrap */
+	WRITE_PTE(&kernel_pmap->l4base[lin2l4num(VM_MIN_KERNEL_ADDRESS)],
+                  pa_to_pte(_kvtophys(pdp_kernel)) | INTEL_PTE_VALID | INTEL_PTE_WRITE);
 #ifdef	MACH_PV_PAGETABLES
 	pmap_set_page_readonly_init(kernel_pmap->l4base);
-#endif
+#endif /* MACH_PV_PAGETABLES */
+#else	/* x86_64 */
+        kernel_pmap->pdpbase = pdp_kernel;
 #endif	/* x86_64 */
 }
 #endif /* PAE */
@@ -1244,7 +1261,7 @@ pmap_page_table_page_dealloc(vm_offset_t pa)
  */
 pmap_t pmap_create(vm_size_t size)
 {
-	pt_entry_t		*page_dir[PDPNUM];
+	pt_entry_t		*page_dir[PDPNUM], *pdp_kernel;
 	int			i;
 	pmap_t			p;
 	pmap_statistics_t	stats;
@@ -1302,34 +1319,40 @@ pmap_t pmap_create(vm_size_t size)
 #endif	/* MACH_PV_PAGETABLES */
 
 #if PAE
-	p->pdpbase = (pt_entry_t *) kmem_cache_alloc(&pdpt_cache);
-	if (p->pdpbase == NULL) {
+	pdp_kernel = (pt_entry_t *) kmem_cache_alloc(&pdpt_cache);
+	if (pdp_kernel == NULL) {
 		for (i = 0; i < PDPNUM; i++)
 			kmem_cache_free(&pd_cache, (vm_address_t) page_dir[i]);
 		kmem_cache_free(&pmap_cache, (vm_address_t) p);
 		return PMAP_NULL;
 	}
 
-	memset(p->pdpbase, 0, INTEL_PGBYTES);
+	memset(pdp_kernel, 0, INTEL_PGBYTES);
 	{
 		for (i = 0; i < PDPNUM; i++)
-			WRITE_PTE(&p->pdpbase[i],
+			WRITE_PTE(&pdp_kernel[i],
 				  pa_to_pte(kvtophys((vm_offset_t) page_dir[i]))
 				  | INTEL_PTE_VALID
 #if (defined(__x86_64__) && !defined(MACH_HYP)) || defined(MACH_PV_PAGETABLES)
 				  | INTEL_PTE_WRITE
 #ifdef __x86_64__
 				  | INTEL_PTE_USER
-#endif
+#endif /* __x86_64__ */
 #endif
 				  );
 	}
 #ifdef __x86_64__
+	// TODO alloc only PDPTE for the user range VM_MIN_ADDRESS, VM_MAX_ADDRESS
+	// and keep the same for kernel range, in l4 table we have different entries
 	p->l4base = (pt_entry_t *) kmem_cache_alloc(&l4_cache);
 	if (p->l4base == NULL)
 		panic("pmap_create");
 	memset(p->l4base, 0, INTEL_PGBYTES);
-	WRITE_PTE(&p->l4base[0], pa_to_pte(kvtophys((vm_offset_t) p->pdpbase)) | INTEL_PTE_VALID | INTEL_PTE_WRITE | INTEL_PTE_USER);
+	WRITE_PTE(&p->l4base[lin2l4num(VM_MIN_KERNEL_ADDRESS)],
+		  pa_to_pte(kvtophys((vm_offset_t) pdp_kernel)) | INTEL_PTE_VALID | INTEL_PTE_WRITE | INTEL_PTE_USER);
+#if lin2l4num(VM_MIN_KERNEL_ADDRESS) != lin2l4num(VM_MAX_ADDRESS)
+	// TODO kernel vm and user vm are not in the same l4 entry, so add the user one
+#endif
 #ifdef	MACH_PV_PAGETABLES
 	// FIXME: use kmem_cache_alloc instead
 	if (kmem_alloc_wired(kernel_map,
@@ -1350,6 +1373,8 @@ pmap_t pmap_create(vm_size_t size)
 	memset(p->user_l4base, 0, INTEL_PGBYTES);
 	WRITE_PTE(&p->user_l4base[0], pa_to_pte(kvtophys((vm_offset_t) p->user_pdpbase)) | INTEL_PTE_VALID | INTEL_PTE_WRITE);
 #endif	/* MACH_PV_PAGETABLES */
+#else	/* _x86_64 */
+	p->pdpbase = pdp_kernel;
 #endif	/* _x86_64 */
 #ifdef	MACH_PV_PAGETABLES 
 #ifdef __x86_64__
@@ -1412,12 +1437,22 @@ void pmap_destroy(pmap_t p)
 
 #if PAE
 	for (i = 0; i <= lin2pdpnum(LINEAR_MIN_KERNEL_ADDRESS); i++) {
-	    free_all = i < lin2pdpnum(LINEAR_MIN_KERNEL_ADDRESS);
-	    page_dir = (pt_entry_t *) ptetokv(p->pdpbase[i]);
+#ifdef __x86_64__
+#ifdef USER32
+	    /* In this case we know we have one PDP for user space */
+	    pt_entry_t *pdp = (pt_entry_t *) ptetokv(p->l4base[lin2l4num(VM_MIN_ADDRESS)]);
 #else
+#error "TODO do 64-bit userspace need more that 512G?"
+#endif /* USER32 */
+	    page_dir = (pt_entry_t *) ptetokv(pdp[i]);
+#else /* __x86_64__ */
+	    page_dir = (pt_entry_t *) ptetokv(p->pdpbase[i]);
+#endif /* __x86_64__ */
+	    free_all = i < lin2pdpnum(LINEAR_MIN_KERNEL_ADDRESS);
+#else /* PAE */
 	    free_all = FALSE;
 	    page_dir = p->dirbase;
-#endif
+#endif /* PAE */
 
 #ifdef __x86_64__
 #warning FIXME 64bit need to free l3
@@ -1465,14 +1500,20 @@ void pmap_destroy(pmap_t p)
 #endif /* __x86_64__ */
 	pmap_set_page_readwrite(p->pdpbase);
 #endif	/* MACH_PV_PAGETABLES */
+
 #ifdef __x86_64__
+	kmem_cache_free(&pdpt_cache, (vm_offset_t) pmap_ptp(p, VM_MIN_ADDRESS));
+#if lin2l4num(VM_MIN_KERNEL_ADDRESS) != lin2l4num(VM_MAX_ADDRESS)
+	// TODO kernel vm and user vm are not in the same l4 entry
+#endif
 	kmem_cache_free(&l4_cache, (vm_offset_t) p->l4base);
 #ifdef MACH_PV_PAGETABLES
 	kmem_free(kernel_map, (vm_offset_t)p->user_l4base, INTEL_PGBYTES);
 	kmem_free(kernel_map, (vm_offset_t)p->user_pdpbase, INTEL_PGBYTES);
 #endif /* MACH_PV_PAGETABLES */
-#endif /* __x86_64__ */
+#else /* __x86_64__ */
 	kmem_cache_free(&pdpt_cache, (vm_offset_t) p->pdpbase);
+#endif /* __x86_64__ */
 #endif	/* PAE */
 	kmem_cache_free(&pmap_cache, (vm_offset_t) p);
 }
@@ -2405,8 +2446,18 @@ void pmap_collect(pmap_t p)
 
 #if PAE
 	for (i = 0; i <= lin2pdpnum(LINEAR_MIN_KERNEL_ADDRESS); i++) {
-	    free_all = i < lin2pdpnum(LINEAR_MIN_KERNEL_ADDRESS);
+#ifdef __x86_64__
+#ifdef USER32
+	    /* In this case we know we have one PDP for user space */
+	    pdp = (pt_entry_t *) ptetokv(p->l4base[lin2l4num(VM_MIN_ADDRESS)]);
+#else
+#error "TODO do 64-bit userspace need more that 512G?"
+#endif /* USER32 */
+	    page_dir = (pt_entry_t *) ptetokv(pdp[i]);
+#else /* __x86_64__ */
 	    page_dir = (pt_entry_t *) ptetokv(p->pdpbase[i]);
+#endif /* __x86_64__ */
+	    free_all = i < lin2pdpnum(LINEAR_MIN_KERNEL_ADDRESS);
 #else
 	    i = 0;
 	    free_all = FALSE;

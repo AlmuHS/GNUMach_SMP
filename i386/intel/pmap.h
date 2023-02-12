@@ -182,16 +182,17 @@ typedef	volatile long	cpu_set;	/* set of CPUs - must be <= 32 */
 struct pmap {
 #if ! PAE
 	pt_entry_t	*dirbase;	/* page directory table */
-#else
-	pt_entry_t	*pdpbase;	/* page directory pointer table */
-#endif	/* ! PAE */
+#else	/* PAE */
 #ifdef __x86_64__
 	pt_entry_t	*l4base;	/* l4 table */
 #ifdef MACH_HYP
 	pt_entry_t	*user_l4base;	/* Userland l4 table */
 	pt_entry_t	*user_pdpbase;	/* Userland l4 table */
 #endif	/* MACH_HYP */
+#else	/* x86_64 */
+	pt_entry_t	*pdpbase;	/* page directory pointer table */
 #endif	/* x86_64 */
+#endif	/* PAE */
 	int		ref_count;	/* reference count */
 	decl_simple_lock_data(,lock)
 					/* lock on map */
