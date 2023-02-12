@@ -706,6 +706,7 @@ kern_return_t thread_getstatus(
 		state->eip = saved_state->eip;
 		state->efl = saved_state->efl;
 		state->uesp = saved_state->uesp;
+		state->esp = 0;	 /* unused */
 
 		state->cs = saved_state->cs;
 		state->ss = saved_state->ss;
