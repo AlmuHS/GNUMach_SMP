@@ -74,7 +74,7 @@
    */
 #define VM_MIN_ADDRESS		(0)
 #ifdef __x86_64__
-#define VM_MAX_ADDRESS		(0x40000000UL)
+#define VM_MAX_ADDRESS		(0xC0000000UL)
 #else
 #define VM_MAX_ADDRESS		(0xc0000000UL)
 #endif

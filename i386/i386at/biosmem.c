@@ -637,10 +637,8 @@ biosmem_setup_allocator(const struct multiboot_raw_info *mbi)
      */
     end = vm_page_trunc((mbi->mem_upper + 1024) << 10);
 
-#ifndef __LP64__
     if (end > VM_PAGE_DIRECTMAP_LIMIT)
         end = VM_PAGE_DIRECTMAP_LIMIT;
-#endif /* __LP64__ */
 
     max_heap_start = 0;
     max_heap_end = 0;

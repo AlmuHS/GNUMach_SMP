@@ -77,10 +77,10 @@ typedef phys_addr_t pt_entry_t;
 #define PDPNUM_KERNEL	(((VM_MAX_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS) >> PDPSHIFT) + 1)
 #define PDPNUM_USER	(((VM_MAX_USER_ADDRESS - VM_MIN_USER_ADDRESS) >> PDPSHIFT) + 1)
 #define PDPMASK		0x1ff	/* mask for page directory pointer index */
-#else
+#else /* __x86_64__ */
 #define PDPNUM		4	/* number of page directory pointers */
 #define PDPMASK		3	/* mask for page directory pointer index */
-#endif
+#endif /* __x86_64__ */
 #define PDPSHIFT	30	/* page directory pointer */
 #define PDESHIFT	21	/* page descriptor shift */
 #define PDEMASK		0x1ff	/* mask for page descriptor index */
@@ -109,7 +109,11 @@ typedef phys_addr_t pt_entry_t;
 #if PAE
 /* Special version assuming contiguous page directories.  Making it
    include the page directory pointer table index too.  */
+#ifdef __x86_64__
+#define lin2pdenum_cont(a)	(((a) >> PDESHIFT) & 0x3ff)
+#else
 #define lin2pdenum_cont(a)	(((a) >> PDESHIFT) & 0x7ff)
+#endif
 #else
 #define lin2pdenum_cont(a)	lin2pdenum(a)
 #endif
@@ -155,7 +159,11 @@ typedef phys_addr_t pt_entry_t;
 #endif	/* MACH_PV_PAGETABLES */
 #define INTEL_PTE_WIRED		0x00000200
 #ifdef PAE
+#ifdef __x86_64__
+#define INTEL_PTE_PFN		0xfffffffffffff000ULL
+#else /* __x86_64__ */
 #define INTEL_PTE_PFN		0x00007ffffffff000ULL
+#endif/* __x86_64__ */
 #else
 #define INTEL_PTE_PFN		0xfffff000
 #endif

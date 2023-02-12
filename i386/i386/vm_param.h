@@ -45,7 +45,7 @@
 #define VM_MIN_KERNEL_ADDRESS	0xC0000000UL
 #endif
 
-#ifdef	MACH_XEN
+#if defined(MACH_XEN) || defined (__x86_64__)
 /* PV kernels can be loaded directly to the target virtual address */
 #define INIT_VM_MIN_KERNEL_ADDRESS	VM_MIN_KERNEL_ADDRESS
 #else	/* MACH_XEN */
@@ -72,12 +72,22 @@
  * Reserve mapping room for the kernel map, which includes
  * the device I/O map and the IPC map.
  */
+#ifdef __x86_64__
+/*
+ * Vm structures are quite bigger on 64 bit.
+ * This should be well enough for 8G of physical memory; on the other hand,
+ * maybe not all of them need to be in directly-mapped memory, see the parts
+ * allocated with pmap_steal_memory().
+ */
+#define VM_KERNEL_MAP_SIZE (512 * 1024 * 1024)
+#else
 #define VM_KERNEL_MAP_SIZE (152 * 1024 * 1024)
+#endif
 
 /* This is the kernel address range in linear addresses.  */
 #ifdef __x86_64__
 #define LINEAR_MIN_KERNEL_ADDRESS	VM_MIN_KERNEL_ADDRESS
-#define LINEAR_MAX_KERNEL_ADDRESS	(0x00000000ffffffffUL)
+#define LINEAR_MAX_KERNEL_ADDRESS	(0xffffffffffffffffUL)
 #else
 /* On x86, the kernel virtual address space is actually located
    at high linear addresses. */
@@ -141,8 +151,10 @@
 #else /* MACH_XEN */
 #ifdef __LP64__
 #define VM_PAGE_MAX_SEGS 4
-#define VM_PAGE_DMA32_LIMIT     DECL_CONST(0x100000000, UL)
-#define VM_PAGE_DIRECTMAP_LIMIT DECL_CONST(0x400000000000, UL)
+#define VM_PAGE_DMA32_LIMIT     DECL_CONST(0x10000000, UL)
+#define VM_PAGE_DIRECTMAP_LIMIT (VM_MAX_KERNEL_ADDRESS \
+				 - VM_MIN_KERNEL_ADDRESS \
+				 - VM_KERNEL_MAP_SIZE + 1)
 #define VM_PAGE_HIGHMEM_LIMIT   DECL_CONST(0x10000000000000, UL)
 #else /* __LP64__ */
 #define VM_PAGE_DIRECTMAP_LIMIT (VM_MAX_KERNEL_ADDRESS \
