@@ -59,10 +59,10 @@ ENTRY(interrupt)
 
 	movl	S_IRQ,%eax		/* copy irq number */
 	shll	$2,%eax			/* irq * 4 */
-	movl	EXT(iunit)(%eax),%edi	/* get device unit number as 1st arg */
+	movl	EXT(iunit)(%rax),%edi	/* get device unit number as 1st arg */
 
 	shll	$1,%eax			/* irq * 8 */
-	call	*EXT(ivect)(%eax)	/* call interrupt handler */
+	call	*EXT(ivect)(%rax)	/* call interrupt handler */
 
 	movl	S_IPL,%edi		/* restore previous ipl */
 	call	splx_cli		/* restore previous ipl */

@@ -1152,7 +1152,7 @@ syscall_native:
 #endif
 	shll	$5,%eax			/* manual indexing of mach_trap_t */
 	xorq	%r10,%r10
-	movl	EXT(mach_trap_table)(%eax),%r10d
+	mov	EXT(mach_trap_table)(%rax),%r10
 					/* get number of arguments */
 	andq	%r10,%r10
 	jz	mach_call_call		/* skip argument copy if none */
@@ -1199,9 +1199,7 @@ mach_call_call:
 	/* will return with syscallofs still (or again) in eax */
 0:
 #endif /* DEBUG */
-
-	call	*EXT(mach_trap_table)+8(%eax)
-					/* call procedure */
+	call	*EXT(mach_trap_table)+8(%rax)  /* call procedure */
 	movq	%rsp,%rcx		/* get kernel stack */
 	or	$(KERNEL_STACK_SIZE-1),%rcx
 	movq	-7-IKS_SIZE(%rcx),%rsp	/* switch back to PCB stack */
