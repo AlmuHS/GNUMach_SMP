@@ -276,7 +276,7 @@ comcninit(struct consdev *cp)
 
 	{
 		char	msg[128];
-		volatile unsigned char *p = (volatile unsigned char *)0xb8000;
+		volatile unsigned char *p = (volatile unsigned char *)phystokv(0xb8000);
 		int	i;
 
 		sprintf(msg, "    **** using COM port %d for console ****",
