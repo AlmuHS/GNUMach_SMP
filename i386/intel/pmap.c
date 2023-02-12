@@ -437,8 +437,9 @@ pmap_pde(const pmap_t pmap, vm_offset_t addr)
 	if (pmap == kernel_pmap)
 		addr = kvtolin(addr);
 #if PAE
-	pt_entry_t *pdp_table, pdp, pde;
+	pt_entry_t *pdp_table;
 #ifdef __x86_64__
+	pt_entry_t pdp;
 	pdp = pmap->l4base[lin2l4num(addr)];
 	if ((pdp & INTEL_PTE_VALID) == 0)
 		return PT_ENTRY_NULL;
@@ -446,7 +447,7 @@ pmap_pde(const pmap_t pmap, vm_offset_t addr)
 #else /* __x86_64__ */
 	pdp_table = pmap->pdpbase;
 #endif /* __x86_64__ */
-	pde = pdp_table[lin2pdpnum(addr)];
+	pt_entry_t pde = pdp_table[lin2pdpnum(addr)];
 	if ((pde & INTEL_PTE_VALID) == 0)
 		return PT_ENTRY_NULL;
 	page_dir = (pt_entry_t *) ptetokv(pde);
