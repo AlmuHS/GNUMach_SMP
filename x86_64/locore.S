@@ -590,7 +590,7 @@ trap_from_kernel:
 ENTRY(thread_exception_return)
 ENTRY(thread_bootstrap_return)
 	movq	%rsp,%rcx			/* get kernel stack */
-	or	$(KERNEL_STACK_SIZE-1),%ecx
+	or	$(KERNEL_STACK_SIZE-1),%rcx
 	movq	-7-IKS_SIZE(%rcx),%rsp		/* switch back to PCB stack */
 	jmp	_return_from_trap
 
@@ -603,7 +603,7 @@ ENTRY(thread_bootstrap_return)
 ENTRY(thread_syscall_return)
 	movq	S_ARG0,%rax			/* get return value */
 	movq	%rsp,%rcx			/* get kernel stack */
-	or	$(KERNEL_STACK_SIZE-1),%ecx
+	or	$(KERNEL_STACK_SIZE-1),%rcx
 	movq	-7-IKS_SIZE(%rcx),%rsp		/* switch back to PCB stack */
 	movq	%rax,R_EAX(%rsp)		/* save return value */
 	jmp	_return_from_trap

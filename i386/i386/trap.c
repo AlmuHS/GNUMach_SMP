@@ -154,9 +154,9 @@ char *trap_name(unsigned int trapnum)
  */
 void kernel_trap(struct i386_saved_state *regs)
 {
-	int		code;
-	int		subcode;
-	int		type;
+	unsigned long	code;
+	unsigned long	subcode;
+	unsigned long	type;
 	vm_map_t	map;
 	kern_return_t	result;
 	thread_t	thread;
@@ -357,9 +357,9 @@ dump_ss(regs);
 int user_trap(struct i386_saved_state *regs)
 {
 	int	exc = 0;	/* Suppress gcc warning */
-	int	code;
-	int	subcode;
-	int	type;
+	unsigned long	code;
+	unsigned long	subcode;
+	unsigned long	type;
 	thread_t thread = current_thread();
 
 #ifdef __x86_64__
