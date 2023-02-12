@@ -72,7 +72,7 @@ ipc_notify_init_port_deleted(mach_port_deleted_notification_t *n)
 	m->msgh_id = MACH_NOTIFY_PORT_DELETED;
 
 	t->msgt_name = MACH_MSG_TYPE_PORT_NAME;
-	t->msgt_size = PORT_T_SIZE_IN_BITS;
+	t->msgt_size = PORT_NAME_T_SIZE_IN_BITS;
 	t->msgt_number = 1;
 	t->msgt_inline = TRUE;
 	t->msgt_longform = FALSE;
@@ -102,7 +102,7 @@ ipc_notify_init_msg_accepted(mach_msg_accepted_notification_t *n)
 	m->msgh_id = MACH_NOTIFY_MSG_ACCEPTED;
 
 	t->msgt_name = MACH_MSG_TYPE_PORT_NAME;
-	t->msgt_size = PORT_T_SIZE_IN_BITS;
+	t->msgt_size = PORT_NAME_T_SIZE_IN_BITS;
 	t->msgt_number = 1;
 	t->msgt_inline = TRUE;
 	t->msgt_longform = FALSE;
@@ -164,7 +164,7 @@ ipc_notify_init_no_senders(
 	m->msgh_id = MACH_NOTIFY_NO_SENDERS;
 
 	t->msgt_name = MACH_MSG_TYPE_INTEGER_32;
-	t->msgt_size = PORT_T_SIZE_IN_BITS;
+	t->msgt_size = 32;
 	t->msgt_number = 1;
 	t->msgt_inline = TRUE;
 	t->msgt_longform = FALSE;
@@ -215,7 +215,7 @@ ipc_notify_init_dead_name(
 	m->msgh_id = MACH_NOTIFY_DEAD_NAME;
 
 	t->msgt_name = MACH_MSG_TYPE_PORT_NAME;
-	t->msgt_size = PORT_T_SIZE_IN_BITS;
+	t->msgt_size = PORT_NAME_T_SIZE_IN_BITS;
 	t->msgt_number = 1;
 	t->msgt_inline = TRUE;
 	t->msgt_longform = FALSE;
