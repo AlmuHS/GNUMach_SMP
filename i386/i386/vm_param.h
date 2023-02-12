@@ -77,7 +77,7 @@
 /* This is the kernel address range in linear addresses.  */
 #ifdef __x86_64__
 #define LINEAR_MIN_KERNEL_ADDRESS	VM_MIN_KERNEL_ADDRESS
-#define LINEAR_MAX_KERNEL_ADDRESS	(0x00007fffffffffffUL)
+#define LINEAR_MAX_KERNEL_ADDRESS	(0x00000000ffffffffUL)
 #else
 /* On x86, the kernel virtual address space is actually located
    at high linear addresses. */

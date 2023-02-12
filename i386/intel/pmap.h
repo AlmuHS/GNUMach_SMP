@@ -74,16 +74,14 @@ typedef phys_addr_t pt_entry_t;
 #ifdef __x86_64__
 #define L4SHIFT		39	/* L4 shift */
 #define L4MASK		0x1ff	/* mask for L4 index */
-#endif
-#define PDPSHIFT	30	/* page directory pointer */
-#ifdef __x86_64__
-/* Enough for 8GiB addressing space. */
-#define PDPNUM		8	/* number of page directory pointers */
+#define PDPNUM_KERNEL	(((VM_MAX_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS) >> PDPSHIFT) + 1)
+#define PDPNUM_USER	(((VM_MAX_USER_ADDRESS - VM_MIN_USER_ADDRESS) >> PDPSHIFT) + 1)
 #define PDPMASK		0x1ff	/* mask for page directory pointer index */
 #else
 #define PDPNUM		4	/* number of page directory pointers */
 #define PDPMASK		3	/* mask for page directory pointer index */
 #endif
+#define PDPSHIFT	30	/* page directory pointer */
 #define PDESHIFT	21	/* page descriptor shift */
 #define PDEMASK		0x1ff	/* mask for page descriptor index */
 #define PTESHIFT	12	/* page table shift */
