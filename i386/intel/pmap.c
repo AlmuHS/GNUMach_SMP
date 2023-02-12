@@ -582,6 +582,61 @@ vm_offset_t pmap_map_bd(
 	return(virt);
 }
 
+#ifdef	MACH_PV_PAGETABLES
+void pmap_bootstrap_xen()
+{
+	/* We don't actually deal with the CR3 register content at all */
+	hyp_vm_assist(VMASST_CMD_enable, VMASST_TYPE_pae_extended_cr3);
+	/*
+	 * Xen may only provide as few as 512KB extra bootstrap linear memory,
+	 * which is far from enough to map all available memory, so we need to
+	 * map more bootstrap linear memory. We here map 1 (resp. 4 for PAE)
+	 * other L1 table(s), thus 4MiB extra memory (resp. 8MiB), which is
+	 * enough for a pagetable mapping 4GiB.
+	 */
+#ifdef PAE
+#define NSUP_L1 4
+#else
+#define NSUP_L1 1
+#endif
+	pt_entry_t *l1_map[NSUP_L1];
+	vm_offset_t la;
+	int n_l1map;
+	for (n_l1map = 0, la = VM_MIN_KERNEL_ADDRESS; la >= VM_MIN_KERNEL_ADDRESS; la += NPTES * PAGE_SIZE) {
+		pt_entry_t *base = (pt_entry_t*) boot_info.pt_base;
+#ifdef	PAE
+#ifdef __x86_64__
+		base = (pt_entry_t*) ptetokv(base[0]);
+#endif /* x86_64 */
+		pt_entry_t *l2_map = (pt_entry_t*) ptetokv(base[lin2pdpnum(la)]);
+#else	/* PAE */
+		pt_entry_t *l2_map = base;
+#endif	/* PAE */
+		/* Like lin2pdenum, but works with non-contiguous boot L3 */
+		l2_map += (la >> PDESHIFT) & PDEMASK;
+		if (!(*l2_map & INTEL_PTE_VALID)) {
+			struct mmu_update update;
+			unsigned j, n;
+
+			l1_map[n_l1map] = (pt_entry_t*) phystokv(pmap_grab_page());
+			for (j = 0; j < NPTES; j++)
+				l1_map[n_l1map][j] = (((pt_entry_t)pfn_to_mfn(lin2pdenum(la - VM_MIN_KERNEL_ADDRESS) * NPTES + j)) << PAGE_SHIFT) | INTEL_PTE_VALID | INTEL_PTE_WRITE;
+			pmap_set_page_readonly_init(l1_map[n_l1map]);
+			if (!hyp_mmuext_op_mfn (MMUEXT_PIN_L1_TABLE, kv_to_mfn (l1_map[n_l1map])))
+				panic("couldn't pin page %p(%lx)", l1_map[n_l1map], (vm_offset_t) kv_to_ma (l1_map[n_l1map]));
+			update.ptr = kv_to_ma(l2_map);
+			update.val = kv_to_ma(l1_map[n_l1map]) | INTEL_PTE_VALID | INTEL_PTE_WRITE;
+			hyp_mmu_update(kv_to_la(&update), 1, kv_to_la(&n), DOMID_SELF);
+			if (n != 1)
+				panic("couldn't complete bootstrap map");
+			/* added the last L1 table, can stop */
+			if (++n_l1map >= NSUP_L1)
+				break;
+		}
+	}
+}
+#endif	/* MACH_PV_PAGETABLES */
+
 /*
  *	Bootstrap the system enough to run with virtual memory.
  *	Allocate the kernel page directory and page tables,
@@ -678,57 +733,7 @@ void pmap_bootstrap(void)
 	}
 
 #ifdef	MACH_PV_PAGETABLES
-	/* We don't actually deal with the CR3 register content at all */
-	hyp_vm_assist(VMASST_CMD_enable, VMASST_TYPE_pae_extended_cr3);
-	/*
-	 * Xen may only provide as few as 512KB extra bootstrap linear memory,
-	 * which is far from enough to map all available memory, so we need to
-	 * map more bootstrap linear memory. We here map 1 (resp. 4 for PAE)
-	 * other L1 table(s), thus 4MiB extra memory (resp. 8MiB), which is
-	 * enough for a pagetable mapping 4GiB.
-	 */
-#ifdef PAE
-#define NSUP_L1 4
-#else
-#define NSUP_L1 1
-#endif
-	pt_entry_t *l1_map[NSUP_L1];
-	{
-		vm_offset_t la;
-		int n_l1map;
-		for (n_l1map = 0, la = VM_MIN_KERNEL_ADDRESS; la >= VM_MIN_KERNEL_ADDRESS; la += NPTES * PAGE_SIZE) {
-			pt_entry_t *base = (pt_entry_t*) boot_info.pt_base;
-#ifdef	PAE
-#ifdef __x86_64__
-			base = (pt_entry_t*) ptetokv(base[0]);
-#endif /* x86_64 */
-			pt_entry_t *l2_map = (pt_entry_t*) ptetokv(base[lin2pdpnum(la)]);
-#else	/* PAE */
-			pt_entry_t *l2_map = base;
-#endif	/* PAE */
-			/* Like lin2pdenum, but works with non-contiguous boot L3 */
-			l2_map += (la >> PDESHIFT) & PDEMASK;
-			if (!(*l2_map & INTEL_PTE_VALID)) {
-				struct mmu_update update;
-				unsigned j, n;
-
-				l1_map[n_l1map] = (pt_entry_t*) phystokv(pmap_grab_page());
-				for (j = 0; j < NPTES; j++)
-					l1_map[n_l1map][j] = (((pt_entry_t)pfn_to_mfn(lin2pdenum(la - VM_MIN_KERNEL_ADDRESS) * NPTES + j)) << PAGE_SHIFT) | INTEL_PTE_VALID | INTEL_PTE_WRITE;
-				pmap_set_page_readonly_init(l1_map[n_l1map]);
-				if (!hyp_mmuext_op_mfn (MMUEXT_PIN_L1_TABLE, kv_to_mfn (l1_map[n_l1map])))
-					panic("couldn't pin page %p(%lx)", l1_map[n_l1map], (vm_offset_t) kv_to_ma (l1_map[n_l1map]));
-				update.ptr = kv_to_ma(l2_map);
-				update.val = kv_to_ma(l1_map[n_l1map]) | INTEL_PTE_VALID | INTEL_PTE_WRITE;
-				hyp_mmu_update(kv_to_la(&update), 1, kv_to_la(&n), DOMID_SELF);
-				if (n != 1)
-					panic("couldn't complete bootstrap map");
-				/* added the last L1 table, can stop */
-				if (++n_l1map >= NSUP_L1)
-					break;
-			}
-		}
-	}
+	pmap_bootstrap_xen()
 #endif	/* MACH_PV_PAGETABLES */
 
 	/*
