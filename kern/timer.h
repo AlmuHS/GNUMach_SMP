@@ -134,6 +134,18 @@ extern unsigned		timer_delta(timer_t, timer_save_t);
 extern void		timer_normalize(timer_t);
 extern void		timer_init(timer_t);
 
+static inline void
+thread_read_times_rpc(thread_t thread,
+                      rpc_time_value_t *user_time_p, rpc_time_value_t *system_time_p)
+{
+  time_value_t user_p, system_p;
+  thread_read_times(thread, &user_p, &system_p);
+  user_time_p->seconds = user_p.seconds;
+  user_time_p->microseconds = user_p.microseconds;
+  system_time_p->seconds = system_p.seconds;
+  system_time_p->microseconds = system_p.microseconds;
+}
+
 #if	STAT_TIME
 /*
  *	Macro to bump timer values.

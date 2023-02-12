@@ -56,11 +56,11 @@ struct task_basic_info {
 	integer_t	base_priority;	/* base scheduling priority */
 	rpc_vm_size_t	virtual_size;	/* number of virtual pages */
 	rpc_vm_size_t	resident_size;	/* number of resident pages */
-	time_value_t	user_time;	/* total user run time for
+	rpc_time_value_t	user_time;	/* total user run time for
 					   terminated threads */
-	time_value_t	system_time;	/* total system run time for
+	rpc_time_value_t	system_time;	/* total system run time for
 					   terminated threads */
-	time_value_t	creation_time;  /* creation time stamp */
+	rpc_time_value_t	creation_time;  /* creation time stamp */
 };
 
 typedef struct task_basic_info		task_basic_info_data_t;
@@ -89,9 +89,9 @@ typedef struct task_events_info		*task_events_info_t;
 					   only accurate if suspended */
 
 struct task_thread_times_info {
-	time_value_t	user_time;	/* total user run time for
+	rpc_time_value_t	user_time;	/* total user run time for
 					   live threads */
-	time_value_t	system_time;	/* total system run time for
+	rpc_time_value_t	system_time;	/* total system run time for
 					   live threads */
 };
 

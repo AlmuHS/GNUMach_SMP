@@ -429,7 +429,7 @@ record_time_stamp(time_value_t *stamp)
  * real-time clock frame.
  */
 void
-read_time_stamp (const time_value_t *stamp, time_value_t *result)
+read_time_stamp (const time_value_t *stamp, rpc_time_value_t *result)
 {
 	time_value64_t result64;
 	TIME_VALUE_TO_TIME_VALUE64(stamp, &result64);

@@ -1522,7 +1522,7 @@ kern_return_t thread_info(
 
 	    /* fill in info */
 
-	    thread_read_times(thread,
+	    thread_read_times_rpc(thread,
 			&basic_info->user_time,
 			&basic_info->system_time);
 	    basic_info->base_priority	= thread->priority;

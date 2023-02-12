@@ -55,8 +55,8 @@ typedef	integer_t	thread_info_data_t[THREAD_INFO_MAX];
 #define THREAD_BASIC_INFO	1		/* basic information */
 
 struct thread_basic_info {
-	time_value_t	user_time;	/* user run time */
-	time_value_t	system_time;	/* system run time */
+	rpc_time_value_t	user_time;	/* user run time */
+	rpc_time_value_t	system_time;	/* system run time */
 	integer_t	cpu_usage;	/* scaled cpu usage percentage */
 	integer_t	base_priority;	/* base scheduling priority */
 	integer_t	cur_priority;	/* current scheduling priority */
@@ -65,7 +65,7 @@ struct thread_basic_info {
 	integer_t	suspend_count;	/* suspend count for thread */
 	integer_t	sleep_time;	/* number of seconds that thread
 					   has been sleeping */
-	time_value_t	creation_time;	/* time stamp of creation */
+	rpc_time_value_t	creation_time;	/* time stamp of creation */
 };
 
 typedef struct thread_basic_info	thread_basic_info_data_t;
