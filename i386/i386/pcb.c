@@ -622,10 +622,10 @@ kern_return_t thread_setstatus(
 		int_table = state->int_table;
 		int_count = state->int_count;
 
-		if (int_table >= VM_MAX_ADDRESS ||
+		if (int_table >= VM_MAX_USER_ADDRESS ||
 		    int_table +
 			int_count * sizeof(struct v86_interrupt_table)
-			    > VM_MAX_ADDRESS)
+			    > VM_MAX_USER_ADDRESS)
 		    return KERN_INVALID_ARGUMENT;
 
 		thread->pcb->ims.v86s.int_table = int_table;
@@ -834,7 +834,7 @@ thread_set_syscall_return(
 vm_offset_t
 user_stack_low(vm_size_t stack_size)
 {
-	return (VM_MAX_ADDRESS - stack_size);
+	return (VM_MAX_USER_ADDRESS - stack_size);
 }
 
 /*

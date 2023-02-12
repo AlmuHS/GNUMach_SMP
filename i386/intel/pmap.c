@@ -1342,7 +1342,7 @@ pmap_t pmap_create(vm_size_t size)
 				  );
 	}
 #ifdef __x86_64__
-	// TODO alloc only PDPTE for the user range VM_MIN_ADDRESS, VM_MAX_ADDRESS
+	// TODO alloc only PDPTE for the user range VM_MIN_USER_ADDRESS, VM_MAX_USER_ADDRESS
 	// and keep the same for kernel range, in l4 table we have different entries
 	p->l4base = (pt_entry_t *) kmem_cache_alloc(&l4_cache);
 	if (p->l4base == NULL)
@@ -1350,7 +1350,7 @@ pmap_t pmap_create(vm_size_t size)
 	memset(p->l4base, 0, INTEL_PGBYTES);
 	WRITE_PTE(&p->l4base[lin2l4num(VM_MIN_KERNEL_ADDRESS)],
 		  pa_to_pte(kvtophys((vm_offset_t) pdp_kernel)) | INTEL_PTE_VALID | INTEL_PTE_WRITE | INTEL_PTE_USER);
-#if lin2l4num(VM_MIN_KERNEL_ADDRESS) != lin2l4num(VM_MAX_ADDRESS)
+#if lin2l4num(VM_MIN_KERNEL_ADDRESS) != lin2l4num(VM_MAX_USER_ADDRESS)
 	// TODO kernel vm and user vm are not in the same l4 entry, so add the user one
 #endif
 #ifdef	MACH_PV_PAGETABLES
@@ -1362,7 +1362,7 @@ pmap_t pmap_create(vm_size_t size)
 	memset(p->user_pdpbase, 0, INTEL_PGBYTES);
 	{
 		int i;
-		for (i = 0; i < lin2pdpnum(VM_MAX_ADDRESS); i++)
+		for (i = 0; i < lin2pdpnum(VM_MAX_USER_ADDRESS); i++)
 			WRITE_PTE(&p->user_pdpbase[i], pa_to_pte(kvtophys((vm_offset_t) page_dir[i])) | INTEL_PTE_VALID | INTEL_PTE_WRITE);
 	}
 	// FIXME: use kmem_cache_alloc instead
@@ -1440,7 +1440,7 @@ void pmap_destroy(pmap_t p)
 #ifdef __x86_64__
 #ifdef USER32
 	    /* In this case we know we have one PDP for user space */
-	    pt_entry_t *pdp = (pt_entry_t *) ptetokv(p->l4base[lin2l4num(VM_MIN_ADDRESS)]);
+	    pt_entry_t *pdp = (pt_entry_t *) ptetokv(p->l4base[lin2l4num(VM_MIN_USER_ADDRESS)]);
 #else
 #error "TODO do 64-bit userspace need more that 512G?"
 #endif /* USER32 */
@@ -1502,8 +1502,8 @@ void pmap_destroy(pmap_t p)
 #endif	/* MACH_PV_PAGETABLES */
 
 #ifdef __x86_64__
-	kmem_cache_free(&pdpt_cache, (vm_offset_t) pmap_ptp(p, VM_MIN_ADDRESS));
-#if lin2l4num(VM_MIN_KERNEL_ADDRESS) != lin2l4num(VM_MAX_ADDRESS)
+	kmem_cache_free(&pdpt_cache, (vm_offset_t) pmap_ptp(p, VM_MIN_USER_ADDRESS));
+#if lin2l4num(VM_MIN_KERNEL_ADDRESS) != lin2l4num(VM_MAX_USER_ADDRESS)
 	// TODO kernel vm and user vm are not in the same l4 entry
 #endif
 	kmem_cache_free(&l4_cache, (vm_offset_t) p->l4base);
@@ -2449,7 +2449,7 @@ void pmap_collect(pmap_t p)
 #ifdef __x86_64__
 #ifdef USER32
 	    /* In this case we know we have one PDP for user space */
-	    pdp = (pt_entry_t *) ptetokv(p->l4base[lin2l4num(VM_MIN_ADDRESS)]);
+	    pdp = (pt_entry_t *) ptetokv(p->l4base[lin2l4num(VM_MIN_USER_ADDRESS)]);
 #else
 #error "TODO do 64-bit userspace need more that 512G?"
 #endif /* USER32 */
@@ -2556,7 +2556,7 @@ void pmap_collect(pmap_t p)
 #if PAE
 	}
 #endif
-	PMAP_UPDATE_TLBS(p, VM_MIN_ADDRESS, VM_MAX_ADDRESS);
+	PMAP_UPDATE_TLBS(p, VM_MIN_USER_ADDRESS, VM_MAX_USER_ADDRESS);
 
 	PMAP_READ_UNLOCK(p, spl);
 	return;
@@ -2967,7 +2967,7 @@ void    signal_cpus(
 		 *	indicate overflow.
 		 */
 		update_list_p->item[UPDATE_LIST_SIZE-1].pmap  = kernel_pmap;
-		update_list_p->item[UPDATE_LIST_SIZE-1].start = VM_MIN_ADDRESS;
+		update_list_p->item[UPDATE_LIST_SIZE-1].start = VM_MIN_USER_ADDRESS;
 		update_list_p->item[UPDATE_LIST_SIZE-1].end   = VM_MAX_KERNEL_ADDRESS;
 	    }
 	    else {

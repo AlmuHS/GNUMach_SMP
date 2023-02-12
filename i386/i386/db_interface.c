@@ -119,8 +119,8 @@ kern_return_t db_set_debug_state(
 	int i;
 
 	for (i = 0; i <= 3; i++)
-		if (state->dr[i] < VM_MIN_ADDRESS
-	 	 || state->dr[i] >= VM_MAX_ADDRESS)
+		if (state->dr[i] < VM_MIN_USER_ADDRESS
+		 || state->dr[i] >= VM_MAX_USER_ADDRESS)
 			return KERN_INVALID_ARGUMENT;
 
 	pcb->ims.ids = *state;

@@ -122,8 +122,8 @@ task_create_kernel(
 			new_task->map = VM_MAP_NULL;
 		else {
 			new_task->map = vm_map_create(new_pmap,
-					round_page(VM_MIN_ADDRESS),
-					trunc_page(VM_MAX_ADDRESS));
+					round_page(VM_MIN_USER_ADDRESS),
+					trunc_page(VM_MAX_USER_ADDRESS));
 			if (new_task->map == VM_MAP_NULL)
 				pmap_destroy(new_pmap);
 		}

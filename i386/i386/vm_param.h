@@ -31,6 +31,10 @@
 #include <xen/public/xen.h>
 #endif
 
+/* To avoid ambiguity in kernel code, make the name explicit */
+#define VM_MIN_USER_ADDRESS VM_MIN_ADDRESS
+#define VM_MAX_USER_ADDRESS VM_MAX_ADDRESS
+
 /* The kernel address space is usually 1GB, usually starting at virtual address 0.  */
 /* This can be changed freely to separate kernel addresses from user addresses
  * for better trace support in kdb; the _START symbol has to be offset by the
@@ -77,7 +81,7 @@
 #else
 /* On x86, the kernel virtual address space is actually located
    at high linear addresses. */
-#define LINEAR_MIN_KERNEL_ADDRESS	(VM_MAX_ADDRESS)
+#define LINEAR_MIN_KERNEL_ADDRESS	(VM_MAX_USER_ADDRESS)
 #define LINEAR_MAX_KERNEL_ADDRESS	(0xffffffffUL)
 #endif
 
