@@ -137,7 +137,7 @@ ud2
 	movq	S_ARG2,%rsi			/* get its argument */
 
 	CPU_NUMBER(%eax)
-	movq	EXT(interrupt_stack)(,%eax,8),%rcx	/* point to its interrupt stack */
+	movq	CX(EXT(int_stack_base),%eax),%rcx	/* point to its interrupt stack */
 	lea	INTSTACK_SIZE(%rcx),%rsp	/* switch to it (top) */
 
 	movq	%rax,%rdi			/* push thread */
