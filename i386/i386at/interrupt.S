@@ -43,6 +43,9 @@ ENTRY(interrupt)
 	cmpl	$255,%eax		/* was this a spurious intr? */
 	je	_no_eoi			/* if so, just return */
 #endif
+	cmpl	$CALL_SINGLE_FUNCTION_BASE,%eax		/* was this a SMP call single function request? */
+	je	_call_single
+
 	subl	$24,%esp		/* Two local variables + 4 parameters */
 	movl	%eax,S_IRQ		/* save irq number */
 	call	spl7			/* set ipl */
@@ -58,8 +61,6 @@ ENTRY(interrupt)
 	movl	%eax,12(%esp)		/* address of interrupted registers as 4th arg */
 
 	movl	S_IRQ,%eax		/* copy irq number */
-	cmpl	$CALL_SINGLE_FUNCTION_BASE,%eax		/* was this a SMP call single function request? */
-	je	_call_single
 
 	shll	$2,%eax			/* irq * 4 */
 	movl	EXT(iunit)(%eax),%edx	/* get device unit number */
@@ -124,6 +125,5 @@ _no_eoi:
 _call_single:
 	call	EXT(lapic_eoi)		/* lapic EOI before the handler to allow extra update */
 	call	EXT(pmap_update_interrupt) /* TODO: Allow other functions */
-	addl	$24,%esp
 	ret
 END(interrupt)
