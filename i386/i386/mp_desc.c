@@ -210,6 +210,9 @@ paging_enable(void)
     /* Turn paging on.
      * TODO: Why does setting the WP bit here cause a crash?
      */
+#if PAE
+    set_cr4(get_cr4() | CR4_PAE);
+#endif
     set_cr0(get_cr0() | CR0_PG /* | CR0_WP */);
     set_cr0(get_cr0() & ~(CR0_CD | CR0_NW));
     if (CPU_HAS_FEATURE(CPU_FEATURE_PGE))
