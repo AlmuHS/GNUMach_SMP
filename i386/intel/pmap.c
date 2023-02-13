@@ -1271,7 +1271,7 @@ pmap_t pmap_create(vm_size_t size)
 	// needs to be reworked if we want to dynamically allocate PDPs
 	const int PDPNUM = PDPNUM_KERNEL;
 #endif
-	pt_entry_t		*page_dir[PDPNUM], *pdp_kernel;
+	pt_entry_t		*page_dir[PDPNUM];
 	int			i;
 	pmap_t			p;
 	pmap_statistics_t	stats;
@@ -1329,7 +1329,7 @@ pmap_t pmap_create(vm_size_t size)
 #endif	/* MACH_PV_PAGETABLES */
 
 #if PAE
-	pdp_kernel = (pt_entry_t *) kmem_cache_alloc(&pdpt_cache);
+	pt_entry_t *pdp_kernel = (pt_entry_t *) kmem_cache_alloc(&pdpt_cache);
 	if (pdp_kernel == NULL) {
 		for (i = 0; i < PDPNUM; i++)
 			kmem_cache_free(&pd_cache, (vm_address_t) page_dir[i]);
