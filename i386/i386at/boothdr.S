@@ -1,6 +1,6 @@
 
 #include <mach/machine/asm.h>
-
+#include <i386/apic.h>
 #include <i386/i386asm.h>
 
 	/*
@@ -54,7 +54,18 @@ boot_entry:
 	movw	%ax,%ss
 
 	/* Switch to our own interrupt stack.  */
-	movl	$_intstack+INTSTACK_SIZE,%esp
+	movl	$solid_intstack+INTSTACK_SIZE-4, %esp
+	andl	$0xfffffff0,%esp
+
+	/* Enable local apic */
+	xorl	%eax, %eax
+	xorl	%edx, %edx
+	movl	$APIC_MSR, %ecx
+	rdmsr
+	orl	$APIC_MSR_ENABLE, %eax
+	orl	$APIC_MSR_BSP, %eax
+	movl	$APIC_MSR, %ecx
+	wrmsr
 
 	/* Reset EFLAGS to a known state.  */
 	pushl	$0
@@ -90,9 +101,6 @@ iplt_done:
 
 	/* Jump into C code.  */
 	call	EXT(c_boot_entry)
-
-	.comm	_intstack,INTSTACK_SIZE
-	.comm	_eintstack,0
 
 .align 16
 	.word 0

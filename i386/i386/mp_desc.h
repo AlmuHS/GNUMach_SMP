@@ -46,6 +46,8 @@
 #include "gdt.h"
 #include "ldt.h"
 
+#define AP_BOOT_ADDR	0x7000
+
 /*
  * The descriptor tables are together in a structure
  * allocated one per processor (except for the boot processor).
@@ -72,11 +74,12 @@ extern struct task_tss		*mp_ktss[NCPUS];
  */
 extern struct real_descriptor	*mp_gdt[NCPUS];
 
+extern uint8_t solid_intstack[];
 
 /*
  * Each CPU calls this routine to set up its descriptor tables.
  */
-extern struct mp_desc_table *	mp_desc_init(int);
+extern int mp_desc_init(int);
 
 
 extern void interrupt_processor(int cpu);
@@ -89,5 +92,7 @@ extern void start_other_cpus(void);
 extern kern_return_t cpu_start(int cpu);
 
 extern kern_return_t cpu_control(int cpu, const int *info, unsigned int count);
+
+extern void interrupt_stack_alloc(void);
 
 #endif	/* _I386_MP_DESC_H_ */

@@ -128,11 +128,9 @@ extern char	version[];
 /* If set, reboot the system on ctrl-alt-delete.  */
 boolean_t	rebootflag = FALSE;	/* exported to kdintr */
 
-/* Interrupt stack.  */
-static char int_stack[INTSTACK_SIZE] __aligned(INTSTACK_SIZE);
-#if NCPUS <= 1
-vm_offset_t int_stack_top[1], int_stack_base[1];
-#endif
+/* Interrupt stacks  */
+extern vm_offset_t int_stack_top[], int_stack_base[];
+extern uint8_t solid_intstack[];    /* bottom */
 
 #ifdef LINUX_DEV
 extern void linux_init(void);
@@ -165,15 +163,16 @@ void machine_init(void)
 	hyp_init();
 #else	/* MACH_HYP */
 
-#if defined(APIC)
-	if (acpi_apic_init() != ACPI_SUCCESS) {
-		panic("APIC not found, unable to boot");
-	}
-	ioapic_configure();
-	lapic_enable_timer();
 #if (NCPUS > 1)
+	acpi_apic_init();
 	smp_init();
+#endif
+#if defined(APIC)
+	ioapic_configure();
+#endif
+	startrtclock();
 
+#if defined(APIC)
 #warning FIXME: Rather unmask them from their respective drivers
 	/* kd */
 	unmask_irq(1);
@@ -181,8 +180,7 @@ void machine_init(void)
 	unmask_irq(4);
 	/* com1 */
 	unmask_irq(3);
-#endif /* NCPUS > 1 */
-#endif /* APIC */
+#endif
 
 #ifdef LINUX_DEV
 	/*
@@ -477,8 +475,7 @@ i386at_init(void)
 	hyp_p2m_init();
 #endif	/* MACH_XEN */
 
-	int_stack_base[0] = (vm_offset_t)&int_stack;
-	int_stack_top[0] = int_stack_base[0] + INTSTACK_SIZE - 4;
+	interrupt_stack_alloc();
 }
 
 /*
@@ -549,7 +546,6 @@ void c_boot_entry(vm_offset_t bi)
 #endif	/* MACH_KDB */
 
 	machine_slot[0].is_cpu = TRUE;
-	machine_slot[0].running = TRUE;
 	machine_slot[0].cpu_subtype = CPU_SUBTYPE_AT386;
 
 	switch (cpu_type)
@@ -595,8 +591,11 @@ timemmap(dev_t dev, vm_offset_t off, vm_prot_t prot)
 void
 startrtclock(void)
 {
-#ifndef APIC
+#ifdef APIC
+	lapic_enable_timer();
+#else
 	clkstart();
+	unmask_irq(0);
 #endif
 }
 

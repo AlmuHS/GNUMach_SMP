@@ -186,9 +186,8 @@ lapic_enable_timer(void)
     /* Some buggy hardware requires this set again */
     lapic->divider_config.r = LAPIC_TIMER_DIVIDE_16;
 
-    /* Enable interrupts for the first time on BSP */
-    asm("sti");
-    printf("LAPIC timer configured\n");
+    /* Enable interrupts for the first time */
+    printf("LAPIC timer configured on cpu%d\n", cpu_number());
 }
 
 void
