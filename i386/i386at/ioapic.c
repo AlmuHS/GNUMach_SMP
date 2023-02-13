@@ -37,7 +37,7 @@ int duplicate_pin;
 uint32_t lapic_timer_val = 0;
 uint32_t calibrated_ticks = 0;
 
-spl_t curr_ipl;
+spl_t curr_ipl[NCPUS] = {0};
 
 int iunit[NINTR] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
                     16, 17, 18, 19, 20, 21, 22, 23};
@@ -76,8 +76,11 @@ interrupt_handler_fn ivect[NINTR] = {
 void
 picdisable(void)
 {
+    int i;
+
     asm("cli");
-    curr_ipl = SPLHI;
+    for (i = 0; i < NCPUS; i++)
+        curr_ipl[i] = SPLHI;
 
     /*
     ** Disable PIC

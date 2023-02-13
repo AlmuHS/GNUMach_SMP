@@ -74,7 +74,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <i386/machspl.h>
 #include <i386/pio.h>
 
-spl_t	curr_ipl;
+spl_t	curr_ipl[NCPUS] = {0};
 int	curr_pic_mask;
 
 int	iunit[NINTR] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15};
@@ -112,8 +112,10 @@ picinit(void)
 	/*
 	** 0. Initialise the current level to match cli() 
 	*/
+	int i;
 
-	curr_ipl = SPLHI;
+	for (i = 0; i < NCPUS; i++)
+		curr_ipl[i] = SPLHI;
 	curr_pic_mask = 0;
 
 	/*

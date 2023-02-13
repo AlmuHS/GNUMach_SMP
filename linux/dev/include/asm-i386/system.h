@@ -1,7 +1,8 @@
 #ifndef __ASM_SYSTEM_H
 #define __ASM_SYSTEM_H
 
-#include <i386/ipl.h> /* curr_ipl, splx */
+#include <i386/ipl.h> /* curr_ipl[], splx */
+#include <i386/cpu_number.h>
 
 #include <asm/segment.h>
 
@@ -225,7 +226,7 @@ static inline unsigned long __xchg(unsigned long x, void * ptr, int size)
 #define mb()  __asm__ __volatile__ (""   : : :"memory")
 #define __sti() __asm__ __volatile__ ("sti": : :"memory")
 #define __cli() __asm__ __volatile__ ("cli": : :"memory")
-#define __save_flags(x) (x = ((curr_ipl > 0) ? 0 : (1 << 9)))
+#define __save_flags(x) (x = ((curr_ipl[cpu_number()] > 0) ? 0 : (1 << 9)))
 #define __restore_flags(x) splx((x & (1 << 9)) ? 0 : 7)
 
 #ifdef __SMP__

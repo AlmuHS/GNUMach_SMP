@@ -343,7 +343,7 @@ probe_irq_on (void)
   unsigned i, irqs = 0;
   unsigned long delay;
 
-  assert (curr_ipl == 0);
+  assert (curr_ipl[cpu_number()] == 0);
 
   /*
    * Allocate all available IRQs.
@@ -374,7 +374,7 @@ probe_irq_off (unsigned long irqs)
 {
   unsigned int i;
 
-  assert (curr_ipl == 0);
+  assert (curr_ipl[cpu_number()] == 0);
 
   irqs &= linux_pic_mask;
 

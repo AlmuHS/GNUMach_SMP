@@ -28,7 +28,7 @@
 #define NEVNT (sizeof(unsigned long) * sizeof(unsigned long) * 8)
 int	int_mask[NSPL];
 
-spl_t curr_ipl;
+spl_t curr_ipl[NCPUS];
 
 interrupt_handler_fn ivect[NEVNT];
 int intpri[NEVNT];
@@ -92,8 +92,11 @@ extern void hyp_callback(void);
 extern void hyp_failsafe_callback(void);
 
 void hyp_intrinit(void) {
+	int i;
+
 	form_int_mask();
-	curr_ipl = SPLHI;
+	for (i = 0; i < NCPUS; i++)
+		curr_ipl[i] = SPLHI;
 	hyp_shared_info.evtchn_mask[0] = int_mask[SPLHI];
 #ifdef __i386__
 	hyp_set_callbacks(KERNEL_CS, hyp_callback,

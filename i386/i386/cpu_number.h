@@ -32,22 +32,17 @@
 
 #if	NCPUS > 1
 
-/* More-specific code must define cpu_number() and CPU_NUMBER.  */
 #ifdef __i386__
 #define	CX(addr, reg)	addr(,reg,4)
+#endif
+#ifdef __x86_64__
+#define	CX(addr, reg)	addr(,reg,8)
+#endif
 
 #define	CPU_NUMBER(reg)	\
 	movl	%cs:lapic, reg		;\
 	movl	%cs:APIC_ID(reg), reg	;\
 	shrl	$24, reg		;\
-
-
-#endif
-#ifdef __x86_64__
-#define	CX(addr, reg)	addr(,reg,8)
-#warning Missing CPU_NUMBER() for 64 bit
-#define CPU_NUMBER(reg)
-#endif
 
 #ifndef __ASSEMBLER__
 #include "kern/cpu_number.h"
