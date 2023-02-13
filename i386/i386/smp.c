@@ -53,7 +53,6 @@ void smp_pmap_update(unsigned apic_id)
 
     cpu_intr_save(&flags);
 
-    printf("IPI(%d>%u)\n", cpu_number(), apic_id);
     apic_send_ipi(NO_SHORTHAND, FIXED, PHYSICAL, ASSERT, EDGE, CALL_SINGLE_FUNCTION_BASE, apic_id);
 
     do {
