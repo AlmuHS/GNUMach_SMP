@@ -27,6 +27,7 @@
 #include <mach/mach_types.h>
 #include <mach/vm_param.h>
 #include <kern/assert.h>
+#include <kern/cpu_number.h>
 
 #include <i386/spl.h>
 #include <i386/irq.h>

@@ -2,7 +2,7 @@
 #define __ASM_SYSTEM_H
 
 #include <i386/ipl.h> /* curr_ipl[], splx */
-#include <i386/cpu_number.h>
+#include <kern/cpu_number.h>
 
 #include <asm/segment.h>
 
