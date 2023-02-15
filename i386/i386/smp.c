@@ -29,8 +29,6 @@
 
 #include <kern/smp.h>
 
-#define pause_memory	asm volatile ("pause" : : : "memory")
-
 /*
  * smp_data_init: initialize smp_data structure
  * Must be called after smp_init(), once all APIC structures
@@ -56,13 +54,13 @@ void smp_pmap_update(unsigned apic_id)
     apic_send_ipi(NO_SHORTHAND, FIXED, PHYSICAL, ASSERT, EDGE, CALL_SINGLE_FUNCTION_BASE, apic_id);
 
     do {
-        pause_memory;
+        cpu_pause();
     } while(lapic->icr_low.delivery_status == SEND_PENDING);
 
     apic_send_ipi(NO_SHORTHAND, FIXED, PHYSICAL, DE_ASSERT, EDGE, CALL_SINGLE_FUNCTION_BASE, apic_id);
 
     do {
-        pause_memory;
+        cpu_pause();
     } while(lapic->icr_low.delivery_status == SEND_PENDING);
 
     cpu_intr_restore(flags);
@@ -81,7 +79,7 @@ void smp_startup_cpu(unsigned apic_id, unsigned vector)
 
     /* Wait for delivery */
     do {
-        pause_memory;
+        cpu_pause();
     } while(lapic->icr_low.delivery_status == SEND_PENDING);
 
     /* Deassert INIT IPI */
@@ -89,7 +87,7 @@ void smp_startup_cpu(unsigned apic_id, unsigned vector)
 
     /* Wait for delivery */
     do {
-        pause_memory;
+        cpu_pause();
     } while(lapic->icr_low.delivery_status == SEND_PENDING);
 
     /* Wait 10 msec */
@@ -106,7 +104,7 @@ void smp_startup_cpu(unsigned apic_id, unsigned vector)
 
     /* Wait for delivery */
     do {
-        pause_memory;
+        cpu_pause();
     } while(lapic->icr_low.delivery_status == SEND_PENDING);
 
     /* Second StartUp IPI */
@@ -117,7 +115,7 @@ void smp_startup_cpu(unsigned apic_id, unsigned vector)
 
     /* Wait for delivery */
     do {
-        pause_memory;
+        cpu_pause();
     } while(lapic->icr_low.delivery_status == SEND_PENDING);
 
     printf("done\n");

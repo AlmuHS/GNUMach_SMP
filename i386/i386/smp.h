@@ -25,4 +25,6 @@ int smp_init(void);
 void smp_pmap_update(unsigned apic_id);
 void smp_startup_cpu(unsigned apic_id, unsigned vector);
 
+#define cpu_pause() asm volatile ("pause" : : : "memory")
+
 #endif

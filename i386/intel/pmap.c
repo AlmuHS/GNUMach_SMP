@@ -300,7 +300,7 @@ lock_data_t	pmap_system_lock;
 	    /* using the pmap */ \
 	    signal_cpus(users, (pmap), (s), (e)); \
 	    while ((pmap)->cpus_using & cpus_active & ~cpu_mask) \
-		continue; \
+		cpu_pause(); \
 	} \
  \
 	/* invalidate our own TLB if pmap is in use */ \

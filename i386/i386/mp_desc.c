@@ -269,7 +269,7 @@ cpu_ap_main()
     int cpu = apic_get_cpu_kernel_id(apic_id);
 
     do {
-        asm volatile ("pause" : : : "memory");
+	cpu_pause();
     } while (bspdone != cpu);
 
     __sync_synchronize();
@@ -319,7 +319,7 @@ start_other_cpus(void)
 
 		bspdone++;
 		do {
-			asm volatile ("pause" : : : "memory");
+			cpu_pause();
 		} while (machine_slot[cpu].running == FALSE);
 
 		__sync_synchronize();
