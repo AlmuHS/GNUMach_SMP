@@ -119,6 +119,7 @@ MACRO_BEGIN								\
 	} while ((time)->seconds != mtime->check_seconds64);	\
 MACRO_END
 
+/* Shall be taken at splsched only */
 def_simple_lock_data(static,	timer_lock)	/* lock for ... */
 timer_elt_data_t	timer_head;	/* ordered list of timeouts */
 					/* (doubles as end-of-list) */

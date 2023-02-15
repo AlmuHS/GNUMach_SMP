@@ -387,6 +387,7 @@ extern void		thread_unfreeze(
 
 #define thread_pcb(th)		((th)->pcb)
 
+/* Shall be taken at splsched only */
 #define thread_lock(th)		simple_lock(&(th)->lock)
 #define thread_unlock(th)	simple_unlock(&(th)->lock)
 

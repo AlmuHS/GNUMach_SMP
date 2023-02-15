@@ -56,7 +56,7 @@ struct processor_set {
 	struct run_queue	runq;		/* runq for this set */
 	queue_head_t		idle_queue;	/* idle processors */
 	int			idle_count;	/* how many ? */
-	decl_simple_lock_data(,	idle_lock)	/* lock for above */
+	decl_simple_lock_data(,	idle_lock)	/* lock for above, shall be taken at splsched only */
 	queue_head_t		processors;	/* all processors here */
 	int			processor_count;	/* how many ? */
 	boolean_t		empty;		/* true if no processors */
@@ -221,6 +221,7 @@ extern processor_t	processor_ptr[NCPUS];
 #define	pset_ref_lock(pset)	simple_lock(&(pset)->ref_lock)
 #define	pset_ref_unlock(pset)	simple_unlock(&(pset)->ref_lock)
 
+/* Shall be taken at splsched only */
 #define processor_lock(pr)	simple_lock(&(pr)->lock)
 #define processor_unlock(pr)	simple_unlock(&(pr)->lock)
 

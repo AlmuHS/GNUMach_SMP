@@ -127,8 +127,9 @@ timer_elt_data_t recompute_priorities_timer;
 
 #define NUMQUEUES	1031
 
+/* Shall be taken at splsched only */
+decl_simple_lock_data(static,	wait_lock[NUMQUEUES])	 /* Lock for... */
 queue_head_t		wait_queue[NUMQUEUES];
-decl_simple_lock_data(static,	wait_lock[NUMQUEUES])
 
 /* NOTE: we want a small positive integer out of this */
 #define wait_hash(event) \
@@ -1251,7 +1252,7 @@ void thread_setrun(
 	     */
 	    processor = th->last_processor;
 	    if (processor->state == PROCESSOR_IDLE) {
-		    simple_lock(&processor->lock);
+		    processor_lock(processor);
 		    simple_lock(&pset->idle_lock);
 		    if ((processor->state == PROCESSOR_IDLE)
 #if	MACH_HOST
@@ -1264,11 +1265,11 @@ void thread_setrun(
 			    processor->next_thread = th;
 			    processor->state = PROCESSOR_DISPATCHING;
 			    simple_unlock(&pset->idle_lock);
-			    simple_unlock(&processor->lock);
+			    processor_unlock(processor);
 		            return;
 		    }
 		    simple_unlock(&pset->idle_lock);
-		    simple_unlock(&processor->lock);
+		    processor_unlock(processor);
 	    }
 #endif	/* HW_FOOTPRINT */
 
@@ -1309,7 +1310,7 @@ void thread_setrun(
 	     *  processor here because it may not be the current one.
 	     */
 	    if (processor->state == PROCESSOR_IDLE) {
-		simple_lock(&processor->lock);
+		processor_lock(processor);
 		pset = processor->processor_set;
 		simple_lock(&pset->idle_lock);
 		if (processor->state == PROCESSOR_IDLE) {
@@ -1319,11 +1320,11 @@ void thread_setrun(
 		    processor->next_thread = th;
 		    processor->state = PROCESSOR_DISPATCHING;
 		    simple_unlock(&pset->idle_lock);
-		    simple_unlock(&processor->lock);
+		    processor_unlock(processor);
 		    return;
 		}
 		simple_unlock(&pset->idle_lock);
-		simple_unlock(&processor->lock);
+		processor_unlock(processor);
 	    }
 	    rq = &(processor->runq);
 	    run_queue_enqueue(rq,th);

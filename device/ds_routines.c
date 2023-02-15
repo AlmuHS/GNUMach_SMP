@@ -1507,8 +1507,9 @@ ds_no_senders(mach_no_senders_notification_t *notification)
 	       notification->not_count);
 }
 
+/* Shall be taken at splio only */
+def_simple_lock_data(static,	io_done_list_lock)	/* Lock for... */
 queue_head_t		io_done_list;
-def_simple_lock_data(static,	io_done_list_lock)
 
 #define	splio	splsched	/* XXX must block ALL io devices */
 
