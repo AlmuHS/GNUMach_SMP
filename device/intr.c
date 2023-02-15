@@ -104,15 +104,10 @@ int
 deliver_user_intr (struct irqdev *dev, int id, user_intr_t *e)
 {
   /* The reference of the port was increased
-   * when the port was installed.
-   * If the reference is 1, it means the port should
-   * have been destroyed and I destroy it now. */
-  if (e->dst_port
-      && e->dst_port->ip_references == 1)
+   * when the port was installed.  If the reference is 1, it means
+   * the port was deallocated and we should clean after it. */
+  if (e->dst_port->ip_references == 1)
     {
-      printf ("irq handler [%d]: release a dead delivery port %p entry %p\n", id, e->dst_port, e);
-      ipc_port_release (e->dst_port);
-      e->dst_port = MACH_PORT_NULL;
       thread_wakeup ((event_t) &intr_thread);
       return 0;
     }
@@ -246,37 +241,18 @@ intr_thread (void)
       thread_set_timeout (hz);
       spl_t s = splhigh ();
 
-      /* Check for aborted processes */
-      queue_iterate (&main_intr_queue, e, user_intr_t *, chain)
-	{
-	  if ((!e->dst_port || e->dst_port->ip_references == 1) && e->n_unacked)
-	    {
-	      printf ("irq handler [%d]: release dead delivery %d unacked irqs port %p entry %p\n", e->id, e->n_unacked, e->dst_port, e);
-	      /* The reference of the port was increased
-	       * when the port was installed.
-	       * If the reference is 1, it means the port should
-	       * have been destroyed and I clear unacked irqs now, so the Linux
-	       * handling can trigger, and we will cleanup later after the Linux
-	       * handler is cleared. */
-	      /* TODO: rather immediately remove from Linux handler */
-	      while (e->n_unacked)
-	      {
-		__enable_irq (irqtab.irq[e->id]);
-		e->n_unacked--;
-	      }
-	    }
-	}
-
       /* Now check for interrupts */
-      while (irqtab.tot_num_intr)
+      int del;
+      do
 	{
-	  int del = 0;
+	  del = 0;
 
 	  queue_iterate (&main_intr_queue, e, user_intr_t *, chain)
 	    {
-	      /* if an entry doesn't have dest port,
-	       * we should remove it. */
-	      if (e->dst_port == MACH_PORT_NULL)
+	      /* The reference of the port was increased
+               * when the port was installed.  If the reference is 1, it means
+               * the port was deallocated and we should clean after it. */
+	      if (e->dst_port->ip_references == 1)
 		{
 		  clear_wait (current_thread (), 0, 0);
 		  del = 1;
@@ -300,8 +276,17 @@ intr_thread (void)
 	  /* remove the entry without dest port from the queue and free it. */
 	  if (del)
 	    {
+	      /*
+	       * We clear unacked irqs now, so the Linux handling can trigger,
+	       * and we will cleanup later after the Linux handler is cleared.
+	       */
 	      assert (!queue_empty (&main_intr_queue));
 	      queue_remove (&main_intr_queue, e, user_intr_t *, chain);
+
+	      printf ("irq handler [%d]: release a dead delivery port %p entry %p\n", e->id, e->dst_port, e);
+	      ipc_port_release (e->dst_port);
+	      e->dst_port = MACH_PORT_NULL;
+
 	      if (e->n_unacked)
 		printf("irq handler [%d]: still %d unacked irqs in entry %p\n", e->id, e->n_unacked, e);
 	      while (e->n_unacked)
@@ -309,12 +294,13 @@ intr_thread (void)
 		__enable_irq (irqtab.irq[e->id]);
 		e->n_unacked--;
 	      }
-	      printf("irq handler [%d]: removed entry %p\n", e->id, e);
+
 	      splx (s);
 	      kfree ((vm_offset_t) e, sizeof (*e));
 	      s = splhigh ();
 	    }
 	}
+      while (del || irqtab.tot_num_intr);
       splx (s);
       thread_block (NULL);
     }
