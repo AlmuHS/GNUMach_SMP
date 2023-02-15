@@ -100,7 +100,7 @@ struct i386_thread_state {
 
 	unsigned int	cs;
 #if defined(__x86_64__) && !defined(USER32)
-	uint64_t	efl;
+	uint64_t	rfl;
 	uint64_t	ursp;
 #else
 	unsigned int	efl;

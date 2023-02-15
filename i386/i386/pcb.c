@@ -518,6 +518,8 @@ kern_return_t thread_setstatus(
 		saved_state->ecx = state->rcx;
 		saved_state->eax = state->rax;
 		saved_state->eip = state->rip;
+		saved_state->efl = (state->rfl & ~EFL_USER_CLEAR)
+				    | EFL_USER_SET;
 #else
 		saved_state->edi = state->edi;
 		saved_state->esi = state->esi;
@@ -528,14 +530,14 @@ kern_return_t thread_setstatus(
 		saved_state->ecx = state->ecx;
 		saved_state->eax = state->eax;
 		saved_state->eip = state->eip;
-#endif /* __x86_64__ && !USER32 */
 		saved_state->efl = (state->efl & ~EFL_USER_CLEAR)
 				    | EFL_USER_SET;
+#endif /* __x86_64__ && !USER32 */
 
 		/*
 		 * Segment registers.  Set differently in V8086 mode.
 		 */
-		if (state->efl & EFL_VM) {
+		if (saved_state->efl & EFL_VM) {
 		    /*
 		     * Set V8086 mode segment registers.
 		     */
@@ -559,7 +561,7 @@ kern_return_t thread_setstatus(
 			 * Hardware assist on.
 			 */
 			thread->pcb->ims.v86s.flags =
-			    state->efl & (EFL_TF | EFL_IF);
+			    saved_state->efl & (EFL_TF | EFL_IF);
 		    }
 		}
 		else if (flavor == i386_THREAD_STATE) {
@@ -734,6 +736,7 @@ kern_return_t thread_getstatus(
 		state->rax = saved_state->eax;
 		state->rip = saved_state->eip;
 		state->ursp = saved_state->uesp;
+		state->rfl = saved_state->efl;
 		state->rsp = 0;	/* unused */
 #else
 		state->edi = saved_state->edi;
@@ -745,9 +748,9 @@ kern_return_t thread_getstatus(
 		state->eax = saved_state->eax;
 		state->eip = saved_state->eip;
 		state->uesp = saved_state->uesp;
+		state->efl = saved_state->efl;
 		state->esp = 0;	/* unused */
 #endif /* __x86_64__ && !USER32 */
-		state->efl = saved_state->efl;
 
 		state->cs = saved_state->cs;
 		state->ss = saved_state->ss;
@@ -767,7 +770,7 @@ kern_return_t thread_getstatus(
 			if ((thread->pcb->ims.v86s.flags &
 					(EFL_IF|V86_IF_PENDING))
 				== 0)
-			    state->efl &= ~EFL_IF;
+			    saved_state->efl &= ~EFL_IF;
 		    }
 		}
 		else {
