@@ -247,7 +247,7 @@ typedef struct {
 extern pmap_mapwindow_t *pmap_get_mapwindow(pt_entry_t entry);
 extern void pmap_put_mapwindow(pmap_mapwindow_t *map);
 
-#define PMAP_NMAPWINDOWS 2
+#define PMAP_NMAPWINDOWS 2	/* Per CPU */
 
 #if	NCPUS > 1
 /*

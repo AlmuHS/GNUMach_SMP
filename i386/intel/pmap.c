@@ -427,8 +427,7 @@ pt_entry_t *kernel_page_dir;
  * Two slots for temporary physical page mapping, to allow for
  * physical-to-physical transfers.
  */
-static pmap_mapwindow_t mapwindows[PMAP_NMAPWINDOWS];
-def_simple_lock_data(static, pmapwindows_lock)
+static pmap_mapwindow_t mapwindows[PMAP_NMAPWINDOWS * NCPUS];
 
 #ifdef PAE
 static inline pt_entry_t *
@@ -847,9 +846,9 @@ void pmap_bootstrap(void)
 			}
 			for (; pte < ptable+NPTES; pte++)
 			{
-				if (va >= kernel_virtual_end - PMAP_NMAPWINDOWS * PAGE_SIZE && va < kernel_virtual_end)
+				if (va >= kernel_virtual_end - PMAP_NMAPWINDOWS * NCPUS * PAGE_SIZE && va < kernel_virtual_end)
 				{
-					pmap_mapwindow_t *win = &mapwindows[atop(va - (kernel_virtual_end - PMAP_NMAPWINDOWS * PAGE_SIZE))];
+					pmap_mapwindow_t *win = &mapwindows[atop(va - (kernel_virtual_end - PMAP_NMAPWINDOWS * NCPUS * PAGE_SIZE))];
 					win->entry = pte;
 					win->vaddr = va;
 				}
@@ -1005,15 +1004,15 @@ void pmap_clear_bootstrap_pagetable(pt_entry_t *base) {
 pmap_mapwindow_t *pmap_get_mapwindow(pt_entry_t entry)
 {
 	pmap_mapwindow_t *map;
+	int cpu = cpu_number();
 
 	assert(entry != 0);
 
-	simple_lock(&pmapwindows_lock);
 	/* Find an empty one.  */
-	for (map = &mapwindows[0]; map < &mapwindows[sizeof (mapwindows) / sizeof (*mapwindows)]; map++)
+	for (map = &mapwindows[cpu * PMAP_NMAPWINDOWS]; map < &mapwindows[(cpu+1) * PMAP_NMAPWINDOWS]; map++)
 		if (!(*map->entry))
 			break;
-	assert(map < &mapwindows[sizeof (mapwindows) / sizeof (*mapwindows)]);
+	assert(map < &mapwindows[(cpu+1) * PMAP_NMAPWINDOWS]);
 
 #ifdef MACH_PV_PAGETABLES
 	if (!hyp_mmu_update_pte(kv_to_ma(map->entry), pa_to_ma(entry)))
@@ -1021,7 +1020,6 @@ pmap_mapwindow_t *pmap_get_mapwindow(pt_entry_t entry)
 #else /* MACH_PV_PAGETABLES */
 	WRITE_PTE(map->entry, entry);
 #endif /* MACH_PV_PAGETABLES */
-	simple_unlock(&pmapwindows_lock);
 	INVALIDATE_TLB(kernel_pmap, map->vaddr, map->vaddr + PAGE_SIZE);
 	return map;
 }
@@ -1031,14 +1029,12 @@ pmap_mapwindow_t *pmap_get_mapwindow(pt_entry_t entry)
  */
 void pmap_put_mapwindow(pmap_mapwindow_t *map)
 {
-	simple_lock(&pmapwindows_lock);
 #ifdef MACH_PV_PAGETABLES
 	if (!hyp_mmu_update_pte(kv_to_ma(map->entry), 0))
 		panic("pmap_put_mapwindow");
 #else /* MACH_PV_PAGETABLES */
 	WRITE_PTE(map->entry, 0);
 #endif /* MACH_PV_PAGETABLES */
-	simple_unlock(&pmapwindows_lock);
 	INVALIDATE_TLB(kernel_pmap, map->vaddr, map->vaddr + PAGE_SIZE);
 }
 
@@ -1047,7 +1043,7 @@ void pmap_virtual_space(
 	vm_offset_t *endp)
 {
 	*startp = kernel_virtual_start;
-	*endp = kernel_virtual_end - PMAP_NMAPWINDOWS * PAGE_SIZE;
+	*endp = kernel_virtual_end - PMAP_NMAPWINDOWS * NCPUS * PAGE_SIZE;
 }
 
 /*
