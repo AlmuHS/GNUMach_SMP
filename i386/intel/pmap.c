@@ -1022,6 +1022,7 @@ pmap_mapwindow_t *pmap_get_mapwindow(pt_entry_t entry)
 	WRITE_PTE(map->entry, entry);
 #endif /* MACH_PV_PAGETABLES */
 	simple_unlock(&pmapwindows_lock);
+	INVALIDATE_TLB(kernel_pmap, map->vaddr, map->vaddr + PAGE_SIZE);
 	return map;
 }
 
@@ -1038,7 +1039,7 @@ void pmap_put_mapwindow(pmap_mapwindow_t *map)
 	WRITE_PTE(map->entry, 0);
 #endif /* MACH_PV_PAGETABLES */
 	simple_unlock(&pmapwindows_lock);
-	PMAP_UPDATE_TLBS(kernel_pmap, map->vaddr, map->vaddr + PAGE_SIZE);
+	INVALIDATE_TLB(kernel_pmap, map->vaddr, map->vaddr + PAGE_SIZE);
 }
 
 void pmap_virtual_space(
