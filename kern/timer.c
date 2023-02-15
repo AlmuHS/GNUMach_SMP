@@ -334,7 +334,9 @@ void timer_normalize(timer_t timer)
 
 	high_increment = timer->low_bits/TIMER_HIGH_UNIT;
 	timer->high_bits_check += high_increment;
+	__sync_synchronize();
 	timer->low_bits %= TIMER_HIGH_UNIT;
+	__sync_synchronize();
 	timer->high_bits += high_increment;
 }
 
@@ -356,7 +358,9 @@ static void timer_grab(
 #endif
 	do {
 		(save)->high = (timer)->high_bits;
+		__sync_synchronize ();
 		(save)->low = (timer)->low_bits;
+		__sync_synchronize ();
 	/*
 	 *	If the timer was normalized while we were doing this,
 	 *	the high_bits value read above and the high_bits check
