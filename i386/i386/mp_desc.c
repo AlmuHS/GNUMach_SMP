@@ -38,6 +38,7 @@
 #include <i386/lock.h>
 #include <i386/apic.h>
 #include <i386/locore.h>
+#include <i386/fpu.h>
 #include <i386/gdt.h>
 #include <i386at/idt.h>
 #include <i386at/int_init.h>
@@ -258,6 +259,7 @@ cpu_setup(int cpu)
     machine_slot[cpu].cpu_subtype = CPU_SUBTYPE_AT386;
     machine_slot[cpu].cpu_type = machine_slot[0].cpu_type;
 
+    init_fpu();
     lapic_enable();
     cpu_launch_first_thread(THREAD_NULL);
 }
