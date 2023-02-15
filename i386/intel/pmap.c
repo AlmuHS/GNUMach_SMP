@@ -3013,7 +3013,8 @@ void    signal_cpus(
 	    cpu_update_needed[which_cpu] = TRUE;
 	    simple_unlock(&update_list_p->lock);
 
-	    if (((cpus_idle & (1 << which_cpu)) == 0) || (pmap == kernel_pmap))
+	    __sync_synchronize();
+	    if (((cpus_idle & (1 << which_cpu)) == 0))
 		interrupt_processor(which_cpu);
 	    use_list &= ~(1 << which_cpu);
 	}

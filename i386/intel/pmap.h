@@ -424,6 +424,7 @@ pt_entry_t *pmap_pte(const pmap_t pmap, vm_offset_t addr);
 	 *	interrupt if this happens.				\
 	 */								\
 	i_bit_clear((my_cpu), &cpus_idle);				\
+	__sync_synchronize();						\
 									\
 	if (cpu_update_needed[(my_cpu)])				\
 	    pmap_update_interrupt();					\
