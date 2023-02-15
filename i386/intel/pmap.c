@@ -3093,9 +3093,9 @@ void pmap_update_interrupt(void)
 	     *	Wait for any pmap updates in progress, on either user
 	     *	or kernel pmap.
 	     */
-	    while (*(volatile int *)&my_pmap->lock.lock_data ||
-		   *(volatile int *)&kernel_pmap->lock.lock_data)
-		continue;
+	    while (my_pmap->lock.lock_data ||
+		   kernel_pmap->lock.lock_data)
+		cpu_pause();
 
 	    process_pmap_updates(my_pmap);
 

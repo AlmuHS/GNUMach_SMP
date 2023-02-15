@@ -36,6 +36,8 @@
 
 #include <string.h>
 
+#include <machine/smp.h>
+
 #include <kern/debug.h>
 #include <kern/lock.h>
 #include <kern/thread.h>
@@ -88,7 +90,7 @@ void simple_lock_init(simple_lock_t l)
 void simple_lock(simple_lock_t l)
 {
 	while (test_and_set((boolean_t *)l))
-		continue;
+		cpu_pause();
 }
 
 void simple_unlock(simple_lock_t l)
@@ -290,7 +292,7 @@ void lock_write(
 		if ((i = lock_wait_time) > 0) {
 			simple_unlock(&l->interlock);
 			while (--i > 0 && l->want_write)
-				continue;
+				cpu_pause();
 			simple_lock(&l->interlock);
 		}
 
@@ -310,7 +312,7 @@ void lock_write(
 			simple_unlock(&l->interlock);
 			while (--i > 0 && (l->read_count != 0 ||
 					l->want_upgrade))
-				continue;
+				cpu_pause();
 			simple_lock(&l->interlock);
 		}
 
@@ -384,7 +386,7 @@ void lock_read(
 		if ((i = lock_wait_time) > 0) {
 			simple_unlock(&l->interlock);
 			while (--i > 0 && (l->want_write || l->want_upgrade))
-				continue;
+				cpu_pause();
 			simple_lock(&l->interlock);
 		}
 
@@ -450,7 +452,7 @@ boolean_t lock_read_to_write(
 		if ((i = lock_wait_time) > 0) {
 			simple_unlock(&l->interlock);
 			while (--i > 0 && l->read_count != 0)
-				continue;
+				cpu_pause();
 			simple_lock(&l->interlock);
 		}
 

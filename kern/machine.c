@@ -172,7 +172,7 @@ processor_request_action(
      *	state to running very soon.
      */
     while (*(volatile int *)&processor->state == PROCESSOR_DISPATCHING)
-    	continue;
+	cpu_pause();
 
     /*
      *	Now lock the action queue and do the dirty work.

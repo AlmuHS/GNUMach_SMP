@@ -244,7 +244,7 @@ evc_signal(evc_t ev)
 #if (NCPUS > 1)
       retry:
 	while((thread->state & TH_RUN) || thread->lock.lock_data)
-		;
+		cpu_pause();
 #endif
 	thread_lock(thread);
 

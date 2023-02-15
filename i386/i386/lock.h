@@ -30,6 +30,7 @@
 #define	_I386_LOCK_H_
 
 #if NCPUS > 1
+#include <i386/smp.h>
 
 /*
  *	All of the locking routines are built from calls on
