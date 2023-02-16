@@ -579,7 +579,7 @@ build_args_and_stack(struct exec_info *boot_exec_info,
 	vm_offset_t	stack_base;
 	vm_size_t	stack_size;
 	char *		arg_ptr;
-	int		arg_count, envc;
+	long		arg_count, envc;
 	int		arg_len;
 	char *		arg_pos;
 	int		arg_item_len;
@@ -612,7 +612,7 @@ build_args_and_stack(struct exec_info *boot_exec_info,
 	 *	trailing 0 pointer
 	 *	and align to integer boundary
 	 */
-	arg_len += (sizeof(integer_t)
+	arg_len += (sizeof(rpc_vm_offset_t)
 		    + (arg_count + 1 + envc + 1) * sizeof(rpc_vm_offset_t));
 	arg_len = (arg_len + sizeof(integer_t) - 1) & ~(sizeof(integer_t)-1);
 
@@ -633,7 +633,7 @@ build_args_and_stack(struct exec_info *boot_exec_info,
 	 * Start the strings after the arg-count and pointers
 	 */
 	string_pos = (arg_pos
-		      + sizeof(integer_t)
+		      + sizeof(rpc_vm_offset_t)
 		      + (arg_count + 1 + envc + 1) * sizeof(rpc_vm_offset_t));
 
 	/*
@@ -641,8 +641,8 @@ build_args_and_stack(struct exec_info *boot_exec_info,
 	 */
 	(void) copyout(&arg_count,
 			arg_pos,
-			sizeof(integer_t));
-	arg_pos += sizeof(integer_t);
+			sizeof(rpc_vm_offset_t));
+	arg_pos += sizeof(rpc_vm_offset_t);
 
 	/*
 	 * Then the strings and string pointers for each argument
