@@ -31,8 +31,8 @@ int exec_load(exec_read_func_t *read, exec_read_exec_func_t *read_exec,
 		  void *handle, exec_info_t *out_info)
 {
 	vm_size_t actual;
-	Elf32_Ehdr x;
-	Elf32_Phdr *phdr, *ph;
+	Elf_Ehdr x;
+	Elf_Phdr *phdr, *ph;
 	vm_size_t phsize;
 	int i;
 	int result;
@@ -51,7 +51,7 @@ int exec_load(exec_read_func_t *read, exec_read_exec_func_t *read_exec,
 		return EX_NOT_EXECUTABLE;
 
 	/* Make sure the file is of the right architecture.  */
-	if ((x.e_ident[EI_CLASS] != ELFCLASS32) ||
+	if ((x.e_ident[EI_CLASS] != MY_ELF_CLASS) ||
 	    (x.e_ident[EI_DATA] != MY_EI_DATA) ||
 	    (x.e_machine != MY_E_MACHINE))
 		return EX_WRONG_ARCH;
@@ -65,7 +65,7 @@ int exec_load(exec_read_func_t *read, exec_read_exec_func_t *read_exec,
 	out_info->entry = (vm_offset_t) x.e_entry + loadbase;
 
 	phsize = x.e_phnum * x.e_phentsize;
-	phdr = (Elf32_Phdr *)alloca(phsize);
+	phdr = (Elf_Phdr *)alloca(phsize);
 
 	result = (*read)(handle, x.e_phoff, phdr, phsize, &actual);
 	if (result)
@@ -75,7 +75,7 @@ int exec_load(exec_read_func_t *read, exec_read_exec_func_t *read_exec,
 
 	for (i = 0; i < x.e_phnum; i++)
 	{
-		ph = (Elf32_Phdr *)((vm_offset_t)phdr + i * x.e_phentsize);
+		ph = (Elf_Phdr *)((vm_offset_t)phdr + i * x.e_phentsize);
 		if (ph->p_type == PT_LOAD)
 		{
 			exec_sectype_t type = EXEC_SECTYPE_ALLOC |

@@ -29,8 +29,26 @@ typedef unsigned int	Elf32_Off;
 typedef signed int	Elf32_Sword;
 typedef unsigned int	Elf32_Word;
 
-/* Architecture identification parameters for i386.  */
+typedef uint64_t	Elf64_Addr;
+typedef uint64_t	Elf64_Off;
+typedef int32_t		Elf64_Shalf;
+typedef int32_t		Elf64_Sword;
+typedef uint32_t	Elf64_Word;
+typedef int64_t		Elf64_Sxword;
+typedef uint64_t	Elf64_Xword;
+typedef uint32_t	Elf64_Half;
+typedef uint16_t	Elf64_Quarter;
+
+
+/* Architecture identification parameters for x86.  */
+#if defined(__x86_64__) && ! defined(USER32)
+#define MY_ELF_CLASS	ELFCLASS64
+#define MY_EI_DATA	ELFDATA2LSB
+#define MY_E_MACHINE	EM_X86_64
+#else
+#define MY_ELF_CLASS	ELFCLASS32
 #define MY_EI_DATA	ELFDATA2LSB
 #define MY_E_MACHINE	EM_386
+#endif
 
 #endif /* _MACH_I386_EXEC_ELF_H_ */
