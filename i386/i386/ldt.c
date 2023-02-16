@@ -45,6 +45,12 @@ extern
 #endif	/* MACH_PV_DESCRIPTORS */
 struct real_descriptor ldt[LDTSZ];
 
+#if defined(__x86_64__) && ! defined(USER32)
+#define USER_SEGMENT_SIZEBITS SZ_64
+#else
+#define USER_SEGMENT_SIZEBITS SZ_32
+#endif
+
 void
 ldt_fill(struct real_descriptor *myldt, struct real_descriptor *mygdt)
 {
@@ -67,11 +73,11 @@ ldt_fill(struct real_descriptor *myldt, struct real_descriptor *mygdt)
 			    VM_MIN_USER_ADDRESS,
 			    VM_MAX_USER_ADDRESS-VM_MIN_USER_ADDRESS-4096,
 			    /* XXX LINEAR_... */
-			    ACC_PL_U|ACC_CODE_R, SZ_32);
+			    ACC_PL_U|ACC_CODE_R, USER_SEGMENT_SIZEBITS);
 	fill_ldt_descriptor(myldt, USER_DS,
 			    VM_MIN_USER_ADDRESS,
 			    VM_MAX_USER_ADDRESS-VM_MIN_USER_ADDRESS-4096,
-			    ACC_PL_U|ACC_DATA_W, SZ_32);
+			    ACC_PL_U|ACC_DATA_W, USER_SEGMENT_SIZEBITS);
 
 	/* Activate the LDT.  */
 #ifdef	MACH_PV_DESCRIPTORS
