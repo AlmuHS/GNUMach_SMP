@@ -212,7 +212,7 @@ dump_ss(regs);
 			if (trunc_page(subcode) == 0
 			    || (subcode >= (long)_start
 				&& subcode < (long)etext)) {
-				printf("Kernel page fault at address 0x%x, "
+				printf("Kernel page fault at address 0x%lx, "
 				       "eip = 0x%lx\n",
 				       subcode, regs->eip);
 				goto badtrap;
@@ -221,7 +221,7 @@ dump_ss(regs);
 			if (thread)
 				map = thread->task->map;
 			if (!thread || map == kernel_map) {
-				printf("kernel page fault at %08x:\n", subcode);
+				printf("kernel page fault at %08lx:\n", subcode);
 				dump_ss(regs);
 				panic("kernel thread accessed user space!\n");
 			}
@@ -330,7 +330,7 @@ dump_ss(regs);
 		if (type < TRAP_TYPES)
 			printf("%s trap", trap_type[type]);
 		else
-			printf("trap %d", type);
+			printf("trap %ld", type);
 		printf(", eip 0x%lx\n", regs->eip);
 #if	MACH_TTD
 		if (kttd_enabled && kttd_trap(type, code, regs))
@@ -341,7 +341,7 @@ dump_ss(regs);
 		    return;
 #endif	/* MACH_KDB */
 		splhigh();
-		printf("kernel trap, type %d, code = %x\n",
+		printf("kernel trap, type %ld, code = %lx\n",
 			type, code);
 		dump_ss(regs);
 		panic("trap");
@@ -556,7 +556,7 @@ int user_trap(struct i386_saved_state *regs)
 		    return 0;
 #endif	/* MACH_KDB */
 		splhigh();
-		printf("user trap, type %d, code = %lx\n",
+		printf("user trap, type %ld, code = %lx\n",
 		       type, regs->err);
 		dump_ss(regs);
 		panic("trap");
