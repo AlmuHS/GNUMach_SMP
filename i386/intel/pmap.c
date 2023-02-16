@@ -1376,7 +1376,7 @@ pmap_t pmap_create(vm_size_t size)
 		pt_entry_t *user_page_dir = (pt_entry_t *) kmem_cache_alloc(&pd_cache);
 		memset(user_page_dir, 0, INTEL_PGBYTES);
 		WRITE_PTE(&pdp_user[i + lin2pdpnum(VM_MIN_USER_ADDRESS)],  // pdp_user
-			  pa_to_pte(kvtophys(user_page_dir))
+			  pa_to_pte(kvtophys((vm_offset_t)user_page_dir))
 			  | INTEL_PTE_VALID
 #if (defined(__x86_64__) && !defined(MACH_HYP)) || defined(MACH_PV_PAGETABLES)
 			  | INTEL_PTE_WRITE | INTEL_PTE_USER
@@ -3136,14 +3136,13 @@ pmap_unmap_page_zero (void)
 void
 pmap_make_temporary_mapping(void)
 {
-	int i;
-
 	/*
 	 * We'll have to temporarily install a direct mapping
 	 * between physical memory and low linear memory,
 	 * until we start using our new kernel segment descriptors.
 	 */
 #if INIT_VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
+	int i;
 	vm_offset_t delta = INIT_VM_MIN_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS;
 	if ((vm_offset_t)(-delta) < delta)
 		delta = (vm_offset_t)(-delta);
@@ -3191,9 +3190,8 @@ pmap_set_page_dir(void)
 void
 pmap_remove_temporary_mapping(void)
 {
-	int i;
-
 #if INIT_VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
+	int i;
 	vm_offset_t delta = INIT_VM_MIN_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS;
 	if ((vm_offset_t)(-delta) < delta)
 		delta = (vm_offset_t)(-delta);

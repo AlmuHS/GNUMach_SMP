@@ -72,9 +72,9 @@
    not be increased to more than 3GB as glibc and hurd servers would not cope
    with that.
    */
-#define VM_MIN_ADDRESS		(0)
+#define VM_MIN_ADDRESS		(0ULL)
 #ifdef __x86_64__
-#define VM_MAX_ADDRESS		(0xC0000000UL)
+#define VM_MAX_ADDRESS		(0xc0000000ULL)
 #else
 #define VM_MAX_ADDRESS		(0xc0000000UL)
 #endif
