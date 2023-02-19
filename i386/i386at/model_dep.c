@@ -162,9 +162,10 @@ void machine_init(void)
 #ifdef MACH_HYP
 	hyp_init();
 #else	/* MACH_HYP */
-
-#if (NCPUS > 1)
+#if defined(APIC)
 	acpi_apic_init();
+#endif
+#if (NCPUS > 1)
 	smp_init();
 #endif
 #if defined(APIC)
