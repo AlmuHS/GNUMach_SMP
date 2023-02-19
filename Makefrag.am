@@ -398,7 +398,6 @@ include_mach_HEADERS = \
 	include/mach/memory_object.h \
 	include/mach/message.h \
 	include/mach/mig_errors.h \
-	include/mach/msg_type.h \
 	include/mach/notify.h \
 	include/mach/pc_sample.h \
 	include/mach/policy.h \
