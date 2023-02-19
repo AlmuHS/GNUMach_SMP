@@ -136,7 +136,9 @@ size_t msg_usize(const mach_msg_header_t *kmsg)
           boolean_t is_inline;
           amount = unpack_msg_type(saddr, &name, &size, &number, &is_inline);
           saddr += amount;
+          saddr = mach_msg_kernel_align(saddr);
           usize += amount;
+          usize = mach_msg_user_align(usize);
 
           if (is_inline)
             {
@@ -150,8 +152,6 @@ size_t msg_usize(const mach_msg_header_t *kmsg)
                   size_t n = descsize_to_bytes(size);
                   saddr += n*number;
                   usize += n*number;
-                  saddr = mach_msg_align(saddr);
-                  usize = mach_msg_align(usize);
                 }
             }
           else
@@ -160,6 +160,8 @@ size_t msg_usize(const mach_msg_header_t *kmsg)
               saddr += sizeof(vm_offset_t);
               usize += sizeof(rpc_vm_offset_t);
             }
+          saddr = mach_msg_kernel_align(saddr);
+          usize = mach_msg_user_align(usize);
         }
     }
   return usize;
@@ -168,7 +170,7 @@ size_t msg_usize(const mach_msg_header_t *kmsg)
 /*
  * Expand the msg header and, if required, the msg body (ports, pointers)
  *
- * To not make the code too compicated, we use the fact that some fields of
+ * To not make the code too complicated, we use the fact that some fields of
  * mach_msg_header have the same size in the kernel and user variant (basically
  * all fields except ports and addresses)
 */
@@ -202,6 +204,10 @@ int copyinmsg (const void *userbuf, void *kernelbuf, const size_t usize)
   ksaddr = (vm_offset_t)(kmsg + 1);
   usaddr = (vm_offset_t)(umsg + 1);
   ueaddr = (vm_offset_t)umsg + usize;
+
+  _Static_assert(!mach_msg_user_is_misaligned(sizeof(mach_msg_user_header_t)),
+                 "mach_msg_user_header_t needs to be MACH_MSG_USER_ALIGNMENT aligned.");
+
   if (usize > sizeof(mach_msg_user_header_t))
     {
       /* check we have at least space for an empty descryptor */
@@ -212,8 +218,6 @@ int copyinmsg (const void *userbuf, void *kernelbuf, const size_t usize)
           mach_msg_type_size_t size;
           mach_msg_type_number_t number;
           boolean_t is_inline;
-          usaddr = mach_msg_align(usaddr);
-          ksaddr = mach_msg_align(ksaddr);
           if (copyin_unpack_msg_type(usaddr, ksaddr, &name, &size, &number,
                                      &is_inline, &amount))
             return 1;
@@ -222,7 +226,9 @@ int copyinmsg (const void *userbuf, void *kernelbuf, const size_t usize)
           // might need to adjust it later depending on the type
           vm_offset_t ktaddr = ksaddr;
           usaddr += amount;
+          usaddr = mach_msg_user_align(usaddr);
           ksaddr += amount;
+          ksaddr = mach_msg_kernel_align(ksaddr);
 
           if (is_inline)
             {
@@ -249,8 +255,6 @@ int copyinmsg (const void *userbuf, void *kernelbuf, const size_t usize)
                     return 1;
                   usaddr += n*number;
                   ksaddr += n*number;
-                  usaddr = mach_msg_align(usaddr);
-                  ksaddr = mach_msg_align(ksaddr);
                 }
             }
           else
@@ -264,15 +268,19 @@ int copyinmsg (const void *userbuf, void *kernelbuf, const size_t usize)
 
               if (copyin_address((rpc_vm_offset_t*)usaddr, (vm_offset_t*)ksaddr))
                 return 1;
-              // advance one pointer
+              // Advance one pointer.
               ksaddr += sizeof(vm_offset_t);
               usaddr += sizeof(rpc_vm_offset_t);
             }
+          // Note that we have to align because mach_port_name_t might not align
+          // with the required user alignment.
+          usaddr = mach_msg_user_align(usaddr);
+          ksaddr = mach_msg_kernel_align(ksaddr);
         }
     }
 
   kmsg->msgh_size = sizeof(mach_msg_header_t) + ksaddr - (vm_offset_t)(kmsg + 1);
-  kmsg->msgh_size = mach_msg_align(kmsg->msgh_size);
+  kmsg->msgh_size = kmsg->msgh_size;
   return 0;
 }
 
@@ -310,15 +318,15 @@ int copyoutmsg (const void *kernelbuf, void *userbuf, const size_t ksize)
           mach_msg_type_size_t size;
           mach_msg_type_number_t number;
           boolean_t is_inline;
-          usaddr = mach_msg_align(usaddr);
-          ksaddr = mach_msg_align(ksaddr);
           amount = unpack_msg_type(ksaddr, &name, &size, &number, &is_inline);
           // TODO: optimize and bring here type adjustment??
           vm_offset_t utaddr=usaddr, ktaddr=ksaddr;
           if (copyout((void*)ksaddr, (void*)usaddr, amount))
             return 1;
           usaddr += amount;
+          usaddr = mach_msg_user_align(usaddr);
           ksaddr += amount;
+          ksaddr = mach_msg_kernel_align(ksaddr);
 
           if (is_inline)
             {
@@ -343,8 +351,6 @@ int copyoutmsg (const void *kernelbuf, void *userbuf, const size_t ksize)
                     return 1;
                   usaddr += n*number;
                   ksaddr += n*number;
-                  usaddr = mach_msg_align(usaddr);
-                  ksaddr = mach_msg_align(ksaddr);
                 }
             }
           else
@@ -363,12 +369,14 @@ int copyoutmsg (const void *kernelbuf, void *userbuf, const size_t ksize)
               ksaddr += sizeof(vm_offset_t);
               usaddr += sizeof(rpc_vm_offset_t);
             }
+          usaddr = mach_msg_user_align(usaddr);
+          ksaddr = mach_msg_kernel_align(ksaddr);
         }
     }
 
   mach_msg_size_t usize;
   usize = sizeof(mach_msg_user_header_t) + usaddr - (vm_offset_t)(umsg + 1);
-  usize = mach_msg_align(usize);
+  usize = usize;
   if (copyout(&usize, &umsg->msgh_size, sizeof(kmsg->msgh_size)))
     return 1;
 

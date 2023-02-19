@@ -229,27 +229,22 @@ ipc_kmsg_clean_body(
 		type = (mach_msg_type_long_t *) saddr;
 		is_inline = ((mach_msg_type_t*)type)->msgt_inline;
 		if (((mach_msg_type_t*)type)->msgt_longform) {
-			/* This must be aligned */
-			if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
-			    (mach_msg_is_misaligned(type))) {
-				saddr = mach_msg_align(saddr);
-				continue;
-			}
 			name = type->msgtl_name;
 			size = type->msgtl_size;
 			number = type->msgtl_number;
 			saddr += sizeof(mach_msg_type_long_t);
+			if (mach_msg_kernel_is_misaligned(sizeof(mach_msg_type_long_t))) {
+				saddr = mach_msg_kernel_align(saddr);
+			}
 		} else {
 			name = ((mach_msg_type_t*)type)->msgt_name;
 			size = ((mach_msg_type_t*)type)->msgt_size;
 			number = ((mach_msg_type_t*)type)->msgt_number;
 			saddr += sizeof(mach_msg_type_t);
+			if (mach_msg_kernel_is_misaligned(sizeof(mach_msg_type_t))) {
+				saddr = mach_msg_kernel_align(saddr);
+			}
 		}
-
-		/* padding (ptrs and ports) ? */
-		if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
-		    ((size >> 3) == sizeof(natural_t)))
-			saddr = mach_msg_align(saddr);
 
 		/* calculate length of data in bytes, rounding up */
 
@@ -283,9 +278,7 @@ ipc_kmsg_clean_body(
 		}
 
 		if (is_inline) {
-			/* inline data sizes round up to int boundaries */
-
-			saddr += (length + 3) &~ 3;
+			saddr += length;
 		} else {
 			vm_offset_t data = * (vm_offset_t *) saddr;
 
@@ -300,6 +293,7 @@ ipc_kmsg_clean_body(
 
 			saddr += sizeof(vm_offset_t);
 		}
+		saddr = mach_msg_kernel_align(saddr);
 	}
 }
 
@@ -387,30 +381,25 @@ ipc_kmsg_clean_partial(
 		boolean_t is_inline, is_port;
 		vm_size_t length;
 
-xxx:		type = (mach_msg_type_long_t *) eaddr;
+		type = (mach_msg_type_long_t *) eaddr;
 		is_inline = ((mach_msg_type_t*)type)->msgt_inline;
 		if (((mach_msg_type_t*)type)->msgt_longform) {
-			/* This must be aligned */
-			if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
-			    (mach_msg_is_misaligned(type))) {
-				eaddr = mach_msg_align(eaddr);
-				goto xxx;
-			}
 			name = type->msgtl_name;
 			size = type->msgtl_size;
 			rnumber = type->msgtl_number;
 			eaddr += sizeof(mach_msg_type_long_t);
+			if (mach_msg_kernel_is_misaligned(sizeof(mach_msg_type_long_t))) {
+				eaddr = mach_msg_kernel_align(eaddr);
+			}
 		} else {
 			name = ((mach_msg_type_t*)type)->msgt_name;
 			size = ((mach_msg_type_t*)type)->msgt_size;
 			rnumber = ((mach_msg_type_t*)type)->msgt_number;
 			eaddr += sizeof(mach_msg_type_t);
+			if (mach_msg_kernel_is_misaligned(sizeof(mach_msg_type_t))) {
+				eaddr = mach_msg_kernel_align(eaddr);
+			}
 		}
-
-		/* padding (ptrs and ports) ? */
-		if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
-		    ((size >> 3) == sizeof(natural_t)))
-			eaddr = mach_msg_align(eaddr);
 
 		/* calculate length of data in bytes, rounding up */
 
@@ -501,7 +490,7 @@ ipc_kmsg_get(
 {
 	ipc_kmsg_t kmsg;
 
-	if ((size < sizeof(mach_msg_user_header_t)) || (size & 3))
+	if ((size < sizeof(mach_msg_user_header_t)) || mach_msg_user_is_misaligned(size))
 		return MACH_SEND_MSG_TOO_SMALL;
 
 	if (size <= IKM_SAVED_MSG_SIZE) {
@@ -553,7 +542,7 @@ ipc_kmsg_get_from_kernel(
 	ipc_kmsg_t kmsg;
 
 	assert(size >= sizeof(mach_msg_header_t));
-	assert((size & 3) == 0);
+	assert(!mach_msg_kernel_is_misaligned(size));
 
 	kmsg = ikm_alloc(size);
 	if (kmsg == IKM_NULL)
@@ -1307,6 +1296,10 @@ ipc_kmsg_copyin_body(
 	saddr = (vm_offset_t) (&kmsg->ikm_header + 1);
 	eaddr = (vm_offset_t) &kmsg->ikm_header + kmsg->ikm_header.msgh_size;
 
+	// We make assumptions about the alignment of the header.
+	_Static_assert(!mach_msg_kernel_is_misaligned(sizeof(mach_msg_header_t)),
+			"mach_msg_header_t needs to be MACH_MSG_KERNEL_ALIGNMENT aligned.");
+
 	while (saddr < eaddr) {
 		vm_offset_t taddr = saddr;
 		mach_msg_type_long_t *type;
@@ -1330,21 +1323,21 @@ ipc_kmsg_copyin_body(
 		is_inline = ((mach_msg_type_t*)type)->msgt_inline;
 		dealloc = ((mach_msg_type_t*)type)->msgt_deallocate;
 		if (longform) {
-			/* This must be aligned */
-			if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
-			    (mach_msg_is_misaligned(type))) {
-				saddr = mach_msg_align(saddr);
-				continue;
-			}
 			name = type->msgtl_name;
 			size = type->msgtl_size;
 			number = type->msgtl_number;
 			saddr += sizeof(mach_msg_type_long_t);
+			if (mach_msg_kernel_is_misaligned(sizeof(mach_msg_type_long_t))) {
+				saddr = mach_msg_kernel_align(saddr);
+			}
 		} else {
 			name = ((mach_msg_type_t*)type)->msgt_name;
 			size = ((mach_msg_type_t*)type)->msgt_size;
 			number = ((mach_msg_type_t*)type)->msgt_number;
 			saddr += sizeof(mach_msg_type_t);
+			if (mach_msg_kernel_is_misaligned(sizeof(mach_msg_type_t))) {
+				saddr = mach_msg_kernel_align(saddr);
+			}
 		}
 
 		is_port = MACH_MSG_TYPE_PORT_ANY(name);
@@ -1359,21 +1352,13 @@ ipc_kmsg_copyin_body(
 			return MACH_SEND_INVALID_TYPE;
 		}
 
-		/* padding (ptrs and ports) ? */
-		if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
-		    ((size >> 3) == sizeof(natural_t)))
-			saddr = mach_msg_align(saddr);
-
 		/* calculate length of data in bytes, rounding up */
 
 		length = (((uint64_t) number * size) + 7) >> 3;
 
 		if (is_inline) {
-			vm_size_t amount;
+			vm_size_t amount = length;
 
-			/* inline data sizes round up to int boundaries */
-
-			amount = (length + 3) &~ 3;
 			if ((eaddr - saddr) < amount) {
 				ipc_kmsg_clean_partial(kmsg, taddr, FALSE, 0);
 				return MACH_SEND_MSG_TOO_SMALL;
@@ -1383,9 +1368,6 @@ ipc_kmsg_copyin_body(
 			saddr += amount;
 		} else {
 			vm_offset_t addr;
-
-			if (MACH_MSG_ALIGNMENT > sizeof(mach_msg_type_t))
-				saddr = mach_msg_align(saddr);
 
 			if ((eaddr - saddr) < sizeof(vm_offset_t)) {
 				ipc_kmsg_clean_partial(kmsg, taddr, FALSE, 0);
@@ -1491,6 +1473,7 @@ ipc_kmsg_copyin_body(
 
 			complex = TRUE;
 		}
+		saddr = mach_msg_kernel_align(saddr);
 	}
 
 	if (!complex)
@@ -1613,27 +1596,22 @@ ipc_kmsg_copyin_from_kernel(ipc_kmsg_t kmsg)
 		longform = ((mach_msg_type_t*)type)->msgt_longform;
 		/* type->msgtl_header.msgt_deallocate not used */
 		if (longform) {
-			/* This must be aligned */
-			if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
-			    (mach_msg_is_misaligned(type))) {
-				saddr = mach_msg_align(saddr);
-				continue;
-			}
 			name = type->msgtl_name;
 			size = type->msgtl_size;
 			number = type->msgtl_number;
 			saddr += sizeof(mach_msg_type_long_t);
+			if (mach_msg_kernel_is_misaligned(sizeof(mach_msg_type_long_t))) {
+				saddr = mach_msg_kernel_align(saddr);
+			}
 		} else {
 			name = ((mach_msg_type_t*)type)->msgt_name;
 			size = ((mach_msg_type_t*)type)->msgt_size;
 			number = ((mach_msg_type_t*)type)->msgt_number;
 			saddr += sizeof(mach_msg_type_t);
+			if (mach_msg_kernel_is_misaligned(sizeof(mach_msg_type_t))) {
+				saddr = mach_msg_kernel_align(saddr);
+			}
 		}
-
-		/* padding (ptrs and ports) ? */
-		if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
-		    ((size >> 3) == sizeof(natural_t)))
-			saddr = mach_msg_align(saddr);
 
 		/* calculate length of data in bytes, rounding up */
 
@@ -1642,10 +1620,8 @@ ipc_kmsg_copyin_from_kernel(ipc_kmsg_t kmsg)
 		is_port = MACH_MSG_TYPE_PORT_ANY(name);
 
 		if (is_inline) {
-			/* inline data sizes round up to int boundaries */
-
 			data = saddr;
-			saddr += (length + 3) &~ 3;
+			saddr += length;
 		} else {
 			/*
 			 *	The sender should supply ready-made memory
@@ -1682,6 +1658,7 @@ ipc_kmsg_copyin_from_kernel(ipc_kmsg_t kmsg)
 						MACH_MSGH_BITS_CIRCULAR;
 			}
 		}
+		saddr = mach_msg_kernel_align(saddr);
 	}
 }
 
@@ -2386,27 +2363,22 @@ ipc_kmsg_copyout_body(
 		is_inline = ((mach_msg_type_t*)type)->msgt_inline;
 		longform = ((mach_msg_type_t*)type)->msgt_longform;
 		if (longform) {
-			/* This must be aligned */
-			if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
-			    (mach_msg_is_misaligned(type))) {
-				saddr = mach_msg_align(saddr);
-				continue;
-			}
 			name = type->msgtl_name;
 			size = type->msgtl_size;
 			number = type->msgtl_number;
 			saddr += sizeof(mach_msg_type_long_t);
+			if (mach_msg_kernel_is_misaligned(sizeof(mach_msg_type_long_t))) {
+				saddr = mach_msg_kernel_align(saddr);
+			}
 		} else {
 			name = ((mach_msg_type_t*)type)->msgt_name;
 			size = ((mach_msg_type_t*)type)->msgt_size;
 			number = ((mach_msg_type_t*)type)->msgt_number;
 			saddr += sizeof(mach_msg_type_t);
+			if (mach_msg_kernel_is_misaligned(sizeof(mach_msg_type_t))) {
+				saddr = mach_msg_kernel_align(saddr);
+			}
 		}
-
-		/* padding (ptrs and ports) ? */
-		if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
-		    ((size >> 3) == sizeof(natural_t)))
-			saddr = mach_msg_align(saddr);
 
 		/* calculate length of data in bytes, rounding up */
 
@@ -2442,15 +2414,10 @@ ipc_kmsg_copyout_body(
 		}
 
 		if (is_inline) {
-			/* inline data sizes round up to int boundaries */
-
 			((mach_msg_type_t*)type)->msgt_deallocate = FALSE;
-			saddr += (length + 3) &~ 3;
+			saddr += length;
 		} else {
 			vm_offset_t data;
-
-			if (MACH_MSG_ALIGNMENT > sizeof(mach_msg_type_t))
-				saddr = mach_msg_align(saddr);
 
 			data = * (vm_offset_t *) saddr;
 
@@ -2502,6 +2469,9 @@ ipc_kmsg_copyout_body(
 			* (vm_offset_t *) saddr = addr;
 			saddr += sizeof(vm_offset_t);
 		}
+
+		/* Next element is always correctly aligned */
+		saddr = mach_msg_kernel_align(saddr);
 	}
 
 	return mr;
@@ -2827,21 +2797,21 @@ ipc_msg_print(mach_msg_header_t *msgh)
 		is_inline = ((mach_msg_type_t*)type)->msgt_inline;
 		dealloc = ((mach_msg_type_t*)type)->msgt_deallocate;
 		if (longform) {
-			/* This must be aligned */
-			if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
-			    (mach_msg_is_misaligned(type))) {
-				saddr = mach_msg_align(saddr);
-				continue;
-			}
 			name = type->msgtl_name;
 			size = type->msgtl_size;
 			number = type->msgtl_number;
 			saddr += sizeof(mach_msg_type_long_t);
+			if (mach_msg_kernel_is_misaligned(sizeof(mach_msg_type_long_t))) {
+				saddr = mach_msg_kernel_align(saddr);
+			}
 		} else {
 			name = ((mach_msg_type_t*)type)->msgt_name;
 			size = ((mach_msg_type_t*)type)->msgt_size;
 			number = ((mach_msg_type_t*)type)->msgt_number;
 			saddr += sizeof(mach_msg_type_t);
+			if (mach_msg_kernel_is_misaligned(sizeof(mach_msg_type_t))) {
+				saddr = mach_msg_kernel_align(saddr);
+			}
 		}
 
 		db_printf("-- type=");
@@ -2872,11 +2842,6 @@ ipc_msg_print(mach_msg_header_t *msgh)
 			return;
 		}
 
-		/* padding (ptrs and ports) ? */
-		if ((sizeof(natural_t) > sizeof(mach_msg_type_t)) &&
-		    ((size >> 3) == sizeof(natural_t)))
-			saddr = mach_msg_align(saddr);
-
 		/* calculate length of data in bytes, rounding up */
 
 		length = ((number * size) + 7) >> 3;
@@ -2885,7 +2850,7 @@ ipc_msg_print(mach_msg_header_t *msgh)
 			vm_size_t amount;
 			unsigned i, numwords;
 
-			/* inline data sizes round up to int boundaries */
+			/* round up to int boundaries for printing */
 			amount = (length + 3) &~ 3;
 			if ((eaddr - saddr) < amount) {
 				db_printf("*** too small\n");
@@ -2910,6 +2875,7 @@ ipc_msg_print(mach_msg_header_t *msgh)
 			db_printf("0x%x\n", * (vm_offset_t *) saddr);
 			saddr += sizeof(vm_offset_t);
 		}
+		saddr = mach_msg_kernel_align(saddr);
 	}
 }
 #endif	/* MACH_KDB */

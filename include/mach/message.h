@@ -334,19 +334,33 @@ typedef integer_t mach_msg_option_t;
 
 #define MACH_SEND_ALWAYS	0x00010000	/* internal use only */
 
-/* This is the alignment of msg descriptors and the actual data.
+#ifdef KERNEL
+/* This is the alignment of msg descriptors and the actual data
+ * for both in kernel messages and user land messages.
  *
- * On x86 it is made equal to the default structure alignment on
- * 32-bit, so we can easily maintain compatibility with 32-bit user
- * space on a 64-bit kernel. Other architectures might have different
- * needs, so this value might change in the future for differents
- * architectures.
+ * We have two types of alignment because for specific configurations
+ * (in particular a 64 bit kernel with 32 bit userland) we transform
+ * 4-byte aligned user messages into 8-byte aligned messages (and vice-versa)
+ * so that kernel messages are correctly aligned.
  */
-#define MACH_MSG_ALIGNMENT 4
+#define MACH_MSG_KERNEL_ALIGNMENT sizeof(uintptr_t)
+#ifdef __x86_64__
+#ifdef USER32
+#define MACH_MSG_USER_ALIGNMENT 4
+#else
+#define MACH_MSG_USER_ALIGNMENT 8
+#endif
+#else
+#define MACH_MSG_USER_ALIGNMENT 4
+#endif
 
-#define mach_msg_is_misaligned(x)	( ((vm_offset_t)(x)) & (MACH_MSG_ALIGNMENT-1) )
-#define mach_msg_align(x)	\
-	( ( ((vm_offset_t)(x)) + (MACH_MSG_ALIGNMENT-1) ) & ~(MACH_MSG_ALIGNMENT-1) )
+#define mach_msg_align(x, alignment)	\
+	( ( ((vm_offset_t)(x)) + ((alignment)-1) ) & ~((alignment)-1) )
+#define mach_msg_user_align(x) mach_msg_align(x, MACH_MSG_USER_ALIGNMENT)
+#define mach_msg_kernel_align(x) mach_msg_align(x, MACH_MSG_KERNEL_ALIGNMENT)
+#define mach_msg_user_is_misaligned(x) ((x) & ((MACH_MSG_USER_ALIGNMENT)-1))
+#define mach_msg_kernel_is_misaligned(x) ((x) & ((MACH_MSG_KERNEL_ALIGNMENT)-1))
+#endif /* KERNEL */
 
 /*
  *  Much code assumes that mach_msg_return_t == kern_return_t.
