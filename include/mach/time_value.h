@@ -181,4 +181,16 @@ typedef struct mapped_time_value {
         (tv)->microseconds = (ts)->tv_nsec / 1000;                      \
 } while(0)
 
+/* Macros for converting between struct timespec and time_value64_t. */
+
+#define TIME_VALUE64_TO_TIMESPEC(tv, ts) do {                           \
+        (ts)->tv_sec = (tv)->seconds;                                   \
+        (ts)->tv_nsec = (tv)->nanoseconds;                              \
+} while(0)
+
+#define TIMESPEC_TO_TIME_VALUE64(tv, ts) do {                           \
+        (tv)->seconds = (ts)->tv_sec;                                   \
+        (tv)->nanoseconds = (ts)->tv_nsec;                              \
+} while(0)
+
 #endif	/* _MACH_TIME_VALUE_H_ */
