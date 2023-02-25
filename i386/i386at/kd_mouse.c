@@ -106,6 +106,7 @@ boolean_t	mouse_char_cmd = FALSE;		/* mouse response is to cmd */
 boolean_t	mouse_char_wanted = FALSE;	/* want mouse response */
 int		mouse_char_index;		/* mouse response */
 
+#define IBM_MOUSE_IRQ	12
 
 /*
  * init_mouse_hw - initialize the serial port.
@@ -183,7 +184,7 @@ mouseopen(dev_t dev, int flags, io_req_t ior)
 		break;
 	case IBM_MOUSE:
 		mousebufsize = 3;
-		kd_mouse_open(dev, 12);
+		kd_mouse_open(dev, IBM_MOUSE_IRQ);
 		ibm_ps2_mouse_open(dev);
 		break;
 	case NO_MOUSE:
@@ -222,6 +223,7 @@ kd_mouse_open(
 
 	oldvect = ivect[mouse_pic];
 	ivect[mouse_pic] = kdintr;
+	unmask_irq(mouse_pic);
 	splx(s);
 }
 
@@ -243,7 +245,7 @@ mouseclose(
 		break;
 	case IBM_MOUSE:
 		ibm_ps2_mouse_close(dev);
-		kd_mouse_close(dev, 12);
+		kd_mouse_close(dev, IBM_MOUSE_IRQ);
 		{int i = 20000; for (;i--;); }
 		kd_mouse_drain();
 		break;
@@ -282,6 +284,7 @@ kd_mouse_close(
 {
 	spl_t s = splhi();
 
+	mask_irq(mouse_pic);
 	ivect[mouse_pic] = oldvect;
 	splx(s);
 }
