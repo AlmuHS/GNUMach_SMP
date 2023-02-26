@@ -66,18 +66,18 @@ int pit0_mode = PIT_C0|PIT_SQUAREMODE|PIT_READMODE ;
 unsigned int clknumb = CLKNUM;		/* interrupt interval for timer 0 */
 
 void
-pit_prepare_sleep(int hz)
+pit_prepare_sleep(int persec)
 {
-    /* Prepare to sleep for 1/hz seconds */
-    int val = 0;
-    int lsb, msb;
+    /* Prepare to sleep for 1/persec seconds */
+    uint32_t val = 0;
+    uint8_t lsb, msb;
 
     val = inb(PITAUX_PORT);
     val &= ~PITAUX_OUT2;
     val |= PITAUX_GATE2;
     outb (PITAUX_PORT, val);
-    outb (PITCTL_PORT, PIT_C2 | PIT_LOADMODE | PIT_RATEMODE);
-    val = CLKNUM / hz;
+    outb (PITCTL_PORT, PIT_C2 | PIT_LOADMODE | PIT_ONESHOTMODE);
+    val = CLKNUM / persec;
     lsb = val & 0xff;
     msb = val >> 8;
     outb (PITCTR2_PORT, lsb);
@@ -88,7 +88,7 @@ pit_prepare_sleep(int hz)
 void
 pit_sleep(void)
 {
-    int val;
+    uint8_t val;
 
     /* Start counting down */
     val = inb(PITAUX_PORT);

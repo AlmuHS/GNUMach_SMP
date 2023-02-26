@@ -73,7 +73,8 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 					 * followed by most significant byte */
 
 #define PIT_SQUAREMODE	0x06		/* square-wave mode */
-#define PIT_RATEMODE	0x02		/* rate generator mode */
+#define PIT_RATEMODE	0x04		/* rate generator mode */
+#define PIT_ONESHOTMODE	0x02		/* one-shot mode */
 
 /* Used for Timer 2. */
 #define PIT_C2		0x80            /* select counter 2 */
