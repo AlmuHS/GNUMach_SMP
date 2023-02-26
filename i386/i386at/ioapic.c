@@ -151,8 +151,9 @@ ioapic_toggle_entry(int apic, int pin, int mask)
 }
 
 static uint32_t
-pit_measure_apic_hz(void)
+pit_measure_10x_apic_hz(void)
 {
+    volatile int i;
     uint32_t start = 0xffffffff;
 
     /* Prepare accurate delay for 1/hz seconds */
@@ -162,7 +163,8 @@ pit_measure_apic_hz(void)
     lapic->init_count.r = start;
 
     /* zZz */
-    pit_sleep();
+    for (i = 0; i < 10; i++)
+        pit_sleep();
 
     /* Stop APIC timer */
     lapic->lvt_timer.r |= LAPIC_DISABLE;
@@ -181,13 +183,13 @@ lapic_enable_timer(void)
 {
     /* Set up counter */
     lapic->init_count.r = calibrated_ticks;
-    lapic->divider_config.r = LAPIC_TIMER_DIVIDE_16;
+    lapic->divider_config.r = LAPIC_TIMER_DIVIDE_2;
 
     /* Set the timer to interrupt periodically on remapped timer GSI */
     lapic->lvt_timer.r = IOAPIC_INT_BASE | LAPIC_TIMER_PERIODIC;
 
     /* Some buggy hardware requires this set again */
-    lapic->divider_config.r = LAPIC_TIMER_DIVIDE_16;
+    lapic->divider_config.r = LAPIC_TIMER_DIVIDE_2;
 
     /* Enable interrupts for the first time */
     printf("LAPIC timer configured on cpu%d\n", cpu_number());
@@ -336,12 +338,13 @@ ioapic_configure(void)
     lapic_enable();
 
     /* Set one-shot timer */
-    lapic->divider_config.r = LAPIC_TIMER_DIVIDE_16;
+    lapic->divider_config.r = LAPIC_TIMER_DIVIDE_2;
     lapic->lvt_timer.r = IOAPIC_INT_BASE;
 
-    /* Measure number of APIC timer ticks in 1/hz seconds
-     * but calibrate the timer to expire at rate of hz */
-    calibrated_ticks = pit_measure_apic_hz() * hz;
+    /* Measure number of APIC timer ticks in 10x 1/hz seconds
+     * but calibrate the timer to expire at rate of hz
+     * divide by 10 because we waited 10 times longer than we needed */
+    calibrated_ticks = pit_measure_10x_apic_hz() / 10;
 
     /* Set up counter later */
     lapic->lvt_timer.r = LAPIC_DISABLE;
