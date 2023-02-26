@@ -86,7 +86,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  * (defined in param.h)
  */
 #if	defined(AT386) || defined(ATX86_64)
-#define CLKNUM		1193167
+#define CLKNUM		1193182
 #endif	/* AT386 */
 
 extern void clkstart(void);
