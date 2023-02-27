@@ -194,6 +194,8 @@ int copyinmsg (const void *userbuf, void *kernelbuf, const size_t usize)
 		 "mach_msg_header_t and mach_msg_user_header_t expected to be of the same size");
   if (copyin(umsg, kmsg, sizeof(mach_msg_header_t)))
     return 1;
+  kmsg->msgh_remote_port &= 0xFFFFFFFF; // FIXME: still have port names here
+  kmsg->msgh_local_port &= 0xFFFFFFFF;  // also, this assumes little-endian
 #endif
 
   vm_offset_t usaddr, ueaddr, ksaddr;
