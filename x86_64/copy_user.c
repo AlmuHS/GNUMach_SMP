@@ -192,7 +192,7 @@ int copyinmsg (const void *userbuf, void *kernelbuf, const size_t usize)
   /* The 64 bit interface ensures the header is the same size, so it does not need any resizing. */
   _Static_assert(sizeof(mach_msg_header_t) == sizeof(mach_msg_user_header_t),
 		 "mach_msg_header_t and mach_msg_user_header_t expected to be of the same size");
-  if (copyin(&umsg, &kmsg, sizeof(mach_msg_header_t)))
+  if (copyin(umsg, kmsg, sizeof(mach_msg_header_t)))
     return 1;
 #endif
 
@@ -290,7 +290,7 @@ int copyoutmsg (const void *kernelbuf, void *userbuf, const size_t ksize)
              sizeof(kmsg->msgh_seqno) + sizeof(kmsg->msgh_id)))
     return 1;
 #else
-  if (copyout(&kmsg, &umsg, sizeof(mach_msg_header_t)))
+  if (copyout(kmsg, umsg, sizeof(mach_msg_header_t)))
     return 1;
 #endif  /* USER32 */
 
