@@ -27,8 +27,8 @@
  * Fault recovery in copyin/copyout routines.
  */
 struct recovery {
-	int	fault_addr;
-	int	recover_addr;
+	vm_offset_t	fault_addr;
+	vm_offset_t	recover_addr;
 };
 
 extern struct recovery recover_table[];

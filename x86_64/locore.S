@@ -1157,18 +1157,18 @@ syscall_native:
 	andq	%r10,%r10
 	jz	mach_call_call		/* skip argument copy if none */
 
-	movq	R_UESP(%rbx),%rbx	/* get user stack pointer */
-	addq	$4,%rbx			/* Skip user return address */
-
 	movq	$USER_DS,%rdx		/* use user data segment for accesses */
 	mov	%dx,%fs
 	movq	%rsp,%r11		/* save kernel ESP for error recovery */
 
+	movq	R_UESP(%rbx),%rbp	/* get user stack pointer */
+	addq	$4,%rbp			/* Skip user return address */
+
 #define PARAM(reg,ereg) \
-	RECOVER(mach_call_addr_push) \
 	xorq	%reg,%reg		;\
-	movl	%fs:(%rbx),%ereg	/* 1st parameter */ ;\
-	addq	$4,%rbx			;\
+	RECOVER(mach_call_addr_push) \
+	movl	%fs:(%rbp),%ereg	/* 1st parameter */ ;\
+	addq	$4,%rbp			;\
 	dec	%r10			;\
 	jz	mach_call_call
 
@@ -1179,12 +1179,12 @@ syscall_native:
 	PARAM(r8,r8d)			/* 5th parameter */
 	PARAM(r9,r9d)			/* 6th parameter */
 
-	lea	(%rbx,%r10,4),%rbx	/* point past last argument */
+	lea	(%rbp,%r10,4),%rbp	/* point past last argument */
 	xorq	%r12,%r12
 
-0:	subq	$4,%rbx
+0:	subq	$4,%rbp
 	RECOVER(mach_call_addr_push)
-	movl	%fs:(%rbx),%r12d
+	movl	%fs:(%rbp),%r12d
 	pushq	%r12			/* push argument on stack */
 	dec	%r10
 	jnz	0b			/* loop for all arguments */
@@ -1208,7 +1208,7 @@ mach_call_call:
 
 /*
  * Address out of range.  Change to page fault.
- * %esi holds failing address.
+ * %rsi holds failing address.
  */
 mach_call_addr_push:
 	movq	%r11,%rsp		/* clean parameters from stack */
