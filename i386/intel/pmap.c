@@ -1473,7 +1473,8 @@ void pmap_destroy(pmap_t p)
 	    /* In this case we know we have one PDP for user space */
 	    pt_entry_t *pdp = (pt_entry_t *) ptetokv(p->l4base[lin2l4num(VM_MIN_USER_ADDRESS)]);
 #else
-#error "TODO do 64-bit userspace need more that 512G?"
+#warning "TODO do 64-bit userspace need more that 512G?"
+	    pt_entry_t *pdp = (pt_entry_t *) ptetokv(p->l4base[lin2l4num(VM_MIN_USER_ADDRESS)]);
 #endif /* USER32 */
 	    page_dir = (pt_entry_t *) ptetokv(pdp[i]);
 #else /* __x86_64__ */
@@ -2482,7 +2483,8 @@ void pmap_collect(pmap_t p)
 	    /* In this case we know we have one PDP for user space */
 	    pdp = (pt_entry_t *) ptetokv(p->l4base[lin2l4num(VM_MIN_USER_ADDRESS)]);
 #else
-#error "TODO do 64-bit userspace need more that 512G?"
+#warning "TODO do 64-bit userspace need more that 512G?"
+	    pdp = (pt_entry_t *) ptetokv(p->l4base[lin2l4num(VM_MIN_USER_ADDRESS)]);
 #endif /* USER32 */
 	    page_dir = (pt_entry_t *) ptetokv(pdp[i]);
 #else /* __x86_64__ */
