@@ -59,7 +59,7 @@
 #define	SIMPLE_LOCK_INITIALIZER(l) \
 	{.lock_data = 0}
 
-#define	simple_lock(l) \
+#define	_simple_lock(l) \
     ({ \
 	while(_simple_lock_xchg_(l, 1)) \
 	    while (*(volatile int *)&(l)->lock_data) \
@@ -67,10 +67,10 @@
 	0; \
     })
 
-#define	simple_unlock(l) \
+#define	_simple_unlock(l) \
 	(_simple_lock_xchg_(l, 0))
 
-#define	simple_lock_try(l) \
+#define	_simple_lock_try(l) \
 	(!_simple_lock_xchg_(l, 1))
 
 /*

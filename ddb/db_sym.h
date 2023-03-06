@@ -116,6 +116,10 @@ extern void	db_symbol_values( db_symtab_t *stab,
 				  char** namep,
 				  db_expr_t* valuep);
 
+/* find symbol in current task */
+#define db_search_symbol(val,strgy,offp)	\
+	db_search_task_symbol(val,strgy,offp,0)
+
 /* find name&value given approx val */
 
 #define db_find_sym_and_offset(val,namep,offp)	\
@@ -156,10 +160,6 @@ extern void	db_symbol_values( db_symtab_t *stab,
 			   namep,0);					\
 	  db_free_symbol(s);						\
 	} while(0);
-
-/* find symbol in current task */
-#define db_search_symbol(val,strgy,offp)	\
-	db_search_task_symbol(val,strgy,offp,0)
 
 /* strcmp, modulo leading char */
 extern boolean_t	db_eqname( const char* src, const char* dst, char c );

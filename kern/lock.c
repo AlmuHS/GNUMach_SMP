@@ -673,7 +673,11 @@ void db_show_all_slocks(void)
 #else	/* MACH_SLOCKS && NCPUS == 1 */
 void db_show_all_slocks(void)
 {
+#if	MACH_LOCK_MON
+	lip();
+#else
 	db_printf("simple lock info not available\n");
+#endif
 }
 #endif	/* MACH_SLOCKS && NCPUS == 1 */
 #endif	/* MACH_KDB */

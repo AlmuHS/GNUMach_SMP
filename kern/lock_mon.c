@@ -45,7 +45,8 @@
 #include <mach/boolean.h>
 #include <kern/thread.h>
 #include <kern/lock.h>
-
+#include <machine/ipl.h>
+#include <ddb/db_sym.h>
 
 def_simple_lock_data(extern , kdb_lock)
 def_simple_lock_data(extern , printf_lock)
@@ -93,7 +94,6 @@ decl_simple_lock_data(, **lock)
 {
 	struct lock_info *li =  &(lock_info[HASH_LOCK(*lock)].info[0]);
 	int i;
-	my_cpu = cpu_number();
 
 	for (i=0; i < LOCK_INFO_PER_BUCKET; i++, li++)
 		if (li->lock) {
@@ -114,7 +114,7 @@ void simple_lock(lock)
 decl_simple_lock_data(, *lock)
 {
 	struct lock_info *li = locate_lock_info(&lock);
-	my_cpu = cpu_number();
+	int my_cpu = cpu_number();
 
 	if (current_thread())
 		li->stack = current_thread()->lock_stack++;
@@ -133,7 +133,7 @@ int simple_lock_try(lock)
 decl_simple_lock_data(, *lock)
 {
 	struct lock_info *li = locate_lock_info(&lock);
-	my_cpu = cpu_number();
+	int my_cpu = cpu_number();
 
 	if (curr_ipl[my_cpu])
 		li->masked++;

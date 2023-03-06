@@ -229,6 +229,10 @@ struct thread {
 #if	NCPUS > 1
 	processor_t	last_processor; /* processor this last ran on */
 #endif	/* NCPUS > 1 */
+
+#if	MACH_LOCK_MON
+	int lock_stack;
+#endif
 };
 
 /* typedef of thread_t is in kern/kern_types.h */

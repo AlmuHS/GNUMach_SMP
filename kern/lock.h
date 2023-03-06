@@ -39,6 +39,11 @@
 
 #if NCPUS > 1
 #include <machine/lock.h>/*XXX*/
+#if MACH_LOCK_MON == 0
+#define simple_lock	_simple_lock
+#define simple_lock_try	_simple_lock_try
+#define simple_unlock	_simple_unlock
+#endif
 #endif
 
 #define MACH_SLOCKS	((NCPUS > 1) || MACH_LDEBUG)
