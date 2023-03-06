@@ -28,11 +28,13 @@
 #include <i386/pio.h>
 #include <i386/pit.h>
 #include <i386/pic.h> /* only for macros */
+#include <i386/smp.h>
 #include <mach/machine.h>
 #include <kern/printf.h>
+#include <kern/timer.h>
 
 static int has_irq_specific_eoi = 1; /* FIXME: Assume all machines have this */
-int duplicate_pin;
+int timer_pin;
 
 uint32_t lapic_timer_val = 0;
 uint32_t calibrated_ticks = 0;
@@ -43,7 +45,7 @@ int iunit[NINTR] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
                     16, 17, 18, 19, 20, 21, 22, 23};
 
 interrupt_handler_fn ivect[NINTR] = {
-    /* 00 */	intnull,	/* install timer later */
+    /* 00 */	(interrupt_handler_fn)hardclock,
     /* 01 */	kdintr,		/* kdintr, ... */
     /* 02 */	intnull,
     /* 03 */	intnull,	/* lnpoll, comintr, ... */
@@ -150,32 +152,58 @@ ioapic_toggle_entry(int apic, int pin, int mask)
     ioapic_write(apic, APIC_IO_REDIR_LOW(pin), entry.lo);
 }
 
-static uint32_t
-pit_measure_10x_apic_hz(void)
+static void timer_expiry_callback(void *arg)
 {
-    volatile int i;
-    uint32_t start = 0xffffffff;
+    volatile int *done = arg;
+    *done = 1;
+}
 
-    /* Prepare accurate delay for 1/hz seconds */
-    pit_prepare_sleep(hz);
+static uint32_t
+timer_measure_10x_apic_hz(void)
+{
+    volatile int done = 0;
+    uint32_t start = 0xffffffff;
+    timer_elt_data_t tmp_timer;
+    tmp_timer.fcn = timer_expiry_callback;
+    tmp_timer.param = (void *)&done;
+
+    printf("timer calibration...");
 
     /* Set APIC timer */
     lapic->init_count.r = start;
 
-    /* zZz */
-    for (i = 0; i < 10; i++)
-        pit_sleep();
+    /* Delay for 10 * 1/hz seconds */
+    set_timeout(&tmp_timer, hz / 10);
+    do {
+        cpu_pause();
+    } while (!done);
 
     /* Stop APIC timer */
     lapic->lvt_timer.r |= LAPIC_DISABLE;
 
+    printf(" done\n");
+
     return start - lapic->cur_count.r;
 }
 
-void lapic_update_timer(void)
+void
+calibrate_lapic_timer(void)
 {
-    /* Timer decrements until zero and then calls this on every interrupt */
-    lapic_timer_val += calibrated_ticks;
+    spl_t s;
+
+    /* Set one-shot timer */
+    lapic->divider_config.r = LAPIC_TIMER_DIVIDE_2;
+    lapic->lvt_timer.r = IOAPIC_INT_BASE;
+
+    /* Measure number of APIC timer ticks in 10x 1/hz seconds
+     * but calibrate the timer to expire at rate of hz
+     * divide by 10 because we waited 10 times longer than we needed. */
+    if (!calibrated_ticks) {
+        s = splhigh();
+        spl0();
+        calibrated_ticks = timer_measure_10x_apic_hz() / 10;
+        splx(s);
+    }
 }
 
 void
@@ -306,16 +334,14 @@ ioapic_configure(void)
             /* Save timer info */
             timer_gsi = gsi;
         } else {
-            /* Disable duplicated timer gsi */
+            /* Remap timer irq */
             if (gsi == timer_gsi) {
-                duplicate_pin = pin;
-                /* Remap this interrupt pin to GSI base
-                 * so we don't duplicate vectors */
+                timer_pin = pin;
+                /* Remap GSI base to timer pin so ivect[0] is the timer */
                 entry.both.vector = IOAPIC_INT_BASE;
-                ioapic_write_entry(apic, duplicate_pin, entry.both);
-                /* Mask the ioapic pin with deduplicated vector as
-		 * we will never use it, since timer is on another gsi */
-                mask_irq(duplicate_pin);
+                ioapic_write_entry(apic, timer_pin, entry.both);
+                /* Mask the duplicate pin 0 as we will be using timer_pin */
+                mask_irq(0);
             }
         }
     }
@@ -336,21 +362,6 @@ ioapic_configure(void)
 
     /* Start the IO APIC receiving interrupts */
     lapic_enable();
-
-    /* Set one-shot timer */
-    lapic->divider_config.r = LAPIC_TIMER_DIVIDE_2;
-    lapic->lvt_timer.r = IOAPIC_INT_BASE;
-
-    /* Measure number of APIC timer ticks in 10x 1/hz seconds
-     * but calibrate the timer to expire at rate of hz
-     * divide by 10 because we waited 10 times longer than we needed */
-    calibrated_ticks = pit_measure_10x_apic_hz() / 10;
-
-    /* Set up counter later */
-    lapic->lvt_timer.r = LAPIC_DISABLE;
-
-    /* Install clock interrupt handler on pin 0 */
-    ivect[0] = (interrupt_handler_fn)hardclock;
 
     printf("IOAPIC 0 configured\n");
 }

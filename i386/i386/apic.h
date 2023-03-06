@@ -243,11 +243,12 @@ void lapic_eoi(void);
 void ioapic_irq_eoi(int pin);
 void lapic_enable(void);
 void lapic_enable_timer(void);
+void calibrate_lapic_timer(void);
 void ioapic_mask_irqs(void);
 void ioapic_toggle(int pin, int mask);
 void ioapic_configure(void);
 
-extern int duplicate_pin;
+extern int timer_pin;
 extern void intnull(int unit);
 extern volatile ApicLocalUnit* lapic;
 

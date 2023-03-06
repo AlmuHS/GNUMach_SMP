@@ -171,7 +171,7 @@ void machine_init(void)
 #if defined(APIC)
 	ioapic_configure();
 #endif
-	startrtclock();
+	clkstart();
 
 #if defined(APIC)
 #warning FIXME: Rather unmask them from their respective drivers
@@ -593,7 +593,11 @@ void
 startrtclock(void)
 {
 #ifdef APIC
-	lapic_enable_timer();
+	unmask_irq(timer_pin);
+	calibrate_lapic_timer();
+	if (cpu_number() != 0) {
+		lapic_enable_timer();
+	}
 #else
 	clkstart();
 	unmask_irq(0);
