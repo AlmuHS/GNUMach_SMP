@@ -45,11 +45,15 @@
 #include <mach/boolean.h>
 #include <kern/thread.h>
 #include <kern/lock.h>
+#include <kern/printf.h>
 #include <machine/ipl.h>
 #include <ddb/db_sym.h>
+#include <ddb/db_output.h>
 
-def_simple_lock_data(extern , kdb_lock)
-def_simple_lock_data(extern , printf_lock)
+static void lis(int arg, int abs, int count);
+
+def_simple_lock_data(, kdb_lock)
+def_simple_lock_data(, printf_lock)
 
 #if	NCPUS > 1 && MACH_LOCK_MON
 
@@ -79,6 +83,8 @@ struct lock_info {
 struct lock_info_bucket {
 	struct lock_info info[LOCK_INFO_PER_BUCKET];
 };
+
+static void print_lock_info(struct lock_info *li);
 
 struct lock_info_bucket lock_info[LOCK_INFO_HASH_COUNT];
 struct lock_info default_lock_info;
@@ -171,7 +177,7 @@ void lip(void) {
 
 #define lock_info_sort lis
 
-void lock_info_sort(arg, abs, count)
+static void lock_info_sort(int arg, int abs, int count)
 {
 	struct lock_info *li, mean;
 	int bucket = 0;
@@ -263,19 +269,18 @@ void lock_info_clear(void)
 	memset(&default_lock_info, 0, sizeof(struct lock_info));
 }
 
-void print_lock_info(li)
-struct lock_info *li;
+static void print_lock_info(struct lock_info *li)
 {
-	int off;
+	db_addr_t off;
 	int sum = li->success + li->fail;
 	db_printf("%d	%d/%d	%d/%d	%d/%d	%d/%d	", li->success,
 		   li->fail, (li->fail*100)/sum,
 		   li->masked, (li->masked*100)/sum,
 		   li->stack, li->stack/sum,
 		   li->time, li->time/sum);
-	db_free_symbol(db_search_symbol(li->lock, 0, &off));
+	db_free_symbol(db_search_symbol((db_addr_t) li->lock, 0, &off));
 	if (off < 1024)
-		db_printsym(li->lock, 0);
+		db_printsym((db_addr_t) li->lock, 0);
 	else {
 		db_printsym(li->caller, 0);
 		db_printf("(%X)", li->lock);

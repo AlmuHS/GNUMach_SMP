@@ -231,7 +231,7 @@ struct thread {
 #endif	/* NCPUS > 1 */
 
 #if	MACH_LOCK_MON
-	int lock_stack;
+	unsigned lock_stack;
 #endif
 };
 
