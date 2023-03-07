@@ -29,16 +29,42 @@
 #define descsize_to_bytes(n) (n / 8)
 #define bytes_to_descsize(n) (n * 8)
 
+#ifdef USER32
+/* Versions of mach_msg_type_t and mach_msg_type_long that are expected from the 32 bit userland. */
+typedef struct {
+  unsigned int msgt_name : 8,
+               msgt_size : 8,
+               msgt_number : 12,
+               msgt_inline : 1,
+               msgt_longform : 1,
+               msgt_deallocate : 1,
+               msgt_unused : 1;
+} mach_msg_user_type_t;
+_Static_assert(sizeof(mach_msg_user_type_t) == 4);
+
+typedef struct {
+  mach_msg_user_type_t msgtl_header;
+  unsigned short msgtl_name;
+  unsigned short msgtl_size;
+  natural_t msgtl_number;
+} mach_msg_user_type_long_t;
+_Static_assert(sizeof(mach_msg_user_type_long_t) == 12);
+#else
+typedef mach_msg_type_t mach_msg_user_type_t;
+typedef mach_msg_type_long_t mach_msg_user_type_long_t;
+#endif  /* USER32 */
 
 /*
 * Helper to unpack the relevant fields of a msg type; the fields are different
 * depending on whether is long form or not.
 .*/
-static inline vm_size_t unpack_msg_type(vm_offset_t addr,
-                                        mach_msg_type_name_t *name,
-                                        mach_msg_type_size_t *size,
-                                        mach_msg_type_number_t *number,
-                                        boolean_t *is_inline)
+static inline void unpack_msg_type(vm_offset_t addr,
+                                   mach_msg_type_name_t *name,
+                                   mach_msg_type_size_t *size,
+                                   mach_msg_type_number_t *number,
+                                   boolean_t *is_inline,
+                                   vm_size_t *user_amount,
+                                   vm_size_t *kernel_amount)
 {
   mach_msg_type_t* kmt = (mach_msg_type_t*)addr;
   *is_inline = kmt->msgt_inline;
@@ -48,15 +74,67 @@ static inline vm_size_t unpack_msg_type(vm_offset_t addr,
       *name = kmtl->msgtl_name;
       *size = kmtl->msgtl_size;
       *number = kmtl->msgtl_number;
-      return sizeof(mach_msg_type_long_t);
+      *kernel_amount = sizeof(mach_msg_type_long_t);
+      *user_amount = sizeof(mach_msg_user_type_long_t);
     }
   else
     {
       *name = kmt->msgt_name;
       *size = kmt->msgt_size;
       *number = kmt->msgt_number;
-      return sizeof(mach_msg_type_t);
+      *kernel_amount = sizeof(mach_msg_type_t);
+      *user_amount = sizeof(mach_msg_user_type_t);
     }
+}
+
+static inline int copyin_mach_msg_type(const rpc_vm_offset_t *uaddr, mach_msg_type_t *kaddr) {
+#ifdef USER32
+  int ret;
+  ret = copyin(uaddr, kaddr, sizeof(mach_msg_user_type_t));
+  kaddr->unused_msgtl_number = 0;
+  return ret;
+#else
+  return copyin(uaddr, kaddr, sizeof(mach_msg_type_t));
+#endif
+}
+
+static inline int copyout_mach_msg_type(const mach_msg_type_t *kaddr, rpc_vm_offset_t  *uaddr) {
+#ifdef USER32
+  return copyout(kaddr, uaddr, sizeof(mach_msg_user_type_t));
+#else
+  return copyout(kaddr, uaddr, sizeof(mach_msg_type_t));
+#endif
+}
+
+static inline int copyin_mach_msg_type_long(const rpc_vm_offset_t *uaddr, mach_msg_type_long_t *kaddr) {
+#ifdef USER32
+  mach_msg_user_type_long_t user;
+  int ret;
+  ret = copyin(uaddr, &user, sizeof(mach_msg_user_type_long_t));
+  if (ret)
+    return ret;
+  /* The first 4 bytes are laid out in the same way. */
+  memcpy(&kaddr->msgtl_header, &user.msgtl_header, sizeof(mach_msg_user_type_t));
+  kaddr->msgtl_name = user.msgtl_name;
+  kaddr->msgtl_size = user.msgtl_size;
+  kaddr->msgtl_number = user.msgtl_number;
+  return 0;
+#else
+  return copyin(uaddr, kaddr, sizeof(mach_msg_type_long_t));
+#endif
+}
+
+static inline int copyout_mach_msg_type_long(const mach_msg_type_long_t *kaddr, rpc_vm_offset_t *uaddr) {
+#ifdef USER32
+  mach_msg_user_type_long_t user;
+  memcpy(&user.msgtl_header, &kaddr->msgtl_header, sizeof(mach_msg_user_type_t));
+  user.msgtl_name = kaddr->msgtl_name;
+  user.msgtl_size = kaddr->msgtl_size;
+  user.msgtl_number = kaddr->msgtl_number;
+  return copyout(&user, uaddr, sizeof(mach_msg_user_type_long_t));
+#else
+  return copyout(kaddr, uaddr, sizeof(mach_msg_type_long_t));
+#endif
 }
 
 /* Optimized version of unpack_msg_type(), including proper copyin() */
@@ -66,28 +144,31 @@ static inline int copyin_unpack_msg_type(vm_offset_t uaddr,
                                          mach_msg_type_size_t *size,
                                          mach_msg_type_number_t *number,
                                          boolean_t *is_inline,
-                                         vm_size_t *amount)
+                                         vm_size_t *user_amount,
+                                         vm_size_t *kernel_amount)
 {
   mach_msg_type_t *kmt = (mach_msg_type_t*)kaddr;
-  if (copyin((void*)uaddr, kmt, sizeof(mach_msg_type_t)))
+  if (copyin_mach_msg_type((void *)uaddr, kmt))
     return 1;
   *is_inline = kmt->msgt_inline;
   if (kmt->msgt_longform)
     {
       mach_msg_type_long_t* kmtl = (mach_msg_type_long_t*)kaddr;
-      if (copyin((void*)uaddr, kmtl, sizeof(mach_msg_type_long_t)))
+      if (copyin_mach_msg_type_long((void *)uaddr, kmtl))
         return 1;
       *name = kmtl->msgtl_name;
       *size = kmtl->msgtl_size;
       *number = kmtl->msgtl_number;
-      *amount = sizeof(mach_msg_type_long_t);
+      *user_amount = sizeof(mach_msg_user_type_long_t);
+      *kernel_amount = sizeof(mach_msg_type_long_t);
     }
   else
     {
       *name = kmt->msgt_name;
       *size = kmt->msgt_size;
       *number = kmt->msgt_number;
-      *amount = sizeof(mach_msg_type_t);
+      *user_amount = sizeof(mach_msg_user_type_t);
+      *kernel_amount = sizeof(mach_msg_type_t);
     }
   return 0;
 }
@@ -110,6 +191,46 @@ static inline void adjust_msg_type_size(vm_offset_t addr, int amount)
     }
 }
 
+/* Optimized version of unpack_msg_type(), including proper copyout() */
+static inline int copyout_unpack_msg_type(vm_offset_t kaddr,
+                                          vm_offset_t uaddr,
+                                          mach_msg_type_name_t *name,
+                                          mach_msg_type_size_t *size,
+                                          mach_msg_type_number_t *number,
+                                          boolean_t *is_inline,
+                                          vm_size_t *user_amount,
+                                          vm_size_t *kernel_amount)
+{
+  mach_msg_type_t *kmt = (mach_msg_type_t*)kaddr;
+  *is_inline = kmt->msgt_inline;
+  if (kmt->msgt_longform)
+    {
+      mach_msg_type_long_t* kmtl = (mach_msg_type_long_t*)kaddr;
+      if (MACH_MSG_TYPE_PORT_ANY(kmtl->msgtl_name))
+        kmtl->msgtl_size = bytes_to_descsize(sizeof(mach_port_name_t));
+      if (copyout_mach_msg_type_long(kmtl, (void*)uaddr))
+        return 1;
+      *name = kmtl->msgtl_name;
+      *size = kmtl->msgtl_size;
+      *number = kmtl->msgtl_number;
+      *user_amount = sizeof(mach_msg_user_type_long_t);
+      *kernel_amount = sizeof(mach_msg_type_long_t);
+    }
+  else
+    {
+      if (MACH_MSG_TYPE_PORT_ANY(kmt->msgt_name))
+        kmt->msgt_size = bytes_to_descsize(sizeof(mach_port_name_t));
+      if (copyout_mach_msg_type(kmt, (void *)uaddr))
+        return 1;
+      *name = kmt->msgt_name;
+      *size = kmt->msgt_size;
+      *number = kmt->msgt_number;
+      *user_amount = sizeof(mach_msg_user_type_t);
+      *kernel_amount = sizeof(mach_msg_type_t);
+    }
+  return 0;
+}
+
 /*
  * Compute the user-space size of a message still in the kernel.
  * The message may be originating from userspace (in which case we could
@@ -129,15 +250,15 @@ size_t msg_usize(const mach_msg_header_t *kmsg)
       eaddr = saddr + ksize - sizeof(mach_msg_header_t);
       while (saddr < (eaddr - sizeof(mach_msg_type_t)))
         {
-          vm_size_t amount;
+          vm_size_t user_amount, kernel_amount;
           mach_msg_type_name_t name;
           mach_msg_type_size_t size;
           mach_msg_type_number_t number;
           boolean_t is_inline;
-          amount = unpack_msg_type(saddr, &name, &size, &number, &is_inline);
-          saddr += amount;
+          unpack_msg_type(saddr, &name, &size, &number, &is_inline, &user_amount, &kernel_amount);
+          saddr += kernel_amount;
           saddr = mach_msg_kernel_align(saddr);
-          usize += amount;
+          usize += user_amount;
           usize = mach_msg_user_align(usize);
 
           if (is_inline)
@@ -211,23 +332,23 @@ int copyinmsg (const void *userbuf, void *kernelbuf, const size_t usize)
   if (usize > sizeof(mach_msg_user_header_t))
     {
       /* check we have at least space for an empty descryptor */
-      while (usaddr < (ueaddr - sizeof(mach_msg_type_t)))
+      while (usaddr < (ueaddr - sizeof(mach_msg_user_type_t)))
         {
-          vm_size_t amount;
+          vm_size_t user_amount, kernel_amount;
           mach_msg_type_name_t name;
           mach_msg_type_size_t size;
           mach_msg_type_number_t number;
           boolean_t is_inline;
           if (copyin_unpack_msg_type(usaddr, ksaddr, &name, &size, &number,
-                                     &is_inline, &amount))
+                                     &is_inline, &user_amount, &kernel_amount))
             return 1;
 
           // keep a reference to the current field descriptor, we
           // might need to adjust it later depending on the type
           vm_offset_t ktaddr = ksaddr;
-          usaddr += amount;
+          usaddr += user_amount;
           usaddr = mach_msg_user_align(usaddr);
-          ksaddr += amount;
+          ksaddr += kernel_amount;
           ksaddr = mach_msg_kernel_align(ksaddr);
 
           if (is_inline)
@@ -313,28 +434,23 @@ int copyoutmsg (const void *kernelbuf, void *userbuf, const size_t ksize)
     {
       while (ksaddr < keaddr)
         {
-          vm_size_t amount;
+          vm_size_t user_amount, kernel_amount;
           mach_msg_type_name_t name;
           mach_msg_type_size_t size;
           mach_msg_type_number_t number;
           boolean_t is_inline;
-          amount = unpack_msg_type(ksaddr, &name, &size, &number, &is_inline);
-          // TODO: optimize and bring here type adjustment??
-          vm_offset_t utaddr=usaddr, ktaddr=ksaddr;
-          if (copyout((void*)ksaddr, (void*)usaddr, amount))
+          if (copyout_unpack_msg_type(ksaddr, usaddr, &name, &size, &number,
+                                      &is_inline, &user_amount, &kernel_amount))
             return 1;
-          usaddr += amount;
+          usaddr += user_amount;
           usaddr = mach_msg_user_align(usaddr);
-          ksaddr += amount;
+          ksaddr += kernel_amount;
           ksaddr = mach_msg_kernel_align(ksaddr);
 
           if (is_inline)
             {
               if (MACH_MSG_TYPE_PORT_ANY(name))
                 {
-                  adjust_msg_type_size(ktaddr, (int)sizeof(mach_port_name_t) - (int)sizeof(mach_port_t));
-                  if (copyout((void*)ktaddr, (void*)utaddr, amount))
-                    return 1;
                   for (int i=0; i<number; i++)
                     {
                       if (copyout_port((mach_port_t*)ksaddr, (mach_port_name_t*)usaddr))
@@ -355,14 +471,6 @@ int copyoutmsg (const void *kernelbuf, void *userbuf, const size_t ksize)
             }
           else
             {
-              // out-of-line port arrays are shrinked in ipc_kmsg_copyout_body()
-              if (MACH_MSG_TYPE_PORT_ANY(name))
-                {
-                  adjust_msg_type_size(ktaddr, -4);
-                  if (copyout((void*)ktaddr, (void*)utaddr, amount))
-                    return 1;
-                }
-
               if (copyout_address((vm_offset_t*)ksaddr, (rpc_vm_offset_t*)usaddr))
                 return 1;
               // advance one pointer

@@ -132,9 +132,6 @@ typedef	unsigned int mach_msg_size_t;
 typedef natural_t mach_msg_seqno_t;
 typedef integer_t mach_msg_id_t;
 
-/* Force 4-byte alignment to simplify how the kernel parses the messages */
-#pragma pack(push, 4)
-
 /* full header structure, may have different size in user/kernel spaces */
 typedef	struct mach_msg_header {
     mach_msg_bits_t	msgh_bits;
@@ -232,16 +229,19 @@ typedef struct  {
 			msgt_longform : 1,
 			msgt_deallocate : 1,
 			msgt_unused : 1;
-} mach_msg_type_t;
+#ifdef __x86_64__
+    /* TODO: We want to eventually use this in favor of mach_msg_type_long_t
+     * as it makes the mach_msg protocol require only mach_msg_type_t. */
+    mach_msg_type_number_t   unused_msgtl_number;
+#endif
+} __attribute__ ((aligned (__alignof__ (uintptr_t)))) mach_msg_type_t;
 
 typedef	struct	{
     mach_msg_type_t	msgtl_header;
     unsigned short	msgtl_name;
     unsigned short	msgtl_size;
     natural_t		msgtl_number;
-} mach_msg_type_long_t;
-
-#pragma pack(pop)
+} __attribute__ ((aligned (__alignof__ (uintptr_t)))) mach_msg_type_long_t;
 
 /*
  *	Known values for the msgt_name field.

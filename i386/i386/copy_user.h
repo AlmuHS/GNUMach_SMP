@@ -71,7 +71,7 @@ static inline int copyout_address(const vm_offset_t *kaddr, rpc_vm_offset_t *uad
 
 static inline int copyin_port(const mach_port_name_t *uaddr, mach_port_t *kaddr)
 {
-#ifdef __x86_64
+#ifdef __x86_64__
   return copyin_32to64(uaddr, kaddr);
 #else /* __x86_64__ */
   return copyin(uaddr, kaddr, sizeof(*uaddr));
@@ -80,7 +80,7 @@ static inline int copyin_port(const mach_port_name_t *uaddr, mach_port_t *kaddr)
 
 static inline int copyout_port(const mach_port_t *kaddr, mach_port_name_t *uaddr)
 {
-#ifdef __x86_64
+#ifdef __x86_64__
   return copyout_64to32(kaddr, uaddr);
 #else /* __x86_64__ */
   return copyout(kaddr, uaddr, sizeof(*kaddr));
