@@ -172,8 +172,8 @@ timer_measure_10x_apic_hz(void)
     /* Set APIC timer */
     lapic->init_count.r = start;
 
-    /* Delay for 10 * 1/hz seconds */
-    set_timeout(&tmp_timer, hz / 10);
+    /* Delay for 10 ticks (10 * 1/hz seconds) */
+    set_timeout(&tmp_timer, 10);
     do {
         cpu_pause();
     } while (!done);
@@ -195,9 +195,8 @@ calibrate_lapic_timer(void)
     lapic->divider_config.r = LAPIC_TIMER_DIVIDE_2;
     lapic->lvt_timer.r = IOAPIC_INT_BASE;
 
-    /* Measure number of APIC timer ticks in 10x 1/hz seconds
-     * but calibrate the timer to expire at rate of hz
-     * divide by 10 because we waited 10 times longer than we needed. */
+    /* Measure number of APIC timer ticks in 10 mach ticks
+     * divide by 10 because we want to know how many in 1 tick */
     if (!calibrated_ticks) {
         s = splhigh();
         spl0();
