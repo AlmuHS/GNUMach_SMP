@@ -417,12 +417,10 @@ clock_boottime_update(const struct time_value64 *new_time)
  * frame.
  */
 void
-record_time_stamp(time_value_t *stamp)
+record_time_stamp(time_value64_t *stamp)
 {
-	time_value64_t stamp64;
-	read_mapped_time(&stamp64);
-	time_value64_add(&stamp64, &clock_boottime_offset);
-	TIME_VALUE64_TO_TIME_VALUE(&stamp64, stamp);
+	read_mapped_time(stamp);
+	time_value64_add(stamp, &clock_boottime_offset);
 }
 
 /*
@@ -430,10 +428,9 @@ record_time_stamp(time_value_t *stamp)
  * real-time clock frame.
  */
 void
-read_time_stamp (const time_value_t *stamp, rpc_time_value_t *result)
+read_time_stamp (const time_value64_t *stamp, rpc_time_value_t *result)
 {
-	time_value64_t result64;
-	TIME_VALUE_TO_TIME_VALUE64(stamp, &result64);
+	time_value64_t result64 = *stamp;
 	time_value64_sub(&result64, &clock_boottime_offset);
 	TIME_VALUE64_TO_TIME_VALUE(&result64, result);
 }
