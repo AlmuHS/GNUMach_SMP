@@ -378,8 +378,13 @@ static void timer_grab(
 	} while ( (save)->high != (timer)->high_bits_check);
 }
 
+#define TIMER_TO_TIME_VALUE64(tv, timer) do {							\
+		(tv)->seconds = (timer)->high + (timer)->low / 1000000;	\
+		(tv)->nanoseconds = (timer)->low % 1000000 * 1000;			\
+} while(0);
+
 /*
- *	timer_read reads the value of a timer into a time_value_t.  If the
+ *	timer_read reads the value of a timer into a time_value64_t.  If the
  *	timer was modified during the read, retry.  The value returned
  *	is accurate to the last update; time accumulated by a running
  *	timer since its last timestamp is not included.
@@ -388,7 +393,7 @@ static void timer_grab(
 void
 timer_read(
 	timer_t 	timer,
-	time_value_t 	*tv)
+	time_value64_t 	*tv)
 {
 	timer_save_data_t	temp;
 
@@ -399,9 +404,7 @@ timer_read(
 #ifdef	TIMER_ADJUST
 	TIMER_ADJUST(&temp);
 #endif	/* TIMER_ADJUST */
-	tv->seconds = temp.high + temp.low/1000000;
-	tv->microseconds = temp.low%1000000;
-
+	TIMER_TO_TIME_VALUE64(tv, &temp);
 }
 
 /*
@@ -414,29 +417,11 @@ timer_read(
  */
 void	thread_read_times(
 	thread_t 	thread,
-	time_value_t	*user_time_p,
-	time_value_t	*system_time_p)
+	time_value64_t	*user_time_p,
+	time_value64_t	*system_time_p)
 {
-	timer_save_data_t	temp;
-	timer_t			timer;
-
-	timer = &thread->user_timer;
-	timer_grab(timer, &temp);
-
-#ifdef	TIMER_ADJUST
-	TIMER_ADJUST(&temp);
-#endif	/* TIMER_ADJUST */
-	user_time_p->seconds = temp.high + temp.low/1000000;
-	user_time_p->microseconds = temp.low % 1000000;
-
-	timer = &thread->system_timer;
-	timer_grab(timer, &temp);
-
-#ifdef	TIMER_ADJUST
-	TIMER_ADJUST(&temp);
-#endif	/* TIMER_ADJUST */
-	system_time_p->seconds = temp.high + temp.low/1000000;
-	system_time_p->microseconds = temp.low % 1000000;
+	timer_read(&thread->user_timer, user_time_p);
+	timer_read(&thread->system_timer, system_time_p);
 }
 
 #if	MACH_DEBUG
@@ -458,6 +443,23 @@ static void db_timer_grab(
   (save)->low = (timer)->low_bits;
 }
 
+static void
+nonblocking_timer_read(
+	timer_t 	timer,
+	time_value64_t 	*tv)
+{
+	timer_save_data_t	temp;
+
+	db_timer_grab(timer, &temp);
+	/*
+	 *	Normalize the result
+	 */
+#ifdef	TIMER_ADJUST
+	TIMER_ADJUST(&temp);
+#endif	/* TIMER_ADJUST */
+	TIMER_TO_TIME_VALUE64(tv, &temp);
+}
+
 /*
  *      Db_thread_read_times: A version of thread_read_times that
  *      can be called by the debugger. This version does not call
@@ -467,29 +469,11 @@ static void db_timer_grab(
  */
 void	db_thread_read_times(
 	thread_t 	thread,
-	time_value_t	*user_time_p,
-	time_value_t	*system_time_p)
+	time_value64_t	*user_time_p,
+	time_value64_t	*system_time_p)
 {
-	timer_save_data_t	temp;
-	timer_t			timer;
-
-	timer = &thread->user_timer;
-	db_timer_grab(timer, &temp);
-
-#ifdef	TIMER_ADJUST
-	TIMER_ADJUST(&temp);
-#endif	/* TIMER_ADJUST */
-	user_time_p->seconds = temp.high + temp.low/1000000;
-	user_time_p->microseconds = temp.low % 1000000;
-
-	timer = &thread->system_timer;
-	timer_grab(timer, &temp);
-
-#ifdef	TIMER_ADJUST
-	TIMER_ADJUST(&temp);
-#endif	/* TIMER_ADJUST */
-	system_time_p->seconds = temp.high + temp.low/1000000;
-	system_time_p->microseconds = temp.low % 1000000;
+	nonblocking_timer_read(&thread->user_timer, user_time_p);
+	nonblocking_timer_read(&thread->system_timer, system_time_p);
 }
 #endif  /* MACH_DEBUG */
 

@@ -428,11 +428,10 @@ record_time_stamp(time_value64_t *stamp)
  * real-time clock frame.
  */
 void
-read_time_stamp (const time_value64_t *stamp, rpc_time_value_t *result)
+read_time_stamp (const time_value64_t *stamp, time_value64_t *result)
 {
-	time_value64_t result64 = *stamp;
-	time_value64_sub(&result64, &clock_boottime_offset);
-	TIME_VALUE64_TO_TIME_VALUE(&result64, result);
+	*result = *stamp;
+	time_value64_sub(result, &clock_boottime_offset);
 }
 
 

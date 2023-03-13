@@ -82,9 +82,9 @@ struct task {
 	int		priority;		/* for new threads */
 
 	/* Statistics */
-	time_value_t	total_user_time;
+	time_value64_t	total_user_time;
 				/* total user time for dead threads */
-	time_value_t	total_system_time;
+	time_value64_t	total_system_time;
 				/* total system time for dead threads */
 
 	time_value64_t	creation_time; /* time stamp at creation */

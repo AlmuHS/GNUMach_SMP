@@ -98,7 +98,7 @@ extern void record_time_stamp (time_value64_t *stamp);
  * Read a timestamp in STAMP into RESULT.  Returns values in the
  * real-time clock frame.
  */
-extern void read_time_stamp (const time_value64_t *stamp, rpc_time_value_t *result);
+extern void read_time_stamp (const time_value64_t *stamp, time_value64_t *result);
 
 extern void mapable_time_init (void);
 

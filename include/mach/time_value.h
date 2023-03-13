@@ -140,6 +140,11 @@ static __inline__ time_value_t convert_time_value_from_user(rpc_time_value_t tv)
     time_value64_sub_nanos(result, (subtrahend)->nanoseconds);	\
   }
 
+#define time_value64_init(tv)	{												\
+		(tv)->seconds = 0;																\
+		(tv)->nanoseconds = 0;														\
+	}
+
 #define TIME_VALUE64_TO_TIME_VALUE(tv64, tv) do {			\
 		(tv)->seconds = (tv64)->seconds;									\
 		(tv)->microseconds = (tv64)->nanoseconds / 1000;	\

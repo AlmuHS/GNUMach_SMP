@@ -154,10 +154,8 @@ task_create_kernel(
 	ipc_task_init(new_task, parent_task);
 	machine_task_init (new_task);
 
-	new_task->total_user_time.seconds = 0;
-	new_task->total_user_time.microseconds = 0;
-	new_task->total_system_time.seconds = 0;
-	new_task->total_system_time.microseconds = 0;
+	time_value64_init(&new_task->total_user_time);
+	time_value64_init(&new_task->total_system_time);
 
 	record_time_stamp (&new_task->creation_time);
 
@@ -808,16 +806,13 @@ kern_return_t task_info(
 		task_lock(task);
 		basic_info->base_priority = task->priority;
 		basic_info->suspend_count = task->user_stop_count;
-		basic_info->user_time.seconds
-				= task->total_user_time.seconds;
-		basic_info->user_time.microseconds
-				= task->total_user_time.microseconds;
-		basic_info->system_time.seconds
-				= task->total_system_time.seconds;
-		basic_info->system_time.microseconds
-				= task->total_system_time.microseconds;
-		read_time_stamp(&task->creation_time,
-				&basic_info->creation_time);
+		TIME_VALUE64_TO_TIME_VALUE(&task->total_user_time,
+				&basic_info->user_time);
+		TIME_VALUE64_TO_TIME_VALUE(&task->total_system_time,
+				&basic_info->system_time);
+		time_value64_t creation_time64;
+		read_time_stamp(&task->creation_time, &creation_time64);
+		TIME_VALUE64_TO_TIME_VALUE(&creation_time64, &basic_info->creation_time);
 		task_unlock(task);
 
 		if (*task_info_count > TASK_BASIC_INFO_COUNT)
@@ -854,21 +849,22 @@ kern_return_t task_info(
 		task_thread_times_info_t times_info;
 		thread_t	thread;
 
-		if (*task_info_count < TASK_THREAD_TIMES_INFO_COUNT) {
+		/* Callers might not known about time_value64_t fields yet. */
+		if (*task_info_count < TASK_THREAD_TIMES_INFO_COUNT - (2 * sizeof(time_value64_t)) / sizeof(integer_t)) {
 		    return KERN_INVALID_ARGUMENT;
 		}
 
 		times_info = (task_thread_times_info_t) task_info_out;
-		times_info->user_time.seconds = 0;
-		times_info->user_time.microseconds = 0;
-		times_info->system_time.seconds = 0;
-		times_info->system_time.microseconds = 0;
+
+		time_value64_t acc_user_time, acc_system_time;
+		time_value64_init(&acc_user_time);
+		time_value64_init(&acc_system_time);
 
 		task_lock(task);
 		queue_iterate(&task->thread_list, thread,
 			      thread_t, thread_list)
 		{
-		    time_value_t user_time, system_time;
+		    time_value64_t user_time, system_time;
 		    spl_t		 s;
 
 		    s = splsched();
@@ -879,10 +875,12 @@ kern_return_t task_info(
 		    thread_unlock(thread);
 		    splx(s);
 
-		    time_value_add(&times_info->user_time, &user_time);
-		    time_value_add(&times_info->system_time, &system_time);
+		    time_value64_add(&acc_user_time, &user_time);
+		    time_value64_add(&acc_system_time, &system_time);
 		}
 		task_unlock(task);
+		TIME_VALUE64_TO_TIME_VALUE(&acc_user_time, &times_info->user_time);
+		TIME_VALUE64_TO_TIME_VALUE(&acc_system_time, &times_info->system_time);
 
 		*task_info_count = TASK_THREAD_TIMES_INFO_COUNT;
 		break;

@@ -592,7 +592,7 @@ void thread_deallocate(
 	task_t		task;
 	processor_set_t	pset;
 
-	time_value_t	user_time, system_time;
+	time_value64_t	user_time, system_time;
 
 	if (thread == THREAD_NULL)
 		return;
@@ -669,8 +669,8 @@ void thread_deallocate(
 	 *	Accumulate times for dead threads in task.
 	 */
 	thread_read_times(thread, &user_time, &system_time);
-	time_value_add(&task->total_user_time, &user_time);
-	time_value_add(&task->total_system_time, &system_time);
+	time_value64_add(&task->total_user_time, &user_time);
+	time_value64_add(&task->total_system_time, &system_time);
 
 	/*
 	 *	Remove thread from task list and processor_set threads list.
@@ -1522,13 +1522,16 @@ kern_return_t thread_info(
 
 	    /* fill in info */
 
-	    thread_read_times_rpc(thread,
-			&basic_info->user_time,
-			&basic_info->system_time);
+	    time_value64_t user_time, system_time;
+	    thread_read_times(thread, &user_time, &system_time);
+	    TIME_VALUE64_TO_TIME_VALUE(&user_time, &basic_info->user_time);
+	    TIME_VALUE64_TO_TIME_VALUE(&system_time, &basic_info->system_time);
+
 	    basic_info->base_priority	= thread->priority;
 	    basic_info->cur_priority	= thread->sched_pri;
-	    read_time_stamp(&thread->creation_time,
-			    &basic_info->creation_time);
+	    time_value64_t creation_time;
+	    read_time_stamp(&thread->creation_time, &creation_time);
+	    TIME_VALUE64_TO_TIME_VALUE(&creation_time, &basic_info->creation_time);
 
 	    /*
 	     *	To calculate cpu_usage, first correct for timer rate,

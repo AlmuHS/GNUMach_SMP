@@ -32,7 +32,7 @@
 #if	STAT_TIME
 /*
  *	Statistical timer definitions - use microseconds in timer, seconds
- *	in high unit field.  No adjustment needed to convert to time_value_t
+ *	in high unit field.  No adjustment needed to convert to time_value64_t
  *	as a result.  Service timers once an hour.
  */
 
@@ -56,7 +56,7 @@
 
 /*
  *	TIMER_ADJUST is used to adjust the value of a timer after it has been
- *	copied into a time_value_t.  No adjustment is needed if high_bits is in
+ *	copied into a time_value64_t.  No adjustment is needed if high_bits is in
  *	seconds.
  */
 #undef	TIMER_ADJUST
@@ -128,23 +128,11 @@ extern void	start_timer(timer_t);
 extern void	timer_switch(timer_t);
 #endif	/* STAT_TIME */
 
-extern void		timer_read(timer_t, time_value_t *);
-extern void		thread_read_times(thread_t, time_value_t *, time_value_t *);
+extern void		timer_read(timer_t, time_value64_t *);
+extern void		thread_read_times(thread_t, time_value64_t *, time_value64_t *);
 extern unsigned		timer_delta(timer_t, timer_save_t);
 extern void		timer_normalize(timer_t);
 extern void		timer_init(timer_t);
-
-static inline void
-thread_read_times_rpc(thread_t thread,
-                      rpc_time_value_t *user_time_p, rpc_time_value_t *system_time_p)
-{
-  time_value_t user_p, system_p;
-  thread_read_times(thread, &user_p, &system_p);
-  user_time_p->seconds = user_p.seconds;
-  user_time_p->microseconds = user_p.microseconds;
-  system_time_p->seconds = system_p.seconds;
-  system_time_p->microseconds = system_p.microseconds;
-}
 
 #if	STAT_TIME
 /*
@@ -199,8 +187,8 @@ void timer_init(timer_t this_timer);
 #if	MACH_DEBUG
 void	db_thread_read_times(
 	thread_t 	thread,
-	time_value_t	*user_time_p,
-	time_value_t	*system_time_p);
+	time_value64_t	*user_time_p,
+	time_value64_t	*system_time_p);
 #endif
 
 
