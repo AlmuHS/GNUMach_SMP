@@ -5577,8 +5577,8 @@ The minimum quantum and unit of quantum in milliseconds.
 This is a pointer to a @code{struct host_sched_info}.
 @end deftp
 
-@deftypefun kern_return_t host_kernel_version (@w{host_t @var{host}}, @w{kernel_version_t *@var{version}})
-The @code{host_kernel_version} function returns the version string
+@deftypefun kern_return_t host_get_kernel_version (@w{host_t @var{host}}, @w{kernel_version_t *@var{version}})
+The @code{host_get_kernel_version} function returns the version string
 compiled into the kernel executing on @var{host} at the time it was
 built in the character string @var{version}.  This string describes the
 version of the kernel.  The constant @code{KERNEL_VERSION_MAX} should be
@@ -5595,8 +5595,8 @@ inaccessible memory, it returns @code{KERN_INVALID_ADDRESS}, and
 @code{KERN_SUCCESS} otherwise.
 @end deftypefun
 
-@deftypefun kern_return_t host_get_boot_info (@w{host_priv_t @var{host_priv}}, @w{kernel_boot_info_t @var{boot_info}})
-The @code{host_get_boot_info} function returns the boot-time information
+@deftypefun kern_return_t host_get_kernel_boot_info (@w{host_priv_t @var{host_priv}}, @w{kernel_boot_info_t @var{boot_info}})
+The @code{host_get_kernel_boot_info} function returns the boot-time information
 string supplied by the operator to the kernel executing on
 @var{host_priv} in the character string @var{boot_info}.  The constant
 @code{KERNEL_BOOT_INFO_MAX} should be used to dimension storage for the

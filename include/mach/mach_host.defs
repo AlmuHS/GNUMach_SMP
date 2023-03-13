@@ -163,6 +163,7 @@ routine task_get_assignment(
 
 /*
  *	Get string describing current kernel version.
+ *	Deprecated, use host_get_kernel_version.
  */
 routine	host_kernel_version(
 		host		: host_t;
@@ -348,6 +349,7 @@ routine processor_control(
 
 /*
  *      Get boot configuration information from kernel.
+ *      Deprecated, use host_get_kernel_boot_info.
  */
 routine host_get_boot_info(
 		host_priv	: host_priv_t;
@@ -378,3 +380,17 @@ routine	host_adjust_time64(
 		host_priv	: host_priv_t;
 	in	new_adjustment	: time_value64_t;
 	out	old_adjustment	: time_value64_t);
+
+/*
+ *	Get string describing current kernel version.
+ */
+routine	host_get_kernel_version(
+		host		: host_t;
+	out	kernel_version	: new_kernel_version_t);
+
+/*
+ *      Get boot configuration information from kernel.
+ */
+routine host_get_kernel_boot_info(
+		host_priv	: host_priv_t;
+	out	boot_info	: new_kernel_boot_info_t);

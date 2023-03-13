@@ -674,3 +674,11 @@ host_get_boot_info(
 	(void) strncpy(boot_info, src, KERNEL_BOOT_INFO_MAX);
 	return KERN_SUCCESS;
 }
+
+kern_return_t
+host_get_kernel_boot_info(
+        host_t              priv_host,
+        kernel_boot_info_t  boot_info)
+{
+	return host_get_boot_info(priv_host, boot_info);
+}

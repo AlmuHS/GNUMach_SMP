@@ -219,6 +219,14 @@ kern_return_t host_kernel_version(
 	return KERN_SUCCESS;
 }
 
+/* Same as above */
+kern_return_t host_get_kernel_version(
+	const host_t		host,
+	kernel_version_t	out_version)
+{
+	return host_kernel_version(host, out_version);
+}
+
 /*
  *	host_processor_sets:
  *
