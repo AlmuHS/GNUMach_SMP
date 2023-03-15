@@ -102,7 +102,7 @@ type vm_page_info_t = struct {
 };
 type vm_page_info_array_t = array[] of vm_page_info_t;
 
-type symtab_name_t = (MACH_MSG_TYPE_STRING_C, 8*32);
+type symtab_name_t = c_string[32];
 
 type kernel_debug_name_t = c_string[*: 64];
 
