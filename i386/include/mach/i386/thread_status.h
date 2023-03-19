@@ -57,6 +57,7 @@
 #define	i386_V86_ASSIST_STATE	4
 #define	i386_REGS_SEGS_STATE	5
 #define	i386_DEBUG_STATE	6
+#define	i386_FSGS_BASE_STATE	7
 
 /*
  * This structure is used for both
@@ -178,5 +179,12 @@ struct i386_debug_state {
 };
 #define	i386_DEBUG_STATE_COUNT \
 	    (sizeof(struct i386_debug_state)/sizeof(unsigned int))
+
+struct i386_fsgs_base_state {
+	unsigned long fs_base;
+	unsigned long gs_base;
+};
+#define i386_FSGS_BASE_STATE_COUNT \
+	    (sizeof(struct i386_fsgs_base_state)/sizeof(unsigned int))
 
 #endif	/* _MACH_I386_THREAD_STATUS_H_ */
