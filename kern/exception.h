@@ -26,13 +26,13 @@ extern void
 exception(
 	integer_t 	_exception,
 	integer_t	code,
-	integer_t	subcode) __attribute__ ((noreturn));
+	long_integer_t	subcode) __attribute__ ((noreturn));
 
 extern void
 exception_try_task(
 	integer_t 	_exception,
 	integer_t	code,
-	integer_t	subcode) __attribute__ ((noreturn));
+	long_integer_t	subcode) __attribute__ ((noreturn));
 
 extern void
 exception_no_server(void) __attribute__ ((noreturn));
@@ -44,7 +44,7 @@ exception_raise(
 	ipc_port_t task_port,
 	integer_t  _exception,
 	integer_t  code,
-	integer_t  subcode) __attribute__ ((noreturn));
+	long_integer_t  subcode) __attribute__ ((noreturn));
 
 extern kern_return_t
 exception_parse_reply(ipc_kmsg_t kmsg);

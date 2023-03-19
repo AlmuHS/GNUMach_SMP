@@ -40,7 +40,7 @@ void
 i386_exception(
 	int	exc,
 	int	code,
-	int	subcode) __attribute__ ((noreturn));
+	long	subcode) __attribute__ ((noreturn));
 
 extern void
 thread_kdb_return(void);

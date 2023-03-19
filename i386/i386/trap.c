@@ -628,7 +628,7 @@ void
 i386_exception(
 	int	exc,
 	int	code,
-	int	subcode)
+	long	subcode)
 {
 	spl_t	s;
 

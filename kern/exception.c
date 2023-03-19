@@ -85,9 +85,9 @@ boolean_t debug_user_with_kdb = FALSE;
 
 void
 exception(
-	integer_t _exception, 
-	integer_t code, 
-	integer_t subcode)
+	integer_t _exception,
+	integer_t code,
+	long_integer_t subcode)
 {
 	ipc_thread_t self = current_thread();
 	ipc_port_t exc_port;
@@ -157,9 +157,9 @@ exception(
 
 void
 exception_try_task(
-	integer_t _exception, 
-	integer_t code, 
-	integer_t subcode)
+	integer_t _exception,
+	integer_t code,
+	long_integer_t subcode)
 {
 	ipc_thread_t self = current_thread();
 	task_t task = self->task;
@@ -277,11 +277,17 @@ struct mach_exception {
 	mach_msg_type_t		codeType;
 	integer_t		code;
 	mach_msg_type_t		subcodeType;
-	integer_t		subcode;
+	rpc_long_integer_t	subcode;
 };
 
 #define	INTEGER_T_SIZE_IN_BITS	(8 * sizeof(integer_t))
 #define	INTEGER_T_TYPE		MACH_MSG_TYPE_INTEGER_T
+#define RPC_LONG_INTEGER_T_SIZE_IN_BITS	(8 * sizeof(rpc_long_integer_t))
+#if defined(__x86_64__) && !defined(USER32)
+#define RPC_LONG_INTEGER_T_TYPE	MACH_MSG_TYPE_INTEGER_64
+#else
+#define RPC_LONG_INTEGER_T_TYPE	MACH_MSG_TYPE_INTEGER_32
+#endif
 					/* in mach/machine/vm_types.h */
 
 mach_msg_type_t exc_port_proto = {
@@ -297,6 +303,16 @@ mach_msg_type_t exc_port_proto = {
 mach_msg_type_t exc_code_proto = {
 	/* msgt_name = */		INTEGER_T_TYPE,
 	/* msgt_size = */		INTEGER_T_SIZE_IN_BITS,
+	/* msgt_number = */		1,
+	/* msgt_inline = */		TRUE,
+	/* msgt_longform = */		FALSE,
+	/* msgt_deallocate = */		FALSE,
+	/* msgt_unused = */		0
+};
+
+mach_msg_type_t exc_subcode_proto = {
+	/* msgt_name = */		RPC_LONG_INTEGER_T_TYPE,
+	/* msgt_size = */		RPC_LONG_INTEGER_T_SIZE_IN_BITS,
 	/* msgt_number = */		1,
 	/* msgt_inline = */		TRUE,
 	/* msgt_longform = */		FALSE,
@@ -329,9 +345,9 @@ exception_raise(
 	ipc_port_t 	dest_port,
 	ipc_port_t 	thread_port,
 	ipc_port_t 	task_port,
-	integer_t 	_exception, 
-	integer_t 	code, 
-	integer_t 	subcode)
+	integer_t 	_exception,
+	integer_t 	code,
+	long_integer_t 	subcode)
 {
 	ipc_thread_t self = current_thread();
 	ipc_thread_t receiver;
@@ -521,7 +537,7 @@ exception_raise(
 	exc->exception = _exception;
 	exc->codeType = exc_code_proto;
 	exc->code = code;
-	exc->subcodeType = exc_code_proto;
+	exc->subcodeType = exc_subcode_proto;
 	exc->subcode = subcode;
 
 	/*
@@ -725,7 +741,7 @@ exception_raise(
 	exc->exception = _exception;
 	exc->codeType = exc_code_proto;
 	exc->code = code;
-	exc->subcodeType = exc_code_proto;
+	exc->subcodeType = exc_subcode_proto;
 	exc->subcode = subcode;
 
 	ipc_mqueue_send_always(kmsg);

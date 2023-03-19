@@ -4830,11 +4830,11 @@ argument set to @code{THREAD_EXCEPTION_PORT}.
 @node Exceptions
 @subsection Exceptions
 
-@deftypefun kern_return_t catch_exception_raise (@w{mach_port_t @var{exception_port}}, @w{thread_t @var{thread}}, @w{task_t @var{task}}, @w{int @var{exception}}, @w{int @var{code}}, @w{int @var{subcode}})
+@deftypefun kern_return_t catch_exception_raise (@w{mach_port_t @var{exception_port}}, @w{thread_t @var{thread}}, @w{task_t @var{task}}, @w{int @var{exception}}, @w{int @var{code}}, @w{long @var{subcode}})
 XXX Fixme
 @end deftypefun
 
-@deftypefun kern_return_t exception_raise (@w{mach_port_t @var{exception_port}}, @w{mach_port_t @var{thread}}, @w{mach_port_t @var{task}}, @w{integer_t @var{exception}}, @w{integer_t @var{code}}, @w{integer_t @var{subcode}})
+@deftypefun kern_return_t exception_raise (@w{mach_port_t @var{exception_port}}, @w{mach_port_t @var{thread}}, @w{mach_port_t @var{task}}, @w{integer_t @var{exception}}, @w{integer_t @var{code}}, @w{long_integer_t @var{subcode}})
 XXX Fixme
 @end deftypefun
 

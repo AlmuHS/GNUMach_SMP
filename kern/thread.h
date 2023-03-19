@@ -190,7 +190,7 @@ struct thread {
 			struct ipc_port *port;
 			int exc;
 			int code;
-			int subcode;
+			long subcode;
 		} exception;
 		void *other;		/* catch-all for other state */
 	} saved;
