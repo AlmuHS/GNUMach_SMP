@@ -379,12 +379,7 @@ thread_t switch_context(
 void pcb_module_init(void)
 {
 	kmem_cache_init(&pcb_cache, "pcb", sizeof(struct pcb),
-#ifdef __x86_64__
-			16,
-#else
-			0,
-#endif
-			NULL, 0);
+			KERNEL_STACK_ALIGN, NULL, 0);
 
 	fpu_module_init();
 }
@@ -893,11 +888,13 @@ set_user_regs(vm_offset_t stack_base, /* low address */
 	vm_offset_t	arg_addr;
 	struct i386_saved_state *saved_state;
 
-	arg_size = (arg_size + sizeof(int) - 1) & ~(sizeof(int)-1);
+	assert(P2ALIGNED(stack_size, USER_STACK_ALIGN));
+	assert(P2ALIGNED(stack_base, USER_STACK_ALIGN));
+	arg_size = P2ROUND(arg_size, USER_STACK_ALIGN);
 	arg_addr = stack_base + stack_size - arg_size;
 
 	saved_state = USER_REGS(current_thread());
-	saved_state->uesp = (long)arg_addr;
+	saved_state->uesp = (rpc_vm_offset_t)arg_addr;
 	saved_state->eip = exec_info->entry;
 
 	return (arg_addr);

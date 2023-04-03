@@ -225,6 +225,19 @@ typedef struct pcb {
 #define STACK_IEL(stack)	\
 	((struct i386_exception_link *)STACK_IKS(stack) - 1)
 
+#ifdef __x86_64__
+#define KERNEL_STACK_ALIGN 16
+#else
+#define KERNEL_STACK_ALIGN 4
+#endif
+
+#if defined(__x86_64__) && !defined(USER32)
+/* Follow System V AMD64 ABI guidelines. */
+#define USER_STACK_ALIGN 16
+#else
+#define USER_STACK_ALIGN 4
+#endif
+
 #define USER_REGS(thread)	(&(thread)->pcb->iss)
 
 

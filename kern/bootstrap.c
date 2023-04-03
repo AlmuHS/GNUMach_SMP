@@ -610,17 +610,16 @@ build_args_and_stack(struct exec_info *boot_exec_info,
 	 *	trailing 0 pointer
 	 *	pointers to environment variables
 	 *	trailing 0 pointer
-	 *	and align to integer boundary
 	 */
 	arg_len += (sizeof(rpc_vm_offset_t)
 		    + (arg_count + 1 + envc + 1) * sizeof(rpc_vm_offset_t));
-	arg_len = (arg_len + sizeof(integer_t) - 1) & ~(sizeof(integer_t)-1);
 
 	/*
 	 * Allocate the stack.
 	 */
 	stack_size = round_page(STACK_SIZE);
 	stack_base = user_stack_low(stack_size);
+
 	(void) vm_allocate(current_task()->map,
 			&stack_base,
 			stack_size,
