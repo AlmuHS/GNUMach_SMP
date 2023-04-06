@@ -347,13 +347,8 @@ routine processor_control(
 		processor	: processor_t;
 		processor_cmd	: processor_info_t);
 
-/*
- *      Get boot configuration information from kernel.
- *      Deprecated, use host_get_kernel_boot_info.
- */
-routine host_get_boot_info(
-		host_priv	: host_priv_t;
-	out	boot_info	: kernel_boot_info_t);
+/* host_get_boot_info */
+skip;
 
 /*
  *	Get the time on this host.
@@ -387,10 +382,3 @@ routine	host_adjust_time64(
 routine	host_get_kernel_version(
 		host		: host_t;
 	out	kernel_version	: new_kernel_version_t);
-
-/*
- *      Get boot configuration information from kernel.
- */
-routine host_get_kernel_boot_info(
-		host_priv	: host_priv_t;
-	out	boot_info	: new_kernel_boot_info_t);

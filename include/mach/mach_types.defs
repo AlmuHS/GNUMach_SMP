@@ -259,10 +259,6 @@ type kernel_version_t		= (MACH_MSG_TYPE_STRING, 512*8);
 type new_kernel_version_t = c_string[512]
   ctype: kernel_version_t;
 
-type kernel_boot_info_t		= (MACH_MSG_TYPE_STRING, 4096*8);
-type new_kernel_boot_info_t = c_string[4096]
-  ctype: kernel_boot_info_t;
-
 type rpc_time_value_t		= struct {
   rpc_long_integer_t seconds;
   integer_t microseconds;

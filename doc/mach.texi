@@ -5595,20 +5595,6 @@ inaccessible memory, it returns @code{KERN_INVALID_ADDRESS}, and
 @code{KERN_SUCCESS} otherwise.
 @end deftypefun
 
-@deftypefun kern_return_t host_get_kernel_boot_info (@w{host_priv_t @var{host_priv}}, @w{kernel_boot_info_t @var{boot_info}})
-The @code{host_get_kernel_boot_info} function returns the boot-time information
-string supplied by the operator to the kernel executing on
-@var{host_priv} in the character string @var{boot_info}.  The constant
-@code{KERNEL_BOOT_INFO_MAX} should be used to dimension storage for the
-returned string if the @code{kernel_boot_info_t} declaration is not
-used.
-
-If the boot-time information string supplied by the operator is longer
-than @code{KERNEL_BOOT_INFO_MAX}, the result is truncated and not
-necessarily null-terminated.
-@end deftypefun
-
-
 @node Host Time
 @section Host Time
 

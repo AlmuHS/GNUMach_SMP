@@ -46,9 +46,6 @@ typedef integer_t	host_info_data_t[HOST_INFO_MAX];
 #define KERNEL_VERSION_MAX (512)
 typedef char	kernel_version_t[KERNEL_VERSION_MAX];
 
-#define KERNEL_BOOT_INFO_MAX (4096)
-typedef char	kernel_boot_info_t[KERNEL_BOOT_INFO_MAX];
-
 /*
  *	Currently defined information.
  */
