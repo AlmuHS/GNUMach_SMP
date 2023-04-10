@@ -91,6 +91,7 @@ endif
 #
 
 libkernel_a_SOURCES += \
+	i386/i386/copy_user.h \
 	i386/i386/cswitch.S \
 	i386/i386/debug_trace.S \
 	i386/i386/idt_inittab.S \
