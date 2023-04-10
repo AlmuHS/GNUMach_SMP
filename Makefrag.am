@@ -368,7 +368,6 @@ include_device_HEADERS = \
 include_machdir = $(includedir)/mach
 include_mach_HEADERS = \
 	include/mach/default_pager.defs \
-	include/mach/default_pager_helper.defs \
 	include/mach/default_pager_types.defs \
 	include/mach/exc.defs \
 	include/mach/mach.defs \
