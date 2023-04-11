@@ -643,7 +643,12 @@ static void pmap_bootstrap_pae(void)
 #endif /* PAE */
 
 #ifdef	MACH_PV_PAGETABLES
-static void pmap_bootstrap_xen(void)
+#ifdef PAE
+#define NSUP_L1 4
+#else
+#define NSUP_L1 1
+#endif
+static void pmap_bootstrap_xen(pt_entry_t *l1_map[NSUP_L1])
 {
 	/* We don't actually deal with the CR3 register content at all */
 	hyp_vm_assist(VMASST_CMD_enable, VMASST_TYPE_pae_extended_cr3);
@@ -654,12 +659,6 @@ static void pmap_bootstrap_xen(void)
 	 * other L1 table(s), thus 4MiB extra memory (resp. 8MiB), which is
 	 * enough for a pagetable mapping 4GiB.
 	 */
-#ifdef PAE
-#define NSUP_L1 4
-#else
-#define NSUP_L1 1
-#endif
-	pt_entry_t *l1_map[NSUP_L1];
 	vm_offset_t la;
 	int n_l1map;
 	for (n_l1map = 0, la = VM_MIN_KERNEL_ADDRESS; la >= VM_MIN_KERNEL_ADDRESS; la += NPTES * PAGE_SIZE) {
@@ -763,7 +762,8 @@ void pmap_bootstrap(void)
 #endif	/* PAE */
 
 #ifdef	MACH_PV_PAGETABLES
-	pmap_bootstrap_xen()
+	pt_entry_t *l1_map[NSUP_L1];
+	pmap_bootstrap_xen(l1_map);
 #endif	/* MACH_PV_PAGETABLES */
 
 	/*
@@ -3138,13 +3138,13 @@ pmap_unmap_page_zero (void)
 void
 pmap_make_temporary_mapping(void)
 {
+	int i;
 	/*
 	 * We'll have to temporarily install a direct mapping
 	 * between physical memory and low linear memory,
 	 * until we start using our new kernel segment descriptors.
 	 */
 #if INIT_VM_MIN_KERNEL_ADDRESS != LINEAR_MIN_KERNEL_ADDRESS
-	int i;
 	vm_offset_t delta = INIT_VM_MIN_KERNEL_ADDRESS - LINEAR_MIN_KERNEL_ADDRESS;
 	if ((vm_offset_t)(-delta) < delta)
 		delta = (vm_offset_t)(-delta);

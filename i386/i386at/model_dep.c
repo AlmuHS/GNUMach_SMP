@@ -600,7 +600,9 @@ startrtclock(void)
 	}
 #else
 	clkstart();
+#ifndef MACH_HYP
 	unmask_irq(0);
+#endif
 #endif
 }
 

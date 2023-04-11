@@ -36,7 +36,7 @@
 #define mb() __asm__ __volatile__("lock; addl $0,0(%%esp)":::"memory")
 #define rmb() mb()
 #define wmb() mb()
-MACH_INLINE unsigned long xchgl(volatile unsigned long *ptr, unsigned long x)
+static inline unsigned long xchgl(volatile unsigned long *ptr, unsigned long x)
 {
 	__asm__ __volatile__("xchg %0, %1"
 			   : "=r" (x)
@@ -66,7 +66,7 @@ MACH_INLINE unsigned long xchgl(volatile unsigned long *ptr, unsigned long x)
 
 /* x86-specific hypercall interface.  */
 #define _hypcall0(type, name) \
-MACH_INLINE type hyp_##name(void) \
+static inline type hyp_##name(void) \
 { \
 	unsigned long __ret; \
 	asm volatile ("call hypcalls+("TOSTR(__HYPERVISOR_##name)"*32)" \
@@ -76,7 +76,7 @@ MACH_INLINE type hyp_##name(void) \
 }
 
 #define _hypcall1(type, name, type1, arg1) \
-MACH_INLINE type hyp_##name(type1 arg1) \
+static inline type hyp_##name(type1 arg1) \
 { \
 	unsigned long __ret; \
 	register unsigned long __arg1 asm(_hypcall_arg1) = (unsigned long) arg1; \
@@ -88,7 +88,7 @@ MACH_INLINE type hyp_##name(type1 arg1) \
 }
 
 #define _hypcall2(type, name, type1, arg1, type2, arg2) \
-MACH_INLINE type hyp_##name(type1 arg1, type2 arg2) \
+static inline type hyp_##name(type1 arg1, type2 arg2) \
 { \
 	unsigned long __ret; \
 	register unsigned long __arg1 asm(_hypcall_arg1) = (unsigned long) arg1; \
@@ -102,7 +102,7 @@ MACH_INLINE type hyp_##name(type1 arg1, type2 arg2) \
 }
 
 #define _hypcall3(type, name, type1, arg1, type2, arg2, type3, arg3) \
-MACH_INLINE type hyp_##name(type1 arg1, type2 arg2, type3 arg3) \
+static inline type hyp_##name(type1 arg1, type2 arg2, type3 arg3) \
 { \
 	unsigned long __ret; \
 	register unsigned long __arg1 asm(_hypcall_arg1) = (unsigned long) arg1; \
@@ -118,7 +118,7 @@ MACH_INLINE type hyp_##name(type1 arg1, type2 arg2, type3 arg3) \
 }
 
 #define _hypcall4(type, name, type1, arg1, type2, arg2, type3, arg3, type4, arg4) \
-MACH_INLINE type hyp_##name(type1 arg1, type2 arg2, type3 arg3, type4 arg4) \
+static inline type hyp_##name(type1 arg1, type2 arg2, type3 arg3, type4 arg4) \
 { \
 	unsigned long __ret; \
 	register unsigned long __arg1 asm(_hypcall_arg1) = (unsigned long) arg1; \
@@ -136,7 +136,7 @@ MACH_INLINE type hyp_##name(type1 arg1, type2 arg2, type3 arg3, type4 arg4) \
 }
 
 #define _hypcall5(type, name, type1, arg1, type2, arg2, type3, arg3, type4, arg4, type5, arg5) \
-MACH_INLINE type hyp_##name(type1 arg1, type2 arg2, type3 arg3, type4 arg4, type5 arg5) \
+static inline type hyp_##name(type1 arg1, type2 arg2, type3 arg3, type4 arg4, type5 arg5) \
 { \
 	unsigned long __ret; \
 	register unsigned long __arg1 asm(_hypcall_arg1) = (unsigned long) arg1; \
@@ -165,7 +165,7 @@ _hypcall1(long, set_trap_table, vm_offset_t /* struct trap_info * */, traps);
 
 #ifdef MACH_PV_PAGETABLES
 _hypcall4(int, mmu_update, vm_offset_t /* struct mmu_update * */, req, int, count, vm_offset_t /* int * */, success_count, domid_t, domid)
-MACH_INLINE int hyp_mmu_update_pte(pt_entry_t pte, pt_entry_t val)
+static inline int hyp_mmu_update_pte(pt_entry_t pte, pt_entry_t val)
 {
 	struct mmu_update update =
 	{
@@ -221,7 +221,7 @@ _hypcall2(long, set_segment_base, int, reg, unsigned long, value);
 
 #include <xen/public/memory.h>
 _hypcall2(long, memory_op, unsigned long, cmd, vm_offset_t /* void * */, arg);
-MACH_INLINE void hyp_free_mfn(unsigned long mfn)
+static inline void hyp_free_mfn(unsigned long mfn)
 {
 	struct xen_memory_reservation reservation;
 	reservation.extent_start = (void*) kvtolin(&mfn);
@@ -245,7 +245,7 @@ _hypcall3(int, update_va_mapping, unsigned long, va, unsigned long, val, unsigne
 #define hyp_do_update_va_mapping(va, val, flags) hyp_update_va_mapping(va, val, flags)
 #endif
 
-MACH_INLINE void hyp_free_page(unsigned long pfn, void *va)
+static inline void hyp_free_page(unsigned long pfn, void *va)
 {
     /* save mfn */
     unsigned long mfn = pfn_to_mfn(pfn);
@@ -267,7 +267,7 @@ MACH_INLINE void hyp_free_page(unsigned long pfn, void *va)
 
 #ifdef MACH_PV_PAGETABLES
 _hypcall4(int, mmuext_op, vm_offset_t /* struct mmuext_op * */, op, int, count, vm_offset_t /* int * */, success_count, domid_t, domid);
-MACH_INLINE int hyp_mmuext_op_void(unsigned int cmd)
+static inline int hyp_mmuext_op_void(unsigned int cmd)
 {
 	struct mmuext_op op = {
 		.cmd = cmd,
@@ -276,7 +276,7 @@ MACH_INLINE int hyp_mmuext_op_void(unsigned int cmd)
 	hyp_mmuext_op(kv_to_la(&op), 1, kv_to_la(&count), DOMID_SELF);
 	return count;
 }
-MACH_INLINE int hyp_mmuext_op_mfn(unsigned int cmd, unsigned long mfn)
+static inline int hyp_mmuext_op_mfn(unsigned int cmd, unsigned long mfn)
 {
 	struct mmuext_op op = {
 		.cmd = cmd,
@@ -286,7 +286,7 @@ MACH_INLINE int hyp_mmuext_op_mfn(unsigned int cmd, unsigned long mfn)
 	hyp_mmuext_op(kv_to_la(&op), 1, kv_to_la(&count), DOMID_SELF);
 	return count;
 }
-MACH_INLINE void hyp_set_ldt(void *ldt, unsigned long nbentries) {
+static inline void hyp_set_ldt(void *ldt, unsigned long nbentries) {
 	struct mmuext_op op = {
 		.cmd = MMUEXT_SET_LDT,
 		.arg1.linear_addr = kvtolin(ldt),
@@ -303,7 +303,7 @@ MACH_INLINE void hyp_set_ldt(void *ldt, unsigned long nbentries) {
 }
 #define hyp_set_cr3(value) hyp_mmuext_op_mfn(MMUEXT_NEW_BASEPTR, pa_to_mfn(value))
 #define hyp_set_user_cr3(value) hyp_mmuext_op_mfn(MMUEXT_NEW_USER_BASEPTR, pa_to_mfn(value))
-MACH_INLINE void hyp_invlpg(vm_offset_t lin) {
+static inline void hyp_invlpg(vm_offset_t lin) {
 	struct mmuext_op ops;
 	int n;
 	ops.cmd = MMUEXT_INVLPG_ALL;
@@ -328,14 +328,14 @@ _hypcall1(long, set_timer_op, unsigned long, absolute);
 
 #include <xen/public/event_channel.h>
 _hypcall1(int, event_channel_op, vm_offset_t /* evtchn_op_t * */, op);
-MACH_INLINE int hyp_event_channel_send(evtchn_port_t port) {
+static inline int hyp_event_channel_send(evtchn_port_t port) {
 	evtchn_op_t op = {
 		.cmd = EVTCHNOP_send,
 		.u.send.port = port,
 	};
 	return hyp_event_channel_op(kvtolin(&op));
 }
-MACH_INLINE evtchn_port_t hyp_event_channel_alloc(domid_t domid) {
+static inline evtchn_port_t hyp_event_channel_alloc(domid_t domid) {
 	evtchn_op_t op  = {
 		.cmd = EVTCHNOP_alloc_unbound,
 		.u.alloc_unbound.dom = DOMID_SELF,
@@ -345,7 +345,7 @@ MACH_INLINE evtchn_port_t hyp_event_channel_alloc(domid_t domid) {
 		panic("couldn't allocate event channel");
 	return op.u.alloc_unbound.port;
 }
-MACH_INLINE evtchn_port_t hyp_event_channel_bind_virq(uint32_t virq, uint32_t vcpu) {
+static inline evtchn_port_t hyp_event_channel_bind_virq(uint32_t virq, uint32_t vcpu) {
 	evtchn_op_t op = { .cmd = EVTCHNOP_bind_virq, .u.bind_virq = { .virq = virq, .vcpu = vcpu }};
 	if (hyp_event_channel_op(kvtolin(&op)))
 		panic("can't bind virq %d\n",virq);
@@ -364,7 +364,7 @@ _hypcall0(long, iret);
 _hypcall2(long, sched_op, int, cmd, vm_offset_t /* void* */, arg)
 #define hyp_yield() hyp_sched_op(SCHEDOP_yield, 0)
 #define hyp_block() hyp_sched_op(SCHEDOP_block, 0)
-MACH_INLINE void __attribute__((noreturn)) hyp_crash(void)
+static inline void __attribute__((noreturn)) hyp_crash(void)
 {
 	unsigned int shut = SHUTDOWN_crash;
 	hyp_sched_op(SCHEDOP_shutdown, kvtolin(&shut));
@@ -373,7 +373,7 @@ MACH_INLINE void __attribute__((noreturn)) hyp_crash(void)
 	for(;;);
 }
 
-MACH_INLINE void __attribute__((noreturn)) hyp_halt(void)
+static inline void __attribute__((noreturn)) hyp_halt(void)
 {
 	unsigned int shut = SHUTDOWN_poweroff;
 	hyp_sched_op(SCHEDOP_shutdown, kvtolin(&shut));
@@ -382,7 +382,7 @@ MACH_INLINE void __attribute__((noreturn)) hyp_halt(void)
 	for(;;);
 }
 
-MACH_INLINE void __attribute__((noreturn)) hyp_reboot(void)
+static inline void __attribute__((noreturn)) hyp_reboot(void)
 {
 	unsigned int shut = SHUTDOWN_reboot;
 	hyp_sched_op(SCHEDOP_shutdown, kvtolin(&shut));
@@ -395,7 +395,7 @@ _hypcall2(int, set_debugreg, int, reg, unsigned long, value);
 _hypcall1(unsigned long, get_debugreg, int, reg);
 
 /* x86-specific */
-MACH_INLINE uint64_t hyp_cpu_clock(void) {
+static inline uint64_t hyp_cpu_clock(void) {
 	uint32_t hi, lo;
 	asm volatile("rdtsc" : "=d"(hi), "=a"(lo));
 	return (((uint64_t) hi) << 32) | lo;
