@@ -56,11 +56,19 @@ struct task_basic_info {
 	integer_t	base_priority;	/* base scheduling priority */
 	rpc_vm_size_t	virtual_size;	/* number of virtual pages */
 	rpc_vm_size_t	resident_size;	/* number of resident pages */
+	/* Deprecated, please use user_time64 */
 	rpc_time_value_t	user_time;	/* total user run time for
 					   terminated threads */
+	/* Deprecated, please use system_time64 */
 	rpc_time_value_t	system_time;	/* total system run time for
 					   terminated threads */
+	/* Deprecated, please use creation_time64 */
 	rpc_time_value_t	creation_time;  /* creation time stamp */
+	time_value64_t		user_time64;	/* total user run time for
+						   terminated threads */
+	time_value64_t		system_time64;	/* total system run time for
+						   terminated threads */
+	time_value64_t		creation_time64;	/* creation time stamp */
 };
 
 typedef struct task_basic_info		task_basic_info_data_t;

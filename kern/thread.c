@@ -1501,11 +1501,12 @@ kern_return_t thread_info(
 	if (flavor == THREAD_BASIC_INFO) {
 	    thread_basic_info_t	basic_info;
 
-	    /* Allow *thread_info_count to be one smaller than the
-	       usual amount, because creation_time is a new member
-	       that some callers might not know about. */
+	    /* Allow *thread_info_count to be smaller than the provided amount
+	     * that does not contain the new time_value64_t fields as some
+	     * callers might not know about them yet. */
 
-	    if (*thread_info_count < THREAD_BASIC_INFO_COUNT - 1)
+	    if (*thread_info_count <
+			    THREAD_BASIC_INFO_COUNT - 3 * sizeof(time_value64_t)/sizeof(natural_t))
 		return KERN_INVALID_ARGUMENT;
 
 	    basic_info = (thread_basic_info_t) thread_info_out;
@@ -1532,6 +1533,13 @@ kern_return_t thread_info(
 	    time_value64_t creation_time;
 	    read_time_stamp(&thread->creation_time, &creation_time);
 	    TIME_VALUE64_TO_TIME_VALUE(&creation_time, &basic_info->creation_time);
+
+	    if (*thread_info_count == THREAD_BASIC_INFO_COUNT) {
+		/* Copy new time_value64_t fields */
+		basic_info->user_time64 = user_time;
+		basic_info->system_time64 = user_time;
+		basic_info->creation_time64 = creation_time;
+	    }
 
 	    /*
 	     *	To calculate cpu_usage, first correct for timer rate,

@@ -787,13 +787,13 @@ kern_return_t task_info(
 	    {
 		task_basic_info_t	basic_info;
 
-		/* Allow *task_info_count to be two words smaller than
-		   the usual amount, because creation_time is a new member
-		   that some callers might not know about. */
+		/* Allow *task_info_count to be smaller than the provided amount
+		 * that does not contain the new time_value64_t fields as some
+		 * callers might not know about them yet. */
 
-		if (*task_info_count < TASK_BASIC_INFO_COUNT - 2) {
+		if (*task_info_count <
+				TASK_BASIC_INFO_COUNT - 3 * sizeof(time_value64_t)/sizeof(integer_t))
 		    return KERN_INVALID_ARGUMENT;
-		}
 
 		basic_info = (task_basic_info_t) task_info_out;
 
@@ -813,6 +813,12 @@ kern_return_t task_info(
 		time_value64_t creation_time64;
 		read_time_stamp(&task->creation_time, &creation_time64);
 		TIME_VALUE64_TO_TIME_VALUE(&creation_time64, &basic_info->creation_time);
+		if (*task_info_count == TASK_BASIC_INFO_COUNT) {
+		    /* Copy new time_value64_t fields */
+		    basic_info->user_time64 = task->total_user_time;
+		    basic_info->system_time64 = task->total_system_time;
+		    basic_info->creation_time64 = creation_time64;
+		}
 		task_unlock(task);
 
 		if (*task_info_count > TASK_BASIC_INFO_COUNT)
