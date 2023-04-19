@@ -430,7 +430,7 @@ int copyoutmsg (const void *kernelbuf, void *userbuf, const size_t ksize)
   usaddr = (vm_offset_t)(umsg + 1);
   keaddr = ksaddr + ksize - sizeof(mach_msg_header_t);
 
-  if (ksize > sizeof(mach_msg_user_header_t))
+  if (ksize > sizeof(mach_msg_header_t))
     {
       while (ksaddr < keaddr)
         {
@@ -484,8 +484,7 @@ int copyoutmsg (const void *kernelbuf, void *userbuf, const size_t ksize)
 
   mach_msg_size_t usize;
   usize = sizeof(mach_msg_user_header_t) + usaddr - (vm_offset_t)(umsg + 1);
-  usize = usize;
-  if (copyout(&usize, &umsg->msgh_size, sizeof(kmsg->msgh_size)))
+  if (copyout(&usize, &umsg->msgh_size, sizeof(umsg->msgh_size)))
     return 1;
 
   return 0;
