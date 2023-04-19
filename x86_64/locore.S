@@ -423,13 +423,17 @@ ENTRY(t_debug)
 	/* Note: handling KERNEL_RING value by hand */
 	testq	$2,8(%rsp)		/* is trap from kernel mode? */
 	jnz	0f			/* if so: */
+#ifdef USER32
 	cmpq	$syscall_entry,(%rsp)	/* system call entry? */
 	jne	0f			/* if so: */
 					/* flags are sitting where syscall */
 					/* wants them */
 	addq	$32,%rsp		/* remove eip/cs */
 	jmp	syscall_entry_2		/* continue system call entry */
-
+#else
+	// TODO: implement the 64-bit case
+	ud2
+#endif
 0:	pushq	$0			/* otherwise: */
 	pushq	$(T_DEBUG)		/* handle as normal */
 	jmp	EXT(alltraps)		/* debug fault */
@@ -497,12 +501,12 @@ trap_from_user:
 _take_trap:
 	movq	%rbx,%rdi		/* pass register save area to trap */
 	call	EXT(user_trap)		/* call user trap routine */
-
+#ifdef USER32
 	orq     %rax,%rax               /* emulated syscall? */
 	jz      1f			/* no, just return */
 	movq    R_EAX(%rbx),%rax        /* yes, get syscall number */
 	jmp     syscall_entry_3         /* and emulate it */
-
+#endif
 1:
 	movq	(%rsp),%rsp		/* switch back to PCB stack */
 
@@ -1055,6 +1059,7 @@ ud2
 
 #endif	/* MACH_TTD */
 
+#ifdef USER32
 /*
  * System call enters through a call gate.  Flags are not saved -
  * we must shuffle stack to look like trap save area.
@@ -1269,7 +1274,152 @@ syscall_addr:
 	movq	$(T_PF_USER),R_ERR(%rbx)
 					/* set error code - read user space */
 	jmp	_take_trap		/* treat as a trap */
+END(syscall)
 
+#else /* USER32 */
+
+/* Entry point for 64-bit syscalls.
+ * On entry we're still on the user stack, so better not use it. Instead we
+ * save the thread state immediately in thread->pcb->iss, then try to invoke
+ * the syscall.
+ * Note: emulated syscalls seem to not be used anymore in GNU/Hurd, so they
+ * are not handled here.
+ * TODO:
+     - for now we assume the return address is canonical, but apparently there
+       can be cases where it's not (see how Linux handles this). Does it apply
+       here?
+     - do we need to check for ast on syscalls? Maybe on interrupts is enough
+     - check that the case where a task is suspended, and later returns via
+       iretq from return_from_trap, works fine in all combinations
+ */
+ENTRY(syscall64)
+	/* RFLAGS[32:63] are reserved, so combine syscall num (32 bit) and
+	 * eflags in RAX to allow using r11 as temporary register
+	 */
+	shlq	$32,%r11
+	shlq	$32,%rax	/* make sure bits 32:63 of %rax are zero */
+	shrq	$32,%rax
+	or	%r11,%rax
+
+	/* Save thread state in pcb->iss, as on exception entry.
+	 * Since this is triggered synchronously from userspace, we could
+	 * save only the callee-preserved status according to the C ABI,
+	 * plus RIP and EFLAGS for sysret
+	 */
+	CPU_NUMBER(%r11)
+	movq	CX(EXT(active_threads),%r11),%r11 /* point to current thread */
+	movq	TH_PCB(%r11),%r11		/* point to pcb */
+	addq	$ PCB_ISS,%r11			/* point to saved state */
+
+	mov	%rsp,R_UESP(%r11)	/* callee-preserved register */
+	mov	%rcx,R_EIP(%r11)	/* syscall places user RIP in RCX */
+	mov	%rbx,R_EBX(%r11)	/* callee-preserved register */
+	mov	%rax,%rbx		/* Now we can unpack eflags again */
+	shr	$32,%rbx
+	mov	%rbx,R_EFLAGS(%r11)	/* ... and save them in pcb as well */
+	mov	%rbp,R_EBP(%r11)	/* callee-preserved register */
+	mov	%r12,R_R12(%r11)	/* callee-preserved register */
+	mov	%r13,R_R13(%r11)	/* callee-preserved register */
+	mov	%r14,R_R14(%r11)	/* callee-preserved register */
+	mov	%r15,R_R15(%r11)	/* callee-preserved register */
+
+	/* Save syscall number and args for SYSCALL_EXAMINE/MSG_EXAMINE in glibc.
+	 * Note: syscall number is only 32 bit, in EAX, so we sign-extend it in
+	 * RAX to mask the EFLAGS bits.
+	 */
+	cdqe				/* sign-extend EAX in RAX */
+	mov	%rax,R_EAX(%r11)	/* syscall number */
+	mov	%rdi,R_EDI(%r11)	/* syscall arg0 */
+	mov	%rsi,R_ESI(%r11)	/* syscall arg1 */
+	mov	%rdx,R_EDX(%r11)	/* syscall arg2 */
+	mov	%r10,R_R10(%r11)	/* syscall arg3 */
+	mov	%r8,R_R8(%r11)		/* syscall arg4 */
+	mov	%r9,R_R9(%r11)		/* syscall arg5 */
+
+	mov	%r11,%rbx		/* prepare for error handling */
+	mov	%r10,%rcx		/* fix arg3 location according to C ABI */
+
+	/* switch to kernel stack */
+	CPU_NUMBER(%r11)
+	movq	CX(EXT(kernel_stack),%r11),%rsp
+
+	/* Now we have saved state and args 1-6 are in place.
+	 * Before invoking the syscall we do some bound checking and,
+	 * if we have more that 6 arguments, we need to copy the
+	 * remaining ones to the kernel stack, handling page faults when
+	 * accessing the user stack.
+	 */
+	negl	%eax			/* get system call number */
+	jl	_syscall64_range	/* out of range if it was positive */
+	cmpl	EXT(mach_trap_count),%eax	/* check system call table bounds */
+	jg	_syscall64_range	/* error if out of range */
+	shll	$5,%eax			/* manual indexing of mach_trap_t */
+
+	/* check if we need to place some arguments on the stack */
+_syscall64_args_stack:
+	mov	EXT(mach_trap_table)(%rax),%r10	/* get number of arguments */
+	subq	$6,%r10			/* the first 6 args are already in place */
+	jle	_syscall64_call		/* skip argument copy if num args <= 6 */
+
+	movq	R_UESP(%rbx),%r11	/* get user stack pointer */
+	addq	$8,%r11			/* Skip user return address */
+
+	lea	(%r11,%r10,8),%r11	/* point past last argument */
+
+0:	subq	$8,%r11
+	RECOVER(_syscall64_addr_push)
+	mov	(%r11),%r12
+	pushq	%r12			/* push argument on stack */
+	dec	%r10
+	jnz	0b			/* loop for all remaining arguments */
+
+_syscall64_call:
+	call	*EXT(mach_trap_table)+8(%rax)  /* call procedure */
+	// XXX: check ast on exit?
+
+	/* Restore thread state and return to user using sysret. */
+	CPU_NUMBER(%r11)
+	movq	CX(EXT(active_threads),%r11),%r11 /* point to current thread */
+	movq	TH_PCB(%r11),%r11		/* point to pcb */
+	addq	$ PCB_ISS,%r11			/* point to saved state */
+
+	/* Restore syscall args. Note: we can't restore the syscall number in
+	 * RAX because it needs to hold the return value.*/
+	mov	R_EDI(%r11),%rdi	/* syscall arg0 */
+	mov	R_ESI(%r11),%rsi	/* syscall arg1 */
+	mov	R_EDX(%r11),%rdx	/* syscall arg2 */
+	mov	R_R10(%r11),%r10	/* syscall arg3 */
+	mov	R_R8(%r11),%r8		/* syscall arg4 */
+	mov	R_R9(%r11),%r9		/* syscall arg5 */
+
+	mov	R_UESP(%r11),%rsp	/* callee-preserved register,
+					 * also switch back to user stack */
+	mov	R_EIP(%r11),%rcx	/* sysret convention */
+	mov	R_EBX(%r11),%rbx	/* callee-preserved register */
+	mov	R_EBP(%r11),%rbp	/* callee-preserved register */
+	mov	R_R12(%r11),%r12	/* callee-preserved register */
+	mov	R_R13(%r11),%r13	/* callee-preserved register */
+	mov	R_R14(%r11),%r14	/* callee-preserved register */
+	mov	R_R15(%r11),%r15	/* callee-preserved register */
+	mov	R_EFLAGS(%r11),%r11	/* sysret convention */
+
+	sysretq		/* fast return to user-space, the thread didn't block */
+
+/* Error handling fragments, from here we jump directly to the trap handler */
+_syscall64_addr_push:
+	movq	%r11,R_CR2(%rbx)	/* set fault address */
+	movq	$(T_PAGE_FAULT),R_TRAPNO(%rbx)	/* set page-fault trap */
+	movq	$(T_PF_USER),R_ERR(%rbx) /* set error code - read user space */
+	jmp	_take_trap		/* treat as a trap */
+
+_syscall64_range:
+	movq	$(T_INVALID_OPCODE),R_TRAPNO(%rbx)
+					/* set invalid-operation trap */
+	movq	$0,R_ERR(%rbx)		/* clear error code */
+	jmp	_take_trap		/* treat as a trap */
+
+END(syscall64)
+#endif /* USER32 */
 
 	.data
 DATA(cpu_features)
@@ -1278,8 +1428,6 @@ DATA(cpu_features_edx)
 DATA(cpu_features_ecx)
 	.long	0
 	.text
-
-END(syscall)
 
 /* Discover what kind of cpu we have; return the family number
    (3, 4, 5, 6, for 386, 486, 586, 686 respectively).  */

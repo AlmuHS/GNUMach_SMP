@@ -57,6 +57,7 @@ extern int inst_fetch (int eip, int cs);
 extern void cpu_shutdown (void);
 
 extern int syscall (void);
+extern int syscall64 (void);
 
 extern unsigned int cpu_features[2];
 

@@ -52,6 +52,8 @@ expr	CALL_SINGLE_FUNCTION_BASE
 
 offset	ApicLocalUnit		lu	apic_id		APIC_ID
 
+offset	pcb			pcb	iss
+
 offset	thread			th	pcb
 offset	thread			th	task
 offset	thread			th	recover
@@ -82,16 +84,29 @@ size	i386_kernel_state	iks
 
 size	i386_exception_link	iel
 
+offset	i386_saved_state	r	gs
+offset	i386_saved_state	r	fs
 offset	i386_saved_state	r	cs
 offset	i386_saved_state	r	uesp
 offset	i386_saved_state	r	eax
+offset	i386_saved_state	r	ebx
+offset	i386_saved_state	r	ecx
+offset	i386_saved_state	r	edx
+offset	i386_saved_state	r	ebp
 offset	i386_saved_state	r	trapno
 offset	i386_saved_state	r	err
 offset	i386_saved_state	r	efl		R_EFLAGS
 offset	i386_saved_state	r	eip
 offset	i386_saved_state	r	cr2
 offset	i386_saved_state	r	edi
+offset	i386_saved_state	r	esi
 #ifdef __x86_64__
+offset	i386_saved_state	r	r8
+offset	i386_saved_state	r	r9
+offset	i386_saved_state	r	r10
+offset	i386_saved_state	r	r12
+offset	i386_saved_state	r	r13
+offset	i386_saved_state	r	r14
 offset	i386_saved_state	r	r15
 #endif
 

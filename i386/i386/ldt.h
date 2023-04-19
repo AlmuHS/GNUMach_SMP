@@ -43,11 +43,16 @@
  * User descriptors for Mach - 32-bit flat address space
  */
 #define	USER_SCALL	0x07		/* system call gate */
-#ifdef __x86_64__
+#if defined(__x86_64__) && ! defined(USER32)
 /* Call gate needs two entries */
-#endif
+
+/* The sysret instruction puts some constraints on the user segment indexes */
+#define	USER_CS		0x1f		/* user code segment */
+#define	USER_DS		0x17		/* user data segment */
+#else
 #define	USER_CS		0x17		/* user code segment */
 #define	USER_DS		0x1f		/* user data segment */
+#endif
 
 #define	LDTSZ		4
 

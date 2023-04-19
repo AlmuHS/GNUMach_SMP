@@ -31,6 +31,7 @@
 #include <mach/xen.h>
 
 #include <intel/pmap.h>
+#include <kern/debug.h>
 
 #include "vm_param.h"
 #include "seg.h"
@@ -38,6 +39,7 @@
 #include "ldt.h"
 #include "locore.h"
 #include "mp_desc.h"
+#include "msr.h"
 
 #ifdef	MACH_PV_DESCRIPTORS
 /* It is actually defined in xen_boothdr.S */
@@ -65,10 +67,22 @@ ldt_fill(struct real_descriptor *myldt, struct real_descriptor *mygdt)
 			        ACC_PL_K|ACC_LDT, 0);
 #endif	/* MACH_PV_DESCRIPTORS */
 
-	/* Initialize the 32bit LDT descriptors.  */
+	/* Initialize the syscall entry point */
+#if defined(__x86_64__) && ! defined(USER32)
+        if (!CPU_HAS_FEATURE(CPU_FEATURE_SEP))
+            panic("syscall support is missing on 64 bit");
+        /* Enable 64-bit syscalls */
+        wrmsr(MSR_REG_EFER, rdmsr(MSR_REG_EFER) | MSR_EFER_SCE);
+        wrmsr(MSR_REG_LSTAR, (vm_offset_t)syscall64);
+        wrmsr(MSR_REG_STAR, ((((long)USER_CS - 16) << 16) | (long)KERNEL_CS) << 32);
+        wrmsr(MSR_REG_FMASK, 0);  // ?
+#else /* defined(__x86_64__) && ! defined(USER32) */
 	fill_ldt_gate(myldt, USER_SCALL,
 		      (vm_offset_t)&syscall, KERNEL_CS,
 		      ACC_PL_U|ACC_CALL_GATE, 0);
+#endif /* defined(__x86_64__) && ! defined(USER32) */
+
+	/* Initialize the 32bit LDT descriptors.  */
 	fill_ldt_descriptor(myldt, USER_CS,
 			    VM_MIN_USER_ADDRESS,
 			    VM_MAX_USER_ADDRESS-VM_MIN_USER_ADDRESS-4096,
