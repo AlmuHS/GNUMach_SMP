@@ -34,12 +34,53 @@
 #include <i386/i386/trap.h>
 #include <i386/i386/seg.h>
 #include <i386/i386/ldt.h>
+#include <i386/i386/msr.h>
 #include <i386/i386/i386asm.h>
 #include <i386/i386/cpu_number.h>
 #include <i386/i386/xen.h>
 
 #define pusha pushq %rax ; pushq %rcx ; pushq %rdx ; pushq %rbx ; subq $8,%rsp ; pushq %rbp ; pushq %rsi ; pushq %rdi ; pushq %r8 ; pushq %r9 ; pushq %r10 ; pushq %r11 ; pushq %r12 ; pushq %r13 ; pushq %r14 ; pushq %r15
 #define popa popq %r15 ; popq %r14 ; popq %r13 ; popq %r12 ; popq %r11 ; popq %r10 ; popq %r9 ; popq %r8 ; popq %rdi ; popq %rsi ; popq %rbp ; addq $8,%rsp ; popq %rbx ; popq %rdx ; popq %rcx ; popq %rax
+
+#ifdef USER32
+#define PUSH_FSGS		\
+	pushq	%fs		;\
+	pushq	%gs		;\
+	subq	$16,%rsp
+#else
+#define PUSH_FSGS		\
+	subq	$32,%rsp
+#endif
+
+#ifdef USER32
+#define POP_FSGS		\
+	popq	%gs		;\
+	popq	%fs		;\
+	addq	$16,%rsp
+#else
+#define POP_FSGS		\
+	addq	$32,%rsp
+#endif
+
+#ifdef USER32
+#define PUSH_FSGS_ISR		\
+	pushq	%fs		;\
+	pushq	%gs
+#else
+#define PUSH_FSGS_ISR		\
+	subq	$16,%rsp
+#endif
+
+#ifdef USER32
+#define POP_FSGS_ISR		\
+	popq	%gs		;\
+	popq	%fs
+#else
+#define POP_FSGS_ISR		\
+	addq	$16,%rsp
+#endif
+
+
 
 /*
  * Fault recovery.
@@ -405,6 +446,11 @@ push_fs:
 	pushq	%fs			/* restore fs, */
 push_gs:
 	pushq	%gs			/* restore gs. */
+#ifdef USER32
+push_gsbase:
+	pushq	$0
+	pushq	$0
+#endif
 push_segregs:
 	movq	%rax,R_TRAPNO(%rsp)	/* set trap number */
 	movq	%rdx,R_ERR(%rsp)	/* set error code */
@@ -470,8 +516,7 @@ trap_push_segs:
 	pushq	%rax
 	movq	%es,%rax			/* and the segment registers */
 	pushq	%rax
-	pushq	%fs
-	pushq	%gs
+	PUSH_FSGS
 
 	/* Note that we have to load the segment registers
 	   even if this is a trap from the kernel,
@@ -480,9 +525,10 @@ trap_push_segs:
 	mov	%ss,%ax			/* switch to kernel data segment */
 	mov	%ax,%ds			/* (same as kernel stack segment) */
 	mov	%ax,%es
+#ifdef USER32
 	mov	%ax,%fs
 	mov	%ax,%gs
-
+#endif
 trap_set_segs:
 	cld				/* clear direction flag */
 	testl	$(EFL_VM),R_EFLAGS(%rsp) /* in V86 mode? */
@@ -536,10 +582,17 @@ _return_to_user:
  */
 
 _return_from_kernel:
+	addq	$16,%rsp		/* skip FS/GS base */
+#ifndef USER32
+_kret_popl_gs:
+_kret_popl_fs:
+	addq	$16,%rsp		/* skip FS/GS selector */
+#else
 _kret_popl_gs:
 	popq	%gs			/* restore segment registers */
 _kret_popl_fs:
 	popq	%fs
+#endif
 _kret_popl_es:
 	popq	%rax
 	movq	%rax,%es
@@ -695,14 +748,15 @@ ENTRY(all_intrs)
 	pushq	%rdx
 	movq	%es,%rdx
 	pushq	%rdx
-	pushq	%fs
-	pushq	%gs
+	PUSH_FSGS_ISR
+
 	mov	%ss,%dx			/* switch to kernel segments */
 	mov	%dx,%ds
 	mov	%dx,%es
+#ifdef USER32
 	mov	%dx,%fs
 	mov	%dx,%gs
-
+#endif
 	CPU_NUMBER(%edx)
 
 	movq	CX(EXT(int_stack_top),%edx),%rcx
@@ -741,8 +795,7 @@ LEXT(return_to_iret)			/* ( label for kdb_kintr and hardclock) */
 	cmpq	$0,CX(EXT(need_ast),%edx)
 	jnz	ast_from_interrupt	/* take it if so */
 1:
-	pop	%gs			/* restore segment regs */
-	pop	%fs
+	POP_FSGS_ISR
 	pop	%rdx
 	mov	%rdx,%es
 	pop	%rdx
@@ -796,9 +849,7 @@ stack_overflowed:
  *	ss
  */
 ast_from_interrupt:
-	pop	%gs			/* restore all registers ... */
-	pop	%fs
-	pop	%rdx
+	POP_FSGS
 	mov	%rdx,%es
 	pop	%rdx
 	mov	%rdx,%ds
@@ -818,14 +869,15 @@ ast_from_interrupt:
 	push	%rdx
 	mov	%es,%rdx
 	push	%rdx
-	push	%fs
-	push	%gs
+	PUSH_FSGS
+
 	mov	%ss,%dx			/* switch to kernel segments */
 	mov	%dx,%ds
 	mov	%dx,%es
+#ifdef USER32
 	mov	%dx,%fs
 	mov	%dx,%gs
-
+#endif
 	CPU_NUMBER(%edx)
 	TIME_TRAP_UENTRY
 
@@ -947,14 +999,12 @@ kdb_from_iret_i:			/* on interrupt stack */
 	push	%rdx
 	mov	%es,%rdx
 	push	%rdx
-	push	%fs
-	push	%gs
+	PUSH_FSGS
 	movq	%rsp,%rdx		/* pass regs, */
 	movq	$0,%rsi			/* code, */
 	movq	$-1,%rdi		/* type to kdb */
 	call	EXT(kdb_trap)
-	pop	%gs			/* restore segment registers */
-	pop	%fs
+	POP_FSGS
 	pop	%rdx
 	mov	%rdx,%es
 	pop	%rdx
@@ -1039,6 +1089,7 @@ ttd_from_iret_i:			/* on interrupt stack */
 	push	%rdx
 	push	%fs
 	push	%gs
+	ud2	// TEST it
 	movq	%rsp,%rdx		/* pass regs, */
 	movq	$0,%rsi			/* code, */
 	movq	$-1,%rdi		/* type to kdb */
@@ -1087,6 +1138,8 @@ syscall_entry_2:
 	pushq	%rdx
 	pushq	%fs
 	pushq	%gs
+	pushq	$0	// gsbase
+	pushq	$0	// fsbase
 
 	mov	%ss,%dx			/* switch to kernel data segment */
 	mov	%dx,%ds

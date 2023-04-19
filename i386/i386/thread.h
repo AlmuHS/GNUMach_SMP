@@ -51,6 +51,10 @@
  */
 
 struct i386_saved_state {
+#ifdef __x86_64__
+	unsigned long	fsbase;
+	unsigned long	gsbase;
+#endif
 	unsigned long	gs;
 	unsigned long	fs;
 	unsigned long	es;

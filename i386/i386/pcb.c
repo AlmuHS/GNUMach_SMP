@@ -51,6 +51,7 @@
 #include "eflags.h"
 #include "gdt.h"
 #include "ldt.h"
+#include "msr.h"
 #include "ktss.h"
 #include "pcb.h"
 
@@ -372,7 +373,10 @@ thread_t switch_context(
 	 *	Load the rest of the user state for the new thread
 	 */
 	switch_ktss(new->pcb);
-
+#if defined(__x86_64__) && !defined(USER32)
+        wrmsr(MSR_REG_FSBASE, new->pcb->iss.fsbase);
+        wrmsr(MSR_REG_GSBASE, new->pcb->iss.gsbase);
+#endif
 	return Switch_context(old, continuation, new);
 }
 
@@ -667,7 +671,23 @@ kern_return_t thread_setstatus(
 			return ret;
 		break;
 	    }
+#if defined(__x86_64__) && !defined(USER32)
+	    case i386_FSGS_BASE_STATE:
+            {
+                    struct i386_fsgs_base_state *state;
+                    if (count < i386_FSGS_BASE_STATE_COUNT)
+                            return KERN_INVALID_ARGUMENT;
 
+                    state = (struct i386_fsgs_base_state *) tstate;
+                    thread->pcb->iss.fsbase = state->fs_base;
+                    thread->pcb->iss.gsbase = state->gs_base;
+                    if (thread == current_thread()) {
+                            wrmsr(MSR_REG_FSBASE, state->fs_base);
+                            wrmsr(MSR_REG_GSBASE, state->gs_base);
+                    }
+                    break;
+            }
+#endif
 	    default:
 		return(KERN_INVALID_ARGUMENT);
 	}
@@ -843,7 +863,20 @@ kern_return_t thread_getstatus(
 		*count = i386_DEBUG_STATE_COUNT;
 		break;
 	    }
+#if defined(__x86_64__) && !defined(USER32)
+	    case i386_FSGS_BASE_STATE:
+            {
+                    struct i386_fsgs_base_state *state;
+                    if (*count < i386_FSGS_BASE_STATE_COUNT)
+                            return KERN_INVALID_ARGUMENT;
 
+                    state = (struct i386_fsgs_base_state *) tstate;
+                    state->fs_base = thread->pcb->iss.fsbase;
+                    state->fs_base = thread->pcb->iss.gsbase;
+                    *count = i386_FSGS_BASE_STATE_COUNT;
+                    break;
+            }
+#endif
 	    default:
 		return(KERN_INVALID_ARGUMENT);
 	}

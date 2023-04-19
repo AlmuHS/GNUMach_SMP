@@ -1472,6 +1472,9 @@ kern_return_t thread_set_state(
 	if (flavor == i386_DEBUG_STATE && thread == current_thread())
 		/* This state can be set directly for the curren thread.  */
 		return thread_setstatus(thread, flavor, new_state, new_state_count);
+	if (flavor == i386_FSGS_BASE_STATE && thread == current_thread())
+		/* This state can be set directly for the curren thread.  */
+		return thread_setstatus(thread, flavor, new_state, new_state_count);
 #endif
 
 	if (thread == THREAD_NULL || thread == current_thread())
