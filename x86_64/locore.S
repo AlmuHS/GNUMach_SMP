@@ -1208,12 +1208,12 @@ mach_call_call:
 
 /*
  * Address out of range.  Change to page fault.
- * %rsi holds failing address.
+ * %rbp holds failing address.
  */
 mach_call_addr_push:
 	movq	%r11,%rsp		/* clean parameters from stack */
 mach_call_addr:
-	movq	%rsi,R_CR2(%rbx)	/* set fault address */
+	movq	%rbp,R_CR2(%rbx)	/* set fault address */
 	movq	$(T_PAGE_FAULT),R_TRAPNO(%rbx)
 					/* set page-fault trap */
 	movq	$(T_PF_USER),R_ERR(%rbx)
