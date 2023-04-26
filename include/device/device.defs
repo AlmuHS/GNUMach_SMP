@@ -53,6 +53,7 @@ type reply_port_t = MACH_MSG_TYPE_MAKE_SEND_ONCE | polymorphic
 #endif	/* KERNEL_SERVER */
 ;
 
+/* Deprecated in favor of device_open_new.  */
 routine device_open(
 		master_port	: mach_port_t;
 	sreplyport reply_port	: reply_port_t;
@@ -110,7 +111,27 @@ routine	device_read_inband(
 	out	data		: io_buf_ptr_inband_t
 	);
 
+#if defined(KERNEL_SERVER) || defined(DEVICE_ENABLE_DEVICE_OPEN_NEW)
+routine device_open_new(
+		master_port	: mach_port_t;
+	sreplyport reply_port	: reply_port_t;
+		mode		: dev_mode_t;
+		name		: new_dev_name_t;
+	out	device		: device_t =
+					MACH_MSG_TYPE_PORT_SEND
+					ctype: mach_port_t
+#if	KERNEL_SERVER
+		outtran: mach_port_t convert_device_to_port(device_t)
+#else
+#ifdef	DEVICE_OUTTRAN
+		outtran: DEVICE_OUTTRAN
+#endif
+#endif	/* KERNEL_SERVER */
+	);
+#else
 skip;	/* old xxx_device_set_status */
+#endif
+
 skip;	/* old xxx_device_get_status */
 skip;	/* old xxx_device_set_filter*/
 

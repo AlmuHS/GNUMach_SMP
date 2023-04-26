@@ -45,6 +45,7 @@ type reply_port_t = MACH_MSG_TYPE_MAKE_SEND_ONCE
 #endif	/* KERNEL_SERVER */
 ;
 
+/* Deprecated in favor of device_open_new_request.  */
 simpleroutine device_open_request(
 	    device_server_port	: mach_port_t;
   ureplyport reply_port		: reply_port_t;
@@ -84,4 +85,11 @@ simpleroutine device_read_request_inband(
 	in  mode		: dev_mode_t;
 	in  recnum		: recnum_t;
 	in  bytes_wanted	: int
+	);
+
+simpleroutine device_open_new_request(
+	    device_server_port	: mach_port_t;
+  ureplyport reply_port		: reply_port_t;
+	in  mode		: dev_mode_t;
+	in  name		: new_dev_name_t
 	);

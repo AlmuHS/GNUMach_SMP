@@ -56,6 +56,8 @@ type recnum_t		= rpc_recnum_t
 type dev_mode_t		= uint32_t;
 type dev_flavor_t	= uint32_t;
 type dev_name_t		= (MACH_MSG_TYPE_STRING_C, 8*128);
+type new_dev_name_t = c_string[128]
+     ctype: dev_name_t;
 type dev_status_t	= array[*:1024] of int;
 type io_buf_ptr_t	= ^array[] of MACH_MSG_TYPE_INTEGER_8;
 type io_buf_ptr_inband_t= array[*:128] of char;

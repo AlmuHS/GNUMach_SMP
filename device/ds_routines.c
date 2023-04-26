@@ -171,6 +171,14 @@ ds_device_open (ipc_port_t open_port, ipc_port_t reply_port,
 }
 
 io_return_t
+ds_device_open_new (ipc_port_t open_port, ipc_port_t reply_port,
+		mach_msg_type_name_t reply_port_type, dev_mode_t mode,
+		const_dev_name_t name, device_t *devp)
+{
+	return ds_device_open (open_port, reply_port, reply_port_type, mode, name, devp);
+}
+
+io_return_t
 ds_device_close (device_t dev)
 {
   /* Refuse if device is dead or not completely open.  */
