@@ -27,6 +27,7 @@
 #include <mach/boolean.h>
 #include <mach/port.h>
 #include <mach/message.h>
+#include <mach/mig_support.h>
 #include <mach/thread_status.h>
 #include <machine/locore.h>
 #include <machine/copy_user.h>
@@ -285,7 +286,7 @@ mig_put_reply_port(
  *     len - Length of destination buffer.
  */
 vm_size_t
-mig_strncpy(char *dest, const char *src, int len)
+mig_strncpy(char *dest, const char *src, vm_size_t len)
 {
 	char *dest_ = dest;
 	int i;
