@@ -304,6 +304,16 @@ mig_strncpy(char *dest, const char *src, vm_size_t len)
 	return dest - dest_;
 }
 
+/* Called by MiG to deallocate memory, which in this case happens
+ * to be kernel memory. */
+void
+mig_deallocate(vm_address_t addr, vm_size_t size)
+{
+	(void) size;
+	/* We do the same thing as in ipc_kmsg_clean_body. */
+	vm_map_copy_discard((vm_map_copy_t) addr);
+}
+
 #define	fast_send_right_lookup(name, port, abort)			\
 MACRO_BEGIN								\
 	ipc_space_t space = current_space();				\
