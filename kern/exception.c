@@ -291,33 +291,33 @@ struct mach_exception {
 					/* in mach/machine/vm_types.h */
 
 mach_msg_type_t exc_port_proto = {
-	/* msgt_name = */		MACH_MSG_TYPE_PORT_SEND,
-	/* msgt_size = */		PORT_T_SIZE_IN_BITS,
-	/* msgt_number = */		1,
-	/* msgt_inline = */		TRUE,
-	/* msgt_longform = */		FALSE,
-	/* msgt_deallocate = */		FALSE,
-	/* msgt_unused = */		0
+	.msgt_name = MACH_MSG_TYPE_PORT_SEND,
+	.msgt_size = PORT_T_SIZE_IN_BITS,
+	.msgt_number = 1,
+	.msgt_inline = TRUE,
+	.msgt_longform = FALSE,
+	.msgt_deallocate = FALSE,
+	.msgt_unused = 0
 };
 
 mach_msg_type_t exc_code_proto = {
-	/* msgt_name = */		INTEGER_T_TYPE,
-	/* msgt_size = */		INTEGER_T_SIZE_IN_BITS,
-	/* msgt_number = */		1,
-	/* msgt_inline = */		TRUE,
-	/* msgt_longform = */		FALSE,
-	/* msgt_deallocate = */		FALSE,
-	/* msgt_unused = */		0
+	.msgt_name = INTEGER_T_TYPE,
+	.msgt_size = INTEGER_T_SIZE_IN_BITS,
+	.msgt_number = 1,
+	.msgt_inline = TRUE,
+	.msgt_longform = FALSE,
+	.msgt_deallocate = FALSE,
+	.msgt_unused = 0
 };
 
 mach_msg_type_t exc_subcode_proto = {
-	/* msgt_name = */		RPC_LONG_INTEGER_T_TYPE,
-	/* msgt_size = */		RPC_LONG_INTEGER_T_SIZE_IN_BITS,
-	/* msgt_number = */		1,
-	/* msgt_inline = */		TRUE,
-	/* msgt_longform = */		FALSE,
-	/* msgt_deallocate = */		FALSE,
-	/* msgt_unused = */		0
+	.msgt_name = RPC_LONG_INTEGER_T_TYPE,
+	.msgt_size = RPC_LONG_INTEGER_T_SIZE_IN_BITS,
+	.msgt_number = 1,
+	.msgt_inline = TRUE,
+	.msgt_longform = FALSE,
+	.msgt_deallocate = FALSE,
+	.msgt_unused = 0
 };
 
 /*
@@ -780,13 +780,13 @@ exception_raise(
 
 /* Type descriptor for the return code.  */
 mach_msg_type_t exc_RetCode_proto = {
-	/* msgt_name = */		MACH_MSG_TYPE_INTEGER_32,
-	/* msgt_size = */		32,
-	/* msgt_number = */		1,
-	/* msgt_inline = */		TRUE,
-	/* msgt_longform = */		FALSE,
-	/* msgt_deallocate = */		FALSE,
-	/* msgt_unused = */		0
+	.msgt_name = MACH_MSG_TYPE_INTEGER_32,
+	.msgt_size = 32,
+	.msgt_number = 1,
+	.msgt_inline = TRUE,
+	.msgt_longform = FALSE,
+	.msgt_deallocate = FALSE,
+	.msgt_unused = 0
 };
 
 /*
