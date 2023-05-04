@@ -101,13 +101,14 @@ ipc_kobject_server(ipc_kmsg_t request)
 #define	InP	((mach_msg_header_t *) &request->ikm_header)
 #define	OutP	((mig_reply_header_t *) &reply->ikm_header)
 
-	    static mach_msg_type_t RetCodeType = {
-		/* msgt_name = */		MACH_MSG_TYPE_INTEGER_32,
-		/* msgt_size = */		32,
-		/* msgt_number = */		1,
-		/* msgt_inline = */		TRUE,
-		/* msgt_longform = */		FALSE,
-		/* msgt_unused = */		0
+	    static const mach_msg_type_t RetCodeType = {
+	        .msgt_name = MACH_MSG_TYPE_INTEGER_32,
+	        .msgt_size = 32,
+	        .msgt_number = 1,
+	        .msgt_inline = TRUE,
+	        .msgt_longform = FALSE,
+	        .msgt_deallocate = FALSE,
+	        .msgt_unused = 0
 	    };
 	    OutP->Head.msgh_bits =
 		MACH_MSGH_BITS(MACH_MSGH_BITS_LOCAL(InP->msgh_bits), 0);
