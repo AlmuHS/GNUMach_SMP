@@ -386,22 +386,23 @@ boolean_t ethernet_priority(const ipc_kmsg_t kmsg)
 }
 
 mach_msg_type_t header_type = {
-	MACH_MSG_TYPE_BYTE,
-	8,
-	NET_HDW_HDR_MAX,
-	TRUE,
-	FALSE,
-	FALSE,
-	0
+	.msgt_name = MACH_MSG_TYPE_BYTE,
+	.msgt_size = 8,
+	.msgt_number = NET_HDW_HDR_MAX,
+	.msgt_inline = TRUE,
+	.msgt_longform = FALSE,
+	.msgt_deallocate = FALSE,
+	.msgt_unused = 0
 };
 
 mach_msg_type_t packet_type = {
-	MACH_MSG_TYPE_BYTE,	/* name */
-	8,			/* size */
-	0,			/* number */
-	TRUE,			/* inline */
-	FALSE,			/* longform */
-	FALSE			/* deallocate */
+	.msgt_name = MACH_MSG_TYPE_BYTE,
+	.msgt_size = 8,
+	.msgt_number = 0,
+	.msgt_inline = TRUE,
+	.msgt_longform = FALSE,
+	.msgt_deallocate = FALSE,
+	.msgt_unused = 0
 };
 
 /*
@@ -465,9 +466,10 @@ static boolean_t net_deliver(boolean_t nonblocking)
 		    MACH_MSGH_BITS(MACH_MSG_TYPE_PORT_SEND, 0);
 	    /* remember message sizes must be rounded up */
 	    kmsg->ikm_header.msgh_size =
-		    (((mach_msg_size_t) (sizeof(struct net_rcv_msg)
+		    (mach_msg_size_t) P2ROUND(sizeof(struct net_rcv_msg)
 					- sizeof net_kmsg(kmsg)->sent
-					- NET_RCV_MAX + count)) + 3) &~ 3;
+					- NET_RCV_MAX + count,
+					__alignof__ (uintptr_t));
 	    kmsg->ikm_header.msgh_local_port = MACH_PORT_NULL;
 	    kmsg->ikm_header.msgh_kind = MACH_MSGH_KIND_NORMAL;
 	    kmsg->ikm_header.msgh_id = NET_RCV_MSG_ID;
