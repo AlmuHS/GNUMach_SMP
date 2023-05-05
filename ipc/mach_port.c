@@ -45,7 +45,6 @@
 #include <mach/vm_param.h>
 #include <mach/vm_prot.h>
 #ifdef MIGRATING_THREADS
-#include <mach/rpc.h>
 #include <kern/task.h>
 #include <kern/act.h>
 #endif /* MIGRATING_THREADS */

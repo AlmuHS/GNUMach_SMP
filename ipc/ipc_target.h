@@ -27,7 +27,6 @@
 
 #include "ipc_mqueue.h"
 #include "ipc_object.h"
-#include <mach/rpc.h>
 
 typedef struct ipc_target {
 

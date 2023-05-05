@@ -50,7 +50,6 @@
 #include <ipc/ipc_thread.h>
 #include <ipc/ipc_object.h>
 #include "ipc_target.h"
-#include <mach/rpc.h>
 
 /*
  *  A receive right (port) can be in four states:

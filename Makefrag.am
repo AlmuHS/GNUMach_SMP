@@ -403,7 +403,6 @@ include_mach_HEADERS = \
 	include/mach/processor_info.h \
 	include/mach/profil.h \
 	include/mach/profilparam.h \
-	include/mach/rpc.h \
 	include/mach/std_types.h \
 	include/mach/syscall_sw.h \
 	include/mach/task_info.h \
