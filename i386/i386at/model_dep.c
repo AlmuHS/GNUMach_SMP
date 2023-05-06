@@ -549,6 +549,9 @@ void c_boot_entry(vm_offset_t bi)
 	machine_slot[0].is_cpu = TRUE;
 	machine_slot[0].cpu_subtype = CPU_SUBTYPE_AT386;
 
+#ifdef __x86_64__
+	machine_slot[0].cpu_type = CPU_TYPE_X86_64;
+#else
 	switch (cpu_type)
 	  {
 	  default:
@@ -567,6 +570,7 @@ void c_boot_entry(vm_offset_t bi)
 	    machine_slot[0].cpu_type = CPU_TYPE_PENTIUMPRO;
 	    break;
 	  }
+#endif
 
 	/*
 	 * Start the system.
