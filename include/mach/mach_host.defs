@@ -161,6 +161,9 @@ routine task_get_assignment(
 		task		: task_t;
 	out	assigned_set	: processor_set_name_t);
 
+#ifdef __x86_64__
+skip;
+#else
 /*
  *	Get string describing current kernel version.
  *	Deprecated, use host_get_kernel_version.
@@ -168,6 +171,7 @@ routine task_get_assignment(
 routine	host_kernel_version(
 		host		: host_t;
 	out	kernel_version	: kernel_version_t);
+#endif
 
 /*
  *	Set priority for thread.
