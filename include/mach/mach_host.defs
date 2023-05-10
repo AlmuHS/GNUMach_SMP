@@ -161,7 +161,7 @@ routine task_get_assignment(
 		task		: task_t;
 	out	assigned_set	: processor_set_name_t);
 
-#ifdef __x86_64__
+#if defined(__x86_64__) && !defined(USER32)
 skip;
 #else
 /*

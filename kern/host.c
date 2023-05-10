@@ -219,7 +219,7 @@ kern_return_t host_get_kernel_version(
 	return KERN_SUCCESS;
 }
 
-#ifndef __x86_64__
+#if !defined(__x86_64__) || defined(USER32)
 /* Same as above, but does not exist for x86_64.  */
 kern_return_t host_kernel_version(
 	const host_t		host,
