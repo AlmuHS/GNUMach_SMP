@@ -223,6 +223,11 @@ void switch_ktss(pcb_t pcb)
         pcb->ims.user_gdt, sizeof pcb->ims.user_gdt);
 #endif /* MACH_PV_DESCRIPTORS */
 
+#if defined(__x86_64__) && !defined(USER32)
+	wrmsr(MSR_REG_FSBASE, pcb->iss.fsbase);
+	wrmsr(MSR_REG_GSBASE, pcb->iss.gsbase);
+#endif
+
 	db_load_context(pcb);
 
 	/*
@@ -373,10 +378,6 @@ thread_t switch_context(
 	 *	Load the rest of the user state for the new thread
 	 */
 	switch_ktss(new->pcb);
-#if defined(__x86_64__) && !defined(USER32)
-        wrmsr(MSR_REG_FSBASE, new->pcb->iss.fsbase);
-        wrmsr(MSR_REG_GSBASE, new->pcb->iss.gsbase);
-#endif
 	return Switch_context(old, continuation, new);
 }
 
