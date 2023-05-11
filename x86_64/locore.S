@@ -1341,7 +1341,6 @@ END(syscall)
      - for now we assume the return address is canonical, but apparently there
        can be cases where it's not (see how Linux handles this). Does it apply
        here?
-     - do we need to check for ast on syscalls? Maybe on interrupts is enough
      - check that the case where a task is suspended, and later returns via
        iretq from return_from_trap, works fine in all combinations
  */
@@ -1428,10 +1427,33 @@ _syscall64_args_stack:
 
 _syscall64_call:
 	call	*EXT(mach_trap_table)+8(%rax)  /* call procedure */
-	// XXX: check ast on exit?
 
-	/* Restore thread state and return to user using sysret. */
+_syscall64_check_for_ast:
+	/* Check for ast. */
 	CPU_NUMBER(%r11)
+	cmpl	$0,CX(EXT(need_ast),%r11)
+	jz	_syscall64_restore_state
+
+	/* Save the syscall return value, both on our stack, for the case
+	 * i386_astintr returns normally, and in the PCB stack, in case it
+	 * instead calls thread_block(thread_exception_return).
+	 */
+	pushq	%rax				/* save the return value on our stack */
+	pushq	$0				/* dummy value to keep the stack aligned */
+
+	/* Find the PCB stack. */
+	movq	%rsp,%rcx
+	or	$(KERNEL_STACK_SIZE-1),%rcx
+	movq	-7-IKS_SIZE(%rcx),%rcx
+
+	movq	%rax,R_EAX(%rcx)		/* save the return value in the PCB stack */
+	call	EXT(i386_astintr)
+	popq	%rax
+	popq	%rax				/* restore the return value */
+	jmp	_syscall64_check_for_ast	/* check again */
+
+_syscall64_restore_state:
+	/* Restore thread state and return to user using sysret. */
 	movq	CX(EXT(active_threads),%r11),%r11 /* point to current thread */
 	movq	TH_PCB(%r11),%r11		/* point to pcb */
 	addq	$ PCB_ISS,%r11			/* point to saved state */
