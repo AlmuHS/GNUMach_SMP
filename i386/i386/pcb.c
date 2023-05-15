@@ -873,7 +873,7 @@ kern_return_t thread_getstatus(
 
                     state = (struct i386_fsgs_base_state *) tstate;
                     state->fs_base = thread->pcb->iss.fsbase;
-                    state->fs_base = thread->pcb->iss.gsbase;
+                    state->gs_base = thread->pcb->iss.gsbase;
                     *count = i386_FSGS_BASE_STATE_COUNT;
                     break;
             }
