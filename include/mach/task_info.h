@@ -97,10 +97,16 @@ typedef struct task_events_info		*task_events_info_t;
 					   only accurate if suspended */
 
 struct task_thread_times_info {
+	/* Deprecated, please use user_time64 */
 	rpc_time_value_t	user_time;	/* total user run time for
 					   live threads */
+	/* Deprecated, please use system_time64 */
 	rpc_time_value_t	system_time;	/* total system run time for
 					   live threads */
+	time_value64_t		user_time64;	/* total user run time for
+						   live threads */
+	time_value64_t		system_time64;	/* total system run time for
+						   live threads */
 };
 
 typedef struct task_thread_times_info	task_thread_times_info_data_t;

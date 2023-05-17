@@ -887,8 +887,14 @@ kern_return_t task_info(
 		task_unlock(task);
 		TIME_VALUE64_TO_TIME_VALUE(&acc_user_time, &times_info->user_time);
 		TIME_VALUE64_TO_TIME_VALUE(&acc_system_time, &times_info->system_time);
+		if (*task_info_count >= TASK_THREAD_TIMES_INFO_COUNT) {
+		    /* Copy new time_value64_t fields */
+		    times_info->user_time64 = acc_user_time;
+		    times_info->system_time64 = acc_system_time;
+		}
 
-		*task_info_count = TASK_THREAD_TIMES_INFO_COUNT;
+		if (*task_info_count > TASK_THREAD_TIMES_INFO_COUNT)
+		  *task_info_count = TASK_THREAD_TIMES_INFO_COUNT;
 		break;
 	    }
 
