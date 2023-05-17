@@ -849,7 +849,8 @@ stack_overflowed:
  *	ss
  */
 ast_from_interrupt:
-	POP_FSGS
+	POP_FSGS_ISR
+	pop	%rdx
 	mov	%rdx,%es
 	pop	%rdx
 	mov	%rdx,%ds
