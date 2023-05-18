@@ -446,11 +446,9 @@ push_fs:
 	pushq	%fs			/* restore fs, */
 push_gs:
 	pushq	%gs			/* restore gs. */
-#ifdef USER32
 push_gsbase:
 	pushq	$0
 	pushq	$0
-#endif
 push_segregs:
 	movq	%rax,R_TRAPNO(%rsp)	/* set trap number */
 	movq	%rdx,R_ERR(%rsp)	/* set error code */
@@ -870,7 +868,7 @@ ast_from_interrupt:
 	push	%rdx
 	mov	%es,%rdx
 	push	%rdx
-	PUSH_FSGS
+	PUSH_FSGS_ISR
 
 	mov	%ss,%dx			/* switch to kernel segments */
 	mov	%dx,%ds
