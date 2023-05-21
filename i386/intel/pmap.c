@@ -465,7 +465,7 @@ pmap_pde(const pmap_t pmap, vm_offset_t addr)
 #if PAE
 	pt_entry_t *pdp_table;
 	pdp_table = pmap_ptp(pmap, addr);
-        if (pdp_table == 0)
+        if (pdp_table == PT_ENTRY_NULL)
 		return(PT_ENTRY_NULL);
 	pt_entry_t pde = *pdp_table;
 	if ((pde & INTEL_PTE_VALID) == 0)
@@ -1463,44 +1463,38 @@ void pmap_destroy(pmap_t p)
 		if (!(pdp & INTEL_PTE_VALID))
 			continue;
 		pt_entry_t *pdpbase = (pt_entry_t*) ptetokv(pdp);
-		for (int l3i = 0; l3i < 512; l3i++) {
+		for (int l3i = 0; l3i < NPTES; l3i++)
 #else /* __x86_64__ */
 		pt_entry_t *pdpbase = p->pdpbase;
-		for (int l3i = 0; l3i < lin2pdpnum(VM_MAX_USER_ADDRESS); l3i++) {
+		for (int l3i = 0; l3i < lin2pdpnum(VM_MAX_USER_ADDRESS); l3i++)
 #endif /* __x86_64__ */
+		{
 			pt_entry_t pde = (pt_entry_t) pdpbase[l3i];
 			if (!(pde & INTEL_PTE_VALID))
 				continue;
 			pt_entry_t *pdebase = (pt_entry_t*) ptetokv(pde);
-			for (int l2i = 0; l2i < 512; l2i++) {
+			for (int l2i = 0; l2i < NPTES; l2i++)
 #else /* PAE */
 			pt_entry_t *pdebase = p->dirbase;
-			for (int l2i = 0; l2i < lin2pdenum(VM_MAX_USER_ADDRESS); l2i++) {
+			for (int l2i = 0; l2i < lin2pdenum(VM_MAX_USER_ADDRESS); l2i++)
 #endif /* PAE */
+			{
 				pt_entry_t pte = (pt_entry_t) pdebase[l2i];
 				if (!(pte & INTEL_PTE_VALID))
 					continue;
 				kmem_cache_free(&pt_cache, (vm_offset_t)ptetokv(pte));
 			}
-#if PAE
 			kmem_cache_free(&pd_cache, (vm_offset_t)pdebase);
+#if PAE
 		}
-#ifdef __x86_64__
 		kmem_cache_free(&pdpt_cache, (vm_offset_t)pdpbase);
+#ifdef __x86_64__
 	}
+	kmem_cache_free(&l4_cache, (vm_offset_t) p->l4base);
 #endif /* __x86_64__ */
 #endif /* PAE */
 
-        /* Finally, free the page table tree root and the pmap itself */
-#if PAE
-#ifdef __x86_64__
-	kmem_cache_free(&l4_cache, (vm_offset_t) p->l4base);
-#else /* __x86_64__ */
-        kmem_cache_free(&pdpt_cache, (vm_offset_t) p->pdpbase);
-#endif /* __x86_64__ */
-#else /* PAE */
-        kmem_cache_free(&pd_cache, (vm_offset_t) p->dirbase);
-#endif /* PAE */
+        /* Finally, free the pmap itself */
 	kmem_cache_free(&pmap_cache, (vm_offset_t) p);
 }
 
@@ -2092,9 +2086,9 @@ static inline pt_entry_t* pmap_expand(pmap_t pmap, vm_offset_t v, int spl)
 {
 #ifdef PAE
 #ifdef __x86_64__
-	pmap_expand_level(pmap, v, spl, pmap_ptp, pmap_l4base, ptes_per_vm_page, &pdpt_cache);
+	pmap_expand_level(pmap, v, spl, pmap_ptp, pmap_l4base, 1, &pdpt_cache);
 #endif /* __x86_64__ */
-	pmap_expand_level(pmap, v, spl, pmap_pde, pmap_ptp, ptes_per_vm_page, &pd_cache);
+	pmap_expand_level(pmap, v, spl, pmap_pde, pmap_ptp, 1, &pd_cache);
 #endif /* PAE */
 	return pmap_expand_level(pmap, v, spl, pmap_pte, pmap_pde, ptes_per_vm_page, &pt_cache);
 }
@@ -2471,20 +2465,22 @@ void pmap_collect(pmap_t p)
 		if (!(pdp & INTEL_PTE_VALID))
 			continue;
 		pt_entry_t *pdpbase = (pt_entry_t*) ptetokv(pdp);
-		for (int l3i = 0; l3i < 512; l3i++) {
+		for (int l3i = 0; l3i < NPTES; l3i++)
 #else /* __x86_64__ */
 		pt_entry_t *pdpbase = p->pdpbase;
-		for (int l3i = 0; l3i < lin2pdpnum(VM_MAX_USER_ADDRESS); l3i++) {
+		for (int l3i = 0; l3i < lin2pdpnum(VM_MAX_USER_ADDRESS); l3i++)
 #endif /* __x86_64__ */
+		{
 			pt_entry_t pde = (pt_entry_t ) pdpbase[l3i];
 			if (!(pde & INTEL_PTE_VALID))
 				continue;
 			pt_entry_t *pdebase = (pt_entry_t*) ptetokv(pde);
-			for (int l2i = 0; l2i < 512; l2i++) {
+			for (int l2i = 0; l2i < NPTES; l2i++)
 #else /* PAE */
 			pt_entry_t *pdebase = p->dirbase;
-			for (int l2i = 0; l2i < lin2pdenum(VM_MAX_USER_ADDRESS); l2i++) {
+			for (int l2i = 0; l2i < lin2pdenum(VM_MAX_USER_ADDRESS); l2i++)
 #endif /* PAE */
+			{
 				pt_entry_t pte = (pt_entry_t) pdebase[l2i];
 				if (!(pte & INTEL_PTE_VALID))
 					continue;
@@ -2551,10 +2547,10 @@ void pmap_collect(pmap_t p)
 				}
 			}
 #if PAE
-			// TODO check l2?
+			// TODO check l2
 		}
 #ifdef __x86_64__
-			// TODO check l3?
+			// TODO check l3
 	}
 #endif /* __x86_64__ */
 #endif /* PAE */
