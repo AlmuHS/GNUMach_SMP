@@ -75,7 +75,6 @@ typedef phys_addr_t pt_entry_t;
 #define L4SHIFT		39	/* L4 shift */
 #define L4MASK		0x1ff	/* mask for L4 index */
 #define PDPNUM_KERNEL	(((VM_MAX_KERNEL_ADDRESS - VM_MIN_KERNEL_ADDRESS) >> PDPSHIFT) + 1)
-#define PDPNUM_USER	(((VM_MAX_USER_ADDRESS - VM_MIN_USER_ADDRESS) >> PDPSHIFT) + 1)
 #define PDPMASK		0x1ff	/* mask for page directory pointer index */
 #else /* __x86_64__ */
 #define PDPNUM		4	/* number of page directory pointers */
@@ -129,6 +128,26 @@ typedef phys_addr_t pt_entry_t;
  *	Convert page descriptor index to linear address
  */
 #define pdenum2lin(a)	((vm_offset_t)(a) << PDESHIFT)
+
+#if PAE
+#ifdef __x86_64__
+#define pagenum2lin(l4num, l3num, l2num, l1num) \
+    (((vm_offset_t)(l4num) << L4SHIFT) +        \
+     ((vm_offset_t)(l3num) << PDPSHIFT) +       \
+     ((vm_offset_t)(l2num) << PDESHIFT) +       \
+     ((vm_offset_t)(l1num) << PTESHIFT))
+#else /* __x86_64__ */
+#define pagenum2lin(l4num, l3num, l2num, l1num) \
+    (((vm_offset_t)(l3num) << PDPSHIFT) +       \
+     ((vm_offset_t)(l2num) << PDESHIFT) +       \
+     ((vm_offset_t)(l1num) << PTESHIFT))
+#endif
+#else /* PAE */
+#define pagenum2lin(l4num, l3num, l2num, l1num) \
+    (((vm_offset_t)(l2num) << PDESHIFT) +       \
+     ((vm_offset_t)(l1num) << PTESHIFT))
+#endif
+
 
 /*
  *	Convert linear offset to page table index

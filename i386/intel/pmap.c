@@ -398,6 +398,7 @@ struct pmap	kernel_pmap_store;
 pmap_t		kernel_pmap;
 
 struct kmem_cache pmap_cache;  /* cache of pmap structures */
+struct kmem_cache pt_cache;    /* cache of page tables */
 struct kmem_cache pd_cache;    /* cache of page directories */
 #if PAE
 struct kmem_cache pdpt_cache;  /* cache of page directory pointer tables */
@@ -429,6 +430,14 @@ pt_entry_t *kernel_page_dir;
  */
 static pmap_mapwindow_t mapwindows[PMAP_NMAPWINDOWS * NCPUS];
 
+#ifdef __x86_64__
+static inline pt_entry_t *
+pmap_l4base(const pmap_t pmap, vm_offset_t lin_addr)
+{
+	return &pmap->l4base[lin2l4num(lin_addr)];
+}
+#endif
+
 #ifdef PAE
 static inline pt_entry_t *
 pmap_ptp(const pmap_t pmap, vm_offset_t lin_addr)
@@ -443,7 +452,7 @@ pmap_ptp(const pmap_t pmap, vm_offset_t lin_addr)
 #else /* __x86_64__ */
 	pdp_table = pmap->pdpbase;
 #endif /* __x86_64__ */
-	return pdp_table;
+	return &pdp_table[lin2pdpnum(lin_addr)];
 }
 #endif
 
@@ -456,7 +465,9 @@ pmap_pde(const pmap_t pmap, vm_offset_t addr)
 #if PAE
 	pt_entry_t *pdp_table;
 	pdp_table = pmap_ptp(pmap, addr);
-	pt_entry_t pde = pdp_table[lin2pdpnum(addr)];
+        if (pdp_table == 0)
+		return(PT_ENTRY_NULL);
+	pt_entry_t pde = *pdp_table;
 	if ((pde & INTEL_PTE_VALID) == 0)
 		return PT_ENTRY_NULL;
 	page_dir = (pt_entry_t *) ptetokv(pde);
@@ -1092,15 +1103,18 @@ void pmap_init(void)
 	 */
 	s = (vm_size_t) sizeof(struct pmap);
 	kmem_cache_init(&pmap_cache, "pmap", s, 0, NULL, 0);
-	kmem_cache_init(&pd_cache, "pd",
+	kmem_cache_init(&pt_cache, "pmap_L1",
+			INTEL_PGBYTES, INTEL_PGBYTES, NULL,
+			KMEM_CACHE_PHYSMEM);
+	kmem_cache_init(&pd_cache, "pmap_L2",
 			INTEL_PGBYTES, INTEL_PGBYTES, NULL,
 			KMEM_CACHE_PHYSMEM);
 #if PAE
-	kmem_cache_init(&pdpt_cache, "pdpt",
+	kmem_cache_init(&pdpt_cache, "pmap_L3",
 			INTEL_PGBYTES, INTEL_PGBYTES, NULL,
 			KMEM_CACHE_PHYSMEM);
 #ifdef __x86_64__
-	kmem_cache_init(&l4_cache, "L4",
+	kmem_cache_init(&l4_cache, "pmap_L4",
 			INTEL_PGBYTES, INTEL_PGBYTES, NULL,
 			KMEM_CACHE_PHYSMEM);
 #endif /* __x86_64__ */
@@ -1244,6 +1258,11 @@ pmap_page_table_page_dealloc(vm_offset_t pa)
 	vm_object_lock(pmap_object);
 	m = vm_page_lookup(pmap_object, pa);
 	vm_page_lock_queues();
+#ifdef	MACH_PV_PAGETABLES
+        if (!hyp_mmuext_op_mfn (MMUEXT_UNPIN_TABLE, pa_to_mfn(pa)))
+                panic("couldn't unpin page %llx(%lx)\n", pa, (vm_offset_t) kv_to_ma(pa));
+        pmap_set_page_readwrite((void*) phystokv(pa));
+#endif	/* MACH_PV_PAGETABLES */
 	vm_page_free(m);
 	inuse_ptepages_count--;
 	vm_page_unlock_queues();
@@ -1265,7 +1284,7 @@ pmap_page_table_page_dealloc(vm_offset_t pa)
 pmap_t pmap_create(vm_size_t size)
 {
 #ifdef __x86_64__
-	// needs to be reworked if we want to dynamically allocate PDPs
+	// needs to be reworked if we want to dynamically allocate PDPs for kernel
 	const int PDPNUM = PDPNUM_KERNEL;
 #endif
 	pt_entry_t		*page_dir[PDPNUM];
@@ -1360,30 +1379,6 @@ pmap_t pmap_create(vm_size_t size)
 	memset(p->l4base, 0, INTEL_PGBYTES);
 	WRITE_PTE(&p->l4base[lin2l4num(VM_MIN_KERNEL_ADDRESS)],
 		  pa_to_pte(kvtophys((vm_offset_t) pdp_kernel)) | INTEL_PTE_VALID | INTEL_PTE_WRITE);
-#if lin2l4num(VM_MIN_KERNEL_ADDRESS) != lin2l4num(VM_MAX_USER_ADDRESS)
-	// kernel vm and user vm are not in the same l4 entry, so add the user one
-        // TODO alloc only PDPTE for the user range VM_MIN_USER_ADDRESS, VM_MAX_USER_ADDRESS
-	// and keep the same for kernel range, in l4 table we have different entries
-	pt_entry_t *pdp_user = (pt_entry_t *) kmem_cache_alloc(&pdpt_cache);
-	if (pdp_user == NULL) {
-		panic("pmap create");
-	}
-        memset(pdp_user, 0, INTEL_PGBYTES);
-	WRITE_PTE(&p->l4base[lin2l4num(VM_MIN_USER_ADDRESS)],
-		  pa_to_pte(kvtophys((vm_offset_t) pdp_user)) | INTEL_PTE_VALID | INTEL_PTE_WRITE | INTEL_PTE_USER);
-#endif /* lin2l4num(VM_MIN_KERNEL_ADDRESS) != lin2l4num(VM_MAX_USER_ADDRESS) */
-	for (int i = 0; i < PDPNUM_USER; i++) {
-		pt_entry_t *user_page_dir = (pt_entry_t *) kmem_cache_alloc(&pd_cache);
-		memset(user_page_dir, 0, INTEL_PGBYTES);
-		WRITE_PTE(&pdp_user[i + lin2pdpnum(VM_MIN_USER_ADDRESS)],  // pdp_user
-			  pa_to_pte(kvtophys((vm_offset_t)user_page_dir))
-			  | INTEL_PTE_VALID
-#if (defined(__x86_64__) && !defined(MACH_HYP)) || defined(MACH_PV_PAGETABLES)
-			  | INTEL_PTE_WRITE | INTEL_PTE_USER
-#endif
-			);
-	}
-
 #ifdef	MACH_PV_PAGETABLES
 	// FIXME: use kmem_cache_alloc instead
 	if (kmem_alloc_wired(kernel_map,
@@ -1443,15 +1438,7 @@ pmap_t pmap_create(vm_size_t size)
 
 void pmap_destroy(pmap_t p)
 {
-#if PAE
-	int		i;
-#endif
-	boolean_t	free_all;
-	pt_entry_t     	*page_dir;
-	pt_entry_t	*pdep;
-	phys_addr_t	pa;
 	int		c, s;
-	vm_page_t	m;
 
 	if (p == PMAP_NULL)
 		return;
@@ -1466,87 +1453,54 @@ void pmap_destroy(pmap_t p)
 	    return;	/* still in use */
 	}
 
+        /*
+         * Free the page table tree.
+         */
 #if PAE
-	for (i = 0; i < lin2pdpnum(VM_MAX_USER_ADDRESS); i++) {
 #ifdef __x86_64__
-#ifdef USER32
-	    /* In this case we know we have one PDP for user space */
-	    pt_entry_t *pdp = (pt_entry_t *) ptetokv(p->l4base[lin2l4num(VM_MIN_USER_ADDRESS)]);
-#else
-#warning "TODO do 64-bit userspace need more that 512G?"
-	    pt_entry_t *pdp = (pt_entry_t *) ptetokv(p->l4base[lin2l4num(VM_MIN_USER_ADDRESS)]);
-#endif /* USER32 */
-	    page_dir = (pt_entry_t *) ptetokv(pdp[i]);
+	for (int l4i = 0; l4i < lin2l4num(VM_MAX_USER_ADDRESS); l4i++) {
+		pt_entry_t pdp = (pt_entry_t) p->l4base[l4i];
+		if (!(pdp & INTEL_PTE_VALID))
+			continue;
+		pt_entry_t *pdpbase = (pt_entry_t*) ptetokv(pdp);
+		for (int l3i = 0; l3i < 512; l3i++) {
 #else /* __x86_64__ */
-	    page_dir = (pt_entry_t *) ptetokv(p->pdpbase[i]);
+		pt_entry_t *pdpbase = p->pdpbase;
+		for (int l3i = 0; l3i < lin2pdpnum(VM_MAX_USER_ADDRESS); l3i++) {
 #endif /* __x86_64__ */
-	    free_all = i < lin2pdpnum(LINEAR_MIN_KERNEL_ADDRESS);
+			pt_entry_t pde = (pt_entry_t) pdpbase[l3i];
+			if (!(pde & INTEL_PTE_VALID))
+				continue;
+			pt_entry_t *pdebase = (pt_entry_t*) ptetokv(pde);
+			for (int l2i = 0; l2i < 512; l2i++) {
 #else /* PAE */
-	    free_all = FALSE;
-	    page_dir = p->dirbase;
+			pt_entry_t *pdebase = p->dirbase;
+			for (int l2i = 0; l2i < lin2pdenum(VM_MAX_USER_ADDRESS); l2i++) {
+#endif /* PAE */
+				pt_entry_t pte = (pt_entry_t) pdebase[l2i];
+				if (!(pte & INTEL_PTE_VALID))
+					continue;
+				kmem_cache_free(&pt_cache, (vm_offset_t)ptetokv(pte));
+			}
+#if PAE
+			kmem_cache_free(&pd_cache, (vm_offset_t)pdebase);
+		}
+#ifdef __x86_64__
+		kmem_cache_free(&pdpt_cache, (vm_offset_t)pdpbase);
+	}
+#endif /* __x86_64__ */
 #endif /* PAE */
 
-#ifdef __x86_64__
-#warning FIXME 64bit need to free l3
-#endif
-	    /*
-	     *	Free the memory maps, then the
-	     *	pmap structure.
-	     */
-	    for (pdep = page_dir;
-		 (free_all
-		  || pdep < &page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS)])
-		     && pdep < &page_dir[NPTES];
-		 pdep += ptes_per_vm_page) {
-		if (*pdep & INTEL_PTE_VALID) {
-		    pa = pte_to_pa(*pdep);
-		    assert(pa == (vm_offset_t) pa);
-		    vm_object_lock(pmap_object);
-		    m = vm_page_lookup(pmap_object, pa);
-		    if (m == VM_PAGE_NULL)
-			panic("pmap_destroy: pte page not in object");
-		    vm_page_lock_queues();
-#ifdef	MACH_PV_PAGETABLES
-		    if (!hyp_mmuext_op_mfn (MMUEXT_UNPIN_TABLE, pa_to_mfn(pa)))
-			panic("pmap_destroy: couldn't unpin page %llx(%lx)\n", pa, (vm_offset_t) kv_to_ma(pa));
-		    pmap_set_page_readwrite((void*) phystokv(pa));
-#endif	/* MACH_PV_PAGETABLES */
-		    vm_page_free(m);
-		    inuse_ptepages_count--;
-		    vm_page_unlock_queues();
-		    vm_object_unlock(pmap_object);
-		}
-	    }
-#ifdef	MACH_PV_PAGETABLES
-	    pmap_set_page_readwrite((void*) page_dir);
-#endif	/* MACH_PV_PAGETABLES */
-	    kmem_cache_free(&pd_cache, (vm_offset_t) page_dir);
+        /* Finally, free the page table tree root and the pmap itself */
 #if PAE
-	}
-
-#ifdef	MACH_PV_PAGETABLES
 #ifdef __x86_64__
-	pmap_set_page_readwrite(p->l4base);
-	pmap_set_page_readwrite(p->user_l4base);
-	pmap_set_page_readwrite(p->user_pdpbase);
-#endif /* __x86_64__ */
-	pmap_set_page_readwrite(p->pdpbase);
-#endif	/* MACH_PV_PAGETABLES */
-
-#ifdef __x86_64__
-	kmem_cache_free(&pdpt_cache, (vm_offset_t) pmap_ptp(p, VM_MIN_USER_ADDRESS));
-#if lin2l4num(VM_MIN_KERNEL_ADDRESS) != lin2l4num(VM_MAX_USER_ADDRESS)
-	// TODO kernel vm and user vm are not in the same l4 entry
-#endif
 	kmem_cache_free(&l4_cache, (vm_offset_t) p->l4base);
-#ifdef MACH_PV_PAGETABLES
-	kmem_free(kernel_map, (vm_offset_t)p->user_l4base, INTEL_PGBYTES);
-	kmem_free(kernel_map, (vm_offset_t)p->user_pdpbase, INTEL_PGBYTES);
-#endif /* MACH_PV_PAGETABLES */
 #else /* __x86_64__ */
-	kmem_cache_free(&pdpt_cache, (vm_offset_t) p->pdpbase);
+        kmem_cache_free(&pdpt_cache, (vm_offset_t) p->pdpbase);
 #endif /* __x86_64__ */
-#endif	/* PAE */
+#else /* PAE */
+        kmem_cache_free(&pd_cache, (vm_offset_t) p->dirbase);
+#endif /* PAE */
 	kmem_cache_free(&pmap_cache, (vm_offset_t) p);
 }
 
@@ -1756,7 +1710,7 @@ void pmap_remove(
 	    l = (s + PDE_MAPPED_SIZE) & ~(PDE_MAPPED_SIZE-1);
 	    if (l > e)
 		l = e;
-	    if (*pde & INTEL_PTE_VALID) {
+	    if (pde && (*pde & INTEL_PTE_VALID)) {
 		spte = (pt_entry_t *)ptetokv(*pde);
 		spte = &spte[ptenum(s)];
 		epte = &spte[intel_btop(l-s)];
@@ -2036,6 +1990,115 @@ void pmap_protect(
 	SPLX(spl);
 }
 
+typedef	pt_entry_t* (*pmap_level_getter_t)(const pmap_t pmap, vm_offset_t addr);
+/*
+* Expand one single level of the page table tree
+*/
+static inline pt_entry_t* pmap_expand_level(pmap_t pmap, vm_offset_t v, int spl,
+                                            pmap_level_getter_t pmap_level,
+                                            pmap_level_getter_t pmap_level_upper,
+                                            int n_per_vm_page,
+                                            struct kmem_cache *cache)
+{
+	pt_entry_t		*pte;
+
+	/*
+	 *	Expand pmap to include this pte.  Assume that
+	 *	pmap is always expanded to include enough hardware
+	 *	pages to map one VM page.
+	 */
+	while ((pte = pmap_level(pmap, v)) == PT_ENTRY_NULL) {
+	    /*
+	     * Need to allocate a new page-table page.
+	     */
+	    vm_offset_t	ptp;
+	    pt_entry_t	*pdp;
+	    int		i;
+
+	    if (pmap == kernel_pmap) {
+		/*
+		 * Would have to enter the new page-table page in
+		 * EVERY pmap.
+		 */
+		panic("pmap_expand kernel pmap to %#zx", v);
+	    }
+
+	    /*
+	     * Unlock the pmap and allocate a new page-table page.
+	     */
+	    PMAP_READ_UNLOCK(pmap, spl);
+
+	    while (!(ptp = kmem_cache_alloc(cache)))
+		VM_PAGE_WAIT((void (*)()) 0);
+	    memset((void *)ptp, 0, PAGE_SIZE);
+
+	    /*
+	     * Re-lock the pmap and check that another thread has
+	     * not already allocated the page-table page.  If it
+	     * has, discard the new page-table page (and try
+	     * again to make sure).
+	     */
+	    PMAP_READ_LOCK(pmap, spl);
+
+	    if (pmap_level(pmap, v) != PT_ENTRY_NULL) {
+		/*
+		 * Oops...
+		 */
+		PMAP_READ_UNLOCK(pmap, spl);
+		kmem_cache_free(cache, ptp);
+		PMAP_READ_LOCK(pmap, spl);
+		continue;
+	    }
+
+	    /*
+	     * Enter the new page table page in the page directory.
+	     */
+	    i = n_per_vm_page;
+	    pdp = pmap_level_upper(pmap, v);
+	    do {
+#ifdef	MACH_PV_PAGETABLES
+		pmap_set_page_readonly((void *) ptp);
+		if (!hyp_mmuext_op_mfn (MMUEXT_PIN_L1_TABLE, kv_to_mfn(ptp)))
+			panic("couldn't pin page %lx(%lx)\n",ptp,(vm_offset_t) kv_to_ma(ptp));
+		if (!hyp_mmu_update_pte(pa_to_ma(kvtophys((vm_offset_t)pdp)),
+			pa_to_pte(pa_to_ma(kvtophys(ptp))) | INTEL_PTE_VALID
+					      | INTEL_PTE_USER
+					      | INTEL_PTE_WRITE))
+			panic("%s:%d could not set pde %p(%llx,%lx) to %lx(%llx,%lx) %lx\n",__FILE__,__LINE__, pdp, kvtophys((vm_offset_t)pdp), (vm_offset_t) pa_to_ma(kvtophys((vm_offset_t)pdp)), ptp, kvtophys(ptp), (vm_offset_t) pa_to_ma(kvtophys(ptp)), (vm_offset_t) pa_to_pte(kv_to_ma(ptp)));
+#else	/* MACH_PV_PAGETABLES */
+		*pdp = pa_to_pte(kvtophys(ptp)) | INTEL_PTE_VALID
+					        | INTEL_PTE_USER
+					        | INTEL_PTE_WRITE;
+#endif	/* MACH_PV_PAGETABLES */
+		pdp++;	/* Note: This is safe b/c we stay in one page.  */
+		ptp += INTEL_PGBYTES;
+	    } while (--i > 0);
+
+	    /*
+	     * Now, get the address of the page-table entry.
+	     */
+	    continue;
+	}
+        return pte;
+}
+
+/*
+ * Expand, if required, the PMAP to include the virtual address V.
+ * PMAP needs to be locked, and it will be still locked on return. It
+ * can temporarily unlock the PMAP, during allocation or deallocation
+ * of physical pages.
+ */
+static inline pt_entry_t* pmap_expand(pmap_t pmap, vm_offset_t v, int spl)
+{
+#ifdef PAE
+#ifdef __x86_64__
+	pmap_expand_level(pmap, v, spl, pmap_ptp, pmap_l4base, ptes_per_vm_page, &pdpt_cache);
+#endif /* __x86_64__ */
+	pmap_expand_level(pmap, v, spl, pmap_pde, pmap_ptp, ptes_per_vm_page, &pd_cache);
+#endif /* PAE */
+	return pmap_expand_level(pmap, v, spl, pmap_pte, pmap_pde, ptes_per_vm_page, &pt_cache);
+}
+
 /*
  *	Insert the given physical page (p) at
  *	the specified virtual address (v) in the
@@ -2071,7 +2134,7 @@ void pmap_enter(
 
 #if !MACH_KDB
 	if (pmap == kernel_pmap && (v < kernel_virtual_start || v >= kernel_virtual_end))
-		panic("pmap_enter(%zx, %llx) falls in physical memory area!\n", v, (unsigned long long) pa);
+		panic("pmap_enter(%llx, %llx) falls in physical memory area!\n", v, (unsigned long long) pa);
 #endif
 #if !(__i486__ || __i586__ || __i686__)
 	if (pmap == kernel_pmap && (prot & VM_PROT_WRITE) == 0
@@ -2109,82 +2172,7 @@ void pmap_enter(
 Retry:
 	PMAP_READ_LOCK(pmap, spl);
 
-	/*
-	 *	Expand pmap to include this pte.  Assume that
-	 *	pmap is always expanded to include enough hardware
-	 *	pages to map one VM page.
-	 */
-
-	while ((pte = pmap_pte(pmap, v)) == PT_ENTRY_NULL) {
-	    /*
-	     * Need to allocate a new page-table page.
-	     */
-	    vm_offset_t	ptp;
-	    pt_entry_t	*pdp;
-	    int		i;
-
-	    if (pmap == kernel_pmap) {
-		/*
-		 * Would have to enter the new page-table page in
-		 * EVERY pmap.
-		 */
-		panic("pmap_expand kernel pmap to %#zx", v);
-	    }
-
-	    /*
-	     * Unlock the pmap and allocate a new page-table page.
-	     */
-	    PMAP_READ_UNLOCK(pmap, spl);
-
-	    ptp = phystokv(pmap_page_table_page_alloc());
-
-	    /*
-	     * Re-lock the pmap and check that another thread has
-	     * not already allocated the page-table page.  If it
-	     * has, discard the new page-table page (and try
-	     * again to make sure).
-	     */
-	    PMAP_READ_LOCK(pmap, spl);
-
-	    if (pmap_pte(pmap, v) != PT_ENTRY_NULL) {
-		/*
-		 * Oops...
-		 */
-		PMAP_READ_UNLOCK(pmap, spl);
-		pmap_page_table_page_dealloc(kvtophys(ptp));
-		PMAP_READ_LOCK(pmap, spl);
-		continue;
-	    }
-
-	    /*
-	     * Enter the new page table page in the page directory.
-	     */
-	    i = ptes_per_vm_page;
-	    pdp = pmap_pde(pmap, v);
-	    do {
-#ifdef	MACH_PV_PAGETABLES
-		pmap_set_page_readonly((void *) ptp);
-		if (!hyp_mmuext_op_mfn (MMUEXT_PIN_L1_TABLE, kv_to_mfn(ptp)))
-			panic("couldn't pin page %lx(%lx)\n",ptp,(vm_offset_t) kv_to_ma(ptp));
-		if (!hyp_mmu_update_pte(pa_to_ma(kvtophys((vm_offset_t)pdp)),
-			pa_to_pte(pa_to_ma(kvtophys(ptp))) | INTEL_PTE_VALID
-					      | INTEL_PTE_USER
-					      | INTEL_PTE_WRITE))
-			panic("%s:%d could not set pde %p(%llx,%lx) to %lx(%llx,%lx) %lx\n",__FILE__,__LINE__, pdp, kvtophys((vm_offset_t)pdp), (vm_offset_t) pa_to_ma(kvtophys((vm_offset_t)pdp)), ptp, kvtophys(ptp), (vm_offset_t) pa_to_ma(kvtophys(ptp)), (vm_offset_t) pa_to_pte(kv_to_ma(ptp)));
-#else	/* MACH_PV_PAGETABLES */
-		*pdp = pa_to_pte(kvtophys(ptp)) | INTEL_PTE_VALID
-					        | INTEL_PTE_USER
-					        | INTEL_PTE_WRITE;
-#endif	/* MACH_PV_PAGETABLES */
-		pdp++;	/* Note: This is safe b/c we stay in one page.  */
-		ptp += INTEL_PGBYTES;
-	    } while (--i > 0);
-
-	    /*
-	     * Now, get the address of the page-table entry.
-	     */
-	    continue;
-	}
+	pte = pmap_expand(pmap, v, spl);
 
 	if (vm_page_ready())
 		is_physmem = (vm_page_lookup_pa(pa) != NULL);
@@ -2462,10 +2450,7 @@ void pmap_copy(
  */
 void pmap_collect(pmap_t p)
 {
-	int			i;
-	boolean_t		free_all;
-	pt_entry_t		*page_dir;
-	pt_entry_t		*pdp, *ptp;
+	pt_entry_t	        *ptp;
 	pt_entry_t		*eptp;
 	phys_addr_t		pa;
 	int			spl, wired;
@@ -2476,119 +2461,104 @@ void pmap_collect(pmap_t p)
 	if (p == kernel_pmap)
 		return;
 
+	/*
+	 * Free the page table tree.
+	 */
 #if PAE
-	for (i = 0; i < lin2pdpnum(VM_MAX_USER_ADDRESS); i++) {
 #ifdef __x86_64__
-#ifdef USER32
-	    /* In this case we know we have one PDP for user space */
-	    pdp = (pt_entry_t *) ptetokv(p->l4base[lin2l4num(VM_MIN_USER_ADDRESS)]);
-#else
-#warning "TODO do 64-bit userspace need more that 512G?"
-	    pdp = (pt_entry_t *) ptetokv(p->l4base[lin2l4num(VM_MIN_USER_ADDRESS)]);
-#endif /* USER32 */
-	    page_dir = (pt_entry_t *) ptetokv(pdp[i]);
+	for (int l4i = 0; l4i < lin2l4num(VM_MAX_USER_ADDRESS); l4i++) {
+		pt_entry_t pdp = (pt_entry_t) p->l4base[l4i];
+		if (!(pdp & INTEL_PTE_VALID))
+			continue;
+		pt_entry_t *pdpbase = (pt_entry_t*) ptetokv(pdp);
+		for (int l3i = 0; l3i < 512; l3i++) {
 #else /* __x86_64__ */
-	    page_dir = (pt_entry_t *) ptetokv(p->pdpbase[i]);
+		pt_entry_t *pdpbase = p->pdpbase;
+		for (int l3i = 0; l3i < lin2pdpnum(VM_MAX_USER_ADDRESS); l3i++) {
 #endif /* __x86_64__ */
-	    free_all = i < lin2pdpnum(LINEAR_MIN_KERNEL_ADDRESS);
-#else
-	    i = 0;
-	    free_all = FALSE;
-	    page_dir = p->dirbase;
-#endif
+			pt_entry_t pde = (pt_entry_t ) pdpbase[l3i];
+			if (!(pde & INTEL_PTE_VALID))
+				continue;
+			pt_entry_t *pdebase = (pt_entry_t*) ptetokv(pde);
+			for (int l2i = 0; l2i < 512; l2i++) {
+#else /* PAE */
+			pt_entry_t *pdebase = p->dirbase;
+			for (int l2i = 0; l2i < lin2pdenum(VM_MAX_USER_ADDRESS); l2i++) {
+#endif /* PAE */
+				pt_entry_t pte = (pt_entry_t) pdebase[l2i];
+				if (!(pte & INTEL_PTE_VALID))
+					continue;
 
-	    /*
-	     *	Garbage collect map.
-	     */
-	    PMAP_READ_LOCK(p, spl);
-	    for (pdp = page_dir;
-		 (free_all
-		  || pdp < &page_dir[lin2pdenum(LINEAR_MIN_KERNEL_ADDRESS)])
-		     && pdp < &page_dir[NPTES];
-		 pdp += ptes_per_vm_page) {
-		if (*pdp & INTEL_PTE_VALID) {
+				pa = pte_to_pa(pte);
+				ptp = (pt_entry_t *)phystokv(pa);
+				eptp = ptp + NPTES*ptes_per_vm_page;
 
-		    pa = pte_to_pa(*pdp);
-		    ptp = (pt_entry_t *)phystokv(pa);
-		    eptp = ptp + NPTES*ptes_per_vm_page;
+				/*
+				 * If the pte page has any wired mappings, we cannot
+				 * free it.
+				 */
+				wired = 0;
+				{
+				    pt_entry_t *ptep;
+				    for (ptep = ptp; ptep < eptp; ptep++) {
+					if (*ptep & INTEL_PTE_WIRED) {
+					    wired = 1;
+					    break;
+					}
+				    }
+				}
+				if (!wired) {
+				    /*
+				     * Remove the virtual addresses mapped by this pte page.
+				     */
+				    { /*XXX big hack*/
+					vm_offset_t va = pagenum2lin(l4i, l3i, l2i, 0);
+					if (p == kernel_pmap)
+					    va = lintokv(va);
+					pmap_remove_range(p, va, ptp, eptp);
+				    }
 
-		    /*
-		     * If the pte page has any wired mappings, we cannot
-		     * free it.
-		     */
-		    wired = 0;
-		    {
-			pt_entry_t *ptep;
-			for (ptep = ptp; ptep < eptp; ptep++) {
-			    if (*ptep & INTEL_PTE_WIRED) {
-				wired = 1;
-				break;
-			    }
-			}
-		    }
-		    if (!wired) {
-			/*
-			 * Remove the virtual addresses mapped by this pte page.
-			 */
-			{ /*XXX big hack*/
-			    vm_offset_t va = pdenum2lin(pdp - page_dir
-							+ i * NPTES);
-			    if (p == kernel_pmap)
-				va = lintokv(va);
-			    pmap_remove_range(p,
-					      va,
-					      ptp,
-					      eptp);
-			}
-
-			/*
-			 * Invalidate the page directory pointer.
-			 */
-			{
-			    int i = ptes_per_vm_page;
-			    pt_entry_t *pdep = pdp;
-			    do {
+				    /*
+				     * Invalidate the page directory pointer.
+				     */
+				    {
+					int i = ptes_per_vm_page;
+					pt_entry_t *pdep = &pdebase[l2i];
+					do {
 #ifdef	MACH_PV_PAGETABLES
-				unsigned long pte = *pdep;
-				void *ptable = (void*) ptetokv(pte);
-				if (!(hyp_mmu_update_pte(pa_to_ma(kvtophys((vm_offset_t)pdep++)), 0)))
-				    panic("%s:%d could not clear pde %p\n",__FILE__,__LINE__,pdep-1);
-				if (!hyp_mmuext_op_mfn (MMUEXT_UNPIN_TABLE, kv_to_mfn(ptable)))
-				    panic("couldn't unpin page %p(%lx)\n", ptable, (vm_offset_t) pa_to_ma(kvtophys((vm_offset_t)ptable)));
-				pmap_set_page_readwrite(ptable);
+					    unsigned long pte = *pdep;
+					    void *ptable = (void*) ptetokv(pte);
+					    if (!(hyp_mmu_update_pte(pa_to_ma(kvtophys((vm_offset_t)pdep++)), 0)))
+						panic("%s:%d could not clear pde %p\n",__FILE__,__LINE__,pdep-1);
+					    if (!hyp_mmuext_op_mfn (MMUEXT_UNPIN_TABLE, kv_to_mfn(ptable)))
+						panic("couldn't unpin page %p(%lx)\n", ptable, (vm_offset_t) pa_to_ma(kvtophys((vm_offset_t)ptable)));
+					    pmap_set_page_readwrite(ptable);
 #else	/* MACH_PV_PAGETABLES */
-				*pdep++ = 0;
+					    *pdep++ = 0;
 #endif	/* MACH_PV_PAGETABLES */
-			    } while (--i > 0);
+					} while (--i > 0);
+				    }
+
+				    PMAP_READ_UNLOCK(p, spl);
+
+				    /*
+				     * And free the pte page itself.
+				     */
+				    kmem_cache_free(&pt_cache, (vm_offset_t)ptetokv(pte));
+
+				    PMAP_READ_LOCK(p, spl);
+
+				}
 			}
-
-			PMAP_READ_UNLOCK(p, spl);
-
-			/*
-			 * And free the pte page itself.
-			 */
-			{
-			    vm_page_t m;
-
-			    vm_object_lock(pmap_object);
-			    assert(pa == (vm_offset_t) pa);
-			    m = vm_page_lookup(pmap_object, pa);
-			    if (m == VM_PAGE_NULL)
-				panic("pmap_collect: pte page not in object");
-			    vm_page_lock_queues();
-			    vm_page_free(m);
-			    inuse_ptepages_count--;
-			    vm_page_unlock_queues();
-			    vm_object_unlock(pmap_object);
-			}
-
-			PMAP_READ_LOCK(p, spl);
-		    }
-		}
-	    }
 #if PAE
+			// TODO check l2?
+		}
+#ifdef __x86_64__
+			// TODO check l3?
 	}
-#endif
+#endif /* __x86_64__ */
+#endif /* PAE */
+
 	PMAP_UPDATE_TLBS(p, VM_MIN_USER_ADDRESS, VM_MAX_USER_ADDRESS);
 
 	PMAP_READ_UNLOCK(p, spl);
