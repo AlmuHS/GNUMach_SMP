@@ -32,6 +32,7 @@
 #define	_I386_SEG_H_
 
 #include <mach/inline.h>
+#include <mach/machine/vm_types.h>
 
 /*
  * i386 segmentation.
@@ -181,7 +182,7 @@ static inline void lldt(unsigned short ldt_selector)
 
 /* Fill a segment descriptor.  */
 static inline void
-fill_descriptor(struct real_descriptor *_desc, unsigned base, unsigned limit,
+fill_descriptor(struct real_descriptor *_desc, vm_offset_t base, vm_offset_t limit,
 		unsigned char access, unsigned char sizebits)
 {
 	/* TODO: when !MACH_PV_DESCRIPTORS, setting desc and just memcpy isn't simpler actually */
