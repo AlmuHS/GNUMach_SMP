@@ -1407,8 +1407,9 @@ pmap_t pmap_create(vm_size_t size)
 	pmap_set_page_readonly(p->l4base);
 	pmap_set_page_readonly(p->user_l4base);
 	pmap_set_page_readonly(p->user_pdpbase);
-#endif
+#else
 	pmap_set_page_readonly(p->pdpbase);
+#endif
 #endif	/* MACH_PV_PAGETABLES */
 #else	/* PAE */
 	p->dirbase = page_dir[0];
@@ -3126,10 +3127,15 @@ pmap_make_temporary_mapping(void)
 #endif
 
 #ifdef	MACH_PV_PAGETABLES
-	for (i = 0; i < PDPNUM; i++)
+#ifndef __x86_64__
+	const int PDPNUM_KERNEL = PDPNUM;
+#endif
+	for (i = 0; i < PDPNUM_KERNEL; i++)
 		pmap_set_page_readonly_init((void*) kernel_page_dir + i * INTEL_PGBYTES);
 #if PAE
+#ifndef __x86_64__
 	pmap_set_page_readonly_init(kernel_pmap->pdpbase);
+#endif
 #endif	/* PAE */
 #endif	/* MACH_PV_PAGETABLES */
 
