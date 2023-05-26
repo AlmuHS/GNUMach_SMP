@@ -198,7 +198,8 @@ splx_cli:
 	je	1f				/* yes, all done */
 	movl	%edx,CX(EXT(curr_ipl),%eax)	/* set ipl */
 #ifdef MACH_XEN
-	movl	EXT(int_mask)(,%edx,4),%eax
+	movl	EXT(int_mask),%eax
+	movl	(%eax,%edx,4),%eax
 					/* get int mask */
 	XEN_SETMASK()			/* program xen evts with new mask */
 #endif
@@ -228,7 +229,8 @@ spl:
 	cmpl	$SPL7,%edx		/* spl7? */
 	je	EXT(spl7)		/* yes, handle specially */
 #ifdef MACH_XEN
-	movl	EXT(int_mask)(,%edx,4),%eax
+	movl	EXT(int_mask),%eax
+	movl	(%eax,%edx,4),%eax
 					/* get int mask */
 #endif
 	cli				/* disable interrupts */
