@@ -69,6 +69,18 @@ struct db_variable db_regs[] = {
 	{ "edi",(long *)&ddb_regs.edi, db_i386_reg_value },
 	{ "eip",(long *)&ddb_regs.eip, db_i386_reg_value },
 	{ "efl",(long *)&ddb_regs.efl, db_i386_reg_value },
+#ifdef __x86_64__
+	{ "r8", (long *)&ddb_regs.r8,  db_i386_reg_value },
+	{ "r9", (long *)&ddb_regs.r9,  db_i386_reg_value },
+	{ "r10",(long *)&ddb_regs.r10, db_i386_reg_value },
+	{ "r11",(long *)&ddb_regs.r11, db_i386_reg_value },
+	{ "r12",(long *)&ddb_regs.r12, db_i386_reg_value },
+	{ "r13",(long *)&ddb_regs.r13, db_i386_reg_value },
+	{ "r14",(long *)&ddb_regs.r14, db_i386_reg_value },
+	{ "r15",(long *)&ddb_regs.r15, db_i386_reg_value },
+	{ "fsb",(long *)&ddb_regs.fsbase,db_i386_reg_value },
+	{ "gsb",(long *)&ddb_regs.gsbase,db_i386_reg_value },
+#endif
 };
 struct db_variable *db_eregs = db_regs + sizeof(db_regs)/sizeof(db_regs[0]);
 
