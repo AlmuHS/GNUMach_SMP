@@ -31,6 +31,19 @@
 void dump_ss(const struct i386_saved_state *st)
 {
 	printf("Dump of i386_saved_state %p:\n", st);
+#if defined(__x86_64__) && ! defined(USER32)
+	printf("RAX %016lx RBX %016lx RCX %016lx RDX %016lx\n",
+		st->eax, st->ebx, st->ecx, st->edx);
+	printf("RSI %016lx RDI %016lx RBP %016lx RSP %016lx\n",
+		st->esi, st->edi, st->ebp, st->uesp);
+	printf("R8  %016lx R9  %016lx R10 %016lx R11 %016lx\n",
+		st->r8, st->r9, st->r10, st->r11);
+	printf("R12 %016lx R13 %016lx R14 %016lx R15 %016lx\n",
+		st->r12, st->r13, st->r14, st->r15);
+	printf("FSBASE %016lx GSBASE %016lx\n",
+		st->fsbase, st->gsbase);
+	printf("RIP %016lx EFLAGS %08lx\n", st->eip, st->efl);
+#else
 	printf("EAX %08lx EBX %08lx ECX %08lx EDX %08lx\n",
 		st->eax, st->ebx, st->ecx, st->edx);
 	printf("ESI %08lx EDI %08lx EBP %08lx ESP %08lx\n",
@@ -45,6 +58,7 @@ void dump_ss(const struct i386_saved_state *st)
 		st->v86_segs.v86_ds & 0xffff, st->v86_segs.v86_es & 0xffff,
 		st->v86_segs.v86_gs & 0xffff, st->v86_segs.v86_gs & 0xffff);
 	printf("EIP %08lx EFLAGS %08lx\n", st->eip, st->efl);
+#endif
 	printf("trapno %ld: %s, error %08lx\n",
 		st->trapno, trap_name(st->trapno),
 		st->err);
