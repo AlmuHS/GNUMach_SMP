@@ -332,7 +332,7 @@ int copyinmsg (const void *userbuf, void *kernelbuf, const size_t usize)
   if (usize > sizeof(mach_msg_user_header_t))
     {
       /* check we have at least space for an empty descryptor */
-      while (usaddr < (ueaddr - sizeof(mach_msg_user_type_t)))
+      while (usaddr <= (ueaddr - sizeof(mach_msg_user_type_t)))
         {
           vm_size_t user_amount, kernel_amount;
           mach_msg_type_name_t name;
@@ -401,7 +401,6 @@ int copyinmsg (const void *userbuf, void *kernelbuf, const size_t usize)
     }
 
   kmsg->msgh_size = sizeof(mach_msg_header_t) + ksaddr - (vm_offset_t)(kmsg + 1);
-  kmsg->msgh_size = kmsg->msgh_size;
   return 0;
 }
 
