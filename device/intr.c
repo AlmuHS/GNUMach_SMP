@@ -106,7 +106,7 @@ deliver_user_intr (struct irqdev *dev, int id, user_intr_t *e)
   /* The reference of the port was increased
    * when the port was installed.  If the reference is 1, it means
    * the port was deallocated and we should clean after it. */
-  if (e->dst_port->ip_references == 1)
+  if (!e->dst_port || e->dst_port->ip_references == 1)
     {
       thread_wakeup ((event_t) &intr_thread);
       return 0;
@@ -295,9 +295,16 @@ intr_thread (void)
 		e->n_unacked--;
 	      }
 
+#if 0
+#ifndef LINUX_DEV
+	      // TODO: remove from the action list
+#else
+	      // FIXME: with the Linux irq handler we don't actually control the action list
+#endif
 	      splx (s);
 	      kfree ((vm_offset_t) e, sizeof (*e));
 	      s = splhigh ();
+#endif
 	    }
 	}
       while (del || irqtab.tot_num_intr);
