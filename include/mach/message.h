@@ -222,6 +222,30 @@ typedef unsigned int mach_msg_type_size_t;
 typedef natural_t  mach_msg_type_number_t;
 
 typedef struct  {
+#ifdef __x86_64__
+    /*
+     * For 64 bits, this struct is 8 bytes long so we
+     * can pack the same amount of information as mach_msg_type_long_t.
+     * Note that for 64 bit userland, msgt_size only needs to be 8 bits long
+     * but for kernel compatibility with 32 bit userland we allow it to be
+     * 16 bits long.
+     *
+     * Effectively, we don't need mach_msg_type_long_t but we are keeping it
+     * for a while to make the code similar between 32 and 64 bits.
+     *
+     * We also keep the msgt_longform bit around simply because it makes it
+     * very easy to convert messages from a 32 bit userland into a 64 bit
+     * kernel. Otherwise, we would have to replicate some of the MiG logic
+     * internally in the kernel.
+     */
+    unsigned int	msgt_inline : 1,
+			msgt_longform : 1,
+			msgt_deallocate : 1,
+			msgt_name : 8,
+			msgt_size : 16,
+			msgt_unused : 5;
+    mach_msg_type_number_t   msgt_number;
+#else
     unsigned int	msgt_name : 8,
 			msgt_size : 8,
 			msgt_number : 12,
@@ -229,19 +253,37 @@ typedef struct  {
 			msgt_longform : 1,
 			msgt_deallocate : 1,
 			msgt_unused : 1;
-#ifdef __x86_64__
-    /* TODO: We want to eventually use this in favor of mach_msg_type_long_t
-     * as it makes the mach_msg protocol require only mach_msg_type_t. */
-    mach_msg_type_number_t   unused_msgtl_number;
 #endif
 } __attribute__ ((aligned (__alignof__ (uintptr_t)))) mach_msg_type_t;
 
-typedef	struct	{
+typedef struct {
+#ifdef __x86_64__
+    union {
+        /* On x86_64 this is equivalent to mach_msg_type_t so use
+         * union to overlay with the old field names.  */
+        mach_msg_type_t	msgtl_header;
+        struct {
+            unsigned int	msgtl_inline : 1,
+                    msgtl_longform : 1,
+                    msgtl_deallocate : 1,
+                    msgtl_name : 8,
+                    msgtl_size : 16,
+                    msgtl_unused : 5;
+            mach_msg_type_number_t   msgtl_number;
+        };
+    };
+#else
     mach_msg_type_t	msgtl_header;
     unsigned short	msgtl_name;
     unsigned short	msgtl_size;
     natural_t		msgtl_number;
+#endif
 } __attribute__ ((aligned (__alignof__ (uintptr_t)))) mach_msg_type_long_t;
+
+#ifdef __x86_64__
+_Static_assert (sizeof (mach_msg_type_t) == sizeof (mach_msg_type_long_t),
+                "mach_msg_type_t and mach_msg_type_long_t need to have the same size.");
+#endif
 
 /*
  *	Known values for the msgt_name field.

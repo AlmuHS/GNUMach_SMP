@@ -1343,9 +1343,11 @@ ipc_kmsg_copyin_body(
 		is_port = MACH_MSG_TYPE_PORT_ANY(name);
 
 		if ((is_port && (size != PORT_T_SIZE_IN_BITS)) ||
+#ifndef __x86_64__
 		    (longform && ((type->msgtl_header.msgt_name != 0) ||
 				  (type->msgtl_header.msgt_size != 0) ||
 				  (type->msgtl_header.msgt_number != 0))) ||
+#endif
 		    (((mach_msg_type_t*)type)->msgt_unused != 0) ||
 		    (dealloc && is_inline)) {
 			ipc_kmsg_clean_partial(kmsg, taddr, FALSE, 0);
@@ -2832,9 +2834,11 @@ ipc_msg_print(mach_msg_header_t *msgh)
 		is_port = MACH_MSG_TYPE_PORT_ANY(name);
 
 		if ((is_port && (size != PORT_T_SIZE_IN_BITS)) ||
+#ifndef __x86_64__
 		    (longform && ((type->msgtl_header.msgt_name != 0) ||
 				  (type->msgtl_header.msgt_size != 0) ||
 				  (type->msgtl_header.msgt_number != 0))) ||
+#endif
 		    (((mach_msg_type_t*)type)->msgt_unused != 0) ||
 		    (dealloc && is_inline)) {
 			db_printf("*** invalid type\n");

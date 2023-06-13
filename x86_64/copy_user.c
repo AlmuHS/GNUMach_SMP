@@ -87,12 +87,74 @@ static inline void unpack_msg_type(vm_offset_t addr,
     }
 }
 
+#ifdef USER32
+static inline void mach_msg_user_type_to_kernel(const mach_msg_user_type_t *u,
+    mach_msg_type_t* k) {
+  k->msgt_name = u->msgt_name;
+  k->msgt_size = u->msgt_size;
+  k->msgt_number = u->msgt_number;
+  k->msgt_inline = u->msgt_inline;
+  k->msgt_longform = u->msgt_longform;
+  k->msgt_deallocate = u->msgt_deallocate;
+  k->msgt_unused = 0;
+}
+
+static inline void mach_msg_user_type_to_kernel_long(const mach_msg_user_type_long_t *u,
+    mach_msg_type_long_t* k) {
+  const mach_msg_type_long_t kernel = {
+    .msgtl_header = {
+      .msgt_name = u->msgtl_name,
+      .msgt_size = u->msgtl_size,
+      .msgt_number = u->msgtl_number,
+      .msgt_inline = u->msgtl_header.msgt_inline,
+      .msgt_longform = u->msgtl_header.msgt_longform,
+      .msgt_deallocate = u->msgtl_header.msgt_deallocate,
+      .msgt_unused = 0
+    }
+  };
+  *k = kernel;
+}
+
+static inline void mach_msg_kernel_type_to_user(const mach_msg_type_t *k,
+    mach_msg_user_type_t *u) {
+  u->msgt_name = k->msgt_name;
+  u->msgt_size = k->msgt_size;
+  u->msgt_number = k->msgt_number;
+  u->msgt_inline = k->msgt_inline;
+  u->msgt_longform = k->msgt_longform;
+  u->msgt_deallocate = k->msgt_deallocate;
+  u->msgt_unused = 0;
+}
+
+static inline void mach_msg_kernel_type_to_user_long(const mach_msg_type_long_t *k,
+    mach_msg_user_type_long_t *u) {
+  const mach_msg_user_type_long_t user = {
+    .msgtl_header = {
+      .msgt_name = 0,
+      .msgt_size = 0,
+      .msgt_number = 0,
+      .msgt_inline = k->msgtl_header.msgt_inline,
+      .msgt_longform = k->msgtl_header.msgt_longform,
+      .msgt_deallocate = k->msgtl_header.msgt_deallocate,
+      .msgt_unused = 0
+    },
+    .msgtl_name = k->msgtl_header.msgt_name,
+    .msgtl_size = k->msgtl_header.msgt_size,
+    .msgtl_number = k->msgtl_header.msgt_number
+  };
+  *u = user;
+}
+#endif
+
 static inline int copyin_mach_msg_type(const rpc_vm_offset_t *uaddr, mach_msg_type_t *kaddr) {
 #ifdef USER32
-  int ret;
-  ret = copyin(uaddr, kaddr, sizeof(mach_msg_user_type_t));
-  kaddr->unused_msgtl_number = 0;
-  return ret;
+  mach_msg_user_type_t user;
+  int ret = copyin(uaddr, &user, sizeof(mach_msg_user_type_t));
+  if (ret) {
+    return ret;
+  }
+  mach_msg_user_type_to_kernel(&user, kaddr);
+  return 0;
 #else
   return copyin(uaddr, kaddr, sizeof(mach_msg_type_t));
 #endif
@@ -100,7 +162,9 @@ static inline int copyin_mach_msg_type(const rpc_vm_offset_t *uaddr, mach_msg_ty
 
 static inline int copyout_mach_msg_type(const mach_msg_type_t *kaddr, rpc_vm_offset_t  *uaddr) {
 #ifdef USER32
-  return copyout(kaddr, uaddr, sizeof(mach_msg_user_type_t));
+  mach_msg_user_type_t user;
+  mach_msg_kernel_type_to_user(kaddr, &user);
+  return copyout(&user, uaddr, sizeof(mach_msg_user_type_t));
 #else
   return copyout(kaddr, uaddr, sizeof(mach_msg_type_t));
 #endif
@@ -109,15 +173,10 @@ static inline int copyout_mach_msg_type(const mach_msg_type_t *kaddr, rpc_vm_off
 static inline int copyin_mach_msg_type_long(const rpc_vm_offset_t *uaddr, mach_msg_type_long_t *kaddr) {
 #ifdef USER32
   mach_msg_user_type_long_t user;
-  int ret;
-  ret = copyin(uaddr, &user, sizeof(mach_msg_user_type_long_t));
+  int ret = copyin(uaddr, &user, sizeof(mach_msg_user_type_long_t));
   if (ret)
     return ret;
-  /* The first 4 bytes are laid out in the same way. */
-  memcpy(&kaddr->msgtl_header, &user.msgtl_header, sizeof(mach_msg_user_type_t));
-  kaddr->msgtl_name = user.msgtl_name;
-  kaddr->msgtl_size = user.msgtl_size;
-  kaddr->msgtl_number = user.msgtl_number;
+  mach_msg_user_type_to_kernel_long(&user, kaddr);
   return 0;
 #else
   return copyin(uaddr, kaddr, sizeof(mach_msg_type_long_t));
@@ -127,10 +186,7 @@ static inline int copyin_mach_msg_type_long(const rpc_vm_offset_t *uaddr, mach_m
 static inline int copyout_mach_msg_type_long(const mach_msg_type_long_t *kaddr, rpc_vm_offset_t *uaddr) {
 #ifdef USER32
   mach_msg_user_type_long_t user;
-  memcpy(&user.msgtl_header, &kaddr->msgtl_header, sizeof(mach_msg_user_type_t));
-  user.msgtl_name = kaddr->msgtl_name;
-  user.msgtl_size = kaddr->msgtl_size;
-  user.msgtl_number = kaddr->msgtl_number;
+  mach_msg_kernel_type_to_user_long(kaddr, &user);
   return copyout(&user, uaddr, sizeof(mach_msg_user_type_long_t));
 #else
   return copyout(kaddr, uaddr, sizeof(mach_msg_type_long_t));
