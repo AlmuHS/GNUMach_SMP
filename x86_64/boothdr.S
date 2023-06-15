@@ -158,7 +158,7 @@ switch64:
 
 boot_entry64:
 	/* Switch to our own interrupt stack.  */
-	movq	$(_intstack+INTSTACK_SIZE),%rax
+	movq	$solid_intstack+INTSTACK_SIZE-16, %rax
 	andq	$(~15),%rax
 	movq	%rax,%rsp
 
@@ -191,9 +191,6 @@ iplt_done:
 	call	EXT(c_boot_entry)
 	/* not reached */
 	nop
-
-	.section .boot.data
-	.comm	_intstack,INTSTACK_SIZE
 
 	.code32
 	.section .boot.data
