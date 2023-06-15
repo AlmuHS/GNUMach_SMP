@@ -1447,8 +1447,10 @@ ipc_kmsg_copyin_body(
 				mach_port_name_t port = ((mach_port_t*)data)[i];
 				ipc_object_t object;
 
-				if (!MACH_PORT_NAME_VALID(port))
+				if (!MACH_PORT_NAME_VALID(port)) {
+					objects[i] = (ipc_object_t)invalid_name_to_port(port);
 					continue;
+				}
 
 				kr = ipc_object_copyin(space, port,
 						       name, &object);
@@ -1465,9 +1467,6 @@ ipc_kmsg_copyin_body(
 					kmsg->ikm_header.msgh_bits |=
 						MACH_MSGH_BITS_CIRCULAR;
 
-				/* TODO: revisit this for 64 bits since the size of
-				 * mach_port_name_t is not the same as a pointer size.
-				 */
 				objects[i] = object;
 			}
 
