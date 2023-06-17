@@ -27,6 +27,7 @@
  * "Local" descriptor table.  At the moment, all tasks use the
  * same LDT.
  */
+#include <mach/machine/eflags.h>
 #include <mach/machine/vm_types.h>
 #include <mach/xen.h>
 
@@ -75,7 +76,7 @@ ldt_fill(struct real_descriptor *myldt, struct real_descriptor *mygdt)
         wrmsr(MSR_REG_EFER, rdmsr(MSR_REG_EFER) | MSR_EFER_SCE);
         wrmsr(MSR_REG_LSTAR, (vm_offset_t)syscall64);
         wrmsr(MSR_REG_STAR, ((((long)USER_CS - 16) << 16) | (long)KERNEL_CS) << 32);
-        wrmsr(MSR_REG_FMASK, 0);  // ?
+        wrmsr(MSR_REG_FMASK, EFL_IF | EFL_IOPL_USER);
 #else /* defined(__x86_64__) && ! defined(USER32) */
 	fill_ldt_gate(myldt, USER_SCALL,
 		      (vm_offset_t)&syscall, KERNEL_CS,

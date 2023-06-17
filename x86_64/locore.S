@@ -1390,9 +1390,10 @@ ENTRY(syscall64)
 	mov	%r11,%rbx		/* prepare for error handling */
 	mov	%r10,%rcx		/* fix arg3 location according to C ABI */
 
-	/* switch to kernel stack */
+	/* switch to kernel stack, then we can enable interrupts */
 	CPU_NUMBER(%r11)
 	movq	CX(EXT(kernel_stack),%r11),%rsp
+	sti
 
 	/* Now we have saved state and args 1-6 are in place.
 	 * Before invoking the syscall we do some bound checking and,
@@ -1453,6 +1454,7 @@ _syscall64_check_for_ast:
 
 _syscall64_restore_state:
 	/* Restore thread state and return to user using sysret. */
+	cli	/* block interrupts when using the user stack in kernel space */
 	movq	CX(EXT(active_threads),%r11),%r11 /* point to current thread */
 	movq	TH_PCB(%r11),%r11		/* point to pcb */
 	addq	$ PCB_ISS,%r11			/* point to saved state */
