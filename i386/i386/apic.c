@@ -27,7 +27,13 @@
 #include <kern/kalloc.h>
 
 
-volatile ApicLocalUnit* lapic = NULL;
+/*
+ * This dummy structure is needed so that CPU_NUMBER can be called
+ * before the lapic pointer is initialized to point to the real Local Apic.
+ * It causes the apic_id to be faked as 0, which is the master processor.
+ */
+static ApicLocalUnit dummy_lapic = {0};
+volatile ApicLocalUnit* lapic = &dummy_lapic;
 
 ApicInfo apic_data;
 
