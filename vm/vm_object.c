@@ -2692,7 +2692,7 @@ void vm_object_page_remove(
  *
  *	returns TRUE if objects were combined.
  *
- *	NOTE:	Only works at the moment if the second object is NULL -
+ *	NOTE:	Only works at the moment if one of the objects is NULL
  *		or if the objects are the same - otherwise, which
  *		object do we lock first?
  *
@@ -2717,6 +2717,7 @@ boolean_t vm_object_coalesce(
 	vm_size_t	prev_size,
 	vm_size_t	next_size)
 {
+	vm_object_t	object;
 	vm_size_t	newsize;
 
 	if (prev_object == next_object) {
@@ -2735,19 +2736,24 @@ boolean_t vm_object_coalesce(
 		 *	Don't know how to merge two different
 		 *	objects yet.
 		 */
-		return FALSE;
+		if (prev_object != VM_OBJECT_NULL)
+			return FALSE;
+
+		object = next_object;
+	} else {
+		object = prev_object;
 	}
 
-	vm_object_lock(prev_object);
+	vm_object_lock(object);
 
 	/*
 	 *	Try to collapse the object first
 	 */
-	vm_object_collapse(prev_object);
+	vm_object_collapse(object);
 
 	/*
 	 *	Can't coalesce if pages not mapped to
-	 *	prev_entry may be in use anyway:
+	 *	the object may be in use anyway:
 	 *	. more than one reference
 	 *	. paged out
 	 *	. shadows another object
@@ -2755,33 +2761,50 @@ boolean_t vm_object_coalesce(
 	 *	. paging references (pages might be in page-list)
 	 */
 
-	if ((prev_object->ref_count > 1) ||
-	    prev_object->pager_created ||
-	    prev_object->used_for_pageout ||
-	    (prev_object->shadow != VM_OBJECT_NULL) ||
-	    (prev_object->copy != VM_OBJECT_NULL) ||
-	    (prev_object->paging_in_progress != 0)) {
-		vm_object_unlock(prev_object);
+	if ((object->ref_count > 1) ||
+	    object->pager_created ||
+	    object->used_for_pageout ||
+	    (object->shadow != VM_OBJECT_NULL) ||
+	    (object->copy != VM_OBJECT_NULL) ||
+	    (object->paging_in_progress != 0)) {
+		vm_object_unlock(object);
 		return FALSE;
 	}
 
-	/*
-	 *	Remove any pages that may still be in the object from
-	 *	a previous deallocation.
-	 */
-
-	vm_object_page_remove(prev_object,
+	if (object == prev_object) {
+		/*
+		 *	Remove any pages that may still be in
+		 *	the object from a previous deallocation.
+		 */
+		vm_object_page_remove(object,
 			prev_offset + prev_size,
 			prev_offset + prev_size + next_size);
+		/*
+		 *	Extend the object if necessary.
+		 */
+		newsize = prev_offset + prev_size + next_size;
+		if (newsize > object->size)
+			object->size = newsize;
+	} else {
+		/*
+		 *	Check if we have enough space in the object
+		 *	offset space to insert the new mapping before
+		 *	the existing one.
+		 */
+		if (next_offset < prev_size) {
+			vm_object_unlock(object);
+			return FALSE;
+		}
+		/*
+		 *	Remove any pages that may still be in
+		 *	the object from a previous deallocation.
+		 */
+		vm_object_page_remove(object,
+			next_offset - prev_size,
+			next_offset);
+	}
 
-	/*
-	 *	Extend the object if necessary.
-	 */
-	newsize = prev_offset + prev_size + next_size;
-	if (newsize > prev_object->size)
-		prev_object->size = newsize;
-
-	vm_object_unlock(prev_object);
+	vm_object_unlock(object);
 	return TRUE;
 }
 
