@@ -967,6 +967,7 @@ kern_return_t vm_map_enter(
 	vm_inherit_t	inheritance)
 {
 	vm_map_entry_t	entry;
+	vm_map_entry_t	next_entry;
 	vm_offset_t	start;
 	vm_offset_t	end;
 	kern_return_t	result = KERN_SUCCESS;
@@ -987,6 +988,7 @@ kern_return_t vm_map_enter(
 
 		end = start + size;
 		*address = start;
+		next_entry = entry->vme_next;
 	} else {
 		vm_map_entry_t		temp_entry;
 
@@ -1021,14 +1023,15 @@ kern_return_t vm_map_enter(
 			RETURN(KERN_NO_SPACE);
 
 		entry = temp_entry;
+		next_entry = entry->vme_next;
 
 		/*
 		 *	...	the next region doesn't overlap the
 		 *		end point.
 		 */
 
-		if ((entry->vme_next != vm_map_to_entry(map)) &&
-		    (entry->vme_next->vme_start < end))
+		if ((next_entry != vm_map_to_entry(map)) &&
+		    (next_entry->vme_start < end))
 			RETURN(KERN_NO_SPACE);
 	}
 
@@ -1044,8 +1047,7 @@ kern_return_t vm_map_enter(
 
 	/*
 	 *	See whether we can avoid creating a new entry (and object) by
-	 *	extending one of our neighbors.  [So far, we only attempt to
-	 *	extend from below.]
+	 *	extending one of our neighbors.
 	 */
 
 	if ((entry != vm_map_to_entry(map)) &&
@@ -1071,6 +1073,35 @@ kern_return_t vm_map_enter(
 			 */
 			map->size += size;
 			entry->vme_end = end;
+			vm_map_gap_update(&map->hdr, entry);
+			vm_object_deallocate(object);
+			RETURN(KERN_SUCCESS);
+		}
+	}
+	if ((next_entry != vm_map_to_entry(map)) &&
+	    (next_entry->vme_start == end) &&
+	    (!next_entry->is_shared) &&
+	    (!next_entry->is_sub_map) &&
+	    (next_entry->inheritance == inheritance) &&
+	    (next_entry->protection == cur_protection) &&
+	    (next_entry->max_protection == max_protection) &&
+	    (next_entry->wired_count == 0) &&
+	    (next_entry->projected_on == 0)) {
+		if (vm_object_coalesce(object,
+			next_entry->object.vm_object,
+			offset,
+			next_entry->offset,
+			size,
+			(vm_size_t)(next_entry->vme_end - next_entry->vme_start))) {
+
+			/*
+			 *	Coalesced the two objects - can extend
+			 *	the next map entry to include the
+			 *	new range.
+			 */
+			map->size += size;
+			next_entry->vme_start = start;
+			next_entry->offset -= size;
 			vm_map_gap_update(&map->hdr, entry);
 			vm_object_deallocate(object);
 			RETURN(KERN_SUCCESS);
