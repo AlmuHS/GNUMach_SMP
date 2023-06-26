@@ -1048,8 +1048,7 @@ kern_return_t vm_map_enter(
 	 *	extend from below.]
 	 */
 
-	if ((object == VM_OBJECT_NULL) &&
-	    (entry != vm_map_to_entry(map)) &&
+	if ((entry != vm_map_to_entry(map)) &&
 	    (entry->vme_end == start) &&
 	    (!entry->is_shared) &&
 	    (!entry->is_sub_map) &&
@@ -1059,20 +1058,21 @@ kern_return_t vm_map_enter(
 	    (entry->wired_count == 0) &&
 	    (entry->projected_on == 0)) {
 		if (vm_object_coalesce(entry->object.vm_object,
-				VM_OBJECT_NULL,
+				object,
 				entry->offset,
-				(vm_offset_t) 0,
+				offset,
 				(vm_size_t)(entry->vme_end - entry->vme_start),
-				(vm_size_t)(end - entry->vme_end))) {
+				size)) {
 
 			/*
 			 *	Coalesced the two objects - can extend
 			 *	the previous map entry to include the
 			 *	new range.
 			 */
-			map->size += (end - entry->vme_end);
+			map->size += size;
 			entry->vme_end = end;
 			vm_map_gap_update(&map->hdr, entry);
+			vm_object_deallocate(object);
 			RETURN(KERN_SUCCESS);
 		}
 	}

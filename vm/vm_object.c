@@ -2693,7 +2693,8 @@ void vm_object_page_remove(
  *	returns TRUE if objects were combined.
  *
  *	NOTE:	Only works at the moment if the second object is NULL -
- *		if it's not, which object do we lock first?
+ *		or if the objects are the same - otherwise, which
+ *		object do we lock first?
  *
  *	Parameters:
  *		prev_object	First object to coalesce
@@ -2718,12 +2719,23 @@ boolean_t vm_object_coalesce(
 {
 	vm_size_t	newsize;
 
-	if (next_object != VM_OBJECT_NULL) {
-		return FALSE;
+	if (prev_object == next_object) {
+		/*
+		 *	If neither object actually exists,
+		 *	the offsets don't matter.
+		 */
+		if (prev_object == VM_OBJECT_NULL)
+			return TRUE;
+
+		return prev_offset + prev_size == next_offset;
 	}
 
-	if (prev_object == VM_OBJECT_NULL) {
-		return TRUE;
+	if (next_object != VM_OBJECT_NULL) {
+		/*
+		 *	Don't know how to merge two different
+		 *	objects yet.
+		 */
+		return FALSE;
 	}
 
 	vm_object_lock(prev_object);
