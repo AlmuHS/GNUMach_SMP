@@ -746,7 +746,7 @@ boolean_t vm_page_convert(struct vm_page **mp)
 
 	memcpy(&real_m->vm_page_header,
 	       &fict_m->vm_page_header,
-	       sizeof(*fict_m) - VM_PAGE_HEADER_SIZE);
+	       VM_PAGE_BODY_SIZE);
 	real_m->fictitious = FALSE;
 
 	vm_page_insert(real_m, object, offset);

@@ -79,9 +79,6 @@
 
 struct vm_page {
 	struct list node;		/* page queues or free list (P) */
-	unsigned short type;
-	unsigned short seg_index;
-	unsigned short order;
 	void *priv;
 
 	/*
@@ -95,7 +92,6 @@ struct vm_page {
 
 	/* We use an empty struct as the delimiter.  */
 	struct {} vm_page_header;
-#define VM_PAGE_HEADER_SIZE	offsetof(struct vm_page, vm_page_header)
 
 	vm_object_t	object;		/* which object am I in (O,P) */
 	vm_offset_t	offset;		/* offset into that object (O,P) */
@@ -126,9 +122,19 @@ struct vm_page {
 					 * without having data. (O)
 					 * [See vm_object_overwrite] */
 
-	vm_prot_t	page_lock;	/* Uses prohibited by data manager (O) */
-	vm_prot_t	unlock_request;	/* Outstanding unlock request (O) */
+	vm_prot_t	page_lock:3;	/* Uses prohibited by data manager (O) */
+	vm_prot_t	unlock_request:3;	/* Outstanding unlock request (O) */
+
+	struct {} vm_page_footer;
+
+	unsigned short type:2;
+	unsigned short seg_index:2;
+	unsigned short order:4;
 };
+
+#define VM_PAGE_BODY_SIZE					\
+		(offsetof(struct vm_page, vm_page_footer)	\
+		- offsetof(struct vm_page, vm_page_header))
 
 /*
  *	For debugging, this macro can be defined to perform

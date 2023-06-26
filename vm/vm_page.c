@@ -94,7 +94,7 @@ struct vm_page_cpu_pool {
  * Special order value for pages that aren't in a free list. Such pages are
  * either allocated, or part of a free block of pages but not the head page.
  */
-#define VM_PAGE_ORDER_UNLISTED ((unsigned short)-1)
+#define VM_PAGE_ORDER_UNLISTED (VM_PAGE_NR_FREE_LISTS + 1)
 
 /*
  * Doubly-linked list of free blocks.
@@ -1016,7 +1016,7 @@ vm_page_seg_balance_page(struct vm_page_seg *seg,
 
     vm_page_set_type(dest, 0, src->type);
     memcpy(&dest->vm_page_header, &src->vm_page_header,
-           sizeof(*dest) - VM_PAGE_HEADER_SIZE);
+           VM_PAGE_BODY_SIZE);
     vm_page_copy(src, dest);
 
     if (!src->dirty) {
