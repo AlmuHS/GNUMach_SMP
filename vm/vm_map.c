@@ -1877,11 +1877,13 @@ void vm_map_entry_delete(
 	vm_map_entry_t	entry)
 {
 	vm_offset_t		s, e;
+	vm_size_t		size;
 	vm_object_t		object;
 	extern vm_object_t	kernel_object;
 
 	s = entry->vme_start;
 	e = entry->vme_end;
+	size = e - s;
 
 	/*Check if projected buffer*/
 	if (map != kernel_map && entry->projected_on != 0) {
@@ -1920,15 +1922,29 @@ void vm_map_entry_delete(
 	    if (object == kernel_object) {
 		vm_object_lock(object);
 		vm_object_page_remove(object, entry->offset,
-				entry->offset + (e - s));
+				entry->offset + size);
 		vm_object_unlock(object);
 	    } else if (entry->is_shared) {
 		vm_object_pmap_remove(object,
 				 entry->offset,
-				 entry->offset + (e - s));
-	    }
-	    else {
+				 entry->offset + size);
+	    } else {
 		pmap_remove(map->pmap, s, e);
+		/*
+		 *	If this object has no pager and our
+		 *	reference to the object is the only
+		 *	one, we can release the deleted pages
+		 *	now.
+		 */
+		vm_object_lock(object);
+		if ((!object->pager_created) &&
+		    (object->ref_count == 1) &&
+		    (object->paging_in_progress == 0)) {
+			vm_object_page_remove(object,
+				entry->offset,
+				entry->offset + size);
+		}
+		vm_object_unlock(object);
 	    }
         }
 
@@ -1943,7 +1959,7 @@ void vm_map_entry_delete(
 	 	vm_object_deallocate(entry->object.vm_object);
 
 	vm_map_entry_unlink(map, entry);
-	map->size -= e - s;
+	map->size -= size;
 
 	vm_map_entry_dispose(map, entry);
 }
