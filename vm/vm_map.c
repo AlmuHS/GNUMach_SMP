@@ -1075,6 +1075,12 @@ kern_return_t vm_map_enter(
 			map->size += size;
 			entry->vme_end = end;
 			vm_map_gap_update(&map->hdr, entry);
+			/*
+			 *	Now that we did, perhaps we could simplify
+			 *	things even further by coalescing the next
+			 *	entry into the one we just extended.
+			 */
+			vm_map_coalesce_entry(map, next_entry);
 			RETURN(KERN_SUCCESS);
 		}
 	}
@@ -1104,6 +1110,12 @@ kern_return_t vm_map_enter(
 			map->size += size;
 			next_entry->vme_start = start;
 			vm_map_gap_update(&map->hdr, entry);
+			/*
+			 *	Now that we did, perhaps we could simplify
+			 *	things even further by coalescing the
+			 *	entry into the previous one.
+			 */
+			vm_map_coalesce_entry(map, next_entry);
 			RETURN(KERN_SUCCESS);
 		}
 	}
@@ -1582,6 +1594,7 @@ kern_return_t vm_map_protect(
 {
 	vm_map_entry_t		current;
 	vm_map_entry_t		entry;
+	vm_map_entry_t		next;
 
 	vm_map_lock(map);
 
@@ -1657,8 +1670,15 @@ kern_return_t vm_map_protect(
 					current->vme_end,
 					current->protection);
 		}
-		current = current->vme_next;
+
+		next = current->vme_next;
+		vm_map_coalesce_entry(map, current);
+		current = next;
 	}
+
+	next = current->vme_next;
+	if (vm_map_coalesce_entry(map, current))
+		current = next;
 
 	/* Returns with the map read-locked if successful */
 	vm_map_pageable_scan(map, entry, current);
@@ -1683,6 +1703,7 @@ kern_return_t vm_map_inherit(
 {
 	vm_map_entry_t	entry;
 	vm_map_entry_t	temp_entry;
+	vm_map_entry_t	next;
 
 	vm_map_lock(map);
 
@@ -1700,8 +1721,12 @@ kern_return_t vm_map_inherit(
 
 		entry->inheritance = new_inheritance;
 
-		entry = entry->vme_next;
+		next = entry->vme_next;
+		vm_map_coalesce_entry(map, entry);
+		entry = next;
 	}
+
+	vm_map_coalesce_entry(map, entry);
 
 	vm_map_unlock(map);
 	return(KERN_SUCCESS);
