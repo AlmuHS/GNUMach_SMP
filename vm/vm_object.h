@@ -247,7 +247,9 @@ extern boolean_t vm_object_coalesce(
    vm_offset_t prev_offset,
    vm_offset_t next_offset,
    vm_size_t   prev_size,
-   vm_size_t   next_size);
+   vm_size_t   next_size,
+   vm_object_t *new_object,	/* OUT */
+   vm_offset_t *new_offset);	/* OUT */
 
 extern void vm_object_pager_wakeup(ipc_port_t  pager);
 

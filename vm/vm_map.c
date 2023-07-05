@@ -1064,7 +1064,9 @@ kern_return_t vm_map_enter(
 				entry->offset,
 				offset,
 				(vm_size_t)(entry->vme_end - entry->vme_start),
-				size)) {
+				size,
+				&entry->object.vm_object,
+				&entry->offset)) {
 
 			/*
 			 *	Coalesced the two objects - can extend
@@ -1074,7 +1076,6 @@ kern_return_t vm_map_enter(
 			map->size += size;
 			entry->vme_end = end;
 			vm_map_gap_update(&map->hdr, entry);
-			vm_object_deallocate(object);
 			RETURN(KERN_SUCCESS);
 		}
 	}
@@ -1092,7 +1093,9 @@ kern_return_t vm_map_enter(
 			offset,
 			next_entry->offset,
 			size,
-			(vm_size_t)(next_entry->vme_end - next_entry->vme_start))) {
+			(vm_size_t)(next_entry->vme_end - next_entry->vme_start),
+			&next_entry->object.vm_object,
+			&next_entry->offset)) {
 
 			/*
 			 *	Coalesced the two objects - can extend
@@ -1101,9 +1104,7 @@ kern_return_t vm_map_enter(
 			 */
 			map->size += size;
 			next_entry->vme_start = start;
-			next_entry->offset -= size;
 			vm_map_gap_update(&map->hdr, entry);
-			vm_object_deallocate(object);
 			RETURN(KERN_SUCCESS);
 		}
 	}

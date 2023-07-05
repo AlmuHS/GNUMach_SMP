@@ -2687,15 +2687,16 @@ void vm_object_page_remove(
 
 /*
  *	Routine:	vm_object_coalesce
- *	Function:	Coalesces two objects backing up adjoining
- *			regions of memory into a single object.
+ *	Purpose:
+ *		Tries to coalesce two objects backing up adjoining
+ *		regions	of memory into a single object.
  *
- *	returns TRUE if objects were combined.
- *
- *	NOTE:	Only works at the moment if one of the objects is NULL
- *		or if the objects are the same - otherwise, which
- *		object do we lock first?
- *
+ *		NOTE: Only works at the moment if one of the objects
+ *		is NULL	or if the objects are the same - otherwise,
+ *		which object do we lock first?
+ *	Returns:
+ *		TRUE	if objects have been coalesced.
+ *		FALSE	the objects could not be coalesced.
  *	Parameters:
  *		prev_object	First object to coalesce
  *		prev_offset	Offset into prev_object
@@ -2705,8 +2706,14 @@ void vm_object_page_remove(
  *		prev_size	Size of reference to prev_object
  *		next_size	Size of reference to next_object
  *
+ *		new_object	Resulting colesced object
+ *		new_offset	Offset into the resulting object
  *	Conditions:
- *	The object must *not* be locked.
+ *		The objects must *not* be locked.
+ *
+ *		If the objects are coalesced successfully, the caller's
+ *		references for both objects are consumed, and the caller
+ *		gains a reference for the new object.
  */
 
 boolean_t vm_object_coalesce(
@@ -2715,7 +2722,9 @@ boolean_t vm_object_coalesce(
 	vm_offset_t	prev_offset,
 	vm_offset_t	next_offset,
 	vm_size_t	prev_size,
-	vm_size_t	next_size)
+	vm_size_t	next_size,
+	vm_object_t	*new_object,	/* OUT */
+	vm_offset_t	*new_offset)	/* OUT */
 {
 	vm_object_t	object;
 	vm_size_t	newsize;
@@ -2725,10 +2734,23 @@ boolean_t vm_object_coalesce(
 		 *	If neither object actually exists,
 		 *	the offsets don't matter.
 		 */
-		if (prev_object == VM_OBJECT_NULL)
+		if (prev_object == VM_OBJECT_NULL) {
+			*new_object = VM_OBJECT_NULL;
+			*new_offset = 0;
 			return TRUE;
+		}
 
-		return prev_offset + prev_size == next_offset;
+		if (prev_offset + prev_size == next_offset) {
+			*new_object = prev_object;
+			*new_offset = prev_offset;
+			/*
+			 *	Deallocate one of the two references.
+			 */
+			vm_object_deallocate(prev_object);
+			return TRUE;
+		}
+
+		return FALSE;
 	}
 
 	if (next_object != VM_OBJECT_NULL) {
@@ -2785,6 +2807,8 @@ boolean_t vm_object_coalesce(
 		newsize = prev_offset + prev_size + next_size;
 		if (newsize > object->size)
 			object->size = newsize;
+
+		*new_offset = prev_offset;
 	} else {
 		/*
 		 *	Check if we have enough space in the object
@@ -2802,9 +2826,12 @@ boolean_t vm_object_coalesce(
 		vm_object_page_remove(object,
 			next_offset - prev_size,
 			next_offset);
+
+		*new_offset = next_offset - prev_size;
 	}
 
 	vm_object_unlock(object);
+	*new_object = object;
 	return TRUE;
 }
 
