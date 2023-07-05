@@ -113,8 +113,7 @@ MACRO_END
  *	start or end value.]  Note that these clippings may not
  *	always be necessary (as the two resulting entries are then
  *	not changed); however, the clipping is done for convenience.
- *	No attempt is currently made to "glue back together" two
- *	abutting entries.
+ *	The entries can later be "glued back together" (coalesced).
  *
  *	The symmetric (shadow) copy strategy implements virtual copy
  *	by copying VM object references from one map to
@@ -4907,6 +4906,81 @@ vm_region_create_proxy (task_t task, vm_address_t address,
 
   return ret;
 }
+
+/*
+ *	Routine:	vm_map_coalesce_entry
+ *	Purpose:
+ *		Try to coalesce an entry with the preceeding entry in the map.
+ *	Conditions:
+ *		The map is locked.  If coalesced, the entry is destroyed
+ *		by the call.
+ *	Returns:
+ *		Whether the entry was coalesced.
+ */
+boolean_t
+vm_map_coalesce_entry(
+	vm_map_t	map,
+	vm_map_entry_t	entry)
+{
+	vm_map_entry_t	prev = entry->vme_prev;
+	vm_size_t	prev_size;
+	vm_size_t	entry_size;
+
+	/*
+	 *	Check the basic conditions for coalescing the two entries.
+	 */
+	if ((entry == vm_map_to_entry(map)) ||
+	    (prev == vm_map_to_entry(map)) ||
+	    (prev->vme_end != entry->vme_start) ||
+	    (prev->is_shared || entry->is_shared) ||
+	    (prev->is_sub_map || entry->is_sub_map) ||
+	    (prev->inheritance != entry->inheritance) ||
+	    (prev->protection != entry->protection) ||
+	    (prev->max_protection != entry->max_protection) ||
+	    (prev->needs_copy != entry->needs_copy) ||
+	    (prev->in_transition || entry->in_transition) ||
+	    (prev->wired_count != entry->wired_count) ||
+	    (prev->projected_on != 0) ||
+	    (entry->projected_on != 0))
+		return FALSE;
+
+	prev_size = prev->vme_end - prev->vme_start;
+	entry_size = entry->vme_end - entry->vme_start;
+	assert(prev->gap_size == 0);
+
+	/*
+	 *	See if we can coalesce the two objects.
+	 */
+	if (!vm_object_coalesce(prev->object.vm_object,
+		entry->object.vm_object,
+		prev->offset,
+		entry->offset,
+		prev_size,
+		entry_size,
+		&prev->object.vm_object,
+		&prev->offset))
+		return FALSE;
+
+	/*
+	 *	Update the hints.
+	 */
+	if (map->hint == entry)
+		SAVE_HINT(map, prev);
+	if (map->first_free == entry)
+		map->first_free = prev;
+
+	/*
+	 *	Get rid of the entry without changing any wirings or the pmap,
+	*	and without altering map->size.
+	 */
+	prev->vme_end = entry->vme_end;
+	vm_map_entry_unlink(map, entry);
+	vm_map_entry_dispose(map, entry);
+
+	return TRUE;
+}
+
+
 
 /*
  *	Routine:	vm_map_machine_attribute
