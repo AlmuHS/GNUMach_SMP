@@ -46,6 +46,7 @@
 #include <kern/thread.h>
 #include <kern/lock.h>
 #include <kern/printf.h>
+#include <kern/mach_clock.h>
 #include <machine/ipl.h>
 #include <ddb/db_sym.h>
 #include <ddb/db_output.h>
@@ -56,13 +57,10 @@ def_simple_lock_data(, kdb_lock)
 def_simple_lock_data(, printf_lock)
 
 #if	NCPUS > 1 && MACH_LOCK_MON
-
-#if	TIME_STAMP
-extern	time_stamp_t time_stamp;
-#else	/* TIME_STAMP */
+#define TIME_STAMP 1
 typedef unsigned int time_stamp_t;
-#define	time_stamp 0
-#endif	/* TIME_STAMP */
+/* in milliseconds */
+#define	time_stamp (elapsed_ticks * 1000 / hz)
 
 #define LOCK_INFO_MAX	     (1024*32)
 #define LOCK_INFO_HASH_COUNT 1024
