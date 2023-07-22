@@ -100,7 +100,7 @@ void db_load_context(pcb_t pcb)
 }
 
 void cpu_interrupt_to_db(int i){
-#if NCPUS > 1
+#if MACH_KDB && NCPUS > 1
 	db_on(i);
 #endif
 }
