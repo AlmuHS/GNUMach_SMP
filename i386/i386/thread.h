@@ -85,12 +85,14 @@ struct i386_saved_state {
 	unsigned long	efl;
 	unsigned long	uesp;
 	unsigned long	ss;
+#if !defined(__x86_64__) || defined(USER32)
 	struct v86_segs {
 	    unsigned long v86_es;	/* virtual 8086 segment registers */
 	    unsigned long v86_ds;
 	    unsigned long v86_fs;
 	    unsigned long v86_gs;
 	} v86_segs;
+#endif
 };
 
 /*
@@ -144,6 +146,7 @@ struct i386_fpsave_state {
 	};
 };
 
+#if !defined(__x86_64__) || defined(USER32)
 /*
  *	v86_assist_state:
  *
@@ -157,6 +160,7 @@ struct v86_assist_state {
 	unsigned short		flags;	/* 8086 flag bits */
 };
 #define	V86_IF_PENDING		0x8000	/* unused bit */
+#endif
 
 /*
  *	i386_interrupt_state:
@@ -197,7 +201,9 @@ struct i386_interrupt_state {
 struct i386_machine_state {
 	struct user_ldt	*	ldt;
 	struct i386_fpsave_state *ifps;
+#if !defined(__x86_64__) || defined(USER32)
 	struct v86_assist_state	v86s;
+#endif
 	struct real_descriptor user_gdt[USER_GDT_SLOTS];
 	struct i386_debug_state ids;
 };

@@ -383,8 +383,10 @@ ENTRY(t_segnp)
 					/* indicate fault type */
 
 trap_check_kernel_exit:
+#ifdef USER32
 	testq	$(EFL_VM),32(%rsp)	/* is trap from V86 mode? */
 	jnz	EXT(alltraps)		/* isn`t kernel trap if so */
+#endif
 	/* Note: handling KERNEL_RING value by hand */
 	testq	$2,24(%rsp)		/* is trap from kernel mode? */
 	jnz	EXT(alltraps)		/* if so:  */
@@ -477,8 +479,10 @@ push_segregs:
  */
 ENTRY(t_debug)
 	INT_FIX
+#ifdef USER32
 	testq	$(EFL_VM),16(%rsp)	/* is trap from V86 mode? */
 	jnz	0f			/* isn`t kernel trap if so */
+#endif
 	/* Note: handling KERNEL_RING value by hand */
 	testq	$2,8(%rsp)		/* is trap from kernel mode? */
 	jnz	0f			/* if so: */
@@ -544,8 +548,10 @@ trap_push_segs:
 #endif
 trap_set_segs:
 	cld				/* clear direction flag */
+#ifdef USER32
 	testl	$(EFL_VM),R_EFLAGS(%rsp) /* in V86 mode? */
 	jnz	trap_from_user		/* user mode trap if so */
+#endif
 	/* Note: handling KERNEL_RING value by hand */
 	testb	$2,R_CS(%rsp)		/* user mode trap? */
 	jz	trap_from_kernel	/* kernel trap if not */
@@ -799,8 +805,10 @@ LEXT(return_to_iret)			/* ( label for kdb_kintr and hardclock) */
 
 	popq	%rsp			/* switch back to old stack */
 
+#ifdef USER32
 	testl	$(EFL_VM),I_EFL(%rsp)	/* if in V86 */
 	jnz	0f			/* or */
+#endif
 	/* Note: handling KERNEL_RING value by hand */
 	testb	$2,I_CS(%rsp)		/* user mode, */
 	jz	1f			/* check for ASTs */

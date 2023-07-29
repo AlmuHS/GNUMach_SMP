@@ -145,9 +145,14 @@ void switch_ktss(pcb_t pcb)
 	 *	won`t save the v86 segments, so we leave room.
 	 */
 
+#if !defined(__x86_64__) || defined(USER32)
 	pcb_stack_top = (pcb->iss.efl & EFL_VM)
 			? (long) (&pcb->iss + 1)
 			: (long) (&pcb->iss.v86_segs);
+#else
+	pcb_stack_top = (vm_offset_t) (&pcb->iss + 1);
+#endif
+
 #ifdef __x86_64__
 	assert((pcb_stack_top & 0xF) == 0);
 #endif
@@ -534,6 +539,7 @@ kern_return_t thread_setstatus(
 				    | EFL_USER_SET;
 #endif /* __x86_64__ && !USER32 */
 
+#if !defined(__x86_64__) || defined(USER32)
 		/*
 		 * Segment registers.  Set differently in V8086 mode.
 		 */
@@ -563,8 +569,9 @@ kern_return_t thread_setstatus(
 			thread->pcb->ims.v86s.flags =
 			    saved_state->efl & (EFL_TF | EFL_IF);
 		    }
-		}
-		else if (flavor == i386_THREAD_STATE) {
+		} else
+#endif
+		if (flavor == i386_THREAD_STATE) {
 		    /*
 		     * 386 mode.  Set segment registers for flat
 		     * 32-bit address space.
@@ -630,7 +637,7 @@ kern_return_t thread_setstatus(
 #endif
 		break;
 	    }
-
+#if !defined(__x86_64__) || defined(USER32)
 	    case i386_V86_ASSIST_STATE:
 	    {
 		struct i386_v86_assist_state *state;
@@ -657,7 +664,7 @@ kern_return_t thread_setstatus(
 			USER_REGS(thread)->efl & (EFL_TF | EFL_IF);
 		break;
 	    }
-
+#endif
 	    case i386_DEBUG_STATE:
 	    {
 		struct i386_debug_state *state;
@@ -710,13 +717,20 @@ kern_return_t thread_getstatus(
 {
 	switch (flavor)  {
 	    case THREAD_STATE_FLAVOR_LIST:
-		if (*count < 4)
+#if !defined(__x86_64__) || defined(USER32)
+		unsigned int ncount = 4;
+#else
+		unsigned int ncount = 3;
+#endif
+		if (*count < ncount)
 		    return (KERN_INVALID_ARGUMENT);
 		tstate[0] = i386_THREAD_STATE;
 		tstate[1] = i386_FLOAT_STATE;
 		tstate[2] = i386_ISA_PORT_MAP_STATE;
+#if !defined(__x86_64__) || defined(USER32)
 		tstate[3] = i386_V86_ASSIST_STATE;
-		*count = 4;
+#endif
+		*count = ncount;
 		break;
 
 	    case i386_THREAD_STATE:
@@ -770,6 +784,7 @@ kern_return_t thread_getstatus(
 
 		state->cs = saved_state->cs;
 		state->ss = saved_state->ss;
+#if !defined(__x86_64__) || defined(USER32)
 		if (saved_state->efl & EFL_VM) {
 		    /*
 		     * V8086 mode.
@@ -789,7 +804,9 @@ kern_return_t thread_getstatus(
 			    saved_state->efl &= ~EFL_IF;
 		    }
 		}
-		else {
+		else
+#endif
+		{
 		    /*
 		     * 386 mode.
 		     */
@@ -835,7 +852,7 @@ kern_return_t thread_getstatus(
 		*count = i386_ISA_PORT_MAP_STATE_COUNT;
 		break;
 	    }
-
+#if !defined(__x86_64__) || defined(USER32)
 	    case i386_V86_ASSIST_STATE:
 	    {
 		struct i386_v86_assist_state *state;
@@ -850,7 +867,7 @@ kern_return_t thread_getstatus(
 		*count = i386_V86_ASSIST_STATE_COUNT;
 		break;
 	    }
-
+#endif
 	    case i386_DEBUG_STATE:
 	    {
 		struct i386_debug_state *state;
