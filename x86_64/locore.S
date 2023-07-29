@@ -752,16 +752,16 @@ ENTRY(all_intrs)
 	pushq	%r11
 	cld				/* clear direction flag */
 
-	movq	%rsp,%rdx		/* on an interrupt stack? */
-	and	$(~(INTSTACK_SIZE-1)),%rdx
-	cmpq	%ss:EXT(int_stack_base),%rdx
-	je	int_from_intstack	/* if not: */
-
 	movq	%ds,%rdx			/* save segment registers */
 	pushq	%rdx
 	movq	%es,%rdx
 	pushq	%rdx
 	PUSH_FSGS_ISR
+
+	movq	%rsp,%rdx		/* on an interrupt stack? */
+	and	$(~(INTSTACK_SIZE-1)),%rdx
+	cmpq	%ss:EXT(int_stack_base),%rdx
+	je	int_from_intstack	/* if not: */
 
 	mov	%ss,%dx			/* switch to kernel segments */
 	mov	%dx,%ds
@@ -830,6 +830,12 @@ int_from_intstack:
 	jb	stack_overflowed	/* if not: */
 	call	EXT(interrupt)		/* call interrupt routine */
 _return_to_iret_i:			/* ( label for kdb_kintr) */
+	POP_FSGS_ISR
+	pop	%rdx
+	mov	%rdx,%es
+	pop	%rdx
+	mov	%rdx,%ds
+
 	pop	%r11
 	pop	%r10
 	pop	%r9
