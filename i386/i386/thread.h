@@ -51,10 +51,12 @@
  */
 
 struct i386_saved_state {
+#if !defined(__x86_64__) || defined(USER32)
 	unsigned long	gs;
 	unsigned long	fs;
 	unsigned long	es;
 	unsigned long	ds;
+#endif
 #ifdef __x86_64__
 	unsigned long	r15;
 	unsigned long	r14;
@@ -174,10 +176,12 @@ struct i386_segment_base_state {
  */
 
 struct i386_interrupt_state {
+#if !defined(__x86_64__) || defined(USER32)
 	long	gs;
 	long	fs;
 	long	es;
 	long	ds;
+#endif
 #ifdef __x86_64__
 	long	r11;
 	long	r10;

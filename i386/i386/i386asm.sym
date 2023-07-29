@@ -84,8 +84,10 @@ size	i386_kernel_state	iks
 
 size	i386_exception_link	iel
 
+#if !defined(__x86_64__) || defined(USER32)
 offset	i386_saved_state	r	gs
 offset	i386_saved_state	r	fs
+#endif
 offset	i386_saved_state	r	cs
 offset	i386_saved_state	r	uesp
 offset	i386_saved_state	r	eax

@@ -54,10 +54,12 @@
  */
 struct db_variable db_regs[] = {
 	{ "cs",	(long *)&ddb_regs.cs,  db_i386_reg_value },
+#if !defined(__x86_64__) || defined(USER32)
 	{ "ds",	(long *)&ddb_regs.ds,  db_i386_reg_value },
 	{ "es",	(long *)&ddb_regs.es,  db_i386_reg_value },
 	{ "fs",	(long *)&ddb_regs.fs,  db_i386_reg_value },
 	{ "gs",	(long *)&ddb_regs.gs,  db_i386_reg_value },
+#endif
 	{ "ss",	(long *)&ddb_regs.ss,  db_i386_reg_value },
 	{ "eax",(long *)&ddb_regs.eax, db_i386_reg_value },
 	{ "ecx",(long *)&ddb_regs.ecx, db_i386_reg_value },

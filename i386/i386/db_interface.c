@@ -332,12 +332,13 @@ kdb_trap(
 	    regs->ebp    = ddb_regs.ebp;
 	    regs->esi    = ddb_regs.esi;
 	    regs->edi    = ddb_regs.edi;
-	    regs->es     = ddb_regs.es & 0xffff;
 	    regs->cs     = ddb_regs.cs & 0xffff;
+#if !defined(__x86_64__) || defined(USER32)
+	    regs->es     = ddb_regs.es & 0xffff;
 	    regs->ds     = ddb_regs.ds & 0xffff;
 	    regs->fs     = ddb_regs.fs & 0xffff;
 	    regs->gs     = ddb_regs.gs & 0xffff;
-
+#endif
 	    if ((type == T_INT3) &&
 		(db_get_task_value(regs->eip, BKPT_SIZE, FALSE, TASK_NULL)
 								 == BKPT_INST))
@@ -401,11 +402,12 @@ kdb_kentry(
 	    ddb_regs.esi = is->rsi;
 	    ddb_regs.edi = is->rdi;
 #endif
+#if !defined(__x86_64__) || defined(USER32)
 	    ddb_regs.ds  = is->ds;
 	    ddb_regs.es  = is->es;
 	    ddb_regs.fs  = is->fs;
 	    ddb_regs.gs  = is->gs;
-
+#endif
 	    cnpollc(TRUE);
 	    db_task_trap(-1, 0, (ddb_regs.cs & 0x3) != 0);
 	    cnpollc(FALSE);
@@ -430,10 +432,12 @@ kdb_kentry(
 	    is->rsi = ddb_regs.esi;
 	    is->rdi = ddb_regs.edi;
 #endif
+#if !defined(__x86_64__) || defined(USER32)
 	    is->ds  = ddb_regs.ds & 0xffff;
 	    is->es  = ddb_regs.es & 0xffff;
 	    is->fs  = ddb_regs.fs & 0xffff;
 	    is->gs  = ddb_regs.gs & 0xffff;
+#endif
 	}
 #if	NCPUS > 1
 	db_leave();

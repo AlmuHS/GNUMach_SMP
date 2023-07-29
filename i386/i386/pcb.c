@@ -417,10 +417,12 @@ void pcb_init(task_t parent_task, thread_t thread)
 	 */
 	pcb->iss.cs = USER_CS;
 	pcb->iss.ss = USER_DS;
+#if !defined(__x86_64__) || defined(USER32)
 	pcb->iss.ds = USER_DS;
 	pcb->iss.es = USER_DS;
 	pcb->iss.fs = USER_DS;
 	pcb->iss.gs = USER_DS;
+#endif
 	pcb->iss.efl = EFL_USER_SET;
 
 	thread->pcb = pcb;
@@ -578,10 +580,12 @@ kern_return_t thread_setstatus(
 		     */
 		    saved_state->cs = USER_CS;
 		    saved_state->ss = USER_DS;
+#if !defined(__x86_64__) || defined(USER32)
 		    saved_state->ds = USER_DS;
 		    saved_state->es = USER_DS;
 		    saved_state->fs = USER_DS;
 		    saved_state->gs = USER_DS;
+#endif
 		}
 		else {
 		    /*
@@ -592,10 +596,12 @@ kern_return_t thread_setstatus(
 		     */
 		    saved_state->cs = state->cs;
 		    saved_state->ss = state->ss;
+#if !defined(__x86_64__) || defined(USER32)
 		    saved_state->ds = state->ds;
 		    saved_state->es = state->es;
 		    saved_state->fs = state->fs;
 		    saved_state->gs = state->gs;
+#endif
 		}
 		break;
 	    }
@@ -803,10 +809,7 @@ kern_return_t thread_getstatus(
 				== 0)
 			    saved_state->efl &= ~EFL_IF;
 		    }
-		}
-		else
-#endif
-		{
+		} else {
 		    /*
 		     * 386 mode.
 		     */
@@ -815,6 +818,7 @@ kern_return_t thread_getstatus(
 		    state->fs = saved_state->fs & 0xffff;
 		    state->gs = saved_state->gs & 0xffff;
 		}
+#endif
 		*count = i386_THREAD_STATE_COUNT;
 		break;
 	    }

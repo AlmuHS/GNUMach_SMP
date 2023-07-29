@@ -94,8 +94,7 @@
 	pushq	%fs		;\
 	pushq	%gs
 #else
-#define PUSH_SEGMENTS(reg)	\
-	subq	$32,%rsp
+#define PUSH_SEGMENTS(reg)
 #endif
 
 #ifdef USER32
@@ -107,8 +106,7 @@
 	popq	reg		;\
 	movq	reg,%ds
 #else
-#define POP_SEGMENTS(reg)	\
-	addq	$32,%rsp
+#define POP_SEGMENTS(reg)
 #endif
 
 #ifdef USER32
@@ -120,8 +118,7 @@
 	pushq	%fs		;\
 	pushq	%gs
 #else
-#define PUSH_SEGMENTS_ISR(reg)	\
-	subq	$32,%rsp
+#define PUSH_SEGMENTS_ISR(reg)
 #endif
 
 #ifdef USER32
@@ -133,8 +130,7 @@
 	popq	reg		;\
 	movq	reg,%ds
 #else
-#define POP_SEGMENTS_ISR(reg)	\
-	addq	$32,%rsp
+#define POP_SEGMENTS_ISR(reg)
 #endif
 
 #ifdef USER32
@@ -639,9 +635,7 @@ _return_to_user:
  */
 
 _return_from_kernel:
-#ifndef USER32
-	addq	$32,%rsp		/* skip FS/GS selector */
-#else
+#ifdef USER32
 _kret_popl_gs:
 	popq	%gs			/* restore segment registers */
 _kret_popl_fs:
