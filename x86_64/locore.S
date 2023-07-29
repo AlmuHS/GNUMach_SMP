@@ -39,6 +39,10 @@
 #include <i386/i386/cpu_number.h>
 #include <i386/i386/xen.h>
 
+
+/*
+ * Helpers for thread state as saved in the pcb area, during trap or irq handling
+ */
 #define pusha		\
 	pushq %rax	;\
 	pushq %rcx	;\
@@ -75,45 +79,74 @@
 	popq %rcx	;\
 	popq %rax
 
+/*
+ * Note that we have to load the kernel segment registers even if this
+ * is a trap from the kernel, because the kernel uses user segment
+ * registers for copyin/copyout.
+ * (XXX Would it be smarter just to use fs or gs for that?)
+ */
 #ifdef USER32
-#define PUSH_FSGS		\
+#define PUSH_SEGMENTS(reg)	\
+	movq	%ds,reg		;\
+	pushq	reg		;\
+	movq	%es,reg		;\
+	pushq	reg		;\
 	pushq	%fs		;\
-	pushq	%gs		;\
-	subq	$16,%rsp
+	pushq	%gs
 #else
-#define PUSH_FSGS		\
+#define PUSH_SEGMENTS(reg)	\
 	subq	$32,%rsp
 #endif
 
 #ifdef USER32
-#define POP_FSGS		\
+#define POP_SEGMENTS(reg)	\
 	popq	%gs		;\
 	popq	%fs		;\
-	addq	$16,%rsp
+	popq	reg		;\
+	movq	reg,%es		;\
+	popq	reg		;\
+	movq	reg,%ds
 #else
-#define POP_FSGS		\
+#define POP_SEGMENTS(reg)	\
 	addq	$32,%rsp
 #endif
 
 #ifdef USER32
-#define PUSH_FSGS_ISR		\
+#define PUSH_SEGMENTS_ISR(reg)	\
+	movq	%ds,reg		;\
+	pushq	reg		;\
+	movq	%es,reg		;\
+	pushq	reg		;\
 	pushq	%fs		;\
 	pushq	%gs
 #else
-#define PUSH_FSGS_ISR		\
-	subq	$16,%rsp
+#define PUSH_SEGMENTS_ISR(reg)	\
+	subq	$32,%rsp
 #endif
 
 #ifdef USER32
-#define POP_FSGS_ISR		\
+#define POP_SEGMENTS_ISR(reg)	\
 	popq	%gs		;\
-	popq	%fs
+	popq	%fs		;\
+	popq	reg		;\
+	movq	reg,%es		;\
+	popq	reg		;\
+	movq	reg,%ds
 #else
-#define POP_FSGS_ISR		\
-	addq	$16,%rsp
+#define POP_SEGMENTS_ISR(reg)	\
+	addq	$32,%rsp
 #endif
 
-
+#ifdef USER32
+#define SET_KERNEL_SEGMENTS	       \
+	mov	%ss,%dx /* switch to kernel segments */ ;\
+	mov	%dx,%ds			;\
+	mov	%dx,%es			;\
+	mov	%dx,%fs			;\
+	mov	%dx,%gs
+#else
+#define SET_KERNEL_SEGMENTS
+#endif
 
 /*
  * Fault recovery.
@@ -350,32 +383,17 @@ ENTRY(start_timer)
 /*
  * Trap/interrupt entry points.
  *
- * All traps must create the following save area on the kernel stack:
+ * All traps must create the i386_saved_state struct on the stack on
+ * entry. Note that:
+ *      - CR2 is only used if the trap is a page fault
+ *      - user_rsp/user_ss are only used if entering from user space
+ *      - v86_regs are used only from V86 threads
+ *         (TODO check if V86 is still used with USER32)
  *
- *	gs
- *	fs
- *	es
- *	ds
- *	edi
- *	esi
- *	ebp
- *	cr2 if page fault - otherwise unused
- *	ebx
- *	edx
- *	ecx
- *	eax
- *	trap number
- *	error code
- *	eip
- *	cs
- *	eflags
- *	user rsp - if from user
- *	user ss  - if from user
- *	es       - if from V86 thread
- *	ds       - if from V86 thread
- *	fs       - if from V86 thread
- *	gs       - if from V86 thread
- *
+ * Depending the CPL before entry, the stack might be switched or not;
+ * if entering from user-space the CPU loads TSS->RSP0 in RSP,
+ * otherwise RSP is unchanged. After this, the cpu pushes
+ * SS/RSP/RFLAFS/CS/RIP and optionally ErrorCode and executes the handler.
  */
 
 /* Try to save/show some information when a double fault happens
@@ -426,16 +444,16 @@ trap_check_kernel_exit:
 					/* check for the kernel exit sequence */
 	cmpq	$_kret_iret,16(%rsp)	/* on IRET? */
 	je	fault_iret
-#if 0
+#ifdef USER32
 	cmpq	$_kret_popl_ds,16(%rsp)	/* popping DS? */
 	je	fault_popl_ds
 	cmpq	$_kret_popl_es,16(%rsp)	/* popping ES? */
 	je	fault_popl_es
-#endif
 	cmpq	$_kret_popl_fs,16(%rsp)	/* popping FS? */
 	je	fault_popl_fs
 	cmpq	$_kret_popl_gs,16(%rsp)	/* popping GS? */
 	je	fault_popl_gs
+#endif
 take_fault:				/* if none of the above: */
 	jmp	EXT(alltraps)		/* treat as normal trap. */
 
@@ -464,6 +482,7 @@ fault_iret:
 	popq	%rax			/* restore eax */
 	jmp	EXT(alltraps)		/* take fault */
 
+#ifdef USER32
 /*
  * Fault restoring a segment register.  The user's registers are still
  * saved on the stack.  The offending segment register has not been
@@ -499,6 +518,7 @@ push_gs:
 push_gsbase:
 	pushq	$0
 	pushq	$0
+#endif
 push_segregs:
 	movq	%rax,R_TRAPNO(%rsp)	/* set trap number */
 	movq	%rdx,R_ERR(%rsp)	/* set error code */
@@ -562,23 +582,8 @@ ENTRY(t_page_fault)
 ENTRY(alltraps)
 	pusha				/* save the general registers */
 trap_push_segs:
-	movq	%ds,%rax			/* and the segment registers */
-	pushq	%rax
-	movq	%es,%rax			/* and the segment registers */
-	pushq	%rax
-	PUSH_FSGS
-
-	/* Note that we have to load the segment registers
-	   even if this is a trap from the kernel,
-	   because the kernel uses user segment registers for copyin/copyout.
-	   (XXX Would it be smarter just to use fs or gs for that?)  */
-	mov	%ss,%ax			/* switch to kernel data segment */
-	mov	%ax,%ds			/* (same as kernel stack segment) */
-	mov	%ax,%es
-#ifdef USER32
-	mov	%ax,%fs
-	mov	%ax,%gs
-#endif
+	PUSH_SEGMENTS(%rax)
+	SET_KERNEL_SEGMENTS
 trap_set_segs:
 	cld				/* clear direction flag */
 #ifdef USER32
@@ -634,23 +639,20 @@ _return_to_user:
  */
 
 _return_from_kernel:
-	addq	$16,%rsp		/* skip FS/GS base */
 #ifndef USER32
-_kret_popl_gs:
-_kret_popl_fs:
-	addq	$16,%rsp		/* skip FS/GS selector */
+	addq	$32,%rsp		/* skip FS/GS selector */
 #else
 _kret_popl_gs:
 	popq	%gs			/* restore segment registers */
 _kret_popl_fs:
 	popq	%fs
-#endif
 _kret_popl_es:
 	popq	%rax
 	movq	%rax,%es
 _kret_popl_ds:
 	popq	%rax
 	movq	%rax,%ds
+#endif
 	popa				/* restore general registers */
 	addq	$16,%rsp		/* discard trap number and error code */
 _kret_iret:
@@ -777,8 +779,11 @@ INTERRUPT(255)
 /* XXX handle NMI - at least print a warning like Linux does.  */
 
 /*
- * All interrupts enter here.
- * old %eax on stack; interrupt number in %eax.
+ * All interrupts enter here. The cpu might have loaded a new RSP,
+ * depending on the previous CPL, as in alltraps.
+ * Old %eax on stack, interrupt number in %eax; we need to fill the remaining
+ * fields of struct i386_interrupt_state, which might be in the pcb or in the
+ * interrupt stack.
  */
 ENTRY(all_intrs)
 	pushq	%rcx			/* save registers */
@@ -791,24 +796,15 @@ ENTRY(all_intrs)
 	pushq	%r11
 	cld				/* clear direction flag */
 
-	movq	%ds,%rdx			/* save segment registers */
-	pushq	%rdx
-	movq	%es,%rdx
-	pushq	%rdx
-	PUSH_FSGS_ISR
+	PUSH_SEGMENTS_ISR(%rdx)
 
 	movq	%rsp,%rdx		/* on an interrupt stack? */
 	and	$(~(INTSTACK_SIZE-1)),%rdx
 	cmpq	%ss:EXT(int_stack_base),%rdx
 	je	int_from_intstack	/* if not: */
 
-	mov	%ss,%dx			/* switch to kernel segments */
-	mov	%dx,%ds
-	mov	%dx,%es
-#ifdef USER32
-	mov	%dx,%fs
-	mov	%dx,%gs
-#endif
+	SET_KERNEL_SEGMENTS
+
 	CPU_NUMBER(%edx)
 
 	movq	CX(EXT(int_stack_top),%edx),%rcx
@@ -849,11 +845,7 @@ LEXT(return_to_iret)			/* ( label for kdb_kintr and hardclock) */
 	cmpq	$0,CX(EXT(need_ast),%edx)
 	jnz	ast_from_interrupt	/* take it if so */
 1:
-	POP_FSGS_ISR
-	pop	%rdx
-	mov	%rdx,%es
-	pop	%rdx
-	mov	%rdx,%ds
+	POP_SEGMENTS_ISR(%rdx)
 	pop	%r11
 	pop	%r10
 	pop	%r9
@@ -871,12 +863,7 @@ int_from_intstack:
 	jb	stack_overflowed	/* if not: */
 	call	EXT(interrupt)		/* call interrupt routine */
 _return_to_iret_i:			/* ( label for kdb_kintr) */
-	POP_FSGS_ISR
-	pop	%rdx
-	mov	%rdx,%es
-	pop	%rdx
-	mov	%rdx,%ds
-
+	POP_SEGMENTS_ISR(%rdx)
 	pop	%r11
 	pop	%r10
 	pop	%r9
@@ -909,11 +896,7 @@ stack_overflowed:
  *	ss
  */
 ast_from_interrupt:
-	POP_FSGS_ISR
-	pop	%rdx
-	mov	%rdx,%es
-	pop	%rdx
-	mov	%rdx,%ds
+	POP_SEGMENTS_ISR(%rdx)
 	popq	%r11
 	popq	%r10
 	popq	%r9
@@ -926,19 +909,8 @@ ast_from_interrupt:
 	pushq	$0			/* zero code */
 	pushq	$0			/* zero trap number */
 	pusha				/* save general registers */
-	mov	%ds,%rdx		/* save segment registers */
-	push	%rdx
-	mov	%es,%rdx
-	push	%rdx
-	PUSH_FSGS_ISR
-
-	mov	%ss,%dx			/* switch to kernel segments */
-	mov	%dx,%ds
-	mov	%dx,%es
-#ifdef USER32
-	mov	%dx,%fs
-	mov	%dx,%gs
-#endif
+	PUSH_SEGMENTS_ISR(%rdx)
+	SET_KERNEL_SEGMENTS
 	CPU_NUMBER(%edx)
 	TIME_TRAP_UENTRY
 
@@ -1056,20 +1028,12 @@ kdb_from_iret_i:			/* on interrupt stack */
 	pushq	$0			/* zero error code */
 	pushq	$0			/* zero trap number */
 	pusha				/* save general registers */
-	mov	%ds,%rdx		/* save segment registers */
-	push	%rdx
-	mov	%es,%rdx
-	push	%rdx
-	PUSH_FSGS
+	PUSH_SEGMENTS(%rdx)
 	movq	%rsp,%rdx		/* pass regs, */
 	movq	$0,%rsi			/* code, */
 	movq	$-1,%rdi		/* type to kdb */
 	call	EXT(kdb_trap)
-	POP_FSGS
-	pop	%rdx
-	mov	%rdx,%es
-	pop	%rdx
-	mov	%rdx,%ds
+	POP_SEGMENTS(%rdx)
 	popa				/* restore general registers */
 	addq	$16,%rsp
 
@@ -1144,23 +1108,13 @@ ttd_from_iret_i:			/* on interrupt stack */
 	pushq	$0			/* zero error code */
 	pushq	$0			/* zero trap number */
 	pusha				/* save general registers */
-	mov	%ds,%rdx		/* save segment registers */
-	push	%rdx
-	mov	%es,%rdx
-	push	%rdx
-	push	%fs
-	push	%gs
+	PUSH_SEGMENTS_ISR(%rdx)
 	ud2	// TEST it
 	movq	%rsp,%rdx		/* pass regs, */
 	movq	$0,%rsi			/* code, */
 	movq	$-1,%rdi		/* type to kdb */
 	call	_kttd_trap
-	pop	%gs			/* restore segment registers */
-	pop	%fs
-	pop	%rdx
-	mov	%rdx,%es
-	pop	%rdx
-	mov	%rdx,%ds
+	POP_SEGMENTS_ISR(%rdx)
 	popa				/* restore general registers */
 	addq	$16,%rsp
 
@@ -1193,20 +1147,8 @@ syscall_entry_2:
 	pushq	$0			/* clear trap number slot */
 
 	pusha				/* save the general registers */
-	movq	%ds,%rdx		/* and the segment registers */
-	pushq	%rdx
-	movq	%es,%rdx
-	pushq	%rdx
-	pushq	%fs
-	pushq	%gs
-	pushq	$0	// gsbase
-	pushq	$0	// fsbase
-
-	mov	%ss,%dx			/* switch to kernel data segment */
-	mov	%dx,%ds
-	mov	%dx,%es
-	mov	%dx,%fs
-	mov	%dx,%gs
+	PUSH_SEGMENTS(%rdx)
+	SET_KERNEL_SEGMENTS
 
 /*
  * Shuffle eflags,eip,cs into proper places

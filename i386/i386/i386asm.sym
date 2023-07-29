@@ -108,8 +108,6 @@ offset	i386_saved_state	r	r12
 offset	i386_saved_state	r	r13
 offset	i386_saved_state	r	r14
 offset	i386_saved_state	r	r15
-offset	i386_saved_state	r	fsbase
-offset	i386_saved_state	r	gsbase
 #endif
 
 offset	i386_interrupt_state	i	eip

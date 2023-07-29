@@ -51,10 +51,6 @@
  */
 
 struct i386_saved_state {
-#ifdef __x86_64__
-	unsigned long	fsbase;
-	unsigned long	gsbase;
-#endif
 	unsigned long	gs;
 	unsigned long	fs;
 	unsigned long	es;
@@ -162,6 +158,13 @@ struct v86_assist_state {
 #define	V86_IF_PENDING		0x8000	/* unused bit */
 #endif
 
+#if defined(__x86_64__) && !defined(USER32)
+struct i386_segment_base_state {
+	unsigned long fsbase;
+	unsigned long gsbase;
+};
+#endif
+
 /*
  *	i386_interrupt_state:
  *
@@ -206,14 +209,23 @@ struct i386_machine_state {
 #endif
 	struct real_descriptor user_gdt[USER_GDT_SLOTS];
 	struct i386_debug_state ids;
+#if defined(__x86_64__) && !defined(USER32)
+	struct i386_segment_base_state sbs;
+#endif
 };
 
 typedef struct pcb {
+	/* START of the exception stack.
+	 * NOTE: this area is used as exception stack when switching
+	 * CPL, and it MUST be big enough to save the thread state and
+	 * switch to a proper stack area, even considering recursive
+	 * exceptions, otherwise it could corrupt nearby memory */
 	struct i386_interrupt_state iis[2];	/* interrupt and NMI */
 #ifdef __x86_64__
-	unsigned long pad;         /* ensure exception stack is aligned to 16 */
+	unsigned long pad;	   /* ensure exception stack is aligned to 16 */
 #endif
 	struct i386_saved_state iss;
+	/* END of exception stack*/
 	struct i386_machine_state ims;
 	decl_simple_lock_data(, lock)
 	unsigned short init_control;		/* Initial FPU control to set */

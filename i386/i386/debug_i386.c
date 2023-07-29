@@ -40,8 +40,6 @@ void dump_ss(const struct i386_saved_state *st)
 		st->r8, st->r9, st->r10, st->r11);
 	printf("R12 %016lx R13 %016lx R14 %016lx R15 %016lx\n",
 		st->r12, st->r13, st->r14, st->r15);
-	printf("FSBASE %016lx GSBASE %016lx\n",
-		st->fsbase, st->gsbase);
 	printf("RIP %016lx EFLAGS %08lx\n", st->eip, st->efl);
 #else
 	printf("EAX %08lx EBX %08lx ECX %08lx EDX %08lx\n",

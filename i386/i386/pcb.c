@@ -229,8 +229,8 @@ void switch_ktss(pcb_t pcb)
 #endif /* MACH_PV_DESCRIPTORS */
 
 #if defined(__x86_64__) && !defined(USER32)
-	wrmsr(MSR_REG_FSBASE, pcb->iss.fsbase);
-	wrmsr(MSR_REG_GSBASE, pcb->iss.gsbase);
+	wrmsr(MSR_REG_FSBASE, pcb->ims.sbs.fsbase);
+	wrmsr(MSR_REG_GSBASE, pcb->ims.sbs.gsbase);
 #endif
 
 	db_load_context(pcb);
@@ -687,8 +687,8 @@ kern_return_t thread_setstatus(
                             return KERN_INVALID_ARGUMENT;
 
                     state = (struct i386_fsgs_base_state *) tstate;
-                    thread->pcb->iss.fsbase = state->fs_base;
-                    thread->pcb->iss.gsbase = state->gs_base;
+                    thread->pcb->ims.sbs.fsbase = state->fs_base;
+                    thread->pcb->ims.sbs.gsbase = state->gs_base;
                     if (thread == current_thread()) {
                             wrmsr(MSR_REG_FSBASE, state->fs_base);
                             wrmsr(MSR_REG_GSBASE, state->gs_base);
@@ -889,8 +889,8 @@ kern_return_t thread_getstatus(
                             return KERN_INVALID_ARGUMENT;
 
                     state = (struct i386_fsgs_base_state *) tstate;
-                    state->fs_base = thread->pcb->iss.fsbase;
-                    state->gs_base = thread->pcb->iss.gsbase;
+                    state->fs_base = thread->pcb->ims.sbs.fsbase;
+                    state->gs_base = thread->pcb->ims.sbs.gsbase;
                     *count = i386_FSGS_BASE_STATE_COUNT;
                     break;
             }
