@@ -34,6 +34,10 @@ struct idt_init_entry
 	unsigned long entrypoint;
 	unsigned short vector;
 	unsigned short type;
+#ifdef __x86_64__
+	unsigned short ist;
+	unsigned short pad_0;
+#endif
 };
 extern struct idt_init_entry idt_inittab[];
 
@@ -49,7 +53,13 @@ idt_fill(struct real_gate *myidt)
 	/* Initialize the exception vectors from the idt_inittab.  */
 	while (iie->entrypoint)
 	{
-		fill_idt_gate(myidt, iie->vector, iie->entrypoint, KERNEL_CS, iie->type, 0);
+		fill_idt_gate(myidt, iie->vector, iie->entrypoint, KERNEL_CS, iie->type,
+#ifdef __x86_64__
+			      iie->ist
+#else
+			      0
+#endif
+		    );
 		iie++;
 	}
 

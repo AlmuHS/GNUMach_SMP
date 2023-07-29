@@ -666,3 +666,9 @@ db_debug_all_traps (boolean_t enable)
 }
 
 #endif	/* MACH_KDB */
+
+void handle_double_fault(struct i386_saved_state *regs)
+{
+  dump_ss(regs);
+  panic("DOUBLE FAULT! This is critical\n");
+}

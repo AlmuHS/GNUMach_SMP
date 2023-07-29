@@ -43,9 +43,10 @@ struct task_tss ktss;
 void
 ktss_fill(struct task_tss *myktss, struct real_descriptor *mygdt)
 {
-	/* XXX temporary exception stack */
+	/* XXX temporary exception stacks */
 	/* FIXME: make it per-processor */
 	static int exception_stack[1024];
+	static int double_fault_stack[1024];
 
 #ifdef	MACH_RING1
 	/* Xen won't allow us to do any I/O by default anyway, just register
@@ -61,6 +62,7 @@ ktss_fill(struct task_tss *myktss, struct real_descriptor *mygdt)
 	/* Initialize the master TSS.  */
 #ifdef __x86_64__
 	myktss->tss.rsp0 = (unsigned long)(exception_stack+1024);
+	myktss->tss.ist1 = (unsigned long)(double_fault_stack+1024);
 #else /* ! __x86_64__ */
 	myktss->tss.ss0 = KERNEL_DS;
 	myktss->tss.esp0 = (unsigned long)(exception_stack+1024);

@@ -50,12 +50,13 @@ ENTRY(idt_inittab)
 	.quad	entry		;\
 	.text
 #else	/* MACH_PV_DESCRIPTORS */
-#define	IDT_ENTRY(n,entry,type) \
+#define	IDT_ENTRY(n,entry,type,ist) \
 	.data	2		;\
 	.quad	entry		;\
 	.word	n		;\
 	.word	type		;\
-	.long	0	/*pad*/	;\
+	.word	ist		;\
+	.word	0	/*pad*/	;\
 	.text
 #endif	/* MACH_PV_DESCRIPTORS */
 
@@ -63,7 +64,7 @@ ENTRY(idt_inittab)
  * No error code.  Clear error code and push trap number.
  */
 #define	EXCEPTION(n,name) \
-	IDT_ENTRY(n,EXT(name),ACC_PL_K|ACC_TRAP_GATE);\
+	IDT_ENTRY(n,EXT(name),ACC_PL_K|ACC_TRAP_GATE, 0);\
 ENTRY(name)				;\
 	INT_FIX				;\
 	pushq	$(0)			;\
@@ -74,7 +75,7 @@ ENTRY(name)				;\
  * User-accessible exception.  Otherwise, same as above.
  */
 #define	EXCEP_USR(n,name) \
-	IDT_ENTRY(n,EXT(name),ACC_PL_U|ACC_TRAP_GATE);\
+	IDT_ENTRY(n,EXT(name),ACC_PL_U|ACC_TRAP_GATE, 0);\
 ENTRY(name)				;\
 	INT_FIX				;\
 	pushq	$(0)			;\
@@ -85,7 +86,7 @@ ENTRY(name)				;\
  * Error code has been pushed.  Just push trap number.
  */
 #define	EXCEP_ERR(n,name) \
-	IDT_ENTRY(n,EXT(name),ACC_PL_K|ACC_INTR_GATE);\
+	IDT_ENTRY(n,EXT(name),ACC_PL_K|ACC_INTR_GATE, 0);\
 ENTRY(name)				;\
 	INT_FIX				;\
 	pushq	$(n)			;\
@@ -95,25 +96,25 @@ ENTRY(name)				;\
  * Special interrupt code: dispatches to a unique entrypoint,
  * not defined automatically here.
  */
-#define	EXCEP_SPC(n,name)  \
-	IDT_ENTRY(n,EXT(name),ACC_PL_K|ACC_TRAP_GATE)
+#define	EXCEP_SPC(n,name, ist)  \
+	IDT_ENTRY(n,EXT(name),ACC_PL_K|ACC_TRAP_GATE, ist)
 
 
 EXCEPTION(0x00,t_zero_div)
-EXCEP_SPC(0x01,t_debug)
+EXCEP_SPC(0x01,t_debug, 0)
 /* skip NMI interrupt - let more specific code figure that out.  */
 EXCEP_USR(0x03,t_int3)
 EXCEP_USR(0x04,t_into)
 EXCEP_USR(0x05,t_bounds)
 EXCEPTION(0x06,t_invop)
 EXCEPTION(0x07,t_nofpu)
-EXCEPTION(0x08,a_dbl_fault)
+EXCEP_SPC(0x08,t_dbl_fault, 1)
 EXCEPTION(0x09,a_fpu_over)
 EXCEPTION(0x0a,a_inv_tss)
-EXCEP_SPC(0x0b,t_segnp)
+EXCEP_SPC(0x0b,t_segnp, 0)
 EXCEP_ERR(0x0c,t_stack_fault)
-EXCEP_SPC(0x0d,t_gen_prot)
-EXCEP_SPC(0x0e,t_page_fault)
+EXCEP_SPC(0x0d,t_gen_prot, 0)
+EXCEP_SPC(0x0e,t_page_fault, 0)
 #ifdef MACH_PV_DESCRIPTORS
 EXCEP_ERR(0x0f,t_trap_0f)
 #else

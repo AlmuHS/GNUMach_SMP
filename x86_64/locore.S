@@ -345,6 +345,21 @@ ENTRY(start_timer)
  *
  */
 
+/* Try to save/show some information when a double fault happens
+ * We can't recover to a working state, so if we have a debugger wait for it,
+ * otherwise reset */
+ENTRY(t_dbl_fault)
+	INT_FIX
+	cli	/* disable interrupts that might corrupt the state*/
+	pusha
+	movq	%cr2,%rax
+	movq	%rax,R_CR2-R_R15(%rsp)	/* CR2 might contain the faulting address */
+	subq	$48,%rsp	// FIXME remove when segments are cleaned up
+	movq	%rsp,%rdi		/* pass the saved state */
+	call	handle_double_fault
+	jmp	cpu_shutdown	/* reset */
+END(t_dbl_fault)
+
 /*
  * General protection or segment-not-present fault.
  * Check for a GP/NP fault in the kernel_return
