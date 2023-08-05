@@ -57,6 +57,7 @@
 #include <kern/host.h>
 #include <kern/kalloc.h>
 #include <kern/slab.h>
+#include <kern/smp.h>
 #include <kern/mach_clock.h>
 #include <vm/vm_kern.h>
 #include <vm/vm_user.h>
@@ -2570,7 +2571,7 @@ kern_return_t processor_set_stack_usage(
 
 			stack = thread->kernel_stack;
 
-			for (cpu = 0; cpu < NCPUS; cpu++)
+			for (cpu = 0; cpu < smp_get_numcpus(); cpu++)
 				if (active_threads[cpu] == thread) {
 					stack = active_stacks[cpu];
 					break;
