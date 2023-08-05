@@ -25,23 +25,6 @@
 #if NCPUS > 1
 int cpu_number(void)
 {
-	int kernel_id, apic_id;
-
-	if (bspdone == 0)
-		return 0;
-
-	apic_id = apic_get_current_cpu();
-	if (apic_id < 0) {
-		printf("apic_get_current_cpu() failed, assuming BSP\n");
-		apic_id = 0;
-	}
-
-	kernel_id = apic_get_cpu_kernel_id(apic_id);
-	if (kernel_id < 0) {
-		printf("apic_get_cpu_kernel_id() failed, assuming BSP\n");
-		kernel_id = 0;
-	}
-
-	return kernel_id;
+	return cpu_id_lut[apic_get_current_cpu()];
 }
 #endif

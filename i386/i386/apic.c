@@ -35,6 +35,11 @@
 static ApicLocalUnit dummy_lapic = {0};
 volatile ApicLocalUnit* lapic = &dummy_lapic;
 
+/* This lookup table of [apic_id] -> kernel_id is initially populated with zeroes
+ * so every lookup results in master processor until real kernel ids are populated.
+ */
+int cpu_id_lut[UINT8_MAX + 1] = {0};
+
 ApicInfo apic_data;
 
 /*
@@ -137,14 +142,7 @@ apic_get_cpu_apic_id(int kernel_id)
 int
 apic_get_cpu_kernel_id(uint16_t apic_id)
 {
-    int i;
-
-    for (i = 0; i < apic_data.ncpus; i++) {
-        if (apic_data.cpu_lapic_list[i] == apic_id)
-            return i;
-    }
-
-    return -1;
+    return cpu_id_lut[apic_id];
 }
 
 /* apic_get_lapic: returns a reference to the common memory address for Local APIC. */
@@ -187,9 +185,6 @@ apic_get_num_ioapics(void)
 int
 apic_get_current_cpu(void)
 {
-    if(lapic == NULL)
-        return -1;
-
     return (lapic->apic_id.r >> 24) & 0xff;
 }
 
@@ -220,6 +215,22 @@ int apic_refit_cpulist(void)
     kfree((vm_offset_t) old_list, NCPUS*sizeof(uint16_t));
 
     return 0;
+}
+
+/*
+ * apic_generate_cpu_id_lut: Generate lookup table of cpu kernel ids from apic ids
+ */
+void apic_generate_cpu_id_lut(void)
+{
+    int i, apic_id;
+
+    for (i = 0; i < apic_data.ncpus; i++) {
+        apic_id = apic_get_cpu_apic_id(i);
+        if (apic_id >= 0)
+            cpu_id_lut[apic_id] = i;
+        else
+            printf("apic_get_cpu_apic_id(%d) failed...\n", i);
+    }
 }
 
 /*

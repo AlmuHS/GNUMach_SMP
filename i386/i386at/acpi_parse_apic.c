@@ -483,6 +483,8 @@ acpi_apic_setup(struct acpi_apic *apic)
             return ACPI_FIT_FAILURE;
     }
 
+    apic_generate_cpu_id_lut();
+
     return ACPI_SUCCESS;
 }
 

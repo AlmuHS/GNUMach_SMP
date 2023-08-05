@@ -43,6 +43,7 @@
 	movl	%cs:lapic, reg		;\
 	movl	%cs:APIC_ID(reg), reg	;\
 	shrl	$24, reg		;\
+	movl	%cs:CX(cpu_id_lut, reg), reg	;\
 
 #ifndef __ASSEMBLER__
 #include "kern/cpu_number.h"

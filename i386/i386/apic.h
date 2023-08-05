@@ -238,6 +238,7 @@ uint8_t apic_get_num_ioapics(void);
 int apic_get_current_cpu(void);
 void apic_print_info(void);
 int apic_refit_cpulist(void);
+void apic_generate_cpu_id_lut(void);
 void picdisable(void);
 void lapic_eoi(void);
 void ioapic_irq_eoi(int pin);
@@ -250,6 +251,7 @@ void ioapic_configure(void);
 extern int timer_pin;
 extern void intnull(int unit);
 extern volatile ApicLocalUnit* lapic;
+extern int cpu_id_lut[];
 
 #endif
 
