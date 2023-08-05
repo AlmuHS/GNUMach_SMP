@@ -123,6 +123,7 @@ _no_eoi:
 	ret
 
 _call_single:
+	cli				/* no nested interrupts */
 	call	EXT(lapic_eoi)		/* lapic EOI before the handler to allow extra update */
 	call	EXT(pmap_update_interrupt) /* TODO: Allow other functions */
 	ret
