@@ -2462,6 +2462,7 @@ void pmap_collect(pmap_t p)
 	/*
 	 * Free the page table tree.
 	 */
+	PMAP_READ_LOCK(p, spl);
 #if PAE
 #ifdef __x86_64__
 	for (int l4i = 0; l4i < lin2l4num(VM_MAX_USER_ADDRESS); l4i++) {
