@@ -607,11 +607,19 @@ kern_return_t vm_allocate_contiguous(
 	selector = VM_PAGE_SEL_DMA;
 	if (pmax > VM_PAGE_DMA_LIMIT)
 #ifdef VM_PAGE_DMA32_LIMIT
+#if VM_PAGE_DMA32_LIMIT < VM_PAGE_DIRECTMAP_LIMIT
 		selector = VM_PAGE_SEL_DMA32;
 	if (pmax > VM_PAGE_DMA32_LIMIT)
 #endif
+#endif
 		selector = VM_PAGE_SEL_DIRECTMAP;
 	if (pmax > VM_PAGE_DIRECTMAP_LIMIT)
+#ifdef VM_PAGE_DMA32_LIMIT
+#if VM_PAGE_DMA32_LIMIT > VM_PAGE_DIRECTMAP_LIMIT
+		selector = VM_PAGE_SEL_DMA32;
+	if (pmax > VM_PAGE_DMA32_LIMIT)
+#endif
+#endif
 		selector = VM_PAGE_SEL_HIGHMEM;
 
 	size = vm_page_round(size);
