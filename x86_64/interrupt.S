@@ -42,12 +42,13 @@ ENTRY(interrupt)
 #ifdef APIC
 	cmpl	$255,%eax		/* was this a spurious intr? */
 	je	_no_eoi			/* if so, just return */
-
+#endif
 	cmpl	$CALL_SINGLE_FUNCTION_BASE,%eax	/* was this a SMP call single function request? */
 	je	_call_single
-#endif
+
 	subq	$16,%rsp		/* Two local variables */
 	movl	%eax,S_IRQ		/* save irq number */
+
 	call	spl7			/* set ipl */
 	movl	%eax,S_IPL		/* save previous ipl */
 
@@ -115,15 +116,14 @@ ENTRY(interrupt)
 _isa_eoi:
 	movl	%ecx,%edi		/* load irq number as 1st arg */
 	call	EXT(ioapic_irq_eoi)	/* ioapic irq specific EOI */
+#endif
 	addq	$16,%rsp		/* pop local variables */
+_no_eoi:
 	ret
+
 _call_single:
 	cli                             /* no nested interrupts */
 	call	EXT(lapic_eoi)		/* lapic EOI before the handler to allow extra update */
 	call	EXT(pmap_update_interrupt) /* TODO: Allow other functions */
-	ret
-#endif
-	addq	$16,%rsp		/* pop local variables */
-_no_eoi:
 	ret
 END(interrupt)
