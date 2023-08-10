@@ -41,37 +41,18 @@
 ENTRY(interrupt)
 #ifdef APIC
 	cmpl	$255,%eax		/* was this a spurious intr? */
-	je	_no_eoi			/* if so, just return */
+	jne	1f
+	ret				/* if so, just return */
+1:
 #endif
 	cmpl	$CALL_SINGLE_FUNCTION_BASE,%eax		/* was this a SMP call single function request? */
 	je	_call_single
 
 	subl	$24,%esp		/* Two local variables + 4 parameters */
 	movl	%eax,S_IRQ		/* save irq number */
+
 	call	spl7			/* set ipl */
 	movl	%eax,S_IPL		/* save previous ipl */
-
-	movl	S_IPL,%eax
-	movl	%eax,4(%esp)		/* previous ipl as 2nd arg */
-
-	movl	S_RET,%eax
-	movl	%eax,8(%esp)		/* return address as 3rd arg */
-
-	movl	S_REGS,%eax
-	movl	%eax,12(%esp)		/* address of interrupted registers as 4th arg */
-
-	movl	S_IRQ,%eax		/* copy irq number */
-
-	shll	$2,%eax			/* irq * 4 */
-	movl	EXT(iunit)(%eax),%edx	/* get device unit number */
-	movl	%edx,(%esp)		/* unit number as 1st arg */
-
-	call	*EXT(ivect)(%eax)	/* call interrupt handler */
-
-	movl	S_IPL,%eax		/* restore previous ipl */
-	movl	%eax,(%esp)
-	call	splx_cli		/* restore previous ipl */
-	cli				/* XXX no more nested interrupts */
 
 	movl	S_IRQ,%ecx		/* restore irq number */
 
@@ -114,12 +95,33 @@ ENTRY(interrupt)
 #else
 	cmpl    $16,%ecx		/* was this a low ISA intr? */
 	jge     _no_eoi			/* no, must be PCI (let irq_ack handle EOI) */
-_isa_eoi:
 	movl	%ecx,(%esp)		/* load irq number as 1st arg */
 	call	EXT(ioapic_irq_eoi)	/* ioapic irq specific EOI */
-#endif
-	addl	$24,%esp		/* pop local variables */
 _no_eoi:
+#endif
+
+	movl	S_IPL,%eax
+	movl	%eax,4(%esp)		/* previous ipl as 2nd arg */
+
+	movl	S_RET,%eax
+	movl	%eax,8(%esp)		/* return address as 3rd arg */
+
+	movl	S_REGS,%eax
+	movl	%eax,12(%esp)		/* address of interrupted registers as 4th arg */
+
+	movl	S_IRQ,%eax		/* copy irq number */
+
+	shll	$2,%eax			/* irq * 4 */
+	movl	EXT(iunit)(%eax),%edx	/* get device unit number */
+	movl	%edx,(%esp)		/* unit number as 1st arg */
+
+	call	*EXT(ivect)(%eax)	/* call interrupt handler */
+
+	movl	S_IPL,%eax		/* restore previous ipl */
+	movl	%eax,(%esp)
+	call	splx_cli		/* restore previous ipl */
+
+	addl	$24,%esp		/* pop local variables */
 	ret
 
 _call_single:
