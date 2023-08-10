@@ -225,6 +225,7 @@ LEXT(retry_table_end)			;\
  * Uses %eax, %ebx, %ecx.
  */
 #define	TIME_TRAP_UENTRY \
+	pushf					/* Save flags */	;\
 	cli					/* block interrupts */	;\
 	movl	VA_ETC,%ebx			/* get timer value */	;\
 	movl	CX(EXT(current_tstamp),%edx),%ecx	/* get old time stamp */;\
@@ -237,7 +238,7 @@ LEXT(retry_table_end)			;\
 0:	addl	$(TH_SYSTEM_TIMER-TH_USER_TIMER),%ecx			;\
 						/* switch to sys timer */;\
 	movl	%ecx,CX(EXT(current_timer),%edx)	/* make it current */	;\
-	sti					/* allow interrupts */
+	popf					/* allow interrupts */
 
 /*
  * Update time on system call entry.
@@ -247,6 +248,7 @@ LEXT(retry_table_end)			;\
  * Same as TIME_TRAP_UENTRY, but preserves %eax.
  */
 #define	TIME_TRAP_SENTRY \
+	pushf					/* Save flags */	;\
 	cli					/* block interrupts */	;\
 	movl	VA_ETC,%ebx			/* get timer value */	;\
 	movl	CX(EXT(current_tstamp),%edx),%ecx	/* get old time stamp */;\
@@ -261,7 +263,7 @@ LEXT(retry_table_end)			;\
 0:	addl	$(TH_SYSTEM_TIMER-TH_USER_TIMER),%ecx			;\
 						/* switch to sys timer */;\
 	movl	%ecx,CX(EXT(current_timer),%edx)	/* make it current */	;\
-	sti					/* allow interrupts */
+	popf					/* allow interrupts */
 
 /*
  * update time on user trap exit.
