@@ -172,7 +172,7 @@ void kernel_trap(struct i386_saved_state *regs)
 ((short*)0xb8700)[2] = 0x0f30+(type % 10);
 #endif
 #if 0
-printf("kernel trap %d error %d\n", type, code);
+printf("kernel trap %d error %d\n", (int) type, (int) code);
 dump_ss(regs);
 #endif
 
