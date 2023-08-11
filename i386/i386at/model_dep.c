@@ -128,10 +128,6 @@ extern char	version[];
 /* If set, reboot the system on ctrl-alt-delete.  */
 boolean_t	rebootflag = FALSE;	/* exported to kdintr */
 
-/* Interrupt stacks  */
-extern vm_offset_t int_stack_top[], int_stack_base[];
-extern uint8_t solid_intstack[];    /* bottom */
-
 #ifdef LINUX_DEV
 extern void linux_init(void);
 #endif
