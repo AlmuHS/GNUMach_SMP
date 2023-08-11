@@ -1281,6 +1281,8 @@ void thread_setrun(
 			    processor->state = PROCESSOR_DISPATCHING;
 			    simple_unlock(&pset->idle_lock);
 			    processor_unlock(processor);
+			    if (processor != current_processor())
+				cause_ast_check(processor);
 		            return;
 		    }
 		    simple_unlock(&pset->idle_lock);
@@ -1298,6 +1300,8 @@ void thread_setrun(
 		    processor->next_thread = th;
 		    processor->state = PROCESSOR_DISPATCHING;
 		    simple_unlock(&pset->idle_lock);
+		    if (processor != current_processor())
+			cause_ast_check(processor);
 		    return;
 		}
 		simple_unlock(&pset->idle_lock);
@@ -1336,6 +1340,8 @@ void thread_setrun(
 		    processor->state = PROCESSOR_DISPATCHING;
 		    simple_unlock(&pset->idle_lock);
 		    processor_unlock(processor);
+		    if (processor != current_processor())
+			cause_ast_check(processor);
 		    return;
 		}
 		simple_unlock(&pset->idle_lock);
