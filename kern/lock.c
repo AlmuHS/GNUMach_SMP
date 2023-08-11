@@ -340,9 +340,12 @@ void lock_done(
 	if (l->recursion_depth != 0)
 		l->recursion_depth--;
 	else
-	if (l->want_upgrade)
+	if (l->want_upgrade) {
 	 	l->want_upgrade = FALSE;
-	else {
+#if MACH_LDEBUG
+		l->writer = THREAD_NULL;
+#endif	/* MACH_LDEBUG */
+	} else {
 	 	l->want_write = FALSE;
 #if MACH_LDEBUG
 		l->writer = THREAD_NULL;
