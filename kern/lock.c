@@ -343,11 +343,13 @@ void lock_done(
 	if (l->want_upgrade) {
 	 	l->want_upgrade = FALSE;
 #if MACH_LDEBUG
+		assert(l->writer == current_thread());
 		l->writer = THREAD_NULL;
 #endif	/* MACH_LDEBUG */
 	} else {
 	 	l->want_write = FALSE;
 #if MACH_LDEBUG
+		assert(l->writer == current_thread());
 		l->writer = THREAD_NULL;
 #endif	/* MACH_LDEBUG */
 	}
@@ -497,6 +499,7 @@ void lock_write_to_read(
 	}
 
 #if MACH_LDEBUG
+	assert(l->writer == current_thread());
 	l->writer = THREAD_NULL;
 #endif	/* MACH_LDEBUG */
 	simple_unlock(&l->interlock);
