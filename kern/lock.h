@@ -46,7 +46,7 @@
 #endif
 #endif
 
-#define MACH_SLOCKS	((NCPUS > 1) || MACH_LDEBUG)
+#define MACH_SLOCKS	NCPUS > 1
 
 /*
  *	A simple spin lock.
