@@ -204,7 +204,7 @@ boolean_t _simple_lock_try(
 	return TRUE;
 }
 
-void simple_unlock(
+void _simple_unlock(
 	simple_lock_t l)
 {
 	assert(l->lock_data != 0);

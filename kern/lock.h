@@ -99,7 +99,7 @@ class	simple_lock_data_t	name = SIMPLE_LOCK_INITIALIZER(&name);
 extern void		simple_lock_init(simple_lock_t);
 extern void		_simple_lock(simple_lock_t,
 				     const char *, const char *);
-extern void		simple_unlock(simple_lock_t);
+extern void		_simple_unlock(simple_lock_t);
 extern boolean_t	_simple_lock_try(simple_lock_t,
 					 const char *, const char *);
 
@@ -110,6 +110,7 @@ extern boolean_t	_simple_lock_try(simple_lock_t,
 #define LOCATION	__FILE__ ":" STR(__LINE__)
 
 #define simple_lock(lock)	_simple_lock((lock), #lock, LOCATION)
+#define simple_unlock(lock)	_simple_unlock((lock), #lock, LOCATION)
 #define simple_lock_try(lock)	_simple_lock_try((lock), #lock, LOCATION)
 
 #define simple_lock_pause()
