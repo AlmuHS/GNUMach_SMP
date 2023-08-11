@@ -48,7 +48,7 @@ lock	orl	$1,hyp_shared_info+CPU_PENDING_SEL; /* Yes, activate it */ \
 ENTRY(spl0)
 	mb;
 	CPU_NUMBER(%edx)
-	movl	CX(EXT(curr_ipl),%edx),%eax	/* save current ipl */
+	movl	CX(EXT(curr_ipl),%rdx),%eax	/* save current ipl */
 	pushq	%rax
 	cli				/* disable interrupts */
 #ifdef LINUX_DEV
@@ -77,9 +77,9 @@ ENTRY(spl0)
 	cli				/* disable interrupts */
 1:
 	CPU_NUMBER(%edx)
-	cmpl	$(SPL0),CX(EXT(curr_ipl),%edx)	/* are we at spl0? */
+	cmpl	$(SPL0),CX(EXT(curr_ipl),%rdx)	/* are we at spl0? */
 	je	1f				/* yes, all done */
-	movl	$(SPL0),CX(EXT(curr_ipl),%edx)	/* set ipl */
+	movl	$(SPL0),CX(EXT(curr_ipl),%rdx)	/* set ipl */
 #ifdef MACH_XEN
 	movl	EXT(int_mask)+SPL0*4,%eax
 					/* get xen mask */
@@ -124,7 +124,7 @@ ENTRY(spl7)
 	cli
 	CPU_NUMBER(%edx)
 	movl    $SPL7,%eax
-	xchgl   CX(EXT(curr_ipl),%edx),%eax
+	xchgl   CX(EXT(curr_ipl),%rdx),%eax
 	ret
 
 ENTRY(splx)
@@ -132,7 +132,7 @@ ENTRY(splx)
 	CPU_NUMBER(%eax)
 #if (MACH_KDB || MACH_TTD) && !defined(MACH_XEN)
 	/* First make sure that if we're exitting from ipl7, IF is still cleared */
-	cmpl	$SPL7,CX(EXT(curr_ipl),%eax)	/* from ipl7? */
+	cmpl	$SPL7,CX(EXT(curr_ipl),%rax)	/* from ipl7? */
 	jne	0f
 	pushfq
 	popq	%rax
@@ -145,7 +145,7 @@ ENTRY(splx)
 	testl	%edx,%edx		/* spl0? */
 	jz	EXT(spl0)		/* yes, handle specially */
 	CPU_NUMBER(%eax)
-	cmpl	CX(EXT(curr_ipl),%eax),%edx	/* same ipl as current? */
+	cmpl	CX(EXT(curr_ipl),%rax),%edx	/* same ipl as current? */
 	jne	spl			/* no */
 	cmpl	$SPL7,%edx		/* spl7? */
 	je	1f			/* to ipl7, don't enable interrupts */
@@ -194,9 +194,9 @@ splx_cli:
 	xorl	%edx,%edx		/* edx = ipl 0 */
 2:
 	CPU_NUMBER(%eax)
-	cmpl	CX(EXT(curr_ipl),%eax),%edx	/* same ipl as current? */
+	cmpl	CX(EXT(curr_ipl),%rax),%edx	/* same ipl as current? */
 	je	1f				/* yes, all done */
-	movl	%edx,CX(EXT(curr_ipl),%eax)	/* set ipl */
+	movl	%edx,CX(EXT(curr_ipl),%rax)	/* set ipl */
 #ifdef MACH_XEN
 	movl	EXT(int_mask),%eax
 	movl	(%eax,%edx,4),%eax
@@ -216,7 +216,7 @@ spl:
 	CPU_NUMBER(%eax)
 #if (MACH_KDB || MACH_TTD) && !defined(MACH_XEN)
 	/* First make sure that if we're exitting from ipl7, IF is still cleared */
-	cmpl	$SPL7,CX(EXT(curr_ipl),%eax)	/* from ipl7? */
+	cmpl	$SPL7,CX(EXT(curr_ipl),%rax)	/* from ipl7? */
 	jne	0f
 	pushfq
 	popq	%rax
@@ -235,7 +235,7 @@ spl:
 #endif
 	cli				/* disable interrupts */
 	CPU_NUMBER(%eax)
-	xchgl	CX(EXT(curr_ipl),%eax),%edx	/* set ipl */
+	xchgl	CX(EXT(curr_ipl),%rax),%edx	/* set ipl */
 #ifdef MACH_XEN
 	XEN_SETMASK()			/* program PICs with new mask */
 #endif

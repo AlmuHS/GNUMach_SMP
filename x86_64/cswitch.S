@@ -40,8 +40,8 @@ ENTRY(Load_context)
 	lea	KERNEL_STACK_SIZE-IKS_SIZE-IEL_SIZE(%rcx),%rdx
 						/* point to stack top */
 	CPU_NUMBER(%eax)
-	movq	%rcx,CX(EXT(active_stacks),%eax)	/* store stack address */
-	movq	%rdx,CX(EXT(kernel_stack),%eax)	/* store stack top */
+	movq	%rcx,CX(EXT(active_stacks),%rax)	/* store stack address */
+	movq	%rdx,CX(EXT(kernel_stack),%rax)	/* store stack top */
 
 /* XXX complete */
 
@@ -62,7 +62,7 @@ ENTRY(Load_context)
 
 ENTRY(Switch_context)
 	CPU_NUMBER(%eax)
-	movq	CX(EXT(active_stacks),%eax),%rcx	/* get old kernel stack */
+	movq	CX(EXT(active_stacks),%rax),%rcx	/* get old kernel stack */
 
 	movq	%r12,KSS_R12(%rcx)		/* save registers */
 	movq	%r13,KSS_R13(%rcx)
@@ -85,9 +85,9 @@ ENTRY(Switch_context)
 	        				/* point to stack top */
 
 	CPU_NUMBER(%eax)
-	movq	%rsi,CX(EXT(active_threads),%eax)	/* new thread is active */
-	movq	%rcx,CX(EXT(active_stacks),%eax)	/* set current stack */
-	movq	%rbx,CX(EXT(kernel_stack),%eax)	/* set stack top */
+	movq	%rsi,CX(EXT(active_threads),%rax)	/* new thread is active */
+	movq	%rcx,CX(EXT(active_stacks),%rax)	/* set current stack */
+	movq	%rbx,CX(EXT(kernel_stack),%rax)	/* set stack top */
 
 	movq	KSS_ESP(%rcx),%rsp		/* switch stacks */
 	movq	KSS_EBP(%rcx),%rbp		/* restore registers */
@@ -120,7 +120,7 @@ ENTRY(Thread_continue)
 ENTRY(switch_to_shutdown_context)
 ud2
 	CPU_NUMBER(%eax)
-	movq	EXT(active_stacks)(,%eax,8),%rcx	/* get old kernel stack */
+	movq	CX(EXT(active_stacks),%rax),%rcx	/* get old kernel stack */
 	movq	%r12,KSS_R12(%rcx)		/* save registers */
 	movq	%r13,KSS_R13(%rcx)
 	movq	%r14,KSS_R14(%rcx)
@@ -136,8 +136,8 @@ ud2
 	movq	S_ARG1,%rbx			/* get routine to run next */
 	movq	S_ARG2,%rsi			/* get its argument */
 
-	CPU_NUMBER(%eax)
-	movq	CX(EXT(int_stack_base),%eax),%rcx	/* point to its interrupt stack */
+	CPU_NUMBER(%ecx)
+	movq	CX(EXT(int_stack_base),%rcx),%rcx	/* point to its interrupt stack */
 	lea	INTSTACK_SIZE(%rcx),%rsp	/* switch to it (top) */
 
 	movq	%rax,%rdi			/* push thread */
