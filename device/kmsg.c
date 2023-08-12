@@ -44,7 +44,7 @@ static queue_head_t kmsg_read_queue;
 /* Used for exclusive access to the device */
 static boolean_t kmsg_in_use;
 /* Used for exclusive access to the routines */
-def_simple_lock_data (static, kmsg_lock);
+def_simple_lock_irq_data (static, kmsg_lock);
 /* If already initialized or not  */
 static boolean_t kmsg_init_done = FALSE;
 
@@ -56,23 +56,23 @@ kmsginit (void)
   kmsg_read_offset = 0;
   queue_init (&kmsg_read_queue);
   kmsg_in_use = FALSE;
-  simple_lock_init (&kmsg_lock);
+  simple_lock_init_irq (&kmsg_lock);
 }
 
 /* Kernel Message Open Handler */
 io_return_t
 kmsgopen (dev_t dev, int flag, const io_req_t ior)
 {
-  simple_lock (&kmsg_lock);
+  spl_t s = simple_lock_irq (&kmsg_lock);
   if (kmsg_in_use)
     {
-      simple_unlock (&kmsg_lock);
+      simple_unlock_irq (s, &kmsg_lock);
       return D_ALREADY_OPEN;
     }
   
   kmsg_in_use = TRUE;
 
-  simple_unlock (&kmsg_lock);
+  simple_unlock_irq (s, &kmsg_lock);
   return D_SUCCESS;
 }
 
@@ -80,10 +80,10 @@ kmsgopen (dev_t dev, int flag, const io_req_t ior)
 void
 kmsgclose (dev_t dev, int flag)
 {
-  simple_lock (&kmsg_lock);
+  spl_t s = simple_lock_irq (&kmsg_lock);
   kmsg_in_use = FALSE;
   
-  simple_unlock (&kmsg_lock);
+  simple_unlock_irq (s, &kmsg_lock);
 }
 
 static boolean_t kmsg_read_done (io_req_t ior);
@@ -99,19 +99,19 @@ kmsgread (dev_t dev, io_req_t ior)
   if (err != KERN_SUCCESS)
     return err;
 
-  simple_lock (&kmsg_lock);
+  spl_t s = simple_lock_irq (&kmsg_lock);
   if (kmsg_read_offset == kmsg_write_offset)
     {
       /* The queue is empty.  */
       if (ior->io_mode & D_NOWAIT)
 	{
-	  simple_unlock (&kmsg_lock);
+	  simple_unlock_irq (s, &kmsg_lock);
 	  return D_WOULD_BLOCK;
 	}
 
       ior->io_done = kmsg_read_done;
       enqueue_tail (&kmsg_read_queue, (queue_entry_t) ior);
-      simple_unlock (&kmsg_lock);
+      simple_unlock_irq (s, &kmsg_lock);
       return D_IO_QUEUED;
     }
 
@@ -142,7 +142,7 @@ kmsgread (dev_t dev, io_req_t ior)
   
   ior->io_residual = ior->io_count - amt;
   
-  simple_unlock (&kmsg_lock);
+  simple_unlock_irq (s, &kmsg_lock);
   return D_SUCCESS;
 }
 
@@ -151,13 +151,13 @@ kmsg_read_done (io_req_t ior)
 {
   int amt, len;
 
-  simple_lock (&kmsg_lock);
+  spl_t s = simple_lock_irq (&kmsg_lock);
   if (kmsg_read_offset == kmsg_write_offset)
     {
       /* The queue is empty.  */
       ior->io_done = kmsg_read_done;
       enqueue_tail (&kmsg_read_queue, (queue_entry_t) ior);
-      simple_unlock (&kmsg_lock);
+      simple_unlock_irq (s, &kmsg_lock);
       return FALSE;
     }
 
@@ -188,7 +188,7 @@ kmsg_read_done (io_req_t ior)
   
   ior->io_residual = ior->io_count - amt;
 
-  simple_unlock (&kmsg_lock);
+  simple_unlock_irq (s, &kmsg_lock);
   ds_read_done (ior);
   
   return TRUE;
@@ -218,6 +218,7 @@ kmsg_putchar (int c)
 {
   io_req_t ior;
   int offset;
+  spl_t s;
 
   /* XXX: cninit is not called before cnputc is used. So call kmsginit
      here if not initialized yet.  */
@@ -227,7 +228,7 @@ kmsg_putchar (int c)
       kmsg_init_done = TRUE;
     }
   
-  simple_lock (&kmsg_lock);
+  s = simple_lock_irq (&kmsg_lock);
   offset = kmsg_write_offset + 1;
   if (offset == KMSGBUFSIZE)
     offset = 0;
@@ -235,7 +236,7 @@ kmsg_putchar (int c)
   if (offset == kmsg_read_offset)
     {
       /* Discard C.  */
-      simple_unlock (&kmsg_lock);
+      simple_unlock_irq (s, &kmsg_lock);
       return;
     }
 
@@ -246,5 +247,5 @@ kmsg_putchar (int c)
   while ((ior = (io_req_t) dequeue_head (&kmsg_read_queue)) != NULL)
     iodone (ior);
 
-  simple_unlock (&kmsg_lock);
+  simple_unlock_irq (s, &kmsg_lock);
 }
