@@ -43,7 +43,7 @@
 #include <device/io_req.h>
 
 struct tty {
-	decl_simple_lock_data(,t_lock)	/* Shall be taken at spltty only */
+	decl_simple_lock_irq_data(,t_lock)	/* Shall be taken at spltty only */
 	struct cirbuf	t_inq;		/* input buffer */
 	struct cirbuf	t_outq;		/* output buffer */
 	char *		t_addr;		/* device pointer */

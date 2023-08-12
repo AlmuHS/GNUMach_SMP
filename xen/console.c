@@ -184,32 +184,29 @@ int hypcnopen(dev_t dev, int flag, io_req_t ior)
 	struct tty 	*tp = &hypcn_tty;
 	spl_t	o_pri;
 
-	o_pri = spltty();
-	simple_lock(&tp->t_lock);
+	o_pri = simple_lock_irq(&tp->t_lock);
 	if (!(tp->t_state & (TS_ISOPEN|TS_WOPEN))) {
 		/* XXX ttychars allocates memory */
-		simple_unlock(&tp->t_lock);
+		simple_unlock_nocheck(&tp->t_lock.slock);
 		ttychars(tp);
-		simple_lock(&tp->t_lock);
+		simple_lock_nocheck(&tp->t_lock.slock);
 		tp->t_oproc = hypcnstart;
 		tp->t_stop = hypcnstop;
 		tp->t_ospeed = tp->t_ispeed = B9600;
 		tp->t_flags = ODDP|EVENP|ECHO|CRMOD|XTABS;
 	}
 	tp->t_state |= TS_CARR_ON;
-	simple_unlock(&tp->t_lock);
-	splx(o_pri);
+	simple_unlock_irq(o_pri, &tp->t_lock);
 	return (char_open(dev, tp, flag, ior));
 }
 
 void hypcnclose(dev_t dev, int flag)
 {
 	struct tty	*tp = &hypcn_tty;
-	spl_t s = spltty();
-	simple_lock(&tp->t_lock);
+	spl_t s;
+	s = simple_lock_irq(&tp->t_lock);
 	ttyclose(tp);
-	simple_unlock(&tp->t_lock);
-	splx(s);
+	simple_unlock_irq(s, &tp->t_lock);
 }
 
 int hypcnprobe(struct consdev *cp)

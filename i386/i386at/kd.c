@@ -441,13 +441,12 @@ kdopen(
 	spl_t	o_pri;
 
 	tp = &kd_tty;
-	o_pri = spltty();
-	simple_lock(&tp->t_lock);
+	o_pri = simple_lock_irq(&tp->t_lock);
 	if (!(tp->t_state & (TS_ISOPEN|TS_WOPEN))) {
 		/* XXX ttychars allocates memory */
-		simple_unlock(&tp->t_lock);
+		simple_unlock_nocheck(&tp->t_lock.slock);
 		ttychars(tp);
-		simple_lock(&tp->t_lock);
+		simple_lock_nocheck(&tp->t_lock.slock);
 		/*
 		 *	Special support for boot-time rc scripts, which don't
 		 *	stty the console.
@@ -459,8 +458,7 @@ kdopen(
 		kdinit();
 	}
 	tp->t_state |= TS_CARR_ON;
-	simple_unlock(&tp->t_lock);
-	splx(o_pri);
+	simple_unlock_irq(o_pri, &tp->t_lock);
 	return (char_open(dev, tp, flag, ior));
 }
 
@@ -484,11 +482,10 @@ kdclose(dev_t dev, int flag)
 
 	tp = &kd_tty;
 	{
-	    spl_t s = spltty();
-	    simple_lock(&tp->t_lock);
+	    spl_t s;
+	    s = simple_lock_irq(&tp->t_lock);
 	    ttyclose(tp);
-	    simple_unlock(&tp->t_lock);
-	    splx(s);
+	    simple_unlock_irq(s, &tp->t_lock);
 	}
 
 	return;
