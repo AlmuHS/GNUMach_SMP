@@ -200,7 +200,8 @@ dump_ss(regs);
 		/* If it's in the kernel linear address region,
 		   convert it to a kernel virtual address
 		   and use the kernel map to process the fault.  */
-		if (subcode >= LINEAR_MIN_KERNEL_ADDRESS) {
+		if (lintokv(subcode) == 0 ||
+			subcode >= LINEAR_MIN_KERNEL_ADDRESS) {
 #if 0
 		printf("%08x in kernel linear address range\n", subcode);
 #endif
