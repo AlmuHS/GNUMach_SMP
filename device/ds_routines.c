@@ -1516,7 +1516,7 @@ ds_no_senders(mach_no_senders_notification_t *notification)
 }
 
 /* Shall be taken at splio only */
-def_simple_lock_data(static,	io_done_list_lock)	/* Lock for... */
+def_simple_lock_irq_data(static,	io_done_list_lock)	/* Lock for... */
 queue_head_t		io_done_list;
 
 #define	splio	splsched	/* XXX must block ALL io devices */
@@ -1546,10 +1546,10 @@ void iodone(io_req_t ior)
 	    thread_wakeup((event_t)ior);
 	} else {
 	    ior->io_op |= IO_DONE;
-	    simple_lock(&io_done_list_lock);
+	    simple_lock_nocheck(&io_done_list_lock.slock);
 	    enqueue_tail(&io_done_list, (queue_entry_t)ior);
 	    thread_wakeup((event_t)&io_done_list);
-	    simple_unlock(&io_done_list_lock);
+	    simple_unlock_nocheck(&io_done_list_lock.slock);
 	}
 	splx(s);
 }
@@ -1563,11 +1563,9 @@ static void  __attribute__ ((noreturn)) io_done_thread_continue(void)
 #if defined (LINUX_DEV) && defined (CONFIG_INET)
 	    free_skbuffs ();
 #endif
-	    s = splio();
-	    simple_lock(&io_done_list_lock);
+	    s = simple_lock_irq(&io_done_list_lock);
 	    while ((ior = (io_req_t)dequeue_head(&io_done_list)) != 0) {
-		simple_unlock(&io_done_list_lock);
-		(void) splx(s);
+		simple_unlock_irq(s, &io_done_list_lock);
 
 		if ((*ior->io_done)(ior)) {
 		    /*
@@ -1577,13 +1575,11 @@ static void  __attribute__ ((noreturn)) io_done_thread_continue(void)
 		}
 		/* else routine has re-queued it somewhere */
 
-		s = splio();
-		simple_lock(&io_done_list_lock);
+		s = simple_lock_irq(&io_done_list_lock);
 	    }
 
 	    assert_wait(&io_done_list, FALSE);
-	    simple_unlock(&io_done_list_lock);
-	    (void) splx(s);
+	    simple_unlock_irq(s, &io_done_list_lock);
 	    counter(c_io_done_thread_block++);
 	    thread_block(io_done_thread_continue);
 	}
@@ -1611,7 +1607,7 @@ void mach_device_init(void)
 	vm_offset_t	device_io_min, device_io_max;
 
 	queue_init(&io_done_list);
-	simple_lock_init(&io_done_list_lock);
+	simple_lock_init_irq(&io_done_list_lock);
 
 	kmem_submap(device_io_map, kernel_map, &device_io_min, &device_io_max,
 		    DEVICE_IO_MAP_SIZE);
