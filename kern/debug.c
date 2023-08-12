@@ -54,10 +54,10 @@ void
 Assert(const char *exp, const char *file, int line, const char *fun)
 {
 #if NCPUS > 1
-  	simple_lock(&Assert_print_lock);
+	spl_t s = simple_lock_irq(&Assert_print_lock);
 	printf("{cpu%d} %s:%d: %s: Assertion `%s' failed.",
 	       cpu_number(), file, line, fun, exp);
-	simple_unlock(&Assert_print_lock);
+	simple_unlock_irq(s, &Assert_print_lock);
 #else
 	printf("%s:%d: %s: Assertion `%s' failed.",
 	       file, line, fun, exp);
@@ -112,7 +112,7 @@ void Debugger(const char *message)
    even before panic_init() gets called from the "normal" place in kern/startup.c.
    (panic_init() still needs to be called from there
    to make sure we get initialized before starting multiple processors.)  */
-def_simple_lock_data(static,	panic_lock)
+def_simple_lock_irq_data(static,	panic_lock)
 
 const char     		*panicstr;
 int			paniccpu;
@@ -131,13 +131,14 @@ void
 Panic(const char *file, int line, const char *fun, const char *s, ...)
 {
 	va_list	listp;
+	spl_t spl;
 
 	panic_init();
 
-	simple_lock(&panic_lock);
+	spl = simple_lock_irq(&panic_lock);
 	if (panicstr) {
 	    if (cpu_number() != paniccpu) {
-		simple_unlock(&panic_lock);
+		simple_unlock_irq(spl, &panic_lock);
 		halt_cpu();
 		/* NOTREACHED */
 	    }
@@ -146,7 +147,7 @@ Panic(const char *file, int line, const char *fun, const char *s, ...)
 	    panicstr = s;
 	    paniccpu = cpu_number();
 	}
-	simple_unlock(&panic_lock);
+	simple_unlock_irq(spl, &panic_lock);
 	printf("panic ");
 #if	NCPUS > 1
 	printf("{cpu%d} ", paniccpu);
