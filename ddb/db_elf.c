@@ -63,8 +63,8 @@
 
 struct db_symtab_elf {
   int		type;
-  Elf32_Sym	*start;
-  Elf32_Sym	*end;
+  Elf_Sym	*start;
+  Elf_Sym	*end;
   char		*strings;
   char		*map_pointer;	/* symbols are for this map only,
 				   if not null */
@@ -80,7 +80,7 @@ elf_db_sym_init (unsigned shdr_num,
 		 char *name,
 		 char *task_addr)
 {
-  Elf32_Shdr *shdr, *symtab, *strtab;
+  Elf_Shdr *shdr, *symtab, *strtab;
   const char *shstrtab;
   unsigned i;
 
@@ -90,7 +90,7 @@ elf_db_sym_init (unsigned shdr_num,
   if (shdr_size != sizeof *shdr)
     return FALSE;
 
-  shdr = (Elf32_Shdr *) shdr_addr;
+  shdr = (Elf_Shdr *) shdr_addr;
 
   if (shdr[shdr_shndx].sh_type != SHT_STRTAB)
     return FALSE;
@@ -127,7 +127,7 @@ elf_db_sym_init (unsigned shdr_num,
 			   (char *) phystokv (strtab->sh_addr),
 			   task_addr)) {
     db_printf ("Loaded ELF symbol table for %s (%d symbols)\n",
-	       name, symtab->sh_size / sizeof (Elf32_Sym));
+	       name, symtab->sh_size / sizeof (Elf_Sym));
     return TRUE;
   }
 
@@ -142,7 +142,7 @@ elf_db_lookup (db_symtab_t *stab,
 	       char *symstr)
 {
   struct db_symtab_elf *self = (struct db_symtab_elf *) stab;
-  Elf32_Sym *s;
+  Elf_Sym *s;
 
   for (s = self->start; s < self->end; s++)
     if (strcmp (symstr, &self->strings[s->st_name]) == 0)
@@ -159,29 +159,29 @@ elf_db_search_symbol (db_symtab_t *stab,
 {
   struct db_symtab_elf *self = (struct db_symtab_elf *) stab;
   unsigned long	diff = *diffp;
-  Elf32_Sym *s, *symp = NULL;
+  Elf_Sym *s, *symp = NULL;
 
   for (s = self->start; s < self->end; s++) {
     if (s->st_name == 0)
       continue;
 
-    if (strategy == DB_STGY_XTRN && (ELF32_ST_BIND(s->st_info) != STB_GLOBAL))
+    if (strategy == DB_STGY_XTRN && (ELF_ST_BIND(s->st_info) != STB_GLOBAL))
       continue;
 
     if (off >= s->st_value) {
-      if (ELF32_ST_TYPE(s->st_info) != STT_FUNC)
+      if (ELF_ST_TYPE(s->st_info) != STT_FUNC)
 	continue;
 
       if (off - s->st_value < diff) {
 	diff = off - s->st_value;
 	symp = s;
-	if (diff == 0 && (ELF32_ST_BIND(s->st_info) == STB_GLOBAL))
+	if (diff == 0 && (ELF_ST_BIND(s->st_info) == STB_GLOBAL))
 	  break;
       } else if (off - s->st_value == diff) {
 	if (symp == NULL)
 	  symp = s;
-	else if ((ELF32_ST_BIND(symp->st_info) != STB_GLOBAL)
-		 && (ELF32_ST_BIND(s->st_info) == STB_GLOBAL))
+	else if ((ELF_ST_BIND(symp->st_info) != STB_GLOBAL)
+		 && (ELF_ST_BIND(s->st_info) == STB_GLOBAL))
 	  symp = s;	/* pick the external symbol */
       }
     }
@@ -205,7 +205,7 @@ elf_db_symbol_values (db_symtab_t *stab,
 		      db_expr_t *valuep)
 {
   struct db_symtab_elf *self = (struct db_symtab_elf *) stab;
-  Elf32_Sym *s = (Elf32_Sym *) sym;
+  Elf_Sym *s = (Elf_Sym *) sym;
 
   if (namep)
     *namep = &self->strings[s->st_name];
