@@ -36,8 +36,7 @@ typedef int32_t		Elf64_Sword;
 typedef uint32_t	Elf64_Word;
 typedef int64_t		Elf64_Sxword;
 typedef uint64_t	Elf64_Xword;
-typedef uint32_t	Elf64_Half;
-typedef uint16_t	Elf64_Quarter;
+typedef uint16_t	Elf64_Half;
 
 
 /* Architecture identification parameters for x86.  */

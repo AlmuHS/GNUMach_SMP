@@ -50,19 +50,19 @@ typedef struct {
 
 typedef struct {
   unsigned char	e_ident[EI_NIDENT];	/* Id bytes */
-  Elf64_Quarter	e_type;			/* file type */
-  Elf64_Quarter	e_machine;		/* machine type */
-  Elf64_Half	e_version;		/* version number */
+  Elf64_Half	e_type;			/* file type */
+  Elf64_Half	e_machine;		/* machine type */
+  Elf64_Word	e_version;		/* version number */
   Elf64_Addr	e_entry;		/* entry point */
   Elf64_Off	e_phoff;		/* Program hdr offset */
   Elf64_Off	e_shoff;		/* Section hdr offset */
-  Elf64_Half	e_flags;		/* Processor flags */
-  Elf64_Quarter	e_ehsize;		/* sizeof ehdr */
-  Elf64_Quarter	e_phentsize;		/* Program header entry size */
-  Elf64_Quarter	e_phnum;		/* Number of program headers */
-  Elf64_Quarter	e_shentsize;		/* Section header entry size */
-  Elf64_Quarter	e_shnum;		/* Number of section headers */
-  Elf64_Quarter	e_shstrndx;		/* String table index */
+  Elf64_Word	e_flags;		/* Processor flags */
+  Elf64_Half	e_ehsize;		/* sizeof ehdr */
+  Elf64_Half	e_phentsize;		/* Program header entry size */
+  Elf64_Half	e_phnum;		/* Number of program headers */
+  Elf64_Half	e_shentsize;		/* Section header entry size */
+  Elf64_Half	e_shnum;		/* Number of section headers */
+  Elf64_Half	e_shstrndx;		/* String table index */
 } Elf64_Ehdr;
 
 /* e_ident[] identification indexes - figure 4-4, page 4-7 */
@@ -251,8 +251,8 @@ typedef struct {
 } Elf32_Phdr;
 
 typedef struct {
-  Elf64_Half	p_type;		/* entry type */
-  Elf64_Half	p_flags;	/* flags */
+  Elf64_Word	p_type;		/* entry type */
+  Elf64_Word	p_flags;	/* flags */
   Elf64_Off	p_offset;	/* offset */
   Elf64_Addr	p_vaddr;	/* virtual address */
   Elf64_Addr	p_paddr;	/* physical address */
