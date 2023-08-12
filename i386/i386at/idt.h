@@ -37,6 +37,9 @@
 /* IOAPIC spurious interrupt vector set to 0xff */
 #define IOAPIC_SPURIOUS_BASE 0xff
 
+/* Remote -> local AST requests */
+#define CALL_LOCAL_AST_BASE 0xfa
+
 /* Currently for TLB shootdowns */
 #define CALL_SINGLE_FUNCTION_BASE 0xfb
 

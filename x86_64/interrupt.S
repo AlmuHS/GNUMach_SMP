@@ -48,6 +48,9 @@ ENTRY(interrupt)
 	cmpl	$CALL_SINGLE_FUNCTION_BASE,%eax	/* was this a SMP call single function request? */
 	je	_call_single
 
+	cmpl	$CALL_LOCAL_AST_BASE,%eax	/* was this a SMP remote -> local ast request? */
+	je	_call_local_ast
+
 	subq	$16,%rsp		/* Two local variables */
 	movl	%eax,S_IRQ		/* save irq number */
 

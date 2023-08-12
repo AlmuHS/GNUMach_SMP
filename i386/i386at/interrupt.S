@@ -48,6 +48,9 @@ ENTRY(interrupt)
 	cmpl	$CALL_SINGLE_FUNCTION_BASE,%eax		/* was this a SMP call single function request? */
 	je	_call_single
 
+	cmpl	$CALL_LOCAL_AST_BASE,%eax	/* was this a SMP remote -> local ast request? */
+	je	_call_local_ast
+
 	subl	$24,%esp		/* Two local variables + 4 parameters */
 	movl	%eax,S_IRQ		/* save irq number */
 
@@ -128,5 +131,10 @@ _call_single:
 	cli				/* no nested interrupts */
 	call	EXT(lapic_eoi)		/* lapic EOI before the handler to allow extra update */
 	call	EXT(pmap_update_interrupt) /* TODO: Allow other functions */
+	ret
+
+_call_local_ast:
+	call	EXT(ast_check)		/* AST check on this cpu */
+	call	EXT(lapic_eoi)		/* lapic EOI */
 	ret
 END(interrupt)

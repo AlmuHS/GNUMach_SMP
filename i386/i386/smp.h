@@ -22,6 +22,7 @@
 #define _SMP_H_
 
 int smp_init(void);
+void smp_remote_ast(unsigned apic_id);
 void smp_pmap_update(unsigned apic_id);
 void smp_startup_cpu(unsigned apic_id, unsigned vector);
 

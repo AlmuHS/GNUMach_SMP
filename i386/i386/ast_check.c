@@ -34,6 +34,9 @@
 
 #include <kern/ast.h>
 #include <kern/processor.h>
+#include <kern/smp.h>
+#include <machine/cpu_number.h>
+#include <machine/apic.h>
 
 /*
  * Initialize for remote invocation of ast_check.
@@ -47,6 +50,7 @@ void init_ast_check(const processor_t processor)
  */
 void cause_ast_check(const processor_t processor)
 {
+    smp_remote_ast(apic_get_cpu_apic_id(processor->slot_num));
 }
 
 #endif	/* NCPUS > 1 */

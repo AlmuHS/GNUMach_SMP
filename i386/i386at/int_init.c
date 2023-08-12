@@ -45,6 +45,10 @@ int_fill(struct real_gate *myidt)
 			      int_entry_table[i], KERNEL_CS,
 			      ACC_PL_K|ACC_INTR_GATE, 0);
 	}
+	fill_idt_gate(myidt, CALL_LOCAL_AST_BASE,
+			      int_entry_table[i], KERNEL_CS,
+			      ACC_PL_K|ACC_INTR_GATE, 0);
+	i++;
 	fill_idt_gate(myidt, CALL_SINGLE_FUNCTION_BASE,
 			      int_entry_table[i], KERNEL_CS,
 			      ACC_PL_K|ACC_INTR_GATE, 0);
