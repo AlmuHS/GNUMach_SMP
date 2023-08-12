@@ -119,8 +119,7 @@ MACRO_BEGIN								\
 	} while ((time)->seconds != mtime->check_seconds64);	\
 MACRO_END
 
-/* Shall be taken at splsched only */
-def_simple_lock_data(static,	timer_lock)	/* lock for ... */
+def_simple_lock_irq_data(static,	timer_lock)	/* lock for ... */
 timer_elt_data_t	timer_head;	/* ordered list of timeouts */
 					/* (doubles as end-of-list) */
 
@@ -217,16 +216,14 @@ void clock_interrupt(
 	     *	timeouts.
 	     */
 
-	    s = splsched();
-	    simple_lock(&timer_lock);
+	    s = simple_lock_irq(&timer_lock);
 
 	    elapsed_ticks++;
 
 	    telt = (timer_elt_t)queue_first(&timer_head.chain);
 	    if (telt->ticks <= elapsed_ticks)
 		needsoft = TRUE;
-	    simple_unlock(&timer_lock);
-	    splx(s);
+	    simple_unlock_irq(s, &timer_lock);
 
 	    /*
 	     *	Increment the time-of-day clock.
@@ -305,12 +302,10 @@ void softclock(void)
 	void	*param;
 
 	while (TRUE) {
-	    s = splsched();
-	    simple_lock(&timer_lock);
+	    s = simple_lock_irq(&timer_lock);
 	    telt = (timer_elt_t) queue_first(&timer_head.chain);
 	    if (telt->ticks > elapsed_ticks) {
-		simple_unlock(&timer_lock);
-		splx(s);
+		simple_unlock_irq(s, &timer_lock);
 		break;
 	    }
 	    fcn = telt->fcn;
@@ -318,8 +313,7 @@ void softclock(void)
 
 	    remqueue(&timer_head.chain, (queue_entry_t)telt);
 	    telt->set = TELT_UNSET;
-	    simple_unlock(&timer_lock);
-	    splx(s);
+	    simple_unlock_irq(s, &timer_lock);
 
 	    assert(fcn != 0);
 	    (*fcn)(param);
@@ -340,8 +334,7 @@ void set_timeout(
 	spl_t			s;
 	timer_elt_t		next;
 
-	s = splsched();
-	simple_lock(&timer_lock);
+	s = simple_lock_irq(&timer_lock);
 
 	interval += elapsed_ticks;
 
@@ -359,33 +352,29 @@ void set_timeout(
 	 */
 	insque((queue_entry_t) telt, ((queue_entry_t)next)->prev);
 	telt->set = TELT_SET;
-	simple_unlock(&timer_lock);
-	splx(s);
+	simple_unlock_irq(s, &timer_lock);
 }
 
 boolean_t reset_timeout(timer_elt_t telt)
 {
 	spl_t	s;
 
-	s = splsched();
-	simple_lock(&timer_lock);
+	s = simple_lock_irq(&timer_lock);
 	if (telt->set) {
 	    remqueue(&timer_head.chain, (queue_entry_t)telt);
 	    telt->set = TELT_UNSET;
-	    simple_unlock(&timer_lock);
-	    splx(s);
+	    simple_unlock_irq(s, &timer_lock);
 	    return TRUE;
 	}
 	else {
-	    simple_unlock(&timer_lock);
-	    splx(s);
+	    simple_unlock_irq(s, &timer_lock);
 	    return FALSE;
 	}
 }
 
 void init_timeout(void)
 {
-	simple_lock_init(&timer_lock);
+	simple_lock_init_irq(&timer_lock);
 	queue_init(&timer_head.chain);
 	timer_head.ticks = ~0;	/* MAXUINT - sentinel */
 
@@ -626,8 +615,7 @@ void timeout(
 	spl_t	s;
 	timer_elt_t elt;
 
-	s = splsched();
-	simple_lock(&timer_lock);
+	s = simple_lock_irq(&timer_lock);
 	for (elt = &timeout_timers[0]; elt < &timeout_timers[NTIMERS]; elt++)
 	    if (elt->set == TELT_UNSET)
 		break;
@@ -636,8 +624,7 @@ void timeout(
 	elt->fcn = fcn;
 	elt->param = param;
 	elt->set = TELT_ALLOC;
-	simple_unlock(&timer_lock);
-	splx(s);
+	simple_unlock_irq(s, &timer_lock);
 
 	set_timeout(elt, (unsigned int)interval);
 }
@@ -651,8 +638,7 @@ boolean_t untimeout(void (*fcn)( void * param ), const void *param)
 	spl_t	s;
 	timer_elt_t elt;
 
-	s = splsched();
-	simple_lock(&timer_lock);
+	s = simple_lock_irq(&timer_lock);
 	queue_iterate(&timer_head.chain, elt, timer_elt_t, chain) {
 
 	    if ((fcn == elt->fcn) && (param == elt->param)) {
@@ -662,12 +648,10 @@ boolean_t untimeout(void (*fcn)( void * param ), const void *param)
 		remqueue(&timer_head.chain, (queue_entry_t)elt);
 		elt->set = TELT_UNSET;
 
-		simple_unlock(&timer_lock);
-		splx(s);
+		simple_unlock_irq(s, &timer_lock);
 		return (TRUE);
 	    }
 	}
-	simple_unlock(&timer_lock);
-	splx(s);
+	simple_unlock_irq(s, &timer_lock);
 	return (FALSE);
 }
