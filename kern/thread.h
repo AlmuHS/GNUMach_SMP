@@ -392,8 +392,19 @@ extern void		thread_unfreeze(
 #define thread_pcb(th)		((th)->pcb)
 
 /* Shall be taken at splsched only */
-#define thread_lock(th)		simple_lock(&(th)->lock)
-#define thread_unlock(th)	simple_unlock(&(th)->lock)
+#ifdef MACH_LDEBUG
+#define thread_lock(th)		do { \
+	assert(splsched() == SPL7); \
+	simple_lock_nocheck(&(th)->lock); \
+} while (0)
+#define thread_unlock(th)	do { \
+	assert(splsched() == SPL7); \
+	simple_unlock_nocheck(&(th)->lock); \
+} while (0)
+#else
+#define thread_lock(th)		simple_lock_nocheck(&(th)->lock)
+#define thread_unlock(th)	simple_unlock_nocheck(&(th)->lock)
+#endif
 
 #define thread_should_halt(thread)	\
 		((thread)->ast & (AST_HALT|AST_TERMINATE))
