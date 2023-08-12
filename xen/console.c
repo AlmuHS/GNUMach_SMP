@@ -29,8 +29,8 @@
 
 /* Hypervisor part */
 
-def_simple_lock_data(static, outlock);
-def_simple_lock_data(static, inlock);
+def_simple_lock_irq_data(static, outlock);
+def_simple_lock_irq_data(static, inlock);
 static struct xencons_interface *console;
 static int kd_pollc;
 int kb_mode;	/* XXX: actually don't care.  */
@@ -41,9 +41,9 @@ static int hypputc(int c)
 		char d = c;
 		hyp_console_io(CONSOLEIO_write, 1, kvtolin(&d));
 	} else {
-		spl_t spl = splhigh();
+		spl_t spl;
 		static int complain;
-		simple_lock(&outlock);
+		spl = simple_lock_irq(&outlock);
 		while (hyp_ring_smash(console->out, console->out_prod, console->out_cons)) {
 			if (!complain) {
 				complain = 1;
@@ -56,8 +56,7 @@ static int hypputc(int c)
 		wmb();
 		console->out_prod++;
 		hyp_event_channel_send(boot_info.console_evtchn);
-		simple_unlock(&outlock);
-		splx(spl);
+		simple_unlock_irq(spl, &outlock);
 	}
 	return 0;
 }
@@ -105,7 +104,7 @@ static void hypcnintr(int unit, spl_t spl, void *ret_addr, void *regs) {
 	struct tty *tp = &hypcn_tty;
 	if (kd_pollc)
 		return;
-	simple_lock(&inlock);
+	simple_lock_nocheck(&inlock.slock);
 	while (console->in_prod != console->in_cons) {
 		int c = hyp_ring_cell(console->in, console->in_cons);
 		mb();
@@ -121,7 +120,7 @@ static void hypcnintr(int unit, spl_t spl, void *ret_addr, void *regs) {
 			(*linesw[tp->t_line].l_rint)(c, tp);
 	}
 	hyp_event_channel_send(boot_info.console_evtchn);
-	simple_unlock(&inlock);
+	simple_unlock_nocheck(&inlock.slock);
 }
 
 int hypcnread(dev_t dev, io_req_t ior)
@@ -220,8 +219,8 @@ int hypcninit(struct consdev *cp)
 {
 	if (console)
 		return 0;
-	simple_lock_init(&outlock);
-	simple_lock_init(&inlock);
+	simple_lock_init_irq(&outlock);
+	simple_lock_init_irq(&inlock);
 	console = (void*) mfn_to_kv(boot_info.console_mfn);
 #ifdef	MACH_PV_PAGETABLES
 	pmap_set_page_readwrite(console);
