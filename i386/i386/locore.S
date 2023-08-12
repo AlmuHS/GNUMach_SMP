@@ -652,8 +652,10 @@ INTERRUPT(21)
 INTERRUPT(22)
 INTERRUPT(23)
 #endif
+#if NCPUS > 1
 INTERRUPT(CALL_AST_CHECK)
 INTERRUPT(CALL_PMAP_UPDATE)
+#endif
 #ifdef APIC
 /* Spurious interrupt, set irq number to vect number */
 INTERRUPT(255)
