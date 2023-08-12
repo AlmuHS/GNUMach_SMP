@@ -203,7 +203,7 @@ ast_check(void)
 			/*
 			 *	Need to recheck and possibly update hint.
 			 */
-			simple_lock(&rq->lock);
+			runq_lock(rq);
 			q = rq->runq + rq->low;
 			if (rq->count > 0) {
 			    for (i = rq->low; i < NRQS; i++) {
@@ -213,7 +213,7 @@ ast_check(void)
 			    }
 			    rq->low = i;
 			}
-			simple_unlock(&rq->lock);
+			runq_unlock(rq);
 		    }
 
 		    if (rq->low <= thread->sched_pri) {

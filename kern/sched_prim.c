@@ -1174,7 +1174,7 @@ void update_priority(
 		whichq = NRQS - 1;					\
 	    }								\
 									\
-	    simple_lock(&(rq)->lock);	/* lock the run queue */	\
+	    runq_lock(rq);	/* lock the run queue */	\
 	    checkrq((rq), "thread_setrun: before adding thread");	\
 	    enqueue_tail(&(rq)->runq[whichq], &((th)->links));		\
 									\
@@ -1185,7 +1185,7 @@ void update_priority(
 	    (th)->runq = (rq);						\
 	    thread_check((th), (rq));					\
 	    checkrq((rq), "thread_setrun: after adding thread");	\
-	    simple_unlock(&(rq)->lock);					\
+	    runq_unlock(rq);						\
 	MACRO_END
 #else	/* DEBUG */
 #define run_queue_enqueue(rq, th)					\
@@ -1198,7 +1198,7 @@ void update_priority(
 		whichq = NRQS - 1;					\
 	    }								\
 									\
-	    simple_lock(&(rq)->lock);	/* lock the run queue */	\
+	    runq_lock(rq);	/* lock the run queue */	\
 	    enqueue_tail(&(rq)->runq[whichq], &((th)->links));		\
 									\
 	    if (whichq < (rq)->low || (rq)->count == 0) 		\
@@ -1206,7 +1206,7 @@ void update_priority(
 									\
 	    (rq)->count++;						\
 	    (th)->runq = (rq);						\
-	    simple_unlock(&(rq)->lock);					\
+	    runq_unlock(rq);						\
 	MACRO_END
 #endif	/* DEBUG */
 /*
@@ -1422,7 +1422,7 @@ struct run_queue *rem_runq(
 	 *	the thread is on a runq, but could leave.
 	 */
 	if (rq != RUN_QUEUE_NULL) {
-		simple_lock(&rq->lock);
+		runq_lock(rq);
 #if	DEBUG
 		checkrq(rq, "rem_runq: at entry");
 #endif	/* DEBUG */
@@ -1441,7 +1441,7 @@ struct run_queue *rem_runq(
 			checkrq(rq, "rem_runq: after removing thread");
 #endif	/* DEBUG */
 			th->runq = RUN_QUEUE_NULL;
-			simple_unlock(&rq->lock);
+			runq_unlock(rq);
 		}
 		else {
 			/*
@@ -1450,7 +1450,7 @@ struct run_queue *rem_runq(
 			 *	can't move again because this routine's
 			 *	caller locked the thread.
 			 */
-			simple_unlock(&rq->lock);
+			runq_unlock(rq);
 			rq = RUN_QUEUE_NULL;
 		}
 	}
