@@ -223,6 +223,10 @@ db_find_trace_symbols(void)
  */
 const int db_numargs_default = 5;
 
+#ifdef __x86_64
+/* Args are in registers */
+#define db_numargs(fp, task) -1
+#else
 static int
 db_numargs(
 	struct i386_frame *fp,
@@ -249,6 +253,7 @@ db_numargs(
 	}
 	return args;
 }
+#endif
 
 struct interrupt_frame {
 	struct i386_frame *if_frame;	/* point to next frame */
