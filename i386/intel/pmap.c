@@ -1899,7 +1899,6 @@ void pmap_protect(
 	vm_offset_t	e,
 	vm_prot_t	prot)
 {
-	pt_entry_t	*pde;
 	pt_entry_t	*spte, *epte;
 	vm_offset_t	l;
 	int		spl;
@@ -1938,12 +1937,13 @@ void pmap_protect(
 	SPLVM(spl);
 	simple_lock(&map->lock);
 
-	pde = pmap_pde(map, s);
 	while (s < e) {
+	    pt_entry_t *pde = pde = pmap_pde(map, s);
+
 	    l = (s + PDE_MAPPED_SIZE) & ~(PDE_MAPPED_SIZE-1);
 	    if (l > e)
 		l = e;
-	    if (*pde & INTEL_PTE_VALID) {
+	    if (pde && (*pde & INTEL_PTE_VALID)) {
 		spte = (pt_entry_t *)ptetokv(*pde);
 		spte = &spte[ptenum(s)];
 		epte = &spte[intel_btop(l-s)];
@@ -1980,7 +1980,6 @@ void pmap_protect(
 #endif	/* MACH_PV_PAGETABLES */
 	    }
 	    s = l;
-	    pde++;
 	}
 	PMAP_UPDATE_TLBS(map, _s, e);
 
