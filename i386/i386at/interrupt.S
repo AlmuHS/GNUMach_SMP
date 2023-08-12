@@ -45,10 +45,10 @@ ENTRY(interrupt)
 	ret				/* if so, just return */
 1:
 #endif
-	cmpl	$CALL_SINGLE_FUNCTION_BASE,%eax		/* was this a SMP call single function request? */
+	cmpl	$CALL_PMAP_UPDATE,%eax	/* was this a SMP pmap_update request? */
 	je	_call_single
 
-	cmpl	$CALL_LOCAL_AST_BASE,%eax	/* was this a SMP remote -> local ast request? */
+	cmpl	$CALL_AST_CHECK,%eax	/* was this a SMP remote -> local ast request? */
 	je	_call_local_ast
 
 	subl	$24,%esp		/* Two local variables + 4 parameters */
@@ -130,7 +130,7 @@ _no_eoi:
 _call_single:
 	cli				/* no nested interrupts */
 	call	EXT(lapic_eoi)		/* lapic EOI before the handler to allow extra update */
-	call	EXT(pmap_update_interrupt) /* TODO: Allow other functions */
+	call	EXT(pmap_update_interrupt)
 	ret
 
 _call_local_ast:

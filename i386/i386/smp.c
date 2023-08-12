@@ -68,12 +68,12 @@ static void smp_send_ipi(unsigned apic_id, unsigned vector)
 
 void smp_remote_ast(unsigned apic_id)
 {
-    smp_send_ipi(apic_id, CALL_LOCAL_AST_BASE);
+    smp_send_ipi(apic_id, CALL_AST_CHECK);
 }
 
 void smp_pmap_update(unsigned apic_id)
 {
-    smp_send_ipi(apic_id, CALL_SINGLE_FUNCTION_BASE);
+    smp_send_ipi(apic_id, CALL_PMAP_UPDATE);
 }
 
 /* See Intel IA32/64 Software Developer's Manual 3A Section 8.4.4.1 */

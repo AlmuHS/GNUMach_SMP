@@ -652,9 +652,8 @@ INTERRUPT(21)
 INTERRUPT(22)
 INTERRUPT(23)
 #endif
-INTERRUPT(CALL_LOCAL_AST_BASE)
-/* Invalidate TLB IPI to call pmap_update_interrupt() on a specific cpu */
-INTERRUPT(CALL_SINGLE_FUNCTION_BASE)
+INTERRUPT(CALL_AST_CHECK)
+INTERRUPT(CALL_PMAP_UPDATE)
 #ifdef APIC
 /* Spurious interrupt, set irq number to vect number */
 INTERRUPT(255)

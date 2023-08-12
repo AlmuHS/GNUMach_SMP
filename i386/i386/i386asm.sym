@@ -48,8 +48,8 @@
 #include <i386/apic.h>
 #include <i386/xen.h>
 
-expr	CALL_LOCAL_AST_BASE
-expr	CALL_SINGLE_FUNCTION_BASE
+expr	CALL_AST_CHECK
+expr	CALL_PMAP_UPDATE
 
 offset	ApicLocalUnit		lu	apic_id		APIC_ID
 
