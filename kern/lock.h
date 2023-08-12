@@ -49,6 +49,13 @@
  * spl_t s = simple_lock_irq(&mylock);
  * [... critical section]
  * simple_unlock_irq(s, &mylock);
+ *
+ * To catch faulty code, when MACH_LDEBUG is set we check that non-_irq versions
+ * are not called while handling an interrupt.
+ *
+ * In the following, the _nocheck versions don't check anything, the _irq
+ * versions disable interrupts, and the pristine versions add a check when
+ * MACH_LDEBUG is set.
  */
 
 #if NCPUS > 1
@@ -249,9 +256,8 @@ extern void		lock_clear_recursive(lock_t);
 /* XXX: We don't keep track of readers, so this is an approximation.  */
 #define have_read_lock(l)	((l)->read_count > 0)
 #define have_write_lock(l)	((l)->writer == current_thread())
-// Disabled for now, until all places are fixed
 extern unsigned long in_interrupt[NCPUS];
-#define lock_check_no_interrupts()	// assert(!in_interrupt[cpu_number()])
+#define lock_check_no_interrupts()	assert(!in_interrupt[cpu_number()])
 #endif	/* MACH_LDEBUG */
 #define have_lock(l)		(have_read_lock(l) || have_write_lock(l))
 

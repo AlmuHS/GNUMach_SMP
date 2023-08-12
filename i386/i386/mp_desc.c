@@ -67,6 +67,14 @@
 vm_offset_t	int_stack_top[NCPUS];
 vm_offset_t	int_stack_base[NCPUS];
 
+/*
+ * Whether we are currently handling an interrupt.
+ * To catch code erroneously taking non-irq-safe locks.
+ */
+#ifdef MACH_LDEBUG
+unsigned long	in_interrupt[NCPUS];
+#endif
+
 /* Interrupt stack allocation */
 uint8_t solid_intstack[NCPUS*INTSTACK_SIZE] __aligned(NCPUS*INTSTACK_SIZE);
 
