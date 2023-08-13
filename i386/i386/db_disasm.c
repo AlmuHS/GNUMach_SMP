@@ -1091,6 +1091,12 @@ db_disasm(
 	int	len;
 	struct i_addr	address;
 
+#ifdef __x86_64__
+	/* The instruction set decoding needs an update, avoid showing bogus output.  */
+	db_printf("TODO\n");
+	return loc+1;
+#endif
+
 	get_value_inc(inst, loc, 1, FALSE, task);
 	if (db_disasm_16) {
 	    short_addr = TRUE;
