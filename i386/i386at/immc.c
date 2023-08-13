@@ -99,6 +99,14 @@ immc_cnputc(dev_t dev, int c)
 		memset((void *) phystokv((0xb8000+80*2*24)), 0, 80*2);
 		ofs = 0;
 	}
+	else if (c == '\r')
+	{
+		ofs = 0;
+	}
+	else if (c == '\t')
+	{
+		ofs = (ofs & ~7) + 8;
+	}
 	else
 	{
 		volatile unsigned char *p;
