@@ -816,7 +816,7 @@ void kmem_cache_init(struct kmem_cache *cache, const char *name,
 
     cache->flags = 0;
 #if SLAB_VERIFY
-    if (obj_size <= PAGE_SIZE - sizeof(union kmem_bufctl) + sizeof(struct kmem_buftag))
+    if (obj_size < PAGE_SIZE - sizeof(union kmem_bufctl) + sizeof(struct kmem_buftag))
         cache->flags |= KMEM_CF_VERIFY;
 #endif /* SLAB_VERIFY */
 
