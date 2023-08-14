@@ -1713,7 +1713,7 @@ void pmap_remove(
 	    pt_entry_t *pde = pmap_pde(map, s);
 
 	    l = (s + PDE_MAPPED_SIZE) & ~(PDE_MAPPED_SIZE-1);
-	    if (l > e)
+	    if (l > e || l < s)
 		l = e;
 	    if (pde && (*pde & INTEL_PTE_VALID)) {
 		spte = (pt_entry_t *)ptetokv(*pde);
@@ -1948,7 +1948,7 @@ void pmap_protect(
 	    pt_entry_t *pde = pde = pmap_pde(map, s);
 
 	    l = (s + PDE_MAPPED_SIZE) & ~(PDE_MAPPED_SIZE-1);
-	    if (l > e)
+	    if (l > e || l < s)
 		l = e;
 	    if (pde && (*pde & INTEL_PTE_VALID)) {
 		spte = (pt_entry_t *)ptetokv(*pde);
