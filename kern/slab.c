@@ -416,6 +416,9 @@ kmem_pagealloc_virtual(vm_size_t size, vm_size_t align)
 static void
 kmem_pagefree_virtual(vm_offset_t addr, vm_size_t size)
 {
+    if (addr < kernel_virtual_start || addr + size > kernel_virtual_end)
+	panic("kmem_pagefree_virtual(%lx-%lx) falls in physical memory area!\n",
+		(unsigned long) addr, (unsigned long) addr + size);
     assert(size > PAGE_SIZE);
     size = vm_page_round(size);
     kmem_free(kernel_map, addr, size);

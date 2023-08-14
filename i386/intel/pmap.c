@@ -1553,6 +1553,9 @@ void pmap_remove_range(
 	struct mmu_update update[HYP_BATCH_MMU_UPDATES];
 #endif	/* MACH_PV_PAGETABLES */
 
+	if (pmap == kernel_pmap && (va < kernel_virtual_start || va + (epte-spte)*PAGE_SIZE > kernel_virtual_end))
+		panic("pmap_remove_range(%lx-%lx) falls in physical memory area!\n", (unsigned long) va, (unsigned long) va + (epte-spte)*PAGE_SIZE);
+
 #if	DEBUG_PTE_PAGE
 	if (pmap != kernel_pmap)
 		ptep_check(get_pte_page(spte));
@@ -1565,6 +1568,9 @@ void pmap_remove_range(
 
 	    if (*cpte == 0)
 		continue;
+
+	    assert(*cpte & INTEL_PTE_VALID);
+
 	    pa = pte_to_pa(*cpte);
 
 	    num_removed++;
@@ -1639,7 +1645,7 @@ void pmap_remove_range(
 
 		pv_h = pai_to_pvh(pai);
 		if (pv_h->pmap == PMAP_NULL) {
-		    panic("pmap_remove: null pv_list for pai %lx at va %lx!", pai, va);
+		    panic("pmap_remove: null pv_list for pai %lx at va %lx!", pai, (unsigned long) va);
 		}
 		if (pv_h->va == va && pv_h->pmap == pmap) {
 		    /*
@@ -2136,10 +2142,8 @@ void pmap_enter(
 	if (pmap == PMAP_NULL)
 		return;
 
-#if !MACH_KDB
 	if (pmap == kernel_pmap && (v < kernel_virtual_start || v >= kernel_virtual_end))
-		panic("pmap_enter(%llx, %llx) falls in physical memory area!\n", v, (unsigned long long) pa);
-#endif
+		panic("pmap_enter(%lx, %llx) falls in physical memory area!\n", (unsigned long) v, (unsigned long long) pa);
 #if !(__i486__ || __i586__ || __i686__)
 	if (pmap == kernel_pmap && (prot & VM_PROT_WRITE) == 0
 	    && !wired /* hack for io_wire */ ) {
