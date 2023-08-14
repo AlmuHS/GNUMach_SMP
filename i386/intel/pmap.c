@@ -753,8 +753,8 @@ void pmap_bootstrap(void)
 	kernel_virtual_end = kernel_virtual_start + VM_KERNEL_MAP_SIZE;
 
 	if (kernel_virtual_end < kernel_virtual_start
-			|| kernel_virtual_end > VM_MAX_KERNEL_ADDRESS)
-		kernel_virtual_end = VM_MAX_KERNEL_ADDRESS;
+			|| kernel_virtual_end > VM_MAX_KERNEL_ADDRESS - PAGE_SIZE)
+		kernel_virtual_end = VM_MAX_KERNEL_ADDRESS - PAGE_SIZE;
 
 	/*
 	 * Allocate and clear a kernel page directory.
