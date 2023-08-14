@@ -429,6 +429,7 @@ pt_entry_t *kernel_page_dir;
  * physical-to-physical transfers.
  */
 static pmap_mapwindow_t mapwindows[PMAP_NMAPWINDOWS * NCPUS];
+#define MAPWINDOW_SIZE (PMAP_NMAPWINDOWS * NCPUS * PAGE_SIZE)
 
 #ifdef __x86_64__
 static inline pt_entry_t *
@@ -857,9 +858,9 @@ void pmap_bootstrap(void)
 			}
 			for (; pte < ptable+NPTES; pte++)
 			{
-				if (va >= kernel_virtual_end - PMAP_NMAPWINDOWS * NCPUS * PAGE_SIZE && va < kernel_virtual_end)
+				if (va >= kernel_virtual_end - MAPWINDOW_SIZE && va < kernel_virtual_end)
 				{
-					pmap_mapwindow_t *win = &mapwindows[atop(va - (kernel_virtual_end - PMAP_NMAPWINDOWS * NCPUS * PAGE_SIZE))];
+					pmap_mapwindow_t *win = &mapwindows[atop(va - (kernel_virtual_end - MAPWINDOW_SIZE))];
 					win->entry = pte;
 					win->vaddr = va;
 				}
@@ -1054,7 +1055,7 @@ void pmap_virtual_space(
 	vm_offset_t *endp)
 {
 	*startp = kernel_virtual_start;
-	*endp = kernel_virtual_end - PMAP_NMAPWINDOWS * NCPUS * PAGE_SIZE;
+	*endp = kernel_virtual_end - MAPWINDOW_SIZE;
 }
 
 /*
