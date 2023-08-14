@@ -777,10 +777,16 @@ vm_page_t vm_page_grab(unsigned flags)
 
 	if (flags & VM_PAGE_HIGHMEM)
 		selector = VM_PAGE_SEL_HIGHMEM;
+#if defined(VM_PAGE_DMA32_LIMIT) && VM_PAGE_DMA32_LIMIT > VM_PAGE_DIRECTMAP_LIMIT
+       else if (flags & VM_PAGE_DMA32)
+               selector = VM_PAGE_SEL_DMA32;
+#endif
 	else if (flags & VM_PAGE_DIRECTMAP)
 		selector = VM_PAGE_SEL_DIRECTMAP;
+#if defined(VM_PAGE_DMA32_LIMIT) && VM_PAGE_DMA32_LIMIT <= VM_PAGE_DIRECTMAP_LIMIT
 	else if (flags & VM_PAGE_DMA32)
 		selector = VM_PAGE_SEL_DMA32;
+#endif
 	else
 		selector = VM_PAGE_SEL_DMA;
 

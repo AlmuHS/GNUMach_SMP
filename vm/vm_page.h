@@ -162,8 +162,13 @@ void vm_page_check(const struct vm_page *page);
  */
 
 #define VM_PAGE_DMA		0x01
+#if defined(VM_PAGE_DMA32_LIMIT) && VM_PAGE_DMA32_LIMIT > VM_PAGE_DIRECTMAP_LIMIT
+#define VM_PAGE_DIRECTMAP      0x02
+#define VM_PAGE_DMA32          0x04
+#else
 #define VM_PAGE_DMA32		0x02
 #define VM_PAGE_DIRECTMAP	0x04
+#endif
 #define VM_PAGE_HIGHMEM		0x08
 
 extern
@@ -327,13 +332,24 @@ extern unsigned int	vm_page_info(
  *
  * Selector-to-segment-list translation table :
  * DMA          DMA
+ * if 32bit PAE
+ * DIRECTMAP    DMA32 DMA
+ * DMA32        DMA32 DIRECTMAP DMA
+ * HIGHMEM      HIGHMEM DMA32 DIRECTMAP DMA
+ * else
  * DMA32        DMA32 DMA
  * DIRECTMAP    DIRECTMAP DMA32 DMA
  * HIGHMEM      HIGHMEM DIRECTMAP DMA32 DMA
+ * endif
  */
 #define VM_PAGE_SEL_DMA         0
+#if defined(VM_PAGE_DMA32_LIMIT) && VM_PAGE_DMA32_LIMIT > VM_PAGE_DIRECTMAP_LIMIT
+#define VM_PAGE_SEL_DIRECTMAP   1
+#define VM_PAGE_SEL_DMA32       2
+#else
 #define VM_PAGE_SEL_DMA32       1
 #define VM_PAGE_SEL_DIRECTMAP   2
+#endif
 #define VM_PAGE_SEL_HIGHMEM     3
 
 /*

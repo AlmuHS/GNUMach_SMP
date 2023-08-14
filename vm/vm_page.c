@@ -245,10 +245,12 @@ static int vm_page_is_ready __read_mostly;
  *  - HIGHMEM: must be mapped before it can be accessed
  *
  * Segments are ordered by priority, 0 being the lowest priority. Their
- * relative priorities are DMA < DMA32 < DIRECTMAP < HIGHMEM. Some segments
- * may actually be aliases for others, e.g. if DMA is always possible from
- * the direct physical mapping, DMA and DMA32 are aliases for DIRECTMAP,
- * in which case the segment table contains DIRECTMAP and HIGHMEM only.
+ * relative priorities are DMA < DMA32 < DIRECTMAP < HIGHMEM or
+ * DMA < DIRECTMAP < DMA32 < HIGHMEM.
+ * Some segments may actually be aliases for others, e.g. if DMA is always
+ * possible from the direct physical mapping, DMA and DMA32 are aliases for
+ * DIRECTMAP, in which case the segment table contains DIRECTMAP and HIGHMEM
+ * only.
  */
 static struct vm_page_seg vm_page_segs[VM_PAGE_MAX_SEGS];
 
