@@ -1638,7 +1638,7 @@ void pmap_remove_range(
 
 		pv_h = pai_to_pvh(pai);
 		if (pv_h->pmap == PMAP_NULL) {
-		    panic("pmap_remove: null pv_list!");
+		    panic("pmap_remove: null pv_list for pai %lx at va %lx!", pai, va);
 		}
 		if (pv_h->va == va && pv_h->pmap == pmap) {
 		    /*
