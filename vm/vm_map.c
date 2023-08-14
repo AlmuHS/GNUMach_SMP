@@ -1980,6 +1980,9 @@ kern_return_t vm_map_delete(
 	vm_map_entry_t		entry;
 	vm_map_entry_t		first_entry;
 
+	if (map->pmap == kernel_pmap && (start < kernel_virtual_start || end > kernel_virtual_end))
+		panic("vm_map_delete(%lx-%lx) falls in physical memory area!\n", (unsigned long) start, (unsigned long) end);
+
 	/*
 	 *	Find the start of the region, and clip it
 	 */
