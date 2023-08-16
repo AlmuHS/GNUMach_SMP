@@ -1765,7 +1765,9 @@ retry:
 			 */
 			if ((new_thread = (thread_t)*threadp)!= THREAD_NULL) {
 				*threadp = (volatile thread_t) THREAD_NULL;
+				thread_lock(new_thread);
 				thread_setrun(new_thread, FALSE);
+				thread_unlock(new_thread);
 			}
 
 			counter(c_idle_thread_block++);
