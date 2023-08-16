@@ -49,6 +49,7 @@
 #include <kern/queue.h>
 #include <kern/sched.h>
 #include <kern/sched_prim.h>
+#include <kern/smp.h>
 #include <kern/syscall_subr.h>
 #include <kern/thread.h>
 #include <kern/thread_swap.h>
@@ -1955,6 +1956,7 @@ void do_thread_scan(void)
 	spl_t		s;
 	boolean_t	restart_needed = 0;
 	thread_t	thread;
+	int		i;
 #if	MACH_HOST
 	processor_set_t	pset;
 #endif	/* MACH_HOST */
@@ -1970,8 +1972,12 @@ void do_thread_scan(void)
 #else	/* MACH_HOST */
 	    restart_needed = do_runq_scan(&default_pset.runq);
 #endif	/* MACH_HOST */
-	    if (!restart_needed)
-	    	restart_needed = do_runq_scan(&master_processor->runq);
+	    if (!restart_needed) {
+		for (i = 0; i < smp_get_numcpus(); i++) {
+		    if ((restart_needed = do_runq_scan(&cpu_to_processor(i)->runq)))
+			break;
+		}
+	    }
 
 	    /*
 	     *	Ok, we now have a collection of candidates -- fix them.
