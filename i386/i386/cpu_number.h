@@ -39,11 +39,29 @@
 #define	CX(addr, reg)	addr(,reg,8)
 #endif
 
-#define	CPU_NUMBER(reg)	\
+#define	CPU_NUMBER_NO_STACK(reg)	\
 	movl	%cs:lapic, reg		;\
 	movl	%cs:APIC_ID(reg), reg	;\
 	shrl	$24, reg		;\
 	movl	%cs:CX(cpu_id_lut, reg), reg	;\
+
+/* Never call CPU_NUMBER(%esi) */
+#define CPU_NUMBER(reg)		\
+	pushl	%esi		;\
+	pushl	%eax		;\
+	pushl	%ebx		;\
+	pushl	%ecx		;\
+	pushl	%edx		;\
+	movl	$1, %eax	;\
+	cpuid			;\
+	shrl	$24, %ebx	;\
+	movl	%cs:CX(cpu_id_lut, %ebx), %esi	;\
+	popl	%edx		;\
+	popl	%ecx		;\
+	popl	%ebx		;\
+	popl	%eax		;\
+	movl	%esi, reg	;\
+	popl	%esi		;\
 
 #ifndef __ASSEMBLER__
 #include "kern/cpu_number.h"

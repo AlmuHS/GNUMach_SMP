@@ -275,8 +275,7 @@ cpu_setup(int cpu)
 void
 cpu_ap_main()
 {
-    unsigned apic_id = (((ApicLocalUnit*)phystokv(lapic_addr))->apic_id.r >> 24) & 0xff;
-    int cpu = apic_get_cpu_kernel_id(apic_id);
+    int cpu = cpu_number();
 
     do {
 	cpu_pause();

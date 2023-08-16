@@ -185,7 +185,11 @@ apic_get_num_ioapics(void)
 int
 apic_get_current_cpu(void)
 {
-    return (lapic->apic_id.r >> 24) & 0xff;
+    unsigned int eax, ebx, ecx, edx;
+    eax = 1;
+    ecx = 0;
+    cpuid(eax, ebx, ecx, edx);
+    return (ebx >> 24);
 }
 
 
@@ -295,11 +299,6 @@ lapic_enable(void)
     cpu_intr_save(&flags);
 
     apic_id = apic_get_current_cpu();
-    if (apic_id < 0)
-      {
-        printf("apic_get_current_cpu() failed, assuming BSP\n");
-        apic_id = 0;
-      }
 
     dummy = lapic->dest_format.r;
     lapic->dest_format.r = 0xffffffff;		/* flat model */
