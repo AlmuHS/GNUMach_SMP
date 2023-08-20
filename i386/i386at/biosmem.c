@@ -840,10 +840,11 @@ biosmem_directmap_end(void)
 {
     if (biosmem_segment_size(VM_PAGE_SEG_DIRECTMAP) != 0)
         return biosmem_segment_end(VM_PAGE_SEG_DIRECTMAP);
-    else if (biosmem_segment_size(VM_PAGE_SEG_DMA32) != 0)
+#if defined(VM_PAGE_DMA32_LIMIT) && (VM_PAGE_DMA32_LIMIT < VM_PAGE_DIRECTMAP_LIMIT)
+    if (biosmem_segment_size(VM_PAGE_SEG_DMA32) != 0)
         return biosmem_segment_end(VM_PAGE_SEG_DMA32);
-    else
-        return biosmem_segment_end(VM_PAGE_SEG_DMA);
+#endif
+    return biosmem_segment_end(VM_PAGE_SEG_DMA);
 }
 
 static const char * __init

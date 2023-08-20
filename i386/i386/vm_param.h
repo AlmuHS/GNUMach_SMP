@@ -178,14 +178,23 @@
  */
 #define VM_PAGE_SEG_DMA         0
 
-#ifdef __LP64__
-#define VM_PAGE_SEG_DMA32       1
-#define VM_PAGE_SEG_DIRECTMAP   2
-#define VM_PAGE_SEG_HIGHMEM     3
-#else /* __LP64__ */
-#define VM_PAGE_SEG_DMA32       1   /* Alias for the DIRECTMAP segment */
-#define VM_PAGE_SEG_DIRECTMAP   1
-#define VM_PAGE_SEG_HIGHMEM     2
-#endif /* __LP64__ */
+#if defined(VM_PAGE_DMA32_LIMIT) && (VM_PAGE_DMA32_LIMIT != VM_PAGE_DIRECTMAP_LIMIT)
+
+#if VM_PAGE_DMA32_LIMIT < VM_PAGE_DIRECTMAP_LIMIT
+#define VM_PAGE_SEG_DMA32       (VM_PAGE_SEG_DMA+1)
+#define VM_PAGE_SEG_DIRECTMAP   (VM_PAGE_SEG_DMA32+1)
+#define VM_PAGE_SEG_HIGHMEM     (VM_PAGE_SEG_DIRECTMAP+1)
+#else /* VM_PAGE_DMA32_LIMIT > VM_PAGE_DIRECTMAP_LIMIT */
+#define VM_PAGE_SEG_DIRECTMAP   (VM_PAGE_SEG_DMA+1)
+#define VM_PAGE_SEG_DMA32       (VM_PAGE_SEG_DIRECTMAP+1)
+#define VM_PAGE_SEG_HIGHMEM     (VM_PAGE_SEG_DMA32+1)
+#endif
+
+#else
+
+#define VM_PAGE_SEG_DIRECTMAP   (VM_PAGE_SEG_DMA+1)
+#define VM_PAGE_SEG_DMA32       VM_PAGE_SEG_DIRECTMAP   /* Alias for the DIRECTMAP segment */
+#define VM_PAGE_SEG_HIGHMEM     (VM_PAGE_SEG_DIRECTMAP+1)
+#endif
 
 #endif /* _I386_KERNEL_I386_VM_PARAM_ */
