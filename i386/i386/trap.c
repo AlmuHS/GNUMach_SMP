@@ -332,7 +332,7 @@ dump_ss(regs);
 			printf("%s trap", trap_type[type]);
 		else
 			printf("trap %ld", type);
-		printf(", eip 0x%lx\n", regs->eip);
+		printf(", eip 0x%lx, code %lx, cr2 %lx\n", regs->eip, code, regs->cr2);
 #if	MACH_TTD
 		if (kttd_enabled && kttd_trap(type, code, regs))
 			return;
