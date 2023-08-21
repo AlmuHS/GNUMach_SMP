@@ -1398,6 +1398,8 @@ vm_offset_t kalloc(vm_size_t size)
 
         if ((buf != 0) && (cache->flags & KMEM_CF_VERIFY))
             kalloc_verify(cache, buf, size);
+    } else if (size <= PAGE_SIZE) {
+        buf = (void *)kmem_pagealloc_physmem(PAGE_SIZE);
     } else {
         buf = (void *)kmem_pagealloc_virtual(size, 0);
     }
@@ -1440,6 +1442,8 @@ void kfree(vm_offset_t data, vm_size_t size)
             kfree_verify(cache, (void *)data, size);
 
         kmem_cache_free(cache, data);
+    } else if (size <= PAGE_SIZE) {
+        kmem_pagefree_physmem(data, PAGE_SIZE);
     } else {
         kmem_pagefree_virtual(data, size);
     }
