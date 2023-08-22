@@ -260,12 +260,12 @@ evc_signal(evc_t ev)
 		 *	on run queue.
 		 */
 		thread->state = (state &~ TH_WAIT) | TH_RUN;
-		thread_unlock(thread);
 #if NCPUS > 1
 		thread_setrun(thread, TRUE);
 #else
 		simpler_thread_setrun(thread, TRUE);
 #endif
+		thread_unlock(thread);
 		break;
 
 	    case TH_RUN | TH_WAIT:
