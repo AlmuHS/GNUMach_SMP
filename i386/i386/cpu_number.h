@@ -70,6 +70,7 @@ int cpu_number(void);
 
 #else	/* NCPUS == 1 */
 
+#define	CPU_NUMBER_NO_STACK(reg)
 #define	CPU_NUMBER(reg)
 #define	CX(addr,reg)	addr
 
