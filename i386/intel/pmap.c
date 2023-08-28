@@ -1479,9 +1479,9 @@ void pmap_destroy(pmap_t p)
 			if (
 #ifdef __x86_64__
 			    l4i < lin2l4num(VM_MAX_USER_ADDRESS) ||
-			    (l4i == lin2l4num(VM_MAX_USER_ADDRESS) && l3i <= lin2pdpnum(VM_MAX_USER_ADDRESS))
+			    (l4i == lin2l4num(VM_MAX_USER_ADDRESS) && l3i < lin2pdpnum(VM_MAX_USER_ADDRESS))
 #else /* __x86_64__ */
-			    l3i <= lin2pdpnum(VM_MAX_USER_ADDRESS)
+			    l3i < lin2pdpnum(VM_MAX_USER_ADDRESS)
 #endif /* __x86_64__ */
 			    )
 			for (int l2i = 0; l2i < NPTES; l2i++)
