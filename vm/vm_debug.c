@@ -324,7 +324,7 @@ mach_vm_object_pages(
 
 		info->vpi_offset = p->offset;
 		if (p->phys_addr != (typeof(info->vpi_phys_addr)) p->phys_addr)
-			printf("warning: physical address overflow in mach_vm_object_pages!!");
+			printf("warning: physical address overflow in mach_vm_object_pages!!\n");
 		info->vpi_phys_addr = p->phys_addr;
 		info->vpi_wire_count = p->wire_count;
 		info->vpi_page_lock = p->page_lock;
