@@ -696,7 +696,7 @@ kern_return_t vm_allocate_contiguous(
 	*result_paddr = pages->phys_addr;
 
 	assert(*result_paddr >= pmin);
-	assert(*result_paddr + size < pmax);
+	assert(*result_paddr + size <= pmax);
 
 	return KERN_SUCCESS;
 }
