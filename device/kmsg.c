@@ -218,7 +218,7 @@ kmsg_putchar (int c)
 {
   io_req_t ior;
   int offset;
-  spl_t s;
+  spl_t s = -1;
 
   /* XXX: cninit is not called before cnputc is used. So call kmsginit
      here if not initialized yet.  */
@@ -227,8 +227,9 @@ kmsg_putchar (int c)
       kmsginit ();
       kmsg_init_done = TRUE;
     }
-  
-  s = simple_lock_irq (&kmsg_lock);
+
+  if (spl_init)
+    s = simple_lock_irq (&kmsg_lock);
   offset = kmsg_write_offset + 1;
   if (offset == KMSGBUFSIZE)
     offset = 0;
@@ -236,7 +237,8 @@ kmsg_putchar (int c)
   if (offset == kmsg_read_offset)
     {
       /* Discard C.  */
-      simple_unlock_irq (s, &kmsg_lock);
+      if (spl_init)
+	simple_unlock_irq (s, &kmsg_lock);
       return;
     }
 
@@ -247,5 +249,6 @@ kmsg_putchar (int c)
   while ((ior = (io_req_t) dequeue_head (&kmsg_read_queue)) != NULL)
     iodone (ior);
 
-  simple_unlock_irq (s, &kmsg_lock);
+  if (spl_init)
+    simple_unlock_irq (s, &kmsg_lock);
 }

@@ -69,6 +69,7 @@ extern void splon (unsigned long n);
 extern unsigned long sploff (void);
 
 extern void setsoftclock (void);
+extern int spl_init;
 
 /* XXX Include each other... */
 #include <i386/ipl.h>

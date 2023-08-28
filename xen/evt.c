@@ -29,6 +29,7 @@
 int	int_mask[NSPL];
 
 spl_t curr_ipl[NCPUS];
+int spl_init = 0;
 
 interrupt_handler_fn ivect[NEVNT];
 int intpri[NEVNT];
