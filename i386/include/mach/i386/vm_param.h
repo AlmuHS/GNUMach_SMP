@@ -52,8 +52,8 @@
  *	No rounding is used.
  */
 
-#define i386_btop(x)		(((unsigned long)(x)) >> I386_PGSHIFT)
-#define i386_ptob(x)		(((unsigned long)(x)) << I386_PGSHIFT)
+#define i386_btop(x)		(((phys_addr_t)(x)) >> I386_PGSHIFT)
+#define i386_ptob(x)		(((phys_addr_t)(x)) << I386_PGSHIFT)
 
 /*
  *	Round off or truncate to the nearest page.  These will work
@@ -61,9 +61,9 @@
  *	bytes.)
  */
 
-#define i386_round_page(x)	((((unsigned long)(x)) + I386_PGBYTES - 1) & \
+#define i386_round_page(x)	((((phys_addr_t)(x)) + I386_PGBYTES - 1) & \
 					~(I386_PGBYTES-1))
-#define i386_trunc_page(x)	(((unsigned long)(x)) & ~(I386_PGBYTES-1))
+#define i386_trunc_page(x)	(((phys_addr_t)(x)) & ~(I386_PGBYTES-1))
 
 /* User address spaces are 3GB each on a 32-bit kernel, starting at
    virtual and linear address 0.
