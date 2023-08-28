@@ -265,7 +265,7 @@ mach_vm_object_info(
 				 VPI_STATE_PRIVATE|VPI_STATE_ABSENT)
 
 /*
- *	Routine:	mach_vm_object_pages [kernel call]
+ *	Routine:	mach_vm_object_pages/mach_vm_object_pages_phys/ [kernel call]
  *	Purpose:
  *		Retrieve information about the pages in a VM object.
  *	Conditions:
@@ -276,15 +276,16 @@ mach_vm_object_info(
  *		KERN_RESOURCE_SHORTAGE	Couldn't allocate memory.
  */
 
-kern_return_t
-mach_vm_object_pages(
+static kern_return_t
+_mach_vm_object_pages(
 	vm_object_t 		object,
-	vm_page_info_array_t 	*pagesp,
-	natural_t 		*countp)
+	void*		 	*pagesp,
+	natural_t 		*countp,
+	int			phys)
 {
 	vm_size_t size;
 	vm_offset_t addr;
-	vm_page_info_t *pages;
+	void *pages;
 	unsigned int potential, actual, count;
 	vm_page_t p;
 	kern_return_t kr;
@@ -307,28 +308,52 @@ mach_vm_object_pages(
 		if (pages != *pagesp)
 			kmem_free(ipc_kernel_map, addr, size);
 
-		size = round_page(actual * sizeof *pages);
+		if (phys)
+			size = round_page(actual * sizeof(vm_page_phys_info_t));
+		else
+			size = round_page(actual * sizeof(vm_page_info_t));
 		kr = kmem_alloc(ipc_kernel_map, &addr, size);
 		if (kr != KERN_SUCCESS)
 			return kr;
 
-		pages = (vm_page_info_t *) addr;
-		potential = size/sizeof *pages;
+		pages = (void *) addr;
+		if (phys)
+			potential = size / sizeof(vm_page_phys_info_t);
+		else
+			potential = size / sizeof(vm_page_info_t);
 	}
 	/* object is locked, we have enough wired memory */
 
 	count = 0;
 	queue_iterate(&object->memq, p, vm_page_t, listq) {
-		vm_page_info_t *info = &pages[count++];
+		vm_page_info_t *info = NULL;
+		vm_page_phys_info_t *info_phys = NULL;
+
+		if (phys)
+			info_phys = pages + count * sizeof(*info_phys);
+		else
+			info = pages + count * sizeof(*info);
+		count++;
+
 		vm_page_info_state_t state = 0;
 
-		info->vpi_offset = p->offset;
-		if (p->phys_addr != (typeof(info->vpi_phys_addr)) p->phys_addr)
-			printf("warning: physical address overflow in mach_vm_object_pages!!\n");
-		info->vpi_phys_addr = p->phys_addr;
-		info->vpi_wire_count = p->wire_count;
-		info->vpi_page_lock = p->page_lock;
-		info->vpi_unlock_request = p->unlock_request;
+		if (phys) {
+			info_phys->vpi_offset = p->offset;
+			if (p->phys_addr != (typeof(info_phys->vpi_phys_addr)) p->phys_addr)
+				printf("warning: physical address overflow in mach_vm_object_pages!!\n");
+			info_phys->vpi_phys_addr = p->phys_addr;
+			info_phys->vpi_wire_count = p->wire_count;
+			info_phys->vpi_page_lock = p->page_lock;
+			info_phys->vpi_unlock_request = p->unlock_request;
+		} else {
+			info->vpi_offset = p->offset;
+			if (p->phys_addr != (typeof(info->vpi_phys_addr)) p->phys_addr)
+				printf("warning: physical address overflow in mach_vm_object_pages!!\n");
+			info->vpi_phys_addr = p->phys_addr;
+			info->vpi_wire_count = p->wire_count;
+			info->vpi_page_lock = p->page_lock;
+			info->vpi_unlock_request = p->unlock_request;
+		}
 
 		if (p->busy)
 			state |= VPI_STATE_BUSY;
@@ -376,7 +401,10 @@ mach_vm_object_pages(
 		}
 		vm_page_unlock_queues();
 
-		info->vpi_state = state;
+		if (phys)
+			info_phys->vpi_state = state;
+		else
+			info->vpi_state = state;
 	}
 
 	if (object->resident_page_count != count)
@@ -397,7 +425,10 @@ mach_vm_object_pages(
 
 		/* kmem_alloc doesn't zero memory */
 
-		size_used = actual * sizeof *pages;
+		if (phys)
+			size_used = actual * sizeof(vm_page_phys_info_t);
+		else
+			size_used = actual * sizeof(vm_page_info_t);
 		rsize_used = round_page(size_used);
 
 		if (rsize_used != size)
@@ -412,11 +443,29 @@ mach_vm_object_pages(
 				   TRUE, &copy);
 		assert(kr == KERN_SUCCESS);
 
-		*pagesp = (vm_page_info_t *) copy;
+		*pagesp = (void *) copy;
 		*countp = actual;
 	}
 
 	return KERN_SUCCESS;
+}
+
+kern_return_t
+mach_vm_object_pages(
+	vm_object_t 		object,
+	vm_page_info_array_t 	*pagesp,
+	natural_t 		*countp)
+{
+	return _mach_vm_object_pages(object, (void**) pagesp, countp, 0);
+}
+
+kern_return_t
+mach_vm_object_pages_phys(
+	vm_object_t 			object,
+	vm_page_phys_info_array_t 	*pagesp,
+	natural_t 			*countp)
+{
+	return _mach_vm_object_pages(object, (void**) pagesp, countp, 1);
 }
 
 #endif	/* MACH_VM_DEBUG */

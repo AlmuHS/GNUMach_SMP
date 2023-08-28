@@ -102,6 +102,16 @@ type vm_page_info_t = struct {
 };
 type vm_page_info_array_t = array[] of vm_page_info_t;
 
+type vm_page_phys_info_t = struct {
+   rpc_vm_offset_t vpi_offset;
+   rpc_phys_addr_t vpi_phys_addr;
+   unsigned vpi_wire_count;
+   vm_prot_t vpi_page_lock;
+   vm_prot_t vpi_unlock_request;
+   vm_page_info_state_t vpi_state;
+};
+type vm_page_phys_info_array_t = array[] of vm_page_phys_info_t;
+
 type symtab_name_t = c_string[32];
 
 type kernel_debug_name_t = c_string[*: 64];

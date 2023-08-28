@@ -117,6 +117,7 @@ typedef uint32_t vm_page_info_state_t;
 
 #define VPI_STATE_PAGER		0x80000000	/* pager has the page */
 
+/* XXX: This structure holds a 32bit vpi_phys_addr.  */
 typedef struct vm_page_info {
 	rpc_vm_offset_t vpi_offset;	/* offset in object */
 	rpc_vm_offset_t vpi_phys_addr;	/* physical address */
@@ -127,5 +128,16 @@ typedef struct vm_page_info {
 } vm_page_info_t;
 
 typedef vm_page_info_t *vm_page_info_array_t;
+
+typedef struct vm_page_phys_info {
+	rpc_vm_offset_t vpi_offset;	/* offset in object */
+	rpc_phys_addr_t vpi_phys_addr;	/* physical address */
+	unsigned int vpi_wire_count;	/* number of times wired */
+	vm_prot_t vpi_page_lock;	/* XP access restrictions */
+	vm_prot_t vpi_unlock_request;	/* outstanding unlock requests */
+	vm_page_info_state_t vpi_state;	/* random state bits */
+} vm_page_phys_info_t;
+
+typedef vm_page_phys_info_t *vm_page_phys_info_array_t;
 
 #endif	/* _MACH_DEBUG_VM_INFO_H_ */

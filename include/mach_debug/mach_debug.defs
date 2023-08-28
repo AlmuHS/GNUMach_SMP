@@ -217,3 +217,12 @@ routine host_load_symbol_table(
 #else	/* !defined(MACH_KDB) || MACH_KDB */
 skip;	/* host_load_symbol_table */
 #endif	/* !defined(MACH_KDB) || MACH_KDB */
+
+#if	!defined(MACH_VM_DEBUG) || MACH_VM_DEBUG
+routine mach_vm_object_pages_phys(
+		object		: memory_object_name_t;
+	out	pages		: vm_page_phys_info_array_t,
+					CountInOut, Dealloc);
+#else	/* !defined(MACH_VM_DEBUG) || MACH_VM_DEBUG */
+skip;	/* mach_vm_object_pages_phys */
+#endif	/* !defined(MACH_VM_DEBUG) || MACH_VM_DEBUG */
