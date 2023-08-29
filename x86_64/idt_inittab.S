@@ -41,12 +41,13 @@ ENTRY(idt_inittab)
  * Interrupt descriptor table and code vectors for it.
  */
 #ifdef	MACH_PV_DESCRIPTORS
-#define	IDT_ENTRY(n,entry,type) \
+#define	IDT_ENTRY(n,entry,type,ist) \
 	.data	2		;\
 	.byte	n		;\
 	.byte	(((type)&ACC_PL)>>5)|((((type)&(ACC_TYPE|ACC_A))==ACC_INTR_GATE)<<2)	;\
 	.word	FLAT_KERNEL_CS	;\
-	.long	0	/*pad*/	;\
+	.word	ist		;\
+	.word	0	/*pad*/	;\
 	.quad	entry		;\
 	.text
 #else	/* MACH_PV_DESCRIPTORS */
