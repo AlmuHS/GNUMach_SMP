@@ -1378,7 +1378,7 @@ vm_page_boot_seg_avail_size(struct vm_page_boot_seg *seg)
     return seg->avail_end - seg->avail_start;
 }
 
-unsigned long __init
+phys_addr_t __init
 vm_page_bootalloc(size_t size)
 {
     struct vm_page_boot_seg *seg;

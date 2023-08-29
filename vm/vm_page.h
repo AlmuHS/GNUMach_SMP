@@ -426,7 +426,7 @@ int vm_page_ready(void);
  * pmap_steal_memory. It can be used after physical segments have been loaded
  * and before the vm_page module is initialized.
  */
-unsigned long vm_page_bootalloc(size_t size);
+phys_addr_t vm_page_bootalloc(size_t size);
 
 /*
  * Set up the vm_page module.

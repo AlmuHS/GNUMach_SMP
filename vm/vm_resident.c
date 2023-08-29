@@ -233,7 +233,8 @@ void vm_page_bootstrap(
 vm_offset_t pmap_steal_memory(
 	vm_size_t size)
 {
-	vm_offset_t addr, vaddr, paddr;
+	vm_offset_t addr, vaddr;
+	phys_addr_t paddr;
 
 	size = round_page(size);
 
