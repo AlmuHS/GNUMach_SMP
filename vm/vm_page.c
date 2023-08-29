@@ -427,7 +427,7 @@ vm_page_seg_free_to_buddy(struct vm_page_seg *seg, struct vm_page *page,
     pa = page->phys_addr;
 
     while (order < (VM_PAGE_NR_FREE_LISTS - 1)) {
-        buddy_pa = pa ^ vm_page_ptoa(1 << order);
+        buddy_pa = pa ^ vm_page_ptoa(1ULL << order);
 
         if ((buddy_pa < seg->start) || (buddy_pa >= seg->end))
             break;
@@ -440,7 +440,7 @@ vm_page_seg_free_to_buddy(struct vm_page_seg *seg, struct vm_page *page,
         vm_page_free_list_remove(&seg->free_lists[order], buddy);
         buddy->order = VM_PAGE_ORDER_UNLISTED;
         order++;
-        pa &= -vm_page_ptoa(1 << order);
+        pa &= -vm_page_ptoa(1ULL << order);
         page = &seg->pages[vm_page_atop(pa - seg->start)];
     }
 
