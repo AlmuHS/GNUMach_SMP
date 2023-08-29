@@ -85,7 +85,6 @@
 #include <linux/dev/glue/glue.h>
 
 #ifdef PAE
-#warning TODO: make DMA32 between DIRECTMAP and HIGHMEM
 #define VM_PAGE_LINUX VM_PAGE_DMA32
 #else
 #define VM_PAGE_LINUX VM_PAGE_HIGHMEM
