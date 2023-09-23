@@ -119,7 +119,7 @@ _apboot:
 	wrmsr
 
 	/* Load int_stack_top[cpu] -> esp */
-	CPU_NUMBER(%edx)
+	CPU_NUMBER_NO_STACK(%edx)
 	movl	CX(EXT(int_stack_top), %edx), %esp
 
 	/* Ensure stack alignment */
