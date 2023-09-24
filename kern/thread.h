@@ -269,7 +269,6 @@ typedef	mach_port_t *thread_array_t;
 #endif	/* _KERN_KERN_TYPES_H_ */
 
 
-extern thread_t		active_threads[NCPUS];	/* active threads */
 extern vm_offset_t	active_stacks[NCPUS];	/* active kernel stacks */
 
 #ifdef KERNEL
@@ -415,7 +414,7 @@ extern void		thread_unfreeze(
  *	designate this by defining CURRENT_THREAD.
  */
 #ifndef	CURRENT_THREAD
-#define current_thread()	(active_threads[cpu_number()])
+#define current_thread()	(percpu_get(thread_t, active_thread))
 #endif	/* CURRENT_THREAD */
 
 #define	current_stack()		(active_stacks[cpu_number()])

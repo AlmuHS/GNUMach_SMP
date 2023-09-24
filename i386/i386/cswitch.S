@@ -79,7 +79,7 @@ ENTRY(Switch_context)
 	lea	KERNEL_STACK_SIZE-IKS_SIZE-IEL_SIZE(%ecx),%ebx
 						/* point to stack top */
 
-	movl	%esi,CX(EXT(active_threads),%edx)	/* new thread is active */
+	movl	%esi,MY(ACTIVE_THREAD)		/* new thread is active */
 	movl	%ecx,CX(EXT(active_stacks),%edx)	/* set current stack */
 	movl	%ebx,CX(EXT(kernel_stack),%edx)	/* set stack top */
 

@@ -54,6 +54,7 @@ expr	CALL_PMAP_UPDATE
 offset	ApicLocalUnit		lu	apic_id		APIC_ID
 
 offset	percpu			pc	cpu_id		PERCPU_CPU_ID
+offset	percpu			pc	active_thread	PERCPU_ACTIVE_THREAD
 
 size	percpu			pcs
 

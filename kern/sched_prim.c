@@ -806,7 +806,7 @@ boolean_t thread_invoke(
 	/*
 	 *	switch_context is machine-dependent.  It does the
 	 *	machine-dependent components of a context-switch, like
-	 *	changing address spaces.  It updates active_threads.
+	 *	changing address spaces.  It updates active_thread.
 	 *	It returns only if a continuation is not supplied.
 	 */
 	counter(c_thread_invoke_csw++);

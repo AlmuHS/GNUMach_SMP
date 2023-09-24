@@ -300,7 +300,7 @@ void cpu_launch_first_thread(thread_t th)
 
 	PMAP_ACTIVATE_KERNEL(mycpu);
 
-	active_threads[mycpu] = th;
+	percpu_assign(active_thread, th);
 	active_stacks[mycpu] = th->kernel_stack;
 	thread_lock(th);
 	th->state &= ~TH_UNINT;

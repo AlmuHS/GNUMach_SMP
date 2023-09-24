@@ -1082,7 +1082,7 @@ syscall_entry_2:
  * Check for MACH or emulated system call
  */
 syscall_entry_3:
-	movl	CX(EXT(active_threads),%edx),%edx
+	movl	MY(ACTIVE_THREAD),%edx
 					/* point to current thread */
 	movl	TH_TASK(%edx),%edx	/* point to task */
 	movl	TASK_EMUL(%edx),%edx	/* get emulation vector */

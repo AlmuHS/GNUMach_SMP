@@ -233,7 +233,7 @@ thread_handoff(
 	/*
 	 *	stack_handoff is machine-dependent.  It does the
 	 *	machine-dependent components of a context-switch, like
-	 *	changing address spaces.  It updates active_threads.
+	 *	changing address spaces.  It updates active_thread.
 	 */
 
 	stack_handoff(old, new);

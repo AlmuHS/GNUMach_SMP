@@ -316,7 +316,7 @@ void stack_handoff(
 	stack = current_stack();
 	old->kernel_stack = 0;
 	new->kernel_stack = stack;
-	active_threads[mycpu] = new;
+	percpu_assign(active_thread, new);
 
 	/*
 	 *	Switch exception link to point to new

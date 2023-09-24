@@ -132,7 +132,7 @@ time_trap_uentry(unsigned ts)
 	/*
 	 *	Record new timer.
 	 */
-	mytimer = &(active_threads[mycpu]->system_timer);
+	mytimer = &(current_thread()->system_timer);
 	current_timer[mycpu] = mytimer;
 	mytimer->tstamp = ts;
 }
@@ -170,7 +170,7 @@ time_trap_uexit(int ts)
 		timer_normalize(mytimer);	/* SYSTEMMODE */
 	}
 
-	mytimer = &(active_threads[mycpu]->user_timer);
+	mytimer = &(current_thread()->user_timer);
 
 	/*
 	 *	Record new timer.
