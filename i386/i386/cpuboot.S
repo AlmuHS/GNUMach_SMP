@@ -39,20 +39,22 @@ apboot_idt_ptr:
 .align 16
 	.word 0
 apboot_gdt_descr:
-	.word 13*8+7
+	.word 14*8-1
 	.long apboot_gdt - KERNELBASE
 .align 16
 apboot_gdt:
-	/* NULL segment */
+	/* NULL segment = 0x0 */
 	.quad 0
-	/* KERNEL_CS */
+
+	/* KERNEL_CS = 0x8 */
 	.word 0xffff /* Segment limit first 0-15 bits*/
 	.word (-KERNELBASE) & 0xffff /*Base first 0-15 bits*/
 	.byte ((-KERNELBASE) >> 16) & 0xff /*Base 16-23 bits */
 	.byte ACC_PL_K | ACC_CODE_R | ACC_P /*Access byte */
 	.byte ((SZ_32 | SZ_G) << 4) | 0xf /* High 4 bits */
 	.byte ((-KERNELBASE) >> 24) & 0xff /*Base 24-31 bits */
-	/* KERNEL_DS */
+
+	/* KERNEL_DS = 0x10 */
 	.word 0xffff /*Segment limit */
 	.word (-KERNELBASE) & 0xffff /*Base first 0-15 bits*/
 	.byte ((-KERNELBASE) >> 16) & 0xff
@@ -79,6 +81,7 @@ apboot_gdt:
 	.quad 0
 
 	/* USER_GDT = 0x48 and 0x50 */
+	.quad 0
 	.quad 0
 
 	/* USER_TSS64 = 0x58 */
@@ -128,6 +131,21 @@ _apboot:
 	movw	%ax, %es
 	movw	%ax, %ss
 
+	lgdtl	apboot_gdt_descr - KERNELBASE
+	ljmpl	$KERNEL_CS, $1f
+1:
+	xorl	%eax, %eax
+	movw	%ax, %ds
+	movw	%ax, %es
+	movw	%ax, %fs
+	movw	%ax, %gs
+	movw	$KERNEL_DS, %ax
+	movw	%ax, %ds
+	movw	%ax, %es
+	movw	%ax, %fs
+	movw	%ax, %gs
+	movw	%ax, %ss
+
 	/* Get CPU number */
 	movl	$1, %eax
 	cpuid
@@ -141,28 +159,15 @@ _apboot:
 	addl	$percpu_array - KERNELBASE, %eax
 
 	/* Record our cpu number */
-	movl	%ecx, PERCPU_CPU_ID(%eax)
+	movl	%ecx, (PERCPU_CPU_ID + KERNELBASE)(%eax)
 
 	/* Set up temporary percpu descriptor */
-	movw	%ax, apboot_percpu_low - KERNELBASE
+	movw	%ax, apboot_percpu_low
 	shr	$16, %eax
-	movb	%al, apboot_percpu_med - KERNELBASE
+	movb	%al, apboot_percpu_med
 	shr	$8, %ax
-	movb	%al, apboot_percpu_high - KERNELBASE
+	movb	%al, apboot_percpu_high
 
-	lgdtl	apboot_gdt_descr - KERNELBASE
-	ljmpl	$KERNEL_CS, $1f
-1:
-	xorl	%eax, %eax
-	movw	%ax, %ds
-	movw	%ax, %es
-	movw	%ax, %fs
-	movw	%ax, %gs
-	movw	$KERNEL_DS, %ax
-	movw	%ax, %ds
-	movw	%ax, %es
-	movw	%ax, %fs
-	movw	%ax, %ss
 	movw	$PERCPU_DS, %ax
 	movw	%ax, %gs
 
@@ -200,7 +205,7 @@ _apboot:
 .align 16
     .word 0
 gdt_descr_tmp:
-    .short 3*8+7
+    .short 3*8-1
     .long M(gdt_tmp)
 
 .align 16

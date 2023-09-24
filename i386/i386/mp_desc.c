@@ -276,7 +276,7 @@ cpu_setup(int cpu)
 void
 cpu_ap_main()
 {
-    int cpu = cpu_number_slow();
+    int cpu = cpu_number();
 
     do {
 	cpu_pause();

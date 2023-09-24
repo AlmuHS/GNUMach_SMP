@@ -282,7 +282,7 @@ void cpu_launch_first_thread(thread_t th)
 {
 	int	mycpu;
 
-	mycpu = cpu_number_slow();
+	mycpu = cpu_number();
 
 	cpu_up(mycpu);
 
