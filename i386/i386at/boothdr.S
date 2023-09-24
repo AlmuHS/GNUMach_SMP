@@ -115,7 +115,7 @@ iplt_done:
 .align 16
 	.word 0
 boot_gdt_descr:
-	.word 13*8+7
+	.word 14*8-1
 	.long boot_gdt - KERNELBASE
 .align 16
 boot_gdt:
@@ -157,6 +157,7 @@ boot_gdt:
 	.quad 0
 
 	/* USER_GDT = 0x48 and 0x50 */
+	.quad 0
 	.quad 0
 
 	/* USER_TSS64 = 0x58 */
