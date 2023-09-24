@@ -39,7 +39,7 @@ apboot_idt_ptr:
 .align 16
 	.word 0
 apboot_gdt_descr:
-	.word 3*8+7
+	.word 13*8+7
 	.long apboot_gdt - KERNELBASE
 .align 16
 apboot_gdt:
@@ -49,16 +49,54 @@ apboot_gdt:
 	.word 0xffff /* Segment limit first 0-15 bits*/
 	.word (-KERNELBASE) & 0xffff /*Base first 0-15 bits*/
 	.byte ((-KERNELBASE) >> 16) & 0xff /*Base 16-23 bits */
-	.byte (ACC_P | ACC_CODE_R) /*Access byte */
-	.byte 0xcf /* High 4 bits */
+	.byte ACC_PL_K | ACC_CODE_R | ACC_P /*Access byte */
+	.byte ((SZ_32 | SZ_G) << 4) | 0xf /* High 4 bits */
 	.byte ((-KERNELBASE) >> 24) & 0xff /*Base 24-31 bits */
 	/* KERNEL_DS */
 	.word 0xffff /*Segment limit */
 	.word (-KERNELBASE) & 0xffff /*Base first 0-15 bits*/
 	.byte ((-KERNELBASE) >> 16) & 0xff
-	.byte (ACC_P | ACC_DATA_W) /*Access byte*/
-	.byte 0xcf /* High 4 bits */
+	.byte ACC_PL_K | ACC_DATA_W | ACC_P /*Access byte*/
+	.byte ((SZ_32 | SZ_G) << 4) | 0xf /* High 4 bits */
 	.byte ((-KERNELBASE) >> 24) & 0xff /*Base 24-31 bits */
+
+	/* LDT = 0x18 */
+	.quad 0
+
+	/* TSS = 0x20 */
+	.quad 0
+
+	/* USER_LDT = 0x28 */
+	.quad 0
+
+	/* USER_TSS = 0x30 */
+	.quad 0
+
+	/* LINEAR = 0x38 */
+	.quad 0
+
+	/* FPREGS = 0x40 */
+	.quad 0
+
+	/* USER_GDT = 0x48 and 0x50 */
+	.quad 0
+
+	/* USER_TSS64 = 0x58 */
+	.quad 0
+
+	/* USER_TSS64 = 0x60 */
+	.quad 0
+
+	/* boot GS = 0x68 */
+	.word 0xffff
+apboot_percpu_low:
+	.word 0
+apboot_percpu_med:
+	.byte 0
+	.byte ACC_PL_K | ACC_DATA_W | ACC_P
+	.byte ((SZ_32 | SZ_G) << 4) | 0xf
+apboot_percpu_high:
+	.byte 0
 
 .globl apboot, apbootend
 .align 16
@@ -90,6 +128,28 @@ _apboot:
 	movw	%ax, %es
 	movw	%ax, %ss
 
+	/* Get CPU number */
+	movl	$1, %eax
+	cpuid
+	shrl	$24, %ebx
+	movl	%cs:CX(cpu_id_lut, %ebx), %ecx
+
+	/* Access per_cpu area */
+	movl	%ecx,%eax
+	movl	$PC_SIZE,%ebx
+	mul	%ebx
+	addl	$percpu_array - KERNELBASE, %eax
+
+	/* Record our cpu number */
+	movl	%ecx, PERCPU_CPU_ID(%eax)
+
+	/* Set up temporary percpu descriptor */
+	movw	%ax, apboot_percpu_low - KERNELBASE
+	shr	$16, %eax
+	movb	%al, apboot_percpu_med - KERNELBASE
+	shr	$8, %ax
+	movb	%al, apboot_percpu_high - KERNELBASE
+
 	lgdtl	apboot_gdt_descr - KERNELBASE
 	ljmpl	$KERNEL_CS, $1f
 1:
@@ -102,8 +162,9 @@ _apboot:
 	movw	%ax, %ds
 	movw	%ax, %es
 	movw	%ax, %fs
-	movw	%ax, %gs
 	movw	%ax, %ss
+	movw	$PERCPU_DS, %ax
+	movw	%ax, %gs
 
 	/* Load null Interrupt descriptor table */
 	mov	apboot_idt_ptr, %ebx
@@ -150,15 +211,15 @@ gdt_tmp:
     .word 0xffff
     .word 0x0000
     .byte 0x00
-    .byte (ACC_P | ACC_CODE_R)
-    .byte 0xcf
+    .byte ACC_PL_K | ACC_CODE_R | ACC_P
+    .byte ((SZ_32 | SZ_G) << 4) | 0xf
     .byte 0x00
     /* BOOT_DS */
     .word 0xffff
     .word 0x0000
     .byte 0x00
-    .byte (ACC_P | ACC_DATA_W)
-    .byte 0xcf
+    .byte ACC_PL_K | ACC_DATA_W | ACC_P
+    .byte ((SZ_32 | SZ_G) << 4) | 0xf
     .byte 0x00
 
 _apbootend:

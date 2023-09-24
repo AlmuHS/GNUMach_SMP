@@ -58,6 +58,8 @@ offset	percpu			pc	active_thread	PERCPU_ACTIVE_THREAD
 
 offset	pcb			pcb	iss
 
+size	percpu			pc
+
 offset	thread			th	pcb
 offset	thread			th	task
 offset	thread			th	recover
