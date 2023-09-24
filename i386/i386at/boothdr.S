@@ -172,6 +172,6 @@ boot_percpu_low:
 boot_percpu_med:
 	.byte 0
 	.byte ACC_PL_K | ACC_DATA_W | ACC_P
-	.byte ((SZ_32 | SZ_G) << 4) | 0xf
+	.byte ((SZ_32 | SZ_G) << 4)
 boot_percpu_high:
 	.byte 0
