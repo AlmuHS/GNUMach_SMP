@@ -244,7 +244,7 @@ timer_normalize:
  * Switch to a new timer.
  */
 ENTRY(timer_switch)
-	CPU_NUMBER_NO_GS(%edx)			/* get this CPU  */
+	CPU_NUMBER(%edx)			/* get this CPU  */
 	movl	VA_ETC,%ecx			/* get timer */
 	movl	CX(EXT(current_tstamp),%edx),%eax	/* get old time stamp  */
 	movl	%ecx,CX(EXT(current_tstamp),%edx)	/* set new time stamp */
@@ -262,7 +262,7 @@ ENTRY(timer_switch)
  * Initialize the first timer for a CPU.
  */
 ENTRY(start_timer)
-	CPU_NUMBER_NO_GS(%edx)			/* get this CPU */
+	CPU_NUMBER(%edx)			/* get this CPU */
 	movl	VA_ETC,%ecx			/* get timer */
 	movl	%ecx,CX(EXT(current_tstamp),%edx)	/* set initial time stamp */
 	movl	S_ARG0,%ecx			/* get timer */
