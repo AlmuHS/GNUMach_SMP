@@ -48,7 +48,7 @@ lock	orl	$1,hyp_shared_info+CPU_PENDING_SEL; /* Yes, activate it */ \
 
 ENTRY(spl0)
 	mb;
-	CPU_NUMBER_NO_GS(%edx)
+	CPU_NUMBER(%edx)
 	movl	CX(EXT(curr_ipl),%edx),%eax	/* save current ipl */
 	pushl	%eax
 	cli				/* disable interrupts */
@@ -77,7 +77,7 @@ ENTRY(spl0)
 #endif
 	cli				/* disable interrupts */
 1:
-	CPU_NUMBER_NO_GS(%edx)
+	CPU_NUMBER(%edx)
 	cmpl	$(SPL0),CX(EXT(curr_ipl),%edx)	/* are we at spl0? */
 	je	1f				/* yes, all done */
 	movl	$(SPL0),CX(EXT(curr_ipl),%edx)	/* set ipl */
@@ -123,14 +123,14 @@ ENTRY(spl7)
 	mb;
 	/* just clear IF */
 	cli
-	CPU_NUMBER_NO_GS(%edx)
+	CPU_NUMBER(%edx)
 	movl    $SPL7,%eax
 	xchgl   CX(EXT(curr_ipl),%edx),%eax
 	ret
 
 ENTRY(splx)
 	movl	S_ARG0,%edx		/* get ipl */
-	CPU_NUMBER_NO_GS(%eax)
+	CPU_NUMBER(%eax)
 #if (MACH_KDB || MACH_TTD) && !defined(MACH_XEN)
 	/* First make sure that if we're exitting from ipl7, IF is still cleared */
 	cmpl	$SPL7,CX(EXT(curr_ipl),%eax)	/* from ipl7? */
@@ -145,7 +145,7 @@ ENTRY(splx)
 #endif	/* (MACH_KDB || MACH_TTD) && !MACH_XEN */
 	testl	%edx,%edx		/* spl0? */
 	jz	EXT(spl0)		/* yes, handle specially */
-	CPU_NUMBER_NO_GS(%eax)
+	CPU_NUMBER(%eax)
 	cmpl	CX(EXT(curr_ipl),%eax),%edx	/* same ipl as current? */
 	jne	spl			/* no */
 	cmpl	$SPL7,%edx		/* spl7? */
@@ -194,7 +194,7 @@ splx_cli:
 1:
 	xorl	%edx,%edx		/* edx = ipl 0 */
 2:
-	CPU_NUMBER_NO_GS(%eax)
+	CPU_NUMBER(%eax)
 	cmpl	CX(EXT(curr_ipl),%eax),%edx	/* same ipl as current? */
 	je	1f				/* yes, all done */
 	movl	%edx,CX(EXT(curr_ipl),%eax)	/* set ipl */
@@ -213,7 +213,7 @@ splx_cli:
 	.align	TEXT_ALIGN
 	.globl	spl
 spl:
-	CPU_NUMBER_NO_GS(%eax)
+	CPU_NUMBER(%eax)
 #if (MACH_KDB || MACH_TTD) && !defined(MACH_XEN)
 	/* First make sure that if we're exitting from ipl7, IF is still cleared */
 	cmpl	$SPL7,CX(EXT(curr_ipl),%eax)	/* from ipl7? */
@@ -233,7 +233,7 @@ spl:
 					/* get int mask */
 #endif
 	cli				/* disable interrupts */
-	CPU_NUMBER_NO_GS(%eax)
+	CPU_NUMBER(%eax)
 	xchgl	CX(EXT(curr_ipl),%eax),%edx	/* set ipl */
 #ifdef MACH_XEN
 	XEN_SETMASK()			/* program PICs with new mask */
