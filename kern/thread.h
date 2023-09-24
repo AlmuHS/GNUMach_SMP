@@ -42,7 +42,6 @@
 #include <mach/port.h>
 #include <mach/vm_prot.h>
 #include <kern/ast.h>
-#include <kern/cpu_number.h>
 #include <kern/mach_clock.h>
 #include <kern/queue.h>
 #include <kern/pc_sample.h>
@@ -234,6 +233,8 @@ struct thread {
 	unsigned lock_stack;
 #endif
 };
+
+#include <kern/cpu_number.h>
 
 /* typedef of thread_t is in kern/kern_types.h */
 typedef struct thread_shuttle	*thread_shuttle_t;

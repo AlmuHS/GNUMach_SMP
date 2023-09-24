@@ -41,7 +41,6 @@
 #include <mach/kern_return.h>
 #include <mach/port.h>
 #include <mach/processor_info.h>
-#include <kern/cpu_number.h>
 #include <kern/lock.h>
 #include <kern/queue.h>
 #include <kern/sched.h>
@@ -111,6 +110,8 @@ struct processor {
 };
 typedef struct processor Processor;
 extern struct processor	processor_array[NCPUS];
+
+#include <kern/cpu_number.h>
 
 /*
  *	Chain of all processor sets.

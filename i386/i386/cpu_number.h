@@ -64,8 +64,14 @@
 	popl	%esi		;\
 
 #ifndef __ASSEMBLER__
-#include "kern/cpu_number.h"
-int cpu_number(void);
+#include <kern/cpu_number.h>
+#include <i386/apic.h>
+
+static inline int cpu_number(void)
+{
+	return cpu_id_lut[apic_get_current_cpu()];
+}
+
 #endif
 
 #else	/* NCPUS == 1 */

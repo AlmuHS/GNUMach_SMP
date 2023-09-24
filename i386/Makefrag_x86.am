@@ -18,7 +18,6 @@ libkernel_a_SOURCES += \
 	i386/i386/ast_check.c \
 	i386/i386/ast_types.h \
 	i386/i386/cpu.h \
-	i386/i386/cpu_number.c \
 	i386/i386/cpu_number.h \
 	i386/i386/db_disasm.c \
 	i386/i386/db_interface.c \
