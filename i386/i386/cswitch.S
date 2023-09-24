@@ -29,6 +29,7 @@
 #include <i386/proc_reg.h>
 #include <i386/i386asm.h>
 #include <i386/cpu_number.h>
+#include <i386/gdt.h>
 
 /*
  * Context switch routines for i386.

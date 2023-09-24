@@ -33,6 +33,7 @@
 #include <i386/i386/proc_reg.h>
 #include <i386/i386/trap.h>
 #include <i386/i386/seg.h>
+#include <i386/i386/gdt.h>
 #include <i386/i386/ldt.h>
 #include <i386/i386/msr.h>
 #include <i386/i386/i386asm.h>

@@ -27,6 +27,7 @@
 
 #include <i386/seg.h>
 #include <i386/i386asm.h>
+#include <i386/gdt.h>
 
 
 /* We'll be using macros to fill in a table in data hunk 2

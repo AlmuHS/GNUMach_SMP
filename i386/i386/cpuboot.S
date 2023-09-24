@@ -21,6 +21,7 @@
 #include <i386/apic.h>
 #include <i386/cpu_number.h>
 #include <i386/seg.h>
+#include <i386/gdt.h>
 
 #define AP_BOOT_ADDR	0x7000
 #define M(addr)		(addr - apboot + AP_BOOT_ADDR)

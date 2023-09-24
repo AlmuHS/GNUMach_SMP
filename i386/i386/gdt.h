@@ -83,6 +83,8 @@
 #define	GDTSZ		sel_idx(0x58)
 #endif
 
+#ifndef __ASSEMBLER__
+
 extern struct real_descriptor gdt[GDTSZ];
 
 /* Fill a segment descriptor in the GDT.  */
@@ -117,4 +119,5 @@ extern struct real_descriptor gdt[GDTSZ];
 extern void gdt_init(void);
 extern void ap_gdt_init(int cpu);
 
+#endif /* __ASSEMBLER__ */
 #endif /* _I386_GDT_ */

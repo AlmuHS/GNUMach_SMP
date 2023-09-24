@@ -33,6 +33,7 @@
 #include <i386/proc_reg.h>
 #include <i386/trap.h>
 #include <i386/seg.h>
+#include <i386/gdt.h>
 #include <i386/ldt.h>
 #include <i386/i386asm.h>
 #include <i386/cpu_number.h>

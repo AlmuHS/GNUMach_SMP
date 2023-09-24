@@ -22,6 +22,7 @@
 #include <i386/i386asm.h>
 #include <i386/xen.h>
 #include <i386/cpu_number.h>
+#include <i386/gdt.h>
 
 #if NCPUS > 1
 #define mb lock; addl $0,(%esp)
