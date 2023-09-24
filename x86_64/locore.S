@@ -140,6 +140,7 @@
 	mov	%dx,%ds			;\
 	mov	%dx,%es			;\
 	mov	%dx,%fs			;\
+	mov	$(PERCPU_DS),%dx	;\
 	mov	%dx,%gs
 #else
 #define SET_KERNEL_SEGMENTS
@@ -350,7 +351,7 @@ timer_normalize:
  * Switch to a new timer.
  */
 ENTRY(timer_switch)
-	CPU_NUMBER(%edx)			/* get this CPU  */
+	CPU_NUMBER_NO_GS(%edx)			/* get this CPU  */
 	movl	VA_ETC,%ecx			/* get timer */
 	movl	CX(EXT(current_tstamp),%rdx),%eax	/* get old time stamp  */
 	movl	%ecx,CX(EXT(current_tstamp),%rdx)	/* set new time stamp */
@@ -368,7 +369,7 @@ ENTRY(timer_switch)
  * Initialize the first timer for a CPU.
  */
 ENTRY(start_timer)
-	CPU_NUMBER(%edx)			/* get this CPU */
+	CPU_NUMBER_NO_GS(%edx)			/* get this CPU */
 	movl	VA_ETC,%ecx			/* get timer */
 	movl	%ecx,CX(EXT(current_tstamp),%rdx)	/* set initial time stamp */
 	movl	S_ARG0,%ecx			/* get timer */
@@ -1445,7 +1446,7 @@ _syscall64_call:
 
 _syscall64_check_for_ast:
 	/* Check for ast. */
-	CPU_NUMBER(%r11)
+	CPU_NUMBER_NO_GS(%r11)
 	cmpl	$0,CX(EXT(need_ast),%r11)
 	jz	_syscall64_restore_state
 

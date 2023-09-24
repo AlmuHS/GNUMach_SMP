@@ -37,7 +37,8 @@ extern int	master_cpu;	/* 'master' processor - keeps time */
 
 #if	(NCPUS == 1)
 	/* cpu number is always 0 on a single processor system */
-#define	cpu_number()	(0)
+#define	cpu_number()		(0)
+#define	cpu_number_slow()	(0)
 
 #endif	/* NCPUS == 1 */
 

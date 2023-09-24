@@ -30,6 +30,8 @@
 #ifndef	_I386_CPU_NUMBER_H_
 #define	_I386_CPU_NUMBER_H_
 
+#define MY(stm)		%gs:PERCPU_##stm
+
 #if	NCPUS > 1
 
 #ifdef __i386__
@@ -45,8 +47,8 @@
 	shrl	$24, reg		;\
 	movl	%cs:CX(cpu_id_lut, reg), reg	;\
 
-/* Never call CPU_NUMBER(%esi) */
-#define CPU_NUMBER(reg)		\
+/* Never call CPU_NUMBER_NO_GS(%esi) */
+#define CPU_NUMBER_NO_GS(reg)		\
 	pushl	%esi		;\
 	pushl	%eax		;\
 	pushl	%ebx		;\
@@ -63,20 +65,29 @@
 	movl	%esi, reg	;\
 	popl	%esi		;\
 
+#define CPU_NUMBER(reg)	\
+	movl    MY(CPU_ID), reg;
+
 #ifndef __ASSEMBLER__
 #include <kern/cpu_number.h>
 #include <i386/apic.h>
+#include <i386/percpu.h>
 
-static inline int cpu_number(void)
+static inline int cpu_number_slow(void)
 {
 	return cpu_id_lut[apic_get_current_cpu()];
 }
 
+static inline int cpu_number(void)
+{
+	return percpu_get(int, cpu_id);
+}
 #endif
 
 #else	/* NCPUS == 1 */
 
 #define	CPU_NUMBER_NO_STACK(reg)
+#define	CPU_NUMBER_NO_GS(reg)
 #define	CPU_NUMBER(reg)
 #define	CX(addr,reg)	addr
 

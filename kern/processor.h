@@ -112,6 +112,7 @@ typedef struct processor Processor;
 extern struct processor	processor_array[NCPUS];
 
 #include <kern/cpu_number.h>
+#include <machine/percpu.h>
 
 /*
  *	Chain of all processor sets.
@@ -196,23 +197,15 @@ extern processor_t	master_processor;
 #define	PROCESSOR_ASSIGN	4	/* Assignment is changing */
 #define PROCESSOR_SHUTDOWN	5	/* Being shutdown */
 
-/*
- *	Use processor ptr array to find current processor's data structure.
- *	This replaces a multiplication (index into processor_array) with
- *	an array lookup and a memory reference.  It also allows us to save
- *	space if processor numbering gets too sparse.
- */
+#define processor_ptr(i)	(&percpu_array[i].processor)
+#define cpu_to_processor	processor_ptr
 
-extern processor_t	processor_ptr[NCPUS];
-
-#define cpu_to_processor(i)	(processor_ptr[i])
-
-#define current_processor()	(processor_ptr[cpu_number()])
+#define current_processor()	(percpu_ptr(struct processor, processor))
 #define current_processor_set()	(current_processor()->processor_set)
 
 /* Compatibility -- will go away */
 
-#define cpu_state(slot_num)	(processor_ptr[slot_num]->state)
+#define cpu_state(slot_num)	(processor_ptr(slot_num)->state)
 #define cpu_idle(slot_num)	(cpu_state(slot_num) == PROCESSOR_IDLE)
 
 /* Useful lock macros */

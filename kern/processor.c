@@ -60,14 +60,12 @@ struct kmem_cache pset_cache;
 int	master_cpu;
 
 struct processor_set default_pset;
-struct processor processor_array[NCPUS];
 
 queue_head_t		all_psets;
 int			all_psets_count;
 def_simple_lock_data(, all_psets_lock);
 
 processor_t	master_processor;
-processor_t	processor_ptr[NCPUS];
 
 /*
  *	Bootstrap the processor/pset system so the scheduler can run.
@@ -81,10 +79,9 @@ void pset_sys_bootstrap(void)
 	for (i = 0; i < NCPUS; i++) {
 		/*
 		 *	Initialize processor data structures.
-		 *	Note that cpu_to_processor(i) is processor_ptr[i].
+		 *	Note that cpu_to_processor is processor_ptr.
 		 */
-		processor_ptr[i] = &processor_array[i];
-		processor_init(processor_ptr[i], i);
+		processor_init(processor_ptr(i), i);
 	}
 	master_processor = cpu_to_processor(master_cpu);
 	queue_init(&all_psets);

@@ -119,7 +119,7 @@ init_fpu(void)
 #else	/* MACH_RING1 */
 	unsigned int native = 0;
 
-	if (machine_slot[cpu_number()].cpu_type >= CPU_TYPE_I486)
+	if (machine_slot[cpu_number_slow()].cpu_type >= CPU_TYPE_I486)
 		native = CR0_NE;
 
 	/*

@@ -244,7 +244,7 @@ timer_normalize:
  * Switch to a new timer.
  */
 ENTRY(timer_switch)
-	CPU_NUMBER(%edx)			/* get this CPU  */
+	CPU_NUMBER_NO_GS(%edx)			/* get this CPU  */
 	movl	VA_ETC,%ecx			/* get timer */
 	movl	CX(EXT(current_tstamp),%edx),%eax	/* get old time stamp  */
 	movl	%ecx,CX(EXT(current_tstamp),%edx)	/* set new time stamp */
@@ -262,7 +262,7 @@ ENTRY(timer_switch)
  * Initialize the first timer for a CPU.
  */
 ENTRY(start_timer)
-	CPU_NUMBER(%edx)			/* get this CPU */
+	CPU_NUMBER_NO_GS(%edx)			/* get this CPU */
 	movl	VA_ETC,%ecx			/* get timer */
 	movl	%ecx,CX(EXT(current_tstamp),%edx)	/* set initial time stamp */
 	movl	S_ARG0,%ecx			/* get timer */
@@ -469,7 +469,8 @@ trap_push_segs:
 	mov	%ax,%ds			/* (same as kernel stack segment) */
 	mov	%ax,%es
 	mov	%ax,%fs
-	mov	%ax,%gs
+	mov	$(PERCPU_DS),%ax
+	movw	%ax,%gs
 
 trap_set_segs:
 	cld				/* clear direction flag */
@@ -673,7 +674,7 @@ ENTRY(all_intrs)
 	pushl	%edx
 	cld				/* clear direction flag */
 
-	CPU_NUMBER(%ecx)
+	CPU_NUMBER_NO_GS(%ecx)
 	movl	%esp,%edx		/* on an interrupt stack? */
 	and	$(~(INTSTACK_SIZE-1)),%edx
 	cmpl	%ss:CX(EXT(int_stack_base),%ecx),%edx
@@ -687,7 +688,8 @@ ENTRY(all_intrs)
 	mov	%dx,%ds
 	mov	%dx,%es
 	mov	%dx,%fs
-	mov	%dx,%gs
+	mov	$(PERCPU_DS),%dx
+	movw	%dx,%gs
 
 	CPU_NUMBER(%edx)
 
@@ -745,7 +747,7 @@ LEXT(return_to_iret)			/* to find the return from calling interrupt) */
 	iret				/* return to caller */
 
 int_from_intstack:
-	CPU_NUMBER(%edx)
+	CPU_NUMBER_NO_GS(%edx)
 	cmpl	CX(EXT(int_stack_base),%edx),%esp /* seemingly looping? */
 	jb	stack_overflowed	/* if not: */
 	call	EXT(interrupt)		/* call interrupt routine */
@@ -793,7 +795,8 @@ ast_from_interrupt:
 	mov	%dx,%ds
 	mov	%dx,%es
 	mov	%dx,%fs
-	mov	%dx,%gs
+	mov	$(PERCPU_DS),%dx
+	movw	%dx,%gs
 
 	CPU_NUMBER(%edx)
 	TIME_TRAP_UENTRY
@@ -1052,7 +1055,8 @@ syscall_entry_2:
 	mov	%dx,%ds
 	mov	%dx,%es
 	mov	%dx,%fs
-	mov	%dx,%gs
+	mov	$(PERCPU_DS),%dx
+	movw	%dx,%gs
 
 /*
  * Shuffle eflags,eip,cs into proper places

@@ -74,6 +74,7 @@ boolean_t reboot_on_panic = TRUE;
 
 #if	NCPUS > 1
 #include <machine/mp_desc.h>
+#include <kern/smp.h>
 #include <kern/machine.h>
 #endif	/* NCPUS > 1 */
 
@@ -281,7 +282,7 @@ void cpu_launch_first_thread(thread_t th)
 {
 	int	mycpu;
 
-	mycpu = cpu_number();
+	mycpu = cpu_number_slow();
 
 	cpu_up(mycpu);
 

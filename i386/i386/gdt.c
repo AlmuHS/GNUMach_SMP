@@ -35,6 +35,8 @@
 
 #include <kern/assert.h>
 #include <intel/pmap.h>
+#include <kern/cpu_number.h>
+#include <machine/percpu.h>
 
 #include "vm_param.h"
 #include "seg.h"
@@ -48,7 +50,7 @@ extern
 struct real_descriptor gdt[GDTSZ];
 
 static void
-gdt_fill(struct real_descriptor *mygdt)
+gdt_fill(int cpu, struct real_descriptor *mygdt)
 {
 	/* Initialize the kernel code and data segment descriptors.  */
 #ifdef __x86_64__
@@ -73,6 +75,16 @@ gdt_fill(struct real_descriptor *mygdt)
 			    0xffffffff,
 			    ACC_PL_K|ACC_DATA_W, SZ_32);
 #endif	/* MACH_PV_DESCRIPTORS */
+	vm_offset_t thiscpu = kvtolin(&percpu_array[cpu]);
+	_fill_gdt_descriptor(mygdt, PERCPU_DS,
+			    thiscpu,
+			    thiscpu + sizeof(struct percpu) - 1,
+#ifdef __x86_64__
+			    ACC_PL_K|ACC_DATA_W, SZ_64
+#else
+			    ACC_PL_K|ACC_DATA_W, SZ_32
+#endif
+	);
 #endif
 
 #ifdef	MACH_PV_DESCRIPTORS
@@ -119,15 +131,16 @@ reload_segs(void)
 		     
 		     "movw	%w1,%%ds\n"
 		     "movw	%w1,%%es\n"
+		     "movw	%w3,%%gs\n"
 		     "movw	%w1,%%ss\n"
-		     : : "i" (KERNEL_CS), "r" (KERNEL_DS), "r" (0));
+		     : : "i" (KERNEL_CS), "r" (KERNEL_DS), "r" (0), "r" (PERCPU_DS));
 #endif
 }
 
 void
 gdt_init(void)
 {
-	gdt_fill(gdt);
+	gdt_fill(0, gdt);
 
 	reload_segs();
 
@@ -146,7 +159,7 @@ gdt_init(void)
 void
 ap_gdt_init(int cpu)
 {
-	gdt_fill(mp_gdt[cpu]);
+	gdt_fill(cpu, mp_gdt[cpu]);
 
 	reload_segs();
 }

@@ -238,6 +238,7 @@ cpu_setup(int cpu)
     flush_instr_queue();
     printf("AP=(%u) paging done\n", cpu);
 
+    init_percpu(cpu);
     mp_desc_init(cpu);
     printf("AP=(%u) mpdesc done\n", cpu);
 
@@ -275,7 +276,7 @@ cpu_setup(int cpu)
 void
 cpu_ap_main()
 {
-    int cpu = cpu_number();
+    int cpu = cpu_number_slow();
 
     do {
 	cpu_pause();

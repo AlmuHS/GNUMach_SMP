@@ -77,11 +77,9 @@
 
 /*			0x58		   used by user TSS in 64bit mode */
 
-#ifdef __x86_64__
-#define	GDTSZ		sel_idx(0x60)
-#else
-#define	GDTSZ		sel_idx(0x58)
-#endif
+#define PERCPU_DS	0x68		/* per-cpu data mapping */
+
+#define	GDTSZ		sel_idx(0x70)
 
 #ifndef __ASSEMBLER__
 
