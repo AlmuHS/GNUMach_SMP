@@ -118,7 +118,7 @@ pit_mdelay(int msec)
 void
 clkstart(void)
 {
-	if (cpu_number_slow() != 0)
+	if (cpu_number() != 0)
 		/* Only one PIT initialization is needed */
 		return;
 	unsigned char	byte;
