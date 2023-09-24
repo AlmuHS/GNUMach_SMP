@@ -166,12 +166,12 @@ boot_gdt:
 	.quad 0
 
 	/* boot GS = 0x68 */
-	.word PCS_SIZE
+	.word 0xffff
 boot_percpu_low:
 	.word 0
 boot_percpu_med:
 	.byte 0
 	.byte ACC_PL_K | ACC_DATA_W | ACC_P
-	.byte ((SZ_32 | SZ_G) << 4)
+	.byte ((SZ_32 | SZ_G) << 4) | 0xf
 boot_percpu_high:
 	.byte 0
