@@ -1,6 +1,7 @@
 
 #include <mach/machine/asm.h>
 #include <i386/apic.h>
+#include <i386/seg.h>
 #include <i386/i386asm.h>
 
 	/*
@@ -39,19 +40,28 @@ boot_hdr:
 #endif /* __ELF__ */
 
 boot_entry:
+	movl	$percpu_array - KERNELBASE, %eax
+	movw	%ax, boot_percpu_low - KERNELBASE
+	shr	$16, %eax
+	movb	%al, boot_percpu_med - KERNELBASE
+	shr	$8, %ax
+	movb	%al, boot_percpu_high - KERNELBASE
+
 	/* use segmentation to offset ourself. */
 	lgdt	boot_gdt_descr - KERNELBASE
-	ljmp	$8,$0f
+	ljmp	$0x8,$0f
 0:
-	movw	$0,%ax
+	movw	$0x0,%ax
 	movw	%ax,%ds
 	movw	%ax,%es
 	movw	%ax,%fs
 	movw	%ax,%gs
-	movw	$16,%ax
+	movw	$0x10,%ax
 	movw	%ax,%ds
 	movw	%ax,%es
 	movw	%ax,%ss
+	movw	$0x68,%ax
+	movw	%ax,%gs
 
 	/* Switch to our own interrupt stack.  */
 	movl	$solid_intstack+INTSTACK_SIZE-4, %esp
@@ -105,24 +115,63 @@ iplt_done:
 .align 16
 	.word 0
 boot_gdt_descr:
-	.word 3*8+7
+	.word 13*8+7
 	.long boot_gdt - KERNELBASE
 .align 16
 boot_gdt:
 	/* 0 */
 	.quad 0
-	/* boot CS = 8 */
+
+	/* boot CS = 0x08 */
 	.word 0xffff
 	.word (-KERNELBASE) & 0xffff
 	.byte ((-KERNELBASE) >> 16) & 0xff
-	.byte 0x9a
-	.byte 0xcf
-	.byte ((-KERNELBASE) >> 24) & 0xff
-	/* boot DS = 8 */
-	.word 0xffff
-	.word (-KERNELBASE) & 0xffff
-	.byte ((-KERNELBASE) >> 16) & 0xff
-	.byte 0x92
-	.byte 0xcf
+	.byte ACC_PL_K | ACC_CODE_R | ACC_P
+	.byte ((SZ_32 | SZ_G) << 4) | 0xf
 	.byte ((-KERNELBASE) >> 24) & 0xff
 
+	/* boot DS = 0x10 */
+	.word 0xffff
+	.word (-KERNELBASE) & 0xffff
+	.byte ((-KERNELBASE) >> 16) & 0xff
+	.byte ACC_PL_K | ACC_DATA_W | ACC_P
+	.byte ((SZ_32 | SZ_G) << 4) | 0xf
+	.byte ((-KERNELBASE) >> 24) & 0xff
+
+	/* LDT = 0x18 */
+	.quad 0
+
+	/* TSS = 0x20 */
+	.quad 0
+
+	/* USER_LDT = 0x28 */
+	.quad 0
+
+	/* USER_TSS = 0x30 */
+	.quad 0
+
+	/* LINEAR = 0x38 */
+	.quad 0
+
+	/* FPREGS = 0x40 */
+	.quad 0
+
+	/* USER_GDT = 0x48 and 0x50 */
+	.quad 0
+
+	/* USER_TSS64 = 0x58 */
+	.quad 0
+
+	/* USER_TSS64 = 0x60 */
+	.quad 0
+
+	/* boot GS = 0x68 */
+	.word PCS_SIZE
+boot_percpu_low:
+	.word 0
+boot_percpu_med:
+	.byte 0
+	.byte ACC_PL_K | ACC_DATA_W | ACC_P
+	.byte ((SZ_32 | SZ_G) << 4) | 0xf
+boot_percpu_high:
+	.byte 0
