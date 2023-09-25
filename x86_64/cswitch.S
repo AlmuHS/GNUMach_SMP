@@ -85,7 +85,7 @@ ENTRY(Switch_context)
 	        				/* point to stack top */
 
 	CPU_NUMBER(%eax)
-	movq	%rsi,CX(EXT(active_threads),%rax)	/* new thread is active */
+	movq	%rsi,MY(ACTIVE_THREAD)		/* new thread is active */
 	movq	%rcx,CX(EXT(active_stacks),%rax)	/* set current stack */
 	movq	%rbx,CX(EXT(kernel_stack),%rax)	/* set stack top */
 

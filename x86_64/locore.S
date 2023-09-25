@@ -1186,7 +1186,7 @@ syscall_entry_2:
  * Check for MACH or emulated system call
  */
 syscall_entry_3:
-	movq	CX(EXT(active_threads),%rdx),%rdx
+	movq	MY(ACTIVE_THREAD),%rdx
 					/* point to current thread */
 	movq	TH_TASK(%rdx),%rdx	/* point to task */
 	movq	TASK_EMUL(%rdx),%rdx	/* get emulation vector */
@@ -1373,8 +1373,7 @@ ENTRY(syscall64)
 	 * save only the callee-preserved status according to the C ABI,
 	 * plus RIP and EFLAGS for sysret
 	 */
-	CPU_NUMBER_NO_STACK(%r11)
-	movq	CX(EXT(active_threads),%r11),%r11 /* point to current thread */
+	movq	MY(ACTIVE_THREAD),%r11	/* point to current thread */
 	movq	TH_PCB(%r11),%r11		/* point to pcb */
 	addq	$ PCB_ISS,%r11			/* point to saved state */
 
@@ -1471,7 +1470,7 @@ _syscall64_check_for_ast:
 _syscall64_restore_state:
 	/* Restore thread state and return to user using sysret. */
 	cli	/* block interrupts when using the user stack in kernel space */
-	movq	CX(EXT(active_threads),%r11),%r11 /* point to current thread */
+	movq	MY(ACTIVE_THREAD),%r11	/* point to current thread */
 	movq	TH_PCB(%r11),%r11		/* point to pcb */
 	addq	$ PCB_ISS,%r11			/* point to saved state */
 
