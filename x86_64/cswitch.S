@@ -40,7 +40,7 @@ ENTRY(Load_context)
 	lea	KERNEL_STACK_SIZE-IKS_SIZE-IEL_SIZE(%rcx),%rdx
 						/* point to stack top */
 	CPU_NUMBER(%eax)
-	movq	%rcx,CX(EXT(active_stacks),%rax)	/* store stack address */
+	movq	%rcx,MY(ACTIVE_STACK)		/* store stack address */
 	movq	%rdx,CX(EXT(kernel_stack),%rax)	/* store stack top */
 
 /* XXX complete */
@@ -61,8 +61,7 @@ ENTRY(Load_context)
  */
 
 ENTRY(Switch_context)
-	CPU_NUMBER(%eax)
-	movq	CX(EXT(active_stacks),%rax),%rcx	/* get old kernel stack */
+	movq	MY(ACTIVE_STACK),%rcx		/* get old kernel stack */
 
 	movq	%r12,KSS_R12(%rcx)		/* save registers */
 	movq	%r13,KSS_R13(%rcx)
@@ -86,7 +85,7 @@ ENTRY(Switch_context)
 
 	CPU_NUMBER(%eax)
 	movq	%rsi,MY(ACTIVE_THREAD)		/* new thread is active */
-	movq	%rcx,CX(EXT(active_stacks),%rax)	/* set current stack */
+	movq	%rcx,MY(ACTIVE_STACK)		/* set current stack */
 	movq	%rbx,CX(EXT(kernel_stack),%rax)	/* set stack top */
 
 	movq	KSS_ESP(%rcx),%rsp		/* switch stacks */
@@ -119,8 +118,7 @@ ENTRY(Thread_continue)
  */
 ENTRY(switch_to_shutdown_context)
 ud2
-	CPU_NUMBER(%eax)
-	movq	CX(EXT(active_stacks),%rax),%rcx	/* get old kernel stack */
+	movq	MY(ACTIVE_STACK),%rcx		/* get old kernel stack */
 	movq	%r12,KSS_R12(%rcx)		/* save registers */
 	movq	%r13,KSS_R13(%rcx)
 	movq	%r14,KSS_R14(%rcx)

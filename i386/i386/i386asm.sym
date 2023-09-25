@@ -55,6 +55,7 @@ offset	ApicLocalUnit		lu	apic_id		APIC_ID
 
 offset	percpu			pc	cpu_id		PERCPU_CPU_ID
 offset	percpu			pc	active_thread	PERCPU_ACTIVE_THREAD
+offset	percpu			pc	active_stack	PERCPU_ACTIVE_STACK
 
 offset	pcb			pcb	iss
 

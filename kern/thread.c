@@ -69,8 +69,6 @@
 #include <machine/pcb.h>
 #include <machine/thread.h>		/* for MACHINE_STACK */
 
-vm_offset_t active_stacks[NCPUS];
-
 struct kmem_cache thread_cache;
 struct kmem_cache thread_stack_cache;
 
@@ -2572,7 +2570,7 @@ kern_return_t processor_set_stack_usage(
 
 			for (cpu = 0; cpu < smp_get_numcpus(); cpu++)
 				if (percpu_array[cpu].active_thread == thread) {
-					stack = active_stacks[cpu];
+					stack = percpu_array[cpu].active_stack;
 					break;
 				}
 		}

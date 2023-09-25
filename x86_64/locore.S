@@ -673,7 +673,7 @@ trap_from_kernel:
 	cmpq	CX(EXT(kernel_stack),%rdx),%rsp
 					/* already on kernel stack? */
 	ja	0f
-	cmpq	CX(EXT(active_stacks),%rdx),%rsp
+	cmpq	MY(ACTIVE_STACK),%rsp
 	ja	1f			/* switch if not */
 0:
 	movq	CX(EXT(kernel_stack),%rdx),%rsp

@@ -555,7 +555,7 @@ trap_from_kernel:
 	cmpl	CX(EXT(kernel_stack),%edx),%esp
 					/* already on kernel stack? */
 	ja	0f
-	cmpl	CX(EXT(active_stacks),%edx),%esp
+	cmpl	MY(ACTIVE_STACK),%esp
 	ja	1f			/* switch if not */
 0:
 	movl	CX(EXT(kernel_stack),%edx),%esp

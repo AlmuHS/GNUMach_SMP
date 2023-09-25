@@ -59,10 +59,10 @@ struct percpu {
     int			cpu_id;
     struct processor	processor;
     thread_t		active_thread;
+    vm_offset_t		active_stack;
 /*
     struct machine_slot	machine_slot;
     struct mp_desc_table mp_desc_table;
-    vm_offset_t		active_stack;
     vm_offset_t		int_stack_top;
     vm_offset_t		int_stack_base;
     ast_t		need_ast;
