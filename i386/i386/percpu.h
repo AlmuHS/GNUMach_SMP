@@ -20,6 +20,8 @@
 
 struct percpu;
 
+#if NCPUS > 1
+
 #define percpu_assign(stm, val)     \
     asm("mov %[src], %%gs:%c[offs]" \
          : /* No outputs */         \
@@ -49,6 +51,19 @@ MACRO_BEGIN                         \
                                     \
     ptr_;                           \
 MACRO_END
+
+#else
+
+#define percpu_assign(stm, val)     \
+MACRO_BEGIN                         \
+        percpu_array[0].stm = val;  \
+MACRO_END
+#define percpu_get(typ, stm)        \
+        (percpu_array[0].stm)
+#define percpu_ptr(typ, stm)        \
+        (&percpu_array[0].stm)
+
+#endif
 
 #include <kern/processor.h>
 #include <kern/thread.h>
