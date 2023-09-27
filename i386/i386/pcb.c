@@ -492,10 +492,12 @@ kern_return_t thread_setstatus(
 		     */
 		    state->cs &= 0xffff;
 		    state->ss &= 0xffff;
+#if !defined(__x86_64__) || defined(USER32)
 		    state->ds &= 0xffff;
 		    state->es &= 0xffff;
 		    state->fs &= 0xffff;
 		    state->gs &= 0xffff;
+#endif
 
 		    if (state->cs == 0 || (state->cs & SEL_PL) != SEL_PL_U
 		     || state->ss == 0 || (state->ss & SEL_PL) != SEL_PL_U)
