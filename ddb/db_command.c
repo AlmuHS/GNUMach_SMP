@@ -309,6 +309,7 @@ struct db_command db_show_all_cmds[] = {
 	{ "tasks",	db_show_all_tasks,	0,	0 },
 	{ "threads",	db_show_all_threads,	0,	0 },
 	{ "slocks",	(db_command_fun_t)db_show_all_slocks,	0,	0 },
+	{ "runqs",	(db_command_fun_t)db_show_all_runqs,	0,	0 },
 	{ (char *)0 }
 };
 

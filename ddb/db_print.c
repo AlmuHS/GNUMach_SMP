@@ -39,6 +39,9 @@
 #include <kern/task.h>
 #include <kern/thread.h>
 #include <kern/queue.h>
+#include <kern/sched.h>
+#include <kern/processor.h>
+#include <kern/smp.h>
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_space.h>
 
@@ -327,6 +330,30 @@ db_show_all_tasks(db_expr_t addr,
 			  task->thread_count);
 		task_id++;
 	    }
+}
+
+static void showrq(run_queue_t rq)
+{
+	db_printf("count(%d) low(%d)\n", rq->count, rq->low);
+}
+
+/*ARGSUSED*/
+void
+db_show_all_runqs(
+	db_expr_t	addr,
+	boolean_t	have_addr,
+	db_expr_t	count,
+	const char *	modif)
+{
+	int i;
+
+	db_printf("Processor set runq:\t");
+	showrq(&default_pset.runq);
+	for (i = 0; i < smp_get_numcpus(); i++) {
+	    db_printf("Processor #%d runq:\t", i);
+	    showrq(&cpu_to_processor(i)->runq);
+	}
+	db_printf("Stuck threads:\t%d", stuck_count);
 }
 
 /*ARGSUSED*/

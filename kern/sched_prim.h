@@ -184,5 +184,6 @@ void thread_check(thread_t th, run_queue_t rq);
 
 extern void idle_thread(void) __attribute__((noreturn));
 extern void sched_thread(void);
+extern int stuck_count;
 
 #endif	/* _KERN_SCHED_PRIM_H_ */
