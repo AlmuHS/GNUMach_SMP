@@ -1228,8 +1228,7 @@ void update_priority(
 /*
  *	thread_setrun:
  *
- *	Make thread runnable; dispatch directly onto an idle processor
- *	if possible.  Else put on appropriate run queue (processor
+ *	Make thread runnable; put on appropriate run queue (processor
  *	if bound, else processor set.  Caller must have lock on thread.
  *	This is always called at splsched.
  */
@@ -1262,51 +1261,6 @@ void thread_setrun(
 	     *	Not bound, any processor in the processor set is ok.
 	     */
 	    pset = th->processor_set;
-#if	HW_FOOTPRINT
-	    /*
-	     *	But first check the last processor it ran on.
-	     */
-	    processor = th->last_processor;
-	    if (processor->state == PROCESSOR_IDLE) {
-		    processor_lock(processor);
-		    simple_lock(&pset->idle_lock);
-		    if ((processor->state == PROCESSOR_IDLE)
-#if	MACH_HOST
-			&& (processor->processor_set == pset)
-#endif	/* MACH_HOST */
-			) {
-			    queue_remove(&pset->idle_queue, processor,
-			        processor_t, processor_queue);
-			    pset->idle_count--;
-			    processor->next_thread = th;
-			    processor->state = PROCESSOR_DISPATCHING;
-			    simple_unlock(&pset->idle_lock);
-			    processor_unlock(processor);
-			    if (processor != current_processor())
-				cause_ast_check(processor);
-		            return;
-		    }
-		    simple_unlock(&pset->idle_lock);
-		    processor_unlock(processor);
-	    }
-#endif	/* HW_FOOTPRINT */
-
-	    if (pset->idle_count > 0) {
-		simple_lock(&pset->idle_lock);
-		if (pset->idle_count > 0) {
-		    processor = (processor_t) queue_first(&pset->idle_queue);
-		    queue_remove(&(pset->idle_queue), processor, processor_t,
-				processor_queue);
-		    pset->idle_count--;
-		    processor->next_thread = th;
-		    processor->state = PROCESSOR_DISPATCHING;
-		    simple_unlock(&pset->idle_lock);
-		    if (processor != current_processor())
-			cause_ast_check(processor);
-		    return;
-		}
-		simple_unlock(&pset->idle_lock);
-	    }
 	    rq = &(pset->runq);
 	    run_queue_enqueue(rq,th);
 	    /*
@@ -1326,28 +1280,8 @@ void thread_setrun(
 	}
 	else {
 	    /*
-	     *	Bound, can only run on bound processor.  Have to lock
-	     *  processor here because it may not be the current one.
+	     *	Bound, queue on specific processor
 	     */
-	    if (processor->state == PROCESSOR_IDLE) {
-		processor_lock(processor);
-		pset = processor->processor_set;
-		simple_lock(&pset->idle_lock);
-		if (processor->state == PROCESSOR_IDLE) {
-		    queue_remove(&pset->idle_queue, processor,
-			processor_t, processor_queue);
-		    pset->idle_count--;
-		    processor->next_thread = th;
-		    processor->state = PROCESSOR_DISPATCHING;
-		    simple_unlock(&pset->idle_lock);
-		    processor_unlock(processor);
-		    if (processor != current_processor())
-			cause_ast_check(processor);
-		    return;
-		}
-		simple_unlock(&pset->idle_lock);
-		processor_unlock(processor);
-	    }
 	    rq = &(processor->runq);
 	    run_queue_enqueue(rq,th);
 
@@ -1362,18 +1296,6 @@ void thread_setrun(
 	    }
 	}
 #else	/* NCPUS > 1 */
-	/*
-	 *	XXX should replace queue with a boolean in this case.
-	 */
-	if (default_pset.idle_count > 0) {
-	    processor = (processor_t) queue_first(&default_pset.idle_queue);
-	    queue_remove(&default_pset.idle_queue, processor,
-		processor_t, processor_queue);
-	    default_pset.idle_count--;
-	    processor->next_thread = th;
-	    processor->state = PROCESSOR_DISPATCHING;
-	    return;
-	}
 	if (th->bound_processor == PROCESSOR_NULL) {
 	    	rq = &(default_pset.runq);
 	}
