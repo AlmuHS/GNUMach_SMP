@@ -33,7 +33,7 @@
 #include <kern/printf.h>
 #include <kern/timer.h>
 
-static int has_irq_specific_eoi = 1; /* FIXME: Assume all machines have this */
+static int has_irq_specific_eoi = 0;
 int timer_pin;
 
 uint32_t lapic_timer_val = 0;
@@ -151,6 +151,12 @@ ioapic_toggle_entry(int apic, int pin, int mask)
     ioapic_read_entry(apic, pin, &entry.both);
     entry.both.mask = mask & 0x1;
     ioapic_write(apic, APIC_IO_REDIR_LOW(pin), entry.lo);
+}
+
+static int
+ioapic_version(int apic)
+{
+    return ioapic_read(apic, APIC_IO_VERSION) & 0xff;
 }
 
 static void timer_expiry_callback(void *arg)
@@ -305,6 +311,13 @@ ioapic_configure(void)
     int gsi, apic = 0, bsp = 0, pin;
     IrqOverrideData *irq_over;
     int timer_gsi;
+    int version = ioapic_version(apic);
+
+    if (version >= 0x20) {
+        has_irq_specific_eoi = 1;
+    }
+
+    printf("IOAPIC version 0x%x\n", version);
 
     /* Disable IOAPIC interrupts and set spurious interrupt */
     lapic->spurious_vector.r = IOAPIC_SPURIOUS_BASE;
