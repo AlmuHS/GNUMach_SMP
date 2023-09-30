@@ -32,6 +32,7 @@
 #include <mach/machine.h>
 #include <kern/printf.h>
 #include <kern/timer.h>
+#include <kern/lock.h>
 
 static int has_irq_specific_eoi = 0;
 int timer_pin;
@@ -41,6 +42,8 @@ uint32_t calibrated_ticks = 0;
 
 spl_t curr_ipl[NCPUS] = {0};
 int spl_init = 0;
+
+def_simple_lock_irq_data(static, ioapic_lock)	/* Lock for non-atomic window accesses to ioapic */
 
 int iunit[NINTR] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
                     16, 17, 18, 19, 20, 21, 22, 23};
@@ -148,9 +151,11 @@ ioapic_toggle_entry(int apic, int pin, int mask)
 {
     union ioapic_route_entry_union entry;
 
+    spl_t s = simple_lock_irq(&ioapic_lock);
     ioapic_read_entry(apic, pin, &entry.both);
     entry.both.mask = mask & 0x1;
     ioapic_write(apic, APIC_IO_REDIR_LOW(pin), entry.lo);
+    simple_unlock_irq(s, &ioapic_lock);
 }
 
 static int
@@ -245,6 +250,8 @@ ioapic_irq_eoi(int pin)
     if (pin == 0)
         goto skip_specific_eoi;
 
+    spl_t s = simple_lock_irq(&ioapic_lock);
+
     if (!has_irq_specific_eoi) {
         /* Workaround for old IOAPICs with no specific EOI */
 
@@ -263,6 +270,8 @@ ioapic_irq_eoi(int pin)
         ioapic_read_entry(apic, pin, &entry.both);
         ioapic->eoi.r = entry.both.vector;
     }
+
+    simple_unlock_irq(s, &ioapic_lock);
 
 skip_specific_eoi:
     lapic_eoi ();
