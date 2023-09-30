@@ -99,7 +99,7 @@ AC_DEFINE([MACH_MP_DEBUG], [0], [MACH_MP_DEBUG])
 AC_DEFINE([MACH_PAGEMAP], [1], [MACH_PAGEMAP])
 
 # Do pc sample histogram.
-AC_DEFINE([MACH_PCSAMPLE], [1], [MACH_PCSAMPLE])
+AC_DEFINE([MACH_PCSAMPLE], [0], [MACH_PCSAMPLE])
 
 # Sample kernel too.
 AC_ARG_ENABLE([kernsample],
