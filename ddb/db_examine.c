@@ -292,24 +292,25 @@ db_whatis_cmd(
 
 		    if (addr >= (vm_offset_t) task->map
 			&& addr < (vm_offset_t) task->map + sizeof(*(task->map)))
-			db_printf("map %X for task%d %s\n", (vm_offset_t) task->map, task_id, task->name);
+			db_printf("$map%d %X for $task%d %s\n",
+				task_id, (vm_offset_t) task->map, task_id, task->name);
 
 		    for (entry = vm_map_first_entry(task->map);
 			 entry != vm_map_to_entry(task->map);
 			 entry = entry->vme_next)
 			if (addr >= (vm_offset_t) entry
 				&& addr < (vm_offset_t) entry + sizeof(*entry))
-			    db_printf("map %X for task%d %s entry 0x%X: ",
-				    (vm_offset_t) task->map, task_id, task->name,
+			    db_printf("$map%d %X for $task%d %s entry 0x%X: ",
+				    task_id, (vm_offset_t) task->map, task_id, task->name,
 				    (vm_offset_t) entry);
 
 		    if (pmap_whatis(task->map->pmap, addr))
-			db_printf(" in task%d %s\n", task_id, task->name);
+			db_printf(" in $task%d %s\n", task_id, task->name);
 
 		    if ((task == current_task() || task == kernel_task)
 			&& addr >= vm_map_min(task->map)
 			&& addr < vm_map_max(task->map)) {
-			    db_printf("inside map of task%d %s\n", task_id, task->name);
+			    db_printf("inside $map%d of $task%d %s\n", task_id, task_id, task->name);
 
 			    for (entry = vm_map_first_entry(task->map);
 				 entry != vm_map_to_entry(task->map);
@@ -332,13 +333,13 @@ db_whatis_cmd(
 		    queue_iterate(&task->thread_list, thread, thread_t, thread_list) {
 			if (addr >= (vm_offset_t) thread
 			    && addr < (vm_offset_t) thread + sizeof(*thread)) {
-			    db_printf("In task%d %s\n", task_id, task->name);
+			    db_printf("In $task%d %s\n", task_id, task->name);
 			    db_print_thread(thread, thread_id, 0);
 			}
 			if (addr >= thread->kernel_stack
 				&& addr < thread->kernel_stack + KERNEL_STACK_SIZE) {
-			    db_printf("In task%d %s\n", task_id, task->name);
-			    db_printf("  on stack of\n");
+			    db_printf("In $task%d %s\n", task_id, task->name);
+			    db_printf("  on stack of $thread%d.%d\n", task_id, thread_id);
 			    db_print_thread(thread, thread_id, 0);
 			}
 			thread_id++;
