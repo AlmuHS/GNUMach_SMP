@@ -66,6 +66,11 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <i386/pio.h>
 #include <i386at/kd.h>
 #include <i386at/kd_queue.h>
+#ifdef APIC
+# include <i386/apic.h>
+#else
+# include <i386/pic.h>
+#endif
 
 #include "kd_event.h"
 
@@ -116,6 +121,7 @@ kbdopen(dev_t dev, int flags, io_req_t ior)
 	kdinit();
 	splx(o_pri);
 	kbdinit();
+	unmask_irq(KBD_IRQ);
 
 	return(0);
 }
@@ -134,6 +140,7 @@ kbdclose(
 {
 	spl_t s = SPLKD();
 
+	mask_irq(KBD_IRQ);
 	kb_mode = KB_ASCII;
 	kdq_reset(&kbd_queue);
 	splx(s);

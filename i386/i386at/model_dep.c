@@ -171,8 +171,6 @@ void machine_init(void)
 
 #if defined(APIC)
 #warning FIXME: Rather unmask them from their respective drivers
-	/* kd */
-	unmask_irq(1);
 	/* com0 */
 	unmask_irq(4);
 	/* com1 */

@@ -546,6 +546,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #define K_PDN		0x1b,0x5b,0x55
 #define K_INS		0x1b,0x5b,0x40
 
+#define KBD_IRQ		1
 
 /*
  * This array maps scancodes to Ascii characters (or character
