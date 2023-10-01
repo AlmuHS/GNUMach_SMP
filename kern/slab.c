@@ -1504,6 +1504,7 @@ void db_show_slab_info(void)
 void db_whatis_slab(vm_offset_t a)
 {
     struct kmem_cache *cache;
+    int done = 0;
 
 #ifndef SLAB_VERIFY
     db_printf("enabling SLAB_VERIFY is recommended\n");
@@ -1527,16 +1528,65 @@ void db_whatis_slab(vm_offset_t a)
                 struct kmem_slab *slab;
                 slab = rbtree_entry(node, struct kmem_slab, tree_node);
                 if (a >= (vm_offset_t) slab->addr
-                        && a < (vm_offset_t) slab->addr + cache->slab_size)
-                    db_printf("In cache %s\n", cache->name);
+                        && a < (vm_offset_t) slab->addr + cache->slab_size) {
+                    db_printf("Allocated from cache %s\n", cache->name);
+                    done = 1;
+                    goto out_cache;
+                }
             }
         }
 
+        union kmem_bufctl *free;
+        struct kmem_slab *slab;
+
+        list_for_each_entry(&cache->partial_slabs, slab, list_node) {
+            if (a >= (vm_offset_t) slab->addr
+                && a < (vm_offset_t) slab->addr + cache->slab_size) {
+                db_printf("In cache %s\n", cache->name);
+
+                for (free = slab->first_free; free; free = free->next) {
+                    void *buf = kmem_bufctl_to_buf(free, cache);
+
+                    if (a >= (vm_offset_t) buf
+                            && a < (vm_offset_t) buf + cache->buf_size) {
+                        db_printf("  In free list\n");
+                        break;
+                    }
+                }
+
+                done = 1;
+                goto out_cache;
+            }
+        }
+
+        list_for_each_entry(&cache->free_slabs, slab, list_node) {
+            if (a >= (vm_offset_t) slab->addr
+                && a < (vm_offset_t) slab->addr + cache->slab_size) {
+                db_printf("In cache %s\n", cache->name);
+
+                for (free = slab->first_free; free; free = free->next) {
+                    void *buf = kmem_bufctl_to_buf(free, cache);
+
+                    if (a >= (vm_offset_t) buf
+                            && a < (vm_offset_t) buf + cache->buf_size) {
+                        db_printf("  In free list\n");
+                        break;
+                    }
+                }
+
+                done = 1;
+                goto out_cache;
+            }
+        }
+
+out_cache:
         simple_unlock(&cache->lock);
+        if (done)
+            goto out;
     }
 
+out:
     simple_unlock(&kmem_cache_list_lock);
-
 }
 
 #endif /* MACH_KDB */
