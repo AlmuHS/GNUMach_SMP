@@ -262,10 +262,16 @@ static inline int copyout_unpack_msg_type(vm_offset_t kaddr,
   if (kmt->msgt_longform)
     {
       mach_msg_type_long_t* kmtl = (mach_msg_type_long_t*)kaddr;
+      mach_msg_type_size_t orig_size = kmtl->msgtl_size;
+      int ret;
+
       if (MACH_MSG_TYPE_PORT_ANY(kmtl->msgtl_name))
         kmtl->msgtl_size = bytes_to_descsize(sizeof(mach_port_name_t));
-      if (copyout_mach_msg_type_long(kmtl, (void*)uaddr))
+      ret = copyout_mach_msg_type_long(kmtl, (void*)uaddr);
+      kmtl->msgtl_size = orig_size;
+      if (ret)
         return 1;
+
       *name = kmtl->msgtl_name;
       *size = kmtl->msgtl_size;
       *number = kmtl->msgtl_number;
@@ -274,10 +280,16 @@ static inline int copyout_unpack_msg_type(vm_offset_t kaddr,
     }
   else
     {
+      mach_msg_type_size_t orig_size = kmt->msgt_size;
+      int ret;
+
       if (MACH_MSG_TYPE_PORT_ANY(kmt->msgt_name))
         kmt->msgt_size = bytes_to_descsize(sizeof(mach_port_name_t));
-      if (copyout_mach_msg_type(kmt, (void *)uaddr))
+      ret = copyout_mach_msg_type(kmt, (void *)uaddr);
+      kmt->msgt_size = orig_size;
+      if (ret)
         return 1;
+
       *name = kmt->msgt_name;
       *size = kmt->msgt_size;
       *number = kmt->msgt_number;
