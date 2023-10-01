@@ -1335,6 +1335,7 @@ copyin_fail:
  * arg0:	user address
  * arg1:	kernel address
  * arg2:	byte count - must be a multiple of four
+ * arg3:	kernel byte count
  */
 ENTRY(copyinmsg)
 	pushl	%esi

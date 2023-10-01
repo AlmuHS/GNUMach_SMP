@@ -505,7 +505,7 @@ ipc_kmsg_get(
 		ikm_init(kmsg, ksize);
 	}
 
-	if (copyinmsg(msg, &kmsg->ikm_header, size)) {
+	if (copyinmsg(msg, &kmsg->ikm_header, size, kmsg->ikm_size)) {
 		ikm_free(kmsg);
 		return MACH_SEND_INVALID_DATA;
 	}

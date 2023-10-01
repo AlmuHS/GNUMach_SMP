@@ -460,7 +460,7 @@ mach_msg_trap(
 			goto slow_get;
 
 		if (copyinmsg(msg, &kmsg->ikm_header,
-			      send_size)) {
+			      send_size, kmsg->ikm_size)) {
 			ikm_free(kmsg);
 			goto slow_get;
 		}

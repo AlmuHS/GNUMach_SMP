@@ -363,7 +363,7 @@ size_t msg_usize(const mach_msg_header_t *kmsg)
  * mach_msg_header have the same size in the kernel and user variant (basically
  * all fields except ports and addresses)
 */
-int copyinmsg (const void *userbuf, void *kernelbuf, const size_t usize)
+int copyinmsg (const void *userbuf, void *kernelbuf, const size_t usize, const size_t ksize)
 {
   const mach_msg_user_header_t *umsg = userbuf;
   mach_msg_header_t *kmsg = kernelbuf;
@@ -469,6 +469,7 @@ int copyinmsg (const void *userbuf, void *kernelbuf, const size_t usize)
     }
 
   kmsg->msgh_size = sizeof(mach_msg_header_t) + ksaddr - (vm_offset_t)(kmsg + 1);
+  assert(kmsg->msgh_size <= ksize);
   return 0;
 }
 

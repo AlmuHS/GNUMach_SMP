@@ -48,7 +48,7 @@ extern int call_continuation (continuation_t continuation);
 extern int discover_x86_cpu_type (void);
 
 extern int copyin (const void *userbuf, void *kernelbuf, size_t cn);
-extern int copyinmsg (const void *userbuf, void *kernelbuf, size_t cn);
+extern int copyinmsg (const void *userbuf, void *kernelbuf, size_t cn, size_t kn);
 extern int copyout (const void *kernelbuf, void *userbuf, size_t cn);
 extern int copyoutmsg (const void *kernelbuf, void *userbuf, size_t cn);
 
