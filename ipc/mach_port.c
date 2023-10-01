@@ -160,6 +160,7 @@ mach_port_names(
 	vm_offset_t addr2;	/* allocated memory, for types */
 	vm_map_copy_t memory1;	/* copied-in memory, for names */
 	vm_map_copy_t memory2;	/* copied-in memory, for types */
+	ipc_entry_num_t bound;
 
 	/* safe simplifying assumption */
 	assert_static(sizeof(mach_port_name_t) == sizeof(mach_port_type_t));
@@ -170,7 +171,6 @@ mach_port_names(
 	size = 0;
 
 	for (;;) {
-		ipc_entry_num_t bound;
 		vm_size_t size_needed;
 
 		is_read_lock(space);
@@ -240,6 +240,7 @@ mach_port_names(
 					       names, types, &actual);
 		}
 	}
+	assert(actual < bound);
 	is_read_unlock(space);
 
 	if (actual == 0) {
