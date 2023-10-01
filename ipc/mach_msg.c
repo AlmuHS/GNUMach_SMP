@@ -452,12 +452,12 @@ mach_msg_trap(
 
 		if ((send_size > IKM_SAVED_MSG_SIZE) ||
 		    (send_size < sizeof(mach_msg_user_header_t)) ||
-		    (send_size & 3) ||
-		    ((kmsg = ikm_cache()) == IKM_NULL))
+		    (send_size & 3))
 			goto slow_get;
 
-		ikm_cache() = IKM_NULL;
-		ikm_check_initialized(kmsg, IKM_SAVED_KMSG_SIZE);
+		kmsg = ikm_cache_alloc_try();
+		if (kmsg == IKM_NULL)
+			goto slow_get;
 
 		if (copyinmsg(msg, &kmsg->ikm_header,
 			      send_size)) {
@@ -1176,11 +1176,12 @@ mach_msg_trap(
 
 		if ((kmsg->ikm_size != IKM_SAVED_KMSG_SIZE) ||
 		    copyoutmsg(&kmsg->ikm_header, msg,
-			       reply_size) ||
-		    (ikm_cache() != IKM_NULL))
+			       reply_size))
 			goto slow_put;
 
-		ikm_cache() = kmsg;
+		if (!ikm_cache_free_try(kmsg))
+			goto slow_put;
+
 		thread_syscall_return(MACH_MSG_SUCCESS);
 		/*NOTREACHED*/
 		return MACH_MSG_SUCCESS; /* help for the compiler */

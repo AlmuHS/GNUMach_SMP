@@ -102,6 +102,46 @@ extern ipc_kmsg_t	ipc_kmsg_cache[NCPUS];
 
 #define ikm_cache()     ipc_kmsg_cache[cpu_number()]
 
+#define ikm_cache_alloc_try()						\
+MACRO_BEGIN								\
+	ipc_kmsg_t __kmsg = ikm_cache();				\
+	if (__kmsg != IKM_NULL) {					\
+		ikm_cache() = IKM_NULL;					\
+		ikm_check_initialized(__kmsg, IKM_SAVED_KMSG_SIZE);	\
+	}								\
+	__kmsg;								\
+MACRO_END
+
+#define ikm_cache_alloc()						\
+MACRO_BEGIN								\
+	ipc_kmsg_t __kmsg = ikm_cache_alloc_try(); 			\
+	if (!__kmsg) {							\
+		__kmsg = ikm_alloc(IKM_SAVED_MSG_SIZE);			\
+		if (__kmsg != IKM_NULL)					\
+			ikm_init(__kmsg, IKM_SAVED_MSG_SIZE);		\
+	}								\
+	__kmsg;								\
+MACRO_END
+
+#define ikm_cache_free_try(kmsg)					\
+MACRO_BEGIN								\
+	int __success = 0;						\
+	if (ikm_cache() == IKM_NULL) {					\
+		ikm_cache() = (kmsg);					\
+		__success = 1;						\
+	}								\
+	__success;							\
+MACRO_END
+
+#define ikm_cache_free(kmsg)						\
+MACRO_BEGIN								\
+	if (((kmsg)->ikm_size == IKM_SAVED_KMSG_SIZE) &&		\
+	    (ikm_cache() == IKM_NULL))					\
+		ikm_cache() = (kmsg);					\
+	else								\
+		ikm_free(kmsg);						\
+MACRO_END
+
 /*
  *	The size of the kernel message buffers that will be cached.
  *	IKM_SAVED_KMSG_SIZE includes overhead; IKM_SAVED_MSG_SIZE doesn't.

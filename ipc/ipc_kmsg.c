@@ -494,16 +494,9 @@ ipc_kmsg_get(
 		return MACH_SEND_MSG_TOO_SMALL;
 
 	if (size <= IKM_SAVED_MSG_SIZE) {
-		kmsg = ikm_cache();
-		if (kmsg != IKM_NULL) {
-			ikm_cache() = IKM_NULL;
-			ikm_check_initialized(kmsg, IKM_SAVED_KMSG_SIZE);
-		} else {
-			kmsg = ikm_alloc(IKM_SAVED_MSG_SIZE);
-			if (kmsg == IKM_NULL)
-				return MACH_SEND_NO_BUFFER;
-			ikm_init(kmsg, IKM_SAVED_MSG_SIZE);
-		}
+		kmsg = ikm_cache_alloc();
+		if (kmsg == IKM_NULL)
+			return MACH_SEND_NO_BUFFER;
 	} else {
 		kmsg = ikm_alloc(size);
 		if (kmsg == IKM_NULL)
@@ -585,11 +578,7 @@ ipc_kmsg_put(
 	else
 		mr = MACH_MSG_SUCCESS;
 
-	if ((kmsg->ikm_size == IKM_SAVED_KMSG_SIZE) &&
-	    (ikm_cache() == IKM_NULL))
-		ikm_cache() = kmsg;
-	else
-		ikm_free(kmsg);
+	ikm_cache_free(kmsg);
 
 	return mr;
 }

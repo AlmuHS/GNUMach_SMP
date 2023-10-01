@@ -366,16 +366,9 @@ exception_raise(
 	 *	and it will give the buffer back with its reply.
 	 */
 
-	kmsg = ikm_cache();
-	if (kmsg != IKM_NULL) {
-		ikm_cache() = IKM_NULL;
-		ikm_check_initialized(kmsg, IKM_SAVED_KMSG_SIZE);
-	} else {
-		kmsg = ikm_alloc(IKM_SAVED_MSG_SIZE);
-		if (kmsg == IKM_NULL)
-			panic("exception_raise");
-		ikm_init(kmsg, IKM_SAVED_MSG_SIZE);
-	}
+	kmsg = ikm_cache_alloc();
+	if (kmsg == IKM_NULL)
+		panic("exception_raise");
 
 	/*
 	 *	We need a reply port for the RPC.
@@ -695,15 +688,20 @@ exception_raise(
 	assert(kmsg->ikm_size == IKM_SAVED_KMSG_SIZE);
 
 	if (copyoutmsg(&kmsg->ikm_header, receiver->ith_msg,
-		       sizeof(struct mach_exception)) ||
-	    (ikm_cache() != IKM_NULL)) {
+		       sizeof(struct mach_exception))) {
 		mr = ipc_kmsg_put(receiver->ith_msg, kmsg,
 				  kmsg->ikm_header.msgh_size);
 		thread_syscall_return(mr);
 		/*NOTREACHED*/
 	}
 
-	ikm_cache() = kmsg;
+	if (!ikm_cache_free_try(kmsg)) {
+		mr = ipc_kmsg_put(receiver->ith_msg, kmsg,
+				  kmsg->ikm_header.msgh_size);
+		thread_syscall_return(mr);
+		/*NOTREACHED*/
+	}
+
 	thread_syscall_return(MACH_MSG_SUCCESS);
 	/*NOTREACHED*/
 #ifndef	__GNUC__
@@ -823,11 +821,7 @@ exception_parse_reply(ipc_kmsg_t kmsg)
 
 	kr = msg->RetCode;
 
-	if ((kmsg->ikm_size == IKM_SAVED_KMSG_SIZE) &&
-	    (ikm_cache() == IKM_NULL))
-		ikm_cache() = kmsg;
-	else
-		ikm_free(kmsg);
+	ikm_cache_free(kmsg);
 
 	return kr;
 }

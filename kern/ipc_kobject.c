@@ -238,11 +238,7 @@ ipc_kobject_server(ipc_kmsg_t request)
 		/* like ipc_kmsg_put, but without the copyout */
 
 		ikm_check_initialized(request, request->ikm_size);
-		if ((request->ikm_size == IKM_SAVED_KMSG_SIZE) &&
-		    (ikm_cache() == IKM_NULL))
-			ikm_cache() = request;
-		else
-			ikm_free(request);
+		ikm_cache_free(request);
 	} else {
 		/*
 		 *	The message contents of the request are intact.
