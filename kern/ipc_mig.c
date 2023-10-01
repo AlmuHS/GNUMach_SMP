@@ -198,7 +198,7 @@ mach_msg(
 
 		kmsg->ikm_header.msgh_seqno = seqno;
 
-		if (rcv_size < kmsg->ikm_header.msgh_size) {
+		if (rcv_size < msg_usize(&kmsg->ikm_header)) {
 			ipc_kmsg_copyout_dest(kmsg, space);
 			ipc_kmsg_put_to_kernel(msg, kmsg, sizeof *msg);
 			return MACH_RCV_TOO_LARGE;
