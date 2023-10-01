@@ -448,8 +448,11 @@ pmap_ptp(const pmap_t pmap, vm_offset_t lin_addr)
 {
 	pt_entry_t *pdp_table;
 #ifdef __x86_64__
-	pt_entry_t pdp;
-	pdp = pmap->l4base[lin2l4num(lin_addr)];
+	pt_entry_t *l4_table;
+	l4_table = pmap_l4base(pmap, lin_addr);
+	if (l4_table == PT_ENTRY_NULL)
+		return(PT_ENTRY_NULL);
+	pt_entry_t pdp = *l4_table;
 	if ((pdp & INTEL_PTE_VALID) == 0)
 		return PT_ENTRY_NULL;
 	pdp_table = (pt_entry_t *) ptetokv(pdp);
