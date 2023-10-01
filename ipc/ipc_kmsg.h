@@ -156,6 +156,16 @@ MACRO_END
 #define	ikm_alloc(size)							\
 		((ipc_kmsg_t) kalloc(ikm_plus_overhead(size)))
 
+/*
+ *	The conversion between userland and kernel-land has to convert from port
+ *	names to ports.  This may increase the size that needs to be allocated
+ *	on the kernel size.  At worse the message is full of port names to be
+ *	converted.
+ */
+#define	IKM_EXPAND_FACTOR	((sizeof(mach_port_t) + sizeof(mach_port_name_t) - 1) / sizeof(mach_port_name_t))
+/* But make sure it's not the converse.  */
+_Static_assert(sizeof(mach_port_t) >= sizeof(mach_port_name_t));
+
 #define	ikm_init(kmsg, size)						\
 MACRO_BEGIN								\
 	ikm_init_special((kmsg), ikm_plus_overhead(size));		\

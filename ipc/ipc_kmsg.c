@@ -489,19 +489,20 @@ ipc_kmsg_get(
 	ipc_kmsg_t 		*kmsgp)
 {
 	ipc_kmsg_t kmsg;
+	mach_msg_size_t 	ksize = size * IKM_EXPAND_FACTOR;
 
 	if ((size < sizeof(mach_msg_user_header_t)) || mach_msg_user_is_misaligned(size))
 		return MACH_SEND_MSG_TOO_SMALL;
 
-	if (size <= IKM_SAVED_MSG_SIZE) {
+	if (ksize <= IKM_SAVED_MSG_SIZE) {
 		kmsg = ikm_cache_alloc();
 		if (kmsg == IKM_NULL)
 			return MACH_SEND_NO_BUFFER;
 	} else {
-		kmsg = ikm_alloc(size);
+		kmsg = ikm_alloc(ksize);
 		if (kmsg == IKM_NULL)
 			return MACH_SEND_NO_BUFFER;
-		ikm_init(kmsg, size);
+		ikm_init(kmsg, ksize);
 	}
 
 	if (copyinmsg(msg, &kmsg->ikm_header, size)) {

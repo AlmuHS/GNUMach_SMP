@@ -450,7 +450,7 @@ mach_msg_trap(
 		 *	We must clear ikm_cache before copyinmsg.
 		 */
 
-		if ((send_size > IKM_SAVED_MSG_SIZE) ||
+		if (((send_size * IKM_EXPAND_FACTOR) > IKM_SAVED_MSG_SIZE) ||
 		    (send_size < sizeof(mach_msg_user_header_t)) ||
 		    (send_size & 3))
 			goto slow_get;
