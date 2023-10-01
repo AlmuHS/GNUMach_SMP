@@ -169,14 +169,6 @@ void machine_init(void)
 #endif
 	clkstart();
 
-#if defined(APIC)
-#warning FIXME: Rather unmask them from their respective drivers
-	/* com0 */
-	unmask_irq(4);
-	/* com1 */
-	unmask_irq(3);
-#endif
-
 #ifdef LINUX_DEV
 	/*
 	 * Initialize Linux drivers.
