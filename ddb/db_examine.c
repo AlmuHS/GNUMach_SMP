@@ -42,8 +42,10 @@
 #include <ddb/db_task_thread.h>
 #include <ddb/db_examine.h>
 #include <ddb/db_expr.h>
+#include <ddb/db_print.h>
 #include <kern/thread.h>
 #include <kern/task.h>
+#include <kern/smp.h>
 #include <mach/vm_param.h>
 
 #define db_thread_to_task(thread)	((thread)? thread->task: TASK_NULL)
@@ -250,6 +252,158 @@ db_examine(
 	    }
 	}
 	db_next = addr;
+}
+
+/*
+ * Find out what this address may be
+ */
+/*ARGSUSED*/
+void
+db_whatis_cmd(
+	db_expr_t	addr,
+	int		have_addr,
+	db_expr_t	count,
+	const char *	modif)
+{
+	/* TODO: Add whatever you can think of */
+
+	int i;
+
+	{
+	    /* tasks */
+
+	    task_t task;
+	    int task_id = 0;
+	    processor_set_t pset;
+	    thread_t thread;
+	    int thread_id;
+	    vm_map_entry_t entry;
+
+	    queue_iterate(&all_psets, pset, processor_set_t, all_psets)
+		queue_iterate(&pset->tasks, task, task_t, pset_tasks) {
+		    if (addr >= (vm_offset_t) task
+			&& addr < (vm_offset_t) task + sizeof(*task))
+			db_printf("%3d %0*X %s [%d]\n",
+				  task_id,
+				  2*sizeof(vm_offset_t),
+				  task,
+				  task->name,
+				  task->thread_count);
+
+		    if (addr >= (vm_offset_t) task->map
+			&& addr < (vm_offset_t) task->map + sizeof(*(task->map)))
+			db_printf("map %X for task%d %s\n", (vm_offset_t) task->map, task_id, task->name);
+
+		    for (entry = vm_map_first_entry(task->map);
+			 entry != vm_map_to_entry(task->map);
+			 entry = entry->vme_next)
+			if (addr >= (vm_offset_t) entry
+				&& addr < (vm_offset_t) entry + sizeof(*entry))
+			    db_printf("map %X for task%d %s entry 0x%X: ",
+				    (vm_offset_t) task->map, task_id, task->name,
+				    (vm_offset_t) entry);
+
+		    if (pmap_whatis(task->map->pmap, addr))
+			db_printf(" in task%d %s\n", task_id, task->name);
+
+		    if ((task == current_task() || task == kernel_task)
+			&& addr >= vm_map_min(task->map)
+			&& addr < vm_map_max(task->map)) {
+			    db_printf("inside map of task%d %s\n", task_id, task->name);
+
+			    for (entry = vm_map_first_entry(task->map);
+				 entry != vm_map_to_entry(task->map);
+				 entry = entry->vme_next)
+				if (addr >= entry->vme_start
+					&& addr < entry->vme_end) {
+				    db_printf(" entry 0x%X: ", (vm_offset_t) entry);
+				    if (entry->is_sub_map)
+					db_printf("submap=0x%X, offset=0x%X\n",
+						(vm_offset_t) entry->object.sub_map,
+						(vm_offset_t) entry->offset);
+				    else
+					db_printf("object=0x%X, offset=0x%X\n",
+						(vm_offset_t) entry->object.vm_object,
+						(vm_offset_t) entry->offset);
+				}
+		    }
+
+		    thread_id = 0;
+		    queue_iterate(&task->thread_list, thread, thread_t, thread_list) {
+			if (addr >= (vm_offset_t) thread
+			    && addr < (vm_offset_t) thread + sizeof(*thread)) {
+			    db_printf("In task%d %s\n", task_id, task->name);
+			    db_print_thread(thread, thread_id, 0);
+			}
+			if (addr >= thread->kernel_stack
+				&& addr < thread->kernel_stack + KERNEL_STACK_SIZE) {
+			    db_printf("In task%d %s\n", task_id, task->name);
+			    db_printf("  on stack of\n");
+			    db_print_thread(thread, thread_id, 0);
+			}
+			thread_id++;
+		    }
+		    task_id++;
+		}
+	}
+
+	pmap_whatis(kernel_pmap, addr);
+
+	{
+	    /* runqs */
+	    if (addr >= (vm_offset_t) &default_pset.runq
+		&& addr < (vm_offset_t) &default_pset.runq + sizeof(default_pset.runq))
+		db_printf("default runq %p\n", &default_pset.runq);
+	    for (i = 0; i < smp_get_numcpus(); i++) {
+		processor_t proc = cpu_to_processor(i);
+		if (addr >= (vm_offset_t) &proc->runq
+		    && addr < (vm_offset_t) &proc->runq + sizeof(proc->runq))
+		    db_printf("Processor #%d runq %p\n", &proc->runq);
+	    }
+	}
+
+	{
+	    /* stacks */
+	    for (i = 0; i < smp_get_numcpus(); i++) {
+		if (addr >= percpu_array[i].active_stack
+			&& addr < percpu_array[i].active_stack + KERNEL_STACK_SIZE)
+		    db_printf("Processor #%d active stack\n", i);
+	    }
+	}
+
+	db_whatis_slab(addr);
+
+	{
+	    /* page */
+	    phys_addr_t pa;
+	    if (DB_VALID_KERN_ADDR(addr))
+		pa = kvtophys(addr);
+	    else
+		pa = pmap_extract(current_task()->map->pmap, addr);
+
+	    if (pa) {
+		struct vm_page *page = vm_page_lookup_pa(pa);
+		db_printf("phys %llx, page %p\n", (unsigned long long) pa, page);
+		if (page) {
+		    const char *types[] = {
+			    [VM_PT_FREE] =	"free",
+			    [VM_PT_RESERVED] =	"reserved",
+			    [VM_PT_TABLE] =	"table",
+			    [VM_PT_KERNEL] =	"kernel",
+		    };
+		    db_printf("  %s\n", types[page->type]);
+		    db_printf("  free %u\n", page->free);
+		    db_printf("  external %u\n", page->external);
+		    db_printf("  busy %u\n", page->busy);
+		    db_printf("  private %u\n", page->private);
+		    db_printf("  object %lx\n", page->object);
+		    db_printf("  offset %lx\n", page->offset);
+		    db_printf("  wired %u\n", page->wire_count);
+		    db_printf("  segment %u\n", page->seg_index);
+		    db_printf("  order %u\n", page->order);
+		}
+	    }
+	}
 }
 
 /*

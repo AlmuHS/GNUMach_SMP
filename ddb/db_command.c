@@ -362,6 +362,7 @@ struct db_command db_command_table[] = {
 	{ "x",		db_examine_cmd,		CS_MORE|CS_SET_DOT, 0 },
 	{ "xf",		db_examine_forward,	CS_SET_DOT,	0 },
 	{ "xb",		db_examine_backward,	CS_SET_DOT,	0 },
+	{ "whatis",	db_whatis_cmd,		CS_MORE,	0 },
 	{ "search",	db_search_cmd,		CS_OWN|CS_SET_DOT, 0 },
 	{ "set",	(db_command_fun_t)db_set_cmd,		CS_OWN,		0 },
 	{ "write",	db_write_cmd,		CS_MORE|CS_SET_DOT, 0 },

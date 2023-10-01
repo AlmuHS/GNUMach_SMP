@@ -60,4 +60,9 @@ db_addr_t db_task_from_space(
 	ipc_space_t	space,
 	int		*task_id);
 
+void db_print_thread(
+	thread_t thread,
+	int	 thread_id,
+	int	 flag);
+
 #endif	/* !_DDB_DB_PRINT_H_ */

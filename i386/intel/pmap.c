@@ -91,6 +91,9 @@
 #include <i386/mp_desc.h>
 #endif
 
+#include <ddb/db_output.h>
+#include <machine/db_machdep.h>
+
 #ifdef	MACH_PSEUDO_PHYS
 #define	WRITE_PTE(pte_p, pte_entry)		*(pte_p) = pte_entry?pa_to_ma(pte_entry):0;
 #else	/* MACH_PSEUDO_PHYS */
@@ -2576,6 +2579,103 @@ void pmap_collect(pmap_t p)
 	return;
 
 }
+
+#if	MACH_KDB
+/*
+ *	Routine:	pmap_whatis
+ *	Function:
+ *		Check whether this address is within a pmap
+ *	Usage:
+ *		Called from debugger
+ */
+int pmap_whatis(pmap_t p, vm_offset_t a)
+{
+	pt_entry_t	        *ptp;
+	phys_addr_t		pa;
+	int			spl;
+	int			ret = 0;
+
+	if (p == PMAP_NULL)
+		return 0;
+
+	PMAP_READ_LOCK(p, spl);
+#if PAE
+#ifdef __x86_64__
+	if (a >= (vm_offset_t) p->l4base && a < (vm_offset_t) (&p->l4base[NPTES])) {
+		db_printf("L4 for pmap %p\n", p);
+		ret = 1;
+	}
+	for (int l4i = 0; l4i < NPTES; l4i++) {
+		pt_entry_t pdp = (pt_entry_t) p->l4base[l4i];
+		if (!(pdp & INTEL_PTE_VALID))
+			continue;
+		pt_entry_t *pdpbase = (pt_entry_t*) ptetokv(pdp);
+#else /* __x86_64__ */
+		int l4i = 0;
+		pt_entry_t *pdpbase = p->pdpbase;
+#endif /* __x86_64__ */
+		if (a >= (vm_offset_t) pdpbase && a < (vm_offset_t) (&pdpbase[NPTES])) {
+			db_printf("PDP %d for pmap %p\n", l4i, p);
+			ret = 1;
+		}
+		for (int l3i = 0; l3i < NPTES; l3i++)
+		{
+			pt_entry_t pde = (pt_entry_t ) pdpbase[l3i];
+			if (!(pde & INTEL_PTE_VALID))
+				continue;
+			pt_entry_t *pdebase = (pt_entry_t*) ptetokv(pde);
+#else /* PAE */
+			int l3i = 0;
+			pt_entry_t *pdebase = p->dirbase;
+#endif /* PAE */
+			if (a >= (vm_offset_t) pdebase && a < (vm_offset_t) (&pdebase[NPTES])) {
+				db_printf("PDE %d %d for pmap %p\n", l4i, l3i, p);
+				ret = 1;
+			}
+			for (int l2i = 0; l2i < NPTES; l2i++)
+			{
+				pt_entry_t pte = (pt_entry_t) pdebase[l2i];
+				if (!(pte & INTEL_PTE_VALID))
+					continue;
+
+				pa = pte_to_pa(pte);
+				ptp = (pt_entry_t *)phystokv(pa);
+
+				if (a >= (vm_offset_t) ptp && a < (vm_offset_t) (&ptp[NPTES*ptes_per_vm_page])) {
+					db_printf("PTP %d %d %d for pmap %p\n", l4i, l3i, l2i, p);
+					ret = 1;
+				}
+			}
+#if PAE
+		}
+#ifdef __x86_64__
+	}
+#endif /* __x86_64__ */
+#endif /* PAE */
+	PMAP_READ_UNLOCK(p, spl);
+
+	if (p == kernel_pmap) {
+		phys_addr_t pa;
+		if (DB_VALID_KERN_ADDR(a))
+			pa = kvtophys(a);
+		else
+			pa = pmap_extract(current_task()->map->pmap, a);
+
+		if (valid_page(pa)) {
+			unsigned long pai;
+			pv_entry_t pv_h;
+
+			pai = pa_index(pa);
+			for (pv_h = pai_to_pvh(pai);
+				pv_h && pv_h->pmap;
+				pv_h = pv_h->next)
+				db_printf("pmap %p at %llx\n", pv_h->pmap, pv_h->va);
+		}
+	}
+
+	return ret;
+}
+#endif /* MACH_KDB */
 
 /*
  *	Routine:	pmap_activate

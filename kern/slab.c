@@ -1496,9 +1496,47 @@ void slab_info(void)
 #if MACH_KDB
 #include <ddb/db_output.h>
 
- void db_show_slab_info(void)
+void db_show_slab_info(void)
 {
     _slab_info(db_printf);
+}
+
+void db_whatis_slab(vm_offset_t a)
+{
+    struct kmem_cache *cache;
+
+#ifndef SLAB_VERIFY
+    db_printf("enabling SLAB_VERIFY is recommended\n");
+#endif
+
+    simple_lock(&kmem_cache_list_lock);
+
+    list_for_each_entry(&kmem_cache_list, cache, node) {
+        if (a >= (vm_offset_t) cache
+                && a < (vm_offset_t) cache + sizeof(*cache))
+            db_printf("Cache %s\n", cache->name);
+
+        simple_lock(&cache->lock);
+
+        if (cache->flags & KMEM_CF_USE_TREE) {
+            struct rbtree_node *node;
+
+            node = rbtree_lookup_nearest(&cache->active_slabs, (void*) a,
+                                         kmem_slab_cmp_lookup, RBTREE_LEFT);
+            if (node) {
+                struct kmem_slab *slab;
+                slab = rbtree_entry(node, struct kmem_slab, tree_node);
+                if (a >= (vm_offset_t) slab->addr
+                        && a < (vm_offset_t) slab->addr + cache->slab_size)
+                    db_printf("In cache %s\n", cache->name);
+            }
+        }
+
+        simple_unlock(&cache->lock);
+    }
+
+    simple_unlock(&kmem_cache_list_lock);
+
 }
 
 #endif /* MACH_KDB */

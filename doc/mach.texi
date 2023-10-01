@@ -6918,6 +6918,10 @@ Examine backward.  It executes an examine command with the last
 specified parameters to it except that the last start address subtracted
 by the size displayed by it is used as the start address.
 
+@item whatis @var{addr}
+Try to find what this address is. This looks up in the various tasks, threads,
+maps, caches etc. to give an idea what is behind this address.
+
 @item print[/axzodurc] @var{addr1} [ @var{addr2} @dots{} ]
 Print @var{addr}'s according to the modifier character.  Valid formats
 are: @code{a} @code{x} @code{z} @code{o} @code{d} @code{u} @code{r}

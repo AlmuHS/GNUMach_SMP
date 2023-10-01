@@ -157,6 +157,10 @@ boolean_t pmap_is_modified(phys_addr_t pa);
 extern phys_addr_t	pmap_extract(pmap_t, vm_offset_t);
 /* Perform garbage collection, if any.  */
 extern void		pmap_collect(pmap_t);
+
+/* Lookup an address.  */
+int pmap_whatis(pmap_t, vm_offset_t);
+
 /* Specify pageability.  */
 extern void		pmap_change_wiring(pmap_t, vm_offset_t, boolean_t);
 

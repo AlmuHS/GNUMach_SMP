@@ -148,7 +148,7 @@ db_thread_stat(
 	return(status);
 }
 
-static void
+void
 db_print_thread(
 	thread_t thread,
 	int	 thread_id,

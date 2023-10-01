@@ -61,6 +61,12 @@ int db_xcdump(
 	int	count,
 	task_t task);
 
+extern void db_whatis_cmd (
+	db_expr_t addr,
+	int have_addr,
+	db_expr_t count,
+	const char *modif);
+
 void db_print_cmd(void);
 
 void db_search_cmd(

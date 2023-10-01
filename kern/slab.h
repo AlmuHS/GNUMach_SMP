@@ -237,6 +237,7 @@ void slab_info(void);
 
 #if MACH_KDB
 void db_show_slab_info(void);
+void db_whatis_slab(vm_offset_t addr);
 #endif /* MACH_KDB */
 
 #endif /* _KERN_SLAB_H */
