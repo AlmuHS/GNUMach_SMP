@@ -2628,7 +2628,7 @@ int pmap_whatis(pmap_t p, vm_offset_t a)
 				continue;
 			pt_entry_t *pdebase = (pt_entry_t*) ptetokv(pde);
 #else /* PAE */
-			int l3i = 0;
+			int l4i = 0, l3i = 0;
 			pt_entry_t *pdebase = p->dirbase;
 #endif /* PAE */
 			if (a >= (vm_offset_t) pdebase && a < (vm_offset_t) (&pdebase[NPTES])) {
