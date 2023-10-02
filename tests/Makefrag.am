@@ -20,5 +20,7 @@
 # Tests.
 #
 
+if !PLATFORM_xen
 TESTS += \
 	tests/test-multiboot
+endif
