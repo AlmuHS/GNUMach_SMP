@@ -50,6 +50,20 @@ search_intr (struct irqdev *dev, ipc_port_t dst_port)
   return NULL;
 }
 
+
+/*
+ * Interrupt handling logic:
+ *
+ * interrupt.S raises spl (thus IF cleared)
+ * interrupt.S EOI
+ * interrupt.S calls the handler
+ *   - for pure in-kernel handlers, they do whatever they want with IF cleared.
+ *   - when a userland handler is registered, queue_intr masks the irq.
+ * interrupt.S lowers spl with splx_cli, thus IF still cleared
+ * iret, that also sets IF
+ *
+ * later on, (irq_acknowledge), userland acks the IRQ, that unmasks the irq
+ */
 kern_return_t
 irq_acknowledge (ipc_port_t receive_port)
 {
@@ -75,8 +89,6 @@ irq_acknowledge (ipc_port_t receive_port)
 
   if (ret)
     return ret;
-
-  (*(irqtab.irqdev_ack)) (&irqtab, e->id);
 
   __enable_irq (irqtab.irq[e->id]);
 
