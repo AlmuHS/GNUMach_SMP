@@ -39,6 +39,23 @@
 #include <i386/cpu_number.h>
 #include <i386/xen.h>
 
+#define PUSH_REGS_ISR	\
+	pushl	%ecx    ;\
+	pushl	%edx
+
+#define PUSH_AREGS_ISR	\
+	pushl	%eax    ;\
+	PUSH_REGS_ISR
+
+
+#define POP_REGS_ISR	\
+	popl	%edx    ;\
+	popl	%ecx
+
+#define POP_AREGS_ISR	\
+	POP_REGS_ISR   ;\
+	popl	%eax
+
 /*
  * Note that we have to load the kernel segment registers even if this
  * is a trap from the kernel, because the kernel uses user segment
@@ -694,8 +711,7 @@ INTERRUPT(255)
  * old %eax on stack; interrupt number in %eax.
  */
 ENTRY(all_intrs)
-	pushl	%ecx			/* save registers */
-	pushl	%edx
+	PUSH_REGS_ISR			/* save registers */
 	cld				/* clear direction flag */
 
 	CPU_NUMBER_NO_GS(%ecx)
@@ -754,9 +770,8 @@ LEXT(return_to_iret)			/* to find the return from calling interrupt) */
 	jnz	ast_from_interrupt	/* take it if so */
 1:
 	POP_SEGMENTS_ISR		/* restore segment regs */
-	pop	%edx
-	pop	%ecx
-	pop	%eax
+	POP_AREGS_ISR			/* restore registers */
+
 	iret				/* return to caller */
 
 int_from_intstack:
@@ -765,9 +780,10 @@ int_from_intstack:
 	jb	stack_overflowed	/* if not: */
 	call	EXT(interrupt)		/* call interrupt routine */
 _return_to_iret_i:			/* ( label for kdb_kintr) */
-	pop	%edx			/* must have been on kernel segs */
-	pop	%ecx
-	pop	%eax			/* no ASTs */
+					/* must have been on kernel segs */
+	POP_AREGS_ISR			/* restore registers */
+					/* no ASTs */
+
 	iret
 
 stack_overflowed:
@@ -791,9 +807,7 @@ stack_overflowed:
  */
 ast_from_interrupt:
 	POP_SEGMENTS_ISR		/* restore all registers ... */
-	popl	%edx
-	popl	%ecx
-	popl	%eax
+	POP_AREGS_ISR
 	pushl	$0			/* zero code */
 	pushl	$0			/* zero trap number */
 	pusha				/* save general registers */

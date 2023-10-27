@@ -80,6 +80,35 @@
 	popq %rcx	;\
 	popq %rax
 
+#define PUSH_REGS_ISR	\
+	pushq	%rcx    ;\
+	pushq	%rdx    ;\
+	pushq	%rsi    ;\
+	pushq	%rdi    ;\
+	pushq	%r8     ;\
+	pushq	%r9     ;\
+	pushq	%r10     ;\
+	pushq	%r11
+
+#define PUSH_AREGS_ISR	\
+	pushq	%rax    ;\
+	PUSH_REGS_ISR
+
+
+#define POP_REGS_ISR	\
+	popq	%r11    ;\
+	popq	%r10     ;\
+	popq	%r9     ;\
+	popq	%r8     ;\
+	popq	%rdi    ;\
+	popq	%rsi    ;\
+	popq	%rdx    ;\
+	popq	%rcx
+
+#define POP_AREGS_ISR	\
+	POP_REGS_ISR	;\
+	popq	%rax
+
 /*
  * Note that we have to load the kernel segment registers even if this
  * is a trap from the kernel, because the kernel uses user segment
@@ -790,14 +819,7 @@ INTERRUPT(255)
  * interrupt stack.
  */
 ENTRY(all_intrs)
-	pushq	%rcx			/* save registers */
-	pushq	%rdx
-	pushq	%rsi
-	pushq	%rdi
-	pushq	%r8
-	pushq	%r9
-	pushq	%r10
-	pushq	%r11
+	PUSH_REGS_ISR			/* save registers */
 	cld				/* clear direction flag */
 
 	PUSH_SEGMENTS_ISR(%rdx)		/* save segment registers */
@@ -858,15 +880,7 @@ LEXT(return_to_iret)			/* to find the return from calling interrupt) */
 	jnz	ast_from_interrupt	/* take it if so */
 1:
 	POP_SEGMENTS_ISR(%rdx)		/* restore segment regs */
-	pop	%r11
-	pop	%r10
-	pop	%r9
-	pop	%r8
-	pop	%rdi
-	pop	%rsi
-	pop	%rdx
-	pop	%rcx
-	pop	%rax
+	POP_AREGS_ISR			/* restore registers */
 
 	iretq				/* return to caller */
 
@@ -876,15 +890,8 @@ int_from_intstack:
 	call	EXT(interrupt)		/* call interrupt routine */
 _return_to_iret_i:			/* ( label for kdb_kintr) */
 	POP_SEGMENTS_ISR(%rdx)
-	pop	%r11
-	pop	%r10
-	pop	%r9
-	pop	%r8
-	pop	%rdi
-	pop	%rsi
-	pop	%rdx			/* must have been on kernel segs */
-	pop	%rcx
-	pop	%rax			/* no ASTs */
+	POP_AREGS_ISR			/* restore registers */
+					/* no ASTs */
 
 	iretq
 
@@ -909,15 +916,7 @@ stack_overflowed:
  */
 ast_from_interrupt:
 	POP_SEGMENTS_ISR(%rdx)		/* restore all registers ... */
-	popq	%r11
-	popq	%r10
-	popq	%r9
-	popq	%r8
-	popq	%rdi
-	popq	%rsi
-	popq	%rdx
-	popq	%rcx
-	popq	%rax
+	POP_AREGS_ISR
 	pushq	$0			/* zero code */
 	pushq	$0			/* zero trap number */
 	pusha				/* save general registers */
