@@ -692,13 +692,14 @@ _kret_iret:
 trap_from_kernel:
 #if	MACH_KDB || MACH_TTD
 	movq	%rsp,%rbx		/* save current stack */
-
 	movq	%rsp,%rdx		/* on an interrupt stack? */
+
+	CPU_NUMBER(%ecx)
 	and	$(~(INTSTACK_SIZE-1)),%rdx
-	cmpq	EXT(int_stack_base),%rdx
+	cmpq	CX(EXT(int_stack_base),%ecx),%rdx
 	je	1f			/* OK if so */
 
-	CPU_NUMBER(%edx)		/* get CPU number */
+	movl	%ecx,%edx
 	cmpq	CX(EXT(kernel_stack),%rdx),%rsp
 					/* already on kernel stack? */
 	ja	0f
@@ -824,9 +825,10 @@ ENTRY(all_intrs)
 
 	PUSH_SEGMENTS_ISR(%rdx)		/* save segment registers */
 
+	CPU_NUMBER_NO_GS(%ecx)
 	movq	%rsp,%rdx		/* on an interrupt stack? */
 	and	$(~(INTSTACK_SIZE-1)),%rdx
-	cmpq	%ss:EXT(int_stack_base),%rdx
+	cmpq	%ss:CX(EXT(int_stack_base),%ecx),%rdx
 	je	int_from_intstack	/* if not: */
 
 	SET_KERNEL_SEGMENTS(%rdx)	/* switch to kernel segments */
@@ -885,7 +887,8 @@ LEXT(return_to_iret)			/* to find the return from calling interrupt) */
 	iretq				/* return to caller */
 
 int_from_intstack:
-	cmpq	EXT(int_stack_base),%rsp	/* seemingly looping? */
+	CPU_NUMBER_NO_GS(%edx)
+	cmpq	CX(EXT(int_stack_base),%edx),%rsp /* seemingly looping? */
 	jb	stack_overflowed	/* if not: */
 	call	EXT(interrupt)		/* call interrupt routine */
 _return_to_iret_i:			/* ( label for kdb_kintr) */
