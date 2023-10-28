@@ -711,11 +711,13 @@ trap_from_kernel:
 	pushq	%rbx			/* save old stack */
 	movq	%rbx,%rdi		/* pass as parameter */
 	call	EXT(kernel_trap)	/* to kernel trap routine */
+
 	popq	%rsp			/* return to old stack */
 #else	/* MACH_KDB || MACH_TTD */
 
 	movq	%rsp,%rdi		/* pass parameter */
 	call	EXT(kernel_trap)	/* to kernel trap routine */
+
 #endif	/* MACH_KDB || MACH_TTD */
 
 	jmp	_return_from_kernel

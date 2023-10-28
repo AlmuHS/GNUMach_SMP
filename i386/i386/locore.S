@@ -592,7 +592,6 @@ trap_from_kernel:
 	je	1f			/* OK if so */
 
 	movl	%ecx,%edx
-
 	cmpl	CX(EXT(kernel_stack),%edx),%esp
 					/* already on kernel stack? */
 	ja	0f
@@ -612,6 +611,7 @@ trap_from_kernel:
 	call	EXT(kernel_trap)	/* to kernel trap routine */
 	addl	$4,%esp			/* pop parameter */
 #endif	/* MACH_KDB || MACH_TTD */
+
 	jmp	_return_from_kernel
 
 
