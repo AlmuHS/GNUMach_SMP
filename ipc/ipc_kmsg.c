@@ -2383,8 +2383,12 @@ ipc_kmsg_copyout_body(
 
 			if (!is_inline && (length != 0)) {
 				/* first allocate memory in the map */
+				uint64_t allocated = length;
 
-				kr = vm_allocate(map, &addr, length, TRUE);
+				assert(sizeof(mach_port_name_t) < sizeof(mach_port_t));
+				allocated -= (sizeof(mach_port_t) - sizeof(mach_port_name_t)) * number;
+
+				kr = vm_allocate(map, &addr, allocated, TRUE);
 				if (kr != KERN_SUCCESS) {
 					ipc_kmsg_clean_body(taddr, saddr);
 					goto vm_copyout_failure;
