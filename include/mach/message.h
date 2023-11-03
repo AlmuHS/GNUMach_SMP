@@ -281,8 +281,13 @@ typedef struct {
 } __attribute__ ((aligned (__alignof__ (uintptr_t)))) mach_msg_type_long_t;
 
 #ifdef __x86_64__
+#ifdef __cplusplus
+static_assert (sizeof (mach_msg_type_t) == sizeof (mach_msg_type_long_t),
+                "mach_msg_type_t and mach_msg_type_long_t need to have the same size.");
+#else
 _Static_assert (sizeof (mach_msg_type_t) == sizeof (mach_msg_type_long_t),
                 "mach_msg_type_t and mach_msg_type_long_t need to have the same size.");
+#endif
 #endif
 
 /*
