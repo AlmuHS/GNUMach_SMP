@@ -2385,7 +2385,8 @@ ipc_kmsg_copyout_body(
 				/* first allocate memory in the map */
 				uint64_t allocated = length;
 
-				assert(sizeof(mach_port_name_t) < sizeof(mach_port_t));
+				_Static_assert(sizeof(mach_port_name_t) <= sizeof(mach_port_t),
+						"Size of mach_port_t should be equal or larger than mach_port_name_t.");
 				allocated -= (sizeof(mach_port_t) - sizeof(mach_port_name_t)) * number;
 
 				kr = vm_allocate(map, &addr, allocated, TRUE);
