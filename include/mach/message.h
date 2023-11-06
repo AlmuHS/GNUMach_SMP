@@ -282,8 +282,10 @@ typedef struct {
 
 #ifdef __x86_64__
 #ifdef __cplusplus
+#if __cplusplus >= 201103L
 static_assert (sizeof (mach_msg_type_t) == sizeof (mach_msg_type_long_t),
                 "mach_msg_type_t and mach_msg_type_long_t need to have the same size.");
+#endif
 #else
 _Static_assert (sizeof (mach_msg_type_t) == sizeof (mach_msg_type_long_t),
                 "mach_msg_type_t and mach_msg_type_long_t need to have the same size.");
