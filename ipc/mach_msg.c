@@ -495,7 +495,10 @@ mach_msg_trap(
 			ipc_entry_t entry;
 			entry = ipc_entry_lookup (space, reply_name);
 			if (entry == IE_NULL)
+			{
+				ipc_entry_lookup_failed (reply_name);
 				goto abort_request_copyin;
+			}
 			reply_port = (ipc_port_t) entry->ie_object;
 			assert(reply_port != IP_NULL);
 		    }
@@ -508,7 +511,10 @@ mach_msg_trap(
 			ipc_entry_bits_t bits;
 			entry = ipc_entry_lookup (space, dest_name);
 			if (entry == IE_NULL)
+			{
+				ipc_entry_lookup_failed (dest_name);
 				goto abort_request_copyin;
+			}
 			bits = entry->ie_bits;
 
 			/* check type bits */
@@ -620,7 +626,10 @@ mach_msg_trap(
 
 			entry = ipc_entry_lookup (space, dest_name);
 			if (entry == IE_NULL)
+			{
+				ipc_entry_lookup_failed (dest_name);
 				goto abort_reply_dest_copyin;
+			}
 
 			/* check type bits */
 			if (IE_BITS_TYPE (entry->ie_bits) !=
@@ -668,7 +677,10 @@ mach_msg_trap(
 			ipc_entry_bits_t bits;
 			entry = ipc_entry_lookup (space, rcv_name);
 			if (entry == IE_NULL)
+			{
+				ipc_entry_lookup_failed (rcv_name);
 				goto abort_reply_rcv_copyin;
+			}
 			bits = entry->ie_bits;
 
 			/* check type bits; looking for receive or set */
