@@ -687,7 +687,7 @@ ipc_kmsg_copyin_header(
 		entry = ipc_entry_lookup (space, dest_name);
 		if (entry == IE_NULL)
 		{
-			ipc_entry_lookup_failed (dest_name);
+			ipc_entry_lookup_failed (msg, dest_name);
 			goto abort_async;
 		}
 		bits = entry->ie_bits;
@@ -742,7 +742,7 @@ ipc_kmsg_copyin_header(
 		entry = ipc_entry_lookup (space, dest_name);
 		if (entry == IE_NULL)
 		{
-			ipc_entry_lookup_failed (dest_name);
+			ipc_entry_lookup_failed (msg, dest_name);
 			goto abort_request;
 		}
 		bits = entry->ie_bits;
@@ -759,7 +759,7 @@ ipc_kmsg_copyin_header(
 		entry = ipc_entry_lookup (space, reply_name);
 		if (entry == IE_NULL)
 		{
-			ipc_entry_lookup_failed (reply_name);
+			ipc_entry_lookup_failed (msg, reply_name);
 			goto abort_request;
 		}
 		bits = entry->ie_bits;
@@ -829,7 +829,7 @@ ipc_kmsg_copyin_header(
 		entry = ipc_entry_lookup (space, dest_name);
 		if (entry == IE_NULL)
 		{
-			ipc_entry_lookup_failed (dest_name);
+			ipc_entry_lookup_failed (msg, dest_name);
 			goto abort_reply;
 		}
 		bits = entry->ie_bits;
@@ -905,7 +905,7 @@ ipc_kmsg_copyin_header(
 		if (((entry = ipc_entry_lookup(space, notify)) == IE_NULL) ||
 		    ((entry->ie_bits & MACH_PORT_TYPE_RECEIVE) == 0)) {
 			if (entry == IE_NULL)
-				ipc_entry_lookup_failed (notify);
+				ipc_entry_lookup_failed (msg, notify);
 			is_write_unlock(space);
 			return MACH_SEND_INVALID_NOTIFY;
 		}
@@ -931,7 +931,7 @@ ipc_kmsg_copyin_header(
 
 		entry = ipc_entry_lookup(space, name);
 		if (entry == IE_NULL) {
-			ipc_entry_lookup_failed (name);
+			ipc_entry_lookup_failed (msg, name);
 			goto invalid_dest;
 		}
 
@@ -1084,7 +1084,7 @@ ipc_kmsg_copyin_header(
 
 		entry = ipc_entry_lookup(space, dest_name);
 		if (entry == IE_NULL) {
-			ipc_entry_lookup_failed (dest_name);
+			ipc_entry_lookup_failed (msg, dest_name);
 			goto invalid_dest;
 		}
 
@@ -1142,14 +1142,14 @@ ipc_kmsg_copyin_header(
 
 		dest_entry = ipc_entry_lookup(space, dest_name);
 		if (dest_entry == IE_NULL) {
-			ipc_entry_lookup_failed (dest_name);
+			ipc_entry_lookup_failed (msg, dest_name);
 			goto invalid_dest;
 		}
 
 		reply_entry = ipc_entry_lookup(space, reply_name);
 		if (reply_entry == IE_NULL)
 		{
-			ipc_entry_lookup_failed (reply_name);
+			ipc_entry_lookup_failed (msg, reply_name);
 			goto invalid_reply;
 		}
 
@@ -2117,7 +2117,7 @@ ipc_kmsg_copyout_header(
 								== IE_NULL) ||
 			    ((entry->ie_bits & MACH_PORT_TYPE_RECEIVE) == 0)) {
 				if (entry == IE_NULL)
-					ipc_entry_lookup_failed (notify);
+					ipc_entry_lookup_failed (msg, notify);
 				is_read_unlock(space);
 				return MACH_RCV_INVALID_NOTIFY;
 			}

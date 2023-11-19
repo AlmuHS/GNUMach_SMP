@@ -159,11 +159,11 @@ ipc_entry_lookup(
 extern volatile boolean_t mach_port_deallocate_debug;
 
 static inline void
-ipc_entry_lookup_failed(mach_port_name_t name)
+ipc_entry_lookup_failed(mach_msg_header_t *msg, mach_port_name_t name)
 {
 	if (name == MACH_PORT_NULL || name == MACH_PORT_DEAD)
 		return;
-	printf("task %.*s looked up a bogus port %lu, most probably a bug.\n", (int) sizeof current_task()->name, current_task()->name, (unsigned long) name);
+	printf("task %.*s looked up a bogus port %lu for %d, most probably a bug.\n", (int) sizeof current_task()->name, current_task()->name, (unsigned long) name, msg->msgh_id);
 	if (mach_port_deallocate_debug)
 		SoftDebugger("ipc_entry_lookup");
 }

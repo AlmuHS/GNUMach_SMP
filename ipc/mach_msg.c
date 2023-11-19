@@ -496,7 +496,7 @@ mach_msg_trap(
 			entry = ipc_entry_lookup (space, reply_name);
 			if (entry == IE_NULL)
 			{
-				ipc_entry_lookup_failed (reply_name);
+				ipc_entry_lookup_failed (msg, reply_name);
 				goto abort_request_copyin;
 			}
 			reply_port = (ipc_port_t) entry->ie_object;
@@ -512,7 +512,7 @@ mach_msg_trap(
 			entry = ipc_entry_lookup (space, dest_name);
 			if (entry == IE_NULL)
 			{
-				ipc_entry_lookup_failed (dest_name);
+				ipc_entry_lookup_failed (msg, dest_name);
 				goto abort_request_copyin;
 			}
 			bits = entry->ie_bits;
@@ -627,7 +627,7 @@ mach_msg_trap(
 			entry = ipc_entry_lookup (space, dest_name);
 			if (entry == IE_NULL)
 			{
-				ipc_entry_lookup_failed (dest_name);
+				ipc_entry_lookup_failed (msg, dest_name);
 				goto abort_reply_dest_copyin;
 			}
 
@@ -678,7 +678,7 @@ mach_msg_trap(
 			entry = ipc_entry_lookup (space, rcv_name);
 			if (entry == IE_NULL)
 			{
-				ipc_entry_lookup_failed (rcv_name);
+				ipc_entry_lookup_failed (msg, rcv_name);
 				goto abort_reply_rcv_copyin;
 			}
 			bits = entry->ie_bits;
