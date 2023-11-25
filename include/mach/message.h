@@ -238,12 +238,12 @@ typedef struct  {
      * kernel. Otherwise, we would have to replicate some of the MiG logic
      * internally in the kernel.
      */
-    unsigned int	msgt_inline : 1,
-			msgt_longform : 1,
-			msgt_deallocate : 1,
-			msgt_name : 8,
+    unsigned int	msgt_name : 8,
 			msgt_size : 16,
-			msgt_unused : 5;
+			msgt_unused : 5,
+			msgt_inline : 1,
+			msgt_longform : 1,
+			msgt_deallocate : 1;
     mach_msg_type_number_t   msgt_number;
 #else
     unsigned int	msgt_name : 8,
@@ -263,12 +263,12 @@ typedef struct {
          * union to overlay with the old field names.  */
         mach_msg_type_t	msgtl_header;
         struct {
-            unsigned int	msgtl_inline : 1,
-                    msgtl_longform : 1,
-                    msgtl_deallocate : 1,
-                    msgtl_name : 8,
+            unsigned int	msgtl_name : 8,
                     msgtl_size : 16,
-                    msgtl_unused : 5;
+                    msgtl_unused : 5,
+                    msgtl_inline : 1,
+                    msgtl_longform : 1,
+                    msgtl_deallocate : 1;
             mach_msg_type_number_t   msgtl_number;
         };
     };
