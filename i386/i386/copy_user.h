@@ -87,16 +87,14 @@ static inline int copyout_port(const mach_port_t *kaddr, mach_port_name_t *uaddr
 #endif /* __x86_64__ */
 }
 
-// XXX we could add another field to kmsg to store the user-side size, but then we
-// should check if we can  obtain it for rpc and notifications originating from
-// the kernel
-#ifndef __x86_64__
+#if defined(__x86_64__) && defined(USER32)
+/* For 32 bit userland, kernel and user land messages are not the same size. */
+size_t msg_usize(const mach_msg_header_t *kmsg);
+#else
 static inline size_t msg_usize(const mach_msg_header_t *kmsg)
 {
   return kmsg->msgh_size;
 }
-#else /* __x86_64__ */
-size_t msg_usize(const mach_msg_header_t *kmsg);
-#endif /* __x86_64__ */
+#endif /* __x86_64__ && USER32 */
 
 #endif /* COPY_USER_H */
