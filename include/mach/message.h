@@ -221,24 +221,6 @@ typedef unsigned int mach_msg_type_name_t;
 typedef unsigned int mach_msg_type_size_t;
 typedef natural_t  mach_msg_type_number_t;
 
-/**
- * Structure used for inlined port rights in messages.
- *
- * We use this to avoid having to perform message resizing in the kernel
- * since userspace port rights might be smaller than kernel ports in 64 bit
- * architectures.
- */
-typedef struct {
-    union {
-        mach_port_name_t name;
-#ifdef KERNEL
-        mach_port_t kernel_port;
-#else
-        uintptr_t kernel_port_do_not_use;
-#endif  /* KERNEL */
-    };
-} mach_port_name_inlined_t;
-
 typedef struct  {
 #ifdef __x86_64__
     /*
