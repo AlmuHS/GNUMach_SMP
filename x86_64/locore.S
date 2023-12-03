@@ -539,7 +539,8 @@ fault_popl_gs:
 	jmp	push_segregs		/* (GS on top of stack) */
 
 push_es:
-	pushq	%es			/* restore es, */
+	movq	%es,%rcx
+	pushq	%rcx			/* restore es, */
 push_fs:
 	pushq	%fs			/* restore fs, */
 push_gs:
