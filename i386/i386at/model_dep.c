@@ -452,7 +452,9 @@ i386at_init(void)
 	ldt_init();
 	ktss_init();
 
+#ifndef MACH_XEN
 	init_percpu(0);
+#endif
 #if NCPUS > 1
 	/* Initialize SMP structures in the master processor */
 	mp_desc_init(0);

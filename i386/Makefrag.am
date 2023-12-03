@@ -96,6 +96,8 @@ libkernel_a_SOURCES += \
 	i386/i386/debug_trace.S \
 	i386/i386/idt_inittab.S \
 	i386/i386/locore.S \
+	i386/i386/percpu.c \
+	i386/i386/percpu.h \
 	i386/i386/spl.S \
 	i386/i386/cpuboot.S
 
@@ -108,8 +110,6 @@ libkernel_a_SOURCES += \
 	i386/i386/irq.c \
 	i386/i386/irq.h \
 	i386/i386/msr.h \
-	i386/i386/percpu.c \
-	i386/i386/percpu.h \
 	i386/i386/pit.c \
 	i386/i386/pit.h
 
