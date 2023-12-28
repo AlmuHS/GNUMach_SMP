@@ -401,6 +401,16 @@ typedef integer_t mach_msg_option_t;
 
 #define MACH_SEND_ALWAYS	0x00010000	/* internal use only */
 
+#ifdef __x86_64__
+#if defined(KERNEL) && defined(USER32)
+#define MACH_MSG_USER_ALIGNMENT 4
+#else
+#define MACH_MSG_USER_ALIGNMENT 8
+#endif
+#else
+#define MACH_MSG_USER_ALIGNMENT 4
+#endif
+
 #ifdef KERNEL
 /* This is the alignment of msg descriptors and the actual data
  * for both in kernel messages and user land messages.
@@ -411,15 +421,6 @@ typedef integer_t mach_msg_option_t;
  * so that kernel messages are correctly aligned.
  */
 #define MACH_MSG_KERNEL_ALIGNMENT sizeof(uintptr_t)
-#ifdef __x86_64__
-#ifdef USER32
-#define MACH_MSG_USER_ALIGNMENT 4
-#else
-#define MACH_MSG_USER_ALIGNMENT 8
-#endif
-#else
-#define MACH_MSG_USER_ALIGNMENT 4
-#endif
 
 #define mach_msg_align(x, alignment)	\
 	( ( ((vm_offset_t)(x)) + ((alignment)-1) ) & ~((alignment)-1) )
