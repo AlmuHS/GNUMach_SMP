@@ -1829,6 +1829,30 @@ kern_return_t vm_map_pageable(
 	return(KERN_SUCCESS);
 }
 
+/* Update pageability of all the memory currently in the map.
+ * The map must be locked, and protection mismatch will not be checked, see
+ * vm_map_pageable().
+ */
+static kern_return_t
+vm_map_pageable_current(vm_map_t map, vm_prot_t access_type)
+{
+	struct rbtree_node *node;
+	vm_offset_t min_address, max_address;
+
+	node = rbtree_first(&map->hdr.tree);
+	min_address = rbtree_entry(node, struct vm_map_entry,
+				   tree_node)->vme_start;
+
+	node = rbtree_last(&map->hdr.tree);
+	max_address = rbtree_entry(node, struct vm_map_entry,
+				   tree_node)->vme_end;
+
+	/* Returns with the map read-locked if successful */
+	return vm_map_pageable(map, min_address, max_address,access_type,
+			       FALSE, FALSE);
+}
+
+
 /*
  *	vm_map_pageable_all:
  *
@@ -1859,8 +1883,7 @@ vm_map_pageable_all(struct vm_map *map, vm_wire_t flags)
 		map->wiring_required = FALSE;
 
 		/* Returns with the map read-locked if successful */
-		kr = vm_map_pageable(map, map->min_offset, map->max_offset,
-				     VM_PROT_NONE, FALSE, FALSE);
+		kr = vm_map_pageable_current(map, VM_PROT_NONE);
 		vm_map_unlock(map);
 		return kr;
 	}
@@ -1873,9 +1896,7 @@ vm_map_pageable_all(struct vm_map *map, vm_wire_t flags)
 
 	if (flags & VM_WIRE_CURRENT) {
 		/* Returns with the map read-locked if successful */
-		kr = vm_map_pageable(map, map->min_offset, map->max_offset,
-				     VM_PROT_READ | VM_PROT_WRITE,
-				     FALSE, FALSE);
+		kr = vm_map_pageable_current(map, VM_PROT_READ | VM_PROT_WRITE);
 
 		if (kr != KERN_SUCCESS) {
 			if (flags & VM_WIRE_FUTURE) {
