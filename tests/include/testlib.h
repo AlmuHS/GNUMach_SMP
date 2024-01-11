@@ -65,6 +65,7 @@ const char* e2s(int err);
 const char* e2s_gnumach(int err);
 void halt();
 int msleep(uint32_t timeout);
+thread_t test_thread_start(task_t task, void(*routine)(void*), void* arg);
 
 mach_port_t host_priv(void);
 mach_port_t device_priv(void);

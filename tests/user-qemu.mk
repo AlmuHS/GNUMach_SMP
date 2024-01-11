@@ -125,6 +125,7 @@ SRC_TESTLIB= \
 	$(srcdir)/tests/syscalls.S \
 	$(srcdir)/tests/start.S \
 	$(srcdir)/tests/testlib.c \
+	$(srcdir)/tests/testlib_thread_start.c \
 	$(builddir)/tests/errlist.c \
 	$(MIG_GEN_CC)
 
