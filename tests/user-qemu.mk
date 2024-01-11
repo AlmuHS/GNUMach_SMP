@@ -202,7 +202,8 @@ USER_TESTS := \
 	tests/test-mach_port \
 	tests/test-vm \
 	tests/test-syscalls \
-	tests/test-machmsg
+	tests/test-machmsg \
+	tests/test-task
 
 USER_TESTS_CLEAN = $(subst tests/,clean-,$(USER_TESTS))
 
