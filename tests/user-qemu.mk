@@ -197,7 +197,8 @@ clean-test-%:
 USER_TESTS := \
 	tests/test-hello \
 	tests/test-mach_host \
-	tests/test-gsync
+	tests/test-gsync \
+	tests/test-mach_port
 
 USER_TESTS_CLEAN = $(subst tests/,clean-,$(USER_TESTS))
 
