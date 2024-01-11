@@ -195,7 +195,8 @@ clean-test-%:
 
 
 USER_TESTS := \
-	tests/test-hello
+	tests/test-hello \
+	tests/test-mach_host
 
 USER_TESTS_CLEAN = $(subst tests/,clean-,$(USER_TESTS))
 
