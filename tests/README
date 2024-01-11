@@ -1,0 +1,37 @@
+
+There are some basic tests that can be run qith qemu. You can run all the tests with
+
+    $ make check
+
+or selectively with:
+
+    $ make run-hello
+
+Also, you can debug the existing tests, or a new one, by starting on one shell
+
+    $ make debug-hello
+
+and on another shell you can attach with gdb, load the symbols of the
+bootstrap module and break on its _start():
+
+    $ gdb gnumach
+    ...
+    (gdb) target remote :1234
+    ...
+    (gdb) b setup_main
+    Breakpoint 11 at 0xffffffff81019d60: file ../kern/startup.c, line 98.
+    (gdb) c
+    Continuing.
+
+    Breakpoint 11, setup_main () at ../kern/startup.c:98
+    98		cninit();
+    (gdb) add-symbol-file ../gnumach/build-64/module-task
+    Reading symbols from ../gnumach/build-64/module-task...
+    (gdb) b _start
+    Breakpoint 12 at 0x40324a: _start. (2 locations)
+    (gdb) c
+    Continuing.
+
+    Breakpoint 12, _start () at ../tests/testlib.c:96
+    96	{
+    (gdb) 

@@ -22,6 +22,22 @@ dnl 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA.
 
 AC_CONFIG_FILES([tests/test-multiboot], [chmod +x tests/test-multiboot])
 
+
+[if test x"$enable_user32" = xyes ; then
+    ac_miguser=$user32_cpu-gnu-mig
+else
+    ac_miguser=$host_cpu-gnu-mig
+fi]
+
+AC_CHECK_PROG([USER_MIG], [$ac_miguser], [$ac_miguser])
+AC_ARG_VAR([USER_MIG], [Path to the mig tool for user-space tests])
+AC_CHECK_PROG([USER_CC], [$CC], [$CC], [none])
+AC_ARG_VAR([USER_CC], [C compiler command for user-space tests])
+AC_CHECK_PROG([USER_CPP], [$CPP], [$CPP], [none])
+AC_ARG_VAR([USER_CPP], [C preprocessor for user-space tests])
+AC_ARG_VAR([USER_CFLAGS], [C compiler flags for user-space tests])
+AC_ARG_VAR([USER_CPPFLAGS], [C preprocessor flags for user-space tests])
+
 dnl Local Variables:
 dnl mode: autoconf
 dnl End:

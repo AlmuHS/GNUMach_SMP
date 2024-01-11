@@ -123,9 +123,6 @@ AC_CHECK_PROG([PATCH], [patch], [patch], [patch-not-found])
 # configure fragments.
 #
 
-# The test suite.
-m4_include([tests/configfrag.ac])
-
 # Default set of device drivers.
 AC_ARG_ENABLE([device-drivers],
   AS_HELP_STRING([--enable-device-drivers=WHICH], [specify WHICH (on `ix86-at'
@@ -181,6 +178,9 @@ m4_include([configfrag.ac])
 
 # Linux code snarfed into GNU Mach.
 m4_include([linux/configfrag.ac])
+
+# The test suite.
+m4_include([tests/configfrag.ac])
 
 #
 # Compiler features.
