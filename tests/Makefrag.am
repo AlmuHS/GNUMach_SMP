@@ -29,5 +29,6 @@ TESTS += \
 	$(USER_TESTS)
 
 clean-local: $(USER_TESTS_CLEAN)
+	rm -fr tests/include-mach
 
 endif # !PLATFORM_xen
