@@ -191,8 +191,8 @@ int hypcnopen(dev_t dev, int flag, io_req_t ior)
 		simple_lock_nocheck(&tp->t_lock.slock);
 		tp->t_oproc = hypcnstart;
 		tp->t_stop = hypcnstop;
-		tp->t_ospeed = tp->t_ispeed = B9600;
-		tp->t_flags = ODDP|EVENP|ECHO|CRMOD|XTABS;
+		tp->t_ospeed = tp->t_ispeed = B115200;
+		tp->t_flags = ODDP|EVENP|ECHO|CRMOD|XTABS|LITOUT;
 	}
 	tp->t_state |= TS_CARR_ON;
 	simple_unlock_irq(o_pri, &tp->t_lock);

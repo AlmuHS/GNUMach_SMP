@@ -62,20 +62,15 @@ boolean_t comfifo[NCOM];
 boolean_t comtimer_active;
 int comtimer_state[NCOM];
 
-#define RCBAUD B9600
+#define RCBAUD B115200
 static int rcline = -1;
 static struct bus_device *comcndev;
 
 /* XX */
 extern char *kernel_cmdline;
 
-#ifndef	PORTSELECTOR
-#define ISPEED	B9600
-#define IFLAGS	(EVENP|ODDP|ECHO|CRMOD)
-#else
-#define ISPEED	B4800
-#define IFLAGS	(EVENP|ODDP)
-#endif
+#define ISPEED	B115200
+#define IFLAGS	(EVENP|ODDP|ECHO|CRMOD|XTABS|LITOUT)
 
 u_short divisorreg[] = {
 	0,	2304,	1536,	1047,		/*     0,    50,    75,   110*/
@@ -361,18 +356,12 @@ io_return_t comopen(
 		tp->t_mctl = commctl;
 		tp->t_getstat = comgetstat;
 		tp->t_setstat = comsetstat;
-#ifndef	PORTSELECTOR
 		if (tp->t_ispeed == 0) {
-#else
-			tp->t_state |= TS_HUPCLS;
-#endif	/* PORTSELECTOR */
 			tp->t_ispeed = ISPEED;
 			tp->t_ospeed = ISPEED;
 			tp->t_flags = IFLAGS;
 			tp->t_state &= ~TS_BUSY;
-#ifndef	PORTSELECTOR
 		}
-#endif	/* PORTSELECTOR */
 	}
 /*rvb	tp->t_state |= TS_WOPEN; */
 	if ((tp->t_state & TS_ISOPEN) == 0)
