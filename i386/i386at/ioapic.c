@@ -93,12 +93,6 @@ picdisable(void)
     */
     outb ( PIC_SLAVE_OCW, PICS_MASK );
     outb ( PIC_MASTER_OCW, PICM_MASK );
-
-    /*
-    ** Route interrupts through IOAPIC
-    */
-    outb ( IMCR_SELECT, MODE_IMCR );
-    outb ( IMCR_DATA, IMCR_USE_APIC );
 }
 
 void
