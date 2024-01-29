@@ -331,6 +331,9 @@ acpi_apic_add_ioapic(struct acpi_apic_ioapic *ioapic_entry)
     io_apic.ioapic = (ApicIoUnit *)kmem_map_aligned_table(ioapic_entry->addr,
                                                           sizeof(ApicIoUnit),
                                                           VM_PROT_READ | VM_PROT_WRITE);
+    io_apic.ioapic->select.r = APIC_IO_VERSION;
+    io_apic.ngsis = ((io_apic.ioapic->window.r >> APIC_IO_ENTRIES_SHIFT) & 0xff) + 1;
+
     /* Insert IOAPIC in the list. */
     apic_add_ioapic(io_apic);
 }
