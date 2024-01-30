@@ -302,7 +302,8 @@ extern int cpu_id_lut[];
 
 #define APIC_MSR                       0x1b
 #define APIC_MSR_BSP                   0x100 /* Processor is a BSP */
-#define APIC_MSR_ENABLE                0x800
+#define APIC_MSR_X2APIC                0x400 /* LAPIC is in x2APIC mode */
+#define APIC_MSR_ENABLE                0x800 /* LAPIC is enabled */
 
 /* Set or clear a bit in a 255-bit APIC mask register.
    These registers are spread through eight 32-bit registers.  */
