@@ -45,10 +45,10 @@
  */
 
 #define	_simple_lock_xchg_(lock, new_val) \
-    ({	int _old_val_; \
-	asm volatile("xchgl %0, %2" \
+({	natural_t _old_val_; \
+	asm volatile("xchg %0, %2" \
 		    : "=r" (_old_val_) \
-		    : "0" (new_val), "m" (*(lock)) : "memory" \
+		    : "0" ((natural_t)(new_val)), "m" (*(lock)) : "memory" \
 		    ); \
 	_old_val_; \
     })
@@ -62,7 +62,7 @@
 #define	_simple_lock(l) \
     ({ \
 	while(_simple_lock_xchg_(l, 1)) \
-	    while (*(volatile int *)&(l)->lock_data) \
+	    while (*(volatile natural_t *)&(l)->lock_data) \
 		cpu_pause(); \
 	0; \
     })
@@ -85,7 +85,7 @@
 			btsl	%0, %1	\n\
 			jb	0b" \
 		    : \
-		    : "r" (bit), "m" (*(volatile int *)(l)) : "memory"); \
+		    : "r" ((int)(bit)), "m" (*(volatile int *)(l)) : "memory"); \
 	0; \
     })
 
@@ -94,7 +94,7 @@
 	asm volatile("	lock		\n\
 			btrl	%0, %1" \
 		    : \
-		    : "r" (bit), "m" (*(volatile int *)(l)) : "memory"); \
+		    : "r" ((int)(bit)), "m" (*(volatile int *)(l)) : "memory"); \
 	0; \
     })
 
@@ -108,7 +108,7 @@
 	asm volatile("	lock		\n\
 			btsl	%0, %1" \
 		    : \
-		    : "r" (bit), "m" (*(l)) ); \
+		    : "r" ((int)(bit)), "m" (*(l)) ); \
 	0; \
     })
 
@@ -117,7 +117,7 @@
 	asm volatile("	lock		\n\
 			btrl	%0, %1" \
 		    : \
-		    : "r" (bit), "m" (*(l)) ); \
+		    : "r" ((int)(bit)), "m" (*(l)) ); \
 	0; \
     })
 

@@ -87,6 +87,8 @@ endif
 #
 
 libkernel_a_SOURCES += \
+	i386/i386/percpu.h \
+	i386/i386/percpu.c \
 	x86_64/cswitch.S \
 	x86_64/copy_user.c \
 	x86_64/debug_trace.S \
@@ -103,8 +105,6 @@ libkernel_a_SOURCES += \
 	i386/i386/irq.c \
 	i386/i386/irq.h \
 	i386/i386/msr.h \
-	i386/i386/percpu.h \
-	i386/i386/percpu.c \
 	i386/i386/pit.c \
 	i386/i386/pit.h
 

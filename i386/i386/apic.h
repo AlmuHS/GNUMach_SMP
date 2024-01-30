@@ -193,6 +193,7 @@ typedef struct ApicLocalUnit {
 
 typedef struct IoApicData {
         uint8_t  apic_id;
+        uint8_t  ngsis;
         uint32_t addr;
         uint32_t gsi_base;
         ApicIoUnit *ioapic;
@@ -239,6 +240,7 @@ int apic_get_current_cpu(void);
 void apic_print_info(void);
 int apic_refit_cpulist(void);
 void apic_generate_cpu_id_lut(void);
+int apic_get_total_gsis(void);
 void picdisable(void);
 void lapic_eoi(void);
 void ioapic_irq_eoi(int pin);
@@ -257,6 +259,8 @@ extern int cpu_id_lut[];
 
 #define APIC_IO_UNIT_ID			0x00
 #define APIC_IO_VERSION			0x01
+# define APIC_IO_VERSION_SHIFT		0
+# define APIC_IO_ENTRIES_SHIFT		16
 #define APIC_IO_REDIR_LOW(int_pin)	(0x10+(int_pin)*2)
 #define APIC_IO_REDIR_HIGH(int_pin)	(0x11+(int_pin)*2)
 
@@ -283,7 +287,7 @@ extern int cpu_id_lut[];
 #define LAPIC_TIMER_BASEDIV            0x100000
 #define LAPIC_HAS_DIRECTED_EOI         0x1000000
 
-#define NINTR                          24
+#define NINTR                          64 /* Max 32 GSIs on each of two IOAPICs */
 #define IOAPIC_FIXED                   0
 #define IOAPIC_PHYSICAL                0
 #define IOAPIC_LOGICAL                 1
@@ -298,7 +302,8 @@ extern int cpu_id_lut[];
 
 #define APIC_MSR                       0x1b
 #define APIC_MSR_BSP                   0x100 /* Processor is a BSP */
-#define APIC_MSR_ENABLE                0x800
+#define APIC_MSR_X2APIC                0x400 /* LAPIC is in x2APIC mode */
+#define APIC_MSR_ENABLE                0x800 /* LAPIC is enabled */
 
 /* Set or clear a bit in a 255-bit APIC mask register.
    These registers are spread through eight 32-bit registers.  */

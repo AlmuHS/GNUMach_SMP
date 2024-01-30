@@ -94,6 +94,7 @@ typedef unsigned long phys_addr_t;
 typedef unsigned long long phys_addr_t;
 #endif
 typedef unsigned long long rpc_phys_addr_t;
+typedef rpc_phys_addr_t *rpc_phys_addr_array_t;
 
 /*
  * A vm_size_t is the proper type for e.g.

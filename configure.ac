@@ -123,9 +123,6 @@ AC_CHECK_PROG([PATCH], [patch], [patch], [patch-not-found])
 # configure fragments.
 #
 
-# The test suite.
-m4_include([tests/configfrag.ac])
-
 # Default set of device drivers.
 AC_ARG_ENABLE([device-drivers],
   AS_HELP_STRING([--enable-device-drivers=WHICH], [specify WHICH (on `ix86-at'
@@ -146,6 +143,16 @@ AC_ARG_ENABLE([device-drivers],
       [`--enable-device-drivers=$enable_device_drivers'.])
     [;;
 esac]
+
+AC_ARG_ENABLE([user32],
+AS_HELP_STRING([--enable-user32], [enable 32-bit user space on a 64-bit kernel]))
+[if [ x"$enable_user32" = xyes ]; then]
+  AC_DEFINE([USER32], [], [enable 32-bit user on 64-bit kernel])
+  AM_CONDITIONAL([enable_user32], [true])
+[else]
+  AM_CONDITIONAL([enable_user32], [false])
+[fi]
+
 
 # Platform-specific configuration.
 
@@ -171,6 +178,9 @@ m4_include([configfrag.ac])
 
 # Linux code snarfed into GNU Mach.
 m4_include([linux/configfrag.ac])
+
+# The test suite.
+m4_include([tests/configfrag.ac])
 
 #
 # Compiler features.

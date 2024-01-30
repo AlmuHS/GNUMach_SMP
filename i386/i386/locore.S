@@ -39,6 +39,61 @@
 #include <i386/cpu_number.h>
 #include <i386/xen.h>
 
+#define PUSH_REGS_ISR	\
+	pushl	%ecx    ;\
+	pushl	%edx
+
+#define PUSH_AREGS_ISR	\
+	pushl	%eax    ;\
+	PUSH_REGS_ISR
+
+
+#define POP_REGS_ISR	\
+	popl	%edx    ;\
+	popl	%ecx
+
+#define POP_AREGS_ISR	\
+	POP_REGS_ISR   ;\
+	popl	%eax
+
+/*
+ * Note that we have to load the kernel segment registers even if this
+ * is a trap from the kernel, because the kernel uses user segment
+ * registers for copyin/copyout.
+ * (XXX Would it be smarter just to use fs or gs for that?)
+ */
+#define PUSH_SEGMENTS	\
+	pushl	%ds		;\
+	pushl	%es		;\
+	pushl	%fs		;\
+	pushl	%gs
+
+#define POP_SEGMENTS	\
+	popl	%gs		;\
+	popl	%fs		;\
+	popl	%es		;\
+	popl	%ds
+
+#define PUSH_SEGMENTS_ISR	\
+	pushl	%ds		;\
+	pushl	%es		;\
+	pushl	%fs		;\
+	pushl	%gs
+
+#define POP_SEGMENTS_ISR	\
+	popl	%gs		;\
+	popl	%fs		;\
+	popl	%es		;\
+	popl	%ds
+
+#define SET_KERNEL_SEGMENTS(reg)	       \
+	mov	%ss,reg /* switch to kernel segments */ ;\
+	mov	reg,%ds	/* (same as kernel stack segment) */ ;\
+	mov	reg,%es			;\
+	mov	reg,%fs			;\
+	mov	$(PERCPU_DS),reg	;\
+	mov	reg,%gs
+
 /*
  * Fault recovery.
  */
@@ -456,22 +511,8 @@ ENTRY(t_page_fault)
 ENTRY(alltraps)
 	pusha				/* save the general registers */
 trap_push_segs:
-	pushl	%ds			/* and the segment registers */
-	pushl	%es
-	pushl	%fs
-	pushl	%gs
-
-	/* Note that we have to load the segment registers
-	   even if this is a trap from the kernel,
-	   because the kernel uses user segment registers for copyin/copyout.
-	   (XXX Would it be smarter just to use fs or gs for that?)  */
-	mov	%ss,%ax			/* switch to kernel data segment */
-	mov	%ax,%ds			/* (same as kernel stack segment) */
-	mov	%ax,%es
-	mov	%ax,%fs
-	mov	$(PERCPU_DS),%ax
-	movw	%ax,%gs
-
+	PUSH_SEGMENTS			/* and the segment registers */
+	SET_KERNEL_SEGMENTS(%ax)	/* switch to kernel data segment */
 trap_set_segs:
 	cld				/* clear direction flag */
 	testl	$(EFL_VM),R_EFLAGS(%esp) /* in V86 mode? */
@@ -551,7 +592,6 @@ trap_from_kernel:
 	je	1f			/* OK if so */
 
 	movl	%ecx,%edx
-
 	cmpl	CX(EXT(kernel_stack),%edx),%esp
 					/* already on kernel stack? */
 	ja	0f
@@ -571,6 +611,7 @@ trap_from_kernel:
 	call	EXT(kernel_trap)	/* to kernel trap routine */
 	addl	$4,%esp			/* pop parameter */
 #endif	/* MACH_KDB || MACH_TTD */
+
 	jmp	_return_from_kernel
 
 
@@ -653,6 +694,49 @@ INTERRUPT(20)
 INTERRUPT(21)
 INTERRUPT(22)
 INTERRUPT(23)
+/* Possibly 8 more GSIs */
+INTERRUPT(24)
+INTERRUPT(25)
+INTERRUPT(26)
+INTERRUPT(27)
+INTERRUPT(28)
+INTERRUPT(29)
+INTERRUPT(30)
+INTERRUPT(31)
+/* ... APIC IOAPIC #2 */
+INTERRUPT(32)
+INTERRUPT(33)
+INTERRUPT(34)
+INTERRUPT(35)
+INTERRUPT(36)
+INTERRUPT(37)
+INTERRUPT(38)
+INTERRUPT(39)
+INTERRUPT(40)
+INTERRUPT(41)
+INTERRUPT(42)
+INTERRUPT(43)
+INTERRUPT(44)
+INTERRUPT(45)
+INTERRUPT(46)
+INTERRUPT(47)
+INTERRUPT(48)
+INTERRUPT(49)
+INTERRUPT(50)
+INTERRUPT(51)
+INTERRUPT(52)
+INTERRUPT(53)
+INTERRUPT(54)
+INTERRUPT(55)
+/* Possibly 8 more GSIs */
+INTERRUPT(56)
+INTERRUPT(57)
+INTERRUPT(58)
+INTERRUPT(59)
+INTERRUPT(60)
+INTERRUPT(61)
+INTERRUPT(62)
+INTERRUPT(63)
 #endif
 #if NCPUS > 1
 INTERRUPT(CALL_AST_CHECK)
@@ -670,8 +754,7 @@ INTERRUPT(255)
  * old %eax on stack; interrupt number in %eax.
  */
 ENTRY(all_intrs)
-	pushl	%ecx			/* save registers */
-	pushl	%edx
+	PUSH_REGS_ISR			/* save registers */
 	cld				/* clear direction flag */
 
 	CPU_NUMBER_NO_GS(%ecx)
@@ -680,16 +763,8 @@ ENTRY(all_intrs)
 	cmpl	%ss:CX(EXT(int_stack_base),%ecx),%edx
 	je	int_from_intstack	/* if not: */
 
-	pushl	%ds			/* save segment registers */
-	pushl	%es
-	pushl	%fs
-	pushl	%gs
-	mov	%ss,%dx			/* switch to kernel segments */
-	mov	%dx,%ds
-	mov	%dx,%es
-	mov	%dx,%fs
-	mov	$(PERCPU_DS),%dx
-	movw	%dx,%gs
+	PUSH_SEGMENTS_ISR		/* save segment registers */
+	SET_KERNEL_SEGMENTS(%dx)	/* switch to kernel segments */
 
 	CPU_NUMBER(%edx)
 
@@ -737,13 +812,9 @@ LEXT(return_to_iret)			/* to find the return from calling interrupt) */
 	cmpl	$0,CX(EXT(need_ast),%edx)
 	jnz	ast_from_interrupt	/* take it if so */
 1:
-	pop	%gs			/* restore segment regs */
-	pop	%fs
-	pop	%es
-	pop	%ds
-	pop	%edx
-	pop	%ecx
-	pop	%eax
+	POP_SEGMENTS_ISR		/* restore segment regs */
+	POP_AREGS_ISR			/* restore registers */
+
 	iret				/* return to caller */
 
 int_from_intstack:
@@ -752,9 +823,10 @@ int_from_intstack:
 	jb	stack_overflowed	/* if not: */
 	call	EXT(interrupt)		/* call interrupt routine */
 _return_to_iret_i:			/* ( label for kdb_kintr) */
-	pop	%edx			/* must have been on kernel segs */
-	pop	%ecx
-	pop	%eax			/* no ASTs */
+					/* must have been on kernel segs */
+	POP_AREGS_ISR			/* restore registers */
+					/* no ASTs */
+
 	iret
 
 stack_overflowed:
@@ -777,27 +849,13 @@ stack_overflowed:
  *	ss
  */
 ast_from_interrupt:
-	pop	%gs			/* restore all registers ... */
-	pop	%fs
-	pop	%es
-	pop	%ds
-	popl	%edx
-	popl	%ecx
-	popl	%eax
+	POP_SEGMENTS_ISR		/* restore all registers ... */
+	POP_AREGS_ISR
 	pushl	$0			/* zero code */
 	pushl	$0			/* zero trap number */
 	pusha				/* save general registers */
-	push	%ds			/* save segment registers */
-	push	%es
-	push	%fs
-	push	%gs
-	mov	%ss,%dx			/* switch to kernel segments */
-	mov	%dx,%ds
-	mov	%dx,%es
-	mov	%dx,%fs
-	mov	$(PERCPU_DS),%dx
-	movw	%dx,%gs
-
+	PUSH_SEGMENTS_ISR		/* save segment registers */
+	SET_KERNEL_SEGMENTS(%dx)	/* switch to kernel segments */
 	CPU_NUMBER(%edx)
 	TIME_TRAP_UENTRY
 
@@ -924,19 +982,13 @@ kdb_from_iret_i:			/* on interrupt stack */
 	pushl	$0			/* zero error code */
 	pushl	$0			/* zero trap number */
 	pusha				/* save general registers */
-	push	%ds			/* save segment registers */
-	push	%es
-	push	%fs
-	push	%gs
+	PUSH_SEGMENTS			/* save segment registers */
 	pushl	%esp			/* pass regs, */
 	pushl	$0			/* code, */
 	pushl	$-1			/* type to kdb */
 	call	EXT(kdb_trap)
 	addl	$12,%esp		/* remove parameters */
-	pop	%gs			/* restore segment registers */
-	pop	%fs
-	pop	%es
-	pop	%ds
+	POP_SEGMENTS			/* restore segment registers */
 	popa				/* restore general registers */
 	addl	$8,%esp
 	iret
@@ -1006,19 +1058,13 @@ ttd_from_iret_i:			/* on interrupt stack */
 	pushl	$0			/* zero error code */
 	pushl	$0			/* zero trap number */
 	pusha				/* save general registers */
-	push	%ds			/* save segment registers */
-	push	%es
-	push	%fs
-	push	%gs
+	PUSH_SEGMENTS_ISR		/* save segment registers */
 	pushl	%esp			/* pass regs, */
 	pushl	$0			/* code, */
 	pushl	$-1			/* type to kdb */
 	call	_kttd_trap
 	addl	$12,%esp		/* remove parameters */
-	pop	%gs			/* restore segment registers */
-	pop	%fs
-	pop	%es
-	pop	%ds
+	POP_SEGMENTS_ISR		/* restore segment registers */
 	popa				/* restore general registers */
 	addl	$8,%esp
 	iret
@@ -1046,17 +1092,8 @@ syscall_entry_2:
 	pushl	$0			/* clear trap number slot */
 
 	pusha				/* save the general registers */
-	pushl	%ds			/* and the segment registers */
-	pushl	%es
-	pushl	%fs
-	pushl	%gs
-
-	mov	%ss,%dx			/* switch to kernel data segment */
-	mov	%dx,%ds
-	mov	%dx,%es
-	mov	%dx,%fs
-	mov	$(PERCPU_DS),%dx
-	movw	%dx,%gs
+	PUSH_SEGMENTS			/* and the segment registers */
+	SET_KERNEL_SEGMENTS(%dx)	/* switch to kernel data segment */
 
 /*
  * Shuffle eflags,eip,cs into proper places

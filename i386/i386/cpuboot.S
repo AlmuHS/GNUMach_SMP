@@ -175,13 +175,13 @@ _apboot:
 	mov	apboot_idt_ptr, %ebx
 	lidt	(%ebx)
 
-	/* Enable local apic */
+	/* Enable local apic in xAPIC mode */
 	xorl	%eax, %eax
 	xorl	%edx, %edx
 	movl	$APIC_MSR, %ecx
 	rdmsr
 	orl	$APIC_MSR_ENABLE, %eax
-	andl	$(~APIC_MSR_BSP), %eax
+	andl	$(~(APIC_MSR_BSP | APIC_MSR_X2APIC)), %eax
 	movl	$APIC_MSR, %ecx
 	wrmsr
 

@@ -1,0 +1,4 @@
+echo TEST_START_MARKER
+multiboot /boot/gnumach GNUMACHARGS
+module /boot/BOOTMODULE BOOTMODULE '${host-port}' '${device-port}' '$(task-create)' '$(task-resume)'
+boot

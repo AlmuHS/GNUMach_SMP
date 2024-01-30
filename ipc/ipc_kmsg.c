@@ -686,7 +686,10 @@ ipc_kmsg_copyin_header(
 
 		entry = ipc_entry_lookup (space, dest_name);
 		if (entry == IE_NULL)
+		{
+			ipc_entry_lookup_failed (msg, dest_name);
 			goto abort_async;
+		}
 		bits = entry->ie_bits;
 
 		/* check type bits */
@@ -738,7 +741,10 @@ ipc_kmsg_copyin_header(
 
 		entry = ipc_entry_lookup (space, dest_name);
 		if (entry == IE_NULL)
+		{
+			ipc_entry_lookup_failed (msg, dest_name);
 			goto abort_request;
+		}
 		bits = entry->ie_bits;
 
 		/* check type bits */
@@ -752,7 +758,10 @@ ipc_kmsg_copyin_header(
 
 		entry = ipc_entry_lookup (space, reply_name);
 		if (entry == IE_NULL)
+		{
+			ipc_entry_lookup_failed (msg, reply_name);
 			goto abort_request;
+		}
 		bits = entry->ie_bits;
 
 		/* check type bits */
@@ -819,7 +828,10 @@ ipc_kmsg_copyin_header(
 
 		entry = ipc_entry_lookup (space, dest_name);
 		if (entry == IE_NULL)
+		{
+			ipc_entry_lookup_failed (msg, dest_name);
 			goto abort_reply;
+		}
 		bits = entry->ie_bits;
 
 		/* check and type bits */
@@ -892,6 +904,8 @@ ipc_kmsg_copyin_header(
 
 		if (((entry = ipc_entry_lookup(space, notify)) == IE_NULL) ||
 		    ((entry->ie_bits & MACH_PORT_TYPE_RECEIVE) == 0)) {
+			if (entry == IE_NULL)
+				ipc_entry_lookup_failed (msg, notify);
 			is_write_unlock(space);
 			return MACH_SEND_INVALID_NOTIFY;
 		}
@@ -916,8 +930,10 @@ ipc_kmsg_copyin_header(
 		 */
 
 		entry = ipc_entry_lookup(space, name);
-		if (entry == IE_NULL)
+		if (entry == IE_NULL) {
+			ipc_entry_lookup_failed (msg, name);
 			goto invalid_dest;
+		}
 
 		assert(reply_type != 0); /* because name not null */
 
@@ -1067,8 +1083,10 @@ ipc_kmsg_copyin_header(
 		 */
 
 		entry = ipc_entry_lookup(space, dest_name);
-		if (entry == IE_NULL)
+		if (entry == IE_NULL) {
+			ipc_entry_lookup_failed (msg, dest_name);
 			goto invalid_dest;
+		}
 
 		kr = ipc_right_copyin(space, dest_name, entry,
 				      dest_type, FALSE,
@@ -1123,12 +1141,17 @@ ipc_kmsg_copyin_header(
 		 */
 
 		dest_entry = ipc_entry_lookup(space, dest_name);
-		if (dest_entry == IE_NULL)
+		if (dest_entry == IE_NULL) {
+			ipc_entry_lookup_failed (msg, dest_name);
 			goto invalid_dest;
+		}
 
 		reply_entry = ipc_entry_lookup(space, reply_name);
 		if (reply_entry == IE_NULL)
+		{
+			ipc_entry_lookup_failed (msg, reply_name);
 			goto invalid_reply;
+		}
 
 		assert(dest_entry != reply_entry); /* names are not equal */
 		assert(reply_type != 0); /* because reply_name not null */
@@ -2093,6 +2116,8 @@ ipc_kmsg_copyout_header(
 			if (((entry = ipc_entry_lookup(space, notify))
 								== IE_NULL) ||
 			    ((entry->ie_bits & MACH_PORT_TYPE_RECEIVE) == 0)) {
+				if (entry == IE_NULL)
+					ipc_entry_lookup_failed (msg, notify);
 				is_read_unlock(space);
 				return MACH_RCV_INVALID_NOTIFY;
 			}
@@ -2383,8 +2408,13 @@ ipc_kmsg_copyout_body(
 
 			if (!is_inline && (length != 0)) {
 				/* first allocate memory in the map */
+				uint64_t allocated = length;
 
-				kr = vm_allocate(map, &addr, length, TRUE);
+				_Static_assert(sizeof(mach_port_name_t) <= sizeof(mach_port_t),
+						"Size of mach_port_t should be equal or larger than mach_port_name_t.");
+				allocated -= (sizeof(mach_port_t) - sizeof(mach_port_name_t)) * number;
+
+				kr = vm_allocate(map, &addr, allocated, TRUE);
 				if (kr != KERN_SUCCESS) {
 					ipc_kmsg_clean_body(taddr, saddr);
 					goto vm_copyout_failure;

@@ -47,6 +47,7 @@
 	shrl	$24, reg		;\
 	movl	%cs:CX(cpu_id_lut, reg), reg	;\
 
+#ifdef __i386__
 /* Never call CPU_NUMBER_NO_GS(%esi) */
 #define CPU_NUMBER_NO_GS(reg)		\
 	pushl	%esi		;\
@@ -63,7 +64,27 @@
 	popl	%ebx		;\
 	popl	%eax		;\
 	movl	%esi, reg	;\
-	popl	%esi		;\
+	popl	%esi
+#endif
+#ifdef __x86_64__
+/* Never call CPU_NUMBER_NO_GS(%esi) */
+#define CPU_NUMBER_NO_GS(reg)		\
+	pushq	%rsi		;\
+	pushq	%rax		;\
+	pushq	%rbx		;\
+	pushq	%rcx		;\
+	pushq	%rdx		;\
+	movl	$1, %eax	;\
+	cpuid			;\
+	shrl	$24, %ebx	;\
+	movl	%cs:CX(cpu_id_lut, %ebx), %esi	;\
+	popq	%rdx		;\
+	popq	%rcx		;\
+	popq	%rbx		;\
+	popq	%rax		;\
+	movl	%esi, reg	;\
+	popq	%rsi
+#endif
 
 #define CPU_NUMBER(reg)	\
 	movl    MY(CPU_ID), reg;

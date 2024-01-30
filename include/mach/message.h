@@ -221,6 +221,24 @@ typedef unsigned int mach_msg_type_name_t;
 typedef unsigned int mach_msg_type_size_t;
 typedef natural_t  mach_msg_type_number_t;
 
+/**
+ * Structure used for inlined port rights in messages.
+ *
+ * We use this to avoid having to perform message resizing in the kernel
+ * since userspace port rights might be smaller than kernel ports in 64 bit
+ * architectures.
+ */
+typedef struct {
+    union {
+        mach_port_name_t name;
+#ifdef KERNEL
+        mach_port_t kernel_port;
+#else
+        uintptr_t kernel_port_do_not_use;
+#endif  /* KERNEL */
+    };
+} mach_port_name_inlined_t;
+
 typedef struct  {
 #ifdef __x86_64__
     /*
@@ -238,12 +256,12 @@ typedef struct  {
      * kernel. Otherwise, we would have to replicate some of the MiG logic
      * internally in the kernel.
      */
-    unsigned int	msgt_inline : 1,
-			msgt_longform : 1,
-			msgt_deallocate : 1,
-			msgt_name : 8,
+    unsigned int	msgt_name : 8,
 			msgt_size : 16,
-			msgt_unused : 5;
+			msgt_unused : 5,
+			msgt_inline : 1,
+			msgt_longform : 1,
+			msgt_deallocate : 1;
     mach_msg_type_number_t   msgt_number;
 #else
     unsigned int	msgt_name : 8,
@@ -263,12 +281,12 @@ typedef struct {
          * union to overlay with the old field names.  */
         mach_msg_type_t	msgtl_header;
         struct {
-            unsigned int	msgtl_inline : 1,
-                    msgtl_longform : 1,
-                    msgtl_deallocate : 1,
-                    msgtl_name : 8,
+            unsigned int	msgtl_name : 8,
                     msgtl_size : 16,
-                    msgtl_unused : 5;
+                    msgtl_unused : 5,
+                    msgtl_inline : 1,
+                    msgtl_longform : 1,
+                    msgtl_deallocate : 1;
             mach_msg_type_number_t   msgtl_number;
         };
     };
@@ -281,8 +299,15 @@ typedef struct {
 } __attribute__ ((aligned (__alignof__ (uintptr_t)))) mach_msg_type_long_t;
 
 #ifdef __x86_64__
+#ifdef __cplusplus
+#if __cplusplus >= 201103L
+static_assert (sizeof (mach_msg_type_t) == sizeof (mach_msg_type_long_t),
+                "mach_msg_type_t and mach_msg_type_long_t need to have the same size.");
+#endif
+#else
 _Static_assert (sizeof (mach_msg_type_t) == sizeof (mach_msg_type_long_t),
                 "mach_msg_type_t and mach_msg_type_long_t need to have the same size.");
+#endif
 #endif
 
 /*
@@ -376,6 +401,16 @@ typedef integer_t mach_msg_option_t;
 
 #define MACH_SEND_ALWAYS	0x00010000	/* internal use only */
 
+#ifdef __x86_64__
+#if defined(KERNEL) && defined(USER32)
+#define MACH_MSG_USER_ALIGNMENT 4
+#else
+#define MACH_MSG_USER_ALIGNMENT 8
+#endif
+#else
+#define MACH_MSG_USER_ALIGNMENT 4
+#endif
+
 #ifdef KERNEL
 /* This is the alignment of msg descriptors and the actual data
  * for both in kernel messages and user land messages.
@@ -386,15 +421,6 @@ typedef integer_t mach_msg_option_t;
  * so that kernel messages are correctly aligned.
  */
 #define MACH_MSG_KERNEL_ALIGNMENT sizeof(uintptr_t)
-#ifdef __x86_64__
-#ifdef USER32
-#define MACH_MSG_USER_ALIGNMENT 4
-#else
-#define MACH_MSG_USER_ALIGNMENT 8
-#endif
-#else
-#define MACH_MSG_USER_ALIGNMENT 4
-#endif
 
 #define mach_msg_align(x, alignment)	\
 	( ( ((vm_offset_t)(x)) + ((alignment)-1) ) & ~((alignment)-1) )

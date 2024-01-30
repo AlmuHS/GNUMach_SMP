@@ -21,6 +21,7 @@
 
 struct percpu percpu_array[NCPUS] = {0};
 
+#ifndef MACH_XEN
 void init_percpu(int cpu)
 {
     int apic_id = apic_get_current_cpu();
@@ -29,3 +30,4 @@ void init_percpu(int cpu)
     percpu_array[cpu].apic_id = apic_id;
     percpu_array[cpu].cpu_id = cpu;
 }
+#endif

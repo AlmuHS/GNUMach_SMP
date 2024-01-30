@@ -113,8 +113,7 @@ MACRO_END
  *	start or end value.]  Note that these clippings may not
  *	always be necessary (as the two resulting entries are then
  *	not changed); however, the clipping is done for convenience.
- *	No attempt is currently made to "glue back together" two
- *	abutting entries.
+ *	The entries can later be "glued back together" (coalesced).
  *
  *	The symmetric (shadow) copy strategy implements virtual copy
  *	by copying VM object references from one map to
@@ -1076,6 +1075,12 @@ kern_return_t vm_map_enter(
 			map->size += size;
 			entry->vme_end = end;
 			vm_map_gap_update(&map->hdr, entry);
+			/*
+			 *	Now that we did, perhaps we could simplify
+			 *	things even further by coalescing the next
+			 *	entry into the one we just extended.
+			 */
+			vm_map_coalesce_entry(map, next_entry);
 			RETURN(KERN_SUCCESS);
 		}
 	}
@@ -1105,6 +1110,12 @@ kern_return_t vm_map_enter(
 			map->size += size;
 			next_entry->vme_start = start;
 			vm_map_gap_update(&map->hdr, entry);
+			/*
+			 *	Now that we did, perhaps we could simplify
+			 *	things even further by coalescing the
+			 *	entry into the previous one.
+			 */
+			vm_map_coalesce_entry(map, next_entry);
 			RETURN(KERN_SUCCESS);
 		}
 	}
@@ -1583,6 +1594,7 @@ kern_return_t vm_map_protect(
 {
 	vm_map_entry_t		current;
 	vm_map_entry_t		entry;
+	vm_map_entry_t		next;
 
 	vm_map_lock(map);
 
@@ -1658,8 +1670,15 @@ kern_return_t vm_map_protect(
 					current->vme_end,
 					current->protection);
 		}
-		current = current->vme_next;
+
+		next = current->vme_next;
+		vm_map_coalesce_entry(map, current);
+		current = next;
 	}
+
+	next = current->vme_next;
+	if (vm_map_coalesce_entry(map, current))
+		current = next;
 
 	/* Returns with the map read-locked if successful */
 	vm_map_pageable_scan(map, entry, current);
@@ -1684,6 +1703,7 @@ kern_return_t vm_map_inherit(
 {
 	vm_map_entry_t	entry;
 	vm_map_entry_t	temp_entry;
+	vm_map_entry_t	next;
 
 	vm_map_lock(map);
 
@@ -1701,8 +1721,12 @@ kern_return_t vm_map_inherit(
 
 		entry->inheritance = new_inheritance;
 
-		entry = entry->vme_next;
+		next = entry->vme_next;
+		vm_map_coalesce_entry(map, entry);
+		entry = next;
 	}
+
+	vm_map_coalesce_entry(map, entry);
 
 	vm_map_unlock(map);
 	return(KERN_SUCCESS);
@@ -1805,6 +1829,30 @@ kern_return_t vm_map_pageable(
 	return(KERN_SUCCESS);
 }
 
+/* Update pageability of all the memory currently in the map.
+ * The map must be locked, and protection mismatch will not be checked, see
+ * vm_map_pageable().
+ */
+static kern_return_t
+vm_map_pageable_current(vm_map_t map, vm_prot_t access_type)
+{
+	struct rbtree_node *node;
+	vm_offset_t min_address, max_address;
+
+	node = rbtree_first(&map->hdr.tree);
+	min_address = rbtree_entry(node, struct vm_map_entry,
+				   tree_node)->vme_start;
+
+	node = rbtree_last(&map->hdr.tree);
+	max_address = rbtree_entry(node, struct vm_map_entry,
+				   tree_node)->vme_end;
+
+	/* Returns with the map read-locked if successful */
+	return vm_map_pageable(map, min_address, max_address,access_type,
+			       FALSE, FALSE);
+}
+
+
 /*
  *	vm_map_pageable_all:
  *
@@ -1835,8 +1883,7 @@ vm_map_pageable_all(struct vm_map *map, vm_wire_t flags)
 		map->wiring_required = FALSE;
 
 		/* Returns with the map read-locked if successful */
-		kr = vm_map_pageable(map, map->min_offset, map->max_offset,
-				     VM_PROT_NONE, FALSE, FALSE);
+		kr = vm_map_pageable_current(map, VM_PROT_NONE);
 		vm_map_unlock(map);
 		return kr;
 	}
@@ -1849,9 +1896,7 @@ vm_map_pageable_all(struct vm_map *map, vm_wire_t flags)
 
 	if (flags & VM_WIRE_CURRENT) {
 		/* Returns with the map read-locked if successful */
-		kr = vm_map_pageable(map, map->min_offset, map->max_offset,
-				     VM_PROT_READ | VM_PROT_WRITE,
-				     FALSE, FALSE);
+		kr = vm_map_pageable_current(map, VM_PROT_READ | VM_PROT_WRITE);
 
 		if (kr != KERN_SUCCESS) {
 			if (flags & VM_WIRE_FUTURE) {
@@ -4907,6 +4952,81 @@ vm_region_create_proxy (task_t task, vm_address_t address,
 
   return ret;
 }
+
+/*
+ *	Routine:	vm_map_coalesce_entry
+ *	Purpose:
+ *		Try to coalesce an entry with the preceeding entry in the map.
+ *	Conditions:
+ *		The map is locked.  If coalesced, the entry is destroyed
+ *		by the call.
+ *	Returns:
+ *		Whether the entry was coalesced.
+ */
+boolean_t
+vm_map_coalesce_entry(
+	vm_map_t	map,
+	vm_map_entry_t	entry)
+{
+	vm_map_entry_t	prev = entry->vme_prev;
+	vm_size_t	prev_size;
+	vm_size_t	entry_size;
+
+	/*
+	 *	Check the basic conditions for coalescing the two entries.
+	 */
+	if ((entry == vm_map_to_entry(map)) ||
+	    (prev == vm_map_to_entry(map)) ||
+	    (prev->vme_end != entry->vme_start) ||
+	    (prev->is_shared || entry->is_shared) ||
+	    (prev->is_sub_map || entry->is_sub_map) ||
+	    (prev->inheritance != entry->inheritance) ||
+	    (prev->protection != entry->protection) ||
+	    (prev->max_protection != entry->max_protection) ||
+	    (prev->needs_copy != entry->needs_copy) ||
+	    (prev->in_transition || entry->in_transition) ||
+	    (prev->wired_count != entry->wired_count) ||
+	    (prev->projected_on != 0) ||
+	    (entry->projected_on != 0))
+		return FALSE;
+
+	prev_size = prev->vme_end - prev->vme_start;
+	entry_size = entry->vme_end - entry->vme_start;
+	assert(prev->gap_size == 0);
+
+	/*
+	 *	See if we can coalesce the two objects.
+	 */
+	if (!vm_object_coalesce(prev->object.vm_object,
+		entry->object.vm_object,
+		prev->offset,
+		entry->offset,
+		prev_size,
+		entry_size,
+		&prev->object.vm_object,
+		&prev->offset))
+		return FALSE;
+
+	/*
+	 *	Update the hints.
+	 */
+	if (map->hint == entry)
+		SAVE_HINT(map, prev);
+	if (map->first_free == entry)
+		map->first_free = prev;
+
+	/*
+	 *	Get rid of the entry without changing any wirings or the pmap,
+	*	and without altering map->size.
+	 */
+	prev->vme_end = entry->vme_end;
+	vm_map_entry_unlink(map, entry);
+	vm_map_entry_dispose(map, entry);
+
+	return TRUE;
+}
+
+
 
 /*
  *	Routine:	vm_map_machine_attribute

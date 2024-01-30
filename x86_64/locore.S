@@ -80,6 +80,35 @@
 	popq %rcx	;\
 	popq %rax
 
+#define PUSH_REGS_ISR	\
+	pushq	%rcx    ;\
+	pushq	%rdx    ;\
+	pushq	%rsi    ;\
+	pushq	%rdi    ;\
+	pushq	%r8     ;\
+	pushq	%r9     ;\
+	pushq	%r10     ;\
+	pushq	%r11
+
+#define PUSH_AREGS_ISR	\
+	pushq	%rax    ;\
+	PUSH_REGS_ISR
+
+
+#define POP_REGS_ISR	\
+	popq	%r11    ;\
+	popq	%r10     ;\
+	popq	%r9     ;\
+	popq	%r8     ;\
+	popq	%rdi    ;\
+	popq	%rsi    ;\
+	popq	%rdx    ;\
+	popq	%rcx
+
+#define POP_AREGS_ISR	\
+	POP_REGS_ISR	;\
+	popq	%rax
+
 /*
  * Note that we have to load the kernel segment registers even if this
  * is a trap from the kernel, because the kernel uses user segment
@@ -135,15 +164,15 @@
 #endif
 
 #ifdef USER32
-#define SET_KERNEL_SEGMENTS	       \
-	mov	%ss,%dx /* switch to kernel segments */ ;\
-	mov	%dx,%ds			;\
-	mov	%dx,%es			;\
-	mov	%dx,%fs			;\
-	mov	$(PERCPU_DS),%dx	;\
-	mov	%dx,%gs
+#define SET_KERNEL_SEGMENTS(reg)	       \
+	mov	%ss,reg /* switch to kernel segments */ ;\
+	mov	reg,%ds	/* (same as kernel stack segment) */ ;\
+	mov	reg,%es			;\
+	mov	reg,%fs			;\
+	mov	$(PERCPU_DS),reg	;\
+	mov	reg,%gs
 #else
-#define SET_KERNEL_SEGMENTS
+#define SET_KERNEL_SEGMENTS(reg)
 #endif
 
 /*
@@ -510,7 +539,8 @@ fault_popl_gs:
 	jmp	push_segregs		/* (GS on top of stack) */
 
 push_es:
-	//pushq	%es			/* restore es, */
+	movq	%es,%rcx
+	pushq	%rcx			/* restore es, */
 push_fs:
 	pushq	%fs			/* restore fs, */
 push_gs:
@@ -582,8 +612,8 @@ ENTRY(t_page_fault)
 ENTRY(alltraps)
 	pusha				/* save the general registers */
 trap_push_segs:
-	PUSH_SEGMENTS(%rax)
-	SET_KERNEL_SEGMENTS
+	PUSH_SEGMENTS(%rax)		/* and the segment registers */
+	SET_KERNEL_SEGMENTS(%rax)	/* switch to kernel data segment */
 trap_set_segs:
 	cld				/* clear direction flag */
 #ifdef USER32
@@ -663,13 +693,14 @@ _kret_iret:
 trap_from_kernel:
 #if	MACH_KDB || MACH_TTD
 	movq	%rsp,%rbx		/* save current stack */
-
 	movq	%rsp,%rdx		/* on an interrupt stack? */
+
+	CPU_NUMBER(%ecx)
 	and	$(~(INTSTACK_SIZE-1)),%rdx
-	cmpq	EXT(int_stack_base),%rdx
+	cmpq	CX(EXT(int_stack_base),%rcx),%rdx
 	je	1f			/* OK if so */
 
-	CPU_NUMBER(%edx)		/* get CPU number */
+	movl	%ecx,%edx
 	cmpq	CX(EXT(kernel_stack),%rdx),%rsp
 					/* already on kernel stack? */
 	ja	0f
@@ -681,11 +712,13 @@ trap_from_kernel:
 	pushq	%rbx			/* save old stack */
 	movq	%rbx,%rdi		/* pass as parameter */
 	call	EXT(kernel_trap)	/* to kernel trap routine */
+
 	popq	%rsp			/* return to old stack */
 #else	/* MACH_KDB || MACH_TTD */
 
 	movq	%rsp,%rdi		/* pass parameter */
 	call	EXT(kernel_trap)	/* to kernel trap routine */
+
 #endif	/* MACH_KDB || MACH_TTD */
 
 	jmp	_return_from_kernel
@@ -790,24 +823,18 @@ INTERRUPT(255)
  * interrupt stack.
  */
 ENTRY(all_intrs)
-	pushq	%rcx			/* save registers */
-	pushq	%rdx
-	pushq	%rsi
-	pushq	%rdi
-	pushq	%r8
-	pushq	%r9
-	pushq	%r10
-	pushq	%r11
+	PUSH_REGS_ISR			/* save registers */
 	cld				/* clear direction flag */
 
-	PUSH_SEGMENTS_ISR(%rdx)
+	PUSH_SEGMENTS_ISR(%rdx)		/* save segment registers */
 
+	CPU_NUMBER_NO_GS(%ecx)
 	movq	%rsp,%rdx		/* on an interrupt stack? */
 	and	$(~(INTSTACK_SIZE-1)),%rdx
-	cmpq	%ss:EXT(int_stack_base),%rdx
+	cmpq	%ss:CX(EXT(int_stack_base),%rcx),%rdx
 	je	int_from_intstack	/* if not: */
 
-	SET_KERNEL_SEGMENTS
+	SET_KERNEL_SEGMENTS(%rdx)	/* switch to kernel segments */
 
 	CPU_NUMBER(%edx)
 
@@ -857,34 +884,20 @@ LEXT(return_to_iret)			/* to find the return from calling interrupt) */
 	cmpq	$0,CX(EXT(need_ast),%rdx)
 	jnz	ast_from_interrupt	/* take it if so */
 1:
-	POP_SEGMENTS_ISR(%rdx)
-	pop	%r11
-	pop	%r10
-	pop	%r9
-	pop	%r8
-	pop	%rdi
-	pop	%rsi
-	pop	%rdx
-	pop	%rcx
-	pop	%rax
+	POP_SEGMENTS_ISR(%rdx)		/* restore segment regs */
+	POP_AREGS_ISR			/* restore registers */
 
 	iretq				/* return to caller */
 
 int_from_intstack:
-	cmpq	EXT(int_stack_base),%rsp	/* seemingly looping? */
+	CPU_NUMBER_NO_GS(%edx)
+	cmpq	CX(EXT(int_stack_base),%rdx),%rsp /* seemingly looping? */
 	jb	stack_overflowed	/* if not: */
 	call	EXT(interrupt)		/* call interrupt routine */
 _return_to_iret_i:			/* ( label for kdb_kintr) */
 	POP_SEGMENTS_ISR(%rdx)
-	pop	%r11
-	pop	%r10
-	pop	%r9
-	pop	%r8
-	pop	%rdi
-	pop	%rsi
-	pop	%rdx			/* must have been on kernel segs */
-	pop	%rcx
-	pop	%rax			/* no ASTs */
+	POP_AREGS_ISR			/* restore registers */
+					/* no ASTs */
 
 	iretq
 
@@ -908,21 +921,13 @@ stack_overflowed:
  *	ss
  */
 ast_from_interrupt:
-	POP_SEGMENTS_ISR(%rdx)
-	popq	%r11
-	popq	%r10
-	popq	%r9
-	popq	%r8
-	popq	%rdi
-	popq	%rsi
-	popq	%rdx
-	popq	%rcx
-	popq	%rax
+	POP_SEGMENTS_ISR(%rdx)		/* restore all registers ... */
+	POP_AREGS_ISR
 	pushq	$0			/* zero code */
 	pushq	$0			/* zero trap number */
 	pusha				/* save general registers */
-	PUSH_SEGMENTS_ISR(%rdx)
-	SET_KERNEL_SEGMENTS
+	PUSH_SEGMENTS_ISR(%rdx)		/* save segment registers */
+	SET_KERNEL_SEGMENTS(%rdx)	/* switch to kernel segments */
 	CPU_NUMBER(%edx)
 	TIME_TRAP_UENTRY
 
@@ -1040,12 +1045,12 @@ kdb_from_iret_i:			/* on interrupt stack */
 	pushq	$0			/* zero error code */
 	pushq	$0			/* zero trap number */
 	pusha				/* save general registers */
-	PUSH_SEGMENTS(%rdx)
+	PUSH_SEGMENTS(%rdx)		/* save segment registers */
 	movq	%rsp,%rdx		/* pass regs, */
 	movq	$0,%rsi			/* code, */
 	movq	$-1,%rdi		/* type to kdb */
 	call	EXT(kdb_trap)
-	POP_SEGMENTS(%rdx)
+	POP_SEGMENTS(%rdx)		/* restore segment registers */
 	popa				/* restore general registers */
 	addq	$16,%rsp
 
@@ -1120,13 +1125,13 @@ ttd_from_iret_i:			/* on interrupt stack */
 	pushq	$0			/* zero error code */
 	pushq	$0			/* zero trap number */
 	pusha				/* save general registers */
-	PUSH_SEGMENTS_ISR(%rdx)
+	PUSH_SEGMENTS_ISR(%rdx)		/* save segment registers */
 	ud2	// TEST it
 	movq	%rsp,%rdx		/* pass regs, */
 	movq	$0,%rsi			/* code, */
 	movq	$-1,%rdi		/* type to kdb */
 	call	_kttd_trap
-	POP_SEGMENTS_ISR(%rdx)
+	POP_SEGMENTS_ISR(%rdx)		/* restore segment registers */
 	popa				/* restore general registers */
 	addq	$16,%rsp
 
@@ -1159,8 +1164,8 @@ syscall_entry_2:
 	pushq	$0			/* clear trap number slot */
 
 	pusha				/* save the general registers */
-	PUSH_SEGMENTS(%rdx)
-	SET_KERNEL_SEGMENTS
+	PUSH_SEGMENTS(%rdx)		/* and the segment registers */
+	SET_KERNEL_SEGMENTS(%rdx)	/* switch to kernel data segment */
 
 /*
  * Shuffle eflags,eip,cs into proper places
@@ -1406,7 +1411,7 @@ ENTRY(syscall64)
 	mov	%r10,%rcx		/* fix arg3 location according to C ABI */
 
 	/* switch to kernel stack, then we can enable interrupts */
-	CPU_NUMBER_NO_STACK(%r11)
+	CPU_NUMBER_NO_STACK(%r11d)
 	movq	CX(EXT(kernel_stack),%r11),%rsp
 	sti
 
@@ -1445,7 +1450,7 @@ _syscall64_call:
 
 _syscall64_check_for_ast:
 	/* Check for ast. */
-	CPU_NUMBER_NO_GS(%r11)
+	CPU_NUMBER_NO_GS(%r11d)
 	cmpl	$0,CX(EXT(need_ast),%r11)
 	jz	_syscall64_restore_state
 

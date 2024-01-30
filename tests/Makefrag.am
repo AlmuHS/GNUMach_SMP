@@ -21,6 +21,14 @@
 #
 
 if !PLATFORM_xen
+
+include tests/user-qemu.mk
+
 TESTS += \
-	tests/test-multiboot
-endif
+	tests/test-multiboot \
+	$(USER_TESTS)
+
+clean-local: $(USER_TESTS_CLEAN)
+	rm -fr tests/include-mach
+
+endif # !PLATFORM_xen

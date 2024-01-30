@@ -46,7 +46,13 @@ int spl_init = 0;
 def_simple_lock_irq_data(static, ioapic_lock)	/* Lock for non-atomic window accesses to ioapic */
 
 int iunit[NINTR] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,
-                    16, 17, 18, 19, 20, 21, 22, 23};
+                    16, 17, 18, 19, 20, 21, 22, 23,
+		    24, 25, 26, 27, 28, 29, 30, 31,
+		    /* 2nd IOAPIC */
+		    32, 33, 34, 35, 36, 37, 38, 39,
+		    40, 41, 42, 43, 44, 45, 46, 47,
+		    48, 49, 50, 51, 52, 53, 54, 55,
+		    56, 57, 58, 59, 60, 61, 62, 63 };
 
 interrupt_handler_fn ivect[NINTR] = {
     /* 00 */	(interrupt_handler_fn)hardclock,
@@ -77,6 +83,49 @@ interrupt_handler_fn ivect[NINTR] = {
     /* 21 */	intnull,	/* PIRQF */
     /* 22 */	intnull,	/* PIRQG */
     /* 23 */	intnull,	/* PIRQH */
+
+    /* 24 */	intnull,
+    /* 25 */	intnull,
+    /* 26 */	intnull,
+    /* 27 */	intnull,
+    /* 28 */	intnull,
+    /* 29 */	intnull,
+    /* 30 */	intnull,
+    /* 31 */	intnull,
+
+    /* 32 */	intnull,
+    /* 33 */	intnull,
+    /* 34 */	intnull,
+    /* 35 */	intnull,
+    /* 36 */	intnull,
+    /* 37 */	intnull,
+    /* 38 */	intnull,
+    /* 39 */	intnull,
+    /* 40 */	intnull,
+    /* 41 */	intnull,
+    /* 42 */	intnull,
+    /* 43 */	intnull,
+    /* 44 */	intnull,
+    /* 45 */	intnull,
+    /* 46 */	intnull,
+    /* 47 */	intnull,
+    /* 48 */	intnull,
+    /* 49 */	intnull,
+    /* 50 */	intnull,
+    /* 51 */	intnull,
+    /* 52 */	intnull,
+    /* 53 */	intnull,
+    /* 54 */	intnull,
+    /* 55 */	intnull,
+
+    /* 56 */	intnull,
+    /* 57 */	intnull,
+    /* 58 */	intnull,
+    /* 59 */	intnull,
+    /* 60 */	intnull,
+    /* 61 */	intnull,
+    /* 62 */	intnull,
+    /* 63 */	intnull,
 };
 
 void
@@ -93,12 +142,6 @@ picdisable(void)
     */
     outb ( PIC_SLAVE_OCW, PICS_MASK );
     outb ( PIC_MASTER_OCW, PICM_MASK );
-
-    /*
-    ** Route interrupts through IOAPIC
-    */
-    outb ( IMCR_SELECT, MODE_IMCR );
-    outb ( IMCR_DATA, IMCR_USE_APIC );
 }
 
 void
@@ -161,7 +204,13 @@ ioapic_toggle_entry(int apic, int pin, int mask)
 static int
 ioapic_version(int apic)
 {
-    return ioapic_read(apic, APIC_IO_VERSION) & 0xff;
+    return (ioapic_read(apic, APIC_IO_VERSION) >> APIC_IO_VERSION_SHIFT) & 0xff;
+}
+
+static int
+ioapic_gsis(int apic)
+{
+    return ((ioapic_read(apic, APIC_IO_VERSION) >> APIC_IO_ENTRIES_SHIFT) & 0xff) + 1;
 }
 
 static void timer_expiry_callback(void *arg)
@@ -321,6 +370,8 @@ ioapic_configure(void)
     IrqOverrideData *irq_over;
     int timer_gsi;
     int version = ioapic_version(apic);
+    int ngsis = ioapic_gsis(apic);
+    int ngsis2 = 0;
 
     if (version >= 0x20) {
         has_irq_specific_eoi = 1;
@@ -368,7 +419,7 @@ ioapic_configure(void)
         }
     }
 
-    for (pin = 16; pin < 24; pin++) {
+    for (pin = 16; pin < ngsis; pin++) {
         gsi = pin;
 
         /* PCI IRQs PIRQ A-H */
@@ -382,8 +433,30 @@ ioapic_configure(void)
         ioapic_write_entry(apic, pin, entry.both);
     }
 
+    printf("IOAPIC 0 configured with GSI 0-%d\n", ngsis - 1);
+
+    /* Second IOAPIC */
+    if (apic_get_num_ioapics() > 1) {
+        apic = 1;
+        ngsis2 = ioapic_gsis(apic);
+
+        for (pin = 0; pin < ngsis2; pin++) {
+            gsi = pin + ngsis;
+
+            /* Defaults */
+            entry.both.trigger = IOAPIC_LEVEL_TRIGGERED;
+            entry.both.polarity = IOAPIC_ACTIVE_LOW;
+
+            if ((irq_over = acpi_get_irq_override(pin + ngsis))) {
+                gsi = override_irq(irq_over, &entry);
+            }
+            entry.both.vector = IOAPIC_INT_BASE + gsi;
+            ioapic_write_entry(apic, pin, entry.both);
+        }
+
+        printf("IOAPIC 1 configured with GSI %d-%d\n", ngsis, ngsis + ngsis2 - 1);
+    }
+
     /* Start the IO APIC receiving interrupts */
     lapic_enable();
-
-    printf("IOAPIC 0 configured\n");
 }

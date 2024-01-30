@@ -43,7 +43,7 @@ AM_LDFLAGS =
 
 GCC_INSTALL = $(shell LANG=C $(CC) -print-search-dirs | sed -n -e 's/install: \(.*\)/\1/p')
 AM_CPPFLAGS += \
-	-imacros config.h -I $(GCC_INSTALL)/include
+	-nostdinc -imacros config.h -I $(GCC_INSTALL)/include
 
 AM_CPPFLAGS += \
 	-I$(systype) \

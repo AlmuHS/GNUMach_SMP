@@ -442,6 +442,8 @@ extern vm_map_copy_t	vm_map_copy_copy(vm_map_copy_t);
 extern kern_return_t	vm_map_copy_discard_cont(vm_map_copyin_args_t,
 						 vm_map_copy_t *);
 
+extern boolean_t	vm_map_coalesce_entry(vm_map_t, vm_map_entry_t);
+
 /* Add or remove machine- dependent attributes from map regions */
 extern kern_return_t	vm_map_machine_attribute(vm_map_t, vm_offset_t,
 						 vm_size_t,

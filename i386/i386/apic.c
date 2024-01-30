@@ -179,6 +179,19 @@ apic_get_num_ioapics(void)
     return apic_data.nioapics;
 }
 
+/* apic_get_total_gsis: returns the total number of GSIs in the system. */
+int
+apic_get_total_gsis(void)
+{
+    int id;
+    int gsis = 0;
+
+    for (id = 0; id < apic_get_num_ioapics(); id++)
+        gsis += apic_get_ioapic(id)->ngsis;
+
+    return gsis;
+}
+
 /*
  * apic_get_current_cpu: returns the apic_id of current cpu.
  */

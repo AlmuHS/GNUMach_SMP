@@ -24,6 +24,10 @@
 #include <i386at/idt.h>
 #include <i386at/int_init.h>
 #include <i386/mp_desc.h>
+#include <kern/printf.h>
+#ifdef APIC
+#include <i386/apic.h>
+#endif
 
 /* defined in locore.S */
 extern vm_offset_t int_entry_table[];
@@ -37,7 +41,7 @@ int_fill(struct real_gate *myidt)
 	int nirq = 16;
 #else
 	int base = IOAPIC_INT_BASE;
-	int nirq = 24;
+	int nirq = NINTR;
 #endif
 
 	for (i = 0; i < nirq; i++) {
