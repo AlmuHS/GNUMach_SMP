@@ -102,5 +102,6 @@ type long_integer_t = rpc_long_integer_t
  * Physical address size
  */
 type rpc_phys_addr_t = uint64_t;
+type rpc_phys_addr_array_t = array[] of rpc_phys_addr_t;
 
 #endif	/* _MACHINE_MACHINE_TYPES_DEFS_ */

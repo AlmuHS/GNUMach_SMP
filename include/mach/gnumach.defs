@@ -197,3 +197,13 @@ routine vm_allocate_contiguous(
 simpleroutine task_set_essential(
 		task	: task_t;
 		essential	: boolean_t);
+
+/*
+ *	Returns physical addresses of a region of memory
+ */
+routine vm_pages_phys(
+		host_priv	: host_priv_t;
+		target_task	: vm_task_t;
+		vaddr		: vm_address_t;
+		size		: vm_size_t;
+	out	pages		: rpc_phys_addr_array_t);

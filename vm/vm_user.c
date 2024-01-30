@@ -700,3 +700,103 @@ kern_return_t vm_allocate_contiguous(
 
 	return KERN_SUCCESS;
 }
+
+/*
+ *	vm_pages_phys returns information about a region of memory
+ */
+kern_return_t vm_pages_phys(
+	host_t				host,
+	vm_map_t			map,
+	vm_address_t			address,
+	vm_size_t			size,
+	rpc_phys_addr_array_t		*pagespp,
+	mach_msg_type_number_t		*countp)
+{
+	if (host == HOST_NULL)
+		return KERN_INVALID_HOST;
+	if (map == VM_MAP_NULL)
+		return KERN_INVALID_TASK;
+
+	if (!page_aligned(address))
+		return KERN_INVALID_ARGUMENT;
+	if (!page_aligned(size))
+		return KERN_INVALID_ARGUMENT;
+
+	mach_msg_type_number_t count = atop(size), cur;
+	rpc_phys_addr_array_t pagesp = *pagespp;
+	kern_return_t kr;
+
+	if (*countp < count) {
+		vm_offset_t allocated;
+		kr = kmem_alloc_pageable(ipc_kernel_map, &allocated,
+					 count * sizeof(pagesp[0]));
+		if (kr != KERN_SUCCESS)
+			return KERN_RESOURCE_SHORTAGE;
+		pagesp = (rpc_phys_addr_array_t) allocated;
+	}
+
+	for (cur = 0; cur < count; cur++) {
+		vm_map_t cmap;		/* current map in traversal */
+		rpc_phys_addr_t paddr;
+		vm_map_entry_t entry;	/* entry in current map */
+
+		/* find the entry containing (or following) the address */
+		vm_map_lock_read(map);
+		for (cmap = map;;) {
+			/* cmap is read-locked */
+
+			if (!vm_map_lookup_entry(cmap, address, &entry)) {
+				entry = VM_MAP_ENTRY_NULL;
+				break;
+			}
+
+			if (entry->is_sub_map) {
+				/* move down to the sub map */
+
+				vm_map_t nmap = entry->object.sub_map;
+				vm_map_lock_read(nmap);
+				vm_map_unlock_read(cmap);
+				cmap = nmap;
+				continue;
+			} else {
+				/* Found it */
+				break;
+			}
+			/*NOTREACHED*/
+		}
+
+		paddr = 0;
+		if (entry) {
+			vm_offset_t offset = address - entry->vme_start + entry->offset;
+			vm_object_t object = entry->object.vm_object;
+
+			if (object) {
+				vm_object_lock(object);
+				vm_page_t page = vm_page_lookup(object, offset);
+				if (page) {
+					if (page->phys_addr != (typeof(pagesp[cur])) page->phys_addr)
+						printf("warning: physical address overflow in vm_pages_phys!!\n");
+					else
+						paddr = page->phys_addr;
+				}
+				vm_object_unlock(object);
+			}
+		}
+		vm_map_unlock_read(cmap);
+		pagesp[cur] = paddr;
+
+		address += PAGE_SIZE;
+	}
+
+	if (pagesp != *pagespp) {
+		vm_map_copy_t copy;
+		kr = vm_map_copyin(ipc_kernel_map, (vm_offset_t) pagesp,
+				   count * sizeof(pagesp[0]), TRUE, &copy);
+		assert(kr == KERN_SUCCESS);
+		*pagespp = (rpc_phys_addr_array_t) copy;
+	}
+
+	*countp = count;
+
+	return KERN_SUCCESS;
+}

@@ -3010,6 +3010,7 @@ the kernel.
 * Memory Attributes::             Tweaking memory regions.
 * Mapping Memory Objects::        How to map memory objects.
 * Memory Statistics::             How to get statistics about memory usage.
+* Memory physical addresses::     How to get physical addresses of memory.
 @end menu
 
 @node Memory Allocation
@@ -3512,6 +3513,22 @@ kernel's use of virtual memory since the kernel was booted.
 @code{vm_page_size} which is set at task initialization and remains
 constant for the life of the task.
 @end deftypefun
+
+
+@node Memory physical addresses
+@section Memory physical addresses
+
+@deftypefun kern_return_t vm_pages_phys (@w{host_t @var{host}}, @w{vm_task_t @var{target_task}}, @w{vm_address_t @var{address}}, @w{vm_size_t @var{size}}, @w{rpc_phys_addr_array_t *@var{pages}, @w{mach_msg_type_number_t *@var{pagesCnt}}})
+The function @code{vm_pages_phys} retrieves the physical addresses of the
+specified region (@var{size} bytes starting from @var{address}) of
+@var{target_task}'s virtual address space.
+
+Both @var{address} and @var{size} have to be aligned on @code{vm_page_size}.
+
+@var{pages} is an array of @code{rpc_phys_addr_array_t} that is supplied by the
+caller and returned filled with the physical page numbers. @var{pagesCnt} is
+supplied as the maximum number of elements in the @var{pages} array.  On
+return, it contains the actual number of integers in @var{pages}.
 
 
 @node External Memory Management
