@@ -44,10 +44,17 @@ struct acpi_rsdp {
     uint8_t  	signature[8];
     uint8_t  	checksum;
     uint8_t  	oem_id[6];
-    uint8_t  	revision[1];
+    uint8_t  	revision;
     uint32_t 	rsdt_addr;
 } __attribute__((__packed__));
 
+struct acpi_rsdp2 {
+    struct acpi_rsdp v1;
+    uint32_t	length;
+    uint64_t	xsdt_addr;
+    uint8_t	checksum;
+    uint8_t 	reserved[3];
+} __attribute__((__packed__));
 
 /*
  * RSDT Entry Header
@@ -75,6 +82,13 @@ struct acpi_dhdr {
 struct acpi_rsdt {
     struct acpi_dhdr 	header;
     uint32_t 			entry[0];
+} __attribute__((__packed__));
+
+#define ACPI_XSDT_SIG "XSDT"
+
+struct acpi_xsdt {
+    struct acpi_dhdr 	header;
+    uint64_t 			entry[0];
 } __attribute__((__packed__));
 
 /* APIC table signature. */
@@ -157,7 +171,7 @@ struct acpi_apic_irq_override {
 } __attribute__((__packed__));
 
 int acpi_apic_init(void);
-void acpi_print_info(struct acpi_rsdp *rsdp, struct acpi_rsdt *rsdt, int acpi_rsdt_n);
+void acpi_print_info(phys_addr_t rsdp, void *rsdt, int acpi_rsdt_n);
 
 extern unsigned lapic_addr;
 
