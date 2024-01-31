@@ -138,11 +138,6 @@ extern void linux_init(void);
 void machine_init(void)
 {
 	/*
-	 * Initialize the console.
-	 */
-	cninit();
-
-	/*
 	 * Make more free memory.
 	 *
 	 * This is particularly important for the Linux drivers which
@@ -168,6 +163,11 @@ void machine_init(void)
 	ioapic_configure();
 #endif
 	clkstart();
+
+	/*
+	 * Initialize the console.
+	 */
+	cninit();
 
 #ifdef LINUX_DEV
 	/*
