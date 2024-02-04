@@ -728,8 +728,9 @@ kern_return_t vm_pages_phys(
 
 	if (*countp < count) {
 		vm_offset_t allocated;
-		kr = kmem_alloc_pageable(ipc_kernel_map, &allocated,
-					 count * sizeof(pagesp[0]));
+		/* Avoid faults while we keep vm locks */
+		kr = kmem_alloc(ipc_kernel_map, &allocated,
+				count * sizeof(pagesp[0]));
 		if (kr != KERN_SUCCESS)
 			return KERN_RESOURCE_SHORTAGE;
 		pagesp = (rpc_phys_addr_array_t) allocated;

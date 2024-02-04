@@ -138,11 +138,6 @@ extern void linux_init(void);
 void machine_init(void)
 {
 	/*
-	 * Initialize the console.
-	 */
-	cninit();
-
-	/*
 	 * Make more free memory.
 	 *
 	 * This is particularly important for the Linux drivers which
@@ -159,7 +154,13 @@ void machine_init(void)
 	hyp_init();
 #else	/* MACH_HYP */
 #if defined(APIC)
-	acpi_apic_init();
+	int err;
+
+	err = acpi_apic_init();
+	if (err) {
+		printf("acpi_apic_init failed with %d\n", err);
+		for (;;);
+	}
 #endif
 #if (NCPUS > 1)
 	smp_init();
@@ -168,6 +169,11 @@ void machine_init(void)
 	ioapic_configure();
 #endif
 	clkstart();
+
+	/*
+	 * Initialize the console.
+	 */
+	cninit();
 
 #ifdef LINUX_DEV
 	/*

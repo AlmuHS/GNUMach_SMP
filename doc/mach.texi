@@ -3529,6 +3529,7 @@ Both @var{address} and @var{size} have to be aligned on @code{vm_page_size}.
 caller and returned filled with the physical page numbers. @var{pagesCnt} is
 supplied as the maximum number of elements in the @var{pages} array.  On
 return, it contains the actual number of integers in @var{pages}.
+@end deftypefun
 
 
 @node External Memory Management
