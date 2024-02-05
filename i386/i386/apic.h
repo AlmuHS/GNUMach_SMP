@@ -83,7 +83,7 @@ typedef union u_icr_low
         unsigned :1;
         unsigned level: 1;
         unsigned trigger_mode: 1;
-        unsigned :2;
+        unsigned remote_read_status: 2;	/* Read-only field */
         unsigned destination_shorthand: 2;
         unsigned :12;
     };
