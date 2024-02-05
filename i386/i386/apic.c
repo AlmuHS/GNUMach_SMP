@@ -290,6 +290,10 @@ void apic_send_ipi(unsigned dest_shorthand, unsigned deliv_mode, unsigned dest_m
     IcrLReg icrl_values;
     IcrHReg icrh_values;
 
+    /* Keep previous values and only overwrite known fields */
+    icrl_values.r = lapic->icr_low.r;
+    icrh_values.r = lapic->icr_high.r;
+
     icrl_values.destination_shorthand = dest_shorthand;
     icrl_values.delivery_mode = deliv_mode;
     icrl_values.destination_mode = dest_mode;
@@ -298,8 +302,8 @@ void apic_send_ipi(unsigned dest_shorthand, unsigned deliv_mode, unsigned dest_m
     icrl_values.vector = vector;
     icrh_values.destination_field = dest_id;
 
-    lapic->icr_high = icrh_values;
-    lapic->icr_low = icrl_values;
+    lapic->icr_high.r = icrh_values.r;
+    lapic->icr_low.r = icrl_values.r;
 }
 
 void

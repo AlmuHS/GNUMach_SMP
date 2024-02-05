@@ -23,15 +23,14 @@
 #include <i386/seg.h>
 #include <i386/gdt.h>
 
-#define AP_BOOT_ADDR	0x7000
-#define M(addr)		(addr - apboot + AP_BOOT_ADDR)
+#define M(addr)		(addr - apboot)
 #define CR0_CLEAR_FLAGS_CACHE_ENABLE	(CR0_CD | CR0_NW)
 #define CR0_SET_FLAGS	(CR0_CLEAR_FLAGS_CACHE_ENABLE | CR0_PE)
-#define CR0_CLEAR_FLAGS (CR0_PG | CR0_AM | CR0_WP | CR0_NE | CR0_TS | CR0_EM | CR0_MP)
+#define CR0_CLEAR_FLAGS	(CR0_PG | CR0_AM | CR0_WP | CR0_NE | CR0_TS | CR0_EM | CR0_MP)
 #define BOOT_CS		0x8
 #define BOOT_DS		0x10
 
-.text
+.data
 
 .align 16
 apboot_idt_ptr:
@@ -101,16 +100,22 @@ apboot_percpu_med:
 apboot_percpu_high:
 	.byte 0
 
-.globl apboot, apbootend
+.globl apboot, apbootend, gdt_descr_tmp, apboot_jmp_offset
 .align 16
 .code16
 
 apboot:
 _apboot:
+	/* This is now address CS:0 in real mode */
+
+	/* Set data seg same as code seg */
+	mov	%cs, %dx
+	mov	%dx, %ds
+
 	cli
 	xorl	%eax, %eax
 	movl    %eax, %cr3
-	mov	%ax, %ds
+
 	mov	%ax, %es
 	mov	%ax, %fs
 	mov	%ax, %gs
@@ -123,9 +128,16 @@ _apboot:
 	orl	$CR0_SET_FLAGS, %eax
 	movl	%eax, %cr0
 
-	ljmp	$BOOT_CS, $M(0f)
+	/* ljmpl with relocation from machine_init */
+	.byte 0x66
+	.byte 0xea
+apboot_jmp_offset:
+	.long M(0f)
+	.word BOOT_CS
+
 0:
 	.code32
+	/* Protected mode! */
 	movw	$BOOT_DS, %ax
 	movw	%ax, %ds
 	movw	%ax, %es
