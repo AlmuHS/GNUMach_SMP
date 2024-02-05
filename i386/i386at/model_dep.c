@@ -66,6 +66,7 @@
 #include <i386/locore.h>
 #include <i386/model_dep.h>
 #include <i386/smp.h>
+#include <i386/seg.h>
 #include <i386at/acpi_parse_apic.h>
 #include <i386at/autoconf.h>
 #include <i386at/biosmem.h>
@@ -124,6 +125,9 @@ struct multiboot_raw_info boot_info;
 char *kernel_cmdline = "";
 
 extern char	version[];
+
+/* Realmode temporary GDT */
+extern struct pseudo_descriptor gdt_descr_tmp;
 
 /* If set, reboot the system on ctrl-alt-delete.  */
 boolean_t	rebootflag = FALSE;	/* exported to kdintr */
@@ -206,6 +210,20 @@ void machine_init(void)
 	 * Note that this breaks accessing some BIOS areas stored there.
 	 */
 	pmap_unmap_page_zero();
+#endif
+
+#ifdef APIC
+	/*
+	 * Grab an early page for AP boot code
+	 */
+	/* FIXME: this may not allocate from below 1MB, if within first 16MB */
+	apboot_addr = vm_page_to_pa(vm_page_grab_contig(PAGE_SIZE, VM_PAGE_SEL_DMA));
+	assert (apboot_addr < 0x100000);
+
+	/*
+	 * Patch the realmode gdt with the correct offset
+	 */
+	gdt_descr_tmp.linear_base += apboot_addr;
 #endif
 }
 

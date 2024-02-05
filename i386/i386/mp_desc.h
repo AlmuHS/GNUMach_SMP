@@ -46,8 +46,6 @@
 #include "gdt.h"
 #include "ldt.h"
 
-#define AP_BOOT_ADDR	0x7000
-
 /*
  * The descriptor tables are together in a structure
  * allocated one per processor (except for the boot processor).
@@ -77,6 +75,11 @@ extern struct real_descriptor	*mp_gdt[NCPUS];
 extern uint8_t solid_intstack[];
 
 extern int bspdone;
+
+/*
+ * Address to hold AP boot code, held in ASM
+ */
+extern phys_addr_t apboot_addr;
 
 /*
  * Each CPU calls this routine to set up its descriptor tables.

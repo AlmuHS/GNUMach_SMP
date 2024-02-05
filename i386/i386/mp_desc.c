@@ -99,6 +99,7 @@ interrupt_stack_alloc(void)
  */
 int bspdone;
 
+phys_addr_t apboot_addr;
 extern void *apboot, *apbootend;
 extern volatile ApicLocalUnit* lapic;
 
@@ -296,7 +297,7 @@ cpu_start(int cpu)
 
     printf("Trying to enable: %d\n", apic_id);
 
-    smp_startup_cpu(apic_id, AP_BOOT_ADDR);
+    smp_startup_cpu(apic_id, apboot_addr);
 
     printf("Started cpu %d (lapic id %04x)\n", cpu, apic_id);
 
@@ -309,7 +310,7 @@ start_other_cpus(void)
 	int ncpus = smp_get_numcpus();
 
 	//Copy cpu initialization assembly routine
-	memcpy((void*)phystokv(AP_BOOT_ADDR), (void*) &apboot,
+	memcpy((void*) phystokv(apboot_addr), (void*) &apboot,
 	       (uint32_t)&apbootend - (uint32_t)&apboot);
 
 #ifndef APIC
