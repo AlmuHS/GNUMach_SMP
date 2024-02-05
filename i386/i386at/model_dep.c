@@ -129,6 +129,9 @@ extern char	version[];
 /* Realmode temporary GDT */
 extern struct pseudo_descriptor gdt_descr_tmp;
 
+/* Realmode relocated jmp */
+extern uint32_t apboot_jmp_offset;
+
 /* If set, reboot the system on ctrl-alt-delete.  */
 boolean_t	rebootflag = FALSE;	/* exported to kdintr */
 
@@ -221,9 +224,11 @@ void machine_init(void)
 	assert (apboot_addr < 0x100000);
 
 	/*
-	 * Patch the realmode gdt with the correct offset
+	 * Patch the realmode gdt with the correct offset and the first jmp to
+	 * protected mode with the correct target.
 	 */
 	gdt_descr_tmp.linear_base += apboot_addr;
+	apboot_jmp_offset += apboot_addr;
 #endif
 }
 

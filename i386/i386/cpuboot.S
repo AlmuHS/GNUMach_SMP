@@ -100,7 +100,7 @@ apboot_percpu_med:
 apboot_percpu_high:
 	.byte 0
 
-.globl apboot, apbootend, gdt_descr_tmp
+.globl apboot, apbootend, gdt_descr_tmp, apboot_jmp_offset
 .align 16
 .code16
 
@@ -128,21 +128,11 @@ _apboot:
 	orl	$CR0_SET_FLAGS, %eax
 	movl	%eax, %cr0
 
-	xorl	%eax, %eax
-	mov	%cs, %ax
-	shll	$4, %eax
-	addl	$M(0f), %eax
-	movl	%eax, M(ljmp_offset32)
-
-	/* Flush cached instruction queue */
-	jmp	1f
-1:
-
-	/* ljmpl with relocation */
+	/* ljmpl with relocation from machine_init */
 	.byte 0x66
 	.byte 0xea
-ljmp_offset32:
-	.long 0xffffffff
+apboot_jmp_offset:
+	.long M(0f)
 	.word BOOT_CS
 
 0:
