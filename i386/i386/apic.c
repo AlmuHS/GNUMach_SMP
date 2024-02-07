@@ -309,6 +309,18 @@ void apic_send_ipi(unsigned dest_shorthand, unsigned deliv_mode, unsigned dest_m
 void
 lapic_enable(void)
 {
+    lapic->spurious_vector.r |= LAPIC_ENABLE;
+}
+
+void
+lapic_disable(void)
+{
+    lapic->spurious_vector.r &= ~LAPIC_ENABLE;
+}
+
+void
+lapic_setup(void)
+{
     unsigned long flags;
     int apic_id;
     volatile uint32_t dummy;
@@ -338,8 +350,7 @@ lapic_enable(void)
     /* Enable LAPIC to send or recieve IPI/SIPIs */
     dummy = lapic->spurious_vector.r;
     lapic->spurious_vector.r = IOAPIC_SPURIOUS_BASE
-			     | LAPIC_ENABLE_DIRECTED_EOI
-			     | LAPIC_ENABLE;
+			     | LAPIC_ENABLE_DIRECTED_EOI;
 
     lapic->error_status.r = 0;
 

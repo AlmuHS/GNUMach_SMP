@@ -244,6 +244,8 @@ int apic_get_total_gsis(void);
 void picdisable(void);
 void lapic_eoi(void);
 void ioapic_irq_eoi(int pin);
+void lapic_setup(void);
+void lapic_disable(void);
 void lapic_enable(void);
 void lapic_enable_timer(void);
 void calibrate_lapic_timer(void);

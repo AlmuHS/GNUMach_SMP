@@ -270,6 +270,7 @@ cpu_setup(int cpu)
     machine_slot[cpu].cpu_type = machine_slot[0].cpu_type;
 
     init_fpu();
+    lapic_setup();
     lapic_enable();
     cpu_launch_first_thread(THREAD_NULL);
 }
@@ -313,12 +314,20 @@ start_other_cpus(void)
 	memcpy((void*) phystokv(apboot_addr), (void*) &apboot,
 	       (uint32_t)&apbootend - (uint32_t)&apboot);
 
-#ifndef APIC
-	lapic_enable(); /* Enable lapic only once */
-#endif
 	unsigned cpu;
 
 	splhigh();
+
+	/* Disable IOAPIC interrupts (IPIs not affected).
+	 * Clearing this flag is similar to masking all
+	 * IOAPIC interrupts individually.
+	 *
+	 * This is done to prevent IOAPIC interrupts from
+	 * interfering with SMP startup. splhigh() may be enough for BSP,
+	 * but I'm not sure.  We cannot control the lapic
+	 * on APs because we don't have execution on them yet.
+	 */
+	lapic_disable();
 
 	bspdone = 0;
 	for (cpu = 1; cpu < ncpus; cpu++) {
@@ -336,5 +345,8 @@ start_other_cpus(void)
 		__sync_synchronize();
 	}
 	printf("BSP: Completed SMP init\n");
+
+	/* Re-enable IOAPIC interrupts as per setup */
+	lapic_enable();
 }
 #endif	/* NCPUS > 1 */
