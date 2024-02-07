@@ -91,6 +91,14 @@ struct acpi_xsdt {
     uint64_t 			entry[0];
 } __attribute__((__packed__));
 
+struct acpi_address {
+    uint8_t	is_io;
+    uint8_t	reg_width;
+    uint8_t	reg_offset;
+    uint8_t	reserved;
+    uint64_t	addr64;
+} __attribute__((__packed__));
+
 /* APIC table signature. */
 #define ACPI_APIC_SIG "APIC"
 
@@ -168,6 +176,21 @@ struct acpi_apic_irq_override {
     uint8_t     irq;
     uint32_t    gsi;
     uint16_t    flags;
+} __attribute__((__packed__));
+
+
+#define ACPI_HPET_SIG "HPET"
+
+/*
+ * HPET High Precision Event Timer structure
+ */
+struct acpi_hpet {
+    struct acpi_dhdr header;
+    uint32_t	id;
+    struct acpi_address	address;
+    uint8_t	sequence;
+    uint16_t	minimum_tick;
+    uint8_t	flags;
 } __attribute__((__packed__));
 
 int acpi_apic_init(void);

@@ -252,10 +252,15 @@ void calibrate_lapic_timer(void);
 void ioapic_toggle(int pin, int mask);
 void ioapic_configure(void);
 
+void hpet_init(void);
+void hpet_udelay(uint32_t us);
+void hpet_mdelay(uint32_t ms);
+
 extern int timer_pin;
 extern void intnull(int unit);
 extern volatile ApicLocalUnit* lapic;
 extern int cpu_id_lut[];
+extern uint32_t *hpet_addr;
 
 #endif
 
