@@ -71,6 +71,11 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 /* Addresses, related masks, and potential results */
 
+#define CMOS_SHUTDOWN	0xf
+#define CM_NORM_RST	0x0
+#define CM_LOAD_SYS	0x4
+#define CM_JMP_467	0xa
+
 #define CMOS_EB		0x14		/* read Equipment Byte */
 #define CM_SCRMSK	0x30		/* mask for EB query to get screen */
 #define CM_EGA_VGA	0x00		/* "not CGA or MONO" */

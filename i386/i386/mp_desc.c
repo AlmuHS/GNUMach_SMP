@@ -292,17 +292,22 @@ cpu_ap_main()
 kern_return_t
 cpu_start(int cpu)
 {
+    int err;
+
     assert(machine_slot[cpu].running != TRUE);
 
     uint16_t apic_id = apic_get_cpu_apic_id(cpu);
 
-    printf("Trying to enable: %d\n", apic_id);
+    printf("Trying to enable: %d at 0x%lx\n", apic_id, apboot_addr);
 
-    smp_startup_cpu(apic_id, apboot_addr);
+    err = smp_startup_cpu(apic_id, apboot_addr);
 
-    printf("Started cpu %d (lapic id %04x)\n", cpu, apic_id);
-
-    return KERN_SUCCESS;
+    if (!err) {
+        printf("Started cpu %d (lapic id %04x)\n", cpu, apic_id);
+        return KERN_SUCCESS;
+    }
+    printf("FATAL: Cannot init AP %d\n", cpu);
+    for (;;);
 }
 
 void
