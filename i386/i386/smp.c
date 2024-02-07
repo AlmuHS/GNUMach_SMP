@@ -21,7 +21,6 @@
 #include <i386/apic.h>
 #include <i386/smp.h>
 #include <i386/cpu.h>
-#include <i386/pit.h>
 #include <i386at/idt.h>
 #include <i386at/acpi_parse_apic.h>
 #include <kern/printf.h>
@@ -101,7 +100,7 @@ void smp_startup_cpu(unsigned apic_id, unsigned vector)
     } while(lapic->icr_low.delivery_status == SEND_PENDING);
 
     /* Wait 10 msec */
-    pit_mdelay(10);
+    hpet_mdelay(10);
 
     /* Clear APIC errors */
     lapic->error_status.r = 0;
@@ -110,7 +109,7 @@ void smp_startup_cpu(unsigned apic_id, unsigned vector)
     apic_send_ipi(NO_SHORTHAND, STARTUP, PHYSICAL, ASSERT, LEVEL, vector >> 12, apic_id);
 
     /* Wait 200 usec */
-    pit_udelay(200);
+    hpet_udelay(200);
 
     /* Wait for delivery */
     do {
@@ -121,7 +120,7 @@ void smp_startup_cpu(unsigned apic_id, unsigned vector)
     apic_send_ipi(NO_SHORTHAND, STARTUP, PHYSICAL, ASSERT, LEVEL, vector >> 12, apic_id);
 
     /* Wait 200 usec */
-    pit_udelay(200);
+    hpet_udelay(200);
 
     /* Wait for delivery */
     do {
