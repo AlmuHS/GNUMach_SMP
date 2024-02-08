@@ -458,5 +458,6 @@ ioapic_configure(void)
     }
 
     /* Start the IO APIC receiving interrupts */
+    lapic_setup();
     lapic_enable();
 }

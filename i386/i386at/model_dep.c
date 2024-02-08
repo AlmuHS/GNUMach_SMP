@@ -221,6 +221,7 @@ void machine_init(void)
 	 */
 	/* FIXME: this may not allocate from below 1MB, if within first 16MB */
 	apboot_addr = vm_page_to_pa(vm_page_grab_contig(PAGE_SIZE, VM_PAGE_SEL_DMA));
+	apboot_addr = 0x3000;
 	assert (apboot_addr < 0x100000);
 
 	/*
@@ -229,6 +230,11 @@ void machine_init(void)
 	 */
 	gdt_descr_tmp.linear_base += apboot_addr;
 	apboot_jmp_offset += apboot_addr;
+
+	/*
+	 * Initialize the HPET
+	 */
+	hpet_init();
 #endif
 }
 

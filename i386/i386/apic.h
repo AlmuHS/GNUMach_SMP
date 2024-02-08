@@ -244,16 +244,23 @@ int apic_get_total_gsis(void);
 void picdisable(void);
 void lapic_eoi(void);
 void ioapic_irq_eoi(int pin);
+void lapic_setup(void);
+void lapic_disable(void);
 void lapic_enable(void);
 void lapic_enable_timer(void);
 void calibrate_lapic_timer(void);
 void ioapic_toggle(int pin, int mask);
 void ioapic_configure(void);
 
+void hpet_init(void);
+void hpet_udelay(uint32_t us);
+void hpet_mdelay(uint32_t ms);
+
 extern int timer_pin;
 extern void intnull(int unit);
 extern volatile ApicLocalUnit* lapic;
 extern int cpu_id_lut[];
+extern uint32_t *hpet_addr;
 
 #endif
 
