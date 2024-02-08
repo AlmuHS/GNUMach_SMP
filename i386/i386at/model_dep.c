@@ -217,14 +217,6 @@ void machine_init(void)
 
 #ifdef APIC
 	/*
-	 * Grab an early page for AP boot code
-	 */
-	/* FIXME: this may not allocate from below 1MB, if within first 16MB */
-	apboot_addr = vm_page_to_pa(vm_page_grab_contig(PAGE_SIZE, VM_PAGE_SEL_DMA));
-	apboot_addr = 0x3000;
-	assert (apboot_addr < 0x100000);
-
-	/*
 	 * Patch the realmode gdt with the correct offset and the first jmp to
 	 * protected mode with the correct target.
 	 */
