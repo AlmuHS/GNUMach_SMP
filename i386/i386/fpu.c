@@ -163,6 +163,7 @@ init_fpu(void)
 
 		if (CPU_HAS_FEATURE(CPU_FEATURE_XSAVE)) {
 		    unsigned eax, ebx, ecx, edx;
+		    unsigned xsave_cpu_features;
 
 		    eax = 0xd;
 		    ecx = 0x0;
@@ -177,7 +178,10 @@ init_fpu(void)
 		    eax = 0xd;
 		    ecx = 0x1;
 		    cpuid(eax, ebx, ecx, edx);
-		    if (eax & CPU_FEATURE_XSAVES) {
+		    xsave_cpu_features = eax;
+
+		    if (xsave_cpu_features & CPU_FEATURE_XSAVES) {
+			// all states enabled by XCR0|IA32_XSS
 			fp_xsave_size = offsetof(struct i386_fpsave_state, xfp_save_state) + ebx;
 			if (fp_xsave_size < sizeof(struct i386_fpsave_state))
 				panic("CPU-provided xstate size %d "
@@ -190,6 +194,7 @@ init_fpu(void)
 			eax = 0xd;
 			ecx = 0x0;
 			cpuid(eax, ebx, ecx, edx);
+			// all states enabled by XCR0
 			fp_xsave_size = offsetof(struct i386_fpsave_state, xfp_save_state) + ebx;
 			if(fp_xsave_size < sizeof(struct i386_fpsave_state))
 				panic("CPU-provided xstate size %d "
@@ -197,9 +202,9 @@ init_fpu(void)
 				      fp_xsave_size,
 				      (int) sizeof(struct i386_fpsave_state));
 
-			if (eax & CPU_FEATURE_XSAVEOPT)
+			if (xsave_cpu_features & CPU_FEATURE_XSAVEOPT)
 			    fp_save_kind = FP_XSAVEOPT;
-			else if (eax & CPU_FEATURE_XSAVEC)
+			else if (xsave_cpu_features & CPU_FEATURE_XSAVEC)
 			    fp_save_kind = FP_XSAVEC;
 			else
 			    fp_save_kind = FP_XSAVE;
