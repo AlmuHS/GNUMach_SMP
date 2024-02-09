@@ -77,11 +77,6 @@ extern uint8_t solid_intstack[];
 extern int bspdone;
 
 /*
- * Address to hold AP boot code, held in ASM
- */
-extern phys_addr_t apboot_addr;
-
-/*
  * Each CPU calls this routine to set up its descriptor tables.
  */
 extern int mp_desc_init(int);

@@ -689,6 +689,15 @@ biosmem_bootstrap_common(void)
     if (error)
         boot_panic(biosmem_panic_noseg_msg);
 
+#if !defined(MACH_HYP) && NCPUS > 1
+    /*
+     * Grab an early page for AP boot code which needs to be below 1MB.
+     */
+    assert (phys_start < 0x100000);
+    apboot_addr = phys_start;
+    phys_start += PAGE_SIZE;
+#endif
+
     biosmem_set_segment(VM_PAGE_SEG_DMA, phys_start, phys_end);
 
     phys_start = VM_PAGE_DMA_LIMIT;

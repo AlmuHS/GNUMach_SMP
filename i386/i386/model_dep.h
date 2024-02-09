@@ -29,6 +29,11 @@
 #include <mach/std_types.h>
 
 /*
+ * Address to hold AP boot code, held in ASM
+ */
+extern phys_addr_t apboot_addr;
+
+/*
  * Find devices.  The system is alive.
  */
 extern void machine_init (void);
