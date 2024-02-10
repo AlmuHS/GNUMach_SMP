@@ -15,6 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+#if NCPUS > 1
 #include <mach/machine/asm.h>
 #include <i386/i386asm.h>
 #include <i386/proc_reg.h>
@@ -241,3 +242,4 @@ gdt_tmp:
 
 _apbootend:
 apbootend:
+#endif
