@@ -215,7 +215,7 @@ void machine_init(void)
 	pmap_unmap_page_zero();
 #endif
 
-#ifdef APIC
+#if NCPUS > 1
 	/*
 	 * Patch the realmode gdt with the correct offset and the first jmp to
 	 * protected mode with the correct target.
