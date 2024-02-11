@@ -121,7 +121,6 @@ kbdopen(dev_t dev, int flags, io_req_t ior)
 	kdinit();
 	splx(o_pri);
 	kbdinit();
-	unmask_irq(KBD_IRQ);
 
 	return(0);
 }
@@ -140,7 +139,6 @@ kbdclose(
 {
 	spl_t s = SPLKD();
 
-	mask_irq(KBD_IRQ);
 	kb_mode = KB_ASCII;
 	kdq_reset(&kbd_queue);
 	splx(s);

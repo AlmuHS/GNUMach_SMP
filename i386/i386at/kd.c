@@ -1127,6 +1127,7 @@ kdinit(void)
 	k_comm |= K_CB_ENBLIRQ;		/* enable interrupt */
 	kd_sendcmd(KC_CMD_WRITE);	/* write new ctlr command byte */
 	kd_senddata(k_comm);
+	unmask_irq(KBD_IRQ);
 	kd_initialized = TRUE;
 
 #if	ENABLE_IMMEDIATE_CONSOLE
