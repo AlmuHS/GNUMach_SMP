@@ -345,10 +345,14 @@ db_show_all_runqs(
 	db_expr_t	count,
 	const char *	modif)
 {
-	int i;
+	int i = 0;
+	processor_set_t pset;
 
-	db_printf("Processor set runq:\t");
-	showrq(&default_pset.runq);
+	queue_iterate(&all_psets, pset, processor_set_t, all_psets) {
+		db_printf("Processor set #%d runq:\t", i);
+		showrq(&pset->runq);
+		i++;
+	}
 	for (i = 0; i < smp_get_numcpus(); i++) {
 	    db_printf("Processor #%d runq:\t", i);
 	    showrq(&cpu_to_processor(i)->runq);
