@@ -62,9 +62,9 @@ struct task {
 	int		ref_count;	/* Number of references to me */
 
 	/* Flags */
-	unsigned int	active:1,	/* Task has not been terminated */
+	unsigned char	assign_active;	/* waiting for may_assign */
+	unsigned char	active:1,	/* Task has not been terminated */
 	/* boolean_t */ may_assign:1,	/* can assigned pset be changed? */
-			assign_active:1,	/* waiting for may_assign */
 			essential:1;	/* Is this task essential for the system? */
 
 	/* Miscellaneous */
