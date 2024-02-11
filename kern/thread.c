@@ -1921,7 +1921,7 @@ Restart:
 	 *	Reset policy and priorities if needed.
 	 */
 #if	MACH_FIXPRI
-	if (thread->policy & new_pset->policies == 0) {
+	if ((thread->policy & new_pset->policies) == 0) {
 	    thread->policy = POLICY_TIMESHARE;
 	    recompute_pri = TRUE;
 	}
