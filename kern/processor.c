@@ -51,6 +51,7 @@
 #if	MACH_HOST
 #include <kern/slab.h>
 struct kmem_cache pset_cache;
+struct processor_set *slave_pset;
 #endif	/* MACH_HOST */
 
 
@@ -124,6 +125,8 @@ void pset_sys_init(void)
 		ipc_processor_init(processor);
 	    }
 	}
+
+	processor_set_create(&realhost, &slave_pset, &slave_pset);
 }
 #endif	/* MACH_HOST */
 

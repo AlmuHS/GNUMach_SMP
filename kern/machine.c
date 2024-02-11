@@ -84,6 +84,9 @@ void cpu_up(int cpu)
 
 	processor = cpu_to_processor(cpu);
 	pset_lock(&default_pset);
+#if	MACH_HOST
+	pset_lock(slave_pset);
+#endif
 	s = splsched();
 	processor_lock(processor);
 #if	NCPUS > 1
@@ -92,10 +95,18 @@ void cpu_up(int cpu)
 	ms = &machine_slot[cpu];
 	ms->running = TRUE;
 	machine_info.avail_cpus++;
-	pset_add_processor(&default_pset, processor);
+#if	MACH_HOST
+	if (cpu != 0)
+		pset_add_processor(slave_pset, processor);
+	else
+#endif
+		pset_add_processor(&default_pset, processor);
 	processor->state = PROCESSOR_RUNNING;
 	processor_unlock(processor);
 	splx(s);
+#if	MACH_HOST
+	pset_unlock(slave_pset);
+#endif
 	pset_unlock(&default_pset);
 }
 

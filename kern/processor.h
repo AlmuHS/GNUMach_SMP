@@ -85,6 +85,9 @@ struct processor_set {
 	long			sched_load;	/* load avg for scheduler */
 };
 extern struct processor_set	default_pset;
+#if	MACH_HOST
+extern struct processor_set	*slave_pset;
+#endif
 
 struct processor {
 	struct run_queue runq;		/* local runq for this processor */
