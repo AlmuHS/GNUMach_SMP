@@ -70,8 +70,12 @@ AC_DEFINE([MACH_DEBUG], [1], [MACH_DEBUG])
 # Fixed priority threads.
 AC_DEFINE([MACH_FIXPRI], [1], [MACH_FIXPRI])
 
-# Mach host (resource alloc.).
-AC_DEFINE([MACH_HOST], [0], [MACH_HOST])
+# Mach host (cpu resource alloc.).
+[if [ $mach_ncpus -gt 1 ]; then]
+  AC_DEFINE([MACH_HOST], [1], [MACH_HOST])
+[else]
+  AC_DEFINE([MACH_HOST], [0], [MACH_HOST])
+[fi]
 
 # IPC debugging calls.
 AC_DEFINE([MACH_IPC_DEBUG], [1], [MACH_IPC_DEBUG])
