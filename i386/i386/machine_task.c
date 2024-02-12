@@ -23,6 +23,7 @@
 #include <kern/lock.h>
 #include <mach/mach_types.h>
 #include <kern/slab.h>
+#include <kern/task.h>
 #include <machine/task.h>
 
 #include <machine/io_perm.h>

@@ -57,13 +57,12 @@
 #include <mach/vm_sync.h>
 
 #ifdef	MACH_KERNEL
-#include <kern/task.h>		/* for task_array_t */
-#include <kern/thread.h>	/* for thread_array_t */
-#include <kern/processor.h>	/* for processor_array_t,
-				       processor_set_array_t,
-				       processor_set_name_array_t */
-#include <kern/syscall_emulation.h>
-				/* for emulation_vector_t */
+
+typedef struct task		*task_t;
+typedef struct thread		*thread_t;
+typedef struct processor	*processor_t;
+typedef struct processor_set	*processor_set_t;
+
 #else	/* MACH_KERNEL */
 typedef	mach_port_t	task_t;
 typedef task_t		*task_array_t;

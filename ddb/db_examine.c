@@ -47,6 +47,7 @@
 #include <kern/task.h>
 #include <kern/smp.h>
 #include <mach/vm_param.h>
+#include <vm/vm_map.h>
 
 #define db_thread_to_task(thread)	((thread)? thread->task: TASK_NULL)
 

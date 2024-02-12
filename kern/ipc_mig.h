@@ -28,6 +28,7 @@
 
 #include <mach/std_types.h>
 #include <device/device_types.h>
+#include <ipc/ipc_thread.h>
 
 /*
  *  Routine:    mach_msg_send_from_kernel

@@ -30,6 +30,7 @@
 #include <mach/machine/trap.h>
 
 #ifndef __ASSEMBLER__
+#include <i386/thread.h>
 #include <mach/mach_types.h>
 
 char *trap_name(unsigned int trapnum);

@@ -23,6 +23,7 @@
 
 #include <i386at/idt.h>
 #include <i386at/int_init.h>
+#include <i386/gdt.h>
 #include <i386/mp_desc.h>
 #include <kern/printf.h>
 #ifdef APIC

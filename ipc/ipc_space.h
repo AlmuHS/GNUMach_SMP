@@ -49,6 +49,7 @@
 #include <kern/slab.h>
 #include <kern/printf.h>
 #include <ipc/ipc_entry.h>
+#include <ipc/ipc_port.h>
 #include <ipc/ipc_types.h>
 
 /*

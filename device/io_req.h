@@ -38,6 +38,7 @@
 #include <kern/slab.h>
 #include <kern/kalloc.h>
 #include <kern/lock.h>
+#include <vm/vm_map.h>
 #include <vm/vm_page.h>
 #include <device/device_types.h>
 #include <device/dev_hdr.h>

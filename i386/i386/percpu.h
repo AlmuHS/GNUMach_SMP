@@ -66,7 +66,7 @@ MACRO_END
 #endif
 
 #include <kern/processor.h>
-#include <kern/thread.h>
+#include <mach/mach_types.h>
 
 struct percpu {
     struct percpu	*self;

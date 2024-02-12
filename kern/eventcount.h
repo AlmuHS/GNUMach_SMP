@@ -35,6 +35,8 @@
 #ifndef	_KERN_EVENTCOUNT_H_
 #define	_KERN_EVENTCOUNT_H_	1
 
+#include <kern/lock.h>
+
 /* kernel visible only */
 
 typedef struct evc {
