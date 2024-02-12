@@ -4427,6 +4427,17 @@ The last processor used by the thread.
 This is a pointer to a @code{struct thread_sched_info}.
 @end deftp
 
+@deftypefun kern_return_t thread_set_name (@w{thread_t @var{target_thread}}, @w{const_kernel_debug_name_t @var{name}})
+
+The function @code{thread_set_name} sets the name of @var{target_thread}
+to @var{name}, truncating it if necessary.
+
+This is a debugging aid.  The name is used in diagnostic messages
+printed by the kernel.
+
+The function returns @code{KERN_SUCCESS} if the call succeeded.
+@end deftypefun
+
 
 @node Thread Settings
 @subsection Thread Settings
