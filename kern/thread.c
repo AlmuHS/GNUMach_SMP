@@ -46,6 +46,7 @@
 #include <kern/counters.h>
 #include <kern/debug.h>
 #include <kern/eventcount.h>
+#include <kern/gnumach.server.h>
 #include <kern/ipc_mig.h>
 #include <kern/ipc_tt.h>
 #include <kern/mach_debug.server.h>
@@ -551,6 +552,10 @@ kern_return_t thread_create(
 #endif	/* MACH_PCSAMPLE */
 
 	new_thread->pc_sample.buffer = 0;
+
+	/* Inherit the task name as the thread name. */
+	memcpy (new_thread->name, parent_task->name, THREAD_NAME_SIZE);
+
 	/*
 	 *	Add the thread to the task`s list of threads.
 	 *	The new thread holds another reference to the task.
@@ -2624,3 +2629,18 @@ thread_stats(void)
 	printf("%d using rpc_reply.\n", rpcreply);
 }
 #endif	/* MACH_DEBUG */
+
+/*
+ *	thread_set_name
+ *
+ *	Set the name of thread THREAD to NAME.
+ */
+kern_return_t
+thread_set_name(
+	thread_t	thread,
+	const_kernel_debug_name_t	name)
+{
+	strncpy(thread->name, name, sizeof thread->name - 1);
+	thread->name[sizeof thread->name - 1] = '\0';
+	return KERN_SUCCESS;
+}

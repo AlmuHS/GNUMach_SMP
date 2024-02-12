@@ -222,10 +222,11 @@ db_print_thread(
 	    }
 	} else {
 	    if (flag & OPTION_INDENT)
-		db_printf("            %3d (%0*X) ", thread_id,
-			  2*sizeof(vm_offset_t), thread);
-	    else
-		db_printf("(%0*X) ", 2*sizeof(vm_offset_t), thread);
+		db_printf("            %3d ", thread_id);
+	    if (thread->name[0] &&
+		strncmp (thread->name, thread->task->name, THREAD_NAME_SIZE))
+		db_printf("%s ", thread->name);
+	    db_printf("(%0*X) ", 2*sizeof(vm_offset_t), thread);
 	    char status[8];
 	    db_printf("%s", db_thread_stat(thread, status));
 	    if (thread->state & TH_SWAPPED) {

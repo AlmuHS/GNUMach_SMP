@@ -207,3 +207,11 @@ routine vm_pages_phys(
 		vaddr		: vm_address_t;
 		size		: vm_size_t;
 	out	pages		: rpc_phys_addr_array_t);
+
+/*
+ *	Set the name of thread THREAD to NAME.  This is a debugging aid.
+ *	NAME will be used in error messages printed by the kernel.
+ */
+simpleroutine thread_set_name(
+		thread	: thread_t;
+		name	: kernel_debug_name_t);
