@@ -245,6 +245,7 @@ void pset_add_processor(
 	queue_enter(&pset->processors, processor, processor_t, processors);
 	processor->processor_set = pset;
 	pset->processor_count++;
+	pset->empty = FALSE;
 	quantum_set(pset);
 }
 
