@@ -64,6 +64,10 @@
 #define simple_lock_nocheck	_simple_lock
 #define simple_lock_try_nocheck	_simple_lock_try
 #define simple_unlock_nocheck	_simple_unlock
+#else
+#define simple_lock_nocheck	simple_lock
+#define simple_lock_try_nocheck	simple_lock_try
+#define simple_unlock_nocheck	simple_unlock
 #endif
 #endif
 
@@ -261,6 +265,8 @@ extern unsigned long in_interrupt[NCPUS];
 #endif	/* MACH_LDEBUG */
 #define have_lock(l)		(have_read_lock(l) || have_write_lock(l))
 
+/* These are defined elsewhere with lock monitoring */
+#if MACH_LOCK_MON == 0
 #define simple_lock(l)		do { \
 	lock_check_no_interrupts(); \
 	simple_lock_nocheck(l); \
@@ -273,6 +279,7 @@ extern unsigned long in_interrupt[NCPUS];
 	lock_check_no_interrupts(); \
 	simple_unlock_nocheck(l); \
 } while (0)
+#endif
 
 /* _irq variants */
 
