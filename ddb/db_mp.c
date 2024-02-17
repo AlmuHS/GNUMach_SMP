@@ -48,7 +48,8 @@
  * multiprocessors.
  */
 
-def_simple_lock_data(static,db_lock)	/* lock to enter debugger */
+int	db_spl;
+def_simple_lock_irq_data(static,db_lock) /* lock to enter debugger */
 volatile int	db_cpu = -1;		/* CPU currently in debugger */
 					/* -1 if none */
 int	db_active[NCPUS] = { 0 };	/* count recursive entries
@@ -78,7 +79,7 @@ db_enter(void)
 	/*
 	 * Wait for other CPUS to leave debugger.
 	 */
-	lock_db();
+	db_spl = lock_db();
 
 	if (db_enter_debug)
 	    db_printf(
@@ -132,7 +133,7 @@ db_leave(void)
 	/*
 	 * Unlock debugger.
 	 */
-	unlock_db();
+	unlock_db(db_spl);
 
 	/*
 	 * Drop recursive entry count.
@@ -231,12 +232,12 @@ db_on(int cpu)
 	 * Give debugger to that CPU
 	 */
 	db_cpu = cpu;
-	unlock_db();
+	unlock_db(db_spl);
 
 	/*
 	 * Wait for it to come back again
 	 */
-	lock_db();
+	db_spl = lock_db();
 
 	/*
 	 * Restore ddb globals
@@ -268,10 +269,11 @@ remote_db_enter(void)
  * As long as db_cpu is not -1 or cpu_number(), we know that debugger
  * is active on another cpu.
  */
-void
+int
 lock_db(void)
 {
 	int	my_cpu = cpu_number();
+	int	s;
 
 	for (;;) {
 #if	CONSOLE_ON_MASTER
@@ -284,25 +286,27 @@ lock_db(void)
 
 #if	CONSOLE_ON_MASTER
 	    if (my_cpu == master_cpu) {
-		if (!simple_lock_try(&db_lock))
+		if (!(s = simple_lock_try_irq(&db_lock)))
 		    continue;
 	    }
 	    else {
-		simple_lock(&db_lock);
+		s = simple_lock_irq(&db_lock);
 	    }
 #else /* CONSOLE_ON_MASTER */
-	    simple_lock(&db_lock);
+	    s = simple_lock_irq(&db_lock);
 #endif /* CONSOLE_ON_MASTER */
 	    if (db_cpu == -1 || db_cpu == my_cpu)
 		break;
-	    simple_unlock(&db_lock);
+	    unlock_db(s);
 	}
+
+	return s;
 }
 
 void
-unlock_db(void)
+unlock_db(int s)
 {
-	simple_unlock(&db_lock);
+	simple_unlock_irq(s, &db_lock);
 }
 
 #if CONSOLE_ON_MASTER

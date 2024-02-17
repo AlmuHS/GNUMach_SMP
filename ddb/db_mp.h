@@ -20,8 +20,8 @@
 #define _DDB_DB_MP_H_
 
 void	remote_db(void);
-void	lock_db(void);
-void	unlock_db(void);
+int	lock_db(void);
+void	unlock_db(int);
 void	db_on(int i);
 
 #if CONSOLE_ON_MASTER
