@@ -782,8 +782,7 @@ ENTRY(all_intrs)
 #endif
 
 #ifdef MACH_LDEBUG
-	CPU_NUMBER(%ecx)
-	incl	CX(EXT(in_interrupt),%ecx)
+	incl	CX(EXT(in_interrupt),%edx)
 #endif
 
 	call	EXT(interrupt)		/* call generic interrupt routine */
