@@ -1965,7 +1965,7 @@ void do_thread_scan(void)
 #if	MACH_HOST
 	    simple_lock(&all_psets_lock);
 	    queue_iterate(&all_psets, pset, processor_set_t, all_psets) {
-		if (restart_needed = do_runq_scan(&pset->runq))
+		if ((restart_needed = do_runq_scan(&pset->runq)))
 			break;
 	    }
 	    simple_unlock(&all_psets_lock);
