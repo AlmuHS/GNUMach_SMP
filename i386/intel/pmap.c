@@ -3103,6 +3103,9 @@ void    signal_cpus(
 	}
 }
 
+/*
+ *	This is called at splvm
+ */
 void process_pmap_updates(pmap_t my_pmap)
 {
 	int			my_cpu = cpu_number();
@@ -3111,7 +3114,7 @@ void process_pmap_updates(pmap_t my_pmap)
 	pmap_t			pmap;
 
 	update_list_p = &cpu_update_list[my_cpu];
-	simple_lock(&update_list_p->lock);
+	simple_lock_nocheck(&update_list_p->lock);
 
 	for (j = 0; j < update_list_p->count; j++) {
 	    pmap = update_list_p->item[j].pmap;
@@ -3125,7 +3128,7 @@ void process_pmap_updates(pmap_t my_pmap)
 	}
 	update_list_p->count = 0;
 	cpu_update_needed[my_cpu] = FALSE;
-	simple_unlock(&update_list_p->lock);
+	simple_unlock_nocheck(&update_list_p->lock);
 }
 
 /*
