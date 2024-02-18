@@ -59,6 +59,7 @@ extern spl_t	(splvm)(void);
 extern spl_t	(spl7)(void);
 extern spl_t	(splclock)(void);
 extern spl_t	(splsched)(void);
+#define assert_splsched() assert(splsched() == SPL7)
 extern spl_t	(splhigh)(void);
 
 extern spl_t	(splx)(spl_t n);

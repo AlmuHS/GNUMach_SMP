@@ -399,11 +399,11 @@ extern void		thread_unfreeze(
 /* Shall be taken at splsched only */
 #ifdef MACH_LDEBUG
 #define thread_lock(th)		do { \
-	assert(splsched() == SPL7); \
+	assert_splsched(); \
 	simple_lock_nocheck(&(th)->lock); \
 } while (0)
 #define thread_unlock(th)	do { \
-	assert(splsched() == SPL7); \
+	assert_splsched(); \
 	simple_unlock_nocheck(&(th)->lock); \
 } while (0)
 #else
