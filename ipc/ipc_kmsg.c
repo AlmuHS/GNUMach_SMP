@@ -1321,7 +1321,7 @@ ipc_kmsg_copyin_body(
 		mach_msg_type_number_t number;
 		boolean_t is_inline, longform, dealloc, is_port;
 		vm_offset_t data;
-		uint64_t length;
+		vm_size_t length;
 		kern_return_t kr;
 
 		type = (mach_msg_type_long_t *) saddr;
@@ -1355,7 +1355,8 @@ ipc_kmsg_copyin_body(
 
 		is_port = MACH_MSG_TYPE_PORT_ANY(name);
 
-		if ((is_port && (size != PORT_T_SIZE_IN_BITS)) ||
+		if ((is_port && !is_inline && (size != PORT_NAME_T_SIZE_IN_BITS)) ||
+		    (is_port && is_inline && (size != PORT_T_SIZE_IN_BITS)) ||
 #ifndef __x86_64__
 		    (longform && ((type->msgtl_header.msgt_name != 0) ||
 				  (type->msgtl_header.msgt_size != 0) ||
@@ -1396,11 +1397,22 @@ ipc_kmsg_copyin_body(
 			if (length == 0)
 				data = 0;
 			else if (is_port) {
+				const vm_size_t user_length = length;
+				/*
+				 * In 64 bit architectures, out of line port names are
+				 * represented as an array of mach_port_name_t which are
+				 * smaller than mach_port_t.
+				 */
+				if (sizeof(mach_port_name_t) != sizeof(mach_port_t)) {
+					length = sizeof(mach_port_t) * number;
+					type->msgtl_size = sizeof(mach_port_t) * 8;
+				}
+
 				data = kalloc(length);
 				if (data == 0)
 					goto invalid_memory;
 
-				if (sizeof(mach_port_name_t) != sizeof(mach_port_t))
+				if (user_length != length)
 				{
 					mach_port_name_t *src = (mach_port_name_t*)addr;
 					mach_port_t *dst = (mach_port_t*)data;
@@ -1416,7 +1428,7 @@ ipc_kmsg_copyin_body(
 					goto invalid_memory;
 				}
 				if (dealloc &&
-				    (vm_deallocate(map, addr, length) != KERN_SUCCESS)) {
+				    (vm_deallocate(map, addr, user_length) != KERN_SUCCESS)) {
 					kfree(data, length);
 					goto invalid_memory;
 				}
@@ -2372,7 +2384,7 @@ ipc_kmsg_copyout_body(
 		mach_msg_type_size_t size;
 		mach_msg_type_number_t number;
 		boolean_t is_inline, longform, is_port;
-		uint64_t length;
+		vm_size_t length;
 		vm_offset_t addr;
 
 		type = (mach_msg_type_long_t *) saddr;
@@ -2406,18 +2418,28 @@ ipc_kmsg_copyout_body(
 			ipc_object_t *objects;
 			mach_msg_type_number_t i;
 
-			if (!is_inline && (length != 0)) {
-				/* first allocate memory in the map */
-				uint64_t allocated = length;
+			if (!is_inline) {
+				if (length != 0) {
+					vm_size_t user_length = length;
 
-				_Static_assert(sizeof(mach_port_name_t) <= sizeof(mach_port_t),
-						"Size of mach_port_t should be equal or larger than mach_port_name_t.");
-				allocated -= (sizeof(mach_port_t) - sizeof(mach_port_name_t)) * number;
+					if (sizeof(mach_port_name_t) != sizeof(mach_port_t)) {
+						user_length = sizeof(mach_port_name_t) * number;
+					}
 
-				kr = vm_allocate(map, &addr, allocated, TRUE);
-				if (kr != KERN_SUCCESS) {
-					ipc_kmsg_clean_body(taddr, saddr);
-					goto vm_copyout_failure;
+					/* first allocate memory in the map */
+					kr = vm_allocate(map, &addr, user_length, TRUE);
+					if (kr != KERN_SUCCESS) {
+						ipc_kmsg_clean_body(taddr, saddr);
+						goto vm_copyout_failure;
+					}
+				}
+
+				if (sizeof(mach_port_name_t) != sizeof(mach_port_t)) {
+					/* Out of line ports are always returned as mach_port_name_t.
+					 * Note: we have to do this after ipc_kmsg_clean_body, otherwise
+					 * the cleanup function will not work correctly.
+					 */
+					type->msgtl_size = sizeof(mach_port_name_t) * 8;
 				}
 			}
 
