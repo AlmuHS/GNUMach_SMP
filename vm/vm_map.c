@@ -4607,8 +4607,9 @@ vm_map_t vm_map_fork(vm_map_t old_map)
  *	In order to later verify this lookup, a "version"
  *	is returned.
  *
- *	The map should not be locked; it will not be
- *	locked on exit.  In order to guarantee the
+ *	The map should not be locked; it will be
+ *	unlocked on exit unless keep_map_locked is set and
+ *	the lookup succeeds.  In order to guarantee the
  *	existence of the returned object, it is returned
  *	locked.
  *
@@ -4621,6 +4622,7 @@ kern_return_t vm_map_lookup(
 	vm_map_t		*var_map,	/* IN/OUT */
 	vm_offset_t		vaddr,
 	vm_prot_t		fault_type,
+	boolean_t		keep_map_locked,
 
 	vm_map_version_t	*out_version,	/* OUT */
 	vm_object_t		*object,	/* OUT */
@@ -4642,7 +4644,8 @@ kern_return_t vm_map_lookup(
 
 #define	RETURN(why) \
 		{ \
-		vm_map_unlock_read(map); \
+		if (!(keep_map_locked && (why == KERN_SUCCESS))) \
+		  vm_map_unlock_read(map); \
 		return(why); \
 		}
 

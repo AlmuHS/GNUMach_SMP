@@ -134,7 +134,7 @@ probe_address (vm_map_t map, vm_offset_t addr,
   vm_prot_t rprot;
   boolean_t wired_p;
 
-  if (vm_map_lookup (&map, addr, prot, &ver,
+  if (vm_map_lookup (&map, addr, prot, FALSE, &ver,
       &vap->obj, &vap->off, &rprot, &wired_p) != KERN_SUCCESS)
     return (-1);
   else if ((rprot & prot) != prot)

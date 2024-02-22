@@ -412,7 +412,7 @@ extern kern_return_t	vm_map_inherit(vm_map_t, vm_offset_t, vm_offset_t,
 				       vm_inherit_t);
 
 /* Look up an address */
-extern kern_return_t	vm_map_lookup(vm_map_t *, vm_offset_t, vm_prot_t,
+extern kern_return_t	vm_map_lookup(vm_map_t *, vm_offset_t, vm_prot_t, boolean_t,
 				      vm_map_version_t *, vm_object_t *,
 				      vm_offset_t *, vm_prot_t *, boolean_t *);
 /* Find a map entry */

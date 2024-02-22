@@ -1213,7 +1213,7 @@ kern_return_t vm_fault(
 	 *	it to begin the search.
 	 */
 
-	if ((kr = vm_map_lookup(&map, vaddr, fault_type, &version,
+	if ((kr = vm_map_lookup(&map, vaddr, fault_type, FALSE, &version,
 				&object, &offset,
 				&prot, &wired)) != KERN_SUCCESS) {
 		goto done;
@@ -1375,7 +1375,7 @@ kern_return_t vm_fault(
 		 *	take another fault.
 		 */
 		kr = vm_map_lookup(&map, vaddr,
-				   fault_type & ~VM_PROT_WRITE, &version,
+				   fault_type & ~VM_PROT_WRITE, FALSE, &version,
 				   &retry_object, &retry_offset, &retry_prot,
 				   &wired);
 

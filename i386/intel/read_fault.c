@@ -61,7 +61,7 @@ intel_read_fault(
 	 *	Find the backing store object and offset into it
 	 *	to begin search.
 	 */
-	result = vm_map_lookup(&map, vaddr, VM_PROT_READ, &version,
+	result = vm_map_lookup(&map, vaddr, VM_PROT_READ, FALSE, &version,
 			&object, &offset, &prot, &wired);
 	if (result != KERN_SUCCESS)
 	    return (result);
@@ -133,7 +133,7 @@ intel_read_fault(
 	    vm_offset_t		retry_offset;
 	    vm_prot_t		retry_prot;
 
-	    result = vm_map_lookup(&map, vaddr, VM_PROT_READ, &version,
+	    result = vm_map_lookup(&map, vaddr, VM_PROT_READ, FALSE, &version,
 				&retry_object, &retry_offset, &retry_prot,
 				&wired);
 	    if (result != KERN_SUCCESS) {
