@@ -551,10 +551,12 @@ void vm_map_deallocate(vm_map_t map)
 	c = --map->ref_count;
 	simple_unlock(&map->ref_lock);
 
+	/* Check the refcount */
 	if (c > 0) {
 		return;
 	}
 
+	/* If no more references, call vm_map_delete without locking the map */
 	projected_buffer_collect(map);
 	(void) vm_map_delete(map, map->min_offset, map->max_offset);
 
@@ -2027,6 +2029,11 @@ kern_return_t vm_map_delete(
 
 	if (map->pmap == kernel_pmap && (start < kernel_virtual_start || end > kernel_virtual_end))
 		panic("vm_map_delete(%lx-%lx) falls in physical memory area!\n", (unsigned long) start, (unsigned long) end);
+
+	/*
+	 *	Must be called with map lock taken unless refcount is zero
+	 */
+	assert((map->ref_count > 0 && have_lock(map->lock)) || (map->ref_count == 0));
 
 	/*
 	 *	Find the start of the region, and clip it
