@@ -76,7 +76,6 @@ void pset_sys_bootstrap(void)
 	int	i;
 
 	pset_init(&default_pset);
-	default_pset.empty = FALSE;
 	for (i = 0; i < NCPUS; i++) {
 		/*
 		 *	Initialize processor data structures.
@@ -90,7 +89,6 @@ void pset_sys_bootstrap(void)
 	queue_enter(&all_psets, &default_pset, processor_set_t, all_psets);
 	all_psets_count = 1;
 	default_pset.active = TRUE;
-	default_pset.empty = FALSE;
 
 	/*
 	 *	Note: the default_pset has a max_priority of BASEPRI_USER.
