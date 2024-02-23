@@ -176,8 +176,7 @@ processor_request_action(
      *	get at processor state.
      */
     pset = processor->processor_set;
-    assert_splsched();
-    simple_lock_nocheck(&pset->idle_lock);
+    pset_idle_lock();
 
     /*
      *	If the processor is dispatching, let it finish - it will set its
@@ -229,8 +228,7 @@ processor_request_action(
 	    panic("processor_request_action: bad state");
     }
     simple_unlock(&action_lock);
-    assert_splsched();
-    simple_unlock_nocheck(&pset->idle_lock);
+    pset_idle_unlock();
 
     thread_wakeup((event_t)&action_queue);
 }

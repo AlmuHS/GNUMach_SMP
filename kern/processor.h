@@ -89,6 +89,20 @@ extern struct processor_set	default_pset;
 extern struct processor_set	*slave_pset;
 #endif
 
+#ifdef MACH_LDEBUG
+#define pset_idle_lock()	do { \
+	assert_splsched(); \
+	simple_lock_nocheck(&pset->idle_lock); \
+} while (0)
+#define pset_idle_unlock()	do { \
+	assert_splsched(); \
+	simple_unlock_nocheck(&pset->idle_lock); \
+} while (0)
+#else
+#define pset_idle_lock()	simple_lock_nocheck(&pset->idle_lock)
+#define pset_idle_unlock()	simple_unlock_nocheck(&pset->idle_lock)
+#endif
+
 struct processor {
 	struct run_queue runq;		/* local runq for this processor */
 		/* XXX want to do this round robin eventually */

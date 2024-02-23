@@ -141,19 +141,9 @@ queue_head_t		wait_queue[NUMQUEUES];
 	assert_splsched(); \
 	simple_unlock_nocheck(wl); \
 } while (0)
-#define pset_idle_lock()	do { \
-	assert_splsched(); \
-	simple_lock_nocheck(&pset->idle_lock); \
-} while (0)
-#define pset_idle_unlock()	do { \
-	assert_splsched(); \
-	simple_unlock_nocheck(&pset->idle_lock); \
-} while (0)
 #else
 #define waitq_lock(wl)		simple_lock_nocheck(wl)
 #define waitq_unlock(wl)	simple_unlock_nocheck(wl)
-#define pset_idle_lock()	simple_lock_nocheck(&pset->idle_lock)
-#define pset_idle_unlock()	simple_unlock_nocheck(&pset->idle_lock)
 #endif
 
 
