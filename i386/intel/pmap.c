@@ -3114,6 +3114,7 @@ void process_pmap_updates(pmap_t my_pmap)
 	pmap_t			pmap;
 
 	update_list_p = &cpu_update_list[my_cpu];
+	assert_splvm();
 	simple_lock_nocheck(&update_list_p->lock);
 
 	for (j = 0; j < update_list_p->count; j++) {
