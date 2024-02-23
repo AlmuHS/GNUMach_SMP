@@ -137,14 +137,14 @@ void thread_quantum_update(
 		if ((quantum != myprocessor->last_quantum) &&
 		    (pset->processor_count > 1)) {
 			myprocessor->last_quantum = quantum;
-			simple_lock(&pset->quantum_adj_lock);
+			s = simple_lock_irq(&pset->quantum_adj_lock);
 			quantum = min_quantum + (pset->quantum_adj_index *
 				(quantum - min_quantum)) / 
 					(pset->processor_count - 1);
 			if (++(pset->quantum_adj_index) >=
 			    pset->processor_count)
 				pset->quantum_adj_index = 0;
-			simple_unlock(&pset->quantum_adj_lock);
+			simple_unlock_irq(s, &pset->quantum_adj_lock);
 		}
 #endif	/* NCPUS > 1 */
 		if (myprocessor->quantum <= 0) {

@@ -77,7 +77,7 @@ struct processor_set {
 	int			set_quantum;	/* current default quantum */
 #if	NCPUS > 1
 	int			quantum_adj_index; /* runtime quantum adj. */
-	decl_simple_lock_data(,	quantum_adj_lock)  /* lock for above */
+	decl_simple_lock_irq_data(, quantum_adj_lock)  /* lock for above */
 	int			machine_quantum[NCPUS+1]; /* ditto */
 #endif	/* NCPUS > 1 */
 	long			mach_factor;	/* mach_factor */

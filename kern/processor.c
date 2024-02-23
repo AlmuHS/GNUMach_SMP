@@ -167,7 +167,7 @@ void pset_init(
 	pset->set_quantum = min_quantum;
 #if	NCPUS > 1
 	pset->quantum_adj_index = 0;
-	simple_lock_init(&pset->quantum_adj_lock);
+	simple_lock_init_irq(&pset->quantum_adj_lock);
 
 	for (i = 0; i <= NCPUS; i++) {
 	    pset->machine_quantum[i] = min_quantum;
