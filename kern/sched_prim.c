@@ -141,9 +141,19 @@ queue_head_t		wait_queue[NUMQUEUES];
 	assert_splsched(); \
 	simple_unlock_nocheck(wl); \
 } while (0)
+#define pset_idle_lock()	do { \
+	assert_splsched(); \
+	simple_lock_nocheck(&pset->idle_lock); \
+} while (0)
+#define pset_idle_unlock()	do { \
+	assert_splsched(); \
+	simple_unlock_nocheck(&pset->idle_lock); \
+} while (0)
 #else
 #define waitq_lock(wl)		simple_lock_nocheck(wl)
 #define waitq_unlock(wl)	simple_unlock_nocheck(wl)
+#define pset_idle_lock()	simple_lock_nocheck(&pset->idle_lock)
+#define pset_idle_unlock()	simple_unlock_nocheck(&pset->idle_lock)
 #endif
 
 
@@ -1269,7 +1279,7 @@ void thread_setrun(
 	    processor = th->last_processor;
 	    if (processor->state == PROCESSOR_IDLE) {
 		    processor_lock(processor);
-		    simple_lock(&pset->idle_lock);
+		    pset_idle_lock();
 		    if ((processor->state == PROCESSOR_IDLE)
 #if	MACH_HOST
 			&& (processor->processor_set == pset)
@@ -1280,19 +1290,19 @@ void thread_setrun(
 			    pset->idle_count--;
 			    processor->next_thread = th;
 			    processor->state = PROCESSOR_DISPATCHING;
-			    simple_unlock(&pset->idle_lock);
+			    pset_idle_unlock();
 			    processor_unlock(processor);
 			    if (processor != current_processor())
 				cause_ast_check(processor);
 		            return;
 		    }
-		    simple_unlock(&pset->idle_lock);
+		    pset_idle_unlock();
 		    processor_unlock(processor);
 	    }
 #endif	/* HW_FOOTPRINT */
 
 	    if (pset->idle_count > 0) {
-		simple_lock(&pset->idle_lock);
+		pset_idle_lock();
 		if (pset->idle_count > 0) {
 		    processor = (processor_t) queue_first(&pset->idle_queue);
 		    queue_remove(&(pset->idle_queue), processor, processor_t,
@@ -1300,12 +1310,12 @@ void thread_setrun(
 		    pset->idle_count--;
 		    processor->next_thread = th;
 		    processor->state = PROCESSOR_DISPATCHING;
-		    simple_unlock(&pset->idle_lock);
+		    pset_idle_unlock();
 		    if (processor != current_processor())
 			cause_ast_check(processor);
 		    return;
 		}
-		simple_unlock(&pset->idle_lock);
+		pset_idle_unlock();
 	    }
 	    rq = &(pset->runq);
 	    run_queue_enqueue(rq,th);
@@ -1332,20 +1342,20 @@ void thread_setrun(
 	    if (processor->state == PROCESSOR_IDLE) {
 		processor_lock(processor);
 		pset = processor->processor_set;
-		simple_lock(&pset->idle_lock);
+		pset_idle_lock();
 		if (processor->state == PROCESSOR_IDLE) {
 		    queue_remove(&pset->idle_queue, processor,
 			processor_t, processor_queue);
 		    pset->idle_count--;
 		    processor->next_thread = th;
 		    processor->state = PROCESSOR_DISPATCHING;
-		    simple_unlock(&pset->idle_lock);
+		    pset_idle_unlock();
 		    processor_unlock(processor);
 		    if (processor != current_processor())
 			cause_ast_check(processor);
 		    return;
 		}
-		simple_unlock(&pset->idle_lock);
+		pset_idle_unlock();
 		processor_unlock(processor);
 	    }
 	    rq = &(processor->runq);
@@ -1593,7 +1603,7 @@ thread_t choose_pset_thread(
 	 *	was running.  If it was in an assignment or shutdown,
 	 *	leave it alone.  Return its idle thread.
 	 */
-	simple_lock(&pset->idle_lock);
+	pset_idle_lock();
 	if (myprocessor->state == PROCESSOR_RUNNING) {
 	    myprocessor->state = PROCESSOR_IDLE;
 	    /*
@@ -1611,7 +1621,7 @@ thread_t choose_pset_thread(
 
 	    pset->idle_count++;
 	}
-	simple_unlock(&pset->idle_lock);
+	pset_idle_unlock();
 
 	return myprocessor->idle_thread;
 }
@@ -1736,12 +1746,12 @@ retry:
 			processor_set_t pset;
 
 			pset = myprocessor->processor_set;
-			simple_lock(&pset->idle_lock);
+			pset_idle_lock();
 			if (myprocessor->state != PROCESSOR_IDLE) {
 				/*
 				 *	Something happened, try again.
 				 */
-				simple_unlock(&pset->idle_lock);
+				pset_idle_unlock();
 				goto retry;
 			}
 			/*
@@ -1753,7 +1763,7 @@ retry:
 			queue_remove(&pset->idle_queue, myprocessor,
 				processor_t, processor_queue);
 			myprocessor->state = PROCESSOR_RUNNING;
-			simple_unlock(&pset->idle_lock);
+			pset_idle_unlock();
 			counter(c_idle_thread_block++);
 			thread_block(idle_thread_continue);
 		}
