@@ -1165,6 +1165,9 @@ task_set_name(
 	task_t			task,
 	const_kernel_debug_name_t	name)
 {
+	if (task == TASK_NULL)
+		return KERN_INVALID_ARGUMENT;
+
 	strncpy(task->name, name, sizeof task->name - 1);
 	task->name[sizeof task->name - 1] = '\0';
 	return KERN_SUCCESS;
@@ -1181,6 +1184,9 @@ task_set_essential(
 	task_t			task,
 	boolean_t		essential)
 {
+	if (task == TASK_NULL)
+		return KERN_INVALID_ARGUMENT;
+
 	task->essential = !!essential;
 	return KERN_SUCCESS;
 }

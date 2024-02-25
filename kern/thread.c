@@ -2640,6 +2640,9 @@ thread_set_name(
 	thread_t	thread,
 	const_kernel_debug_name_t	name)
 {
+	if (thread == THREAD_NULL)
+		return KERN_INVALID_ARGUMENT;
+
 	strncpy(thread->name, name, sizeof thread->name - 1);
 	thread->name[sizeof thread->name - 1] = '\0';
 	return KERN_SUCCESS;
