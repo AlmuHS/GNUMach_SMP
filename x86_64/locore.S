@@ -1241,6 +1241,10 @@ syscall_native:
 	movq	R_UESP(%rbx),%rbp	/* get user stack pointer */
 	addq	$4,%rbp			/* Skip user return address */
 
+	movq	$VM_MAX_ADDRESS, %rcx
+	cmpq	%rcx,%rbp		/* Check segment limit by hand */
+	jae	mach_call_addr_push
+
 #define PARAM(reg,ereg) \
 	xorq	%reg,%reg		;\
 	RECOVER(mach_call_addr_push) \
@@ -1323,6 +1327,9 @@ syscall_emul:
 /* XXX what about write-protected pages? */
 	movq	R_UESP(%rbx),%rdi	/* get user stack pointer */
 	subq	$16,%rdi		/* push space for new arguments */
+	movq	$VM_MAX_ADDRESS, %rax
+	cmpq	%rax,%rdi		/* Check segment limit by hand */
+	jae	syscall_addr
 	movq	R_EFLAGS(%rbx),%rax	/* move flags */
 	RECOVER(syscall_addr)
 	movl	%eax,%fs:0(%rdi)	/* to user stack */
@@ -1437,6 +1444,10 @@ _syscall64_args_stack:
 
 	lea	(%r11,%r10,8),%r11	/* point past last argument */
 
+	movq	$VM_MAX_ADDRESS, %r12
+	cmpq	%r12,%r11		/* Check segment limit by hand */
+	jae	_syscall64_addr_push
+
 0:	subq	$8,%r11
 	RECOVER(_syscall64_addr_push)
 	mov	(%r11),%r12
@@ -1545,6 +1556,9 @@ ENTRY(discover_x86_cpu_type)
 
 ENTRY(copyin)
 	xchgq   %rsi,%rdi		/* Get user source and kernel destination */
+	movq	$VM_MAX_ADDRESS, %rcx
+	cmpq	%rcx,%rsi		/* Check segment limit by hand */
+	jae	copyin_fail
 
 copyin_remainder:
 	/*cld*/				/* count up: default mode in all GCC code */
@@ -1572,6 +1586,9 @@ bogus:
 
 ENTRY(copyout)
 	xchgq   %rsi,%rdi		/* Get user source and kernel destination */
+	movq	$VM_MAX_ADDRESS, %rcx
+	cmpq	%rcx,%rdi		/* Check segment limit by hand */
+	jae	copyin_fail
 
 copyout_remainder:
 	movq	%rdx,%rax		/* use count */
@@ -1604,6 +1621,9 @@ ENTRY(inst_fetch)
 	movq	S_ARG1, %rax		/* get segment */
 	movw	%ax,%fs			/* into FS */
 	movq	S_ARG0, %rax		/* get offset */
+	movq	$VM_MAX_ADDRESS, %rcx
+	cmpq	%rcx,%rax		/* Check segment limit by hand */
+	jae	_inst_fetch_fault
 	RETRY(EXT(inst_fetch))		/* re-load FS on retry */
 	RECOVER(_inst_fetch_fault)
 	movzbq	%fs:(%rax),%rax		/* load instruction byte */
