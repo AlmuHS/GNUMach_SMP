@@ -1231,12 +1231,16 @@ void pmap_map_mfn(void *_addr, unsigned long mfn) {
 #ifdef	MACH_PV_PAGETABLES
 		if (!hyp_mmu_update_pte(kv_to_ma(pdp),
 			pa_to_pte(kv_to_ma(ptp)) | INTEL_PTE_VALID
+#ifndef __x86_64__
 					      | INTEL_PTE_USER
+#endif
 					      | INTEL_PTE_WRITE))
 			panic("%s:%d could not set pde %llx(%lx) to %lx(%lx)\n",__FILE__,__LINE__,kvtophys((vm_offset_t)pdp),(vm_offset_t) kv_to_ma(pdp), ptp, (vm_offset_t) pa_to_ma(ptp));
 #else	/* MACH_PV_PAGETABLES */
 		*pdp = pa_to_pte(kvtophys(ptp)) | INTEL_PTE_VALID
+#ifndef __x86_64__
 						| INTEL_PTE_USER
+#endif
 						| INTEL_PTE_WRITE;
 #endif	/* MACH_PV_PAGETABLES */
 		pte = pmap_pte(kernel_pmap, addr);
@@ -1375,9 +1379,6 @@ pmap_t pmap_create(vm_size_t size)
 				  | INTEL_PTE_VALID
 #if (defined(__x86_64__) && !defined(MACH_HYP)) || defined(MACH_PV_PAGETABLES)
 				  | INTEL_PTE_WRITE
-#ifdef __x86_64__
-				  | INTEL_PTE_USER
-#endif /* __x86_64__ */
 #endif
 				  );
 			}
@@ -2078,12 +2079,12 @@ static inline pt_entry_t* pmap_expand_level(pmap_t pmap, vm_offset_t v, int spl,
 			panic("couldn't pin page %lx(%lx)\n",ptp,(vm_offset_t) kv_to_ma(ptp));
 		if (!hyp_mmu_update_pte(pa_to_ma(kvtophys((vm_offset_t)pdp)),
 			pa_to_pte(pa_to_ma(kvtophys(ptp))) | INTEL_PTE_VALID
-					      | INTEL_PTE_USER
+					      | (pmap != kernel_pmap ? INTEL_PTE_USER : 0)
 					      | INTEL_PTE_WRITE))
 			panic("%s:%d could not set pde %p(%llx,%lx) to %lx(%llx,%lx) %lx\n",__FILE__,__LINE__, pdp, kvtophys((vm_offset_t)pdp), (vm_offset_t) pa_to_ma(kvtophys((vm_offset_t)pdp)), ptp, kvtophys(ptp), (vm_offset_t) pa_to_ma(kvtophys(ptp)), (vm_offset_t) pa_to_pte(kv_to_ma(ptp)));
 #else	/* MACH_PV_PAGETABLES */
 		*pdp = pa_to_pte(kvtophys(ptp)) | INTEL_PTE_VALID
-					        | INTEL_PTE_USER
+					        | (pmap != kernel_pmap ? INTEL_PTE_USER : 0)
 					        | INTEL_PTE_WRITE;
 #endif	/* MACH_PV_PAGETABLES */
 		pdp++;	/* Note: This is safe b/c we stay in one page.  */
