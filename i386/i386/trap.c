@@ -291,6 +291,9 @@ dump_ss(regs);
 		    return;
 		}
 
+		/* Fall-through */
+	    case T_GENERAL_PROTECTION:
+
 		/*
 		 * If there is a failure recovery address
 		 * for this fault, go there.
