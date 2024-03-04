@@ -692,6 +692,9 @@ kern_return_t vm_allocate_contiguous(
 		return kr;
 	}
 
+	for (i = 0; i < vm_page_atop(size); i++)
+		vm_page_unwire(&pages[i]);
+
 	*result_vaddr = vaddr;
 	*result_paddr = pages->phys_addr;
 
