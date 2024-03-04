@@ -35,6 +35,8 @@ static const char *version =
 #include <sys/types.h>
 #include <mach/mach_types.h>
 #include <mach/vm_param.h>
+#include <mach/message.h>
+#include <vm/vm_map.h>
 
 #define MACH_INCLUDE
 #include <linux/sched.h>
