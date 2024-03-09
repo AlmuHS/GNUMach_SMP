@@ -34,7 +34,7 @@
 #include <mach/kern_return.h>
 #include <mach/mig_errors.h>
 #include <mach/vm_param.h>
-#include <machine/machspl.h>		/* spl definitions */
+#include <machine/spl.h>		/* spl definitions */
 
 #include <ipc/ipc_port.h>
 

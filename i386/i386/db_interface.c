@@ -59,7 +59,7 @@
 #include <ddb/db_watch.h>
 #include <ddb/db_mp.h>
 #include <machine/db_interface.h>
-#include <machine/machspl.h>
+#include <machine/spl.h>
 
 #if MACH_KDB
 /* Whether the kernel uses any debugging register.  */

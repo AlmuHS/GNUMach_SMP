@@ -36,7 +36,7 @@
 #include <i386/locore.h>
 #include <i386/model_dep.h>
 #include <intel/read_fault.h>
-#include <machine/machspl.h>	/* for spl_t */
+#include <machine/spl.h>	/* for spl_t */
 #include <machine/db_interface.h>
 
 #include <mach/exception.h>

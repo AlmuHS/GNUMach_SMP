@@ -35,7 +35,7 @@
 #include <kern/printf.h>
 #include <mach/machine.h>
 #include <machine/locore.h>
-#include <machine/machspl.h>	/* For def'n of splsched() */
+#include <machine/spl.h>	/* For def'n of splsched() */
 #include <machine/model_dep.h>
 #include <kern/ast.h>
 #include <kern/counters.h>

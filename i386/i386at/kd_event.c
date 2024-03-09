@@ -62,7 +62,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <device/ds_routines.h>
 #include <device/device_types.h>
 #include <device/io_req.h>
-#include <i386/machspl.h>
+#include <i386/spl.h>
 #include <i386/pio.h>
 #include <i386at/kd.h>
 #include <i386at/kd_queue.h>

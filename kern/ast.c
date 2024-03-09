@@ -46,7 +46,7 @@
 #include <kern/processor.h>
 #include <device/net_io.h>
 
-#include <machine/machspl.h>	/* for splsched */
+#include <machine/spl.h>	/* for splsched */
 
 #if	MACH_FIXPRI
 #include <mach/policy.h>

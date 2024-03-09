@@ -34,7 +34,7 @@
 #include <kern/task.h>
 
 #include <machine/db_machdep.h>
-#include <machine/machspl.h>
+#include <machine/spl.h>
 #include <machine/db_interface.h>
 #include <machine/db_trace.h>
 #include <machine/cpu_number.h>

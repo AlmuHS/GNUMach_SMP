@@ -43,7 +43,7 @@
 #include <mach/machine/fp_reg.h>
 
 #include <kern/debug.h>
-#include <machine/machspl.h>	/* spls */
+#include <machine/spl.h>	/* spls */
 #include <kern/printf.h>
 #include <kern/thread.h>
 #include <kern/slab.h>

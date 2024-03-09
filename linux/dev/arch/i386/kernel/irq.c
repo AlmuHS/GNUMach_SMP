@@ -49,7 +49,7 @@
 #include <asm/hardirq.h>
 
 #include <linux/dev/glue/glue.h>
-#include <machine/machspl.h>
+#include <machine/spl.h>
 
 #include <device/intr.h>
 

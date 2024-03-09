@@ -40,7 +40,7 @@
 
 #include <i386/ipl.h>
 #include <i386/pio.h>
-#include <i386/machspl.h>
+#include <i386/spl.h>
 #include <chips/busses.h>
 #include <i386at/autoconf.h>
 #include <i386at/com.h>

@@ -71,7 +71,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <kern/printf.h>
 #include <i386/ipl.h>
 #include <i386/pic.h>
-#include <i386/machspl.h>
+#include <i386/spl.h>
 #include <i386/pio.h>
 
 spl_t	curr_ipl[NCPUS] = {0};

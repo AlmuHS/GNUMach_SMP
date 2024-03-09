@@ -55,7 +55,7 @@
 #include <kern/syscall_emulation.h>
 #include <kern/task_notify.user.h>
 #include <vm/vm_kern.h>		/* for kernel_map, ipc_kernel_map */
-#include <machine/machspl.h>	/* for splsched */
+#include <machine/spl.h>	/* for splsched */
 
 task_t	kernel_task = TASK_NULL;
 struct kmem_cache task_cache;

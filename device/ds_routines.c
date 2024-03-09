@@ -63,7 +63,7 @@
 #include <mach/vm_param.h>
 #include <mach/notify.h>
 #include <machine/locore.h>
-#include <machine/machspl.h>		/* spl definitions */
+#include <machine/spl.h>		/* spl definitions */
 
 #include <ipc/ipc_port.h>
 #include <ipc/ipc_space.h>
@@ -95,7 +95,7 @@
 #include <device/device_emul.h>
 #include <device/intr.h>
 
-#include <machine/machspl.h>
+#include <machine/spl.h>
 
 #ifdef LINUX_DEV
 extern struct device_emulation_ops linux_block_emulation_ops;

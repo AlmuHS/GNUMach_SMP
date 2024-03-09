@@ -21,7 +21,7 @@
 #include <device/tty.h>
 #include <device/cons.h>
 #include <machine/pmap.h>
-#include <machine/machspl.h>
+#include <machine/spl.h>
 #include <xen/public/io/console.h>
 #include "console.h"
 #include "ring.h"

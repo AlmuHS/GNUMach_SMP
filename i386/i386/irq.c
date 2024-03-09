@@ -22,7 +22,7 @@
 #include <mach/kern_return.h>
 #include <kern/queue.h>
 #include <kern/assert.h>
-#include <machine/machspl.h>
+#include <machine/spl.h>
 
 extern queue_head_t main_intr_queue;
 

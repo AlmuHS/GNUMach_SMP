@@ -71,7 +71,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 #ifdef	KERNEL
 #ifndef	__ASSEMBLER__
-#include <machine/machspl.h>
+#include <machine/spl.h>
 /* Note that interrupts have varying signatures */
 typedef void (*interrupt_handler_fn)(int);
 extern interrupt_handler_fn ivect[];

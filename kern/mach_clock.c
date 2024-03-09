@@ -57,7 +57,7 @@
 #include <kern/priority.h>
 #include <vm/vm_kern.h>
 #include <machine/mach_param.h>	/* HZ */
-#include <machine/machspl.h>
+#include <machine/spl.h>
 #include <machine/model_dep.h>
 
 #if MACH_PCSAMPLE

@@ -57,7 +57,7 @@
 #include <i386/gdt.h>
 #include <i386/ktss.h>
 #include <i386/ldt.h>
-#include <i386/machspl.h>
+#include <i386/spl.h>
 #include <i386/mp_desc.h>
 #include <i386/pit.h>
 #include <i386/pmap.h>

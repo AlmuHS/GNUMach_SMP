@@ -70,7 +70,7 @@
 #include <ipc/ipc_port.h>
 #include <ipc/mach_msg.h>
 #include <ipc/mach_port.server.h>
-#include <machine/machspl.h>		/* for splsched */
+#include <machine/spl.h>		/* for splsched */
 #include <machine/pcb.h>
 #include <machine/thread.h>		/* for MACHINE_STACK */
 

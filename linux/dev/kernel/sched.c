@@ -36,7 +36,7 @@
 #include <kern/sched_prim.h>
 #include <kern/printf.h>
 
-#include <machine/machspl.h>
+#include <machine/spl.h>
 
 #define MACH_INCLUDE
 #include <linux/sched.h>

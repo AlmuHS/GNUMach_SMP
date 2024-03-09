@@ -35,7 +35,7 @@
 #include <kern/processor.h>
 #include <kern/thread_swap.h>
 #include <kern/ipc_sched.h>
-#include <machine/machspl.h>	/* for splsched/splx */
+#include <machine/spl.h>	/* for splsched/splx */
 #include <machine/pmap.h>
 
 

@@ -55,7 +55,7 @@
 #include <kern/sched_prim.h>
 #include <kern/processor.h>
 #include <kern/thread_swap.h>
-#include <machine/machspl.h>		/* for splsched */
+#include <machine/spl.h>		/* for splsched */
 
 
 

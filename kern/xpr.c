@@ -33,7 +33,7 @@
 #include <kern/xpr.h>
 #include <kern/lock.h>
 #include "cpu_number.h"
-#include <machine/machspl.h>
+#include <machine/spl.h>
 #include <vm/vm_kern.h>
 
 

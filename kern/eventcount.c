@@ -49,7 +49,7 @@
 #include <kern/sched_prim.h>
 #include <kern/thread.h>
 
-#include <machine/machspl.h>	/* For def'n of splsched() */
+#include <machine/spl.h>	/* For def'n of splsched() */
 
 #include <kern/eventcount.h>
 

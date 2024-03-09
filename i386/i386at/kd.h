@@ -568,7 +568,7 @@ extern u_char	key_map[NUMKEYS][WIDTH_KMAP];
  */
 
 #ifdef	KERNEL
-#include <i386/machspl.h>
+#include <i386/spl.h>
 #define SPLKD	spltty
 #endif /* KERNEL */
 

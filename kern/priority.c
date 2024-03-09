@@ -45,7 +45,7 @@
 #include <kern/priority.h>
 #include <kern/processor.h>
 #include <kern/timer.h>
-#include <machine/machspl.h>
+#include <machine/spl.h>
 
 
 

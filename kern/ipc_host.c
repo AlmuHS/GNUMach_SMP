@@ -45,7 +45,7 @@
 #include <ipc/ipc_space.h>
 #include <mach/mach_traps.h>
 
-#include <machine/machspl.h>	/* for spl */
+#include <machine/spl.h>	/* for spl */
 
 
 

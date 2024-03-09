@@ -89,7 +89,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <i386/locore.h>
 #include <i386/loose_ends.h>
 #include <i386/vm_param.h>
-#include <i386/machspl.h>
+#include <i386/spl.h>
 #include <i386/pio.h>
 #include <i386at/cram.h>
 #include <i386at/kd.h>

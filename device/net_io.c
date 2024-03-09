@@ -42,7 +42,7 @@
 #include <string.h>
 
 #include <device/net_status.h>
-#include <machine/machspl.h>		/* spl definitions */
+#include <machine/spl.h>		/* spl definitions */
 #include <device/net_io.h>
 #include <device/if_hdr.h>
 #include <device/io_req.h>
@@ -64,7 +64,7 @@
 #include <kern/slab.h>
 #include <kern/thread.h>
 
-#include <machine/machspl.h>
+#include <machine/spl.h>
 
 #if	MACH_TTD
 #include <ttd/ttd_stub.h>

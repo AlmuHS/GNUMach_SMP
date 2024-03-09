@@ -49,7 +49,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <sys/types.h>
 #include <kern/mach_clock.h>
 #include <kern/printf.h>
-#include <i386/machspl.h>
+#include <i386/spl.h>
 #include <i386/pio.h>
 #include <i386at/rtc.h>
 

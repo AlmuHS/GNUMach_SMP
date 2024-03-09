@@ -42,7 +42,7 @@
 #include <kern/ipc_sched.h>
 #include <kern/task.h>
 #include <kern/thread.h>
-#include <machine/machspl.h>	/* for splsched */
+#include <machine/spl.h>	/* for splsched */
 
 #if	MACH_FIXPRI
 #include <mach/policy.h>

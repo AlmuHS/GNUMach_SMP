@@ -56,7 +56,7 @@
 #include <vm/vm_page.h>
 #include <vm/vm_init.h>
 #include <vm/vm_pageout.h>
-#include <machine/machspl.h>
+#include <machine/spl.h>
 #include <machine/pcb.h>
 #include <machine/pmap.h>
 #include <machine/model_dep.h>

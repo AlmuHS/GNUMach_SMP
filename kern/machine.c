@@ -53,7 +53,7 @@
 #include <kern/task.h>
 #include <kern/thread.h>
 #include <kern/printf.h>
-#include <machine/machspl.h>	/* for splsched */
+#include <machine/spl.h>	/* for splsched */
 #include <machine/model_dep.h>
 #include <machine/pcb.h>
 #include <sys/reboot.h>
