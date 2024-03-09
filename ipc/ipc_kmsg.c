@@ -42,7 +42,6 @@
 #include <mach/message.h>
 #include <mach/port.h>
 #include <machine/locore.h>
-#include <machine/copy_user.h>
 #include <kern/assert.h>
 #include <kern/debug.h>
 #include <kern/kalloc.h>
@@ -51,6 +50,7 @@
 #include <vm/vm_kern.h>
 #include <vm/vm_user.h>
 #include <ipc/port.h>
+#include <ipc/copy_user.h>
 #include <ipc/ipc_entry.h>
 #include <ipc/ipc_kmsg.h>
 #include <ipc/ipc_thread.h>

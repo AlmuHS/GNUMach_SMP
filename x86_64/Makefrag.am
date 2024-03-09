@@ -90,7 +90,6 @@ libkernel_a_SOURCES += \
 	i386/i386/percpu.h \
 	i386/i386/percpu.c \
 	x86_64/cswitch.S \
-	x86_64/copy_user.c \
 	x86_64/debug_trace.S \
 	x86_64/idt_inittab.S \
 	x86_64/locore.S \

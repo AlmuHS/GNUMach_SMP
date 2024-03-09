@@ -30,7 +30,6 @@
 #include <mach/mig_support.h>
 #include <mach/thread_status.h>
 #include <machine/locore.h>
-#include <machine/copy_user.h>
 #include <kern/ast.h>
 #include <kern/debug.h>
 #include <kern/ipc_tt.h>
@@ -42,6 +41,7 @@
 #include <kern/ipc_mig.h>
 #include <vm/vm_map.h>
 #include <vm/vm_user.h>
+#include <ipc/copy_user.h>
 #include <ipc/port.h>
 #include <ipc/ipc_kmsg.h>
 #include <ipc/ipc_entry.h>

@@ -16,13 +16,14 @@
  * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
  */
 
+#ifdef __LP64__
+
 #include <stddef.h>
 #include <string.h>
 
+#include <ipc/copy_user.h>
 #include <kern/debug.h>
 #include <mach/boolean.h>
-
-#include <copy_user.h>
 
 
 /* Mach field descriptors measure size in bits */
@@ -611,3 +612,5 @@ int copyoutmsg (const void *kernelbuf, void *userbuf, const size_t ksize)
   return 0;
 
 }
+
+#endif /* __LP64__ */

@@ -76,6 +76,8 @@ endif
 #
 
 libkernel_a_SOURCES += \
+	ipc/copy_user.c \
+	ipc/copy_user.h \
 	ipc/ipc_entry.c \
 	ipc/ipc_entry.h \
 	ipc/ipc_init.c \

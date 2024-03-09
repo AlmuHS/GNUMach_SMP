@@ -36,13 +36,13 @@
 
 #include <mach/port.h>
 #include <mach/message.h>
-#include <machine/copy_user.h>
 #include <kern/assert.h>
 #include <kern/counters.h>
 #include <kern/debug.h>
 #include <kern/sched_prim.h>
 #include <kern/ipc_sched.h>
 #include <kern/ipc_kobject.h>
+#include <ipc/copy_user.h>
 #include <ipc/ipc_mqueue.h>
 #include <ipc/ipc_thread.h>
 #include <ipc/ipc_kmsg.h>

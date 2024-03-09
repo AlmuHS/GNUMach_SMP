@@ -39,7 +39,6 @@
 #include <mach/kern_return.h>
 #include <mach/port.h>
 #include <mach/message.h>
-#include <machine/copy_user.h>
 #include <kern/assert.h>
 #include <kern/counters.h>
 #include <kern/debug.h>
@@ -49,6 +48,7 @@
 #include <kern/ipc_sched.h>
 #include <kern/exception.h>
 #include <vm/vm_map.h>
+#include <ipc/copy_user.h>
 #include <ipc/ipc_kmsg.h>
 #include <ipc/ipc_marequest.h>
 #include <ipc/ipc_mqueue.h>

@@ -28,7 +28,7 @@
 /*
  * The copyin_32to64() and copyout_64to32() routines are meant for data types
  * that have different size in kernel and user space. They should be independent
- * of endianness and hopefully can be reused in the future on other archs.
+ * of endianness and hopefully can be reused on all archs.
  * These types are e.g.:
  * - port names vs port pointers, on a 64-bit kernel
  * - memory addresses, on a 64-bit kernel and 32-bit user
@@ -71,23 +71,23 @@ static inline int copyout_address(const vm_offset_t *kaddr, rpc_vm_offset_t *uad
 
 static inline int copyin_port(const mach_port_name_t *uaddr, mach_port_t *kaddr)
 {
-#ifdef __x86_64__
+#ifdef __LP64__
   return copyin_32to64(uaddr, kaddr);
-#else /* __x86_64__ */
+#else /* __LP64__ */
   return copyin(uaddr, kaddr, sizeof(*uaddr));
-#endif /* __x86_64__ */
+#endif /* __LP64__ */
 }
 
 static inline int copyout_port(const mach_port_t *kaddr, mach_port_name_t *uaddr)
 {
-#ifdef __x86_64__
+#ifdef __LP64__
   return copyout_64to32(kaddr, uaddr);
-#else /* __x86_64__ */
+#else /* __LP64__ */
   return copyout(kaddr, uaddr, sizeof(*kaddr));
-#endif /* __x86_64__ */
+#endif /* __LP64__ */
 }
 
-#if defined(__x86_64__) && defined(USER32)
+#if defined(__LP64__) && defined(USER32)
 /* For 32 bit userland, kernel and user land messages are not the same size. */
 size_t msg_usize(const mach_msg_header_t *kmsg);
 #else
@@ -95,6 +95,6 @@ static inline size_t msg_usize(const mach_msg_header_t *kmsg)
 {
   return kmsg->msgh_size;
 }
-#endif /* __x86_64__ && USER32 */
+#endif /* __LP64__ && USER32 */
 
 #endif /* COPY_USER_H */
