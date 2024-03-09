@@ -163,17 +163,21 @@
 #define POP_SEGMENTS_ISR(reg)
 #endif
 
+#if NCPUS > 1
+#define SET_KERNEL_SEGMENTS(reg)                \
+	ud2		/* TODO: use swapgs or similar */
+#else // NCPUS > 1
 #ifdef USER32
 #define SET_KERNEL_SEGMENTS(reg)	       \
 	mov	%ss,reg /* switch to kernel segments */ ;\
 	mov	reg,%ds	/* (same as kernel stack segment) */ ;\
 	mov	reg,%es			;\
 	mov	reg,%fs			;\
-	mov	$(PERCPU_DS),reg	;\
 	mov	reg,%gs
-#else
+#else // USER32
 #define SET_KERNEL_SEGMENTS(reg)
-#endif
+#endif // USER32
+#endif // NCPUS > 1
 
 /*
  * Fault recovery.
