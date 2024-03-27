@@ -34,7 +34,7 @@ static struct {
   mach_port_t task;
   integer_t exception;
   integer_t code;
-  integer_t subcode;
+  long_integer_t subcode;
 } last_exc;
 kern_return_t catch_exception_raise(mach_port_t exception_port,
                                     mach_port_t thread, mach_port_t task,
