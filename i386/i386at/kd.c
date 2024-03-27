@@ -86,6 +86,7 @@ WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 #include <device/buf.h>
 #include <vm/vm_kern.h>
 #include <i386/db_interface.h>
+#include <i386/irq.h>
 #include <i386/locore.h>
 #include <i386/loose_ends.h>
 #include <i386/vm_param.h>
