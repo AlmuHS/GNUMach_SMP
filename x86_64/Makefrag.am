@@ -236,6 +236,10 @@ gnumach_LINKFLAGS += \
 	-T '$(srcdir)'/x86_64/ldscript
 endif
 
+# We do not support or need position-independent
+AM_CFLAGS += \
+	-no-pie -fno-PIE -fno-pie -fno-pic
+
 AM_CFLAGS += -D_START_MAP=$(_START_MAP) \
 	-DKERNEL_MAP_BASE=$(KERNEL_MAP_BASE)
 AM_CCASFLAGS += -D_START_MAP=$(_START_MAP) \

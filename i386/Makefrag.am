@@ -170,6 +170,10 @@ gnumach_LINKFLAGS += \
 	-T '$(srcdir)'/i386/ldscript
 endif
 
+# We do not support or need position-independent
+AM_CFLAGS += \
+	-no-pie -fno-PIE -fno-pie -fno-pic
+
 AM_CFLAGS += \
 	-mno-3dnow \
 	-mno-mmx \
