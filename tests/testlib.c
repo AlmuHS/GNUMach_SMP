@@ -23,6 +23,7 @@
 #include <mach/message.h>
 #include <mach/mig_errors.h>
 #include <mach/vm_param.h>
+#include <sys/reboot.h>
 
 #include <mach.user.h>
 #include <mach_host.user.h>
@@ -55,7 +56,7 @@ mach_port_t device_priv(void)
 
 void halt()
 {
-  int ret = host_reboot(host_priv_port, 0);
+  int ret = host_reboot(host_priv_port, RB_HALT);
   ASSERT_RET(ret, "host_reboot() failed!");
   while (1)
     ;

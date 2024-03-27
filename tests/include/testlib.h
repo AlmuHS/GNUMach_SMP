@@ -63,7 +63,7 @@ extern const char* TEST_FAILURE_MARKER;
 
 const char* e2s(int err);
 const char* e2s_gnumach(int err);
-void halt();
+extern void __attribute__((noreturn)) halt();
 int msleep(uint32_t timeout);
 thread_t test_thread_start(task_t task, void(*routine)(void*), void* arg);
 
