@@ -70,6 +70,22 @@ thread_t test_thread_start(task_t task, void(*routine)(void*), void* arg);
 mach_port_t host_priv(void);
 mach_port_t device_priv(void);
 
+extern void mach_msg_destroy(mach_msg_header_t *msg);
+
+extern mach_msg_return_t mach_msg_server(
+	boolean_t		(*demux) (mach_msg_header_t *request,
+					  mach_msg_header_t *reply),
+	mach_msg_size_t		max_size,
+	mach_port_t		rcv_name,
+	mach_msg_option_t	options);
+
+extern mach_msg_return_t mach_msg_server_once(
+	boolean_t		(*demux) (mach_msg_header_t *request,
+					  mach_msg_header_t *reply),
+	mach_msg_size_t		max_size,
+	mach_port_t		rcv_name,
+	mach_msg_option_t	options);
+
 int main(int argc, char *argv[], int envc, char *envp[]);
 
 #endif /* TESTLIB_H */

@@ -26,6 +26,7 @@
 #include <sys/reboot.h>
 
 #include <mach.user.h>
+#include <mach_port.user.h>
 #include <mach_host.user.h>
 
 
@@ -79,6 +80,128 @@ const char* e2s(int err)
       {
       default: return "unknown";
       }
+}
+
+void mach_msg_destroy(mach_msg_header_t *msg)
+{
+	mach_port_t	tmp;
+
+	tmp = mach_reply_port();
+
+	msg->msgh_local_port = msg->msgh_remote_port;
+	msg->msgh_bits = MACH_MSGH_BITS(MACH_MSG_TYPE_MAKE_SEND,
+					MACH_MSGH_BITS_REMOTE(msg->msgh_bits))
+			 | MACH_MSGH_BITS_OTHER(msg->msgh_bits);
+
+	mach_msg(msg, MACH_SEND_MSG, msg->msgh_size, 0, MACH_PORT_NULL,
+		 MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
+
+	mach_port_mod_refs(mach_task_self(), tmp, MACH_PORT_RIGHT_RECEIVE, -1);
+}
+
+mach_msg_return_t mach_msg_server(
+	boolean_t		(*demux) (mach_msg_header_t *request,
+					  mach_msg_header_t *reply),
+	mach_msg_size_t		max_size,
+	mach_port_t		rcv_name,
+	mach_msg_option_t	options)
+{
+	mach_msg_return_t	mr;
+	mig_reply_header_t	*request;
+	mig_reply_header_t	*reply;
+	mig_reply_header_t	*tmp;
+	boolean_t		handled;
+
+	request = __builtin_alloca(max_size);
+	reply = __builtin_alloca(max_size);
+
+GetRequest:
+	mr = mach_msg(&request->Head, MACH_RCV_MSG|options,
+		      0, max_size, rcv_name,
+		      MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
+	if (mr)
+		return mr;
+
+Handle:
+	handled = demux(&request->Head, &reply->Head);
+	if (!handled)
+		reply->RetCode = MIG_BAD_ID;
+
+	if (reply->RetCode == MIG_NO_REPLY)
+		goto GetRequest;
+	else if (reply->RetCode != KERN_SUCCESS) {
+		request->Head.msgh_remote_port = MACH_PORT_NULL;
+		mach_msg_destroy(&request->Head);
+	}
+
+	if (!MACH_PORT_VALID(reply->Head.msgh_remote_port)) {
+		mach_msg_destroy(&reply->Head);
+		goto GetRequest;
+	}
+
+	tmp = request;
+	request = reply;
+	reply = tmp;
+
+	mr = mach_msg(&request->Head, MACH_SEND_MSG|MACH_RCV_MSG|options,
+		      request->Head.msgh_size, max_size, rcv_name,
+		      MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
+
+	if (mr == MACH_MSG_SUCCESS)
+		goto Handle;
+	else if (mr == MACH_SEND_INVALID_DEST) {
+		mach_msg_destroy(&request->Head);
+		goto GetRequest;
+	}
+
+	return mr;
+}
+
+mach_msg_return_t mach_msg_server_once(
+	boolean_t		(*demux) (mach_msg_header_t *request,
+					  mach_msg_header_t *reply),
+	mach_msg_size_t		max_size,
+	mach_port_t		rcv_name,
+	mach_msg_option_t	options)
+{
+	mach_msg_return_t	mr;
+	mig_reply_header_t	*request;
+	mig_reply_header_t	*reply;
+	boolean_t		handled;
+
+	request = __builtin_alloca(max_size);
+	reply = __builtin_alloca(max_size);
+
+	mr = mach_msg(&request->Head, MACH_RCV_MSG|options,
+		      0, max_size, rcv_name,
+		      MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
+	if (mr)
+		return mr;
+
+	handled = demux(&request->Head, &reply->Head);
+	if (!handled)
+		reply->RetCode = MIG_BAD_ID;
+
+	if (reply->RetCode == MIG_NO_REPLY)
+		return MACH_MSG_SUCCESS;
+	else if (reply->RetCode != KERN_SUCCESS) {
+		request->Head.msgh_remote_port = MACH_PORT_NULL;
+		mach_msg_destroy(&request->Head);
+	}
+
+	if (!MACH_PORT_VALID(reply->Head.msgh_remote_port)) {
+		mach_msg_destroy(&reply->Head);
+		return MACH_MSG_SUCCESS;
+	}
+
+	mr = mach_msg(&reply->Head, MACH_SEND_MSG|options,
+		      reply->Head.msgh_size, 0, MACH_PORT_NULL,
+		      MACH_MSG_TIMEOUT_NONE, MACH_PORT_NULL);
+
+	if (mr == MACH_SEND_INVALID_DEST)
+		mach_msg_destroy(&reply->Head);
+
+	return mr;
 }
 
 /*

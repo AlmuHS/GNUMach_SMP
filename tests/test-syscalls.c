@@ -49,43 +49,9 @@ kern_return_t catch_exception_raise(mach_port_t exception_port,
   last_exc.exception = exception;
   last_exc.code = code;
   last_exc.subcode = subcode;
+  thread_terminate(thread);
   return KERN_SUCCESS;
 }
-
-static char simple_request_data[PAGE_SIZE];
-static char simple_reply_data[PAGE_SIZE];
-int simple_msg_server(boolean_t (*demuxer) (mach_msg_header_t *request,
-                                             mach_msg_header_t *reply),
-                      mach_port_t rcv_port_name,
-                      int num_msgs)
-{
-  int midx = 0, mok = 0;
-  int ret;
-  mig_reply_header_t *request = (mig_reply_header_t*)simple_request_data;
-  mig_reply_header_t *reply = (mig_reply_header_t*)simple_reply_data;
-  while ((midx - num_msgs) < 0)
-    {
-      ret = mach_msg(&request->Head, MACH_RCV_MSG, 0, PAGE_SIZE,
-                     rcv_port_name, 0, MACH_PORT_NULL);
-      switch (ret)
-        {
-        case MACH_MSG_SUCCESS:
-          if ((*demuxer)(&request->Head, &reply->Head))
-            mok++;  // TODO send reply
-          else
-            FAILURE("demuxer didn't handle the message");
-          break;
-        default:
-          ASSERT_RET(ret, "receiving in msg_server");
-          break;
-        }
-      midx++;
-    }
-  if (mok != midx)
-    FAILURE("wrong number of message received");
-  return mok != midx;
-}
-
 
 void test_syscall_bad_arg_on_stack(void *arg)
 {
@@ -152,13 +118,13 @@ int main(int argc, char *argv[], int envc, char *envp[])
 
   memset(&last_exc, 0, sizeof(last_exc));
   test_thread_start(mach_task_self(), test_bad_syscall_num, NULL);
-  ASSERT_RET(simple_msg_server(exc_server, excp, 1), "error in exc server");
+  ASSERT_RET(mach_msg_server_once(exc_server, 4096, excp, MACH_MSG_OPTION_NONE), "error in exc server");
   ASSERT((last_exc.exception == EXC_BAD_INSTRUCTION) && (last_exc.code == EXC_I386_INVOP),
          "bad exception for test_bad_syscall_num()");
 
   memset(&last_exc, 0, sizeof(last_exc));
   test_thread_start(mach_task_self(), test_syscall_bad_arg_on_stack, NULL);
-  ASSERT_RET(simple_msg_server(exc_server, excp, 1), "error in exc server");
+  ASSERT_RET(mach_msg_server_once(exc_server, 4096, excp, MACH_MSG_OPTION_NONE), "error in exc server");
   ASSERT((last_exc.exception == EXC_BAD_ACCESS) && (last_exc.code == KERN_INVALID_ADDRESS),
          "bad exception for test_syscall_bad_arg_on_stack()");
 
