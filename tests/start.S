@@ -26,3 +26,5 @@ _start:
         movq    %rsp,%rdi
         callq   c_start
 #endif /* __x86_64__ */
+
+	.section .note.GNU-stack,"",%progbits
