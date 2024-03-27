@@ -212,7 +212,7 @@ typedef struct elf64_sym {
     Elf64_Xword	st_size;
 } Elf64_Sym;
 
-#ifdef __x86_64__
+#ifdef __LP64__
 #define Elf_Sym Elf64_Sym
 #define Elf_Shdr Elf64_Shdr
 #else
@@ -349,7 +349,7 @@ typedef struct {
 #define DT_TEXTREL	22
 #define DT_JMPREL	23
 
-#if defined(__x86_64__) && ! defined(USER32)
+#if defined(__LP64__) && ! defined(USER32)
 typedef Elf64_Ehdr Elf_Ehdr;
 typedef Elf64_Phdr Elf_Phdr;
 #else
