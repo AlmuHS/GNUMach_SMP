@@ -23,6 +23,7 @@
 #include <kern/list.h>
 #include <vm/vm_map.h>
 #include <vm/vm_kern.h>
+#include <machine/locore.h>
 
 /* An entry in the global hash table. */
 struct gsync_hbucket
@@ -254,9 +255,28 @@ kern_return_t gsync_wait (task_t task, vm_offset_t addr,
 
   boolean_t equal;
   if (! remote)
-    equal = ((unsigned int *)addr)[0] == lo &&
-      ((flags & GSYNC_QUAD) == 0 ||
-       ((unsigned int *)addr)[1] == hi);
+    {
+      unsigned int value;
+
+      if (copyin ((const void *) addr, &value, 4))
+	{
+	  vm_map_unlock_read (task->map);
+	  kmutex_unlock (&hbp->lock);
+	  return KERN_INVALID_ADDRESS;
+	}
+
+      equal = (value == lo);
+      if (flags & GSYNC_QUAD)
+	{
+	  if (copyin ((const void *) (addr + 4), &value, 4))
+	    {
+	      vm_map_unlock_read (task->map);
+	      kmutex_unlock (&hbp->lock);
+	      return KERN_INVALID_ADDRESS;
+	    }
+	  equal = equal && (value == hi);
+	}
+    }
   else
     {
       vm_offset_t paddr = temp_mapping (&va, addr, VM_PROT_READ);
@@ -388,11 +408,15 @@ kern_return_t gsync_wake (task_t task,
             }
 
           addr = paddr + (addr & (PAGE_SIZE - 1));
+          *(unsigned int *)addr = val;
+          vm_map_remove (kernel_map, addr, addr + sizeof (int));
         }
-
-      *(unsigned int *)addr = val;
-      if (task != current_task ())
-        vm_map_remove (kernel_map, addr, addr + sizeof (int));
+      else if (copyout (&val, (void *) addr, 4))
+        {
+          kmutex_unlock (&hbp->lock);
+          vm_map_unlock_read (task->map);
+          return KERN_INVALID_ADDRESS;
+        }
     }
 
   vm_map_unlock_read (task->map);
