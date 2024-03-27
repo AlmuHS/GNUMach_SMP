@@ -161,9 +161,7 @@ routine task_get_assignment(
 		task		: task_t;
 	out	assigned_set	: processor_set_name_t);
 
-#if defined(__x86_64__) && !defined(USER32)
-skip;
-#else
+#if defined(__i386__) || (defined(__x86_64__) && defined(USER32))
 /*
  *	Get string describing current kernel version.
  *	Deprecated, use host_get_kernel_version.
@@ -171,6 +169,8 @@ skip;
 routine	host_kernel_version(
 		host		: host_t;
 	out	kernel_version	: kernel_version_t);
+#else
+skip;
 #endif
 
 /*
