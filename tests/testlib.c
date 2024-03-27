@@ -29,6 +29,11 @@
 #include <mach_port.user.h>
 #include <mach_host.user.h>
 
+#ifdef PAGE_SIZE
+vm_size_t vm_page_size = PAGE_SIZE;
+#else
+vm_size_t vm_page_size;
+#endif
 
 static int argc = 0;
 static char *argv_unknown[] = {"unknown", "m1", "123", "456"};
@@ -212,6 +217,7 @@ mach_msg_return_t mach_msg_server_once(
 void __attribute__((used, retain))
 c_start(void **argptr)
 {
+  kern_return_t kr;
   intptr_t* argcptr = (intptr_t*)argptr;
   argc = argcptr[0];
   argv = (char **) &argcptr[1];
@@ -223,6 +229,13 @@ c_start(void **argptr)
 
   mach_atoi(argv[1], &host_priv_port);
   mach_atoi(argv[2], &device_master_port);
+
+#ifndef PAGE_SIZE
+  vm_statistics_data_t stats;
+  kr = vm_statistics (mach_task_self(), &stats);
+  ASSERT_RET(kr, "can't get page size");
+  vm_page_size = stats.pagesize;
+#endif
 
   printf("started %s", argv[0]);
   for (int i=1; i<argc; i++)

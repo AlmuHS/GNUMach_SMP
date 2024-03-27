@@ -70,6 +70,8 @@ thread_t test_thread_start(task_t task, void(*routine)(void*), void* arg);
 mach_port_t host_priv(void);
 mach_port_t device_priv(void);
 
+extern vm_size_t vm_page_size;
+
 extern void mach_msg_destroy(mach_msg_header_t *msg);
 
 extern mach_msg_return_t mach_msg_server(
