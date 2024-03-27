@@ -30,29 +30,32 @@
 #include <mach/vm_param.h>
 #include <mach.user.h>
 
-/* This is just a temporary mapping to set up the stack */
-static long stack_top[PAGE_SIZE/sizeof(long)] __attribute__ ((aligned (PAGE_SIZE)));
-
 thread_t test_thread_start(task_t task, void(*routine)(void*), void* arg) {
-  const vm_size_t stack_size = PAGE_SIZE * 16;
+  const vm_size_t stack_size = vm_page_size * 16;
   kern_return_t ret;
-  vm_address_t stack;
+  vm_address_t stack, local_stack;
+
+  ret = vm_allocate(mach_task_self(), &local_stack, vm_page_size, TRUE);
+  ASSERT_RET(ret, "can't allocate local stack");
 
   ret = vm_allocate(task, &stack, stack_size, TRUE);
   ASSERT_RET(ret, "can't allocate the stack for a new thread");
 
-  ret = vm_protect(task, stack, PAGE_SIZE, FALSE, VM_PROT_NONE);
+  ret = vm_protect(task, stack, vm_page_size, FALSE, VM_PROT_NONE);
   ASSERT_RET(ret, "can't protect the stack from overflows");
 
-  long *top = (long*)((vm_offset_t)stack_top + PAGE_SIZE) - 1;
+  long *top = (long*)(local_stack + vm_page_size) - 1;
 #ifdef __i386__
   *top = (long)arg; /* The argument is passed on the stack on x86_32 */
   *(top - 1) = 0;   /* The return address */
 #elif defined(__x86_64__)
   *top = 0;         /* The return address */
 #endif
-  ret = vm_write(task, stack + stack_size - PAGE_SIZE, (vm_offset_t)stack_top, PAGE_SIZE);
+  ret = vm_write(task, stack + stack_size - vm_page_size, local_stack, vm_page_size);
   ASSERT_RET(ret, "can't initialize the stack for the new thread");
+
+  ret = vm_deallocate(mach_task_self(), local_stack, vm_page_size);
+  ASSERT_RET(ret, "can't deallocate local stack");
 
   thread_t thread;
   ret = thread_create(task, &thread);
