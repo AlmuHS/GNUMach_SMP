@@ -240,7 +240,7 @@ typedef struct {
 } mach_port_name_inlined_t;
 
 typedef struct  {
-#ifdef __x86_64__
+#ifdef __LP64__
     /*
      * For 64 bits, this struct is 8 bytes long so we
      * can pack the same amount of information as mach_msg_type_long_t.
@@ -275,9 +275,9 @@ typedef struct  {
 } __attribute__ ((aligned (__alignof__ (uintptr_t)))) mach_msg_type_t;
 
 typedef struct {
-#ifdef __x86_64__
+#ifdef __LP64__
     union {
-        /* On x86_64 this is equivalent to mach_msg_type_t so use
+        /* On 64-bit this is equivalent to mach_msg_type_t so use
          * union to overlay with the old field names.  */
         mach_msg_type_t	msgtl_header;
         struct {
@@ -298,7 +298,7 @@ typedef struct {
 #endif
 } __attribute__ ((aligned (__alignof__ (uintptr_t)))) mach_msg_type_long_t;
 
-#ifdef __x86_64__
+#ifdef __LP64__
 #ifdef __cplusplus
 #if __cplusplus >= 201103L
 static_assert (sizeof (mach_msg_type_t) == sizeof (mach_msg_type_long_t),
@@ -401,7 +401,7 @@ typedef integer_t mach_msg_option_t;
 
 #define MACH_SEND_ALWAYS	0x00010000	/* internal use only */
 
-#ifdef __x86_64__
+#ifdef __LP64__
 #if defined(KERNEL) && defined(USER32)
 #define MACH_MSG_USER_ALIGNMENT 4
 #else

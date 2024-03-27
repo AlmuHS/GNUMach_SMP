@@ -1357,7 +1357,7 @@ ipc_kmsg_copyin_body(
 
 		if ((is_port && !is_inline && (size != PORT_NAME_T_SIZE_IN_BITS)) ||
 		    (is_port && is_inline && (size != PORT_T_SIZE_IN_BITS)) ||
-#ifndef __x86_64__
+#ifndef __LP64__
 		    (longform && ((type->msgtl_header.msgt_name != 0) ||
 				  (type->msgtl_header.msgt_size != 0) ||
 				  (type->msgtl_header.msgt_number != 0))) ||
@@ -2876,7 +2876,7 @@ ipc_msg_print(mach_msg_header_t *msgh)
 		is_port = MACH_MSG_TYPE_PORT_ANY(name);
 
 		if ((is_port && (size != PORT_T_SIZE_IN_BITS)) ||
-#ifndef __x86_64__
+#ifndef __LP64__
 		    (longform && ((type->msgtl_header.msgt_name != 0) ||
 				  (type->msgtl_header.msgt_size != 0) ||
 				  (type->msgtl_header.msgt_number != 0))) ||
