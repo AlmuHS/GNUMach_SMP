@@ -73,6 +73,8 @@ int exec_load(exec_read_func_t *read, exec_read_exec_func_t *read_exec,
 	if (actual < phsize)
 		return EX_CORRUPT;
 
+	out_info->stack_prot = VM_PROT_ALL;
+
 	for (i = 0; i < x.e_phnum; i++)
 	{
 		ph = (Elf_Phdr *)((vm_offset_t)phdr + i * x.e_phentsize);
@@ -89,6 +91,11 @@ int exec_load(exec_read_func_t *read, exec_read_exec_func_t *read_exec,
 					      ph->p_vaddr + loadbase, ph->p_memsz, type);
 			if (result)
 				return result;
+		} else if (ph->p_type == PT_GNU_STACK) {
+			out_info->stack_prot = 0;
+			if (ph->p_flags & PF_R) out_info->stack_prot |= VM_PROT_READ;
+			if (ph->p_flags & PF_W) out_info->stack_prot |= VM_PROT_WRITE;
+			if (ph->p_flags & PF_X) out_info->stack_prot |= VM_PROT_EXECUTE;
 		}
 	}
 

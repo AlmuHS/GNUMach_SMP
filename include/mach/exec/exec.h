@@ -51,6 +51,8 @@ typedef struct exec_info
 	/* (ELF) Address of interpreter string for loading shared libraries, null if none.  */
 	vm_offset_t interp;
 
+	/* Required stack protection.  */
+	vm_prot_t stack_prot;
 } exec_info_t;
 
 typedef int exec_sectype_t;

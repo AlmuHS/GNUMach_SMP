@@ -620,10 +620,10 @@ build_args_and_stack(struct exec_info *boot_exec_info,
 	stack_size = round_page(STACK_SIZE);
 	stack_base = user_stack_low(stack_size);
 
-	(void) vm_allocate(current_task()->map,
-			&stack_base,
-			stack_size,
-			FALSE);
+	(void) vm_map(current_map(), &stack_base, stack_size,
+		      0, FALSE, IP_NULL, 0, FALSE,
+		      boot_exec_info->stack_prot, VM_PROT_ALL,
+		      VM_INHERIT_DEFAULT);
 
 	arg_pos = (char *)
 		set_user_regs(stack_base, stack_size, boot_exec_info, arg_len);
