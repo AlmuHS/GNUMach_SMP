@@ -821,6 +821,7 @@ kern_return_t vm_map_find_entry(
 	    (entry->vme_end == start) &&
 	    (!entry->is_shared) &&
 	    (!entry->is_sub_map) &&
+	    (!entry->in_transition) &&
 	    (entry->object.vm_object == object) &&
 	    (entry->needs_copy == FALSE) &&
 	    (entry->inheritance == VM_INHERIT_DEFAULT) &&
@@ -1055,6 +1056,7 @@ kern_return_t vm_map_enter(
 	    (entry->vme_end == start) &&
 	    (!entry->is_shared) &&
 	    (!entry->is_sub_map) &&
+	    (!entry->in_transition) &&
 	    (entry->inheritance == inheritance) &&
 	    (entry->protection == cur_protection) &&
 	    (entry->max_protection == max_protection) &&
@@ -1090,6 +1092,7 @@ kern_return_t vm_map_enter(
 	    (next_entry->vme_start == end) &&
 	    (!next_entry->is_shared) &&
 	    (!next_entry->is_sub_map) &&
+	    (!next_entry->in_transition) &&
 	    (next_entry->inheritance == inheritance) &&
 	    (next_entry->protection == cur_protection) &&
 	    (next_entry->max_protection == max_protection) &&
@@ -3054,6 +3057,7 @@ kern_return_t vm_map_copyout_page_list(
 	    last->inheritance != VM_INHERIT_DEFAULT ||
 	    last->protection != VM_PROT_DEFAULT ||
 	    last->max_protection != VM_PROT_ALL ||
+	    last->in_transition ||
 	    (must_wire ? (last->wired_count == 0)
 		       : (last->wired_count != 0))) {
 		    goto create_object;
