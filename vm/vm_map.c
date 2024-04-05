@@ -1419,13 +1419,13 @@ vm_map_entry_reset_wired(vm_map_t map, vm_map_entry_t entry)
  *	is downgraded to a read lock. The caller should always consider
  *	the map read locked on return.
  */
-static void
-vm_map_pageable_scan(struct vm_map *map,
-		     struct vm_map_entry *start,
-		     struct vm_map_entry *end)
+static void vm_map_pageable_scan(
+	vm_map_t	map,
+	vm_map_entry_t	start_entry,
+	vm_offset_t	end)
 {
-	struct vm_map_entry *entry;
-	boolean_t do_wire_faults;
+	vm_map_entry_t	entry;
+	boolean_t	do_wire_faults;
 
 	/*
 	 * Pass 1. Update counters and prepare wiring faults.
@@ -1433,7 +1433,10 @@ vm_map_pageable_scan(struct vm_map *map,
 
 	do_wire_faults = FALSE;
 
-	for (entry = start; entry != end; entry = entry->vme_next) {
+	for (entry = start_entry;
+	     (entry != vm_map_to_entry(map)) &&
+	     (entry->vme_start < end);
+	     entry = entry->vme_next) {
 
 		/*
 		 * Unwiring.
@@ -1558,7 +1561,10 @@ vm_map_pageable_scan(struct vm_map *map,
 		vm_map_lock_write_to_read(map);
 	}
 
-	for (entry = start; entry != end; entry = entry->vme_next) {
+	for (entry = start_entry;
+	     (entry != vm_map_to_entry(map)) &&
+	     (entry->vme_end <= end);
+	     entry = entry->vme_next) {
 		/*
 		 * The wiring count can only be 1 if it was
 		 * incremented by this function right before
@@ -1683,7 +1689,7 @@ kern_return_t vm_map_protect(
 		current = next;
 
 	/* Returns with the map read-locked if successful */
-	vm_map_pageable_scan(map, entry, current);
+	vm_map_pageable_scan(map, entry, end);
 
 	vm_map_unlock(map);
 	return(KERN_SUCCESS);
@@ -1822,7 +1828,7 @@ kern_return_t vm_map_pageable(
 	}
 
 	/* Returns with the map read-locked */
-	vm_map_pageable_scan(map, start_entry, end_entry);
+	vm_map_pageable_scan(map, start_entry, end);
 
 	if (lock_map) {
 		vm_map_unlock(map);
