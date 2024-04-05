@@ -1555,9 +1555,21 @@ static void vm_map_pageable_scan(
 	 * while we have it unlocked.  We cannot trust user threads
 	 * to do the same.
 	 *
+	 * We set the in_transition bit in the entries to prevent
+	 * them from getting coalesced with their neighbors at the
+	 * same time as we're accessing them.
+	 *
 	 * HACK HACK HACK HACK
 	 */
 	if (vm_map_pmap(map) == kernel_pmap) {
+		for (entry = start_entry;
+		     (entry != vm_map_to_entry(map)) &&
+		     (entry->vme_end <= end);
+		     entry = entry->vme_next) {
+			assert(!entry->in_transition);
+			entry->in_transition = TRUE;
+			entry->needs_wakeup = FALSE;
+		}
 		vm_map_unlock(map); /* trust me ... */
 	} else {
 		vm_map_lock_set_recursive(map);
@@ -1583,6 +1595,19 @@ static void vm_map_pageable_scan(
 
 	if (vm_map_pmap(map) == kernel_pmap) {
 		vm_map_lock(map);
+		for (entry = start_entry;
+		     (entry != vm_map_to_entry(map)) &&
+		     (entry->vme_end <= end);
+		     entry = entry->vme_next) {
+			assert(entry->in_transition);
+			entry->in_transition = FALSE;
+			/*
+			 *	Nothing should've tried to access
+			 *	this VM region while we had the map
+			 *	unlocked.
+			 */
+			assert(!entry->needs_wakeup);
+		}
 	} else {
 		vm_map_lock_clear_recursive(map);
 	}
@@ -5037,7 +5062,7 @@ vm_map_coalesce_entry(
 
 	/*
 	 *	Get rid of the entry without changing any wirings or the pmap,
-	*	and without altering map->size.
+	 *	and without altering map->size.
 	 */
 	prev->vme_end = entry->vme_end;
 	vm_map_entry_unlink(map, entry);
