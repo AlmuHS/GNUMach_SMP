@@ -94,6 +94,12 @@ if [ x"$enable_lpr" = xyes ]; then]
 
 AC_ARG_ENABLE([apic],
   AS_HELP_STRING([--enable-apic], [LAPIC/IOAPIC support]))
+
+[if [ $mach_ncpus -gt 1 ]; then]
+  # For SMP we need apic
+  enable_apic=yes
+[fi]
+
 [if [ x"$enable_apic" = xyes ]; then]
   AC_DEFINE([APIC], [1], [APIC support])
   AM_CONDITIONAL([enable_apic], [true])
